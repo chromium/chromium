@@ -8,6 +8,8 @@
 
 #include "base/json/json_reader.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/same_party_context.h"
@@ -34,15 +36,98 @@ MATCHER_P(SerializesTo, want, "") {
   return testing::ExplainMatchResult(testing::Eq(want), got, result_listener);
 }
 
-TEST(FirstPartySets, Sets_IsEmpty) {
+class FirstPartySetsDisabledTest : public ::testing::Test {
+ public:
+  FirstPartySetsDisabledTest() {
+    feature_list_.InitAndDisableFeature(net::features::kFirstPartySets);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(FirstPartySetsDisabledTest, ParseAndSet_IgnoresValid) {
+  const std::string input =
+      R"([{
+        "owner": "https://example.test",
+        "members": ["https://aaaa.test"]
+        }])";
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  EXPECT_THAT(FirstPartySets().ParseAndSet(input), Pointee(IsEmpty()));
+}
+
+TEST_F(FirstPartySetsDisabledTest, SetsManuallySpecified_IgnoresValid) {
+  FirstPartySets sets;
+  sets.SetManuallySpecifiedSet("https://example.test,https://member.test");
+  EXPECT_THAT(sets.Sets(), IsEmpty());
+}
+
+TEST_F(FirstPartySetsDisabledTest, ComputeContext_InfersSingletons) {
+  using SamePartyContextType = net::SamePartyContext::Type;
+
+  net::SchemefulSite member(GURL("https://member1.test"));
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite wss_member(GURL("wss://member1.test"));
+
+  FirstPartySets sets;
+
+  // Works if the site is provided with WSS scheme instead of HTTPS.
+  EXPECT_THAT(sets.ComputeContext(wss_member, &member, {member, example}),
+              net::SamePartyContext(SamePartyContextType::kCrossParty,
+                                    SamePartyContextType::kCrossParty,
+                                    SamePartyContextType::kSameParty));
+
+  EXPECT_THAT(sets.ComputeContext(example, &member, {member}),
+              net::SamePartyContext(SamePartyContextType::kCrossParty));
+  EXPECT_THAT(sets.ComputeContext(member, &example, {member}),
+              net::SamePartyContext(SamePartyContextType::kCrossParty));
+
+  // Top&resource differs from Ancestors.
+  EXPECT_THAT(sets.ComputeContext(member, &member, {example}),
+              net::SamePartyContext(SamePartyContextType::kCrossParty,
+                                    SamePartyContextType::kCrossParty,
+                                    SamePartyContextType::kSameParty));
+
+  // Metrics values infer singleton sets when appropriate.
+  EXPECT_THAT(sets.ComputeContext(member, &member, {member}),
+              net::SamePartyContext(SamePartyContextType::kCrossParty,
+                                    SamePartyContextType::kSameParty,
+                                    SamePartyContextType::kSameParty));
+  EXPECT_THAT(sets.ComputeContext(member, &example, {member}),
+              net::SamePartyContext(SamePartyContextType::kCrossParty));
+  EXPECT_THAT(sets.ComputeContext(example, &member, {member}),
+              net::SamePartyContext(SamePartyContextType::kCrossParty));
+  EXPECT_THAT(sets.ComputeContext(member, &member, {example}),
+              net::SamePartyContext(SamePartyContextType::kCrossParty,
+                                    SamePartyContextType::kCrossParty,
+                                    SamePartyContextType::kSameParty));
+
+  EXPECT_THAT(sets.ComputeContext(member, &member, {member, example}),
+              net::SamePartyContext(SamePartyContextType::kCrossParty,
+                                    SamePartyContextType::kCrossParty,
+                                    SamePartyContextType::kSameParty));
+}
+
+class FirstPartySetsTest : public ::testing::Test {
+ public:
+  FirstPartySetsTest() {
+    feature_list_.InitAndEnableFeature(net::features::kFirstPartySets);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(FirstPartySetsTest, Sets_IsEmpty) {
   EXPECT_THAT(FirstPartySets().Sets(), IsEmpty());
 }
 
-TEST(FirstPartySets, ParsesJSON) {
+TEST_F(FirstPartySetsTest, ParsesJSON) {
   EXPECT_THAT(FirstPartySets().ParseAndSet("[]"), Pointee(IsEmpty()));
 }
 
-TEST(FirstPartySets, AcceptsMinimal) {
+TEST_F(FirstPartySetsTest, AcceptsMinimal) {
   const std::string input =
       R"([{
         "owner": "https://example.test",
@@ -58,7 +143,7 @@ TEST(FirstPartySets, AcceptsMinimal) {
                        SerializesTo("https://example.test")))));
 }
 
-TEST(FirstPartySets, AcceptsMultipleSets) {
+TEST_F(FirstPartySetsTest, AcceptsMultipleSets) {
   const std::string input = R"(
   [
     {
@@ -85,7 +170,7 @@ TEST(FirstPartySets, AcceptsMultipleSets) {
                                         SerializesTo("https://foo.test")))));
 }
 
-TEST(FirstPartySets, ClearsPreloadedOnError) {
+TEST_F(FirstPartySetsTest, ClearsPreloadedOnError) {
   const std::string input = R"(
   [
     {
@@ -115,7 +200,7 @@ TEST(FirstPartySets, ClearsPreloadedOnError) {
   EXPECT_THAT(sets.ParseAndSet("{}"), Pointee(IsEmpty()));
 }
 
-TEST(FirstPartySets, OwnerIsOnlyMember) {
+TEST_F(FirstPartySetsTest, OwnerIsOnlyMember) {
   const std::string input = R"(
   [
     {
@@ -133,7 +218,7 @@ TEST(FirstPartySets, OwnerIsOnlyMember) {
   EXPECT_THAT(FirstPartySets().ParseAndSet(input), Pointee(IsEmpty()));
 }
 
-TEST(FirstPartySets, OwnerIsMember) {
+TEST_F(FirstPartySetsTest, OwnerIsMember) {
   const std::string input = R"(
   [
     {
@@ -151,7 +236,7 @@ TEST(FirstPartySets, OwnerIsMember) {
   EXPECT_THAT(FirstPartySets().ParseAndSet(input), Pointee(IsEmpty()));
 }
 
-TEST(FirstPartySets, RepeatedMember) {
+TEST_F(FirstPartySetsTest, RepeatedMember) {
   const std::string input = R"(
   [
     {
@@ -173,39 +258,41 @@ TEST(FirstPartySets, RepeatedMember) {
   EXPECT_THAT(FirstPartySets().ParseAndSet(input), Pointee(IsEmpty()));
 }
 
-TEST(FirstPartySets, SetsManuallySpecified_Invalid_TooSmall) {
+TEST_F(FirstPartySetsTest, SetsManuallySpecified_Invalid_TooSmall) {
   FirstPartySets sets;
   sets.SetManuallySpecifiedSet("https://example.test");
   EXPECT_THAT(sets.ParseAndSet("[]"), Pointee(IsEmpty()));
 }
 
-TEST(FirstPartySets, SetsManuallySpecified_Invalid_NotOrigins) {
+TEST_F(FirstPartySetsTest, SetsManuallySpecified_Invalid_NotOrigins) {
   FirstPartySets sets;
   sets.SetManuallySpecifiedSet("https://example.test,member1");
   EXPECT_THAT(sets.ParseAndSet("[]"), Pointee(IsEmpty()));
 }
 
-TEST(FirstPartySets, SetsManuallySpecified_Invalid_NotHTTPS) {
+TEST_F(FirstPartySetsTest, SetsManuallySpecified_Invalid_NotHTTPS) {
   FirstPartySets sets;
   sets.SetManuallySpecifiedSet("https://example.test,http://member1.test");
   EXPECT_THAT(sets.ParseAndSet("[]"), Pointee(IsEmpty()));
 }
 
-TEST(FirstPartySets, SetsManuallySpecified_Invalid_RegisteredDomain_Owner) {
+TEST_F(FirstPartySetsTest,
+       SetsManuallySpecified_Invalid_RegisteredDomain_Owner) {
   FirstPartySets sets;
   sets.SetManuallySpecifiedSet(
       "https://www.example.test..,https://www.member.test");
   EXPECT_THAT(sets.ParseAndSet("[]"), Pointee(IsEmpty()));
 }
 
-TEST(FirstPartySets, SetsManuallySpecified_Invalid_RegisteredDomain_Member) {
+TEST_F(FirstPartySetsTest,
+       SetsManuallySpecified_Invalid_RegisteredDomain_Member) {
   FirstPartySets sets;
   sets.SetManuallySpecifiedSet(
       "https://www.example.test,https://www.member.test..");
   EXPECT_THAT(sets.ParseAndSet("[]"), Pointee(IsEmpty()));
 }
 
-TEST(FirstPartySets, SetsManuallySpecified_Valid_EmptyValue) {
+TEST_F(FirstPartySetsTest, SetsManuallySpecified_Valid_EmptyValue) {
   FirstPartySets sets;
   sets.SetManuallySpecifiedSet("");
 
@@ -229,7 +316,7 @@ TEST(FirstPartySets, SetsManuallySpecified_Valid_EmptyValue) {
                        SerializesTo("https://example.test")))));
 }
 
-TEST(FirstPartySets, SetsManuallySpecified_Valid_SingleMember) {
+TEST_F(FirstPartySetsTest, SetsManuallySpecified_Valid_SingleMember) {
   FirstPartySets sets;
   sets.SetManuallySpecifiedSet("https://example.test,https://member.test");
   EXPECT_THAT(sets.ParseAndSet("[]"),
@@ -240,8 +327,8 @@ TEST(FirstPartySets, SetsManuallySpecified_Valid_SingleMember) {
                        SerializesTo("https://example.test")))));
 }
 
-TEST(FirstPartySets,
-     SetsManuallySpecified_Valid_SingleMember_RegisteredDomain) {
+TEST_F(FirstPartySetsTest,
+       SetsManuallySpecified_Valid_SingleMember_RegisteredDomain) {
   FirstPartySets sets;
   sets.SetManuallySpecifiedSet(
       "https://www.example.test,https://www.member.test");
@@ -253,7 +340,7 @@ TEST(FirstPartySets,
                        SerializesTo("https://example.test")))));
 }
 
-TEST(FirstPartySets, SetsManuallySpecified_Valid_MultipleMembers) {
+TEST_F(FirstPartySetsTest, SetsManuallySpecified_Valid_MultipleMembers) {
   FirstPartySets sets;
   sets.SetManuallySpecifiedSet(
       "https://example.test,https://member1.test,https://member2.test");
@@ -267,13 +354,13 @@ TEST(FirstPartySets, SetsManuallySpecified_Valid_MultipleMembers) {
                        SerializesTo("https://example.test")))));
 }
 
-TEST(FirstPartySets, SetsManuallySpecified_Valid_OwnerIsOnlyMember) {
+TEST_F(FirstPartySetsTest, SetsManuallySpecified_Valid_OwnerIsOnlyMember) {
   FirstPartySets sets;
   sets.SetManuallySpecifiedSet("https://example.test,https://example.test");
   EXPECT_THAT(sets.ParseAndSet("[]"), Pointee(IsEmpty()));
 }
 
-TEST(FirstPartySets, SetsManuallySpecified_Valid_OwnerIsMember) {
+TEST_F(FirstPartySetsTest, SetsManuallySpecified_Valid_OwnerIsMember) {
   FirstPartySets sets;
   sets.SetManuallySpecifiedSet(
       "https://example.test,https://example.test,https://member1.test");
@@ -285,7 +372,7 @@ TEST(FirstPartySets, SetsManuallySpecified_Valid_OwnerIsMember) {
                        SerializesTo("https://example.test")))));
 }
 
-TEST(FirstPartySets, SetsManuallySpecified_Valid_RepeatedMember) {
+TEST_F(FirstPartySetsTest, SetsManuallySpecified_Valid_RepeatedMember) {
   FirstPartySets sets;
   sets.SetManuallySpecifiedSet(
       R"(https://example.test,
@@ -302,7 +389,7 @@ TEST(FirstPartySets, SetsManuallySpecified_Valid_RepeatedMember) {
                        SerializesTo("https://example.test")))));
 }
 
-TEST(FirstPartySets, SetsManuallySpecified_DeduplicatesOwnerOwner) {
+TEST_F(FirstPartySetsTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
   const std::string input = R"(
   [
     {
@@ -334,7 +421,7 @@ TEST(FirstPartySets, SetsManuallySpecified_DeduplicatesOwnerOwner) {
                                         SerializesTo("https://bar.test")))));
 }
 
-TEST(FirstPartySets, SetsManuallySpecified_DeduplicatesOwnerMember) {
+TEST_F(FirstPartySetsTest, SetsManuallySpecified_DeduplicatesOwnerMember) {
   const std::string input = R"(
   [
     {
@@ -366,7 +453,7 @@ TEST(FirstPartySets, SetsManuallySpecified_DeduplicatesOwnerMember) {
                        SerializesTo("https://example.test")))));
 }
 
-TEST(FirstPartySets, SetsManuallySpecified_DeduplicatesMemberOwner) {
+TEST_F(FirstPartySetsTest, SetsManuallySpecified_DeduplicatesMemberOwner) {
   const std::string input = R"(
   [
     {
@@ -397,7 +484,7 @@ TEST(FirstPartySets, SetsManuallySpecified_DeduplicatesMemberOwner) {
                        SerializesTo("https://example.test")))));
 }
 
-TEST(FirstPartySets, SetsManuallySpecified_DeduplicatesMemberMember) {
+TEST_F(FirstPartySetsTest, SetsManuallySpecified_DeduplicatesMemberMember) {
   const std::string input = R"(
   [
     {
@@ -433,7 +520,7 @@ TEST(FirstPartySets, SetsManuallySpecified_DeduplicatesMemberMember) {
                                         SerializesTo("https://bar.test")))));
 }
 
-TEST(FirstPartySets, SetsManuallySpecified_ClearsPreloadedOnError) {
+TEST_F(FirstPartySetsTest, SetsManuallySpecified_ClearsPreloadedOnError) {
   const std::string input = R"(
   [
     {
@@ -470,7 +557,7 @@ TEST(FirstPartySets, SetsManuallySpecified_ClearsPreloadedOnError) {
                        SerializesTo("https://example.test")))));
 }
 
-TEST(FirstPartySets, SetsManuallySpecified_PrunesInducedSingletons) {
+TEST_F(FirstPartySetsTest, SetsManuallySpecified_PrunesInducedSingletons) {
   const std::string input = R"(
   [
     {
@@ -494,7 +581,7 @@ TEST(FirstPartySets, SetsManuallySpecified_PrunesInducedSingletons) {
                        SerializesTo("https://example.test")))));
 }
 
-TEST(FirstPartySets, ComputeSetsDiff_SitesJoined) {
+TEST_F(FirstPartySetsTest, ComputeSetsDiff_SitesJoined) {
   auto old_sets = base::flat_map<net::SchemefulSite, net::SchemefulSite>{
       {net::SchemefulSite(GURL("https://example.test")),
        net::SchemefulSite(GURL("https://example.test"))},
@@ -532,7 +619,7 @@ TEST(FirstPartySets, ComputeSetsDiff_SitesJoined) {
   EXPECT_THAT(sets.ComputeSetsDiff(old_sets), IsEmpty());
 }
 
-TEST(FirstPartySets, ComputeSetsDiff_SitesLeft) {
+TEST_F(FirstPartySetsTest, ComputeSetsDiff_SitesLeft) {
   auto old_sets = base::flat_map<net::SchemefulSite, net::SchemefulSite>{
       {net::SchemefulSite(GURL("https://example.test")),
        net::SchemefulSite(GURL("https://example.test"))},
@@ -577,7 +664,7 @@ TEST(FirstPartySets, ComputeSetsDiff_SitesLeft) {
                                    SerializesTo("https://member3.test")));
 }
 
-TEST(FirstPartySets, ComputeSetsDiff_OwnerChanged) {
+TEST_F(FirstPartySetsTest, ComputeSetsDiff_OwnerChanged) {
   auto old_sets = base::flat_map<net::SchemefulSite, net::SchemefulSite>{
       {net::SchemefulSite(GURL("https://example.test")),
        net::SchemefulSite(GURL("https://example.test"))},
@@ -623,7 +710,7 @@ TEST(FirstPartySets, ComputeSetsDiff_OwnerChanged) {
               UnorderedElementsAre(SerializesTo("https://member3.test")));
 }
 
-TEST(FirstPartySets, ComputeSetsDiff_OwnerLeft) {
+TEST_F(FirstPartySetsTest, ComputeSetsDiff_OwnerLeft) {
   auto old_sets = base::flat_map<net::SchemefulSite, net::SchemefulSite>{
       {net::SchemefulSite(GURL("https://example.test")),
        net::SchemefulSite(GURL("https://example.test"))},
@@ -663,7 +750,7 @@ TEST(FirstPartySets, ComputeSetsDiff_OwnerLeft) {
                                    SerializesTo("https://bar.test")));
 }
 
-TEST(FirstPartySets, ComputeSetsDiff_OwnerMemberRotate) {
+TEST_F(FirstPartySetsTest, ComputeSetsDiff_OwnerMemberRotate) {
   auto old_sets = base::flat_map<net::SchemefulSite, net::SchemefulSite>{
       {net::SchemefulSite(GURL("https://example.test")),
        net::SchemefulSite(GURL("https://example.test"))},
@@ -698,7 +785,7 @@ TEST(FirstPartySets, ComputeSetsDiff_OwnerMemberRotate) {
                                    SerializesTo("https://foo.test")));
 }
 
-TEST(FirstPartySets, ComputeSetsDiff_EmptySets) {
+TEST_F(FirstPartySetsTest, ComputeSetsDiff_EmptySets) {
   // Empty old_sets.
   FirstPartySets sets;
   sets.ParseAndSet(R"(
@@ -732,7 +819,7 @@ TEST(FirstPartySets, ComputeSetsDiff_EmptySets) {
                                    SerializesTo("https://member1.test")));
 }
 
-TEST(FirstPartySets, ClearSiteDataOnChangedSetsIfReady_NotReady) {
+TEST_F(FirstPartySetsTest, ClearSiteDataOnChangedSetsIfReady_NotReady) {
   int callback_calls = 0;
   auto callback = base::BindLambdaForTesting(
       [&](const std::string& got) { callback_calls++; });
@@ -776,7 +863,7 @@ TEST(FirstPartySets, ClearSiteDataOnChangedSetsIfReady_NotReady) {
 
 // The callback only runs when `old_sets` is generated and `sets` has merged the
 // inputs from Component Updater and command line flag.
-TEST(FirstPartySets, ClearSiteDataOnChangedSetsIfReady_Ready) {
+TEST_F(FirstPartySetsTest, ClearSiteDataOnChangedSetsIfReady_Ready) {
   FirstPartySets sets;
   int callback_calls = 0;
   sets.ParseAndSet(R"([
@@ -799,9 +886,10 @@ TEST(FirstPartySets, ClearSiteDataOnChangedSetsIfReady_Ready) {
   EXPECT_EQ(callback_calls, 1);
 }
 
-class FirstPartySetsTest : public ::testing::Test {
+class PopulatedFirstPartySetsTest : public ::testing::Test {
  public:
-  FirstPartySetsTest() {
+  PopulatedFirstPartySetsTest() {
+    feature_list_.InitAndEnableFeature(net::features::kFirstPartySets);
     const std::string input = R"(
       [
         {
@@ -834,9 +922,12 @@ class FirstPartySetsTest : public ::testing::Test {
 
  protected:
   FirstPartySets sets_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_EmptyContext) {
+TEST_F(PopulatedFirstPartySetsTest, IsContextSamePartyWithSite_EmptyContext) {
   net::SchemefulSite example_site(GURL("https://example.test"));
   net::SchemefulSite nonmember(GURL("https://nonmember.test"));
 
@@ -860,7 +951,8 @@ TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_EmptyContext) {
       nonmember, &example_site, {}, false /* infer_singleton_sets */));
 }
 
-TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextIsNonmember) {
+TEST_F(PopulatedFirstPartySetsTest,
+       IsContextSamePartyWithSite_ContextIsNonmember) {
   std::set<net::SchemefulSite> context({
       net::SchemefulSite(GURL("https://nonmember.test")),
   });
@@ -895,7 +987,7 @@ TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextIsNonmember) {
   }
 }
 
-TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextIsOwner) {
+TEST_F(PopulatedFirstPartySetsTest, IsContextSamePartyWithSite_ContextIsOwner) {
   std::set<net::SchemefulSite> context(
       {net::SchemefulSite(GURL("https://example.test"))});
 
@@ -929,7 +1021,8 @@ TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextIsOwner) {
   }
 }
 
-TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextIsMember) {
+TEST_F(PopulatedFirstPartySetsTest,
+       IsContextSamePartyWithSite_ContextIsMember) {
   std::set<net::SchemefulSite> context(
       {net::SchemefulSite(GURL("https://member1.test"))});
 
@@ -967,7 +1060,8 @@ TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextIsMember) {
   }
 }
 
-TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextIsOwnerAndMember) {
+TEST_F(PopulatedFirstPartySetsTest,
+       IsContextSamePartyWithSite_ContextIsOwnerAndMember) {
   std::set<net::SchemefulSite> context({
       net::SchemefulSite(GURL("https://example.test")),
       net::SchemefulSite(GURL("https://member1.test")),
@@ -1007,7 +1101,8 @@ TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextIsOwnerAndMember) {
   }
 }
 
-TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextMixesParties) {
+TEST_F(PopulatedFirstPartySetsTest,
+       IsContextSamePartyWithSite_ContextMixesParties) {
   std::set<net::SchemefulSite> context({
       net::SchemefulSite(GURL("https://example.test")),
       net::SchemefulSite(GURL("https://member1.test")),
@@ -1044,7 +1139,7 @@ TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextMixesParties) {
   }
 }
 
-TEST_F(FirstPartySetsTest,
+TEST_F(PopulatedFirstPartySetsTest,
        IsContextSamePartyWithSite_ContextMixesMembersAndNonmembers) {
   std::set<net::SchemefulSite> context({
       net::SchemefulSite(GURL("https://example.test")),
@@ -1082,7 +1177,8 @@ TEST_F(FirstPartySetsTest,
   }
 }
 
-TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextMixesSchemes) {
+TEST_F(PopulatedFirstPartySetsTest,
+       IsContextSamePartyWithSite_ContextMixesSchemes) {
   std::set<net::SchemefulSite> context({
       net::SchemefulSite(GURL("https://example.test")),
       net::SchemefulSite(GURL("https://member1.test")),
@@ -1119,7 +1215,8 @@ TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextMixesSchemes) {
   }
 }
 
-TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_InfersSingletonSets) {
+TEST_F(PopulatedFirstPartySetsTest,
+       IsContextSamePartyWithSite_InfersSingletonSets) {
   std::set<net::SchemefulSite> context({
       net::SchemefulSite(GURL("https://nonmember.test")),
   });
@@ -1160,7 +1257,7 @@ TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_InfersSingletonSets) {
       sets().IsContextSamePartyWithSite(member, &nonmember, {nonmember}, true));
 }
 
-TEST_F(FirstPartySetsTest, ComputeContext) {
+TEST_F(PopulatedFirstPartySetsTest, ComputeContext) {
   using SamePartyContextType = net::SamePartyContext::Type;
 
   net::SchemefulSite nonmember(GURL("https://nonmember.test"));
@@ -1224,7 +1321,7 @@ TEST_F(FirstPartySetsTest, ComputeContext) {
                                     SamePartyContextType::kSameParty));
 }
 
-TEST_F(FirstPartySetsTest, IsInNontrivialFirstPartySet) {
+TEST_F(PopulatedFirstPartySetsTest, IsInNontrivialFirstPartySet) {
   EXPECT_TRUE(sets().IsInNontrivialFirstPartySet(
       net::SchemefulSite(GURL("https://example.test"))));
 
@@ -1244,7 +1341,7 @@ TEST_F(FirstPartySetsTest, IsInNontrivialFirstPartySet) {
       net::SchemefulSite(GURL("https://nonmember.test"))));
 }
 
-TEST_F(FirstPartySetsTest, Sets_NonEmpty) {
+TEST_F(PopulatedFirstPartySetsTest, Sets_NonEmpty) {
   EXPECT_THAT(
       sets().Sets(),
       UnorderedElementsAre(
@@ -1257,7 +1354,7 @@ TEST_F(FirstPartySetsTest, Sets_NonEmpty) {
                                     SerializesTo("https://member2.test")))));
 }
 
-TEST_F(FirstPartySetsTest, ComputeContextType) {
+TEST_F(PopulatedFirstPartySetsTest, ComputeContextType) {
   std::set<net::SchemefulSite> homogeneous_context({
       net::SchemefulSite(GURL("https://example.test")),
       net::SchemefulSite(GURL("https://member1.test")),

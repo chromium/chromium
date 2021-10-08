@@ -602,19 +602,17 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   // Configure SCT Auditing in the NetworkService.
   SCTReportingService::ReconfigureAfterNetworkRestart();
 
-  if (net::cookie_util::IsFirstPartySetsEnabled()) {
-    component_updater::FirstPartySetsComponentInstallerPolicy::
-        ReconfigureAfterNetworkRestart(
-            base::BindRepeating([](const std::string& raw_sets) {
-              // We use a fresh pointer here (instead of using `network_service`
-              // from the enclosing scope) to avoid use-after-free bugs, since
-              // `network_service` is not guaranteed to live until the
-              // invocation of this callback.
-              network::mojom::NetworkService* network_service =
-                  content::GetNetworkService();
-              network_service->SetFirstPartySets(raw_sets);
-            }));
-  }
+  component_updater::FirstPartySetsComponentInstallerPolicy::
+      ReconfigureAfterNetworkRestart(
+          base::BindRepeating([](const std::string& raw_sets) {
+            // We use a fresh pointer here (instead of using `network_service`
+            // from the enclosing scope) to avoid use-after-free bugs, since
+            // `network_service` is not guaranteed to live until the
+            // invocation of this callback.
+            network::mojom::NetworkService* network_service =
+                content::GetNetworkService();
+            network_service->SetFirstPartySets(raw_sets);
+          }));
 
   UpdateExplicitlyAllowedNetworkPorts();
 }

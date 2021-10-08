@@ -18,6 +18,7 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "content/public/browser/network_service_instance.h"
 #include "net/base/features.h"
+#include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -62,10 +63,16 @@ base::FilePath& GetConfigPathInstance() {
   return *instance;
 }
 
+// Invokes `on_sets_ready` with the contents of the component, if:
+// * the component has been installed; and
+// * the `kFirstPartySets` feature is enabled; and
+// * the component was read successfully.
 void SetFirstPartySetsConfig(
     const base::RepeatingCallback<void(const std::string&)>& on_sets_ready) {
-  if (GetConfigPathInstance().empty())
+  if (GetConfigPathInstance().empty() ||
+      !net::cookie_util::IsFirstPartySetsEnabled()) {
     return;
+  }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -183,14 +190,15 @@ void FirstPartySetsComponentInstallerPolicy::ResetForTesting() {
 
 void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {
   VLOG(1) << "Registering First-Party Sets component.";
-  auto installer = base::MakeRefCounted<ComponentInstaller>(
+
+  base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<FirstPartySetsComponentInstallerPolicy>(
           /*on_sets_ready=*/base::BindRepeating(
               [](const std ::string& raw_sets) {
                 VLOG(1) << "Received Sets: \"" << raw_sets << "\"";
                 content::GetNetworkService()->SetFirstPartySets(raw_sets);
-              })));
-  installer->Register(cus, base::OnceClosure());
+              })))
+      ->Register(cus, base::OnceClosure());
 }
 
 // static

@@ -30,6 +30,10 @@ class FirstPartySets {
   FirstPartySets(const FirstPartySets&) = delete;
   FirstPartySets& operator=(const FirstPartySets&) = delete;
 
+  // Stores the First-Party Set that was provided via the `kUseFirstPartySet`
+  // flag/switch.
+  //
+  // Has no effect if `kFirstPartySets` is disabled.
   void SetManuallySpecifiedSet(const std::string& flag_value);
 
   // Overwrites the current members-to-owners map with the values in |raw_sets|,
@@ -40,6 +44,8 @@ class FirstPartySets {
   //
   // In case of invalid input, clears the current members-to-owners map, but
   // keeps any manually-specified set (i.e. a set provided on the command line).
+  //
+  // Has no effect if `kFirstPartySets` is disabled.
   base::flat_map<net::SchemefulSite, net::SchemefulSite>* ParseAndSet(
       base::StringPiece raw_sets);
 
@@ -141,12 +147,13 @@ class FirstPartySets {
   // The callback runs after the site state clearing is completed.
   base::OnceCallback<void(const std::string&)> on_site_data_cleared_;
 
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySets, ComputeSetsDiff_SitesJoined);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySets, ComputeSetsDiff_SitesLeft);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySets, ComputeSetsDiff_OwnerChanged);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySets, ComputeSetsDiff_OwnerLeft);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySets, ComputeSetsDiff_OwnerMemberRotate);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySets, ComputeSetsDiff_EmptySets);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_SitesJoined);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_SitesLeft);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_OwnerChanged);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_OwnerLeft);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest,
+                           ComputeSetsDiff_OwnerMemberRotate);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_EmptySets);
 };
 
 }  // namespace network

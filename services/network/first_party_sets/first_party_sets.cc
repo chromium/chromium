@@ -16,6 +16,7 @@
 #include "base/task/post_task.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_util.h"
 #include "net/cookies/same_party_context.h"
 #include "services/network/first_party_sets/first_party_set_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -69,6 +70,9 @@ FirstPartySets::FirstPartySets() = default;
 FirstPartySets::~FirstPartySets() = default;
 
 void FirstPartySets::SetManuallySpecifiedSet(const std::string& flag_value) {
+  if (!net::cookie_util::IsFirstPartySetsEnabled())
+    return;
+
   manually_specified_set_ = CanonicalizeSet(base::SplitString(
       flag_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
 
@@ -79,6 +83,9 @@ void FirstPartySets::SetManuallySpecifiedSet(const std::string& flag_value) {
 
 base::flat_map<net::SchemefulSite, net::SchemefulSite>*
 FirstPartySets::ParseAndSet(base::StringPiece raw_sets) {
+  if (!net::cookie_util::IsFirstPartySetsEnabled())
+    return &sets_;
+
   sets_ = FirstPartySetParser::ParseSetsFromComponentUpdater(raw_sets);
   ApplyManuallySpecifiedSet();
   component_sets_ready_ = true;
