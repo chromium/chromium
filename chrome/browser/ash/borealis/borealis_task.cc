@@ -27,17 +27,21 @@
 
 namespace borealis {
 
-BorealisTask::BorealisTask() = default;
+BorealisTask::BorealisTask(std::string name) : name_(std::move(name)) {}
 
 BorealisTask::~BorealisTask() = default;
 
 void BorealisTask::Run(BorealisContext* context,
                        CompletionResultCallback callback) {
   callback_ = std::move(callback);
+  start_time_ = base::Time::Now();
   RunInternal(context);
 }
 
 void BorealisTask::Complete(BorealisStartupResult status, std::string message) {
+  // TODO(b/198698779): Remove these logs before going live.
+  LOG(WARNING) << "Task " << name_ << " completed in "
+               << (base::Time::Now() - start_time_);
   // Task completion is self-mutually-exclusive, because tasks are deleted once
   // complete.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -45,7 +49,7 @@ void BorealisTask::Complete(BorealisStartupResult status, std::string message) {
       base::BindOnce(std::move(callback_), status, std::move(message)));
 }
 
-MountDlc::MountDlc() = default;
+MountDlc::MountDlc() : BorealisTask("MountDlc") {}
 MountDlc::~MountDlc() = default;
 
 void MountDlc::RunInternal(BorealisContext* context) {
@@ -69,7 +73,7 @@ void MountDlc::OnMountDlc(
   }
 }
 
-CreateDiskImage::CreateDiskImage() = default;
+CreateDiskImage::CreateDiskImage() : BorealisTask("CreateDiskImage") {}
 CreateDiskImage::~CreateDiskImage() = default;
 
 void CreateDiskImage::RunInternal(BorealisContext* context) {
@@ -116,7 +120,7 @@ bool GetDeveloperMode() {
   return output == "1";
 }
 
-StartBorealisVm::StartBorealisVm() = default;
+StartBorealisVm::StartBorealisVm() : BorealisTask("StartBorealisVm") {}
 StartBorealisVm::~StartBorealisVm() = default;
 
 void StartBorealisVm::RunInternal(BorealisContext* context) {
@@ -188,7 +192,7 @@ void StartBorealisVm::OnStartBorealisVm(
 
 AwaitBorealisStartup::AwaitBorealisStartup(Profile* profile,
                                            std::string vm_name)
-    : watcher_(profile, vm_name) {}
+    : BorealisTask("AwaitBorealisStartup"), watcher_(profile, vm_name) {}
 AwaitBorealisStartup::~AwaitBorealisStartup() = default;
 
 void AwaitBorealisStartup::RunInternal(BorealisContext* context) {
@@ -213,7 +217,7 @@ void AwaitBorealisStartup::OnAwaitBorealisStartup(
   Complete(BorealisStartupResult::kSuccess, "");
 }
 
-SyncBorealisDisk::SyncBorealisDisk() = default;
+SyncBorealisDisk::SyncBorealisDisk() : BorealisTask("SyncBorealisDisk") {}
 SyncBorealisDisk::~SyncBorealisDisk() = default;
 
 void SyncBorealisDisk::RunInternal(BorealisContext* context) {

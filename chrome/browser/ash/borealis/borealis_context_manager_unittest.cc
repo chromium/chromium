@@ -44,7 +44,8 @@ MATCHER(IsFailureResult, "") {
 
 class MockTask : public BorealisTask {
  public:
-  explicit MockTask(bool success) : success_(success) {}
+  explicit MockTask(bool success)
+      : BorealisTask("MockTask"), success_(success) {}
   void RunInternal(BorealisContext* context) override {
     if (success_) {
       context->set_vm_name("test_vm_name");
@@ -260,6 +261,7 @@ class NeverCompletingContextManager : public BorealisContextManagerImpl {
  private:
   class NeverCompletingTask : public BorealisTask {
    public:
+    NeverCompletingTask() : BorealisTask("NeverCompletingTask") {}
     void RunInternal(BorealisContext* context) override {}
   };
 
@@ -342,7 +344,8 @@ class MockContextManager : public BorealisContextManagerImpl {
 class TaskThatDoesSomethingAfterCompletion : public BorealisTask {
  public:
   explicit TaskThatDoesSomethingAfterCompletion(base::OnceClosure something)
-      : something_(std::move(something)) {}
+      : BorealisTask("TaskThatDoesSomethingAfterCompletion"),
+        something_(std::move(something)) {}
 
   void RunInternal(BorealisContext* context) override {
     Complete(BorealisStartupResult::kSuccess, "");

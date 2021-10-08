@@ -25,7 +25,7 @@ class BorealisTask {
   // different result should be used, and an error string provided.
   using CompletionResultCallback =
       base::OnceCallback<void(BorealisStartupResult, std::string)>;
-  BorealisTask();
+  explicit BorealisTask(std::string name);
   BorealisTask(const BorealisTask&) = delete;
   BorealisTask& operator=(const BorealisTask&) = delete;
   virtual ~BorealisTask();
@@ -38,6 +38,8 @@ class BorealisTask {
   void Complete(BorealisStartupResult result, std::string message);
 
  private:
+  std::string name_;
+  base::Time start_time_;
   CompletionResultCallback callback_;
 };
 
