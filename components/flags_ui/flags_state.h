@@ -240,9 +240,9 @@ class FlagsState {
   // When |enabled_entries| is empty |name_to_switch_map| won't be filled.
   void GenerateFlagsToSwitchesMapping(
       FlagsStorage* flags_storage,
+      const base::CommandLine& command_line,
       std::set<std::string>* enabled_entries,
       std::map<std::string, SwitchEntry>* name_to_switch_map) const;
-
 
   // Returns whether there is a FeatureEntry named by |name| in
   // |feature_entries_| that:

@@ -79,9 +79,10 @@ struct FeatureEntry {
     // Linux).
     FEATURE_WITH_PARAMS_VALUE,
 
-    // Corresponds to a command line switch where the value is treatead as a
-    // list of url::Origins. Default state is disabled like SINGLE_VALUE.
-    ORIGIN_LIST_VALUE
+    // Corresponds to a command line switch where the value is treated as a list
+    // of url::Origins. (Lists will not be reordered.) Default state is
+    // disabled like SINGLE_VALUE.
+    ORIGIN_LIST_VALUE,
   };
 
   // Describes state of a feature.
