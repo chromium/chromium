@@ -36,8 +36,10 @@ class TestCustomProxyConfigClient
 
   // network::mojom::CustomProxyConfigClient:
   void OnCustomProxyConfigUpdated(
-      network::mojom::CustomProxyConfigPtr proxy_config) override {
+      network::mojom::CustomProxyConfigPtr proxy_config,
+      OnCustomProxyConfigUpdatedCallback callback) override {
     config_ = std::move(proxy_config);
+    std::move(callback).Run();
   }
   void MarkProxiesAsBad(base::TimeDelta bypass_duration,
                         const net::ProxyList& bad_proxies,
@@ -87,9 +89,11 @@ class PrefetchProxyProxyConfiguratorTest : public testing::Test {
       mojo::Remote<network::mojom::CustomProxyConfigClient> client_remote;
       config_client_ = std::make_unique<TestCustomProxyConfigClient>(
           client_remote.BindNewPipeAndPassReceiver());
-      configurator_->AddCustomProxyConfigClient(std::move(client_remote));
+      base::RunLoop run_loop;
+      configurator_->AddCustomProxyConfigClient(std::move(client_remote),
+                                                run_loop.QuitClosure());
       configurator_->SetClockForTesting(task_environment_.GetMockClock());
-      base::RunLoop().RunUntilIdle();
+      run_loop.Run();
     }
     return configurator_.get();
   }
@@ -109,8 +113,9 @@ TEST_F(PrefetchProxyProxyConfiguratorTest, FeatureOff) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kIsolatePrerenders);
 
-  configurator()->UpdateCustomProxyConfig();
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop loop;
+  configurator()->UpdateCustomProxyConfig(loop.QuitClosure());
+  loop.Run();
 
   EXPECT_FALSE(LatestProxyConfig());
 }
@@ -122,8 +127,9 @@ TEST_F(PrefetchProxyProxyConfiguratorTest, ExperimentOverrides) {
       features::kIsolatePrerenders,
       {{"proxy_host", proxy_url.spec()}, {"proxy_header_key", "test-header"}});
 
-  configurator()->UpdateCustomProxyConfig();
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop loop;
+  configurator()->UpdateCustomProxyConfig(loop.QuitClosure());
+  loop.Run();
 
   net::HttpRequestHeaders headers;
   headers.SetHeader("test-header", "key=" + google_apis::GetAPIKey());
@@ -293,8 +299,9 @@ TEST_F(PrefetchProxyProxyConfiguratorTest, ServerExperimentGroup) {
        {"proxy_header_key", "test-header"},
        {"server_experiment_group", "test_group"}});
 
-  configurator()->UpdateCustomProxyConfig();
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop loop;
+  configurator()->UpdateCustomProxyConfig(loop.QuitClosure());
+  loop.Run();
 
   net::HttpRequestHeaders headers;
   headers.SetHeader("test-header",

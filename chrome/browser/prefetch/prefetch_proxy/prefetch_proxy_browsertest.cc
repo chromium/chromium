@@ -145,18 +145,15 @@ class TestCustomProxyConfigClient
  public:
   explicit TestCustomProxyConfigClient(
       mojo::PendingReceiver<network::mojom::CustomProxyConfigClient>
-          pending_receiver,
-      base::OnceClosure update_closure)
-      : receiver_(this, std::move(pending_receiver)),
-        update_closure_(std::move(update_closure)) {}
+          pending_receiver)
+      : receiver_(this, std::move(pending_receiver)) {}
 
   // network::mojom::CustomProxyConfigClient:
   void OnCustomProxyConfigUpdated(
-      network::mojom::CustomProxyConfigPtr proxy_config) override {
+      network::mojom::CustomProxyConfigPtr proxy_config,
+      OnCustomProxyConfigUpdatedCallback callback) override {
     config_ = std::move(proxy_config);
-    if (update_closure_) {
-      std::move(update_closure_).Run();
-    }
+    std::move(callback).Run();
   }
   void MarkProxiesAsBad(base::TimeDelta bypass_duration,
                         const net::ProxyList& bad_proxies,
@@ -167,7 +164,6 @@ class TestCustomProxyConfigClient
 
  private:
   mojo::Receiver<network::mojom::CustomProxyConfigClient> receiver_;
-  base::OnceClosure update_closure_;
 };
 
 class AuthChallengeObserver : public content::NotificationObserver {
@@ -555,7 +551,6 @@ class PrefetchProxyBrowserTest
 
   void InsertSpeculation(bool subresources,
                          const std::vector<GURL>& prefetch_urls) {
-
     std::string speculation_script = R"(
       var script = document.createElement('script');
       script.type = 'speculationrules';
@@ -602,10 +597,9 @@ class PrefetchProxyBrowserTest
     base::RunLoop run_loop;
     mojo::Remote<network::mojom::CustomProxyConfigClient> client_remote;
     TestCustomProxyConfigClient config_client(
-        client_remote.BindNewPipeAndPassReceiver(), run_loop.QuitClosure());
+        client_remote.BindNewPipeAndPassReceiver());
     prefetch_proxy_service->proxy_configurator()->AddCustomProxyConfigClient(
-        std::move(client_remote));
-
+        std::move(client_remote), run_loop.QuitClosure());
     run_loop.Run();
 
     return std::move(config_client.config_);

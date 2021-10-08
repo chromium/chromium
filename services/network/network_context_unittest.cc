@@ -5854,8 +5854,10 @@ TEST_F(NetworkContextMockHostTest, MAYBE_CustomProxyUsesSpecifiedProxyList) {
   config->rules.ParseFromString(
       "http=" +
       net::ProxyServerToProxyUri(ConvertToProxyServer(proxy_test_server)));
-  proxy_config_client->OnCustomProxyConfigUpdated(std::move(config));
-  task_environment_.RunUntilIdle();
+  base::RunLoop loop;
+  proxy_config_client->OnCustomProxyConfigUpdated(std::move(config),
+                                                  loop.QuitClosure());
+  loop.Run();
 
   ResourceRequest request;
   request.url = GURL("http://does.not.resolve/echo");

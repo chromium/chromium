@@ -103,8 +103,9 @@ class NetworkServiceProxyDelegateTest : public testing::Test {
   }
 
   void SetConfig(mojom::CustomProxyConfigPtr config) {
-    client_->OnCustomProxyConfigUpdated(std::move(config));
-    task_environment_.RunUntilIdle();
+    base::RunLoop loop;
+    client_->OnCustomProxyConfigUpdated(std::move(config), loop.QuitClosure());
+    loop.Run();
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }

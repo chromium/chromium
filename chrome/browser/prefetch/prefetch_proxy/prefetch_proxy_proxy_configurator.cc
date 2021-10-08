@@ -4,6 +4,7 @@
 
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_proxy_configurator.h"
 
+#include "base/barrier_closure.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/time/default_clock.h"
@@ -42,21 +43,27 @@ void PrefetchProxyProxyConfigurator::SetClockForTesting(
 }
 
 void PrefetchProxyProxyConfigurator::AddCustomProxyConfigClient(
-    mojo::Remote<network::mojom::CustomProxyConfigClient> config_client) {
+    mojo::Remote<network::mojom::CustomProxyConfigClient> config_client,
+    base::OnceCallback<void()> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   proxy_config_clients_.Add(std::move(config_client));
-  UpdateCustomProxyConfig();
+  UpdateCustomProxyConfig(std::move(callback));
 }
 
-void PrefetchProxyProxyConfigurator::UpdateCustomProxyConfig() {
+void PrefetchProxyProxyConfigurator::UpdateCustomProxyConfig(
+    base::OnceCallback<void()> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!PrefetchProxyIsEnabled())
+  if (!PrefetchProxyIsEnabled()) {
+    std::move(callback).Run();
     return;
+  }
 
+  base::RepeatingClosure repeating_closure =
+      base::BarrierClosure(proxy_config_clients_.size(), std::move(callback));
   network::mojom::CustomProxyConfigPtr config = CreateCustomProxyConfig();
   for (auto& client : proxy_config_clients_) {
-    client->OnCustomProxyConfigUpdated(config->Clone());
+    client->OnCustomProxyConfigUpdated(config->Clone(), repeating_closure);
   }
 }
 

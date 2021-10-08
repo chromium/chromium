@@ -118,7 +118,7 @@ struct CertVerifierServiceRemoteParams {
 
 // Client to update the custom proxy config.
 interface CustomProxyConfigClient {
-  OnCustomProxyConfigUpdated(CustomProxyConfig proxy_config);
+  OnCustomProxyConfigUpdated(CustomProxyConfig proxy_config) => ();
 
   // Marks the custom proxies in |bad_proxies| as temporarily bad, so they are
   // not layered onto the proxy resolution results for subsequent requests.

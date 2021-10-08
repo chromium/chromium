@@ -1644,7 +1644,7 @@ void PrefetchProxyTabHelper::CreateIsolatedURLLoaderFactory() {
   context_params->custom_proxy_config_client_receiver =
       config_client.BindNewPipeAndPassReceiver();
   prefetch_proxy_service->proxy_configurator()->AddCustomProxyConfigClient(
-      std::move(config_client));
+      std::move(config_client), base::DoNothing());
 
   // Explicitly disallow network service features which could cause a privacy
   // leak.
