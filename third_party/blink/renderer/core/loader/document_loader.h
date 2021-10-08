@@ -180,6 +180,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
                                        mojom::blink::ScrollRestorationType,
                                        WebFrameLoadType,
                                        const SecurityOrigin* initiator_origin,
+                                       bool is_browser_initiated,
                                        bool is_synchronously_committed);
 
   const ResourceResponse& GetResponse() const { return response_; }
@@ -218,8 +219,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // same document navigation in that frame. Returns false if the navigation
   // cannot commit, true otherwise.
   // |initiator_origin| is the origin of the document or script that initiated
-  // the navigation or nullptr if the navigation is browser-initiated (e.g.
-  // typed in omnibox).
+  // the navigation or nullptr if the navigation is initiated via browser UI
+  // (e.g. typed in omnibox), or a history traversal to a previous navigation
+  // via browser UI.
   // |is_synchronously_committed| is true if the navigation is synchronously
   // committed from within Blink, rather than being driven by the browser's
   // navigation stack.
@@ -232,6 +234,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       const SecurityOrigin* initiator_origin,
       bool is_synchronously_committed,
       mojom::blink::TriggeringEventInfo,
+      bool is_browser_initiated,
       std::unique_ptr<WebDocumentLoader::ExtraData>);
 
   void SetDefersLoading(LoaderFreezeMode);
@@ -406,6 +409,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       ClientRedirectPolicy,
       bool has_transient_user_activation,
       const SecurityOrigin* initiator_origin,
+      bool is_browser_initiated,
       bool is_synchronously_committed,
       mojom::blink::TriggeringEventInfo,
       std::unique_ptr<WebDocumentLoader::ExtraData>);

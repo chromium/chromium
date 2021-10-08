@@ -4261,7 +4261,8 @@ void NavigationControllerImpl::NavigateToAppHistoryKey(FrameTreeNode* node,
     if (result == HistoryNavigationAction::kStopLooking)
       break;
     if (result != HistoryNavigationAction::kKeepLooking) {
-      GoToIndex(i);
+      GoToIndex(i, FrameTreeNode::kFrameTreeNodeInvalidId,
+                false /* is_browser_initiated*/);
       return;
     }
   }
@@ -4271,7 +4272,8 @@ void NavigationControllerImpl::NavigateToAppHistoryKey(FrameTreeNode* node,
     if (result == HistoryNavigationAction::kStopLooking)
       break;
     if (result != HistoryNavigationAction::kKeepLooking) {
-      GoToIndex(i);
+      GoToIndex(i, FrameTreeNode::kFrameTreeNodeInvalidId,
+                false /* is_browser_initiated*/);
       return;
     }
   }

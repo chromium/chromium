@@ -7724,7 +7724,7 @@ TEST_F(WebFrameTest, SameDocumentHistoryNavigationCommitType) {
       false /* has_transient_user_activation */, /*initiator_origin=*/nullptr,
       /*is_synchronously_committed=*/false,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
-      nullptr /* extra_data */);
+      true /* is_browser_initiated */, nullptr /* extra_data */);
   EXPECT_EQ(kWebBackForwardCommit, client.LastCommitType());
 }
 
@@ -13147,8 +13147,8 @@ TEST_F(WebFrameTest, RecordSameDocumentNavigationToHistogram) {
       mojom::blink::SameDocumentNavigationType::kHistoryApi, message,
       mojom::blink::ScrollRestorationType::kAuto,
       WebFrameLoadType::kReplaceCurrentItem,
-      frame->DomWindow()->GetSecurityOrigin(),
-      /*is_synchronously_committed=*/true);
+      frame->DomWindow()->GetSecurityOrigin(), false /* is_browser_initiated */,
+      true /* is_synchronously_committed */);
   // The bucket index corresponds to the definition of
   // |SinglePageAppNavigationType|.
   tester.ExpectBucketCount(histogramName,
@@ -13158,7 +13158,7 @@ TEST_F(WebFrameTest, RecordSameDocumentNavigationToHistogram) {
       mojom::blink::SameDocumentNavigationType::kFragment, message,
       mojom::blink::ScrollRestorationType::kManual,
       WebFrameLoadType::kBackForward, frame->DomWindow()->GetSecurityOrigin(),
-      /*is_synchronously_committed=*/true);
+      false /* is_browser_initiated */, true /* is_synchronously_committed */);
   tester.ExpectBucketCount(histogramName,
                            kSPANavTypeSameDocumentBackwardOrForward, 1);
   document_loader.UpdateForSameDocumentNavigation(
@@ -13166,8 +13166,8 @@ TEST_F(WebFrameTest, RecordSameDocumentNavigationToHistogram) {
       mojom::blink::SameDocumentNavigationType::kFragment, message,
       mojom::blink::ScrollRestorationType::kManual,
       WebFrameLoadType::kReplaceCurrentItem,
-      frame->DomWindow()->GetSecurityOrigin(),
-      /*is_synchronously_committed=*/true);
+      frame->DomWindow()->GetSecurityOrigin(), false /* is_browser_initiated */,
+      true /* is_synchronously_committed */);
   tester.ExpectBucketCount(histogramName, kSPANavTypeOtherFragmentNavigation,
                            1);
   // mojom::blink::SameDocumentNavigationType::kHistoryApi and

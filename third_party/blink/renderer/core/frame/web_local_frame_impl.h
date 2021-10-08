@@ -349,6 +349,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       bool is_client_redirect,
       bool has_transient_user_activation,
       const WebSecurityOrigin& initiator_origin,
+      bool is_browser_initiated,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) override;
   void SetCommittedFirstRealLoad() override;
   bool HasCommittedFirstRealLoad() override;

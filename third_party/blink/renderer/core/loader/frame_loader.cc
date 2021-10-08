@@ -670,7 +670,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
                                       frame_load_type),
         resource_request.HasUserGesture(), origin_window->GetSecurityOrigin(),
         /*is_synchronously_committed=*/true, request.GetTriggeringEventInfo(),
-        nullptr /* extra_data */);
+        false /* is_browser_initiated */, nullptr /* extra_data */);
     return;
   }
 

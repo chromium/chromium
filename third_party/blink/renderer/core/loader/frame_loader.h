@@ -91,11 +91,12 @@ class CORE_EXPORT FrameLoader final {
 
   ProgressTracker& Progress() const { return *progress_tracker_; }
 
-  // Starts a navigation. It will eventually send the navigation to the
-  // browser process, or call LoadInSameDocument for same-document navigation.
-  // For reloads, an appropriate WebFrameLoadType should be given. Otherwise,
-  // kStandard should be used (and the final WebFrameLoadType
-  // will be computed).
+  // This is the entry-point for all renderer-initiated navigations except
+  // history traversals. It will eventually send the navigation to the browser
+  // process, or call DocumentLoader::CommitSameDocumentNavigation for
+  // same-document navigation. For reloads, an appropriate WebFrameLoadType
+  // should be given. Otherwise, kStandard should be used (and the final
+  // WebFrameLoadType will be computed).
   void StartNavigation(FrameLoadRequest&,
                        WebFrameLoadType = WebFrameLoadType::kStandard);
 
