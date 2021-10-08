@@ -35,15 +35,6 @@ void RecordRequestTextLength(IntentType intent_type, int length);
 void RecordActiveImpression(ResultType result_type,
                             const base::TimeDelta duration);
 
-// Record user interaction with the consent UI with how many times the user has
-// seen the consent and impression duration.
-void RecordNoticeInteraction(NoticeInteractionType type,
-                             int nth_impression,
-                             const base::TimeDelta duration);
-
-// Record consent impression with how many times the user has seen the consent.
-void RecordNoticeImpression(int nth_impression);
-
 // Record the intent generated on-device.
 void RecordIntentType(IntentType intent_type);
 

@@ -17,10 +17,6 @@
 
 namespace ash {
 
-namespace quick_answers {
-class QuickAnswersNotice;
-}  // namespace quick_answers
-
 class QuickAnswersUiController;
 
 // Implementation of QuickAnswerController. It fetches quick answers
@@ -70,14 +66,6 @@ class ASH_EXPORT QuickAnswersControllerImpl
   // User clicks on the quick answer result.
   void OnQuickAnswerClick();
 
-  // Called by the UI Controller when user accepts the notice for the
-  // Quick Answers feature.
-  void OnUserNoticeAccepted();
-
-  // Called by the UI Controller when user requests detailed settings from the
-  // notice screen for the Quick Answers feature.
-  void OnNoticeSettingsRequestedByUser();
-
   // Handle user consent result.
   void OnUserConsentResult(bool consented);
 
@@ -88,12 +76,7 @@ class ASH_EXPORT QuickAnswersControllerImpl
     return quick_answers_ui_controller_.get();
   }
 
-  quick_answers::QuickAnswersNotice* GetNoticeControllerForTesting() {
-    return notice_controller_.get();
-  }
-
  private:
-  void MaybeDismissQuickAnswersNotice();
   void MaybeDismissQuickAnswersConsent();
 
   void HandleQuickAnswerRequest(
@@ -119,7 +102,6 @@ class ASH_EXPORT QuickAnswersControllerImpl
   quick_answers::Context context_;
 
   std::unique_ptr<quick_answers::QuickAnswersClient> quick_answers_client_;
-  std::unique_ptr<quick_answers::QuickAnswersNotice> notice_controller_;
 
   QuickAnswersStateController quick_answers_state_controller_;
 

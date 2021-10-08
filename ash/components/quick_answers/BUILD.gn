@@ -8,8 +8,6 @@ source_set("quick_answers") {
     "quick_answers_client.h",
     "quick_answers_model.cc",
     "quick_answers_model.h",
-    "quick_answers_notice.cc",
-    "quick_answers_notice.h",
     "result_loader.cc",
     "result_loader.h",
     "search_result_loader.cc",
@@ -65,7 +63,6 @@ source_set("unit_tests") {
 
   sources = [
     "quick_answers_client_unittest.cc",
-    "quick_answers_notice_unittest.cc",
     "search_result_loader_unittest.cc",
     "search_result_parsers/definition_result_parser_unittest.cc",
     "search_result_parsers/kp_entity_result_parser_unittest.cc",

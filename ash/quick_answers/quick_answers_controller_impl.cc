@@ -5,7 +5,6 @@
 #include "ash/quick_answers/quick_answers_controller_impl.h"
 
 #include "ash/components/quick_answers/public/cpp/quick_answers_prefs.h"
-#include "ash/components/quick_answers/quick_answers_notice.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/quick_answers/quick_answers_state.h"
@@ -28,8 +27,6 @@ using ::ash::quick_answers::QuickAnswersExitPoint;
 using ::ash::quick_answers::QuickAnswersRequest;
 using ::ash::quick_answers::ResultType;
 
-constexpr char kAssistantRelatedInfoUrl[] =
-    "chrome://os-settings/googleAssistant";
 constexpr char kQuickAnswersSettingsUrl[] =
     "chrome://os-settings/osSearch/search";
 
@@ -80,8 +77,6 @@ QuickAnswersControllerImpl::~QuickAnswersControllerImpl() = default;
 void QuickAnswersControllerImpl::SetClient(
     std::unique_ptr<QuickAnswersClient> client) {
   quick_answers_client_ = std::move(client);
-  notice_controller_ = std::make_unique<quick_answers::QuickAnswersNotice>(
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService());
 }
 
 void QuickAnswersControllerImpl::MaybeShowQuickAnswers(
@@ -136,7 +131,6 @@ void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
 void QuickAnswersControllerImpl::DismissQuickAnswers(
     QuickAnswersExitPoint exit_point) {
   visibility_ = QuickAnswersVisibility::kClosed;
-  MaybeDismissQuickAnswersNotice();
   MaybeDismissQuickAnswersConsent();
   bool closed = quick_answers_ui_controller_->CloseQuickAnswersView();
   // |quick_answer_| could be null before we receive the result from the server.
@@ -252,24 +246,6 @@ void QuickAnswersControllerImpl::SetPendingShowQuickAnswers() {
   visibility_ = QuickAnswersVisibility::kPending;
 }
 
-void QuickAnswersControllerImpl::OnUserNoticeAccepted() {
-  quick_answers_ui_controller_->CloseUserNoticeView();
-  notice_controller_->AcceptNotice(
-      quick_answers::NoticeInteractionType::kAccept);
-
-  // Display Quick-Answer for the cached query when user dismisses the
-  // notice.
-  MaybeShowQuickAnswers(anchor_bounds_, title_, context_);
-}
-
-void QuickAnswersControllerImpl::OnNoticeSettingsRequestedByUser() {
-  quick_answers_ui_controller_->CloseUserNoticeView();
-  notice_controller_->AcceptNotice(
-      quick_answers::NoticeInteractionType::kManageSettings);
-  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kAssistantRelatedInfoUrl),
-                                            /*from_user_interaction=*/true);
-}
-
 void QuickAnswersControllerImpl::OnUserConsentResult(bool consented) {
   quick_answers_ui_controller_->CloseUserConsentView();
 
@@ -288,12 +264,6 @@ void QuickAnswersControllerImpl::OpenQuickAnswersSettings() {
                                             /*from_user_interaction=*/true);
 }
 
-void QuickAnswersControllerImpl::MaybeDismissQuickAnswersNotice() {
-  if (quick_answers_ui_controller_->is_showing_user_notice_view())
-    notice_controller_->DismissNotice();
-  quick_answers_ui_controller_->CloseUserNoticeView();
-}
-
 void QuickAnswersControllerImpl::MaybeDismissQuickAnswersConsent() {
   if (quick_answers_ui_controller_->is_showing_user_consent_view())
     ash::QuickAnswersState::Get()->OnConsentResult(ConsentResultType::kDismiss);
@@ -303,7 +273,7 @@ void QuickAnswersControllerImpl::MaybeDismissQuickAnswersConsent() {
 void QuickAnswersControllerImpl::ShowUserConsent(
     const std::u16string& intent_type,
     const std::u16string& intent_text) {
-  // Show notice informing user about the feature if required.
+  // Show consent informing user about the feature if required.
   if (!quick_answers_ui_controller_->is_showing_user_consent_view()) {
     quick_answers_ui_controller_->CreateUserConsentView(
         anchor_bounds_, intent_type, intent_text);

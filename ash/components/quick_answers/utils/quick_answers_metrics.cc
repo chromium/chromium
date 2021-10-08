@@ -4,8 +4,8 @@
 
 #include "ash/components/quick_answers/utils/quick_answers_metrics.h"
 
-#include "ash/components/quick_answers/quick_answers_notice.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 
@@ -27,10 +27,6 @@ const char kDurationSuffix[] = ".Duration";
 const char kDefinitionSuffix[] = ".Definition";
 const char kTranslationSuffix[] = ".Translation";
 const char kUnitConversionSuffix[] = ".UnitConversion";
-
-const char kQuickAnswersNotice[] = "QuickAnswers.Consent";
-const char kQuickAnswersNoticeDuration[] = "QuickAnswers.Consent.Duration";
-const char kQuickAnswersNoticeImpression[] = "QuickAnswers.Consent.Impression";
 const char kQuickAnswersNetworkError[] = "QuickAnswers.NetworkError.IntentType";
 
 std::string ResultTypeToString(ResultType result_type) {
@@ -48,17 +44,6 @@ std::string ResultTypeToString(ResultType result_type) {
     default:
       NOTREACHED() << "Invalid ResultType.";
       return ".Unknown";
-  }
-}
-
-std::string NoticeInteractionTypeToString(NoticeInteractionType type) {
-  switch (type) {
-    case NoticeInteractionType::kAccept:
-      return "Accept";
-    case NoticeInteractionType::kManageSettings:
-      return "ManageSettings";
-    case NoticeInteractionType::kDismiss:
-      return "Dismiss";
   }
 }
 
@@ -127,26 +112,6 @@ void RecordActiveImpression(ResultType result_type,
                             const base::TimeDelta duration) {
   RecordTypeAndDuration(kQuickAnswerActiveImpression, result_type, duration,
                         /*is_medium_bucketization=*/true);
-}
-
-void RecordNoticeInteraction(NoticeInteractionType type,
-                             int nth_impression,
-                             const base::TimeDelta duration) {
-  std::string interaction_type = NoticeInteractionTypeToString(type);
-  base::UmaHistogramExactLinear(
-      base::StringPrintf("%s.%s", kQuickAnswersNoticeImpression,
-                         interaction_type.c_str()),
-      nth_impression, kNoticeImpressionCap);
-  base::UmaHistogramTimes(
-      base::StringPrintf("%s.%s", kQuickAnswersNoticeDuration,
-                         interaction_type.c_str()),
-      duration);
-}
-
-void RecordNoticeImpression(int nth_impression) {
-  // Record every impression event.
-  base::UmaHistogramExactLinear(kQuickAnswersNotice, nth_impression,
-                                kNoticeImpressionCap);
 }
 
 void RecordIntentType(IntentType intent_type) {

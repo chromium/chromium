@@ -3296,24 +3296,6 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_TITLE_TEXT" desc="Title text of the dialog that opens up to seek user-consent for the Quick Answers feature.">
         Get info related to your selection
       </message>
-      <message name="IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_TITLE_TEXT_WITH_INTENT" desc="Title text of the dialog that opens up to seek user-consent for the Quick Answers feature when supported intent is generated.">
-        Get the <ph name="intent">$1<ex>definition</ex></ph> for "<ph name="query">$2<ex>unfathomable</ex></ph>"
-      </message>
-      <message name="IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_DESC_TEXT" desc="Description in the dialog that opens up to seek user-consent for the Quick Answers feature.">
-        With a right-click or a long press, Assistant shows info such as the definition, translation or unit conversion for your selection.
-      </message>
-      <message name="IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_MANAGE_SETTINGS_BUTTON" desc="Display text on the Manage-Settings button in the dialog that opens up to seek user-consent for the Quick Answers feature.">
-        Manage Settings
-      </message>
-      <message name="IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_ACCEPT_BUTTON" desc="Display text on the accept button in the dialog that opens up to seek user-consent for the Quick Answers feature.">
-        Got it
-      </message>
-      <message name="IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_SETTINGS_BUTTON_DESC_TEXT" desc="A11y description text for the settings button in Quick Answers user notice view.">
-        Click to open Google Assistant settings.
-      </message>
-      <message name="IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_ACCEPT_BUTTON_DESC_TEXT" desc="A11y description text for the accept button in Quick Answers user notice view.">
-        Let Assistant show info such as definition, translation or unit conversion for your selection.
-      </message>
       <message name="IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_ALERT_TEXT" desc="A11y alert text for the Quick Answers user notice view.">
         New feature available, use Up arrow key to learn more.
       </message>

@@ -16,7 +16,6 @@ class QuickAnswersView;
 class QuickAnswersControllerImpl;
 
 namespace quick_answers {
-class UserNoticeView;
 class UserConsentView;
 struct QuickAnswer;
 }  // namespace quick_answers
@@ -56,20 +55,6 @@ class ASH_EXPORT QuickAnswersUiController {
 
   void UpdateQuickAnswersBounds(const gfx::Rect& anchor_bounds);
 
-  // Creates a view for notifying the user about the Quick Answers feature
-  // vertically aligned to the anchor.
-  void CreateUserNoticeView(const gfx::Rect& anchor_bounds,
-                            const std::u16string& intent_type,
-                            const std::u16string& intent_text);
-
-  void CloseUserNoticeView();
-
-  // Invoked when user clicks the 'got it' button to dismiss the notice.
-  void OnAcceptButtonPressed();
-
-  // Invoked when user clicks the settings button on the notice view.
-  void OnManageSettingsButtonPressed();
-
   // Creates a view for asking the user for consent about the Quick Answers
   // feature vertically aligned to the anchor.
   void CreateUserConsentView(const gfx::Rect& anchor_bounds,
@@ -78,12 +63,6 @@ class ASH_EXPORT QuickAnswersUiController {
 
   // Closes the user consent view.
   void CloseUserConsentView();
-
-  // Used by the controller to check if the user notice view is currently
-  // showing instead of QuickAnswers.
-  bool is_showing_user_notice_view() const {
-    return user_notice_view_ != nullptr;
-  }
 
   // Used by the controller to check if the user consent view is currently
   // showing instead of QuickAnswers.
@@ -113,9 +92,6 @@ class ASH_EXPORT QuickAnswersUiController {
   const QuickAnswersView* quick_answers_view_for_testing() const {
     return quick_answers_view_;
   }
-  const quick_answers::UserNoticeView* notice_view_for_testing() const {
-    return user_notice_view_;
-  }
   const quick_answers::UserConsentView* consent_view_for_testing() const {
     return user_consent_view_;
   }
@@ -125,7 +101,6 @@ class ASH_EXPORT QuickAnswersUiController {
 
   // Owned by view hierarchy.
   QuickAnswersView* quick_answers_view_ = nullptr;
-  quick_answers::UserNoticeView* user_notice_view_ = nullptr;
   quick_answers::UserConsentView* user_consent_view_ = nullptr;
   std::string query_;
 };
