@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chromecast/net/io_buffer_pool.h"
 #include "net/base/io_buffer.h"
 #include "net/socket/stream_socket.h"

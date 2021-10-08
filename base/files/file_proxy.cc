@@ -12,8 +12,8 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_forward.h"
+#include "base/task/task_runner_util_forward.h"
 
 namespace {
 

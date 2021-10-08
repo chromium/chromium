@@ -19,12 +19,12 @@
 #include <GLES2/gl2extchromium.h>
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/bind_post_task_forward.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"

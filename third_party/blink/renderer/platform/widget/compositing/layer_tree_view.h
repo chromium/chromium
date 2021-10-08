@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/time/time.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/trees/layer_tree_host_client.h"

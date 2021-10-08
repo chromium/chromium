@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

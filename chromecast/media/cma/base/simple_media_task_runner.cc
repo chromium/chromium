@@ -4,7 +4,7 @@
 
 #include "chromecast/media/cma/base/simple_media_task_runner.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 
 namespace chromecast {
 namespace media {

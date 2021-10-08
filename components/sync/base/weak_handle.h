@@ -16,7 +16,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 
 // Weak handles provides a way to refer to weak pointers from another sequence.
 // This is useful because it is not safe to reference a weak pointer from a

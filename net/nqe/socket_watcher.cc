@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "net/base/address_list.h"

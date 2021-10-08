@@ -11,8 +11,8 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "media/audio/audio_sink_parameters.h"

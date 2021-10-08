@@ -10,7 +10,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chrome/browser/media/offscreen_tab.h"
 #include "components/mirroring/mojom/mirroring_service.mojom.h"
 #include "components/mirroring/mojom/mirroring_service_host.mojom.h"

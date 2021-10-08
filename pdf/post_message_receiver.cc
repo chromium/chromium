@@ -14,7 +14,7 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "gin/function_template.h"

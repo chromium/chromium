@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "build/build_config.h"
 #include "components/services/storage/partition_impl.h"
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"

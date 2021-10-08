@@ -34,7 +34,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/system/sys_info.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "mojo/core/core.h"

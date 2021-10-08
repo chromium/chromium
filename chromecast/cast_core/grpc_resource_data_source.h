@@ -6,7 +6,7 @@
 #define CHROMECAST_CAST_CORE_GRPC_RESOURCE_DATA_SOURCE_H_
 
 #include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "content/public/browser/url_data_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cast_core/public/src/proto/v2/core_application_service.grpc.pb.h"

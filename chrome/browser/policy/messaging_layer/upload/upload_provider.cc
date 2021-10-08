@@ -7,11 +7,11 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind_post_task.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
+#include "base/task/bind_post_task_forward.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/util/get_cloud_policy_client.h"

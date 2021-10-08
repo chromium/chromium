@@ -5,7 +5,7 @@
 #ifndef CONTENT_RENDERER_MEDIA_ANDROID_STREAM_TEXTURE_WRAPPER_IMPL_H_
 #define CONTENT_RENDERER_MEDIA_ANDROID_STREAM_TEXTURE_WRAPPER_IMPL_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "content/common/content_export.h"
 #include "content/renderer/media/android/stream_texture_factory.h"
 #include "gpu/command_buffer/common/mailbox.h"

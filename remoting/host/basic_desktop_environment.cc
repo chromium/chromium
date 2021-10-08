@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "build/build_config.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"

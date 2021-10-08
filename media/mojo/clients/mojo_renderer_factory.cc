@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "build/build_config.h"
 #include "media/mojo/clients/mojo_renderer.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"

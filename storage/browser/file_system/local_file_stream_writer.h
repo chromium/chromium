@@ -16,7 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "storage/browser/file_system/file_stream_writer.h"
 
 namespace net {

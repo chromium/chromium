@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/geolocation_service_ash.h"
 
-#include "base/bind_post_task.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task_forward.h"
 #include "base/time/time.h"
 #include "chromeos/network/geolocation_handler.h"
 #include "chromeos/network/network_handler.h"

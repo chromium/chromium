@@ -14,7 +14,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/values.h"
 #include "net/base/ip_endpoint.h"
 #include "remoting/proto/internal.pb.h"

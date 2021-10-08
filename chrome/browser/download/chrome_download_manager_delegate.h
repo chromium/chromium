@@ -17,7 +17,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_completion_blocker.h"
 #include "chrome/browser/download/download_target_determiner_delegate.h"

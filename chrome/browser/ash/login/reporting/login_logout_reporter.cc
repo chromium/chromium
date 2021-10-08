@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
 
-#include "base/bind_post_task.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/bind_post_task_forward.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"

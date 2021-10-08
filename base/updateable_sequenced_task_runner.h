@@ -5,7 +5,7 @@
 #ifndef BASE_UPDATEABLE_SEQUENCED_TASK_RUNNER_H_
 #define BASE_UPDATEABLE_SEQUENCED_TASK_RUNNER_H_
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/task/task_traits.h"
 
 namespace base {

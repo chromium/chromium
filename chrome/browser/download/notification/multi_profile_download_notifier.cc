@@ -4,7 +4,7 @@
 
 #include "chrome/browser/download/notification/multi_profile_download_notifier.h"
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/download/public/common/simple_download_manager.h"
 #include "content/public/browser/download_manager.h"
 

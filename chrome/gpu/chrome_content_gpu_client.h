@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/profiler/thread_profiler.h"
 #include "content/public/gpu/content_gpu_client.h"

@@ -13,7 +13,7 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 // TODO(tzik): Merge this file to media/base/bind_to_current_loop.h.

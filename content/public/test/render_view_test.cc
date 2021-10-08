@@ -12,7 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "build/build_config.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "content/app/mojo/mojo_init.h"

@@ -8,7 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "media/base/mock_media_log.h"

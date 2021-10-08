@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/single_thread_task_runner.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "third_party/blink/public/platform/scheduler/test/web_mock_thread_scheduler.h"

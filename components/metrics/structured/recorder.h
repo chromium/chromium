@@ -10,7 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/structured_metrics_client.h"

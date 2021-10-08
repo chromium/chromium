@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "remoting/protocol/connection_to_host.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 

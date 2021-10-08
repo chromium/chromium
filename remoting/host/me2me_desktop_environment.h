@@ -6,7 +6,7 @@
 #define REMOTING_HOST_ME2ME_DESKTOP_ENVIRONMENT_H_
 
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "remoting/host/basic_desktop_environment.h"
 
 namespace remoting {

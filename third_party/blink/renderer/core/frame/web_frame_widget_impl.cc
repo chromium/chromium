@@ -37,7 +37,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/trees/compositor_commit_data.h"

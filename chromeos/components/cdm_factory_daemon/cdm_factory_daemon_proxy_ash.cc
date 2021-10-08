@@ -10,7 +10,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/components/cdm_factory_daemon/output_protection_impl.h"
 #include "chromeos/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"

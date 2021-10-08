@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "build/build_config.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 

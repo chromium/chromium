@@ -16,7 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/test/task_environment.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message.h"

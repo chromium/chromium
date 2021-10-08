@@ -74,7 +74,7 @@
 #include "ui/snapshot/snapshot.h"
 
 #if defined(OS_POSIX)
-#include "base/deferred_sequenced_task_runner.h"
+#include "base/task/deferred_sequenced_task_runner_forward.h"
 #include "base/tracing/perfetto_task_runner.h"
 #include "services/tracing/perfetto/system_test_utils.h"
 #endif

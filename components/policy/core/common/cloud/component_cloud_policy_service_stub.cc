@@ -4,7 +4,7 @@
 
 #include "components/policy/core/common/cloud/component_cloud_policy_service.h"
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 
 namespace policy {
 

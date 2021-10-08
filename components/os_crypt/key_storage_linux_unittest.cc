@@ -5,7 +5,7 @@
 #include "components/os_crypt/key_storage_linux.h"
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/test/test_simple_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

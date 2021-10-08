@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util_forward.h"
 #include "components/drive/service/drive_service_interface.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"

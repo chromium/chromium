@@ -20,7 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/process/process.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "build/build_config.h"
 #include "mojo/core/atomic_flag.h"
 #include "mojo/core/node_channel.h"

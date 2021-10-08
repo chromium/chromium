@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/threading/thread.h"
 #include "base/win/windows_types.h"
 #include "base/win/wrapped_window_proc.h"

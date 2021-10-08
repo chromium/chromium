@@ -7,10 +7,10 @@
 #include <atomic>
 
 #include "base/bind.h"
-#include "base/deferred_sequenced_task_runner.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
+#include "base/task/deferred_sequenced_task_runner_forward.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits_extension.h"
 #include "base/threading/thread_task_runner_handle.h"

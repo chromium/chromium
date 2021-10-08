@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "build/build_config.h"
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/child_process_launcher.h"

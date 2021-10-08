@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
 
 namespace crash_reporter {

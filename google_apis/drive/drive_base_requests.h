@@ -19,7 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/threading/thread_checker.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/base_requests.h"

@@ -17,7 +17,7 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "base/version.h"

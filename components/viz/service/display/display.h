@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/time/time.h"
 #include "cc/base/rolling_time_delta_history.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"

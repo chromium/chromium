@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "remoting/protocol/clipboard_stub.h"
 
 namespace remoting {

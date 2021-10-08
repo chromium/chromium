@@ -4,7 +4,7 @@
 
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/send_tab_to_self/target_device_info.h"
 
 namespace send_tab_to_self {

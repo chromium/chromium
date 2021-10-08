@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chromecast/common/mojom/constants.mojom.h"
 #include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/media/api/decoder_buffer_base.h"

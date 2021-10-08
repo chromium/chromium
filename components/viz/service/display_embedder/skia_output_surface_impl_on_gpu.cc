@@ -7,8 +7,8 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
+#include "base/task/bind_post_task_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"

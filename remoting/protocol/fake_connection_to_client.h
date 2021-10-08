@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/video_feedback_stub.h"
 #include "remoting/protocol/video_stream.h"

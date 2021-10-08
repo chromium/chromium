@@ -9,12 +9,12 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/check.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/posix/unix_domain_socket.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/bind_post_task_forward.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "chromecast/media/audio/audio_io_thread.h"

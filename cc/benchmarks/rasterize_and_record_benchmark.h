@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/values.h"
 #include "cc/benchmarks/micro_benchmark_controller.h"
 #include "cc/layers/recording_source.h"

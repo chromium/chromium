@@ -9,7 +9,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "build/build_config.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/action_executor.h"

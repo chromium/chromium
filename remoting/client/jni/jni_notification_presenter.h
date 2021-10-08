@@ -10,7 +10,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "remoting/client/notification/notification_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

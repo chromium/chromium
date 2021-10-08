@@ -5,9 +5,9 @@
 #include "content/public/browser/audio_service.h"
 
 #include "base/command_line.h"
-#include "base/deferred_sequenced_task_runner.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/deferred_sequenced_task_runner_forward.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

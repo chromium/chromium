@@ -11,7 +11,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/policy/core/cached_policy_key_loader.h"
 #include "chrome/browser/ash/policy/value_validation/onc_user_policy_value_validator.h"

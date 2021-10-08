@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace content {

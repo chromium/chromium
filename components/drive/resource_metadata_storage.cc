@@ -19,7 +19,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/drive/drive.pb.h"
 #include "components/drive/drive_api_util.h"

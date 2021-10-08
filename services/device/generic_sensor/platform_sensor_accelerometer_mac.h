@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/timer/timer.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"

@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
 #include "chrome/browser/profiles/profile_manager.h"

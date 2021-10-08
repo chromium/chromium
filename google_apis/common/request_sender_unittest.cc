@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "google_apis/common/base_requests.h"
 #include "google_apis/common/dummy_auth_service.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"

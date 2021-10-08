@@ -12,7 +12,7 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chromecast/media/audio/net/common.pb.h"
 #include "chromecast/media/audio/net/conversions.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"

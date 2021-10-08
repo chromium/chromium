@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/proto/record_constants.pb.h"

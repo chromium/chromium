@@ -13,7 +13,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "libassistant/shared/internal_api/http_connection.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/http/http_request_headers.h"

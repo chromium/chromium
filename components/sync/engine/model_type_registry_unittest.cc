@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/deferred_sequenced_task_runner.h"
+#include "base/task/deferred_sequenced_task_runner_forward.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "components/sync/engine/cancelation_signal.h"

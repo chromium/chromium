@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "chromecast/media/common/media_resource_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

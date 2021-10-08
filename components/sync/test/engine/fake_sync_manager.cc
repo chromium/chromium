@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/engine_components_factory.h"

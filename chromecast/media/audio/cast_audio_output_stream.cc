@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/bits.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -17,6 +16,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/base/bind_to_task_runner.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"

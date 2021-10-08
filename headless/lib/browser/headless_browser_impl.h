@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "headless/lib/browser/headless_devtools_manager_delegate.h"
 #include "headless/public/headless_devtools_target.h"
 #include "headless/public/headless_export.h"

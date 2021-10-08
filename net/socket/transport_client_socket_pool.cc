@@ -16,9 +16,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -31,7 +31,6 @@
 #include "net/socket/connect_job_factory.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
-
 
 namespace net {
 

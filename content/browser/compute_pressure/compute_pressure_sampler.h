@@ -11,7 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
 #include "content/browser/compute_pressure/compute_pressure_sample.h"

@@ -13,8 +13,8 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/task_runner_util_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "storage/browser/blob/shareable_file_reference.h"

@@ -16,7 +16,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util_forward.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/download/public/common/download_task_runner.h"

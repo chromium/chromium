@@ -12,7 +12,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "build/chromeos_buildflags.h"
 #include "services/device/usb/usb_service.h"
 

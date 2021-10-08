@@ -10,8 +10,8 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/driver/sync_driver_switches.h"
 

@@ -8,7 +8,7 @@
 #include <atomic>
 #include <memory>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "build/build_config.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "components/power_scheduler/power_mode_voter.h"

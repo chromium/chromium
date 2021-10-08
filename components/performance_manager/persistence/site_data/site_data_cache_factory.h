@@ -14,7 +14,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

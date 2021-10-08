@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/model_type_controller.h"
 #include "components/sync/model/model_type_store.h"

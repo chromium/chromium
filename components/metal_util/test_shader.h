@@ -7,7 +7,7 @@
 
 #include <vector>
 #include "base/callback.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "base/time/time.h"
 #include "components/metal_util/metal_util_export.h"
 

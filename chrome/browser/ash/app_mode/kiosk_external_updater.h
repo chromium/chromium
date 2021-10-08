@@ -13,7 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chrome/browser/ash/app_mode/kiosk_external_update_validator.h"
 #include "chromeos/disks/disk_mount_manager.h"
 

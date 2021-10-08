@@ -12,7 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/values.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/client_session_details.h"

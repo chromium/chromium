@@ -40,7 +40,7 @@ include_rules = [
     "+base/posix/eintr_wrapper.h",
     "+base/process/memory.h",
     "+base/rand_util.h",
-    "+base/sequenced_task_runner.h",
+    "+base/task/sequenced_task_runner_forward.h",
     "+base/strings/stringprintf.h",
     "+base/sys_byteorder.h",
     "+base/system/sys_info.h",

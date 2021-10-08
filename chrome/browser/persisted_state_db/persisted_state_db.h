@@ -7,7 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "build/build_config.h"
 #include "chrome/browser/persisted_state_db/persisted_state_db_content.pb.h"
 #include "components/keyed_service/core/keyed_service.h"

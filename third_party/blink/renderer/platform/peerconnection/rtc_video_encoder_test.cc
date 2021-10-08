@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"

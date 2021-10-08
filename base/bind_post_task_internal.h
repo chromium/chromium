@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 
 namespace base {
 namespace internal {

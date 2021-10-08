@@ -5,8 +5,8 @@
 #include "components/download/public/background_service/basic_task_scheduler.h"
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/task/task_traits.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"

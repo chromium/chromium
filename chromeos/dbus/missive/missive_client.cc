@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chromeos/dbus/missive/fake_missive_client.h"
 #include "components/reporting/proto/interface.pb.h"
 #include "components/reporting/proto/record.pb.h"

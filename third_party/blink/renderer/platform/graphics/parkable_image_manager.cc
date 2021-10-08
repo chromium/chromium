@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/parkable_image_manager.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"

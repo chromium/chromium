@@ -9,7 +9,7 @@
 #include "base/android/java_handler_thread.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "device/vr/android/mailbox_to_surface_bridge.h"
 
 namespace device {

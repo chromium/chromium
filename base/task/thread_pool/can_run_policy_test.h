@@ -6,9 +6,9 @@
 #define BASE_TASK_THREAD_POOL_CAN_RUN_POLICY_TEST_H_
 
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/task_runner_forward.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/test_utils.h"
-#include "base/task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/test_waitable_event.h"

@@ -8,7 +8,7 @@
 #include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/customization/customization_document.h"

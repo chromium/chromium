@@ -22,7 +22,7 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "chrome/chrome_cleaner/engines/target/engine_commands_impl.h"  // nogncheck
 #include "chrome/chrome_cleaner/engines/target/engine_delegate.h"  // nogncheck
 #include "chrome/chrome_cleaner/engines/target/engine_delegate_factory.h"  // nogncheck

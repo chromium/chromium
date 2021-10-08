@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "ui/events/event_modifiers.h"
 #include "ui/events/ozone/device/device_event_observer.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"

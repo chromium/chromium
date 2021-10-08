@@ -15,7 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chromeos/services/ime/constants.h"
 #include "chromeos/services/ime/decoder/decoder_engine.h"
 #include "chromeos/services/ime/decoder/system_engine.h"

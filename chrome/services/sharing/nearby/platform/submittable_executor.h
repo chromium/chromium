@@ -9,7 +9,7 @@
 
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "base/thread_annotations.h"
 #include "chrome/services/sharing/nearby/platform/atomic_boolean.h"
 #include "third_party/nearby/src/cpp/platform/api/submittable_executor.h"

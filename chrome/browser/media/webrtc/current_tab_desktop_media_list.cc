@@ -5,10 +5,10 @@
 #include "chrome/browser/media/webrtc/current_tab_desktop_media_list.h"
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/hash/hash.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/bind_post_task_forward.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"

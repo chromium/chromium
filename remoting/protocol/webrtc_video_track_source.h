@@ -6,7 +6,7 @@
 #define REMOTING_PROTOCOL_WEBRTC_VIDEO_TRACK_SOURCE_H_
 
 #include "base/callback.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "remoting/codec/webrtc_video_encoder.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 #include "third_party/webrtc/api/notifier.h"

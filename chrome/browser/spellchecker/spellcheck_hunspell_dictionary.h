@@ -14,7 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "build/build_config.h"
 #include "components/spellcheck/browser/spellcheck_dictionary.h"
 #include "components/spellcheck/spellcheck_buildflags.h"

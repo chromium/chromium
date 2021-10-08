@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"

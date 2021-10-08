@@ -9,8 +9,8 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/process/process_metrics.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/time/time.h"
 
 // NearOomMonitor tracks memory stats to estimate whether we are in "near-OOM"

@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/message_loop/message_pump_for_io.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "services/device/serial/serial_io_handler.h"
 

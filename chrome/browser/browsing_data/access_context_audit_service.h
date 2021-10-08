@@ -7,7 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
-#include "base/updateable_sequenced_task_runner.h"
+#include "base/task/updateable_sequenced_task_runner_forward.h"
 #include "chrome/browser/browsing_data/access_context_audit_database.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_data/content/canonical_cookie_hash.h"

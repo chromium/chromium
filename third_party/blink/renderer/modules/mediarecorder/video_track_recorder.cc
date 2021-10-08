@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"

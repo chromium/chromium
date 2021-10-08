@@ -9,7 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/thread_annotations.h"
 #include "remoting/base/running_samples.h"
 #include "remoting/codec/webrtc_video_encoder.h"

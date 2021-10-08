@@ -18,7 +18,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/task/current_thread.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"

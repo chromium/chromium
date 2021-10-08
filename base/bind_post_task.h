@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 
 // BindPostTask() is a helper function for binding a OnceCallback or
 // RepeatingCallback to a task runner. BindPostTask(task_runner, callback)

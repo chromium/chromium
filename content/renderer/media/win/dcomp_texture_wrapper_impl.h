@@ -5,7 +5,7 @@
 #ifndef CONTENT_RENDERER_MEDIA_WIN_DCOMP_TEXTURE_WRAPPER_IMPL_H_
 #define CONTENT_RENDERER_MEDIA_WIN_DCOMP_TEXTURE_WRAPPER_IMPL_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "content/renderer/media/win/dcomp_texture_factory.h"

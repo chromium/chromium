@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/no_destructor.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "media/base/android/android_util.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/media_codec_bridge_impl.h"

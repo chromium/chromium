@@ -7,7 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_utils.h"
 #include "crypto/rsa_private_key.h"

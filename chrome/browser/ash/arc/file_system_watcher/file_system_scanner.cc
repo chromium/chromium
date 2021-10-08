@@ -8,8 +8,8 @@
 #include <sys/stat.h>
 
 #include "base/files/file_enumerator.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/file_system_watcher/arc_file_system_watcher_util.h"
 #include "components/arc/mojom/file_system.mojom.h"

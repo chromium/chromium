@@ -10,7 +10,7 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 
 namespace base {
 

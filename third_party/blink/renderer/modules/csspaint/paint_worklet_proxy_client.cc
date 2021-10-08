@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_color_value.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_unit_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_paint_worklet_input.h"

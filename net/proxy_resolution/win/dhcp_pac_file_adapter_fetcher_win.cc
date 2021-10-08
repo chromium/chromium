@@ -11,7 +11,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "net/base/net_errors.h"

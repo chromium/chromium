@@ -11,7 +11,7 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"

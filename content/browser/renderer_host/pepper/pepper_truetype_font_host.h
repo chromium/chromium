@@ -14,7 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "content/browser/renderer_host/pepper/pepper_truetype_font.h"
 #include "content/common/content_export.h"
 #include "ppapi/host/host_message_context.h"

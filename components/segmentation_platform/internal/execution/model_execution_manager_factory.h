@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 

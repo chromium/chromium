@@ -9,7 +9,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/values.h"
 #include "cc/benchmarks/micro_benchmark_impl.h"
 

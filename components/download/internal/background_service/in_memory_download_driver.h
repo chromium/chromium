@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "components/download/internal/background_service/in_memory_download.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 

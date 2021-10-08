@@ -8,8 +8,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "mojo/public/java/system/system_impl_java_jni_headers/BaseRunLoop_jni.h"
 
 using base::android::JavaParamRef;

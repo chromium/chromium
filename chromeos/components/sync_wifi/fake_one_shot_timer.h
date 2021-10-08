@@ -7,7 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/timer/mock_timer.h"
 #include "base/unguessable_token.h"
 

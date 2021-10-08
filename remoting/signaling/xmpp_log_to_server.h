@@ -13,7 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "remoting/signaling/log_to_server.h"
 #include "remoting/signaling/server_log_entry.h"
 #include "remoting/signaling/signal_strategy.h"

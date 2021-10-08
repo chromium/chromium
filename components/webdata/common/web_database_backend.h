@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "components/webdata/common/web_data_request_manager.h"
 #include "components/webdata/common/web_database_service.h"
 #include "components/webdata/common/webdata_export.h"

@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "media/mojo/mojom/gpu_accelerated_video_decoder.mojom.h"
 #include "media/video/video_decode_accelerator.h"

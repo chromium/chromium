@@ -16,7 +16,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(USE_GCM_FROM_PLATFORM)
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/gcm_driver/gcm_driver_android.h"
 #else
 #include "base/bind.h"

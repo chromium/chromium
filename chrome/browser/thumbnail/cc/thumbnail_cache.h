@@ -18,7 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/time/time.h"
 #include "chrome/browser/thumbnail/cc/scoped_ptr_expiring_cache.h"
 #include "chrome/browser/thumbnail/cc/thumbnail.h"

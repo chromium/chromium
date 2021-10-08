@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers_forward.h"
 #include "content/browser/media/media_internals.h"
 #include "content/public/browser/browser_thread.h"
 

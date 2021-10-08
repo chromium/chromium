@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/ntp_snippets/remote/remote_suggestion.h"
 

@@ -9,8 +9,8 @@
 #include <memory>
 #include <string>
 
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/thread_annotations.h"
 #include "extensions/common/extension_set.h"
 #include "services/network/public/cpp/session_cookie_delete_predicate.h"

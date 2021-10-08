@@ -27,7 +27,7 @@
 #include "third_party/blink/renderer/core/frame/dom_timer.h"
 
 #include "base/numerics/clamped_math.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/scheduled_action.h"

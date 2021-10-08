@@ -19,7 +19,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/task/task_traits.h"
 #include "base/thread_annotations.h"
 #include "net/base/features.h"

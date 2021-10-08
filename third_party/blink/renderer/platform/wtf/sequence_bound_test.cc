@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/platform/wtf/sequence_bound.h"
 
-#include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
+#include "base/task/bind_post_task_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/viz/service/gl/gpu_service_impl.h"

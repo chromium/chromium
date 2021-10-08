@@ -8,7 +8,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/test/task_environment.h"
 #include "net/base/upload_progress.h"
 #include "testing/gtest/include/gtest/gtest.h"

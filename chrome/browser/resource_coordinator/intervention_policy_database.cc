@@ -8,8 +8,8 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util_forward.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/values.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 

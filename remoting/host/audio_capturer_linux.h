@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/audio_silence_detector.h"
 #include "remoting/host/linux/audio_pipe_reader.h"

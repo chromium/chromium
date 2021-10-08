@@ -10,7 +10,7 @@
 
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_VALIDATOR_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_VALIDATOR_H_
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/optimization_guide/core/base_model_executor.h"
 #include "components/optimization_guide/core/model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"

@@ -11,8 +11,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/post_task_and_reply_with_result_internal.h"
-#include "base/task_runner.h"
+#include "base/task/post_task_and_reply_with_result_internal_forward.h"
+#include "base/task/task_runner_forward.h"
 
 namespace base {
 

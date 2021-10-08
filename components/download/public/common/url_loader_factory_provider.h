@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_URL_LOADER_FACTORY_PROVIDER_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_URL_LOADER_FACTORY_PROVIDER_H_
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/download/public/common/download_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

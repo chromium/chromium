@@ -12,7 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_server.h"

@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"

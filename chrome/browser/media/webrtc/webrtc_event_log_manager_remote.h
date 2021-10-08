@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_history.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"

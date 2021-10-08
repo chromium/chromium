@@ -15,7 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/supports_user_data.h"
 #include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util_forward.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"

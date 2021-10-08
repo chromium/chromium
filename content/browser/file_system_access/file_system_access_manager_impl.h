@@ -5,11 +5,11 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_MANAGER_IMPL_H_
 
-#include "base/bind_post_task.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/bind_post_task_forward.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "components/download/public/common/quarantine_connection.h"

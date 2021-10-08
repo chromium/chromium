@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/util/statusor.h"
 

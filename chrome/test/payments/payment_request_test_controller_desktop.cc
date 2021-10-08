@@ -6,8 +6,8 @@
 
 #include "base/check.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chrome/browser/payments/chrome_payment_request_delegate.h"
 #include "chrome/browser/payments/payment_request_factory.h"
 #include "components/payments/content/android_app_communication.h"

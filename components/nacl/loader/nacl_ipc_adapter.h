@@ -19,7 +19,7 @@
 #include "base/pickle.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "build/build_config.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_platform_file.h"

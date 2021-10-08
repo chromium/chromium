@@ -30,7 +30,7 @@
 
 #include "third_party/blink/renderer/core/inspector/worker_inspector_controller.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/inspector/devtools_session.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_agent.h"

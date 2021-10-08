@@ -13,7 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.pb.h"
 #include "components/sqlite_proto/key_value_table.h"
 #include "components/sqlite_proto/table_manager.h"

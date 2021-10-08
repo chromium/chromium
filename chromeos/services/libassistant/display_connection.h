@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chromeos/assistant/internal/proto/assistant/display_connection.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"

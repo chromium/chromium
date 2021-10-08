@@ -10,7 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 
 namespace base {
 class FilePath;

@@ -6,7 +6,7 @@
 #define CHROMEOS_SERVICES_LIBASSISTANT_DISPLAY_CONTROLLER_H_
 
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chromeos/assistant/internal/action/assistant_action_observer.h"
 #include "chromeos/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/services/libassistant/public/mojom/display_controller.mojom.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 
-#include "base/bind_post_task.h"
+#include "base/task/bind_post_task_forward.h"
 
 namespace file_manager {
 

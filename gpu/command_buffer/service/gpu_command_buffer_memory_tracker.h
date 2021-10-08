@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/timer/timer.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"

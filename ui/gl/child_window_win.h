@@ -6,7 +6,7 @@
 #define UI_GL_CHILD_WINDOW_WIN_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "base/threading/thread.h"
 #include "ui/gl/gl_export.h"
 

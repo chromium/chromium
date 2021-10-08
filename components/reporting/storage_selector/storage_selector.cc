@@ -7,12 +7,12 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind_post_task.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
+#include "base/task/bind_post_task_forward.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/dbus/missive/missive_client.h"

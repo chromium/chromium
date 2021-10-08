@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/hash/hash.h"
+#include "base/task/bind_post_task_forward.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers_forward.h"
 #include "content/common/content_export.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"

@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/rand_util.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"

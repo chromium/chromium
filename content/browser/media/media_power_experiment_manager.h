@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/media_player_id.h"
 #include "media/base/video_codecs.h"

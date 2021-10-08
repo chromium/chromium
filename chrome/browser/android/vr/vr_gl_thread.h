@@ -10,7 +10,7 @@
 #include "base/android/java_handler_thread.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "chrome/browser/android/vr/browser_renderer_factory.h"
 #include "chrome/browser/android/vr/gl_browser_interface.h"
 #include "chrome/browser/android/vr/gvr_keyboard_delegate.h"

@@ -4,11 +4,11 @@
 
 #include "content/browser/file_system_access/safe_move_helper.h"
 
-#include "base/bind_post_task.h"
 #include "base/files/file.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/bind_post_task_forward.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"

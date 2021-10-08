@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/task_runner_forward.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"

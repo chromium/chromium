@@ -6,7 +6,7 @@
 #define BASE_TEST_TEST_MESSAGE_LOOP_H_
 
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/test/task_environment.h"
 
 namespace base {

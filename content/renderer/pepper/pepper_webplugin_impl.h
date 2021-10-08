@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers_forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ppapi/c/pp_var.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"

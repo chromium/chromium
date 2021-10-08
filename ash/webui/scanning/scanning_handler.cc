@@ -13,7 +13,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"

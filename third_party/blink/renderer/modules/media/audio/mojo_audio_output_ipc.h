@@ -10,7 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/time/time.h"
 #include "media/audio/audio_output_ipc.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom-blink.h"

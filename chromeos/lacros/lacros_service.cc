@@ -7,10 +7,10 @@
 #include <atomic>
 #include <utility>
 
-#include "base/bind_post_task.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/task/bind_post_task_forward.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"

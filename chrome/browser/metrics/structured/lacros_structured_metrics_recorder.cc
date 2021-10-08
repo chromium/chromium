@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/metrics/structured/event.h"

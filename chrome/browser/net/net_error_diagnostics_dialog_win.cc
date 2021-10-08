@@ -22,7 +22,7 @@
 #include "base/native_library.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"

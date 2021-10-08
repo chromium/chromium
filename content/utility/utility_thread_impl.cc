@@ -16,7 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "content/child/child_process.h"

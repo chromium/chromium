@@ -9,7 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/process_snapshot_server.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"

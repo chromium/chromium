@@ -8,7 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "net/url_request/url_fetcher_delegate.h"
 #include "remoting/client/notification/json_fetcher.h"
 #include "url/gurl.h"

@@ -12,7 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/discovery/media_sink_service_util.h"
 #include "components/media_router/common/mojom/logger.mojom.h"

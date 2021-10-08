@@ -13,11 +13,11 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task_forward.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/arc/fileapi/arc_select_files_handler.h"

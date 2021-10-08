@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "components/cast_streaming/renderer/cast_streaming_receiver.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"

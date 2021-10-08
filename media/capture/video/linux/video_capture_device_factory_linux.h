@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "media/capture/video/linux/v4l2_capture_device.h"
 #include "media/capture/video_capture_types.h"
 

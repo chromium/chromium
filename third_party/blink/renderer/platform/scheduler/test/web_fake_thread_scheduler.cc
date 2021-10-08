@@ -4,7 +4,7 @@
 
 #include "third_party/blink/public/platform/scheduler/test/web_fake_thread_scheduler.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"

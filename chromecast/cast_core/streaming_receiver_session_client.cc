@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chromecast/shared/platform_info_serializer.h"
 #include "components/cast/message_port/cast_core/create_message_port_core.h"
 #include "components/cast/message_port/platform_message_port.h"

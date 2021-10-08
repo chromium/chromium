@@ -6,8 +6,8 @@
 #define BASE_TASK_SEQUENCE_MANAGER_TASKS_H_
 
 #include "base/pending_task.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/sequence_manager/enqueue_order.h"
+#include "base/task/sequenced_task_runner_forward.h"
 
 namespace base {
 namespace sequence_manager {

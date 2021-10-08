@@ -12,7 +12,7 @@
 #include "base/guid.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers_forward.h"
 #include "components/desks_storage/core/desk_model.h"
 
 namespace ash {

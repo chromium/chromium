@@ -9,7 +9,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/stl_util.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util_forward.h"
 #include "base/threading/scoped_blocking_call.h"
 
 namespace download {

@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "extensions/browser/api/socket/socket.h"
 #include "extensions/common/api/socket.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

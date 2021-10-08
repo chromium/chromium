@@ -20,7 +20,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/dbus_thread_manager.h"

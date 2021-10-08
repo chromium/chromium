@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/renderer/categorized_worker_pool.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/test/bind.h"
 #include "base/test/sequenced_task_runner_test_template.h"
 #include "base/test/task_runner_test_template.h"

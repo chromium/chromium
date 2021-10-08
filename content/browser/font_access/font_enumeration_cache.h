@@ -8,12 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "base/deferred_sequenced_task_runner.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/deferred_sequenced_task_runner_forward.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"

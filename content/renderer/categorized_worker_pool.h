@@ -9,9 +9,9 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/condition_variable.h"
-#include "base/task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/task_runner_forward.h"
 #include "base/thread_annotations.h"
 #include "base/threading/simple_thread.h"
 #include "cc/raster/task_category.h"

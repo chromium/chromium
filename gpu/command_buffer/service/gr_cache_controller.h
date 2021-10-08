@@ -6,7 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_GR_CACHE_CONTROLLER_H_
 
 #include "base/cancelable_callback.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "gpu/gpu_gles2_export.h"
 
 namespace gpu {

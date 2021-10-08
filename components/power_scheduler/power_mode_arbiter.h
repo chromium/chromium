@@ -13,7 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/synchronization/lock.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_log.h"

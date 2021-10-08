@@ -11,8 +11,8 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/task_runner_forward.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

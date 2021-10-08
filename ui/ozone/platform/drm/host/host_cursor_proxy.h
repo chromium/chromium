@@ -5,7 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_DRM_HOST_HOST_CURSOR_PROXY_H_
 #define UI_OZONE_PLATFORM_DRM_HOST_HOST_CURSOR_PROXY_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "ui/gfx/native_widget_types.h"

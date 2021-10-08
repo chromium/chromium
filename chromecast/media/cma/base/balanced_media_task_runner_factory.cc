@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "chromecast/media/cma/base/media_task_runner.h"
 #include "media/base/timestamp_constants.h"
 

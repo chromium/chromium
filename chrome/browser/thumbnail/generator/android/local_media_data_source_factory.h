@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chrome/services/media_gallery_util/public/cpp/safe_media_metadata_parser.h"
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom-forward.h"
 

@@ -17,7 +17,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chrome/browser/media/webrtc/webrtc_log_buffer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

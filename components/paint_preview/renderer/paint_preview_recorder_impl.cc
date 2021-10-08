@@ -9,11 +9,11 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/bind_post_task_forward.h"
+#include "base/task/task_runner_forward.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"

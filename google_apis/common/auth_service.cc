@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"

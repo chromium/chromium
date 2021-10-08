@@ -11,7 +11,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 
 namespace re2 {
 class RE2;

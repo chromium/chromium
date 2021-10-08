@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "build/build_config.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/zygote/zygote_buildflags.h"

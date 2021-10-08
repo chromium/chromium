@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "build/build_config.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/config/device_perf_info.h"

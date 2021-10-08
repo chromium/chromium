@@ -12,7 +12,7 @@
 #include "ash/projector/projector_metadata_model.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 
 namespace base {

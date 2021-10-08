@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"

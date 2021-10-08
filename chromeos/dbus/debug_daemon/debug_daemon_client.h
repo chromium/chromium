@@ -19,7 +19,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/observer_list_types.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "base/trace_event/tracing_agent.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"

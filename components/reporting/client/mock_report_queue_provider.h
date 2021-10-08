@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"

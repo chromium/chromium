@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/trace_event/trace_event.h"
 #include "components/value_store/leveldb_value_store.h"
 #include "components/value_store/value_store.h"

@@ -10,7 +10,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/no_destructor.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
 

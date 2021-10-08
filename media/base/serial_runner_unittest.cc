@@ -9,7 +9,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/test/task_environment.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/serial_runner.h"

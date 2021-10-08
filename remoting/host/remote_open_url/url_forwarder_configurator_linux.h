@@ -6,7 +6,7 @@
 #define REMOTING_HOST_REMOTE_OPEN_URL_URL_FORWARDER_CONFIGURATOR_LINUX_H_
 
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 
 namespace remoting {

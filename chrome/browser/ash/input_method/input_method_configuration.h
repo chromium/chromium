@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_CONFIGURATION_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_CONFIGURATION_H_
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "ui/base/ime/ash/input_method_manager.h"
 

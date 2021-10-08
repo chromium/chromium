@@ -10,9 +10,9 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/usb/usb_device_handle_win.h"

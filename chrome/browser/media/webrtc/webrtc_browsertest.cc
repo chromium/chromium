@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/deferred_sequenced_task_runner.h"
+#include "base/task/deferred_sequenced_task_runner_forward.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"

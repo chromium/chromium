@@ -14,7 +14,7 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "ipc/ipc_test_base.h"

@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/task/bind_post_task_forward.h"
 #include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util_forward.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/public/browser/browser_task_traits.h"

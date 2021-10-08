@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/native_library.h"
 #include "base/process/process.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "content/common/content_export.h"
 #include "content/public/common/pepper_plugin_info.h"
 #include "ppapi/c/pp_bool.h"

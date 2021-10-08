@@ -13,7 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/arc/mojom/video_decode_accelerator.mojom.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_decoder.h"

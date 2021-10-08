@@ -10,7 +10,7 @@
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"

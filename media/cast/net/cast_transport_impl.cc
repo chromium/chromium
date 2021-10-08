@@ -13,7 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "build/build_config.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/cast/net/rtcp/sender_rtcp_session.h"

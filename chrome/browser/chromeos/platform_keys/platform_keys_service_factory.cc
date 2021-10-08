@@ -8,7 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider.h"
 #include "chrome/browser/ash/net/client_cert_store_ash.h"

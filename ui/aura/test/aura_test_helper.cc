@@ -35,7 +35,7 @@
 #endif
 
 #if defined(OS_WIN)
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "ui/aura/native_window_occlusion_tracker_win.h"
 #endif
 

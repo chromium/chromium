@@ -114,8 +114,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
 namespace chromecast {

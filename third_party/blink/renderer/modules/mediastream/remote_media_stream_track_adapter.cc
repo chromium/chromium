@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/remote_media_stream_track_adapter.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "media/base/limits.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/peerconnection/media_stream_remote_video_source.h"

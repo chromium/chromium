@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/sync_wifi/fake_one_shot_timer.h"
 #include "chromeos/components/sync_wifi/timer_factory.h"

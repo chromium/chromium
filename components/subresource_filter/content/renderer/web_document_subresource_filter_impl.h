@@ -9,7 +9,7 @@
 #include "base/files/file.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "components/subresource_filter/content/renderer/ad_resource_tracker.h"
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/url_pattern_index/proto/rules.pb.h"

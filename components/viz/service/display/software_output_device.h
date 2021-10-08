@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/viz/service/display/software_output_device_client.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/skia/include/core/SkSurface.h"

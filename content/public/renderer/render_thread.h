@@ -11,7 +11,7 @@
 
 #include "base/callback.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "content/common/content_export.h"
 #include "content/public/child/child_thread.h"

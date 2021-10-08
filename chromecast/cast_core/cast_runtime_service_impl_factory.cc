@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "chromecast/cast_core/cast_runtime_service.h"
 #include "chromecast/cast_core/cast_runtime_service_impl.h"
 

@@ -33,8 +33,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/values.h"
 #include "base/win/shlwapi.h"  // For PathIsUNC()

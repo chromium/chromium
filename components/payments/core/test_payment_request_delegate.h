@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/single_thread_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/test_address_normalizer.h"

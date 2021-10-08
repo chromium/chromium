@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/viz_common_export.h"

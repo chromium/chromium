@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "media/base/audio_renderer_sink.h"
 #include "services/audio/public/cpp/sounds/audio_stream_handler.h"
 

@@ -7,8 +7,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -11,7 +11,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/policy/core/common/async_policy_loader.h"
 #include "components/policy/core/common/policy_proto_decoders.h"

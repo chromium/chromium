@@ -11,8 +11,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/deferred_sequenced_task_runner.h"
 #include "base/macros.h"
+#include "base/task/deferred_sequenced_task_runner_forward.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 

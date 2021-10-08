@@ -9,7 +9,7 @@
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
-#include "base/bind_post_task.h"
+#include "base/task/bind_post_task_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"

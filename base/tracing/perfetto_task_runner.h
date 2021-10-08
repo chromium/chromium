@@ -7,8 +7,8 @@
 
 #include "base/base_export.h"
 #include "base/cancelable_callback.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "third_party/perfetto/include/perfetto/base/task_runner.h"

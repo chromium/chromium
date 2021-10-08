@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
 #include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/quota/quota_client_type.h"

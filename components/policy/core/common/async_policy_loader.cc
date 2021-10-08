@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_bundle.h"
 

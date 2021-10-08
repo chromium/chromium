@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/blocking_model_type_store.h"
 

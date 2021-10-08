@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_DETECTOR_H_
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_DETECTOR_H_
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/timer.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"

@@ -26,7 +26,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/process/process_handle.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"

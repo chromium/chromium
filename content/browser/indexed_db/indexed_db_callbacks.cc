@@ -11,8 +11,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/indexed_db/cursor_impl.h"

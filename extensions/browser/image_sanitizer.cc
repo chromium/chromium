@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util_forward.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/extension_resource_path_normalizer.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"

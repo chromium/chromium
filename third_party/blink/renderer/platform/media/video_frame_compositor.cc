@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task_forward.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"

@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/strings/stringprintf.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util_forward.h"
 #include "dbus/bus.h"
 #include "dbus/dbus_statistics.h"
 #include "dbus/message.h"

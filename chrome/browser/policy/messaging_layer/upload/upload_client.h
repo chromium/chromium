@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/task/post_task.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/reporting/proto/record.pb.h"

@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 
 #include "base/memory/ref_counted_memory.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"

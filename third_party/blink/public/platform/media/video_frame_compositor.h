@@ -9,8 +9,8 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/thread_annotations.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"

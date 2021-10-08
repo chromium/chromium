@@ -48,9 +48,9 @@
 #include "base/containers/small_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/post_task_and_reply_with_result_internal.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/post_task_and_reply_with_result_internal_forward.h"
 
 namespace base {
 

@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/observer_list_threadsafe.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/timer/timer.h"
 #include "chromecast/device/bluetooth/le/ble_notification_logger.h"
 #include "chromecast/device/bluetooth/le/gatt_client_manager.h"

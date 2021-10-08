@@ -12,7 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"

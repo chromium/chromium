@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "url/gurl.h"

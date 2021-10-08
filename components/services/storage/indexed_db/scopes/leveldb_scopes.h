@@ -20,7 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
 #include "components/services/storage/indexed_db/scopes/scope_lock.h"
 #include "components/services/storage/indexed_db/scopes/scope_lock_range.h"

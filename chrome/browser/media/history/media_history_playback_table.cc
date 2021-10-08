@@ -5,7 +5,7 @@
 #include "chrome/browser/media/history/media_history_playback_table.h"
 
 #include "base/strings/stringprintf.h"
-#include "base/updateable_sequenced_task_runner.h"
+#include "base/task/updateable_sequenced_task_runner_forward.h"
 #include "chrome/browser/media/history/media_history_origin_table.h"
 #include "content/public/browser/media_player_watch_time.h"
 #include "sql/statement.h"

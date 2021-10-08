@@ -8,7 +8,7 @@
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
 #include "base/scoped_observation.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"

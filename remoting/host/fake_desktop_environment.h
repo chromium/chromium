@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/desktop_environment_options.h"

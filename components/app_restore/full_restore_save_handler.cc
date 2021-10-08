@@ -9,7 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/time/time.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_file_handler.h"

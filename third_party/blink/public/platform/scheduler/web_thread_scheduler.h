@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/message_loop/message_pump.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_input_event.h"

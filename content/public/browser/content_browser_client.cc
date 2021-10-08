@@ -20,7 +20,7 @@
 #include "base/guid.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

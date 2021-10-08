@@ -16,7 +16,7 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "media/audio/fake_audio_log_factory.h"

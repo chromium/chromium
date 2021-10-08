@@ -6,7 +6,7 @@
 #define COMPONENTS_CAST_STREAMING_BROWSER_TEST_CAST_STREAMING_TEST_SENDER_H_
 
 #include "base/callback.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast_streaming/browser/test/cast_message_port_sender_impl.h"
 #include "components/openscreen_platform/task_runner.h"

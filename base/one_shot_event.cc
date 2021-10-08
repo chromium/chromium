@@ -9,8 +9,8 @@
 
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
+#include "base/task/task_runner_forward.h"
 #include "base/time/time.h"
 
 namespace base {

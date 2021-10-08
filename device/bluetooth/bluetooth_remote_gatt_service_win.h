@@ -12,7 +12,7 @@
 
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "device/bluetooth/bluetooth_low_energy_defs_win.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 

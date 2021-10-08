@@ -12,7 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/unguessable_token.h"
 #include "chromecast/media/audio/cast_audio_manager_helper.h"
 

@@ -9,7 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

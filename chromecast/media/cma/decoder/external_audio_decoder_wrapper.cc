@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/scoped_native_library.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/time/time.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "media/base/audio_bus.h"

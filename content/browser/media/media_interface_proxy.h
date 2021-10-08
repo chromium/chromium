@@ -33,7 +33,7 @@
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 
 #if defined(OS_WIN)
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "media/mojo/mojom/media_foundation_service.mojom.h"
 #endif
 

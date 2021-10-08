@@ -9,8 +9,8 @@
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/test/test_pending_task.h"
 #include "base/threading/platform_thread.h"
 

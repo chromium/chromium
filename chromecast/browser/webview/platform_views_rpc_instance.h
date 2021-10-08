@@ -9,7 +9,7 @@
 #include <mutex>
 
 #include "base/callback.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "chromecast/browser/webview/proto/webview.grpc.pb.h"
 #include "chromecast/browser/webview/web_content_controller.h"
 #include "chromecast/browser/webview/webview_window_manager.h"

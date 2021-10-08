@@ -10,7 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "headless/public/devtools/domains/accessibility.h"
 #include "headless/public/devtools/domains/animation.h"
 #include "headless/public/devtools/domains/browser.h"

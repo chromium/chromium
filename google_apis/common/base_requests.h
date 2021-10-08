@@ -18,7 +18,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_forward.h"
 #include "base/threading/thread_checker.h"
 #include "google_apis/common/api_error_codes.h"
 #include "services/network/public/cpp/simple_url_loader.h"

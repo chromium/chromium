@@ -66,7 +66,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner_forward.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/android_affiliation/facet_manager_host.h"
