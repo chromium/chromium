@@ -203,7 +203,9 @@ chrome.tabs.getCurrent(function(tab) {
           let isOnBeforeSendHeadersCalled = false;
           const onBeforeSendHeaders = callbackPass((details) => {
             const headers = details.requestHeaders;
-            chrome.test.assertEq([], headers);
+            chrome.test.assertEq(
+                [{name: 'sec-webtransport-http3-draft02', value: '1'}],
+                headers);
             headers.push({name: 'foo', value: 'bar'});
             isOnBeforeSendHeadersCalled = true;
 
@@ -217,7 +219,9 @@ chrome.tabs.getCurrent(function(tab) {
           const onSendHeaders = callbackPass((details) => {
             const headers = details.requestHeaders;
             // Header mutation in onBeforeSendHeaders is ignored.
-            chrome.test.assertEq([], headers);
+            chrome.test.assertEq(
+                [{name: 'sec-webtransport-http3-draft02', value: '1'}],
+                headers);
             isOnSendHeadersCalled = true;
 
             chrome.webRequest.onSendHeaders.removeListener(onSendHeaders);
