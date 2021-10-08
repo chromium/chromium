@@ -74,8 +74,9 @@ IN_PROC_BROWSER_TEST_F(AutofillProgressDialogViewsBrowserTest,
 }
 
 // Ensures clicking on the cancel button is correctly handled.
+// TODO(crbug.com/1257990): Flaky.
 IN_PROC_BROWSER_TEST_F(AutofillProgressDialogViewsBrowserTest,
-                       ClickCancelButton) {
+                       DISABLED_ClickCancelButton) {
   ShowUi("");
   VerifyUi();
   GetDialogViews()->CancelDialog();
