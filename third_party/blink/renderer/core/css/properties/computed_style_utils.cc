@@ -1897,7 +1897,8 @@ CSSFunctionValue* ComputedStyleUtils::ValueForTransformOperation(
         result->Append(
             *CSSPrimitiveValue::CreateFromLength(translate.X(), zoom));
       }
-      if (id == CSSValueID::kTranslateY || id == CSSValueID::kTranslate ||
+      if (id == CSSValueID::kTranslateY ||
+          (id == CSSValueID::kTranslate && (translate.Y().Value() != 0.f)) ||
           id == CSSValueID::kTranslate3d) {
         result->Append(
             *CSSPrimitiveValue::CreateFromLength(translate.Y(), zoom));

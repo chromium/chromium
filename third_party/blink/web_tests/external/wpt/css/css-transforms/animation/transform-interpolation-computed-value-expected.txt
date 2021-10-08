@@ -1,13 +1,13 @@
 This is a testharness.js-based test.
-Found 102 tests; 74 PASS, 28 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 105 tests; 75 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL Interpolation between translateX(0px) and translateX(50px) gives the correct computed value halfway according to computedStyleMap. assert_equals: The value at 50% progress is as expected expected "translateX(25px)" but got "translate(25px, 0px)"
 FAIL Interpolation between translateX(0px) and translateX(50px) gives the correct computed value halfway according to computedStyleMap with zoom active. assert_equals: The value at 50% progress is as expected expected "translateX(25px)" but got "translate(25px, 0px)"
 PASS Interpolation between translateX(0px) and translateX(50px) gives the correct computed value halfway according to commitStyles.
 FAIL Interpolation between translateX(0%) and translateX(50%) gives the correct computed value halfway according to computedStyleMap. assert_equals: The value at 50% progress is as expected expected "translateX(25%)" but got "translate(25%, 0px)"
 FAIL Interpolation between translateX(0%) and translateX(50%) gives the correct computed value halfway according to computedStyleMap with zoom active. assert_equals: The value at 50% progress is as expected expected "translateX(25%)" but got "translate(25%, 0px)"
 PASS Interpolation between translateX(0%) and translateX(50%) gives the correct computed value halfway according to commitStyles.
-PASS Interpolation between translateY(0%) and translateX(50%) gives the correct computed value halfway according to computedStyleMap.
-PASS Interpolation between translateY(0%) and translateX(50%) gives the correct computed value halfway according to computedStyleMap with zoom active.
+FAIL Interpolation between translateY(0%) and translateX(50%) gives the correct computed value halfway according to computedStyleMap. assert_equals: The value at 50% progress is as expected expected "translate(25%)" but got "translate(25%, 0px)"
+FAIL Interpolation between translateY(0%) and translateX(50%) gives the correct computed value halfway according to computedStyleMap with zoom active. assert_equals: The value at 50% progress is as expected expected "translate(25%)" but got "translate(25%, 0px)"
 PASS Interpolation between translateY(0%) and translateX(50%) gives the correct computed value halfway according to commitStyles.
 PASS Interpolation between translateX(50px) and translateY(50px) gives the correct computed value halfway according to computedStyleMap.
 PASS Interpolation between translateX(50px) and translateY(50px) gives the correct computed value halfway according to computedStyleMap with zoom active.
@@ -23,7 +23,7 @@ FAIL Interpolation between translateZ(-50px) and translateZ(50px) gives the corr
 PASS Interpolation between translateZ(-50px) and translateZ(50px) gives the correct computed value halfway according to commitStyles.
 FAIL Interpolation between translate(0%) and translate(50%) gives the correct computed value halfway according to computedStyleMap. assert_equals: The value at 50% progress is as expected expected "translate(25%)" but got "translate(25%, 0px)"
 FAIL Interpolation between translate(0%) and translate(50%) gives the correct computed value halfway according to computedStyleMap with zoom active. assert_equals: The value at 50% progress is as expected expected "translate(25%)" but got "translate(25%, 0px)"
-FAIL Interpolation between translate(0%) and translate(50%) gives the correct computed value halfway according to commitStyles. assert_equals: The value at 50% progress is as expected expected "translate(25%)" but got "translate(25%, 0px)"
+PASS Interpolation between translate(0%) and translate(50%) gives the correct computed value halfway according to commitStyles.
 PASS Interpolation between translate(50%) and translate(100%, 50%) gives the correct computed value halfway according to computedStyleMap.
 PASS Interpolation between translate(50%) and translate(100%, 50%) gives the correct computed value halfway according to computedStyleMap with zoom active.
 PASS Interpolation between translate(50%) and translate(100%, 50%) gives the correct computed value halfway according to commitStyles.
@@ -35,7 +35,10 @@ PASS Interpolation between translate3d(0,0,-50px) and translateZ(50px) gives the
 PASS Interpolation between translate3d(0,0,-50px) and translateZ(50px) gives the correct computed value halfway according to commitStyles.
 FAIL Interpolation between translate(50px, 0px) and translate(100px, 0px) gives the correct computed value halfway according to computedStyleMap. assert_equals: The value at 50% progress is as expected expected "translate(75px)" but got "translate(75px, 0px)"
 FAIL Interpolation between translate(50px, 0px) and translate(100px, 0px) gives the correct computed value halfway according to computedStyleMap with zoom active. assert_equals: The value at 50% progress is as expected expected "translate(75px)" but got "translate(75px, 0px)"
-FAIL Interpolation between translate(50px, 0px) and translate(100px, 0px) gives the correct computed value halfway according to commitStyles. assert_equals: The value at 50% progress is as expected expected "translate(75px)" but got "translate(75px, 0px)"
+PASS Interpolation between translate(50px, 0px) and translate(100px, 0px) gives the correct computed value halfway according to commitStyles.
+FAIL Interpolation between translate(50px, -50px) and translate(100px, 50px) gives the correct computed value halfway according to computedStyleMap. assert_equals: The value at 50% progress is as expected expected "translate(75px)" but got "translate(75px, 0px)"
+FAIL Interpolation between translate(50px, -50px) and translate(100px, 50px) gives the correct computed value halfway according to computedStyleMap with zoom active. assert_equals: The value at 50% progress is as expected expected "translate(75px)" but got "translate(75px, 0px)"
+PASS Interpolation between translate(50px, -50px) and translate(100px, 50px) gives the correct computed value halfway according to commitStyles.
 PASS Interpolation between rotate(30deg) and rotate(90deg) gives the correct computed value halfway according to computedStyleMap.
 PASS Interpolation between rotate(30deg) and rotate(90deg) gives the correct computed value halfway according to computedStyleMap with zoom active.
 PASS Interpolation between rotate(30deg) and rotate(90deg) gives the correct computed value halfway according to commitStyles.
