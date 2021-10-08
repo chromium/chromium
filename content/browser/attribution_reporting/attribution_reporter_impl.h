@@ -13,8 +13,8 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/timer/timer.h"
+#include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/conversion_manager_impl.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -33,9 +33,9 @@ struct SentReportInfo;
 // an AttributionReporterImpl::NetworkSender. It maintains a queue of reports
 // and a timer to ensure all reports are sent at the correct time, since the
 // time in which a conversion report is sent is potentially sensitive
-// information. Created and owned by ConversionManager.
+// information. Created and owned by AttributionManager.
 class CONTENT_EXPORT AttributionReporterImpl
-    : public ConversionManagerImpl::AttributionReporter,
+    : public AttributionManagerImpl::AttributionReporter,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   // This class is responsible for sending conversion reports to their
@@ -63,7 +63,7 @@ class CONTENT_EXPORT AttributionReporterImpl
   AttributionReporterImpl& operator=(AttributionReporterImpl&&) = delete;
   ~AttributionReporterImpl() override;
 
-  // ConversionManagerImpl::AttributionReporter:
+  // AttributionManagerImpl::AttributionReporter:
   void AddReportsToQueue(std::vector<AttributionReport> reports) override;
   void RemoveAllReportsFromQueue() override;
 
@@ -117,7 +117,7 @@ class CONTENT_EXPORT AttributionReporterImpl
 
   base::RepeatingCallback<void(SentReportInfo)> callback_;
 
-  // Should never be nullptr, since StoragePartition owns the ConversionManager
+  // Should never be nullptr, since StoragePartition owns the AttributionManager
   // which owns |this|.
   StoragePartitionImpl* partition_;
 

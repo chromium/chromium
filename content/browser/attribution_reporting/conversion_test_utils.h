@@ -13,12 +13,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_session_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/conversion_manager.h"
-#include "content/browser/attribution_reporting/conversion_manager_impl.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -149,27 +149,27 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
   int report_time_ms_ = 0;
 };
 
-// Test manager provider which can be used to inject a fake ConversionManager.
-class TestManagerProvider : public ConversionManager::Provider {
+// Test manager provider which can be used to inject a fake AttributionManager.
+class TestManagerProvider : public AttributionManager::Provider {
  public:
-  explicit TestManagerProvider(ConversionManager* manager)
+  explicit TestManagerProvider(AttributionManager* manager)
       : manager_(manager) {}
   ~TestManagerProvider() override = default;
 
-  ConversionManager* GetManager(WebContents* web_contents) const override;
+  AttributionManager* GetManager(WebContents* web_contents) const override;
 
  private:
-  ConversionManager* manager_ = nullptr;
+  AttributionManager* manager_ = nullptr;
 };
 
-// Test ConversionManager which can be injected into tests to monitor calls to a
-// ConversionManager instance.
-class TestConversionManager : public ConversionManager {
+// Test AttributionManager which can be injected into tests to monitor calls to
+// a AttributionManager instance.
+class TestAttributionManager : public AttributionManager {
  public:
-  TestConversionManager();
-  ~TestConversionManager() override;
+  TestAttributionManager();
+  ~TestAttributionManager() override;
 
-  // ConversionManager:
+  // AttributionManager:
   void HandleImpression(StorableSource impression) override;
   void HandleConversion(StorableTrigger conversion) override;
   void GetActiveImpressionsForWebUI(
@@ -343,7 +343,7 @@ std::ostream& operator<<(std::ostream& out,
                          StorableSource::AttributionLogic attribution_logic);
 
 std::vector<AttributionReport> GetConversionsToReportForTesting(
-    ConversionManagerImpl* manager,
+    AttributionManagerImpl* manager,
     base::Time max_report_time) WARN_UNUSED_RESULT;
 
 }  // namespace content

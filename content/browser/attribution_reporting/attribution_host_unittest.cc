@@ -8,7 +8,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "content/browser/attribution_reporting/conversion_manager.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/conversion_test_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_client.h"
@@ -33,10 +33,10 @@ class AttributionHostTestPeer {
  public:
   static std::unique_ptr<AttributionHost> CreateAttributionHost(
       WebContents* web_contents,
-      std::unique_ptr<ConversionManager::Provider>
-          conversion_manager_provider) {
+      std::unique_ptr<AttributionManager::Provider>
+          attribution_manager_provider) {
     return base::WrapUnique(new AttributionHost(
-        web_contents, std::move(conversion_manager_provider)));
+        web_contents, std::move(attribution_manager_provider)));
   }
 
   static void SetCurrentTargetFrameForTesting(
@@ -97,7 +97,7 @@ class AttributionHostTest : public RenderViewHostTestHarness {
   }
 
  protected:
-  TestConversionManager test_manager_;
+  TestAttributionManager test_manager_;
   std::unique_ptr<AttributionHost> conversion_host_;
 };
 
@@ -491,7 +491,7 @@ TEST_F(AttributionHostTest, PerPageConversionMetrics) {
 
 TEST_F(AttributionHostTest, NoManager_NoPerPageConversionMetrics) {
   // Replace the AttributionHost on the WebContents with one that is backed by a
-  // null ConversionManager.
+  // null AttributionManager.
   conversion_host_ = AttributionHostTestPeer::CreateAttributionHost(
       web_contents(), std::make_unique<TestManagerProvider>(nullptr));
   AttributionHost::SetReceiverImplForTesting(conversion_host_.get());
@@ -557,7 +557,7 @@ TEST_F(AttributionHostTest, PerPageImpressionMetrics) {
 
 TEST_F(AttributionHostTest, NoManager_NoPerPageImpressionMetrics) {
   // Replace the AttributionHost on the WebContents with one that is backed by a
-  // null ConversionManager.
+  // null AttributionManager.
   conversion_host_ = AttributionHostTestPeer::CreateAttributionHost(
       web_contents(), std::make_unique<TestManagerProvider>(nullptr));
   AttributionHost::SetReceiverImplForTesting(conversion_host_.get());
@@ -621,7 +621,7 @@ TEST_F(AttributionHostTest, ValidImpression_ForwardedToManager) {
 
 TEST_F(AttributionHostTest, ImpressionWithNoManagerAvilable_NoCrash) {
   // Replace the AttributionHost on the WebContents with one that is backed by a
-  // null ConversionManager.
+  // null AttributionManager.
   conversion_host_ = AttributionHostTestPeer::CreateAttributionHost(
       web_contents(), std::make_unique<TestManagerProvider>(nullptr));
   AttributionHost::SetReceiverImplForTesting(conversion_host_.get());

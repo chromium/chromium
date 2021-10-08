@@ -6,9 +6,9 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/conversion_manager.h"
 #include "content/browser/attribution_reporting/conversion_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -56,7 +56,7 @@ class ConversionInternalsWebUiBrowserTest : public ContentBrowserTest {
                   EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1);
   }
 
-  void OverrideWebUIConversionManager(ConversionManager* manager) {
+  void OverrideWebUIAttributionManager(AttributionManager* manager) {
     content::WebUI* web_ui = shell()->web_contents()->GetWebUI();
 
     // Performs a safe downcast to the concrete ConversionInternalsUI subclass.
@@ -64,7 +64,7 @@ class ConversionInternalsWebUiBrowserTest : public ContentBrowserTest {
         web_ui ? web_ui->GetController()->GetAs<ConversionInternalsUI>()
                : nullptr;
     EXPECT_TRUE(conversion_internals_ui);
-    conversion_internals_ui->SetConversionManagerProviderForTesting(
+    conversion_internals_ui->SetAttributionManagerProviderForTesting(
         std::make_unique<TestManagerProvider>(manager));
   }
 
@@ -104,11 +104,11 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
                        WebUIShownWithManager_MeasurementConsideredEnabled) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
 
-  TestConversionManager manager;
-  OverrideWebUIConversionManager(&manager);
+  TestAttributionManager manager;
+  OverrideWebUIAttributionManager(&manager);
 
   // Create a mutation observer to wait for the content to render to the dom.
-  // Waiting on calls to TestConversionManager is not sufficient because the
+  // Waiting on calls to TestAttributionManager is not sufficient because the
   // results are returned in promises.
   static constexpr char wait_script[] = R"(
     let status = document.getElementById("feature-status-content");
@@ -131,11 +131,11 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
       SetBrowserClientForTesting(&disallowed_browser_client_);
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
 
-  TestConversionManager manager;
-  OverrideWebUIConversionManager(&manager);
+  TestAttributionManager manager;
+  OverrideWebUIAttributionManager(&manager);
 
   // Create a mutation observer to wait for the content to render to the dom.
-  // Waiting on calls to TestConversionManager is not sufficient because the
+  // Waiting on calls to TestAttributionManager is not sufficient because the
   // results are returned in promises.
   static constexpr char wait_script[] = R"(
     let status = document.getElementById("feature-status-content");
@@ -158,8 +158,8 @@ IN_PROC_BROWSER_TEST_F(
     WebUIShownWithNoActiveImpression_NoImpressionsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
 
-  TestConversionManager manager;
-  OverrideWebUIConversionManager(&manager);
+  TestAttributionManager manager;
+  OverrideWebUIAttributionManager(&manager);
 
   static constexpr char wait_script[] = R"(
     let table = document.querySelector("#source-table-wrapper tbody");
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   // are properly handled as `bigint` values in JS and don't run into issues
   // with `Number.MAX_SAFE_INTEGER`.
 
-  TestConversionManager manager;
+  TestAttributionManager manager;
   manager.SetActiveImpressionsForWebUI(
       {ImpressionBuilder(base::Time::Now())
            .SetData(std::numeric_limits<uint64_t>::max())
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
            .SetPriority(std::numeric_limits<int64_t>::max())
            .SetDedupKeys({13, 17})
            .Build()});
-  OverrideWebUIConversionManager(&manager);
+  OverrideWebUIAttributionManager(&manager);
 
   static constexpr char wait_script[] = R"(
     let table = document.querySelector("#source-table-wrapper tbody");
@@ -228,8 +228,8 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
                        WebUIShownWithNoReports_NoReportsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
 
-  TestConversionManager manager;
-  OverrideWebUIConversionManager(&manager);
+  TestAttributionManager manager;
+  OverrideWebUIAttributionManager(&manager);
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
   SetTitleOnReportsTableEmpty(kCompleteTitle);
@@ -241,11 +241,11 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
                        WebUIShownWithManager_DebugModeDisabled) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
 
-  TestConversionManager manager;
-  OverrideWebUIConversionManager(&manager);
+  TestAttributionManager manager;
+  OverrideWebUIAttributionManager(&manager);
 
   // Create a mutation observer to wait for the content to render to the dom.
-  // Waiting on calls to TestConversionManager is not sufficient because the
+  // Waiting on calls to TestAttributionManager is not sufficient because the
   // results are returned in promises.
   static constexpr char wait_script[] = R"(
     let status = document.getElementById("debug-mode-content");
@@ -269,11 +269,11 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
 
-  TestConversionManager manager;
-  OverrideWebUIConversionManager(&manager);
+  TestAttributionManager manager;
+  OverrideWebUIAttributionManager(&manager);
 
   // Create a mutation observer to wait for the content to render to the dom.
-  // Waiting on calls to TestConversionManager is not sufficient because the
+  // Waiting on calls to TestAttributionManager is not sufficient because the
   // results are returned in promises.
   static constexpr char wait_script[] = R"(
     let status = document.getElementById("debug-mode-content");
@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
 
   const base::Time now = base::Time::Now();
 
-  TestConversionManager manager;
+  TestAttributionManager manager;
   manager.GetSessionStorage().AddSentReport(SentReportInfo(
       AttributionReport(ImpressionBuilder(now).SetData(100).Build(),
                         /*conversion_data=*/5,
@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
                             /*report_time=*/now + base::Hours(2),
                             /*priority=*/12,
                             /*conversion_id=*/absl::nullopt)));
-  OverrideWebUIConversionManager(&manager);
+  OverrideWebUIAttributionManager(&manager);
 
   {
     static constexpr char wait_script[] = R"(
@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
 
   const base::Time now = base::Time::Now();
 
-  TestConversionManager manager;
+  TestAttributionManager manager;
   AttributionReport report(ImpressionBuilder(now).SetData(100).Build(),
                            /*conversion_data=*/0, /*conversion_time=*/now,
                            /*report_time=*/now, /*priority=*/7,
@@ -441,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   manager.GetSessionStorage().AddSentReport(
       SentReportInfo(report, SentReportInfo::Status::kSent,
                      /*http_response_code=*/200));
-  OverrideWebUIConversionManager(&manager);
+  OverrideWebUIAttributionManager(&manager);
 
   // Verify both rows get rendered.
   static constexpr char wait_script[] = R"(
@@ -471,20 +471,20 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   EXPECT_EQ(kDeleteTitle, delete_title_watcher.WaitAndGetTitle());
 }
 
-// TODO(johnidel): Use a real ConversionManager here and verify that the reports
-// are actually sent.
+// TODO(johnidel): Use a real AttributionManager here and verify that the
+// reports are actually sent.
 IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
                        WebUISendReports_ReportsRemoved) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
 
-  TestConversionManager manager;
+  TestAttributionManager manager;
   AttributionReport report(
       ImpressionBuilder(base::Time::Now()).SetData(100).Build(),
       /*conversion_data=*/0, /*conversion_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now(), /*priority=*/7,
       AttributionReport::Id(1));
   manager.SetReportsForWebUI({report});
-  OverrideWebUIConversionManager(&manager);
+  OverrideWebUIAttributionManager(&manager);
 
   static constexpr char wait_script[] = R"(
     let table = document.querySelector("#report-table-wrapper tbody");

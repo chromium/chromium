@@ -63,7 +63,7 @@ class BroadcastChannelProvider;
 class BucketContext;
 class CacheStorageControlWrapper;
 class ComputePressureManager;
-class ConversionManagerImpl;
+class AttributionManagerImpl;
 class CookieStoreManager;
 class FileSystemAccessEntryFactory;
 class FileSystemAccessManagerImpl;
@@ -222,7 +222,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   FileSystemAccessManagerImpl* GetFileSystemAccessManager();
   BucketContext* GetBucketContext();
   QuotaContext* GetQuotaContext();
-  ConversionManagerImpl* GetConversionManager();
+  AttributionManagerImpl* GetAttributionManager();
   void SetFontAccessManagerForTesting(
       std::unique_ptr<FontAccessManagerImpl> font_access_manager);
   FontAccessManagerImpl* GetFontAccessManager();
@@ -569,7 +569,7 @@ class CONTENT_EXPORT StoragePartitionImpl
       proto_database_provider_;
   scoped_refptr<ContentIndexContextImpl> content_index_context_;
   scoped_refptr<NativeIOContextImpl> native_io_context_;
-  std::unique_ptr<ConversionManagerImpl> conversion_manager_;
+  std::unique_ptr<AttributionManagerImpl> attribution_manager_;
   std::unique_ptr<FontAccessManagerImpl> font_access_manager_;
   std::unique_ptr<InterestGroupManager> interest_group_manager_;
 

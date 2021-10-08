@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_MANAGER_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_MANAGER_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_MANAGER_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_MANAGER_H_
 
 #include <vector>
 
@@ -32,22 +32,22 @@ class WebContents;
 
 // Interface that mediates data flow between the network, storage layer, and
 // blink.
-class CONTENT_EXPORT ConversionManager {
+class CONTENT_EXPORT AttributionManager {
  public:
-  // Provides access to a ConversionManager implementation. This layer of
-  // abstraction is to allow tests to mock out the ConversionManager without
+  // Provides access to a AttributionManager implementation. This layer of
+  // abstraction is to allow tests to mock out the AttributionManager without
   // injecting a manager explicitly.
   class Provider {
    public:
     virtual ~Provider() = default;
 
-    // Gets the ConversionManager that should be used for handling conversions
+    // Gets the AttributionManager that should be used for handling conversions
     // that occur in the given |web_contents|. Returns nullptr if conversion
     // measurement is not enabled in the given |web_contents|, e.g. when the
     // browser context is off the record.
-    virtual ConversionManager* GetManager(WebContents* web_contents) const = 0;
+    virtual AttributionManager* GetManager(WebContents* web_contents) const = 0;
   };
-  virtual ~ConversionManager() = default;
+  virtual ~AttributionManager() = default;
 
   // Persists the given |impression| to storage. Called when a navigation
   // originating from an impression tag finishes.
@@ -93,4 +93,4 @@ class CONTENT_EXPORT ConversionManager {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_MANAGER_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_MANAGER_H_

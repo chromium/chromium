@@ -8,7 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "content/browser/attribution_reporting/conversion_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -112,15 +112,15 @@ IN_PROC_BROWSER_TEST_F(AttributionsOriginTrialBrowserTest,
   EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
   observer.Wait();
 
-  ConversionManagerImpl* conversion_manager =
+  AttributionManagerImpl* attribution_manager =
       static_cast<StoragePartitionImpl*>(
           web_contents()->GetBrowserContext()->GetDefaultStoragePartition())
-          ->GetConversionManager();
+          ->GetAttributionManager();
 
   base::RunLoop run_loop;
 
   // Verify we have received and logged an impression for the origin trial.
-  conversion_manager->GetActiveImpressionsForWebUI(base::BindLambdaForTesting(
+  attribution_manager->GetActiveImpressionsForWebUI(base::BindLambdaForTesting(
       [&](std::vector<StorableSource> impressions) -> void {
         EXPECT_EQ(1u, impressions.size());
         run_loop.Quit();

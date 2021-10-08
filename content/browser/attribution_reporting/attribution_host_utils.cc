@@ -8,8 +8,8 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
-#include "content/browser/attribution_reporting/conversion_manager.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/url_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -27,7 +27,7 @@ VerifyResult VerifyAndStoreImpression(StorableSource::SourceType source_type,
                                       const url::Origin& impression_origin,
                                       const blink::Impression& impression,
                                       BrowserContext* browser_context,
-                                      ConversionManager& conversion_manager) {
+                                      AttributionManager& attribution_manager) {
   // Convert |impression| into a StorableImpression that can be forwarded to
   // storage. If a reporting origin was not provided, default to the conversion
   // destination for reporting.
@@ -56,7 +56,7 @@ VerifyResult VerifyAndStoreImpression(StorableSource::SourceType source_type,
 
   base::Time impression_time = base::Time::Now();
 
-  const AttributionPolicy& policy = conversion_manager.GetAttributionPolicy();
+  const AttributionPolicy& policy = attribution_manager.GetAttributionPolicy();
   StorableSource storable_impression(
       policy.GetSanitizedImpressionData(impression.impression_data),
       impression_origin, impression.conversion_destination, reporting_origin,
@@ -67,7 +67,7 @@ VerifyResult VerifyAndStoreImpression(StorableSource::SourceType source_type,
       policy.GetAttributionLogicForImpression(source_type),
       /*impression_id=*/absl::nullopt);
 
-  conversion_manager.HandleImpression(std::move(storable_impression));
+  attribution_manager.HandleImpression(std::move(storable_impression));
   return VerifyResult{.allowed = true, .stored = true};
 }
 

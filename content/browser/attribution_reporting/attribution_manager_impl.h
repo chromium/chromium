@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_MANAGER_IMPL_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_MANAGER_IMPL_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_MANAGER_IMPL_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_MANAGER_IMPL_H_
 
 #include <memory>
 #include <vector>
@@ -17,10 +17,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_session_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/conversion_manager.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -35,30 +35,31 @@ namespace content {
 // Frequency we pull ConversionReports from storage and queue them to be
 // reported.
 extern CONTENT_EXPORT const base::TimeDelta
-    kConversionManagerQueueReportsInterval;
+    kAttributionManagerQueueReportsInterval;
 
 class StoragePartitionImpl;
 
 // Provides access to the manager owned by the default StoragePartition.
-class ConversionManagerProviderImpl : public ConversionManager::Provider {
+class AttributionManagerProviderImpl : public AttributionManager::Provider {
  public:
-  ConversionManagerProviderImpl() = default;
-  ConversionManagerProviderImpl(const ConversionManagerProviderImpl& other) =
+  AttributionManagerProviderImpl() = default;
+  AttributionManagerProviderImpl(const AttributionManagerProviderImpl& other) =
       delete;
-  ConversionManagerProviderImpl& operator=(
-      const ConversionManagerProviderImpl& other) = delete;
-  ConversionManagerProviderImpl(ConversionManagerProviderImpl&& other) = delete;
-  ConversionManagerProviderImpl& operator=(
-      ConversionManagerProviderImpl&& other) = delete;
-  ~ConversionManagerProviderImpl() override = default;
+  AttributionManagerProviderImpl& operator=(
+      const AttributionManagerProviderImpl& other) = delete;
+  AttributionManagerProviderImpl(AttributionManagerProviderImpl&& other) =
+      delete;
+  AttributionManagerProviderImpl& operator=(
+      AttributionManagerProviderImpl&& other) = delete;
+  ~AttributionManagerProviderImpl() override = default;
 
-  // ConversionManagerProvider:
-  ConversionManager* GetManager(WebContents* web_contents) const override;
+  // AttributionManagerProvider:
+  AttributionManager* GetManager(WebContents* web_contents) const override;
 };
 
 // UI thread class that manages the lifetime of the underlying conversion
 // storage. Owned by the storage partition.
-class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
+class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -78,7 +79,7 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
     // Adds |reports| to a shared queue of reports that need to be sent.
     virtual void AddReportsToQueue(std::vector<AttributionReport> reports) = 0;
 
-    // Called by `ConversionManagerImpl::ClearData()` to prevent outstanding
+    // Called by `AttributionManagerImpl::ClearData()` to prevent outstanding
     // reports from being sent. This is best-effort, as a network request may
     // already have been triggered.
     virtual void RemoveAllReportsFromQueue() = 0;
@@ -88,7 +89,7 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
   // disk. This speeds up initialization to avoid timeouts in test environments.
   static void RunInMemoryForTesting();
 
-  static std::unique_ptr<ConversionManagerImpl> CreateForTesting(
+  static std::unique_ptr<AttributionManagerImpl> CreateForTesting(
       std::unique_ptr<AttributionReporter> reporter,
       std::unique_ptr<AttributionPolicy> policy,
       const base::Clock* clock,
@@ -96,17 +97,18 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       size_t max_sent_reports_to_store) WARN_UNUSED_RESULT;
 
-  ConversionManagerImpl(
+  AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
       const base::FilePath& user_data_directory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
-  ConversionManagerImpl(const ConversionManagerImpl& other) = delete;
-  ConversionManagerImpl& operator=(const ConversionManagerImpl& other) = delete;
-  ConversionManagerImpl(ConversionManagerImpl&& other) = delete;
-  ConversionManagerImpl& operator=(ConversionManagerImpl&& other) = delete;
-  ~ConversionManagerImpl() override;
+  AttributionManagerImpl(const AttributionManagerImpl& other) = delete;
+  AttributionManagerImpl& operator=(const AttributionManagerImpl& other) =
+      delete;
+  AttributionManagerImpl(AttributionManagerImpl&& other) = delete;
+  AttributionManagerImpl& operator=(AttributionManagerImpl&& other) = delete;
+  ~AttributionManagerImpl() override;
 
-  // ConversionManager:
+  // AttributionManager:
   void HandleImpression(StorableSource impression) override;
   void HandleConversion(StorableTrigger conversion) override;
   void GetActiveImpressionsForWebUI(
@@ -123,9 +125,9 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
                  base::OnceClosure done) override;
 
  private:
-  friend class ConversionManagerImplTest;
+  friend class AttributionManagerImplTest;
 
-  ConversionManagerImpl(
+  AttributionManagerImpl(
       std::unique_ptr<AttributionReporter> reporter,
       std::unique_ptr<AttributionPolicy> policy,
       const base::Clock* clock,
@@ -161,7 +163,7 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
 
   // Friend to expose the AttributionStorage for certain tests.
   friend std::vector<AttributionReport> GetConversionsToReportForTesting(
-      ConversionManagerImpl* manager,
+      AttributionManagerImpl* manager,
       base::Time max_report_time);
 
   // Whether the API is running in debug mode, meaning that there should be
@@ -196,9 +198,9 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
   // Storage policy for the browser context |this| is in. May be nullptr.
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
 
-  base::WeakPtrFactory<ConversionManagerImpl> weak_factory_;
+  base::WeakPtrFactory<AttributionManagerImpl> weak_factory_;
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_MANAGER_IMPL_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_MANAGER_IMPL_H_

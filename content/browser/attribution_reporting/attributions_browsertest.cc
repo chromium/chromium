@@ -8,7 +8,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "content/browser/attribution_reporting/conversion_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/conversion_test_utils.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -94,7 +94,7 @@ struct ExpectedReportWaiter {
 
 class AttributionsBrowserTest : public ContentBrowserTest {
  public:
-  AttributionsBrowserTest() { ConversionManagerImpl::RunInMemoryForTesting(); }
+  AttributionsBrowserTest() { AttributionManagerImpl::RunInMemoryForTesting(); }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kConversionsDebugMode);

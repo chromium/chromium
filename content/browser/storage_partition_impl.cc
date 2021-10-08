@@ -39,7 +39,7 @@
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/storage_service_impl.h"
 #include "components/variations/net/variations_http_headers.h"
-#include "content/browser/attribution_reporting/conversion_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/browser/blob_storage/blob_registry_wrapper.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
@@ -942,7 +942,7 @@ class StoragePartitionImpl::DataDeletionHelper {
       storage::FileSystemContext* filesystem_context,
       network::mojom::CookieManager* cookie_manager,
       InterestGroupManager* interest_group_manager,
-      ConversionManagerImpl* conversion_manager,
+      AttributionManagerImpl* attribution_manager,
       bool perform_storage_cleanup,
       const base::Time begin,
       const base::Time end);
@@ -1302,7 +1302,7 @@ void StoragePartitionImpl::Initialize(
   // The Conversion Measurement API is not available in Incognito mode.
   if (!is_in_memory() &&
       base::FeatureList::IsEnabled(blink::features::kConversionMeasurement)) {
-    conversion_manager_ = std::make_unique<ConversionManagerImpl>(
+    attribution_manager_ = std::make_unique<AttributionManagerImpl>(
         this, path, special_storage_policy_);
   }
 
@@ -1609,9 +1609,9 @@ StoragePartitionImpl::GetFileSystemAccessManager() {
   return file_system_access_manager_.get();
 }
 
-ConversionManagerImpl* StoragePartitionImpl::GetConversionManager() {
+AttributionManagerImpl* StoragePartitionImpl::GetAttributionManager() {
   DCHECK(initialized_);
-  return conversion_manager_.get();
+  return attribution_manager_.get();
 }
 
 FontAccessManagerImpl* StoragePartitionImpl::GetFontAccessManager() {
@@ -2119,7 +2119,7 @@ void StoragePartitionImpl::ClearDataImpl(
       std::move(cookie_deletion_filter), GetPath(), dom_storage_context_.get(),
       quota_manager_.get(), special_storage_policy_.get(),
       filesystem_context_.get(), GetCookieManagerForBrowserProcess(),
-      interest_group_manager_.get(), conversion_manager_.get(),
+      interest_group_manager_.get(), attribution_manager_.get(),
       perform_storage_cleanup, begin, end);
 }
 
@@ -2320,7 +2320,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     storage::FileSystemContext* filesystem_context,
     network::mojom::CookieManager* cookie_manager,
     InterestGroupManager* interest_group_manager,
-    ConversionManagerImpl* conversion_manager,
+    AttributionManagerImpl* attribution_manager,
     bool perform_storage_cleanup,
     const base::Time begin,
     const base::Time end) {
@@ -2426,8 +2426,8 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
 
   auto filter = CreateGenericOriginMatcher(storage_origin, origin_matcher,
                                            storage_policy_ref);
-  if (conversion_manager && (remove_mask_ & REMOVE_DATA_MASK_CONVERSIONS)) {
-    conversion_manager->ClearData(
+  if (attribution_manager && (remove_mask_ & REMOVE_DATA_MASK_CONVERSIONS)) {
+    attribution_manager->ClearData(
         begin, end, std::move(filter),
         CreateTaskCompletionClosure(TracingDataType::kConversions));
   }

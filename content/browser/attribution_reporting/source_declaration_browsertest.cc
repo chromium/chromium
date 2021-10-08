@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
-#include "content/browser/attribution_reporting/conversion_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_switches.h"
@@ -134,7 +134,7 @@ class TestAttributionHost : public AttributionHost {
 class AttributionSourceDisabledBrowserTest : public ContentBrowserTest {
  public:
   AttributionSourceDisabledBrowserTest() {
-    ConversionManagerImpl::RunInMemoryForTesting();
+    AttributionManagerImpl::RunInMemoryForTesting();
   }
 
   void SetUpOnMainThread() override {

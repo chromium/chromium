@@ -7,7 +7,7 @@
 
 #include "base/bind.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
-#include "content/browser/attribution_reporting/conversion_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -80,7 +80,7 @@ class TestAttributionHost : public AttributionHost {
 class AttributionTriggerDisabledBrowserTest : public ContentBrowserTest {
  public:
   AttributionTriggerDisabledBrowserTest() {
-    ConversionManagerImpl::RunInMemoryForTesting();
+    AttributionManagerImpl::RunInMemoryForTesting();
   }
 
   void SetUpOnMainThread() override {

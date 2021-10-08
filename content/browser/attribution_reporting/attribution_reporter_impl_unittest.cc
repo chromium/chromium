@@ -13,7 +13,7 @@
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
-#include "content/browser/attribution_reporting/conversion_manager.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/conversion_test_utils.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
 #include "content/browser/storage_partition_impl.h"

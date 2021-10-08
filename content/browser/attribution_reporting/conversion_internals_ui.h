@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/conversion_internals.mojom.h"
-#include "content/browser/attribution_reporting/conversion_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -34,8 +34,8 @@ class CONTENT_EXPORT ConversionInternalsUI : public WebUIController {
   void BindInterface(
       mojo::PendingReceiver<mojom::ConversionInternalsHandler> receiver);
 
-  void SetConversionManagerProviderForTesting(
-      std::unique_ptr<ConversionManager::Provider> manager_provider);
+  void SetAttributionManagerProviderForTesting(
+      std::unique_ptr<AttributionManager::Provider> manager_provider);
 
  private:
   std::unique_ptr<AttributionInternalsHandlerImpl> ui_handler_;

@@ -5,8 +5,8 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTERNALS_HANDLER_IMPL_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTERNALS_HANDLER_IMPL_H_
 
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/conversion_internals.mojom.h"
-#include "content/browser/attribution_reporting/conversion_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -15,7 +15,7 @@ namespace content {
 class WebUI;
 
 // Implements the mojo endpoint for the Conversion WebUI which proxies calls to
-// the ConversionManager to get information about stored conversion data. Owned
+// the AttributionManager to get information about stored conversion data. Owned
 // by ConversionInternalsUI.
 class AttributionInternalsHandlerImpl
     : public mojom::ConversionInternalsHandler {
@@ -48,12 +48,12 @@ class AttributionInternalsHandlerImpl
   void ClearStorage(mojom::ConversionInternalsHandler::ClearStorageCallback
                         callback) override;
 
-  void SetConversionManagerProviderForTesting(
-      std::unique_ptr<ConversionManager::Provider> manager_provider);
+  void SetAttributionManagerProviderForTesting(
+      std::unique_ptr<AttributionManager::Provider> manager_provider);
 
  private:
   WebUI* web_ui_;
-  std::unique_ptr<ConversionManager::Provider> manager_provider_;
+  std::unique_ptr<AttributionManager::Provider> manager_provider_;
 
   mojo::Receiver<mojom::ConversionInternalsHandler> receiver_;
 };

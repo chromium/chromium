@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-#include "content/browser/attribution_reporting/conversion_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -21,7 +21,7 @@ namespace content {
 class DevToolsConversionBrowserTest : public DevToolsProtocolTest {
  public:
   DevToolsConversionBrowserTest() {
-    ConversionManagerImpl::RunInMemoryForTesting();
+    AttributionManagerImpl::RunInMemoryForTesting();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

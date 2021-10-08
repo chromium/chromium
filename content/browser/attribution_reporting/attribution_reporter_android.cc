@@ -11,8 +11,8 @@
 #include "base/strings/strcat.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_host_utils.h"
-#include "content/browser/attribution_reporting/conversion_manager.h"
-#include "content/browser/attribution_reporting/conversion_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/renderer_host/navigation_controller_android.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/url_utils.h"
@@ -32,7 +32,7 @@ namespace content {
 
 namespace attribution_reporter_android {
 
-void ReportAppImpression(ConversionManager& conversion_manager,
+void ReportAppImpression(AttributionManager& attribution_manager,
                          BrowserContext* context,
                          const std::string& source_package_name,
                          const std::string& source_event_id,
@@ -50,7 +50,7 @@ void ReportAppImpression(ConversionManager& conversion_manager,
 
   attribution_host_utils::VerifyAndStoreImpression(
       StorableSource::SourceType::kEvent, impression_origin, *impression,
-      context, conversion_manager);
+      context, attribution_manager);
 }
 
 }  // namespace attribution_reporter_android
@@ -89,14 +89,14 @@ void JNI_AttributionReporterImpl_ReportAppImpression(
   BrowserContext* context = BrowserContextFromJavaHandle(j_browser_context);
   DCHECK(context);
 
-  ConversionManager* conversion_manager =
+  AttributionManager* attribution_manager =
       static_cast<StoragePartitionImpl*>(context->GetDefaultStoragePartition())
-          ->GetConversionManager();
-  if (!conversion_manager)
+          ->GetAttributionManager();
+  if (!attribution_manager)
     return;
 
   attribution_reporter_android::ReportAppImpression(
-      *conversion_manager, context,
+      *attribution_manager, context,
       ConvertJavaStringToUTF8(env, j_source_package_name),
       ConvertJavaStringToUTF8(env, j_source_event_id),
       ConvertJavaStringToUTF8(env, j_destination),

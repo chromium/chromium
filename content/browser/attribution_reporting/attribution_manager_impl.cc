@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/conversion_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_manager_impl.h"
 
 #include <utility>
 
@@ -44,7 +44,7 @@ enum class ConversionReportSendOutcome {
 const size_t kMaxSentReportsToStore = 100;
 
 // The shared-task runner for all conversion storage operations. Note that
-// different ConversionManagerImpl perform operations on the same task
+// different AttributionManagerImpl perform operations on the same task
 // runner. This prevents any potential races when a given context is destroyed
 // and recreated for the same backing storage. This uses
 // BLOCK_SHUTDOWN as some data deletion operations may be running when the
@@ -77,7 +77,7 @@ void RecordCreateReportStatus(
 
 // We measure this in order to be able to count reports that weren't
 // successfully deleted, which can lead to duplicate reports.
-void RecordDeleteEvent(ConversionManagerImpl::DeleteEvent event) {
+void RecordDeleteEvent(AttributionManagerImpl::DeleteEvent event) {
   base::UmaHistogramEnumeration("Conversions.DeleteSentReportOperation", event);
 }
 
@@ -102,45 +102,46 @@ ConversionReportSendOutcome ConvertToConversionReportSendOutcome(
 
 }  // namespace
 
-const constexpr base::TimeDelta kConversionManagerQueueReportsInterval =
+const constexpr base::TimeDelta kAttributionManagerQueueReportsInterval =
     base::Minutes(30);
 
-ConversionManager* ConversionManagerProviderImpl::GetManager(
+AttributionManager* AttributionManagerProviderImpl::GetManager(
     WebContents* web_contents) const {
   return static_cast<StoragePartitionImpl*>(
              web_contents->GetBrowserContext()->GetDefaultStoragePartition())
-      ->GetConversionManager();
+      ->GetAttributionManager();
 }
 
 // static
-void ConversionManagerImpl::RunInMemoryForTesting() {
+void AttributionManagerImpl::RunInMemoryForTesting() {
   AttributionStorageSql::RunInMemoryForTesting();
 }
 
 // static
-std::unique_ptr<ConversionManagerImpl> ConversionManagerImpl::CreateForTesting(
+std::unique_ptr<AttributionManagerImpl>
+AttributionManagerImpl::CreateForTesting(
     std::unique_ptr<AttributionReporter> reporter,
     std::unique_ptr<AttributionPolicy> policy,
     const base::Clock* clock,
     const base::FilePath& user_data_directory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     size_t max_sent_reports_to_store) {
-  return base::WrapUnique<ConversionManagerImpl>(new ConversionManagerImpl(
+  return base::WrapUnique<AttributionManagerImpl>(new AttributionManagerImpl(
       std::move(reporter), std::move(policy), clock, user_data_directory,
       std::move(special_storage_policy), max_sent_reports_to_store));
 }
 
-ConversionManagerImpl::ConversionManagerImpl(
+AttributionManagerImpl::AttributionManagerImpl(
     StoragePartitionImpl* storage_partition,
     const base::FilePath& user_data_directory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy)
-    : ConversionManagerImpl(
+    : AttributionManagerImpl(
           std::make_unique<AttributionReporterImpl>(
               storage_partition,
               base::DefaultClock::GetInstance(),
               // |reporter_| is owned by |this|, so `base::Unretained()` is safe
               // as the reporter and callbacks will be deleted first.
-              base::BindRepeating(&ConversionManagerImpl::OnReportSent,
+              base::BindRepeating(&AttributionManagerImpl::OnReportSent,
                                   base::Unretained(this))),
           std::make_unique<AttributionPolicy>(
               base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -150,7 +151,7 @@ ConversionManagerImpl::ConversionManagerImpl(
           std::move(special_storage_policy),
           kMaxSentReportsToStore) {}
 
-ConversionManagerImpl::ConversionManagerImpl(
+AttributionManagerImpl::AttributionManagerImpl(
     std::unique_ptr<AttributionReporter> reporter,
     std::unique_ptr<AttributionPolicy> policy,
     const base::Clock* clock,
@@ -173,18 +174,18 @@ ConversionManagerImpl::ConversionManagerImpl(
   // Once the database is loaded, get all reports that may have expired while
   // Chrome was not running and handle these specially. It is safe to post tasks
   // to the storage context as soon as it is created.
-  GetAndHandleReports(base::BindOnce(&ConversionManagerImpl::QueueReports,
+  GetAndHandleReports(base::BindOnce(&AttributionManagerImpl::QueueReports,
                                      weak_factory_.GetWeakPtr()),
-                      clock_->Now() + kConversionManagerQueueReportsInterval);
+                      clock_->Now() + kAttributionManagerQueueReportsInterval);
 
   // Start a repeating timer that will fetch reports once every
-  // |kConversionManagerQueueReportsInterval| and add them to |reporter_|.
+  // |kAttributionManagerQueueReportsInterval| and add them to |reporter_|.
   get_and_queue_reports_timer_.Start(
-      FROM_HERE, kConversionManagerQueueReportsInterval, this,
-      &ConversionManagerImpl::GetAndQueueReportsForNextInterval);
+      FROM_HERE, kAttributionManagerQueueReportsInterval, this,
+      &AttributionManagerImpl::GetAndQueueReportsForNextInterval);
 }
 
-ConversionManagerImpl::~ConversionManagerImpl() {
+AttributionManagerImpl::~AttributionManagerImpl() {
   // Browser contexts are not required to have a special storage policy.
   if (!special_storage_policy_ ||
       !special_storage_policy_->HasSessionOnlyOrigins()) {
@@ -201,17 +202,17 @@ ConversionManagerImpl::~ConversionManagerImpl() {
                 std::move(session_only_origin_predicate));
 }
 
-void ConversionManagerImpl::HandleImpression(StorableSource impression) {
+void AttributionManagerImpl::HandleImpression(StorableSource impression) {
   // Add the impression to storage.
   attribution_storage_.AsyncCall(&AttributionStorage::StoreImpression)
       .WithArgs(std::move(impression));
 }
 
-void ConversionManagerImpl::HandleConversion(StorableTrigger conversion) {
+void AttributionManagerImpl::HandleConversion(StorableTrigger conversion) {
   attribution_storage_
       .AsyncCall(&AttributionStorage::MaybeCreateAndStoreConversionReport)
       .WithArgs(std::move(conversion))
-      .Then(base::BindOnce(&ConversionManagerImpl::OnReportStored,
+      .Then(base::BindOnce(&AttributionManagerImpl::OnReportStored,
                            weak_factory_.GetWeakPtr()));
 
   // If we are running in debug mode, we should also schedule a task to
@@ -220,7 +221,7 @@ void ConversionManagerImpl::HandleConversion(StorableTrigger conversion) {
     GetAndQueueReportsForNextInterval();
 }
 
-void ConversionManagerImpl::OnReportStored(
+void AttributionManagerImpl::OnReportStored(
     AttributionStorage::CreateReportResult result) {
   RecordCreateReportStatus(result.status());
   if (!result.dropped_report().has_value())
@@ -229,7 +230,7 @@ void ConversionManagerImpl::OnReportStored(
   session_storage_.AddDroppedReport(std::move(result));
 }
 
-void ConversionManagerImpl::GetActiveImpressionsForWebUI(
+void AttributionManagerImpl::GetActiveImpressionsForWebUI(
     base::OnceCallback<void(std::vector<StorableSource>)> callback) {
   const int kMaxImpressions = 1000;
   attribution_storage_.AsyncCall(&AttributionStorage::GetActiveImpressions)
@@ -237,30 +238,30 @@ void ConversionManagerImpl::GetActiveImpressionsForWebUI(
       .Then(std::move(callback));
 }
 
-void ConversionManagerImpl::GetPendingReportsForWebUI(
+void AttributionManagerImpl::GetPendingReportsForWebUI(
     base::OnceCallback<void(std::vector<AttributionReport>)> callback,
     base::Time max_report_time) {
   const int kMaxReports = 1000;
   GetAndHandleReports(std::move(callback), max_report_time, kMaxReports);
 }
 
-const AttributionSessionStorage& ConversionManagerImpl::GetSessionStorage()
+const AttributionSessionStorage& AttributionManagerImpl::GetSessionStorage()
     const {
   return session_storage_;
 }
 
-void ConversionManagerImpl::SendReportsForWebUI(base::OnceClosure done) {
+void AttributionManagerImpl::SendReportsForWebUI(base::OnceClosure done) {
   GetAndHandleReports(
-      base::BindOnce(&ConversionManagerImpl::HandleReportsSentFromWebUI,
+      base::BindOnce(&AttributionManagerImpl::HandleReportsSentFromWebUI,
                      weak_factory_.GetWeakPtr(), std::move(done)),
       base::Time::Max());
 }
 
-const AttributionPolicy& ConversionManagerImpl::GetAttributionPolicy() const {
+const AttributionPolicy& AttributionManagerImpl::GetAttributionPolicy() const {
   return *attribution_policy_;
 }
 
-void ConversionManagerImpl::ClearData(
+void AttributionManagerImpl::ClearData(
     base::Time delete_begin,
     base::Time delete_end,
     base::RepeatingCallback<bool(const url::Origin&)> filter,
@@ -271,7 +272,7 @@ void ConversionManagerImpl::ClearData(
       .WithArgs(delete_begin, delete_end, std::move(filter))
       .Then(base::BindOnce(
           [](base::OnceClosure done,
-             base::WeakPtr<ConversionManagerImpl> manager) {
+             base::WeakPtr<AttributionManagerImpl> manager) {
             std::move(done).Run();
             if (manager)
               manager->GetAndQueueReportsForNextInterval();
@@ -279,7 +280,7 @@ void ConversionManagerImpl::ClearData(
           std::move(done), weak_factory_.GetWeakPtr()));
 }
 
-void ConversionManagerImpl::GetAndHandleReports(
+void AttributionManagerImpl::GetAndHandleReports(
     ReportsHandlerFunc handler_function,
     base::Time max_report_time,
     int limit) {
@@ -288,15 +289,15 @@ void ConversionManagerImpl::GetAndHandleReports(
       .Then(std::move(handler_function));
 }
 
-void ConversionManagerImpl::GetAndQueueReportsForNextInterval() {
+void AttributionManagerImpl::GetAndQueueReportsForNextInterval() {
   // Get all the reports that will be reported in the next interval and them to
   // the |reporter_|.
-  GetAndHandleReports(base::BindOnce(&ConversionManagerImpl::QueueReports,
+  GetAndHandleReports(base::BindOnce(&AttributionManagerImpl::QueueReports,
                                      weak_factory_.GetWeakPtr()),
-                      clock_->Now() + kConversionManagerQueueReportsInterval);
+                      clock_->Now() + kAttributionManagerQueueReportsInterval);
 }
 
-void ConversionManagerImpl::QueueReports(
+void AttributionManagerImpl::QueueReports(
     std::vector<AttributionReport> reports) {
   if (reports.empty())
     return;
@@ -315,7 +316,7 @@ void ConversionManagerImpl::QueueReports(
   reporter_->AddReportsToQueue(std::move(reports));
 }
 
-void ConversionManagerImpl::HandleReportsSentFromWebUI(
+void AttributionManagerImpl::HandleReportsSentFromWebUI(
     base::OnceClosure done,
     std::vector<AttributionReport> reports) {
   // If there's already a send-all in progress, ignore this request.
@@ -344,7 +345,7 @@ void ConversionManagerImpl::HandleReportsSentFromWebUI(
   reporter_->AddReportsToQueue(std::move(reports));
 }
 
-void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
+void AttributionManagerImpl::OnReportSent(SentReportInfo info) {
   DCHECK(info.report.conversion_id.has_value());
 
   // If there was a transient failure, and another attempt is allowed,
@@ -372,7 +373,7 @@ void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
         .AsyncCall(&AttributionStorage::UpdateReportForSendFailure)
         .WithArgs(*info.report.conversion_id, info.report.report_time)
         .Then(base::BindOnce(
-            [](base::WeakPtr<ConversionManagerImpl> manager,
+            [](base::WeakPtr<AttributionManagerImpl> manager,
                AttributionReport report, bool success) {
               if (!manager || !success)
                 return;

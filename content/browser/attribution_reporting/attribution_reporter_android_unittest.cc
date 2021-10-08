@@ -4,7 +4,7 @@
 
 #include "content/browser/attribution_reporting/attribution_reporter_android.h"
 
-#include "content/browser/attribution_reporting/conversion_manager.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/conversion_test_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/url_utils.h"
@@ -34,7 +34,7 @@ class AttributionReporterTest : public ::testing::Test {
   void TearDown() override {}
 
  protected:
-  TestConversionManager test_manager_;
+  TestAttributionManager test_manager_;
 
  private:
   url::ScopedSchemeRegistryForTests scoped_registry_;

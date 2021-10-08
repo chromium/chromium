@@ -54,9 +54,9 @@ void ConversionInternalsUI::BindInterface(
       web_ui(), std::move(receiver));
 }
 
-void ConversionInternalsUI::SetConversionManagerProviderForTesting(
-    std::unique_ptr<ConversionManager::Provider> manager_provider) {
-  ui_handler_->SetConversionManagerProviderForTesting(
+void ConversionInternalsUI::SetAttributionManagerProviderForTesting(
+    std::unique_ptr<AttributionManager::Provider> manager_provider) {
+  ui_handler_->SetAttributionManagerProviderForTesting(
       std::move(manager_provider));
 }
 

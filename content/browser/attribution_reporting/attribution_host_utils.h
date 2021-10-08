@@ -17,7 +17,7 @@ class Origin;
 namespace content {
 
 class BrowserContext;
-class ConversionManager;
+class AttributionManager;
 
 namespace attribution_host_utils {
 
@@ -37,7 +37,7 @@ VerifyResult VerifyAndStoreImpression(StorableSource::SourceType source_type,
                                       const url::Origin& impression_origin,
                                       const blink::Impression& impression,
                                       BrowserContext* browser_context,
-                                      ConversionManager& conversion_manager);
+                                      AttributionManager& attribution_manager);
 
 CONTENT_EXPORT absl::optional<blink::Impression> ParseImpressionFromApp(
     const std::string& attribution_source_event_id,

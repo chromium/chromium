@@ -13,10 +13,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_host_utils.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_page_metrics.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
-#include "content/browser/attribution_reporting/conversion_manager.h"
-#include "content/browser/attribution_reporting/conversion_manager_impl.h"
 #include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -80,13 +80,13 @@ void RecordRegisterImpressionAllowed(bool allowed) {
 
 AttributionHost::AttributionHost(WebContents* web_contents)
     : AttributionHost(web_contents,
-                      std::make_unique<ConversionManagerProviderImpl>()) {}
+                      std::make_unique<AttributionManagerProviderImpl>()) {}
 
 AttributionHost::AttributionHost(
     WebContents* web_contents,
-    std::unique_ptr<ConversionManager::Provider> conversion_manager_provider)
+    std::unique_ptr<AttributionManager::Provider> attribution_manager_provider)
     : WebContentsObserver(web_contents),
-      conversion_manager_provider_(std::move(conversion_manager_provider)),
+      attribution_manager_provider_(std::move(attribution_manager_provider)),
       receivers_(web_contents, this) {
   // TODO(csharrison): When https://crbug.com/1051334 is resolved, add a DCHECK
   // that the kConversionMeasurement feature is enabled.
@@ -100,7 +100,7 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   // Impression navigations need to navigate the primary main frame to be valid.
   if (!navigation_handle->GetImpression() ||
       !navigation_handle->IsInPrimaryMainFrame() ||
-      !conversion_manager_provider_->GetManager(web_contents())) {
+      !attribution_manager_provider_->GetManager(web_contents())) {
     return;
   }
 
@@ -162,9 +162,9 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  ConversionManager* conversion_manager =
-      conversion_manager_provider_->GetManager(web_contents());
-  if (!conversion_manager) {
+  AttributionManager* attribution_manager =
+      attribution_manager_provider_->GetManager(web_contents());
+  if (!attribution_manager) {
     DCHECK(navigation_impression_origins_.empty());
     DCHECK(!pending_attribution_);
     if (navigation_handle->GetImpression())
@@ -227,18 +227,18 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   }
 
   VerifyAndStoreImpression(StorableSource::SourceType::kNavigation,
-                           impression_origin, impression, *conversion_manager);
+                           impression_origin, impression, *attribution_manager);
 }
 
 bool AttributionHost::VerifyAndStoreImpression(
     StorableSource::SourceType source_type,
     const url::Origin& impression_origin,
     const blink::Impression& impression,
-    ConversionManager& conversion_manager) {
+    AttributionManager& attribution_manager) {
   attribution_host_utils::VerifyResult result =
       attribution_host_utils::VerifyAndStoreImpression(
           source_type, impression_origin, impression,
-          web_contents()->GetBrowserContext(), conversion_manager);
+          web_contents()->GetBrowserContext(), attribution_manager);
   RecordRegisterImpressionAllowed(result.allowed);
   return result.stored;
 }
@@ -254,9 +254,9 @@ void AttributionHost::RegisterConversion(
 
   // If there is no conversion manager available, ignore any conversion
   // registrations.
-  ConversionManager* conversion_manager =
-      conversion_manager_provider_->GetManager(web_contents());
-  if (!conversion_manager) {
+  AttributionManager* attribution_manager =
+      attribution_manager_provider_->GetManager(web_contents());
+  if (!attribution_manager) {
     RecordRegisterConversionAllowed(false);
     return;
   }
@@ -289,7 +289,7 @@ void AttributionHost::RegisterConversion(
 
   net::SchemefulSite conversion_destination(main_frame_origin);
 
-  if (!conversion_manager->GetAttributionPolicy().IsConversionDataInRange(
+  if (!attribution_manager->GetAttributionPolicy().IsConversionDataInRange(
           conversion->conversion_data,
           StorableSource::SourceType::kNavigation)) {
     devtools_instrumentation::ReportAttributionReportingIssue(
@@ -300,7 +300,7 @@ void AttributionHost::RegisterConversion(
         base::NumberToString(conversion->conversion_data));
   }
 
-  if (!conversion_manager->GetAttributionPolicy().IsConversionDataInRange(
+  if (!attribution_manager->GetAttributionPolicy().IsConversionDataInRange(
           conversion->event_source_trigger_data,
           StorableSource::SourceType::kEvent)) {
     devtools_instrumentation::ReportAttributionReportingIssue(
@@ -312,10 +312,10 @@ void AttributionHost::RegisterConversion(
   }
 
   StorableTrigger storable_conversion(
-      conversion_manager->GetAttributionPolicy().GetSanitizedConversionData(
+      attribution_manager->GetAttributionPolicy().GetSanitizedConversionData(
           conversion->conversion_data, StorableSource::SourceType::kNavigation),
       conversion_destination, conversion->reporting_origin,
-      conversion_manager->GetAttributionPolicy().GetSanitizedConversionData(
+      attribution_manager->GetAttributionPolicy().GetSanitizedConversionData(
           conversion->event_source_trigger_data,
           StorableSource::SourceType::kEvent),
       conversion->priority,
@@ -325,7 +325,7 @@ void AttributionHost::RegisterConversion(
 
   if (conversion_page_metrics_)
     conversion_page_metrics_->OnConversion(conversion->reporting_origin);
-  conversion_manager->HandleConversion(std::move(storable_conversion));
+  attribution_manager->HandleConversion(std::move(storable_conversion));
 }
 
 void AttributionHost::NotifyImpressionInitiatedByPage(
@@ -343,9 +343,9 @@ void AttributionHost::NotifyImpressionInitiatedByPage(
 void AttributionHost::RegisterImpression(const blink::Impression& impression) {
   // If there is no conversion manager available, ignore any impression
   // registrations.
-  ConversionManager* conversion_manager =
-      conversion_manager_provider_->GetManager(web_contents());
-  if (!conversion_manager)
+  AttributionManager* attribution_manager =
+      attribution_manager_provider_->GetManager(web_contents());
+  if (!attribution_manager)
     return;
 
   content::RenderFrameHost* render_frame_host =
@@ -359,7 +359,7 @@ void AttributionHost::RegisterImpression(const blink::Impression& impression) {
       render_frame_host->GetLastCommittedOrigin();
   if (VerifyAndStoreImpression(StorableSource::SourceType::kEvent,
                                impression_origin, impression,
-                               *conversion_manager)) {
+                               *attribution_manager)) {
     NotifyImpressionInitiatedByPage(impression_origin, impression);
   }
 }
@@ -367,9 +367,9 @@ void AttributionHost::RegisterImpression(const blink::Impression& impression) {
 void AttributionHost::ReportAttributionForCurrentNavigation(
     const url::Origin& impression_origin,
     const blink::Impression& impression) {
-  ConversionManager* conversion_manager =
-      conversion_manager_provider_->GetManager(web_contents());
-  if (!conversion_manager)
+  AttributionManager* attribution_manager =
+      attribution_manager_provider_->GetManager(web_contents());
+  if (!attribution_manager)
     return;
   // If a navigation is ongoing, add the attribution to that navigation.
   if (web_contents()->GetController().GetPendingEntry()) {
@@ -396,7 +396,7 @@ void AttributionHost::ReportAttributionForCurrentNavigation(
   // No navigation in progress and we've already committed the destination for
   // the conversion, so just store the impression.
   VerifyAndStoreImpression(StorableSource::SourceType::kNavigation,
-                           impression_origin, impression, *conversion_manager);
+                           impression_origin, impression, *attribution_manager);
 }
 
 // static

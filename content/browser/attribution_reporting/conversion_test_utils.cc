@@ -135,58 +135,58 @@ ConfigurableStorageDelegate::GetDeleteExpiredRateLimitsFrequency() const {
   return delete_expired_rate_limits_frequency_;
 }
 
-ConversionManager* TestManagerProvider::GetManager(
+AttributionManager* TestManagerProvider::GetManager(
     WebContents* web_contents) const {
   return manager_;
 }
 
-TestConversionManager::TestConversionManager() = default;
+TestAttributionManager::TestAttributionManager() = default;
 
-TestConversionManager::~TestConversionManager() = default;
+TestAttributionManager::~TestAttributionManager() = default;
 
-void TestConversionManager::HandleImpression(StorableSource impression) {
+void TestAttributionManager::HandleImpression(StorableSource impression) {
   num_impressions_++;
   last_impression_source_type_ = impression.source_type();
   last_impression_origin_ = impression.impression_origin();
   last_attribution_source_priority_ = impression.priority();
 }
 
-void TestConversionManager::HandleConversion(StorableTrigger conversion) {
+void TestAttributionManager::HandleConversion(StorableTrigger conversion) {
   num_conversions_++;
 
   last_conversion_destination_ = conversion.conversion_destination();
 }
 
-void TestConversionManager::GetActiveImpressionsForWebUI(
+void TestAttributionManager::GetActiveImpressionsForWebUI(
     base::OnceCallback<void(std::vector<StorableSource>)> callback) {
   std::move(callback).Run(impressions_);
 }
 
-void TestConversionManager::GetPendingReportsForWebUI(
+void TestAttributionManager::GetPendingReportsForWebUI(
     base::OnceCallback<void(std::vector<AttributionReport>)> callback,
     base::Time max_report_time) {
   std::move(callback).Run(reports_);
 }
 
-const AttributionSessionStorage& TestConversionManager::GetSessionStorage()
+const AttributionSessionStorage& TestAttributionManager::GetSessionStorage()
     const {
   return session_storage_;
 }
 
-void TestConversionManager::SendReportsForWebUI(base::OnceClosure done) {
+void TestAttributionManager::SendReportsForWebUI(base::OnceClosure done) {
   reports_.clear();
   std::move(done).Run();
 }
 
-AttributionSessionStorage& TestConversionManager::GetSessionStorage() {
+AttributionSessionStorage& TestAttributionManager::GetSessionStorage() {
   return session_storage_;
 }
 
-const AttributionPolicy& TestConversionManager::GetAttributionPolicy() const {
+const AttributionPolicy& TestAttributionManager::GetAttributionPolicy() const {
   return policy_;
 }
 
-void TestConversionManager::ClearData(
+void TestAttributionManager::ClearData(
     base::Time delete_begin,
     base::Time delete_end,
     base::RepeatingCallback<bool(const url::Origin&)> filter,
@@ -197,17 +197,17 @@ void TestConversionManager::ClearData(
   std::move(done).Run();
 }
 
-void TestConversionManager::SetActiveImpressionsForWebUI(
+void TestAttributionManager::SetActiveImpressionsForWebUI(
     std::vector<StorableSource> impressions) {
   impressions_ = std::move(impressions);
 }
 
-void TestConversionManager::SetReportsForWebUI(
+void TestAttributionManager::SetReportsForWebUI(
     std::vector<AttributionReport> reports) {
   reports_ = std::move(reports);
 }
 
-void TestConversionManager::Reset() {
+void TestAttributionManager::Reset() {
   num_impressions_ = 0u;
   num_conversions_ = 0u;
 }
@@ -531,7 +531,7 @@ std::ostream& operator<<(std::ostream& out, const SentReportInfo& info) {
 }
 
 std::vector<AttributionReport> GetConversionsToReportForTesting(
-    ConversionManagerImpl* manager,
+    AttributionManagerImpl* manager,
     base::Time max_report_time) {
   base::RunLoop run_loop;
   std::vector<AttributionReport> conversion_reports;

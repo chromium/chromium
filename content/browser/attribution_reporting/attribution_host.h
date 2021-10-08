@@ -10,7 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "content/browser/attribution_reporting/conversion_manager.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
@@ -73,9 +73,9 @@ class CONTENT_EXPORT AttributionHost
     blink::Impression impression;
   };
 
-  AttributionHost(
-      WebContents* web_contents,
-      std::unique_ptr<ConversionManager::Provider> conversion_manager_provider);
+  AttributionHost(WebContents* web_contents,
+                  std::unique_ptr<AttributionManager::Provider>
+                      attribution_manager_provider);
 
   // blink::mojom::ConversionHost:
   void RegisterConversion(blink::mojom::ConversionPtr conversion) override;
@@ -96,7 +96,7 @@ class CONTENT_EXPORT AttributionHost
   bool VerifyAndStoreImpression(StorableSource::SourceType source_type,
                                 const url::Origin& impression_origin,
                                 const blink::Impression& impression,
-                                ConversionManager& conversion_manager);
+                                AttributionManager& attribution_manager);
 
   // Map which stores the top-frame origin an impression occurred on for all
   // navigations with an associated impression, keyed by navigation ID.
@@ -113,12 +113,12 @@ class CONTENT_EXPORT AttributionHost
   using NavigationImpressionOriginMap = base::flat_map<int64_t, url::Origin>;
   NavigationImpressionOriginMap navigation_impression_origins_;
 
-  // Gives access to a ConversionManager implementation to forward impressions
+  // Gives access to a AttributionManager implementation to forward impressions
   // and conversion registrations to.
-  std::unique_ptr<ConversionManager::Provider> conversion_manager_provider_;
+  std::unique_ptr<AttributionManager::Provider> attribution_manager_provider_;
 
   // Logs metrics per top-level page load. Created for every top level
-  // navigation that commits, as long as there is a ConversionManager.
+  // navigation that commits, as long as there is a AttributionManager.
   // Excludes the initial about:blank document.
   std::unique_ptr<AttributionPageMetrics> conversion_page_metrics_;
 
