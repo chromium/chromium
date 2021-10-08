@@ -18,9 +18,9 @@
       }
 
       #icon {
+        background: var(--cros-icon-color-primary, rgba(0, 0, 0, 0.65));
         height: 20px;
         width: 20px;
-        background: var(--cros-icon-color-primary, rgba(0, 0, 0, 0.65));
       }
 
       /* Upper-left corner */
@@ -55,7 +55,8 @@
 
       /* Left middle between icon image and technology badge*/
       #roaming {
-        --iron-icon-fill-color: var(--cros-icon-color-secondary);
+        -webkit-mask: url(chrome://resources/cr_components/chromeos/network/globe_badge.svg);
+        background-color: var(--cros-icon-color-secondary);
         height: 5px;
         left: 2px;
         position: absolute;
@@ -199,9 +200,7 @@
     <iron-icon id="secure" hidden="[[!showSecure_(networkState)]]"
         icon="network8:badge-secure">
     </iron-icon>
-    <iron-icon id="roaming" hidden="[[!showRoaming_(networkState)]]"
-        src="chrome://resources/cr_components/chromeos/network/globe_badge.svg">
-    </iron-icon>
+    <div id="roaming" hidden="[[!showRoaming_(networkState)]]"></div>
   </template>
   <script src="network_icon.js"></script>
 </dom-module>
