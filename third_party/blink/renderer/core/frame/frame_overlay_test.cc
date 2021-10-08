@@ -71,8 +71,8 @@ class FrameOverlayTest : public testing::Test, public PaintTestConfigurations {
 
   WebViewImpl* GetWebView() const { return helper_.GetWebView(); }
 
-  std::unique_ptr<FrameOverlay> CreateSolidYellowOverlay() {
-    return std::make_unique<FrameOverlay>(
+  FrameOverlay* CreateSolidYellowOverlay() {
+    return MakeGarbageCollected<FrameOverlay>(
         GetWebView()->MainFrameImpl()->GetFrame(),
         std::make_unique<SolidColorOverlay>(SK_ColorYELLOW));
   }
@@ -92,7 +92,7 @@ class MockFrameOverlayCanvas : public SkCanvas {
 INSTANTIATE_PAINT_TEST_SUITE_P(FrameOverlayTest);
 
 TEST_P(FrameOverlayTest, AcceleratedCompositing) {
-  std::unique_ptr<FrameOverlay> frame_overlay = CreateSolidYellowOverlay();
+  FrameOverlay* frame_overlay = CreateSolidYellowOverlay();
   frame_overlay->UpdatePrePaint();
   EXPECT_EQ(PropertyTreeState::Root(),
             frame_overlay->DefaultPropertyTreeState());
@@ -114,7 +114,7 @@ TEST_P(FrameOverlayTest, AcceleratedCompositing) {
     EXPECT_FALSE(graphics_layer->IsHitTestable());
     EXPECT_EQ(PropertyTreeState::Root(),
               graphics_layer->GetPropertyTreeState());
-    Vector<PreCompositedLayerInfo> pre_composited_layers;
+    HeapVector<PreCompositedLayerInfo> pre_composited_layers;
     PaintController::CycleScope cycle_scope;
     graphics_layer->PaintRecursively(builder->Context(), pre_composited_layers,
                                      cycle_scope);
@@ -123,6 +123,7 @@ TEST_P(FrameOverlayTest, AcceleratedCompositing) {
         graphics_layer->GetPaintController().GetPaintArtifact().GetPaintRecord(
             PropertyTreeState::Root()));
   }
+  frame_overlay->Destroy();
 }
 
 TEST_P(FrameOverlayTest, DeviceEmulationScale) {
@@ -133,7 +134,7 @@ TEST_P(FrameOverlayTest, DeviceEmulationScale) {
   GetWebView()->MainFrameViewWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
-  std::unique_ptr<FrameOverlay> frame_overlay = CreateSolidYellowOverlay();
+  FrameOverlay* frame_overlay = CreateSolidYellowOverlay();
   frame_overlay->UpdatePrePaint();
   auto* transform = GetWebView()
                         ->MainFrameImpl()
@@ -172,12 +173,13 @@ TEST_P(FrameOverlayTest, DeviceEmulationScale) {
     auto* graphics_layer = frame_overlay->GetGraphicsLayer();
     EXPECT_FALSE(graphics_layer->IsHitTestable());
     EXPECT_EQ(state, graphics_layer->GetPropertyTreeState());
-    Vector<PreCompositedLayerInfo> pre_composited_layers;
+    HeapVector<PreCompositedLayerInfo> pre_composited_layers;
     PaintController::CycleScope cycle_scope;
     graphics_layer->PaintRecursively(context, pre_composited_layers,
                                      cycle_scope);
     check_paint_results(graphics_layer->GetPaintController());
   }
+  frame_overlay->Destroy();
 }
 
 TEST_P(FrameOverlayTest, LayerOrder) {
@@ -185,8 +187,8 @@ TEST_P(FrameOverlayTest, LayerOrder) {
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
     return;
 
-  auto frame_overlay1 = CreateSolidYellowOverlay();
-  auto frame_overlay2 = CreateSolidYellowOverlay();
+  auto* frame_overlay1 = CreateSolidYellowOverlay();
+  auto* frame_overlay2 = CreateSolidYellowOverlay();
   frame_overlay1->UpdatePrePaint();
   frame_overlay2->UpdatePrePaint();
 
@@ -202,8 +204,9 @@ TEST_P(FrameOverlayTest, LayerOrder) {
   EXPECT_EQ(parent_layer, frame_overlay2->GetGraphicsLayer()->Parent());
   EXPECT_EQ(parent_layer->Children()[2], frame_overlay2->GetGraphicsLayer());
 
-  auto extra_layer = std::make_unique<GraphicsLayer>(parent_layer->Client());
-  parent_layer->AddChild(extra_layer.get());
+  auto* extra_layer =
+      MakeGarbageCollected<GraphicsLayer>(parent_layer->Client());
+  parent_layer->AddChild(extra_layer);
 
   frame_overlay1->UpdatePrePaint();
   frame_overlay2->UpdatePrePaint();
@@ -212,6 +215,10 @@ TEST_P(FrameOverlayTest, LayerOrder) {
   EXPECT_EQ(parent_layer->Children()[2], frame_overlay1->GetGraphicsLayer());
   EXPECT_EQ(parent_layer, frame_overlay2->GetGraphicsLayer()->Parent());
   EXPECT_EQ(parent_layer->Children()[3], frame_overlay2->GetGraphicsLayer());
+
+  extra_layer->Destroy();
+  frame_overlay1->Destroy();
+  frame_overlay2->Destroy();
 }
 
 }  // namespace

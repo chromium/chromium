@@ -419,6 +419,7 @@ LocalFrame::~LocalFrame() {
   // Verify that the LocalFrameView has been cleared as part of detaching
   // the frame owner.
   DCHECK(!view_);
+  DCHECK(!frame_color_overlay_);
   if (IsAdSubframe())
     InstanceCounters::DecrementCounter(InstanceCounters::kAdSubframeCounter);
 }
@@ -443,6 +444,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(system_clipboard_);
   visitor->Trace(virtual_keyboard_overlay_changed_observers_);
   visitor->Trace(pause_handle_receivers_);
+  visitor->Trace(frame_color_overlay_);
   visitor->Trace(mojo_handler_);
   visitor->Trace(text_fragment_handler_);
   visitor->Trace(saved_scroll_offsets_);
@@ -593,7 +595,8 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   DCHECK(!IsDetached());
 
-  frame_color_overlay_.reset();
+  if (frame_color_overlay_)
+    frame_color_overlay_.Release()->Destroy();
 
   if (IsLocalRoot()) {
     performance_monitor_->Shutdown();
@@ -2403,12 +2406,13 @@ void LocalFrame::SetSubframeColorOverlay(SkColor color) {
 }
 
 void LocalFrame::SetFrameColorOverlay(SkColor color) {
-  frame_color_overlay_.reset();
+  if (frame_color_overlay_)
+    frame_color_overlay_.Release()->Destroy();
 
   if (color == Color::kTransparent)
     return;
 
-  frame_color_overlay_ = std::make_unique<FrameOverlay>(
+  frame_color_overlay_ = MakeGarbageCollected<FrameOverlay>(
       this, std::make_unique<FrameColorOverlay>(this, color));
 }
 
