@@ -308,11 +308,6 @@ export class ShimlessRmaElement extends PolymerElement {
   }
 
   /** @private */
-  fetchNextState_() {
-    return this.shimlessRmaService_.transitionNextState();
-  }
-
-  /** @private */
   fetchPrevState_() {
     return this.shimlessRmaService_.transitionPreviousState();
   }
@@ -396,10 +391,6 @@ export class ShimlessRmaElement extends PolymerElement {
     component.setAttribute('class', 'shimless-content');
     component.hidden = true;
 
-    if (!component) {
-      console.error('Failed to create ' + componentIs);
-    }
-
     shimlessBody.appendChild(component);
     return component;
   }
@@ -432,17 +423,16 @@ export class ShimlessRmaElement extends PolymerElement {
   /** @protected */
   onNextButtonClicked_() {
     const page = this.shadowRoot.querySelector(this.currentPage_.componentIs);
-    assert(page);
+    assert(page, 'Could not find page ' + this.currentPage_.componentIs);
+    assert(
+        page.onNextButtonClick,
+        'No onNextButtonClick for ' + this.currentPage_.componentIs);
+    assert(
+        typeof page.onNextButtonClick === 'function',
+        'onNextButtonClick not a function for ' +
+            this.currentPage_.componentIs);
 
-    // Acquire promise to check whether current page is ready for next page.
-    const prepPageAdvance =
-        page.onNextButtonClick || (() => Promise.resolve(undefined));
-    assert(typeof prepPageAdvance === 'function');
-
-    prepPageAdvance.call(page)
-        .then(
-            (stateResult) => !!stateResult ? Promise.resolve(stateResult) :
-                                             this.fetchNextState_())
+    page.onNextButtonClick()
         .then((stateResult) => this.processStateResult_(stateResult))
         .catch((err) => void 0);
   }

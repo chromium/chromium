@@ -7,6 +7,9 @@ import './base_page.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getShimlessRmaService} from './mojo_interface_provider.js';
+import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+
 /**
  * @fileoverview
  * 'onboarding-wp-disable-complete-page' notifies the user that manual HWWP
@@ -28,6 +31,17 @@ export class OnboardingWpDisableCompletePage extends PolymerElement {
         'disable-next-button',
         {bubbles: true, composed: true, detail: false},
         ));
+  }
+
+  constructor() {
+    super();
+    /** @private {ShimlessRmaServiceInterface} */
+    this.shimlessRmaService_ = getShimlessRmaService();
+  }
+
+  /** @return {!Promise<!StateResult>} */
+  onNextButtonClick() {
+    return this.shimlessRmaService_.confirmManualWpDisableComplete();
   }
 };
 

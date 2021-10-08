@@ -73,7 +73,7 @@ export function onboardingWaitForManualWpDisablePageTest() {
     await initializeWaitForManualWpDisablePage();
     service.triggerHardwareWriteProtectionObserver(false, 0);
     await flushTasks();
-    service.transitionNextState = () => {
+    service.writeProtectManuallyDisabled = () => {
       return resolver.promise;
     };
 

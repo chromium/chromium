@@ -52,13 +52,6 @@ void ShimlessRmaService::GetCurrentState(GetCurrentStateCallback callback) {
       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-// TODO(crbug.com/1218180): For development only. Remove when all state
-// specific functions implemented.
-void ShimlessRmaService::TransitionNextState(
-    TransitionNextStateCallback callback) {
-  TransitionNextStateGeneric(std::move(callback));
-}
-
 // TODO(gavindodd): Handle transition back from wifi connect and os update pages
 void ShimlessRmaService::TransitionPreviousState(
     TransitionPreviousStateCallback callback) {
@@ -286,6 +279,32 @@ void ShimlessRmaService::SetRsuDisableWriteProtectCode(
     return;
   }
   state_proto_.mutable_wp_disable_rsu()->set_unlock_code(code);
+  TransitionNextStateGeneric(std::move(callback));
+}
+
+void ShimlessRmaService::WriteProtectManuallyDisabled(
+    WriteProtectManuallyDisabledCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kWpDisablePhysical) {
+    LOG(ERROR) << "WriteProtectManuallyDisabled called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
+                            can_abort_, can_go_back_,
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  TransitionNextStateGeneric(std::move(callback));
+}
+
+void ShimlessRmaService::ConfirmManualWpDisableComplete(
+    ConfirmManualWpDisableCompleteCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kWpDisableComplete) {
+    LOG(ERROR) << "ConfirmManualWpDisableComplete called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
+                            can_abort_, can_go_back_,
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
   TransitionNextStateGeneric(std::move(callback));
 }
 
@@ -571,6 +590,45 @@ void ShimlessRmaService::CalibrationComplete(
     CalibrationCompleteCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kRunCalibration) {
     LOG(ERROR) << "CalibrationComplete called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
+                            can_abort_, can_go_back_,
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  TransitionNextStateGeneric(std::move(callback));
+}
+
+void ShimlessRmaService::ProvisioningComplete(
+    ProvisioningCompleteCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kProvisionDevice) {
+    LOG(ERROR) << "ProvisioningComplete called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
+                            can_abort_, can_go_back_,
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  TransitionNextStateGeneric(std::move(callback));
+}
+
+void ShimlessRmaService::FinalizationComplete(
+    FinalizationCompleteCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kFinalize) {
+    LOG(ERROR) << "FinalizationComplete called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
+                            can_abort_, can_go_back_,
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  TransitionNextStateGeneric(std::move(callback));
+}
+
+void ShimlessRmaService::WriteProtectManuallyEnabled(
+    WriteProtectManuallyEnabledCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kWpEnablePhysical) {
+    LOG(ERROR) << "WriteProtectManuallyEnabled called from incorrect state "
                << state_proto_.state_case();
     std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
                             can_abort_, can_go_back_,

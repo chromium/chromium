@@ -84,9 +84,7 @@ export class WrapupWaitForManualWpEnablePageElement extends PolymerElement {
   /** @return {!Promise<!StateResult>} */
   onNextButtonClick() {
     if (this.hwwpEnabled_) {
-      // TODO(crbug.com/1218180): Replace with a state specific function e.g.
-      // WriteProtectManuallyEnabled()
-      return this.shimlessRmaService_.transitionNextState();
+      return this.shimlessRmaService_.writeProtectManuallyEnabled();
     } else {
       return Promise.reject(
           new Error('Hardware Write Protection is not enabled.'));

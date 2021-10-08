@@ -70,9 +70,7 @@ export class WrapupFinalizePageElement extends PolymerElement {
   /** @return {!Promise<!StateResult>} */
   onNextButtonClick() {
     if (this.finalizationComplete_) {
-      // TODO(crbug.com/1218180): Replace with a state specific function e.g.
-      // FinalizationComplete()
-      return this.shimlessRmaService_.transitionNextState();
+      return this.shimlessRmaService_.finalizationComplete();
     } else {
       return Promise.reject(new Error('Finalization is not complete.'));
     }

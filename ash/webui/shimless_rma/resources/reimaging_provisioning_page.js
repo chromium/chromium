@@ -104,9 +104,7 @@ export class ReimagingProvisioningPageElement extends PolymerElement {
   /** @return {!Promise<!StateResult>} */
   onNextButtonClick() {
     if (this.step_ == ProvisioningStep.kProvisioningComplete) {
-      // TODO(crbug.com/1218180): Replace with a state specific function e.g.
-      // ProvisioningComplete()
-      return this.shimlessRmaService_.transitionNextState();
+      return this.shimlessRmaService_.provisioningComplete();
     } else {
       return Promise.reject(new Error('Provisioning is not complete.'));
     }

@@ -59,45 +59,6 @@ export function fakeShimlessRmaServiceTestSuite() {
     });
   });
 
-  test('TransitionNextStateDefaultRmaNotRequired', () => {
-    return service.transitionNextState().then((state) => {
-      assertEquals(state.state, RmaState.kUnknown);
-      assertEquals(state.error, RmadErrorCode.kRmaNotRequired);
-    });
-  });
-
-  test('TransitionNextStateConfigureNetworkOk', () => {
-    let states = [
-      {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
-      {state: RmaState.kUpdateOs, error: RmadErrorCode.kOk},
-    ];
-    service.setStates(states);
-
-    return service.transitionNextState().then((state) => {
-      assertEquals(state.state, RmaState.kUpdateOs);
-      assertEquals(state.error, RmadErrorCode.kOk);
-    });
-  });
-
-  test('TransitionNextStateConfigureNetworkTransitionFailed', () => {
-    let states = [
-      {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
-    ];
-    service.setStates(states);
-
-    return service.transitionNextState().then((state) => {
-      assertEquals(state.state, RmaState.kWelcomeScreen);
-      assertEquals(state.error, RmadErrorCode.kTransitionFailed);
-    });
-  });
-
-  test('TransitionPreviousStateDefaultRmaNotRequired', () => {
-    return service.transitionPreviousState().then((state) => {
-      assertEquals(state.state, RmaState.kUnknown);
-      assertEquals(state.error, RmadErrorCode.kRmaNotRequired);
-    });
-  });
-
   test('TransitionPreviousStateWelcomeOk', () => {
     let states = [
       {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
@@ -105,7 +66,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     ];
     service.setStates(states);
 
-    service.transitionNextState().then((state) => {
+    service.beginFinalization().then((state) => {
       assertEquals(state.state, RmaState.kUpdateOs);
       assertEquals(state.error, RmadErrorCode.kOk);
     });

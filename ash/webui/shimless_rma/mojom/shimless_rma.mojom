@@ -369,13 +369,6 @@ interface ShimlessRmaService {
   GetCurrentState()
       => (RmaState state, bool can_cancel, bool can_go_back,
           RmadErrorCode error);
-  // Attempts to progress the RMA state.
-  // Returns the next state to display and an error code.
-  // TODO(crbug.com/1218180): For development only. Remove when all state
-  // specific functions implemented.
-  TransitionNextState()
-      => (RmaState state, bool can_cancel, bool can_go_back,
-          RmadErrorCode error);
   // Attempt to roll back to the previous RMA state.
   // Returns the updated state to display and an error code.
   TransitionPreviousState()
@@ -467,6 +460,25 @@ interface ShimlessRmaService {
   SetRsuDisableWriteProtectCode(string code)
       => (RmaState state, bool can_cancel, bool can_go_back,
           RmadErrorCode error);
+
+  ///////////////////////////////////////
+  // Methods for kWaitForManualWPDisable state.
+  //
+  // Transition to next state after manual write protect disabled signal has
+  // been received.
+  WriteProtectManuallyDisabled()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
+
+  ///////////////////////////////////////
+  // Methods for kWPDisableComplete state.
+  //
+  // User acknowledges manual HWWP disable is complete and transitions to next
+  // state.
+  ConfirmManualWpDisableComplete()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
+
 
   ///////////////////////////////////////
   // Methods for kSelectComponents state.
@@ -579,6 +591,29 @@ interface ShimlessRmaService {
   // This can only be called after kCalibrationOverallComplete has been
   // observed.
   CalibrationComplete()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
+
+  ///////////////////////////////////////
+  // Methods for kProvisionDevice state
+  //
+  ProvisioningComplete()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
+
+  ///////////////////////////////////////
+  // Methods for kFinalize state
+  //
+  FinalizationComplete()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
+
+  ///////////////////////////////////////
+  // Methods for kWaitForManualWPEnable state
+  //
+  // Transition to next state after manual write protect enabled signal has been
+  // received.
+  WriteProtectManuallyEnabled()
       => (RmaState state, bool can_cancel, bool can_go_back,
           RmadErrorCode error);
 

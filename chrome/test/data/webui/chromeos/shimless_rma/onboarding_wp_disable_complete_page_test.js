@@ -5,12 +5,14 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {WrapupFinalizePageElement} from 'chrome://shimless-rma/wrapup_finalize_page.js';
+import {OnboardingWpDisableCompletePage} from 'chrome://shimless-rma/onboarding_wp_disable_complete_page.js';
+
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
-export function wrapupFinalizePageTest() {
-  /** @type {?WrapupFinalizePageElement} */
+
+export function onboardingWpDisableCompletePageTest() {
+  /** @type {?OnboardingWpDisableCompletePage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
@@ -31,58 +33,43 @@ export function wrapupFinalizePageTest() {
     service.reset();
   });
 
-  /**
-   * @return {!Promise}
-   */
-  function initializeFinalizePage() {
+  /** @return {!Promise} */
+  function initializeOnboardingWpDisableCompletePage() {
     assertFalse(!!component);
 
-    component = /** @type {!WrapupFinalizePageElement} */ (
-        document.createElement('wrapup-finalize-page'));
+    component = /** @type {!OnboardingWpDisableCompletePage} */ (
+        document.createElement('onboarding-wp-disable-complete-page'));
     assertTrue(!!component);
     document.body.appendChild(component);
 
     return flushTasks();
   }
 
-  test('FinalizePageInitializes', async () => {
-    await initializeFinalizePage();
-    const manualEnableComponent =
-        component.shadowRoot.querySelector('#finalizationMessage');
-    assertFalse(manualEnableComponent.hidden);
+  test('ComponentRenders', async () => {
+    await initializeOnboardingWpDisableCompletePage();
+    assertTrue(!!component);
+
+    const basePage = component.shadowRoot.querySelector('base-page');
+    assertTrue(!!basePage);
   });
 
-  test('FinalizationIncompleteDisablesNext', async () => {
-    await initializeFinalizePage();
-
-    let savedResult;
-    let savedError;
-    component.onNextButtonClick()
-        .then((result) => savedResult = result)
-        .catch((error) => savedError = error);
-    await flushTasks();
-
-    assertTrue(savedError instanceof Error);
-    assertEquals(savedError.message, 'Finalization is not complete.');
-    assertEquals(savedResult, undefined);
-  });
-
-  test('FinalizationCompleteEnablesNext', async () => {
+  test('OnBoardingPageOnNextCallsConfirmManualWpDisableComplete', async () => {
     const resolver = new PromiseResolver();
-    await initializeFinalizePage();
-    service.triggerFinalizationObserver(true, 'ok', 0);
-    await flushTasks();
-    service.finalizationComplete = () => {
+    await initializeOnboardingWpDisableCompletePage();
+    let callCounter = 0;
+    service.confirmManualWpDisableComplete = () => {
+      callCounter++;
       return resolver.promise;
     };
 
-    let expectedResult = {foo: 'bar'};
+    const expectedResult = {foo: 'bar'};
     let savedResult;
     component.onNextButtonClick().then((result) => savedResult = result);
     // Resolve to a distinct result to confirm it was not modified.
     resolver.resolve(expectedResult);
     await flushTasks();
 
-    assertDeepEquals(savedResult, expectedResult);
+    assertEquals(1, callCounter);
+    assertDeepEquals(expectedResult, savedResult);
   });
 }

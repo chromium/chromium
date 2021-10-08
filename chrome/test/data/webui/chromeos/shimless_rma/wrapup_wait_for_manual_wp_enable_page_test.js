@@ -73,7 +73,7 @@ export function wrapupWaitForManualWpEnablePageTest() {
     await initializeWaitForManualWpEnablePage();
     service.triggerHardwareWriteProtectionObserver(true, 0);
     await flushTasks();
-    service.transitionNextState = () => {
+    service.writeProtectManuallyEnabled = () => {
       return resolver.promise;
     };
 
