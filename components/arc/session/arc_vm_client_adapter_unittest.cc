@@ -2136,7 +2136,7 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_EnableArcNearbyShare_Default) {
   EXPECT_EQ(boot_notification_server()->connection_count(), 2);
   EXPECT_FALSE(boot_notification_server()->received_data().empty());
   EXPECT_TRUE(base::Contains(boot_notification_server()->received_data(),
-                             "ro.boot.enable_arc_nearby_share=0"));
+                             "ro.boot.enable_arc_nearby_share=1"));
 }
 
 TEST_F(ArcVmClientAdapterTest, UpgradeArc_EnableArcNearbyShare_Enabled) {
