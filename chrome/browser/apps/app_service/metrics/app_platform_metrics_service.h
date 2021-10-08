@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_PLATFORM_METRICS_SERVICE_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_APP_PLATFORM_METRICS_SERVICE_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_PLATFORM_METRICS_SERVICE_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_PLATFORM_METRICS_SERVICE_H_
 
 #include <utility>
 
 #include "base/timer/timer.h"
-#include "chrome/browser/apps/app_service/app_platform_metrics.h"
+#include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 
 class PrefRegistrySimple;
@@ -65,4 +65,4 @@ class AppPlatformMetricsService {
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_PLATFORM_METRICS_SERVICE_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_PLATFORM_METRICS_SERVICE_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_PLATFORM_METRICS_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_APP_PLATFORM_METRICS_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_PLATFORM_METRICS_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_PLATFORM_METRICS_H_
 
 #include <map>
 #include <set>
@@ -315,4 +315,4 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_PLATFORM_METRICS_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_PLATFORM_METRICS_H_
