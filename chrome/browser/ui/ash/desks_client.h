@@ -10,6 +10,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "components/desks_storage/core/desk_model.h"
 
@@ -96,6 +97,11 @@ class DesksClient : public ash::SessionObserver {
   // backend depending on the feature flag DeskTemplateSync.
   desks_storage::DeskModel* GetDeskModel();
 
+  // Sets the preconfigured desk template.
+  void SetPolicyPreconfiguredTemplate(const AccountId& account_id,
+                                      std::unique_ptr<std::string> data);
+  void RemovePolicyPreconfiguredTemplate(const AccountId& account_id);
+
  private:
   friend class DesksClientTest;
   friend class ScopedDeskClientAppLaunchHandlerSetter;
@@ -166,6 +172,9 @@ class DesksClient : public ash::SessionObserver {
 
   // Local desks storage backend.
   std::unique_ptr<desks_storage::LocalDeskDataManager> storage_manager_;
+
+  // The stored JSON values of preconfigured desk templates
+  base::flat_map<AccountId, std::string> preconfigured_desk_templates_json_;
 
   base::WeakPtrFactory<DesksClient> weak_ptr_factory_{this};
 };

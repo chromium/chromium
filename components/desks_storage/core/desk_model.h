@@ -12,6 +12,7 @@
 #include "base/guid.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/values.h"
 
 namespace ash {
 class DeskTemplate;
@@ -131,9 +132,15 @@ class DeskModel {
   void AddObserver(DeskModelObserver* observer);
   void RemoveObserver(DeskModelObserver* observer);
 
+  // Operations to update the preconfigured desk templates from policy
+  void SetPolicyDeskTemplates(const std::string& policyJson);
+
  protected:
   // The observers.
   base::ObserverList<DeskModelObserver>::Unchecked observers_;
+
+  // The preconfigured desk templates from policy (as opposed to user-defined)
+  std::vector<std::unique_ptr<ash::DeskTemplate>> policy_entries_;
 };
 
 }  // namespace desks_storage

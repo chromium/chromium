@@ -10,7 +10,6 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -29,6 +28,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
+#include "ash/wm/desks/templates/desks_templates_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_delegate.h"
@@ -700,7 +700,7 @@ void OverviewSession::OnStartingAnimationComplete(bool canceled,
 
   // Create this after the desks bar widget. This will try to update the desks
   // templates button on the desks bar views during construction.
-  if (features::AreDesksTemplatesEnabled()) {
+  if (desks_templates_util::AreDesksTemplatesEnabled()) {
     DCHECK(!desks_templates_presenter_);
     desks_templates_presenter_ =
         std::make_unique<DesksTemplatesPresenter>(this);

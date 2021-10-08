@@ -73,6 +73,34 @@ const base::GUID kTestUuid1 =
     base::GUID::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 1));
 const base::GUID kTestUuid2 =
     base::GUID::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 2));
+const base::GUID kTestUuid8 =
+    base::GUID::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 8));
+const base::GUID kTestUuid9 =
+    base::GUID::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 9));
+
+const std::string kPolicyWithTwoTemplates =
+    "[{\"version\":1,\"uuid\":\"" + base::StringPrintf(kUuidFormat, 8) +
+    "\",\"name\":\""
+    "Example Template"
+    "\",\"created_time_usec\":\"1633535632\",\"desk\":{\"apps\":[{\"window_"
+    "bound\":{\"left\":0,\"top\":1,\"height\":121,\"width\":120},\"window_"
+    "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
+    "\"url\":\"https://example.com\",\"title\":\"Example\"},{\"url\":\"https://"
+    "example.com/"
+    "2\",\"title\":\"Example2\"}],\"active_tab_index\":1,\"window_id\":0,"
+    "\"display_id\":\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}},"
+    "{\"version\":1,\"uuid\":\"" +
+    base::StringPrintf(kUuidFormat, 9) +
+    "\",\"name\":\""
+    "Example Template 2"
+    "\",\"created_time_usec\":\"1633535632\",\"desk\":{\"apps\":[{\"window_"
+    "bound\":{\"left\":0,\"top\":1,\"height\":121,\"width\":120},\"window_"
+    "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
+    "\"url\":\"https://google.com\",\"title\":\"Example "
+    "2\"},{\"url\":\"https://"
+    "gmail.com.com/"
+    "2\",\"title\":\"Example2\"}],\"active_tab_index\":1,\"window_id\":0,"
+    "\"display_id\":\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}}]";
 
 void FillExampleBrowserAppWindow(WorkspaceDeskSpecifics_App* app) {
   BrowserAppWindow* app_window =
@@ -428,6 +456,35 @@ TEST_F(DeskSyncBridgeTest, InitializationWithLocalDataAndMetadata) {
                     base::GUID::ParseCaseInsensitive(template2.uuid())))
                 .SerializeAsString(),
             template2.SerializeAsString());
+}
+
+TEST_F(DeskSyncBridgeTest, GetAllEntriesIncludesPolicyEntries) {
+  const WorkspaceDeskSpecifics template1 = CreateWorkspaceDeskSpecifics(1);
+  const WorkspaceDeskSpecifics template2 = CreateWorkspaceDeskSpecifics(2);
+
+  ModelTypeState state = StateWithEncryption("test_encryption_key");
+  WriteToStoreWithMetadata({template1, template2}, state);
+  EXPECT_CALL(*processor(), ModelReadyToSync(MetadataBatchContains(
+                                HasEncryptionKeyName("test_encryption_key"),
+                                /*entities=*/_)));
+
+  InitializeBridge();
+
+  bridge()->SetPolicyDeskTemplates(kPolicyWithTwoTemplates);
+
+  EXPECT_EQ(4ul, bridge()->GetAllEntryUuids().size());
+
+  base::RunLoop loop;
+  bridge()->GetAllEntries(
+      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
+                                     std::vector<ash::DeskTemplate*> entries) {
+        EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
+        EXPECT_EQ(entries.size(), 4ul);
+        loop.Quit();
+      }));
+  loop.Run();
+
+  bridge()->SetPolicyDeskTemplates("");
 }
 
 TEST_F(DeskSyncBridgeTest, AddEntriesLocally) {

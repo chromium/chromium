@@ -85,6 +85,11 @@ void DesksClient::OnActiveUserSessionChanged(const AccountId& account_id) {
     storage_manager_ = std::make_unique<desks_storage::LocalDeskDataManager>(
         active_profile_->GetPath());
   }
+
+  auto policy_desk_templates_it =
+      preconfigured_desk_templates_json_.find(account_id);
+  if (policy_desk_templates_it != preconfigured_desk_templates_json_.end())
+    GetDeskModel()->SetPolicyDeskTemplates(policy_desk_templates_it->second);
 }
 
 void DesksClient::CaptureActiveDeskAndSaveTemplate(
@@ -338,4 +343,29 @@ void DesksClient::OnGetAllTemplates(
       std::string(status != desks_storage::DeskModel::GetAllEntriesStatus::kOk
                       ? kStorageError
                       : ""));
+}
+
+// Sets the preconfigured desk template.  Data contains the contents of the JSON
+// file with the template information
+void DesksClient::SetPolicyPreconfiguredTemplate(
+    const AccountId& account_id,
+    std::unique_ptr<std::string> data) {
+  Profile* profile =
+      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  if (!data || !IsSupportedProfile(profile))
+    return;
+
+  std::string& in_map_data = preconfigured_desk_templates_json_[account_id];
+  if (in_map_data == *data)
+    return;
+
+  in_map_data = *data;
+
+  if (profile && profile == active_profile_)
+    GetDeskModel()->SetPolicyDeskTemplates(*data);
+}
+
+void DesksClient::RemovePolicyPreconfiguredTemplate(
+    const AccountId& account_id) {
+  preconfigured_desk_templates_json_.erase(account_id);
 }

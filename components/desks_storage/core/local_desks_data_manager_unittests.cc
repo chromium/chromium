@@ -51,6 +51,17 @@ const std::string kTestUuid9 = base::StringPrintf(kUuidFormat, 9);
 const base::Time kTestTime1 = base::Time();
 const std::string kTestFileName1 =
     base::StringPrintf(kTemplateFileNameFormat, kTestUuid1.c_str());
+const std::string kPolicyWithOneTemplate =
+    "[{\"version\":1,\"uuid\":\"" + kTestUuid9 +
+    "\",\"name\":\""
+    "Example Template"
+    "\",\"created_time_usec\":\"1633535632\",\"desk\":{\"apps\":[{\"window_"
+    "bound\":{\"left\":0,\"top\":1,\"height\":121,\"width\":120},\"window_"
+    "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
+    "\"url\":\"https://example.com\",\"title\":\"Example\"},{\"url\":\"https://"
+    "example.com/"
+    "2\",\"title\":\"Example2\"}],\"active_tab_index\":1,\"window_id\":0,"
+    "\"display_id\":\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}}]";
 
 // Search |entry_list| for |entry_query| as a uuid and returns true if
 // found, false if not.
@@ -249,6 +260,38 @@ TEST_F(LocalDeskDataManagerTest, CanGetAllEntries) {
         loop.Quit();
       }));
   loop.Run();
+}
+
+TEST_F(LocalDeskDataManagerTest, GetAllEntriesIncludesPolicyValues) {
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
+
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_two_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
+
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_three_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
+
+  data_manager_->SetPolicyDeskTemplates(kPolicyWithOneTemplate);
+
+  base::RunLoop loop;
+  data_manager_->GetAllEntries(
+      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
+                                     std::vector<ash::DeskTemplate*> entries) {
+        EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
+        EXPECT_EQ(entries.size(), 4ul);
+        EXPECT_TRUE(FindUuidInUuidList(kTestUuid1, entries));
+        EXPECT_TRUE(FindUuidInUuidList(kTestUuid2, entries));
+        EXPECT_TRUE(FindUuidInUuidList(kTestUuid3, entries));
+        EXPECT_TRUE(FindUuidInUuidList(kTestUuid9, entries));
+
+        // Sanity check for the search function.
+        EXPECT_FALSE(FindUuidInUuidList(kTestUuid4, entries));
+        loop.Quit();
+      }));
+  loop.Run();
+
+  data_manager_->SetPolicyDeskTemplates("");
 }
 
 TEST_F(LocalDeskDataManagerTest, CanMarkDuplicateEntryNames) {

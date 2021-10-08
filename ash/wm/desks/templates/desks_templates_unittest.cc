@@ -5,7 +5,9 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/desks/desks_bar_view.h"
@@ -23,6 +25,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -150,6 +153,8 @@ class DesksTemplatesTest : public OverviewTestBase {
 
     // This will call `AshTestBase::SetUp()`.
     SetUpInternal(std::make_unique<CustomTestShellDelegate>(desk_model_.get()));
+    Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
+        prefs::kDeskTemplatesEnabled, true);
   }
 
  private:

@@ -339,6 +339,9 @@ void LocalDeskDataManager::GetAllEntriesTask(
     return;
   }
 
+  for (const auto& it : policy_entries_)
+    entries_ptr->push_back(it.get());
+
   for (auto& it : templates_) {
     DCHECK_EQ(it.first, it.second->uuid());
     entries_ptr->push_back(it.second.get());

@@ -21,6 +21,7 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/window_info.h"
 #include "components/desks_storage/core/desk_model_observer.h"
+#include "components/desks_storage/core/desk_template_conversion.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/sync/model/entity_change.h"
@@ -53,24 +54,14 @@ using syncer::ModelTypeStore;
 // The maximum number of templates the local storage can hold.
 constexpr std::size_t kMaxTemplateCount = 6u;
 
-// Converts a time field from sync protobufs to a time object.
-base::Time ProtoTimeToTime(int64_t proto_t) {
-  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(proto_t));
-}
-
-// Converts a time object to the format used in sync protobufs
-// (Microseconds since the Windows epoch).
-int64_t TimeToProtoTime(const base::Time& t) {
-  return t.ToDeltaSinceWindowsEpoch().InMicroseconds();
-}
-
 // Allocate a EntityData and copies |specifics| into it.
 std::unique_ptr<syncer::EntityData> CopyToEntityData(
     const sync_pb::WorkspaceDeskSpecifics& specifics) {
   auto entity_data = std::make_unique<syncer::EntityData>();
   *entity_data->specifics.mutable_workspace_desk() = specifics;
   entity_data->name = specifics.uuid();
-  entity_data->creation_time = ProtoTimeToTime(specifics.created_time_usec());
+  entity_data->creation_time =
+      desk_template_conversion::ProtoTimeToTime(specifics.created_time_usec());
   return entity_data;
 }
 
@@ -499,7 +490,8 @@ std::unique_ptr<DeskTemplate> DeskSyncBridge::FromSyncProto(
   if (uuid.empty() || !base::GUID::ParseCaseInsensitive(uuid).is_valid())
     return nullptr;
 
-  const base::Time created_time = ProtoTimeToTime(pb_entry.created_time_usec());
+  const base::Time created_time =
+      desk_template_conversion::ProtoTimeToTime(pb_entry.created_time_usec());
 
   // Protobuf parsing enforces UTF-8 encoding for all strings.
   std::unique_ptr<DeskTemplate> desk_template =
@@ -635,6 +627,9 @@ void DeskSyncBridge::GetAllEntries(GetAllEntriesCallback callback) {
     std::move(callback).Run(GetAllEntriesStatus::kFailure, std::move(entries));
     return;
   }
+
+  for (const auto& it : policy_entries_)
+    entries.push_back(it.get());
 
   for (const auto& it : entries_) {
     DCHECK_EQ(it.first, it.second->uuid());
@@ -772,6 +767,10 @@ std::size_t DeskSyncBridge::GetMaxEntryCount() const {
 
 std::vector<base::GUID> DeskSyncBridge::GetAllEntryUuids() const {
   std::vector<base::GUID> keys;
+
+  for (const auto& it : policy_entries_)
+    keys.push_back(it.get()->uuid());
+
   for (const auto& it : entries_) {
     DCHECK_EQ(it.first, it.second->uuid());
     keys.emplace_back(it.first);
@@ -801,7 +800,7 @@ sync_pb::WorkspaceDeskSpecifics DeskSyncBridge::ToSyncProto(
   pb_entry.set_uuid(desk_template->uuid().AsLowercaseString());
   pb_entry.set_name(base::UTF16ToUTF8(desk_template->template_name()));
   pb_entry.set_created_time_usec(
-      TimeToProtoTime(desk_template->created_time()));
+      desk_template_conversion::TimeToProtoTime(desk_template->created_time()));
 
   if (desk_template->desk_restore_data()) {
     FillWorkspaceDeskSpecifics(&pb_entry, cache,
