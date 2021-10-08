@@ -86,13 +86,15 @@ SuggestionsServiceClient::SuggestionsServiceClient() {
       .LoadTextSuggester(
           text_suggester_.BindNewPipeAndPassReceiver(), std::move(spec),
           base::BindOnce(
-              [](bool* text_suggester_loaded_,
+              [](base::WeakPtr<SuggestionsServiceClient> weak_this,
                  chromeos::machine_learning::mojom::LoadModelResult result) {
-                *text_suggester_loaded_ =
-                    result ==
-                    chromeos::machine_learning::mojom::LoadModelResult::OK;
+                if (weak_this) {
+                  weak_this->text_suggester_loaded_ =
+                      result ==
+                      chromeos::machine_learning::mojom::LoadModelResult::OK;
+                }
               },
-              &text_suggester_loaded_));
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
 SuggestionsServiceClient::~SuggestionsServiceClient() = default;

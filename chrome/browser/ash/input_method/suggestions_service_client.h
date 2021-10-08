@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
@@ -42,6 +43,8 @@ class SuggestionsServiceClient : public AsyncSuggestionsSource {
   mojo::Remote<chromeos::machine_learning::mojom::TextSuggester>
       text_suggester_;
   bool text_suggester_loaded_ = false;
+
+  base::WeakPtrFactory<SuggestionsServiceClient> weak_ptr_factory_{this};
 };
 
 }  // namespace input_method
