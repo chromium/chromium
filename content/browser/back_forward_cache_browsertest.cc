@@ -7593,8 +7593,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 }
 
 // Disabled for being flaky. See crbug.com/1116190.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       DISABLED_SubframeWithNoStoreCached) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SubframeWithNoStoreCached) {
   // iframe will try to load title1.html.
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/title1.html");
