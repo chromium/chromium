@@ -9,7 +9,6 @@
     "ios_build_chrome=false",
     "ios_enable_code_signing=false",
     "ios_set_attributes_for_xcode_project_generation=false",
-    "ios_use_goma_rbe=true",
     "is_component_build=false",
     "is_debug=true",
     "symbol_level=1",
