@@ -831,6 +831,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("transferDragAndDrop").FilesSwa(),
         TestCase("transferDragAndHover"),
         TestCase("transferDragAndHover").FilesSwa(),
+        TestCase("transferDropBrowserFile"),
+        TestCase("transferDropBrowserFile").FilesSwa(),
         TestCase("transferFromDownloadsToDownloads"),
         TestCase("transferFromDownloadsToDownloads").FilesSwa(),
         TestCase("transferDeletedFile"),

@@ -1678,3 +1678,20 @@ export async function testZipTaskError(callback) {
     callback(true);
   }
 }
+
+/**
+ * Test writeFile() with file dragged from browser.
+ */
+export async function testWriteFile(done) {
+  const fileSystem = createTestFileSystem('testVolume', {
+    '/testdir': DIRECTORY_SIZE,
+  });
+  volumeManager = new FakeVolumeManager();
+  fileOperationManager = new FileOperationManagerImpl();
+  const file = new File(['content'], 'browserfile', {type: 'text/plain'});
+  await fileOperationManager.writeFile(
+      file, /** @type {!DirectoryEntry} */ (fileSystem.entries['/testdir']));
+  const writtenEntry = fileSystem.entries['/testdir/browserfile'];
+  assertEquals('content', await writtenEntry.content.text());
+  done();
+}

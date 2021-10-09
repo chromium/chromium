@@ -448,6 +448,11 @@ export class FileTransferController {
    * @return {!FileTransferController.PastePlan}
    */
   preparePaste(clipboardData, opt_destinationEntry, opt_effect) {
+    const destinationEntry = assert(
+        opt_destinationEntry ||
+        /** @type {DirectoryEntry} */
+        (this.directoryModel_.getCurrentDirEntry()));
+
     // When FilesApp does drag and drop to itself, it uses fs/sources to
     // populate sourceURLs, and it will resolve sourceEntries later using
     // webkitResolveLocalFileSystemURL().
@@ -458,20 +463,29 @@ export class FileTransferController {
     // When FilesApp is the paste target for other apps such as crostini,
     // the file URL is either not provided, or it is not compatible. We use
     // DataTransferItem.webkitGetAsEntry() to get the entry now.
-    const sourceEntries = sourceURLs.length === 0 ?
-        Array.prototype.filter.call(clipboardData.items, i => i.kind === 'file')
-            .map(i => i.webkitGetAsEntry()) :
-        [];
+    const sourceEntries = [];
+    if (sourceURLs.length === 0) {
+      for (let i = 0; i < clipboardData.items.length; i++) {
+        if (clipboardData.items[i].kind === 'file') {
+          const item = clipboardData.items[i];
+          const entry = item.webkitGetAsEntry();
+          if (entry !== null) {
+            sourceEntries.push(entry);
+          } else {
+            // A File which does not resolve for webkitGetAsEntry() must be an
+            // image drag drop from the browser. Write it to destination dir.
+            this.fileOperationManager_.writeFile(
+                assert(item.getAsFile()), destinationEntry);
+          }
+        }
+      }
+    }
 
     // effectAllowed set in copy/paste handlers stay uninitialized. DnD handlers
     // work fine.
     const effectAllowed = clipboardData.effectAllowed !== 'uninitialized' ?
         clipboardData.effectAllowed :
         clipboardData.getData('fs/effectallowed');
-    const destinationEntry = assert(
-        opt_destinationEntry ||
-        /** @type {DirectoryEntry} */
-        (this.directoryModel_.getCurrentDirEntry()));
     const toMove = util.isDropEffectAllowed(effectAllowed, 'move') &&
         (!util.isDropEffectAllowed(effectAllowed, 'copy') ||
          opt_effect === 'move');

@@ -965,6 +965,40 @@ test.util.async.fakeDragLeaveOrDrop =
     };
 
 /**
+ * Sends a drop event to simulate dropping a file originating in the browser to
+ * a target.
+ *
+ * @param {Window} contentWindow Window to be tested.
+ * @param {string} fileName File name.
+ * @param {string} fileContent File content.
+ * @param {string} fileMimeType File mime type.
+ * @param {string} targetQuery Query to specify the target element.
+ * @param {function(boolean)} callback Function called with result
+ *    true on success, or false on failure.
+ */
+test.util.async.fakeDropBrowserFile =
+    (contentWindow, fileName, fileContent, fileMimeType, targetQuery,
+     callback) => {
+      const target = contentWindow.document.querySelector(targetQuery);
+
+      if (!target) {
+        setTimeout(() => callback(false));
+        return;
+      }
+
+      const file = new File([fileContent], fileName, {type: fileMimeType});
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      // The value for the callback is true if the event has been handled, i.e.
+      // event has been received and preventDefault() called.
+      callback(target.dispatchEvent(new DragEvent('drop', {
+        bubbles: true,
+        composed: true,
+        dataTransfer: dataTransfer,
+      })));
+    };
+
+/**
  * Sends a resize event to the content window.
  *
  * @param {Window} contentWindow Window to be tested.
