@@ -274,7 +274,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3087734570205094154">Bas</translation>
 <translation id="3090989381251959936">Basculer la fonctionnalité <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Déplacer le curseur</translation>
-<translation id="3098580329624789136">Obtenir la <ph name="INTENT" /> de « <ph name="QUERY" /> »</translation>
 <translation id="3100274880412651815">Fermer le mode de capture</translation>
 <translation id="3105917916468784889">Faire une capture d'écran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4477892968187500306">Cet appareil pourrait contenir des applications qui n'ont pas été vérifiées par Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Appareils dissociés</translation>
-<translation id="4485060137115666462">Si vous effectuez un clic droit ou maintenez un doigt sur l'écran, l'Assistant vous présente de l'information, comme la définition, la traduction ou la conversion d'unités, relative à votre sélection.</translation>
 <translation id="4505050298327493054">Bureau actif.</translation>
 <translation id="4513946894732546136">Commentaires</translation>
 <translation id="4518404433291145981">Pour déverrouiller votre Chromebook, déverrouillez d'abord votre téléphone</translation>
@@ -668,7 +666,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5947494881799873997">Rétablir</translation>
 <translation id="595202126637698455">Suivi des performances activé</translation>
 <translation id="5958529069007801266">Utilis. supervisé</translation>
-<translation id="5960825221082587934">L'Assistant peut vous présenter de l'information, comme la définition, la traduction ou la conversion d'unités, relative à votre sélection.</translation>
 <translation id="5977415296283489383">Casque d'écoute</translation>
 <translation id="5978382165065462689">Partage du contrôle de votre écran au moyen de l’assistance à distance.</translation>
 <translation id="5980301590375426705">Fermer sess. invité</translation>
@@ -702,7 +699,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6179832488876878285">Vous pouvez épingler vos fichiers importants ici. Ouvrez l'application Fichiers pour commencer.</translation>
 <translation id="622484624075952240">Bas</translation>
 <translation id="6231419273573514727">Les performances du périphérique peuvent être limitées</translation>
-<translation id="6236290670123303279">Gérer les paramètres</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Verrouillée à l'horizontale</translation>
 <translation id="6259254695169772643">Utilisez votre stylet pour effectuer une sélection</translation>
@@ -1020,7 +1016,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="8683506306463609433">Suivi des performances activé</translation>
 <translation id="8703634754197148428">Commencer l'enregistrement. Une fois que l'enregistrement a commencé, servez-vous des touches Alt+Majuscule+L pour naviguer jusqu'à l'étagère et trouver le bouton d'arrêt de l'enregistrement</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilisez les touches de flèche vers la droite ou vers la gauche pour gérer cette fonctionnalité.</translation>
-<translation id="8712637175834984815">OK</translation>
 <translation id="8721053961083920564">Activer/Désactiver le volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Capturer l'écran au complet</translation>
 <translation id="8734991477317290293">Il essaie peut-être de récupérer les touches que vous avez utilisées</translation>
@@ -1048,7 +1043,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="8876661425082386199">Vérifiez votre connexion</translation>
 <translation id="8877788021141246043">Créer un rappel</translation>
 <translation id="8878886163241303700">Extension de l'écran</translation>
-<translation id="8883473964424809116">Cliquez pour ouvrir les paramètres de l'Assistant Google.</translation>
 <translation id="8884537526797090108">Impossible d'enregistrer du contenu confidentiel</translation>
 <translation id="890616557918890486">Changer de source</translation>
 <translation id="8909138438987180327">Pile chargée à <ph name="PERCENTAGE" /> %.</translation>

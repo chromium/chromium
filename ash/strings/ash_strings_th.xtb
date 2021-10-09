@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">ด้านล่าง</translation>
 <translation id="3090989381251959936">เปิด/ปิด <ph name="FEATURE_NAME" /> <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">เลื่อนเคอร์เซอร์</translation>
-<translation id="3098580329624789136">ดู<ph name="INTENT" />สำหรับ "<ph name="QUERY" />"</translation>
 <translation id="3100274880412651815">ปิดโหมดจับภาพ</translation>
 <translation id="3105917916468784889">จับภาพหน้าจอ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (บลูทูธ)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">อุปกรณ์นี้อาจมีแอปที่ยังไม่ได้รับการยืนยันจาก Google</translation>
 <translation id="4479639480957787382">อีเทอร์เน็ต</translation>
 <translation id="4481530544597605423">อุปกรณ์ที่ไม่ได้จับคู่</translation>
-<translation id="4485060137115666462">เมื่อคลิกขวาหรือกดค้าง Assistant จะแสดงข้อมูล เช่น คำจำกัดความ คำแปล หรือการแปลงหน่วยของรายการที่คุณเลือก</translation>
 <translation id="4505050298327493054">เดสก์ที่ใช้งานอยู่</translation>
 <translation id="4513946894732546136">ข้อเสนอแนะ</translation>
 <translation id="4518404433291145981">ก่อนอื่นให้ปลดล็อกโทรศัพท์เพื่อปลดล็อก Chromebook</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">ย้อนกลับ</translation>
 <translation id="595202126637698455">เปิดใช้งานการติดตามการปฏิบัติงานแล้ว</translation>
 <translation id="5958529069007801266">ผู้ใช้ภายใต้การควบคุมดูแล</translation>
-<translation id="5960825221082587934">ให้ Assistant แสดงข้อมูล เช่น คำจำกัดความ คำแปล หรือการแปลงหน่วยของสิ่งที่คุณเลือก</translation>
 <translation id="5977415296283489383">ชุดหูฟัง</translation>
 <translation id="5978382165065462689">กำลังแชร์การควบคุมหน้าจอผ่านความช่วยเหลือระยะไกล</translation>
 <translation id="5980301590375426705">ออกเซสชันผู้มาเยือน</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">คุณตรึงไฟล์สำคัญๆ ไว้ที่นี่ได้ เปิดแอป Files เพื่อเริ่มต้นใช้งาน</translation>
 <translation id="622484624075952240">ลง</translation>
 <translation id="6231419273573514727">อุปกรณ์ต่อพ่วงอาจมีประสิทธิภาพจำกัด</translation>
-<translation id="6236290670123303279">จัดการการตั้งค่า</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">ล็อกไว้ที่แนวนอนแล้ว</translation>
 <translation id="6259254695169772643">ใช้สไตลัสเพื่อเลือก</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">ใช้งานการติดตามประสิทธิภาพอยู่</translation>
 <translation id="8703634754197148428">เริ่มบันทึก เมื่อการบันทึกเริ่มต้น ให้ใช้ Alt + Shift + L เพื่อไปที่แถบและหาปุ่มหยุดบันทึก</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ใช้แป้นลูกศรซ้ายหรือขวาเพื่อจัดการฟีเจอร์นี้</translation>
-<translation id="8712637175834984815">สำเร็จ</translation>
 <translation id="8721053961083920564">สลับเปิด/ปิดระดับเสียง <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">จับภาพแบบเต็มหน้าจอ</translation>
 <translation id="8734991477317290293">แป้นพิมพ์นี้อาจพยายามขโมยการกดแป้นพิมพ์ของคุณ</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">ตรวจสอบการเชื่อมต่อของคุณ</translation>
 <translation id="8877788021141246043">ตั้งการช่วยเตือน</translation>
 <translation id="8878886163241303700">กำลังขยายหน้าจอ</translation>
-<translation id="8883473964424809116">คลิกเพื่อเปิดการตั้งค่า Google Assistant</translation>
 <translation id="8884537526797090108">บันทึกเนื้อหาที่เป็นความลับไม่ได้</translation>
 <translation id="890616557918890486">เปลี่ยนแหล่งที่มา</translation>
 <translation id="8909138438987180327">แบตเตอรี่เหลือ <ph name="PERCENTAGE" /> เปอร์เซ็นต์</translation>

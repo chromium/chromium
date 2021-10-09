@@ -361,7 +361,6 @@
 <translation id="1383876407941801731">Axtar</translation>
 <translation id="1384849755549338773">Başqa dillərdə olan vebsaytlar üçün Google Tərcüməni təklif edin</translation>
 <translation id="138784436342154190">Defolt başlanğıc səhifə bərpa edilsin?</translation>
-<translation id="1388047369870196878">CloudReady 2.0 sistemini quraşdırın</translation>
 <translation id="1388253969141979417">Mikrofonunuzdan istifadə etməyə icazə verilib</translation>
 <translation id="1388728792929436380">Güncəlləmələr tamamlanan kimi <ph name="DEVICE_TYPE" /> cihazı yenidən başladılacaq.</translation>
 <translation id="139013308650923562">Cihazınızda quraşdırılmış şriftləri istifadə etmək icazəsi verilir</translation>
@@ -1962,7 +1961,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> sizdən bugün Wi-Fi'a qoşulmanızı və güncəlləməni endirmənizi tələb edir. Ya da limitli bağlantı vasitəsilə endirin (ödəniş tutula bilər).}other{<ph name="MANAGER" /> son tarixdən öncə Wi-Fi'a qoşulmanızı və güncəlləməni endirmənizi tələb edir. Ya da limitli bağlantı vasitəsilə endirin (ödəniş tutula bilər).}}</translation>
 <translation id="3009300415590184725">Mobil data xidmətinin quraşdırma prosesini ləğv etmək istəyirsiniz?</translation>
 <translation id="3009779501245596802">İndeksli verilənlər bazası</translation>
-<translation id="3009984992511490972">Bu cihazı CloudReady 2.0 cihazına çevirin.</translation>
 <translation id="3010279545267083280">Parol silindi</translation>
 <translation id="3011384993885886186">Sarımtıl boz</translation>
 <translation id="3011488081941333749"><ph name="DOMAIN" /> kukiləri çıxışda təmizlənəcək</translation>
@@ -2390,7 +2388,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3476303763173086583">İstifadə və diaqnostika datasını göndərin. Google'a diaqnostika, cihaz və tətbiq istifadə datasını avtomatik göndərməklə övladınızın Android təcrübəsini təkmilləşdirin. Bu, övladınızı müəyyən etmək üçün istifadə edilməyəcək, eyni zamanda, sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Ümumi data, həmçinin, Google tətbiqləri və Android developerləri kimi partnyorlara kömək edəcək. Bu <ph name="BEGIN_LINK1" />ayar<ph name="END_LINK1" /> sahibi tərəfindən tətbiq edilir. Sahibi bu cihaz üçün diaqnostika və istifadə datasını Google'a göndərməyi seçə bilər. Övladınız üçün əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, həmin data Google hesabında yadda saxlana bilər. <ph name="BEGIN_LINK2" />Ətraflı Məlumat<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Ups! Sistem cihaz siyasətini əldə edə bilmədi.</translation>
 <translation id="347785443197175480"><ph name="HOST" /> hostuna kameranıza və mikrofonunuza giriş verirsiniz</translation>
-<translation id="3478813605045578676">Qeydiyyata alınma yalnız quraşdırıldıqdan sonra dəstəklənir. Bu cihazı idarə etmək üçün əvvəlcə CloudReady quraşdırın.</translation>
 <translation id="3479552764303398839">İndi yox</translation>
 <translation id="3479685872808224578">Çap serverini aşkar etmək mümkün olmadı. Ünvanı yoxlayın və yenidən cəhd edin.</translation>
 <translation id="3480612136143976912">Canlı Altyazı üçün altyazı ölçüsünü və üslubunu fərdiləşdirin. Bəzi tətbiqlər və saytlar da bu ayarı istifadə edəcək.</translation>
@@ -2593,7 +2590,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3694027410380121301">Öncəki Tabı Seçin</translation>
 <translation id="369489984217678710">Parollar və digər giriş datası</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Güvənlik yoxlanışları tamamlanıb. Datanız yüklənəcək.}=1{Güvənlik yoxlanışları tamamlanıb. Faylınız yüklənəcək.}other{Güvənlik yoxlanışları tamamlanıb. Fayllarınız yüklənəcək.}}</translation>
-<translation id="3696576298374669274">Cihaz girişlərini göstərin</translation>
 <translation id="3699624789011381381">E-poçt ünvanı</translation>
 <translation id="3699920817649120894">Sinxronizasiya və fərdiləşdirmə deaktiv edilsin?</translation>
 <translation id="3700888195348409686">Təqdim olunur (<ph name="PAGE_ORIGIN" />)</translation>
@@ -3058,7 +3054,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> e-poçtuna aid bəzi ayarlar Sizinlə paylaşılıb. Çoxsaylı hesab girişindən istifadə etdikdə bu ayarlar hesabınıza təsir edir.</translation>
 <translation id="4169535189173047238">İcazə verməyin</translation>
 <translation id="4170314459383239649">Çıxarkən silin</translation>
-<translation id="4171570447245353961">CloudReady 2.0, datanızı daha etibarlı şəkildə saxlaya biləcək aktiv TPM aşkar etdi.</translation>
 <translation id="4175137578744761569">Açıq-bənövşəyi və ağ</translation>
 <translation id="4175737294868205930">Davamlı saxlama yeri</translation>
 <translation id="4176463684765177261">Deaktiv edildi</translation>
@@ -4179,7 +4174,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5431318178759467895">Rəng</translation>
 <translation id="543338862236136125">Parolu redaktə edin</translation>
 <translation id="5434065355175441495">PKCS #1 RSA Şifrələmə</translation>
-<translation id="5434473680236142631">CloudReady 2.0 sisteminə xoş gəlmisiniz</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> üçün həmişə məkanınıza giriş icazəsi verin</translation>
 <translation id="5436492226391861498">Proksi tunel gözlənilir...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> axtarın:</translation>
@@ -4753,7 +4747,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6057312498756061228">Bu fayl Güvənlik yoxlanışı üçün çox böyükdür. 50 MB-a qədər faylları aça bilərsiniz.</translation>
 <translation id="6057381398996433816">Bu saytın hərəkət və zəif sensorlardan istifadə etməsi blok edilib.</translation>
 <translation id="6059276912018042191">Son Chrome tabları</translation>
-<translation id="6059347142391822629">Bələdçini bağlamaq üçün fokus Tamamlandı düyməsinin üzərində olduqda keçiriciyə basın.</translation>
 <translation id="6059652578941944813">Sertifikat İyerarxiyası</translation>
 <translation id="6061882183774845124">Linki cihazlara göndərin</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Qeyd:<ph name="END_BOLD" /> Oxşar səs və ya səsyazısı <ph name="SUPERVISED_USER_NAME" /> adlı şəxsin fərdi nəticələrinə daxil ola bilər. Batareyaya qənaət etmək üçün <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçinin Assistentinin ayarlarında "Ok Google" seçiminin yalnız bu cihaz enerji mənbəyinə qoşulu olduqda yanılı olmasını seçə bilərsiniz.</translation>
@@ -5040,6 +5033,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6359706544163531585">İşıqlı temanı deaktiv edin</translation>
 <translation id="6361850914223837199">Xəta detalları:</translation>
 <translation id="6362853299801475928">Problemi xəbər verin...</translation>
+<translation id="6363786367719063276">Baxış jurnalı</translation>
 <translation id="6363990818884053551">Sinxronizasiyaya başlamaq üçün kimliyinizi doğrulayın</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Ailə və dostlarınızı əlavə edin</translation>
@@ -5232,8 +5226,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6569911211938664415">Parollar Google Hesabınızda (<ph name="ACCOUNT" />) yadda saxlanılıb. Onları istənilən cihazda istifadə edə bilərsiniz.</translation>
 <translation id="6573497332121198392">Qısayolu silmək olmur</translation>
 <translation id="657402800789773160">Bu Səhifəni Yenidən yükləyin</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />Ən yaxşı təcrübə üçün CloudReady 2.0 sistemini daxili diskinizdə quraşdırın. Daha sonra giriş ekranından da quraşdıra bilərsiniz.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Quraşdırmağa hazır deyilsinizsə, sınamaq üçün USB'dən işə sala bilərsiniz. Bununla mövcud ƏS və məlumatlarınız saxlanılacaq, lakin saxlama və performans məhdudiyyətləri tətbiq edilə bilər.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">Endirmə ləğv edildi: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Şəbəkə vəziyyətinə baxış</translation>
 <translation id="6579369886355986318">Bütün &amp;nizamlayıcıları göstərin</translation>
@@ -6054,9 +6046,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# açıq tab, tab sətrini dəyişmək üçün basın}other{# açıq tab, tab sətrini dəyişmək üçün basın}}</translation>
 <translation id="7465635034594602553">Xəta baş verdi. Bir neçə dəqiqə gözləyib <ph name="APP_NAME" /> tətbiqini yenidən işə salın.</translation>
 <translation id="7465778193084373987">Netscape Sertifikat Ləğvetmə URL</translation>
-<translation id="746811648436543102"><ph name="BEGIN_PARAGRAPH1" />Qeydiyyatdan keçmədən əvvəl, CloudReady 2.0 cihazın sahibi ola bilməsi üçün TPM'i silməlisiniz.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />TPM cihazını tamamilə deaktiv edə bilərsiniz. Datanız hələ də proqram şifrələməsi ilə etibarlı şəkildə saxlanacaq, ancaq avadanlıq dəstəkli sertifikatlar kimi müəyyən güvənlik funksiyaları deaktiv ediləcək.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Sistemi yenidən başladaraq və BIOS/UEFI ayarlarına daxil olaraq TPM ayarlarınızı dəyişə bilərsiniz. Adımlar cihaz modelinə görə dəyişir. Digər məlumatlar üçün yenidən başlatmazdan əvvəl ayrı bir cihazda CloudReady 2.0 sənədlərini açın: [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="746861123368584540">Artırma yüklənib</translation>
 <translation id="7470424110735398630">Mübadilə buferinizə baxmaq icazəsi verilib</translation>
 <translation id="747114903913869239">Xəta: Artırmanı deşifrələmək mümkün deyil</translation>
@@ -6340,7 +6329,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</translation>
 <translation id="7750228210027921155">Şəkil içində şəkil</translation>
 <translation id="7751260505918304024">Hamısını göstərin</translation>
-<translation id="7751855202867682241">ƏS-ni saxlayın və USB'dən CloudReady 2.0 sistemini işə salın.</translation>
 <translation id="7753735457098489144">Yaddaşda kifayət qədər yer olmadığına görə quraşdırılmadı. Yer boşaltmaq üçün cihazın yaddaşındakı faylları silin.</translation>
 <translation id="7754347746598978109">Javascript'dən istifadə etməyə icazə verilmir</translation>
 <translation id="7754704193130578113">Endirmədən öncə faylın saxlanacağı yeri soruşun</translation>
@@ -7394,7 +7382,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8846132060409673887">Bu kompüterin istehsalçı və modelini oxuyun</translation>
 <translation id="8846163936679269230">eSIM profillərini sıfırlayın</translation>
-<translation id="8846746259444262774">Quraşdırma alınmadı</translation>
 <translation id="8847523528195140327">Qapaq bağlandıqda hesabdan çıxsın</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Gizli</translation>

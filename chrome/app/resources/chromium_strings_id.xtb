@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">Chromium memerlukan akses penyimpanan untuk mendownload file</translation>
 <translation id="2572494885440352020">Pembantu Chromium</translation>
 <translation id="2577788541081224677">Untuk mengakses aktivitas Chromium di semua perangkat, login agar Anda dapat mengaktifkan sinkronisasi.</translation>
-<translation id="2580426763510374355">Instal Chromium OS</translation>
 <translation id="2583187216237139145">Data Chromium yang dibuat selama penggunaan profil ini (seperti pembuatan bookmark, histori, sandi, dan setelan lain) dapat dihapus oleh administrator profil kerja. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS harus dimulai ulang untuk menerapkan pembaruan.</translation>
 <translation id="2648074677641340862">Terjadi kesalahan pada sistem operasi saat pemasangan berlangsung. Download Chromium lagi.</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">Buang dari Chromium...</translation>
 <translation id="2885378588091291677">Pengelola Tugas</translation>
 <translation id="2910007522516064972">Tentang &amp;Chromium</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Pengingat terakhir: penginstalan <ph name="BEGIN_BOLD" />akan menghapus seluruh data di hard drive<ph name="END_BOLD" />. Pastikan Anda telah mencadangkan semua data penting.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Penginstalan tidak dapat dibatalkan setelah dimulai.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium sudah diperbarui</translation>
 <translation id="2983934633046890458">Chromium mencoba mengedit sandi.</translation>
 <translation id="3032706164202344641">Chromium tidak dapat memeriksa sandi Anda. Coba lagi nanti.</translation>
@@ -79,7 +76,6 @@
 <translation id="3350761136195634146">Profil Chromium dengan akun ini sudah ada</translation>
 <translation id="3406848076815591792">Beralih ke profil Chromium yang sudah ada?</translation>
 <translation id="3430503420100763906">Dengan profil Chromium, Anda dapat memisahkan semua aktivitas Chromium Anda. Buat profil untuk teman dan keluarga, atau pisahkan antara aktivitas kerja dan hiburan.</translation>
-<translation id="3433271666494956603">Penginstalan Chromium OS sedang berlangsung</translation>
 <translation id="347328004046849135">Chromium akan memberi tahu Anda saat Anda login dengan sandi yang telah dibobol</translation>
 <translation id="3474745554856756813">Tindakan ini akan menghapus <ph name="ITEMS_COUNT" /> item dari perangkat. Untuk mengambil data nanti, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> dapat membuat berpindah-pindah profil Chromium</translation>
@@ -107,7 +103,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" /> mewajibkan Anda membaca dan menyetujui Persyaratan Layanan berikut sebelum menggunakan perangkat ini. Persyaratan ini tidak memperluas, mengubah, atau membatasi Persyaratan Chromium OS.</translation>
 <translation id="4271805377592243930">Dapatkan bantuan Chromium</translation>
 <translation id="4285930937574705105">Pemasangan gagal karena kesalahan yang tidak diketahui. Jika Chromium sedang berjalan, tutup, lalu ulang kembali.</translation>
-<translation id="429583012151745428">Penginstalan sedang berlangsung. Jangan matikan perangkat. Penginstalan seharusnya tidak lebih dari dua puluh menit. Perangkat akan otomatis dimatikan setelah penginstalan.</translation>
 <translation id="4407044323746248786">Tetap keluar dari Chromium?</translation>
 <translation id="4415566066719264597">Jalankan Chromium di Background</translation>
 <translation id="4423735387467980091">Menyesuaikan dan mengontrol Chromium</translation>
@@ -201,7 +196,6 @@ Sebagian fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda at
 <translation id="6734291798041940871">Chromium sudah terpasang untuk semua pengguna di komputer Anda.</translation>
 <translation id="673636774878526923">Untuk mengakses aktivitas Chromium di semua perangkat, login lalu aktifkan sinkronisasi.</translation>
 <translation id="6774082503108938489">Orang tuamu telah menonaktifkan "Izin untuk situs, aplikasi, dan ekstensi" untuk Chromium. Tindakan mengaktifkan <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak diizinkan.</translation>
-<translation id="6827182711503025204">Menginstal Chromium OS akan menimpa semua data di perangkat.</translation>
 <translation id="6847869444787758381">Chromium akan memberi tahu jika sandi Anda disusupi</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (disalin ke Chromium)</translation>

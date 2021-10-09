@@ -360,7 +360,6 @@
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1384849755549338773">Diğer dillerdeki web siteleri için Google Çeviri'yi teklif et</translation>
 <translation id="138784436342154190">Varsayılan başlangıç sayfası geri yüklensin mi?</translation>
-<translation id="1388047369870196878">CloudReady 2.0'ı Yükle</translation>
 <translation id="1388253969141979417">Mikrofonunuzu kullanmasına izin verilen siteler</translation>
 <translation id="1388728792929436380">Güncellemeler tamamlandığında <ph name="DEVICE_TYPE" /> yeniden başlatılacak.</translation>
 <translation id="139013308650923562">Cihazınızda yüklü yazı tiplerini kullanmasına izin verilen siteler</translation>
@@ -1953,7 +1952,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" />, güncelleme indirmek için bugün kablosuz ağa bağlanmanızı zorunlu tutuyor. İsterseniz sayaçlı bir bağlantı üzerinden indirebilirsiniz (bunun için ödeme alınabilir).}other{<ph name="MANAGER" />, kablosuz ağa bağlanıp son tarihten önce güncelleme indirmenizi zorunlu tutuyor. İsterseniz sayaçlı bir bağlantı üzerinden indirebilirsiniz (bunun için ödeme alınabilir).}}</translation>
 <translation id="3009300415590184725">Mobil veri hizmeti kurulum işlemini iptal etmek istediğinizden emin misiniz?</translation>
 <translation id="3009779501245596802">Dizine alınmış veritabanları</translation>
-<translation id="3009984992511490972">Bu cihazı CloudReady 2.0 cihazına dönüştürün.</translation>
 <translation id="3010279545267083280">Şifre silindi</translation>
 <translation id="3011384993885886186">Sıcak gri</translation>
 <translation id="3011488081941333749"><ph name="DOMAIN" /> alanından gelen çerezler çıkışta silinecek</translation>
@@ -2378,7 +2376,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3476303763173086583">Kullanım ve teşhis verilerini gönder. Teşhis, cihaz ve uygulama kullanımı verilerini otomatik olarak Google'a göndererek çocuğunuzun Android deneyiminin iyileştirilmesine yardımcı olun. Bu veriler, çocuğunuzun kimliğini tespit etmek için kullanılmaz; sistem ve uygulama kararlılığı ile diğer özellikleri iyileştirmeye yardımcı olur. Bazı birleştirilmiş veriler, Google uygulamalarına ve iş ortaklarına da (ör. Android geliştiricileri) yardımcı olur. Bu <ph name="BEGIN_LINK1" />ayar<ph name="END_LINK1" />, cihazın sahibi tarafından zorunlu kılınmıştır. Cihazın sahibi bu cihazın teşhis ve kullanım verilerini Google'a göndermeyi seçebilir. Çocuğunuz için ek Web ve Uygulama Etkinliği açıksa bu veriler çocuğunuzun Google hesabına kaydedilebilir. <ph name="BEGIN_LINK2" />Daha Fazla Bilgi<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Hay aksi! Sistem, cihazınıza ait politikayı getiremedi.</translation>
 <translation id="347785443197175480"><ph name="HOST" /> sitesinin kamerama ve mikrofonuma erişmesine izin vermeye devam et</translation>
-<translation id="3478813605045578676">Kayıt, yalnızca yüklemeden sonra desteklenir. Bu cihazı yönetmek için önce CloudReady'yi yükleyin.</translation>
 <translation id="3479552764303398839">Şimdi değil</translation>
 <translation id="3479685872808224578">Yazdırma sunucusu algılanamadı. Lütfen adresi kontrol edip tekrar deneyin.</translation>
 <translation id="3480612136143976912">Canlı Altyazı'nın altyazı boyutunu ve stilini özelleştirin. Bazı uygulama ve siteler de bu ayarı kullanır.</translation>
@@ -2580,7 +2577,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3694027410380121301">Önceki Sekmeyi Seç</translation>
 <translation id="369489984217678710">Şifreler ve diğer oturum açma verileri</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Güvenlik kontrolleri tamamlandı. Verileriniz yüklenecek.}=1{Güvenlik kontrolleri tamamlandı. Dosyanız yüklenecek.}other{Güvenlik kontrolleri tamamlandı. Dosyalarınız yüklenecek.}}</translation>
-<translation id="3696576298374669274">Hizmet günlüklerini göster</translation>
 <translation id="3699624789011381381">E-posta adresi</translation>
 <translation id="3699920817649120894">Senkronizasyon ve kişiselleştirme kapatılsın mı?</translation>
 <translation id="3700888195348409686">(<ph name="PAGE_ORIGIN" />) gösteriliyor</translation>
@@ -4158,7 +4154,6 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5431318178759467895">Renk</translation>
 <translation id="543338862236136125">Şifreyi düzenle</translation>
 <translation id="5434065355175441495">PKCS #1 RSA Şifrelemesi</translation>
-<translation id="5434473680236142631">CloudReady 2.0'a hoş geldiniz</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> sitesinin konumuma erişmesine her zaman izin ver</translation>
 <translation id="5436492226391861498">Proxy tüneli bekleniyor...</translation>
 <translation id="5436510242972373446">Ara <ph name="SITE_NAME" />:</translation>
@@ -4731,7 +4726,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6057312498756061228">Bu dosya güvenlik kontrolü için çok büyük. 50 MB'a kadar olan dosyaları açabilirsiniz.</translation>
 <translation id="6057381398996433816">Bu sitenin hareket ve ışık sensörlerini kullanması engellendi.</translation>
 <translation id="6059276912018042191">Son Chrome sekmeleri</translation>
-<translation id="6059347142391822629">Kılavuzu kapatmak için Bitti düğmesi vurgulandığında anahtarınıza basın.</translation>
 <translation id="6059652578941944813">Sertifika Hiyerarşisi</translation>
 <translation id="6061882183774845124">Bağlantıyı cihazlarınıza gönderin</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Not:<ph name="END_BOLD" /> Benzer bir sese veya ses kayıtlarına sahip olan kişiler de <ph name="SUPERVISED_USER_NAME" /> kullanıcısının kişisel sonuçlarına erişebilir. Pilden tasarruf etmek için <ph name="SUPERVISED_USER_NAME" /> kullanıcısının Asistan ayarlarından "Ok Google" ifadesinin yalnızca bu cihaz güç kaynağına bağlıyken açık olmasını seçebilirsiniz.</translation>
@@ -5017,6 +5011,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6359706544163531585">Açık temayı devre dışı bırak</translation>
 <translation id="6361850914223837199">Hata ayrıntıları:</translation>
 <translation id="6362853299801475928">&amp;Sorun bildir...</translation>
+<translation id="6363786367719063276">Günlükleri göster</translation>
 <translation id="6363990818884053551">Senkronizasyonu başlatmak için kimliğinizi doğrulayın</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Aile üyelerini ve arkadaşları ekleyin</translation>
@@ -5209,8 +5204,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6569911211938664415">Şifreler Google Hesabınıza (<ph name="ACCOUNT" />) kaydedildiğinden bunları herhangi bir cihazda kullanabilirsiniz</translation>
 <translation id="6573497332121198392">Kısayol kaldırılamıyor</translation>
 <translation id="657402800789773160">Bu &amp;Sayfayı Tekrar Yükle</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />En iyi deneyim için CloudReady 2.0'ı dahili diskinize yükleyin. Daha sonra giriş ekranından da yükleyebilirsiniz.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Yüklemeye hazır değilseniz önce denemek için USB'den çalıştırabilirsiniz. Bu şekilde mevcut işletim sisteminiz ve verileriniz kaldırılmaz ancak depolama alanı ve performansla ilgili bazı sınırlar görebilirsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">İndirme işlemi iptal edildi: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Ağ Durumunun Anlık Görüntüsü</translation>
 <translation id="6579369886355986318">Tüm &amp;kontrolleri göster</translation>
@@ -6306,7 +6299,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation>
 <translation id="7750228210027921155">Pencere içinde pencere</translation>
 <translation id="7751260505918304024">Tümünü göster</translation>
-<translation id="7751855202867682241">CloudReady 2.0'ı, işletim sisteminizi kaldırmadan USB'den çalıştırın.</translation>
 <translation id="7753735457098489144">Depolama alanı yetersiz olduğu için yüklenemedi. Yer açmak için cihaz depolama alanından dosya silin.</translation>
 <translation id="7754347746598978109">JavaScript kullanmasına izin verilmeyen siteler</translation>
 <translation id="7754704193130578113">İndirmeden önce her dosyanın nereye kaydedileceğini sor</translation>
@@ -7353,7 +7345,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8846132060409673887">Bu bilgisayarın üreticisini ve modelini okuma</translation>
 <translation id="8846163936679269230">eSIM profillerini sıfırlayın</translation>
-<translation id="8846746259444262774">Yükleme başarısız oldu</translation>
 <translation id="8847523528195140327">Kapak kapatıldığında oturumu kapat</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Gizli</translation>

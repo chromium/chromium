@@ -84,8 +84,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2926676257163822632">As palavras-passe fracas são fáceis de adivinhar. Permita que o Chrome <ph name="BEGIN_LINK" />crie e memorize palavra-passes fortes<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">O Chrome necessita da autorização da câmara para este site</translation>
 <translation id="2929907241665500097">O Chrome não foi atualizado. Ocorreu um erro. <ph name="BEGIN_LINK" />Corrija problemas de atualização do Chrome e falhas nas atualizações<ph name="END_LINK" />.</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Só mais um lembrete: a instalação <ph name="BEGIN_BOLD" />apaga todo o seu disco rígido<ph name="END_BOLD" />. Certifique-se de que tem uma cópia de segurança dos dados importantes.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Não pode cancelar a instalação depois de a iniciar.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Início de sessão na rede – Chrome</translation>
 <translation id="3037838751736561277">O Google Chrome está no modo em segundo plano.</translation>
 <translation id="3059710691562604940">A Navegação segura está desativada. O Chrome recomenda que a ative.</translation>
@@ -133,7 +131,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="4251615635259297716">Associar os seus dados do Chrome a esta conta?</translation>
 <translation id="4281844954008187215">Termos de Utilização</translation>
 <translation id="4293420128516039005">Inicie sessão para sincronizar e personalizar o Chrome em todos os dispositivos.</translation>
-<translation id="429583012151745428">A instalação está em curso. Não desligue o dispositivo. A instalação não deve demorar mais de vinte minutos. O computador será automaticamente encerrado após a instalação.</translation>
 <translation id="4325083532956419387">Versão do Chrome OS</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -175,7 +172,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="5386244825306882791">Também controla a página apresentada quando inicia o Chrome ou pesquisa a partir da Caixa geral.</translation>
 <translation id="5394833366792865639">Partilhe um separador do Chrome</translation>
 <translation id="5430073640787465221">O ficheiro de preferências está danificado ou não é válido. O Google Chrome não consegue recuperar as suas definições.</translation>
-<translation id="5486618155264784386">Instalar o Chrome OS</translation>
 <translation id="556024056938947818">O Google Chrome está a tentar mostrar palavras-passe.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Se não encontrar uma definição nesta página, procure nas <ph name="LINK_BEGIN" />
@@ -230,7 +226,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="7155997830309522122">Em caso afirmativo, edite a sua palavra-passe guardada no Chrome para que corresponda à nova palavra-passe.</translation>
 <translation id="7161904924553537242">Bem-vindo ao Google Chrome</translation>
 <translation id="7242029209006116544">Está a iniciar sessão com uma conta gerida e a permitir que o gestor controle o seu perfil do Google Chrome. Os seus dados do Chrome, como aplicações, marcadores, histórico, palavras-passe e outras definições, ficarão associados definitivamente a <ph name="USER_NAME" />. Poderá eliminar estes dados através do Painel de Controlo das Contas Google, mas não poderá associá-los a outra conta. Opcionalmente, pode criar um perfil novo para manter os seus dados atuais do Chrome em separado. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Instalação do Chrome OS em curso</translation>
 <translation id="7295052994004373688">Este idioma é utilizado para apresentar a IU do Google Chrome</translation>
 <translation id="7296210096911315575">Informações de utilização e segurança importantes</translation>
 <translation id="7308322188646931570">O Chrome necessita de acesso ao armazenamento para transferir ficheiros.</translation>

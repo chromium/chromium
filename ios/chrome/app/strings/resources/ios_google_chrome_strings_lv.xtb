@@ -3,6 +3,7 @@
 <translationbundle lang="lv">
 <translation id="1096883626080133124">Vairāk iespēju vienkāršajā un drošajā pārlūkā Google Chrome, kas tagad ir vēl ātrāks</translation>
 <translation id="1282031177488366470">Palīdzēt uzlabot Chrome funkcijas un veiktspēju</translation>
+<translation id="1354592789402432496">Administrators pieprasa pierakstīšanos ar organizācijas kontu. Konti, kuru lietošanu administrators ir aizliedzis, ir paslēpti.</translation>
 <translation id="1479202195792305274">Pārlūkprogrammā Chrome var pārbaudīt jūsu paroles, ja esat pierakstījies savā Google kontā.</translation>
 <translation id="1493827051843127077">Lai visās ierīcēs sinhronizētu savas cilnes, paroles un maksājumu informāciju, iestatiet pārlūku Chrome kā noklusējuma pārlūku</translation>
 <translation id="1504372625950710826">Pārlūkā Chrome nevarēja pārbaudīt atjauninājumu pieejamību. Pārbaudiet interneta savienojumu.</translation>
@@ -45,6 +46,7 @@
 <translation id="3988789688219830639">Google Chrome nevar piekļūt jūsu fotoattēliem vai videoklipiem. Iespējojiet piekļuvi: iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="4099578267706723511">Uzlabojiet pārlūku Chrome, uzņēmumam Google sūtot lietojuma statistiku un avāriju pārskatus.</translation>
 <translation id="417201473131094001">Netiek atbalstīta pārlūkā Chrome Canary.</translation>
+<translation id="4214277427269650960">Pierakstieties šajā vietnē un pārlūkā Chrome. Sinhronizāciju varat ieslēgt vēlāk.</translation>
 <translation id="424864128008805179">Vai izrakstīties no pārlūka Chrome?</translation>
 <translation id="4249068189593983585">Chrome padoms. Lai iegūtu vairāk ciļņu iespēju, rīkjoslā, kas atrodas ekrāna apakšdaļā vai augšdaļā, pieskarieties pogai Rādīt cilnes un turiet to.</translation>
 <translation id="4523886039239821078">Daži papildinājumi var izraisīt pārlūka Chrome avarēšanu. Lūdzu, atinstalējiet šos papildinājumus:</translation>
@@ -59,6 +61,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Pārlūkā Chrome nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="5716154293141027663">Tiks atvērts pārlūks Chrome ikreiz, kad pieskarsieties saitēm citās lietotnēs.</translation>
+<translation id="572883588166315317">Saskaņā ar jūsu organizācijas prasībām, lai izmantotu pārlūku Chrome, jums ir jāpierakstās. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="5854621639439811139">Chrome padoms. Tagad ekrāna apakšdaļā ir dažas pogas, piemēram, Atpakaļ, Pārsūtīt un Meklēt.</translation>
 <translation id="5876773482963502140">Ja atļaujat pārlūkam Chrome piekļūt jūsu atrašanās vietas informācijai, pārlūkā Chrome šī informācija tiek nosūtīta uz visām vietnēm, kurām piešķirat atļauju. Vietnēs var tikt lūgta atļauja piekļūt atrašanās vietas informācijai, lai rādītu jums vietēju informāciju, piemēram, vietējās ziņas vai informāciju par tuvumā esošiem veikaliem.</translation>
 <translation id="6054613632208573261">Chrome izmantošana pēc noklusējuma</translation>

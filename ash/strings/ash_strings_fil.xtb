@@ -277,7 +277,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3087734570205094154">Sa ilalim</translation>
 <translation id="3090989381251959936">I-toggle ang <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Ilipat ang cursor</translation>
-<translation id="3098580329624789136">Kunin ang <ph name="INTENT" /> para sa "<ph name="QUERY" />"</translation>
 <translation id="3100274880412651815">I-dismiss ang capture mode</translation>
 <translation id="3105917916468784889">Kunin screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -480,7 +479,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4477892968187500306">Posibleng naglalaman ang device na ito ng mga app na hindi pa nave-verify ng Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Mga hindi nakapares na device</translation>
-<translation id="4485060137115666462">Sa pamamagitan ng pag-right click o matagal na pagpindot, magpapakita ang Assistant ng impormasyon tulad ng kahulugan, pagsasalin, o conversion ng unit para sa iyong napili.</translation>
 <translation id="4505050298327493054">Aktibong desk.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4518404433291145981">Para i-unlock ang iyong Chromebook, i-unlock muna ang telepono mo</translation>
@@ -674,7 +672,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5947494881799873997">I-revert</translation>
 <translation id="595202126637698455">Naka-enable ang pagte-trace sa pagganap</translation>
 <translation id="5958529069007801266">Pinangangasiwaang user</translation>
-<translation id="5960825221082587934">Payagan ang Assistant na magpakita ng impormasyon tulad ng kahulugan, pagsasalin, o conversion ng unit para sa iyong pinili.</translation>
 <translation id="5977415296283489383">Headphone</translation>
 <translation id="5978382165065462689">Pagbabahagi ng kontrol sa iyong screen sa pamamagitan ng Remote Assistance.</translation>
 <translation id="5980301590375426705">Lumabas</translation>
@@ -708,7 +705,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6179832488876878285">Puwede mong i-pin ang iyong mahahalagang file dito. Buksan ang app na Mga File para magsimula.</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">Posibleng maging limitado ang performance ng peripheral</translation>
-<translation id="6236290670123303279">Pamahalaan ang Mga Setting</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Naka-lock sa horizontal</translation>
 <translation id="6259254695169772643">Gamitin ang iyong stylus para pumili</translation>
@@ -1027,7 +1023,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8683506306463609433">Aktibo ang pag-trace ng performance</translation>
 <translation id="8703634754197148428">Simulang mag-record. Kapag nagsimula na ang pag-record, gamitin ang Alt + Shift + L para mag-navigate papunta sa shelf at makita ang button na ihinto ang pag-record</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gamitin ang mga Kaliwa o Pakanang arrow key para pamahalaan ang feature na ito.</translation>
-<translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8721053961083920564">I-toggle ang Volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Full screen capture</translation>
 <translation id="8734991477317290293">Maaaring sinusubukan nitong nakawin ang iyong mga keystroke</translation>
@@ -1055,7 +1050,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8876661425082386199">Suriin ang iyong koneksyon</translation>
 <translation id="8877788021141246043">Magtakda ng paalala</translation>
 <translation id="8878886163241303700">Pinapalawak ang screen</translation>
-<translation id="8883473964424809116">I-click para buksan ang mga setting ng Google Assistant.</translation>
 <translation id="8884537526797090108">Hindi puwedeng mag-record ng kumpidensyal na content</translation>
 <translation id="890616557918890486">Baguhin ang source</translation>
 <translation id="8909138438987180327">Nasa <ph name="PERCENTAGE" /> porsyento ang baterya.</translation>

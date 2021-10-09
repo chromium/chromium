@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">Знізу</translation>
 <translation id="3090989381251959936">Уключыць або выключыць функцыю "<ph name="FEATURE_NAME" />". <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Перамясціць курсор</translation>
-<translation id="3098580329624789136">Атрымаць <ph name="INTENT" /> для "<ph name="QUERY" />"</translation>
 <translation id="3100274880412651815">Адхіліць рэжым здымання</translation>
 <translation id="3105917916468784889">Зрабіць здымак экрана</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">На гэтай прыладзе могуць знаходзіцца праграмы, якія не былі спраўджаны Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Разлучаныя прылады</translation>
-<translation id="4485060137115666462">Калі націснуць правай кнопкай мышы або націснуць і трымаць, Памочнік пакажа інфармацыю пра вылучаны вамі тэкст: напрыклад, дасць азначэнне, пераклад або перавядзе адзінкі вымярэння.</translation>
 <translation id="4505050298327493054">Актыўны стол.</translation>
 <translation id="4513946894732546136">Водгук</translation>
 <translation id="4518404433291145981">Каб разблакіраваць Chromebook, спачатку разблакіруйце тэлефон</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">Вярнуць</translation>
 <translation id="595202126637698455">Уключана трасіроўка прадукцыйнасці</translation>
 <translation id="5958529069007801266">Падкантрольны карыстальнік</translation>
-<translation id="5960825221082587934">Дазволіць Памочніку паказваць інфармацыю пра вылучаны вамі тэкст: напрыклад, ён можа даць азначэнне, пераклад або перавесці адзінкі вымярэння.</translation>
 <translation id="5977415296283489383">Навушнікі</translation>
 <translation id="5978382165065462689">Абагульванне кантролю над экранам праз Аддаленую дапамогу.</translation>
 <translation id="5980301590375426705">Выйсці з гасцявога рэжыму</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">Тут можна замацаваць важныя файлы. Каб пачаць, адкрыйце праграму "Файлы".</translation>
 <translation id="622484624075952240">Уніз</translation>
 <translation id="6231419273573514727">Прадукцыйнасць перыферыйных прылад можа быць абмежаванай</translation>
-<translation id="6236290670123303279">Кіраваць наладамі</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Зафіксаваны гарызантальны фармат</translation>
 <translation id="6259254695169772643">Для выбару выкарыстайце стыло</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">Ажыццяўляецца трасіроўка прадукцыйнасці</translation>
 <translation id="8703634754197148428">Пачаць запіс. Каб пасля пачатку запісу перайсці на паліцу, дзе знаходзіцца кнопка спынення запісу, націсніце Alt + Shift + L</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Каб кіраваць гэтай функцыяй, выкарыстоўвайце клавішы са стрэлкамі ўлева і ўправа</translation>
-<translation id="8712637175834984815">Зразумела</translation>
 <translation id="8721053961083920564">Уключыць або выключыць гук. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Здыманне ўсяго экрана</translation>
 <translation id="8734991477317290293">Клавіятура можа спрабаваць адсочваць і перадаваць націсканні клавіш</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">Праверце падключэнне</translation>
 <translation id="8877788021141246043">Задайце напамін</translation>
 <translation id="8878886163241303700">Экран пашыраецца</translation>
-<translation id="8883473964424809116">Націсніце, каб адкрыць налады Памочніка Google.</translation>
 <translation id="8884537526797090108">Немагчыма зрабіць запіс з-за наяўнасці на экране прыватнага змесціва</translation>
 <translation id="890616557918890486">Змяніць крыніцу</translation>
 <translation id="8909138438987180327">Узровень зараду: <ph name="PERCENTAGE" /> %.</translation>

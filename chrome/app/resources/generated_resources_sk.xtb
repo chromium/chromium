@@ -362,7 +362,6 @@
 <translation id="1383876407941801731">Vyhľadávanie</translation>
 <translation id="1384849755549338773">Ponúkať Prekladač Google v prípade cudzojazyčných webov</translation>
 <translation id="138784436342154190">Obnoviť predvolenú stránku pri spustení?</translation>
-<translation id="1388047369870196878">Inštalovať CloudReady 2.0</translation>
 <translation id="1388253969141979417">Môže používať váš mikrofón</translation>
 <translation id="1388728792929436380">Zariadenie <ph name="DEVICE_TYPE" /> bude po dokončení aktualizácií reštartované.</translation>
 <translation id="139013308650923562">Weby s povolením používať písma nainštalované v zariadení</translation>
@@ -1957,7 +1956,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vyžaduje, aby ste sa dnes pripojili k sieti Wi‑Fi a stiahli aktualizáciu. Prípadne ju stiahnite prostredníctvom meraného pripojenia (môžu sa účtovať poplatky).}few{<ph name="MANAGER" /> vyžaduje, aby ste sa pripojili k sieti Wi‑Fi a pred uplynutím termínu stiahli aktualizáciu. Prípadne ju stiahnite prostredníctvom meraného pripojenia (môžu sa účtovať poplatky).}many{<ph name="MANAGER" /> vyžaduje, aby ste sa pripojili k sieti Wi‑Fi a pred uplynutím termínu stiahli aktualizáciu. Prípadne ju stiahnite prostredníctvom meraného pripojenia (môžu sa účtovať poplatky).}other{<ph name="MANAGER" /> vyžaduje, aby ste sa pripojili k sieti Wi‑Fi a pred uplynutím termínu stiahli aktualizáciu. Prípadne ju stiahnite prostredníctvom meraného pripojenia (môžu sa účtovať poplatky).}}</translation>
 <translation id="3009300415590184725">Naozaj chcete zrušiť proces nastavenia mobilnej dátovej služby?</translation>
 <translation id="3009779501245596802">Indexované databázy</translation>
-<translation id="3009984992511490972">Zmeňte toto zariadenie na zariadenie so systémom CloudReady 2.0.</translation>
 <translation id="3010279545267083280">Heslo bolo odstránené</translation>
 <translation id="3011384993885886186">Teplá sivá</translation>
 <translation id="3011488081941333749">Súbory cookie z domény <ph name="DOMAIN" /> sa vymažú pri ukončení relácie</translation>
@@ -2382,7 +2380,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3476303763173086583">Odosielať údaje o využití a diagnostiky. Pomôžte zlepšiť prostredie Androidu svojho dieťaťa automatickým odosielaním diagnostík a údajov o používaní zariadenia a aplikácií do Googlu. Nebudú slúžiť na zistenie totožnosti vášho dieťaťa. Pomôžu zvýšiť stabilitu systému a aplikácií a poskytovať ďalšie vylepšenia. Niektoré súhrnné údaje tiež pomôžu aplikáciám Google a partnerom, ako napríklad vývojárom Androidu. Používanie tohto <ph name="BEGIN_LINK1" />nastavenia<ph name="END_LINK1" /> je presadzované vlastníkom. Vlastník môže odosielať Googlu diagnostiky a údaje o používaní pre toto zariadenie. Ak pre dieťa aktivujete dodatočnú aktivitu na internete a v aplikáciách, tieto údaje sa môžu uložiť do jeho účtu Google. <ph name="BEGIN_LINK2" />Ďalšie informácie<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Ojoj! Systému sa nepodarilo načítať pravidlo pre vaše zariadenie.</translation>
 <translation id="347785443197175480">Aj naďalej povoliť stránkam <ph name="HOST" /> prístup ku kamere a mikrofónu</translation>
-<translation id="3478813605045578676">Registrácia je podporovaná až po inštalácii. Ak chcete spravovať toto zariadenie, najprv si nainštalujte CloudReady.</translation>
 <translation id="3479552764303398839">Teraz nie</translation>
 <translation id="3479685872808224578">Tlačový server sa nepodarilo rozpoznať. Skontrolujte adresu a skúste to znova.</translation>
 <translation id="3480612136143976912">Vlastná veľkosť a štýl titulkov živého prepisu. Toto nastavenie budú používať aj niektoré aplikácie a weby.</translation>
@@ -2584,7 +2581,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3694027410380121301">Vybrať predchádzajúcu kartu</translation>
 <translation id="369489984217678710">Heslá a ďalšie prihlasovacie údaje</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Kontroly boli uskutočnené. Vaše údaje budú nahrané.}=1{Kontroly boli uskutočnené. Váš súbor bude nahraný.}few{Kontroly boli uskutočnené. Vaše súbory budú nahrané.}many{Kontroly boli uskutočnené. Vaše súbory budú nahrané.}other{Kontroly boli uskutočnené. Vaše súbory budú nahrané.}}</translation>
-<translation id="3696576298374669274">Zobraziť denníky služieb</translation>
 <translation id="3699624789011381381">E-mailová adresa</translation>
 <translation id="3699920817649120894">Vypnúť synchronizáciu a prispôsobenie?</translation>
 <translation id="3700888195348409686">Prebieha prezentácia (<ph name="PAGE_ORIGIN" />)</translation>
@@ -4162,7 +4158,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5431318178759467895">Farebne</translation>
 <translation id="543338862236136125">Upraviť heslo</translation>
 <translation id="5434065355175441495">Štandard PKCS #1 so šifrovaním RSA</translation>
-<translation id="5434473680236142631">Vitajte v systéme CloudReady 2.0</translation>
 <translation id="5435779377906857208">Vždy povoliť webu <ph name="HOST" /> prístup k polohe</translation>
 <translation id="5436492226391861498">Čaká sa na tunelové prepojenie servera proxy...</translation>
 <translation id="5436510242972373446">Prehľadať webovú stránku <ph name="SITE_NAME" />:</translation>
@@ -4734,7 +4729,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6057312498756061228">Tento súbor je príliš veľký na kontrolu. Otvoriť môžete súbory s maximálnou veľkosťou 50 MB.</translation>
 <translation id="6057381398996433816">Tomuto webu bolo zablokované používanie senzorov pohybu a svetla.</translation>
 <translation id="6059276912018042191">Nedávne karty Chromu</translation>
-<translation id="6059347142391822629">Keď bude označenie na tlačidle Hotovo, stlačením prepínača zavrite sprievodcu.</translation>
 <translation id="6059652578941944813">Hierarchia certifikátu</translation>
 <translation id="6061882183774845124">Odoslať odkaz do vašich zariadení</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Poznámka:<ph name="END_BOLD" /> K osobným výsledkom dieťaťa <ph name="SUPERVISED_USER_NAME" /> je možné získať prístup podobným hlasom alebo jeho nahrávkou. Ak chcete šetriť batériu, môžete v nastaveniach Asistenta dieťaťa <ph name="SUPERVISED_USER_NAME" /> vybrať, aby bolo rozpoznávanie výrazu „Hey Google“ zapnuté iba vtedy, keď je toto zariadenie pripojené k napájaciemu zdroju.</translation>
@@ -5020,6 +5014,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6359706544163531585">Vypnúť svetlý motív</translation>
 <translation id="6361850914223837199">Podrobnosti chyby:</translation>
 <translation id="6362853299801475928">Nahlásenie p&amp;roblému...</translation>
+<translation id="6363786367719063276">Zobraziť denníky</translation>
 <translation id="6363990818884053551">Ak chcete spustiť synchronizáciu, overte svoju totožnosť</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Pridanie rodiny a priateľov</translation>
@@ -5212,8 +5207,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6569911211938664415">Heslá sa ukladajú do účtu Google (<ph name="ACCOUNT" />), takže ich môžete používať v ľubovoľnom zariadení</translation>
 <translation id="6573497332121198392">Odkaz sa nedá odstrániť</translation>
 <translation id="657402800789773160">&amp;Obnoviť túto stránku</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />Najlepšie prostredie získate inštaláciou systému CloudReady 2.0 na interný disk. Môžete si ho nainštalovať aj neskôr na prihlasovacej obrazovke.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ak si ho zatiaľ nechcete nainštalovať, môžete ho spustiť z kľúča USB a vyskúšať ho. Ponecháte si tak súčasný operačný systém aj údaje, ale môžete naraziť na obmedzenia ukladacieho priestoru a výkonnosti.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">Sťahovanie bolo zrušené: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Prehľad stavu siete</translation>
 <translation id="6579369886355986318">Zobraziť všetky ovládacie prvky</translation>
@@ -6309,7 +6302,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation>
 <translation id="7750228210027921155">Obraz v obraze</translation>
 <translation id="7751260505918304024">Zobraziť všetky</translation>
-<translation id="7751855202867682241">Ponechajte si súčasný operačný systém a spustite CloudReady 2.0 z kľúča USB.</translation>
 <translation id="7753735457098489144">Nepodarilo sa nainštalovať pre nedostatok priestoru. Uvoľníte ho odstránením súborov z úložiska zariadenia.</translation>
 <translation id="7754347746598978109">Nemôže používať JavaScript</translation>
 <translation id="7754704193130578113">Pred každým sťahovaním sa spýtať, kam uložiť súbor</translation>
@@ -7359,7 +7351,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8845001906332463065">Získať pomoc</translation>
 <translation id="8846132060409673887">Prečítať informácie o výrobcovi a modeli tohto zariadenia</translation>
 <translation id="8846163936679269230">Resetovanie profilov eSIM</translation>
-<translation id="8846746259444262774">Nepodarilo sa nainštalovať</translation>
 <translation id="8847523528195140327">Pri zavretí krytu sa odhlásiť</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Skryté</translation>

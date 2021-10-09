@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">ಕೆಳಗೆ</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">ಕರ್ಸರ್ ಸರಿಸಿ</translation>
-<translation id="3098580329624789136">"<ph name="QUERY" />" ಗಾಗಿ <ph name="INTENT" /> ಅನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="3100274880412651815">ಕ್ಯಾಪ್ಚರ್ ಮೋಡ್ ಅನ್ನು ವಜಾಗೊಳಿಸಿ</translation>
 <translation id="3105917916468784889">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ಬ್ಲೂಟೂತ್‌)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">Google ನಿಂದ ದೃಢೀಕರಿಸದ ಆ್ಯಪ್‌ಗಳನ್ನು ಈ ಸಾಧನವು ಒಳಗೊಂಡಿರಬಹುದು.</translation>
 <translation id="4479639480957787382">ಈಥರ್ನೆಟ್</translation>
 <translation id="4481530544597605423">ಜೋಡಿಯಾಗಿರದ ಸಾಧನಗಳು</translation>
-<translation id="4485060137115666462">ಬಲ-ಕ್ಲಿಕ್ ಅಥವಾ ಲಾಂಗ್ ಪ್ರೆಸ್ ಮಾಡಿ, ಆಗ Assistant ನಿಮಗೆ ಬೇಕಾದ ವ್ಯಾಖ್ಯಾನ, ಅನುವಾದ ಅಥವಾ ಯೂನಿಟ್ ಪರಿವರ್ತನೆಗಳಂತಹ ಮಾಹಿತಿಯನ್ನು ತೋರಿಸುತ್ತದೆ.</translation>
 <translation id="4505050298327493054">ಸಕ್ರಿಯೆ ಡೆಸ್ಕ್</translation>
 <translation id="4513946894732546136">ಪ್ರತಿಕ್ರಿಯೆ</translation>
 <translation id="4518404433291145981">ನಿಮ್ಮ Chromebook ಅನ್‌ಲಾಕ್ ಮಾಡಲು, ಮೊದಲು ನಿಮ್ಮ ಫೋನ್ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">ಹಿಂತಿರುಗಿಸು</translation>
 <translation id="595202126637698455">ಕಾರ್ಯಕ್ಷಮತೆ ಟ್ರೇಸಿಂಗ್ ಸಕ್ರಿಯಗೊಂಡಿದೆ</translation>
 <translation id="5958529069007801266">ಮೇಲ್ವಿಚಾರಣೆಗೊಳಪಟ್ಟ ಬಳಕೆದಾರರು</translation>
-<translation id="5960825221082587934">ನಿಮ್ಮ ಆಯ್ಕೆಗೆ ಸಂಬಂಧಿಸಿದ ವ್ಯಾಖ್ಯಾನ, ಅನುವಾದ ಅಥವಾ ಯೂನಿಟ್ ಪರಿವರ್ತನೆಯಂತಹ ಮಾಹಿತಿಯನ್ನು Assistant ತೋರಿಸಲಿ.</translation>
 <translation id="5977415296283489383">ಹೆಡ್‌ಫೋನ್</translation>
 <translation id="5978382165065462689">ರಿಮೋಟ್ ಸಹಾಯಕದ ಮೂಲಕ ನಿಮ್ಮ ಪರದೆಯ ಹಂಚಿಕೆಯ ನಿಯಂತ್ರಣ</translation>
 <translation id="5980301590375426705">ಅತಿಥಿ ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
@@ -703,7 +700,6 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6179832488876878285">ನಿಮ್ಮ ಪ್ರಮುಖವಾದ ಫೈಲ್‌ಗಳನ್ನು ನೀವು ಇಲ್ಲಿ ಪಿನ್ ಮಾಡಬಹುದು. ಪ್ರಾರಂಭಿಸಲು Files ಆ್ಯಪ್ ಅನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="622484624075952240">ಕೆಳಗೆ</translation>
 <translation id="6231419273573514727">ಬಾಹ್ಯ ಸಾಧನದ ಕಾರ್ಯಕ್ಷಮತೆಯು ಸೀಮಿತವಾಗಿರಬಹುದು</translation>
-<translation id="6236290670123303279">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">ಪರದೆಯು ಅಡ್ಡಲಾಗಿ ತೋರುವಂತೆ ಲಾಕ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6259254695169772643">ಆಯ್ಕೆ ಮಾಡಲು ನಿಮ್ಮ ಸ್ಟೈಲಸ್ ಅನ್ನು ಬಳಸಿ</translation>
@@ -1021,7 +1017,6 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8683506306463609433">ಕಾರ್ಯಕ್ಷಮತೆಯ ಟ್ರೇಸಿಂಗ್ ಸಕ್ರಿಯವಾಗಿದೆ</translation>
 <translation id="8703634754197148428">ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭಿಸಿ. ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭವಾದ ನಂತರ ಶೆಲ್ಫ್‌ಗೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಮತ್ತು ರೆಕಾರ್ಡಿಂಗ್ ನಿಲ್ಲಿಸಿ ಬಟನ್ ಅನ್ನು ಹುಡುಕಲು Alt + Shift + L ಅನ್ನು ಒತ್ತಿ</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ಈ ಫೀಚರ್ ಅನ್ನು ನಿರ್ವಹಿಸಲು ಎಡ ಅಥವಾ ಬಲ ಆ್ಯರೋ ಕೀಗಳನ್ನು ಬಳಸಿ.</translation>
-<translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8721053961083920564">ವಾಲ್ಯೂಮ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್</translation>
 <translation id="8734991477317290293">ನಿಮ್ಮ ಕೀಸ್ಟ್ರೋಕ್‌ಗಳನ್ನು ಕಳವು ಮಾಡಲು ಇದು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು</translation>
@@ -1049,7 +1044,6 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8876661425082386199">ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="8877788021141246043">ಜ್ಞಾಪನೆಯನ್ನು ಹೊಂದಿಸಿ</translation>
 <translation id="8878886163241303700">ಪರದೆಯನ್ನು ವಿಸ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
-<translation id="8883473964424809116">Google Assistant ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="8884537526797090108">ಗೌಪ್ಯ ವಿಷಯವನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="890616557918890486">ಮೂಲವನ್ನು ಬದಲಿಸಿ</translation>
 <translation id="8909138438987180327">ಬ್ಯಾಟರಿ <ph name="PERCENTAGE" /> ಪ್ರತಿಶತ ಇದೆ.</translation>

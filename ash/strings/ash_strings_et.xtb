@@ -23,6 +23,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1104621072296271835">Teie seadmed töötavad koos veelgi paremini</translation>
 <translation id="1119348796022671382">Temaatiline värvirežiim kasutab taustapildist tuletatud värve, et liidest kergelt toonida.</translation>
 <translation id="112308213915226829">Riiuli automaatne peitmine</translation>
+<translation id="1142002900084379065">Hiljutised fotod</translation>
 <translation id="1148499908455722006">Avage konto <ph name="USER_NAME" /> teabedialoog</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Seotud seadmed</translation>
@@ -179,6 +180,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2298170939937364391">Täisekraani suurendus on lubatud. Vajutage selle väljalülitamiseks uuesti klahvikombinatsiooni Ctrl + otsinguklahv + M.</translation>
 <translation id="2302092602801625023">Kontot haldab Family Link</translation>
 <translation id="2303600792989757991">Akna ülevaate sisse- ja väljalülitamine</translation>
+<translation id="2318576281648121272">Täna, <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Tähe võrra tagasi</translation>
 <translation id="2339073806695260576">Puudutage riiulil elektronpliiatsi nuppu, et teha märkmeid, jäädvustada ekraanipilt, kasutada laserkursorit või suurendusklaasi.</translation>
 <translation id="2341729377289034582">Lukustatud vertikaalasendisse</translation>
@@ -200,6 +202,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2435457462613246316">Kuva parool</translation>
 <translation id="24452542372838207">Laienda märguannet</translation>
 <translation id="2450205753526923158">Ekraanipildirežiim</translation>
+<translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Kinnitage eraldusvõime</translation>
 <translation id="2475982808118771221">Tekkis viga</translation>
 <translation id="2482878487686419369">Märguanded</translation>
@@ -274,10 +277,10 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3087734570205094154">Alaserv</translation>
 <translation id="3090989381251959936">Vahetage funktsiooni <ph name="FEATURE_NAME" /> olekut. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Kursori liigutamine</translation>
-<translation id="3098580329624789136">Hankige päringu „<ph name="QUERY" />” <ph name="INTENT" /></translation>
 <translation id="3100274880412651815">Loobu jäädvustusrežiimist</translation>
 <translation id="3105917916468784889">Teeb kuvatõmmise</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Eemalda soovitus</translation>
 <translation id="3126069444801937830">Taaskäivitage värskendamiseks</translation>
 <translation id="3139942575505304791">Töölaud 1</translation>
 <translation id="315116470104423982">Mobiilne andmeside</translation>
@@ -477,7 +480,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4477892968187500306">See seade võib sisaldada rakendusi, mida Google pole kinnitanud.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Sidumata seadmed</translation>
-<translation id="4485060137115666462">Paremkliki või pika vajutusega kuvab assistent teavet, näiteks teie valitud üksuse definitsiooni, tõlke või ühiku teisenduse.</translation>
 <translation id="4505050298327493054">Aktiivne töölaud.</translation>
 <translation id="4513946894732546136">Tagasiside</translation>
 <translation id="4518404433291145981">Chromebooki avamiseks avage esmalt oma telefon</translation>
@@ -505,6 +507,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4642092649622328492">Osalise ekraanipildi jäädvustamine</translation>
 <translation id="4659419629803378708">ChromeVox on lubatud</translation>
 <translation id="4665114317261903604">Lülitab režiimi Mitte segada sisse või välja. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Faili <ph name="FILENAME" /> allalaadimine</translation>
 <translation id="4696813013609194136">Avage seade lapsevanema koodiga</translation>
 <translation id="4702647871202761252">Privaatsuskuva on väljas</translation>
 <translation id="4706121060329443414">Hiljem üritatakse uuesti alla laadida. Kõne saadetakse praegu töötlemiseks Google'ile.</translation>
@@ -642,6 +645,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5744083938413354016">Puudutusega lohistamine</translation>
 <translation id="5745612484876805746">Öövalgus lülitub päikeseloojangul automaatselt sisse</translation>
 <translation id="5750765938512549687">Bluetooth on välja lülitatud</translation>
+<translation id="576341972084747908">Ohtliku faili <ph name="FILENAME" /> allalaadimine</translation>
 <translation id="576453121877257266">Öövalgus on sees.</translation>
 <translation id="5769373120130404283">Privaatsuskuva</translation>
 <translation id="5777841717266010279">Kas peatada ekraani jagamine?</translation>
@@ -669,7 +673,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5947494881799873997">Ennista</translation>
 <translation id="595202126637698455">Toimivuse jälgimine on lubatud</translation>
 <translation id="5958529069007801266">Valvatav kasutaja</translation>
-<translation id="5960825221082587934">Laske assistendil kuvada teavet, näiteks teie valitud üksuse definitsiooni, tõlke või ühiku teisenduse.</translation>
 <translation id="5977415296283489383">Kõrvaklapid</translation>
 <translation id="5978382165065462689">Ekraani juhtimise jagamine kaugabi kaudu.</translation>
 <translation id="5980301590375426705">Välju kül. seansist</translation>
@@ -703,7 +706,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6179832488876878285">Saate oma olulised failid siia kinnitada. Alustamiseks avage rakendus Failid.</translation>
 <translation id="622484624075952240">Alla</translation>
 <translation id="6231419273573514727">Välisseadme toimivus võib olla piiratud</translation>
-<translation id="6236290670123303279">Halda seadeid</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Lukustatud horisontaalasendisse</translation>
 <translation id="6259254695169772643">Kasutage valimiseks elektronpliiatsit</translation>
@@ -783,6 +785,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6852052252232534364">Klõpsake aktiveerimiseks</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Üks number on jäänud}other{# numbrit on jäänud}}</translation>
+<translation id="6867938213751067702">Allalaadimine on peatatud: <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Otsetee on välja lülitatud</translation>
 <translation id="6886172995547742638">Seadme <ph name="DEVICE_TYPE" /> jõudlus võib olla väiksem. Kasutage sertifitseeritud <ph name="PREFERRED_MINIMUM_POWER" /> W või võimsamat USB-C-toiteadapterit.</translation>
 <translation id="688631446150864480">Akende vahetamiseks vajutage allanoolt</translation>
@@ -1021,7 +1024,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="8683506306463609433">Toimivuse jälgimine on aktiivne</translation>
 <translation id="8703634754197148428">Alusta salvestust. Kui salvestamine on alanud, vajutage klahvikombinatsiooni Alt + tõstuklahv + L, et liikuda riiulile ja leida salvestamise peatamise nupp.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Kasutage selle funktsiooni haldamiseks vasak- või paremnooleklahvi.</translation>
-<translation id="8712637175834984815">Selge</translation>
 <translation id="8721053961083920564">Lülitage helitugevus sisse. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Täisekraani jäädvustamine</translation>
 <translation id="8734991477317290293">See võib üritada varastada teie klahvivajutusi</translation>
@@ -1049,7 +1051,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="8876661425082386199">Kontrollige ühendust</translation>
 <translation id="8877788021141246043">Määra meeldetuletus</translation>
 <translation id="8878886163241303700">Ekraani laiendamine</translation>
-<translation id="8883473964424809116">Klõpsake Google'i assistendi seadete avamiseks.</translation>
 <translation id="8884537526797090108">Konfidentsiaalset sisu ei saa salvestada</translation>
 <translation id="890616557918890486">Vaheta allikat</translation>
 <translation id="8909138438987180327">Aku laetuse tase on <ph name="PERCENTAGE" /> protsenti.</translation>

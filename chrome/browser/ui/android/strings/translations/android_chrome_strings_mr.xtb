@@ -180,6 +180,7 @@
 <translation id="2139186145475833000">होम स्क्रीनवर जोडा</translation>
 <translation id="2141396931810938595">तुमच्या वापरावर आधारित</translation>
 <translation id="214888715418183969">तुम्हाला Chrome सह काय शेअर करायचे आहे ते निवडा. तुम्ही शेअर केलेली मेट्रिक Chrome ची वैशिष्ट्ये, परफॉर्मन्स आणि स्थिरता सुधारण्यात मदत करण्यासाठी वापरली जाईल.</translation>
+<translation id="2149973817440762519">बुकमार्क संपादित करा</translation>
 <translation id="2154484045852737596">कार्ड संपादित करा</translation>
 <translation id="2154710561487035718">URL कॉपी करा</translation>
 <translation id="2156074688469523661">उर्वरित साइट (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -640,7 +641,6 @@
 <translation id="4943872375798546930">परिणाम नाहीत</translation>
 <translation id="4957722034734105353">अधिक जाणून घ्या...</translation>
 <translation id="4961107849584082341">या पेजचे कोणत्याही भाषेत भाषांतर करा</translation>
-<translation id="4970824347203572753">तुमच्या स्थानामध्ये उपलब्ध नाही</translation>
 <translation id="4971735654804503942">धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून अधिक जलद, प्रोअ‍ॅक्टिव्ह संरक्षण. पासवर्ड भंगांबद्दल तुम्हाला चेतावणी देतो. Google ला पाठवला जाण्यासाठी ब्राउझिंग डेटा आवश्यक आहे.</translation>
 <translation id="497421865427891073">पुढे जा</translation>
 <translation id="4988210275050210843">(<ph name="MEGABYTES" />) ची फाइल डाउनलोड करत आहे.</translation>
@@ -724,7 +724,6 @@
 <translation id="5483197086164197190">Chrome नेव्हिगेट करा</translation>
 <translation id="5487521232677179737">डेटा साफ करा</translation>
 <translation id="549025011754480756">तुमचा आवाज वापरून कसे शोधावे</translation>
-<translation id="5500777121964041360">तुमच्या स्थानामध्ये उपलब्ध नसू शकते</translation>
 <translation id="5512137114520586844">हे खाते <ph name="PARENT_NAME" /> द्वारे व्यवस्थापित केले आहे.</translation>
 <translation id="5514904542973294328">या डिव्हाइसच्या ॲडमिनिस्ट्रेटरने बंद केले आहे.</translation>
 <translation id="5515439363601853141">तुमचा पासवर्ड पाहण्यासाठी अनलॉक करा</translation>
@@ -878,7 +877,6 @@
 <translation id="6364438453358674297">इतिहासातून सूचना काढून टाकायची?</translation>
 <translation id="6378173571450987352">तपशील: वापरलेल्या डेटाच्या प्रमाणानुसार क्रमाने लावलेला</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> हे Chrome मध्ये उघडेल. सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व Chrome OS अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता.</translation>
-<translation id="6381421346744604172">डार्कन वेबसाइट</translation>
 <translation id="6395288395575013217">लिंक</translation>
 <translation id="6397616442223433927">पुन्हा ऑनलाइन</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> वरील <ph name="ERROR_CODE" /></translation>
@@ -1209,7 +1207,6 @@
 <translation id="8218052821161047641">जलद पेज</translation>
 <translation id="8218622182176210845">तुमचे खाते व्यवस्थापित करा</translation>
 <translation id="8223642481677794647">फीड कार्ड मेनू</translation>
-<translation id="8224471946457685718">वाय-फायवर तुमच्यासाठी लेख डाउनलोड करा</translation>
 <translation id="8250920743982581267">दस्तऐवज</translation>
 <translation id="825412236959742607">हे पेज खूप जास्त मेमरी वापरत असल्यामुळे, Chrome ने काही आशय काढून टाकला आहे.</translation>
 <translation id="8260126382462817229">पुन्हा साइन इन करण्याचा प्रयत्न करा</translation>

@@ -167,6 +167,7 @@
 <translation id="5505264765875738116">Web lokacije ne mogu tražiti da šalju obavještenja</translation>
 <translation id="5516455585884385570">Otvori postavke obavještenja</translation>
 <translation id="5527111080432883924">Web lokacije moraju tražiti dozvolu za čitanje teksta i pregled slika u međumemoriji (preporučeno)</translation>
+<translation id="5553374991681107062">Najnovije</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="5649053991847567735">Automatska preuzimanja</translation>
@@ -267,6 +268,7 @@
 <translation id="7999064672810608036">Jeste li sigurni da želite obrisati sve lokalne podatke, uključujući kolačiće i poništiti sva odobrenja za ovu web lokaciju?</translation>
 <translation id="8007176423574883786">Isključeno za ovaj uređaj</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
+<translation id="8042586301629853791">Kriterij razvrstavanja:</translation>
 <translation id="8067883171444229417">Reproduciraj videozapis</translation>
 <translation id="8068648041423924542">Nije moguće odabrati potvrdu.</translation>
 <translation id="8087000398470557479">Ovaj sadržaj je iz domene <ph name="DOMAIN_NAME" />, a isporučio ga je Google.</translation>

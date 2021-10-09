@@ -274,7 +274,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3087734570205094154">Bawah</translation>
 <translation id="3090989381251959936">Tombol <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Pindahkan kursor</translation>
-<translation id="3098580329624789136">Dapatkan <ph name="INTENT" /> untuk "<ph name="QUERY" />"</translation>
 <translation id="3100274880412651815">Tutup mode tangkapan layar</translation>
 <translation id="3105917916468784889">Ambil screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4477892968187500306">Perangkat ini dapat memuat aplikasi yang belum diverifikasi oleh Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Perangkat tidak terhubung</translation>
-<translation id="4485060137115666462">Dengan klik kanan atau tekan lama, Asisten akan menampilkan info seperti definisi, terjemahan, atau konversi unit untuk teks yang Anda pilih.</translation>
 <translation id="4505050298327493054">Desktop aktif.</translation>
 <translation id="4513946894732546136">Masukan</translation>
 <translation id="4518404433291145981">Untuk membuka kunci Chromebook, buka kunci ponsel terlebih dahulu</translation>
@@ -668,7 +666,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5947494881799873997">Kembalikan</translation>
 <translation id="595202126637698455">Kinerja pelacakan aktif</translation>
 <translation id="5958529069007801266">Pengguna yang diawasi</translation>
-<translation id="5960825221082587934">Izinkan Asisten menampilkan info seperti definisi, terjemahan, atau konversi unit untuk teks yang Anda pilih.</translation>
 <translation id="5977415296283489383">Headphone</translation>
 <translation id="5978382165065462689">Berbagi kontrol layar via Remote Assistance.</translation>
 <translation id="5980301590375426705">Hentikan sesi tamu</translation>
@@ -702,7 +699,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6179832488876878285">Anda dapat menyematkan file penting di sini. Buka aplikasi File untuk memulai.</translation>
 <translation id="622484624075952240">Bawah</translation>
 <translation id="6231419273573514727">Performa periferal mungkin dibatasi</translation>
-<translation id="6236290670123303279">Kelola Setelan</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Terkunci ke horizontal</translation>
 <translation id="6259254695169772643">Gunakan stilus untuk memilih</translation>
@@ -1020,7 +1016,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8683506306463609433">Pelacakan performa aktif</translation>
 <translation id="8703634754197148428">Mulai merekam. Setelah perekaman dimulai, gunakan Alt + Shift + L untuk menuju rak dan temukan tombol hentikan perekaman</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gunakan tombol Panah kiri atau kanan untuk mengelola fitur ini.</translation>
-<translation id="8712637175834984815">Mengerti</translation>
 <translation id="8721053961083920564">Ubah Volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tangkapan layar penuh</translation>
 <translation id="8734991477317290293">Keyboard mungkin mencoba mencuri ketukan tombol Anda</translation>
@@ -1048,7 +1043,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8876661425082386199">Periksa koneksi Anda</translation>
 <translation id="8877788021141246043">Setel pengingat</translation>
 <translation id="8878886163241303700">Memperluas layar</translation>
-<translation id="8883473964424809116">Klik untuk membuka setelan Asisten Google.</translation>
 <translation id="8884537526797090108">Tidak dapat merekam konten rahasia</translation>
 <translation id="890616557918890486">Ubah sumber</translation>
 <translation id="8909138438987180327">Baterai <ph name="PERCENTAGE" /> persen.</translation>

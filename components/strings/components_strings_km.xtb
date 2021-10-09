@@ -343,6 +343,7 @@
 <translation id="2025186561304664664">ប្រូកស៊ីត្រូវបានកំណត់ទៅកំណត់ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="2025891858974379949">ខ្លឹមសារ​ដែលគ្មាន​សុវត្ថិភាព</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />សូមពិនិត្យប្រូកស៊ី និង firewall<ph name="END_LINK" /></translation>
+<translation id="2034971124472263449">មិនអីទេ រក្សាទុក​ចុះ</translation>
 <translation id="2036983605131262583">ដុំជំនួស</translation>
 <translation id="2042213636306070719">ទម្រទី 7</translation>
 <translation id="204357726431741734">ចូលគណនី ដើម្បីប្រើ​ពាក្យសម្ងាត់​ដែលរក្សាទុក​នៅក្នុងគណនី Google របស់អ្នក</translation>
@@ -384,6 +385,7 @@
 <translation id="2154054054215849342">ដែនរបស់អ្នកមិនអាចប្រើសមកាលកម្មបានទេ</translation>
 <translation id="2154484045852737596">កែសម្រួលកាត</translation>
 <translation id="2161656808144014275">អត្ថបទ</translation>
+<translation id="2162510787844374618">កំពុងទាក់ទងធនាគាររបស់អ្នក...</translation>
 <translation id="2164510882479075877">សូមពិនិត្យមើល​ថាតើ <ph name="HOST_NAME" /> មានកំហុស​អក្ខរាវិរុទ្ធឬអត់។</translation>
 <translation id="2166049586286450108">ការចូលប្រើពេញលេញដោយអ្នកគ្រប់គ្រង</translation>
 <translation id="2166378884831602661">គេហទំព័រនេះមិនអាចផ្តល់ការតភ្ជាប់ដែលមានសុវត្ថិភាពទេ</translation>
@@ -653,6 +655,7 @@
 <translation id="3145945101586104090">បានបរាជ័យក្នុងការបម្លែងការឆ្លើយតប</translation>
 <translation id="3150653042067488994">កំហុសឆ្គងម៉ាស៊ីនមេបណ្តោះអាសន្ន</translation>
 <translation id="3154506275960390542">ទំព័រនេះ​មានទម្រង់បែបបទ​ដែល​ប្រហែលជា​មិនអាច​ដាក់បញ្ជូន​ដោយ​សុវត្ថិភាពទេ។ ទិន្នន័យ​ដែលអ្នក​ផ្ញើអាច​ត្រូវបាន​មើលដោយ​អ្នកផ្សេង​ទៀត​ខណៈពេល​ឆ្លងកាត់ ឬ​អាចត្រូវបាន​កែសម្រួល​ដោយអ្នក​វាយប្រហារ ដើម្បី​ផ្លាស់​ប្តូរអ្វី​ដែល​ម៉ាស៊ីនមេ​ទទួល។</translation>
+<translation id="3154987252551138431">មាន​អ្វីមួយ​ខុសប្រក្រតី ពេលកំពុង​ប្រើការ​ចែករំលែកនៅ​ជិត</translation>
 <translation id="315504272643575312">គណនី​របស់​អ្នក​ស្ថិតក្រោម​ការគ្រប់គ្រង​របស់ <ph name="MANAGER" />។</translation>
 <translation id="3157931365184549694">ស្តារ</translation>
 <translation id="3158539265159265653">ថាស</translation>
@@ -912,6 +915,7 @@
 <translation id="3963721102035795474">របៀបកម្មវិធីអាន</translation>
 <translation id="3963837677003247395">បន្ត​ដោយ​ខ្លួនឯង?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{គ្មាន}=1{ពីទំព័រ 1 }other{ពីទំព័រ # }}</translation>
+<translation id="3969052498612555048">រកមិនឃើញលេខកូដរបស់អ្នកឬ? <ph name="BEGIN_LINK" />យកលេខកូដថ្មី<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">កំពុងគណនា...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ត្រូវបានរារាំង</translation>
 <translation id="3973357910713125165">ប៊ូតុង​ដំណើរការ​ការពិនិត្យ​សុវត្ថិភាព Chrome, ចុច Enter ដើម្បី​ដំណើរការ​ការពិនិត្យ​សុវត្ថិភាព​នៅក្នុង​ការកំណត់ Chrome</translation>
@@ -1051,6 +1055,7 @@
 <translation id="4348834659292907206">ការតភ្ជាប់ទៅ <ph name="SITE" /> មិនមាន​សុវត្ថិភាពទេ</translation>
 <translation id="4350629523305688469">ទម្រ​ពហុមុខងារ</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> ចង់ស្កេនរក​ឧបករណ៍ប៊្លូធូស​នៅជិត។ បានរកឃើញ​ឧបករណ៍​ខាងក្រោម៖</translation>
+<translation id="4351175281479794167">បញ្ចូល​លេខ​កូដ​ផ្ទៀងផ្ទាត់</translation>
 <translation id="4356973930735388585">អ្នកវាយប្រហារនៅលើទំព័រនេះអាចនឹងព្យាយាមលួចដំឡើងកម្មវិធីដែលបង្កគ្រោះថ្នាក់នៅលើកុំព្យូទ័ររបស់អ្នក ដែលកម្មវិធីនេះអាចនឹងលួច ឬលុបព័ត៌មានរបស់អ្នក (ឧទាហរណ៍៖ រូបថត ពាក្យសម្ងាត់ សារ និងកាតឥណទាន)។</translation>
 <translation id="4358059973562876591">ទម្រង់គំរូ​ដែលអ្នក​បានបញ្ជាក់​ប្រហែលជា​មិន​អាច​ប្រើ​បានទេ ដោយសារ​មានបញ្ហា​ពាក់ព័ន្ធនឹង​គោលការណ៍ DnsOverHttpsMode។</translation>
 <translation id="4358461427845829800">គ្រប់គ្រង​វិធីបង់ប្រាក់...</translation>
@@ -1208,6 +1213,7 @@
 <translation id="4853901935952445031">គេហទំព័រនេះ​នឹងមិនអាច​ប្រើ U2F API នៅក្រោយ​ខែកុម្ភៈ ឆ្នាំ 2022 បានទេ។ ប្រសិនបើ​អ្នកជាម្ចាស់​គេហទំព័រនេះ អ្នកគួរតែ​ប្ដូរវា​ទៅប្រើ Web Authentication API។</translation>
 <translation id="4854362297993841467">មិនមានមធ្យោបាយ​ដឹកជញ្ជូនផ្ទាល់នេះទេ។ សូមសាកល្បងមធ្យោបាយផ្សេង។</translation>
 <translation id="4854853140771946034">បង្កើត​កំណត់ចំណាំថ្មី​នៅក្នុង Google Keep បានរហ័ស</translation>
+<translation id="485902285759009870">កំពុង​ផ្ទៀង​ផ្ទាត់​​លេខ​កូដ...</translation>
 <translation id="4876188919622883022">​ទិដ្ឋភាព​សាមញ្ញ</translation>
 <translation id="4876305945144899064">គ្មាន​ឈ្មោះ​អ្នកប្រើប្រាស់​ទេ</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{គ្មាន}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -1238,6 +1244,7 @@
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">ពង្រីកបញ្ជី</translation>
 <translation id="4968522289500246572">កម្មវិធីនេះត្រូវបានបង្កើតឡើងសម្រាប់ឧបករណ៍ចល័ត ហើយប្រហែលជាមិនអាចប្ដូរទំហំ​បានល្អទេ។ កម្មវិធីនេះអាចមានបញ្ហា ឬចាប់ផ្ដើមឡើងវិញ។</translation>
+<translation id="4969341057194253438">លុបការថត</translation>
 <translation id="4973922308112707173">ចោះ​ពីររន្ធ​ខាងលើ</translation>
 <translation id="4984088539114770594">ប្រើមីក្រូហ្វូនឬ?</translation>
 <translation id="4984339528288761049">Prc5 (ស្រោម​សំបុត្រ)</translation>
@@ -1264,6 +1271,7 @@
 <translation id="5040262127954254034">ឯកជនភាព</translation>
 <translation id="5043480802608081735">តំណដែល​អ្នកបានចម្លង</translation>
 <translation id="5045550434625856497">ពាក្យសម្ងាត់មិនត្រឹមត្រូវ</translation>
+<translation id="5056425809654826431">{NUM_FILES,plural, =1{ដើម្បីផ្ញើឯកសារនេះដោយប្រើការ​ចែករំលែកនៅ​ជិត សូមបង្កើនទំហំផ្ទុក (<ph name="DISK_SPACE_SIZE" />) នៅលើឧបករណ៍របស់អ្នក}other{ដើម្បីផ្ញើឯកសារទាំងនេះដោយប្រើការ​ចែករំលែកនៅ​ជិត សូមបង្កើនទំហំផ្ទុក (<ph name="DISK_SPACE_SIZE" />) នៅលើឧបករណ៍របស់អ្នក}}</translation>
 <translation id="5056549851600133418">អត្ថបទសម្រាប់អ្នក</translation>
 <translation id="5061227663725596739">តើ​អ្នក​ចង់​មានន័យ​ថា <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">ប្រវត្តិ​បោះពុម្ព</translation>
@@ -1783,6 +1791,7 @@
 <translation id="6895330447102777224">កាតរបស់អ្នកបានបញ្ជាក់រួចហើយ</translation>
 <translation id="6897140037006041989">ភ្នាក់ងារអ្នកប្រើ</translation>
 <translation id="6898699227549475383">អង្គភាព (O)</translation>
+<translation id="6899000063526916106">បញ្ចូលលេខកូដ <ph name="NUMBER_OF_DIGITS" /> ខ្ទង់</translation>
 <translation id="6907293445143367439">អនុញ្ញាតឱ្យ <ph name="SITE_NAME" />៖</translation>
 <translation id="6910240653697687763"><ph name="URL" /> ចង់​គ្រប់គ្រង​ឧបករណ៍ MIDI របស់អ្នក​ទាំងស្រុង</translation>
 <translation id="691024665142758461">ទាញយកឯកសារច្រើន</translation>
@@ -1833,6 +1842,7 @@
 <translation id="7062635574500127092">បៃតងចាស់</translation>
 <translation id="706295145388601875">បញ្ចូល និងគ្រប់គ្រងអាសយដ្ឋាននៅក្នុងការកំណត់ Chrome</translation>
 <translation id="7064851114919012435">ព័ត៌មានទំនាក់ទំនង</translation>
+<translation id="7068733155164172741">បញ្ចូលលេខកូដ <ph name="OTP_LENGTH" /> ខ្ទង់</translation>
 <translation id="70705239631109039">ការតភ្ជាប់របស់អ្នក​មិនមានសុវត្ថិភាពពេញលេញទេ</translation>
 <translation id="7075452647191940183">សំណើមាន​ទំហំធំពេក</translation>
 <translation id="7079718277001814089">ទំព័រនេះមានផ្ទុកមេរោគ</translation>
@@ -2029,6 +2039,7 @@
 <translation id="7667346355482952095">និមិត្តសញ្ញាគោលការណ៍ដែលបានប្រគល់ត្រឡប់វិញគឺទទេ ឬមិនត្រូវគ្នាជាមួយនិមិត្តសញ្ញាបច្ចុប្បន្ន</translation>
 <translation id="7668654391829183341">ឧបករណ៍មិនស្គាល់</translation>
 <translation id="7669271284792375604">អ្នកវាយប្រហារនៅលើទំព័រនេះ អាចព្យាយាមបញ្ជោតអ្នកឲ្យដំឡើងកម្មវិធីដែលបង្កគ្រោះថ្នាក់ដល់ការរុករករបស់អ្នក (ឧទាហរណ៍៖ ដោយផ្លាស់ប្តូរទំព័រដើមរបស់អ្នក ឬបង្ហាញការផ្សាយពាណិជ្ជកម្មបន្ថែមនៅលើទំព័រដែលអ្នកបានទៅកាន់)។</translation>
+<translation id="7669907849388166732">{COUNT,plural, =1{សកម្មភាព​ដែលបានធ្វើពាក់ព័ន្ធនឹង​ទិន្នន័យដែលបាន​សម្គាល់ថា​ជាការសម្ងាត់ (សកម្មភាព 1 ចាប់តាំងពីចូល)។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" />}other{សកម្មភាព​ដែលបានធ្វើពាក់ព័ន្ធនឹង​ទិន្នន័យដែលបាន​សម្គាល់ថា​ជាការសម្ងាត់ (សកម្មភាព # ចាប់តាំងពីចូល)។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">ប្រអប់​សំបុត្រទី 6</translation>
 <translation id="7676643023259824263">ស្វែងរក​អត្ថបទ​ឃ្លីបបត, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">មើល និងគ្រប់គ្រង​ប្រវត្តិរុករកតាម​អ៊ីនធឺណិត​របស់អ្នកនៅក្នុង​ការកំណត់ Chrome</translation>
@@ -2143,6 +2154,7 @@
 <translation id="8041089156583427627">ផ្ញើមតិ</translation>
 <translation id="8041940743680923270">ប្រើលំនាំដើមជាសកល (សួរ)</translation>
 <translation id="8042918947222776840">ជ្រើសរើស​មធ្យោបាយ​ទៅយក</translation>
+<translation id="8052898407431791827">បានចម្លង​ទៅ​ឃ្លីបបត</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" មិនបានកំណត់រចនាសម្ព័ន្ធត្រឹមត្រូវទេ។ ជាធម្មតាការលុប "<ph name="SOFTWARE_NAME" />" អាចដោះស្រាយបញ្ហានេះបាន។ <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">សូម​អភ័យទោស មានអ្វីមួយ​ខុសប្រក្រតី។</translation>
 <translation id="8067872629359326442">អ្នកទើបតែ​បានបញ្ចូល​ពាក្យសម្ងាត់​របស់អ្នក​នៅលើ​គេហទំព័របញ្ឆោត។ Chromium អាចជួយបាន។ ដើម្បី​ប្ដូរ​ពាក្យសម្ងាត់​របស់អ្នក និងជូនដំណឹង​ដល់ Google ថាគណនី​របស់អ្នក​អាច​ប្រឈម​នឹង​ហានិភ័យ សូមចុច "ការពារ​គណនី"។</translation>
@@ -2212,6 +2224,7 @@
 <translation id="8282947398454257691">ដឹងពីឧបករណ៍សម្គាល់ឧបករណ៍តែមួយរបស់អ្នក</translation>
 <translation id="8284769179630993263">គ្រប់គ្រងការរុករក​ដោយសុវត្ថិភាពរបស់អ្នក និងអ្វីៗជាច្រើនទៀតនៅក្នុងការកំណត់ Chrome</translation>
 <translation id="8286036467436129157">ចូល</translation>
+<translation id="8287501787477690853">អ្នកគ្រប់គ្រង​មិនណែនាំឱ្យ​ថតអេក្រង់ ឬថតវីដេអូអេក្រង់ទេ ដោយសារខ្លឹមសារសម្ងាត់ត្រូវបានថត។</translation>
 <translation id="8288807391153049143">បង្ហាញវិញ្ញាបនបត្រ</translation>
 <translation id="8289355894181816810">ទំនាក់ទំនងអ្នកគ្រប់គ្រងបណ្តាញរបស់អ្នក ប្រសិនបើអ្នកមិនប្រាកដថាមានន័យដូចម្តេច។</translation>
 <translation id="8293206222192510085">បន្ថែមចំណាំ</translation>
@@ -2244,6 +2257,7 @@
 <translation id="8364627913115013041">មិនបានកំណត់។</translation>
 <translation id="8368027906805972958">ឧបករណ៍ដែល​មិនស្គាល់ ឬ​មិនអាច​ប្រើបាន (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">សេវាកម្ម Google Play</translation>
+<translation id="8369073279043109617">យកលេខកូដថ្មី</translation>
 <translation id="8371889962595521444">វិញ្ញាបនបត្រគោល​ផ្ទាល់ខ្លួន</translation>
 <translation id="8374636051559112948">ខុស​គ្នា</translation>
 <translation id="8380941800586852976">គ្រោះថ្នាក់</translation>
@@ -2281,6 +2295,7 @@
 <translation id="8507227106804027148">ជួរពាក្យបញ្ជា</translation>
 <translation id="8508648098325802031">រូប​ស្វែងរក</translation>
 <translation id="8511402995811232419">គ្រប់គ្រងខូគី</translation>
+<translation id="8519478486928352883">អ្នកគ្រប់គ្រង​មិនណែនាំឱ្យ​ថតអេក្រង់ ឬថតវីដេអូអេក្រង់ទេ ដោយសារមាន​ខ្លឹមសារសម្ងាត់នៅលើអេក្រង់។</translation>
 <translation id="8522552481199248698">Chrome អាច​ជួយ​អ្នក​ក្នុងការការពារ​គណនី Google និង​ផ្លាស់ប្ដូរ​ពាក្យសម្ងាត់​របស់អ្នក​។</translation>
 <translation id="8530813470445476232">សម្អាតប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត ខូគី ឃ្លាំងផ្ទុកទិន្នន័យរបស់អ្នក និងអ្វីៗជាច្រើនទៀត​នៅក្នុង​ការកំណត់ Chrome</translation>
 <translation id="8533619373899488139">សូមចូលទៅកាន់ &lt;strong&gt;chrome://policy&lt;/strong&gt; ដើម្បីមើល​បញ្ជី URL ដែលបាន​ទប់ស្កាត់ និងគោលការណ៍​ផ្សេងទៀត ដែលបានអនុវត្ត​ដោយអ្នកគ្រប់គ្រងប្រព័ន្ធ​របស់អ្នក។</translation>
@@ -2289,6 +2304,7 @@
 <translation id="8542014550340843547">កិប​បីគ្រាប់​ខាងក្រោម</translation>
 <translation id="8543181531796978784">អ្នកអាច<ph name="BEGIN_ERROR_LINK" />រាយការណ៍អំពីបញ្ហាដែលបានរកឃើញ<ph name="END_ERROR_LINK" /> ឬប្រសិនបើអ្នកយល់ពីហានិភ័យចំពោះសុវត្ថិភាពរបស់អ្នកហើយ <ph name="BEGIN_LINK" />សូមចូលទៅកាន់គេហទំព័រគ្មានសុវត្ថិភាពនេះ<ph name="END_LINK" />។</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{កំណត់ការអនុញ្ញាតឡើងវិញ}other{កំណត់ការអនុញ្ញាតឡើងវិញ}}</translation>
+<translation id="8555010941760982128">ប្រើប្រាស់លេខ​កូដ​នេះ​នៅ​ពេល​គិត​លុយ</translation>
 <translation id="8557066899867184262">CVC ស្ថិត​នៅក្រោយ​បណ្ណ​របស់អ្នក។</translation>
 <translation id="8558485628462305855">ដើម្បី​មើលខ្លឹមសារ AR សូមដំឡើងជំនាន់ ARCore</translation>
 <translation id="8559762987265718583">ការភ្ជាប់ឯកជនទៅ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> មិនអាចធ្វើឡើងទេ ពីព្រោះកាលបរិច្ឆេទ និងម៉ោងឧបករណ៍របស់អ្នក (<ph name="DATE_AND_TIME" />)មិនត្រឹមត្រូវ។</translation>
@@ -2328,6 +2344,7 @@
 <translation id="8718314106902482036">ការបង់ប្រាក់​មិនទាន់​បញ្ចប់​ទេ</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, ការស្វែងរកដែលបានណែនាំ​</translation>
 <translation id="8719528812645237045">ចោះ​ច្រើនរន្ធ​ខាងលើ</translation>
+<translation id="8723535127346307411">បញ្ចូល​លេខ​កូដ​ផ្ទៀងផ្ទាត់</translation>
 <translation id="8725066075913043281">ព្យាយាមម្តងទៀត</translation>
 <translation id="8726549941689275341">ទំហំ​ទំព័រ៖</translation>
 <translation id="8730621377337864115">រួចរាល់</translation>
@@ -2468,6 +2485,7 @@
 <translation id="9191834167571392248">ចោះ​ខាងក្រោម​ផ្នែកខាងឆ្វេង</translation>
 <translation id="9199905725844810519">ការបោះពុម្ពត្រូវបានទប់ស្កាត់។</translation>
 <translation id="9205078245616868884">ទិន្នន័យរបស់អ្នកត្រូវបានអ៊ិនគ្រីបដោយប្រើឃ្លាសម្ងាត់សមកាលកម្មរបស់អ្នក។ សូមបញ្ចូលវាដើម្បីចាប់ផ្តើមធ្វើសមកាលកម្ម។</translation>
+<translation id="920511547311754821">រកមិនឃើញ​លេខកូដរបស់អ្នក​ឬ? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">បានបរាជ័យក្នុងបន្ថែមអត្ថបទ។</translation>
 <translation id="9213433120051936369">ប្ដូររូបរាងតាមបំណង</translation>
 <translation id="9215416866750762878">កម្មវិធី​មួយកំពុង​បញ្ឈប់ Chrome មិនឱ្យ​ភ្ជាប់ទៅកាន់ទំព័រ​នេះដោយ​សុវត្ថិភាពទេ</translation>

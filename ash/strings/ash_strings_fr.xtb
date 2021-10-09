@@ -274,7 +274,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3087734570205094154">En bas</translation>
 <translation id="3090989381251959936">Activer/Désactiver <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Curseur de déplacement</translation>
-<translation id="3098580329624789136">Trouvez la <ph name="INTENT" /> de "<ph name="QUERY" />"</translation>
 <translation id="3100274880412651815">Ignorer le mode de capture</translation>
 <translation id="3105917916468784889">Faire une capture d'écran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4477892968187500306">Cet appareil peut contenir des applications qui n'ont pas été validées par Google.</translation>
 <translation id="4479639480957787382">Ethernet </translation>
 <translation id="4481530544597605423">Appareils dissociés</translation>
-<translation id="4485060137115666462">Si vous effectuez un clic droit ou appuyez de manière prolongée sur l'élément sélectionné, l'Assistant fournit des informations qui s'y rapportent, comme une définition, une traduction ou une conversion d'unités.</translation>
 <translation id="4505050298327493054">Bureau actif.</translation>
 <translation id="4513946894732546136">Commentaires</translation>
 <translation id="4518404433291145981">Pour déverrouiller votre Chromebook, déverrouillez d'abord votre téléphone</translation>
@@ -668,7 +666,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5947494881799873997">Rétablir</translation>
 <translation id="595202126637698455">Suivi des performances activé</translation>
 <translation id="5958529069007801266">Utilis. supervisé</translation>
-<translation id="5960825221082587934">Laissez l'Assistant afficher des informations sur l'élément sélectionné, telles qu'une définition, une traduction ou une conversion d'unité.</translation>
 <translation id="5977415296283489383">Casque</translation>
 <translation id="5978382165065462689">Partager le contrôle de votre écran via l'assistance à distance</translation>
 <translation id="5980301590375426705">Fermer sess. Invité</translation>
@@ -702,7 +699,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6179832488876878285">Vous pouvez épingler vos fichiers importants ici. Pour commencer, ouvrez l'application Fichiers.</translation>
 <translation id="622484624075952240">Bas</translation>
 <translation id="6231419273573514727">Les performances du périphérique risquent d'être limitées</translation>
-<translation id="6236290670123303279">Gérer les paramètres</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Verrouillée en position horizontale</translation>
 <translation id="6259254695169772643">Effectuez une sélection à l'aide de votre stylet</translation>
@@ -1020,7 +1016,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8683506306463609433">Suivi des performances actif</translation>
 <translation id="8703634754197148428">Démarrez l'enregistrement. Une fois l'enregistrement démarré, appuyez sur Alt+Maj+L pour aller à la barre d'accès et trouver le bouton pour arrêter l'enregistrement.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Pour gérer cette fonctionnalité, utilisez les flèches vers la gauche ou vers la droite.</translation>
-<translation id="8712637175834984815">OK</translation>
 <translation id="8721053961083920564">Activer/désactiver le volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Capture plein écran</translation>
 <translation id="8734991477317290293">Il est possible que cet autre clavier tente d'enregistrer les touches sur lesquelles vous appuyez afin de vous soutirer des informations</translation>
@@ -1048,7 +1043,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8876661425082386199">Vérifier votre connexion</translation>
 <translation id="8877788021141246043">Définis un rappel</translation>
 <translation id="8878886163241303700">Extension de l'écran</translation>
-<translation id="8883473964424809116">Cliquez ici pour accéder aux paramètres de l'Assistant Google.</translation>
 <translation id="8884537526797090108">Impossible d'enregistrer un contenu confidentiel</translation>
 <translation id="890616557918890486">Modifier la source</translation>
 <translation id="8909138438987180327">Niveau de charge de la batterie : <ph name="PERCENTAGE" /> %.</translation>

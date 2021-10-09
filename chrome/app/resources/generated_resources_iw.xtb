@@ -364,7 +364,6 @@
 <translation id="1383876407941801731">חיפוש</translation>
 <translation id="1384849755549338773">‏הצעה להפעיל את Google Translate באתרים בשפות אחרות</translation>
 <translation id="138784436342154190">לשחזר את דף הפתיחה שהוגדר כברירת המחדל?</translation>
-<translation id="1388047369870196878">‏התקנה של CloudReady 2.0</translation>
 <translation id="1388253969141979417">מורשים להשתמש במיקרופון</translation>
 <translation id="1388728792929436380">המכשיר <ph name="DEVICE_TYPE" /> יופעל מחדש אחרי שהעדכונים יושלמו.</translation>
 <translation id="139013308650923562">יש הרשאה להשתמש בגופנים שמותקנים במכשיר</translation>
@@ -1970,7 +1969,6 @@
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{‏לפי הדרישה של <ph name="MANAGER" />, עליך להתחבר היום לרשת Wi-Fi כדי להוריד עדכון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}two{‏לפי דרישת <ph name="MANAGER" />, עליך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}many{‏לפי דרישת <ph name="MANAGER" />, עליך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}other{‏לפי דרישת <ph name="MANAGER" />, עליך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}}</translation>
 <translation id="3009300415590184725">בטוח שברצונך לבטל את תהליך ההתקנה של שירות הנתונים לנייד?</translation>
 <translation id="3009779501245596802">מסדי נתונים שנוספו לאינדקס</translation>
-<translation id="3009984992511490972">‏המכשיר הזה יהיה מכשיר CloudReady 2.0.</translation>
 <translation id="3010279545267083280">הסיסמה נמחקה</translation>
 <translation id="3011384993885886186">אפור חם</translation>
 <translation id="3011488081941333749">‏קובצי Cookie מ-<ph name="DOMAIN" /> יימחקו בעת היציאה</translation>
@@ -2395,7 +2393,6 @@
 <translation id="3476303763173086583">‏שליחה של נתוני אבחון ונתונים על השימוש. אפשר לעזור בשיפור החוויה של הילד/ה שלך ב-Android. לשם כך יש לשלוח אל Google באופן אוטומטי נתוני אבחון ונתונים לגבי השימוש במכשיר ובאפליקציות. נתונים אלה לא ישמשו כדי לזהות את הילד/ה שלך, והם יעזרו לשמור על יציבות המערכת והאפליקציות, כמו גם לביצוע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לאפליקציות ולשותפים של Google, כמו מפתחי Android. ה<ph name="BEGIN_LINK1" />הגדרה<ph name="END_LINK1" /> הזו נאכפת על-ידי הבעלים. ייתכן שהבעלים יבחרו לשלוח אל Google נתוני אבחון ונתונים לגבי אופן השימוש במכשיר הזה. אם הופעלה בשביל הילד/ה שלך האפשרות 'פעילות באתרי אינטרנט ובאפליקציות נוספים', ייתכן שהנתונים יישמרו בחשבון Google שלו/ה. <ph name="BEGIN_LINK2" />מידע נוסף<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">אופס! המערכת לא הצליחה לשלוף מדיניות למכשיר שלך.</translation>
 <translation id="347785443197175480">אני רוצה להמשיך לאפשר ל-<ph name="HOST" /> לגשת למצלמה ולמיקרופון</translation>
-<translation id="3478813605045578676">‏אפשר להירשם רק לאחר ההתקנה. כדי לנהל את המכשיר הזה, תחילה מתקינים את CloudReady.</translation>
 <translation id="3479552764303398839">לא עכשיו</translation>
 <translation id="3479685872808224578">לא ניתן היה להתחבר אל שרת ההדפסה. יש לבדוק את הכתובת ולנסות שוב.</translation>
 <translation id="3480612136143976912">ניתן להתאים אישית את הגודל והסגנון של הכתוביות המיידיות. ההגדרה הזו תחול גם על אפליקציות ואתרים מסוימים.</translation>
@@ -2597,7 +2594,6 @@
 <translation id="3694027410380121301">בחירה בכרטיסייה הקודמת</translation>
 <translation id="369489984217678710">סיסמאות ונתוני כניסה אחרים</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{בדיקות האבטחה הסתיימו. הנתונים שלך יועלו.}=1{בדיקות האבטחה הסתיימו. הקובץ שלך יועלה.}two{בדיקות האבטחה הסתיימו. הקבצים שלך יועלו.}many{בדיקות האבטחה הסתיימו. הקבצים שלך יועלו.}other{בדיקות האבטחה הסתיימו. הקבצים שלך יועלו.}}</translation>
-<translation id="3696576298374669274">הצגת יומני השירות</translation>
 <translation id="3699624789011381381">כתובת אימייל</translation>
 <translation id="3699920817649120894">להשבית את הסנכרון וההתאמה האישית?</translation>
 <translation id="3700888195348409686">מציג (<ph name="PAGE_ORIGIN" />)</translation>
@@ -4176,7 +4172,6 @@
 <translation id="5431318178759467895">צבע</translation>
 <translation id="543338862236136125">עריכת סיסמה</translation>
 <translation id="5434065355175441495">‏הצפנת RSA של PKCS #1</translation>
-<translation id="5434473680236142631">‏ברוך בואך אל CloudReady 2.0</translation>
 <translation id="5435779377906857208">לאשר תמיד ל-<ph name="HOST" /> גישה למיקום</translation>
 <translation id="5436492226391861498">‏בהמתנה ל-Proxy Tunnel...</translation>
 <translation id="5436510242972373446">חיפוש ב-<ph name="SITE_NAME" />:</translation>
@@ -4748,7 +4743,6 @@
 <translation id="6057312498756061228">‏הקובץ הזה גדול מדי בשביל בדיקת אבטחה. אפשר לפתוח קבצים בגודל של עד 50 MB.</translation>
 <translation id="6057381398996433816">נחסמה היכולת של האתר הזה להשתמש בחיישני התנועה והתאורה.</translation>
 <translation id="6059276912018042191">‏כרטיסיות Chrome אחרונות</translation>
-<translation id="6059347142391822629">יש ללחוץ על המתג כשההדגשה נמצאת על הלחצן 'סיום' כדי לסגור את המדריך.</translation>
 <translation id="6059652578941944813">היררכיית אישורים</translation>
 <translation id="6061882183774845124">שליחת הקישור אל המכשירים שלך</translation>
 <translation id="6063847492705284550">‏<ph name="BEGIN_BOLD" />הערה:<ph name="END_BOLD" /> יכול להיות שמישהו יצליח לגשת אל התוצאות האישיות של <ph name="SUPERVISED_USER_NAME" /> גם באמצעות קול דומה או הקלטה. כדי לחסוך בצריכת הסוללה, אפשר לבחור בהגדרות Assistant של <ph name="SUPERVISED_USER_NAME" /> שהפקודה “Hey Google” תפעל רק כשהמכשיר מחובר לחשמל או נמצא בטעינה.</translation>
@@ -5034,6 +5028,7 @@
 <translation id="6359706544163531585">השבתת העיצוב הבהיר</translation>
 <translation id="6361850914223837199">פרטי השגיאה:</translation>
 <translation id="6362853299801475928">&amp;דיווח על בעיה...</translation>
+<translation id="6363786367719063276">הצגת היומנים</translation>
 <translation id="6363990818884053551">כדי להתחיל בסנכרון עליך לאמת את זהותך</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">הוספת בני משפחה וחברים</translation>
@@ -5226,8 +5221,6 @@
 <translation id="6569911211938664415">‏סיסמאות נשמרות בחשבון Google (<ph name="ACCOUNT" />) כדי לאפשר לך להשתמש בהן בכל המכשירים</translation>
 <translation id="6573497332121198392">לא ניתן להסיר את קיצור הדרך</translation>
 <translation id="657402800789773160">&amp;טעינת דף זה מחדש</translation>
-<translation id="6575988479073402532">‏<ph name="BEGIN_PARAGRAPH1" />כדי ליהנות מהחוויה הכי טובה, צריך להתקין את CloudReady 2.0 בדיסק הפנימי. יש לך גם אפשרות להתקין בשלב מאוחר יותר ממסך ההתחברות.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />אם עדיין לא מתאים לך להתקין, אפשר להריץ את המערכת מ-USB ולנסות אותה. מערכת ההפעלה והנתונים הנוכחיים שלך ימשיכו לפעול, אבל ייתכן שיהיו מגבלות על נפח אחסון וביצועים.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">ההורדה בוטלה: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">תמונת מצב של תקינות הרשת</translation>
 <translation id="6579369886355986318">הצגת כל &amp;הפקדים</translation>
@@ -6323,7 +6316,6 @@
 כדי להסיר את ההקצאה, מקישים על מתג או מקש במקלדת שהוקצו.</translation>
 <translation id="7750228210027921155">תמונה בתוך תמונה</translation>
 <translation id="7751260505918304024">הצגת הכול</translation>
-<translation id="7751855202867682241">‏מערכת ההפעלה שלך תמשיך לרוץ, ומערכת CloudReady 2.0 תרוץ מה-USB.</translation>
 <translation id="7753735457098489144">ההתקנה נכשלה כי אין מספיק נפח אחסון. כדי לפנות נפח אחסון, עליך למחוק קבצים מאחסון המכשיר.</translation>
 <translation id="7754347746598978109">‏לא מורשים להשתמש ב-JavaScript</translation>
 <translation id="7754704193130578113">יש לשאול היכן לשמור כל קובץ לפני הורדתו</translation>
@@ -7375,7 +7367,6 @@
 <translation id="8845001906332463065">קבלת עזרה</translation>
 <translation id="8846132060409673887">קריאת היצרן והדגם של המחשב הזה</translation>
 <translation id="8846163936679269230">‏איפוס הפרופילים של ה-eSIM</translation>
-<translation id="8846746259444262774">ההתקנה נכשלה</translation>
 <translation id="8847523528195140327">יציאה מהחשבון כשסוגרים את הכיסוי</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">מוסתר</translation>

@@ -43,7 +43,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2560420686485554789">Du behöver ge Chromium åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
 <translation id="2572494885440352020">Hjälp för Chromium</translation>
 <translation id="2577788541081224677">Logga in och aktivera synkronisering om du vill få tillgång till dina saker i Chromium på olika enheter.</translation>
-<translation id="2580426763510374355">Installera Chromium OS</translation>
 <translation id="2583187216237139145">All data i Chromium som uppstår när den här profilen används (t.ex. bokmärken, historik, lösenord och andra inställningar) kan tas bort av jobbprofilens administratör. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS måste startas om för att uppdateringen ska börja gälla.</translation>
 <translation id="2648074677641340862">Ett operativsystemsfel inträffade under installationen. Ladda ned Chromium igen.</translation>
@@ -56,8 +55,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2847479871509788944">Ta bort från Chromium …</translation>
 <translation id="2885378588091291677">Aktivitetshanteraren</translation>
 <translation id="2910007522516064972">Om &amp;Chromium</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />En sista påminnelse: installationen <ph name="BEGIN_BOLD" />rensar hårddisken fullständigt<ph name="END_BOLD" />. Se till att du har säkerhetskopierat all data som du vill behålla.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />När installationen har påbörjats går den inte att avbryta.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium är uppdaterat</translation>
 <translation id="2983934633046890458">Lösenorden i Chromium redigeras.</translation>
 <translation id="3032706164202344641">Chromium kan inte kontrollera dina lösenord. Försök igen senare.</translation>
@@ -81,7 +78,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3350761136195634146">Det finns redan en Chromium-profil med detta konto</translation>
 <translation id="3406848076815591792">Vill du byta till befintlig Chromium-profil?</translation>
 <translation id="3430503420100763906">Du kan hålla dina saker i Chromium åtskilda med hjälp av Chromium-profiler. Skapa profiler för vänner och familjemedlemmar eller dela upp jobb och nöje.</translation>
-<translation id="3433271666494956603">Installationen av Chromium OS pågår</translation>
 <translation id="347328004046849135">Chromium aviserar dig om du loggar in med ett utsatt lösenord</translation>
 <translation id="3474745554856756813"><ph name="ITEMS_COUNT" /> objekt tas bort från enheten. Logga in i Chromium som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
 <translation id="3497319089134299931">Du kan använda <ph name="SHORTCUT" /> för att byta mellan Chromium-profiler</translation>
@@ -109,7 +105,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4264410486868823224"><ph name="MANAGER" /> kräver att du läser och godkänner följande användarvillkor innan du använder enheten. Villkoren varken utökar, ändrar eller begränsar villkoren för Chromium OS.</translation>
 <translation id="4271805377592243930">Få hjälp med Chromium</translation>
 <translation id="4285930937574705105">Installationen misslyckades på grund av ett ospecificerat fel. Stäng Chromium om det är igång och försök sedan igen.</translation>
-<translation id="429583012151745428">Installation pågår. Stäng inte av enheten Installationen bör ta högst 20 minuter. Datorn stängs av automatiskt när installationen är klar.</translation>
 <translation id="4407044323746248786">Vill du avsluta Chromium ändå?</translation>
 <translation id="4415566066719264597">Låt Chromium köras i bakgrunden</translation>
 <translation id="4423735387467980091">Anpassa och kontrollera Chromium</translation>
@@ -203,7 +198,6 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="6734291798041940871">Chromium har redan installerats för alla användare på datorn.</translation>
 <translation id="673636774878526923">Logga in och aktivera synkronisering om du vill få tillgång till dina saker i Chromium på olika enheter.</translation>
 <translation id="6774082503108938489">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chromium. Det är inte tillåtet att aktivera denna <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="6827182711503025204">All data på enheten skrivs över när du installerar Chromium OS.</translation>
 <translation id="6847869444787758381">Om dina lösenord någonsin skulle läcka ut får du veta det i Chromium</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (har kopierats till Chromium)</translation>

@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">ファイルをダウンロードするには、Chromium でストレージへのアクセスを許可する必要があります</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">お使いのすべてのデバイスで Chromium の設定やデータを使用するには、ログインしてください。ログインすると同期を有効にできます。</translation>
-<translation id="2580426763510374355">Chromium OS をインストール</translation>
 <translation id="2583187216237139145">このプロファイルの使用中に生成された Chromium データ（ブックマーク、履歴、パスワード、他の設定など）は、仕事用プロファイルの管理者によって削除される場合があります。<ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">アップデートを適用するには Chromium OS を再起動する必要があります。</translation>
 <translation id="2648074677641340862">インストール中にオペレーティング システム エラーが発生しました。Chromium をダウンロードし直してください。</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">Chromium から削除...</translation>
 <translation id="2885378588091291677">タスク マネージャ</translation>
 <translation id="2910007522516064972">Chromium について(&amp;C)</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />重要: インストールすると、<ph name="BEGIN_BOLD" />ハードドライブのデータはすべて消去されます<ph name="END_BOLD" />。大切なデータがすべてバックアップされていることをご確認ください。<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />インストールを開始した後にキャンセルすることはできません。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium は最新版です</translation>
 <translation id="2983934633046890458">Chromium でパスワードを編集しようとしています。</translation>
 <translation id="3032706164202344641">Chromium でパスワードを確認できません。しばらくしてからもう一度お試しください。</translation>
@@ -79,7 +76,6 @@
 <translation id="3350761136195634146">このアカウントの Chromium プロフィールはすでに存在します</translation>
 <translation id="3406848076815591792">既存の Chromium プロフィールに切り替えますか？</translation>
 <translation id="3430503420100763906">Chromium プロフィールを使うと、Chromium のあらゆる項目や設定を個別に管理できます。友達や家族のプロフィールを作成したり、仕事とプライベートでプロフィールを使い分けたりできます。</translation>
-<translation id="3433271666494956603">Chromium OS をインストールしています</translation>
 <translation id="347328004046849135">不正使用されたパスワードでログインした場合、Chromium で通知します</translation>
 <translation id="3474745554856756813">このデバイスから <ph name="ITEMS_COUNT" /> 件の項目を削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chromium にログインしてください。</translation>
 <translation id="3497319089134299931">Chromium プロフィールを切り替えるには、<ph name="SHORTCUT" /> を使用します</translation>
@@ -107,7 +103,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" /> では、このデバイスを使用する前に下記の利用規約を確認しこれに同意していただく必要があります。これらの規約は Chromium OS 利用規約を拡張、変更、制限するものではありません。</translation>
 <translation id="4271805377592243930">Chromium のヘルプを見る</translation>
 <translation id="4285930937574705105">原因不明のエラーによりインストールが失敗しました。実行中の Chromium を終了してからもう一度お試しください。</translation>
-<translation id="429583012151745428">インストール中です。デバイスの電源をオフにしないでください。インストールは 20 分以内に完了します。インストール後、マシンは自動的にシャットダウンされます。</translation>
 <translation id="4407044323746248786">今すぐ Chromium を終了しますか？</translation>
 <translation id="4415566066719264597">Chromium をバックグラウンドで実行する</translation>
 <translation id="4423735387467980091">Chromium の設定</translation>
@@ -201,7 +196,6 @@
 <translation id="6734291798041940871">Chromium は既にパソコンのすべてのユーザーに対してインストールされています。</translation>
 <translation id="673636774878526923">お使いのすべてのデバイスで Chromium の設定やデータを使用するには、ログインして同期を有効にしてください。</translation>
 <translation id="6774082503108938489">保護者が Chromium の「サイト、アプリ、拡張機能の権限」をオフにしました。この <ph name="EXTENSION_TYPE_PARAMETER" /> を有効にすることはできません。</translation>
-<translation id="6827182711503025204">Chromium OS をインストールすると、デバイスのデータはすべて上書きされます。</translation>
 <translation id="6847869444787758381">Chromium では、特定のパスワードが侵害された事実の有無がわかります</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay（Chromium にコピー）</translation>

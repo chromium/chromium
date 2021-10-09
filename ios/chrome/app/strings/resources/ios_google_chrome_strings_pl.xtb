@@ -3,6 +3,7 @@
 <translationbundle lang="pl">
 <translation id="1096883626080133124">Zwiększ produktywność, korzystając z prostej, bezpiecznej i wyjątkowo szybkiej przeglądarki Google Chrome</translation>
 <translation id="1282031177488366470">Pomóż w ulepszaniu funkcji i działania Chrome</translation>
+<translation id="1354592789402432496">Twój administrator wymaga od Ciebie zalogowania się przy użyciu konta organizacji. Konta z dostępem ograniczonym przez administratora są ukryte.</translation>
 <translation id="1479202195792305274">Chrome może sprawdzić Twoje hasła, gdy zalogujesz się na swoje konto Google.</translation>
 <translation id="1493827051843127077">Ustaw Chrome jako przeglądarkę domyślną, aby synchronizować karty, hasła i dane kart płatniczych na wszystkich urządzeniach</translation>
 <translation id="1504372625950710826">Chrome nie udało się sprawdzić dostępności aktualizacji. Sprawdź połączenie z internetem.</translation>
@@ -45,6 +46,7 @@
 <translation id="3988789688219830639">Google Chrome nie ma dostępu do Twoich zdjęć ani filmów. Aby włączyć dostęp w iOS, wybierz Ustawienia &gt; Prywatność &gt; Zdjęcia.</translation>
 <translation id="4099578267706723511">Pomóż ulepszyć Chrome, wysyłając do Google statystyki użytkowania i raporty o awariach.</translation>
 <translation id="417201473131094001">Nieobsługiwane w Chrome Canary</translation>
+<translation id="4214277427269650960">Zaloguj się w na tej stronie i w Chrome. Synchronizację możesz włączyć później.</translation>
 <translation id="424864128008805179">Wylogować z Chrome?</translation>
 <translation id="4249068189593983585">Wskazówka dla użytkowników Chrome. Aby zobaczyć więcej opcji kart, naciśnij i przytrzymaj przycisk Pokaż karty na pasku narzędzi, który znajduje się na dole lub na górze ekranu.</translation>
 <translation id="4523886039239821078">Niektóre dodatki mogą powodować awarie Chrome. Odinstaluj je.</translation>
@@ -59,6 +61,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Tryb offline. Chrome nie może sprawdzić dostępności aktualizacji.</translation>
 <translation id="5716154293141027663">Otwieraj Chrome po kliknięciu linków w innych aplikacjach</translation>
+<translation id="572883588166315317">Twoja organizacja wymaga od Ciebie zalogowania się w Chrome. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Wskazówka dla użytkowników Chrome. Niektóre przyciski (na przykład Wstecz, Dalej i Szukaj) znajdują się teraz na dole ekranu.</translation>
 <translation id="5876773482963502140">Jeśli zezwolisz na dostęp do swojej lokalizacji, Chrome będzie wysyłać ją do witryn, którym przyznasz dostęp. O dostęp do Twojej lokalizacji mogą prosić witryny pokazujące treści lokalne, np. wiadomości z regionu czy informacje o sklepach w pobliżu.</translation>
 <translation id="6054613632208573261">Używaj domyślnie Chrome</translation>

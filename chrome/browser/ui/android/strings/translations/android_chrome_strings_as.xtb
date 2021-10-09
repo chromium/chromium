@@ -180,6 +180,7 @@
 <translation id="2139186145475833000">গৃহ স্ক্ৰীণত যোগ কৰক</translation>
 <translation id="2141396931810938595">আপোনাৰ ব্যৱহাৰৰ ওপৰত আধাৰিত</translation>
 <translation id="214888715418183969">আপুনি Chromeৰ সৈতে কি সহজে শ্বেয়াৰ কৰিব পাৰে সেয়া বাছনি কৰক। Chromeৰ সুবিধা, পাৰদৰ্শিতা আৰু স্থিৰতা উন্নত কৰাত সহায় কৰিবলৈ আপুনি শ্বেয়াৰ কৰা মেট্ৰিক্স ব্যৱহাৰ কৰা হ’ব।</translation>
+<translation id="2149973817440762519">বুকমার্ক সম্পাদনা কৰক</translation>
 <translation id="2154484045852737596">কাৰ্ড সম্পাদনা কৰক</translation>
 <translation id="2154710561487035718">URL প্ৰতিলিপি কৰক</translation>
 <translation id="2156074688469523661">বাকী থকা ছাইটসমূহ (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -640,7 +641,6 @@
 <translation id="4943872375798546930">কোনো ফলাফল নাই</translation>
 <translation id="4957722034734105353">অধিক জানক...</translation>
 <translation id="4961107849584082341">যিকোনো ভাষালৈ এই পৃষ্ঠাটো অনুবাদ কৰক</translation>
-<translation id="4970824347203572753">আপোনাৰ অৱস্থানত উপলব্ধ নহয়</translation>
 <translation id="4971735654804503942">ক্ষতিকাৰক হিচাপে জনাজাত ৱেবছাইট, ডাউনল'ড আৰু এক্সটেনশ্বনসমূহৰ পৰা ক্ষিপ্ৰ, আগতীয়া সুৰক্ষা। পাছৱর্ড ফাদিল হোৱা সম্পর্কে আপোনাক সকীয়নি দিয়ে। Googleলৈ পঠিয়াবলৈ ব্ৰাউজিং ডেটাৰ আৱশ্যক হয়।</translation>
 <translation id="497421865427891073">আগুৱাই যাওক</translation>
 <translation id="4988210275050210843">ফাইল ডাউনল’ড কৰি থকা হৈছে (<ph name="MEGABYTES" />)।</translation>
@@ -724,7 +724,6 @@
 <translation id="5483197086164197190">Chromeত নেভিগে’ট কৰা</translation>
 <translation id="5487521232677179737">ডেটা মচক</translation>
 <translation id="549025011754480756">আপোনাৰ কণ্ঠধ্বনিৰ জৰিয়তে কেনেকৈ সন্ধান কৰিব লাগে</translation>
-<translation id="5500777121964041360">আপোনাৰ অৱস্থানত উপলব্ধ নহ'বও পাৰে</translation>
 <translation id="5512137114520586844">এই একাউণ্টটো <ph name="PARENT_NAME" />য়ে পৰিচালনা কৰে।</translation>
 <translation id="5514904542973294328">এই ডিভাইচটোৰ প্ৰশাসকে অক্ষম কৰিছে</translation>
 <translation id="5515439363601853141">আপোনাৰ পাছৱৰ্ডটো চাবলৈ আনলক কৰক</translation>
@@ -878,7 +877,6 @@
 <translation id="6364438453358674297">ইতিহাসৰ পৰা পৰামৰ্শ আঁতৰাবনে?</translation>
 <translation id="6378173571450987352">সবিশেষ: ব্যৱহৃত ডেটাৰ পৰিমাণৰ ওপৰত ভিত্তি কৰি সজোৱা হৈছে</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> Chromeত খুলিব। অব্যাহত ৰাখি আপুনি <ph name="BEGIN_LINK1" />Google সেৱাৰ চৰ্তাৱলী<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />Google Chrome আৰু Chrome OSৰ সেৱাৰ অতিৰিক্ত চৰ্তাৱলী<ph name="END_LINK2" />ত সন্মতি দিয়ে।</translation>
-<translation id="6381421346744604172">গাঢ় কৰা ৱেবছাইটসমূহ</translation>
 <translation id="6395288395575013217">লিংক</translation>
 <translation id="6397616442223433927">আকৌ অনলাইন হৈছে</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" />ত <ph name="ERROR_CODE" /></translation>
@@ -1209,7 +1207,6 @@
 <translation id="8218052821161047641">দ্ৰুত পৃষ্ঠা</translation>
 <translation id="8218622182176210845">আপোনাৰ একাউণ্টটো পৰিচালনা কৰক</translation>
 <translation id="8223642481677794647">ফীড কাৰ্ড মেনু</translation>
-<translation id="8224471946457685718">আপোনাৰ ৱাই-ফাইৰ বাবে প্ৰবন্ধসমূহ ডাউনল'ড কৰক</translation>
 <translation id="8250920743982581267">নথিপত্রসমূহ</translation>
 <translation id="825412236959742607">এই পৃষ্ঠাটোৱে বহুত বেছি মেম’ৰি খৰচ কৰে, সেয়েহে Chromeএ কিছুমান সমল আঁতৰাই পেলাইছে৷</translation>
 <translation id="8260126382462817229">আকৌ ছাইন ইন কৰিবলৈ চেষ্টা কৰক</translation>

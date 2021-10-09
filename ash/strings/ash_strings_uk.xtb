@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">Низ</translation>
 <translation id="3090989381251959936">Перемкнути функцію "<ph name="FEATURE_NAME" />". <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Курсор переміщення</translation>
-<translation id="3098580329624789136">Дізнайтеся <ph name="INTENT" /> запиту "<ph name="QUERY" />"</translation>
 <translation id="3100274880412651815">Вийти з режиму зйомки</translation>
 <translation id="3105917916468784889">Зробити знімок екрана</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">На цьому пристрої можуть бути додатки, які не були перевірені Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Відключені пристрої</translation>
-<translation id="4485060137115666462">Натисніть вибраний контент правою кнопкою миші або втримуйте його, і Асистент покаже визначення чи переклад терміна, конвертує одиницю тощо.</translation>
 <translation id="4505050298327493054">Активний робочий стіл.</translation>
 <translation id="4513946894732546136">Відгуки</translation>
 <translation id="4518404433291145981">Щоб розблокувати Chromebook, спершу розблокуйте телефон</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">Повернути</translation>
 <translation id="595202126637698455">Відстеження ефективності ввімкнено</translation>
 <translation id="5958529069007801266">Контрольований користувач</translation>
-<translation id="5960825221082587934">Дозволити Асистенту показувати визначення чи переклад терміна, конвертувати одиниці тощо для вибраного контенту.</translation>
 <translation id="5977415296283489383">Навушники</translation>
 <translation id="5978382165065462689">Спільний доступ до екрана через віддалену допомогу.</translation>
 <translation id="5980301590375426705">Закрити сеанс гостя</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">Тут можна закріпити важливі файли. Щоб почати, відкрийте додаток Файли.</translation>
 <translation id="622484624075952240">Донизу</translation>
 <translation id="6231419273573514727">Ефективність периферійних пристроїв може бути обмежена</translation>
-<translation id="6236290670123303279">Керувати налаштуваннями</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Заблоковано в горизонтальному положенні</translation>
 <translation id="6259254695169772643">Вибирайте елементи за допомогою стилуса</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">Відстеження ефективності активне</translation>
 <translation id="8703634754197148428">Почніть запис. Коли запис почнеться, натисніть Alt + Shift + L, щоб перейти на полицю, де розташована кнопка зупинки запису</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Щоб керувати цією функцією, натискайте стрілки ліворуч або праворуч.</translation>
-<translation id="8712637175834984815">Виконано</translation>
 <translation id="8721053961083920564">Увімкнути або вимкнути гучність. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Зйомка всього екрана</translation>
 <translation id="8734991477317290293">Можливо, це спроба викрасти введенні символи.</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">Перевірте з'єднання</translation>
 <translation id="8877788021141246043">Налаштуй нагадування</translation>
 <translation id="8878886163241303700">Розширення екрана</translation>
-<translation id="8883473964424809116">Натисніть, щоб відкрити налаштування Google Асистента.</translation>
 <translation id="8884537526797090108">Не вдається записати конфіденційний контент</translation>
 <translation id="890616557918890486">Змінити джерело</translation>
 <translation id="8909138438987180327">Акумулятор заряджено на <ph name="PERCENTAGE" />.</translation>

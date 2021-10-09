@@ -87,8 +87,6 @@
 <translation id="2926676257163822632">სუსტი პაროლები ადვილი გამოსაცნობია, ამიტომ მიეცით საშუალება Chrome-ს, <ph name="BEGIN_LINK" />თქვენთვის შექმნას და დაიმახსოვროს ძლიერი პაროლები<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome საჭიროებს კამერზე წვდომის ნებართვას ამ საიტისთვის</translation>
 <translation id="2929907241665500097">Chrome-ის განახლება ვერ მოხერხდა შეფერხების გამო. <ph name="BEGIN_LINK" />შეასწორეთ Chrome-ის განახლებასთან დაკავშირებული პრობლემები და განუხორციელებელი განახლებები.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />ბოლოჯერ შეგახსენებთ, რომ ინსტალაცია <ph name="BEGIN_BOLD" />მთლიანად ამოშლის თქვენს მყარ დისკს<ph name="END_BOLD" />. დარწმუნდით, რომ თქვენთვის მნიშვნელოვანი მონაცემების სარეზერვო ასლი გაქვთ შექმნილი.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />ინსტალაციის დაწყების შემდეგ მას ვეღარ გააუქმებთ.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> — ქსელში შესვლა — Chrome</translation>
 <translation id="3037838751736561277">Google Chrome ფონურ რეჟიმშია.</translation>
 <translation id="3059710691562604940">Safe Browsing გამორთულია. Chrome გირჩევთ მის ჩართვას.</translation>
@@ -136,7 +134,6 @@
 <translation id="4251615635259297716">მივამაგროთ Chrome-ის მონაცემები ამ ანგარიშზე?</translation>
 <translation id="4281844954008187215">მომსახურების პირობები</translation>
 <translation id="4293420128516039005">შედით სისტემაში, რათა მოახდინოთ Chrome-ის სინქრონიზაცია და პერსონალიზება თქვენს ყველა მოწყობილობას შორის</translation>
-<translation id="429583012151745428">მიმდინარეობს ინსტალაცია. არ გამორთოთ მოწყობილობა. ინსტალაციას ოც წუთზე მეტი არ უნდა დასჭირდეს. მოწყობილობა ავტომატურად გამოირთვება ინსტალაციის შემდეგ.</translation>
 <translation id="4325083532956419387">Chrome OS-ის ვერსია</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -182,7 +179,6 @@
 <translation id="5430073640787465221">თქვენი გამორჩეული ფაილი დაზიანებულია ან არასწორია.
 
 Google Chrome ვერ შეძლებს თქვენი პარამეტრების აღდგენას.</translation>
-<translation id="5486618155264784386">Chrome OS-ის დაინსტალირება</translation>
 <translation id="556024056938947818">Google Chrome ცდილობს პაროლების ჩვენებას.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">თუ პარამეტრი ამ გვერდზე არ გამოჩნდება, ცადეთ მისი პოვნა <ph name="LINK_BEGIN" />Chrome OS-ის პარამეტრებში<ph name="LINK_END" /></translation>
@@ -236,7 +232,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7155997830309522122">ამ შემთხევაში ჩაასწორეთ Chrome-ში შენახული პაროლი ახლის მიხედვით.</translation>
 <translation id="7161904924553537242">მოგესალმებათ Google Chrome!</translation>
 <translation id="7242029209006116544">თქვენ სისტემაში შედიხართ მართული ანგარიშით და მის ადმინისტრატორს თქვენი Google Chrome-ის პროფილის კონტროლის შესაძლებლობას აძლევთ. თქვენი Chrome-ის მონაცემები, როგორიცაა თქვენი პროგრამები, სანიშნეები, ისტორია, პაროლები და სხვა პარამეტრები მუდმივად მიებმება <ph name="USER_NAME" />-ს. თქვენ შეძლებთ ამ მონაცემების წაშლას Google Accounts Dashboard-ის მეშვეობით, მაგრამ თქვენ ვერ შეძლებთ ამ მონაცემების დაკავშირებას სხვა ანგარიშთან. სურვილისამებრ, შეგიძლიათ ახალი პროფილის შექმნა თქვენი Chrome-ის მონაცემების ცალე შესანახად. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">მიმდინარეობს Chrome OS-ის ინსტალაცია</translation>
 <translation id="7295052994004373688">ეს ენა გამოიყენება Google Chrome-ის სამომხმარებლო ინტერფეისისთვის</translation>
 <translation id="7296210096911315575">მნიშნველოვანი ინფორმაცია გამოყენებისა და უსაფრთხოების შესახებ</translation>
 <translation id="7308322188646931570">Chrome საჭიროებს მეხსიერებაზე წვდომას ფაილების ჩამოსატვირთად</translation>

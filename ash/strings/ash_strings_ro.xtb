@@ -277,7 +277,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3087734570205094154">Jos</translation>
 <translation id="3090989381251959936">Activează/dezactivează <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Mută cursorul</translation>
-<translation id="3098580329624789136">Solicită <ph name="INTENT" /> pentru „<ph name="QUERY" />”</translation>
 <translation id="3100274880412651815">Închide modul de capturare</translation>
 <translation id="3105917916468784889">Realizează o captură de ecran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -480,7 +479,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4477892968187500306">Dispozitivul poate conține aplicații care nu au fost verificate de Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispozitive neasociate</translation>
-<translation id="4485060137115666462">Dacă dai clic dreapta sau apeși lung, Asistentul îți arată informații cum ar fi definiția, traducerea sau conversia unităților pentru selecția ta.</translation>
 <translation id="4505050298327493054">Desktop activ.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4518404433291145981">Pentru a te conecta la Chromebook, mai întâi deblochează telefonul</translation>
@@ -674,7 +672,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5947494881799873997">Reveniți</translation>
 <translation id="595202126637698455">Urmărirea performanței este activată</translation>
 <translation id="5958529069007801266">Utilizator monitorizat</translation>
-<translation id="5960825221082587934">Lasă Asistentul să îți arate informații cum ar fi definiția, traducerea sau conversia unităților pentru selecția ta.</translation>
 <translation id="5977415296283489383">Căști</translation>
 <translation id="5978382165065462689">În prezent, permiți controlul la ecran prin Asistență la distanță.</translation>
 <translation id="5980301590375426705">Ieși ca invitat</translation>
@@ -708,7 +705,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6179832488876878285">Poți să fixezi fișierele importante aici. Deschide aplicația Fișiere pentru a începe.</translation>
 <translation id="622484624075952240">Jos</translation>
 <translation id="6231419273573514727">Performanța dispozitivelor periferice poate fi limitată</translation>
-<translation id="6236290670123303279">Gestionează setările</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Blocată pe orizontală</translation>
 <translation id="6259254695169772643">Folosește creionul pentru a selecta</translation>
@@ -1027,7 +1023,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8683506306463609433">Urmărirea performanțelor este activă</translation>
 <translation id="8703634754197148428">Pornește înregistrarea. După ce a început înregistrarea, apasă pe Alt + Shift + L pentru a naviga la raft și caută butonul de oprire a înregistrării</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> folosește tastele săgeată la stânga sau la dreapta ca să gestionezi această funcție.</translation>
-<translation id="8712637175834984815">Am înțeles</translation>
 <translation id="8721053961083920564">Activează sau dezactivează volumul: <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Captură pe ecran complet</translation>
 <translation id="8734991477317290293">Aceasta ar putea încerca să înregistreze ce taste apeși</translation>
@@ -1055,7 +1050,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8876661425082386199">Verifică-ți conexiunea</translation>
 <translation id="8877788021141246043">Setează un memento</translation>
 <translation id="8878886163241303700">Ecran extins</translation>
-<translation id="8883473964424809116">Dă clic pentru a deschide setările Asistentului Google.</translation>
 <translation id="8884537526797090108">Conținutul confidențial nu se poate înregistra</translation>
 <translation id="890616557918890486">Schimbă sursa</translation>
 <translation id="8909138438987180327">Nivelul bateriei este <ph name="PERCENTAGE" /> %.</translation>

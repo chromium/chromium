@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">ফাইল ডাউনলোড করতে Chromium-এর জন্য স্টোরেজের অ্যাক্সেস প্রয়োজন</translation>
 <translation id="2572494885440352020">Chromium সহায়ক</translation>
 <translation id="2577788541081224677">সব ডিভাইস জুড়ে Chromium-এ থাকা ডেটা অ্যাক্সেস করার জন্য সাইন-ইন করুন যাতে আপনি সিঙ্ক চালু করতে পারেন।</translation>
-<translation id="2580426763510374355">Chromium OS ইনস্টল করুন</translation>
 <translation id="2583187216237139145">এই প্রোফাইল ব্যবহার করার সময় জেনারেট হওয়া Chromium ডেটা (যেমন বুকমার্ক, ইতিহাস, পাসওয়ার্ড ও অন্যান্য সেটিংস) অফিস প্রোফাইল অ্যাডমিনিস্ট্রেটর মুছে দিতে পারেন। <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">আপডেটটি প্রয়োগ করতে Chromium OS আবার চালু করা প্রয়োজন।</translation>
 <translation id="2648074677641340862">ইনস্টলেশনের সময় একটি অপারেটিং সিস্টেম ত্রুটি ঘটেছে৷ অনুগ্রহ করে Chromium আবার ডাউনলোড করুন৷</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">Chromium থেকে সরান...</translation>
 <translation id="2885378588091291677">কার্য পরিচালক</translation>
 <translation id="2910007522516064972">&amp;Chromium সম্পর্কে</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />শেষ বারের মতো রিমাইন্ডার: ইনস্টল করা হলে <ph name="BEGIN_BOLD" />আপনার হার্ড ড্রাইভের সমস্ত ডেটা মুছে যাবে<ph name="END_BOLD" />। প্রয়োজনীয় সমস্ত ডেটার ব্যাক-আপ নেওয়া হয়েছে কিনা দেখে নিন।<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />ইনস্টল করা একবার শুরু হয়ে গেলে আর বন্ধ করা যাবে না।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium আপ-টু-ডেট আছে</translation>
 <translation id="2983934633046890458">Chromium আপনার পাসওয়ার্ড এডিট করার অনুমতি চাইছে।</translation>
 <translation id="3032706164202344641">Chromium আপনার পাসওয়ার্ড চেক করতে পারছে না। পরে আবার চেষ্টা করুন।</translation>
@@ -79,7 +76,6 @@
 <translation id="3350761136195634146">এই অ্যাকাউন্টের সাথে আগে থেকেই একটি Chromium প্রোফাইল রয়েছে</translation>
 <translation id="3406848076815591792">বর্তমান Chromium প্রোফাইলে পাল্টাতে চান?</translation>
 <translation id="3430503420100763906">Chromium প্রোফাইল থেকে আপনার সব Chromium স্টাফ আলাদা করতে পারবেন। বন্ধু এবং পরিবারের জন্য প্রোফাইল তৈরি করুন অথবা অফিস এবং বিনোদনের প্রোফাইল আলাদা আলাদা রাখুন।</translation>
-<translation id="3433271666494956603">Chromium OS ইনস্টল করা চলছে</translation>
 <translation id="347328004046849135">কোনও চুরি হয়ে যাওয়া পাসওয়ার্ড দিয়ে আপনি সাইন-ইন করলে আপনাকে Chromium বিজ্ঞপ্তি দিয়ে জানাবে</translation>
 <translation id="3474745554856756813">এটি এই ডিভাইস থেকে <ph name="ITEMS_COUNT" />টি আইটেম মুছে দেবে। আপনার ডেটা পরে পুনরুদ্ধার করার জন্য, Chromium-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> ব্যবহার করে একটি Chromium প্রোফাইল থেকে আরেকটিতে পাল্টানো যায়</translation>
@@ -107,7 +103,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" />-এ এই ডিভাইস ব্যবহার করার আগে আপনাকে নিম্নলিখিত পরিষেবার শর্তাবলী পড়ে নিতে হবে এবং তাতে সম্মতি দিতে হবে। এইসব শর্ত Chromium OS-এর শর্তাবলীকে সম্প্রসারণ, পরিবর্তন বা সীমাবদ্ধ করে না।</translation>
 <translation id="4271805377592243930">Chromium বিষয়ে সাহায্য পান</translation>
 <translation id="4285930937574705105">অনির্দিষ্ট ত্রুটির কারণে ইনস্টলেশন ব্যর্থ৷ বর্তমানে Chromium চালু থাকলেও, দয়া করে এটি বন্ধ করুন এবং আবার চেষ্টা করুন৷</translation>
-<translation id="429583012151745428">ইনস্টল করা চলছে। ডিভাইসটি বন্ধ করবেন না। ইনস্টল করতে কুড়ি মিনিটের বেশি সময় লাগবে না। ইনস্টল হয়ে যাওয়ার পরে মেশিনটি নিজে থেকে বন্ধ হয়ে যাবে।</translation>
 <translation id="4407044323746248786">তা স্বত্তেও Chromium ছেড়ে যাবেন?</translation>
 <translation id="4415566066719264597">Chromium-কে ব্যাকগ্রাউন্ডে চলতে দিন</translation>
 <translation id="4423735387467980091">Chromium কাস্টমাইজ ও নিয়ন্ত্রণ করুন</translation>
@@ -199,7 +194,6 @@
 <translation id="6734291798041940871">Chromium ইতোমধ্যে আপনার কম্পিউটারের সকল ব্যবহারকারীর জন্য ইনস্টল করা হয়েছে।</translation>
 <translation id="673636774878526923">সব ডিভাইস জুড়ে Chromium-এ থাকা ডেটা অ্যাক্সেস করতে, প্রথমে সাইন-ইন করে সিঙ্ক চালু করুন।</translation>
 <translation id="6774082503108938489">তোমার অভিভাবক Chromium-এ "সাইট, অ্যাপ ও এক্সটেনশনের অনুমতি" বন্ধ করে দিয়েছেন। এই <ph name="EXTENSION_TYPE_PARAMETER" /> চালু করার অনুমতি নেই।</translation>
-<translation id="6827182711503025204">Chromium OS ইনস্টল করলে আপনার ডিভাইসে থাকা সব ডেটা মুছে যাবে।</translation>
 <translation id="6847869444787758381">আপনার পাসওয়ার্ড কখনও চুরি হলে তা Chromium আপনাকে জানিয়ে দেবে</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium এ কপি করা হয়েছে)</translation>

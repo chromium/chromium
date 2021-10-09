@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">ດ້ານລຸ່ມ</translation>
 <translation id="3090989381251959936">ສະຫຼັບ <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">ຍ້າຍເຄີເຊີ</translation>
-<translation id="3098580329624789136">ຮັບ <ph name="INTENT" /> ສຳລັບ "<ph name="QUERY" />"</translation>
 <translation id="3100274880412651815">ປິດໂໝດຖ່າຍຮູບໄວ້</translation>
 <translation id="3105917916468784889">ຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">ອຸປະກອນນີ້ອາດຈະປະກອບມີແອັບທີ່ບໍ່ໄດ້ຜ່ານການຢັ້ງຢືນຈາກ Google.</translation>
 <translation id="4479639480957787382">ອີເທີເນັດ</translation>
 <translation id="4481530544597605423">ອຸປະກອນທີ່ບໍ່ໄດ້ຈັບຄູ່ກັນ</translation>
-<translation id="4485060137115666462">ໂດຍການຄລິກຂວາ ຫຼື ກົດຄ້າງໄວ້, ຜູ້ຊ່ວຍຈະສະແດງຂໍ້ມູນ ເຊັ່ນ: ຄຳນິຍາມ, ຄຳແປ ຫຼື ການປ່ຽນຫົວໜ່ວຍສຳລັບການເລືອກຂອງທ່ານ.</translation>
 <translation id="4505050298327493054">ໂຕະເຮັດວຽກທີ່ນຳໃຊ້ຢູ່.</translation>
 <translation id="4513946894732546136">ຄໍາຄິດເຫັນ</translation>
 <translation id="4518404433291145981">ເພື່ອປົດລັອກ Chromebook ຂອງທ່ານ, ໃຫ້ປົດລັອກໂທລະສັບຂອງທ່ານ</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">ກັບຄືນ</translation>
 <translation id="595202126637698455">ການຕິດຕາມການປະຕິບັດເປີດໃຊ້ງານແລ້ວ</translation>
 <translation id="5958529069007801266">ຜູ້ໃຊ້ທີ່ມີການຄວບຄຸມດູແລ</translation>
-<translation id="5960825221082587934">ອະນຸຍາດໃຫ້ຜູ້ຊ່ວຍສະແດງຂໍ້ມູນ ເຊັ່ນ: ຄຳນິຍາມ, ຄຳແປ ຫຼື ການປ່ຽນຫົວໜ່ວຍສຳລັບການເລືອກຂອງທ່ານ.</translation>
 <translation id="5977415296283489383">ຫູຟັງ</translation>
 <translation id="5978382165065462689">​ການແບ່ງປັນ​ການ​ຄວບ​ຄຸມ​ໜ້າ​ຈໍ​ຂອງ​ທ່ານຜ່ານ​ຕົວ​ຊ່ວຍ​ທາງ​ໄກ.</translation>
 <translation id="5980301590375426705">ອອກຈາກແຂກ</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">ທ່ານສາມາດປັກໝຸດໄຟລ໌ສຳຄັນຂອງທ່ານຢູ່ບ່ອນນີ້. ເປີດແອັບໄຟລ໌ເພື່ອເລີ່ມຕົ້ນ.</translation>
 <translation id="622484624075952240">ລົງ</translation>
 <translation id="6231419273573514727">ປະສິດທິພາບອຸປະກອນຕໍ່ພ່ວງອາດຖືກຈຳກັດໄວ້</translation>
-<translation id="6236290670123303279">ຈັດການການຕັ້ງຄ່າ</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">ລັອກເປັນລວງນອນ</translation>
 <translation id="6259254695169772643">ໃຊ້ປາຍປາກກາຂອງທ່ານເພື່ອເລືອກ</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">ການຕິດຕາມປະສິດທິພາບເປີດນຳໃຊ້ຢູ່</translation>
 <translation id="8703634754197148428">ເລີ່ມການບັນທຶກ. ເມື່ອການບັນທຶກເລີ່ມແລ້ວ ກະລຸນາກົດ Alt + Shift + L ເພື່ອນຳທາງໄປຫາຖ້ານ ແລະ ຊອກຫາປຸ່ມຢຸດການບັນທຶກ</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ໃຊ້ປຸ່ມລູກສອນຊ້າຍ ຫຼື ຂວາເພື່ອຈັດການຄຸນສົມບັດນີ້.</translation>
-<translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8721053961083920564">ເປີດລະດັບສຽງ. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ການຖ່າຍຮູບໜ້າຈໍແບບເຕັມຈໍ</translation>
 <translation id="8734991477317290293">ມັນອາດຈະກຳລັງພະຍາຍາມລັກໃຊ້ການກົດແປ້ນພິມຂອງທ່ານຢູ່</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ຂອງທ່ານ</translation>
 <translation id="8877788021141246043">ຕັ້ງຄ່າການແຈ້ງເຕືອນ</translation>
 <translation id="8878886163241303700">ກໍາລັງຂະ​ຫຍາຍຫນ້າ​ຈໍ​</translation>
-<translation id="8883473964424809116">ຄລິກເພື່ອເປີດການຕັ້ງຄ່າຜູ້ຊ່ວຍ Google.</translation>
 <translation id="8884537526797090108">ບໍ່ສາມາດບັນທຶກເນື້ອຫາທີ່ເປັນຄວາມລັບໄດ້</translation>
 <translation id="890616557918890486">ປ່ຽນແຫຼ່ງ</translation>
 <translation id="8909138438987180327">ແບັດເຕີຣີຢູ່ທີ່ <ph name="PERCENTAGE" /> ເປີເຊັນ.</translation>

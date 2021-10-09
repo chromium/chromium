@@ -43,7 +43,6 @@
 <translation id="2560420686485554789">ફાઇલો ડાઉનલોડ કરવા માટે Chromiumને સ્ટોરેજના ઍક્સેસની જરૂર પડે છે</translation>
 <translation id="2572494885440352020">Chromium હેલ્પર</translation>
 <translation id="2577788541081224677">Chromium પરની તમારી વસ્તુઓને તમારા બધા ડિવાઇસ પર ઍક્સેસ કરવા માટે સાઇન ઇન કરો, જેથી તમે સિંક કરવાની સુવિધા ચાલુ કરી શકો.</translation>
-<translation id="2580426763510374355">Chromium OS ઇન્સ્ટૉલ કરો</translation>
 <translation id="2583187216237139145">આ પ્રોફાઇલના ઉપયોગ (જેમકે બુકમાર્ક, ઇતિહાસ, પાસવર્ડ બનાવવા અને અન્ય સેટિંગ ગોઠવવા) દરમિયાન જનરેટ થયેલા કોઈપણ Chromium ડેટાને ઑફિસની પ્રોફાઇલના વ્યવસ્થાપક કાઢી નાખી શકે છે. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">અપડેટ લાગુ કરવા માટે Chromium OSને ફરી શરૂ કરવાની જરૂર છે.</translation>
 <translation id="2648074677641340862">ઇન્સ્ટૉલેશન દરમિયાન ઓપરેટિંગ સિસ્ટમ ભૂલ આવી. કૃપા કરીને ફરીથી Chromium ડાઉનલોડ કરો.</translation>
@@ -56,8 +55,6 @@
 <translation id="2847479871509788944">Chromium માંથી દૂર કરો...</translation>
 <translation id="2885378588091291677">કાર્ય વ્યવસ્થાપક</translation>
 <translation id="2910007522516064972">&amp;Chromium વિશે</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />એક છેલ્લું રિમાઇન્ડર: ઇન્સ્ટૉલેશન કરવાથી, <ph name="BEGIN_BOLD" />તમારી હાર્ડ ડ્રાઇવનો બધો ડેટા કાઢી નાખવામાં આવશે<ph name="END_BOLD" />. કૃપા કરીને ખાતરી કરો કે તમે તમારા જરૂરી ડેટાનો બૅકઅપ લઈ લીધો છે.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />એકવાર ઇન્સ્ટૉલેશન શરૂ થયા પછી, તેને રદ કરી શકાશે નહીં.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium અપ ટૂ ડેટ છે</translation>
 <translation id="2983934633046890458">Chromium પાસવર્ડમાં ફેરફાર કરવાનો પ્રયાસ કરે છે.</translation>
 <translation id="3032706164202344641">Chromium તમારા પાસવર્ડ ચેક કરી શકતું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
@@ -81,7 +78,6 @@
 <translation id="3350761136195634146">આ એકાઉન્ટ સાથેની Chromium પ્રોફાઇલ પહેલેથી અસ્તિત્વમાં છે</translation>
 <translation id="3406848076815591792">વર્તમાન Chromium પ્રોફાઇલ પર સ્વિચ કરીએ?</translation>
 <translation id="3430503420100763906">Chromium પ્રોફાઇલ વડે તમે તમારી બધી વસ્તુઓ Chromium પર અલગ-અલગ રાખી શકો છો. મિત્રો અને કુટુંબ માટે પ્રોફાઇલ બનાવો અથવા તેને ઑફિસ અને મનોરંજન વચ્ચે વિભાજિત કરો.</translation>
-<translation id="3433271666494956603">Chromium OSને ઇન્સ્ટૉલ કરવાની પ્રક્રિયા ચાલુ છે</translation>
 <translation id="347328004046849135">જ્યારે તમે ચેડાં કરવામાં આવેલા પાસવર્ડ વડે સાઇન ઇન કરશો ત્યારે Chromium તમને સૂચિત કરશે</translation>
 <translation id="3474745554856756813">આ, <ph name="ITEMS_COUNT" /> આઇટમને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromium માં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> વડે એક Chromium પ્રોફાઇલથી બીજી Chromium પ્રોફાઇલ પર સ્વિચ કરી શકાય છે</translation>
@@ -109,7 +105,6 @@
 <translation id="4264410486868823224">આ ડિવાઇસનો ઉપયોગ કરતા પહેલાં <ph name="MANAGER" />ને નીચે સેવાની શરતોને વાંચવાની અને સ્વીકારવાની જરૂર છે. આ શરતો Google Chromium OSની શરતોને વિસ્તૃત, તેમાં ફેરફાર અથવા મર્યાદિત કરતી નથી.</translation>
 <translation id="4271805377592243930">Chromium સાથે સહાય મેળવો</translation>
 <translation id="4285930937574705105">અમઉલ્લેખિત ભૂલને કારણે ઇન્સ્ટોલેશન નિષ્ફળ થયું. જો Chromium હાલમાં ચાલી રહ્યું હોય, તો તેને બંધ કરો અને ફરી પ્રયાસ કરો.</translation>
-<translation id="429583012151745428">ઇન્સ્ટૉલ કરવાની પ્રક્રિયા ચાલુ છે. ડિવાઇસને બંધ કરશો નહીં. ઇન્સ્ટૉલ કરવામાં વીસ મિનિટથી વધુ સમય લાગશે નહીં. ઇન્સ્ટૉલ કરવાની પ્રક્રિયા પૂર્ણ થયા બાદ, મશીન ઑટોમૅટિક રીતે શટ ડાઉન થઈ જશે.</translation>
 <translation id="4407044323746248786">છતાં પણ Chromiumમાંથી બહાર નિકળવું છે?</translation>
 <translation id="4415566066719264597">Chromiumને બૅકગ્રાઉન્ડમાં ચાલવા દો</translation>
 <translation id="4423735387467980091">Chromium ને કસ્ટમાઇઝ અને નિયંત્રિત કરો</translation>
@@ -203,7 +198,6 @@
 <translation id="6734291798041940871">Chromium, તમારા કમ્પ્યુટર પર તમામ વપરાશકર્તાઓ માટે પહેલાંથી ઇન્સ્ટૉલ કરેલ છે.</translation>
 <translation id="673636774878526923">Chromium પરની તમારી વસ્તુઓને તમારા બધા ડિવાઇસ પર ઍક્સેસ કરવા માટે, સાઇન ઇન કરો અને પછી સિંક કરવાની સુવિધા ચાલુ કરો.</translation>
 <translation id="6774082503108938489">તમારા માતાપિતાએ Chromium માટે "સાઇટ, ઍપ અને એક્સ્ટેન્શન માટેની પરવાનગીઓ" બંધ કરી છે. આ <ph name="EXTENSION_TYPE_PARAMETER" /> ચાલુ કરવાની મંજૂરી નથી.</translation>
-<translation id="6827182711503025204">Chromium OSને ઇન્સ્ટૉલ કરવાથી, બધો ડેટા તમારા ડિવાઇસ પર ઓવરરાઇટ થઈ જશે.</translation>
 <translation id="6847869444787758381">Chromium વડે તમે તમારા પાસવર્ડમાં ક્યારેક ચેડાં થાય તો તેના વિશે જાણકારી મેળવી શકો છો</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium પર કૉપિ કરેલું છે)</translation>

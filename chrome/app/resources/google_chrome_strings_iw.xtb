@@ -84,8 +84,6 @@
 <translation id="2926676257163822632">‏קל לנחש סיסמאות חלשות. באמצעות Chrome אפשר <ph name="BEGIN_LINK" />ליצור ולזכור סיסמאות חזקות<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">‏נדרשת הרשאת גישה למצלמה ב-Chrome עבור האתר הזה</translation>
 <translation id="2929907241665500097">‏Chrome לא התעדכן, משהו השתבש. <ph name="BEGIN_LINK" />לטיפול בבעיות בעדכון של Chrome ובעדכונים שנכשלו<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />תזכורת אחרונה: ההתקנה <ph name="BEGIN_BOLD" />תגרום למחיקה של כל הכונן הקשיח<ph name="END_BOLD" />. חשוב לוודא שגיבית את הנתונים שחשובים לך.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />אין אפשרות לבטל את ההתקנה לאחר שהחלה.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> – כניסה לרשת – Chrome</translation>
 <translation id="3037838751736561277">‏Google Chrome נמצא במצב רקע.</translation>
 <translation id="3059710691562604940">‏הגלישה הבטוחה כבויה. ההמלצה של Chrome היא להפעיל אותה.</translation>
@@ -133,7 +131,6 @@
 <translation id="4251615635259297716">‏האם לקשר את הנתונים שלך ב-Chrome לחשבון זה?</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
 <translation id="4293420128516039005">‏כניסה לחשבון תסנכרן ותתאים אישית את Chrome בכל המכשירים שברשותך</translation>
-<translation id="429583012151745428">ההתקנה מתבצעת. אין לכבות את המכשיר. ההתקנה לא אמורה להימשך יותר מ-20 דקות. המחשב ייכבה באופן אוטומטי לאחר ההתקנה.</translation>
 <translation id="4325083532956419387">‏גרסת Chrome OS</translation>
 <translation id="4328355335528187361">‏גרסת הפיתוח של Google Chrome ‏(mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -175,7 +172,6 @@
 <translation id="5386244825306882791">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chrome או כשמבצעים חיפוש מסרגל הכתובות.</translation>
 <translation id="5394833366792865639">‏שיתוף כרטיסיית Chrome</translation>
 <translation id="5430073640787465221">‏קובץ ההעדפות שלך פגום או לא חוקי. Google Chrome לא יכול לשחזר את ההגדרות שלך.</translation>
-<translation id="5486618155264784386">‏להתקנת Chrome OS</translation>
 <translation id="556024056938947818">‏Google Chrome מנסה להציג סיסמאות.</translation>
 <translation id="5566025111015594046">‏Google Chrome‏ (mDNS-In)</translation>
 <translation id="5657226924540934362">‏אם הגדרה מסוימת לא מופיעה בדף הזה, אפשר לחפש אותה <ph name="LINK_BEGIN" />
@@ -230,7 +226,6 @@
 <translation id="7155997830309522122">‏אם שינית את הסיסמה הזו, יש לערוך את הסיסמה השמורה ב-Chrome כך שהיא תתאים לסיסמה החדשה שלך.</translation>
 <translation id="7161904924553537242">‏ברוך הבא ל-Google Chrome</translation>
 <translation id="7242029209006116544">‏בחרת להיכנס לחשבון מנוהל, ויינתן למנהל המערכת שלו שליטה על הפרופיל שלך ב-Google Chrome. הנתונים שלך ב-Chrome, כגון אפליקציות, סימניות, היסטוריה, סיסמאות והגדרות אחרות ייקשרו באופן קבוע ל-<ph name="USER_NAME" />. ניתן למחוק את הנתונים האלה באמצעות מרכז השליטה של חשבונות Google, אבל לא ניתן יהיה לשייך את הנתונים האלה לחשבון אחר. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">‏ההתקנה של Chrome OS מתבצעת</translation>
 <translation id="7295052994004373688">‏זו השפה שבה מוצג ממשק המשתמש של Google Chrome</translation>
 <translation id="7296210096911315575">מידע חשוב על בטיחות ועל אופן השימוש</translation>
 <translation id="7308322188646931570">‏Chrome זקוק לגישה לאחסון כדי להוריד קבצים</translation>

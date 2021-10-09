@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">Астына</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> функциясын қосу немесе өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Курсорды жылжыту</translation>
-<translation id="3098580329624789136">"<ph name="QUERY" />" туралы <ph name="INTENT" /> алу</translation>
 <translation id="3100274880412651815">Түсіру режимін жабу</translation>
 <translation id="3105917916468784889">Скриншот түсіру</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">Құрылғыда Google растамаған қолданбалар болуы мүмкін.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Жұпталмаған құрылғылар</translation>
-<translation id="4485060137115666462">Тінтуірдің оң жақ түймесін бассаңыз немесе басып тұрсаңыз, Assistant таңдаған нәрсеңізге қатысты анықтама, аударма немесе бірлікті түрлендіру сияқты ақпаратты көрсетеді.</translation>
 <translation id="4505050298327493054">Белсенді жұмыс үстелі.</translation>
 <translation id="4513946894732546136">Пікір жіберу</translation>
 <translation id="4518404433291145981">Chromebook құлпын ашу үшін алдымен телефонның құлпын ашыңыз.</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">Қайтару</translation>
 <translation id="595202126637698455">Өнімділікті бақылау қосылған</translation>
 <translation id="5958529069007801266">Бақылаудағы пайдаланушы</translation>
-<translation id="5960825221082587934">Assistant қолданбасына анықтама, аударма немесе бірлікті түрлендіру сияқты ақпаратты көрсетуге мүмкіндік беріңіз.</translation>
 <translation id="5977415296283489383">Құлақаспап</translation>
 <translation id="5978382165065462689">Remote Assistance арқылы экранды бөлісіп басқару.</translation>
 <translation id="5980301590375426705">Қонақты шығару</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">Бұл жерде маңызды файлдарыңызды бекіте аласыз. Бастау үшін Files қолданбасын ашыңыз.</translation>
 <translation id="622484624075952240">Төмен</translation>
 <translation id="6231419273573514727">Перифериялық құрылғының өнімділігі шектеулі болуы мүмкін</translation>
-<translation id="6236290670123303279">Параметрлерді басқару</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Көлденең күйде құлыптаулы</translation>
 <translation id="6259254695169772643">Стилустың көмегімен таңдаңыз</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">Жұмыс өнімділігін қадағалау функциясы іске қосылды</translation>
 <translation id="8703634754197148428">Жазуды бастаңыз. Бейне жазу басталған кезде, Alt + Shift + L пернелер тіркесімін басып, сөреге өтіңіз, онда жазуды тоқтатуға арналған түймені таба аласыз</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Бұл функцияны басқару үшін сол немесе оң жаққа бағыттауыш пернелерді пайдаланыңыз.</translation>
-<translation id="8712637175834984815">Түсінікті</translation>
 <translation id="8721053961083920564">Дыбыс деңгейін ауыстыру. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Толық экранды түсіру</translation>
 <translation id="8734991477317290293">Ол басылған пернелерді "ұрлап алу" әрекетін жасауы мүмкін.</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">Интернет байланысын тексеріңіз.</translation>
 <translation id="8877788021141246043">Еске салғыш орнату</translation>
 <translation id="8878886163241303700">Экранды кеңейту</translation>
-<translation id="8883473964424809116">Google Assistant параметрлерін ашу үшін басыңыз.</translation>
 <translation id="8884537526797090108">Құпия мазмұнды жазу мүмкін емес</translation>
 <translation id="890616557918890486">Дереккөзді өзгерту</translation>
 <translation id="8909138438987180327">Батарея қуаты: <ph name="PERCENTAGE" />.</translation>

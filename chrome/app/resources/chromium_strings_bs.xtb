@@ -43,7 +43,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2560420686485554789">Chromium treba pristup pohrani zbog preuzimanja fajlova</translation>
 <translation id="2572494885440352020">Chromium pomagač</translation>
 <translation id="2577788541081224677">Prijavite se da možete uključiti sinhronizaciju i pristupiti svojim Chromium stvarima na svim svojim uređajima.</translation>
-<translation id="2580426763510374355">Instaliraj Chromium OS</translation>
 <translation id="2583187216237139145">Administrator radnog profila može ukloniti bilo koje podatke Chromiuma koji se generiraju tokom korištenja ovog profila (naprimjer kreiranje oznaka, historije, lozinki i drugih postavki). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS treba ponovo pokrenuti kako bi se primijenilo ažuriranje.</translation>
 <translation id="2648074677641340862">Tokom instaliranja se pojavila greška operativnog sistema. Ponovo preuzmite Chromium.</translation>
@@ -56,8 +55,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2847479871509788944">Ukloni iz Chromiuma...</translation>
 <translation id="2885378588091291677">Upravitelj zadataka</translation>
 <translation id="2910007522516064972">O &amp;Chromiumu</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Još jednom podsjećamo: prilikom instaliranja će se <ph name="BEGIN_BOLD" />potpuno izbrisati vaš cijeli tvrdi disk<ph name="END_BOLD" />. Provjerite jeste li napravili sigurnosnu kopiju podataka koji su vam bitni.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Kada instalacija započne, nije je moguće otkazati.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium je ažuriran</translation>
 <translation id="2983934633046890458">Chromium pokušava urediti lozinke.</translation>
 <translation id="3032706164202344641">Chromium ne može provjeravati vaše lozinke. Pokušajte ponovo kasnije.</translation>
@@ -81,7 +78,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3350761136195634146">Chromium profil s ovim računom već postoji</translation>
 <translation id="3406848076815591792">Želite li se prebaciti na Chromium profil?</translation>
 <translation id="3430503420100763906">S Chromium profilima možete odvojiti sve svoje Chromium stvari. Kreirajte profile za prijatelje i porodicu ili razdvojite posao i zabavu.</translation>
-<translation id="3433271666494956603">Instaliranje Chromium OS-a je u toku</translation>
 <translation id="347328004046849135">Chromium će vas obavijestiti kada se prijavite s ugroženom lozinkom</translation>
 <translation id="3474745554856756813">Time će se izbrisati sljedeći broj stavki s uređaja: <ph name="ITEMS_COUNT" />. TDa biste kasnije dohvatili svoje podatke, prijavite se na Chromium kao <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Prečicom <ph name="SHORTCUT" /> možete prebacivati između Chromium profila</translation>
@@ -109,7 +105,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="4264410486868823224"><ph name="MANAGER" /> zahtijeva da prije korištenja uređaja pročitate i prihvatite sljedeće Uslove korištenja usluge. Ovi uslovi ne predstavljaju dodatak, izmjenu ili ograničenje uslova za Chromium OS.</translation>
 <translation id="4271805377592243930">Potražite pomoć s Chromiumom</translation>
 <translation id="4285930937574705105">Instalacija nije uspjela zbog neodređene greške. Ako je Chromium trenutno pokrenut, zatvorite ga i pokušajte ponovo.</translation>
-<translation id="429583012151745428">Instaliranje je u toku. Nemojte isključivati uređaj. Instaliranje ne bi trebalo trajati duže od dvadeset minuta. Uređaj će se automatski isključiti nakon instalacije.</translation>
 <translation id="4407044323746248786">Želite li ipak zatvoriti Chromium?</translation>
 <translation id="4415566066719264597">Neka Chromium radi u pozadini</translation>
 <translation id="4423735387467980091">Prilagodite Chromium i upravljajte njime</translation>
@@ -203,7 +198,6 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="6734291798041940871">Chromium je već instaliran za sve korisnike na računaru.</translation>
 <translation id="673636774878526923">Prijavite se, a zatim uključite sinhronizaciju da pristupite svojim Chromium stvarima na svim svojim uređajima.</translation>
 <translation id="6774082503108938489">Tvoj roditelj je isključio "Odobrenja za web lokacije, aplikacije i ekstenzije" za Chromium. Omogućavanje ove stavke (<ph name="EXTENSION_TYPE_PARAMETER" />) nije dozvoljeno.</translation>
-<translation id="6827182711503025204">Ako instalirate Chromium OS, zamijenit će se svi podaci na vašem uređaju.</translation>
 <translation id="6847869444787758381">Chromium vas obavještava ako sigurnost vaših lozinki bude ugrožena</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopirano u Chromium)</translation>

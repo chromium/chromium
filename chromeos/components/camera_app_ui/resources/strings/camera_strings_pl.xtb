@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1113173431709655881">Tryb kamery</translation>
 <translation id="1175958423215084756">Wykryto link. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Zdjęcia z galerii</translation>
 <translation id="1300209025925956156">Skanowanie dokumentu</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">Zacznij nagrywanie</translation>
 <translation id="2599796128805996109">Tylny aparat</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> s</translation>
+<translation id="2761536921376153655">Typ skanowania</translation>
 <translation id="2879583609344924966">Podłączono kamerę <ph name="CAMERA" />.</translation>
 <translation id="2968794441791257519">Zdjęcia i filmy pochodzące z aparatu zostaną przeniesione do folderu Pobrane pliki. Dostęp do nich możesz uzyskać w aplikacji Pliki.
 
@@ -99,9 +101,11 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="698156982839284926">3 sekundy</translation>
 <translation id="712848772518857951">Czy na pewno chcesz usunąć te elementy (<ph name="COUNT" />)?</translation>
 <translation id="7134221860976209830">10-sekundowy samowyzwalacz</translation>
+<translation id="7191890674911603392">Typ rekordu</translation>
 <translation id="7243947652761655814">Rozdzielczość wideo</translation>
 <translation id="7337660886763914220">Błędy systemu plików.</translation>
 <translation id="7450541714075000668">Tekst został skopiowany</translation>
+<translation id="7476762461674917065">Pokaż opcje zapisywania GIF-a</translation>
 <translation id="7488619942230388918">Nagraj film GIF</translation>
 <translation id="7557677699350329807">Przełącz na następny aparat</translation>
 <translation id="7607002721634913082">Wstrzymano</translation>

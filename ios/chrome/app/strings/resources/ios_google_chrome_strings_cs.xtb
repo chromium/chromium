@@ -3,6 +3,7 @@
 <translationbundle lang="cs">
 <translation id="1096883626080133124">S Google Chrome toho stihnete víc – je jednoduchý, bezpečný a rychlejší než kdy dřív</translation>
 <translation id="1282031177488366470">Pomozte zlepšit funkce a výkon Chromu</translation>
+<translation id="1354592789402432496">Váš administrátor vyžaduje, abyste se přihlásili pomocí účtu organizace. Účty, které váš administrátor nepovoluje, jsou skryty.</translation>
 <translation id="1479202195792305274">Když se přihlásíte k účtu Google, může vám Chrome kontrolovat hesla</translation>
 <translation id="1493827051843127077">Nastavte si Chrome jako výchozí prohlížeč a karty, hesla a platební údaje se budou synchronizovat na všechna vaše zařízení</translation>
 <translation id="1504372625950710826">Chrome nemůže vyhledat dostupné aktualizace. Zkuste zkontrolovat připojení k internetu.</translation>
@@ -45,6 +46,7 @@
 <translation id="3988789688219830639">Google Chrome nemá přístup k vašim fotkám nebo videím. Povolte přístup v systému iOS v Nastavení &gt; Soukromí &gt; Fotky.</translation>
 <translation id="4099578267706723511">Pomozte Chrome zlepšovat – posílejte Googlu statistiky o využívání a zprávy o selhání.</translation>
 <translation id="417201473131094001">V Chrome Canary není podporováno</translation>
+<translation id="4214277427269650960">Přihlaste se na tento webu a do Chromu. Synchronizaci můžete zapnout později.</translation>
 <translation id="424864128008805179">Odhlásit se z Chromu?</translation>
 <translation id="4249068189593983585">Tip pro Chrome. Další možnosti karet zobrazíte přidržením tlačítka Zobrazit karty, které najdete v dolní nebo horní části obrazovky.</translation>
 <translation id="4523886039239821078">Některé doplňky způsobují selhání prohlížeče Chrome. Prosím odinstalujte:</translation>
@@ -59,6 +61,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Chrome nemůže vyhledat dostupné aktualizace, protože jste offline</translation>
 <translation id="5716154293141027663">Otevřít Chrome při každém klepnutí na odkaz v jiné aplikaci</translation>
+<translation id="572883588166315317">Vaše organizace vyžaduje, abyste se k používání Chromu přihlásili. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Tip pro Chrome. Některá tlačítka, například Zpět, Vpřed a Hledat, jsou teď v dolní části obrazovky.</translation>
 <translation id="5876773482963502140">Když Chromu povolíte přístup k poloze, bude ji odesílat webům, u kterých to povolíte. Weby o vaši polohu mohou žádat, pokud pro vás mají místní informace, například seznamy obchodů v okolí nebo místní zprávy.</translation>
 <translation id="6054613632208573261">Používejte Chrome ve výchozím nastavení</translation>

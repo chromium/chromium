@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">নিচে</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">কার্সর সরান</translation>
-<translation id="3098580329624789136">"<ph name="QUERY" />"-এর জন্য <ph name="INTENT" /> পান</translation>
 <translation id="3100274880412651815">ক্যাপচার মোড বাতিল করুন</translation>
 <translation id="3105917916468784889">স্ক্রিনশট নিন</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ব্লুটুথ)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">Google যাচাই করেনি এমন অ্যাপও এই ডিভাইসে থাকে পারে।</translation>
 <translation id="4479639480957787382">ইথারনেট</translation>
 <translation id="4481530544597605423">বিযুক্ত করা ডিভাইসগুলি</translation>
-<translation id="4485060137115666462">রাইট-ক্লিক করলে বা বেশিক্ষণ টিপে ধরে রাখলে, Assistant আপনার বেছে নেওয়া আইটেমের সংজ্ঞা, অনুবাদ বা ইউনিট রূপান্তরের মতো বিভিন্ন তথ্য দেখায়।</translation>
 <translation id="4505050298327493054">অ্যাক্টিভ ডেস্কটপ।</translation>
 <translation id="4513946894732546136">প্রতিক্রিয়া</translation>
 <translation id="4518404433291145981">Chromebook আনলক করতে, প্রথমে আপনার ফোন আনলক করুন</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">ফেরান</translation>
 <translation id="595202126637698455">কার্য-সম্পাদনা ট্রেস করা সক্ষম রয়েছে</translation>
 <translation id="5958529069007801266">তত্ত্বাবধানে থাকা ব্যবহারকারী</translation>
-<translation id="5960825221082587934">আপনার বেছে নেওয়া আইটেমের জন্য Assistant-কে সংজ্ঞা, অনুবাদ বা ইউনিট রূপান্তরের মতো তথ্য দেখানোর অনুমতি দিন।</translation>
 <translation id="5977415296283489383">হেডফোন</translation>
 <translation id="5978382165065462689">রিমোট সহায়কের মাধ্যমে আপনার স্ক্রিন নিয়ন্ত্রণ ভাগ করুন৷</translation>
 <translation id="5980301590375426705">অতিথি থেকে প্রস্থান</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">গুরুত্বপূর্ণ ফাইলগুলি আপনি এখানে পিন করে রাখতে পারবেন। শুরু করার জন্য, Files অ্যাপ খুলুন।</translation>
 <translation id="622484624075952240">নিচের</translation>
 <translation id="6231419273573514727">পেরিফেরাল পারফর্ম্যন্স সীমাবদ্ধ হতে পারে</translation>
-<translation id="6236290670123303279">সেটিংস ম্যানেজ করুন</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">স্ক্রিনটি ল্যান্ডস্কেপ মোডে লক করা আছে</translation>
 <translation id="6259254695169772643">বেছে নিতে স্টাইলাস ব্যবহার করুন</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">পারফরম্যান্স ট্রেস করার বিকল্প চালু আছে</translation>
 <translation id="8703634754197148428">রেকর্ডিং শুরু করুন। রেকর্ডিং শুরু হলে, Alt, Shift ও L কী একসাথে প্রেস করে শেল্ফে যান এবং রেকর্ডিং বন্ধ করার বোতাম খুঁজুন</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> এই ফিচার ম্যানেজ করতে, 'বাঁদিক' বা 'ডানদিকের তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
-<translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8721053961083920564">ভলিউম টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ফুল-স্ক্রিন ক্যাপচার</translation>
 <translation id="8734991477317290293">এটি আপনার পাসওয়ার্ড চুরি করার চেষ্টা করতে পারে</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">আপনার ইন্টারনেট কানেকশন চেক করুন</translation>
 <translation id="8877788021141246043">রিমাইন্ডার সেট করুন</translation>
 <translation id="8878886163241303700">স্ক্রিন সম্প্রসারণ করা হচ্ছে</translation>
-<translation id="8883473964424809116">Google Assistant-এর সেটিংস খুলতে ক্লিক করুন।</translation>
 <translation id="8884537526797090108">গোপনীয় কন্টেন্ট রেকর্ড করা যাচ্ছে না</translation>
 <translation id="890616557918890486">সোর্স পরিবর্তন করুন</translation>
 <translation id="8909138438987180327">ব্যাটারিতে <ph name="PERCENTAGE" /> শতাংশ চার্জ আছে।</translation>

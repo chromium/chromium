@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">Доод</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" />-г асаах/унтраах. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Курсорыг зөөх</translation>
-<translation id="3098580329624789136">"<ph name="QUERY" />"-н <ph name="INTENT" />-г авах</translation>
 <translation id="3100274880412651815">Зураг авах горимыг хаах</translation>
 <translation id="3105917916468784889">Дэлгэцийн зураг авах</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -477,7 +476,6 @@
 <translation id="4477892968187500306">Энэ төхөөрөмж нь Google-н баталгаажуулаагүй аппыг агуулж болзошгүй.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Хослоогүй төхөөрөмж</translation>
-<translation id="4485060137115666462">Баруун талыг товших эсвэл удаан дарснаар Туслах таны сонголтын тодорхойлолт, орчуулга эсвэл нэгжийн хөрвүүлэг зэрэг мэдээллийг харуулдаг.</translation>
 <translation id="4505050298327493054">Идэвхтэй дэлгэц.</translation>
 <translation id="4513946894732546136">Санал дүгнэлт</translation>
 <translation id="4518404433291145981">Chromebook-нхээ түгжээг тайлахын тулд эхлээд утасныхаа түгжээг тайлна уу</translation>
@@ -669,7 +667,6 @@
 <translation id="5947494881799873997">Буцаах</translation>
 <translation id="595202126637698455">Гүйцэтгэлийн ажиглалтыг идэвхжүүлсэн</translation>
 <translation id="5958529069007801266">Хяналттай хэрэглэгч</translation>
-<translation id="5960825221082587934">Туслахад тодорхойлолт, орчуулга эсвэл нэгжийн хөрвүүлэлт зэрэг мэдээллийг таны сонголтод харуулахыг зөвшөөрнө үү.</translation>
 <translation id="5977415296283489383">Чихэвч</translation>
 <translation id="5978382165065462689">Remote Assistance ашиглан өөрийн дэлгэцийн хяналтыг хуваалцах.</translation>
 <translation id="5980301590375426705">Зочноос гарах</translation>
@@ -703,7 +700,6 @@
 <translation id="6179832488876878285">Та чухал файлуудаа энд бэхлэх боломжтой. Эхлүүлэхийн тулд Файлс аппыг нээнэ үү.</translation>
 <translation id="622484624075952240">Бууруулсан жагсаалт</translation>
 <translation id="6231419273573514727">Дагалдах төхөөрөмжийн гүйцэтгэлийг хязгаарласан байж болзошгүй</translation>
-<translation id="6236290670123303279">Тохиргоог удирдах</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Хэвтээ чиглэлээр түгжсэн</translation>
 <translation id="6259254695169772643">Мэдрэгч үзгээ ашиглан сонгоно уу</translation>
@@ -1022,7 +1018,6 @@
 <translation id="8683506306463609433">Гүйцэтгэлийн хяналт идэвхтэй байна</translation>
 <translation id="8703634754197148428">Бичиж эхэлнэ үү. Бичиж эхэлсэн үед Alt + Shift + L-г ашиглан тавиур луу шилжиж, бичлэгийг зогсоох товчлуурыг олно уу</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Энэ онцлогийг удирдахын тулд Зүүн эсвэл Баруун суман товчийг ашиглана уу.</translation>
-<translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="8721053961083920564">Дууг хаах/нээх. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Бүтэн дэлгэцийн зураг авах</translation>
 <translation id="8734991477317290293">Энэ нь таны түлхүүрийн цуглуулгыг хулгайлахаар оролдож байж болзошгүй</translation>
@@ -1050,7 +1045,6 @@
 <translation id="8876661425082386199">Холболтоо шалгана уу</translation>
 <translation id="8877788021141246043">Сануулагч тохируулах</translation>
 <translation id="8878886163241303700">Дэлгэцийг сунгаж байна</translation>
-<translation id="8883473964424809116">Google Туслахын тохиргоог нээхийн тулд товшино уу.</translation>
 <translation id="8884537526797090108">Нууцлалтай контентыг бичих боломжгүй</translation>
 <translation id="890616557918890486">Эх сурвалжийг өөрчлөх</translation>
 <translation id="8909138438987180327">Батарей <ph name="PERCENTAGE" /> хувьтай байна.</translation>

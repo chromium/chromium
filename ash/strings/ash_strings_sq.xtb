@@ -277,7 +277,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3087734570205094154">Në fund</translation>
 <translation id="3090989381251959936">Aktivizo/çaktivizo <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Zhvendos kursorin</translation>
-<translation id="3098580329624789136">Merr <ph name="INTENT" /> për "<ph name="QUERY" />"</translation>
 <translation id="3100274880412651815">Hiq modalitetin e regjistrimit</translation>
 <translation id="3105917916468784889">Nxirr një pamje të ekranit</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -480,7 +479,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4477892968187500306">Kjo pajisje mund të përmbajë aplikacione që nuk janë verifikuar nga Google.</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4481530544597605423">Pajisjet e paçiftuara</translation>
-<translation id="4485060137115666462">Me një klikim me butonin djathtas ose shtypje të gjatë, "Asistenti" shfaq informacione si p.sh. përkufizimi, përkthimi ose konvertimi i njësisë për zgjedhjen tënde.</translation>
 <translation id="4505050298327493054">Hapësira e punës aktive.</translation>
 <translation id="4513946894732546136">Komente</translation>
 <translation id="4518404433291145981">Për të shkyçur Chromebook-un tënd, shkyç fillimisht telefonin</translation>
@@ -674,7 +672,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5947494881799873997">Riktheje</translation>
 <translation id="595202126637698455">Gjurmimi i rendimentit u aktivizua</translation>
 <translation id="5958529069007801266">Përdorues i mbikëqyrur</translation>
-<translation id="5960825221082587934">Lëri "Asistentit" të tregojë informacione, si p.sh. përkufizimin, përkthimin apo konvertimin e njësive për zgjedhjen tënde.</translation>
 <translation id="5977415296283489383">Kufjet</translation>
 <translation id="5978382165065462689">Po ndan kontrollin e ekranit përmes "Ndihmës në distancë".</translation>
 <translation id="5980301590375426705">Dil si vizitor</translation>
@@ -708,7 +705,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6179832488876878285">Mund t'i gozhdosh skedarët e tu të rëndësishëm këtu. Hap aplikacionin "Skedarët" për të filluar.</translation>
 <translation id="622484624075952240">Poshtë</translation>
 <translation id="6231419273573514727">Cilësia e funksionimit të pajisjeve periferike mund të jetë e kufizuar</translation>
-<translation id="6236290670123303279">Menaxho cilësimet</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Kyçur horizontalisht</translation>
 <translation id="6259254695169772643">Përdor lapsin për të zgjedhur</translation>
@@ -1027,7 +1023,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8683506306463609433">Gjurmimi i cilësisë së funksionimit është aktiv</translation>
 <translation id="8703634754197148428">Nis regjistrimin. Pasi të ketë filluar regjistrimi, përdor Alt + Shift + L për të shkuar te rafti dhe gjej butonin e ndalimit të regjistrimit</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Përdor tastet "Shigjeta majtas" ose "Shigjeta djathtas" për ta menaxhuar këtë veçori.</translation>
-<translation id="8712637175834984815">E kuptova</translation>
 <translation id="8721053961083920564">Ndërro volumin. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Regjistrimi i plotë i ekranit</translation>
 <translation id="8734991477317290293">Ajo ndoshta po përpiqet të regjistrojë goditjet e tasteve</translation>
@@ -1055,7 +1050,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8876661425082386199">Kontrollo lidhjen tënde</translation>
 <translation id="8877788021141246043">Cakto një alarm rikujtues</translation>
 <translation id="8878886163241303700">Ekran i zgjeruar</translation>
-<translation id="8883473964424809116">Kliko për të hapur cilësimet e Google Assistant.</translation>
 <translation id="8884537526797090108">Nuk mund të regjistrojë përmbajtje konfidenciale</translation>
 <translation id="890616557918890486">Ndrysho burimin</translation>
 <translation id="8909138438987180327">Bateria është në <ph name="PERCENTAGE" /> për qind.</translation>

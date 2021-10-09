@@ -180,6 +180,7 @@ Toca calquera palabra para buscala. Mantena premida para seleccionar máis ou me
 <translation id="2139186145475833000">Engadir á pantalla inicio</translation>
 <translation id="2141396931810938595">Segundo o uso que fas do navegador</translation>
 <translation id="214888715418183969">Escolle a información que queiras compartir con Chrome. As métricas que compartas usaranse para axudar a mellorar as funcións, o rendemento e a estabilidade de Chrome.</translation>
+<translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2154484045852737596">Editar tarxeta</translation>
 <translation id="2154710561487035718">Copiar o URL</translation>
 <translation id="2156074688469523661">Sitios restantes (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -640,7 +641,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4943872375798546930">Non hai resultados</translation>
 <translation id="4957722034734105353">Máis información...</translation>
 <translation id="4961107849584082341">Traduce esta páxina a calquera idioma</translation>
-<translation id="4970824347203572753">Non está dispoñible na túa localización</translation>
 <translation id="4971735654804503942">Unha protección máis rápida e proactiva contra sitios web, descargas e extensións perigosos. Móstrache unha advertencia en caso de violacións da seguranza do contrasinal. Para utilizar este modo débenselle enviar a Google os datos de navegación.</translation>
 <translation id="497421865427891073">Avanzar</translation>
 <translation id="4988210275050210843">Descargando ficheiro (<ph name="MEGABYTES" />).</translation>
@@ -724,7 +724,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5483197086164197190">Navega por Chrome</translation>
 <translation id="5487521232677179737">Borrar datos</translation>
 <translation id="549025011754480756">Como facer buscas por voz?</translation>
-<translation id="5500777121964041360">É posible que non estea dispoñible na túa localización</translation>
 <translation id="5512137114520586844"><ph name="PARENT_NAME" /> xestiona esta conta.</translation>
 <translation id="5514904542973294328">Desactivado polo administrador deste dispositivo</translation>
 <translation id="5515439363601853141">Desbloquea a pantalla para ver o teu contrasinal</translation>
@@ -878,7 +877,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6364438453358674297">Queres eliminar a suxestión do historial?</translation>
 <translation id="6378173571450987352">Detalles: filas ordenadas por cantidade de datos utilizados</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> abrirase en Chrome. Ao continuar, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" />, así como as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="6381421346744604172">Escurecer sitios web</translation>
 <translation id="6395288395575013217">LIGAZÓN</translation>
 <translation id="6397616442223433927">De novo en liña</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> o <ph name="VIOLATED_URL" /></translation>
@@ -1209,7 +1207,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8218052821161047641">Páxina de carga rápida</translation>
 <translation id="8218622182176210845">Xestiona a túa conta</translation>
 <translation id="8223642481677794647">Menú da tarxeta do feed</translation>
-<translation id="8224471946457685718">Descargar artigos personalizados a través da wifi</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="825412236959742607">Esta páxina utiliza demasiada memoria, polo que Chrome quitou parte do seu contido.</translation>
 <translation id="8260126382462817229">Proba a volver iniciar sesión</translation>

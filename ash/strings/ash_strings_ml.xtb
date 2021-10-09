@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">താഴെ</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">കഴ്‌സർ നീക്കുക</translation>
-<translation id="3098580329624789136">"<ph name="QUERY" />" എന്നതിനുള്ള <ph name="INTENT" /> നേടുക</translation>
 <translation id="3100274880412651815">ക്യാപ്‌ചർ മോഡ് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="3105917916468784889">സ്ക്രീന്‍ഷോട്ട് എടുക്കുക</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">Google പരിശോധിച്ചുറപ്പിച്ചിട്ടില്ലാത്ത ആപ്പുകൾ ഈ ഉപകരണത്തിൽ അടങ്ങിയിരിക്കാം.</translation>
 <translation id="4479639480957787382">എതെര്‍‌നെറ്റ്</translation>
 <translation id="4481530544597605423">ജോടി മാറ്റിയ ഉപകരണങ്ങൾ</translation>
-<translation id="4485060137115666462">വലത്-ക്ലിക്ക് ചെയ്യുകയോ ദീർഘനേരം അമർത്തുകയോ ചെയ്താൽ നിങ്ങൾ തിരഞ്ഞെടുത്തതിനുള്ള നിർവചനമോ വിവർത്തനമോ യൂണിറ്റ് പരിവർത്തനമോ പോലുള്ള വിവരങ്ങൾ Assistant കാണിക്കുന്നു.</translation>
 <translation id="4505050298327493054">സജീവ ഡെസ്‌ക്.</translation>
 <translation id="4513946894732546136">ഫീഡ്ബാക്ക്</translation>
 <translation id="4518404433291145981">Chromebook അൺലോക്ക് ചെയ്യാൻ ആദ്യം നിങ്ങളുടെ ഫോൺ അൺലോക്ക് ചെയ്യുക</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">പഴയപടിയാക്കുക</translation>
 <translation id="595202126637698455">പ്രകടനം പിന്തുടരൽ പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="5958529069007801266">മേൽനോട്ടത്തിലുള്ള ഉപയോക്താവ്</translation>
-<translation id="5960825221082587934">നിർവചനമോ വിവർത്തനമോ യൂണിറ്റ് പരിവർത്തനമോ പോലുള്ള വിവരങ്ങൾ കാണിക്കാൻ Assistant-നെ അനുവദിക്കുക.</translation>
 <translation id="5977415296283489383">ഹെഡ്‌ഫോൺ</translation>
 <translation id="5978382165065462689">നിങ്ങളുടെ വിദൂര സഹായി മുഖേന സ്‌ക്രീനിന്റെ നിയന്ത്രണം പങ്കിടുക.</translation>
 <translation id="5980301590375426705">ഗസ്റ്റ് എക്സിറ്റ്</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">നിങ്ങളുടെ പ്രധാനപ്പെട്ട ഫയലുകൾ ഇവിടെ പിൻ ചെയ്യാം. ആരംഭിക്കാൻ Files ആപ്പ് തുറക്കുക.</translation>
 <translation id="622484624075952240">താഴേക്കുള്ള കീ</translation>
 <translation id="6231419273573514727">പെരിഫറൽ പ്രകടനം പരിമിതപ്പെട്ടേക്കാം</translation>
-<translation id="6236290670123303279">ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">സമാന്തരമായി ലോക്ക് ചെയ്‌തു</translation>
 <translation id="6259254695169772643">തിരഞ്ഞെടുക്കാൻ നിങ്ങളുടെ സ്റ്റൈലസ് ഉപയോഗിക്കുക</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">പ്രകടനം പിന്തുടരൽ സജീവം</translation>
 <translation id="8703634754197148428">റെക്കോർഡിംഗ് ആരംഭിക്കൂ. റെക്കോർഡിംഗ് ആരംഭിച്ചുകഴിഞ്ഞാൽ, ഷെൽഫിലേക്ക് പോയി റെക്കോർഡിംഗ് നിർത്തുക ബട്ടൺ കണ്ടെത്താൻ Alt + Shift + L ഉപയോഗിക്കുക</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ഈ ഫീച്ചർ മാനേജ് ചെയ്യാൻ ഇടത്തേയ്‌ക്കോ വലത്തേയ്‌ക്കോ ഉള്ള അമ്പടയാളം ഉപയോഗിക്കുക.</translation>
-<translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="8721053961083920564">വോളിയം മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">പൂർണ്ണ സ്ക്രീൻ ക്യാപ്‌ചർ ചെയ്യൽ</translation>
 <translation id="8734991477317290293">ഇത് നിങ്ങളുടെ കീസ്ട്രോക്കുകൾ മോഷ്‌ടിക്കാൻ ശ്രമിച്ചേക്കാം.</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">നിങ്ങളുടെ കണക്ഷൻ പരിശോധിക്കുക</translation>
 <translation id="8877788021141246043">ഒരു റിമൈൻഡർ സജ്ജീകരിക്കുക</translation>
 <translation id="8878886163241303700">സ്‌ക്രീൻ വിപുലീകരിക്കുന്നു</translation>
-<translation id="8883473964424809116">Google Assistant ക്രമീകരണം തുറക്കാൻ ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="8884537526797090108">രഹസ്യാത്മക ഉള്ളടക്കം റെക്കോർഡ് ചെയ്യാനാകില്ല</translation>
 <translation id="890616557918890486">ഉറവിടം മാറ്റുക</translation>
 <translation id="8909138438987180327">ബാറ്ററി <ph name="PERCENTAGE" /> ശതമാനം ഉണ്ട്..</translation>

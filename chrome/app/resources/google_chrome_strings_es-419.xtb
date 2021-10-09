@@ -84,8 +84,6 @@
 <translation id="2926676257163822632">Las contraseñas poco seguras son fáciles de adivinar. Permite que Chrome <ph name="BEGIN_LINK" />cree y recuerde contraseñas seguras para ti<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome necesita permiso de acceso a la cámara para este sitio.</translation>
 <translation id="2929907241665500097">No se actualizó Chrome porque se produjo un error. <ph name="BEGIN_LINK" />Soluciona los problemas de actualización y las actualizaciones con error de Chrome.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Un último recordatorio: la instalación <ph name="BEGIN_BOLD" />borrará todo el disco duro<ph name="END_BOLD" />. Asegúrate de haber creado una copia de seguridad de todos los datos que consideres importantes.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Una vez que comienza la instalación, no puede cancelarse.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" />: Acceso a la red - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome está en modo de segundo plano</translation>
 <translation id="3059710691562604940">La Navegación segura está desactivada. Chrome recomienda activarla.</translation>
@@ -133,7 +131,6 @@
 <translation id="4251615635259297716">¿Quieres vincular tus datos de Google Chrome con esta cuenta?</translation>
 <translation id="4281844954008187215">Condiciones del Servicio</translation>
 <translation id="4293420128516039005">Accede para sincronizar y personalizar Chrome en todos tus dispositivos</translation>
-<translation id="429583012151745428">La instalación está en curso. No apagues el dispositivo. La instalación no debe tardar más de veinte minutos. La máquina se apagará automáticamente después de la instalación.</translation>
 <translation id="4325083532956419387">Versión del Sistema operativo Chrome</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -175,7 +172,6 @@
 <translation id="5386244825306882791">También controla qué página se muestra al iniciar Chrome o al realizar búsquedas desde el cuadro multifunción.</translation>
 <translation id="5394833366792865639">Compartir una pestaña de Chrome</translation>
 <translation id="5430073640787465221">Tu archivo de preferencias está dañado o no es válido. Google Chrome no puede recuperar tu configuración.</translation>
-<translation id="5486618155264784386">Instalar Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome está intentando mostrar contraseñas.</translation>
 <translation id="5566025111015594046">Google Chrome (tráfico mDNS entrante)</translation>
 <translation id="5657226924540934362">Si no ves una opción de configuración en esta página, consulta la <ph name="LINK_BEGIN" />
@@ -230,7 +226,6 @@
 <translation id="7155997830309522122">En ese caso, edita la contraseña guardada en Chrome para que coincida con la nueva.</translation>
 <translation id="7161904924553537242">Bienvenido a Google Chrome</translation>
 <translation id="7242029209006116544">Estás por acceder con una cuenta administrada, lo que significa que proporcionarás al administrador el control sobre tu perfil de Google Chrome. Tus datos de Google Chrome, como las aplicaciones, los favoritos, el historial, las contraseñas y otros parámetros de configuración quedarán vinculados a <ph name="USER_NAME" /> de forma permanente. Podrás eliminar estos datos a través del Panel de control de Cuentas de Google, pero no podrás asociarlos a otra cuenta. También puedes crear un perfil para mantener separados tus datos de Chrome. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Instalación de Chrome OS en curso</translation>
 <translation id="7295052994004373688">Este idioma se usa para mostrar la IU de Google Chrome</translation>
 <translation id="7296210096911315575">Información importante sobre el uso y la seguridad</translation>
 <translation id="7308322188646931570">Chrome necesita acceder al almacenamiento para descargar archivos</translation>

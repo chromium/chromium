@@ -43,7 +43,6 @@
 <translation id="2560420686485554789">Chromium ຕ້ອງການເຂົ້າເຖິງບ່ອນເກັບຂໍ້ມູນເພື່ອດາວໂຫຼດໄຟລ໌</translation>
 <translation id="2572494885440352020">ຜູ້​ຊ່ວຍ Chromium</translation>
 <translation id="2577788541081224677">ເພື່ອເຂົ້າເຖິງຂໍ້ມູນ Chromium ຂອງທ່ານໃນອຸປະກອນທັງໝົດຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອໃຫ້ທ່ານສາມາດເປີດການຊິ້ງຂໍ້ມູນໄດ້.</translation>
-<translation id="2580426763510374355">ຕິດຕັ້ງ Chromium OS</translation>
 <translation id="2583187216237139145">ຜູ້ເບິ່ງແຍງລະບົບໂປຣໄຟລ໌ບ່ອນເຮັດວຽກສາມາດລຶບຂໍ້ມູນ Chromium ໃດໆກໍຕາມທີ່ສ້າງຂຶ້ນໃນລະຫວ່າງການນຳໃຊ້ໂປຣໄຟລ໌ນີ້ (ເຊັ່ນ: ການສ້າງບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນໆ) ອອກໄດ້. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">ຈຳເປັນຕ້ອງປິດແລ້ວເປີດ Chromium OS ຄືນໃໝ່ເພື່ອນຳໃຊ້ການອັບເດດ.</translation>
 <translation id="2648074677641340862">ເກີດຄວາມຜິດພາດດ້ານລະບົບປະຕິບັດການໃນລະຫວ່າງການຕິດຕັ້ງ. ກະລຸນາດາວໂຫຼດ Chromium ອີກ.</translation>
@@ -56,8 +55,6 @@
 <translation id="2847479871509788944">ເອົາ​ອອກ​ຈາກ Chromium...</translation>
 <translation id="2885378588091291677">ຕົວຈັດການໜ້າວຽກ</translation>
 <translation id="2910007522516064972">ກ່ຽວ​ກັບ​ Chromium</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />ການແຈ້ງເຕືອນເທື່ອສຸດທ້າຍ: ການຕິດຕັ້ງ <ph name="BEGIN_BOLD" />ຈະລຶບທັງຮາດໄດຣຟ໌ຂອງທ່ານອອກ<ph name="END_BOLD" />. ກະລຸນາກວດສອບວ່າທ່ານສຳຮອງຂໍ້ມູນທີ່ທ່ານຕ້ອງການໄວ້ໝົດແລ້ວ.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />ຫຼັງຈາກເລີ່ມການຕິດຕັ້ງແລ້ວມັນຈະບໍ່ສາມາດຍົກເລີກໄດ້.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium ແມ່ນເວີຊັນໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
 <translation id="2983934633046890458">Chromium ກຳລັງພະຍາຍາມແກ້ໄຂລະຫັດຜ່ານ.</translation>
 <translation id="3032706164202344641">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫລັງ.</translation>
@@ -81,7 +78,6 @@
 <translation id="3350761136195634146">ມີໂປຣໄຟລ໌ Chromium ກັບບັນຊີນີ້ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="3406848076815591792">ສະຫຼັບເປັນໂປຣໄຟລ໌ Chromium ທີ່ມີຢູ່ກ່ອນແລ້ວບໍ?</translation>
 <translation id="3430503420100763906">ດ້ວຍໂປຣໄຟລ໌ Chromium ທ່ານສາມາດແຍກເນື້ອຫາ Chromium ຂອງທ່ານທັງໝົດໄດ້. ສ້າງໂປຣໄຟລ໌ສຳລັບໝູ່ ແລະ ຄອບຄົວ ຫຼື ແຍກຈາກກັນລະຫວ່າງວຽກ ແລະ ຄວາມມ່ວນ.</translation>
-<translation id="3433271666494956603">ກຳລັງຕິດຕັ້ງ Chromium OS ຢູ່</translation>
 <translation id="347328004046849135">Chromium ຈະແຈ້ງບອກທ່ານເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍລະຫັດຜ່ານທີ່ຖືກລະເມີດ</translation>
 <translation id="3474745554856756813">ນີ້ຈະລຶບ <ph name="ITEMS_COUNT" /> ລາຍການອອກຈາກອຸປະກອນນີ້. ເພື່ອກູ້ຂໍ້ມູນຂອງທ່ານຄືນໃນພາຍຫຼັງ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chromium ເປັນ <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> ສາມາດສະຫຼັບລະຫວ່າງໂປຣໄຟລ໌ Chromium ໄດ້</translation>
@@ -109,7 +105,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" /> ກຳນົດໃຫ້ທ່ານອ່ານ ແລະ ຍອມຮັບຂໍ້ກຳນົດການບໍລິການຕໍ່ໄປນີ້ກ່ອນທີ່ຈະໃຊ້ອຸປະກອນນີ້. ຂໍ້ກຳນົດການບໍລິການເຫຼົ່ານີ້ບໍ່ຂະຫຍາຍ, ປ່ຽນແປງ ຫຼື ຈຳກັດຂໍ້ກຳນົດຂອງ Chromium OS.</translation>
 <translation id="4271805377592243930">ຂໍຄວາມຊ່ວຍເຫຼືອເລື່ອງ Chromium</translation>
 <translation id="4285930937574705105">ການ​ຕິດ​ຕັ້ງ​ບໍ່​ສໍາ​ເລັດ​ອັນ ​ເນື່ອງ​ມາ​ຈາກ​ຄວາມ​ຜິດພາດທີ່ບໍ່ລະບຸໄວ້​. ຖ້າ Chromium ກໍາລັງແລ່ນຢູ່ໃນປະຈຸບັນ​, ກະ​ລຸ​ນາ​ປິດ​ມັນ ​ແລະ​ລອງໃໝ່​ອີກ​.</translation>
-<translation id="429583012151745428">ກຳລັງຕິດຕັ້ງຢູ່. ຢ່າປິດອຸປະກອນ. ການຕິດຕັ້ງຄວນຈະໃຊ້ເວລາບໍ່ເກີນຊາວນາທີ. ເຄື່ອງນີ້ຈະປິດອັດຕະໂນມັດຫຼັງຈາກການຕິດຕັ້ງ.</translation>
 <translation id="4407044323746248786">ຢືນຢັນການອອກຈາກ Chromium ບໍ?</translation>
 <translation id="4415566066719264597">ໃຫ້ Chromium ເປີດໃຊ້ຢູ່ໃນພື້ນຫຼັງ</translation>
 <translation id="4423735387467980091">ກໍານົດໃຊ້ ແລະ​ຄວບ​ຄຸມ Chromium</translation>
@@ -203,7 +198,6 @@
 <translation id="6734291798041940871">ຕິດຕັ້ງ Chromium ສຳລັບຜູ້ໃຊ້ທຸກຄົນໃນຄອມພິວເຕີຂອງທ່ານແລ້ວ.</translation>
 <translation id="673636774878526923">ເພື່ອເຂົ້າເຖິງຂໍ້ມູນໃນ Chromium ຂອງທ່ານຢູ່ໃນອຸປະກອນທັງໝົດຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ ແລ້ວເປີດການຊິ້ງຂໍ້ມູນ.</translation>
 <translation id="6774082503108938489">ພໍ່ແມ່ຂອງທ່ານໄດ້ປິດ "ການອະນຸຍາດສຳລັບເວັບໄຊ, ແອັບ ແລະ ສ່ວນຂະຫຍາຍ" ສຳລັບ Chromium ແລ້ວ. ການເປີດການນຳໃຊ້ <ph name="EXTENSION_TYPE_PARAMETER" /> ນີ້ບໍ່ໄດ້ຮັບອະນຸຍາດ.</translation>
-<translation id="6827182711503025204">ການຕິດຕັ້ງ Chromium OS ຈະຂຽນທັບຂໍ້ມູນທັງໝົດຢູ່ອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="6847869444787758381">Chromium ແຈ້ງໃຫ້ທ່ານຮູ້ຖ້າມີຄົນຮູ້ລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (ສຳເນົາໄວ້ໃນ Chromium ແລ້ວ)</translation>

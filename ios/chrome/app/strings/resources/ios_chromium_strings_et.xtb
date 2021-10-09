@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Teave Chromiumi kohta</translation>
 <translation id="1257458525759135959">Piltide salvestamiseks puudutage valikut Seaded, et lubada Chromiumil fotode lisamine</translation>
 <translation id="1289216811211435351">Lülituge Chromiumile</translation>
+<translation id="1354592789402432496">Administraator nõuab, et logiksite sisse organisatsiooni kontoga. Kontod, mille administraator on piiranud, on peidetud.</translation>
 <translation id="1361748954329991663">Chromium on aegunud. Kui <ph name="BEGIN_LINK" />App Store'is<ph name="END_LINK" /> pole värskendust saadaval, on võimalik, et teie seade ei toeta enam Chromiumi uuemaid versioone.</translation>
 <translation id="1370204544543370355">Chromiumi kasutamiseks parimal moel logige Chromiumi sisse oma Google'i kontoga</translation>
 <translation id="1431818719585918472">Laske Chromiumil oma inkognito vahelehed lukustada.</translation>
@@ -50,6 +51,7 @@
 <translation id="5171868502429358653">Logige Chromiumi sisse</translation>
 <translation id="5224391634244552924">Salvestatud paroole ei ole. Chromium saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="5308226104666789935">Chromium ei saa värskendusi otsida</translation>
+<translation id="5324242752415821224">Teie organisatsioon nõuab, et logiksite Chromiumi kasutamiseks sisse. <ph name="BEGIN_LINK" />Vaadake lisateavet<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Kas määrata Chromium vaikebrauseriks?</translation>
 <translation id="5521125884468363740">Selleks et näha vahelehti kõikjalt, kus Chromiumi kasutate, logige sisse ja lülitage sisse sünkroonimine</translation>
 <translation id="5573014823074921752">Chromiumi nõuanne. Vahelehtede lisavalikute nägemiseks puudutage ja hoidke all ekraanikuva üla- või alaosas tööriistaribal olevat nuppu Kuva vahelehed.</translation>
@@ -63,6 +65,7 @@
 2. Puudutage valikut Vaikebrauserirakendus.
 3. Valige Chromium.</translation>
 <translation id="6155422572367400359">Logige sellele saidile, oma Google'i kontole ja Chromiumi sisse. Sünkroonimise saate hiljem sisse lülitada.</translation>
+<translation id="6183442264225539303">Logige sellele saidile ja Chromiumisse sisse. Sünkroonimise saate hiljem sisse lülitada.</translation>
 <translation id="6268381023930128611">Kas logida Chromiumist välja?</translation>
 <translation id="632825460376924298">Luba Chromiumisse sisselogimine</translation>
 <translation id="6337530241089703714">Valige, kas soovite oma Chromiumi andmed sellest seadmest kustutada või need säilitada</translation>

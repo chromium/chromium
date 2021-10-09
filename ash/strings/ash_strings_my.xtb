@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">အောက်ခြေပိုင်း</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ပြောင်းရန်။ <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">ကာဆာ ရွှေ့ရန်</translation>
-<translation id="3098580329624789136">"<ph name="QUERY" />" အတွက် <ph name="INTENT" /> ရယူခြင်း</translation>
 <translation id="3100274880412651815">ပုံဖမ်းယူမှုမုဒ်ကို ပယ်ရန်</translation>
 <translation id="3105917916468784889">ဖန်သားပြင်ဓာတ်ပုံ ရိုက်ရန်</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ဘလူးတုသ်)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">ဤစက်တွင် Google က အတည်ပြုမထားသော အက်ပ်များ ပါဝင်နိုင်သည်။</translation>
 <translation id="4479639480957787382">အီတာနက်</translation>
 <translation id="4481530544597605423">ချိတ်ဆက်မှု ဖြုတ်ထားသည့် စက်ပစ္စည်းများ</translation>
-<translation id="4485060137115666462">ညာဘက်ခလုတ်ကိုနှိပ်လျှင် (သို့) ကြာရှည်စွာဖိထားလျှင် သင်ရွေးထားသည့်အရာအတွက် အဓိပ္ပာယ်ဖွင့်ဆိုချက်၊ ဘာသာပြန်ဆိုချက် (သို့) ယူနစ်ပြောင်းလဲခြင်းကဲ့သို့ အချက်အလက်များကို Assistant က ပြသည်။</translation>
 <translation id="4505050298327493054">အသုံးပြုနေသော နေရာ။</translation>
 <translation id="4513946894732546136">အကြံပြုချက်</translation>
 <translation id="4518404433291145981">သင့် Chromebook ကို လော့ခ်ဖွင့်ရန် သင့်ဖုန်းကို ဦးစွာ လော့ခ်ဖွင့်ပါ</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">မူလအခြေအနေ ပြန်သွားရန်</translation>
 <translation id="595202126637698455">ဆောင်ရွက်ချက်များကို ခြေရာခံနေသည်။</translation>
 <translation id="5958529069007801266">ကြီးကြပ်မှုခံ အသုံးပြုသူ</translation>
-<translation id="5960825221082587934">သင်ရွေးထားသည့်အရာအတွက် အဓိပ္ပာယ်ဖွင့်ဆိုချက်၊ ဘာသာပြန်ဆိုချက် (သို့) ယူနစ်ပြောင်းလဲခြင်းကဲ့သို့ အချက်အလက်များကို Assistant က ပြနိုင်သည်။</translation>
 <translation id="5977415296283489383">နားကြပ်</translation>
 <translation id="5978382165065462689">အဝေးမှ ထောက်ကူခြင်း ဆိုသည်မှ တဆင့် သင့်ဖန်သားပြင်အားမျှဝေသုံးစွဲခြင်း။</translation>
 <translation id="5980301590375426705">ဧည့်သည် ထွက်ရန်</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">သင့်အရေးကြီးဖိုင်များကို ဤနေရာတွင် ပင်ထိုးနိုင်သည်။ စတင်ရန် Files အက်ပ်ကို ဖွင့်ပါ။</translation>
 <translation id="622484624075952240">အောက်သို့</translation>
 <translation id="6231419273573514727">ချိတ်ဆက်ပစ္စည်း စွမ်းဆောင်ရည်ကို ကန့်သတ်ထားနိုင်သည်</translation>
-<translation id="6236290670123303279">ဆက်တင်များ စီမံခန့်ခွဲရန်</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">အလျားလိုက်မုဒ်အဖြစ် လော့ခ်ချထားသည်</translation>
 <translation id="6259254695169772643">ရွေးချယ်ရန် သင့်စတိုင်လပ်စ် အသုံးပြုပါ</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">စွမ်းဆောင်ရည် မှတ်တမ်းတင်ခြင်းကို လက်ရှိဖွင့်ထားသည်</translation>
 <translation id="8703634754197148428">စတင် ရိုက်ကူးပါ။ ရိုက်ကူးမှုစတင်သောအခါ Alt + Shift + L သုံး၍ စင်သို့သွားပြီး ရိုက်ကူးမှုရပ်ရန်ခလုတ်ကို ရှာပါ</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ဤဝန်ဆောင်မှုကို စီမံရန် ဘယ် သို့မဟုတ် ညာညွှန်မြားခလုတ်များ အသုံးပြုပါ။</translation>
-<translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="8721053961083920564">အသံခလုတ်ကို နှိပ်ပါ။ <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ဖန်သားပြင်အပြည့် ပုံဖမ်းခြင်း</translation>
 <translation id="8734991477317290293">၎င်းသည် သင်၏ ခလုတ်နှိပ်ချက်များကို ခိုးယူရန် ကြိုးပမ်းနိုင်သည်။</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
 <translation id="8877788021141246043">သတိပေးချက် သတ်မှတ်ပါ</translation>
 <translation id="8878886163241303700">မျက်နှာပြင်ကို တိုးချဲ့နေ</translation>
-<translation id="8883473964424809116">Google Assistant ဆက်တင်များဖွင့်ရန် နှိပ်ပါ။</translation>
 <translation id="8884537526797090108">လျှို့ဝှက်အကြောင်းအရာကို ရိုက်ကူး၍မရပါ</translation>
 <translation id="890616557918890486">အရင်းအမြစ် ပြောင်းရန်</translation>
 <translation id="8909138438987180327">ဘက်ထရီ <ph name="PERCENTAGE" /> ရာခိုင်နှုန်း ရှိပါသည်။</translation>

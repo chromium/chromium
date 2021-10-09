@@ -43,7 +43,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2560420686485554789">Aby bylo možné stahovat soubory, potřebuje Chromium přístup k úložišti</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">Chcete-li mít ve všech zařízeních přístup k údajům z prohlížeče Chromium, přihlaste se, abyste mohli zapnout synchronizaci.</translation>
-<translation id="2580426763510374355">Nainstalovat Chromium OS</translation>
 <translation id="2583187216237139145">Veškerá data prohlížeče Chromium vygenerovaná během používání tohoto profilu (jako je vytvoření záložek, historie, hesel a další nastavení) může administrátor pracovního profilu odstranit. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Aktualizace se použije po restartování systému Chromium OS.</translation>
 <translation id="2648074677641340862">Během instalace došlo k chybě operačního systému. Stáhněte prosím Chromium znovu.</translation>
@@ -56,8 +55,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2847479871509788944">Odstranit z prohlížeče Chromium...</translation>
 <translation id="2885378588091291677">Správce úloh</translation>
 <translation id="2910007522516064972">O prohlížeči &amp;Chromium</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Ještě poslední připomenutí: Při instalaci bude <ph name="BEGIN_BOLD" />zcela vymazán pevný disk.<ph name="END_BOLD" /> Zkontrolujte si, zda máte všechna důležitá data zálohovaná.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Po spuštění již instalaci nelze zrušit.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium je aktuální</translation>
 <translation id="2983934633046890458">Chromium se pokouší upravit hesla.</translation>
 <translation id="3032706164202344641">Chromium nemůže zkontrolovat hesla. Zkuste to později.</translation>
@@ -81,7 +78,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3350761136195634146">Profil Chromium s tímto účtem už existuje</translation>
 <translation id="3406848076815591792">Přepnout na stávající profil Chromium?</translation>
 <translation id="3430503420100763906">Pomocí profilů Chromium můžete všechny své údaje v prohlížeči Chromium uchovávat odděleně. Vytvořte profily pro přátele a rodinu nebo rozdělte činnosti mezi práci a zábavu.</translation>
-<translation id="3433271666494956603">Probíhá instalace systému Chromium OS</translation>
 <translation id="347328004046849135">Pokud se přihlásíte pomocí prolomeného hesla, Chromium vám to oznámí</translation>
 <translation id="3474745554856756813">Z tohoto zařízení bude smazán následující počet položek: <ph name="ITEMS_COUNT" />. Budete-li chtít své údaje později načíst, přihlaste se do prohlížeče Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Zkratkou <ph name="SHORTCUT" /> lze přepínat mezi profily Chromium</translation>
@@ -109,7 +105,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4264410486868823224">Doména <ph name="MANAGER" /> vyžaduje, abyste si před použitím tohoto zařízení přečetli následující smluvní podmínky a odsouhlasili je. Tyto smluvní podmínky nerozšiřují, neupravují ani neomezují smluvní podmínky systému Chromium OS.</translation>
 <translation id="4271805377592243930">Pomoc s prohlížečem Chromium</translation>
 <translation id="4285930937574705105">Došlo k nespecifikované chybě, instalace se nezdařila. Pokud je prohlížeč Chromium právě spuštěný, zavřete jej prosím a zkuste to znovu.</translation>
-<translation id="429583012151745428">Probíhá instalace. Nevypínejte zařízení. Instalace by neměla trvat déle než dvacet minut. Po instalaci se zařízení automaticky vypne.</translation>
 <translation id="4407044323746248786">Přesto Chromium ukončit?</translation>
 <translation id="4415566066719264597">Nechat Chromium běžet na pozadí</translation>
 <translation id="4423735387467980091">Přizpůsobit a ovládat Chromium</translation>
@@ -203,7 +198,6 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="6734291798041940871">Prohlížeč Chromium je na tomto počítači již nainstalován pro všechny uživatele.</translation>
 <translation id="673636774878526923">Chcete-li mít ve všech zařízeních přístup k údajům z prohlížeče Chromium, přihlaste se a zapněte synchronizaci.</translation>
 <translation id="6774082503108938489">Tvůj rodič pro prohlížeč Chromium vypnul možnost Oprávnění pro weby, aplikace a rozšíření. Aktivace tohoto <ph name="EXTENSION_TYPE_PARAMETER" /> není povolena.</translation>
-<translation id="6827182711503025204">Při instalaci systému Chromium OS se v zařízení přepíšou všechna data.</translation>
 <translation id="6847869444787758381">Pokud vaše hesla někdo prolomí, Chromium vás o tom bude informovat</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (zkopírováno do prohlížeče Chromium)</translation>

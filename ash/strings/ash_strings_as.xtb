@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">একেবাৰে তলি</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">কাৰ্ছৰ স্থানান্তৰ কৰক</translation>
-<translation id="3098580329624789136">"<ph name="QUERY" />"ৰ বাবে <ph name="INTENT" /> লাভ কৰক</translation>
 <translation id="3100274880412651815">কেপচাৰ ম'ডটো অগ্ৰাহ্য কৰক</translation>
 <translation id="3105917916468784889">স্ক্ৰীণশ্বট লওক</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ব্লুটুথ)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">এই ডিভাইচটোত Googleএ সত্যাপন নকৰা এপ্‌সমূহ থাকিব পাৰে।</translation>
 <translation id="4479639480957787382">ইথাৰনেট</translation>
 <translation id="4481530544597605423">যোৰা বিচ্ছিন্ন কৰা ডিভাইচসমূহ</translation>
-<translation id="4485060137115666462">ৰাইট-ক্লিক কৰিলে অথবা দীঘলীয়াকৈ টিপিলে Assistantএ আপুনি কৰা বাছনিটোৰ সংজ্ঞা, অনুবাদ অথবা একক ৰূপান্তৰণৰ দৰে তথ্য দেখুৱায়।</translation>
 <translation id="4505050298327493054">সক্ৰিয় ডেস্ক৷</translation>
 <translation id="4513946894732546136">মতামত</translation>
 <translation id="4518404433291145981">আপোনাৰ Chromebook আনলক কৰিবলৈ, প্ৰথমে আপোনাৰ ফ’নটো আনলক কৰক</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">পূৰ্বাৱস্থালৈ নিয়ক</translation>
 <translation id="595202126637698455">কার্যদক্ষতা ট্ৰে’চ কৰাটো সক্ষম কৰা হৈছে</translation>
 <translation id="5958529069007801266">নিৰীক্ষণত থকা ব্যৱহাৰকাৰী</translation>
-<translation id="5960825221082587934">Assistantক আপুনি কৰা বাছনিটোৰ সংজ্ঞা, অনুবাদ অথবা একক ৰূপান্তৰণৰ দৰে তথ্য দেখুৱাবলৈ দিয়ক।</translation>
 <translation id="5977415296283489383">হেডফ’ন</translation>
 <translation id="5978382165065462689">ৰিম’ট সহায়কৰ জৰিয়তে আপোনাৰ স্ক্রীণৰ নিয়ন্ত্ৰণ শ্বেয়াৰ কৰি থকা হৈছে।</translation>
 <translation id="5980301590375426705">অতিথিৰ পৰা প্ৰস্থান</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">আপুনি নিজৰ গুৰুত্বপূৰ্ণ ফাইলসমূহ ইয়াত পিন কৰিব পাৰে। আৰম্ভ কৰিবলৈ Files এপ্‌টো খোলক।</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">পৰিধীয় আহিলাৰ কাৰ্যক্ষমতা সীমিত হ’ব পাৰে</translation>
-<translation id="6236290670123303279">ছেটিংসমূহ পৰিচালনা কৰক</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">আনুভূমিক হিচাপে লক কৰা হৈছে</translation>
 <translation id="6259254695169772643">বাছনি কৰিবলৈ আপোনাৰ ষ্টাইলাছ ব্যৱহাৰ কৰক</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">কার্যদক্ষতা ট্ৰে’চ কৰাটো সক্ৰিয় অৱস্থাত আছে</translation>
 <translation id="8703634754197148428">ৰেকৰ্ডিং আৰম্ভ কৰক। ৰেকৰ্ডিং আৰম্ভ হোৱাৰ পাছত, শ্বেল্‌ফটোলৈ যাবলৈ অল্‌ট + শ্বিফ্ট + এল ব্যৱহাৰ কৰক আৰু ৰেকৰ্ডিং বন্ধ কৰাৰ বুটামটো বিচাৰক</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> এই সুবিধাটো পৰিচালনা কৰিবলৈ বাওঁমুৱা অথবা সোঁমুৱা কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰক।</translation>
-<translation id="8712637175834984815">বুজি পালোঁ</translation>
 <translation id="8721053961083920564">ভলিউম ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">সম্পূৰ্ণ স্ক্ৰীন কেপচাৰ</translation>
 <translation id="8734991477317290293">এইটোৱে আপোনাৰ কীষ্ট্র’ক চুৰ কৰিব চেষ্টা কৰি থাকিব পাৰে</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক</translation>
 <translation id="8877788021141246043">ৰিমাইণ্ডাৰ ছেট কৰক</translation>
 <translation id="8878886163241303700">বিস্তাৰিত স্ক্ৰীণ</translation>
-<translation id="8883473964424809116">Google Assistantৰ ছেটিং খুলিবলৈ ক্লিক কৰক।</translation>
 <translation id="8884537526797090108">গোপনীয় সমল ৰেকৰ্ড কৰিব নোৱাৰি</translation>
 <translation id="890616557918890486">উৎস সলনি কৰক</translation>
 <translation id="8909138438987180327">বেটাৰী <ph name="PERCENTAGE" /> শতাংশত আছে।</translation>

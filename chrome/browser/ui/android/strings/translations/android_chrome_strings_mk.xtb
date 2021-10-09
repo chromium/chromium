@@ -182,6 +182,7 @@
 <translation id="2139186145475833000">Додај на почетниот екран</translation>
 <translation id="2141396931810938595">Според користењето</translation>
 <translation id="214888715418183969">Изберете какви податоци за користењето сакате да споделувате со Chrome. Метриката што ја споделувате ќе се користи за подобрување на функциите, изведбата и стабилноста на Chrome.</translation>
+<translation id="2149973817440762519">Измени Обележувач</translation>
 <translation id="2154484045852737596">Уредете ја картичката</translation>
 <translation id="2154710561487035718">Копирај URL</translation>
 <translation id="2156074688469523661">Останати сајтови (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -647,7 +648,6 @@
 <translation id="4943872375798546930">Нема резултати</translation>
 <translation id="4957722034734105353">Дознај повеќе...</translation>
 <translation id="4961107849584082341">Преведете ја страницава на кој било јазик</translation>
-<translation id="4970824347203572753">Не е достапно во вашата локација</translation>
 <translation id="4971735654804503942">Побрза и проактивна заштита од опасни веб-сајтови, преземања и екстензии. Ве предупредува за упади во лозинките. Бара да се испраќаат податоци од прелистувањето до Google.</translation>
 <translation id="497421865427891073">Оди напред</translation>
 <translation id="4988210275050210843">Се презема датотека (<ph name="MEGABYTES" />).</translation>
@@ -731,7 +731,6 @@
 <translation id="5483197086164197190">Навигација во Chrome</translation>
 <translation id="5487521232677179737">Избриши податоци</translation>
 <translation id="549025011754480756">Како да пребарувате со гласот</translation>
-<translation id="5500777121964041360">Можеби не е достапно во вашата локација</translation>
 <translation id="5512137114520586844"><ph name="PARENT_NAME" /> управува со оваа сметка.</translation>
 <translation id="5514904542973294328">Оневозможено од администраторот на уредов</translation>
 <translation id="5515439363601853141">Отклучете за да ја прикажете лозинката</translation>
@@ -885,7 +884,6 @@
 <translation id="6364438453358674297">Да се отстрани предлогот од историјата?</translation>
 <translation id="6378173571450987352">Детали: подредени по количината на податоци што се користат</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> ќе се отвори во Chrome. Ако продолжите, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" />и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="6381421346744604172">Затемнете ги веб-сајтовите</translation>
 <translation id="6395288395575013217">ЛИНК</translation>
 <translation id="6397616442223433927">Повторно сте онлајн</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> на <ph name="VIOLATED_URL" /></translation>
@@ -1217,7 +1215,6 @@
 <translation id="8218052821161047641">Брза страница</translation>
 <translation id="8218622182176210845">Управувајте со сметката</translation>
 <translation id="8223642481677794647">Мени на картичката за активност</translation>
-<translation id="8224471946457685718">Преземање статии за вас преку Wi-Fi</translation>
 <translation id="8250920743982581267">Документи</translation>
 <translation id="825412236959742607">Страницава користи премногу меморија, па Chrome отстрани некои содржини.</translation>
 <translation id="8260126382462817229">Обидете се да се најавите повторно</translation>

@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">तल</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> अन/अफ गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">कर्सर सार्नुहोस्</translation>
-<translation id="3098580329624789136">"<ph name="QUERY" />" को <ph name="INTENT" /> प्राप्त गर्नुहोस्</translation>
 <translation id="3100274880412651815">क्याप्चर मोड खारेज गर्नुहोस्</translation>
 <translation id="3105917916468784889">स्क्रिनसट लिनुहोस्</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ब्लुटूथ)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">यो डिभाइसमा Google ले पुष्टि नगरेका एपहरू हुन सक्छन्।</translation>
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4481530544597605423">जोडा हटाइएका यन्त्रहरू</translation>
-<translation id="4485060137115666462">दायाँ क्लिक गर्दा वा लङ प्रेस गर्दा सहायकले तपाईंलाई आफूले चयन गरेको कुराको परिभाषा, अनुवाद वा त्यसको एकाइ रूपान्तरण जस्ता जानकारी देखाउँछ।</translation>
 <translation id="4505050298327493054">सक्रिय डेस्क।</translation>
 <translation id="4513946894732546136">पृष्ठपोषण</translation>
 <translation id="4518404433291145981">तपाईं आफ्नो Chromebook अनलक गर्न चाहनुहुन्छ भने सर्वप्रथम आफ्नो फोन अनलक गर्नुहोस्</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">उल्टाउनुहोस्</translation>
 <translation id="595202126637698455">प्रदर्शन ट्रेसिङ सक्षम गरियो</translation>
 <translation id="5958529069007801266">सुपरिवेक्षित प्रयोगकर्ता</translation>
-<translation id="5960825221082587934">सहायकलाई आफूले चयन गरेको पाठको परिभाषा, अनुवाद वा त्यसको एकाइ रूपान्तरण जस्ता जानकारी देखाउन दिनुहोस्।</translation>
 <translation id="5977415296283489383">हेडफोन</translation>
 <translation id="5978382165065462689">रिमोट सहायता मार्फत तपाईँको स्क्रीन नियन्त्रण साझेदारी गर्दै।</translation>
 <translation id="5980301590375426705">अतिथि सत्रबाट निस्कनु…</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">तपाईं यहाँ आफ्ना महत्त्वपूर्ण फाइलहरू पिन गर्न सक्नुहुन्छ। पिन गर्न थाल्न फाइलहरू नामक एप खोल्नुहोस्।</translation>
 <translation id="622484624075952240">तल</translation>
 <translation id="6231419273573514727">सहायक यन्त्रले पूर्ण रूपमा काम नगर्न सक्छ</translation>
-<translation id="6236290670123303279">सेटिङहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">तेर्सो अवस्थामा लक गरियो</translation>
 <translation id="6259254695169772643">चयन गर्न आफ्नो स्टाइलस प्रयोग गर्नुहोस्</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">प्रदर्शन ट्रेस सक्रिय छ</translation>
 <translation id="8703634754197148428">रेकर्ड गर्न थाल्नुहोस्। रेकर्ड हुन थालेपछि सेल्फमा जान Alt + Shift + L थिच्नुहोस् र रेकर्ड गर्न बन्द गर्ने बटन भेट्टाउनुहोस्</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> यो सुविधा व्यवस्थापन गर्न लेफ्ट वा राइट एरो की प्रयोग गर्नुहोस्।</translation>
-<translation id="8712637175834984815">भयो</translation>
 <translation id="8721053961083920564">भोल्युम टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">फुल स्क्रिन क्याप्चर</translation>
 <translation id="8734991477317290293">यसले तपाईंका किस्ट्रोकहरू चोर्न खोजिरहेको हुन सक्छ</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">आफ्नो यन्त्रको ब्लुटुथ वा Wi-Fi कनेक्सन जाँच्नुहोस्</translation>
 <translation id="8877788021141246043">कुनै रिमाइन्डर सेट गर्नुहोस्</translation>
 <translation id="8878886163241303700">स्क्रिनलाई विस्तार गर्दै</translation>
-<translation id="8883473964424809116">Google सहायकसम्बन्धी सेटिङ खोल्न क्लिक गर्नुहोस्।</translation>
 <translation id="8884537526797090108">गोप्य सामग्री रेकर्ड गर्न मिल्दैन</translation>
 <translation id="890616557918890486">स्रोत परिवर्तन गर्नुहोस्</translation>
 <translation id="8909138438987180327">ब्याट्री <ph name="PERCENTAGE" /> प्रतिशत छ।</translation>

@@ -274,7 +274,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3087734570205094154">Unten</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ein-/ausschalten. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Textcursor verschieben</translation>
-<translation id="3098580329624789136"><ph name="INTENT" /> für "<ph name="QUERY" />" abrufen</translation>
 <translation id="3100274880412651815">Aufnahmemodus schließen</translation>
 <translation id="3105917916468784889">Screenshot aufnehmen</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4477892968187500306">Auf diesem Gerät befinden sich möglicherweise Apps, die nicht von Google geprüft wurden.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Entkoppelte Geräte</translation>
-<translation id="4485060137115666462">Wenn Sie mit der rechten Maustaste klicken oder lange drücken, zeigt Assistant Informationen wie die Definition, Übersetzung oder das Umrechnen von Einheiten für Ihre Auswahl.</translation>
 <translation id="4505050298327493054">Aktiver Desktop.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4518404433291145981">Zum Entsperren des Chromebooks zuerst Smartphone entsperren</translation>
@@ -668,7 +666,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5947494881799873997">Rückgängig machen</translation>
 <translation id="595202126637698455">Leistungsnachverfolgung aktiviert</translation>
 <translation id="5958529069007801266">Betreuter Nutzer</translation>
-<translation id="5960825221082587934">Sie können sich von Assistant Informationen wie die Definition, Übersetzung oder das Umrechnen von Einheiten für Ihre Auswahl zeigen lassen.</translation>
 <translation id="5977415296283489383">Kopfhörer</translation>
 <translation id="5978382165065462689">Sie teilen sich die Bildschirmsteuerung per Remote-Unterstützung.</translation>
 <translation id="5980301590375426705">Gastsitzung beenden</translation>
@@ -702,7 +699,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6179832488876878285">Sie können wichtige Dateien hier anpinnen. Öffnen Sie die Dateien App, um zu starten.</translation>
 <translation id="622484624075952240">Abwärts</translation>
 <translation id="6231419273573514727">Die Leistung der Peripheriegeräte ist möglicherweise eingeschränkt</translation>
-<translation id="6236290670123303279">Einstellungen verwalten</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Horizontale Ausrichtung aktiv</translation>
 <translation id="6259254695169772643">Verwenden Sie den Eingabestift, um Ihre Auswahl zu treffen</translation>
@@ -1020,7 +1016,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8683506306463609433">Leistungsverfolgung ist aktiv</translation>
 <translation id="8703634754197148428">Aufnahme starten. Wenn die Aufnahme gestartet ist, können Sie Alt + Umschalttaste + L verwenden, um zur Ablage zu gehen – dort finden Sie die Schaltfläche zum Beenden der Aufnahme.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Verwenden Sie zum Verwalten dieser Funktion den Rechts- und Linkspfeil.</translation>
-<translation id="8712637175834984815">Alles klar</translation>
 <translation id="8721053961083920564">Ton ein- oder ausschalten. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Aufnahme vom ganzen Bildschirm</translation>
 <translation id="8734991477317290293">Möglicherweise versucht jemand, darüber Ihre Tastatureingaben zu erfassen</translation>
@@ -1048,7 +1043,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8876661425082386199">Verbindung prüfen</translation>
 <translation id="8877788021141246043">Erinnerungen einrichten</translation>
 <translation id="8878886163241303700">Bildschirmerweiterung</translation>
-<translation id="8883473964424809116">Klicken Sie, um die Google Assistant-Einstellungen zu öffnen.</translation>
 <translation id="8884537526797090108">Vertrauliche Inhalte können nicht aufgezeichnet werden</translation>
 <translation id="890616557918890486">Quelle ändern</translation>
 <translation id="8909138438987180327">Akkustand: <ph name="PERCENTAGE" />.</translation>

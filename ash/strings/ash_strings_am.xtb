@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">ግርጌ</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ቀያይር። <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">ጠቋሚን አንቀሳቅስ</translation>
-<translation id="3098580329624789136">ለ«<ph name="QUERY" />» <ph name="INTENT" />ን ያግኙ</translation>
 <translation id="3100274880412651815">የማንሳት ሁነታን ያሰናብቱ</translation>
 <translation id="3105917916468784889">ቅጽበታዊ ገጽ እይታን ያነሳል</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ብሉቱዝ)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">ይህ መሣሪያ በGoogle ያልተረጋገጡ መተግበሪያዎችን ሊይዝ ይችላል።</translation>
 <translation id="4479639480957787382">ኢተርኔት</translation>
 <translation id="4481530544597605423">ያልተጣመሩ መሣሪያዎች</translation>
-<translation id="4485060137115666462">በቀኝ ጠቅታ ወይም ተጭኖ በመያዝ አማካኝነት ረዳት እርስዎ ምርጫ እንደ ፍቺ፣ ትርጉም ወይም የአሃድ ልወጣ ያለ መረጃን ያሳያል።</translation>
 <translation id="4505050298327493054">ንቁ ዴስክ።</translation>
 <translation id="4513946894732546136">ግብረ መልስ</translation>
 <translation id="4518404433291145981">የእርስዎን Chromebook ለመክፈት መጀመሪያ ስልክዎን ይክፈቱ</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">አድህር</translation>
 <translation id="595202126637698455">አፈጻጸም መከታተያ ነቅቷል</translation>
 <translation id="5958529069007801266">ክትትል የሚደረግበት ተጠቃሚ</translation>
-<translation id="5960825221082587934">ረዳት ለእርስዎ ምርጫ እንደ ፍቺ፣ ትርጉም ወይም አሃድ ልወጣ የመሳሰሉ መረጃዎችን እንዲያሳይ ይፍቀዱ።</translation>
 <translation id="5977415296283489383">ጆሮ ማዳጀጫ</translation>
 <translation id="5978382165065462689">የማያ ገጽዎን ቁጥጥር በርቀት እርዳታ በኩል በማጋራት ላይ።</translation>
 <translation id="5980301590375426705">ከእንግዳ ውጣ</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">እዚህ አስፈላጊ ፋይሎችዎን መሰካት ይችላሉ። ለመጀመር የፋይሎች መተግበሪያን ይክፈቱ።</translation>
 <translation id="622484624075952240">ታች</translation>
 <translation id="6231419273573514727">የተቀጥላዎች አፈጻጸም የተገደበ ሊሆን ይችላል።</translation>
-<translation id="6236290670123303279">ቅንብሮችን ያቀናብሩ</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">ወደ አግድም ተቆልፏል</translation>
 <translation id="6259254695169772643">ለመጠቀም የእርስዎን ስታይለስ ይጠቀሙ</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">የአፈጻጸም ክትትል ገቢር ነው</translation>
 <translation id="8703634754197148428">መቅዳት ጀምር። አንዴ ቀረጻው ከጀመረ በኋላ ወደ መደርደሪያው ለመሄድ እና ቀረፃውን አዝራር አቁምን ለማግኘት Alt + Shift + Lን ይጠቀሙ</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ይህንን ባህሪ ለማስተዳደር የግራ ወይም የቀኝ ቀስት ቁልፎችን ይጠቀሙ።</translation>
-<translation id="8712637175834984815">ገባኝ</translation>
 <translation id="8721053961083920564">ድምፅን ቀያይር። <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ሙሉ የማያ ገጽ ቀረጻ</translation>
 <translation id="8734991477317290293">የእርስዎን የቁልፍ ጭረቶች ለመስረቅ እየሞከረ ሊሆን ይችላል</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">ግንኙነትዎን ይፈትሹ</translation>
 <translation id="8877788021141246043">አስታዋሽ አዘጋጅ</translation>
 <translation id="8878886163241303700">ማያ ገጽ በማስቀጠል ላይ</translation>
-<translation id="8883473964424809116">የGoogle ረዳት ቅንብሮችን ለመክፈት ጠቅ ያድርጉ።</translation>
 <translation id="8884537526797090108">ሚስጥራዊ ይዘት መቅረጽ አልተቻለም</translation>
 <translation id="890616557918890486">ምንጭ ይለውጡ</translation>
 <translation id="8909138438987180327">ባትሪ <ph name="PERCENTAGE" /> መቶኛ ላይ።</translation>

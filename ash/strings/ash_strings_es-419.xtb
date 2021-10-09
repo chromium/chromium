@@ -274,7 +274,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3087734570205094154">Inferior</translation>
 <translation id="3090989381251959936">Activa o desactiva <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Cursor de movimiento</translation>
-<translation id="3098580329624789136">Obtén la <ph name="INTENT" /> para "<ph name="QUERY" />"</translation>
 <translation id="3100274880412651815">Salir del modo de captura</translation>
 <translation id="3105917916468784889">Tomar captura de pantalla</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -477,7 +476,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4477892968187500306">Es posible que este dispositivo incluya apps que Google no verificó.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispositivos no sincronizados</translation>
-<translation id="4485060137115666462">Si haces clic con el botón derecho en la selección o la mantienes presionada, Asistente te mostrará información adicional, como su definición, la traducción o la conversión de unidades.</translation>
 <translation id="4505050298327493054">Escritorio activo</translation>
 <translation id="4513946894732546136">Comentario</translation>
 <translation id="4518404433291145981">Para desbloquear la Chromebook, primero desbloquea el teléfono</translation>
@@ -669,7 +667,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5947494881799873997">Revertir</translation>
 <translation id="595202126637698455">Seguimiento de rendimiento habilitado</translation>
 <translation id="5958529069007801266">Usuario supervisado</translation>
-<translation id="5960825221082587934">Permite que Asistente muestre información sobre el texto seleccionado, como su definición, traducción o conversión de unidad.</translation>
 <translation id="5977415296283489383">Auriculares</translation>
 <translation id="5978382165065462689">Se está compartiendo el control de la pantalla mediante la Asistencia remota.</translation>
 <translation id="5980301590375426705">Cerrar como invitado</translation>
@@ -703,7 +700,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6179832488876878285">Puedes fijar tus archivos importantes aquí. Para comenzar, abre la app de Archivos.</translation>
 <translation id="622484624075952240">Abajo</translation>
 <translation id="6231419273573514727">Es posible que se limite el rendimiento de los dispositivos periféricos</translation>
-<translation id="6236290670123303279">Administrar Configuración</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Se bloqueó en posición horizontal</translation>
 <translation id="6259254695169772643">Usa tu pluma stylus para realizar una selección</translation>
@@ -1021,7 +1017,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8683506306463609433">Registro del rendimiento activado</translation>
 <translation id="8703634754197148428">Inicia la grabación. Luego, presiona Alt + Mayúsculas + L para navegar hasta la barra, donde se encuentra el botón de finalización de la grabación</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Para administrar esta función, utiliza las flechas hacia la izquierda o la derecha.</translation>
-<translation id="8712637175834984815">Entendido</translation>
 <translation id="8721053961083920564">Activa o desactiva el volumen. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Captura de pantalla completa</translation>
 <translation id="8734991477317290293">Es posible que alguien esté intentando determinar qué teclas presionaste</translation>
@@ -1049,7 +1044,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8876661425082386199">Revisa tu conexión</translation>
 <translation id="8877788021141246043">Establecer un recordatorio</translation>
 <translation id="8878886163241303700">Ampliando pantalla</translation>
-<translation id="8883473964424809116">Haz clic para abrir la configuración de Asistente de Google.</translation>
 <translation id="8884537526797090108">No se puede grabar contenido confidencial</translation>
 <translation id="890616557918890486">Cambiar la fuente</translation>
 <translation id="8909138438987180327">Batería al <ph name="PERCENTAGE" />%</translation>

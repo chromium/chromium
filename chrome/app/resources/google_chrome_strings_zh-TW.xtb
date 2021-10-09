@@ -83,8 +83,6 @@
 <translation id="2926676257163822632">低強度密碼很容易讓有心人士猜中，請讓 Chrome <ph name="BEGIN_LINK" />為你建立一組高強度密碼，並儲存在 Chrome 中<ph name="END_LINK" />。</translation>
 <translation id="2926952073016206995">Chrome 需要相機權限，才能執行這個網站要求的功能</translation>
 <translation id="2929907241665500097">發生錯誤，Chrome 未能更新。<ph name="BEGIN_LINK" />請修正 Chrome 更新問題與更新失敗項目。<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />最後請注意，安裝程序<ph name="BEGIN_BOLD" />會清除整個硬碟的資料<ph name="END_BOLD" />。請確認重要資料皆已完成備份。<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />安裝程序開始後就無法取消。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 網路登入 - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome 正在背景模式中執行。</translation>
 <translation id="3059710691562604940">安全瀏覽功能已停用。Chrome 建議啟用這項功能。</translation>
@@ -132,7 +130,6 @@
 <translation id="4251615635259297716">要將你的 Chrome 資料連結至這個帳戶嗎？</translation>
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4293420128516039005">登入即可進行同步處理，讓你在所有裝置上享有個人化的 Chrome 體驗</translation>
-<translation id="429583012151745428">正在執行安裝作業，請勿關閉裝置。安裝作業應會在二十分鐘內完成。完成後，電腦會自動關機。</translation>
 <translation id="4325083532956419387">Chrome 作業系統版本</translation>
 <translation id="4328355335528187361">Google Chrome 開發人員版 (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome 作業系統</translation>
@@ -176,7 +173,6 @@
 <translation id="5430073640787465221">你的偏好設定檔已毀損或無效。
 
 Google Chrome 無法復原你的設定。</translation>
-<translation id="5486618155264784386">安裝 Chrome 作業系統</translation>
 <translation id="556024056938947818">Google Chrome 即將顯示密碼。</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">如果這個頁面上未顯示你的設定，請檢查 <ph name="LINK_BEGIN" />
@@ -231,7 +227,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7155997830309522122">如果是的話，請編輯你儲存在 Chrome 中的密碼，使其與新密碼相符。</translation>
 <translation id="7161904924553537242">歡迎使用 Google Chrome</translation>
 <translation id="7242029209006116544">你已登入管理化環境下的帳戶，並將管理控制權授予你的 Chrome 設定檔。你的 Chrome 資料 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。你可以透過 Google 帳戶資訊主頁刪除這些資料，但你無法將這些資料與其他帳戶建立關聯。如要另行保留現有的 Chromium 資料，你可以選擇建立新的設定檔。<ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">正在安裝 Chrome OS</translation>
 <translation id="7295052994004373688">這是 Google Chrome UI 的顯示語言</translation>
 <translation id="7296210096911315575">重要的使用與安全資訊</translation>
 <translation id="7308322188646931570">Chrome 需要儲存空間存取權，才能下載檔案</translation>

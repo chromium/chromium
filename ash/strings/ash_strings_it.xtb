@@ -274,7 +274,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3087734570205094154">In basso</translation>
 <translation id="3090989381251959936">Attiva/disattiva <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Sposta il cursore</translation>
-<translation id="3098580329624789136">Ottieni la <ph name="INTENT" /> di "<ph name="QUERY" />"</translation>
 <translation id="3100274880412651815">Ignora modalità di acquisizione</translation>
 <translation id="3105917916468784889">Acquisisce uno screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -477,7 +476,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4477892968187500306">Questo dispositivo potrebbe contenere app che non sono state verificate da Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispositivi disaccoppiati</translation>
-<translation id="4485060137115666462">Se fai clic con il pulsante destro del mouse o se applichi una pressione prolungata, l'assistente ti mostra informazioni quali la definizione, la traduzione o la conversione di unità per gli elementi selezionati.</translation>
 <translation id="4505050298327493054">Scrivania attiva.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4518404433291145981">Per sbloccare Chromebook, sblocca prima il telefono</translation>
@@ -669,7 +667,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5947494881799873997">Ripristina</translation>
 <translation id="595202126637698455">Rilevamento del rendimento attivo</translation>
 <translation id="5958529069007801266">Utente supervis.</translation>
-<translation id="5960825221082587934">Consenti all'assistente di mostrare informazioni come la definizione, la traduzione o la conversione di unità per gli elementi selezionati.</translation>
 <translation id="5977415296283489383">Cuffia</translation>
 <translation id="5978382165065462689">Condividi il controllo dello schermo tramite Assistenza remota.</translation>
 <translation id="5980301590375426705">Esci come Ospite</translation>
@@ -703,7 +700,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6179832488876878285">Puoi bloccare qui i tuoi file importanti. Apri l'app File per iniziare.</translation>
 <translation id="622484624075952240">Giù</translation>
 <translation id="6231419273573514727">Le prestazioni delle periferiche potrebbero essere limitate</translation>
-<translation id="6236290670123303279">Gestisci impostazioni</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Bloccata in orizzontale</translation>
 <translation id="6259254695169772643">Usa lo stilo per selezionare</translation>
@@ -1021,7 +1017,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8683506306463609433">Traccia delle prestazioni attiva</translation>
 <translation id="8703634754197148428">Avvia registrazione. Dopo aver avviato la registrazione, utilizza i tasti Alt + Maiusc + L per accedere alla barra delle app e individuare il pulsante per interrompere la registrazione</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilizza i tasti Freccia destra o Freccia sinistra per gestire la funzionalità.</translation>
-<translation id="8712637175834984815">Fatto</translation>
 <translation id="8721053961083920564">Attiva/disattiva volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Acquisizione schermo intero</translation>
 <translation id="8734991477317290293">Potrebbe essere un tentativo di rubare i tasti premuti</translation>
@@ -1049,7 +1044,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8876661425082386199">Controlla la connessione</translation>
 <translation id="8877788021141246043">Imposta un promemoria</translation>
 <translation id="8878886163241303700">Estensione schermo</translation>
-<translation id="8883473964424809116">Fai clic per aprire le impostazioni dell'Assistente Google.</translation>
 <translation id="8884537526797090108">Impossibile registrare contenuti riservati</translation>
 <translation id="890616557918890486">Cambia origine</translation>
 <translation id="8909138438987180327">Livello batteria: <ph name="PERCENTAGE" />%.</translation>

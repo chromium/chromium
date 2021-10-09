@@ -83,8 +83,6 @@
 <translation id="2926676257163822632">Parolele slabe sunt ușor de ghicit. Permite browserului Chrome <ph name="BEGIN_LINK" />să creeze și să memoreze parole puternice pentru tine<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome are nevoie de acces la cameră pentru acest site</translation>
 <translation id="2929907241665500097">Chrome nu s-a actualizat. A apărut o eroare. <ph name="BEGIN_LINK" />Remediază problemele de actualizare și actualizările nereușite în Chrome.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Un ultim memento: instalarea <ph name="BEGIN_BOLD" />va șterge toate datele de pe hard disk<ph name="END_BOLD" />. Asigură-te că ai făcut backup datelor pe care vrei să le păstrezi.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Odată ce începe instalarea, nu o poți anula.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – conectare la rețea – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome este în modul fundal.</translation>
 <translation id="3059710691562604940">Navigarea sigură este dezactivată. Chrome îți recomandă să o activezi.</translation>
@@ -132,7 +130,6 @@
 <translation id="4251615635259297716">Vă conectați datele Chrome cu acest cont?</translation>
 <translation id="4281844954008187215">Condiții de furnizare a serviciilor</translation>
 <translation id="4293420128516039005">Conectează-te pentru a sincroniza și a personaliza Chrome pe toate dispozitivele</translation>
-<translation id="429583012151745428">Instalarea este în curs. Nu închide dispozitivul. Procesul ar trebui să dureze cel mult 20 de minute. Dispozitivul se va închide automat după instalare.</translation>
 <translation id="4325083532956419387">Versiunea sistemului de operare Chrome</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Sistemul de operare Chrome</translation>
@@ -174,7 +171,6 @@
 <translation id="5386244825306882791">Stabilește și ce pagină se afișează când porniți Chrome sau când căutați din caseta polivalentă.</translation>
 <translation id="5394833366792865639">Arată o filă Chrome</translation>
 <translation id="5430073640787465221">Fișierul dvs. de preferințe este fie deteriorat, fie nevalid. Google Chrome nu poate recupera setările dvs.</translation>
-<translation id="5486618155264784386">Instalează sistemul de operare Chrome</translation>
 <translation id="556024056938947818">Google Chrome încearcă să afișeze parolele.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Dacă o setare nu apare în pagină, încearcă <ph name="LINK_BEGIN" />
@@ -229,7 +225,6 @@
 <translation id="7155997830309522122">Dacă da, modifică parola salvată în Chrome, astfel încât să corespundă cu noua parolă.</translation>
 <translation id="7161904924553537242">Bun venit la Google Chrome</translation>
 <translation id="7242029209006116544">Vă conectați cu un cont gestionat și îi permiteți administratorului acestuia controlul asupra profilului dvs. Google Chrome. Datele Chrome, cum ar fi aplicațiile, marcajele, istoricul, parolele și alte setări vor fi asociate definitiv cu <ph name="USER_NAME" />. Veți putea să ștergeți aceste date prin intermediul Tabloului de bord pentru Conturi Google, însă nu veți putea să asociați aceste date cu alt cont. Aveți opțiunea de a crea un profil nou, pentru a păstra separat datele Chrome existente. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Se instalează sistemul de operare Chrome</translation>
 <translation id="7295052994004373688">Limba este folosită pentru a afișa IU Google Chrome</translation>
 <translation id="7296210096911315575">Informații importante cu privire la folosire și siguranță</translation>
 <translation id="7308322188646931570">Pentru a descărca fișiere, Chrome necesită acces la stocare</translation>

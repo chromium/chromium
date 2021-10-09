@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">نیچے</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> کو ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">کرسر منتقل کریں</translation>
-<translation id="3098580329624789136">"<ph name="QUERY" />" کیلئے <ph name="INTENT" /> حاصل کریں</translation>
 <translation id="3100274880412651815">کیپچر وضع برخاست کریں</translation>
 <translation id="3105917916468784889">اسکرین شاٹ لیں</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوٹوتھ)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">‏یہ آلہ ایسی ایپس پر مشتمل ہو سکتا ہے جو Google کے ذریعے تصدیق شدہ نہیں ہیں۔</translation>
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
 <translation id="4481530544597605423">جوڑا ختم کیے ہوئے آلات</translation>
-<translation id="4485060137115666462">دائیں طرف کلک کرنے یا لانگ پریس سے، اسسٹنٹ آپ کے انتخاب کیلئے تعریف، ترجمہ یا یونٹ تبدیلی جیسی معلومات دکھاتی ہے۔</translation>
 <translation id="4505050298327493054">فعال ڈیسک۔</translation>
 <translation id="4513946894732546136">تاثرات</translation>
 <translation id="4518404433291145981">‏اپنے Chromebook کو غیر مقفل کرنے کے لیے، پہلے اپنے فون کو غیر مقفل کریں</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">واپس لوٹیں</translation>
 <translation id="595202126637698455">کارکردگی کی ٹریسنگ فعال کر دی گئی</translation>
 <translation id="5958529069007801266">تحفظ یافتہ صارف</translation>
-<translation id="5960825221082587934">اسسٹنٹ کو آپ کے انتخاب کیلئے تعریف، ترجمہ یا یونٹ تبدیلی جیسی معلومات دکھانے دیں۔</translation>
 <translation id="5977415296283489383">ہیڈفون</translation>
 <translation id="5978382165065462689">ریموٹ اسسٹنس کے ذریعے آپ کی اسکرین کے کنٹرول کا اشتراک کیا جا رہا ہے۔</translation>
 <translation id="5980301590375426705">مہمان سیشن ختم کریں</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">آپ اپنی اہم فائلز کو یہاں پن کر سکتے ہیں۔ شروع کرنے کیلئے فائلز ایپ کھولیں۔</translation>
 <translation id="622484624075952240">نیچے</translation>
 <translation id="6231419273573514727">پیریفیرل کی کارکردگی محدود ہو سکتی ہے</translation>
-<translation id="6236290670123303279">ترتیبات کا نظم کریں</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">افقی پر مقفل ہے</translation>
 <translation id="6259254695169772643">منتخب کرنے کے لئے اپنا اسٹائلس استعمال کریں</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">کارکردگی کا پتا لگانا فعال ہے</translation>
 <translation id="8703634754197148428">‏ریکارڈنگ شروع کریں۔ ریکارڈنگ شروع ہونے کے بعد، شیلف پر نیویگیٹ کرنے کیلئے Alt + Shift + L استعمال کریں اور 'ریکارڈنگ بند کریں' بٹن تلاش کریں</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> اس خصوصیت کا نظم کرنے کے لئے بائیں یا دائیں تیر کے نشان کی کلیدیں استعمال کریں۔</translation>
-<translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="8721053961083920564">والیوم ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">فُل اسکرین کیپچر</translation>
 <translation id="8734991477317290293">ممکن ہے یہ آپ کی کلید کے اسٹروکس کو چوری کرنے کی کوشش کر رہا ہو</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">اپنا کنکشن چیک کریں</translation>
 <translation id="8877788021141246043">یاد دہانی سیٹ کریں</translation>
 <translation id="8878886163241303700">اسکرین کو پھیلایا جا رہا ہے</translation>
-<translation id="8883473964424809116">‏Google اسسٹنٹ کی ترتیبات کھولنے کے لئے کلک کریں۔</translation>
 <translation id="8884537526797090108">رازدارانہ مواد کو ریکارڈ نہیں کیا جا سکتا</translation>
 <translation id="890616557918890486">ماخذ تبدیل کریں</translation>
 <translation id="8909138438987180327">بیٹری <ph name="PERCENTAGE" /> فیصد ہے۔</translation>

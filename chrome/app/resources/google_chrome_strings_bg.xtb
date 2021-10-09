@@ -86,8 +86,6 @@
 <translation id="2926676257163822632">Ненадеждните пароли са лесни за отгатване. Използвайте Chrome <ph name="BEGIN_LINK" />за създаване и запомняне на надеждни пароли за профилите ви<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">За този сайт Chrome се нуждае от разрешение за достъп до камерата</translation>
 <translation id="2929907241665500097">Chrome не се актуализира, защото нещо се обърка. <ph name="BEGIN_LINK" />Отстранете проблеми с актуализирането на Chrome и неуспешни актуализации<ph name="END_LINK" />.</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Последно напомняне: при инсталирането <ph name="BEGIN_BOLD" />целият ви твърд диск ще бъде изтрит<ph name="END_BOLD" />. Уверете се, че имате резервно копие на всичките си важни данни.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />След като инсталирането започне, не може да бъде отменено.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Вход в мрежата – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome работи на заден план.</translation>
 <translation id="3059710691562604940">Функцията „Безопасно сърфиране“ е изключена. Chrome препоръчва да я включите.</translation>
@@ -135,7 +133,6 @@
 <translation id="4251615635259297716">Да се свържат ли данните ви в Chrome с този профил?</translation>
 <translation id="4281844954008187215">Условия за ползване</translation>
 <translation id="4293420128516039005">Влезте в профила си, за да синхронизирате и персонализирате Chrome на всичките си устройства</translation>
-<translation id="429583012151745428">Инсталирането е в ход. Не изключвайте устройството. Инсталирането не би трябвало да отнеме повече от 20 минути. Устройството ще се изключи автоматично след инсталирането.</translation>
 <translation id="4325083532956419387">Версия на Chrome OS</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -177,7 +174,6 @@
 <translation id="5386244825306882791">То също контролира коя страница се показва при стартиране на Chrome или при търсене от полето за всичко.</translation>
 <translation id="5394833366792865639">Споделяне на раздел в Chrome</translation>
 <translation id="5430073640787465221">Файлът с предпочитанията ви е повреден или невалиден. Google Chrome не може да възстанови настройките ви.</translation>
-<translation id="5486618155264784386">Инсталиране на Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome опитва да покаже паролите.</translation>
 <translation id="5566025111015594046">Google Chrome (входящ трафик за mDNS)</translation>
 <translation id="5657226924540934362">Ако дадена настройка не се показва на тази страница, потърсете в <ph name="LINK_BEGIN" />настройките на Chrome OS<ph name="LINK_END" /></translation>
@@ -231,7 +227,6 @@
 <translation id="7155997830309522122">Ако сте го направили, моля, редактирайте запазената си парола в Chrome, така че да съответства на новата.</translation>
 <translation id="7161904924553537242">Добре дошли в Google Chrome</translation>
 <translation id="7242029209006116544">Влизате с управляван профил и давате на администратора му контрол над потребителския си профил в Google Chrome. Данните ви в браузъра, като например приложения, отметки, история, пароли и други настройки, ще се свържат за постоянно с/ъс <ph name="USER_NAME" />. Ще можете да ги изтриете чрез таблото за управление на Google Профили, но не и да ги свържете с друг профил. По избор можете да създадете нов потребителски профил, за да отделите съществуващите си данни в Chrome. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Chrome OS се инсталира</translation>
 <translation id="7295052994004373688">Този език служи за показване на ПИ на Google Chrome</translation>
 <translation id="7296210096911315575">Важна информация за използването и безопасността</translation>
 <translation id="7308322188646931570">Chrome се нуждае от достъп до хранилището, за да изтегля файлове</translation>

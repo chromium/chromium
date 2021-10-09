@@ -274,7 +274,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3087734570205094154">Part inferior</translation>
 <translation id="3090989381251959936">Commuta <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Mou el cursor</translation>
-<translation id="3098580329624789136">Obtén la <ph name="INTENT" /> de: <ph name="QUERY" /></translation>
 <translation id="3100274880412651815">Ignora el mode de captura</translation>
 <translation id="3105917916468784889">Fes una captura de pantalla</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4477892968187500306">Aquest dispositiu pot contenir aplicacions que Google no ha verificat.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispositius desvinculats</translation>
-<translation id="4485060137115666462">Si mantens el text premut o hi fas clic amb el botó dret, l'Assistent et mostrarà informació com ara la definició, la traducció o la conversió d'unitats.</translation>
 <translation id="4505050298327493054">Escriptori actiu.</translation>
 <translation id="4513946894732546136">Comentaris</translation>
 <translation id="4518404433291145981">Per desbloquejar el Chromebook, primer desbloqueja el telèfon</translation>
@@ -668,7 +666,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5947494881799873997">Reverteix</translation>
 <translation id="595202126637698455">Traça del rendiment activada</translation>
 <translation id="5958529069007801266">Usuari supervisat</translation>
-<translation id="5960825221082587934">Permet que l'Assistent mostri informació com ara la definició, la traducció o la conversió d'unitats associades a la teva selecció.</translation>
 <translation id="5977415296283489383">Auricular</translation>
 <translation id="5978382165065462689">Es comparteix el control de la pantalla mitjançant l'Assistència remota.</translation>
 <translation id="5980301590375426705">Tanca com a convidat</translation>
@@ -702,7 +699,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6179832488876878285">Pots fixar els teus fitxers importants aquí. Obre l'aplicació Fitxers per començar.</translation>
 <translation id="622484624075952240">Avall</translation>
 <translation id="6231419273573514727">És possible que el rendiment dels perifèrics sigui limitat</translation>
-<translation id="6236290670123303279">Gestiona la configuració</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Bloquejada en horitzontal</translation>
 <translation id="6259254695169772643">Fes servir el llapis òptic per seleccionar</translation>
@@ -1020,7 +1016,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8683506306463609433">Traça del rendiment activa</translation>
 <translation id="8703634754197148428">Inicia la gravació. Quan la gravació hagi començat, prem Alt+Maj+L per navegar fins al prestatge i trobar el botó per aturar-la.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilitza les tecles de fletxa dreta o esquerra per gestionar aquesta funció.</translation>
-<translation id="8712637175834984815">Entesos</translation>
 <translation id="8721053961083920564">Activa o desactiva el volum. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Captura de pantalla completa</translation>
 <translation id="8734991477317290293">Pot ser que estigui provant de robar-te les combinacions de tecles</translation>
@@ -1048,7 +1043,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8876661425082386199">Comprova la connexió</translation>
 <translation id="8877788021141246043">Configura un recordatori</translation>
 <translation id="8878886163241303700">Ampliació de la pantalla</translation>
-<translation id="8883473964424809116">Fes clic per obrir la configuració de l'Assistent de Google.</translation>
 <translation id="8884537526797090108">No es pot gravar contingut confidencial</translation>
 <translation id="890616557918890486">Canvia la font</translation>
 <translation id="8909138438987180327">La bateria està a un <ph name="PERCENTAGE" />%.</translation>

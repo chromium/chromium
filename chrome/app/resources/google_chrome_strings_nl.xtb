@@ -87,8 +87,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2926676257163822632">Zwakke wachtwoorden zijn makkelijk te raden. Laat Chrome <ph name="BEGIN_LINK" />sterke wachtwoorden voor je instellen en onthouden<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome heeft camerarechten nodig voor deze site</translation>
 <translation id="2929907241665500097">Chrome is niet geüpdatet. Er is een fout opgetreden. <ph name="BEGIN_LINK" />Updateproblemen en mislukte updates voor Chrome verhelpen<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Een laatste herinnering: tijdens de installatie <ph name="BEGIN_BOLD" />wordt de hele harde schijf gewist<ph name="END_BOLD" />. Zorg dat je een back-up hebt gemaakt van belangrijke gegevens.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Nadat de installatie is gestart, kun je deze niet meer annuleren.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Inloggen bij netwerk - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome bevindt zich in de achtergrondmodus.</translation>
 <translation id="3059710691562604940">Safe Browsing staat uit. Chrome raadt je aan deze functie aan te zetten.</translation>
@@ -136,7 +134,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4251615635259297716">Wil je je Chrome-gegevens aan dit account koppelen?</translation>
 <translation id="4281844954008187215">Servicevoorwaarden</translation>
 <translation id="4293420128516039005">Log in om Chrome op al je apparaten te synchroniseren en te personaliseren</translation>
-<translation id="429583012151745428">De installatie wordt uitgevoerd. Zet het apparaat niet uit. De installatie duurt niet langer dan 20 minuten. De machine gaat automatisch uit na de installatie.</translation>
 <translation id="4325083532956419387">Chrome OS-versie</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Besturingssysteem Chrome</translation>
@@ -180,7 +177,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5386244825306882791">Hiermee wordt ook gecontroleerd welke pagina wordt getoond wanneer je Chrome start of vanuit de omnibox zoekt.</translation>
 <translation id="5394833366792865639">Een Chrome-tabblad delen</translation>
 <translation id="5430073640787465221">Je bestand met voorkeuren is beschadigd of ongeldig. Google Chrome kan je instellingen niet herstellen.</translation>
-<translation id="5486618155264784386">Chrome OS installeren</translation>
 <translation id="556024056938947818">Google Chrome probeert wachtwoorden te tonen.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Als je een instelling niet ziet op deze pagina, kijk je in de <ph name="LINK_BEGIN" />Chrome OS-instellingen<ph name="LINK_END" /></translation>
@@ -234,7 +230,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="7155997830309522122">Als dit het geval is, bewerk je het opgeslagen wachtwoord in Chrome, zodat het overeenkomt met je nieuwe wachtwoord.</translation>
 <translation id="7161904924553537242">Welkom bij Google Chrome</translation>
 <translation id="7242029209006116544">Je logt in op een beheerd account waarmee de eigenaar van dat account beheer krijgt over je Google Chrome-profiel. Je Chrome-gegevens zoals je apps, bookmarks, geschiedenis, wachtwoorden en andere instellingen worden permanent gekoppeld aan <ph name="USER_NAME" />. Je kunt deze gegevens verwijderen via het Google Accounts Dashboard, maar je kunt deze gegevens niet koppelen aan een ander account. Je kunt ook een nieuw profiel maken om je bestaande Chrome-gegevens gescheiden te houden. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Chrome OS wordt geïnstalleerd</translation>
 <translation id="7295052994004373688">Deze taal wordt gebruikt om de Google Chrome-UI weer te geven</translation>
 <translation id="7296210096911315575">Belangrijke informatie over gebruik en veiligheid</translation>
 <translation id="7308322188646931570">Chrome heeft toegang tot de opslag nodig om bestanden te kunnen downloaden</translation>

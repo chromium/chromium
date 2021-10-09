@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">‏يحتاج Chromium إلى الوصول إلى مساحة التخزين لتنزيل الملفات.</translation>
 <translation id="2572494885440352020">‏أداة مساعدة Chromium</translation>
 <translation id="2577788541081224677">‏للوصول من خلال جميع أجهزتك إلى بياناتك في Chromium، عليك تسجيل الدخول كي تتمكّن من تفعيل المزامنة.</translation>
-<translation id="2580426763510374355">‏تثبيت نظام التشغيل Chromium</translation>
 <translation id="2583187216237139145">‏يمكن لمشرف الملف الشخصي للعمل إزالة أي بيانات مرتبطة بمتصفِّح Chromium والتي يتم إنشاؤها أثناء استخدام هذا الملف الشخصي (مثل إنشاء الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى).<ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">‏يلزم إعادة تشغيل نظام التشغيل Chromium حتى يتم تطبيق التحديث.</translation>
 <translation id="2648074677641340862">‏حدث خطأ في نظام التشغيل أثناء عملية التثبيت. يُرجى إعادة تنزيل Chromium.</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">‏إزالة من Chromium</translation>
 <translation id="2885378588091291677">إدارة المهام</translation>
 <translation id="2910007522516064972">‏حو&amp;ل Chromium</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />تذكير أخير: ستؤدي عملية التثبيت إلى <ph name="BEGIN_BOLD" />محو بيانات محرك الأقراص الثابتة بالكامل<ph name="END_BOLD" />. يُرجى التأكّد من احتفاظك بنسخة احتياطية من أي بيانات مُهمّة.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />عند بدء عملية التثبيت، لا يمكن إلغاؤها.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">‏Chromium محدّث</translation>
 <translation id="2983934633046890458">‏يحاول Chromium تعديل كلمات المرور.</translation>
 <translation id="3032706164202344641">‏يتعذّر على Chromium التحقّق من كلمات المرور. يُرجى إعادة المحاولة.</translation>
@@ -79,7 +76,6 @@
 <translation id="3350761136195634146">‏يتوفّر ملف شخصي بهذا الحساب حاليًا على Chromium.</translation>
 <translation id="3406848076815591792">‏هل تريد الانتقال إلى الملف الشخصي الحالي على Chromium؟</translation>
 <translation id="3430503420100763906">‏باستخدام الملفات الشخصية على Chromium، يمكنك الفصل بين جميع بيانات Chromium. ويمكنك إنشاء ملفات شخصية للأصدقاء والعائلة أو تقسيمها للعمل وأغراض الترفيه.</translation>
-<translation id="3433271666494956603">‏جارٍ تثبيت نظام التشغيل Chromium</translation>
 <translation id="347328004046849135">‏في حال تسجيل الدخول باستخدام كلمة مرور محتمَل تعرّضها للاختراق، سيرسل Chromium إشعارًا إليك.</translation>
 <translation id="3474745554856756813">‏سيعمل هذا على حذف <ph name="ITEMS_COUNT" /> من العناصر من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chromium كـ <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">‏يعمل الاختصار <ph name="SHORTCUT" /> على التبديل بين الملفات الشخصية على Chromium.</translation>
@@ -107,7 +103,6 @@
 <translation id="4264410486868823224">‏يشترط <ph name="MANAGER" /> عليك قراءة بنود الخدمة التالية وقبولها قبل استخدام هذا الجهاز، مع العلم بأنّ هذه البنود لا توسِّع نطاق بنود نظام التشغيل Chromium ولا تعدلِّها ولا تفرض قيودًا عليها.</translation>
 <translation id="4271805377592243930">‏الحصول على مساعدة في Chromium</translation>
 <translation id="4285930937574705105">‏تعذّر إتمام عملية التثبيت بسبب خطأ غير محدد. إذا كان Chromium في حالة التشغيل حاليًا، يُرجى إغلاقه وإعادة المحاولة.</translation>
-<translation id="429583012151745428">جارٍ تثبيت نظام التشغيل. يُرجى عدم إيقاف تشغيل الجهاز. لن تستغرق عملية التثبيت أكثر من 20 دقيقة. سيتم تلقائيًا إيقاف تشغيل الجهاز بعد اكتمال التثبيت.</translation>
 <translation id="4407044323746248786">‏هل تريد الخروج من Chromium على أي حال؟</translation>
 <translation id="4415566066719264597">‏السماح بتشغيل Chromium في الخلفية</translation>
 <translation id="4423735387467980091">‏تخصيص Chromium والتحكم فيه</translation>
@@ -201,7 +196,6 @@
 <translation id="6734291798041940871">‏يتم تثبيت Chromium بالفعل لجميع المستخدمين على جهاز الكمبيوتر.</translation>
 <translation id="673636774878526923">‏للوصول من خلال جميع أجهزتك إلى بياناتك في Chromium، عليك تسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="6774082503108938489">‏أوقفَ أحد والدَيك "أذونات المواقع الإلكترونية والتطبيقات والإضافات" لمتصفِّح Chromium. ولا يمكن تفعيل <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="6827182711503025204">‏سيؤدي تثبيت نظام التشغيل Chromium إلى استبدال جميع البيانات على جهازك.</translation>
 <translation id="6847869444787758381">‏يتم إعلامك من خلال Chromium في حال تم اختراق كلمات المرور في أي وقت.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">‏Google Pay (تم النسخ إلى Chromium)</translation>

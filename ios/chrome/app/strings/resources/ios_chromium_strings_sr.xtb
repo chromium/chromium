@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">О Chromium-у</translation>
 <translation id="1257458525759135959">Да бисте сачували слике, додирните Подешавања да бисте омогућили Chromium-у да додаје слике</translation>
 <translation id="1289216811211435351">Пређите на Chromium</translation>
+<translation id="1354592789402432496">Администратор захтева да се пријавите помоћу налога организације. Налози које је организатор ограничио су скривени.</translation>
 <translation id="1361748954329991663">Chromium је застарео. Ако ажурирање није доступно у <ph name="BEGIN_LINK" />App Store-у<ph name="END_LINK" />, уређај можда не подржава нове верзије Chromium-а.</translation>
 <translation id="1370204544543370355">Да бисте користили Chromium на најбољи начин, пријавите се на Chromium помоћу Google налога</translation>
 <translation id="1431818719585918472">Дозволите Chromium-у да закључа картице без архивирања.</translation>
@@ -50,6 +51,7 @@
 <translation id="5171868502429358653">Пријавите се у Chromium</translation>
 <translation id="5224391634244552924">Нема сачуваних лозинки. Chromium може да проверава лозинке када их сачувате.</translation>
 <translation id="5308226104666789935">Chromium не може да тражи ажурирања</translation>
+<translation id="5324242752415821224">Организација захтева да се пријавите да бисте користили Chromium. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Желите да подесите Chromium као подразумевани?</translation>
 <translation id="5521125884468363740">Да бисте видели картице на било којем уређају на ком користите Chromium, пријавите се и укључите синхронизацију</translation>
 <translation id="5573014823074921752">Савет за Chromium. Ако желите више опција за картице, додирните и задржите дугме Прикажи картице на траци с алаткама, која се налази у дну или врху екрана.</translation>
@@ -63,6 +65,7 @@
 2. Додирните Подразумевана апликација за прегледање
 3. Изаберите Chromium.</translation>
 <translation id="6155422572367400359">Пријавите се на овај сајт, Google налог и у Chromium. Синхронизацију можете да укључите касније.</translation>
+<translation id="6183442264225539303">Пријавите се на овај сајт и у Chromium. Синхронизацију можете да укључите касније.</translation>
 <translation id="6268381023930128611">Желите ли да се одјавите из Chromium-а?</translation>
 <translation id="632825460376924298">Дозволите пријављивање у Chromium</translation>
 <translation id="6337530241089703714">Одаберите да ли ћете обрисати Chromium податке са овог уређаја или их задржати</translation>

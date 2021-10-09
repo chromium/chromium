@@ -43,7 +43,6 @@
 <translation id="2560420686485554789">Для спампоўвання файлаў браўзеру Chrome патрабуецца доступ да сховішча</translation>
 <translation id="2572494885440352020">Памочнік Chromium</translation>
 <translation id="2577788541081224677">Каб мець доступ да даных браўзера Chromium на ўсіх вашых прыладах, уключыце сінхранізацыю, увайшоўшы ва ўліковы запіс.</translation>
-<translation id="2580426763510374355">Усталяваць Chromium OS</translation>
 <translation id="2583187216237139145">Любыя даныя Chromium, створаныя пры выкарыстанні гэтага профілю (напрыклад, закладкі, гісторыя, паролі і іншыя налады), могуць быць выдалены адміністратарам працоўнага профілю. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Каб прымяніць абнаўленне, трэба перазапусціць Chromium OS.</translation>
 <translation id="2648074677641340862">Падчас усталявання адбылася памылка аперацыйнай сістэмы. Спампуйце Chromium зноў.</translation>
@@ -56,8 +55,6 @@
 <translation id="2847479871509788944">Выдаліць з Chromium...</translation>
 <translation id="2885378588091291677">Менеджар заданняў</translation>
 <translation id="2910007522516064972">Пра &amp;Chromium</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Яшчэ раз напамінаем, што пры ўсталяванні <ph name="BEGIN_BOLD" />ўсе даныя на цвёрдым дыску будуць сцёрты<ph name="END_BOLD" />. Упэўніцеся, што вы маеце іх рэзервовую копію.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Пасля таго як усталяванне пачнецца, працэс нельга будзе скасаваць.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium абноўлены</translation>
 <translation id="2983934633046890458">Chromium спрабуе змяніць паролі.</translation>
 <translation id="3032706164202344641">Браўзеру Chromium не ўдаецца праверыць паролі. Паўтарыце спробу пазней.</translation>
@@ -81,7 +78,6 @@
 <translation id="3350761136195634146">Профіль Chromium з гэтым уліковым запісам ужо існуе</translation>
 <translation id="3406848076815591792">Пераключыцца на існуючы профіль Chromium?</translation>
 <translation id="3430503420100763906">Профілі Chromium патрэбны для раздзельнага выкарыстання браўзера рознымі людзьмі і ў розных мэтах. Стварайце профілі для сяброў і родных, або раздзяляйце работу і забавы.</translation>
-<translation id="3433271666494956603">Ідзе ўсталяванне Chromium OS</translation>
 <translation id="347328004046849135">Chromium адправіць вам апавяшчэнне, калі вы ўвойдзеце ва ўліковы запіс, выкарыстаўшы раскрыты пароль</translation>
 <translation id="3474745554856756813">З гэтай прылады будзе выдалена наступная колькасць элементаў: <ph name="ITEMS_COUNT" />. Каб потым атрымаць свае даныя, увайдзіце ў Chromium як <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Пераключацца паміж профілямі Chromium можна, выкарыстоўваючы спалучэнне клавіш <ph name="SHORTCUT" /></translation>
@@ -109,7 +105,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" /> патрабуе ад вас прачытаць і прыняць наступныя Умовы выкарыстання, перш чым пачаць карыстацца прыладай. Гэтыя ўмовы не пашыраюць, не змяняюць і не абмяжоўваюць Умовы выкарыстання Chromium OS.</translation>
 <translation id="4271805377592243930">Атрымаць дапамогу па Chromium</translation>
 <translation id="4285930937574705105">Збой усталявання з-за нявызначанай памылкі. Калі Chromium зараз запушчаны, закрыйце яго і паўтарыце спробу.</translation>
-<translation id="429583012151745428">Выконваецца ўсталяванне. Не выключайце прыладу. Усталяванне зойме не больш за дваццаць хвілін. Пасля ўсталявання машына аўтаматычна завершыць працу.</translation>
 <translation id="4407044323746248786">Усё роўна выйсці з Chromium?</translation>
 <translation id="4415566066719264597">Дазволіць браўзеру Chromium працаваць у фоне</translation>
 <translation id="4423735387467980091">Наладка і кіраванне Chromium</translation>
@@ -203,7 +198,6 @@
 <translation id="6734291798041940871">Chromium ужо ўсталяваны для ўсіх карыстальнікаў на камп'ютары.</translation>
 <translation id="673636774878526923">Каб мець доступ да даных браўзера Chromium на ўсіх вашых прыладах, увайдзіце ва ўліковы запіс, а затым уключыце сінхранізацыю.</translation>
 <translation id="6774082503108938489">Вашы бацькі выключылі "Дазволы для сайтаў, праграм і пашырэнняў" для Chromium. Уключэнне гэтага элемента (<ph name="EXTENSION_TYPE_PARAMETER" />) забаронена.</translation>
-<translation id="6827182711503025204">Пры ўсталяванні Chromium OS усе даныя на прыладзе будуць перазапісаны.</translation>
 <translation id="6847869444787758381">Chromium апавяшчае вас у выпадку ўзлому вашых пароляў</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (скапіравана ў Chromium)</translation>

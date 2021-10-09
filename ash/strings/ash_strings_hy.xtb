@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">Ներքև</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" />՝ միացնել/անջատել։ <ph name="STATE_TEXT" />։</translation>
 <translation id="309749186376891736">Նշորդի տեղափոխում</translation>
-<translation id="3098580329624789136">Ստացեք <ph name="INTENT" /> «<ph name="QUERY" />» հարցումով</translation>
 <translation id="3100274880412651815">Անջատել տեսագրման ռեժիմը</translation>
 <translation id="3105917916468784889">Ստանալ սքրինշոթը</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">Այս սարքում կարող են լինել հավելվածներ, որոնք չեն ստուգվել Google-ի կողմից։</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Ապազուգակցված սարքեր</translation>
-<translation id="4485060137115666462">Օգնականը կցուցադրի տարրի մասին տեղեկություններ, օրինակ՝ սահմանումը, թարգմանությունը կամ փոխարկման միավորը, երբ երկար սեղմեք դրա վրա կամ ուղղակի սեղմեք մկնիկի աջ կոճակով։</translation>
 <translation id="4505050298327493054">Ակտիվ աշխատանքային սեղան։</translation>
 <translation id="4513946894732546136">Հետադարձ կապ</translation>
 <translation id="4518404433291145981">Ձեր Chromebook-ն ապակողպելու համար նախ ապակողպեք ձեր հեռախոսը</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">Հետադարձել</translation>
 <translation id="595202126637698455">Կատարողականության հետագծումը միացված է</translation>
 <translation id="5958529069007801266">Վերահսկվող պրոֆիլ</translation>
-<translation id="5960825221082587934">Թույլատրել Օգնականին ցուցադրել տարրի մասին տեղեկություններ, օրինակ՝ սահմանումը, թարգմանությունը կամ փոխարկման միավորը։</translation>
 <translation id="5977415296283489383">Ականջակալ</translation>
 <translation id="5978382165065462689">Էկրանի կառավարման համօգտագործում Հեռակա օգնության միջոցով:</translation>
 <translation id="5980301590375426705">Ավարտել հյուրի սեսիան</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">Դուք կարող եք այստեղ ամրացնել ձեր կարևոր ֆայլերը։ Սկսելու համար բացեք «Ֆայլեր» հավելվածը։</translation>
 <translation id="622484624075952240">Վար</translation>
 <translation id="6231419273573514727">Արտաքին սարքերի աշխատանքի արդյունավետությունը կարող է սահմանափակվել</translation>
-<translation id="6236290670123303279">Կառավարել կարգավորումները</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Միայն հորիզոնական</translation>
 <translation id="6259254695169772643">Ընտրելու համար օգտագործեք ստիլուսը</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">Արդյունավետության հետագծումն ակտիվ է</translation>
 <translation id="8703634754197148428">Սկսել տեսագրումը։ Տեսագրումը սկսելուց հետո կարող եք օգտագործել Alt+Shift+L ստեղների համադրությունը՝ դարակ անցնելու և տեսագրումը կանգնեցնելու կոճակը գտնելու համար։</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Այս գործառույթը կառավարելու համար օգտագործեք ձախ կամ աջ սլաքները։</translation>
-<translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8721053961083920564">Միացնել/անջատել ձայնը: <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Լիաէկրան տեսագրում</translation>
 <translation id="8734991477317290293">Հնարավոր է՝ ինչ-որ մեկը փորձում է իմանալ, թե ինչ ստեղներ եք սեղմում։</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">Ստուգեք ձեր կապը</translation>
 <translation id="8877788021141246043">Ստեղծել հիշեցում</translation>
 <translation id="8878886163241303700">Էկրանի ընդարձակում</translation>
-<translation id="8883473964424809116">Սեղմեք՝ Google Օգնականի կարգավորումները բացելու համար։</translation>
 <translation id="8884537526797090108">Հնարավոր չէ տեսագրել գաղտնի բովանդակությունը</translation>
 <translation id="890616557918890486">Փոխել աղբյուրը</translation>
 <translation id="8909138438987180327">Մարտկոցի լիցքը՝ <ph name="PERCENTAGE" />%</translation>

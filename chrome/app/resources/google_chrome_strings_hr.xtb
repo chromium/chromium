@@ -84,8 +84,6 @@
 <translation id="2926676257163822632">Slabe zaporke lako je pogoditi. Neka Chrome <ph name="BEGIN_LINK" />izradi i zapamti snažne zaporke za vas<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome treba dopuštenje za fotoaparat za ovu web-lokaciju</translation>
 <translation id="2929907241665500097">Chrome se nije ažurirao zbog pogreške. <ph name="BEGIN_LINK" />Riješite probleme s ažuriranjem i neuspjela ažuriranja Chromea.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Još jednom podsjećamo: instalacijom se <ph name="BEGIN_BOLD" />briše cijeli tvrdi disk<ph name="END_BOLD" />. Provjerite imate li sigurnosnu kopiju svih važnih podataka.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Nakon što započne, instalacija se ne može otkazati.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Prijava na mrežu – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome radi u pozadini.</translation>
 <translation id="3059710691562604940">Sigurno pregledavanje je isključeno. Chrome preporučuje da ga uključite.</translation>
@@ -133,7 +131,6 @@
 <translation id="4251615635259297716">Želite li povezati svoje podatke sustava Chrome s tim računom?</translation>
 <translation id="4281844954008187215">Uvjeti upotrebe usluge</translation>
 <translation id="4293420128516039005">Prijavite se da biste sinkronizirali i prilagodili Chrome na svim svojim uređajima</translation>
-<translation id="429583012151745428">U tijeku je instaliranje. Nemojte isključiti uređaj. Instaliranje ne bi trebalo trajati dulje od dvadeset minuta. Računalo će se automatski isključiti nakon instaliranja.</translation>
 <translation id="4325083532956419387">Verzija OS-a Chrome</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">OS Chrome</translation>
@@ -175,7 +172,6 @@
 <translation id="5386244825306882791">Upravlja i time koja se stranica prikazuje prilikom pokretanja Chromea ili pretraživanja putem višenamjenskog okvira.</translation>
 <translation id="5394833366792865639">Podijeli karticu Chrome</translation>
 <translation id="5430073640787465221">Datoteka vaših postavki oštećena je ili nevažeća. Google Chrome nema mogućnost oporavka vaših postavki.</translation>
-<translation id="5486618155264784386">Instalirajte OS Chrome</translation>
 <translation id="556024056938947818">Google Chrome pokušava prikazati zaporke.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Ako se postavka ne prikazuje na ovoj stranici, pogledajte <ph name="LINK_BEGIN" />
@@ -230,7 +226,6 @@
 <translation id="7155997830309522122">Ako jeste, uredite zaporku spremljenu u Chromeu kako bi odgovarala vašoj novoj zaporki.</translation>
 <translation id="7161904924553537242">Dobro došli u Google Chrome</translation>
 <translation id="7242029209006116544">Prijavljujete se upravljanim računom i dajete administratoru kontrolu nad svojim profilom u sustavu Google Chrome. Vaši podaci u sustavu Chrome, primjerice, aplikacije, oznake, povijest, zaporke i ostale postavke, trajno će se povezati s korisnikom <ph name="USER_NAME" />. Moći ćete izbrisati te podatke putem Nadzorne ploče Google računa, ali ih nećete moći povezati s nekim drugim računom. Ako želite, možete izraditi novi profil kako biste zadržali postojeće podatke u sustavu Chrome zasebno. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Instalacija OS-a Chrome u tijeku</translation>
 <translation id="7295052994004373688">Taj se jezik koristi za prikaz korisničkog sučelja Google Chromea</translation>
 <translation id="7296210096911315575">Važne informacije o upotrebi i sigurnosti</translation>
 <translation id="7308322188646931570">Chrome treba pristup pohrani radi preuzimanja datoteka</translation>

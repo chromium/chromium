@@ -87,8 +87,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2926676257163822632">Weak passwords are easy to guess. Let Chrome <ph name="BEGIN_LINK" />create and remember strong passwords for you<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome needs camera permission for this site</translation>
 <translation id="2929907241665500097">Chrome didn't update. Something went wrong. <ph name="BEGIN_LINK" />Fix Chrome update problems and failed updates.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />One last reminder: installation <ph name="BEGIN_BOLD" />will erase your entire hard drive<ph name="END_BOLD" />. Please make sure that you have any data you care about backed up.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Once installation starts it cannot be cancelled.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Network sign-in – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome is in background mode.</translation>
 <translation id="3059710691562604940">Safe Browsing is off. Chrome recommends turning it on.</translation>
@@ -136,7 +134,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4251615635259297716">Link my Chrome data to this account</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="4293420128516039005">Sign in to sync and personalise Chrome across your devices</translation>
-<translation id="429583012151745428">Installation is in progress. Don't turn off the device. Install should take no longer than twenty minutes. The machine will automatically shut down after installing.</translation>
 <translation id="4325083532956419387">Chrome OS version</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -182,7 +179,6 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="5430073640787465221">Your preferences file is corrupt or invalid.
 
 Google Chrome is unable to recover your settings.</translation>
-<translation id="5486618155264784386">Install Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome is trying to show passwords.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">If a setting doesn't show on this page, look in your <ph name="LINK_BEGIN" />
@@ -237,7 +233,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7155997830309522122">If so, please edit your saved password in Chrome so that it matches your new password.</translation>
 <translation id="7161904924553537242">Welcome to Google Chrome</translation>
 <translation id="7242029209006116544">You are signing in with a managed account and giving its administrator control over your Google Chrome profile. Your Chrome data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. You can optionally create a new profile to keep your existing Chrome data separate. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Chrome OS installation in progress</translation>
 <translation id="7295052994004373688">This language is used to display the Google Chrome UI</translation>
 <translation id="7296210096911315575">Important use and safety information</translation>
 <translation id="7308322188646931570">Chrome needs storage access to download files</translation>

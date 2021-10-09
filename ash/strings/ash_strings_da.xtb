@@ -277,7 +277,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3087734570205094154">Bund</translation>
 <translation id="3090989381251959936">Slå <ph name="FEATURE_NAME" /> til/fra. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Flyttemarkør</translation>
-<translation id="3098580329624789136">Få <ph name="INTENT" /> til "<ph name="QUERY" />"</translation>
 <translation id="3100274880412651815">Luk optagelsestilstand</translation>
 <translation id="3105917916468784889">Tag screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -480,7 +479,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4477892968187500306">Denne enhed indeholder muligvis apps, der ikke er blevet bekræftet af Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Ikke-parrede enheder</translation>
-<translation id="4485060137115666462">Når du højreklikker eller bruger langt tryk, viser Google Assistent oplysninger som f.eks. definition, oversættelse eller enhedsomregning for den tekst, du har markeret.</translation>
 <translation id="4505050298327493054">Aktivt skrivebord.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4518404433291145981">Hvis du vil låse din Chromebook op, skal du først låse din telefon op</translation>
@@ -674,7 +672,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5947494881799873997">Fortryd</translation>
 <translation id="595202126637698455">Sporing af ydelsen er aktiveret</translation>
 <translation id="5958529069007801266">Overvåget bruger</translation>
-<translation id="5960825221082587934">Tillad, at Assistent viser oplysninger som f.eks. definition, oversættelse eller enhedsomregning for den tekst, du har markeret.</translation>
 <translation id="5977415296283489383">Hovedtelefon</translation>
 <translation id="5978382165065462689">Skærmdeling via Fjernsupport.</translation>
 <translation id="5980301590375426705">Afslut gæstesession</translation>
@@ -708,7 +705,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6179832488876878285">Du kan fastgøre dine vigtige filer her. Åbn appen Filer for at komme i gang.</translation>
 <translation id="622484624075952240">Ned</translation>
 <translation id="6231419273573514727">Din eksterne enheds ydeevne kan være begrænset</translation>
-<translation id="6236290670123303279">Administrer indstillinger</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Altid vandret</translation>
 <translation id="6259254695169772643">Vælg ved hjælp af din styluspen</translation>
@@ -1027,7 +1023,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="8683506306463609433">Sporing af effektivitet er aktiv</translation>
 <translation id="8703634754197148428">Start optagelse. Når optagelsen er startet, kan du bruge Alt+Shift+L til at gå til hylden, hvor du finder den knap, der stopper optagelsen</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tryk på venstre- eller højrepil for at bruge denne funktion.</translation>
-<translation id="8712637175834984815">Forstået</translation>
 <translation id="8721053961083920564">Slå lyden til/fra. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Screenshot af hel skærm</translation>
 <translation id="8734991477317290293">Det forsøger muligvis at stjæle dine indtastninger</translation>
@@ -1055,7 +1050,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="8876661425082386199">Tjek din forbindelse</translation>
 <translation id="8877788021141246043">Opret en påmindelse</translation>
 <translation id="8878886163241303700">Udvider skærm</translation>
-<translation id="8883473964424809116">Klik for at åbne indstillingerne for Google Assistent.</translation>
 <translation id="8884537526797090108">Der kan ikke optages fortroligt indhold</translation>
 <translation id="890616557918890486">Skift kilde</translation>
 <translation id="8909138438987180327">Batteriet er på <ph name="PERCENTAGE" /> procent.</translation>

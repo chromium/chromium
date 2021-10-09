@@ -274,7 +274,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3087734570205094154">Bên dưới</translation>
 <translation id="3090989381251959936">Bật/tắt <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Di con trỏ</translation>
-<translation id="3098580329624789136">Xem <ph name="INTENT" /> của "<ph name="QUERY" />"</translation>
 <translation id="3100274880412651815">Đóng chế độ chụp</translation>
 <translation id="3105917916468784889">Chụp ảnh màn hình</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4477892968187500306">Thiết bị này có thể chứa những ứng dụng mà Google chưa xác minh.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Thiết bị được hủy ghép nối</translation>
-<translation id="4485060137115666462">Khi bạn nhấp chuột phải hoặc nhấn và giữ, Trợ lý sẽ hiển thị các thông tin như định nghĩa, bản dịch hoặc kết quả chuyển đổi đơn vị cho nội dung bạn chọn.</translation>
 <translation id="4505050298327493054">Không gian làm việc đang hoạt động.</translation>
 <translation id="4513946894732546136">Phản hồi</translation>
 <translation id="4518404433291145981">Trước tiên hãy mở khóa điện thoại của bạn để mở khóa Chromebook</translation>
@@ -668,7 +666,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5947494881799873997">Hoàn nguyên</translation>
 <translation id="595202126637698455">Đã bật theo dõi hoạt động</translation>
 <translation id="5958529069007801266">Người dùng được giám sát</translation>
-<translation id="5960825221082587934">Cho phép Trợ lý hiển thị những thông tin như định nghĩa, bản dịch hoặc kết quả chuyển đổi đơn vị cho nội dung bạn chọn.</translation>
 <translation id="5977415296283489383">Tai nghe</translation>
 <translation id="5978382165065462689">Chia sẻ quyền kiểm soát màn hình của bạn qua Trợ giúp từ xa.</translation>
 <translation id="5980301590375426705">Thoát phiên khách</translation>
@@ -702,7 +699,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6179832488876878285">Bạn có thể ghim các tệp quan trọng của mình ở đây. Hãy mở ứng dụng Files để bắt đầu.</translation>
 <translation id="622484624075952240">Xuống</translation>
 <translation id="6231419273573514727">Hiệu suất của thiết bị ngoại vi có thể bị hạn chế</translation>
-<translation id="6236290670123303279">Quản lý chế độ cài đặt</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Đã khóa theo chiều ngang</translation>
 <translation id="6259254695169772643">Sử dụng bút cảm ứng để chọn</translation>
@@ -1020,7 +1016,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8683506306463609433">Tính năng theo dõi hiệu suất đang hoạt động</translation>
 <translation id="8703634754197148428">Bắt đầu ghi. Sau khi quá trình ghi bắt đầu, hãy nhấn tổ hợp phím Alt + Shift + L để chuyển đến kệ rồi tìm nút dừng ghi</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Dùng phím mũi tên Trái hoặc Phải để quản lý tính năng này.</translation>
-<translation id="8712637175834984815">Bỏ qua</translation>
 <translation id="8721053961083920564">Bật/tắt tiếng. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Chụp toàn màn hình</translation>
 <translation id="8734991477317290293">Bàn phím này có thể đang cố gắng đánh cắp thao tác nhấn phím của bạn</translation>
@@ -1048,7 +1043,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8876661425082386199">Kiểm tra kết nối của bạn</translation>
 <translation id="8877788021141246043">Đặt lời nhắc</translation>
 <translation id="8878886163241303700">Mở rộng màn hình</translation>
-<translation id="8883473964424809116">Nhấp để mở phần cài đặt của Trợ lý Google.</translation>
 <translation id="8884537526797090108">Không thể ghi nội dung bí mật</translation>
 <translation id="890616557918890486">Thay đổi nguồn</translation>
 <translation id="8909138438987180327">Pin ở mức <ph name="PERCENTAGE" />%.</translation>

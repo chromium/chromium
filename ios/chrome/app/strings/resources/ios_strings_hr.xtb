@@ -16,6 +16,7 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="1066060668811609597">Upravljanje sinkronizacijom</translation>
 <translation id="1076421457278169141">Kod skeniran</translation>
 <translation id="1084365883616172403">Dovršen je post za Facebook.</translation>
+<translation id="1086486568852410168">Pretraži pomoću Google objektiva</translation>
 <translation id="1103523840287552314">Uvijek prevedi <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Prihvati i nastavi</translation>
 <translation id="110724200315609752">Prijeđite na otvoreni prozor</translation>
@@ -57,6 +58,7 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="1400642268715879018">Protekla 4 tjedna</translation>
 <translation id="1407135791313364759">Otvori sve</translation>
 <translation id="1430915738399379752">Ispis</translation>
+<translation id="1434356225517321998">Vaš je preglednik upravljan. <ph name="BEGIN_LINK" />Pojedinosti<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Sakrijte zaporku</translation>
 <translation id="145015347812617860">Broj stavki: <ph name="COUNT" /></translation>
 <translation id="149095475893949513">Web-lokacija pokušava preuzeti profil za konfiguraciju.</translation>
@@ -120,6 +122,7 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="209018056901015185">Prikaži klasičnu stranicu</translation>
 <translation id="2103075008456228677">Otvori history.google.com</translation>
 <translation id="2116625576999540962">Broj premještenih stavki: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="2122754583996902531">Vaš je preglednik upravljan. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="212623074644302906">Postavi upit o dodavanju na popis za čitanje</translation>
 <translation id="2139867232736819575">Pretraživanje teksta koji ste kopirali</translation>
 <translation id="214201757571129614">Prijavite se…</translation>
@@ -128,6 +131,7 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="2218443599109088993">Smanji</translation>
 <translation id="2230173723195178503">Web-stranica učitana</translation>
 <translation id="2239626343334228536">Brisanje podataka o pregledavanju...</translation>
+<translation id="2256933947031277845">Vaša organizacija dopušta da se prijavite samo putem određenih računa.</translation>
 <translation id="225943865679747347">Kôd pogreške: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Dodaj račun</translation>
 <translation id="2268044343513325586">Pročišćavanje</translation>
@@ -220,7 +224,6 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3131206671572504478">Blokiraj sve</translation>
 <translation id="313283613037595347">Izradite novu anonimnu karticu.</translation>
 <translation id="3153862085237805241">Spremi karticu</translation>
-<translation id="315401415709252194">Vaša organizacija zahtijeva da se prijavite.</translation>
 <translation id="3157387275655328056">Dodaj na popis za čitanje</translation>
 <translation id="3157684681743766797">Označi sve...</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -258,6 +261,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="345565170154308620">Upravljajte zaporkama...</translation>
 <translation id="3469166899695866866">Zaustaviti preuzimanje?</translation>
 <translation id="3470502288861289375">Kopiranje...</translation>
+<translation id="3472993688462687965">Kad uključite sinkronizaciju, podaci mogu biti ograničeni u skladu s dopuštenjima vaše organizacije.</translation>
 <translation id="3474624961160222204">Nastavi kao <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Mjesec isteka</translation>
 <translation id="3482959374254649722">Sinkronizacija kartica...</translation>
@@ -369,10 +373,12 @@ Slijedite korake u nastavku:</translation>
 
 Vaši su podaci šifrirani vašom šifrom za sinkronizaciju. Unesite je da biste pokrenuli sinkronizaciju.</translation>
 <translation id="4689564913179979534">Upravljajte načinima plaćanja...</translation>
+<translation id="469022783543509074">Odjavljeni ste</translation>
 <translation id="470966556546083668">Ne uključuj sinkronizaciju</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4747097190499141774">Enkripcija šifrom ne uključuje podatke o načinima plaćanja i adresama s Google Paya. Samo osoba koja ima vašu šifru može čitati vaše kriptirane podatke. Šifra se ne šalje Googleu niti se na njemu pohranjuje. Ako zaboravite šifru ili želite promijeniti tu postavku, morate poništiti sinkronizaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nova anonimna kartica</translation>
+<translation id="4764612367328936189">Vaša organizacija dopušta da se prijavite samo putem određenih računa. Nedopušteni su računi skriveni. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4775879719735953715">Zadani preglednik</translation>
 <translation id="4778644898150334464">Upotreba druge zaporke</translation>
 <translation id="4802417911091824046">Enkripcija šifrom ne uključuje načine plaćanja i adrese s Google Paya.
@@ -829,6 +835,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="9081058212938299310">Želite li ažurirati zaporku za <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 stavka</translation>
 <translation id="9083838294503912307">Da biste sinkronizirali i prilagodili više uređaja, uključite sinkronizaciju.</translation>
+<translation id="9084677839771512880">Vaša organizacija ograničava sadržaj koji možete sinkronizirati. <ph name="BEGIN_LINK" />Pojedinosti<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Zaporka koju predlaže Chrome:</translation>
 <translation id="9094033019050270033">Ažuriraj zaporku</translation>
 <translation id="9100610230175265781">Potrebna je zaporka</translation>

@@ -88,8 +88,6 @@
 <translation id="2926676257163822632">ଦୁର୍ବଳ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଅନୁମାନ କରିବା ସହଜ ଅଟେ। Chromeକୁ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ପାଇଁ ଜଟିଳ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ତିଆରି କରି ମନେ ରଖିବାକୁ ଦିଅନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="2926952073016206995">ଏହି ସାଇଟ୍ ପାଇଁ Chrome କ୍ୟାମେରା ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="2929907241665500097">Chrome ଅପଡେଟ୍ ହେଲା ନାହିଁ, କିଛି ତ୍ରୁଟି ହୋଇଗଲା। <ph name="BEGIN_LINK" />Chrome ଅପଡେଟ୍ ସମସ୍ୟା ଏବଂ ବିଫଳ ଅପଡେଟଗୁଡ଼ିକର ସମାଧାନ କରନ୍ତୁ।<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />ଶେଷ ଥର ପାଇଁ ରିମାଇଣ୍ଡର୍: ଇନଷ୍ଟଲେସନ୍ <ph name="BEGIN_BOLD" />ଆପଣଙ୍କ ହାର୍ଡ ଡ୍ରାଇଭର ସମସ୍ତ ଡାଟାକୁ ଖାଲି କରିଦେବ<ph name="END_BOLD" />। ଦୟାକରି ଆପଣ ଆପଣଙ୍କ ସମସ୍ତ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଡାଟାର ବ୍ୟାକଅପ୍ ନେଇଛନ୍ତି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ।<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />ଥରେ ଇନଷ୍ଟଲେସନ୍ ଆରମ୍ଭ ହେଲେ ଏହାକୁ ବାତିଲ୍ କରାଯାଇପାରିବ ନାହିଁ।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ନେଟୱାର୍କ ସାଇନ୍-ଇନ୍ - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome ପୃଷ୍ଠପଟ ମୋଡ୍‌ରେ ଅଛି।</translation>
 <translation id="3059710691562604940">ସେଫ୍ ବ୍ରାଉଜିଂ ବନ୍ଦ ଅଛି। Chrome ଏହାକୁ ଚାଲୁ କରିବାକୁ ସୁପାରିଶ କରେ।</translation>
@@ -137,7 +135,6 @@
 <translation id="4251615635259297716">ଆପଣଙ୍କର Chrome ଡାଟା ଏହି ଆକାଉଣ୍ଟ ସହ ଲିଙ୍କ୍ କରିବେ?</translation>
 <translation id="4281844954008187215">ସେବାର ସର୍ତ୍ତାବଳୀ</translation>
 <translation id="4293420128516039005">ସିଙ୍କ୍‌ରେ ସାଇନ୍‌ କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସ୍‌ରେ Chromeକୁ ବ୍ୟକ୍ତିଗତକୃତ କରନ୍ତୁ</translation>
-<translation id="429583012151745428">ଇନଷ୍ଟଲେସନ୍ ଚାଲିଛି। ଡିଭାଇସକୁ ବନ୍ଦ କରନ୍ତୁ ନାହିଁ। ଇନଷ୍ଟଲ୍ ପାଇଁ କୋଡ଼ିଏ ମିନିଟରୁ ଅଧିକ ସମୟ ଲାଗିବା ଉଚିତ ନୁହେଁ। ଇନଷ୍ଟଲ୍ କରିବା ପରେ ମେସିନ୍ ସ୍ୱଚାଳିତ ଭାବେ ବନ୍ଦ ହୋଇଯିବ।</translation>
 <translation id="4325083532956419387">Chrome OS ସଂସ୍କରଣ</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -183,7 +180,6 @@
 <translation id="5430073640787465221">ଆପଣଙ୍କର ଅଗ୍ରାଧିକାର ଫାଇଲ୍‌ ଖରାପ କିମ୍ବା ଅବୈଧ ଅଟେ।
 
 ଆପଣଙ୍କର ସେଟିଂସ୍‌ ପୁନରୁଦ୍ଧାର କରିବାକୁ Google Chrome ଅକ୍ଷମ ଅଟେ।</translation>
-<translation id="5486618155264784386">Chrome OS ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="556024056938947818">Google Chrome ପାସ୍‌ୱାର୍ଡ ଦେଖାଇବାକୁ ଚାହୁଁଛି।</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">ଯଦି ଏହି ପୃଷ୍ଠାରେ ଏକ ସେଟିଂ ଦେଖାଯାଉ ନାହିଁ, ତେବେ ଆପଣଙ୍କର <ph name="LINK_BEGIN" />Chrome OS ସେଟିଂସ୍‌<ph name="LINK_END" />ରେ ଦେଖନ୍ତୁ</translation>
@@ -237,7 +233,6 @@
 <translation id="7155997830309522122">ଯଦି ଏପରି ହୋଇଥାଏ, ତେବେ ଦୟାକରି Chromeରେ ଆପଣଙ୍କ ସେଭ୍ କରାଯାଇଥିବା ପାସୱାର୍ଡକୁ ସମ୍ପାଦନ କରନ୍ତୁ ଯାହା ଫଳରେ ଏହା ଆପଣଙ୍କ ନୂଆ ପାସୱାର୍ଡ ସହ ମେଳ ହେବ।</translation>
 <translation id="7161904924553537242">Google Chrome କୁ ସ୍ଵାଗତଂ</translation>
 <translation id="7242029209006116544">ଆପଣ ଏକ ପରିଚାଳିତ ଆକାଉଣ୍ଟ ସାହାଯ୍ୟରେ ସାଇନ୍ ଇନ୍ କରୁଛନ୍ତି ଏବଂ ଆପଣଙ୍କର Google Chrome ପ୍ରୋଫାଇଲ୍ ଉପରେ ଏହାର ବ୍ୟବସ୍ଥାପକଙ୍କୁ ନିୟନ୍ତ୍ରଣ ଦେଉଛନ୍ତି। ଆପଣଙ୍କର Chrome ଡାଟା ଯେପରିକି, ଆପଣଙ୍କର ଆପ୍ସ, ବୁକ୍‌ମାର୍କ, ଇତିବୃତ୍ତି, ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକ ଏବଂ ଅନ୍ୟାନ୍ୟ ସେଟିଂସ୍ ସ୍ଥାୟୀ ରୂପେ <ph name="USER_NAME" /> ସହ ଯୋଡ଼ି ହୋଇଯିବ। ଆପଣ ଏହି ଡାଟାକୁ Google ଆକାଉଣ୍ଟ ଡ୍ୟାସ୍‌ବୋର୍ଡ ମାଧ୍ୟମରେ ଡିଲିଟ୍ କରିପାରିବେ, କିନ୍ତୁ ଆପଣ ତାହାକୁ ଅନ୍ୟ ଆକାଉଣ୍ଟ ସହିତ ଯୋଡ଼ିପାରିବେ ନାହିଁ। ଆପଣଙ୍କର ବିଦ୍ୟମାନ Chrome ଡାଟାକୁ ଅଲଗା ରଖିବା ପାଇଁ ଇଚ୍ଛାଧୀନ ରୂପେ ଆପଣ ଏକ ନୂଆ ପ୍ରୋଫାଇଲ୍ ତିଆରି କରିପାରିବେ। <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Chrome OS ଇନଷ୍ଟଲେସନ୍ ପ୍ରକ୍ରିୟା ପ୍ରଗତିରେ ଅଛି</translation>
 <translation id="7295052994004373688">Google Chrome UI ପ୍ରଦର୍ଶନ କରିବା ପାଇଁ ଏହି ଭାଷା ବ୍ୟବହାର କରାଯାଏ</translation>
 <translation id="7296210096911315575">ଗୁରୁତ୍ବପୂର୍ଣ୍ଣ ବ୍ୟବହାର ଏବଂ ସୁରକ୍ଷା ସୂଚନା</translation>
 <translation id="7308322188646931570">ଫାଇଲ୍‌ଗୁଡ଼ିକ ଡାଉନ୍‌ଲୋଡ୍ କରିବାକୁ Chrome ଷ୍ଟୋରେଜ୍ ଆକ୍ସେସ୍ ଆବଶ୍ୟକ କରେ</translation>

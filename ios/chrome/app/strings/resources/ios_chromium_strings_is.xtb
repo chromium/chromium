@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Um Chromium</translation>
 <translation id="1257458525759135959">Til að vista myndir og láta Chromium bæta við myndirnar þínar skaltu ýta á Stillingar</translation>
 <translation id="1289216811211435351">Skipta yfir í Chromium</translation>
+<translation id="1354592789402432496">Stjórnandinn gerir kröfu um að þú skráir þig inn með fyrirtækjareikningnum þínum. Reikningar sem stjórnandinn hefur takmarkað eru faldir.</translation>
 <translation id="1361748954329991663">Chromium er úrelt. Ef engin uppfærsla er til staðar í <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> getur verið að tækið þitt styðji ekki lengur nýjar útgáfur af Chromium.</translation>
 <translation id="1370204544543370355">Skráðu þig inn í Chromium með Google reikningnum þínum svo að Chromium nýtist þér sem best</translation>
 <translation id="1431818719585918472">Leyfa Chromium að læsa huliðsflipunum þínum.</translation>
@@ -50,6 +51,7 @@
 <translation id="5171868502429358653">Skráðu þig inn á Chromium</translation>
 <translation id="5224391634244552924">Engin vistuð aðgangsorð. Chromium getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
 <translation id="5308226104666789935">Chromium getur ekki leitað að uppfærslum</translation>
+<translation id="5324242752415821224">Fyrirtækið þitt krefst þess að þú skráir þig inn til að nota Chromium. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Stilla Chromium sem sjálfgefið?</translation>
 <translation id="5521125884468363740">Skráðu þig inn og kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chromium</translation>
 <translation id="5573014823074921752">Ábending um Chromium. Til að sjá fleiri valkosti fyrir flipa skaltu halda hnappinum „Sýna flipa“ inni á tækjastikunni, sem er neðst eða efst á skjánum.</translation>
@@ -63,6 +65,7 @@
 2. Ýttu á „Sjálfgefið vafraforrit“
 3. Veldu Chromium.</translation>
 <translation id="6155422572367400359">Skráðu þig inn á þetta vefsvæði, Google reikninginn þinn og Chromium. Þú getur kveikt á samstillingu síðar.</translation>
+<translation id="6183442264225539303">Skráðu þig inn á þetta vefsvæði og Chromium. Þú getur kveikt á samstillingu síðar.</translation>
 <translation id="6268381023930128611">Skrá út af Chromium?</translation>
 <translation id="632825460376924298">Leyfa innskráningu í Chromium</translation>
 <translation id="6337530241089703714">Veldu hvort þú vilt hreinsa gögn Chromium úr þessu tæki eða geyma þau</translation>

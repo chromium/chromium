@@ -366,7 +366,6 @@
 <translation id="1383876407941801731">Søg</translation>
 <translation id="1384849755549338773">Gør Google Oversæt tilgængelig for websites på andre sprog</translation>
 <translation id="138784436342154190">Vil du gendanne standardopstartssiden?</translation>
-<translation id="1388047369870196878">Installer CloudReady 2.0</translation>
 <translation id="1388253969141979417">Har tilladelse til at bruge din mikrofon</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> genstartes, når opdateringerne er fuldført.</translation>
 <translation id="139013308650923562">Har tilladelse til at bruge de skrifttyper, der er installeret på din enhed</translation>
@@ -1980,7 +1979,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi i dag for at downloade en opdatering. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).}one{<ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi og downloader en opdatering, før fristen udløber. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).}other{<ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi og downloader en opdatering, før fristen udløber. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).}}</translation>
 <translation id="3009300415590184725">Er du sikker på, at du vil annullere konfigurationen af en mobildatatjeneste?</translation>
 <translation id="3009779501245596802">Indekserede databaser</translation>
-<translation id="3009984992511490972">Konverter denne enhed til en CloudReady 2.0-enhed.</translation>
 <translation id="3010279545267083280">Adgangskoden er slettet</translation>
 <translation id="3011384993885886186">Varm grå</translation>
 <translation id="3011488081941333749">Cookies fra <ph name="DOMAIN" /> ryddes ved lukning</translation>
@@ -2408,7 +2406,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3476303763173086583">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre dit barns Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Disse data bruges ikke til at identificere dit barn. De bruges kun til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Denne <ph name="BEGIN_LINK1" />indstilling<ph name="END_LINK1" /> håndhæves af ejeren. Ejeren kan vælge at sende diagnosticerings- og brugsdata for denne enhed til Google. Hvis indstillingen til yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto. <ph name="BEGIN_LINK2" />Få flere oplysninger<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Ups! Systemet kunne ikke hente politikken til din enhed.</translation>
 <translation id="347785443197175480">Tillad fortsat, at <ph name="HOST" /> har adgang til dit kamera og din mikrofon</translation>
-<translation id="3478813605045578676">Tilmelding understøttes kun efter installation. CloudReady skal installeres, før du kan administrere denne enhed.</translation>
 <translation id="3479552764303398839">Ikke nu</translation>
 <translation id="3479685872808224578">Printerserveren kunne ikke registreres. Tjek adressen, og prøv igen.</translation>
 <translation id="3480612136143976912">Tilpas tekststørrelsen og -stilarten for Livetekstning. Nogle apps og websites vil også anvende denne indstilling.</translation>
@@ -2611,7 +2608,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3694027410380121301">Vælg forrige fane</translation>
 <translation id="369489984217678710">Adgangskoder og andre logindata</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Sikkerhedstjekket blev gennemført. Dine data uploades.}=1{Sikkerhedstjekket blev gennemført. Din fil uploades.}one{Sikkerhedstjekket blev gennemført. Din fil uploades.}other{Sikkerhedstjekket blev gennemført. Dine filer uploades.}}</translation>
-<translation id="3696576298374669274">Se tjenestelogs</translation>
 <translation id="3699624789011381381">Mailadresse</translation>
 <translation id="3699920817649120894">Vil du deaktivere synkronisering og tilpasning?</translation>
 <translation id="3700888195348409686">Præsenterer (<ph name="PAGE_ORIGIN" />)</translation>
@@ -3078,7 +3074,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4168015872538332605">Nogle af de indstillinger, der tilhører <ph name="PRIMARY_EMAIL" />, deles med dig. Disse indstillinger påvirker kun din konto ved brug af samlet login fra flere konti.</translation>
 <translation id="4169535189173047238">Tillad ikke</translation>
 <translation id="4170314459383239649">Ryd ved lukning</translation>
-<translation id="4171570447245353961">CloudReady 2.0 har registreret en aktiv TPM-enhed, som kan gemme dine data mere sikkert.</translation>
 <translation id="4175137578744761569">Lyslilla og hvid</translation>
 <translation id="4175737294868205930">Vedvarende lagring</translation>
 <translation id="4176463684765177261">Deaktiveret</translation>
@@ -4200,7 +4195,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5431318178759467895">Farve</translation>
 <translation id="543338862236136125">Rediger adgangskode</translation>
 <translation id="5434065355175441495">PKCS #1 RSA-kryptering</translation>
-<translation id="5434473680236142631">Velkommen til CloudReady 2.0</translation>
 <translation id="5435779377906857208">Tillad altid, at <ph name="HOST" /> kan få adgang til din lokation</translation>
 <translation id="5436492226391861498">Venter på proxytunnel...</translation>
 <translation id="5436510242972373446">Søg på <ph name="SITE_NAME" />:</translation>
@@ -4776,7 +4770,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6057312498756061228">Denne fil er for stor til, at der kan gennemføres et sikkerhedstjek. Du kan åbne filer på op til 50 MB.</translation>
 <translation id="6057381398996433816">Dette website er blevet blokeret fra at anvende bevægelses- og lyssensorer.</translation>
 <translation id="6059276912018042191">Seneste Chrome-faner</translation>
-<translation id="6059347142391822629">Tryk på din kontakt, når knappen Luk er fremhævet, for at lukke vejledningen.</translation>
 <translation id="6059652578941944813">Certifikathierarki</translation>
 <translation id="6061882183774845124">Send linket til dine enheder</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Bemærk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af den kan muligvis bruges til at få adgang til det personlige indhold, der tilhører <ph name="SUPERVISED_USER_NAME" />. Du kan spare på batteriet ved at gå til Google Assistent-indstillingerne for <ph name="SUPERVISED_USER_NAME" /> og angive, at "Hey Google" kun skal aktiveres, når denne enhed er sluttet til en strømkilde.</translation>
@@ -5063,6 +5056,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6359706544163531585">Deaktiver Lyst tema</translation>
 <translation id="6361850914223837199">Info om fejl:</translation>
 <translation id="6362853299801475928">&amp;Rapporter et problem...</translation>
+<translation id="6363786367719063276">Se logfiler</translation>
 <translation id="6363990818884053551">Bekræft din identitet for at starte synkroniseringen</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Tilføj familie og venner</translation>
@@ -5255,8 +5249,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6569911211938664415">Adgangskoder gemmes på din Google-konto (<ph name="ACCOUNT" />), så du kan bruge dem på enhver enhed</translation>
 <translation id="6573497332121198392">Genvejen kan ikke fjernes</translation>
 <translation id="657402800789773160">&amp;Genindlæs denne side</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />Du får den bedst mulige oplevelse ved at installere CloudReady 2.0 på din interne disk. Du kan også installere det senere via loginskærmen.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Hvis du ikke er klar til at installere, kan du prøvekøre det via USB. På denne måde vil du beholde dit eksisterende OS og dine data, men lagerpladsen og ydeevnen kan være begrænset.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">Downloaden blev annulleret: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Øjebliksbillede af netværkets tilstand</translation>
 <translation id="6579369886355986318">Vis alle &amp;knapper</translation>
@@ -6077,9 +6069,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# åben fane. Tryk for at vise eller skjule fanelinje.}one{# åben fane. Tryk for at vise eller skjule fanelinje.}other{# åbne faner. Tryk for at vise eller skjule fanelinje.}}</translation>
 <translation id="7465635034594602553">Noget gik galt. Vent et øjeblik, og prøv derefter at køre <ph name="APP_NAME" /> igen.</translation>
 <translation id="7465778193084373987">Webadresse for tilbagekaldelse af Netscape-certifikat</translation>
-<translation id="746811648436543102"><ph name="BEGIN_PARAGRAPH1" />Inden tilmelding skal du rydde TPM, så CloudReady 2.0 kan tage ejerskab over enheden.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan også deaktivere TPM-enheden helt. Dine data gemmes fortsat sikkert med softwarekryptering, men visse sikkerhedsfunktioner som f.eks. hardwarebaserede certifikater deaktiveres.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Du kan ændre dine TPM-indstillinger ved at genstarte og gå til systemindstillingerne for BIOS/UEFI. Trinene varierer afhængigt af, hvilken enhedsmodel du bruger. Du kan få flere oplysninger ved at åbne dokumentationen til CloudReady 2.0 på en separat enhed, inden du genstarter: [webadresse]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="746861123368584540">Udvidelsen er indlæst</translation>
 <translation id="7470424110735398630">Har tilladelse til at se din udklipsholder</translation>
 <translation id="747114903913869239">Fejl: Udvidelsen kunne ikke afkodes</translation>
@@ -6363,7 +6352,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildelingen.</translation>
 <translation id="7750228210027921155">Integreret billede</translation>
 <translation id="7751260505918304024">Vis alle</translation>
-<translation id="7751855202867682241">Behold dit OS, og kør CloudReady 2.0 via USB.</translation>
 <translation id="7753735457098489144">Installationen mislykkedes på grund af manglende lagerplads. Slet filer fra lageret på din enhed for at frigøre plads.</translation>
 <translation id="7754347746598978109">Har ikke tilladelse til at bruge JavaScript</translation>
 <translation id="7754704193130578113">Spørg, hvor hver enkelt fil skal gemmes, inden download begynder</translation>
@@ -7422,7 +7410,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8845001906332463065">Få hjælp</translation>
 <translation id="8846132060409673887">Læs computerens producent og model</translation>
 <translation id="8846163936679269230">Nulstil eSIM-profiler</translation>
-<translation id="8846746259444262774">Installationen mislykkedes</translation>
 <translation id="8847523528195140327">Log ud, når etuiet er lukket</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Skjult</translation>

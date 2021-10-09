@@ -3,6 +3,7 @@
 <translationbundle lang="et">
 <translation id="1096883626080133124">Google Chrome on nüüd lihtsam, turvalisem ja kiirem kui kunagi varem ning aitab teil veelgi rohkem toiminguid teha</translation>
 <translation id="1282031177488366470">Aidake täiustada Chrome'i funktsioone ja toimivust</translation>
+<translation id="1354592789402432496">Administraator nõuab, et logiksite sisse organisatsiooni kontoga. Kontod, mille administraator on piiranud, on peidetud.</translation>
 <translation id="1479202195792305274">Chrome saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga.</translation>
 <translation id="1493827051843127077">Määrake Chrome vaikebrauseriks, et sünkroonida kõikides oma seadetes vahelehti, paroole ja makseteavet</translation>
 <translation id="1504372625950710826">Chrome ei saanud värskendusi otsida. Kontrollige internetiühendust.</translation>
@@ -45,6 +46,7 @@
 <translation id="3988789688219830639">Google Chrome'il pole juurdepääsu fotodele ega videotele. Lubage iOS-is juurdep. valikutega Seaded &gt; Privaatsus &gt; Fotod.</translation>
 <translation id="4099578267706723511">Aidake muuta Chrome'i paremaks, saates Google'ile kasutusstatistikat ja krahhiaruandeid.</translation>
 <translation id="417201473131094001">Ei toetata versioonis Chrome Canary</translation>
+<translation id="4214277427269650960">Logige sellele saidile ja Chrome'i sisse. Sünkroonimise saate hiljem sisse lülitada.</translation>
 <translation id="424864128008805179">Kas logida Chrome'ist välja?</translation>
 <translation id="4249068189593983585">Chrome'i nõuanne. Vahelehtede lisavalikute nägemiseks puudutage ja hoidke all ekraanikuva üla- või alaosas tööriistaribal olevat nuppu Kuva vahelehed.</translation>
 <translation id="4523886039239821078">Mõned pistikprogrammid põhjustavad Chrome'i kokkujooksmise. Desinstallige need:</translation>
@@ -59,6 +61,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Võrguühenduseta, Chrome ei saa värskendusi otsida</translation>
 <translation id="5716154293141027663">Kui muudes rakendustes linke puudutate, avaneb alati Chrome</translation>
+<translation id="572883588166315317">Teie organisatsioon nõuab, et logiksite Chrome'i kasutamiseks sisse. <ph name="BEGIN_LINK" />Vaadake lisateavet<ph name="END_LINK" />.</translation>
 <translation id="5854621639439811139">Chrome'i nõuanne. Mõned nupud, näiteks Tagasi, Edasi ja Otsing, asuvad nüüd ekraani alaosas.</translation>
 <translation id="5876773482963502140">Kui lubate Chrome'il teada teie asukohateavet, saadab Chrome selle saitidele, mille jaoks loa annate. Saidid võivad teilt küsida asukohateavet, kui neil on teile näidata kohalikku teavet, näiteks lähedalasuvaid poode või uudiseid.</translation>
 <translation id="6054613632208573261">Kasutage Chrome'i vaikimisi</translation>

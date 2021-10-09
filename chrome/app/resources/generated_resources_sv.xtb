@@ -362,7 +362,6 @@
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1384849755549338773">Gör Google Översätt tillgängligt för webbplatser på andra språk</translation>
 <translation id="138784436342154190">Vill du återställa standardinställningen för startfliken?</translation>
-<translation id="1388047369870196878">Installera CloudReady 2.0</translation>
 <translation id="1388253969141979417">Får använda mikrofonen</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> startas om när uppdateringarna har slutförts.</translation>
 <translation id="139013308650923562">Har tillåtelse att använda teckensnitt som har installerats på enheten</translation>
@@ -1970,7 +1969,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kräver att du ansluter till wifi och laddar ned en uppdatering i dag. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).}other{<ph name="MANAGER" /> kräver att du ansluter till wifi laddar ned en uppdatering före deadline. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).}}</translation>
 <translation id="3009300415590184725">Är du säker på att du vill avbryta konfigurationen av den mobila datatjänsten?</translation>
 <translation id="3009779501245596802">Indexerade databaser</translation>
-<translation id="3009984992511490972">Konvertera den här enheten till en CloudReady 2.0-enhet.</translation>
 <translation id="3010279545267083280">Lösenordet har tagits bort</translation>
 <translation id="3011384993885886186">Varmt grå</translation>
 <translation id="3011488081941333749">Cookies från <ph name="DOMAIN" /> rensas vid avslut</translation>
@@ -2395,7 +2393,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3476303763173086583">Skicka diagnostik- och användningsdata. Hjälp till att göra Android bättre för ditt barn genom att skicka diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera och inte till att identifiera ditt barn. Viss samlad data används även till att förbättra appar från Google och partner, till exempel Android-utvecklare. Ägaren har gjort denna <ph name="BEGIN_LINK1" />inställning<ph name="END_LINK1" /> obligatorisk. Ägaren kan ange att diagnostik- och användningsdata om den här enheten ska skickas till Google. Om ytterligare webb- och appaktivitet har aktiverats för ditt barn kan denna data sparas i Google-kontot. <ph name="BEGIN_LINK2" />Läs mer<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Hoppsan! Det gick inte att hämta enhetsprincipen.</translation>
 <translation id="347785443197175480">Fortsätt tillåta att <ph name="HOST" /> använder kameran och mikrofonen</translation>
-<translation id="3478813605045578676">Registrering stöds endast efter installation. Om du vill hantera den här enheten börjar du med att installera CloudReady.</translation>
 <translation id="3479552764303398839">Inte nu</translation>
 <translation id="3479685872808224578">Utskriftsservern hittades inte. Kontrollera webbadressen och försök igen.</translation>
 <translation id="3480612136143976912">Anpassa storlek och format för Live Caption. Inställningen används även för vissa appar och webbplatser.</translation>
@@ -2597,7 +2594,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3694027410380121301">Välj föregående flik</translation>
 <translation id="369489984217678710">Lösenord och andra inloggningsuppgifter</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Säkerhetskontrollen är klar. Data laddas upp.}=1{Säkerhetskontrollen är klar. Filen laddas upp.}other{Säkerhetskontrollen är klar. Filerna laddas upp.}}</translation>
-<translation id="3696576298374669274">Visa tjänsteloggar</translation>
 <translation id="3699624789011381381">E-postadress</translation>
 <translation id="3699920817649120894">Vill du inaktivera synkronisering och anpassning?</translation>
 <translation id="3700888195348409686">Presenteras (<ph name="PAGE_ORIGIN" />)</translation>
@@ -4176,7 +4172,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5431318178759467895">Färg</translation>
 <translation id="543338862236136125">Redigera lösenord</translation>
 <translation id="5434065355175441495">PKCS #1 RSA-kryptering</translation>
-<translation id="5434473680236142631">Välkommen till CloudReady 2.0</translation>
 <translation id="5435779377906857208">Tillåt alltid att <ph name="HOST" /> har åtkomst till din plats</translation>
 <translation id="5436492226391861498">Väntar på proxytunnel...</translation>
 <translation id="5436510242972373446">Sök <ph name="SITE_NAME" />:</translation>
@@ -4748,7 +4743,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6057312498756061228">Den här filen är så stor att den inte går genom säkerhetskontrollen. Du kan öppna filer som är upp till 50 MB stora.</translation>
 <translation id="6057381398996433816">Den här webbplatsen får inte använda enhetens rörelse- och ljussensor.</translation>
 <translation id="6059276912018042191">Senaste flikarna i Chrome</translation>
-<translation id="6059347142391822629">Tryck på brytaren när knappen Klar är i fokus för att stänga guiden.</translation>
 <translation id="6059652578941944813">Certifikathierarki</translation>
 <translation id="6061882183774845124">Skicka länken till dina enheter</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Obs!<ph name="END_BOLD" /> Det kan hända att de personliga resultaten för <ph name="SUPERVISED_USER_NAME" /> även går att komma åt med en liknande röst eller en inspelning. För att spara batteri kan du välja att ”Hey Google” endast är aktiverat när enheten är ansluten till en strömkälla. Detta gör du i Assistent-inställningarna för <ph name="SUPERVISED_USER_NAME" />.</translation>
@@ -5034,6 +5028,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6359706544163531585">Inaktivera ljust tema</translation>
 <translation id="6361850914223837199">Information om felet:</translation>
 <translation id="6362853299801475928">&amp;Rapportera ett problem...</translation>
+<translation id="6363786367719063276">Visa loggar</translation>
 <translation id="6363990818884053551">Verifiera din identitet för att starta synkroniseringen</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Lägg till familj och vänner</translation>
@@ -5226,8 +5221,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6569911211938664415">Lösenorden sparas i Google-kontot (<ph name="ACCOUNT" />) så att du kan använda dem på vilken enhet som helst</translation>
 <translation id="6573497332121198392">Det gick inte att ta bort genvägen</translation>
 <translation id="657402800789773160">&amp;Hämta sidan igen</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />Du får en bättre upplevelse om du installerar CloudReady 2.0 på den interna disken. Du kan även installera det senare från inloggningsskärmen.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Om du inte vill installera det ännu kan du köra från ett USB-minne och testa. På så vis behåller du det befintliga operativsystemet och din data, men det kan finnas begränsningar för lagringsutrymme och prestanda.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">Nedladdningen avbröts: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Snapshot av nätverkets status</translation>
 <translation id="6579369886355986318">Visa alla &amp;kontroller</translation>
@@ -6323,7 +6316,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill ta bort tilldelningen.</translation>
 <translation id="7750228210027921155">Bild-i-bild</translation>
 <translation id="7751260505918304024">Visa alla</translation>
-<translation id="7751855202867682241">Behåll ditt operativsystem och kör CloudReady 2.0 från USB.</translation>
 <translation id="7753735457098489144">Installationen misslyckades eftersom det inte finns tillräckligt med lagringsutrymme. Frigör utrymme genom att ta bort filer från lagringsutrymmet på enheten.</translation>
 <translation id="7754347746598978109">Får inte använda JavaScript</translation>
 <translation id="7754704193130578113">Fråga var filerna ska sparas före nedladdning</translation>
@@ -7372,7 +7364,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8845001906332463065">Få hjälp</translation>
 <translation id="8846132060409673887">Läsa information om datorns tillverkare och modell</translation>
 <translation id="8846163936679269230">Återställ eSIM-profiler</translation>
-<translation id="8846746259444262774">Installationen misslyckades</translation>
 <translation id="8847523528195140327">Logga ut när fodralet stängs</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Dold</translation>

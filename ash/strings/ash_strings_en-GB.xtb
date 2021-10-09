@@ -277,7 +277,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="3087734570205094154">Bottom</translation>
 <translation id="3090989381251959936">Toggle <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Move cursor</translation>
-<translation id="3098580329624789136">Get the <ph name="INTENT" /> for '<ph name="QUERY" />'</translation>
 <translation id="3100274880412651815">Dismiss capture mode</translation>
 <translation id="3105917916468784889">Take screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -480,7 +479,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="4477892968187500306">This device may contain apps that haven't been verified by Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Unpaired devices</translation>
-<translation id="4485060137115666462">With a right-click or a long press, Assistant shows info such as the definition, translation or unit conversion for your selection.</translation>
 <translation id="4505050298327493054">Active desk.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4518404433291145981">To unlock your Chromebook, first unlock your phone</translation>
@@ -674,7 +672,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="5947494881799873997">Revert</translation>
 <translation id="595202126637698455">Performance tracing enabled</translation>
 <translation id="5958529069007801266">Supervised user</translation>
-<translation id="5960825221082587934">Let Assistant show info such as definition, translation or unit conversion for your selection.</translation>
 <translation id="5977415296283489383">Headphone</translation>
 <translation id="5978382165065462689">Sharing control of your screen via Remote Assistance.</translation>
 <translation id="5980301590375426705">Exit guest</translation>
@@ -708,7 +705,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="6179832488876878285">You can pin your important files here. Open Files app to get started.</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">Peripheral performance may be limited</translation>
-<translation id="6236290670123303279">Manage settings</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Locked to horizontal</translation>
 <translation id="6259254695169772643">Use your stylus to select</translation>
@@ -1027,7 +1023,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="8683506306463609433">Performance tracing active</translation>
 <translation id="8703634754197148428">Start recording. Once recording has started use Alt + Shift + L to navigate to the shelf and find the stop recording button</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Use the left or right arrow keys to manage this feature.</translation>
-<translation id="8712637175834984815">Got it</translation>
 <translation id="8721053961083920564">Toggle volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Full screen capture</translation>
 <translation id="8734991477317290293">It may be attempting to steal your keystrokes</translation>
@@ -1055,7 +1050,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="8876661425082386199">Check your connection</translation>
 <translation id="8877788021141246043">Set a reminder</translation>
 <translation id="8878886163241303700">Extending screen</translation>
-<translation id="8883473964424809116">Click to open Google Assistant settings.</translation>
 <translation id="8884537526797090108">Can't record confidential content</translation>
 <translation id="890616557918890486">Change source</translation>
 <translation id="8909138438987180327">Battery at <ph name="PERCENTAGE" /> per cent.</translation>

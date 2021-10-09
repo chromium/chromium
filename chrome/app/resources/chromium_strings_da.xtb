@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">Chromium skal have lageradgang for at downloade filer</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">Log ind, og aktivér derefter synkronisering for at få adgang til dine Chromium-ting på alle dine enheder.</translation>
-<translation id="2580426763510374355">Installer Chromium OS</translation>
 <translation id="2583187216237139145">Alle Chromium-data, der genereres ved brug af denne profil (f.eks. oprettelse af bogmærker, historik, adgangskoder og andre indstillinger) kan fjernes af arbejdsprofilens administrator. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS skal genstartes, før opdateringen kan anvendes.</translation>
 <translation id="2648074677641340862">Der opstod en fejl i operativsystemet under installationen. Download Chromium igen.</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">Fjern fra Chromium...</translation>
 <translation id="2885378588091291677">Jobliste</translation>
 <translation id="2910007522516064972">Om &amp;Chromium</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />En sidste påmindelse: Når du installerer, <ph name="BEGIN_BOLD" />ryddes hele din harddisk<ph name="END_BOLD" />. Sørg for, at du har sikkerhedskopieret alle dine vigtigste data.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Når installationen først er gået i gang, kan den ikke annulleres.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium er opdateret</translation>
 <translation id="2983934633046890458">Chromium forsøger at redigere adgangskoder.</translation>
 <translation id="3032706164202344641">Chromium kan ikke tjekke dine adgangskoder. Prøv igen senere.</translation>
@@ -79,7 +76,6 @@
 <translation id="3350761136195634146">Der findes allerede en Chromium-profil med denne konto</translation>
 <translation id="3406848076815591792">Vil du skifte til den eksisterende Chromium-profil?</translation>
 <translation id="3430503420100763906">Du kan organisere alle dine ting i Chromium ved hjælp af Chromium-profiler. Opret profiler til dine venner og din familie, eller brug dem til at holde arbejde og fornøjelse adskilt.</translation>
-<translation id="3433271666494956603">Installationen af Chromium OS er i gang</translation>
 <translation id="347328004046849135">Chromium giver dig besked, når du logger ind med en kompromitteret adgangskode</translation>
 <translation id="3474745554856756813">Denne handling sletter <ph name="ITEMS_COUNT" /> elementer på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chromium som <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> kan skifte mellem Chromium-profiler</translation>
@@ -107,7 +103,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" /> kræver, at du læser og accepterer følgende servicevilkår, inden du bruger denne enhed. Disse vilkår udvider, ændrer eller begrænser på ingen måde vilkårene for Chromium OS.</translation>
 <translation id="4271805377592243930">Få hjælp til Chromium</translation>
 <translation id="4285930937574705105">Installationen mislykkedes på grund af en ikke-specificeret fejl. Hvis Chromium kører, skal du lukke programmet og prøve igen.</translation>
-<translation id="429583012151745428">Installationen er i gang. Undlad at slukke enheden. Installationen varer maks. 20 minutter. Maskinen slukker automatisk efter installationen.</translation>
 <translation id="4407044323746248786">Vil du afslutte Chromium alligevel?</translation>
 <translation id="4415566066719264597">Lad Chromium køre i baggrunden</translation>
 <translation id="4423735387467980091">Tilpas og kontrollér Chromium</translation>
@@ -201,7 +196,6 @@ Visse funktioner kan være utilgængelige. Angiv en anden profilmappe, eller bru
 <translation id="6734291798041940871">Chromium er allerede installeret for alle brugere på computeren.</translation>
 <translation id="673636774878526923">Log ind, og aktivér derefter synkronisering for at få adgang til dine Chromium-ting på alle dine enheder.</translation>
 <translation id="6774082503108938489">Din forælder har deaktiveret "Tilladelser til websites, apps og udvidelser" for Chromium. Det er ikke tilladt at aktivere denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="6827182711503025204">Når du installerer Chromium OS, overskrives alle dataene på din enhed.</translation>
 <translation id="6847869444787758381">Chromium giver dig besked, hvis dine adgangskoder kompromitteres</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopieret til Chromium)</translation>

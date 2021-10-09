@@ -362,7 +362,6 @@
 <translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1384849755549338773">Đề xuất dịch các trang web xuất hiện ở các ngôn ngữ khác bằng Google Dịch</translation>
 <translation id="138784436342154190">Khôi phục trang khởi động mặc định?</translation>
-<translation id="1388047369870196878">Cài đặt CloudReady 2.0</translation>
 <translation id="1388253969141979417">Được phép sử dụng micrô</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> sẽ khởi động lại khi cập nhật xong.</translation>
 <translation id="139013308650923562">Cho phép sử dụng phông chữ đã cài đặt trên thiết bị của bạn</translation>
@@ -1970,7 +1969,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> yêu cầu bạn kết nối Wi-Fi ngay hôm nay để tải bản cập nhật xuống, hoặc tải xuống qua một đường kết nối có đo lượng dữ liệu (cước phí có thể phát sinh).}other{<ph name="MANAGER" /> yêu cầu bạn kết nối Wi-Fi và tải bản cập nhật xuống trước thời hạn, hoặc tải xuống qua một đường kết nối có đo lượng dữ liệu (cước phí có thể phát sinh).}}</translation>
 <translation id="3009300415590184725">Bạn có chắc chắn muốn hủy quá trình thiết lập dịch vụ dữ liệu di động không?</translation>
 <translation id="3009779501245596802">Cơ sở dữ liệu được lập chỉ mục</translation>
-<translation id="3009984992511490972">Chuyển đổi thiết bị này thành thiết bị CloudReady 2.0.</translation>
 <translation id="3010279545267083280">Đã xóa mật khẩu</translation>
 <translation id="3011384993885886186">Xám ấm</translation>
 <translation id="3011488081941333749">Cookie từ <ph name="DOMAIN" /> sẽ bị xóa khi thoát</translation>
@@ -2395,7 +2393,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3476303763173086583">Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng. Giúp cải thiện trải nghiệm Android của con bạn bằng cách tự động gửi dữ liệu chẩn đoán cũng như dữ liệu về mức sử dụng ứng dụng và thiết bị cho Google. Những thông tin này sẽ không dùng để nhận dạng con bạn mà giúp tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như những nhà phát triển Android. Mục <ph name="BEGIN_LINK1" />cài đặt<ph name="END_LINK1" /> này do chủ sở hữu thực thi. Chủ sở hữu có thể chọn gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng của thiết bị này cho Google. Nếu bạn bật mục cài đặt bổ sung Hoạt động trên web và ứng dụng cho con mình thì dữ liệu này có thể được lưu vào Tài khoản Google của trẻ. <ph name="BEGIN_LINK2" />Tìm hiểu thêm<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Rất tiếc! Hệ thống không tìm nạp được chính sách cho thiết bị của bạn.</translation>
 <translation id="347785443197175480">Tiếp tục cho phép <ph name="HOST" /> truy cập vào máy ảnh và micrô của bạn</translation>
-<translation id="3478813605045578676">Chỉ hỗ trợ đăng ký sau khi hoàn tất cài đặt. Để quản lý thiết bị này, trước tiên hãy cài đặt CloudReady.</translation>
 <translation id="3479552764303398839">Không phải bây giờ</translation>
 <translation id="3479685872808224578">Không tìm thấy máy chủ máy in này. Vui lòng kiểm tra địa chỉ rồi thử lại.</translation>
 <translation id="3480612136143976912">Tùy chỉnh kích cỡ và kiểu phụ đề cho Phụ đề trực tiếp. Một số ứng dụng và trang web cũng sẽ dùng chế độ cài đặt này.</translation>
@@ -2597,7 +2594,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3694027410380121301">Chọn Thẻ Trước</translation>
 <translation id="369489984217678710">Mật khẩu và các dữ liệu đăng nhập khác</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Đã kiểm tra bảo mật xong. Dữ liệu của bạn sẽ được tải lên.}=1{Đã kiểm tra bảo mật xong. Tệp của bạn sẽ được tải lên.}other{Đã kiểm tra bảo mật xong. Các tệp của bạn sẽ được tải lên.}}</translation>
-<translation id="3696576298374669274">Hiện nhật ký dịch vụ</translation>
 <translation id="3699624789011381381">Địa chỉ email</translation>
 <translation id="3699920817649120894">Bạn có muốn tắt tính năng đồng bộ hóa và cá nhân hóa không?</translation>
 <translation id="3700888195348409686">Đang hiển thị (<ph name="PAGE_ORIGIN" />)</translation>
@@ -4176,7 +4172,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5431318178759467895">Màu</translation>
 <translation id="543338862236136125">Chỉnh sửa mật khẩu</translation>
 <translation id="5434065355175441495">PKCS #1 Mã hóa RSA</translation>
-<translation id="5434473680236142631">Chào mừng bạn đến với CloudReady 2.0</translation>
 <translation id="5435779377906857208">Luôn cho phép <ph name="HOST" /> truy cập thông tin vị trí của bạn</translation>
 <translation id="5436492226391861498">Chờ đường hầm proxy...</translation>
 <translation id="5436510242972373446">Tìm kiếm <ph name="SITE_NAME" />:</translation>
@@ -4748,7 +4743,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6057312498756061228">Hệ thống không thể kiểm tra bảo mật do tệp này có dung lượng quá lớn. Bạn có thể mở tệp có dung lượng tối đa là 50 MB.</translation>
 <translation id="6057381398996433816">Trang web này đã bị chặn sử dụng cảm biến chuyển động và ánh sáng của thiết bị.</translation>
 <translation id="6059276912018042191">Các thẻ Chrome mở gần đây</translation>
-<translation id="6059347142391822629">Để đóng hướng dẫn, hãy nhấn vào công tắc khi tâm điểm ở trên nút Xong.</translation>
 <translation id="6059652578941944813">Hệ thống cấp bậc của Chứng chỉ</translation>
 <translation id="6061882183774845124">Gửi đường liên kết tới thiết bị của bạn</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" /> Một giọng nói hoặc bản ghi âm giọng nói giống với giọng nói của <ph name="SUPERVISED_USER_NAME" /> cũng có thể truy cập vào các kết quả cá nhân của con bạn. Để tiết kiệm pin, bạn có thể chọn chỉ bật tính năng "OK Google" khi thiết bị của <ph name="SUPERVISED_USER_NAME" /> được kết nối với nguồn điện trong phần cài đặt của Trợ lý.</translation>
@@ -5034,6 +5028,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6359706544163531585">Tắt giao diện sáng</translation>
 <translation id="6361850914223837199">Chi tiết lỗi:</translation>
 <translation id="6362853299801475928">&amp;Báo cáo sự cố...</translation>
+<translation id="6363786367719063276">Xem nhật ký</translation>
 <translation id="6363990818884053551">Để bắt đầu đồng bộ hóa, hãy xác minh danh tính của bạn</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Thêm gia đình và bạn bè</translation>
@@ -5226,8 +5221,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6569911211938664415">Các mật khẩu được lưu trong Tài khoản Google (<ph name="ACCOUNT" />) của bạn để bạn có thể sử dụng trên bất cứ thiết bị nào</translation>
 <translation id="6573497332121198392">Không thể xóa lối tắt</translation>
 <translation id="657402800789773160">&amp;Tải lại trang này</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />Để có trải nghiệm tốt nhất, hãy cài đặt CloudReady 2.0 vào ổ đĩa trong của bạn. Bạn cũng có thể cài đặt ứng dụng vào lúc khác trên màn hình đăng nhập.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Nếu chưa sẵn sàng cài đặt, bạn có thể chạy ứng dụng từ USB để dùng thử trước. Thao tác này sẽ giữ lại hệ điều hành và dữ liệu hiện có, nhưng bạn có thể gặp phải các giới hạn về dung lượng lưu trữ và hiệu suất.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">Đã hủy tải xuống: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Tổng quan nhanh về tình trạng mạng</translation>
 <translation id="6579369886355986318">Hiển thị tất cả &amp;nút điều khiển</translation>
@@ -6323,7 +6316,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7750228210027921155">Hình trong hình</translation>
 <translation id="7751260505918304024">Hiển thị tất cả</translation>
-<translation id="7751855202867682241">Vẫn dùng hệ điều hành của bạn và chạy CloudReady 2.0 từ USB.</translation>
 <translation id="7753735457098489144">Cài đặt không thành công do thiếu dung lượng bộ nhớ. Để giải phóng dung lượng, hãy xóa bớt tệp khỏi bộ nhớ của thiết bị.</translation>
 <translation id="7754347746598978109">Không được phép sử dụng JavaScript</translation>
 <translation id="7754704193130578113">Hỏi vị trí lưu từng tệp trước khi tải xuống</translation>
@@ -7372,7 +7364,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8845001906332463065">Nhận trợ giúp</translation>
 <translation id="8846132060409673887">Đọc thông tin về nhà sản xuất và kiểu máy của máy tính này</translation>
 <translation id="8846163936679269230">Đặt lại hồ sơ eSIM</translation>
-<translation id="8846746259444262774">Cài đặt không thành công</translation>
 <translation id="8847523528195140327">Đăng xuất khi đóng nắp màn hình</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Đã ẩn</translation>

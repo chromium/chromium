@@ -362,7 +362,6 @@
 <translation id="1383876407941801731">शोधा</translation>
 <translation id="1384849755549338773">इतर भाषांमधील वेबसाइटसाठी Google Translate ची सुविधा द्या</translation>
 <translation id="138784436342154190">डीफॉल्ट स्टार्टअप पेज रिस्टोअर करायचे?</translation>
-<translation id="1388047369870196878">CloudReady 2.0 इंस्टॉल करा</translation>
 <translation id="1388253969141979417">तुमचा मायक्रोफोन वापरण्याची अनुमती आहे</translation>
 <translation id="1388728792929436380">अपडेट पूर्ण झाल्यावर <ph name="DEVICE_TYPE" /> रीस्टार्ट होईल.</translation>
 <translation id="139013308650923562">तुमच्या डिव्हाइसवर इंस्टॉल केलेले फाँट वापरण्याची अनुमती द्या</translation>
@@ -1969,7 +1968,6 @@
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> नुसार, तुम्ही अपडेट डाउनलोड करण्यासाठी आजच वाय-फायशी कनेक्ट करणे आवश्यक आहे. किंवा मर्यादित कनेक्शनमधून डाउनलोड करा (शुल्के लागू होऊ शकतात).}other{<ph name="MANAGER" /> नुसार, तुम्ही डेडलाइनपूर्वी वाय-फाय शी कनेक्ट करून अपडेट डाउनलोड करणे आवश्यक आहे. किंवा मर्यादित कनेक्शनमधून डाउनलोड करा (शुल्के लागू होऊ शकतात).}}</translation>
 <translation id="3009300415590184725">मोबाइल डेटा सेट अप प्रक्रिया ‍रद्द करु इच्‍छित आहात याबद्दल तुम्हाला खात्री आहे?</translation>
 <translation id="3009779501245596802">अनुक्रमित डेटाबेस</translation>
-<translation id="3009984992511490972">हे डिव्हाइस CloudReady 2.0 डिव्हाइसमध्ये बदला.</translation>
 <translation id="3010279545267083280">पासवर्ड  हटवला</translation>
 <translation id="3011384993885886186">गडद करडा</translation>
 <translation id="3011488081941333749">बाहेर पडताना <ph name="DOMAIN" /> वरील कुकीज साफ केल्या जातील</translation>
@@ -2394,7 +2392,6 @@
 <translation id="3476303763173086583">वापर आणि निदान डेटा पाठवा. Google ला आपोआप निदान आणि डिव्हाइस आणि अ‍ॅप वापर डेटा पाठवून तुमच्या लहान मुलाचा Android अनुभव सुधारण्यात मदत करा. हे तुमच्या लहान मुलाला ओळखण्यासाठी वापरले जाणार नाही आणि सिस्ट्म आणि अ‍ॅप स्थिरता आणि इतर सुधारणा करण्यात मदत करेल. काही एकत्रित डेटा Google अ‍ॅप्स आणि Android डेव्हलपर सारख्या भागीदारांनादेखील मदत करेल. या <ph name="BEGIN_LINK1" />सेटिंगची<ph name="END_LINK1" /> मालकाद्वारे अंमलबजावणी केली जाते. मालक या डिव्हाइससाठी निदान आणि वापर डेटा Google ला पाठवणे निवडू शकतो. तुमच्या लहान मुलासाठी अतिरिक्त वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सुरू केलेली असल्यास, ही माहिती त्याच्या Google खात्यामध्ये स्टोअर केली जाऊ शकते. <ph name="BEGIN_LINK2" />अधिक जाणून घ्या<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">अरेरे! तुमच्या डीव्हाइससाठी धोरण आणण्यात सिस्टम अयशस्वी झाली.</translation>
 <translation id="347785443197175480">तुमचा कॅमेरा आणि मायक्रोफोन ॲक्सेस करण्यासाठी <ph name="HOST" /> ला परवानगी देणे सुरू ठेवा</translation>
-<translation id="3478813605045578676">इंस्टॉल करणे पूर्ण झाल्यावरच नोंदणी करणे सपोर्ट करते. हे डिव्हाइस व्यवस्थापित करण्यासाठी, सर्वप्रथम CloudReady इंस्टॉल करा.</translation>
 <translation id="3479552764303398839">सध्या नाही</translation>
 <translation id="3479685872808224578">प्रिंट सर्व्हर डिटेक्ट करता आला नाही. कृपया ॲड्रेस तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="3480612136143976912">लाइव्ह कॅप्शन साठी कॅप्शनचा आकार आणि शैली कस्टमाइझ करा. हे सेटिंग काही अ‍ॅप्स आणि साइटदेखील वापरतील.</translation>
@@ -2596,7 +2593,6 @@
 <translation id="3694027410380121301">मागील टॅब निवडा</translation>
 <translation id="369489984217678710">पासवर्ड आणि इतर साइन इन डेटा</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{सुरक्षा तपासण्या पूर्ण झाल्या. तुमचा डेटा अपलोड केला जाईल.}=1{सुरक्षा तपासण्या पूर्ण झाल्या. तुमची फाइल अपलोड केली जाईल.}other{सुरक्षा तपासण्या पूर्ण झाल्या. तुमच्या फाइल अपलोड केल्या जातील.}}</translation>
-<translation id="3696576298374669274">सेवा लॉग दाखवा</translation>
 <translation id="3699624789011381381">ईमेल ॲड्रेस</translation>
 <translation id="3699920817649120894">सिंक करणे आणि पर्सनलाइझेशन बंद करायचे आहे का?</translation>
 <translation id="3700888195348409686">सादर करत आहे (<ph name="PAGE_ORIGIN" />)</translation>
@@ -4173,7 +4169,6 @@
 <translation id="5431318178759467895">रंग</translation>
 <translation id="543338862236136125">पासवर्ड संपादित करा</translation>
 <translation id="5434065355175441495">PKCS #1 RSA एंक्रिप्शन</translation>
-<translation id="5434473680236142631">CloudReady 2.0 मध्ये स्वागत आहे</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> ला तुमचे स्थान अ‍ॅक्सेस करण्याची नेहमी अनुमती द्या</translation>
 <translation id="5436492226391861498">प्रॉक्झी टनलसाठी प्रतीक्षा करत आहे...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> शोधा:</translation>
@@ -4746,7 +4741,6 @@
 <translation id="6057312498756061228">सुरक्षा तपासणीसाठी ही फाइल बरीच मोठी आहे. तुम्ही कमाल ५०MB च्या फाइल उघडू शकता.</translation>
 <translation id="6057381398996433816">या साइटला तुमचे गती किंवा प्रकाश सेन्सर वापरण्यापासून ब्लॉक केले गेले आहे.</translation>
 <translation id="6059276912018042191">अलीकडील Chrome टॅब</translation>
-<translation id="6059347142391822629">मार्गदर्शक बंद करण्यासाठी, पूर्ण झाले बटणावर फोकस असेल तेव्हा तुमचा स्विच दाबा.</translation>
 <translation id="6059652578941944813">सर्टिफिकेट पदानुक्रम</translation>
 <translation id="6061882183774845124">तुमच्या डिव्हाइसवर लिंक पाठवा</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />टीप:<ph name="END_BOLD" /> सारखाच आवाज किंवा रेकॉर्डिंग कदाचित <ph name="SUPERVISED_USER_NAME" /> चे वैयक्तिक परिणाम अ‍ॅक्सेस करू शकेल. बॅटरी वाचवण्यासाठी, हे डिव्हाइस एखाद्या पॉवर स्रोताशी कनेक्ट केले असेल तेव्हाच “Ok Google” सुरू असावे असे तुम्ही <ph name="SUPERVISED_USER_NAME" /> च्या Assistant सेटिंग्जमध्ये निवडू शकता.</translation>
@@ -5032,6 +5026,7 @@
 <translation id="6359706544163531585">फिकट थीम बंद करा</translation>
 <translation id="6361850914223837199">एरर तपशील:</translation>
 <translation id="6362853299801475928">&amp;समस्या नोंदवणे...</translation>
+<translation id="6363786367719063276">लॉग पहा</translation>
 <translation id="6363990818884053551">सिंक सुरू करण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">कुटुंब आणि मित्र जोडा</translation>
@@ -5224,8 +5219,6 @@
 <translation id="6569911211938664415">तुम्हाला कोणत्याही डिव्हाइसवर वापरता यावेत म्हणून तुमच्या Google खाते (<ph name="ACCOUNT" />) मध्ये पासवर्ड सेव्ह केले जातात.</translation>
 <translation id="6573497332121198392">शॉर्टकट काढून टाकू शकत नाही</translation>
 <translation id="657402800789773160">हे पृष्ठ &amp;रीलोड करा</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />सर्वोत्तम अनुभवासाठी, तुमच्या अंतर्गत डिस्कवर CloudReady 2.0 इंस्टॉल करा. तुम्ही नंतर लॉग इन स्क्रीनवरूनदेखील इंस्टॉल करू शकता.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />तुम्ही इंस्टॉल करण्यासाठी तयार नसल्यास, तुम्ही ते वापरून पाहण्याकरिता USB वरून रन करू शकता. हे तुमचे विद्यमान OS आणि डेटा ठेवेल, पण तुम्हाला कदाचित स्टोरेज आणि परफॉर्मन्स मर्यादा दिसतील.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">डाउनलोड रद्द केले: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">नेटवर्क हेल्थ स्नॅपशॉट</translation>
 <translation id="6579369886355986318">सर्व नियंत्रणे दाखवा</translation>
@@ -5460,7 +5453,7 @@
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">सर्व वापरकर्त्यांसाठी ऑटोमॅटिक अपडेट सेट करणे अयशस्वी झाले (पूर्वफ्लाइट अंमलबजावणी एरर: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Google गोपनीयता धोरण</translation>
-<translation id="6831043979455480757">Translate</translation>
+<translation id="6831043979455480757">भाषांतर करा</translation>
 <translation id="6833479554815567477">टॅब गट <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> यामधून काढून टाकला आहे</translation>
 <translation id="683373380308365518">स्मार्ट आणि सुरक्षित ब्राउझरवर बदला</translation>
 <translation id="6834652994408928492">सूर्यास्ताच्या वेळी गडद मोड आपोआप सुरू होईल</translation>
@@ -6321,7 +6314,6 @@
 असाइनमेंट काढून टाकण्यासाठी असाइन केलेला स्विच किंवा की दाबा.</translation>
 <translation id="7750228210027921155">चित्रात-चित्र</translation>
 <translation id="7751260505918304024">सर्व दर्शवा</translation>
-<translation id="7751855202867682241">तुमची OS ठेवा आणि CloudReady 2.0 हे USB वरून रन करा.</translation>
 <translation id="7753735457098489144">स्टोरेज जागेच्या अभावी इंस्टॉल करता आले नाही. जागा मोकळी करण्यासाठी, डिव्हाइस स्टोरेजमधून फाइल हटवा.</translation>
 <translation id="7754347746598978109">JavaScript वापरण्याची अनुमती नाही</translation>
 <translation id="7754704193130578113">डाउनलोड करण्यापूर्वी प्रत्येक फाइल कुठे सेव्ह करावी ते विचारा</translation>
@@ -7369,7 +7361,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8845001906332463065">मदत मिळवा</translation>
 <translation id="8846132060409673887">या कॉंप्युटरची उत्पादक आणि मॉडेल माहिती वाचा</translation>
 <translation id="8846163936679269230">eSIM प्रोफाइल रीसेट करा</translation>
-<translation id="8846746259444262774">इंस्टॉल करता आले नाही</translation>
 <translation id="8847523528195140327">कव्हर बंद केल्यावर साइन आउट करा</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">लपवलेली</translation>

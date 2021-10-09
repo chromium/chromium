@@ -16,6 +16,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="1066060668811609597">Urus Penyegerakan</translation>
 <translation id="1076421457278169141">Kod diimbas</translation>
 <translation id="1084365883616172403">Catatan Facebook selesai.</translation>
+<translation id="1086486568852410168">Cari menggunakan Google Lens</translation>
 <translation id="1103523840287552314">Sentiasa terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Terima &amp; Teruskan</translation>
 <translation id="110724200315609752">Tukar kepada Tetingkap Terbuka</translation>
@@ -57,6 +58,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="1400642268715879018">4 Minggu Yang Lalu</translation>
 <translation id="1407135791313364759">Buka semua</translation>
 <translation id="1430915738399379752">Cetak</translation>
+<translation id="1434356225517321998">Penyemak imbas anda diurus. <ph name="BEGIN_LINK" />Butiran<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Sembunyikan Kata Laluan</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> item</translation>
 <translation id="149095475893949513">Laman web ini cuba memuat turun profil konfigurasi.</translation>
@@ -120,6 +122,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="209018056901015185">Minta Tapak Desktop</translation>
 <translation id="2103075008456228677">Buka history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> item dialihkan</translation>
+<translation id="2122754583996902531">Penyemak imbas anda diurus. <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="212623074644302906">Tanya untuk Tambahkan pada Senarai Bacaan</translation>
 <translation id="2139867232736819575">Cari Teks yang Anda Salin</translation>
 <translation id="214201757571129614">Log Masuk…</translation>
@@ -128,6 +131,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2218443599109088993">Zum Keluar</translation>
 <translation id="2230173723195178503">Halaman web dimuatkan</translation>
 <translation id="2239626343334228536">Mengosongkan data semakan imbas...</translation>
+<translation id="2256933947031277845">Organisasi anda membenarkan anda log masuk dengan akaun tertentu sahaja.</translation>
 <translation id="225943865679747347">Kod ralat: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Tambahkan Akaun</translation>
 <translation id="2268044343513325586">Perhalusi</translation>
@@ -220,7 +224,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3131206671572504478">Sekat Semua</translation>
 <translation id="313283613037595347">Buat tab Inkognito baharu.</translation>
 <translation id="3153862085237805241">Simpan Kad</translation>
-<translation id="315401415709252194">Organisasi anda menghendaki anda log masuk.</translation>
 <translation id="3157387275655328056">Tambahkan pada Senarai Bacaan</translation>
 <translation id="3157684681743766797">Tandakan Semua...</translation>
 <translation id="3169472444629675720">Temui</translation>
@@ -258,6 +261,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="345565170154308620">Urus Kata Laluan...</translation>
 <translation id="3469166899695866866">Hentikan Muat Turun?</translation>
 <translation id="3470502288861289375">Menyalin...</translation>
+<translation id="3472993688462687965">Apabila anda menghidupkan penyegerakan, data mungkin dihadkan mengikut perkara yang dibenarkan oleh organisasi anda.</translation>
 <translation id="3474624961160222204">Teruskan sebagai <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Bulan Tamat Tempoh</translation>
 <translation id="3482959374254649722">Menyegerakkan tab anda...</translation>
@@ -369,10 +373,12 @@ Ikut langkah di bawah:</translation>
 
 Data anda disulitkan dengan ungkapan laluan segerak anda. Masukkannya untuk memulakan penyegerakan.</translation>
 <translation id="4689564913179979534">Urus Kaedah Pembayaran...</translation>
+<translation id="469022783543509074">Anda Telah Dilog Keluar</translation>
 <translation id="470966556546083668">Jangan Hidupkan Penyegerakan</translation>
 <translation id="473775607612524610">Kemas kini</translation>
 <translation id="4747097190499141774">Penyulitan ungkapan laluan tidak termasuk kaedah pembayaran dan alamat daripada Google Pay. Hanya orang yang mempunyai ungkapan laluan anda boleh membaca data anda yang disulitkan. Ungkapan laluan tidak dihantar atau disimpan oleh Google. Jika anda terlupa ungkapan laluan atau ingin menukar tetapan ini, anda perlu menetapkan semula penyegerakan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Tab Inkognito Baharu</translation>
+<translation id="4764612367328936189">Organisasi anda membenarkan anda log masuk dengan akaun tertentu sahaja. Akaun yang tidak dibenarkan disembunyikan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4775879719735953715">Penyemak Imbas Lalai</translation>
 <translation id="4778644898150334464">Gunakan kata laluan lain</translation>
 <translation id="4802417911091824046">Penyulitan ungkapan laluan tidak termasuk kaedah pembayaran dan alamat daripada Google Pay.
@@ -829,6 +835,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="9081058212938299310">Kemas kini kata laluan untuk <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 item</translation>
 <translation id="9083838294503912307">Hidupkan penyegerakan untuk melakukan penyegerakan dan pemperibadian pada semua peranti.</translation>
+<translation id="9084677839771512880">Organisasi anda mengehadkan item yang boleh anda segerakkan. <ph name="BEGIN_LINK" />Butiran<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Kata Laluan yang Dicadangkan oleh Chrome:</translation>
 <translation id="9094033019050270033">Kemaskinikan kata laluan</translation>
 <translation id="9100610230175265781">Frasa laluan diperlukan</translation>

@@ -58,6 +58,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1881378885488531302">Não é possível obter o endereço IP</translation>
 <translation id="1887850431809612466">Revisão de hardware</translation>
+<translation id="1901646112321215184">Não estão configurados quaisquer servidores DNS</translation>
 <translation id="1905710495812624430">Foi excedido o número máximo de tentativas permitidas.</translation>
 <translation id="1908234395526491708">Falhas de pedidos de UDP.</translation>
 <translation id="1930797645656624981">Serviço do método de introdução do Chrome OS</translation>
@@ -74,6 +75,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">EM LISTA DE ESPERA</translation>
 <translation id="2161394479394250669">Cancelar tarefa de impressão</translation>
+<translation id="2180197493692062006">Algo correu mal. Experimente reabrir a app.</translation>
 <translation id="2209788852729124853">Repor contadores de tráfego</translation>
 <translation id="2212733584906323460">Resolução de nomes</translation>
 <translation id="2217935453350629363">Velocidade atual</translation>
@@ -89,6 +91,7 @@
 <translation id="2391082728065870591">Enviar relatório de feedback</translation>
 <translation id="2407209115954268704">Estado de bloqueio do SIM</translation>
 <translation id="2418150275289244458">Abra nas Definições</translation>
+<translation id="2421798028054665193">Imagem <ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precisão da vírgula flutuante</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2461822463642141190">Atual</translation>
@@ -107,11 +110,13 @@
 <translation id="2860473693272905224">Coloque outra página no scanner</translation>
 <translation id="2872961005593481000">Encerrar</translation>
 <translation id="2878387241690264070">Descarregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
+<translation id="2927511423571448384">Não é possível estabelecer ligação através da firewall aos Websites HTTP (porta 80) a partir do Android</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
 <translation id="3009958530611748826">Selecione uma pasta onde guardar</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Ponto final</translation>
 <translation id="3069085583900247081">O teste falhou</translation>
+<translation id="3076387335132326640">Está a utilizar uma rede aberta</translation>
 <translation id="3083667275341675831">Diagnóstico de conetividade</translation>
 <translation id="3091839911843451378">Falha – Parou</translation>
 <translation id="3102119246920354026">Cache</translation>
@@ -199,6 +204,7 @@
 <translation id="455835558791489930">Bateria de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM desbloqueado</translation>
 <translation id="4562494484721939086">Sem serviço</translation>
+<translation id="4567024731344774461">Não é possível resolver o DNS a partir do Android</translation>
 <translation id="458794348635939462">Falha ao resolver todos os anfitriões.</translation>
 <translation id="4593212453765072419">Autenticação proxy necessária</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prima Enter para cancelar a tarefa de impressão.</translation>
@@ -223,6 +229,7 @@
 <translation id="484790837831576105">(Android) Resolução de DNS</translation>
 <translation id="4848429997038228357">EM EXECUÇÃO</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativa restante.}other{<ph name="ERROR_MESSAGE" /> {0} tentativas restantes.}}</translation>
+<translation id="4871137769558798671">Não é possível estabelecer ligação através da firewall aos Websites HTTPS (porta 443)</translation>
 <translation id="4880328057631981605">Nome do ponto de acesso</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Escolha uma nova de imediato</translation>
@@ -258,6 +265,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">versão <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Mover janela para o espaço de trabalho</translation>
+<translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identidade</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318334351163689047">Falhas de pedidos de TCP.</translation>
@@ -279,6 +287,8 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5502931783115429516">O Android não está a funcionar</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5546352997259770619">Intensidade do sinal fraca, tente aproximar-se do ponto de acesso</translation>
+<translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Ler novamente</translation>
 <translation id="5669267381087807207">A activar</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -319,6 +329,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">A capacidade da bateria diminui com a utilização.</translation>
 <translation id="6191293864534840972">Os servidores de nomes têm um formato incorreto.</translation>
+<translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nenhum scanner disponível</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6243280677745499710">Definida atualmente</translation>
@@ -328,6 +339,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="636850387210749493">Inscrição empresarial</translation>
 <translation id="6379086450106841622">Ecrã tátil</translation>
 <translation id="6388847657025262518">O alimentador de documentos do scanner está encravado. Verifique o alimentador e tente novamente.</translation>
+<translation id="6395640744968320699">Não é possível estabelecer ligação através da firewall aos Websites HTTP (porta 80)</translation>
 <translation id="641081527798843608">Correspondência de assunto</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Boa</translation>
@@ -335,6 +347,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6472207088655375767">PUU</translation>
 <translation id="6480327114083866287">Gerido por <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Parada – Encravamento de papel</translation>
+<translation id="6498608540383876992">Não é possível contactar o gateway</translation>
 <translation id="6516990319416533844">Para testar a velocidade de carregamento da bateria, descarregue a bateria durante um curto período.</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Protocolo de segurança de Wi-Fi desconhecido.</translation>
@@ -382,6 +395,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7271040990581020067">O leitor está a ser utilizado atualmente. Tente novamente mais tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Coleções de imagens de fundo</translation>
+<translation id="7292680402155138244">Latência elevada para Websites HTTPS (porta 443)</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -432,12 +446,15 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7994702968232966508">Método EAP</translation>
 <translation id="8020238979854764615">Ocorreu um erro. Tente novamente ao escolher outras imagens.</translation>
 <translation id="802154636333426148">Falha ao transferir</translation>
+<translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Enviar feedback</translation>
 <translation id="8075838845814659848">Carregamento restante</translation>
 <translation id="808894953321890993">Alterar palavra-passe</translation>
 <translation id="811820734797650957">(Android) É possível enviar ping ao gateway</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfego</translation>
+<translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8177708084858970226">Não é possível resolver o DNS</translation>
 <translation id="8206859287963243715">Telemóvel</translation>
 <translation id="8208861521865154048">Benefícios</translation>
 <translation id="8230672074305416752">Falha ao enviar ping ao gateway da rede predefinida.</translation>
@@ -449,6 +466,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8297006494302853456">Fraca</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8318753676953949627">Não existem imagens</translation>
+<translation id="8346875532700229909">Não é possível contactar o gateway a partir do Android</translation>
 <translation id="8347227221149377169">Tarefas de impressão</translation>
 <translation id="8352772353338965963">Adicione uma conta para início de sessão integrado. É possível aceder a todas as contas com a sessão iniciada sem uma palavra-passe, por isso, só deve utilizar esta funcionalidade com contas fidedignas.</translation>
 <translation id="8364946094152050673">Os servidores de nomes estão vazios.</translation>
@@ -480,6 +498,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8747900814994928677">Confirme a alteração</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="879568662008399081">Esta rede pode ter um portal cativo</translation>
 <translation id="8798099450830957504">Predefinição</translation>
 <translation id="8798441408945964110">Nome do fornecedor</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
@@ -503,6 +522,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Analisar}=1{Analisar página {NUMBER_OF_PAGES}}other{Analisar página {NUMBER_OF_PAGES}}}</translation>
 <translation id="9003704114456258138">Frequência</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9062831201344759865">A resolução de DNS tem uma latência elevada</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Utilização atual</translation>

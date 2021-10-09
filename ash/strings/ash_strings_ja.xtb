@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">下</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">カーソルを移動</translation>
-<translation id="3098580329624789136">「<ph name="QUERY" />」の<ph name="INTENT" />を表示</translation>
 <translation id="3100274880412651815">キャプチャ モードを閉じる</translation>
 <translation id="3105917916468784889">スクリーンショットを撮る</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />（Bluetooth）</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">このデバイスには Google が確認していないアプリがインストールされている可能性があります。</translation>
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4481530544597605423">ペア設定されていないデバイス</translation>
-<translation id="4485060137115666462">右クリックするか長押しすると、選択した項目の情報（定義、翻訳、単位変換など）が表示されます。</translation>
 <translation id="4505050298327493054">使用中のデスクです。</translation>
 <translation id="4513946894732546136">フィードバック</translation>
 <translation id="4518404433291145981">Chromebook のロックを解除するには、先にスマートフォンのロックを解除します</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">元に戻す</translation>
 <translation id="595202126637698455">パフォーマンス追跡機能が有効です</translation>
 <translation id="5958529069007801266">監視対象ユーザー</translation>
-<translation id="5960825221082587934">選択した項目の情報（定義、翻訳、単位変換など）をアシスタントで表示します。</translation>
 <translation id="5977415296283489383">ヘッドホン</translation>
 <translation id="5978382165065462689">リモート サポート経由で画面の制御を共有しています。</translation>
 <translation id="5980301590375426705">ゲストを終了</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">重要なファイルをここに固定できます。この機能を使用するには、ファイルアプリを開いてください。</translation>
 <translation id="622484624075952240">下矢印キー</translation>
 <translation id="6231419273573514727">周辺機器のパフォーマンスが制限されている可能性があります</translation>
-<translation id="6236290670123303279">設定を管理</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">横に固定</translation>
 <translation id="6259254695169772643">タッチペンを使って選択してください</translation>
@@ -1021,7 +1017,6 @@
 <translation id="8683506306463609433">パフォーマンス追跡機能が有効</translation>
 <translation id="8703634754197148428">録画を開始します。録画を開始した後、シェルフにある [録画を停止] ボタンに移動するには、Alt+Shift+L キーを使用してください</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> 左右矢印キーでこの機能を管理できます。</translation>
-<translation id="8712637175834984815">閉じる</translation>
 <translation id="8721053961083920564">音量を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">全画面キャプチャ</translation>
 <translation id="8734991477317290293">キー入力が読み取られる可能性があります</translation>
@@ -1049,7 +1044,6 @@
 <translation id="8876661425082386199">接続を確認してください</translation>
 <translation id="8877788021141246043">リマインダーを設定して</translation>
 <translation id="8878886163241303700">画面を拡張しています</translation>
-<translation id="8883473964424809116">クリックすると Google アシスタントの設定が開きます。</translation>
 <translation id="8884537526797090108">機密コンテンツは録画できません</translation>
 <translation id="890616557918890486">ソースを変更</translation>
 <translation id="8909138438987180327">電池残量は <ph name="PERCENTAGE" />% です。</translation>

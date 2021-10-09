@@ -180,6 +180,7 @@
 <translation id="2139186145475833000">హోమ్ స్క్రీన్‌కు జోడించు</translation>
 <translation id="2141396931810938595">మీ వినియోగం ఆధారంగా</translation>
 <translation id="214888715418183969">మీరు Chromeతో సౌకర్యవంతంగా షేర్ చేసుకోగలిగేవి ఎంచుకోండి. మీరు షేర్ చేసే కొలమానాలు, Chrome ఫీచర్‌లు, పనితీరు, ఇంకా స్థిరత్వాన్ని మెరుగుపరచడంలో సహాయపడతాయి.</translation>
+<translation id="2149973817440762519">బుక్‌మార్క్‌ను సవరించు</translation>
 <translation id="2154484045852737596">కార్డ్‌ను ఎడిట్ చేయండి</translation>
 <translation id="2154710561487035718">URLను కాపీ చేయి</translation>
 <translation id="2156074688469523661">మిగిలిన సైట్‌లు (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -640,7 +641,6 @@
 <translation id="4943872375798546930">ఫలితాలు ఏవీ లేవు</translation>
 <translation id="4957722034734105353">మరింత తెలుసుకోండి...</translation>
 <translation id="4961107849584082341">ఈ పేజీని ఏ భాషలోకైనా అనువదించుకోవచ్చు</translation>
-<translation id="4970824347203572753">మీ స్థానంలో అందుబాటులో లేదు</translation>
 <translation id="4971735654804503942">ప్రమాదకరమైన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్‌ల నుండి మరింత వేగవంతమైన, క్రియాశీలమైన రక్షణ. పాస్‌వర్డ్ ఉల్లంఘనల గురించి మిమ్మల్ని హెచ్చరిస్తుంది. బ్రౌజింగ్ డేటాను Googleకు పంపాల్సి ఉంటుంది.</translation>
 <translation id="497421865427891073">ముందుకు వెళ్ళు</translation>
 <translation id="4988210275050210843">ఫైల్‌ను డౌన్‌లోడ్ చేస్తోంది (<ph name="MEGABYTES" />).</translation>
@@ -724,7 +724,6 @@
 <translation id="5483197086164197190">Chrome గురించి తెలుసుకోండి</translation>
 <translation id="5487521232677179737">డేటాని తీసివేయి</translation>
 <translation id="549025011754480756">మీ వాయిస్‌తో సెర్చ్ చేయడం ఎలా</translation>
-<translation id="5500777121964041360">మీ స్థానంలో అందుబాటులో ఉండకపోవచ్చు</translation>
 <translation id="5512137114520586844">ఈ ఖాతా <ph name="PARENT_NAME" /> నిర్వహణలో ఉంది.</translation>
 <translation id="5514904542973294328">ఈ పరికర నిర్వాహకులు నిలిపివేశారు</translation>
 <translation id="5515439363601853141">మీ పాస్‌వర్డ్‌ను చూడడానికి అన్‌లాక్ చేయండి</translation>
@@ -878,7 +877,6 @@
 <translation id="6364438453358674297">చరిత్ర నుండి సూచనను తీసివేయాలా?</translation>
 <translation id="6378173571450987352">వివరాలు: ఉపయోగించిన డేటా మొత్తం ద్వారా క్రమీకరించబడ్డాయి</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> Chromeలో తెరవబడుతుంది. కొనసాగడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సేవా నిబంధనలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS అదనపు సేవా నిబంధనలు<ph name="END_LINK2" />కు అంగీకరిస్తున్నారు.</translation>
-<translation id="6381421346744604172">వెబ్‌సైట్‌లు ముదురు రంగులో చేయి</translation>
 <translation id="6395288395575013217">లింక్</translation>
 <translation id="6397616442223433927">తిరిగి ఆన్‌లైన్‌లోకి వచ్చింది</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" />లో <ph name="ERROR_CODE" /></translation>
@@ -1209,7 +1207,6 @@
 <translation id="8218052821161047641">వేగంగా లోడ్ అయ్యే పేజీ</translation>
 <translation id="8218622182176210845">మీ ఖాతాను నిర్వహించండి</translation>
 <translation id="8223642481677794647">ఫీడ్ కార్డ్ మెనూ</translation>
-<translation id="8224471946457685718">మీ కోసం అందించే కథనాలను Wi-Fi ద్వారా డౌన్‌లోడ్ చేసుకోండి</translation>
 <translation id="8250920743982581267">పత్రాలు</translation>
 <translation id="825412236959742607">ఈ పేజీ చాలా మెమరీని ఉపయోగిస్తుంది, కాబట్టి Chrome కొంత కంటెంట్‌ను తీసివేసింది.</translation>
 <translation id="8260126382462817229">మళ్లీ సైన్ ఇన్ చేయడానికి ప్రయత్నించండి</translation>

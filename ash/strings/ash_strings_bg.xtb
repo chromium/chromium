@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">Устройствата ви работят още по-добре заедно</translation>
 <translation id="1119348796022671382">Тематичният цветови режим придава лек оттенък на интерфейса с помощта на цветове, извлечени от тапета ви.</translation>
 <translation id="112308213915226829">Автоматично скриване на лавицата</translation>
+<translation id="1142002900084379065">Скорошни снимки</translation>
 <translation id="1148499908455722006">Отваряне на диалогов прозорец с информация за <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Календар</translation>
 <translation id="1153356358378277386">Сдвоени устройства</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">Лупата за увеличаване на целия екран е активирана. За да я изключите, натиснете отново Ctrl + клавиша „Търсене“ + M.</translation>
 <translation id="2302092602801625023">Този профил се управлява от Family Link</translation>
 <translation id="2303600792989757991">Превключване на общия преглед на прозорците</translation>
+<translation id="2318576281648121272">Днес, <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Придвижване назад с една буква</translation>
 <translation id="2339073806695260576">Докоснете бутона с икона на писалка в лавицата, за да създадете бележка, да направите екранна снимка или да използвате лазерната показалка или лупата.</translation>
 <translation id="2341729377289034582">Заключено във вертикална ориентация</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">Показване на паролата</translation>
 <translation id="24452542372838207">Разгъване на известието</translation>
 <translation id="2450205753526923158">Режим за екранна снимка</translation>
+<translation id="2456008742792828469">Календар, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Потвърждаване на разделителната способност</translation>
 <translation id="2475982808118771221">Възникна грешка</translation>
 <translation id="2482878487686419369">Известия</translation>
@@ -274,10 +277,10 @@
 <translation id="3087734570205094154">Най-долу</translation>
 <translation id="3090989381251959936">Превключване на „<ph name="FEATURE_NAME" />“. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Преместване на курсора</translation>
-<translation id="3098580329624789136">Извеждане на <ph name="INTENT" /> за „<ph name="QUERY" />“</translation>
 <translation id="3100274880412651815">Отхвърляне на режима на заснемане</translation>
 <translation id="3105917916468784889">Създаване на екранна снимка</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Премахване на предложението</translation>
 <translation id="3126069444801937830">Рестартирайте, за да актуализирате</translation>
 <translation id="3139942575505304791">Работен кът 1</translation>
 <translation id="315116470104423982">Мобилни данни</translation>
@@ -476,7 +479,6 @@
 <translation id="4477892968187500306">На това устройство може да са инсталирани приложения, които не са потвърдени от Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Несдвоени устройства</translation>
-<translation id="4485060137115666462">Когато кликнете с десния бутон на мишката или натиснете продължително, Асистент ви показва информация за избраното от вас, като например определение или преобразуване на мерни единици.</translation>
 <translation id="4505050298327493054">Активен работен кът.</translation>
 <translation id="4513946894732546136">Отзиви</translation>
 <translation id="4518404433291145981">За да отключите своя Chromebook, първо отключете телефона си</translation>
@@ -504,6 +506,7 @@
 <translation id="4642092649622328492">Създаване на частична екранна снимка</translation>
 <translation id="4659419629803378708">Активирахте ChromeVox</translation>
 <translation id="4665114317261903604">Превключване на режима „Не безпокойте“. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081"><ph name="FILENAME" /> се изтегля</translation>
 <translation id="4696813013609194136">Отключване на устройството с код на родител</translation>
 <translation id="4702647871202761252">Екранът за поверителност е изключен</translation>
 <translation id="4706121060329443414">По-късно ще се направи опит за изтегляне. Засега говорът ще бъде изпратен до Google за обработка.</translation>
@@ -641,6 +644,7 @@
 <translation id="5744083938413354016">Преместване чрез докосване</translation>
 <translation id="5745612484876805746">Функцията за нощно осветление се включва автоматично при залез</translation>
 <translation id="5750765938512549687">Функцията за Bluetooth е изключена</translation>
+<translation id="576341972084747908">Изтегляне на опасен файл <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Функцията за нощно осветление е включена.</translation>
 <translation id="5769373120130404283">Екран за поверителност</translation>
 <translation id="5777841717266010279">Да се спре ли споделянето на екрана?</translation>
@@ -668,7 +672,6 @@
 <translation id="5947494881799873997">Възстановяване</translation>
 <translation id="595202126637698455">Проследяването на ефективността е активирано</translation>
 <translation id="5958529069007801266">Контролиран потребител</translation>
-<translation id="5960825221082587934">Позволяване на Асистент да показва информация за избраното от вас, като например определение, превод или преобразуване на мерни единици.</translation>
 <translation id="5977415296283489383">Слушалки</translation>
 <translation id="5978382165065462689">Споделяте контрола върху екрана си чрез отдалечено съдействие.</translation>
 <translation id="5980301590375426705">Изход като гост</translation>
@@ -702,7 +705,6 @@
 <translation id="6179832488876878285">Тук можете да фиксирате важните за вас файлове. Отворете приложението „Файлове“, за да започнете.</translation>
 <translation id="622484624075952240">Клавиш за надолу</translation>
 <translation id="6231419273573514727">Ефективността на периферните устройства може да е ограничена</translation>
-<translation id="6236290670123303279">Управление на настройките</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Заключено в хоризонтална ориентация</translation>
 <translation id="6259254695169772643">Използвайте писалката за избиране</translation>
@@ -782,6 +784,7 @@
 <translation id="6852052252232534364">Кликнете за активиране</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Остава една цифра}other{Остават # цифри}}</translation>
+<translation id="6867938213751067702">Изтеглянето на <ph name="FILENAME" /> е на пауза</translation>
 <translation id="6878400149835617132">Прекият път е изключен</translation>
 <translation id="6886172995547742638">Възможно е вашият <ph name="DEVICE_TYPE" /> да работи с намалена производителност. Използвайте сертифициран захранващ адаптер с USB-C и мощност от <ph name="PREFERRED_MINIMUM_POWER" /> W или повече.</translation>
 <translation id="688631446150864480">Натиснете клавиша със стрелка за надолу, за да превключите прозорците</translation>
@@ -1020,7 +1023,6 @@
 <translation id="8683506306463609433">Проследяването на ефективността е активно</translation>
 <translation id="8703634754197148428">Стартиране на записването. След като то започне, използвайте Alt + Shift + L, за да се придвижите до лавицата, където ще намерите бутона за спирането му</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Използвайте клавишите със стрелки наляво и надясно, за да управлявате тази функция.</translation>
-<translation id="8712637175834984815">Разбрах</translation>
 <translation id="8721053961083920564">Превключване на звука. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Заснемане на целия екран</translation>
 <translation id="8734991477317290293">Тя може да се опитва да записва кои клавиши натискате</translation>
@@ -1048,7 +1050,6 @@
 <translation id="8876661425082386199">Проверка на връзката ви</translation>
 <translation id="8877788021141246043">„Set a reminder“ („Задай напомняне“)</translation>
 <translation id="8878886163241303700">Разгъване на екрана</translation>
-<translation id="8883473964424809116">Кликнете, за да отворите настройките на Google Асистент.</translation>
 <translation id="8884537526797090108">Не е възможно записване на поверително съдържание</translation>
 <translation id="890616557918890486">Промяна на източника</translation>
 <translation id="8909138438987180327">Батерията е на <ph name="PERCENTAGE" /> процента.</translation>

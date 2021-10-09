@@ -180,6 +180,7 @@
 <translation id="2139186145475833000">הוספה לדף הבית</translation>
 <translation id="2141396931810938595">על סמך השימוש שלך</translation>
 <translation id="214888715418183969">‏בחירת המידע לשיתוף עם Chrome. המדדים שנקבל ממך ישמשו לשיפור התכונות, הביצועים והיציבות של Chrome.</translation>
+<translation id="2149973817440762519">עריכת סימניות</translation>
 <translation id="2154484045852737596">עריכת כרטיס</translation>
 <translation id="2154710561487035718">העתקת כתובת אתר</translation>
 <translation id="2156074688469523661">אתרים שנותרו (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -640,7 +641,6 @@
 <translation id="4943872375798546930">אין תוצאות</translation>
 <translation id="4957722034734105353">למידע נוסף...</translation>
 <translation id="4961107849584082341">אפשר לתרגם את הדף הזה לשפה כלשהי</translation>
-<translation id="4970824347203572753">האפשרות לא זמינה במיקום שלך</translation>
 <translation id="4971735654804503942">‏הגנה פרואקטיבית ומהירה יותר מפני אתרים, הורדות ותוספים מסוכנים. המערכת מזהירה אותך בנוגע לחשיפה של סיסמאות. כשמצב ההגנה הזה בשימוש, נתוני גלישה נשלחים אל Google.</translation>
 <translation id="497421865427891073">ניווט קדימה</translation>
 <translation id="4988210275050210843">מתבצעת הורדה של קובץ (<ph name="MEGABYTES" />).</translation>
@@ -724,7 +724,6 @@
 <translation id="5483197086164197190">‏ניווט ב-Chrome</translation>
 <translation id="5487521232677179737">ניקוי נתונים</translation>
 <translation id="549025011754480756">איך לחפש באמצעות הקול</translation>
-<translation id="5500777121964041360">ייתכן שהאפשרות לא זמינה במיקום שלך</translation>
 <translation id="5512137114520586844">החשבון הזה מנוהל על ידי <ph name="PARENT_NAME" />.</translation>
 <translation id="5514904542973294328">האפשרות הזו הושבתה על-ידי מנהל המערכת של המכשיר</translation>
 <translation id="5515439363601853141">ביטול הנעילה יציג את הסיסמה</translation>
@@ -878,7 +877,6 @@
 <translation id="6364438453358674297">האם להסיר את ההצעה מההיסטוריה?</translation>
 <translation id="6378173571450987352">פרטים: מיון לפי נפח הנתונים שנצרכו</translation>
 <translation id="6379829913050047669">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך הפעולה מבטא הסכמה ל<ph name="BEGIN_LINK1" />תנאים ולהגבלות של Google<ph name="END_LINK1" /> ול<ph name="BEGIN_LINK2" />תנאים ולהגבלות הנוספים של Google Chrome ו-Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="6381421346744604172">תצוגה כהה יותר של אתרים</translation>
 <translation id="6395288395575013217">קישור</translation>
 <translation id="6397616442223433927">חזרה למצב אונליין</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> בכתובת <ph name="VIOLATED_URL" /></translation>
@@ -1209,7 +1207,6 @@
 <translation id="8218052821161047641">דף מהיר</translation>
 <translation id="8218622182176210845">ניהול החשבון</translation>
 <translation id="8223642481677794647">תפריט כרטיס הפיד</translation>
-<translation id="8224471946457685718">‏הורדת מאמרים עבורך ב-Wi-Fi</translation>
 <translation id="8250920743982581267">מסמכים</translation>
 <translation id="825412236959742607">‏הדף הזה משתמש בנפח זיכרון גדול מדי, לכן מערכת Chrome הסירה חלק מהתוכן.</translation>
 <translation id="8260126382462817229">יש להיכנס שוב</translation>

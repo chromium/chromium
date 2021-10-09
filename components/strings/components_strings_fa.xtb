@@ -341,6 +341,7 @@
 <translation id="2025186561304664664">پروکسی بر روی پیکربندی خودکار تنظیم شده است.</translation>
 <translation id="2025891858974379949">محتوای ناامن</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />بررسی پروکسی و دیوار آتش<ph name="END_LINK" /></translation>
+<translation id="2034971124472263449">درهرصورت ذخیره شود</translation>
 <translation id="2036983605131262583">رول جایگزین</translation>
 <translation id="2042213636306070719">سینی ۷</translation>
 <translation id="204357726431741734">‏ورود به سیستم برای استفاده از گذرواژه‌های ذخیره‌شده در «حساب Google»</translation>
@@ -382,6 +383,7 @@
 <translation id="2154054054215849342">همگام‌سازی برای دامنه شما در دسترس نیست</translation>
 <translation id="2154484045852737596">ویرایش کارت</translation>
 <translation id="2161656808144014275">نوشتار</translation>
+<translation id="2162510787844374618">درحال تماس با بانک…</translation>
 <translation id="2164510882479075877">احتمال وجود غلط املائی در <ph name="HOST_NAME" /> را بررسی کنید.</translation>
 <translation id="2166049586286450108">دسترسی کامل سرپرست</translation>
 <translation id="2166378884831602661">این سایت نمی‌تواند اتصالی ایمن ارائه دهد</translation>
@@ -650,6 +652,7 @@
 <translation id="3145945101586104090">رمزگشایی پاسخ انجام نشد</translation>
 <translation id="3150653042067488994">خطای موقت سرور</translation>
 <translation id="3154506275960390542">این صفحه حاوی فرمی است که ممکن است به‌طور ایمن ارسال نشود. دیگران می‌توانند داده‌هایی را که ارسال می‌کنید درحین انتقال ببینند یا مهاجمان می‌توانند برای تغییر آنچه سرور دریافت می‌کند، آن‌ها را تغییر دهند.</translation>
+<translation id="3154987252551138431">هنگام استفاده از «هم‌رسانی با اطراف»، مشکلی پیش آمد</translation>
 <translation id="315504272643575312">حساب شما توسط <ph name="MANAGER" /> مدیریت می‌شود.</translation>
 <translation id="3157931365184549694">بازیابی</translation>
 <translation id="3158539265159265653">دیسک</translation>
@@ -909,6 +912,7 @@
 <translation id="3963721102035795474">حالت «خواننده»</translation>
 <translation id="3963837677003247395">به‌صورت دستی ادامه می‌دهید؟</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{هیچ‌کدام}=1{از ۱ سایت }one{از # سایت }other{از # سایت }}</translation>
+<translation id="3969052498612555048">نمی‌توانید کدتان را پیدا کنید؟ <ph name="BEGIN_LINK" />کد جدید دریافت کنید<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">در حال محاسبه…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> مسدود شده است</translation>
 <translation id="3973357910713125165">‏دکمه «راندن بررسی ایمنی در Chrome»، کلید «ورود» را فشار دهید تا «بررسی ایمنی» در تنظیمات Chrome اجرا شود</translation>
@@ -1048,6 +1052,7 @@
 <translation id="4348834659292907206">اتصال به <ph name="SITE" /> امن نیست</translation>
 <translation id="4350629523305688469">سینی چندمنظوره</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> می‌خواهد دستگاه‌های «بلوتوث» اطراف را جستجو کند. دستگاه‌های زیر پیدا شدند:</translation>
+<translation id="4351175281479794167">کد درستی‌سنجی را وارد کنید</translation>
 <translation id="4356973930735388585">مهاجم‌ها در این سایت ممکن است تلاش کنند برنامه‌های خطرناکی در رایانه شما نصب کنند که اطلاعات شما (مانند عکس‌ها، گذرواژه‌ها، پیام‌ها و کارت‌های اعتباری) را به سرقت می‌برند یا حذف می‌کنند.</translation>
 <translation id="4358059973562876591">‏ممکن است الگوهایی که مشخص کردید به‌دلیل خطای خط‌مشی DnsOverHttpsMode اعمال نشوند.</translation>
 <translation id="4358461427845829800">مدیریت روش‌های پرداخت…</translation>
@@ -1204,6 +1209,7 @@
 <translation id="4853901935952445031">‏این سایت بعداز فوریه ۲۰۲۲ نمی‌تواند از U2F API استفاده کند. اگر مالک این سایت هستید، باید تغییراتی اعمال کنید تا به‌جای آن از Web Authentication AP استفاده کند.</translation>
 <translation id="4854362297993841467">این روش تحویل در دسترس نیست. روش دیگری را امتحان کنید.</translation>
 <translation id="4854853140771946034">‏ایجاد سریع یادداشت جدید در Google Keep</translation>
+<translation id="485902285759009870">درحال تأیید کد…</translation>
 <translation id="4876188919622883022">نمای ساده‌شده</translation>
 <translation id="4876305945144899064">بدون نام کاربری</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{هیچ‌کدام}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />، <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />، <ph name="EXAMPLE_DOMAIN_2" />، <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />، <ph name="EXAMPLE_DOMAIN_2" />، <ph name="AND_MORE" />}}</translation>
@@ -1234,6 +1240,7 @@
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">بزرگ کردن فهرست</translation>
 <translation id="4968522289500246572">این برنامه برای تلفن همراه طراحی شده است و ممکن است با تغییر اندازه سازگار نباشد. برنامه ممکن است با مشکلاتی روبرو شود یا بازراه‌اندازی شود.</translation>
+<translation id="4969341057194253438">حذف ویدیوی ضبط‌شده</translation>
 <translation id="4973922308112707173">دو سوراخ در بالا</translation>
 <translation id="4984088539114770594">از میکروفون استفاده شود؟</translation>
 <translation id="4984339528288761049">Prc5 (Envelope)</translation>
@@ -1260,6 +1267,7 @@
 <translation id="5040262127954254034">حریم‌خصوصی</translation>
 <translation id="5043480802608081735">پیوندی که کپی کرده‌اید</translation>
 <translation id="5045550434625856497">گذرواژه نادرست</translation>
+<translation id="5056425809654826431">{NUM_FILES,plural, =1{برای ارسال این فایل ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}one{برای ارسال این فایل ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}other{برای ارسال این فایل‌ها ازطریق «هم‌رسانی با اطراف»، در دستگاهتان فضا (<ph name="DISK_SPACE_SIZE" />) آزاد کنید}}</translation>
 <translation id="5056549851600133418">مقالاتی برای شما</translation>
 <translation id="5061227663725596739">منظورتان <ph name="LOOKALIKE_DOMAIN" /> بود؟</translation>
 <translation id="5066056036849835175">سابقه چاپ</translation>
@@ -1779,6 +1787,7 @@
 <translation id="6895330447102777224">کارتتان تأیید شد</translation>
 <translation id="6897140037006041989">نماینده کاربر</translation>
 <translation id="6898699227549475383">‏سازمان (O)</translation>
+<translation id="6899000063526916106">کد <ph name="NUMBER_OF_DIGITS" /> رقمی را وارد کنید</translation>
 <translation id="6907293445143367439">به <ph name="SITE_NAME" /> اجازه داده شود تا:</translation>
 <translation id="6910240653697687763">‏<ph name="URL" /> می‌خواهد کنترل کامل دستگاه‌های MIDI شما را به‌دست آورد</translation>
 <translation id="691024665142758461">بارگیری چندین فایل.</translation>
@@ -1829,6 +1838,7 @@
 <translation id="7062635574500127092">سبز دودی</translation>
 <translation id="706295145388601875">‏افزودن و مدیریت نشانی‌ها در تنظیمات Chrome</translation>
 <translation id="7064851114919012435">اطلاعات تماس</translation>
+<translation id="7068733155164172741">کد <ph name="OTP_LENGTH" /> رقمی را وارد کنید</translation>
 <translation id="70705239631109039">اتصال شما کاملاً ایمن نیست</translation>
 <translation id="7075452647191940183">درخواست خیلی بزرگ است</translation>
 <translation id="7079718277001814089">این سایت حاوی بدافزار است</translation>
@@ -2024,6 +2034,7 @@
 <translation id="7667346355482952095">کد خط‌مشی برگردانده‌شده خالی است یا با کد کنونی مطابقت ندارد</translation>
 <translation id="7668654391829183341">دستگاه ناشناس</translation>
 <translation id="7669271284792375604">مهاجمان در این سایت ممکن است تلاش کنند شما را با نصب برنامه‌هایی که به تجربه مرور شما آسیب می‌رساند، فریب دهند (مثلاً با تغییر دادن صفحه اصلی شما یا با نشان دادن آگهی‌های بیش از حد در سایت‌هایی که بازدید می‌کنید).</translation>
+<translation id="7669907849388166732">{COUNT,plural, =1{اقدامات انجام‌شده درخصوص داده‌های پرچم‌گذاری‌شده به‌عنوان محرمانه (یک اقدام از زمان ورود به سیستم). <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" />}one{اقدامات انجام‌شده درخصوص داده‌های پرچم‌گذاری‌شده به‌عنوان محرمانه (# اقدام از زمان ورود به سیستم). <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" />}other{اقدامات انجام‌شده درخصوص داده‌های پرچم‌گذاری‌شده به‌عنوان محرمانه (# اقدام از زمان ورود به سیستم). <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">صندوق پست ۶</translation>
 <translation id="7676643023259824263">جستجوی نوشتار بریده‌دان، <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">‏مشاهده و مدیریت سابقه مرور در تنظیمات Chrome</translation>
@@ -2137,6 +2148,7 @@
 <translation id="8041089156583427627">ارسال بازخورد</translation>
 <translation id="8041940743680923270">استفاده از پیش‌فرض جهانی (سؤال شود)</translation>
 <translation id="8042918947222776840">انتخاب روش تحویل گرفتن</translation>
+<translation id="8052898407431791827">در بریده‌دان کپی شد</translation>
 <translation id="8057711352706143257">«<ph name="SOFTWARE_NAME" />» درست پیکربندی نمی‌شود. معمولاً حذف‌ نصب «<ph name="SOFTWARE_NAME" />» مشکل را برطرف می‌کند. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">متأسفیم، مشکلی پیش آمد</translation>
 <translation id="8067872629359326442">‏اخیراً گذرواژه‌تان را در سایتی فریب‌کار وارد کرده‌اید. Chromium می‌تواند کمک کند. برای اینکه گذرواژه‌تان را تغییر دهید و به Google اطلاع دهید که شاید حسابتان درمعرض خطر باشد، روی «محافظت از حساب» کلیک کنید.</translation>
@@ -2206,6 +2218,7 @@
 <translation id="8282947398454257691">شناسه یکتای دستگاهتان را بداند</translation>
 <translation id="8284769179630993263">‏مدیریت «مرور ایمن» و غیره در تنظیمات Chrome</translation>
 <translation id="8286036467436129157">ورود به سیستم</translation>
+<translation id="8287501787477690853">به‌دلیل وجود محتوای محرمانه‌ای که ثبت شده است، سرپرست توصیه می‌کند از صفحه‌نمایش نماگرفت نگیرید یا محتوای آن را ضبط نکنید.</translation>
 <translation id="8288807391153049143">نمایش گواهی</translation>
 <translation id="8289355894181816810">اگر این موضوع را متوجه نمی‌شوید، با سرپرست شبکه‌تان تماس بگیرید.</translation>
 <translation id="8293206222192510085">افزودن نشانک</translation>
@@ -2238,6 +2251,7 @@
 <translation id="8364627913115013041">تنظیم نشده.</translation>
 <translation id="8368027906805972958">دستگاه ناشناس یا پشتیبانی‌نشده (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">‏خدمات Google Play</translation>
+<translation id="8369073279043109617">کد جدید دریافت کنید</translation>
 <translation id="8371889962595521444">گواهی‌نامه ریشه سفارشی</translation>
 <translation id="8374636051559112948">متفاوت است</translation>
 <translation id="8380941800586852976">خطرناک</translation>
@@ -2275,6 +2289,7 @@
 <translation id="8507227106804027148">خط فرمان</translation>
 <translation id="8508648098325802031">نماد جستجو</translation>
 <translation id="8511402995811232419">مدیریت کوکی‌ها</translation>
+<translation id="8519478486928352883">به‌دلیل وجود محتوای محرمانه‌ای که در صفحه وجود دارد، سرپرست توصیه می‌کند از صفحه‌نمایش نماگرفت نگیرید یا محتوای آن را ضبط نکنید.</translation>
 <translation id="8522552481199248698">‏Chrome می‌تواند کمک کند از حساب Google خود محافظت کنید و گذرواژه‌تان را تغییر دهید.</translation>
 <translation id="8530813470445476232">‏سابقه مرور، کوکی، حافظه پنهان و موارد دیگر را در تنظیمات Chrome پاک کنید.</translation>
 <translation id="8533619373899488139">‏برای دیدن فهرست نشانی‌های وب مسدودشده و دیگر خط‌مشی‌های اعمال‌شده توسط سرپرست سیستم، از &lt;strong&gt;chrome://policy&lt;/strong&gt; بازدید کنید.</translation>
@@ -2283,6 +2298,7 @@
 <translation id="8542014550340843547">سه منگنه در پایین</translation>
 <translation id="8543181531796978784">می‌توانید <ph name="BEGIN_ERROR_LINK" />یک مشکل شناسایی‌شده را گزارش کنید<ph name="END_ERROR_LINK" /> یا اگر از خطراتی که امنیت شما را تهدید می‌کنند مطلع شدید، <ph name="BEGIN_LINK" />از این سایت ناامن دیدن کنید<ph name="END_LINK" />.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{بازنشانی اجازه}one{بازنشانی اجازه}other{بازنشانی اجازه‌ها}}</translation>
+<translation id="8555010941760982128">هنگام تسویه‌حساب، از این کد استفاده کنید</translation>
 <translation id="8557066899867184262">‏CVC در پشت کارتتان قرار گرفته است.</translation>
 <translation id="8558485628462305855">‏برای مشاهده محتوای واقعیت افزوده، ARCore را به‌روزرسانی کنید</translation>
 <translation id="8559762987265718583">اتصال خصوصی به <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> انجام نمی‌شود، زیرا تاریخ و زمان دستگاه شما (<ph name="DATE_AND_TIME" />) نادرست است.</translation>
@@ -2322,6 +2338,7 @@
 <translation id="8718314106902482036">پرداخت کامل نشد</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />، <ph name="DESCRIPTION" />، پیشنهاد جستجو</translation>
 <translation id="8719528812645237045">چند سوراخ در بالا</translation>
+<translation id="8723535127346307411">کد درستی‌سنجی را وارد کنید</translation>
 <translation id="8725066075913043281">سعی مجدد</translation>
 <translation id="8726549941689275341">اندازه صفحه:</translation>
 <translation id="8730621377337864115">تمام</translation>
@@ -2462,6 +2479,7 @@
 <translation id="9191834167571392248">سوراخ در پایین سمت چپ</translation>
 <translation id="9199905725844810519">چاپ کردن مسدود شده است</translation>
 <translation id="9205078245616868884">داده‌های شما با گذرعبارت همگام‌سازی رمزگذاری می‌شود. برای شروع همگام‌سازی آن را وارد کنید.</translation>
+<translation id="920511547311754821">نمی‌توانید کدتان را پیدا کنید؟ <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">افزودن مقاله ناموفق بود.</translation>
 <translation id="9213433120051936369">سفارشی ساختن شکل ظاهری</translation>
 <translation id="9215416866750762878">‏برنامه‌ای مانع از اتصال ایمن Chrome به این سایت می‌شود</translation>

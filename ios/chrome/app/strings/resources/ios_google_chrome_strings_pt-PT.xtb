@@ -3,6 +3,7 @@
 <translationbundle lang="pt-PT">
 <translation id="1096883626080133124">Faça mais com um Google Chrome simples, seguro e mais rápido do que nunca</translation>
 <translation id="1282031177488366470">Ajudar a melhorar as funcionalidades e o desempenho do Chrome</translation>
+<translation id="1354592789402432496">O seu administrador requer que inicie sessão com uma conta de organização. As contas restringidas pelo seu administrador estão ocultas.</translation>
 <translation id="1479202195792305274">O Chrome pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="1493827051843127077">Defina o Chrome como a predefinição para sincronizar os separadores, as palavras-chave e as informações de pagamento em todos os seus dispositivos</translation>
 <translation id="1504372625950710826">O Chrome não conseguiu verificar se existem atualizações. Experimente verificar a sua ligação à Internet.</translation>
@@ -45,6 +46,7 @@
 <translation id="3988789688219830639">O Google Chrome não tem acesso aos seus vídeos ou fotos. Ative o acesso nas Definições do iOS &gt; Privacidade &gt; Fotos.</translation>
 <translation id="4099578267706723511">Ajude a melhorar o Chrome ao enviar estatísticas de utilização e relatórios de falhas para a Google.</translation>
 <translation id="417201473131094001">Opção não suportada no Chrome Canary.</translation>
+<translation id="4214277427269650960">Inicie sessão neste site e no Chrome. Pode ativar a sincronização mais tarde.</translation>
 <translation id="424864128008805179">Pretende terminar sessão no Chrome?</translation>
 <translation id="4249068189593983585">Sugestão para o Chrome: para obter mais opções de separadores, toque sem soltar no botão Mostrar separadores na barra de ferramentas, que se encontra na parte superior ou inferior do ecrã.</translation>
 <translation id="4523886039239821078">Alguns suplementos provocam falhas no sistema do Chrome. Desinstale:</translation>
@@ -59,6 +61,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Está offline. O Chrome não consegue verificar se existem atualizações.</translation>
 <translation id="5716154293141027663">Abra o Chrome sempre que tocar em links noutras apps</translation>
+<translation id="572883588166315317">A sua organização requer que inicie sessão para utilizar o Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />.</translation>
 <translation id="5854621639439811139">Sugestão para o Chrome: alguns botões encontram-se agora na parte inferior do ecrã, como Voltar, Avançar e Pesquisar.</translation>
 <translation id="5876773482963502140">Se permitir que o Chrome conheça a sua localização, este envia-a para quaisquer sites que permitir. Os sites podem solicitar a sua localização quando têm informações locais para lhe mostrar, como notícias ou lojas próximas.</translation>
 <translation id="6054613632208573261">Utilize o Chrome por predefinição</translation>

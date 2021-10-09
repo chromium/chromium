@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">Снизу</translation>
 <translation id="3090989381251959936">Включить или отключить функцию "<ph name="FEATURE_NAME" />". <ph name="STATE_TEXT" />.</translation>
 <translation id="309749186376891736">Перемещение курсора</translation>
-<translation id="3098580329624789136">Как <ph name="INTENT" /> "<ph name="QUERY" />"</translation>
 <translation id="3100274880412651815">Отключить режим снимка экрана</translation>
 <translation id="3105917916468784889">Скриншот</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">На устройстве могут быть приложения, не проверенные Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Отключенные устройства</translation>
-<translation id="4485060137115666462">Чтобы, например, посмотреть определение и перевод слова или конвертировать одни единицы измерения в другие, выберите нужный элемент с помощью правого клика или долгого нажатия.</translation>
 <translation id="4505050298327493054">Активный рабочий стол.</translation>
 <translation id="4513946894732546136">Отзыв</translation>
 <translation id="4518404433291145981">Чтобы разблокировать Chromebook, сначала разблокируйте телефон.</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">Отменить</translation>
 <translation id="595202126637698455">Включено отслеживание эффективности</translation>
 <translation id="5958529069007801266">Контролируемый профиль</translation>
-<translation id="5960825221082587934">Разрешите Google Ассистенту показывать определение и перевод слова, а также конвертировать одни единицы измерения в другие.</translation>
 <translation id="5977415296283489383">Наушники</translation>
 <translation id="5978382165065462689">Доступ к экрану с помощью удаленного помощника</translation>
 <translation id="5980301590375426705">Закрыть сеанс гостя</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">Вы можете закрепить здесь важные документы. Чтобы начать, откройте приложение "Файлы".</translation>
 <translation id="622484624075952240">Вниз</translation>
 <translation id="6231419273573514727">Производительность периферийных устройств может быть ограничена</translation>
-<translation id="6236290670123303279">Настройки</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Заблокировано в горизонтальном положении</translation>
 <translation id="6259254695169772643">Выберите нужное с помощью стилуса</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">Отслеживание эффективности</translation>
 <translation id="8703634754197148428">Начать запись. Чтобы найти кнопку остановки записи, перейдите к панели запуска, используя сочетание клавиш Alt + Shift + L.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Этой функцией можно управлять нажатием стрелки влево или вправо.</translation>
-<translation id="8712637175834984815">Готово</translation>
 <translation id="8721053961083920564">Включить или выключить звук. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Запись всего экрана</translation>
 <translation id="8734991477317290293">Это может быть попыткой узнать, какие клавиши вы нажимаете.</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">Проверьте подключение</translation>
 <translation id="8877788021141246043">Создать напоминание</translation>
 <translation id="8878886163241303700">Раскрытый экран</translation>
-<translation id="8883473964424809116">Нажмите, чтобы открыть настройки Google Ассистента.</translation>
 <translation id="8884537526797090108">Не удается записать видео конфиденциального контента</translation>
 <translation id="890616557918890486">Изменить источник</translation>
 <translation id="8909138438987180327">Уровень заряда батареи: <ph name="PERCENTAGE" />.</translation>

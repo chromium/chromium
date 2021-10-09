@@ -84,8 +84,6 @@
 <translation id="2926676257163822632">Ненадійні паролі можна легко вгадати. Тому радимо <ph name="BEGIN_LINK" />створювати й зберігати безпечні паролі<ph name="END_LINK" /> в Chrome.</translation>
 <translation id="2926952073016206995">Веб-переглядачу Chrome потрібен доступ до камери для цього сайту</translation>
 <translation id="2929907241665500097">Не вдалось оновити веб-переглядач Chrome. <ph name="BEGIN_LINK" />Вирішіть проблеми з оновленням Chrome.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Останнє нагадування: під час встановлення <ph name="BEGIN_BOLD" />всі дані жорсткого диска буде видалено<ph name="END_BOLD" />. Переконайтеся, що ви маєте резервну копію всіх важливих даних.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Коли встановлення розпочнеться, його не можна буде скасувати.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Вхід у мережу – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome у фоновому режимі.</translation>
 <translation id="3059710691562604940">Безпечний перегляд вимкнено. Chrome радить увімкнути його.</translation>
@@ -133,7 +131,6 @@
 <translation id="4251615635259297716">Пов’язати ваші дані Chrome із цим обліковим записом?</translation>
 <translation id="4281844954008187215">Умови використання</translation>
 <translation id="4293420128516039005">Увійдіть, щоб синхронізувати та персоналізувати роботу Chrome на всіх своїх пристроях</translation>
-<translation id="429583012151745428">Триває встановлення. Не вимикайте пристрій. Процес має зайняти не більше ніж двадцять хвилин. Після нього пристрій автоматично завершить роботу.</translation>
 <translation id="4325083532956419387">Версія ОС Chrome</translation>
 <translation id="4328355335528187361">Версія Google Chrome для розробників (mDNS-In)</translation>
 <translation id="4331809312908958774">ОС Chrome</translation>
@@ -175,7 +172,6 @@
 <translation id="5386244825306882791">Розширення також змінило сторінку, яка відкривається під час запуску Chrome або пошуку в універсальному вікні пошуку.</translation>
 <translation id="5394833366792865639">Поділитися вкладкою Chrome</translation>
 <translation id="5430073640787465221">Ваш файл налаштувань пошкоджений або недійсний. Google Chrome не може відновити ваші налаштування.</translation>
-<translation id="5486618155264784386">Установити ОС Chrome</translation>
 <translation id="556024056938947818">Google Chrome намагається показати паролі.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Якщо налаштування не з'явиться на цій сторінці, пошукайте його в <ph name="LINK_BEGIN" />
@@ -230,7 +226,6 @@
 <translation id="7155997830309522122">Якщо так, змініть збережений пароль у Chrome, щоб він збігався з новим.</translation>
 <translation id="7161904924553537242">Вітаємо у Google Chrome:</translation>
 <translation id="7242029209006116544">Ви входите, використовуючи дані облікового запису, яким керує адміністратор. Адміністратор може контролювати ваш профіль Google Chrome. Ваші дані Chrome, як-от програми, закладки, історія, паролі й інші налаштування, буде назавжди пов’язано з обліковим записом <ph name="USER_NAME" />. Ці дані можна видалити на інформаційній панелі Облікових записів Google, але ви не зможете пов’язати їх з іншим обліковим записом. Проте ви можете створити новий профіль, щоб зберігати наявні дані Chrome окремо. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Триває встановлення ОС Chrome</translation>
 <translation id="7295052994004373688">Цією мовою відображається інтерфейс Google Chrome</translation>
 <translation id="7296210096911315575">Важлива інформація про використання й безпеку</translation>
 <translation id="7308322188646931570">Chrome потрібен доступ до пам’яті, щоб завантажувати файли</translation>

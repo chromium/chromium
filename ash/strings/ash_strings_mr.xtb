@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">तळाकडील</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">कर्सर हलवा</translation>
-<translation id="3098580329624789136">"<ph name="QUERY" />" साठी <ph name="INTENT" /> मिळवा</translation>
 <translation id="3100274880412651815">कॅप्चर मोड डिसमिस करा</translation>
 <translation id="3105917916468784889">स्क्रीनशॉट घ्या</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ब्लूटूथ)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">या डिव्हाइसवर कदाचित Google ने पडताळणी न केलेल्या ॲप्सचा समावेश असू शकतो.</translation>
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4481530544597605423">जोडणी वेगळी केलेली डिव्हाइस</translation>
-<translation id="4485060137115666462">राइट क्लिक केल्याने किंवा दाबून ठेवल्याने, Assistant तुमच्या निवडीसाठी तुम्हाला व्याख्या, भाषांतर किंवा एकक रूपांतर यांसारखी माहिती दाखवतो.</translation>
 <translation id="4505050298327493054">ॲक्टिव्ह डेस्क.</translation>
 <translation id="4513946894732546136">फीडबॅक</translation>
 <translation id="4518404433291145981">तुमचे Chromebook अनलॉक करण्यासाठी, आधी तुमचा फोन अनलॉक करा</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">परत करा</translation>
 <translation id="595202126637698455">कार्यप्रदर्शन ट्रेसिंग सक्षम केले</translation>
 <translation id="5958529069007801266">पर्यवेक्षित वापरकर्ता</translation>
-<translation id="5960825221082587934">Assistant ला तुमच्या निवडीसाठी व्याख्या, भाषांतर किंवा एकक रूपांतर यांसारखी माहिती दाखवू द्या.</translation>
 <translation id="5977415296283489383">हेडफोन</translation>
 <translation id="5978382165065462689">दूरस्थ सहाय्याद्वारे आपल्या स्क्रीनचे नियंत्रण शेअर करत आहे.</translation>
 <translation id="5980301590375426705">अतिथी निर्गमन करा</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">तुम्ही तुमच्या महत्त्वाच्या फाइल येथे पिन करू शकता. सुरुवात करण्यासाठी Files अ‍ॅप उघडा.</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">पेरिफेरल परफॉर्मन्स मर्यादित असू शकतो</translation>
-<translation id="6236290670123303279">सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="6237231532760393653">१X</translation>
 <translation id="6254629735336163724">आडव्या दिशेने लॉक केले</translation>
 <translation id="6259254695169772643">निवडण्यासाठी तुमचे स्टायलस वापरा</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">परफॉर्मंस ट्रेसिंग ॲक्टिव्ह आहे</translation>
 <translation id="8703634754197148428">रेकॉर्डिंग सुरू करा. रेकॉर्डिंग सुरू झाल्यानंतर शेल्फवर नेव्हिगेट करण्यासाठी Alt + Shift + L वापरा आणि रेकॉर्डिंग थांबवा बटण शोधा</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> हे वैशिष्ट्य व्यवस्थापित करण्यासाठी लेफ्ट किंवा राइट अ‍ॅरो की वापरा.</translation>
-<translation id="8712637175834984815">समजले</translation>
 <translation id="8721053961083920564">व्‍हॉल्‍यूम टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">फुल स्‍क्रीन कॅप्‍चर</translation>
 <translation id="8734991477317290293">तो कदाचित तुमचे कीस्ट्रोक चोरण्याचा प्रयत्न करत असेल.</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">तुमचे कनेक्शन तपासा</translation>
 <translation id="8877788021141246043">रिमाइंडर सेट करा</translation>
 <translation id="8878886163241303700">स्क्रीन विस्तृत करत आहे</translation>
-<translation id="8883473964424809116">Google Assistant सेटिंग्ज उघडण्‍यासाठी क्‍लिक करा.</translation>
 <translation id="8884537526797090108">गोपनीय आशय रेकॉर्ड करू शकत नाही</translation>
 <translation id="890616557918890486">स्रोत बदला</translation>
 <translation id="8909138438987180327">बॅटरी <ph name="PERCENTAGE" /> टक्के आहे.</translation>

@@ -274,7 +274,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3087734570205094154">Alt</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> özelliğini aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">İmleci taşı</translation>
-<translation id="3098580329624789136">"<ph name="QUERY" />" için <ph name="INTENT" /> al</translation>
 <translation id="3100274880412651815">Ekran görüntüsü alma modunu kapat</translation>
 <translation id="3105917916468784889">Ekran görüntüsü al</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4477892968187500306">Bu cihaz Google tarafından doğrulanmamış uygulamalar içerebilir.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Eşlemesi kaldırılmış cihazlar</translation>
-<translation id="4485060137115666462">Sağ tıkladığınızda veya uzun bastığınızda Asistan, yaptığınız seçimin tanımı, çevirisi veya birimin dönüştürülmesi gibi bilgiler gösterir.</translation>
 <translation id="4505050298327493054">Etkin masa.</translation>
 <translation id="4513946894732546136">Geri Bildirim</translation>
 <translation id="4518404433291145981">Chromebook'unuzun kilidini açmak için önce telefonunuzun kilidini açın</translation>
@@ -668,7 +666,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5947494881799873997">Geri döndür</translation>
 <translation id="595202126637698455">Performans izleme etkin</translation>
 <translation id="5958529069007801266">Denetlenen kullanıcı</translation>
-<translation id="5960825221082587934">Asistan'ın yaptığınız seçimin tanımı, çevirisi veya birimin dönüştürülmesi gibi bilgileri göstermesine izin verir.</translation>
 <translation id="5977415296283489383">Kulaklık</translation>
 <translation id="5978382165065462689">Ekranınızın kontrolü Uzaktan Yardım kullanılarak paylaşılıyor.</translation>
 <translation id="5980301590375426705">Misafir oturumundan çık</translation>
@@ -703,7 +700,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6179832488876878285">Önemli dosyalarınızı buraya sabitleyebilirsiniz. Başlamak için Dosyalar uygulamasını açın.</translation>
 <translation id="622484624075952240">Aşağı</translation>
 <translation id="6231419273573514727">Çevre birimlerinin performansı sınırlı olabilir</translation>
-<translation id="6236290670123303279">Ayarları Yönet</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Yatay olarak kilitlendi</translation>
 <translation id="6259254695169772643">Seçmek için ekran kaleminizi kullanın</translation>
@@ -1021,7 +1017,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8683506306463609433">Performans izleme etkin</translation>
 <translation id="8703634754197148428">Kaydı başlat. Kayıt başladıktan sonra Alt+Üst Karakter+L tuşlarını kullanarak rafta bulunan kaydı durdur düğmesine gidebilirsiniz</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bu özelliği yönetmek için sol veya sağ ok tuşlarını kullanın.</translation>
-<translation id="8712637175834984815">Anlaşıldı</translation>
 <translation id="8721053961083920564">Sesi Aç/Kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tam ekran görüntüsü alma</translation>
 <translation id="8734991477317290293">Bu klavye, tuş vuruşlarınızı çalmaya çalışıyor olabilir</translation>
@@ -1049,7 +1044,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8876661425082386199">Bağlantınızı denetleyin</translation>
 <translation id="8877788021141246043">Hatırlatıcı oluştur</translation>
 <translation id="8878886163241303700">Genişletilmiş ekran</translation>
-<translation id="8883473964424809116">Google Asistan ayarlarını açmak için tıklayın.</translation>
 <translation id="8884537526797090108">Gizli içerik kaydedilemez</translation>
 <translation id="890616557918890486">Kaynağı değiştir</translation>
 <translation id="8909138438987180327">Pil yüzde <ph name="PERCENTAGE" /> dolu.</translation>

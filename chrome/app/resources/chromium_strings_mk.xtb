@@ -43,7 +43,6 @@
 <translation id="2560420686485554789">На Chromium му треба пристап до меморијата за да презема датотеки</translation>
 <translation id="2572494885440352020">Помошник на Chromium</translation>
 <translation id="2577788541081224677">За да пристапувате до вашите работи на Chromium на сите уреди, најавете се за да може да ја вклучите синхронизацијата.</translation>
-<translation id="2580426763510374355">Инсталирај Chromium OS</translation>
 <translation id="2583187216237139145">Податоците на Chromium што се генерирани при користењето на овој профил (како на пример, создавање обележувачи, историја, лозинки и други поставки) може да се отстранат од страна на администраторот на работниот профил. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Оперативниот систем Chromium треба да се рестартира за да се примени ажурирањето.</translation>
 <translation id="2648074677641340862">Настана грешка на оперативен систем при инсталација. Преземете го Chromium повторно.</translation>
@@ -56,8 +55,6 @@
 <translation id="2847479871509788944">Отстрани од Chromium</translation>
 <translation id="2885378588091291677">Управник со задачи</translation>
 <translation id="2910007522516064972">За &amp;Chromium</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Последен потсетник: инсталацијата <ph name="BEGIN_BOLD" />ќе го избрише целиот хард диск<ph name="END_BOLD" />. Погрижете се дека сте направиле бекап од податоците што ви се важни.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Штом ќе започне инсталирањето нема да може да се откаже.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium е ажуриран</translation>
 <translation id="2983934633046890458">Chromium се обидува да измени лозинки.</translation>
 <translation id="3032706164202344641">Chromium не може да ги провери вашите лозинки. Обидете се пак подоцна.</translation>
@@ -81,7 +78,6 @@
 <translation id="3350761136195634146">Веќе постои профил на Chromium со оваа сметка</translation>
 <translation id="3406848076815591792">Сакате да се префрлите на постојниот профил на Chromium?</translation>
 <translation id="3430503420100763906">Со профилите на Chromium може да ги одделите сите ваши работи на Chromium. Создајте профили за пријателите и семејството или поделете ги помеѓу работа и забава.</translation>
-<translation id="3433271666494956603">Инсталирањето на Chromium OS е во тек</translation>
 <translation id="347328004046849135">Chromium ќе ве извести ако се најавите со компромитирана лозинка</translation>
 <translation id="3474745554856756813">Ова ќе избрише <ph name="ITEMS_COUNT" /> ставки од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chromium како <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Со <ph name="SHORTCUT" /> се менуваат профили на Chromium</translation>
@@ -109,7 +105,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" /> бара да ги прочитате и да ги прифатите следните „Услови за користење“ пред да го користите уредов. Овие услови не ги прошируваат, менуваат или ограничуваат „Условите на Chromium OS“.</translation>
 <translation id="4271805377592243930">Добијте помош за Chromium</translation>
 <translation id="4285930937574705105">Инсталирањето не успеа поради неназначена грешка. Ако Chromium моментално работи, затворете го и обидете се повторно.</translation>
-<translation id="429583012151745428">Инсталирањето е во тек. Не исклучувајте го уредот. Инсталирањето не треба да трае повеќе од дваесет минути. Компјутерот автоматски ќе се исклучи по инсталирањето.</translation>
 <translation id="4407044323746248786">Сепак да се излезе од Chromium?</translation>
 <translation id="4415566066719264597">Остави го Chromium да работи во заднина</translation>
 <translation id="4423735387467980091">Приспособи го и контролирај го Chromium</translation>
@@ -203,7 +198,6 @@
 <translation id="6734291798041940871">Chromium веќе е инсталиран за сите корисници на вашиот компјутер.</translation>
 <translation id="673636774878526923">За да пристапувате до вашите работи на Chromium на сите уреди, најавете се и вклучете ја синхронизацијата.</translation>
 <translation id="6774082503108938489">Родителот ги исклучил „Дозволите за сајтови, апликации и екстензии“ за Chromium. Не е дозволено овозможувањето на оваа<ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="6827182711503025204">Инсталирањето на Chromium OS ќе ги презапише сите податоци на вашиот уред.</translation>
 <translation id="6847869444787758381">Chromium ве известува дали вашите лозинки се компромитирани</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (копирана во Chromium)</translation>

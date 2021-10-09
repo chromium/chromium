@@ -43,7 +43,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2560420686485554789">Chromium needs storage access to download files</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">To access your Chromium stuff across all your devices, sign in so that you can turn on sync.</translation>
-<translation id="2580426763510374355">Install Chromium OS</translation>
 <translation id="2583187216237139145">Any Chromium data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by the work profile administrator. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS needs to be restarted to apply the update.</translation>
 <translation id="2648074677641340862">An operating system error occurred during installation. Please download Chromium again.</translation>
@@ -56,8 +55,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2847479871509788944">Remove from Chromium...</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2910007522516064972">About &amp;Chromium</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />One last reminder: installation <ph name="BEGIN_BOLD" />will erase your entire hard drive<ph name="END_BOLD" />. Please make sure that you have any data you care about backed up.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Once installation starts it cannot be cancelled.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium is up to date</translation>
 <translation id="2983934633046890458">Chromium is trying to edit passwords.</translation>
 <translation id="3032706164202344641">Chromium can't check your passwords. Try again later.</translation>
@@ -81,7 +78,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3350761136195634146">A Chromium profile with this account already exists</translation>
 <translation id="3406848076815591792">Switch to existing Chromium profile?</translation>
 <translation id="3430503420100763906">With Chromium profiles you can separate all of your Chromium stuff. Create profiles for friends and family, or split between work and fun.</translation>
-<translation id="3433271666494956603">Chromium OS installation in progress</translation>
 <translation id="347328004046849135">Chromium will notify you when you sign in with a compromised password</translation>
 <translation id="3474745554856756813">This will delete <ph name="ITEMS_COUNT" /> items from this device. To retrieve your data later, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> can switch between Chromium profiles</translation>
@@ -109,7 +105,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4264410486868823224"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These Terms do not expand, modify or limit the Chromium OS Terms.</translation>
 <translation id="4271805377592243930">Get help with Chromium</translation>
 <translation id="4285930937574705105">Installation failed due to unspecified error. If Google Chrome is currently running, please close it and try again.</translation>
-<translation id="429583012151745428">Installation is in progress. Don't turn off the device. Install should take no longer than twenty minutes. The machine will automatically shut down after installing.</translation>
 <translation id="4407044323746248786">Exit Chromium anyway?</translation>
 <translation id="4415566066719264597">Let Chromium Run in the Background</translation>
 <translation id="4423735387467980091">Customise and control Chromium</translation>
@@ -203,7 +198,6 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="6734291798041940871">Chromium is already installed for all users on your computer.</translation>
 <translation id="673636774878526923">To access your Chromium stuff across all your devices, sign in, then turn on sync.</translation>
 <translation id="6774082503108938489">Your parent has turned off 'Permissions for sites, apps and extensions' for Chromium. Enabling this <ph name="EXTENSION_TYPE_PARAMETER" /> is not allowed.</translation>
-<translation id="6827182711503025204">Installing Chromium OS will overwrite all data on your device.</translation>
 <translation id="6847869444787758381">Chromium lets you know if your passwords are ever compromised</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copied to Chromium)</translation>

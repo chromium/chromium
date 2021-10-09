@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Acerca do Chromium</translation>
 <translation id="1257458525759135959">Para guardar imagens, toque em Definições para permitir que o Chromium adicione as suas fotos.</translation>
 <translation id="1289216811211435351">Mude para o Chromium</translation>
+<translation id="1354592789402432496">O seu administrador requer que inicie sessão com uma conta de organização. As contas restringidas pelo seu administrador estão ocultas.</translation>
 <translation id="1361748954329991663">O Chromium está desatualizado. Se não estiverem disponíveis atualizações na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que o seu dispositivo já não suporte novas versões do Chromium.</translation>
 <translation id="1370204544543370355">Para tirar o máximo partido do Chromium, inicie sessão no mesmo com a sua Conta Google</translation>
 <translation id="1431818719585918472">Permita que o Chromium bloqueie os seus separadores de navegação anónima.</translation>
@@ -50,6 +51,7 @@
 <translation id="5171868502429358653">Inicie sessão no Chromium</translation>
 <translation id="5224391634244552924">Não existem palavras-passe guardadas. O Chromium consegue verificar as suas palavras-passe quando as guarda.</translation>
 <translation id="5308226104666789935">O Chromium não consegue verificar se existem atualizações.</translation>
+<translation id="5324242752415821224">A sua organização requer que inicie sessão para utilizar o Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Pretende definir o Chromium como a predefinição?</translation>
 <translation id="5521125884468363740">Para ver os seus separadores onde quer que esteja a utilizar o Chromium, inicie sessão e ative a sincronização.</translation>
 <translation id="5573014823074921752">Sugestão para o Chromium: para obter mais opções de separadores, toque sem soltar no botão Mostrar separadores na barra de ferramentas, que se encontra na parte superior ou inferior do ecrã.</translation>
@@ -63,6 +65,7 @@
 2. Toque em App de navegador predefinida
 3. Selecione o Chromium.</translation>
 <translation id="6155422572367400359">Inicie sessão neste site, na sua Conta Google e no Chromium. Pode ativar a sincronização mais tarde.</translation>
+<translation id="6183442264225539303">Inicie sessão neste site e no Chromium. Pode ativar a sincronização mais tarde.</translation>
 <translation id="6268381023930128611">Pretende terminar sessão no Chromium?</translation>
 <translation id="632825460376924298">Permitir o início de sessão no Chromium</translation>
 <translation id="6337530241089703714">Escolha se pretende limpar os seus dados do Chromium deste dispositivo ou mantê-los</translation>

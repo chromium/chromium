@@ -87,8 +87,6 @@
 <translation id="2926676257163822632">Ненадзейныя паролі лёгка адгадаць. Дазвольце Chrome <ph name="BEGIN_LINK" />ствараць для вас надзейныя паролі і запамінаць іх<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome запытвае дазвол на доступ да камеры для гэтага сайта</translation>
 <translation id="2929907241665500097">Chrome не абнавіўся. Нешта пайшло не так. <ph name="BEGIN_LINK" />Выправіце праблемы з абнаўленнем Chrome і памылкі абнаўлення.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Яшчэ раз напамінаем, што пры ўсталяванні <ph name="BEGIN_BOLD" />ўсе даныя на цвёрдым дыску будуць сцёрты<ph name="END_BOLD" />. Упэўніцеся, што вы маеце іх рэзервовую копію.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Пасля таго як усталяванне пачнецца, працэс нельга будзе скасаваць.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Уваход у сетку – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome працуе ў фонавым рэжыме.</translation>
 <translation id="3059710691562604940">"Бяспечны прагляд" выключаны. Chrome рэкамендуе ўключыць гэты рэжым.</translation>
@@ -136,7 +134,6 @@
 <translation id="4251615635259297716">Звязаць вашы даныя Chrome з гэтым уліковым запісам?</translation>
 <translation id="4281844954008187215">Умовы выкарыстання</translation>
 <translation id="4293420128516039005">Увайдзіце ў Chrome, каб сінхранізаваць і персаналізаваць яго на сваіх прыладах</translation>
-<translation id="429583012151745428">Выконваецца ўсталяванне. Не выключайце прыладу. Усталяванне зойме не больш за дваццаць хвілін. Пасля ўсталявання машына аўтаматычна завершыць працу.</translation>
 <translation id="4325083532956419387">Версія Chrome OS</translation>
 <translation id="4328355335528187361">Google Chrome для распрацоўшчыкаў (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -182,7 +179,6 @@
 <translation id="5430073640787465221">Файл параметраў пашкоджаны або няправільны.
 
 Не ўдалося аднавіць налады ў браўзеры Google Chrome.</translation>
-<translation id="5486618155264784386">Усталяваць Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome спрабуе паказаць паролі.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Калі налада адсутнічае на гэтай старонцы, перайдзіце ў <ph name="LINK_BEGIN" />
@@ -237,7 +233,6 @@
 <translation id="7155997830309522122">Калі так, змяніце пароль, захаваны ў Chrome, каб ён супадаў з новым.</translation>
 <translation id="7161904924553537242">Вас вітае Google Chrome</translation>
 <translation id="7242029209006116544">Вы ўваходзіце праз уліковы запіс пад кіраваннем, таму адміністратар зможа кантраляваць ваш профіль Google Chrome. Даныя Chrome (праграмы, закладкі, гісторыя, паролі і іншыя налады) будуць назаўсёды прывязаны да ўліковага запісу <ph name="USER_NAME" />. Вы зможаце выдаліць гэтыя даныя праз панэль кіравання Уліковымі запісамі Google, але іх нельга будзе звязаць з іншым уліковым запісам. Каб захаваць існуючыя даныя Chrome асобна, стварыце новы профіль. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Ідзе ўсталяванне Chrome OS</translation>
 <translation id="7295052994004373688">На гэтай мове паказваецца карыстальніцкі інтэрфейс Google Chrome</translation>
 <translation id="7296210096911315575">Важныя звесткі пра выкарыстанне і бяспеку</translation>
 <translation id="7308322188646931570">Для спампоўвання файлаў браўзеру Chrome патрабуецца доступ да сховішча</translation>

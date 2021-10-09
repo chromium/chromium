@@ -180,6 +180,7 @@
 <translation id="2139186145475833000">होम स्क्रीन में जोड़ें</translation>
 <translation id="2141396931810938595">आपके इस्तेमाल करने के हिसाब से</translation>
 <translation id="214888715418183969">चुनें कि Chrome के साथ आपकी क्या जानकारी शेयर की जाए. आप जो मेट्रिक शेयर करते हैं उसका इस्तेमाल, Chrome की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में किया जाएगा. साथ ही, इसका इस्तेमाल क्रैश होने जैसी दिक्कतों को ठीक करने में भी होगा.</translation>
+<translation id="2149973817440762519">बुकमार्क में बदलाव करें</translation>
 <translation id="2154484045852737596">कार्ड में बदलाव करें</translation>
 <translation id="2154710561487035718">URL की कॉपी बनाएं</translation>
 <translation id="2156074688469523661">बाकी साइटें (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -640,7 +641,6 @@
 <translation id="4943872375798546930">कोई परिणाम नहीं</translation>
 <translation id="4957722034734105353">ज़्यादा जानें...</translation>
 <translation id="4961107849584082341">इस पेज का अनुवाद किसी भी भाषा में करें</translation>
-<translation id="4970824347203572753">आपके देश में उपलब्ध नहीं है</translation>
 <translation id="4971735654804503942">नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से तेज़ और प्रोऐक्टिव (बिना मांगे मिलने वाली) सुरक्षा. पासवर्ड हैक होने के बारे में आपको चेतावनी देता है. Google को ब्राउज़िंग डेटा भेजने की ज़रूरत पड़ती है.</translation>
 <translation id="497421865427891073">आगे जाएं</translation>
 <translation id="4988210275050210843">फ़ाइल डाउनलोड हो रही है (<ph name="MEGABYTES" />).</translation>
@@ -724,7 +724,6 @@
 <translation id="5483197086164197190">Navigate Chrome</translation>
 <translation id="5487521232677179737">डेटा साफ़ करें</translation>
 <translation id="549025011754480756">बोलकर खोजने का तरीका</translation>
-<translation id="5500777121964041360">शायद, यह सुविधा आपके देश में उपलब्ध न हाे</translation>
 <translation id="5512137114520586844">यह खाता <ph name="PARENT_NAME" /> द्वारा प्रबंधित है.</translation>
 <translation id="5514904542973294328">इस डिवाइस के व्यवस्थापक ने अक्षम किया है</translation>
 <translation id="5515439363601853141">अपना पासवर्ड देखने के लिए अनलॉक करें</translation>
@@ -878,7 +877,6 @@
 <translation id="6364438453358674297">सुझाव को इतिहास से निकालें?</translation>
 <translation id="6378173571450987352">जानकारी: इस्तेमाल किए गए डेटा की मात्रा के अनुसार क्रम से लगाया गया</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" />, Chrome में खुलेगा. जारी रखने का मतलब है कि आप <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />Google Chrome और Chrome OS की सेवा की अतिरिक्त शर्तों<ph name="END_LINK2" /> से सहमत हैं.</translation>
-<translation id="6381421346744604172">वेबसाइटों को गहरा करने का विकल्प</translation>
 <translation id="6395288395575013217">लिंक</translation>
 <translation id="6397616442223433927">इंटरनेट कनेक्शन फिर से जुड़ गया</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> पर <ph name="ERROR_CODE" /></translation>
@@ -1209,7 +1207,6 @@
 <translation id="8218052821161047641">तेज़ी से लोड होने वाला पेज</translation>
 <translation id="8218622182176210845">अपना खाता प्रबंधित करें</translation>
 <translation id="8223642481677794647">फ़ीड कार्ड मेन्यू</translation>
-<translation id="8224471946457685718">वाई-फ़ाई चालू हाेने पर अपने लिए लेख डाउनलोड करें</translation>
 <translation id="8250920743982581267">दस्तावेज़</translation>
 <translation id="825412236959742607">यह पेज बहुत ज़्यादा स्टोरेज का इस्तेमाल करता है, इसलिए Chrome ने कुछ सामग्री हटा दी है.</translation>
 <translation id="8260126382462817229">फिर से प्रवेश करके देखें</translation>

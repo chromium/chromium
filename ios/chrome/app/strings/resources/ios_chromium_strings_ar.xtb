@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">‏لمحة عن Chromium</translation>
 <translation id="1257458525759135959">‏لحفظ الصور، يُرجى النقر على "الإعدادات" للسماح لمتصفّح Chromium بأن يضيف إلى صورك.</translation>
 <translation id="1289216811211435351">‏التبديل إلى Chromium</translation>
+<translation id="1354592789402432496">يطلُب المشرف منك تسجيل الدخول باستخدام حساب المؤسسة، ويتم إخفاء الحسابات التي يحظرها المشرف.</translation>
 <translation id="1361748954329991663">‏إصدار Chromium قديم. في حال عدم توفُّر تحديث في <ph name="BEGIN_LINK" />متجر التطبيقات<ph name="END_LINK" />، قد يعني هذا أن جهازك لم يعد متوافقًا مع الإصدارات الجديدة من Chromium.</translation>
 <translation id="1370204544543370355">‏للاستفادة إلى أقصى حدّ من Chromium، سجِّل الدخول إلى Chromium باستخدام حسابك على Google</translation>
 <translation id="1431818719585918472">‏اسمح لمتصفّح Chromium بقفل علامات التبويب في وضع التصفّح المتخفي.</translation>
@@ -50,6 +51,7 @@
 <translation id="5171868502429358653">‏تسجيل الدخول إلى Chromium</translation>
 <translation id="5224391634244552924">‏ما مِن كلمات مرور محفوظة. لا يستطيع Chromium التحقُّق من كلمات المرور إلا عند حفظها.</translation>
 <translation id="5308226104666789935">‏يتعذّر على Chromium البحث عن تحديثات.</translation>
+<translation id="5324242752415821224">‏تطلُب مؤسستك منك تسجيل الدخول للتمكّن من استخدام Chromium. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="5396916991083608703">‏هل تريد ضبط Chromium كمتصفّح تلقائي؟</translation>
 <translation id="5521125884468363740">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chromium، سجِّل الدخول وفعِّل المزامنة.</translation>
 <translation id="5573014823074921752">‏نصيحة لاستخدام Chromium: لمزيد من خيارات علامات التبويب، يُرجى النقر مع الاستمرار على الزر "إظهار علامات التبويب" في شريط الأدوات الموجود أسفل الشاشة أو أعلاها.</translation>
@@ -63,6 +65,7 @@
 2. انقر على Default Browser App (تطبيق المتصفِّح التلقائي).
 3. اختَر Chromium.</translation>
 <translation id="6155422572367400359">‏يُرجى تسجيل الدخول إلى هذا الموقع الإلكتروني وحسابك على Google وChromium. يمكنك تفعيل المزامنة لاحقًا.</translation>
+<translation id="6183442264225539303">‏سجِّل الدخول إلى هذا الموقع الإلكتروني وإلى Chromium. يمكنك تفعيل المزامنة لاحقًا.</translation>
 <translation id="6268381023930128611">‏هل تريد الخروج من Chromium؟</translation>
 <translation id="632825460376924298">‏السماح بتسجيل الدخول إلى Chromium</translation>
 <translation id="6337530241089703714">‏اختيار ما إذا كنت تريد محو بيانات Chromium المخزَّنة على هذا الجهاز أو الاحتفاظ بها</translation>

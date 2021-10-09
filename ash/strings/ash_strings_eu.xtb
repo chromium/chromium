@@ -274,7 +274,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3087734570205094154">Behekoa</translation>
 <translation id="3090989381251959936">Aldatu <ph name="FEATURE_NAME" /> eginbidearen egoera. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Mugitu kurtsorea</translation>
-<translation id="3098580329624789136">Lortu "<ph name="QUERY" />" kontsultaren <ph name="INTENT" /></translation>
 <translation id="3100274880412651815">Baztertu edukia kapturatzeko modua</translation>
 <translation id="3105917916468784889">Atera pantaila-argazkia</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth-a)</translation>
@@ -477,7 +476,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4477892968187500306">Baliteke Google-k egiaztatu ez dituen aplikazioak egotea gailuan.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Desparekatutako gailuak</translation>
-<translation id="4485060137115666462">Eskuineko botoiarekin edo luze sakatuz gero, hautatu duzunari buruzko informazioa erakutsiko dizu Laguntzailea eginbideak, hala nola definizioa, itzulpena edo unitateen bihurketa.</translation>
 <translation id="4505050298327493054">Mahaigain aktiboa.</translation>
 <translation id="4513946894732546136">Iritzia</translation>
 <translation id="4518404433291145981">Chromebook-a desblokeatzeko, desblokeatu telefonoa lehenik</translation>
@@ -669,7 +667,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5947494881799873997">Leheneratu</translation>
 <translation id="595202126637698455">Errendimenduaren jarraipena egiteko aukera gaitu da</translation>
 <translation id="5958529069007801266">Erabiltzaile gainbegiratua</translation>
-<translation id="5960825221082587934">Laguntzailea eginbideak erakutsiko dizu zure hautapenari buruzko informazioa, hala nola definizioa, itzulpena edo bihurketa-unitatea.</translation>
 <translation id="5977415296283489383">Entzungailua</translation>
 <translation id="5978382165065462689">Urruneko laguntzaren bidez pantailaren kontrola partekatzen.</translation>
 <translation id="5980301590375426705">Irten gonb. saiotik</translation>
@@ -703,7 +700,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6179832488876878285">Hemen aingura ditzakezu fitxategi garrantzitsuak. Hasteko, erabili Fitxategiak aplikazioa.</translation>
 <translation id="622484624075952240">Behera</translation>
 <translation id="6231419273573514727">Baliteke gailu periferikoaren errendimendua mugatuta egotea</translation>
-<translation id="6236290670123303279">Kudeatu ezarpenak</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Modu horizontalean blokeatuta</translation>
 <translation id="6259254695169772643">Hautatzeko, erabili arkatza</translation>
@@ -1021,7 +1017,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8683506306463609433">Aktibo dago funtzionamenduaren jarraipena egiteko aukera</translation>
 <translation id="8703634754197148428">Hasi grabatzen. Grabatzen hasi ondoren, sakatu Alt + Maius + L apalera joateko; bertan ikusiko duzu grabaketa gelditzeko botoia.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Erabili ezkerrera edo eskuinera egiteko gezi-tekla eginbide hori kudeatzeko.</translation>
-<translation id="8712637175834984815">Ados</translation>
 <translation id="8721053961083920564">Aldatu bolumena. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Pantaila osoaren kaptura</translation>
 <translation id="8734991477317290293">Agian sakatzen ari zaren teklak erregistratzen ari da, pasahitzak lapurtzeko asmoz.</translation>
@@ -1049,7 +1044,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8876661425082386199">Egiaztatu konektatuta zaudela</translation>
 <translation id="8877788021141246043">Ezarri abisu bat</translation>
 <translation id="8878886163241303700">Pantaila hedatzen</translation>
-<translation id="8883473964424809116">Sakatu hau Google-ren Laguntzailea eginbidearen ezarpenak irekitzeko.</translation>
 <translation id="8884537526797090108">Ezin da grabatu isilpeko edukirik</translation>
 <translation id="890616557918890486">Aldatu iturburua</translation>
 <translation id="8909138438987180327">Bateriaren % <ph name="PERCENTAGE" /> geratzen zaizu.</translation>

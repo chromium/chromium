@@ -84,8 +84,6 @@
 <translation id="2926676257163822632">Heikko salasana on helppo arvata. Chrome voi <ph name="BEGIN_LINK" />luoda ja muistaa vahvoja salasanoja puolestasi<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome tarvitsee kameran luvan tällä sivustolla</translation>
 <translation id="2929907241665500097">Chromea ei päivitetty, vaan jotain meni pieleen. <ph name="BEGIN_LINK" />Korjaa Chromen päivitysongelmat ja epäonnistuneet päivitykset<ph name="END_LINK" />.</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Muista: asennus <ph name="BEGIN_BOLD" />tyhjentää koko kiintolevysi<ph name="END_BOLD" />. Varmista, että olet varmuuskopioinut tärkeän datan.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Kun asennus on alkanut, sitä ei voi perua.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Kirjautuminen verkkoon – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome on käynnissä taustalla.</translation>
 <translation id="3059710691562604940">Selaussuoja on pois päältä. Chrome suosittelee laittamaan sen päälle.</translation>
@@ -133,7 +131,6 @@
 <translation id="4251615635259297716">Linkitetäänkö Chrome-tiedot tähän tiliin?</translation>
 <translation id="4281844954008187215">Käyttöehdot</translation>
 <translation id="4293420128516039005">Kirjaudu sisään, niin voit synkronoida Chromen ja tehdä siitä yksilöllisemmän kaikilla laitteilla.</translation>
-<translation id="429583012151745428">Asennus on kesken. Älä sammuta laitetta. Asennuksen pitäisi kestää korkeintaan 20 minuuttia. Laite sammuu automaattisesti asennuksen jälkeen.</translation>
 <translation id="4325083532956419387">Chrome-käyttöjärjestelmän versio</translation>
 <translation id="4328355335528187361">Google Chromen kehittäjäversio (saapuva mDNS)</translation>
 <translation id="4331809312908958774">Chrome-käyttöjärjestelmä</translation>
@@ -175,7 +172,6 @@
 <translation id="5386244825306882791">Määrittää myös Chromen ja omnibox-hakujen aloitussivun.</translation>
 <translation id="5394833366792865639">Jaa Chrome-välilehti</translation>
 <translation id="5430073640787465221">Asetustiedostosi on virheellinen. Google Chrome ei voi palauttaa asetuksiasi.</translation>
-<translation id="5486618155264784386">Asenna Chrome-käyttöjärjestelmä</translation>
 <translation id="556024056938947818">Google Chrome yrittää näyttää salasanoja.</translation>
 <translation id="5566025111015594046">Google Chrome (saapuva mDNS)</translation>
 <translation id="5657226924540934362">Jos asetus ei näy tällä sivulla, siirry <ph name="LINK_BEGIN" />
@@ -230,7 +226,6 @@
 <translation id="7155997830309522122">Jos vaihdoit, päivitä muutos Chromen tallennettuihin salasanoihin.</translation>
 <translation id="7161904924553537242">Tervetuloa Google Chromeen</translation>
 <translation id="7242029209006116544">Olet kirjautumassa sisään hallinnoidulla tilillä ja antamassa tilin järjestelmänvalvojalle oikeuden hallita Google Chrome -profiiliasi. Chrome-tietosi, kuten sovelluksesi, kirjanmerkkisi, historiasi, salasanasi ja muut asetuksesi, yhdistetään pysyvästi käyttäjätiliin <ph name="USER_NAME" />. Voit poistaa nämä tiedot Google-tilien Hallintapaneelissa, mutta et voi liittää tietoja toiseen tiliin. Voit myös halutessasi luoda uuden profiilin, jos haluat pitää aiemmat Chrome-tietosi erillään. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Chrome-käyttöjärjestelmän asennus käynnissä</translation>
 <translation id="7295052994004373688">Google Chrome ‑käyttöliittymä näytetään tällä kielellä</translation>
 <translation id="7296210096911315575">Tärkeää käyttö- ja turvallisuustietoa</translation>
 <translation id="7308322188646931570">Chrome tarvitsee tallennustilan käyttöoikeuden tiedostojen lataamiseen.</translation>

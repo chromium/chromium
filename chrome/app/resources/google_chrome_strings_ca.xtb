@@ -84,8 +84,6 @@
 <translation id="2926676257163822632">Les contrasenyes poc segures són fàcils d'endevinar. Deixa que Chrome <ph name="BEGIN_LINK" />creï i recordi contrasenyes segures en nom teu<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome necessita permís d'accés a la càmera per a aquest lloc web</translation>
 <translation id="2929907241665500097">No s'ha actualitzat Chrome. S'ha produït un error. <ph name="BEGIN_LINK" />Soluciona els problemes i errors d'actualització de Chrome<ph name="END_LINK" />.</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Un darrer recordatori: la instal·lació <ph name="BEGIN_BOLD" />esborrarà tota la unitat de disc dur<ph name="END_BOLD" />. Assegura't que hagis creat una còpia de seguretat de les dades que vols conservar.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Quan comenci la instal·lació, no es podrà cancel·lar.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Inici de sessió a la xarxa - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome està en mode de segon pla.</translation>
 <translation id="3059710691562604940">Navegació segura està desactivada. Chrome recomana activar-la.</translation>
@@ -133,7 +131,6 @@
 <translation id="4251615635259297716">Voleu enllaçar les vostres dades de Chrome amb aquest compte?</translation>
 <translation id="4281844954008187215">Condicions del servei</translation>
 <translation id="4293420128516039005">Inicia la sessió per sincronitzar i personalitzar Chrome en tots els teus dispositius</translation>
-<translation id="429583012151745428">Instal·lació en curs. No apaguis el dispositiu. La instal·lació no tardarà més de 20 minuts. L'equip s'apagarà automàticament un cop acabada.</translation>
 <translation id="4325083532956419387">Versió de Chrome OS</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -175,7 +172,6 @@
 <translation id="5386244825306882791">També controla la pàgina que es mostra quan inicieu Chrome o quan feu una cerca des de l'omnibox.</translation>
 <translation id="5394833366792865639">Comparteix una pestanya de Chrome</translation>
 <translation id="5430073640787465221">El fitxer de preferències està malmès o no és vàlid. Google Chrome no pot recuperar la configuració.</translation>
-<translation id="5486618155264784386">Instal·la Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome està provant de mostrar les contrasenyes.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Si alguna opció de configuració no es mostra en aquesta pàgina, consulta la <ph name="LINK_BEGIN" />configuració de Chrome OS<ph name="LINK_END" />.</translation>
@@ -229,7 +225,6 @@
 <translation id="7155997830309522122">Si ja ho has fet, edita la contrasenya desada a Chrome perquè coincideixi amb la contrasenya nova.</translation>
 <translation id="7161904924553537242">Us donem la benvinguda a Google Chrome.</translation>
 <translation id="7242029209006116544">Esteu a punt d'iniciar la sessió amb un compte gestionat i d'atorgar el control del vostre perfil de Google Chrome a l'administrador corresponent. Les vostres dades de Chrome, com ara aplicacions, adreces d'interès, historial, contrasenyes i altres configuracions, s'enllaçaran permanentment amb <ph name="USER_NAME" />. Podreu suprimir aquestes dades mitjançant el Tauler de Comptes de Google, però no les podreu associar amb un altre compte. De manera opcional, podeu crear un perfil nou per mantenir les vostres dades de Chrome a part. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">La instal·lació de Chrome OS està en curs</translation>
 <translation id="7295052994004373688">És l'idioma en què es mostra la IU de Google Chrome</translation>
 <translation id="7296210096911315575">Informació important d'ús i de seguretat</translation>
 <translation id="7308322188646931570">Chrome necessita accedir a l'emmagatzematge per baixar fitxers</translation>

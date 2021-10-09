@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">下方</translation>
 <translation id="3090989381251959936">切換<ph name="FEATURE_NAME" />功能。<ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">移動游標</translation>
-<translation id="3098580329624789136">取得「<ph name="QUERY" />」的<ph name="INTENT" /></translation>
 <translation id="3100274880412651815">閂擷取模式</translation>
 <translation id="3105917916468784889">擷取螢幕擷圖</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (藍牙)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">此裝置可能包含未經 Google 驗證的的應用程式。</translation>
 <translation id="4479639480957787382">以太網絡</translation>
 <translation id="4481530544597605423">未配對的裝置</translation>
-<translation id="4485060137115666462">按一下或長按右鍵，「Google 助理」即可顯示選取項目的定義、翻譯或單位轉換等相關資料。</translation>
 <translation id="4505050298327493054">用緊嘅桌面。</translation>
 <translation id="4513946894732546136">意見反映</translation>
 <translation id="4518404433291145981">如要解鎖 Chromebook，請先解鎖手機</translation>
@@ -667,7 +665,6 @@
 <translation id="5947494881799873997">還原</translation>
 <translation id="595202126637698455">效能追蹤已啟用</translation>
 <translation id="5958529069007801266">受管使用者</translation>
-<translation id="5960825221082587934">俾「Google 助理」針對你揀嘅內容顯示定義、翻譯或者單位轉換之類嘅資料。</translation>
 <translation id="5977415296283489383">耳機</translation>
 <translation id="5978382165065462689">透過「遠端協助」共用螢幕控制權。</translation>
 <translation id="5980301590375426705">結束訪客工作階段</translation>
@@ -701,7 +698,6 @@
 <translation id="6179832488876878285">您可將重要的檔案固定至此處。開啟「檔案」應用程式即可開始使用。</translation>
 <translation id="622484624075952240">向下鍵</translation>
 <translation id="6231419273573514727">周邊裝置的效能可能受到限制</translation>
-<translation id="6236290670123303279">管理設定</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">已鎖定為水平</translation>
 <translation id="6259254695169772643">使用觸控筆選擇</translation>
@@ -1019,7 +1015,6 @@
 <translation id="8683506306463609433">效能追蹤使用中</translation>
 <translation id="8703634754197148428">開始錄影。如果喺開始之後想停止錄影，請㩒 Alt + Shift + L 鍵去捷徑列，然後搵停止錄影掣</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" />用向左或者向右箭咀掣就可以管理呢個功能。</translation>
-<translation id="8712637175834984815">我知道了</translation>
 <translation id="8721053961083920564">切換音量設定。<ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">全螢幕畫面擷取</translation>
 <translation id="8734991477317290293">鍵盤可能會嘗試盜取您的按鍵操作</translation>
@@ -1047,7 +1042,6 @@
 <translation id="8876661425082386199">請檢查連線</translation>
 <translation id="8877788021141246043">設定提醒</translation>
 <translation id="8878886163241303700">延伸螢幕</translation>
-<translation id="8883473964424809116">㩒一下就可以打開「Google 助理」設定。</translation>
 <translation id="8884537526797090108">無法錄影機密內容</translation>
 <translation id="890616557918890486">變更來源</translation>
 <translation id="8909138438987180327">電量剩番 <ph name="PERCENTAGE" />%。</translation>

@@ -182,6 +182,7 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2139186145475833000">Add to Home screen</translation>
 <translation id="2141396931810938595">Based on your usage</translation>
 <translation id="214888715418183969">Choose what you’re comfortable sharing with Chrome. The metrics that you share will be used to help improve Chrome’s features, performance and stability.</translation>
+<translation id="2149973817440762519">Edit Bookmark</translation>
 <translation id="2154484045852737596">Edit card</translation>
 <translation id="2154710561487035718">Copy URL</translation>
 <translation id="2156074688469523661">Remaining sites (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -647,7 +648,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4943872375798546930">No results</translation>
 <translation id="4957722034734105353">Learn more...</translation>
 <translation id="4961107849584082341">Translate this page to any language</translation>
-<translation id="4970824347203572753">Not available in your location</translation>
 <translation id="4971735654804503942">Faster, proactive protection against dangerous websites, downloads and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.</translation>
 <translation id="497421865427891073">go forward</translation>
 <translation id="4988210275050210843">Downloading file (<ph name="MEGABYTES" />).</translation>
@@ -731,7 +731,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5483197086164197190">Navigate Chrome</translation>
 <translation id="5487521232677179737">Clear data</translation>
 <translation id="549025011754480756">How to search with your voice</translation>
-<translation id="5500777121964041360">May not be available in your location</translation>
 <translation id="5512137114520586844">This account is managed by <ph name="PARENT_NAME" />.</translation>
 <translation id="5514904542973294328">Disabled by the administrator of this device</translation>
 <translation id="5515439363601853141">Unlock to view your password</translation>
@@ -885,7 +884,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6364438453358674297">Remove suggestion from history?</translation>
 <translation id="6378173571450987352">Details: Sorted by amount of data used</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2" />.</translation>
-<translation id="6381421346744604172">Darken websites</translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Back online</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> on <ph name="VIOLATED_URL" /></translation>
@@ -1217,7 +1215,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8218052821161047641">Fast page</translation>
 <translation id="8218622182176210845">Manage your account</translation>
 <translation id="8223642481677794647">Feed card menu</translation>
-<translation id="8224471946457685718">Download articles for you on Wi-Fi</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="825412236959742607">This page uses too much memory, so Chrome removed some content.</translation>
 <translation id="8260126382462817229">Try signing in again</translation>

@@ -57,6 +57,7 @@
 <translation id="1310482092992808703">Gruppér faner</translation>
 <translation id="1311657260431405215">Denne QR-koden er ikke noen nettadresse: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
+<translation id="1320912611264252795">Mapper med flyt for lagring av bokmerke er åpnet i full høyde</translation>
 <translation id="1327257854815634930">Navigasjonsloggen er åpnet</translation>
 <translation id="1331212799747679585">Kan ikke oppdatere Chrome. Flere alternativer</translation>
 <translation id="1332501820983677155">Hurtigtaster for funksjoner i Google Chrome.</translation>
@@ -83,6 +84,7 @@
 <translation id="1466383950273130737">Velg språk for Chrome</translation>
 <translation id="147113415845704694">Prøv «Hvordan er været i dag?»</translation>
 <translation id="1477626028522505441">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av tjenerproblemer.</translation>
+<translation id="148482509007564431">Flyt for lagring av bokmerke</translation>
 <translation id="1492417797159476138">Du har allerede lagret dette brukernavnet for dette nettstedet</translation>
 <translation id="1493287004536771723">Du følger <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">Søkemotor</translation>
@@ -180,6 +182,7 @@ Trykk på et ord for å søke. For å finstemme søket, trykk og hold inne for �
 <translation id="2139186145475833000">Legg til på startsiden</translation>
 <translation id="2141396931810938595">Basert på bruken din</translation>
 <translation id="214888715418183969">Velg hva du synes er greit å dele med Chrome. Målingene du deler, brukes til å gjøre funksjonene, ytelsen og stabiliteten til Chrome bedre.</translation>
+<translation id="2149973817440762519">Rediger bokmerke</translation>
 <translation id="2154484045852737596">Endre kortet</translation>
 <translation id="2154710561487035718">Kopier nettadresse</translation>
 <translation id="2156074688469523661">Andre nettsteder (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -262,6 +265,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2631006050119455616">Spart</translation>
 <translation id="2645657967708199252"><ph name="CONNECTION_TYPE" />-tilkoblingen din kan gjøre at nedlastingen går tregt</translation>
 <translation id="2647434099613338025">Legg til språk</translation>
+<translation id="2649068648233607930">Nettleseren administreres av <ph name="DOMAIN" /></translation>
 <translation id="2650751991977523696">Vil du laste ned filen på nytt?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# lydfil}other{# lydfiler}}</translation>
 <translation id="2656405586795711023">Nettprogrammer</translation>
@@ -427,6 +431,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3622349720008044802">Administrer vinduer</translation>
+<translation id="3624977496395967031">Klikk for å åpne alternativer for sortering</translation>
 <translation id="3631987586758005671">Deler med <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Vis passordet</translation>
 <translation id="363596933471559332">Du logges på nettsteder automatisk ved hjelp av lagret legitimasjon. Når funksjonen er slått av, blir du bedt om å oppgi legitimasjonen din hver gang du logger på et nettsted.</translation>
@@ -496,6 +501,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="4084682180776658562">Legg til bokmerke</translation>
 <translation id="4084712963632273211">Fra <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />levert av Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Slette appdataene?</translation>
+<translation id="4096227151372679484">Flyt for lagring av bokmerke er åpnet i halv høyde</translation>
 <translation id="4099578267706723511">Gjør Chrome bedre ved å sende bruksstatistikk og programstopprapporter til Google.</translation>
 <translation id="410351446219883937">Autoavspilling</translation>
 <translation id="4108314971463891922">Følg</translation>
@@ -604,6 +610,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4766678251456904326">Legg til en konto på enheten</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 nedlasting er planlagt.}other{# nedlastinger er planlagt.}}</translation>
 <translation id="4791358705705538979">Hjelper deg med å fullføre oppgaver, som for eksempel betaling, overalt på nettet</translation>
+<translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">Kryptering av passordfraser inkluderer ikke betalingsmåter og adresser fra Google Pay.
 
 For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkroniseringen<ph name="END_LINK" /></translation>
@@ -627,6 +634,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="4885273946141277891">For mange Chrome-forekomster.</translation>
 <translation id="4905823827770127520">Inkluder en link til siden</translation>
 <translation id="4908869848243824489">Discover fra Google</translation>
+<translation id="4909709702739934280">Nettleseren administreres av administratoren din</translation>
 <translation id="4910889077668685004">Betalingsapper</translation>
 <translation id="4912413785358399818">Flytt fane</translation>
 <translation id="4913161338056004800">Tilbakestill statistikken</translation>
@@ -640,7 +648,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="4943872375798546930">Ingen resultater</translation>
 <translation id="4957722034734105353">Les mer</translation>
 <translation id="4961107849584082341">Oversett denne siden til hvilket som helst språk</translation>
-<translation id="4970824347203572753">Ikke tilgjengelig der du er</translation>
 <translation id="4971735654804503942">Raskere, proaktiv beskyttelse mot farlige nettsteder, nedlastinger og utvidelser. Advarer deg om passordbrudd. Krever at nettlesingsdata sendes til Google.</translation>
 <translation id="497421865427891073">Gå til neste</translation>
 <translation id="4988210275050210843">Laster ned fil (<ph name="MEGABYTES" />).</translation>
@@ -724,7 +731,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5483197086164197190">Naviger i Chrome</translation>
 <translation id="5487521232677179737">Slett data</translation>
 <translation id="549025011754480756">Slik søker du med stemmen</translation>
-<translation id="5500777121964041360">Funksjonen er kanskje ikke tilgjengelig der du er</translation>
 <translation id="5512137114520586844">Denne kontoen er administrert av <ph name="PARENT_NAME" />.</translation>
 <translation id="5514904542973294328">Deaktivert av administratoren for denne enheten</translation>
 <translation id="5515439363601853141">Lås opp for å se passordet ditt</translation>
@@ -878,7 +884,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6364438453358674297">Vil du fjerne forslaget fra loggen?</translation>
 <translation id="6378173571450987352">Informasjon: Sortert etter mengden data som er brukt</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> åpnes i Chrome. Ved å fortsette samtykker du i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Google Chrome og Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="6381421346744604172">Formørk nettsteder</translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">På nettet igjen</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> på <ph name="VIOLATED_URL" /></translation>
@@ -1152,6 +1157,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7926975587469166629">Kallenavn på kortet</translation>
 <translation id="7929962904089429003">Åpne menyen</translation>
 <translation id="7930998711684428189">Advarer deg hvis passord blir avdekket i databrudd.</translation>
+<translation id="7939485076072265087">Opprett stilisert kort med fremheving</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> er utdatert.</translation>
 <translation id="7944772052836377867">Synkronisering må bekrefte at det er deg</translation>
 <translation id="7947953824732555851">Godta og logg på</translation>
@@ -1209,7 +1215,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8218052821161047641">Rask side</translation>
 <translation id="8218622182176210845">Administrer kontoen din</translation>
 <translation id="8223642481677794647">Feedkortmeny</translation>
-<translation id="8224471946457685718">Last ned artikler for deg via Wi-Fi</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
 <translation id="825412236959742607">Denne siden bruker for mye minne, så Chrome har fjernet noe av innholdet.</translation>
 <translation id="8260126382462817229">Prøv å logge på igjen</translation>
@@ -1271,6 +1276,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8562452229998620586">Lagrede passord listes opp her.</translation>
 <translation id="856481929701340285">Bruk skrivebordsversjon</translation>
 <translation id="8569404424186215731">siden <ph name="DATE" /></translation>
+<translation id="8570677896027847510">Filen kan ikke lastes ned sikkert</translation>
 <translation id="8571213806525832805">Siste 4 uker</translation>
 <translation id="8572344201470131220">Bildet ble kopiert</translation>
 <translation id="8583805026567836021">Fjerner kontodata …</translation>
@@ -1323,6 +1329,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8912362522468806198">Google-konto</translation>
 <translation id="8920114477895755567">Venter på informasjon om foreldre.</translation>
 <translation id="8922289737868596582">Last ned sider via Flere alternativer-knappen for å bruke dem uten nett</translation>
+<translation id="8924575305646776101"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> er klart</translation>
 <translation id="8928626432984354940">Listen over bokmerkemapper er åpnet i halv høyde</translation>
 <translation id="8937267401510745927">For å hjelpe deg med å fullføre oppgaver mottar Google nettadressene til og innholdet på nettsteder der du bruker assistenten, i tillegg til informasjon som du sender inn gjennom assistenten. Denne informasjonen kan bli lagret i Google-kontoen din. Du kan slå av assistenten i Chrome-innstillingene.</translation>
@@ -1357,8 +1364,10 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="9086455579313502267">Fikk ikke tilgang til nettverket</translation>
 <translation id="9100505651305367705">Tilby å vise artikler i forenklet visning, når det støttes</translation>
 <translation id="9100610230175265781">Det kreves en passordfrase</translation>
+<translation id="9101137867221042551">Administrering</translation>
 <translation id="9102803872260866941">Fanen for forhåndsvisning er åpnet</translation>
 <translation id="9104217018994036254">Liste over enheter du kan dele faner med.</translation>
+<translation id="9106148373857059373">Flyt for lagring av bokmerke er lukket</translation>
 <translation id="9108312223223904744">Telefon som støtte for sikkerhetsnøkkel</translation>
 <translation id="9108808586816295166">Sikker DNS er kanskje ikke tilgjengelig hele tiden</translation>
 <translation id="9133397713400217035">Utforsk uten nett</translation>

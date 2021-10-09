@@ -365,7 +365,6 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384849755549338773">Offer Google Translate for websites in other languages</translation>
 <translation id="138784436342154190">Restore default start-up page?</translation>
-<translation id="1388047369870196878">Install CloudReady 2.0</translation>
 <translation id="1388253969141979417">Allowed to use your microphone</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> will restart when updates are complete.</translation>
 <translation id="139013308650923562">Allowed to use fonts installed on your device</translation>
@@ -1979,7 +1978,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to connect to Wi-Fi today to download an update. Or, download from a metered connection (charges may apply).}other{<ph name="MANAGER" /> requires you to connect to Wi-Fi and download an update before the deadline. Or, download from a metered connection (charges may apply).}}</translation>
 <translation id="3009300415590184725">Are you sure you want to cancel the mobile data service set-up process?</translation>
 <translation id="3009779501245596802">Indexed Databases</translation>
-<translation id="3009984992511490972">Convert this device into a CloudReady 2.0 device.</translation>
 <translation id="3010279545267083280">Password deleted</translation>
 <translation id="3011384993885886186">Warm grey</translation>
 <translation id="3011488081941333749">Cookies from <ph name="DOMAIN" /> will be cleared on exit</translation>
@@ -2407,7 +2405,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3476303763173086583">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account. <ph name="BEGIN_LINK2" />Find out more<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Oops!  The system failed to fetch policy for your device.</translation>
 <translation id="347785443197175480">Continue allowing <ph name="HOST" /> to access your camera and microphone</translation>
-<translation id="3478813605045578676">Enrolment is only supported after installation. To manage this device, install CloudReady first.</translation>
 <translation id="3479552764303398839">Not now</translation>
 <translation id="3479685872808224578">Couldn't detect the print server. Please check the address and try again.</translation>
 <translation id="3480612136143976912">Customise caption size and style for Live Caption. Some apps and sites will also use this setting.</translation>
@@ -2610,7 +2607,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3694027410380121301">Select previous tab</translation>
 <translation id="369489984217678710">Passwords and other sign-in data</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Security checks are complete. Your data will be uploaded.}=1{Security checks are complete. Your file will be uploaded.}other{Security checks are complete. Your files will be uploaded.}}</translation>
-<translation id="3696576298374669274">Show service logs</translation>
 <translation id="3699624789011381381">Email address</translation>
 <translation id="3699920817649120894">Turn off sync and personalisation?</translation>
 <translation id="3700888195348409686">Presenting (<ph name="PAGE_ORIGIN" />)</translation>
@@ -3077,7 +3073,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4168015872538332605">Some settings belonging to <ph name="PRIMARY_EMAIL" /> are being shared with you. These settings only affect your account when using multiple sign-in.</translation>
 <translation id="4169535189173047238">Don't allow</translation>
 <translation id="4170314459383239649">Clear On Exit</translation>
-<translation id="4171570447245353961">CloudReady 2.0 detected an active TPM which can store your data more securely.</translation>
 <translation id="4175137578744761569">Light purple and white</translation>
 <translation id="4175737294868205930">Persistent storage</translation>
 <translation id="4176463684765177261">Disabled</translation>
@@ -4199,7 +4194,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5431318178759467895">Colour</translation>
 <translation id="543338862236136125">Edit password</translation>
 <translation id="5434065355175441495">PKCS #1 RSA Encryption</translation>
-<translation id="5434473680236142631">Welcome to CloudReady 2.0</translation>
 <translation id="5435779377906857208">Always allow <ph name="HOST" /> to access your location</translation>
 <translation id="5436492226391861498">Waiting for proxy tunnel...</translation>
 <translation id="5436510242972373446">Search <ph name="SITE_NAME" />:</translation>
@@ -4775,7 +4769,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6057312498756061228">This file is too big for a security check. You can open files up to 50 MB.</translation>
 <translation id="6057381398996433816">This site has been blocked from using motion and light sensors.</translation>
 <translation id="6059276912018042191">Recent Chrome tabs</translation>
-<translation id="6059347142391822629">Press your switch when the focus is on the Done button to close the guide.</translation>
 <translation id="6059652578941944813">Certificate Hierarchy</translation>
 <translation id="6061882183774845124">Send link to your devices</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME" />’s personal results. To save battery, you can select in <ph name="SUPERVISED_USER_NAME" />’s Assistant settings to have ‘Hey Google’ on only when this device is connected to a power source.</translation>
@@ -5062,6 +5055,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6359706544163531585">Disable Light theme</translation>
 <translation id="6361850914223837199">Error details:</translation>
 <translation id="6362853299801475928">&amp;Report an issue...</translation>
+<translation id="6363786367719063276">View logs</translation>
 <translation id="6363990818884053551">To start sync, verify that it's you</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Add family and friends</translation>
@@ -5254,8 +5248,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6569911211938664415">Passwords are saved in your Google Account (<ph name="ACCOUNT" />) so that you can use them on any device</translation>
 <translation id="6573497332121198392">Can't remove shortcut</translation>
 <translation id="657402800789773160">&amp;Reload This Page</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />For the best experience, install CloudReady 2.0 to your internal disk. You can also install it later from the login screen.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />If you're not ready to install, you can run from USB to try it out. This will keep your existing OS and data, but you may see storage and performance limits.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">Download cancelled: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Network health snapshot</translation>
 <translation id="6579369886355986318">Show all controls</translation>
@@ -6076,9 +6068,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# open tab; press to toggle tab strip}other{# open tabs; press to toggle tab strip}}</translation>
 <translation id="7465635034594602553">Something went wrong. Please wait a few minutes and run <ph name="APP_NAME" /> again.</translation>
 <translation id="7465778193084373987">Netscape Certificate Revocation URL</translation>
-<translation id="746811648436543102"><ph name="BEGIN_PARAGRAPH1" />Before enrolling you need to clear the TPM so CloudReady 2.0 can take ownership of the device.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />You can also turn off the TPM device entirely. Your data will still be stored safely with software encryption, but certain security features such as hardware-backed certificates will be disabled.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />You can change your TPM settings by rebooting and entering the system BIOS/UEFI settings. Steps vary based on the device model. For more info, open the CloudReady 2.0 documentation on a separate device before you reboot: [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="746861123368584540">Extension loaded</translation>
 <translation id="7470424110735398630">Allowed to see your clipboard</translation>
 <translation id="747114903913869239">Error: Unable to decode extension</translation>
@@ -6362,7 +6351,6 @@ You can assign multiple switches to this action.</translation>
 Press an assigned switch or key to remove assignment.</translation>
 <translation id="7750228210027921155">Picture-in-picture</translation>
 <translation id="7751260505918304024">Show all</translation>
-<translation id="7751855202867682241">Keep your OS and run CloudReady 2.0 from USB.</translation>
 <translation id="7753735457098489144">Installation failed due to lack of storage space. To free up space, delete files from device storage.</translation>
 <translation id="7754347746598978109">Not allowed to use JavaScript</translation>
 <translation id="7754704193130578113">Ask where to save each file before downloading</translation>
@@ -7420,7 +7408,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8845001906332463065">Get help</translation>
 <translation id="8846132060409673887">Read the manufacturer and model of this computer</translation>
 <translation id="8846163936679269230">Reset eSIM profiles</translation>
-<translation id="8846746259444262774">Installation failed</translation>
 <translation id="8847523528195140327">Sign out when cover is closed</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Hidden</translation>

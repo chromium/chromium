@@ -167,6 +167,7 @@
 <translation id="5505264765875738116">Web-lokacije ne mogu postavljati pitanja o slanju obavijesti</translation>
 <translation id="5516455585884385570">Otvori postavke obavijesti</translation>
 <translation id="5527111080432883924">Traži dopuštenje prije nego što se web-lokacijama dopusti čitanje teksta i slika iz međuspremnika (preporučeno)</translation>
+<translation id="5553374991681107062">Najnovije</translation>
 <translation id="5556459405103347317">Ponovno učitaj</translation>
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="5649053991847567735">Automatska preuzimanja</translation>
@@ -267,6 +268,7 @@
 <translation id="7999064672810608036">Jeste li sigurni da želite izbrisati sve lokalne podatke, uključujući kolačiće, i poništiti sva dopuštenja za ovu web-lokaciju?</translation>
 <translation id="8007176423574883786">Isključeno za ovaj uređaj</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
+<translation id="8042586301629853791">Kriterij razvrstavanja:</translation>
 <translation id="8067883171444229417">Reproduciraj videozapis</translation>
 <translation id="8068648041423924542">Ne može se odabrati certifikat.</translation>
 <translation id="8087000398470557479">Sadržaj potječe s domene <ph name="DOMAIN_NAME" />, a omogućuje ga Google.</translation>

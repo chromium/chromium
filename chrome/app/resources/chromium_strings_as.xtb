@@ -43,7 +43,6 @@
 <translation id="2560420686485554789">ফাইল ডাউনল'ড কৰিবলৈ Chromiumক ষ্ট'ৰেজৰ এক্সেছৰ আৱশ্যক</translation>
 <translation id="2572494885440352020">Chromium সহায়ক</translation>
 <translation id="2577788541081224677">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ Chromiumৰ বস্তু এক্সেছ কৰিবলৈ, চাইন ইন কৰক যাতে আপুনি ছিংক অন কৰিব পাৰে।</translation>
-<translation id="2580426763510374355">Chromium OS ইনষ্টল কৰক</translation>
 <translation id="2583187216237139145">কৰ্মস্থানৰ প্ৰ’ফাইলৰ প্ৰশাসকে এই প্ৰ’ফাইলৰ ব্যৱহাৰৰ সময়ত সৃষ্টি হোৱা যিকোনো Chromium ডেটা (যেনে, বুকমাৰ্কৰ সৃষ্টি, ইতিহাস, পাছৱৰ্ড আৰু অন্য ছেটিং) আঁতৰাব পাৰে। <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">আপডে’টবোৰ প্ৰয়োগ কৰিবলৈ Chromium OS ৰিষ্টাৰ্ট কৰাৰ প্ৰয়োজন।</translation>
 <translation id="2648074677641340862">ইনষ্টলেশ্বনৰ সময়ত এটা অপাৰেটিং ছিষ্টেম সম্পর্কীয় আসোঁৱাহ হৈছে। অনুগ্ৰহ কৰি পুনৰ Chromium ডাউনল’ড কৰক।</translation>
@@ -56,8 +55,6 @@
 <translation id="2847479871509788944">Chromiumৰপৰা আঁতৰাওক...</translation>
 <translation id="2885378588091291677">কাৰ্য পৰিচালক</translation>
 <translation id="2910007522516064972">&amp;Chromiumৰ বিষয়ে</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />এটা অন্তিম ৰিমাইণ্ডাৰ: ইনষ্টল কৰিলে <ph name="BEGIN_BOLD" />আপোনাৰ সম্পূৰ্ণ হাৰ্ড ড্ৰাইভটোৰ ডেটা মচা যাব<ph name="END_BOLD" />। অনুগ্ৰহ কৰি আপুনি গুৰুত্বপূৰ্ণ বুলি বিবেচনা কৰা আটাইবোৰ ডেটাৰ বেক আপ লোৱাটো নিশ্চিত কৰক।<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />ইনষ্টল হোৱা আৰম্ভ হ’লে ইয়াক বাতিল কৰিব নোৱাৰি।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium একেবাৰে শেহতীয়া অৱস্থাত আছে</translation>
 <translation id="2983934633046890458">Chromiumএ পাছৱর্ডসমূহ সম্পাদনা কৰিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="3032706164202344641">Chromiumএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে। পাছত আকৌ চেষ্টা কৰক।</translation>
@@ -81,7 +78,6 @@
 <translation id="3350761136195634146">এই প্ৰ'ফাইলটোৰ সৈতে এটা Chromium প্ৰ'ফাইল ইতিমধ্যে আছে</translation>
 <translation id="3406848076815591792">পূৰ্বে থকা Chromium প্ৰ'ফাইলটোলৈ যাব নেকি?</translation>
 <translation id="3430503420100763906">Chromiumৰ প্ৰ’ফাইলৰ জৰিয়তে আপুনি নিজৰ আটাইবোৰ Chromiumৰ বস্তু পৃথক কৰিব পাৰে। বন্ধুবৰ্গ আৰু পৰিয়ালৰ বাবে প্ৰ’ফাইল সৃষ্টি কৰক অথবা কৰ্মস্থান আৰু মনোৰঞ্জনৰ মাজত বিভাজন কৰক।</translation>
-<translation id="3433271666494956603">Chromium OS ইনষ্টল কৰাৰ প্ৰক্ৰিয়াটো চলি আছে</translation>
 <translation id="347328004046849135">আপুনি কোনো হেক কৰা পাছৱৰ্ডৰ জৰিয়তে ছাইন ইন কৰিলে Chromiumএ আপোনাক জাননী দিব</translation>
 <translation id="3474745554856756813">ইয়ে এই ডিভাইচটোৰ পৰা <ph name="ITEMS_COUNT" />টা বস্তু মচিব। আপোনাৰ ডেটা পাছত পুনৰুদ্ধাৰ কৰিবলৈ Chromiumত <ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰক।</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> টিপি Chromiumৰ প্ৰ’ফাইলসমূহৰ মাজত সালসলনি কৰিব পাৰি</translation>
@@ -109,7 +105,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" />ৰ বাবে আপুনি এই ডিভাইচটো ব্যৱহাৰ কৰাৰ পূৰ্বে তলত উল্লেখ কৰা সেৱাৰ চৰ্তাৱলী পঢ়ি সন্মত হোৱাৰ আৱশ্যক। এই চৰ্তাৱলীয়ে Chromium OSৰ চৰ্তাৱলী বিস্তাৰ, সংশোধন অথবা সীমিত নকৰে।</translation>
 <translation id="4271805377592243930">Chromiumৰ ক্ষেত্ৰত সহায় লাভ কৰক</translation>
 <translation id="4285930937574705105">অনির্দিষ্ট আসোঁৱাহৰ বাবে ইনষ্টল কৰিব পৰা নগ’ল। যদি Chromium এতিয়া চলি আছে তেন্তে সেইটো বন্ধ কৰি আকৌ চেষ্টা কৰক।</translation>
-<translation id="429583012151745428">ইনষ্টল কৰি থকা হৈছে। ডিভাইচটো বন্ধ নকৰিব। ইনষ্টল হ’বলৈ বিশ মিনিটতকৈ বেছি সময় নালাগিব লাগে। ইনষ্টল হোৱাৰ পাছত মেচিনটো স্বয়ংক্ৰিয়ভাৱে বন্ধ হ’ব।</translation>
 <translation id="4407044323746248786">যিকোনো প্ৰকাৰে Chromiumৰ পৰা বাহিৰ হ’বনে?</translation>
 <translation id="4415566066719264597">Chromiumক নেপথ্যত চলিবলৈ দিয়ক</translation>
 <translation id="4423735387467980091">Chromium কাষ্টমাইজ আৰু নিয়ন্ত্ৰণ কৰক</translation>
@@ -203,7 +198,6 @@
 <translation id="6734291798041940871">Chromium আপোনাৰ কম্পিউটাৰত থকা সকলো ব্যৱহাৰকাৰীৰ বাবে ইতিমধ্যেই ইনষ্টল কৰা হৈছে।</translation>
 <translation id="673636774878526923">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ Chromiumৰ বস্তু এক্সেছ কৰিবলৈ, চাইন ইন কৰি তাৰ পাছত ছিংক অন কৰক।</translation>
 <translation id="6774082503108938489">আপোনাৰ অভিভাৱকে Chromiumত "ছাইট, এপ্ আৰু এক্সটেনশ্বনসমূহৰ বাবে অনুমতি" অফ কৰিছে। এই <ph name="EXTENSION_TYPE_PARAMETER" />টো সক্ষম কৰাৰ অনুমতি নাই।</translation>
-<translation id="6827182711503025204">Chromium OS ইনষ্টল কৰাটোৱে আপোনাৰ ডিভাইচটোত থকা আটাইবোৰ ডেটা অভাৰৰাইট কৰিব।</translation>
 <translation id="6847869444787758381">Chromiumএ আপোনাৰ পাছৱৰ্ডসমূহ কেতিয়াবা হেক কৰা হৈছিল নেকি আপোনাক জানিবলৈ দিয়ে</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromiumলৈ প্ৰতিলিপি কৰা হ’ল)</translation>

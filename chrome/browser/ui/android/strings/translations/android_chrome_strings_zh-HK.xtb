@@ -180,6 +180,7 @@
 <translation id="2139186145475833000">新增至主螢幕</translation>
 <translation id="2141396931810938595">根據使用情況</translation>
 <translation id="214888715418183969">選擇您想與 Chrome 分享的資料。您分享的數據將有助我們改善 Chrome 的功能、效能和穩定性。</translation>
+<translation id="2149973817440762519">編輯書籤</translation>
 <translation id="2154484045852737596">編輯付款信用卡</translation>
 <translation id="2154710561487035718">複製網址</translation>
 <translation id="2156074688469523661">其餘網站 (共 <ph name="NUMBER_OF_SITES" /> 個)</translation>
@@ -640,7 +641,6 @@
 <translation id="4943872375798546930">沒有結果</translation>
 <translation id="4957722034734105353">瞭解詳情…</translation>
 <translation id="4961107849584082341">將此網頁翻譯成任何語言</translation>
-<translation id="4970824347203572753">此功能無法在您所在的地區使用</translation>
 <translation id="4971735654804503942">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能。密碼外洩時系統會發出警告。需要將瀏覽資料傳送給 Google。</translation>
 <translation id="497421865427891073">往前</translation>
 <translation id="4988210275050210843">正在下載檔案 (<ph name="MEGABYTES" />)。</translation>
@@ -724,7 +724,6 @@
 <translation id="5483197086164197190">導覽 Chrome</translation>
 <translation id="5487521232677179737">清除資料</translation>
 <translation id="549025011754480756">如何使用語音搜尋</translation>
-<translation id="5500777121964041360">此功能可能無法在您所在的地區使用</translation>
 <translation id="5512137114520586844">這個帳戶是由 <ph name="PARENT_NAME" /> 管理。</translation>
 <translation id="5514904542973294328">此裝置的管理員已停用</translation>
 <translation id="5515439363601853141">解鎖即可查看您的密碼</translation>
@@ -878,7 +877,6 @@
 <translation id="6364438453358674297">從記錄中移除建議項目嗎？</translation>
 <translation id="6378173571450987352">詳情：依使用數據量排序</translation>
 <translation id="6379829913050047669">「<ph name="APP_NAME" />」將在 Chrome 中開啟。繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 作業系統的《附加服務條款》<ph name="END_LINK2" />。</translation>
-<translation id="6381421346744604172">調暗網站顏色</translation>
 <translation id="6395288395575013217">連結</translation>
 <translation id="6397616442223433927">已重新連線</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> (<ph name="VIOLATED_URL" />)</translation>
@@ -1209,7 +1207,6 @@
 <translation id="8218052821161047641">快速載入的頁面</translation>
 <translation id="8218622182176210845">管理您的帳戶</translation>
 <translation id="8223642481677794647">資訊提供卡選單</translation>
-<translation id="8224471946457685718">透過 Wi-Fi 下載為您推薦的文章</translation>
 <translation id="8250920743982581267">文件</translation>
 <translation id="825412236959742607">這個網頁使用過多記憶體，因此 Chrome 已移除部分內容。</translation>
 <translation id="8260126382462817229">請嘗試再次登入</translation>

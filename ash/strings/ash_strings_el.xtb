@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">Κάτω</translation>
 <translation id="3090989381251959936">Εναλλαγή λειτουργίας <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Μετακίνηση δείκτη ποντικιού</translation>
-<translation id="3098580329624789136">Λήψη του <ph name="INTENT" /> για το ερώτημα "<ph name="QUERY" />"</translation>
 <translation id="3100274880412651815">Παράβλεψη λειτουργίας λήψης</translation>
 <translation id="3105917916468784889">Λήψη στιγμιότυπου οθόνης</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">Αυτή η συσκευή μπορεί να περιέχει εφαρμογές που δεν έχουν επαληθευτεί από την Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Συσκευές στις οποίες διακόπηκε η σύζευξη</translation>
-<translation id="4485060137115666462">Με δεξί κλικ ή παρατεταμένο πάτημα, ο Βοηθός σάς εμφανίζει πληροφορίες όπως τον ορισμό, τη μετάφραση ή μια μετατροπή μονάδων για την επιλογή σας.</translation>
 <translation id="4505050298327493054">Ενεργή επιφάνεια εργασίας.</translation>
 <translation id="4513946894732546136">Σχόλια</translation>
 <translation id="4518404433291145981">Για να ξεκλειδώσετε το Chromebook, ξεκλειδώστε πρώτα το τηλέφωνό σας</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">Επαναφορά</translation>
 <translation id="595202126637698455">Η παρακολούθηση απόδοσης έχει ενεργοποιηθεί</translation>
 <translation id="5958529069007801266">Εποπτευόμενος χρήστης</translation>
-<translation id="5960825221082587934">Επιτρέψτε στον Βοηθό να σας εμφανίζει πληροφορίες, όπως ορισμούς, μεταφράσεις ή μετατροπές μονάδων για την επιλογή σας.</translation>
 <translation id="5977415296283489383">Ακουστικά</translation>
 <translation id="5978382165065462689">Κοινόχρηστος έλεγχος της οθόνης σας μέσω της απομακρυσμένης βοήθειας.</translation>
 <translation id="5980301590375426705">Έξοδος επισκέπτη</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">Μπορείτε να καρφιτσώσετε εδώ σημαντικά αρχεία. Ανοίξτε την εφαρμογή Αρχεία για να ξεκινήσετε.</translation>
 <translation id="622484624075952240">Κάτω</translation>
 <translation id="6231419273573514727">Η απόδοση των περιφερειακών ενδέχεται να είναι περιορισμένη</translation>
-<translation id="6236290670123303279">Διαχείριση Ρυθμίσεων</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Κλειδωμένη σε οριζόντια</translation>
 <translation id="6259254695169772643">Χρησιμοποιήστε τη γραφίδα σας για επιλογή</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">Ενεργή παρακολούθηση απόδοσης</translation>
 <translation id="8703634754197148428">Έναρξη εγγραφής. Μόλις ξεκινήσει η εγγραφή, χρησιμοποιήστε τα πλήκτρα Alt + Shift + L για να πλοηγηθείτε στο ράφι και να βρείτε το κουμπί διακοπής εγγραφής.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Χρησιμοποιήστε τα πλήκτρα δεξιού ή αριστερού βέλους για τη διαχείριση αυτής της λειτουργίας.</translation>
-<translation id="8712637175834984815">Κατάλαβα!</translation>
 <translation id="8721053961083920564">Εναλλαγή έντασης ήχου. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Λήψη ολόκληρης της οθόνης</translation>
 <translation id="8734991477317290293">Μπορεί να επιχειρεί να υποκλέψει τα πατήματα πλήκτρων σας</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">Ελέγξτε τη σύνδεσή σας</translation>
 <translation id="8877788021141246043">Ορισμός υπενθύμισης</translation>
 <translation id="8878886163241303700">Επέκταση οθόνης</translation>
-<translation id="8883473964424809116">Κάντε κλικ για άνοιγμα των ρυθμίσεων του Βοηθού Google.</translation>
 <translation id="8884537526797090108">Δεν είναι δυνατή η εγγραφή εμπιστευτικού περιεχομένου</translation>
 <translation id="890616557918890486">Αλλαγή πηγής</translation>
 <translation id="8909138438987180327">Η μπαταρία βρίσκεται στο <ph name="PERCENTAGE" /> τοις εκατό.</translation>

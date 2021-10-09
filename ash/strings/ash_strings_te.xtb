@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">దిగువ</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" />ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">కర్సర్‌ను జరపండి</translation>
-<translation id="3098580329624789136">"<ph name="QUERY" />" <ph name="INTENT" /> పొందండి</translation>
 <translation id="3100274880412651815">క్యాప్చర్ మోడ్‌ను విస్మరించండి</translation>
 <translation id="3105917916468784889">స్క్రీన్‌షాట్ తీయండి</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (బ్లూటూత్)</translation>
@@ -477,7 +476,6 @@
 <translation id="4477892968187500306">ఈ పరికరంలో Google ధృవీకరించని యాప్‌లు ఉండవచ్చు.</translation>
 <translation id="4479639480957787382">ఈథర్నెట్</translation>
 <translation id="4481530544597605423">జతను తీసివేసిన పరికరాలు</translation>
-<translation id="4485060137115666462">కుడి క్లిక్ ద్వారా లేదా ఎక్కువసేపు నొక్కి, ఉంచడం ద్వారా, మీ ఎంపిక కోసం నిర్వచనం, అనువాదం లేదా యూనిట్ మార్పిడి లాంటి సమాచారాన్ని Assistant చూపుతుంది.</translation>
 <translation id="4505050298327493054">యాక్టివ్ డెస్క్.</translation>
 <translation id="4513946894732546136">ఫీడ్‌బ్యాక్</translation>
 <translation id="4518404433291145981">మీ Chromebookను అన్‌లాక్ చేయడానికి, ముందుగా మీ ఫోన్‌ను అన్‌లాక్ చేయండి</translation>
@@ -669,7 +667,6 @@
 <translation id="5947494881799873997">తిరిగి పూర్వ స్థితికి మార్చు</translation>
 <translation id="595202126637698455">పనితీరుని గుర్తించడం ప్రారంభించబడింది</translation>
 <translation id="5958529069007801266">పర్యవేక్షించబడే వినియోగదారు</translation>
-<translation id="5960825221082587934">మీ ఎంపిక కోసం నిర్వచనం, అనువాదం లేదా యూనిట్ మార్పిడి లాంటి సమాచారాన్ని చూపించడానికి Assistantను అనుమతించండి.</translation>
 <translation id="5977415296283489383">హెడ్‌ఫోన్</translation>
 <translation id="5978382165065462689">రిమోట్ సహాయం విధానంలో మీ స్క్రీన్ నియంత్రణను భాగస్వామ్యం చేస్తోంది.</translation>
 <translation id="5980301590375426705">అతిథిగా నిష్క్రమించు</translation>
@@ -703,7 +700,6 @@
 <translation id="6179832488876878285">మీ ముఖ్యమైన ఫైళ్లను మీరు ఇక్కడ పిన్ చేయవచ్చు. ప్రారంభించడానికి Files యాప్‌ను తెరవండి.</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">పెరిఫెరల్ పనితీరు పరిమితంగా ఉండవచ్చు</translation>
-<translation id="6236290670123303279">సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">సమాంతర ప్రదర్శనకు లాక్ చేయబడింది</translation>
 <translation id="6259254695169772643">ఎంచుకోవడానికి మీ స్టైలస్‌ను ఉపయోగించండి</translation>
@@ -1021,7 +1017,6 @@
 <translation id="8683506306463609433">పనితీరు స్థితిగతి కనుగొనడం యాక్టివ్‌గా ఉంది</translation>
 <translation id="8703634754197148428">రికార్డింగ్‌ను ప్రారంభించండి. ఒకసారి రికార్డింగ్ ప్రారంభమయిన తర్వాత, Alt + Shift + Lను ఉపయోగించి, షెల్ఫ్‌కు నావిగేట్ అయి, రికార్డింగ్‌ను ఆపివేసే బటన్‌ను కనుగొనండి</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ఈ ఫీచర్‌ను మేనేజ్ చేయడానికి ఎడమ వైపు బాణం లేదా కుడి వైపు బాణం కీలను ఉపయోగించండి.</translation>
-<translation id="8712637175834984815">అర్థమైంది</translation>
 <translation id="8721053961083920564">వాల్యూమ్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ఫుల్ స్క్రీన్ క్యాప్చర్</translation>
 <translation id="8734991477317290293">మీ కీస్ట్రోక్‌లను దొంగిలించడానికి ఇది ప్రయత్నిస్తుండవచ్చు</translation>
@@ -1049,7 +1044,6 @@
 <translation id="8876661425082386199">మీ కనెక్షన్‌ను చెక్ చేయండి</translation>
 <translation id="8877788021141246043">రిమైండర్‌ సెట్ చేయి</translation>
 <translation id="8878886163241303700">స్క్రీన్ విస్తరించబడుతోంది</translation>
-<translation id="8883473964424809116">Google Assistant సెట్టింగ్‌లను తెరవడానికి క్లిక్ చేయండి.</translation>
 <translation id="8884537526797090108">గోప్యమైన కంటెంట్‌ను రికార్డ్ చేయడం సాధ్యం కాదు</translation>
 <translation id="890616557918890486">మూలాధారాన్ని మార్చు</translation>
 <translation id="8909138438987180327">బ్యాటరీ ఛార్జ్ <ph name="PERCENTAGE" /> శాతం ఉంది.</translation>

@@ -274,7 +274,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3087734570205094154">Nederst</translation>
 <translation id="3090989381251959936">Aktivera och inaktivera <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Flytta muspekaren</translation>
-<translation id="3098580329624789136"><ph name="INTENT" /> <ph name="QUERY" /></translation>
 <translation id="3100274880412651815">Stäng läget för skärmbild/skärminspelning</translation>
 <translation id="3105917916468784889">Ta en skärmbild</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4477892968187500306">Den här enheten kan innehålla appar som inte har verifierats av Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Frånkopplade enheter</translation>
-<translation id="4485060137115666462">Assistenten visar information om det som är markerat när du högerklickar eller trycker länge på det, t.ex. en definition, översättning eller en omräkning till en annan enhet.</translation>
 <translation id="4505050298327493054">Aktiv arbetsyta.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4518404433291145981">Du måste först låsa upp telefonen om du vill låsa upp Chromebook</translation>
@@ -668,7 +666,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5947494881799873997">Återgå</translation>
 <translation id="595202126637698455">Resultatspårning aktiverat</translation>
 <translation id="5958529069007801266">Kontrollerad användare</translation>
-<translation id="5960825221082587934">Låt assistenten visa information för det som är markerat, till exempel en definition, en översättning eller en omräkning till en annan enhet.</translation>
 <translation id="5977415296283489383">Hörlurar</translation>
 <translation id="5978382165065462689">Dela kontroll över skärmen via Fjärrhjälp.</translation>
 <translation id="5980301590375426705">Avsluta gästsession</translation>
@@ -702,7 +699,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6179832488876878285">Du kan fästa viktiga filer här. Börja med att öppna appen Filer.</translation>
 <translation id="622484624075952240">Ner</translation>
 <translation id="6231419273573514727">Kringutrustningens prestanda kan vara begränsad</translation>
-<translation id="6236290670123303279">Hantera inställningar</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Låst i liggande läge</translation>
 <translation id="6259254695169772643">Välj något med e-pennan</translation>
@@ -1020,7 +1016,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8683506306463609433">Prestandaspårning är aktiv</translation>
 <translation id="8703634754197148428">Starta inspelning. När inspelningen har startats trycker du på Alt + Skift + L för att navigera till hyllan där du hittar knappen för att stoppa inspelningen</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Hantera den här funktionen med tangenterna vänster- och högerpil.</translation>
-<translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8721053961083920564">Ljud på/av. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Skärmbild/skärminspelning av hela skärmen</translation>
 <translation id="8734991477317290293">Det kan försöka stjäla dina tangenttryckningar</translation>
@@ -1048,7 +1043,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8876661425082386199">Kontrollera anslutningen</translation>
 <translation id="8877788021141246043">Ställ in en påminnelse</translation>
 <translation id="8878886163241303700">Utökad skärm</translation>
-<translation id="8883473964424809116">Klicka här för att öppna inställningarna för Google Assistent.</translation>
 <translation id="8884537526797090108">Det går inte att spela in konfidentiellt innehåll</translation>
 <translation id="890616557918890486">Ändra källa</translation>
 <translation id="8909138438987180327">Batterinivån är på <ph name="PERCENTAGE" /> procent.</translation>

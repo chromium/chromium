@@ -182,6 +182,7 @@ Trokit te një fjalë për të kërkuar. Për ta përsosur kërkimin, preke dhe 
 <translation id="2139186145475833000">Shtoje te ekrani "Faqja kryesore"</translation>
 <translation id="2141396931810938595">Bazuar në përdorimin tënd</translation>
 <translation id="214888715418183969">Zgjidh se çfarë informacionesh ndihesh mirë të ndash me Chrome. Metrikat që ndan do të përdoren për të përmirësuar veçoritë, cilësinë e funksionimit dhe qëndrueshmërinë e Chrome.</translation>
+<translation id="2149973817440762519">Redakto faqeshënuesin</translation>
 <translation id="2154484045852737596">Redakto kartën</translation>
 <translation id="2154710561487035718">Kopjo URL-në</translation>
 <translation id="2156074688469523661">Sajtet e mbetura (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -647,7 +648,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="4943872375798546930">Asnjë rezultat</translation>
 <translation id="4957722034734105353">Mëso më shumë...</translation>
 <translation id="4961107849584082341">Përktheje këtë faqe në çdo gjuhë</translation>
-<translation id="4970824347203572753">Nuk ofrohet në vendndodhjen tënde</translation>
 <translation id="4971735654804503942">Mbrojtje më e shpejtë dhe proaktive kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Të paralajmëron rreth nxjerrjeve të paautorizuara të fjalëkalimeve. Kërkon që të dhënat e shfletimit t'i dërgohen Google.</translation>
 <translation id="497421865427891073">Vazhdo përpara</translation>
 <translation id="4988210275050210843">Po shkarkohet skedari (<ph name="MEGABYTES" />).</translation>
@@ -731,7 +731,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5483197086164197190">Si të navigosh në Chrome</translation>
 <translation id="5487521232677179737">Pastro të dhënat</translation>
 <translation id="549025011754480756">Si të kërkosh me anë të zërit</translation>
-<translation id="5500777121964041360">Mund të mos ofrohet në vendndodhjen tënde</translation>
 <translation id="5512137114520586844">Kjo llogari menaxhohet nga <ph name="PARENT_NAME" />.</translation>
 <translation id="5514904542973294328">Çaktivizuar nga administratori i kësaj pajisjeje</translation>
 <translation id="5515439363601853141">Shkyçe për të parë fjalëkalimin</translation>
@@ -885,7 +884,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6364438453358674297">Të hiqet sugjerimi nga historiku?</translation>
 <translation id="6378173571450987352">Detajet: Renditur sipas sasisë së të dhënave të përdorura</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> do të hapet në Chrome. Duke vazhduar, ti pranon <ph name="BEGIN_LINK1" />Kushtet e shërbimit të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />Kushtet shtesë të shërbimit të Google Chrome dhe të sistemit operativ Chrome<ph name="END_LINK2" />.</translation>
-<translation id="6381421346744604172">Errëso sajtet e uebit</translation>
 <translation id="6395288395575013217">LIDHJA</translation>
 <translation id="6397616442223433927">Përsëri në linjë</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> në <ph name="VIOLATED_URL" /></translation>
@@ -1217,7 +1215,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8218052821161047641">Faqja e shpejtë</translation>
 <translation id="8218622182176210845">Menaxho llogarinë tënde</translation>
 <translation id="8223642481677794647">Menyja e kartave të furnizimit</translation>
-<translation id="8224471946457685718">Shkarko artikujt për ty në Wi-Fi</translation>
 <translation id="8250920743982581267">Dokumentet</translation>
 <translation id="825412236959742607">Kjo faqe përdor shumë memorie, ndaj Chrome ka hequr disa përmbajtje.</translation>
 <translation id="8260126382462817229">Provo të identifikohesh përsëri</translation>

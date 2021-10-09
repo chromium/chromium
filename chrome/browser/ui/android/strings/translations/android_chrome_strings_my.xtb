@@ -180,6 +180,7 @@
 <translation id="2139186145475833000">ပင်မမျက်နှာပြင်သို့ ထည့်ရန်</translation>
 <translation id="2141396931810938595">သင့်အသုံးပြုမှုကို အခြေခံသည်</translation>
 <translation id="214888715418183969">Chrome အားမျှဝေရန် အဆင်ပြေသောအရာများကို ရွေးပါ။ Chrome ၏ ဝန်ဆောင်မှုများ၊ စွမ်းဆောင်ရည်နှင့် တည်ငြိမ်မှုတို့ ပိုကောင်းမွန်စေရန် သင်မျှဝေသောမက်ထရစ်ကို အသုံးပြုပါမည်။</translation>
+<translation id="2149973817440762519">စာညှပ် တည်းဖြတ်ရန်</translation>
 <translation id="2154484045852737596">ကတ်ကို တည်းဖြတ်ပါ</translation>
 <translation id="2154710561487035718">URL ကူးယူရန်</translation>
 <translation id="2156074688469523661">ကျန်ရှိသေးသောဝဘ်ဆိုက်များ (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -640,7 +641,6 @@
 <translation id="4943872375798546930">ရလဒ်မရှိပါ</translation>
 <translation id="4957722034734105353">ပိုမို လေ့လာရန်...</translation>
 <translation id="4961107849584082341">ဤစာမျက်နှာကို နှစ်သက်ရာဘာသာစကားအဖြစ်သို့ ဘာသာပြန်ပါ</translation>
-<translation id="4970824347203572753">သင့်တည်နေရာတွင် မရနိုင်ပါ</translation>
 <translation id="4971735654804503942">အန္တရာယ်ရှိသည့် ဝဘ်ဆိုက်၊ ဒေါင်းလုဒ်နှင့် နောက်ဆက်တွဲများအတွက် ပိုမိုမြန်ဆန်ပြီး အမြဲမပြတ် ကာကွယ်မှုပေးပါသည်။ စကားဝှက်ပေါက်ကြားမှုများအကြောင်း သင့်အား သတိပေးပါသည်။ ကြည့်ရှုခြင်းဒေတာများကို Google သို့ ပို့ရန် လိုအပ်သည်။</translation>
 <translation id="497421865427891073">ရှေ့သို့သွား</translation>
 <translation id="4988210275050210843">ဖိုင်ကို ဒေါင်းလုဒ်လုပ်နေသည် (<ph name="MEGABYTES" />)။</translation>
@@ -724,7 +724,6 @@
 <translation id="5483197086164197190">Navigate Chrome</translation>
 <translation id="5487521232677179737">ဒေတာများကို ရှင်းလင်းပါ</translation>
 <translation id="549025011754480756">သင့်အသံသုံး၍ ရှာဖွေနည်း</translation>
-<translation id="5500777121964041360">သင့်တည်နေရာတွင် မရနိုင်ပါ</translation>
 <translation id="5512137114520586844">ဤအကောင့်အား <ph name="PARENT_NAME" /> မှ စီမံ၏။</translation>
 <translation id="5514904542973294328">ဤစက်ပစ္စည်း၏ စီမံခန့်ခွဲသူက ပိတ်ထားသည်</translation>
 <translation id="5515439363601853141">သင့်စကားဝှက်ကိုကြည့်ရန် ဖွင့်ပါ</translation>
@@ -877,7 +876,6 @@
 <translation id="6364438453358674297">အကြံပေးချက်ကို မှတ်တမ်း ထဲမှ ဖယ်ရှားမလား?</translation>
 <translation id="6378173571450987352">အသေးစိတ်များ− အသုံးပြုသည့် ဒေတာပမာဏအလိုက် စီထားသည်</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> ကို Chrome တွင် ဖွင့်ပါမည်။ ရှေ့ဆက်ခြင်းအားဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် Chrome OS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။</translation>
-<translation id="6381421346744604172">ဝဘ်ဆိုက် မှောင်အောင်လုပ်ခြင်း</translation>
 <translation id="6395288395575013217">လင့်ခ်</translation>
 <translation id="6397616442223433927">အွန်လိုင်းပြန်ရပြီ</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> ရှိ <ph name="ERROR_CODE" /></translation>
@@ -1208,7 +1206,6 @@
 <translation id="8218052821161047641">အမြန်စာမျက်နှာ</translation>
 <translation id="8218622182176210845">သင့်အကောင့်ကို စီမံခန့်ခွဲခြင်း</translation>
 <translation id="8223642481677794647">ဖိဒ်ကတ်မီနူး</translation>
-<translation id="8224471946457685718">Wi-Fi သုံး၍ သင့်အတွက် ဆောင်းပါးများ ဒေါင်းလုဒ်လုပ်သည်</translation>
 <translation id="8250920743982581267">စာရွက်စာတမ်းများ</translation>
 <translation id="825412236959742607">ဤစာမျက်နှာသည် မှတ်ဉာဏ်များစွာ အသုံးပြုနေသည့်အတွက် Chrome သည် အကြောင်းအရာအချို့ကို ဖယ်ရှားထားသည်။</translation>
 <translation id="8260126382462817229">ထပ်မံ၍ လက်မှတ်ထိုးဝင်ကြည့်ပါ</translation>

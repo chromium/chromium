@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">Уређаји заједно функционишу још боље</translation>
 <translation id="1119348796022671382">Режим тематских боја користи боје изведене из позадине да би се благо обојио интефејс.</translation>
 <translation id="112308213915226829">Аутоматски сакриј полицу</translation>
+<translation id="1142002900084379065">Недавне слике</translation>
 <translation id="1148499908455722006">Отвара дијалог са информацијама за корисника <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Календар</translation>
 <translation id="1153356358378277386">Упарени уређаји</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">Лупа за цео екран је омогућена. Поново притисните Ctrl + тастер за претрагу + M да бисте је искључили.</translation>
 <translation id="2302092602801625023">Овим налогом управља Family Link</translation>
 <translation id="2303600792989757991">Укључи/искључи преглед прозора</translation>
+<translation id="2318576281648121272">Данас <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Слово уназад</translation>
 <translation id="2339073806695260576">Додирните дугме писаљке на полици да бисте направили белешку и снимак екрана и да бисте користили ласерски показивач или лупу.</translation>
 <translation id="2341729377289034582">Вертикални приказ је закључан</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">Прикажи лозинку</translation>
 <translation id="24452542372838207">Прошири обавештење</translation>
 <translation id="2450205753526923158">Режим снимка екрана</translation>
+<translation id="2456008742792828469">Календар, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Потврдите резолуцију</translation>
 <translation id="2475982808118771221">Дошло је до грешке</translation>
 <translation id="2482878487686419369">Обавештења</translation>
@@ -274,10 +277,10 @@
 <translation id="3087734570205094154">Дно</translation>
 <translation id="3090989381251959936">Укључите/искључите функцију <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Померите курсор</translation>
-<translation id="3098580329624789136">Потражите <ph name="INTENT" /> за „<ph name="QUERY" />“</translation>
 <translation id="3100274880412651815">Одбаците режим снимања</translation>
 <translation id="3105917916468784889">Сними екран</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Уклони предлог</translation>
 <translation id="3126069444801937830">Покрените поново да бисте ажурирали</translation>
 <translation id="3139942575505304791">Радна површина 1</translation>
 <translation id="315116470104423982">Мобилни подаци</translation>
@@ -476,7 +479,6 @@
 <translation id="4477892968187500306">Овај уређај може да садржи апликације које Google није верификовао.</translation>
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4481530544597605423">Уређаји чије је упаривање опозвано</translation>
-<translation id="4485060137115666462">Када кликнете десним тастером на неку ставку или је дуго притиснете, Помоћник приказује информације као што су дефиниције, превод или конверзије јединице за оно што сте изабрали.</translation>
 <translation id="4505050298327493054">Активан радни простор.</translation>
 <translation id="4513946894732546136">Повратне информације</translation>
 <translation id="4518404433291145981">Да бисте откључали Chromebook, прво откључајте телефон</translation>
@@ -504,6 +506,7 @@
 <translation id="4642092649622328492">Направите делимичан снимак екрана</translation>
 <translation id="4659419629803378708">ChromeVox је омогућен</translation>
 <translation id="4665114317261903604">Укључите/искључите режим Не узнемиравај. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Преузима се фајл <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Откључајте уређај помоћу кода родитеља</translation>
 <translation id="4702647871202761252">Екран за приватност је искључен</translation>
 <translation id="4706121060329443414">Пробаћемо преузимање касније. Говор ће за сада бити послат Google-у ради обраде.</translation>
@@ -641,6 +644,7 @@
 <translation id="5744083938413354016">Превлачење додиром</translation>
 <translation id="5745612484876805746">Ноћно светло се аутоматски укључује када сунце зађе</translation>
 <translation id="5750765938512549687">Bluetooth је искључен</translation>
+<translation id="576341972084747908">Преузимате опасан фајл <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Ноћно светло је укључено.</translation>
 <translation id="5769373120130404283">Екран за приватност</translation>
 <translation id="5777841717266010279">Желите ли да прекинете дељење екрана?</translation>
@@ -668,7 +672,6 @@
 <translation id="5947494881799873997">Врати</translation>
 <translation id="595202126637698455">Праћење учинка је омогућено</translation>
 <translation id="5958529069007801266">Корисник под надзором</translation>
-<translation id="5960825221082587934">Омогућите Помоћнику да приказује информације као што су дефиниције, преводи или конверзије јединица за оно што сте изабрали.</translation>
 <translation id="5977415296283489383">Слушалице</translation>
 <translation id="5978382165065462689">Делите контролу над екраном преко Даљинске помоћи.</translation>
 <translation id="5980301590375426705">Затвори као гост</translation>
@@ -702,7 +705,6 @@
 <translation id="6179832488876878285">Овде можете да закачите најважније фајлове. Отворите апликацију Фајлови да бисте започели.</translation>
 <translation id="622484624075952240">Надоле</translation>
 <translation id="6231419273573514727">Учинак периферних уређаја ће можда бити ограничен</translation>
-<translation id="6236290670123303279">Управљајте подешавањима</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Хоризонтални приказ је закључан</translation>
 <translation id="6259254695169772643">Изаберите помоћу писаљке</translation>
@@ -782,6 +784,7 @@
 <translation id="6852052252232534364">Активирајте</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостала је једна цифра}one{Преостала је # цифра}few{Преостале су # цифре}other{Преостало је # цифара}}</translation>
+<translation id="6867938213751067702">Преузимање је паузирано <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Пречица је искључена</translation>
 <translation id="6886172995547742638">То може негативно да утиче на рад уређаја <ph name="DEVICE_TYPE" />. Користите сертификовани USB-C адаптер од <ph name="PREFERRED_MINIMUM_POWER" /> W или јачи.</translation>
 <translation id="688631446150864480">Притискајте тастер са стрелицом надоле да бисте мењали прозоре</translation>
@@ -1020,7 +1023,6 @@
 <translation id="8683506306463609433">Праћење учинка је активно</translation>
 <translation id="8703634754197148428">Започните снимање. Када снимање почне, користите Alt + Shift + L да бисте се кретали до полице и пронашли дугме за заустављање снимања</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Користите тастер са стрелицом налево или надесно да бисте управљали овом функцијом.</translation>
-<translation id="8712637175834984815">Важи</translation>
 <translation id="8721053961083920564">Укључите/искључите звук. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Снимање целог екрана</translation>
 <translation id="8734991477317290293">Можда покушава да украде вашу комбинацију тастера</translation>
@@ -1048,7 +1050,6 @@
 <translation id="8876661425082386199">Проверите везу</translation>
 <translation id="8877788021141246043">Подеси подсетник</translation>
 <translation id="8878886163241303700">Проширени екран</translation>
-<translation id="8883473964424809116">Кликните да бисте отворили подешавања за Google Assistant.</translation>
 <translation id="8884537526797090108">Снимање поверљивог садржаја није успело</translation>
 <translation id="890616557918890486">Промени извор</translation>
 <translation id="8909138438987180327">Батерија је на <ph name="PERCENTAGE" />%.</translation>

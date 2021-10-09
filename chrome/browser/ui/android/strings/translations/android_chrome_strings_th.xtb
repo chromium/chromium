@@ -180,6 +180,7 @@
 <translation id="2139186145475833000">เพิ่มลงในหน้าจอหลัก</translation>
 <translation id="2141396931810938595">อิงตามการใช้งานของคุณ</translation>
 <translation id="214888715418183969">เลือกสิ่งที่คุณต้องการแชร์กับ Chrome เราจะใช้เมตริกที่คุณแชร์เพื่อช่วยปรับปรุงฟีเจอร์ ประสิทธิภาพ และความเสถียรของ Chrome</translation>
+<translation id="2149973817440762519">แก้ไขบุ๊กมาร์ก</translation>
 <translation id="2154484045852737596">แก้ไขบัตร</translation>
 <translation id="2154710561487035718">คัดลอก URL</translation>
 <translation id="2156074688469523661">เว็บไซต์ที่เหลือ (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -640,7 +641,6 @@
 <translation id="4943872375798546930">ไม่มีผลการค้นหา</translation>
 <translation id="4957722034734105353">ดูข้อมูลเพิ่มเติม...</translation>
 <translation id="4961107849584082341">แปลหน้านี้เป็นภาษาใดก็ได้</translation>
-<translation id="4970824347203572753">ไม่พร้อมใช้งานในประเทศของคุณ</translation>
 <translation id="4971735654804503942">การปกป้องเชิงรุกอย่างรวดเร็วขึ้นจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย เตือนคุณเรื่องการละเมิดรหัสผ่าน ต้องส่งข้อมูลการท่องเว็บให้ Google</translation>
 <translation id="497421865427891073">ไปข้างหน้า</translation>
 <translation id="4988210275050210843">กำลังดาวน์โหลดไฟล์ (<ph name="MEGABYTES" />)</translation>
@@ -724,7 +724,6 @@
 <translation id="5483197086164197190">ไปยังส่วนต่างๆ ของ Chrome</translation>
 <translation id="5487521232677179737">ล้างข้อมูล</translation>
 <translation id="549025011754480756">วิธีค้นหาด้วยเสียง</translation>
-<translation id="5500777121964041360">อาจไม่พร้อมใช้งานในประเทศของคุณ</translation>
 <translation id="5512137114520586844">บัญชีนี้ได้รับการจัดการโดย <ph name="PARENT_NAME" /></translation>
 <translation id="5514904542973294328">ปิดใช้โดยผู้ดูแลระบบของอุปกรณ์นี้</translation>
 <translation id="5515439363601853141">ปลดล็อกเพื่อดูรหัสผ่าน</translation>
@@ -878,7 +877,6 @@
 <translation id="6364438453358674297">ต้องการนำคำแนะนำออกจากประวัติการเข้าชมใช่ไหม</translation>
 <translation id="6378173571450987352">รายละเอียด: จัดเรียงตามปริมาณเน็ตมือถือที่ใช้</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> จะเปิดใน Chrome การดำเนินการต่อหมายความว่า คุณยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK1" /> และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Google Chrome และ Chrome OS<ph name="END_LINK2" /></translation>
-<translation id="6381421346744604172">ปรับเว็บไซต์ให้เป็นสีเข้ม</translation>
 <translation id="6395288395575013217">ลิงก์</translation>
 <translation id="6397616442223433927">กลับมาออนไลน์แล้ว</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> ใน <ph name="VIOLATED_URL" /></translation>
@@ -1209,7 +1207,6 @@
 <translation id="8218052821161047641">หน้าที่โหลดเร็ว</translation>
 <translation id="8218622182176210845">จัดการบัญชีของคุณ</translation>
 <translation id="8223642481677794647">เมนูของการ์ดฟีด</translation>
-<translation id="8224471946457685718">ดาวน์โหลดบทความสำหรับคุณผ่าน Wi-Fi</translation>
 <translation id="8250920743982581267">เอกสาร</translation>
 <translation id="825412236959742607">หน้านี้ใช้หน่วยความจำมากเกินไป Chrome จึงนำเนื้อหาบางส่วนออก</translation>
 <translation id="8260126382462817229">ลองลงชื่อเข้าใช้อีกครั้ง</translation>

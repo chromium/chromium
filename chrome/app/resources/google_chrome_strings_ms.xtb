@@ -84,8 +84,6 @@
 <translation id="2926676257163822632">Kata laluan lemah mudah diteka. Biar Chrome <ph name="BEGIN_LINK" />membuat dan mengingat kata laluan kukuh untuk anda<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome memerlukan kebenaran kamera untuk laman ini</translation>
 <translation id="2929907241665500097">Chrome tidak dikemas kini, kesilapan telah berlaku. <ph name="BEGIN_LINK" />Selesaikan masalah kemas kini dan kegagalan kemas kini Chrome.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Satu peringatan terakhir: pemasangan <ph name="BEGIN_BOLD" />akan memadamkan seluruh pemacu keras anda<ph name="END_BOLD" />. Sila pastikan anda telah menyandarkan sebarang data yang penting bagi anda.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Sebaik sahaja dimulakan, pemasangan tidak boleh dibatalkan.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Log Masuk Rangkaian - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome dalam mod latar belakang.</translation>
 <translation id="3059710691562604940">Penyemakan Imbas Selamat dimatikan. Chrome mengesyorkan agar ciri ini dihidupkan.</translation>
@@ -133,7 +131,6 @@
 <translation id="4251615635259297716">Paut data Chrome anda ke akaun ini?</translation>
 <translation id="4281844954008187215">Syarat Perkhidmatan</translation>
 <translation id="4293420128516039005">Log masuk untuk menyegerakkan dan memperibadikan Chrome pada semua peranti anda</translation>
-<translation id="429583012151745428">Pemasangan sedang dijalankan. Jangan matikan peranti. Pemasangan tidak mengambil masa lebih daripada dua puluh minit. Mesin akan dimatikan secara automatik selepas pemasangan.</translation>
 <translation id="4325083532956419387">Versi OS Chrome</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">OS Chrome</translation>
@@ -175,7 +172,6 @@
 <translation id="5386244825306882791">Sambungan turut mengawal halaman yang ditunjukkan apabila anda memulakan Chrome atau membuat carian dari Kotak Omni.</translation>
 <translation id="5394833366792865639">Kongsi tab Chrome</translation>
 <translation id="5430073640787465221">Fail pilihan anda rosak atau tidak sah. Google Chrome tidak dapat mengembalikan tetapan anda.</translation>
-<translation id="5486618155264784386">Pasang OS Chrome</translation>
 <translation id="556024056938947818">Google Chrome sedang cuba memaparkan kata laluan.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Jika tetapan tidak ditunjukkan pada halaman ini, lihat dalam <ph name="LINK_BEGIN" />
@@ -230,7 +226,6 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="7155997830309522122">Jika ya, sila edit kata laluan yang disimpan dalam Chrome supaya sepadan dengan kata laluan baharu anda.</translation>
 <translation id="7161904924553537242">Selamat Datang ke Google Chrome</translation>
 <translation id="7242029209006116544">Anda log masuk menggunakan akaun terurus dan memberikan pentadbirnya kawalan terhadap profil Google Chrome anda. Data Chrome anda, seperti apl, penanda halaman, sejarah, kata laluan dan tetapan anda yang lain akan terikat kepada <ph name="USER_NAME" /> secara kekal. Anda akan dapat memadamkan data ini melalui Papan Pemuka Akaun Google, tetapi anda tidak akan dapat mengaitkan data ini dengan akaun lain. Anda boleh memilih membuat profil baharu untuk mengasingkan data Chrome anda yang sedia ada. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Pemasangan OS Chrome sedang dijalankan</translation>
 <translation id="7295052994004373688">Bahasa ini digunakan untuk memaparkan UI Google Chrome</translation>
 <translation id="7296210096911315575">Maklumat penggunaan dan keselamatan penting</translation>
 <translation id="7308322188646931570">Chrome memerlukan akses storan untuk memuat turun fail</translation>

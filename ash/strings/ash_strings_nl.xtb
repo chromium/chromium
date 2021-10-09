@@ -274,7 +274,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3087734570205094154">Onderaan</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> aan-/uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Cursor verplaatsen</translation>
-<translation id="3098580329624789136">De <ph name="INTENT" /> voor '<ph name="QUERY" />' ophalen</translation>
 <translation id="3100274880412651815">Opnamemodus sluiten</translation>
 <translation id="3105917916468784889">Screenshot maken</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4477892968187500306">Dit apparaat bevat mogelijk apps die niet zijn geverifieerd door Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Ontkoppelde apparaten</translation>
-<translation id="4485060137115666462">Door met de rechtermuisknop te klikken of de selectie lang ingedrukt te houden, kan de Assistent informatie laten zien zoals de definitie, vertaling of eenheidsconversie voor je selectie.</translation>
 <translation id="4505050298327493054">Actief bureaublad.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4518404433291145981">Ontgrendel eerst je telefoon om je Chromebook te ontgrendelen</translation>
@@ -668,7 +666,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5947494881799873997">Terugzetten</translation>
 <translation id="595202126637698455">Bijhouden van prestaties staat aan</translation>
 <translation id="5958529069007801266">Gelimiteerde gebruiker</translation>
-<translation id="5960825221082587934">Laat de Assistent informatie tonen zoals de definitie, vertaling of eenheidsconversie voor je selectie.</translation>
 <translation id="5977415296283489383">Hoofdtelefoon</translation>
 <translation id="5978382165065462689">De controle over je scherm delen via externe support.</translation>
 <translation id="5980301590375426705">Gastsessie sluiten</translation>
@@ -702,7 +699,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6179832488876878285">Je kunt hier je belangrijke bestanden vastzetten. Open de app Bestanden om aan de slag te gaan.</translation>
 <translation id="622484624075952240">Omlaag</translation>
 <translation id="6231419273573514727">De prestaties van randapparaten kunnen beperkt zijn</translation>
-<translation id="6236290670123303279">Instellingen beheren</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Vergrendeld in horizontale stand</translation>
 <translation id="6259254695169772643">Gebruik je stylus om te selecteren</translation>
@@ -1020,7 +1016,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8683506306463609433">Bijhouden van prestaties is actief</translation>
 <translation id="8703634754197148428">Opname starten. Nadat de opname is gestart, gebruik je Alt + Shift + L om op de plank naar de knop voor het stoppen van de opname te gaan.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gebruik de pijl naar rechts of pijl naar links om deze functie te beheren.</translation>
-<translation id="8712637175834984815">Begrepen</translation>
 <translation id="8721053961083920564">Volume aan/uit. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Volledig scherm opnemen</translation>
 <translation id="8734991477317290293">Mogelijk wordt geprobeerd om je toetsaanslagen te stelen</translation>
@@ -1048,7 +1043,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8876661425082386199">Je verbinding checken</translation>
 <translation id="8877788021141246043">Stel een herinnering in</translation>
 <translation id="8878886163241303700">Uitgebreid scherm</translation>
-<translation id="8883473964424809116">Klik om de instellingen voor de Google Assistent te openen.</translation>
 <translation id="8884537526797090108">Kan geen vertrouwelijke content opnemen</translation>
 <translation id="890616557918890486">Bron wijzigen</translation>
 <translation id="8909138438987180327">Batterij op <ph name="PERCENTAGE" /> procent.</translation>

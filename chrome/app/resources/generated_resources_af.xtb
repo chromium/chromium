@@ -365,7 +365,6 @@
 <translation id="1383876407941801731">Soek</translation>
 <translation id="1384849755549338773">Bied Google Vertaal aan vir webwerwe in ander tale</translation>
 <translation id="138784436342154190">Stel verstekafskopbladsy terug?</translation>
-<translation id="1388047369870196878">Installeer CloudReady 2.0</translation>
 <translation id="1388253969141979417">Mag jou mikrofoon gebruik</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> sal herbegin wanneer opdaterings voltooi is.</translation>
 <translation id="139013308650923562">Mag lettertipes wat op jou toestel geïnstalleer is, gebruik</translation>
@@ -1979,7 +1978,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereis dat jy vandag aan wi-fi koppel om 'n opdatering af te laai. Of laai oor 'n beperkte verbinding af (heffings kan geld).}other{<ph name="MANAGER" /> vereis dat jy voor die sperdatum aan wi-fi koppel en 'n opdatering aflaai. Of laai oor 'n beperkte verbinding af (heffings kan geld).}}</translation>
 <translation id="3009300415590184725">Is jy seker jy wil die mobieledatadiens se opstelproses kanselleer?</translation>
 <translation id="3009779501245596802">Geïndekseerde databasisse</translation>
-<translation id="3009984992511490972">Skakel hierdie toestel om in 'n CloudReady 2.0-toestel.</translation>
 <translation id="3010279545267083280">Wagwoord uitgevee</translation>
 <translation id="3011384993885886186">Warmgrys</translation>
 <translation id="3011488081941333749">Webkoekies van <ph name="DOMAIN" /> af sal uitgevee word wanneer jy uitgaan</translation>
@@ -2407,7 +2405,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3476303763173086583">Stuur gebruik- en diagnostiese data. Help om jou kind se Android-ervaring beter te maak deur diagnostiese, toestel- en programgebruikdata outomaties na Google toe te stuur. Dit sal nie gebruik word om jou kind te identifiseer nie en sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. Hierdie <ph name="BEGIN_LINK1" />instelling<ph name="END_LINK1" /> word deur die eienaar afgedwing. Die eienaar kan kies om diagnostiese en gebruikdata vir hierdie toestel na Google toe te stuur. As die bykomende Web- en Programaktiwiteit-instelling vir jou kind aangeskakel is, kan hierdie data in hul Google-rekening gestoor word. <ph name="BEGIN_LINK2" />Kom meer te wete<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Oeps! Die stelsel kon nie die beleid vir jou toestel gaan haal nie.</translation>
 <translation id="347785443197175480">Hou aan om <ph name="HOST" /> toegang tot jou kamera en mikrofoon te gee</translation>
-<translation id="3478813605045578676">Inskrywing word eers ná installasie gesteun. Installeer CloudReady as jy hierdie toestel wil bestuur.</translation>
 <translation id="3479552764303398839">Nie nou nie</translation>
 <translation id="3479685872808224578">Kon nie die drukbediener bespeur nie. Gaan die adres na en probeer weer.</translation>
 <translation id="3480612136143976912">Pasmaak onderskrif se grootte en styl vir Intydse Onderskrifte. Sommige programme en werwe sal ook hierdie instelling gebruik.</translation>
@@ -2610,7 +2607,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3694027410380121301">Kies vorige oortjie</translation>
 <translation id="369489984217678710">Wagwoorde en ander aanmelddata</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Sekuriteitkontroles is afgehandel. Jou data sal opgelaai word}=1{Sekuriteitkontroles is afgehandel. Jou lêer sal opgelaai word.}other{Sekuriteitkontroles is afgehandel. Jou lêers sal opgelaai word.}}</translation>
-<translation id="3696576298374669274">Wys diensloglêers</translation>
 <translation id="3699624789011381381">E-posadres</translation>
 <translation id="3699920817649120894">Skakel sinkronisering en personalisering af?</translation>
 <translation id="3700888195348409686">Hou tans voor (<ph name="PAGE_ORIGIN" />)</translation>
@@ -3077,7 +3073,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4168015872538332605">Sommige instellings wat aan <ph name="PRIMARY_EMAIL" /> behoort, word met jou gedeel. Hierdie instellings affekteer net jou rekening wanneer jy veelvuldige aanmelding gebruik.</translation>
 <translation id="4169535189173047238">Moenie toelaat nie</translation>
 <translation id="4170314459383239649">Vee uit wanneer uitgegaan is</translation>
-<translation id="4171570447245353961">CloudReady 2.0 het 'n aktiewe TPM bespeur wat jou data veiliger kan berg.</translation>
 <translation id="4175137578744761569">Ligpers en wit</translation>
 <translation id="4175737294868205930">Aanhoudende berging</translation>
 <translation id="4176463684765177261">Gedeaktiveer</translation>
@@ -4199,7 +4194,6 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5431318178759467895">Kleur</translation>
 <translation id="543338862236136125">Wysig wagwoord</translation>
 <translation id="5434065355175441495">PKCS #1 RSA-enkripsie</translation>
-<translation id="5434473680236142631">Welkom by CloudReady 2.0</translation>
 <translation id="5435779377906857208">Laat <ph name="HOST" /> altyd toe om toegang tot jou ligging te kry</translation>
 <translation id="5436492226391861498">Wag tans vir instaanbedienertonnel …</translation>
 <translation id="5436510242972373446">Deursoek <ph name="SITE_NAME" />:</translation>
@@ -4776,7 +4770,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6057312498756061228">Hierdie lêer is te groot vir 'n sekuriteitkontrole. Jy kan lêers van tot 50 MB oopmaak.</translation>
 <translation id="6057381398996433816">Hierdie werf word verhinder om beweging- en ligsensors te gebruik.</translation>
 <translation id="6059276912018042191">Onlangse Chrome-oortjies</translation>
-<translation id="6059347142391822629">Druk jou skakelaar wanneer die fokus op die Klaar-knoppie is om die gids toe te maak.</translation>
 <translation id="6059652578941944813">Sertifikaathiërargie</translation>
 <translation id="6061882183774845124">Stuur skakel na jou toestelle toe</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Let wel:<ph name="END_BOLD" /> 'n Soortgelyke stem of opname kan dalk toegang tot <ph name="SUPERVISED_USER_NAME" /> se persoonlike resultate kry. As jy batterykrag wil bespaar, kan jy in <ph name="SUPERVISED_USER_NAME" /> se Assistent-instellings kies dat "Ok Google" net aan moet wees wanneer hierdie toestel aan 'n kragbron gekoppel is.</translation>
@@ -5063,6 +5056,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6359706544163531585">Deaktiveer ligtema</translation>
 <translation id="6361850914223837199">Foutbesonderhede:</translation>
 <translation id="6362853299801475928">Gee 'n kwessie aan …</translation>
+<translation id="6363786367719063276">Bekyk loglêers</translation>
 <translation id="6363990818884053551">Verifieer dis jy om sinkronisering te begin</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Voeg familie en vriende by</translation>
@@ -5255,8 +5249,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6569911211938664415">Wagwoorde word in jou Google-rekening (<ph name="ACCOUNT" />) gestoor sodat jy hulle op enige toestel kan gebruik.</translation>
 <translation id="6573497332121198392">Kan nie kortpad verwyder nie</translation>
 <translation id="657402800789773160">Herlaai hierdie bladsy</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />Installeer CloudReady 2.0 op jou interne skyf vir die beste ervaring. Jy kan dit ook later van die aanmeldskerm af installeer.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />As jy nie gereed is om dit te installeer nie, kan jy dit van USB af laat loop of dit probeer. Dit sal jou bestaande bedryfstelsel en data behou, maar jy sal dalk berging- en werkverrigtingbeperkings sien.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">Aflaai is gekanselleer: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Netwerkgesondheidoorsig</translation>
 <translation id="6579369886355986318">Wys alle &amp;kontroles</translation>
@@ -6077,9 +6069,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# oop oortjie; druk om oortjiestrook te wissel}other{# oop oortjies; druk om oortjiestrook te wissel}}</translation>
 <translation id="7465635034594602553">Iets is fout. Wag asseblief 'n paar minute en laat loop <ph name="APP_NAME" /> dan weer.</translation>
 <translation id="7465778193084373987">Netscape-sertifikaatherroeping se URL</translation>
-<translation id="746811648436543102"><ph name="BEGIN_PARAGRAPH1" />Voordat jy inskryf, moet jy die TPM skoonmaak sodat CloudReady 2.0 eienaarskap van die toestel kan oorneem.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Jy kan die TPM-toestel ook heeltemal afskakel. Jou data sal veilig geberg word met sagteware-enkripsie, maar sekere sekuriteitkenmerke soos sertifikate wat deur hardeware ondersteun word, sal gedeaktiveer word.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Jy kan jou TPM-instellings verander deur te herselflaai en die stelsel se BIOS/EUFI-instellings in te voer. Stappe wat op die toestelmodel gegrond is. Vir meer inligting, moet jy die CloudReady 2.0-dokumente op 'n ander toestel oopmaak voordat jy herselflaai: [URL-skakel]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="746861123368584540">Uitbreiding is gelaai</translation>
 <translation id="7470424110735398630">Mag jou knipbord sien</translation>
 <translation id="747114903913869239">Fout: Kon nie uitbreiding ontsyfer nie</translation>
@@ -6363,7 +6352,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7750228210027921155">Prent-in-prent</translation>
 <translation id="7751260505918304024">Wys alles</translation>
-<translation id="7751855202867682241">Hou jou bedryfstelsel en laat loop CloudReady 2.0 van die USB af.</translation>
 <translation id="7753735457098489144">Kon weens tekort aan bergingspasie nie installeer nie. Vee lêers in toestelberging uit om spasie beskikbaar te maak.</translation>
 <translation id="7754347746598978109">Mag nie JavaScript gebruik nie</translation>
 <translation id="7754704193130578113">Vra waar om elke lêer te stoor voor jy aflaai</translation>
@@ -7420,7 +7408,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8845001906332463065">Kry hulp</translation>
 <translation id="8846132060409673887">Lees die vervaardiger en model van hierdie rekenaar</translation>
 <translation id="8846163936679269230">Stel e-SIM-profiele terug</translation>
-<translation id="8846746259444262774">Kon nie installeer nie</translation>
 <translation id="8847523528195140327">Meld af wanneer omhulsel toe is</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Versteek</translation>

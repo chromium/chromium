@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">கீழே</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> அம்சத்தை நிலைமாற்றும். <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">கர்சரை நகர்த்து</translation>
-<translation id="3098580329624789136">"<ph name="QUERY" />" என்பதற்கான <ph name="INTENT" /> பெறுங்கள்</translation>
 <translation id="3100274880412651815">படமெடுப்புப் பயன்முறையை நிராகரிக்கும்</translation>
 <translation id="3105917916468784889">ஸ்கிரீன் ஷாட்டை எடுக்கும்</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (புளூடூத்)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">Googleளால் சரிபார்க்கப்படாத ஆப்ஸ் இந்தச் சாதனத்தில் இருக்கக்கூடும்.</translation>
 <translation id="4479639480957787382">ஈத்தர்நெட்</translation>
 <translation id="4481530544597605423">இணைக்காத சாதனங்கள்</translation>
-<translation id="4485060137115666462">வலது கிளிக் செய்தாலோ நீண்ட நேரம் அழுத்தினாலோ நீங்கள் தேர்ந்தெடுத்ததற்கான விளக்கம், மொழிபெயர்ப்பு, அலகு மாற்றம் போன்ற தகவலை Assistant காட்டும்.</translation>
 <translation id="4505050298327493054">செயலிலுள்ள டெஸ்க்.</translation>
 <translation id="4513946894732546136">கருத்து</translation>
 <translation id="4518404433291145981">Chromebookகை அன்லாக் செய்ய, முதலில் உங்கள் மொபைலை அன்லாக் செய்யவும்</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">மாற்றியமை</translation>
 <translation id="595202126637698455">செயல்திறனைத் தடமறிதல் இயக்கப்பட்டுள்ளது</translation>
 <translation id="5958529069007801266">மேற்பார்வையிடப்படும் பயனர்</translation>
-<translation id="5960825221082587934">நீங்கள் தேர்ந்தெடுத்ததற்கான விளக்கம், மொழிபெயர்ப்பு, அலகு மாற்றம் போன்ற தகவல்களை Assistant காட்டுவதற்கான பட்டன்.</translation>
 <translation id="5977415296283489383">ஹெட்ஃபோன்</translation>
 <translation id="5978382165065462689">தொலைநிலை உதவி மூலம் உங்கள் திரையின் கட்டுப்பாட்டைப் பகிர்கிறது.</translation>
 <translation id="5980301590375426705">விருந்தினரிலிருந்து வெளியேறவும்</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">முக்கியமான கோப்புகளை இங்கே பின் (pin) செய்யலாம். பின் செய்ய Files ஆப்ஸைத் திறக்கவும்.</translation>
 <translation id="622484624075952240">கீழ்</translation>
 <translation id="6231419273573514727">சாதனத்தின் செயல்திறன் குறைக்கப்பட்டிருக்கலாம்</translation>
-<translation id="6236290670123303279">அமைப்புகளை நிர்வகி</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">கிடைமட்ட நிலையில் பூட்டப்பட்டது</translation>
 <translation id="6259254695169772643">தேர்ந்தெடுக்க, ஸ்டைலஸைப் பயன்படுத்தலாம்</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">செயல்திறன் டிரேஸிங் இயக்கத்தில்</translation>
 <translation id="8703634754197148428">ரெக்கார்டு செய்யத் தொடங்கும். ரெக்கார்டிங் தொடங்கியதும் Alt + Shift + L விசைகளை ஒன்றாக அழுத்தி ஷெல்ஃபிற்குச் செல்லலாம். அதில் 'ரெக்கார்டிங்கை நிறுத்து' பட்டன் இருக்கும்</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> இந்த அம்சத்தை நிர்வகிக்க, இடது/வலது அம்புக்குறி விசையைப் பயன்படுத்துங்கள்.</translation>
-<translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8721053961083920564">ஒலியை இயக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">முழுத்திரையைப் படமெடுக்கும்</translation>
 <translation id="8734991477317290293">அது உங்கள் விசை அழுத்தங்களைத் திருட முயற்சித்துக் கொண்டிருக்கக்கூடும்</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">இணைய இணைப்பைச் சரிபார்க்கவும்</translation>
 <translation id="8877788021141246043">நினைவூட்டலை அமை</translation>
 <translation id="8878886163241303700">திரையை விரிவாக்குகிறது</translation>
-<translation id="8883473964424809116">Google Assistant அமைப்புகளைத் திறக்க, கிளிக் செய்யுங்கள்.</translation>
 <translation id="8884537526797090108">ரகசியமான உள்ளடக்கம் இருப்பதால் ரெக்கார்டு செய்ய முடியாது</translation>
 <translation id="890616557918890486">மூலத்தை மாற்று</translation>
 <translation id="8909138438987180327">பேட்டரி: <ph name="PERCENTAGE" /> சதவீதம்.</translation>

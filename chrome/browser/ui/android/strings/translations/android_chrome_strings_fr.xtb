@@ -180,6 +180,7 @@ Appuyez sur n'importe quel mot pour lancer une recherche. Pour affiner la recher
 <translation id="2139186145475833000">Ajouter à l'écran d'accueil</translation>
 <translation id="2141396931810938595">D'après votre utilisation</translation>
 <translation id="214888715418183969">Sélectionnez le type de données que vous acceptez de partager avec Chrome. Ces statistiques serviront à améliorer les fonctionnalités, les performances et la stabilité de Chrome.</translation>
+<translation id="2149973817440762519">Modifier le favori</translation>
 <translation id="2154484045852737596">Modifier la carte</translation>
 <translation id="2154710561487035718">Copier l'URL</translation>
 <translation id="2156074688469523661">Sites restants (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -640,7 +641,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4943872375798546930">Aucun résultat</translation>
 <translation id="4957722034734105353">En savoir plus…</translation>
 <translation id="4961107849584082341">Traduire cette page dans n'importe quelle langue</translation>
-<translation id="4970824347203572753">Fonctionnalité non disponible dans votre pays</translation>
 <translation id="4971735654804503942">Ce mode offre une protection proactive et plus rapide contre les téléchargements, les extensions et les sites Web dangereux. Il vous permet d'être averti en cas de piratage de mots de passe et nécessite d'envoyer les données de navigation à Google.</translation>
 <translation id="497421865427891073">Avancer</translation>
 <translation id="4988210275050210843">Téléchargement du fichier (<ph name="MEGABYTES" />)…</translation>
@@ -724,7 +724,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5483197086164197190">Navigate Chrome</translation>
 <translation id="5487521232677179737">Effacer les données</translation>
 <translation id="549025011754480756">Comment effectuer une recherche vocale</translation>
-<translation id="5500777121964041360">Cette fonctionnalité n'est peut-être pas disponible dans votre pays</translation>
 <translation id="5512137114520586844">Ce compte est géré par <ph name="PARENT_NAME" />.</translation>
 <translation id="5514904542973294328">Désactivé par l'administrateur de cet appareil</translation>
 <translation id="5515439363601853141">Déverrouillez pour afficher votre mot de passe</translation>
@@ -878,7 +877,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6364438453358674297">Supprimer la suggestion de l'historique ?</translation>
 <translation id="6378173571450987352">Détails : tri effectué par volume de données utilisées</translation>
 <translation id="6379829913050047669">L'application <ph name="APP_NAME" /> va s'ouvrir dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="6381421346744604172">Assombrir les sites Web</translation>
 <translation id="6395288395575013217">LIEN</translation>
 <translation id="6397616442223433927">Connexion rétablie</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> sur <ph name="VIOLATED_URL" /></translation>
@@ -1209,7 +1207,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8218052821161047641">Chargement rapide</translation>
 <translation id="8218622182176210845">Gérer votre compte</translation>
 <translation id="8223642481677794647">Menu de la carte de flux</translation>
-<translation id="8224471946457685718">Télécharger des articles pour vous via le Wi-Fi</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="825412236959742607">Cette page utilise trop de mémoire, Chrome a donc supprimé du contenu.</translation>
 <translation id="8260126382462817229">Essayez de vous connecter de nouveau à votre compte.</translation>

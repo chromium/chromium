@@ -3,6 +3,7 @@
 <translationbundle lang="lt">
 <translation id="1096883626080133124">Nuveikite daugiau naudodami paprastą, saugią ir spartesnę nei bet kada anksčiau „Google Chrome“</translation>
 <translation id="1282031177488366470">Padėti tobulinti „Chrome“ funkcijas ir našumą</translation>
+<translation id="1354592789402432496">Administratorius reikalauja prisijungti naudojant organizacijos paskyrą. Paskyros, kurias riboja administratorius, yra paslėptos.</translation>
 <translation id="1479202195792305274">„Chrome“ gali tikrinti jūsų slaptažodžius, kai prisijungiate naudodami „Google“ paskyrą.</translation>
 <translation id="1493827051843127077">Nustatykite „Chrome“ kaip numatytąjį nustatymą, kad būtų sinchronizuojami skirtukai, slaptažodžiai ir mokėjimo informacija visuose įrenginiuose</translation>
 <translation id="1504372625950710826">„Chrome“ nepavyko patikrinti, ar yra naujinių. Pabandykite patikrinti interneto ryšį.</translation>
@@ -45,6 +46,7 @@
 <translation id="3988789688219830639">„Google Chrome“ nepasiekia nuotraukų ar vaizdo įr. Įgal. prieigą apsil. „iOS“ nustatymai“ &gt; „Privatumas“ &gt; „Nuotraukos“.</translation>
 <translation id="4099578267706723511">Padėkite tobulinti „Chrome“ siųsdami „Google“ naudojimo statistiką ir strigčių ataskaitas.</translation>
 <translation id="417201473131094001">Nepalaikoma versijoje „Chrome Canary“</translation>
+<translation id="4214277427269650960">Prisijunkite prie šios svetainės ir „Chrome“. Sinchronizavimą galėsite įjungti vėliau.</translation>
 <translation id="424864128008805179">Atsijungti nuo „Chrome“?</translation>
 <translation id="4249068189593983585">„Chrome“ patarimas. Jei reikia daugiau skirtukų parinkčių, palieskite ir palaikykite mygtuką „Rodyti skirtukus“ įrankių juostoje, kuri yra ekrano apačioje arba viršuje.</translation>
 <translation id="4523886039239821078">Dėl tam tikrų priedų „Chrome“ užstringa . Pašalinkite:</translation>
@@ -59,6 +61,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Neprisijungta, todėl „Chrome“ nepavyko patikrinti, ar yra naujinių</translation>
 <translation id="5716154293141027663">Bet kada palietus nuorodas kitose programose, bus atidaroma „Chrome“</translation>
+<translation id="572883588166315317">Organizacija reikalauja prisijungti, kad galėtumėte naudoti „Chrome“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" />.</translation>
 <translation id="5854621639439811139">„Chrome“ patarimas. Kai kurie mygtukai dabar yra ekrano apačioje, pvz., mygtukai „Atgal“, „Pirmyn“ ir „Ieškoti“.</translation>
 <translation id="5876773482963502140">Jei leidžiate „Chrome“ nustatyti jūsų vietovę, „Chrome“ siunčia ją bet kurioms svetainėms, kurioms suteikiate leidimą. Svetainės gali prašyti jūsų vietovės, kai jose yra jums rodytinos vietinės informacijos, pvz., netoliese esančių parduotuvių ar naujienų.</translation>
 <translation id="6054613632208573261">„Chrome“ naudojimas pagal numatytuosius nustatymus</translation>

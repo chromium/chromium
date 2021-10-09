@@ -363,7 +363,6 @@
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="1384849755549338773">Ofro "Përkthe me Google" për faqet e internetit në gjuhë të tjera</translation>
 <translation id="138784436342154190">Të restaurohet faqja e parazgjedhur e nisjes?</translation>
-<translation id="1388047369870196878">Instalo CloudReady 2.0</translation>
 <translation id="1388253969141979417">Lejohen të përdorin mikrofonin tënd</translation>
 <translation id="1388728792929436380">Pajisja <ph name="DEVICE_TYPE" /> do të riniset kur të përfundojnë përditësimet.</translation>
 <translation id="139013308650923562">Lejohen që të përdorin fontet e instaluara në pajisjen tënde</translation>
@@ -1961,7 +1960,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kërkon që të lidhesh me Wi-Fi sot për të shkarkuar një përditësim. Ose shkarko nga një lidhje me matje (mund të zbatohen tarifat).}other{<ph name="MANAGER" /> kërkon që të lidhesh me Wi-Fi dhe të shkarkosh një përditësim para afatit. Ose shkarko nga një lidhje me matje (mund të zbatohen tarifat).}}</translation>
 <translation id="3009300415590184725">Je i sigurt që dëshiron ta anulosh procesin e konfigurimit të shërbimit të të dhënave celulare?</translation>
 <translation id="3009779501245596802">Databazat e indeksuara</translation>
-<translation id="3009984992511490972">Konvertoje këtë pajisje në një pajisje me CloudReady 2.0.</translation>
 <translation id="3010279545267083280">Fjalëkalimi u fshi</translation>
 <translation id="3011384993885886186">Gri e ngrohtë</translation>
 <translation id="3011488081941333749">Kukit nga <ph name="DOMAIN" /> do të pastrohen pas daljes</translation>
@@ -2389,7 +2387,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3476303763173086583">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Ndihmo në përmirësimin e përvojës së fëmijës tënd me Android duke dërguar automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe aplikacioneve. Këto nuk do të përdoren për të identifikuar fëmijën tënd dhe do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Ky <ph name="BEGIN_LINK1" />cilësim<ph name="END_LINK1" /> zbatohet nga zotëruesi. Zotëruesi mund të zgjedhë të dërgojë te Google të dhënat e diagnostikimit dhe të përdorimit për këtë pajisje. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar për fëmijën tënd, këto të dhëna mund të ruhen në "Llogarinë e Google" të fëmijës. <ph name="BEGIN_LINK2" />Mëso më shumë<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Mos! Sistemi nuk arriti të marrë politikën për pajisjen tënde.</translation>
 <translation id="347785443197175480">Vazhdo të lejosh <ph name="HOST" /> që të qaset te kamera dhe mikrofoni</translation>
-<translation id="3478813605045578676">Regjistrimi mbështetet vetëm pas instalimit. Për ta menaxhuar këtë pajisje, instalo përpara CloudReady.</translation>
 <translation id="3479552764303398839">Jo tani</translation>
 <translation id="3479685872808224578">Serveri i printimit nuk mund të zbulohej. Kontrollo adresën dhe provo përsëri.</translation>
 <translation id="3480612136143976912">Personalizo madhësinë dhe stilin e nëntitullit për "Titrat në çast". Disa aplikacione dhe faqe do ta përdorin gjithashtu këtë cilësim.</translation>
@@ -2592,7 +2589,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3694027410380121301">Zgjidh skedën e mëparshme</translation>
 <translation id="369489984217678710">Fjalëkalimet dhe të dhëna të tjera të identifikimit</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Kontrollet e sigurisë përfunduan. Të dhënat e tua do të ngarkohen.}=1{Kontrollet e sigurisë përfunduan. Skedari yt do të ngarkohet.}other{Kontrollet e sigurisë përfunduan. Skedarët e tu do të ngarkohen.}}</translation>
-<translation id="3696576298374669274">Shfaq evidencat e shërbimit</translation>
 <translation id="3699624789011381381">Adresë mail-i</translation>
 <translation id="3699920817649120894">Të çaktivizohet sinkronizimi dhe personalizimi?</translation>
 <translation id="3700888195348409686">Po prezantohet (<ph name="PAGE_ORIGIN" />)</translation>
@@ -3059,7 +3055,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4168015872538332605">Disa cilësime që i përkasin <ph name="PRIMARY_EMAIL" /> po ndahen me ty. Këto cilësime prekin vetëm llogarinë tënde kur përdor identifikimin e shumëfishtë.</translation>
 <translation id="4169535189173047238">Mos lejo</translation>
 <translation id="4170314459383239649">Pastro në dalje</translation>
-<translation id="4171570447245353961">CloudReady 2.0 zbuloi një TPM aktive, e cila mund të ruajë të dhënat e tua në mënyrë më të sigurt.</translation>
 <translation id="4175137578744761569">E purpurt e çelur dhe e bardhë</translation>
 <translation id="4175737294868205930">Hapësira ruajtëse e përhershme</translation>
 <translation id="4176463684765177261">I çaktivizuar</translation>
@@ -4180,7 +4175,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5431318178759467895">Ngjyra</translation>
 <translation id="543338862236136125">Redakto fjalëkalimin</translation>
 <translation id="5434065355175441495">Enkriptimi PKCS #1 RSA</translation>
-<translation id="5434473680236142631">Mirë se vjen në CloudReady 2.0</translation>
 <translation id="5435779377906857208">Lejo gjithmonë që <ph name="HOST" /> të ketë qasje te vendndodhja jote</translation>
 <translation id="5436492226391861498">Po pret për tunelin ndërmjetës...</translation>
 <translation id="5436510242972373446">Kërko në <ph name="SITE_NAME" />:</translation>
@@ -4756,7 +4750,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6057312498756061228">Ky skedar është shumë i madh për kontroll sigurie. Mund të hapësh skedarë deri në 50 MB.</translation>
 <translation id="6057381398996433816">Kësaj faqeje i është bllokuar përdorimi i sensorëve të lëvizjes dhe të dritës.</translation>
 <translation id="6059276912018042191">Skedat e fundit të Chrome</translation>
-<translation id="6059347142391822629">Shtyç çelësin kur fokusi të jetë në butonin "U krye" për ta mbyllur udhëzuesin.</translation>
 <translation id="6059652578941944813">Hierarkia e certifikatave</translation>
 <translation id="6061882183774845124">Dërgo lidhjen te pajisjet e tua</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Shënim.<ph name="END_BOLD" /> Një zë i ngjashëm ose një regjistrim mund të jetë në gjendje që të ketë qasje te rezultatet personale të <ph name="SUPERVISED_USER_NAME" />. Për të kursyer baterinë, mund të zgjedhësh te cilësimet e "Asistentit" të <ph name="SUPERVISED_USER_NAME" /> që “Ok Google” të jetë aktiv vetëm kur kjo pajisje është e lidhur me një burim energjie.</translation>
@@ -5043,6 +5036,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6359706544163531585">Çaktivizo temën e ndriçuar</translation>
 <translation id="6361850914223837199">Detajet e gabimit:</translation>
 <translation id="6362853299801475928">&amp;Raporto një problem...</translation>
+<translation id="6363786367719063276">Shiko evidencat</translation>
 <translation id="6363990818884053551">Për të nisur sinkronizimin, verifiko që je ti</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Shto familjarë dhe miq</translation>
@@ -5235,8 +5229,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6569911211938664415">Fjalëkalimet ruhen në "Llogarinë tënde të Google" (<ph name="ACCOUNT" />) që të mund t'i përdorësh në çdo pajisje</translation>
 <translation id="6573497332121198392">Shkurtorja nuk mund të hiqet</translation>
 <translation id="657402800789773160">&amp;Ringarkoje këtë faqe</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />Për përvojën më të mirë, instalo CloudReady 2.0 në diskun e brendshëm. Mund ta instalosh më vonë nga ekrani i identifikimit.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Nëse nuk je gati për ta instaluar, mund ta ekzekutosh nga USB-ja për ta provuar. Kjo do të mbajë sistemin operativ dhe të dhënat ekzistuese, por hapësira ruajtëse dhe cilësia e funksionimit mund të kufizohen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">Shkarkimi u anulua: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Pamje e çastit e fuqisë së rrjetit</translation>
 <translation id="6579369886355986318">Shfaq të gjitha &amp;kontrollet</translation>
@@ -6057,9 +6049,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# skedë e hapur. Shtyp për të kaluar te shiriti i skedës.}other{# skeda të hapura. Shtyp për të kaluar te shiriti i skedës.}}</translation>
 <translation id="7465635034594602553">Ndodhi një gabim. Prit disa minuta dhe ekzekutoje përsëri <ph name="APP_NAME" />.</translation>
 <translation id="7465778193084373987">URL-ja e revokimit të certifikatës së Netscape</translation>
-<translation id="746811648436543102"><ph name="BEGIN_PARAGRAPH1" />Përpara se të regjistrohesh, ti duhet të pastrosh TPM-në në mënyrë që CloudReady 2.0 të marrë në zotërim pajisjen.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Gjithashtu, ti mund ta çaktivizosh plotësisht pajisjen TPM. Të dhënat e tua do të ruhen në mënyrë të sigurt me enkriptimin e softuerit, por veçori të caktuara të sigurisë, si p.sh. certifikatat e mbështetura nga hardueri do të çaktivizohen.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Ti mund t'i ndryshosh cilësimet e tua TPM duke rindezur dhe futur cilësimet BIOS/UEFI të sistemit. Hapat ndryshojnë në varësi të modelit të pajisjes. Për më shumë informacion, hap dokumentacionin e CloudReady 2.0 në një pajisje të veçantë, përpara se të rindezësh: [lidhja e URL-së]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="746861123368584540">U ngarkua shtesa</translation>
 <translation id="7470424110735398630">Lejohen të shikojnë kujtesën tënde të fragmenteve</translation>
 <translation id="747114903913869239">Gabim: Shtesa nuk mund të dekodohet</translation>
@@ -6343,7 +6332,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7750228210027921155">Figurë brenda figurës</translation>
 <translation id="7751260505918304024">Shfaq të gjitha</translation>
-<translation id="7751855202867682241">Mbaj sistemin tënd operativ dhe ekzekuto CloudReady 2.0 nga USB-ja.</translation>
 <translation id="7753735457098489144">Instalimi dështoi për shkak të mungesës së hapësirës ruajtëse. Për të liruar hapësirë, fshi skedarë nga hapësira ruajtëse e pajisjes.</translation>
 <translation id="7754347746598978109">Nuk lejohen të përdorin JavaScript</translation>
 <translation id="7754704193130578113">Pyet se ku do ta ruash çdo skedar para shkarkimit</translation>
@@ -7398,7 +7386,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8845001906332463065">Kërko ndihmë</translation>
 <translation id="8846132060409673887">Lexo informacionet për prodhuesin dhe modelin e këtij kompjuteri</translation>
 <translation id="8846163936679269230">Rivendos profilet e kartës eSIM</translation>
-<translation id="8846746259444262774">Instalimi dështoi</translation>
 <translation id="8847523528195140327">Dil nga llogaria kur mbyllet kapaku</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">E fshehur</translation>

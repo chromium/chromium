@@ -180,6 +180,7 @@ Tippen Sie auf ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche 
 <translation id="2139186145475833000">Zum Startbildschirm zufügen</translation>
 <translation id="2141396931810938595">Auf Grundlage Ihrer Nutzung</translation>
 <translation id="214888715418183969">Wählen Sie aus, welche Messwerte für Chrome freigegeben werden sollen. Die freigegebenen Messwerte werden verwendet, um die Funktionen, die Leistung und die Stabilität von Chrome zu verbessern.</translation>
+<translation id="2149973817440762519">Lesezeichen bearbeiten</translation>
 <translation id="2154484045852737596">Karte bearbeiten</translation>
 <translation id="2154710561487035718">URL kopieren</translation>
 <translation id="2156074688469523661">Restliche Websites (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -640,7 +641,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="4943872375798546930">Keine Ergebnisse</translation>
 <translation id="4957722034734105353">Weitere Informationen...</translation>
 <translation id="4961107849584082341">Lassen Sie sich diese Seite in eine beliebige Sprache übersetzen</translation>
-<translation id="4970824347203572753">In Ihrem Land nicht verfügbar</translation>
 <translation id="4971735654804503942">Schnellerer und dynamischerer Schutz gegen schädliche Websites, Downloads und Erweiterungen. Warnt Sie im Fall von Datenpannen, bei denen Passwörter preisgegeben werden. Hierfür müssen Browserdaten an Google gesendet werden.</translation>
 <translation id="497421865427891073">Weiter</translation>
 <translation id="4988210275050210843">Datei wird heruntergeladen (<ph name="MEGABYTES" />).</translation>
@@ -724,7 +724,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5483197086164197190">Chrome verwenden</translation>
 <translation id="5487521232677179737">Daten löschen</translation>
 <translation id="549025011754480756">Sprachsuche verwenden</translation>
-<translation id="5500777121964041360">In Ihrem Land möglicherweise nicht verfügbar</translation>
 <translation id="5512137114520586844">Dieses Konto wird von <ph name="PARENT_NAME" /> verwaltet.</translation>
 <translation id="5514904542973294328">Vom Administrator dieses Geräts deaktiviert</translation>
 <translation id="5515439363601853141">Entsperren, um Ihr Passwort zu sehen</translation>
@@ -878,7 +877,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6364438453358674297">Vorschlag aus Verlauf entfernen?</translation>
 <translation id="6378173571450987352">Details: Nach der Menge der verwendeten Daten sortiert</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> wird in Chrome geöffnet. Wenn Sie fortfahren, stimmen Sie den <ph name="BEGIN_LINK1" />Nutzungsbedingungen von Google<ph name="END_LINK1" /> und den <ph name="BEGIN_LINK2" />zusätzlichen Nutzungsbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> zu.</translation>
-<translation id="6381421346744604172">Websites verdunkeln</translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Wieder online</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> auf <ph name="VIOLATED_URL" /></translation>
@@ -1209,7 +1207,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8218052821161047641">Schnelle Seite</translation>
 <translation id="8218622182176210845">Konto verwalten</translation>
 <translation id="8223642481677794647">Feedkartenmenü</translation>
-<translation id="8224471946457685718">"Artikel für mich" bei bestehender WLAN-Verbindung herunterladen</translation>
 <translation id="8250920743982581267">Dokumente</translation>
 <translation id="825412236959742607">Diese Seite benötigt zu viel Arbeitsspeicher. Darum hat Chrome einige Inhalte entfernt.</translation>
 <translation id="8260126382462817229">Melden Sie sich noch einmal an</translation>

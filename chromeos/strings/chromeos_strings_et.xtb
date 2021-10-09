@@ -58,6 +58,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1881378885488531302">IP-aadressi ei õnnestu hankida</translation>
 <translation id="1887850431809612466">Riistvara redaktsioon</translation>
+<translation id="1901646112321215184">Mitte ühtegi DNS-serverit pole seadistatud</translation>
 <translation id="1905710495812624430">Katsete maksimaalne arv on ületatud.</translation>
 <translation id="1908234395526491708">UDP-taotluste vead</translation>
 <translation id="1930797645656624981">Chrome OS sisestusmeetodi teenus</translation>
@@ -74,6 +75,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">JÄRJEKORRAS</translation>
 <translation id="2161394479394250669">Tühista prinditöö</translation>
+<translation id="2180197493692062006">Midagi läks valesti. Proovige rakendus uuesti avada.</translation>
 <translation id="2209788852729124853">Liiklusloendurite lähtestamine</translation>
 <translation id="2212733584906323460">Nime lahendamine</translation>
 <translation id="2217935453350629363">Praegune kiirus</translation>
@@ -89,6 +91,7 @@
 <translation id="2391082728065870591">Saada tagasisidearuanne</translation>
 <translation id="2407209115954268704">SIM-i luku olek</translation>
 <translation id="2418150275289244458">Ava rakenduses Seaded</translation>
+<translation id="2421798028054665193">Pilt <ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Ujukoma täpsus</translation>
 <translation id="2448312741937722512">Tüüp</translation>
 <translation id="2461822463642141190">Praegune</translation>
@@ -107,11 +110,13 @@
 <translation id="2860473693272905224">Asetage skannerile veel üks leht</translation>
 <translation id="2872961005593481000">Lülita välja</translation>
 <translation id="2878387241690264070">Tühjenes <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundiga.</translation>
+<translation id="2927511423571448384">Androidis ei saa HTTP-veebisaitidega (port 80) läbi tulemüüri ühendust luua</translation>
 <translation id="3008341117444806826">VÄRSKENDA</translation>
 <translation id="3009958530611748826">Valige kaust, kuhu salvestada</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Lõpp-punkt</translation>
 <translation id="3069085583900247081">Test ebaõnnestus</translation>
+<translation id="3076387335132326640">Kasutate avatud võrku</translation>
 <translation id="3083667275341675831">Ühenduvuse diagnostika</translation>
 <translation id="3091839911843451378">Ebaõnnestus – peatatud</translation>
 <translation id="3102119246920354026">Vahemälu</translation>
@@ -199,6 +204,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh aku</translation>
 <translation id="4561801978359312462">SIM on avatud</translation>
 <translation id="4562494484721939086">Levi puudub</translation>
+<translation id="4567024731344774461">Androidis ei õnnestu DNS-i lahendada</translation>
 <translation id="458794348635939462">Kõikide hostide lahendamine ebaõnnestus</translation>
 <translation id="4593212453765072419">Vajalik on puhverserveri autentimine</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Prinditöö tühistamiseks vajutage sisestusklahvi.</translation>
@@ -223,6 +229,7 @@
 <translation id="484790837831576105">(Android) DNS-lahendus</translation>
 <translation id="4848429997038228357">POOLELI</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} katse jäänud}other{<ph name="ERROR_MESSAGE" /> {0} katset jäänud}}</translation>
+<translation id="4871137769558798671">HTTPS-veebisaitidega (port 443) ei saa läbi tulemüüri ühendust luua</translation>
 <translation id="4880328057631981605">Pääsupunkti nimi</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Valige kohe uus</translation>
@@ -258,6 +265,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">versioon <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Teisalda aken töölauale</translation>
+<translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identiteet</translation>
 <translation id="5317780077021120954">Salvesta</translation>
 <translation id="5318334351163689047">TCP-taotluste vead</translation>
@@ -279,6 +287,8 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5502931783115429516">Android ei tööta</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5546352997259770619">Signaalitugevus on kehv, minge pääsupunktile lähemale</translation>
+<translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skanni uuesti</translation>
 <translation id="5669267381087807207">Aktiveerimine</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -319,6 +329,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Aku maht väheneb kasutuse käigus</translation>
 <translation id="6191293864534840972">Vigased nimeserverid</translation>
+<translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Ühtegi skannerit pole saadaval</translation>
 <translation id="6232017090690406397">Aku</translation>
 <translation id="6243280677745499710">Praegu määratud</translation>
@@ -328,6 +339,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="636850387210749493">Ettevõtte registreerimine</translation>
 <translation id="6379086450106841622">Puuteekraan</translation>
 <translation id="6388847657025262518">Skanneri dokumendisöötur on ummistunud. Kontrollige sööturit ja proovige uuesti.</translation>
+<translation id="6395640744968320699">HTTP-veebisaitidega (port 80) ei saa läbi tulemüüri ühendust luua</translation>
 <translation id="641081527798843608">Teema vaste</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Hea</translation>
@@ -335,6 +347,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6472207088655375767">Ühekordne parool</translation>
 <translation id="6480327114083866287">Haldab <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Peatatud – paberiummistus</translation>
+<translation id="6498608540383876992">Lüüsiga ei saa ühendust</translation>
 <translation id="6516990319416533844">Aku laadimiskiiruse testimiseks laske akul lühikese perioodi jooksul tühjeneda</translation>
 <translation id="6517239166834772319">Avastamine</translation>
 <translation id="6527081081771465939">Tundmatu WiFi-turvaprotokoll</translation>
@@ -382,6 +395,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7271040990581020067">Skanner on kasutuses. Proovige hiljem uuesti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Taustapiltide kogud</translation>
+<translation id="7292680402155138244">Pikk latentsusaeg HTTPS-veebisaitidega (port 443)</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -432,12 +446,15 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7994702968232966508">EAP meetod</translation>
 <translation id="8020238979854764615">Esines viga. Proovige uuesti, valides muud pildid.</translation>
 <translation id="802154636333426148">Allalaadimine ebaõnnestus</translation>
+<translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Saada tagasiside</translation>
 <translation id="8075838845814659848">Aku laetuse tase</translation>
 <translation id="808894953321890993">Muuda parooli</translation>
 <translation id="811820734797650957">(Android) Lüüsi saab pingida</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Taotle liiklusloendureid</translation>
+<translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8177708084858970226">DNS-i ei õnnestu lahendada</translation>
 <translation id="8206859287963243715">Mobiil</translation>
 <translation id="8208861521865154048">Hüved</translation>
 <translation id="8230672074305416752">Vaikevõrgulüüsi pingimine ebaõnnestus</translation>
@@ -449,6 +466,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8297006494302853456">Nõrk</translation>
 <translation id="8302368968391049045">HTTPS-i tulemüür</translation>
 <translation id="8318753676953949627">Pilte pole</translation>
+<translation id="8346875532700229909">Androidis ei saa lüüsiga ühendust</translation>
 <translation id="8347227221149377169">Prinditööd</translation>
 <translation id="8352772353338965963">Lisage mitmele kontole sisselogimiseks konto. Kõigile kontodele, kuhu on sisse logitud, pääseb juurde ilma paroolita, seega soovitame seda funktsiooni kasutada vaid usaldusväärsete kontodega.</translation>
 <translation id="8364946094152050673">Tühjad nimeserverid</translation>
@@ -480,6 +498,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8747900814994928677">Kinnita muudatus</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="879568662008399081">See võrk võib sisaldada hõiveportaali</translation>
 <translation id="8798099450830957504">Vaikimisi</translation>
 <translation id="8798441408945964110">Teenusepakkuja nimi</translation>
 <translation id="8814190375133053267">WiFi</translation>
@@ -503,6 +522,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanni}=1{Skanni {NUMBER_OF_PAGES}. lehte}other{Skanni {NUMBER_OF_PAGES}. lehte}}</translation>
 <translation id="9003704114456258138">Sagedus</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9062831201344759865">DNS-i eraldusvõimel on pikk latentsusaeg</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Praegune kasutus</translation>

@@ -180,6 +180,7 @@
 <translation id="2139186145475833000">ホーム画面に追加</translation>
 <translation id="2141396931810938595">使用状況を基に決定</translation>
 <translation id="214888715418183969">Chrome と共有してもよいものを選択してください。ご提供いただいた指標は、Chrome の機能、パフォーマンス、安定性の向上に利用させていただきます。</translation>
+<translation id="2149973817440762519">ブックマークを編集</translation>
 <translation id="2154484045852737596">カードを編集</translation>
 <translation id="2154710561487035718">URL をコピー</translation>
 <translation id="2156074688469523661">その他のサイト（<ph name="NUMBER_OF_SITES" /> 件）</translation>
@@ -640,7 +641,6 @@
 <translation id="4943872375798546930">結果はありません</translation>
 <translation id="4957722034734105353">詳細...</translation>
 <translation id="4961107849584082341">このページを任意の言語に翻訳できます</translation>
-<translation id="4970824347203572753">お住まいの地域ではご利用になれません</translation>
 <translation id="4971735654804503942">危険なウェブサイト、ダウンロード、拡張機能から予防的な方法で迅速に保護します。パスワードの侵害があった場合は警告します。Google に閲覧データを送信する必要があります。</translation>
 <translation id="497421865427891073">次に進む</translation>
 <translation id="4988210275050210843">ファイルをダウンロードしています（<ph name="MEGABYTES" />）。</translation>
@@ -724,7 +724,6 @@
 <translation id="5483197086164197190">Chrome を操作する</translation>
 <translation id="5487521232677179737">データを削除</translation>
 <translation id="549025011754480756">音声検索の方法</translation>
-<translation id="5500777121964041360">お住まいの地域ではご利用になれない可能性があります</translation>
 <translation id="5512137114520586844">このアカウントは <ph name="PARENT_NAME" /> によって管理されています。</translation>
 <translation id="5514904542973294328">このデバイスの管理者によって無効にされています</translation>
 <translation id="5515439363601853141">パスワードを表示するにはロックを解除してください</translation>
@@ -878,7 +877,6 @@
 <translation id="6364438453358674297">履歴から候補を削除しますか？</translation>
 <translation id="6378173571450987352">詳細: データ使用量の順</translation>
 <translation id="6379829913050047669">Chrome で <ph name="APP_NAME" /> を開きます。続行すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />に同意したことになります。</translation>
-<translation id="6381421346744604172">ウェブサイトを暗くする</translation>
 <translation id="6395288395575013217">リンク</translation>
 <translation id="6397616442223433927">オンラインに復帰</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" />（<ph name="VIOLATED_URL" />）</translation>
@@ -1209,7 +1207,6 @@
 <translation id="8218052821161047641">高速ページ</translation>
 <translation id="8218622182176210845">アカウントを管理</translation>
 <translation id="8223642481677794647">フィードカード メニュー</translation>
-<translation id="8224471946457685718">Wi-Fi 接続時に記事をダウンロード</translation>
 <translation id="8250920743982581267">ドキュメント</translation>
 <translation id="825412236959742607">このページは大量のメモリを使用しているため、Chrome により一部のコンテンツが削除されました。</translation>
 <translation id="8260126382462817229">もう一度ログインしてみてください</translation>

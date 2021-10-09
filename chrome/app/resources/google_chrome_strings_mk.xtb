@@ -88,8 +88,6 @@
 <translation id="2926676257163822632">Слабите лозинки се лесни за погаѓање. Дозволете Chrome да ви <ph name="BEGIN_LINK" />создаде и запомни силни лозинки<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">На Chrome му треба дозвола за камерата за сајтов</translation>
 <translation id="2929907241665500097">Chrome не се ажурираше, нешто тргна наопаку. <ph name="BEGIN_LINK" />Поправете ги проблемите со ажурирањето на Chrome и со неуспешните ажурирања.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Последен потсетник: инсталацијата <ph name="BEGIN_BOLD" />ќе го избрише целиот хард диск<ph name="END_BOLD" />. Погрижете се дека сте направиле бекап од податоците што ви се важни.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Штом ќе започне инсталирањето нема да може да се откаже.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Мрежно најавување - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome е во заднински режим.</translation>
 <translation id="3059710691562604940">„Безбедното прелистување“ е исклучено. Chrome препорачува да го вклучите.</translation>
@@ -137,7 +135,6 @@
 <translation id="4251615635259297716">Да се поврзат вашите податоци на Chrome со оваа сметка?</translation>
 <translation id="4281844954008187215">Услови за користење</translation>
 <translation id="4293420128516039005">Најавете се за да го синхронизирате и персонализирате Chrome на сите ваши уреди</translation>
-<translation id="429583012151745428">Инсталирањето е во тек. Не исклучувајте го уредот. Инсталирањето не треба да трае повеќе од дваесет минути. Компјутерот автоматски ќе се исклучи по инсталирањето.</translation>
 <translation id="4325083532956419387">Верзија на Chrome OS</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -183,7 +180,6 @@
 <translation id="5430073640787465221">Вашата датотека со претпочитани вредности е оштетена или неважечка.
 
 Google Chrome не може да ги обнови вашите поставки.</translation>
-<translation id="5486618155264784386">Инсталирај Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome се обидува да прикаже лозинки.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Ако некоја поставка не се прикажува на страницава, погледнете во <ph name="LINK_BEGIN" />
@@ -238,7 +234,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7155997830309522122">Ако е така, изменете ја зачуваната лозинка во Chrome за да се совпаѓа со новата лозинка.</translation>
 <translation id="7161904924553537242">Добре дојдовте на Google Chrome</translation>
 <translation id="7242029209006116544">Се пријавувате со управувана сметка и на нејзиниот администратор му давате контрола врз вашиот профил на Google Chrome. Вашите податоци на Chrome, како апликации, обележувачи, историја, лозинки и други поставки, трајно ќе се поврзат со <ph name="USER_NAME" />. Ќе може да ги избришете податоците преку Информациска табла на сметките на Google, но нема да може да ги поврзувате со друга сметка. Изборно може да направите и нов профил за постоечките податоци од Chrome за да бидат одделни. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Инсталирањето на Chrome OS е во тек</translation>
 <translation id="7295052994004373688">Овој јазик се користи за приказ на корисничкиот интерфејс на Google Chrome</translation>
 <translation id="7296210096911315575">Важни информации за користење и безбедност</translation>
 <translation id="7308322188646931570">На Chrome му треба пристап до меморијата за да презема датотеки</translation>

@@ -180,6 +180,7 @@
 <translation id="2139186145475833000">Ավելացնել գլխավոր էկրանին</translation>
 <translation id="2141396931810938595">Ձեր օգտագործման հիման վրա</translation>
 <translation id="214888715418183969">Ընտրեք, թե ինչ տվյալներ եք պատրաստ փոխանցել Chrome-ին։ Ձեր տրամադրած ցուցանիշները կօգնեն բարելավել Chrome-ի գործառույթները, աշխատանքի արդյունավետությունը և կայունությունը։</translation>
+<translation id="2149973817440762519">Փոփոխել էջանիշը</translation>
 <translation id="2154484045852737596">Քարտի փոփոխություն</translation>
 <translation id="2154710561487035718">Պատճենել URL-ը</translation>
 <translation id="2156074688469523661">Այլ կայքեր (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -640,7 +641,6 @@
 <translation id="4943872375798546930">Արդյունքներ չկան</translation>
 <translation id="4957722034734105353">Իմանալ ավելին…</translation>
 <translation id="4961107849584082341">Թարգմանել կայքը</translation>
-<translation id="4970824347203572753">Գործառույթը հասանելի չէ ձեր երկրում</translation>
 <translation id="4971735654804503942">Ավելի արագ և արդյունավետ պաշտպանություն վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից։ Զգուշացնում է ձեզ գաղտնաբառերի արտահոսքի մասին։ Պահանջվում է դիտարկիչի աշխատանքի մասին տվյալների ուղարկում Google-ին։</translation>
 <translation id="497421865427891073">Առաջ գնալ</translation>
 <translation id="4988210275050210843">Ֆայլը ներբեռնվում է (<ph name="MEGABYTES" />)։</translation>
@@ -724,7 +724,6 @@
 <translation id="5483197086164197190">Նավիգացիա Chrome-ում</translation>
 <translation id="5487521232677179737">Ջնջել տվյալները</translation>
 <translation id="549025011754480756">Ինչպես որոնել ձայնի միջոցով</translation>
-<translation id="5500777121964041360">Գործառույթը կարող է հասանելի չլինել ձեր երկրում։</translation>
 <translation id="5512137114520586844">Այս հաշիվը կառավարվում է <ph name="PARENT_NAME" /> հաշվի կողմից:</translation>
 <translation id="5514904542973294328">Անջատվել է այս սարքի ադմինիստրատորի կողմից</translation>
 <translation id="5515439363601853141">Գաղտնաբառը տեսնելու համար ապակողպեք էկրանը</translation>
@@ -878,7 +877,6 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="6364438453358674297">Հեռացնե՞լ առաջարկը պատմությունից:</translation>
 <translation id="6378173571450987352">Տեղեկություններ․ տեսակավորված է ըստ օգտագործված տվյալների ծավալի</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> հավելվածը կբացվի Chrome-ում։ Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և Chrome OS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։</translation>
-<translation id="6381421346744604172">Մգացնել կայքերը</translation>
 <translation id="6395288395575013217">ՀՂՈՒՄ</translation>
 <translation id="6397616442223433927">Կապը վերականգնվեց</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" />՝ <ph name="VIOLATED_URL" /> էջում</translation>
@@ -1209,7 +1207,6 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="8218052821161047641">Արագ էջ</translation>
 <translation id="8218622182176210845">Կառավարեք ձեր հաշիվը</translation>
 <translation id="8223642481677794647">Լրահոսի քարտի ընտրացանկ</translation>
-<translation id="8224471946457685718">Ներբեռնել հոդվածներ Wi-Fi-ի միջոցով</translation>
 <translation id="8250920743982581267">Փաստաթղթեր</translation>
 <translation id="825412236959742607">Այս էջը չափազանց շատ հիշողություն է օգտագործում, այդ պատճառով Chrome-ը որոշակի բովանդակություն հեռացրել է:</translation>
 <translation id="8260126382462817229">Փորձեք նորից մուտք գործել</translation>

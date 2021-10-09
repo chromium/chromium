@@ -43,7 +43,6 @@
 <translation id="2560420686485554789">Файлдарды жүктөп алуу үчүн Chromium сактагычка мүмкүнчүлүк алышы керек</translation>
 <translation id="2572494885440352020">Chromium Жардамчы</translation>
 <translation id="2577788541081224677">Chromium'дагы файлдарды бардык түзмөктөрүңүздө колдонуу үчүн аккаунтуңузга кирип, шайкештирүүнү күйгүзүңүз.</translation>
-<translation id="2580426763510374355">Chromium OS'ту орнотуу</translation>
 <translation id="2583187216237139145">Бул профилди колдонуп жатканда Chromium'да топтолгон бардык маалыматты (түзүлгөн кыстармалар, таржымал, сырсөздөр жана башка жөндөөлөр) жумуш профилинин администратору өчүрө алат. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Жаңыртууну колдонуу үчүн Chromium OS өчүрүлүп күйгүзүлүшү керек.</translation>
 <translation id="2648074677641340862">Орнотулуп жатканда иш тутумунда ката кетти. Chromium'ду кайра жүктөп алыңыз.</translation>
@@ -56,8 +55,6 @@
 <translation id="2847479871509788944">Chromium'дан чыгарып салуу…</translation>
 <translation id="2885378588091291677">Тапшырмаларды башкаргыч</translation>
 <translation id="2910007522516064972">&amp;Chromium жөнүндө</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Акыркы эстеткич: Тутумду орнотсоңуз, <ph name="BEGIN_BOLD" />катуу дискиңиз толугу менен тазаланат<ph name="END_BOLD" />. Керектүү дайын-даректердин камдык көчүрмөлөрү сакталганын текшериңиз.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Орнотулуп баштагандан кийин аны жокко чыгарууга болбойт.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium жаңыртылган</translation>
 <translation id="2983934633046890458">Chromium cырсөздөрдү өзгөртүүгө аракет кылууда.</translation>
 <translation id="3032706164202344641">Chromium сырсөздөрүңүздү текшере албай жатат. Кийинчерээк кайталаңыз.</translation>
@@ -81,7 +78,6 @@
 <translation id="3350761136195634146">Бул аккаунт менен Chromium профили мурунтан эле түзүлгөн</translation>
 <translation id="3406848076815591792">Учурдагы Chromium профилине өтөсүзбү?</translation>
 <translation id="3430503420100763906">Chromium профилдери менен Chromium'дагы маалыматты өзүнчө сактай аласыз. Досторуңуз менен үй-бүлөңүз үчүн профилдерди түзүңүз же жумуш менен эс алууну бири-бири менен аралаштырбаңыз.</translation>
-<translation id="3433271666494956603">Chromium OS орнотулууда</translation>
 <translation id="347328004046849135">Chromium уурдалган сырсөз менен киргениңизде эскертет</translation>
 <translation id="3474745554856756813">Ушуну менен түзмөктөгү <ph name="ITEMS_COUNT" /> нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chromium'га <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> Chromium профилдерин которо алат</translation>
@@ -109,7 +105,6 @@
 <translation id="4264410486868823224">Бул түзмөктү колдонуудан мурун, <ph name="MANAGER" /> төмөнкү Тейлөө шарттарын окуп, кабыл алууңузду талап кылат. Бул шарттар Chromium OS шарттарын кеңейтип, өзгөртүп же чектебейт.</translation>
 <translation id="4271805377592243930">Chromium'дан жардам алыңыз</translation>
 <translation id="4285930937574705105">Белгисиз катадан улам, орнотулбай калды. Учурда Chromium иштеп жаткан болсо, аны жаап туруп, дагы аракет кылып көрүңүз.</translation>
-<translation id="429583012151745428">Орнотулуп жатат. Түзмөктү өчүрбөңүз. Бул жыйырма мүнөткө жетпеген убакытты алат. Орнотулгандан кийин компьютер автоматтык түрдө өчүрүлөт.</translation>
 <translation id="4407044323746248786">Баары бир Chromium'дан чыгасызбы?</translation>
 <translation id="4415566066719264597">Chromium'га фондук режимде иштөөгө уруксат берүү</translation>
 <translation id="4423735387467980091">Chromium'ду өзгөчөлөштүрүү жана көзөмөлдөө</translation>
@@ -203,7 +198,6 @@
 <translation id="6734291798041940871">Chromium компьютериңиздин бардык колдонуучулары үчүн орнотулуп коюлган.</translation>
 <translation id="673636774878526923">Chromium'дагы файлдарды бардык түзмөктөрүңүздө колдонуу үчүн аккаунтуңузга кирип, шайкештирүүнү күйгүзүңүз.</translation>
 <translation id="6774082503108938489">Ата-энеңиз Chromium үчүн "Сайттарга, колдонмолорго жана кеңейтүүлөргө уруксаттарды" өчүрүп койгон. Бул <ph name="EXTENSION_TYPE_PARAMETER" /> кеңейтүүсүн иштетүүгө болбойт.</translation>
-<translation id="6827182711503025204">Chromium OS'ту орнотсоңуз, түзмөгүңүздөгү бардык дайын-даректер кайрадан жазылат.</translation>
 <translation id="6847869444787758381">Chromium сырсөздөрүңүздү башка бирөөлөр билип алса сизге кабарлайт</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium'га көчүрүлдү)</translation>

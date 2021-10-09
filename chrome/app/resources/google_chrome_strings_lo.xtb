@@ -88,8 +88,6 @@
 <translation id="2926676257163822632">ລະຫັດຜ່ານງ່າຍແມ່ນລະຫັດຜ່ານທີ່ເດົາໄດ້ງ່າຍ. ອະນຸຍາດໃຫ້ Chrome <ph name="BEGIN_LINK" />ສ້າງ ແລະ ຈື່ລະຫັດຜ່ານຍາກສຳລັບທ່ານ<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome ຕ້ອງການການອະນຸຍາດກ້ອງຖ່າຍຮູບສຳລັບເວັບໄຊນີ້</translation>
 <translation id="2929907241665500097">Chrome ບໍ່ອັບເດດ, ມີບາງຢ່າງຜິດພາດ. <ph name="BEGIN_LINK" />ແກ້ໄຂບັນຫາການອັບເດດ Chrome ແລະ ການອັບເດດທີ່ບໍ່ສຳເລັດ.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />ການແຈ້ງເຕືອນເທື່ອສຸດທ້າຍ: ການຕິດຕັ້ງ <ph name="BEGIN_BOLD" />ຈະລຶບທັງຮາດໄດຣຟ໌ຂອງທ່ານອອກ<ph name="END_BOLD" />. ກະລຸນາກວດສອບວ່າທ່ານສຳຮອງຂໍ້ມູນທີ່ທ່ານຕ້ອງການໄວ້ໝົດແລ້ວ.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />ຫຼັງຈາກເລີ່ມການຕິດຕັ້ງແລ້ວມັນຈະບໍ່ສາມາດຍົກເລີກໄດ້.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ການເຂົ້າສູ່ລະບົບເຄືອຂ່າຍ - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome ຢູ່ໃນໂໝດພື້ນຫຼັງ.</translation>
 <translation id="3059710691562604940">Safe Browsing ປິດຢູ່. Chrome ແນະນຳໃຫ້ເປີດມັນ.</translation>
@@ -137,7 +135,6 @@
 <translation id="4251615635259297716">ລິ້ງ Chrome ຂອງ​ທ່ານກັບບັນຊີນີ້ບໍ?</translation>
 <translation id="4281844954008187215">ຂໍ້ກໍານົດການບໍລິການ</translation>
 <translation id="4293420128516039005">ເຂົ້າສູ່ລະບົບເພື່ອຊິ້ງຂໍ້ມູນ ແລະ ປັບແຕ່ງ Chrome ໃຫ້ເປັນແບບສ່ວນຕົວໃນທົ່ວອຸປະກອນຂອງທ່ານ</translation>
-<translation id="429583012151745428">ກຳລັງຕິດຕັ້ງຢູ່. ຢ່າປິດອຸປະກອນ. ການຕິດຕັ້ງຄວນຈະໃຊ້ເວລາບໍ່ເກີນຊາວນາທີ. ເຄື່ອງນີ້ຈະປິດອັດຕະໂນມັດຫຼັງຈາກການຕິດຕັ້ງ.</translation>
 <translation id="4325083532956419387">ເວີຊັນ Chrome OS</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -183,7 +180,6 @@
 <translation id="5430073640787465221">ໄຟລ໌ທີ່ມັກຂອງທ່ານຂັດຂ້ອງ ຫຼືໃຊ້ບໍ່ໄດ້.
 
 Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ່າໄດ້.</translation>
-<translation id="5486618155264784386">ຕິດຕັ້ງ Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome ກໍາລັງພະຍາຍາມສະແດງລະຫັດຜ່ານ.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">ຖ້າການຕັ້ງຄ່າບໍ່ສະແດງໃນໜ້ານີ້, ກະລຸນາກວດເບິ່ງໃນ <ph name="LINK_BEGIN" />
@@ -238,7 +234,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7155997830309522122">ຖ້າເປັນເຊັ່ນນັ້ນ, ກະລຸນາແກ້ໄຂລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຂອງທ່ານໃນ Chrome ເພື່ອໃຫ້ມັນກົງກັບລະຫັດຜ່ານໃໝ່ຂອງທ່ານ.</translation>
 <translation id="7161904924553537242">ຍິນ​ດີ​ຕ້ອນ​ຮັບສູ່ Google Chrome</translation>
 <translation id="7242029209006116544">ທ່ານກໍາລັງລົງຊື່ເຂົ້າໃຊ້ດ້ວຍບັນຊີທີ່ມີການຄຸ້ມຄອງ ແລະໃຫ້ຜູ້ຄວບຄຸມຂອງມັນຄວບຄຸມໂປຣໄຟລ໌ Google Chrome ຂອງທ່ານ. ຂໍ້ມູນ Chrome ຂອງທ່ານ, ເຊັ່ນ ແອັບ, ບຸກມາກສ໌, ປະຫວັດ, ລະຫັດຜ່ານ, ແລະການຕັ້ງຄ່າອື່ນໆຂອງທ່ານຈະຖືກຜູກ​ມັດກັບ <ph name="USER_NAME" /> ຢ່າງຖາວອນ. ທ່ານຈະສາມາດລຶບຂໍ້ມູນນີ້ໄດ້ຜ່ານ Google Accounts Dashboard, ແຕ່ທ່ານຈະບໍ່ສາມາດເອົາຂໍ້ມູນນີ້ເຂົ້າຮ່ວມກັບບັນຊີອື່ນໄດ້. ​ໂດຍ​ເລືອກ​ໄດ້ ທ່ານສາມາດສ້າງໂປຣໄຟລ໌​ໃໝ່ ເພື່ອຮັກສາຂໍ້ມູນ Chrome ທີ່​ມີ​ຢູ່ຂອງທ່ານ​ແຍກຕ່າງຫາກ. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">ກຳລັງຕິດຕັ້ງ Chrome OS ຢູ່</translation>
 <translation id="7295052994004373688">ລະບົບໃຊ້ພາສານີ້ເພື່ອສະແດງສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ Google Chrome</translation>
 <translation id="7296210096911315575">ຂໍ້ມູນດ້ານການໃຊ້ ແລະ ຄວາມປອດໄພທີ່ສຳຄັນ</translation>
 <translation id="7308322188646931570">Chrome ຕ້ອງການເຂົ້າເຖິງບ່ອນເກັບຂໍ້ມູນເພື່ອດາວໂຫຼດໄຟລ໌</translation>

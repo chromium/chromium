@@ -87,8 +87,6 @@
 <translation id="2926676257163822632">Os contrasinais pouco seguros son fáciles de adiviñar. Permite que Chrome <ph name="BEGIN_LINK" />cree e lembre contrasinais seguros por ti<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome necesita permiso de acceso á cámara para este sitio</translation>
 <translation id="2929907241665500097">Chrome non se actualizou, xa que se produciu un erro. <ph name="BEGIN_LINK" />Soluciona os problemas de actualización de Chrome e as actualizacións que non se puidesen realizar<ph name="END_LINK" />.</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Recordatorio: Coa instalación <ph name="BEGIN_BOLD" />borrarase toda a unidade de disco duro<ph name="END_BOLD" />. Asegúrate de ter unha copia de seguranza dos datos que che sexan importantes.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Unha vez que comeza a instalación, non se pode cancelar.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> (inicio de sesión de rede, Chrome)</translation>
 <translation id="3037838751736561277">Google Chrome está no modo de segundo plano.</translation>
 <translation id="3059710691562604940">A opción Navegación segura está desactivada. Chrome recomenda activala.</translation>
@@ -136,7 +134,6 @@
 <translation id="4251615635259297716">Queres ligar os teus datos de Chrome con esta conta?</translation>
 <translation id="4281844954008187215">Condicións de servizo</translation>
 <translation id="4293420128516039005">Inicia sesión para sincronizar e personalizar Chrome nos teus dispositivos</translation>
-<translation id="429583012151745428">A instalación está en curso. Non apagues o dispositivo, xa que o proceso non debería tardar máis de vinte minutos. En canto remate a instalación, o equipo apagarase automaticamente.</translation>
 <translation id="4325083532956419387">Versión de Chrome OS</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -182,7 +179,6 @@
 <translation id="5430073640787465221">O teu ficheiro de preferencias está danado ou non é válido.
 
 Google Chrome non pode recuperar a túa configuración.</translation>
-<translation id="5486618155264784386">Instalar Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome está intentando mostrar contrasinais.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Se non se mostra algunha opción de configuración nesta páxina, accede á <ph name="LINK_BEGIN" />
@@ -237,7 +233,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7155997830309522122">Se o fixeches, substitúe o contrasinal gardado en Chrome polo novo.</translation>
 <translation id="7161904924553537242">Dámosche a benvida a Google Chrome</translation>
 <translation id="7242029209006116544">Vas iniciar sesión cunha conta administrada, o que significa que concederás ao seu administrador control sobre o teu perfil de Google Chrome. Os teus datos de Chrome como, por exemplo, as aplicacións, os marcadores, o historial, os contrasinais e outras opcións ligaranse de forma permanente a <ph name="USER_NAME" />. Poderás eliminar estes datos a través do Panel de control de contas de Google, pero non poderás asocialos a outra conta. De maneira opcional, podes crear un novo perfil para manter separados os teus datos de Chrome. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">A instalación de Chrome OS está en curso</translation>
 <translation id="7295052994004373688">Este é o idioma no que se mostra a IU de Google Chrome</translation>
 <translation id="7296210096911315575">Información importante sobre o uso e a seguranza</translation>
 <translation id="7308322188646931570">Chrome necesita acceder ao almacenamento para descargar ficheiros</translation>

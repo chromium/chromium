@@ -16,6 +16,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1066060668811609597">Gerir a sincronização</translation>
 <translation id="1076421457278169141">Código digitalizado</translation>
 <translation id="1084365883616172403">Publicação no Facebook concluída.</translation>
+<translation id="1086486568852410168">Pesquisar com o Google Lens</translation>
 <translation id="1103523840287552314">Traduzir sempre <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Aceitar e Continuar</translation>
 <translation id="110724200315609752">Mudar para a janela aberta</translation>
@@ -57,6 +58,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1400642268715879018">Últimas 4 semanas</translation>
 <translation id="1407135791313364759">Abrir tudo</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1434356225517321998">O seu navegador é gerido. <ph name="BEGIN_LINK" />Detalhes<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Ocultar a palavra-passe</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> itens</translation>
 <translation id="149095475893949513">Este Website está a tentar transferir um perfil de configuração.</translation>
@@ -120,6 +122,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="209018056901015185">Pedir site para computador</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> itens movidos</translation>
+<translation id="2122754583996902531">O seu navegador é gerido. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="212623074644302906">Pedir para adicionar à Lista de leitura</translation>
 <translation id="2139867232736819575">Pesquisar o texto que copiou</translation>
 <translation id="214201757571129614">Iniciar sessão…</translation>
@@ -128,6 +131,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2218443599109088993">Diminuir zoom</translation>
 <translation id="2230173723195178503">Página Web carregada</translation>
 <translation id="2239626343334228536">A limpar os dados de navegação…</translation>
+<translation id="2256933947031277845">A sua organização permite-lhe iniciar sessão apenas com determinadas contas.</translation>
 <translation id="225943865679747347">Código de erro: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Adicionar conta</translation>
 <translation id="2268044343513325586">Refinar</translation>
@@ -220,7 +224,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3131206671572504478">Bloquear tudo</translation>
 <translation id="313283613037595347">Crie um novo separador de navegação anónima.</translation>
 <translation id="3153862085237805241">Guardar cartão</translation>
-<translation id="315401415709252194">A sua organização requer que inicie sessão.</translation>
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
 <translation id="3157684681743766797">Marcar tudo…</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -258,6 +261,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="345565170154308620">Gerir palavras-passe…</translation>
 <translation id="3469166899695866866">Pretende parar a transferência?</translation>
 <translation id="3470502288861289375">A copiar...</translation>
+<translation id="3472993688462687965">Ao ativar a sincronização, os dados podem ser limitados em função do que a sua organização permitiu.</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Mês de validade</translation>
 <translation id="3482959374254649722">A sincronizar os seus separadores...</translation>
@@ -369,10 +373,12 @@ Siga os passos abaixo:</translation>
 
 Os dados estão encriptados com a sua frase de acesso de sincronização. Introduza-a para iniciar a sincronização.</translation>
 <translation id="4689564913179979534">Gerir métodos de pagamento</translation>
+<translation id="469022783543509074">A sua sessão foi terminada</translation>
 <translation id="470966556546083668">Não ative a sincronização</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4747097190499141774">A encriptação da frase de acesso não inclui métodos de pagamento nem endereços do Google Pay. Apenas alguém que conheça a sua frase de acesso pode ler os seus dados encriptados. A frase de acesso não é enviada para a Google nem armazenada pela mesma. Se se esquecer da frase de acesso ou pretender alterar esta definição, tem de repor a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Novo separador de navegação anónima</translation>
+<translation id="4764612367328936189">A sua organização permite-lhe iniciar sessão apenas com determinadas contas. As contas que não estão autorizadas estão ocultas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4775879719735953715">Navegador predefinido</translation>
 <translation id="4778644898150334464">Utilize outra palavra-passe</translation>
 <translation id="4802417911091824046">A encriptação da frase de acesso não inclui métodos de pagamento nem endereços do Google Pay.
@@ -829,6 +835,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="9081058212938299310">Pretende atualizar a palavra-passe de <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 item</translation>
 <translation id="9083838294503912307">Para sincronizar e personalizar dados entre dispositivos, ative a sincronização.</translation>
+<translation id="9084677839771512880">A sua organização limita o que pode sincronizar. <ph name="BEGIN_LINK" />Detalhes<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Palavra-passe sugerida do Chrome:</translation>
 <translation id="9094033019050270033">Atualizar a palavra-passe</translation>
 <translation id="9100610230175265781">Frase de acesso obrigatória</translation>

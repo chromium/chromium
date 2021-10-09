@@ -277,7 +277,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3087734570205094154">Alt</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> dəyişdirin. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Kursoru hərəkət etdirin</translation>
-<translation id="3098580329624789136">"<ph name="QUERY" />" üçün <ph name="INTENT" /> əldə edin</translation>
 <translation id="3100274880412651815">Çəkim rejimini qapadın</translation>
 <translation id="3105917916468784889">Skrinşot çəkin</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -480,7 +479,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4477892968187500306">Bu cihaz Google tərəfindən doğrulanmamış tətbiqlər ehtiva edə bilər.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Ayrılmış cihazlar</translation>
-<translation id="4485060137115666462">Sağ düymə ilə toxunduqda və ya basıb saxladıqda Assistent seçiminiz üçün izahat, tərcümə və ya vahidin çevrilməsi kimi məlumatı göstərir.</translation>
 <translation id="4505050298327493054">Aktiv masa.</translation>
 <translation id="4513946894732546136">Geri əlaqə</translation>
 <translation id="4518404433291145981">Chromebook'u kiliddən çıxarmaq üçün əvvəlcə telefonunuzu kiliddən çıxarın</translation>
@@ -674,7 +672,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5947494881799873997">Geri dönün</translation>
 <translation id="595202126637698455">Fəaliyyət izləməsi aktiv edildi</translation>
 <translation id="5958529069007801266">Nəzarət olunan istifadəçi</translation>
-<translation id="5960825221082587934">Assistentin seçiminiz üçün izahat, tərcümə və ya vahidin çevrilməsi kimi məlumatları göstərməsinə imkan verin.</translation>
 <translation id="5977415296283489383">Qulaqlıq</translation>
 <translation id="5978382165065462689">Uzaq Yardım vasitəsilə ekranınızın kontrolunu paylaşır.</translation>
 <translation id="5980301590375426705">Qonaq hesabından çıxın</translation>
@@ -708,7 +705,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6179832488876878285">Vacib fayllarınızı buraya bərkidə bilərsiniz. Başlamaq üçün Fayllar tətbiqini açın.</translation>
 <translation id="622484624075952240">Aşağı</translation>
 <translation id="6231419273573514727">Periferik cihaz performansı məhdud ola bilər</translation>
-<translation id="6236290670123303279">Ayarları idarə edin</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Horizontal formada kilidləndi</translation>
 <translation id="6259254695169772643">Seçmək üçün fırçadan istifadə edin</translation>
@@ -1027,7 +1023,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8683506306463609433">Performansın izlənməsi aktivdir</translation>
 <translation id="8703634754197148428">Yazmanı başladın. Yazma başladıqda Alt + Shift + L düymələri ilə rəfə keçin və yazmanın dayandırılması düyməsini tapın</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bu funksiyanı idarə etmək üçün Sol və ya Sağ ox düyməsini istifadə edin.</translation>
-<translation id="8712637175834984815">Anladım</translation>
 <translation id="8721053961083920564">Səsi aktiv edin. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tam ekran çəkimi</translation>
 <translation id="8734991477317290293">Bu düymələrininızı oğurlamağa cəhd edə bilər</translation>
@@ -1055,7 +1050,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8876661425082386199">Bağlantını yoxlayın</translation>
 <translation id="8877788021141246043">Xatırlatma ayarlayın</translation>
 <translation id="8878886163241303700">Ekran böyüdülür</translation>
-<translation id="8883473964424809116">Google Assistent ayarlarını açmaq üçün klikləyin.</translation>
 <translation id="8884537526797090108">Məxfi məzmunu yazmaq olmur</translation>
 <translation id="890616557918890486">Mənbəni dəyişin</translation>
 <translation id="8909138438987180327">Batareya <ph name="PERCENTAGE" /> faizdir.</translation>

@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">底部</translation>
 <translation id="3090989381251959936">开启/关闭“<ph name="FEATURE_NAME" />”功能。<ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">移动光标</translation>
-<translation id="3098580329624789136">获取“<ph name="QUERY" />”的<ph name="INTENT" /></translation>
 <translation id="3100274880412651815">关闭截屏/录屏模式</translation>
 <translation id="3105917916468784889">生成屏幕截图</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />（蓝牙）</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">此设备可能包含未经 Google 验证的应用。</translation>
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4481530544597605423">未配对的设备</translation>
-<translation id="4485060137115666462">只要您右键点击或长按所选内容，Google 助理即会显示与其相关的信息（例如定义、翻译或单位换算）。</translation>
 <translation id="4505050298327493054">处于活动状态的桌面。</translation>
 <translation id="4513946894732546136">反馈</translation>
 <translation id="4518404433291145981">若要解锁 Chromebook，请先解锁您的手机</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">还原</translation>
 <translation id="595202126637698455">已启用性能跟踪</translation>
 <translation id="5958529069007801266">受监管用户</translation>
-<translation id="5960825221082587934">让 Google 助理显示与您所选内容相关的信息（例如定义、翻译或单位换算）。</translation>
 <translation id="5977415296283489383">耳机</translation>
 <translation id="5978382165065462689">正在通过远程协助共享您屏幕的控制权限。</translation>
 <translation id="5980301590375426705">退出访客模式</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">您可将自己的重要文件固定在此处。打开“文件”应用即可开始操作。</translation>
 <translation id="622484624075952240">向下箭头键</translation>
 <translation id="6231419273573514727">外围设备的性能可能会受到限制</translation>
-<translation id="6236290670123303279">管理设置</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">已锁定为横向</translation>
 <translation id="6259254695169772643">请使用您的触控笔进行选择</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">正在跟踪性能</translation>
 <translation id="8703634754197148428">开始录制。录制开始后，使用 Alt + Shift + L 可转到任务栏并从中找到“停止录制”按钮</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" />使用向左键或向右键即可管理此功能。</translation>
-<translation id="8712637175834984815">知道了</translation>
 <translation id="8721053961083920564">开启/关闭声音。<ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">截取整个屏幕</translation>
 <translation id="8734991477317290293">当前连接的键盘可能会试图窃取您的击键操作</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">请检查您的网络连接状况</translation>
 <translation id="8877788021141246043">设置提醒</translation>
 <translation id="8878886163241303700">正在扩展屏幕</translation>
-<translation id="8883473964424809116">点击即可打开 Google 助理设置。</translation>
 <translation id="8884537526797090108">无法录制机密内容</translation>
 <translation id="890616557918890486">更改来源</translation>
 <translation id="8909138438987180327">剩余的电池电量为 <ph name="PERCENTAGE" />%。</translation>

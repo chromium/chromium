@@ -274,7 +274,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3087734570205094154">Spodok</translation>
 <translation id="3090989381251959936">Prepnúť funkciu <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Presunúť kurzor</translation>
-<translation id="3098580329624789136">Získajte <ph name="INTENT" /> pre dopyt <ph name="QUERY" /></translation>
 <translation id="3100274880412651815">Zrušiť režim snímania</translation>
 <translation id="3105917916468784889">Nasnímať obrazovku</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -476,7 +475,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4477892968187500306">Toto zariadenie môže obsahovať aplikácie, ktoré neboli overené Googlom.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Nespárované zariadenia</translation>
-<translation id="4485060137115666462">Po kliknutí pravým tlačidlom alebo dlhom stlačení zobrazí Asistent informácie pre váš výber, napríklad definíciu, preklad alebo prevod jednotiek.</translation>
 <translation id="4505050298327493054">Aktívna plocha.</translation>
 <translation id="4513946894732546136">Spätná väzba</translation>
 <translation id="4518404433291145981">Ak chcete Chromebook odomknúť, najprv odomknite telefón</translation>
@@ -668,7 +666,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5947494881799873997">Vrátiť</translation>
 <translation id="595202126637698455">Sledovanie výkonnosti je povolené</translation>
 <translation id="5958529069007801266">Kontrolovaný používateľ</translation>
-<translation id="5960825221082587934">Nechajte si od Asistenta zobrazovať informácie súvisiace s vaším výberom, napríklad definíciu, preklad alebo konverziu jednotiek.</translation>
 <translation id="5977415296283489383">Slúchadlo</translation>
 <translation id="5978382165065462689">Ovládanie obrazovky sa zdieľa prostredníctvom Vzdialenej pomoci.</translation>
 <translation id="5980301590375426705">Ukončiť rel. hosťa</translation>
@@ -702,7 +699,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6179832488876878285">Tu si môžete pripnúť dôležité súbory. Začnite otvorením aplikácie Súbory.</translation>
 <translation id="622484624075952240">Dole</translation>
 <translation id="6231419273573514727">Výkonnosť periférie môže byť obmedzená</translation>
-<translation id="6236290670123303279">Spravovať nastavenia</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Uzamknuté vodorovne</translation>
 <translation id="6259254695169772643">Vyberte pomocou dotykového pera</translation>
@@ -1020,7 +1016,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8683506306463609433">Trasovanie výkonnosti je aktívne</translation>
 <translation id="8703634754197148428">Spustiť nahrávanie. Po spustení nahrávania nájdete tlačidlo na jeho zastavenie v poličke, kam prejdete pomocou skratky Alt + Shift + L.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Spravujte túto funkciu pomocou ľavej alebo pravej šípky.</translation>
-<translation id="8712637175834984815">Dobre</translation>
 <translation id="8721053961083920564">Prepínač zvuku. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Záznam celej obrazovky</translation>
 <translation id="8734991477317290293">Je možné, že sa pokúša ukradnúť vaše stlačenia klávesov</translation>
@@ -1048,7 +1043,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8876661425082386199">Skontrolujte pripojenie</translation>
 <translation id="8877788021141246043">Nastaviť pripomenutie</translation>
 <translation id="8878886163241303700">Rozšírenie obrazovky</translation>
-<translation id="8883473964424809116">Kliknutím otvorte nastavenia Asistenta Google.</translation>
 <translation id="8884537526797090108">Nie je možné nahrať dôverný obsah</translation>
 <translation id="890616557918890486">Zmeniť zdroj</translation>
 <translation id="8909138438987180327">Úroveň stavu batérie: <ph name="PERCENTAGE" /> %.</translation>

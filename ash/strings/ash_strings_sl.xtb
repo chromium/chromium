@@ -277,7 +277,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3087734570205094154">Na dno</translation>
 <translation id="3090989381251959936">Preklop funkcije <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Premik kazalca</translation>
-<translation id="3098580329624789136">Pridobivanje namena <ph name="INTENT" /> za »<ph name="QUERY" />«</translation>
 <translation id="3100274880412651815">Opusti način zajema</translation>
 <translation id="3105917916468784889">Izdelava posnetka zaslona</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -480,7 +479,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4477892968187500306">Ta naprava morda vsebuje aplikacije, ki jih ni preveril Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Naprave, za katere je bila preklicana seznanitev</translation>
-<translation id="4485060137115666462">Če kliknete z desnim gumbom ali pridržite, vam Pomočnik pokaže informacije, kot je definicija, prevod ali pretvorba enot za izbor.</translation>
 <translation id="4505050298327493054">Aktivno namizje.</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
 <translation id="4518404433291145981">Če želite odkleniti Chromebook, najprej odklenite telefon.</translation>
@@ -674,7 +672,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5947494881799873997">Razveljavi</translation>
 <translation id="595202126637698455">Sledenje učinkovitosti delovanja je omogočeno</translation>
 <translation id="5958529069007801266">Zaščiteni uporabnik</translation>
-<translation id="5960825221082587934">Naj vam Pomočnik prikazuje informacije, kot je definicija, prevod ali pretvorba enot za izbor.</translation>
 <translation id="5977415296283489383">Slušalke</translation>
 <translation id="5978382165065462689">Deljenje nadzora nad zaslonom prek pomoči na daljavo.</translation>
 <translation id="5980301590375426705">Zapusti sejo gosta</translation>
@@ -708,7 +705,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6179832488876878285">Tukaj lahko pripnete pomembne datoteke. Če želite začeti, odprite aplikacijo Datoteke.</translation>
 <translation id="622484624075952240">Dol</translation>
 <translation id="6231419273573514727">Delovanje zunanje dodatne opreme bo morda omejeno</translation>
-<translation id="6236290670123303279">Upravljanje nastavitev</translation>
 <translation id="6237231532760393653">1x</translation>
 <translation id="6254629735336163724">Zaklenjeno na ležeče</translation>
 <translation id="6259254695169772643">Uporabite pisalo za izbiranje</translation>
@@ -1027,7 +1023,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="8683506306463609433">Sledenje učinkovitosti delovanja je aktivno</translation>
 <translation id="8703634754197148428">Začetek snemanja. Ko se snemanje začne, pritisnite Alt + Shift + L, da se pomaknete na polico, in poiščite gumb za ustavitev snemanja.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Upravljajte to funkcijo s tipkama puščica levo ali desno.</translation>
-<translation id="8712637175834984815">Razumem</translation>
 <translation id="8721053961083920564">Preklop glasnosti. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Celozaslonski zajem</translation>
 <translation id="8734991477317290293">Morda poskuša beležiti vse, kar natipkate</translation>
@@ -1055,7 +1050,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="8876661425082386199">Preverjanje povezave</translation>
 <translation id="8877788021141246043">Nastavi opomnik</translation>
 <translation id="8878886163241303700">Razširjanje zaslona</translation>
-<translation id="8883473964424809116">Kliknite, če želite odpreti nastavitve Pomočnika Google.</translation>
 <translation id="8884537526797090108">Zaupne vsebine ni mogoče posneti</translation>
 <translation id="890616557918890486">Spremeni vir</translation>
 <translation id="8909138438987180327">Akumulator je <ph name="PERCENTAGE" />-odstotno napolnjen.</translation>

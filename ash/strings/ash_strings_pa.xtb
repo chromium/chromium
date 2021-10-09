@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">ਹੇਠਲਾ</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">ਕਰਸਰ ਹਿਲਾਓ</translation>
-<translation id="3098580329624789136">"<ph name="QUERY" />" ਲਈ <ph name="INTENT" /> ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="3100274880412651815">ਕੈਪਚਰ ਮੋਡ ਨੂੰ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="3105917916468784889">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਵੋ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ਬਲੂਟੁੱਥ)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">ਇਸ ਡੀਵਾਈਸ ਵਿੱਚ ਸ਼ਾਇਦ ਅਜਿਹੀਆਂ ਐਪਾਂ ਹੋਣ ਜਿਨ੍ਹਾਂ ਦੀ ਪੁਸ਼ਟੀ Google ਨੇ ਨਹੀਂ ਕੀਤੀ ਹੈ।</translation>
 <translation id="4479639480957787382">ਈਥਰਨੈਟ</translation>
 <translation id="4481530544597605423">ਅਣ-ਜੋੜਾਬੱਧ ਕੀਤੀਆਂ ਡੀਵਾਈਸਾਂ</translation>
-<translation id="4485060137115666462">ਸੱਜੇ-ਕਲਿੱਕ ਜਾਂ ਦਬਾਈ ਰੱਖਣ ਨਾਲ, Assistant ਤੁਹਾਡੀ ਚੋਣ ਲਈ ਪਰਿਭਾਸ਼ਾ, ਅਨੁਵਾਦ ਜਾਂ ਇਕਾਈ ਰੂਪਾਂਤਰਨ ਵਰਗੀ ਜਾਣਕਾਰੀ ਦਿਖਾਉਂਦੀ ਹੈ।</translation>
 <translation id="4505050298327493054">ਕਿਰਿਆਸ਼ੀਲ ਡੈਸਕ।</translation>
 <translation id="4513946894732546136">ਵਿਚਾਰ</translation>
 <translation id="4518404433291145981">ਆਪਣੀ Chromebook ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਪਹਿਲਾ ਆਪਣੇ ਫ਼ੋਨ ਨੂੰ ਅਣਲਾਕ ਕਰੋ</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">ਵਾਪਸ ਲਿਆਓ</translation>
 <translation id="595202126637698455">ਪ੍ਰਦਰਸ਼ਨ ਟ੍ਰੇਸਿੰਗ ਸਮਰਥਿਤ</translation>
 <translation id="5958529069007801266">ਨਿਗਰਾਨੀ ਕੀਤੇ ਵਰਤੋਂਕਾਰ</translation>
-<translation id="5960825221082587934">Assistant ਨੂੰ ਤੁਹਾਡੀ ਚੋਣ ਲਈ ਪਰਿਭਾਸ਼ਾ, ਅਨੁਵਾਦ ਜਾਂ ਇਕਾਈ ਰੂਪਾਂਤਰਨ ਵਰਗੀ ਜਾਣਕਾਰੀ ਦਿਖਾਉਣ ਦਿਓ।</translation>
 <translation id="5977415296283489383">ਹੈਡਫੋਨ</translation>
 <translation id="5978382165065462689">ਰਿਮੋਟ ਸਹਾਇਤਾ ਰਾਹੀਂ ਨਾਲ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦਾ ਨਿਯੰਤਰਣ ਸ਼ੇਅਰ ਕਰ ਰਿਹਾ ਹੈ।</translation>
 <translation id="5980301590375426705">ਮਹਿਮਾਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">ਇੱਥੇ ਤੁਸੀਂ ਆਪਣੀਆਂ ਮਹੱਤਵਪੂਰਨ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪਿੰਨ ਕਰ ਸਕਦੇ ਹੋ। ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ Files ਐਪ ਨੂੰ ਖੋਲ੍ਹੋ।</translation>
 <translation id="622484624075952240">ਹੇਠਾਂ</translation>
 <translation id="6231419273573514727">ਪੈਰੀਫੈਰਲ ਕਾਰਗੁਜ਼ਾਰੀ ਸੀਮਤ ਹੋ ਸਕਦੀ ਹੈ</translation>
-<translation id="6236290670123303279">ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">ਲੇਟਵੀਂ ਸਥਿਤੀ ਵਿੱਚ ਲਾਕ ਕੀਤੀ ਗਈ</translation>
 <translation id="6259254695169772643">ਚੁਣਨ ਲਈ ਆਪਣੇ ਸਟਾਈਲਸ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">ਪ੍ਰਦਰਸ਼ਨ ਟ੍ਰੇਸਿੰਗ ਕਿਰਿਆਸ਼ੀਲ ਹੈ</translation>
 <translation id="8703634754197148428">ਰਿਕਾਰਡਿੰਗ ਸ਼ੁੁਰੂ ਕਰੋ। ਇੱਕ ਵਾਰ ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਹੋਣ ਤੋਂ ਬਾਅਦ, ਸ਼ੈਲਫ 'ਤੇ ਜਾਣ ਲਈ ਅਤੇ 'ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰੋ' ਬਟਨ ਲੱਭਣ ਲਈ Alt + Shift + L ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਖੱਬੀ ਜਾਂ ਸੱਜੀ ਤੀਰ ਕੁੰਜੀ ਵਰਤੋ।</translation>
-<translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
 <translation id="8721053961083920564">ਅਵਾਜ਼ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਕੈਪਚਰ</translation>
 <translation id="8734991477317290293">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਹ ਤੁਹਾਡੇ ਕੀਸਟ੍ਰੋਕ ਚੋਰੀ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੋਵੇ</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="8877788021141246043">ਕੋਈ ਯਾਦ-ਸੂਚਨਾ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="8878886163241303700">ਸਕ੍ਰੀਨ ਦਾ ਵਿਸਤਾਰ ਕਰ ਰਿਹਾ ਹੈ</translation>
-<translation id="8883473964424809116">Google Assistant ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹਣ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="8884537526797090108">ਗੁਪਤ ਸਮੱਗਰੀ ਨੂੰ ਰਿਕਾਰਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="890616557918890486">ਸਰੋਤ ਬਦਲੋ</translation>
 <translation id="8909138438987180327">ਬੈਟਰੀ <ph name="PERCENTAGE" /> ਫ਼ੀਸਦ ਹੈ।</translation>

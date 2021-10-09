@@ -86,8 +86,6 @@
 <translation id="2926676257163822632">‏من السهل تخمين كلمات المرور الضعيفة. يمكنك السماح لمتصفِّح Chrome <ph name="BEGIN_LINK" />بإنشاء كلمات مرور قوية وتذكُّرها نيابة عنك<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل هذا الموقع الإلكتروني.</translation>
 <translation id="2929907241665500097">‏تعذّر تحديث Chrome بسبب حدوث خطأ. <ph name="BEGIN_LINK" />حلّ مشاكل تحديث Chrome وتعذُّر التحديثات<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />تذكير أخير: ستؤدي عملية التثبيت إلى <ph name="BEGIN_BOLD" />محو بيانات محرك الأقراص الثابتة بالكامل<ph name="END_BOLD" />. يُرجى التأكّد من احتفاظك بنسخة احتياطية من أي بيانات مُهمّة.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />عند بدء عملية التثبيت، لا يمكن إلغاؤها.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> - Chrome - تسجيل الدخول إلى الشبكة</translation>
 <translation id="3037838751736561277">‏Google Chrome في وضع الخلفية.</translation>
 <translation id="3059710691562604940">‏تم إيقاف "التصفّح الآمن" ويقترح متصفّح Chrome تفعيله.</translation>
@@ -135,7 +133,6 @@
 <translation id="4251615635259297716">‏هل ترغب في ربط بياناتك في Chrome بهذا الحساب؟</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
 <translation id="4293420128516039005">‏يمكنك تسجيل الدخول لمزامنة Chrome وتخصيصه على جميع أجهزتك.</translation>
-<translation id="429583012151745428">جارٍ تثبيت نظام التشغيل. يُرجى عدم إيقاف تشغيل الجهاز. لن تستغرق عملية التثبيت أكثر من 20 دقيقة. سيتم تلقائيًا إيقاف تشغيل الجهاز بعد اكتمال التثبيت.</translation>
 <translation id="4325083532956419387">‏إصدار "نظام التشغيل Chrome"</translation>
 <translation id="4328355335528187361">‏إصدار مطوّري البرامج من Google Chrome ‏(mDNS-In)</translation>
 <translation id="4331809312908958774">‏نظام تشغيل Chrome</translation>
@@ -179,7 +176,6 @@
 <translation id="5386244825306882791">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chrome أو إجراء بحث من المربع متعدد الاستخدامات.</translation>
 <translation id="5394833366792865639">‏مشاركة علامة تبويب Chrome</translation>
 <translation id="5430073640787465221">‏ملف الإعدادات المفضّلة تالف أو غير صالح. يتعذر على Google Chrome استرداد إعداداتك.</translation>
-<translation id="5486618155264784386">‏تثبيت نظام التشغيل Chrome</translation>
 <translation id="556024056938947818">‏يحاول Google Chrome إظهار كلمات المرور.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">‏في حال عدم عرض إعداد على هذه الصفحة، انتقل إلى <ph name="LINK_BEGIN" />
@@ -234,7 +230,6 @@
 <translation id="7155997830309522122">‏في هذه الحالة، يُرجى تعديل كلمة المرور المحفوظة في Chrome لتتطابق مع كلمة المرور الجديدة.</translation>
 <translation id="7161904924553537242">‏مرحبًا بك في Google Chrome</translation>
 <translation id="7242029209006116544">‏إنك تسجل الدخول باستخدام حساب مُدار وتمنح المشرف إمكانية التحكم في ملفك الشخصي في Google Chrome. وسيتم ربط بيانات Chrome التابعة لك، مثل التطبيقات والإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى بالمستخدم <ph name="USER_NAME" />. وستتمكن من حذف هذه البيانات عبر لوحة تحكم حسابات Google، ولكنك لن تتمكن من إقران هذه البيانات بحساب آخر. ويُمكنك اختيار إنشاء ملف شخصي جديد للإبقاء على بياناتك الحالية في Chrome بشكل مستقل. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">‏جارٍ تثبيت نظام التشغيل Chrome</translation>
 <translation id="7295052994004373688">‏يتم استخدام هذه اللغة لعرض واجهة مستخدم Google Chrome</translation>
 <translation id="7296210096911315575">معلومات مهمّة حول الأمان والاستخدام</translation>
 <translation id="7308322188646931570">‏يحتاج Chrome للوصول إلى مساحة التخزين لتنزيل الملفات.</translation>

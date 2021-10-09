@@ -3,6 +3,7 @@
 <translationbundle lang="sr-Latn">
 <translation id="1096883626080133124">Uradite više pomoću još jednostavnijeg, bezbednijeg i bržeg Google Chrome-a</translation>
 <translation id="1282031177488366470">Pomozite nam da poboljšamo Chrome-ove funkcije i učinak</translation>
+<translation id="1354592789402432496">Administrator zahteva da se prijavite pomoću naloga organizacije. Nalozi koje je organizator ograničio su skriveni.</translation>
 <translation id="1479202195792305274">Chrome može da vam proverava lozinke kada se prijavite pomoću Google naloga.</translation>
 <translation id="1493827051843127077">Podesite Chrome kao podrazumevanu aplikaciju za sinhronizovanje kartica, lozinki i informacija o plaćanju na svim uređajima</translation>
 <translation id="1504372625950710826">Chrome ne može da traži ažuriranja. Proverite internet vezu.</translation>
@@ -45,6 +46,7 @@
 <translation id="3988789688219830639">Google Chrome ne može da pristupa slikama ili video snimcima. Omogućite pristup u iOS Settings (Podešavanja iOS-a) &gt; Privacy (Privatnost) &gt; Photos (Slike).</translation>
 <translation id="4099578267706723511">Poboljšajte Chrome slanjem statistike korišćenja i izveštaja o otkazivanju Google-u.</translation>
 <translation id="417201473131094001">Nije podržano u verziji Chrome Canary</translation>
+<translation id="4214277427269650960">Prijavite se na ovaj sajt i u Chrome. Sinhronizaciju možete da uključite kasnije.</translation>
 <translation id="424864128008805179">Želite li da se odjavite iz Chrome-a?</translation>
 <translation id="4249068189593983585">Savet za Chrome. Ako želite više opcija za kartice, dodirnite i zadržite dugme Prikaži kartice na traci s alatkama, koja se nalazi u dnu ili vrhu ekrana.</translation>
 <translation id="4523886039239821078">Neki programski dodaci izazivaju otkazivanje Chrome-a. Deinstalirajte:</translation>
@@ -59,6 +61,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Oflajn ste. Chrome ne može da traži ažuriranja.</translation>
 <translation id="5716154293141027663">Otvara Chrome svaki put kada dodirnete linkove u drugim aplikacijama</translation>
+<translation id="572883588166315317">Organizacija zahteva da se prijavite da biste koristili Chrome. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" />.</translation>
 <translation id="5854621639439811139">Savet za Chrome. Neka dugmad se sada nalaze u dnu ekrana, poput dugmadi Nazad, Napred i Pretraži.</translation>
 <translation id="5876773482963502140">Ako dozvolite da Chrome sazna lokaciju, Chrome je šalje svim sajtovima za koje dozvolite. Sajtovi mogu da zatraže lokaciju kada imaju da vam prikažu lokalne informacije, poput radnji ili vesti u blizini.</translation>
 <translation id="6054613632208573261">Podrazumevano koristite Chrome</translation>

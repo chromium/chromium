@@ -16,6 +16,7 @@
 <translation id="1066060668811609597">Управление на синхронизирането</translation>
 <translation id="1076421457278169141">Кодът бе сканиран</translation>
 <translation id="1084365883616172403">Публикацията във Facebook е завършена.</translation>
+<translation id="1086486568852410168">Търсене с Google Обектив</translation>
 <translation id="1103523840287552314">Винаги да се превежда от <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Приемам и напред</translation>
 <translation id="110724200315609752">Превключване към отворения прозорец</translation>
@@ -57,6 +58,7 @@
 <translation id="1400642268715879018">Последните 4 седмици</translation>
 <translation id="1407135791313364759">Отваряне на всички</translation>
 <translation id="1430915738399379752">Печат</translation>
+<translation id="1434356225517321998">Браузърът ви е управляван. <ph name="BEGIN_LINK" />Подробности<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Скриване на паролата</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> елемента</translation>
 <translation id="149095475893949513">Този уебсайт се опитва да изтегли конфигурационен профил.</translation>
@@ -120,6 +122,7 @@
 <translation id="209018056901015185">Заявка за настолния сайт</translation>
 <translation id="2103075008456228677">Към history.google.com</translation>
 <translation id="2116625576999540962">Преместихте <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> елемента</translation>
+<translation id="2122754583996902531">Браузърът ви е управляван. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="212623074644302906">Запитване за добавяне към списъка за четене</translation>
 <translation id="2139867232736819575">Търсене на копирания текст</translation>
 <translation id="214201757571129614">Вход…</translation>
@@ -128,6 +131,7 @@
 <translation id="2218443599109088993">Отдалечаване</translation>
 <translation id="2230173723195178503">Уеб страницата се зареди</translation>
 <translation id="2239626343334228536">Данните за сърфирането се изчистват...</translation>
+<translation id="2256933947031277845">Организацията ви разрешава да влизате само с определени профили.</translation>
 <translation id="225943865679747347">Код на грешката: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Добавяне на профил</translation>
 <translation id="2268044343513325586">Прецизиране</translation>
@@ -220,7 +224,6 @@
 <translation id="3131206671572504478">Блокиране на всички</translation>
 <translation id="313283613037595347">Създаване на нов раздел в режим „инкогнито“.</translation>
 <translation id="3153862085237805241">Запазване на картата</translation>
-<translation id="315401415709252194">Организацията ви изисква да влезете в профила си.</translation>
 <translation id="3157387275655328056">Добавяне към списъка за четене</translation>
 <translation id="3157684681743766797">Означаване на всички…</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -258,6 +261,7 @@
 <translation id="345565170154308620">Управление на паролите...</translation>
 <translation id="3469166899695866866">Искате ли да спрете изтеглянето?</translation>
 <translation id="3470502288861289375">Копира се...</translation>
+<translation id="3472993688462687965">Когато включите синхронизирането, данните може да бъдат ограничени според разрешението от организацията ви.</translation>
 <translation id="3474624961160222204">Продължаване като <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Месец на валидност</translation>
 <translation id="3482959374254649722">Разделите ви се синхронизират...</translation>
@@ -369,10 +373,12 @@
 
 Данните ви са шифровани с пропуска ви за синхронизиране. Въведете го, за да стартирате синхронизирането.</translation>
 <translation id="4689564913179979534">Управление на начините на плащане...</translation>
+<translation id="469022783543509074">Вече не сте в профила си</translation>
 <translation id="470966556546083668">Без включване на синхронизирането</translation>
 <translation id="473775607612524610">Актуализиране</translation>
 <translation id="4747097190499141774">Шифроването с пропуск не включва начините на плащане и адресите от Google Pay. Само някой с пропуска ви може да прочете шифрованите ви данни – той не се изпраща до Google, нито се съхранява от нас. Ако го забравите или искате да промените тази настройка, ще се наложи да нулирате синхронизирането. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Нов раздел в режим „инкогнито“</translation>
+<translation id="4764612367328936189">Организацията ви разрешава да влизате само с определени профили. Неразрешените профили са скрити. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="4775879719735953715">Браузър по подразбиране</translation>
 <translation id="4778644898150334464">Използване на друга парола</translation>
 <translation id="4802417911091824046">Шифроването с пропуск не включва начините на плащане и адресите от Google Pay.
@@ -829,6 +835,7 @@
 <translation id="9081058212938299310">Да се актуализира ли паролата за <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 елемент</translation>
 <translation id="9083838294503912307">Включете синхронизирането, за да се възползвате от синхронизиране и персонализиране на всички устройства.</translation>
+<translation id="9084677839771512880">Организацията ви ограничава това какво можете да синхронизирате. <ph name="BEGIN_LINK" />Подробности<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Предложена от Chrome парола:</translation>
 <translation id="9094033019050270033">Актуализиране на паролата</translation>
 <translation id="9100610230175265781">Изисква се пропуск</translation>

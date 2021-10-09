@@ -364,7 +364,6 @@
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1384849755549338773">Oferă Google Traducere pentru site-uri în alte limbi</translation>
 <translation id="138784436342154190">Restabilești pagina de pornire prestabilită?</translation>
-<translation id="1388047369870196878">Instalează CloudReady 2.0</translation>
 <translation id="1388253969141979417">Au permisiunea de a folosi microfonul</translation>
 <translation id="1388728792929436380">Acest <ph name="DEVICE_TYPE" /> va reporni după finalizarea actualizărilor.</translation>
 <translation id="139013308650923562">Au permisiunea de a folosi fonturile instalate pe dispozitiv</translation>
@@ -1965,7 +1964,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> solicită să te conectezi azi la rețeaua Wi-Fi pentru a descărca o actualizare. Sau poți să descarci folosind o conexiune contorizată (se pot aplica taxe).}few{<ph name="MANAGER" /> solicită să te conectezi la rețeaua Wi-Fi și să descarci o actualizare înainte de termenul limită. Sau poți să descarci folosind o conexiune contorizată (se pot aplica taxe).}other{<ph name="MANAGER" /> solicită să te conectezi la rețeaua Wi-Fi și să descarci o actualizare înainte de termenul limită. Sau poți să descarci folosind o conexiune contorizată (se pot aplica taxe).}}</translation>
 <translation id="3009300415590184725">Sigur doriți să anulați procesul de configurare al serviciului de date mobile?</translation>
 <translation id="3009779501245596802">Baze de date indexate</translation>
-<translation id="3009984992511490972">Transformă-ți dispozitivul într-un dispozitiv CloudReady 2.0.</translation>
 <translation id="3010279545267083280">Parolă ștearsă</translation>
 <translation id="3011384993885886186">Gri cald</translation>
 <translation id="3011488081941333749">Cookie-urile de la <ph name="DOMAIN" /> vor fi șterse la ieșire</translation>
@@ -2393,7 +2391,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3476303763173086583">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android a copilului trimițând automat la Google date de diagnosticare și utilizare a dispozitivului și a aplicațiilor. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Această <ph name="BEGIN_LINK1" />setare<ph name="END_LINK1" /> este impusă de proprietar. Proprietarul poate alege să trimită date de diagnosticare și utilizare a dispozitivului la Google. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google. <ph name="BEGIN_LINK2" />Află mai multe<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Hopa! Sistemul nu a putut prelua politica pentru dispozitivul tău.</translation>
 <translation id="347785443197175480">Permiteți în continuare accesul <ph name="HOST" /> la camera și microfonul dvs.</translation>
-<translation id="3478813605045578676">Înregistrarea este acceptată numai după instalare. Pentru a gestiona dispozitivul, mai întâi instalează CloudReady.</translation>
 <translation id="3479552764303398839">Nu acum</translation>
 <translation id="3479685872808224578">Nu s-a putut șterge serverul de imprimare. Verifică adresa și încearcă din nou.</translation>
 <translation id="3480612136143976912">Personalizează dimensiunea și stilul Subtitrărilor live. Unele aplicații și site-uri vor folosi această setare.</translation>
@@ -2596,7 +2593,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3694027410380121301">Selectează fila anterioară</translation>
 <translation id="369489984217678710">Parole și alte date de conectare</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{S-au finalizat verificările de securitate. Datele vor fi încărcate.}=1{S-au finalizat verificările de securitate. Fișierul va fi încărcat.}few{S-au finalizat verificările de securitate. Fișierele vor fi încărcate.}other{S-au finalizat verificările de securitate. Fișierele vor fi încărcate.}}</translation>
-<translation id="3696576298374669274">Afișează jurnalele de service</translation>
 <translation id="3699624789011381381">Adresă de e-mail</translation>
 <translation id="3699920817649120894">Dezactivezi sincronizarea și personalizarea?</translation>
 <translation id="3700888195348409686">Se prezintă (<ph name="PAGE_ORIGIN" />)</translation>
@@ -3063,7 +3059,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4168015872538332605">Aveți acces la anumite setări care aparțin utilizatorului <ph name="PRIMARY_EMAIL" />. Aceste setări vă afectează contul numai când folosiți conectarea multiplă.</translation>
 <translation id="4169535189173047238">Nu permite</translation>
 <translation id="4170314459383239649">Șterge la ieșire</translation>
-<translation id="4171570447245353961">CloudReady 2.0 a detectat un TPM activ care îți poate stoca datele cu un grad sporit de siguranță.</translation>
 <translation id="4175137578744761569">Mov deschis și alb</translation>
 <translation id="4175737294868205930">Stocare persistentă</translation>
 <translation id="4176463684765177261">Dezactivat</translation>
@@ -4184,7 +4179,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5431318178759467895">Color</translation>
 <translation id="543338862236136125">Editează parola</translation>
 <translation id="5434065355175441495">Criptare RSA PKCS #1</translation>
-<translation id="5434473680236142631">Bun venit la CloudReady 2.0</translation>
 <translation id="5435779377906857208">Permite întotdeauna accesul <ph name="HOST" /> la locație</translation>
 <translation id="5436492226391861498">Se așteaptă tunelul proxy...</translation>
 <translation id="5436510242972373446">Caută <ph name="SITE_NAME" />:</translation>
@@ -4760,7 +4754,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6057312498756061228">Acest fișier este prea mare pentru verificarea de securitate. Poți să deschizi fișiere de maximum 50 MB.</translation>
 <translation id="6057381398996433816">Acest site nu are permisiunea de a folosi senzorii de mișcare și de lumină.</translation>
 <translation id="6059276912018042191">File Chrome recente</translation>
-<translation id="6059347142391822629">Apasă comutatorul când focalizarea este pe butonul Gata pentru a închide ghidul.</translation>
 <translation id="6059652578941944813">Ierarhie de certificate</translation>
 <translation id="6061882183774845124">Trimite linkul pe dispozitivele tale</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Notă:<ph name="END_BOLD" /> o voce asemănătoare sau o înregistrare a vocii ar putea accesa rezultatele personalizate ale lui <ph name="SUPERVISED_USER_NAME" />. Pentru a economisi bateria, poți selecta activarea expresiei „Ok Google” în Setările Asistentului lui <ph name="SUPERVISED_USER_NAME" /> numai când dispozitivul este conectat la o sursă de alimentare.</translation>
@@ -5047,6 +5040,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6359706544163531585">Dezactivează tema luminoasă</translation>
 <translation id="6361850914223837199">Detaliile erorii:</translation>
 <translation id="6362853299801475928">&amp;Raportează o problemă...</translation>
+<translation id="6363786367719063276">Consultă jurnalele</translation>
 <translation id="6363990818884053551">Pentru a începe sincronizarea, confirmă-ți identitatea</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Adăugați membri ai familiei și prieteni</translation>
@@ -5239,8 +5233,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6569911211938664415">Parolele sunt salvate în Contul tău Google (<ph name="ACCOUNT" />), astfel încât să le poți folosi pe orice dispozitiv</translation>
 <translation id="6573497332121198392">Nu se poate elimina comanda rapidă</translation>
 <translation id="657402800789773160">&amp;Reîncarcă această pagină</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />Pentru o experiență optimă, instalează CloudReady 2.0 pe discul intern. Poți să instalezi și mai târziu din ecranul de conectare.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Dacă nu ești gata de instalare, poți să rulezi serviciul de pe USB pentru a-l încerca. Astfel, vei păstra sistemul de operare și datele existente, dar pot să existe limitări ale spațiului de stocare și ale performanței.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">Descărcare anulată: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Captură de ecran pentru starea rețelei</translation>
 <translation id="6579369886355986318">Afișează toate &amp;comenzile</translation>
@@ -6061,9 +6053,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# filă deschisă; atinge pentru a comuta bara de file}few{# file deschise; atinge pentru a comuta bara de file}other{# de file deschise; atinge pentru a comuta bara de file}}</translation>
 <translation id="7465635034594602553">A apărut o eroare. Așteaptă câteva minute și rulează din nou <ph name="APP_NAME" />.</translation>
 <translation id="7465778193084373987">Adresă URL de revocare a certificatului Netscape</translation>
-<translation id="746811648436543102"><ph name="BEGIN_PARAGRAPH1" />Înainte să te înregistrezi, trebuie să ștergi TPM pentru ca CloudReady 2.0 să preia controlul asupra dispozitivului.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Poți și să dezactivezi complet dispozitivul TPM. Datele tale vor fi stocate în siguranță prin criptarea software-ului, dar anumite funcții de securitate, cum ar fi certificatele stocate pe hardware, vor fi dezactivate.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Poți modifica setările TPM prin repornirea sistemului și accesarea setărilor BIOS/UEFI. Pașii variază în funcție de modelul dispozitivului. Pentru mai multe informații, deschide documentația CloudReady 2.0 pe alt dispozitiv înainte de repornire: [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="746861123368584540">Extensia s-a încărcat</translation>
 <translation id="7470424110735398630">Au permisiunea de a vedea clipboardul</translation>
 <translation id="747114903913869239">Eroare: extensia nu poate fi decodificată</translation>
@@ -6347,7 +6336,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</translation>
 <translation id="7750228210027921155">Picture-in-picture</translation>
 <translation id="7751260505918304024">Afișați-le pe toate</translation>
-<translation id="7751855202867682241">Păstrează sistemul de operare și rulează CloudReady 2.0 de pe USB.</translation>
 <translation id="7753735457098489144">Instalarea nu a reușit din cauza spațiului de stocare insuficient. Pentru a elibera spațiu, șterge fișiere din stocarea dispozitivului.</translation>
 <translation id="7754347746598978109">Nu au permisiunea de a folosi JavaScript</translation>
 <translation id="7754704193130578113">Întreabă-mă unde se salvează fiecare fișier înainte de a-l descărca</translation>
@@ -7405,7 +7393,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8845001906332463065">Obține ajutor</translation>
 <translation id="8846132060409673887">Citește producătorul și modelul acestui computer</translation>
 <translation id="8846163936679269230">Resetează profiluri eSIM</translation>
-<translation id="8846746259444262774">Instalarea nu a reușit</translation>
 <translation id="8847523528195140327">Când capacul este închis: deconectare</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Ascuns</translation>

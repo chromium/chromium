@@ -274,7 +274,6 @@
 <translation id="3087734570205094154">맨 아래</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> 기능을 켜거나 끕니다. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">커서 이동</translation>
-<translation id="3098580329624789136">‘<ph name="QUERY" />’의 <ph name="INTENT" /> 확인하기</translation>
 <translation id="3100274880412651815">캡처 모드 닫기</translation>
 <translation id="3105917916468784889">스크린샷 찍기</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />(블루투스)</translation>
@@ -476,7 +475,6 @@
 <translation id="4477892968187500306">이 기기에는 Google에서 확인하지 않은 앱이 설치되어 있을 수 있습니다.</translation>
 <translation id="4479639480957787382">이더넷</translation>
 <translation id="4481530544597605423">페어링 해제된 기기</translation>
-<translation id="4485060137115666462">마우스 오른쪽 버튼으로 클릭하거나 길게 누르면 어시스턴트가 선택한 항목의 정의, 번역 또는 단위 변환과 같은 정보를 표시합니다.</translation>
 <translation id="4505050298327493054">활성 데스크입니다.</translation>
 <translation id="4513946894732546136">문제 신고</translation>
 <translation id="4518404433291145981">Chromebook을 잠금 해제하려면 먼저 휴대전화를 잠금 해제하세요.</translation>
@@ -668,7 +666,6 @@
 <translation id="5947494881799873997">되돌리기</translation>
 <translation id="595202126637698455">성능 추적 사용 중</translation>
 <translation id="5958529069007801266">관리 대상 사용자</translation>
-<translation id="5960825221082587934">어시스턴트가 선택 항목의 정의, 번역 또는 단위 변환과 같은 정보를 표시하도록 허용합니다.</translation>
 <translation id="5977415296283489383">헤드폰</translation>
 <translation id="5978382165065462689">원격 지원을 통해 화면 제어 공유</translation>
 <translation id="5980301590375426705">게스트 세션 종료</translation>
@@ -702,7 +699,6 @@
 <translation id="6179832488876878285">여기에 중요한 파일을 고정할 수 있습니다. 시작하려면 파일 앱을 여세요.</translation>
 <translation id="622484624075952240">아래</translation>
 <translation id="6231419273573514727">주변기기 성능이 제한될 수 있습니다</translation>
-<translation id="6236290670123303279">설정 관리</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">가로로 잠김</translation>
 <translation id="6259254695169772643">스타일러스로 선택하세요.</translation>
@@ -1020,7 +1016,6 @@
 <translation id="8683506306463609433">성능 추적 활성화</translation>
 <translation id="8703634754197148428">녹화 시작 녹화가 시작된 후에는 Alt + Shift + L을 눌러 실행기로 이동하여 녹화 중지 버튼을 찾으세요.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> 이 기능을 관리하려면 왼쪽 또는 오른쪽 화살표 키를 사용하세요.</translation>
-<translation id="8712637175834984815">확인</translation>
 <translation id="8721053961083920564">볼륨 변경. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">전체 화면 캡처</translation>
 <translation id="8734991477317290293">키 입력 내용을 도용하려는 시도일 수 있습니다.</translation>
@@ -1048,7 +1043,6 @@
 <translation id="8876661425082386199">연결 상태 확인</translation>
 <translation id="8877788021141246043">알림을 설정해 줘</translation>
 <translation id="8878886163241303700">화면 확대</translation>
-<translation id="8883473964424809116">Google 어시스턴트 설정을 열려면 클릭하세요.</translation>
 <translation id="8884537526797090108">기밀 콘텐츠는 녹화할 수 없음</translation>
 <translation id="890616557918890486">소스 변경</translation>
 <translation id="8909138438987180327">남은 배터리는 <ph name="PERCENTAGE" />%입니다.</translation>

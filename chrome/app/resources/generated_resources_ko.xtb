@@ -362,7 +362,6 @@
 <translation id="1383876407941801731">검색</translation>
 <translation id="1384849755549338773">다른 언어로 표시되는 웹사이트에서 Google 번역 제공</translation>
 <translation id="138784436342154190">기본 시작 페이지를 복원하시겠습니까?</translation>
-<translation id="1388047369870196878">CloudReady 2.0 설치</translation>
 <translation id="1388253969141979417">마이크 사용이 허용됨</translation>
 <translation id="1388728792929436380">업데이트가 완료되면 <ph name="DEVICE_TYPE" /> 기기가 다시 시작됩니다.</translation>
 <translation id="139013308650923562">기기에 설치된 글꼴을 사용할 수 있음</translation>
@@ -1970,7 +1969,6 @@
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" />에서 오늘 Wi-Fi에 연결하거나 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.}other{<ph name="MANAGER" />에서 기한 전에 Wi-Fi에 연결하거나 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.}}</translation>
 <translation id="3009300415590184725">모바일 데이터 서비스 설정 과정을 취소하시겠습니까?</translation>
 <translation id="3009779501245596802">색인화된 데이터베이스</translation>
-<translation id="3009984992511490972">이 기기를 CloudReady 2.0 기기로 전환합니다</translation>
 <translation id="3010279545267083280">비밀번호 삭제됨</translation>
 <translation id="3011384993885886186">따뜻한 회색</translation>
 <translation id="3011488081941333749"><ph name="DOMAIN" />의 쿠키가 종료 시 삭제됩니다</translation>
@@ -2395,7 +2393,6 @@
 <translation id="3476303763173086583">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 이 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 소유자가 이 기기의 진단 및 사용 데이터를 Google에 전송할지 선택할 수 있습니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />자세히 알아보기<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">시스템에서 기기 정책을 가져오지 못했습니다.</translation>
 <translation id="347785443197175480"><ph name="HOST" />에서 카메라와 마이크에 액세스하도록 계속 허용</translation>
-<translation id="3478813605045578676">등록은 설치 후에만 지원됩니다. 이 기기를 관리하려면 먼저 CloudReady를 설치하세요.</translation>
 <translation id="3479552764303398839">나중에</translation>
 <translation id="3479685872808224578">인쇄 서버를 찾을 수 없습니다. 주소를 확인한 다음 다시 시도해 보세요.</translation>
 <translation id="3480612136143976912">실시간 자막의 자막 크기 및 스타일을 맞춤설정하세요. 일부 앱 및 사이트에서도 이 설정이 사용됩니다.</translation>
@@ -2597,7 +2594,6 @@
 <translation id="3694027410380121301">이전 탭 선택</translation>
 <translation id="369489984217678710">비밀번호 및 기타 로그인 데이터</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{보안 확인이 완료되었습니다. 데이터가 업로드됩니다.}=1{보안 확인이 완료되었습니다. 파일이 업로드됩니다.}other{보안 확인이 완료되었습니다. 파일이 업로드됩니다.}}</translation>
-<translation id="3696576298374669274">서비스 로그 표시</translation>
 <translation id="3699624789011381381">이메일 주소</translation>
 <translation id="3699920817649120894">동기화 및 맞춤설정을 사용 중지하시겠습니까?</translation>
 <translation id="3700888195348409686">표시 중(<ph name="PAGE_ORIGIN" />)</translation>
@@ -4173,7 +4169,6 @@
 <translation id="5431318178759467895">컬러</translation>
 <translation id="543338862236136125">비밀번호 수정</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 암호화</translation>
-<translation id="5434473680236142631">CloudReady 2.0 시작하기</translation>
 <translation id="5435779377906857208"><ph name="HOST" />의 위치 액세스 항상 허용</translation>
 <translation id="5436492226391861498">프록시 터널을 기다리는 중...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> 검색:</translation>
@@ -4745,7 +4740,6 @@
 <translation id="6057312498756061228">파일이 너무 커서 보안 확인을 할 수 없습니다. 최대 50MB 크기의 파일을 열 수 있습니다.</translation>
 <translation id="6057381398996433816">모션 센서 및 조도 센서 사용이 차단된 사이트입니다.</translation>
 <translation id="6059276912018042191">최근 Chrome 탭</translation>
-<translation id="6059347142391822629">가이드를 닫으려면 완료 버튼에 포커스가 있을 때 스위치를 누르세요.</translation>
 <translation id="6059652578941944813">인증서 계층</translation>
 <translation id="6061882183774845124">기기로 링크 전송</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 비슷한 목소리나 녹음된 음성을 이용하여 다른 사람이 <ph name="SUPERVISED_USER_NAME" />님의 개인 검색결과에 액세스할 수도 있습니다. <ph name="SUPERVISED_USER_NAME" />님의 어시스턴트 설정에서 기기가 전원에 연결되어 있을 때만 'Hey Google'을 인식하도록 설정하면 배터리를 절약할 수 있습니다.</translation>
@@ -5031,6 +5025,7 @@
 <translation id="6359706544163531585">밝은 테마 사용 중지</translation>
 <translation id="6361850914223837199">오류 세부정보:</translation>
 <translation id="6362853299801475928">문제 신고하기(&amp;R)...</translation>
+<translation id="6363786367719063276">로그 보기</translation>
 <translation id="6363990818884053551">동기화를 시작하려면 본인 여부를 확인하세요.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">친구 및 가족 추가</translation>
@@ -5223,8 +5218,6 @@
 <translation id="6569911211938664415">어느 기기에서나 사용할 수 있도록 비밀번호가 Google 계정(<ph name="ACCOUNT" />)에 저장됩니다.</translation>
 <translation id="6573497332121198392">바로가기를 삭제할 수 없음</translation>
 <translation id="657402800789773160">페이지 새로고침(&amp;R)</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />최적의 환경에서 이용하려면 CloudReady 2.0을 내부 디스크에 설치하세요. 나중에 로그인 화면에서 설치할 수도 있습니다.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />아직 설치할 준비가 되지 않았다면 USB에서 실행하여 사용해 볼 수도 있습니다. 기존 OS와 데이터는 그대로 유지되지만 저장용량과 성능이 제한될 수 있습니다<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">다운로드 취소됨: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">네트워크 상태 스냅샷</translation>
 <translation id="6579369886355986318">모든 제어 기능 표시(&amp;C)</translation>
@@ -6320,7 +6313,6 @@
 할당을 삭제하려면 할당된 스위치 또는 키를 누르세요.</translation>
 <translation id="7750228210027921155">PIP 모드</translation>
 <translation id="7751260505918304024">모두 표시</translation>
-<translation id="7751855202867682241">OS는 그대로 두고 USB에서 CloudReady 2.0을 실행합니다</translation>
 <translation id="7753735457098489144">저장공간이 부족하여 설치할 수 없습니다. 여유 공간을 확보하려면 기기에서 파일을 삭제하세요.</translation>
 <translation id="7754347746598978109">자바스크립트 사용이 허용되지 않음</translation>
 <translation id="7754704193130578113">다운로드 전에 각 파일의 저장 위치 확인</translation>
@@ -7369,7 +7361,6 @@
 <translation id="8845001906332463065">도움말 보기</translation>
 <translation id="8846132060409673887">이 컴퓨터의 제조업체 및 모델을 읽습니다.</translation>
 <translation id="8846163936679269230">eSIM 프로필 재설정</translation>
-<translation id="8846746259444262774">설치할 수 없음</translation>
 <translation id="8847523528195140327">커버를 닫으면 로그아웃</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">숨김</translation>

@@ -85,8 +85,6 @@
 <translation id="2926676257163822632">Kuchsiz parollar oson topiladi. Chrome <ph name="BEGIN_LINK" />siz uchun ishonchli parol yaratsin va eslab qolsin<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome bu saytda kameradan foydalanishiga ruxsat kerak</translation>
 <translation id="2929907241665500097">Notanish xatolik tufayli Chrome yangilanmadi. <ph name="BEGIN_LINK" />Chromedagi yangilanish muammolari va xatoliklarni tuzatish.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Oxirgi eslatma: oʻrnatishda <ph name="BEGIN_BOLD" />qattiq diskdagi barcha maʼlumotlar oʻchirib tashlanadi<ph name="END_BOLD" />. Kerakli axborotlarni zaxiralashga ulgurganingizni yaxshilab tekshiring.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Oʻrnatish boshlanganidan keyin uni bekor qilish imkonsiz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Tarmoqqa kirish - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome orqa fon rejimida ishlamoqda.</translation>
 <translation id="3059710691562604940">Saytlarni xavfsiz kezish yoniq emas. Chrome uni yoqishingizni tavsiya qiladi.</translation>
@@ -134,7 +132,6 @@
 <translation id="4251615635259297716">Chrome ma’lumotlari bu hisobga bog‘lansinmi?</translation>
 <translation id="4281844954008187215">Xizmat shartlari</translation>
 <translation id="4293420128516039005">Chrome brauzerini barcha qurilmalringizda sinxronlash va o‘zingizga moslab olish uchun hisobingizga kiring</translation>
-<translation id="429583012151745428">Oʻrnatilmoqda. Qurilmani oʻchirmang. Oʻrnatish jarayoni yigirma daqiqadan koʻp vaqt olmaydi. Oʻrnatish tugaganidan keyin kompyuter avtomatik oʻchadi.</translation>
 <translation id="4325083532956419387">Chrome OS versiyasi</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -180,7 +177,6 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tan
 <translation id="5430073640787465221">Sozlamalar fayli shikastlangan yoki yaroqsiz holatda.
 
 Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
-<translation id="5486618155264784386">Chrome OS tizimini oʻrnatish</translation>
 <translation id="556024056938947818">Kirtilgan parollar Google Chrome‘da ko‘rsatiladi.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Agar sozlama bu sahifada chiqmasa, <ph name="LINK_BEGIN" />
@@ -235,7 +231,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7155997830309522122">Agar shunday boʻlsa, Chrome brauzeriga saqlangan parolingizni yangi parolingiz bilan bir xil boʻlishi uchun tahrirlang</translation>
 <translation id="7161904924553537242">Google Chrome brauzeriga xush kelibsiz!</translation>
 <translation id="7242029209006116544">Boshqariladigan hisobga kirish bilan siz administratorga Google Chrome profilingiz sozlamalarini boshqarishiga rozilik bildirasiz. Barcha Chrome ma’lumotlaringiz (m-n, ilovalar, xatcho‘plar, brauzer tarixi, parollar va boshqa sozlamalar kabi) <ph name="USER_NAME" /> hisobiga butunlay bog‘lanadi. Bu ma’lumotlarni Google shaxsiy kabinetida o‘chirish mumkin, lekin boshqa hisobga bog‘lash imkoniyati yo‘q. Chrome ma’lumotlarini saqlab qolish uchun yangi profil yarating. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Chrome OS oʻrnatilmoqda</translation>
 <translation id="7295052994004373688">Google Chrome UI inteyfeysi hozir shu tilda</translation>
 <translation id="7296210096911315575">Foydalanish va xavfsizlik</translation>
 <translation id="7308322188646931570">Yuklab olish uchun Chrome brauzerida omborga saqlash ruxsati bo‘lishi zarur</translation>

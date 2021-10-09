@@ -16,6 +16,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="1066060668811609597">Upravljajte sinhronizacijom</translation>
 <translation id="1076421457278169141">Skenirali ste kôd</translation>
 <translation id="1084365883616172403">Facebook post je dovršen.</translation>
+<translation id="1086486568852410168">Pretražite pomoću Google objektiva</translation>
 <translation id="1103523840287552314">Uvek prevodi <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Prihvati i nastavi</translation>
 <translation id="110724200315609752">Pređi na otvoren prozor</translation>
@@ -57,6 +58,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="1400642268715879018">Poslednje 4 nedelje</translation>
 <translation id="1407135791313364759">Otvori sve</translation>
 <translation id="1430915738399379752">Štampaj</translation>
+<translation id="1434356225517321998">Pregledačem se upravlja. <ph name="BEGIN_LINK" />Detalji<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Sakrijte lozinku</translation>
 <translation id="145015347812617860">Stavki: <ph name="COUNT" /></translation>
 <translation id="149095475893949513">Ovaj veb-sajt pokušava da preuzme profil konfiguracije.</translation>
@@ -120,6 +122,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="209018056901015185">Zahtevaj sajt za računar</translation>
 <translation id="2103075008456228677">Otvori history.google.com</translation>
 <translation id="2116625576999540962">Broj premeštenih stavki je <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="2122754583996902531">Pregledačem se upravlja. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="212623074644302906">Pitaj da dodaš na listu za čitanje</translation>
 <translation id="2139867232736819575">Potražite tekst koji ste kopirali</translation>
 <translation id="214201757571129614">Prijavite se…</translation>
@@ -128,6 +131,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="2218443599109088993">Umanjite</translation>
 <translation id="2230173723195178503">Veb-stranica je učitana</translation>
 <translation id="2239626343334228536">Brišu se podaci pregledanja...</translation>
+<translation id="2256933947031277845">Organizacija vam dozvoljava da se prijavite samo pomoću određenih naloga.</translation>
 <translation id="225943865679747347">Kôd greške: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Dodaj nalog</translation>
 <translation id="2268044343513325586">Preciziraj</translation>
@@ -220,7 +224,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3131206671572504478">Sve je blokirano</translation>
 <translation id="313283613037595347">Napravi novu karticu bez arhiviranja.</translation>
 <translation id="3153862085237805241">Sačuvaj karticu</translation>
-<translation id="315401415709252194">Organizacija zahteva da se prijavite.</translation>
 <translation id="3157387275655328056">Dodaj na listu za čitanje</translation>
 <translation id="3157684681743766797">Označi sve…</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -258,6 +261,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="345565170154308620">Upravljajte lozinkama...</translation>
 <translation id="3469166899695866866">Zaustavljate preuzimanje?</translation>
 <translation id="3470502288861289375">Kopiranje...</translation>
+<translation id="3472993688462687965">Kada uključite sinhronizaciju, podaci mogu da budu ograničeni u skladu sa dozvolama vaše organizacije.</translation>
 <translation id="3474624961160222204">Nastavi kao <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Mesec isteka</translation>
 <translation id="3482959374254649722">Sinhronizacija kartica je u toku...</translation>
@@ -369,10 +373,12 @@ Pratite korake u nastavku:</translation>
 
 Podaci se šifruju pomoću pristupne fraze za sinhronizaciju. Unesite je da biste započeli sinhronizaciju.</translation>
 <translation id="4689564913179979534">Upravljajte načinima plaćanja...</translation>
+<translation id="469022783543509074">Odjavljeni ste</translation>
 <translation id="470966556546083668">Ne uključuj sinhronizaciju</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4747097190499141774">Šifrovanje pomoću pristupne fraze ne obuhvata načine plaćanja i adrese iz Google Pay-a. Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti je on čuva. Ako zaboravite pristupnu frazu ili poželite da promenite ovo podešavanje, treba da resetujete sinhronizaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nova kartica bez arhiviranja</translation>
+<translation id="4764612367328936189">Organizacija vam dozvoljava da se prijavite samo pomoću određenih naloga. Nalozi koji nisu dozvoljeni su skriveni. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4775879719735953715">Podrazumevani pregledač</translation>
 <translation id="4778644898150334464">Koristite drugu lozinku</translation>
 <translation id="4802417911091824046">Šifrovanje pomoću pristupne fraze ne obuhvata načine plaćanja i adrese iz Google Pay-a.
@@ -829,6 +835,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="9081058212938299310">Želite li da ažurirate lozinku za <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">1 stavka</translation>
 <translation id="9083838294503912307">Da biste sinhronizovali i personalizovali sadržaj na uređajima, uključite sinhronizaciju.</translation>
+<translation id="9084677839771512880">Vaša organizacija ograničava sadržaj koji možete da sinhronizujete. <ph name="BEGIN_LINK" />Detalji<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Predložena lozinka za Chrome:</translation>
 <translation id="9094033019050270033">Ažuriraj lozinku</translation>
 <translation id="9100610230175265781">Potrebna je pristupna fraza</translation>

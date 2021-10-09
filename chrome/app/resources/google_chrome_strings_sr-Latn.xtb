@@ -88,8 +88,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2926676257163822632">Slabe lozinke lako mogu da se pogode. Dozvolite da Chrome <ph name="BEGIN_LINK" />pravi i pamti jake lozinke za vas<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome-u treba dozvola za kameru za ovaj sajt</translation>
 <translation id="2929907241665500097">Chrome se nije ažurirao. Došlo je do greške. <ph name="BEGIN_LINK" />Otklonite probleme sa ažuriranjem Chrome-a i neuspela ažuriranja.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Poslednji put vas podsećamo: instalacija <ph name="BEGIN_BOLD" />će obrisati kompletne podatke sa hard-diska<ph name="END_BOLD" />. Uverite se da imate rezervnu kopiju svih podataka koji su vam važni.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Kada instalacija počne, ne može da se otkaže.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – prijavljivanje na mrežu – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome je u pozadinskom režimu.</translation>
 <translation id="3059710691562604940">Bezbedno pregledanje je isključeno. Chrome preporučuje da ga uključite.</translation>
@@ -137,7 +135,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4251615635259297716">Želite li da povežete Chrome podatke sa ovim nalogom?</translation>
 <translation id="4281844954008187215">Uslovi korišćenja usluge</translation>
 <translation id="4293420128516039005">Prijavite se da biste sinhronizovali i personalizovali Chrome na svim uređajima</translation>
-<translation id="429583012151745428">Instalacija je u toku. Ne isključujte uređaj. Instalacija ne bi trebalo da traje duže od dvadeset minuta. Računar će se automatski isključiti posle instaliranja.</translation>
 <translation id="4325083532956419387">Verzija Chrome OS-a</translation>
 <translation id="4328355335528187361">Programerska verzija Google Chrome-a (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -183,7 +180,6 @@ Neke funkcije su možda nedostupne. Navedite drugi direktorijum profila ili kori
 <translation id="5430073640787465221">Datoteka podešavanja je oštećena ili nevažeća.
 
 Google Chrome ne može da vrati podešavanja.</translation>
-<translation id="5486618155264784386">Instaliraj Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome pokušava da prikaže lozinke.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Ako se podešavanje ne prikazuje na ovoj stranici, potražite ga u <ph name="LINK_BEGIN" />
@@ -238,7 +234,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7155997830309522122">Ako je tako, izmenite sačuvanu lozinku u Chrome-u tako da se podudara sa novom lozinkom.</translation>
 <translation id="7161904924553537242">Dobro došli u Google Chrome</translation>
 <translation id="7242029209006116544">Prijavljujete se pomoću naloga kojim se upravlja i dajete njegovom administratoru kontrolu nad Google Chrome profilom. Chrome podaci, kao što su aplikacije, obeleživači, istorija, lozinke i druga podešavanja, biće trajno povezani sa nalogom <ph name="USER_NAME" />. Moći ćete da izbrišete te podatke preko Kontrolne table Google naloga, ali nećete moći da ih povežete sa nekim drugim nalogom. Možete opcionalno da napravite novi profil da bi postojeći Chrome podaci ostali odvojeni. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Instalacija Chrome OS-a je u toku</translation>
 <translation id="7295052994004373688">Ovaj jezik se koristi za prikazivanje korisničkog interfejsa Google Chrome-a</translation>
 <translation id="7296210096911315575">Važne informacije o upotrebi i bezbednosti</translation>
 <translation id="7308322188646931570">Chrome traži pristup memorijskom prostoru da bi preuzimao datoteke</translation>

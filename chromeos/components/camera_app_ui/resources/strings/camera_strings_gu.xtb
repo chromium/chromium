@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
+<translation id="1113173431709655881">કૅમેરા મોડ</translation>
 <translation id="1175958423215084756">લિંકની જાણકારી મળી. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">ગૅલેરી છબીઓ</translation>
 <translation id="1300209025925956156">તમારા દસ્તાવેજને સ્કૅન કરો</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">રેકોર્ડિંગ શરૂ કરો</translation>
 <translation id="2599796128805996109">પાછળનો કૅમેરા</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> સેકન્ડ</translation>
+<translation id="2761536921376153655">સ્કૅનનો પ્રકાર</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> પ્લગ-ઇન કરેલું છે.</translation>
 <translation id="2968794441791257519">કૅમેરા વડે લીધેલા ફોટા અને વીડિયો ડાઉનલોડ ફોલ્ડરમાં ખસેડવામાં આવશે. તમે તેઓને ફાઇલોમાં ઍક્સેસ કરી શકશો.
 
@@ -99,9 +101,11 @@
 <translation id="698156982839284926">3 સેકન્ડ</translation>
 <translation id="712848772518857951">શું તમે ખરેખર <ph name="COUNT" /> આઇટમ કાઢી નાખવા માગો છો?</translation>
 <translation id="7134221860976209830">10 સેકન્ડનું ટાઇમર</translation>
+<translation id="7191890674911603392">રેકોર્ડનો પ્રકાર</translation>
 <translation id="7243947652761655814">વીડિયો રિઝોલ્યુશન</translation>
 <translation id="7337660886763914220">ફાઇલ સિસ્ટમની ભૂલો.</translation>
 <translation id="7450541714075000668">ટેક્સ્ટ કૉપિ કરી</translation>
+<translation id="7476762461674917065">GIF રેકોર્ડ કરવાનો વિકલ્પ બતાવો</translation>
 <translation id="7488619942230388918">GIF વીડિયો રેકોર્ડ કરો</translation>
 <translation id="7557677699350329807">આગલા કૅમેરા પર સ્વિચ કરો</translation>
 <translation id="7607002721634913082">થોભાવેલું</translation>
