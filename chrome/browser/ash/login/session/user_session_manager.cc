@@ -1289,7 +1289,6 @@ void UserSessionManager::OnProfileCreated(const UserContext& user_context,
     case Profile::CREATE_STATUS_CREATED:
       CHECK(profile);
       // Profile created but before initializing extensions and promo resources.
-      BrowserDataMigrator::MaybeRestartToMigrate(user_context);
       InitProfilePreferences(profile, user_context);
       break;
     case Profile::CREATE_STATUS_INITIALIZED:
@@ -2223,8 +2222,18 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
     return;
   }
 
+  // Call this before `RestartToApplyPerSessionFlagsIfNeed()` in the login
+  // process.
+  ash::BrowserDataMigrator::ClearMigrationStep(
+      g_browser_process->local_state());
+
   if (RestartToApplyPerSessionFlagsIfNeed(profile, false))
     return;
+
+  const user_manager::User* user =
+      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  ash::BrowserDataMigrator::MaybeRestartToMigrate(user->GetAccountId(),
+                                                  user->username_hash());
 
   if (login_host) {
     login_host->SetStatusAreaVisible(true);

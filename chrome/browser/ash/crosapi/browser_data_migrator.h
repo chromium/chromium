@@ -13,7 +13,9 @@
 #include "base/strings/string_piece.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/version.h"
-#include "chromeos/login/auth/user_context.h"
+#include "components/account_id/account_id.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 // User data directory name for lacros.
@@ -34,6 +36,13 @@ constexpr char kCommonDataTime[] =
     "Ash.BrowserDataMigrator.CommonDataTimeTakenMS";
 constexpr char kCreateDirectoryFail[] =
     "Ash.BrowserDataMigrator.CreateDirectoryFailure";
+// Local state pref name, which is used to keep track of what step migration is
+// at. This ensures that ash does not get repeatedly for migration.
+// 1. The user logs in and restarts ash if necessary to apply flags.
+// 2. Migration check runs.
+// 3. Restart ash to run migration.
+// 4. Restart ash again to show the home screen.
+constexpr char kMigrationStep[] = "ash.browser_data_migrator.migration_step";
 
 // BrowserDataMigrator is responsible for one time browser data migration from
 // ash-chrome to lacros-chrome.
@@ -96,6 +105,14 @@ class BrowserDataMigrator {
     kMaxValue = kSizeLimitExceeded
   };
 
+  // The value for `kMigrationStep`.
+  enum class MigrationStep {
+    kCheckStep = 0,      // Migration check should run.
+    kRestartCalled = 1,  // `MaybeRestartToMigrate()` called restart.
+    kStarted = 2,        // `Migrate()` was called.
+    kEnded = 3  // Migration ended. It was either skipped, failed or succeeded.
+  };
+
   enum class ResultValue {
     kSkipped,
     kSucceeded,
@@ -110,16 +127,23 @@ class BrowserDataMigrator {
     ResultValue data_migration;
   };
 
-  // Checks if migration is required for the user identified by `user_context`
+  // Checks if migration is required for the user identified by `user_id_hash`
   // and if it is required, calls a DBus method to session_manager and
   // terminates ash-chrome.
-  static void MaybeRestartToMigrate(const UserContext& user_context);
+  static void MaybeRestartToMigrate(const AccountId& account_id,
+                                    const std::string& user_id_hash);
 
   // The method needs to be called on UI thread. It posts `MigrateInternal()` on
   // a worker thread with `callback` which will be called on the original thread
   // once migration has completed or failed.
   static void Migrate(const std::string& user_id_hash,
                       base::OnceClosure callback);
+
+  // Registers boolean pref `kCheckForMigrationOnRestart` with default as false.
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+  // Clears the value of `kMigrationStep` in Local State.
+  static void ClearMigrationStep(PrefService* local_state);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest,
@@ -129,6 +153,12 @@ class BrowserDataMigrator {
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, RecordStatus);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, Migrate);
 
+  // Gets the value of `kMigrationStep` in Local State.
+  static MigrationStep GetMigrationStep(PrefService* local_state);
+
+  // Sets the value of `kMigrationStep` in Local State.
+  static void SetMigrationStep(PrefService* local_state, MigrationStep step);
+
   // The method includes a blocking operation. It checks if lacros user data dir
   // already exists or not. Check if lacros is enabled or not beforehand.
   static bool IsMigrationRequiredOnWorker(base::FilePath user_data_dir,
@@ -137,6 +167,12 @@ class BrowserDataMigrator {
   // wipe and migration.
   static MigrationResult MigrateInternal(
       const base::FilePath& original_user_dir);
+
+  // This will be posted with `IsMigrationRequiredOnWorker()` as the reply on UI
+  // thread or called directly from `MaybeRestartToMigrate()`.
+  static void MaybeRestartToMigrateCallback(const AccountId& account_id,
+                                            bool is_required);
+
   // Called on UI thread once migration is finished.
   static void MigrateInternalFinishedUIThread(base::OnceClosure callback,
                                               const std::string& user_id_hash,
@@ -169,7 +205,7 @@ class BrowserDataMigrator {
                               base::StringPiece category_name);
   // Copies `item` to location pointed by `dest`. Returns true on success and
   // false on failure.
-  static bool CopyTargetItem(const BrowserDataMigrator::TargetItem& item,
+  static bool CopyTargetItem(const TargetItem& item,
                              const base::FilePath& dest);
   // Copies the contents of `from_path` to `to_path` recursively. Unlike
   // `base::CopyDirectory()` it skips symlinks.

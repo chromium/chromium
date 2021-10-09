@@ -30,7 +30,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -178,17 +177,6 @@ void OnRestartRequestResponse(bool result) {
   chrome::AttemptRestart();
 }
 
-// This will be posted with `IsMigrationRequiredOnWorker()` as the reply on UI
-// thread or called directly from `MaybeRestartToMigrate()`.
-void MaybeRestartToMigrateCallback(const AccountId& account_id,
-                                   bool is_required) {
-  if (!is_required)
-    return;
-  SessionManagerClient::Get()->RequestBrowserDataMigration(
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id),
-      base::BindOnce(&OnRestartRequestResponse));
-}
-
 base::span<const char* const> GetNoCopyDataPaths() {
   if (base::FeatureList::IsEnabled(
           kLacrosProfileMigrationUseDeprecatedNoCopyPaths)) {
@@ -236,10 +224,26 @@ int64_t BrowserDataMigrator::TargetInfo::TotalCopySize() const {
 
 // static
 void BrowserDataMigrator::MaybeRestartToMigrate(
-    const UserContext& user_context) {
-  const AccountId account_id = user_context.GetAccountId();
+    const AccountId& account_id,
+    const std::string& user_id_hash) {
+  // If `MigrationStep` is not `kCheckStep`, `MaybeRestartToMigrate()` has
+  // already moved on to later steps. Namely either in the middle of migration
+  // or migration has already run.
+  if (GetMigrationStep(g_browser_process->local_state()) !=
+      MigrationStep::kCheckStep) {
+    return;
+  }
+
+  // If the user is a new user, then there shouldn't be anything to migrate.
+  if (user_manager::UserManager::Get()->IsCurrentUserNew())
+    return;
+
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
+
+  // Check if user exists i.e. not a guest session.
+  if (!user)
+    return;
   // Check if lacros is enabled. If not immediately return.
   if (!crosapi::browser_util::IsLacrosEnabledWithUser(user))
     return;
@@ -267,7 +271,6 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
   if (base::FeatureList::IsEnabled(kLacrosProfileMigrationForceOff))
     return;
 
-  const std::string user_id_hash = user_context.GetUserIDHash();
   if (crosapi::browser_util::IsDataWipeRequired(user_id_hash)) {
     // If data wipe is required, no need for a further check to determine if
     // lacros data dir exists or not.
@@ -289,6 +292,21 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
 }
 
 // static
+void BrowserDataMigrator::MaybeRestartToMigrateCallback(
+    const AccountId& account_id,
+    bool is_required) {
+  if (!is_required)
+    return;
+
+  SetMigrationStep(g_browser_process->local_state(),
+                   MigrationStep::kRestartCalled);
+
+  SessionManagerClient::Get()->RequestBrowserDataMigration(
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id),
+      base::BindOnce(&OnRestartRequestResponse));
+}
+
+// static
 // Returns true if lacros user data dir doesn't exist.
 bool BrowserDataMigrator::IsMigrationRequiredOnWorker(
     base::FilePath user_data_dir,
@@ -304,6 +322,9 @@ bool BrowserDataMigrator::IsMigrationRequiredOnWorker(
 // static
 void BrowserDataMigrator::Migrate(const std::string& user_id_hash,
                                   base::OnceClosure callback) {
+  DCHECK(GetMigrationStep(g_browser_process->local_state()) ==
+         MigrationStep::kRestartCalled);
+  SetMigrationStep(g_browser_process->local_state(), MigrationStep::kStarted);
   base::FilePath user_data_dir;
   if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
     LOG(ERROR)
@@ -430,6 +451,10 @@ void BrowserDataMigrator::MigrateInternalFinishedUIThread(
     base::OnceClosure callback,
     const std::string& user_id_hash,
     MigrationResult result) {
+  DCHECK(GetMigrationStep(g_browser_process->local_state()) ==
+         MigrationStep::kStarted);
+  SetMigrationStep(g_browser_process->local_state(), MigrationStep::kEnded);
+
   if (result.data_wipe == ResultValue::kSucceeded) {
     crosapi::browser_util::RecordDataVer(g_browser_process->local_state(),
                                          user_id_hash,
@@ -638,5 +663,30 @@ bool BrowserDataMigrator::SetupTmpDir(const TargetInfo& target_info,
   }
 
   return true;
+}
+
+// static
+void BrowserDataMigrator::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(kMigrationStep,
+                                static_cast<int>(MigrationStep::kCheckStep));
+}
+
+// static
+void BrowserDataMigrator::SetMigrationStep(
+    PrefService* local_state,
+    BrowserDataMigrator::MigrationStep step) {
+  local_state->SetInteger(kMigrationStep, static_cast<int>(step));
+}
+
+// static
+void BrowserDataMigrator::ClearMigrationStep(PrefService* local_state) {
+  local_state->ClearPref(kMigrationStep);
+}
+
+// static
+BrowserDataMigrator::MigrationStep BrowserDataMigrator::GetMigrationStep(
+    PrefService* local_state) {
+  return static_cast<MigrationStep>(local_state->GetInteger(kMigrationStep));
 }
 }  // namespace ash

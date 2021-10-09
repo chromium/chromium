@@ -183,6 +183,7 @@
 #include "extensions/browser/extension_prefs.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/device_name/device_name_store.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
@@ -988,6 +989,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::ChromeUserManagerImpl::RegisterPrefs(registry);
   crosapi::browser_util::RegisterLocalStatePrefs(registry);
   chromeos::CupsPrintersManager::RegisterLocalStatePrefs(registry);
+  ash::BrowserDataMigrator::RegisterLocalStatePrefs(registry);
   ash::DemoModeDetector::RegisterPrefs(registry);
   ash::DemoModeResourcesRemover::RegisterLocalStatePrefs(registry);
   ash::DemoSession::RegisterLocalStatePrefs(registry);
