@@ -32,8 +32,7 @@ bool AreDesksTemplatesEnabled() {
     return false;
 
   PrefService* pref_service = GetPrimaryUserPrefService();
-  return pref_service &&
-         pref_service->GetBoolean(ash::prefs::kDeskTemplatesEnabled);
+  return pref_service && pref_service->GetBoolean(prefs::kDeskTemplatesEnabled);
 }
 
 }  // namespace desks_templates_util

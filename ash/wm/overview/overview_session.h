@@ -42,6 +42,7 @@ class Widget;
 namespace ash {
 
 class DesksTemplatesPresenter;
+class DesksTemplatesDialogController;
 class OverviewDelegate;
 class OverviewGrid;
 class OverviewHighlightController;
@@ -420,6 +421,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   // The object responsible to talking to the desk model.
   std::unique_ptr<DesksTemplatesPresenter> desks_templates_presenter_;
+
+  std::unique_ptr<DesksTemplatesDialogController>
+      desks_templates_dialog_controller_;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 

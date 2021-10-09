@@ -27,6 +27,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_util.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -259,6 +260,10 @@ void OverviewSession::Shutdown() {
   // Stop the presenter from receiving any events that may update the model or
   // UI.
   desks_templates_presenter_.reset();
+
+  // Resetting here will close any dialogs, and DCHECK anyone trying to open a
+  // dialog past this point.
+  desks_templates_dialog_controller_.reset();
 
   // Stop observing screen metrics changes first to avoid auto-positioning
   // windows in response to work area changes from window activation.
@@ -684,6 +689,8 @@ void OverviewSession::OnStartingAnimationComplete(bool canceled,
     DCHECK(!desks_templates_presenter_);
     desks_templates_presenter_ =
         std::make_unique<DesksTemplatesPresenter>(this);
+    desks_templates_dialog_controller_ =
+        std::make_unique<DesksTemplatesDialogController>();
   }
 
   if (overview_focus_widget_) {
