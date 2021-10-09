@@ -123,8 +123,7 @@ void WebKioskAppLauncher::LaunchApp() {
   // TODO(crbug.com/1101667): Currently, this source has log spamming by
   // LOG(WARNING) to make it easy to debug and develop. Get rid of the log
   // spamming when it gets stable enough.
-  if (base::FeatureList::IsEnabled(features::kWebKioskEnableLacros) &&
-      crosapi::browser_util::IsLacrosEnabled()) {
+  if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession()) {
     LOG(WARNING) << "Using lacros-chrome for web kiosk session.";
     delegate_->OnAppLaunched();
     if (crosapi::BrowserManager::Get()->IsRunning()) {

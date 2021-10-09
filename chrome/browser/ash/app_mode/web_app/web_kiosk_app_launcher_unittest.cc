@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
@@ -22,6 +23,7 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,6 +56,7 @@ const char kAppEmail[] = "lala@example.com";
 const char kAppInstallUrl[] = "https://example.com";
 const char kAppLaunchUrl[] = "https://example.com/launch";
 const char kAppLaunchBadUrl[] = "https://badexample.com";
+const char kUserEmail[] = "user@example.com";
 const char16_t kAppTitle[] = u"app";
 
 std::unique_ptr<web_app::WebAppDataRetriever> CreateDataRetrieverWithData(
@@ -360,22 +363,37 @@ TEST_F(WebKioskAppLauncherTest, SkipInstallation) {
 class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
  public:
   WebKioskAppLauncherUsingLacrosTest()
-      : browser_manager_(std::make_unique<crosapi::FakeBrowserManager>()) {
+      : browser_manager_(std::make_unique<crosapi::FakeBrowserManager>()),
+        fake_user_manager_(new ash::FakeChromeUserManager()),
+        scoped_user_manager_(base::WrapUnique(fake_user_manager_)) {
     scoped_feature_list_.InitAndEnableFeature(features::kWebKioskEnableLacros);
     crosapi::browser_util::SetLacrosEnabledForTest(true);
     crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
+  }
+
+  void LoginWebKioskUser() {
+    const AccountId account_id(AccountId::FromUserEmail(kUserEmail));
+    fake_user_manager()->AddWebKioskAppUser(account_id);
+    fake_user_manager()->LoginUser(account_id);
   }
 
   crosapi::FakeBrowserManager* browser_manager() const {
     return browser_manager_.get();
   }
 
+  ash::FakeChromeUserManager* fake_user_manager() const {
+    return fake_user_manager_;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
+  ash::FakeChromeUserManager* fake_user_manager_;
+  user_manager::ScopedUserManager scoped_user_manager_;
 };
 
 TEST_F(WebKioskAppLauncherUsingLacrosTest, NormalFlow) {
+  LoginWebKioskUser();
   SetupAppData(/*installed*/ true);
   browser_manager()->set_new_fullscreen_window_creation_result(
       crosapi::mojom::CreationResult::kSuccess);
@@ -401,6 +419,7 @@ TEST_F(WebKioskAppLauncherUsingLacrosTest, NormalFlow) {
 }
 
 TEST_F(WebKioskAppLauncherUsingLacrosTest, WaitBrowserManagerToRun) {
+  LoginWebKioskUser();
   SetupAppData(/*installed*/ true);
   browser_manager()->set_new_fullscreen_window_creation_result(
       crosapi::mojom::CreationResult::kSuccess);
@@ -428,6 +447,7 @@ TEST_F(WebKioskAppLauncherUsingLacrosTest, WaitBrowserManagerToRun) {
 }
 
 TEST_F(WebKioskAppLauncherUsingLacrosTest, FailToLaunchApp) {
+  LoginWebKioskUser();
   SetupAppData(/*installed*/ true);
   browser_manager()->set_new_fullscreen_window_creation_result(
       crosapi::mojom::CreationResult::kBrowserNotRunning);

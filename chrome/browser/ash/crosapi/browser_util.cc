@@ -718,6 +718,12 @@ bool IsLacrosChromeAppsEnabled() {
   return true;
 }
 
+bool IsLacrosEnabledInWebKioskSession() {
+  return user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp() &&
+         base::FeatureList::IsEnabled(features::kWebKioskEnableLacros) &&
+         IsLacrosEnabled();
+}
+
 bool IsLacrosWindow(const aura::Window* window) {
   const std::string* app_id = exo::GetShellApplicationId(window);
   if (!app_id)
