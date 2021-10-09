@@ -68,20 +68,18 @@ source_set("vaapi") {
     "vaapi_video_encoder_delegate.h",
     "vaapi_webp_decoder.cc",
     "vaapi_webp_decoder.h",
-    "vp8_rate_control.cc",
-    "vp8_rate_control.h",
     "vp8_vaapi_video_decoder_delegate.cc",
     "vp8_vaapi_video_decoder_delegate.h",
     "vp8_vaapi_video_encoder_delegate.cc",
     "vp8_vaapi_video_encoder_delegate.h",
-    "vp9_rate_control.cc",
-    "vp9_rate_control.h",
     "vp9_svc_layers.cc",
     "vp9_svc_layers.h",
     "vp9_vaapi_video_decoder_delegate.cc",
     "vp9_vaapi_video_decoder_delegate.h",
     "vp9_vaapi_video_encoder_delegate.cc",
     "vp9_vaapi_video_encoder_delegate.h",
+    "vpx_rate_control.cc",
+    "vpx_rate_control.h",
   ]
   if (enable_platform_hevc_decoding) {
     sources += [

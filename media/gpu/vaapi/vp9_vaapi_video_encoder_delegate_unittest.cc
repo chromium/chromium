@@ -16,8 +16,8 @@
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
-#include "media/gpu/vaapi/vp9_rate_control.h"
 #include "media/gpu/vaapi/vp9_svc_layers.h"
+#include "media/gpu/vaapi/vpx_rate_control.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -262,7 +262,10 @@ class MockVaapiWrapper : public VaapiWrapper {
   ~MockVaapiWrapper() override = default;
 };
 
-class MockVP9RateControl : public VP9RateControl {
+class MockVP9RateControl
+    : public VPXRateControl<libvpx::VP9RateControlRtcConfig,
+                            libvpx::VP9RateControlRTC,
+                            libvpx::VP9FrameParamsQpRTC> {
  public:
   MockVP9RateControl() = default;
   ~MockVP9RateControl() override = default;

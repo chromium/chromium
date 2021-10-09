@@ -11,13 +11,19 @@
 #include "base/macros.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
+#include "media/gpu/vaapi/vpx_rate_control.h"
 #include "media/gpu/vp8_picture.h"
 #include "media/gpu/vp8_reference_frame_vector.h"
 #include "media/parsers/vp8_parser.h"
 
+namespace libvpx {
+struct VP8FrameParamsQpRTC;
+class VP8RateControlRTC;
+struct VP8RateControlRtcConfig;
+}  // namespace libvpx
+
 namespace media {
 class VaapiWrapper;
-class VP8RateControl;
 
 class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
  public:
@@ -98,6 +104,9 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   Vp8FrameHeader current_frame_hdr_;
   Vp8ReferenceFrameVector reference_frames_;
 
+  using VP8RateControl = VPXRateControl<libvpx::VP8RateControlRtcConfig,
+                                        libvpx::VP8RateControlRTC,
+                                        libvpx::VP8FrameParamsQpRTC>;
   std::unique_ptr<VP8RateControl> rate_ctrl_;
 };
 
