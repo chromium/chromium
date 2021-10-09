@@ -1800,6 +1800,7 @@ public class ExternalNavigationHandler {
         }
     }
 
+    @SuppressWarnings("UseCompatLoadingForDrawables")
     private OverrideUrlLoadingResult startActivityWithChooser(final Intent intent,
             List<ResolveInfo> resolvingInfos, GURL browserFallbackUrl, GURL intentDataUrl,
             GURL referrerUrl, Activity activity) {
@@ -1836,10 +1837,16 @@ public class ExternalNavigationHandler {
             Resources resources = pm.getResourcesForApplication(applicationInfo);
             resource.packageName = packageName;
             resource.resourceName = resources.getResourceName(applicationInfo.icon);
+            // This will throw a Resources.NotFoundException if the package uses resource
+            // name collapsing/stripping. The ActivityPicker fails to handle this exception, we have
+            // have to check for it here to avoid crashes.
+            resources.getDrawable(resources.getIdentifier(resource.resourceName, null, null), null);
         } catch (NameNotFoundException | Resources.NotFoundException e) {
+            Log.w(TAG, "No icon resource found for package: " + packageName);
             // Most likely the app doesn't have an icon and is just a test
             // app. Android will just use a blank icon.
             resource.packageName = "";
+            resource.resourceName = "";
         }
         labels.add(label);
         icons.add(resource);
