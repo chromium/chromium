@@ -427,16 +427,16 @@ base::FilePath GetReservationPath(DownloadItem* download_item) {
 DownloadItemObserver::DownloadItemObserver(DownloadItem* download_item)
     : download_item_(download_item),
       last_target_path_(GetReservationPath(download_item)) {
+  // Deregister the old observer from |download_item_| if there is one.
+  DownloadItemObserver* observer = static_cast<DownloadItemObserver*>(
+      download_item_->GetUserData(&kUserDataKey));
+  if (observer)
+    download_item_->RemoveObserver(observer);
   download_item_->AddObserver(this);
   download_item_->SetUserData(&kUserDataKey, base::WrapUnique(this));
 }
 
-DownloadItemObserver::~DownloadItemObserver() {
-  download_item_->RemoveObserver(this);
-  // DownloadItemObserver is owned by DownloadItem. It should only be getting
-  // destroyed because it's being removed from the UserData pool. No need to
-  // call DownloadItem::RemoveUserData().
-}
+DownloadItemObserver::~DownloadItemObserver() = default;
 
 void DownloadItemObserver::OnDownloadUpdated(DownloadItem* download) {
   switch (download->GetState()) {
@@ -466,6 +466,7 @@ void DownloadItemObserver::OnDownloadUpdated(DownloadItem* download) {
       // from being used for a subsequent retry attempt.
       DownloadPathReservationTracker::GetTaskRunner()->PostTask(
           FROM_HERE, base::BindOnce(&RevokeReservation, download));
+      download->RemoveObserver(this);
       download->RemoveUserData(&kUserDataKey);
       break;
 
