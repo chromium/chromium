@@ -2445,8 +2445,9 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicy) {
   // Install web app.
-  GURL app_url = GURL("https://example.org/");
-  web_app::AppId app_id = InstallWebApp(app_url);
+  GURL app_url = https_server()->GetURL("/web_apps/basic.html");
+  web_app::AppId app_id = web_app::InstallWebAppFromPage(browser(), app_url);
+
   web_app::ExternallyInstalledWebAppPrefs web_app_prefs(
       browser()->profile()->GetPrefs());
   web_app_prefs.Insert(app_url, app_id,
@@ -2466,8 +2467,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicy) {
   EXPECT_EQ(shelf_model()->items()[0].type, ash::TYPE_BROWSER_SHORTCUT);
   EXPECT_EQ(shelf_model()->items()[1].type, ash::TYPE_PINNED_APP);
   EXPECT_EQ(shelf_model()->items()[1].id.app_id, app_id);
-  // TODO(crbug.com/1157338): Update with the name of a test PWA.
-  EXPECT_EQ(shelf_model()->items()[1].title, u"WebApplicationInfo App Name");
+  EXPECT_EQ(shelf_model()->items()[1].title, u"Basic web app");
   EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
             GetPinnableForAppID(app_id, profile()));
 }
@@ -2475,7 +2475,12 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicy) {
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyUpdate) {
   // Install web app.
   GURL app_url = GURL("https://example.org/");
-  web_app::AppId app_id = InstallWebApp(app_url);
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  web_app_info->start_url = app_url;
+  web_app_info->scope = app_url;
+  web_app_info->title = u"Example";
+  web_app::AppId app_id = web_app::test::InstallWebApp(browser()->profile(),
+                                                       std::move(web_app_info));
 
   // Set policy to pin the web app.
   base::DictionaryValue entry;
@@ -2508,8 +2513,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyUpdate) {
   EXPECT_EQ(shelf_model()->items()[0].type, ash::TYPE_BROWSER_SHORTCUT);
   EXPECT_EQ(shelf_model()->items()[1].type, ash::TYPE_PINNED_APP);
   EXPECT_EQ(shelf_model()->items()[1].id.app_id, app_id);
-  // TODO(crbug.com/1157338): Update with the name of a test PWA.
-  EXPECT_EQ(shelf_model()->items()[1].title, u"WebApplicationInfo App Name");
+  EXPECT_EQ(shelf_model()->items()[1].title, u"Example");
   EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
             GetPinnableForAppID(app_id, profile()));
 }
