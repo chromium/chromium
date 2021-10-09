@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="1113173431709655881">Modo de cámara</translation>
 <translation id="1175958423215084756">Detectouse unha ligazón. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Imaxes da galería</translation>
 <translation id="1300209025925956156">Escanea o teu documento</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">Iniciar gravación</translation>
 <translation id="2599796128805996109">Cámara traseira</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
+<translation id="2761536921376153655">Tipo de busca</translation>
 <translation id="2879583609344924966">Conectouse a cámara <ph name="CAMERA" />.</translation>
 <translation id="2968794441791257519">As fotos e os vídeos realizados coa cámara pasarán ao cartafol Descargas. Podes acceder a eles en Ficheiros.
 
@@ -99,9 +101,11 @@ Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un v
 <translation id="698156982839284926">3 segundos</translation>
 <translation id="712848772518857951">Seguro que queres quitar os <ph name="COUNT" /> elementos?</translation>
 <translation id="7134221860976209830">Temporizador de 10 segundos</translation>
+<translation id="7191890674911603392">Tipo de gravación</translation>
 <translation id="7243947652761655814">Resolución de vídeo</translation>
 <translation id="7337660886763914220">Producíronse erros relacionados co sistema de ficheiros.</translation>
 <translation id="7450541714075000668">Copiouse o texto</translation>
+<translation id="7476762461674917065">Mostrar opción de gravación de GIF</translation>
 <translation id="7488619942230388918">Gravar vídeo GIF</translation>
 <translation id="7557677699350329807">Cambiar á seguinte cámara</translation>
 <translation id="7607002721634913082">En pausa</translation>

@@ -16,6 +16,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="1066060668811609597">Xestionar sincronización</translation>
 <translation id="1076421457278169141">Escaneouse o código</translation>
 <translation id="1084365883616172403">Completouse a publicación de Facebook.</translation>
+<translation id="1086486568852410168">Buscar con Google Lens</translation>
 <translation id="1103523840287552314">Traducir sempre o <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Aceptar e continuar</translation>
 <translation id="110724200315609752">Ir á ventá aberta</translation>
@@ -57,6 +58,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="1400642268715879018">As últimas 4 semanas</translation>
 <translation id="1407135791313364759">Abrir todo</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1434356225517321998">O teu navegador está xestionado. <ph name="BEGIN_LINK" />Detalles<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Ocultar contrasinal</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elementos</translation>
 <translation id="149095475893949513">Este sitio web está tentando descargar un perfil de configuración.</translation>
@@ -120,6 +122,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="209018056901015185">Ver como ordenador</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos movidos</translation>
+<translation id="2122754583996902531">O teu navegador está xestionado. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="212623074644302906">Preguntar se queres engadir as páxinas á lista de lectura</translation>
 <translation id="2139867232736819575">Buscar texto que copiaches</translation>
 <translation id="214201757571129614">Iniciar sesión…</translation>
@@ -128,6 +131,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="2218443599109088993">Afastar</translation>
 <translation id="2230173723195178503">Cargouse a páxina web</translation>
 <translation id="2239626343334228536">Borrando datos de navegación…</translation>
+<translation id="2256933947031277845">A túa organización só che permite iniciar sesión con certas contas.</translation>
 <translation id="225943865679747347">Código de erro: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Engadir conta</translation>
 <translation id="2268044343513325586">Refina</translation>
@@ -257,6 +261,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="345565170154308620">Xestionar contrasinais…</translation>
 <translation id="3469166899695866866">Queres deter a descarga?</translation>
 <translation id="3470502288861289375">Copiando...</translation>
+<translation id="3472993688462687965">Ao activar a sincronización, é posible que os datos se vexan limitados ao que permitise a túa organización.</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Mes caducidade</translation>
 <translation id="3482959374254649722">Sincronizando as túas pestanas…</translation>
@@ -368,10 +373,12 @@ Sigue os pasos indicados a continuación:</translation>
 
 Os teus datos están encriptados co teu contrasinal de sincronización. Introdúceo para comezar a sincronización.</translation>
 <translation id="4689564913179979534">Xestionar métodos de pago...</translation>
+<translation id="469022783543509074">Pechouse a túa sesión</translation>
 <translation id="470966556546083668">Non activar sincronización</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4747097190499141774">A encriptación mediante frase de acceso non inclúe métodos de pago nin enderezos de Google Pay. Só alguén coa túa frase de acceso pode ler os teus datos encriptados. A frase de acceso non se envía nin se almacena en Google. Se a esqueces ou se queres cambiar esta opción de configuración, deberás restablecer a sincronización. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nova pestana do modo de incógnito</translation>
+<translation id="4764612367328936189">A túa organización só che permite iniciar sesión con certas contas. As contas que non están permitidas atópanse ocultas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4775879719735953715">Navegador predeterminado</translation>
 <translation id="4778644898150334464">Utilizar outro contrasinal</translation>
 <translation id="4802417911091824046">A encriptación mediante frase de acceso non inclúe métodos de pago nin enderezos de Google Pay.
@@ -828,6 +835,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9081058212938299310">Queres actualizar o contrasinal do usuario <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">Un elemento</translation>
 <translation id="9083838294503912307">Para sincronizar e personalizar todos os teus dispositivos, activa a sincronización.</translation>
+<translation id="9084677839771512880">A túa organización limita o que podes sincronizar. <ph name="BEGIN_LINK" />Detalles<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Contrasinal suxerido por Chrome:</translation>
 <translation id="9094033019050270033">Actualizar contrasinal</translation>
 <translation id="9100610230175265781">Contrasinal obrigatorio</translation>

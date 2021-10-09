@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">የእርስዎ መሣሪያዎች እንዲያውም የተሻለ ይሠራሉ</translation>
 <translation id="1119348796022671382">ገጽታ የተላበሰው የቀለም ሁነታ በይነገጹን በስሱ ቀለም ለመቀባት ከእርስዎ የግድግዳ ወረቀት የወጡ ቀለማትን ይጠቀማል።</translation>
 <translation id="112308213915226829">መደርደሪያን በራስ ሰር ደብቅ</translation>
+<translation id="1142002900084379065">የቅርብ ጊዜ ፎቶዎች</translation>
 <translation id="1148499908455722006">የ<ph name="USER_NAME" /> የመረጃ መገናኛን ክፈት</translation>
 <translation id="1150989369772528668">ቀን መቁጠሪያ</translation>
 <translation id="1153356358378277386">የተጣመሩ መሣሪያዎች</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">የሙሉ ማያ ገጽ ማጉያ ነቅቷል። እንዲጠፋ አድርጎ እንደገና ለመቀያየር Ctrl+ፍለጋ+M ይጫኑ።</translation>
 <translation id="2302092602801625023">ይህ መለያ በFamily Link የሚተዳደር ነው</translation>
 <translation id="2303600792989757991">የመስኮት አጠቃላይ እይታን ቀያይር</translation>
+<translation id="2318576281648121272">ዛሬ <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">በደብዳቤ ይመለሱ</translation>
 <translation id="2339073806695260576">ማስታወሻ ለመያዝ፣ ቅጽበታዊ ገጽ እይታን ለማንሳት፣ ሌዘር ጠቋሚውን ወይም ማጉያ መነጽሩን ለመጠቀም በመደርደሪያው ላይ ያለውን የስታይለስ አዝራሩን መታ ያድርጉ።</translation>
 <translation id="2341729377289034582">ወደ አቀባዊ ተቆልፏል</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">የይለፍ ቃል አሳይ</translation>
 <translation id="24452542372838207">ማሳወቂያን ዘርጋ</translation>
 <translation id="2450205753526923158">የቅጽበታዊ ገጽ እይታ ሁነታ</translation>
+<translation id="2456008742792828469">ቀን መቁጠሪያ፣ <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">ጥራትን ያረጋግጡ</translation>
 <translation id="2475982808118771221">ስህተት ተከስቷል</translation>
 <translation id="2482878487686419369">ማስታወቂያዎች</translation>
@@ -277,6 +280,7 @@
 <translation id="3100274880412651815">የማንሳት ሁነታን ያሰናብቱ</translation>
 <translation id="3105917916468784889">ቅጽበታዊ ገጽ እይታን ያነሳል</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ብሉቱዝ)</translation>
+<translation id="3113926042639749131">የአስተያየት ጥቆማን አስወግድ</translation>
 <translation id="3126069444801937830">ለማዘመን ዳግም ያስጀምሩ</translation>
 <translation id="3139942575505304791">ዴስክ 1</translation>
 <translation id="315116470104423982">የተንቀሳቃሽ ስልክ ውሂብ</translation>
@@ -502,6 +506,7 @@
 <translation id="4642092649622328492">ከፊል ቅጽበታዊ ገጽ ዕይታን ያንሱ</translation>
 <translation id="4659419629803378708">ChromeVox ነቅቷል</translation>
 <translation id="4665114317261903604">አትረብሽ የሚለውን አብራ ወይም አጥፋ። <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081"><ph name="FILENAME" />ን በማውረድ ላይ</translation>
 <translation id="4696813013609194136">በወላጅ ኮድ መሣሪያን ክፈት</translation>
 <translation id="4702647871202761252">የግላዊነት ማያ ገጽ ጠፍቷል</translation>
 <translation id="4706121060329443414">ማውረድ በኋላ ላይ ይሞከራል። ለአሁን ንግግር ለመሰናዳት ወደ Google ይላካል።</translation>
@@ -639,6 +644,7 @@
 <translation id="5744083938413354016">መታ አድርጎ መጎተት</translation>
 <translation id="5745612484876805746">የሌሊት ብርሃን በፀሐይ መጥለቅ ጊዜ በራስሰር ይበራል</translation>
 <translation id="5750765938512549687">ብሉቱዝ ጠፍቷል</translation>
+<translation id="576341972084747908">አደገኛ <ph name="FILENAME" /> አውርድ</translation>
 <translation id="576453121877257266">የምሽት ብርሃን በርቷል።</translation>
 <translation id="5769373120130404283">የግላዊነት ማያ ገጽ</translation>
 <translation id="5777841717266010279">ማያ ገጽ ማጋራት ይቁም?</translation>
@@ -778,6 +784,7 @@
 <translation id="6852052252232534364">ለማግበር ጠቅ ያድርጉ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ሰከንድ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{አንድ አሃዝ ይቀራል}one{# አሃዞች ይቀራሉ}other{# አሃዞች ይቀራሉ}}</translation>
+<translation id="6867938213751067702">ማውረድ ባለበት ቆሟል <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">አቋራጭ ጠፍቷል</translation>
 <translation id="6886172995547742638">የእርስዎ <ph name="DEVICE_TYPE" /> ያነሰ አፈጻጸም ሊያጋጥመው ይችላል። የእውቅና ማረጋገጫ ያለው <ph name="PREFERRED_MINIMUM_POWER" /> ዋ ወይም ከዚያ በላይ የሆነ የUSB-C ኃይል አስማሚን ይጠቀሙ።</translation>
 <translation id="688631446150864480">መስኮቶችን ለመቀያየር የታች ቀስትን ይጫኑ</translation>

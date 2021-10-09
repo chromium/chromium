@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">Om du vill spara bilder trycker du på Inställningar och låter Chromium lägga till dina foton</translation>
 <translation id="1289216811211435351">Byt till Chromium</translation>
+<translation id="1354592789402432496">Administratören kräver inloggning med ett organisationskonto. Konton som är begränsade av administratören är dolda.</translation>
 <translation id="1361748954329991663">Den här versionen av Chromium är inaktuell. Om det inte finns någon uppdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kan det hända att enheten inte längre har stöd för nya versioner av Chromium.</translation>
 <translation id="1370204544543370355">Logga in i Chromium med Google-kontot så att du får ut mesta möjliga av programmet</translation>
 <translation id="1431818719585918472">Låt Chromium låsa inkognitoflikarna.</translation>
@@ -50,6 +51,7 @@
 <translation id="5171868502429358653">Logga in i Chromium</translation>
 <translation id="5224391634244552924">Inga sparade lösenord. Chromium kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="5308226104666789935">Chromium kan inte söka efter uppdateringar</translation>
+<translation id="5324242752415821224">Organisationen kräver att du loggar in för att använda Chromium. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Vill du ställa in Chromium som standardwebbläsare?</translation>
 <translation id="5521125884468363740">Logga in och aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chromium</translation>
 <translation id="5573014823074921752">Tips för Chromium. Tryck länge på Visa flikar i verktygsfältet så visas fler flikalternativ. Du hittar verktygsfältet längst ned eller högst upp på skärmen.</translation>
@@ -63,6 +65,7 @@
 2. Tryck på Standardwebbläsarapp
 3. Välj Chromium.</translation>
 <translation id="6155422572367400359">Logga in på den här webbplatsen, i ditt Google-konto och i Chromium. Du kan aktivera synkronisering senare.</translation>
+<translation id="6183442264225539303">Logga in på den här webbplatsen och i Chromium. Du kan aktivera synkronisering senare.</translation>
 <translation id="6268381023930128611">Vill du logga ut från Chromium?</translation>
 <translation id="632825460376924298">Tillåt inloggning i Chromium</translation>
 <translation id="6337530241089703714">Välj om din data i Chromium ska raderas från den här enheten eller vara kvar</translation>

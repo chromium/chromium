@@ -23,6 +23,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1104621072296271835">Dina enheter fungerar ännu bättre tillsammans</translation>
 <translation id="1119348796022671382">I färgläget med tema används färger från bakgrunden till att lätt färgsätta gränssnittet.</translation>
 <translation id="112308213915226829">Dölj hyllan automatiskt</translation>
+<translation id="1142002900084379065">Nya foton</translation>
 <translation id="1148499908455722006">Öppna dialogrutan med information om <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Kopplade enheter</translation>
@@ -179,6 +180,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2298170939937364391">Helskärmsförstoring har aktiverats. Tryck på Ctrl + Sök + M igen om du vill inaktivera funktionen.</translation>
 <translation id="2302092602801625023">Det här kontot hanteras av Family Link</translation>
 <translation id="2303600792989757991">Växla fönsteröversikt</translation>
+<translation id="2318576281648121272">I dag <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Bakåt tecken för tecken</translation>
 <translation id="2339073806695260576">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmbild eller använda laserpekaren eller förstoringsglaset.</translation>
 <translation id="2341729377289034582">Låst i stående läge</translation>
@@ -200,6 +202,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
 <translation id="24452542372838207">Utöka avisering</translation>
 <translation id="2450205753526923158">Skärmbildsläge</translation>
+<translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Bekräfta upplösningen</translation>
 <translation id="2475982808118771221">Det uppstod ett fel</translation>
 <translation id="2482878487686419369">Aviseringar</translation>
@@ -277,6 +280,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3100274880412651815">Stäng läget för skärmbild/skärminspelning</translation>
 <translation id="3105917916468784889">Ta en skärmbild</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Ta bort förslaget</translation>
 <translation id="3126069444801937830">Starta om för att uppdatera</translation>
 <translation id="3139942575505304791">Skrivbord 1</translation>
 <translation id="315116470104423982">Mobildata</translation>
@@ -502,6 +506,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4642092649622328492">Ta en skärmbild av en del av skärmen</translation>
 <translation id="4659419629803378708">ChromeVox har aktiverats</translation>
 <translation id="4665114317261903604">Aktivera och inaktivera Stör ej. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081"><ph name="FILENAME" /> laddas ned</translation>
 <translation id="4696813013609194136">Lås upp enheten med föräldrakod</translation>
 <translation id="4702647871202761252">Sekretesskärmen är inaktiverad</translation>
 <translation id="4706121060329443414">Ett nytt nedladdningsförsök görs senare. Tills vidare skickas tal till Google för bearbetning.</translation>
@@ -639,6 +644,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5744083938413354016">Tryck snabbt två gånger och dra</translation>
 <translation id="5745612484876805746">Nattljus aktiveras automatiskt när solen går ned</translation>
 <translation id="5750765938512549687">Bluetooth är inaktiverat</translation>
+<translation id="576341972084747908">Den skadliga filen <ph name="FILENAME" /> laddas ned</translation>
 <translation id="576453121877257266">Nattljus är aktiverat.</translation>
 <translation id="5769373120130404283">Sekretesskärm</translation>
 <translation id="5777841717266010279">Vill du avbryta skärmdelningen?</translation>
@@ -778,6 +784,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6852052252232534364">Aktivera</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{En siffra kvar}other{# siffror kvar}}</translation>
+<translation id="6867938213751067702">Nedladdningen pausades <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Kortkommandot har inaktiverats.</translation>
 <translation id="6886172995547742638">Prestandan på <ph name="DEVICE_TYPE" /> kan försämras. Använd en certifierad USB-C-nätadapter för <ph name="PREFERRED_MINIMUM_POWER" /> W eller mer.</translation>
 <translation id="688631446150864480">Tryck på nedåtpilen på tangentbordet för att byta fönster</translation>

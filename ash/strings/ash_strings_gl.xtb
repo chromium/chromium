@@ -23,6 +23,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1104621072296271835">Os dispositivos funcionan mellor xuntos</translation>
 <translation id="1119348796022671382">O modo de cor con tema usa cores extraídas do fondo de pantalla para colorear lixeiramente a interface.</translation>
 <translation id="112308213915226829">Ocultar estante automaticamente</translation>
+<translation id="1142002900084379065">Fotos recentes</translation>
 <translation id="1148499908455722006">Abrir cadro de diálogo de información para <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendario</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
@@ -179,6 +180,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2298170939937364391">Activouse a lupa de pantalla completa. Preme Ctrl+Buscar+M de novo para desactivala.</translation>
 <translation id="2302092602801625023">Esta conta está xestionada por Family Link</translation>
 <translation id="2303600792989757991">Alternar vista xeral da ventá</translation>
+<translation id="2318576281648121272">Hoxe (<ph name="TODAY_DATE" />)</translation>
 <translation id="2322173485024759474">Retroceder unha letra</translation>
 <translation id="2339073806695260576">Toca o botón do lapis óptico no estante para crear unha nota, facer unha captura de pantalla, utilizar o punteiro láser ou aplicar a lupa.</translation>
 <translation id="2341729377289034582">Pantalla bloqueada en posición vertical</translation>
@@ -200,6 +202,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2435457462613246316">Mostrar contrasinal</translation>
 <translation id="24452542372838207">Despregar notificación</translation>
 <translation id="2450205753526923158">Modo de captura de pantalla</translation>
+<translation id="2456008742792828469">Calendario, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Confirmar resolución</translation>
 <translation id="2475982808118771221">Produciuse un erro</translation>
 <translation id="2482878487686419369">Notificacións</translation>
@@ -277,6 +280,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3100274880412651815">Ignorar modo de captura</translation>
 <translation id="3105917916468784889">Fai unha captura de pantalla</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Quitar suxestión</translation>
 <translation id="3126069444801937830">Reinicia para actualizar</translation>
 <translation id="3139942575505304791">Escritorio 1</translation>
 <translation id="315116470104423982">Datos móbiles</translation>
@@ -503,6 +507,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4642092649622328492">Fai unha captura de pantalla parcial</translation>
 <translation id="4659419629803378708">Activouse ChromeVox</translation>
 <translation id="4665114317261903604">Activar/desactivar o modo Non molestar. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Descargando <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Desbloquea o dispositivo co código parental</translation>
 <translation id="4702647871202761252">A pantalla de privacidade está desactivada</translation>
 <translation id="4706121060329443414">Tentarase descargar os ficheiros máis tarde. De momento, o que se fale enviarase a Google para que o procese.</translation>
@@ -640,6 +645,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5744083938413354016">Acción de tocar e arrastrar</translation>
 <translation id="5745612484876805746">A opción Luz nocturna activarase automaticamente ao anoitecer</translation>
 <translation id="5750765938512549687">O Bluetooth está desactivado</translation>
+<translation id="576341972084747908">Descarga de ficheiro perigoso <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">A función Luz nocturna está activada.</translation>
 <translation id="5769373120130404283">Pantalla de privacidade</translation>
 <translation id="5777841717266010279">Queres deter o uso compartido da pantalla?</translation>
@@ -779,6 +785,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6852052252232534364">Facer clic para activar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un díxito}other{Faltan # díxitos}}</translation>
+<translation id="6867938213751067702">Púxose en pausa a descarga de <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Desactivouse o atallo</translation>
 <translation id="6886172995547742638">O rendemento do dispositivo (<ph name="DEVICE_TYPE" />) pode empeorar. Usa un adaptador de corrente USB‑C de <ph name="PREFERRED_MINIMUM_POWER" /> W ou máis.</translation>
 <translation id="688631446150864480">Premer frecha abaixo para cambiar de ventá</translation>

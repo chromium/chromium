@@ -16,6 +16,7 @@
 <translation id="1066060668811609597">Διαχείριση συγχρονισμού</translation>
 <translation id="1076421457278169141">Ο κώδικας σαρώθηκε</translation>
 <translation id="1084365883616172403">Η ανάρτηση στο Facebook ολοκληρώθηκε.</translation>
+<translation id="1086486568852410168">Αναζήτηση με Google Lens</translation>
 <translation id="1103523840287552314">Να μεταφράζονται πάντα τα <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Αποδοχή και συνέχεια</translation>
 <translation id="110724200315609752">Εναλλαγή σε ανοικτό παράθυρο</translation>
@@ -57,6 +58,7 @@
 <translation id="1400642268715879018">Τελευταίες 4 εβδομάδες</translation>
 <translation id="1407135791313364759">Άνοιγμα όλων</translation>
 <translation id="1430915738399379752">Εκτύπωση</translation>
+<translation id="1434356225517321998">Το πρόγραμμα περιήγησής σας είναι διαχειριζόμενο. <ph name="BEGIN_LINK" />Λεπτομέρειες<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Απόκρυψη κωδικού πρόσβασης</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> στοιχεία</translation>
 <translation id="149095475893949513">Αυτός ο ιστότοπος προσπαθεί να κατεβάσει ένα προφίλ διαμόρφωσης.</translation>
@@ -120,6 +122,7 @@
 <translation id="209018056901015185">Αίτηση ιστότ. για υπολογ.</translation>
 <translation id="2103075008456228677">Ανοίξτε το history.google.com</translation>
 <translation id="2116625576999540962">Μετακινήθηκαν <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> στοιχεία</translation>
+<translation id="2122754583996902531">Το πρόγραμμα περιήγησής σας είναι διαχειριζόμενο. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="212623074644302906">Ερώτηση για προσθήκη στη Λίστα ανάγνωσης</translation>
 <translation id="2139867232736819575">Αναζήτηση του κειμένου που αντιγράψατε</translation>
 <translation id="214201757571129614">Σύνδεση…</translation>
@@ -128,6 +131,7 @@
 <translation id="2218443599109088993">Σμίκρυνση</translation>
 <translation id="2230173723195178503">Η ιστοσελίδα φορτώθηκε</translation>
 <translation id="2239626343334228536">Διαγραφή δεδομένων περιήγησης…</translation>
+<translation id="2256933947031277845">Ο οργανισμός σας επιτρέπει να συνδέεστε μόνο με ορισμένους λογαριασμούς.</translation>
 <translation id="225943865679747347">Κωδικός σφάλματος: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Προσθήκη λογαριασμού</translation>
 <translation id="2268044343513325586">Περιορισμός</translation>
@@ -257,6 +261,7 @@
 <translation id="345565170154308620">Διαχείριση κωδικών πρόσβασης…</translation>
 <translation id="3469166899695866866">Διακοπή λήψης;</translation>
 <translation id="3470502288861289375">Αντιγραφή…</translation>
+<translation id="3472993688462687965">Όταν ενεργοποιήσετε τον συγχρονισμό, τα δεδομένα ενδέχεται να περιορίζονται σε αυτά που επέτρεψε ο οργανισμός σας.</translation>
 <translation id="3474624961160222204">Συνέχεια <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Μήνας λήξης</translation>
 <translation id="3482959374254649722">Συγχρονισμός των καρτελών σας…</translation>
@@ -368,10 +373,12 @@
 
 Τα δεδομένα σας είναι κρυπτογραφημένα με τη δική σας φράση πρόσβασης συγχρονισμού. Πληκτρολογήστε την για να ξεκινήσει ο συγχρονισμός.</translation>
 <translation id="4689564913179979534">Διαχείριση τρόπων πληρωμής…</translation>
+<translation id="469022783543509074">Αποσυνδεθήκατε</translation>
 <translation id="470966556546083668">Να μην ενεργοποιηθεί ο συγχρονισμός</translation>
 <translation id="473775607612524610">Ενημέρωση</translation>
 <translation id="4747097190499141774">Η κρυπτογράφηση με φράση πρόσβασης δεν περιλαμβάνει τρόπους πληρωμής και διευθύνσεις από το Google Pay. Μόνο κάποιος που γνωρίζει τη φράση πρόσβασής σας μπορεί να διαβάσει τα κρυπτογραφημένα δεδομένα σας. Η φράση πρόσβασης δεν αποστέλλεται στην Google ούτε αποθηκεύεται από αυτήν. Εάν ξεχάσετε τη φράση πρόσβασής σας ή θέλετε να αλλάξετε αυτήν τη ρύθμιση, θα πρέπει να επαναφέρετε τον συγχρονισμό. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Νέα καρτέλα ανώνυμης περιήγησης</translation>
+<translation id="4764612367328936189">Ο οργανισμός σας επιτρέπει να συνδέεστε μόνο με ορισμένους λογαριασμούς. Γίνεται απόκρυψη των λογαριασμών που δεν επιτρέπονται. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="4775879719735953715">Προεπιλεγμένο πρόγραμμα περιήγησης</translation>
 <translation id="4778644898150334464">Χρήση άλλου κωδικού πρόσβασης</translation>
 <translation id="4802417911091824046">Η κρυπτογράφηση φράσης πρόσβασης δεν περιλαμβάνει τρόπους πληρωμής και διευθύνσεις από το Google Pay.
@@ -829,6 +836,7 @@
 <translation id="9081058212938299310">Ενημέρωση κωδικού πρόσβασης για <ph name="USERNAME" />;</translation>
 <translation id="9083392325882095631">1 στοιχείο</translation>
 <translation id="9083838294503912307">Για να κάνετε συγχρονισμό και εξατομίκευση σε διάφορες συσκευές, ενεργοποιήστε τον συγχρονισμό.</translation>
+<translation id="9084677839771512880">Ο οργανισμός σας περιορίζει τι μπορείτε να συγχρονίσετε. <ph name="BEGIN_LINK" />Λεπτομέρειες<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Προτεινόμενος κωδικός πρόσβασης Chrome:</translation>
 <translation id="9094033019050270033">Ενημέρωση κωδικού πρόσβασης</translation>
 <translation id="9100610230175265781">Απαιτείται φράση πρόσβασης</translation>
