@@ -327,7 +327,7 @@ void AudioEncoder::CallOutputCallback(
     first_output_after_configure_ = false;
     auto* decoder_config = MakeGarbageCollected<AudioDecoderConfig>();
     decoder_config->setCodec(active_config->codec_string);
-    decoder_config->setSampleRate(active_config->options.sample_rate);
+    decoder_config->setSampleRate(encoded_buffer.params.sample_rate());
     decoder_config->setNumberOfChannels(active_config->options.channels);
     if (codec_desc.has_value()) {
       auto* desc_array_buf = DOMArrayBuffer::Create(codec_desc.value().data(),
