@@ -1132,4 +1132,22 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromPerformanceCounter) {
 
 #endif  // defined(OS_WIN)
 
+// Verifies that copied events never copy target_.
+TEST(EventTest, NeverCopyTarget) {
+  const gfx::Point location(10, 10);
+  const gfx::Point root_location(20, 20);
+  ui::test::TestEventTarget target;
+
+  ui::MouseEvent targeted(ET_MOUSE_PRESSED, location, root_location,
+                          EventTimeForNow(), 0, 0);
+  Event::DispatcherApi(&targeted).set_target(&target);
+  ui::MouseEvent targeted_copy1(targeted);
+
+  EXPECT_EQ(nullptr, targeted_copy1.target());
+
+  ui::MouseEvent targeted_copy2 = targeted;
+
+  EXPECT_EQ(nullptr, targeted_copy2.target());
+}
+
 }  // namespace ui

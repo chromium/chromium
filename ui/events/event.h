@@ -314,6 +314,9 @@ class EVENTS_EXPORT Event {
   PlatformEvent native_event_;
   bool delete_native_event_ = false;
   bool cancelable_ = true;
+  // Neither Event copy constructor nor the assignment operator copies
+  // `target_`, as `target_` should be explicitly set so the setter will be
+  // responsible for tracking it.
   EventTarget* target_ = nullptr;
   EventPhase phase_ = EP_PREDISPATCH;
   EventResult result_ = ER_UNHANDLED;

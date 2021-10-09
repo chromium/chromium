@@ -371,7 +371,6 @@ Event& Event::operator=(const Event& rhs) {
     native_event_ = CopyNativeEvent(rhs.native_event_);
     delete_native_event_ = true;
     cancelable_ = rhs.cancelable_;
-    target_ = rhs.target_;
     phase_ = rhs.phase_;
     result_ = rhs.result_;
     source_device_id_ = rhs.source_device_id_;
