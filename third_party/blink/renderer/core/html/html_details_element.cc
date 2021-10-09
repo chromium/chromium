@@ -46,6 +46,19 @@
 
 namespace blink {
 
+namespace {
+
+bool IsFirstSummary(const Node& node) {
+  DCHECK(IsA<HTMLDetailsElement>(node.parentElement()));
+  if (!IsA<HTMLSummaryElement>(node))
+    return false;
+  return node.parentElement() &&
+         &node ==
+             Traversal<HTMLSummaryElement>::FirstChild(*node.parentElement());
+}
+
+}  // namespace
+
 HTMLDetailsElement::HTMLDetailsElement(Document& document)
     : HTMLElement(html_names::kDetailsTag, document), is_open_(false) {
   UseCounter::Count(document, WebFeature::kDetailsElement);
@@ -54,16 +67,6 @@ HTMLDetailsElement::HTMLDetailsElement(Document& document)
 }
 
 HTMLDetailsElement::~HTMLDetailsElement() = default;
-
-// static
-bool HTMLDetailsElement::IsFirstSummary(const Node& node) {
-  DCHECK(IsA<HTMLDetailsElement>(node.parentElement()));
-  if (!IsA<HTMLSummaryElement>(node))
-    return false;
-  return node.parentElement() &&
-         &node ==
-             Traversal<HTMLSummaryElement>::FirstChild(*node.parentElement());
-}
 
 void HTMLDetailsElement::DispatchPendingEvent(
     const AttributeModificationReason reason) {
@@ -91,26 +94,25 @@ void HTMLDetailsElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
       Text::Create(GetDocument(),
                    GetLocale().QueryString(IDS_DETAILS_WITHOUT_SUMMARY_LABEL)));
 
-  HTMLSlotElement* summary_slot =
-      HTMLSlotElement::CreateUserAgentCustomAssignSlot(GetDocument());
-  summary_slot->SetIdAttribute(shadow_element_names::kIdDetailsSummary);
-  summary_slot->AppendChild(default_summary);
-  root.AppendChild(summary_slot);
+  summary_slot_ = MakeGarbageCollected<HTMLSlotElement>(GetDocument());
+  summary_slot_->SetIdAttribute(shadow_element_names::kIdDetailsSummary);
+  summary_slot_->AppendChild(default_summary);
+  root.AppendChild(summary_slot_);
 
-  HTMLSlotElement* content_slot =
-      HTMLSlotElement::CreateUserAgentDefaultSlot(GetDocument());
-  content_slot->SetIdAttribute(shadow_element_names::kIdDetailsContent);
+  content_slot_ = MakeGarbageCollected<HTMLSlotElement>(GetDocument());
+  HTMLSlotElement::CreateUserAgentDefaultSlot(GetDocument());
+  content_slot_->SetIdAttribute(shadow_element_names::kIdDetailsContent);
   if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled()) {
-    content_slot->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
-                                         CSSValueID::kHidden);
-    content_slot->EnsureDisplayLockContext().SetActivateForFindInPage(true);
-    content_slot->SetInlineStyleProperty(CSSPropertyID::kDisplay,
-                                         CSSValueID::kBlock);
+    content_slot_->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
+                                          CSSValueID::kHidden);
+    content_slot_->EnsureDisplayLockContext().SetActivateForFindInPage(true);
+    content_slot_->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                          CSSValueID::kBlock);
   } else {
-    content_slot->SetInlineStyleProperty(CSSPropertyID::kDisplay,
-                                         CSSValueID::kNone);
+    content_slot_->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                          CSSValueID::kNone);
   }
-  root.AppendChild(content_slot);
+  root.AppendChild(content_slot_);
 
   auto* default_summary_style = MakeGarbageCollected<HTMLStyleElement>(
       GetDocument(), CreateElementFlags::ByCreateElement());
@@ -143,18 +145,6 @@ Element* HTMLDetailsElement::FindMainSummary() const {
 }
 
 void HTMLDetailsElement::ManuallyAssignSlots() {
-  ShadowRoot* shadow_root = UserAgentShadowRoot();
-  DCHECK(shadow_root);
-
-  HTMLSlotElement* summary_slot =
-      To<HTMLSlotElement>(shadow_root->firstChild());
-  HTMLSlotElement* content_slot =
-      To<HTMLSlotElement>(summary_slot->nextSibling());
-  DCHECK_EQ(summary_slot->GetIdAttribute(),
-            shadow_element_names::kIdDetailsSummary);
-  DCHECK_EQ(content_slot->GetIdAttribute(),
-            shadow_element_names::kIdDetailsContent);
-
   HeapVector<Member<Node>> summary_nodes;
   HeapVector<Member<Node>> content_nodes;
   for (Node& child : NodeTraversal::ChildrenOf(*this)) {
@@ -166,10 +156,14 @@ void HTMLDetailsElement::ManuallyAssignSlots() {
       content_nodes.push_back(child);
     }
   }
-  summary_slot->ClearAssignedNodes();
-  summary_slot->Assign(summary_nodes);
-  content_slot->ClearAssignedNodes();
-  content_slot->Assign(content_nodes);
+  summary_slot_->Assign(summary_nodes);
+  content_slot_->Assign(content_nodes);
+}
+
+void HTMLDetailsElement::Trace(Visitor* visitor) const {
+  visitor->Trace(summary_slot_);
+  visitor->Trace(content_slot_);
+  HTMLElement::Trace(visitor);
 }
 
 void HTMLDetailsElement::ParseAttribute(

@@ -431,12 +431,12 @@ TEST_P(ParameterizedTextOffsetMappingTest, RangeWithSelect1) {
   const auto& expected_outer =
       "^<select>"
       "<div aria-hidden=\"true\"></div>"
-      "<slot name=\"user-agent-custom-assign-slot\"></slot>"
+      "<slot></slot>"
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
       "<div aria-hidden=\"true\">^|</div>"
-      "<slot name=\"user-agent-custom-assign-slot\"></slot>"
+      "<slot></slot>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
   EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));
@@ -449,12 +449,12 @@ TEST_P(ParameterizedTextOffsetMappingTest, RangeWithSelect2) {
   const auto& expected_outer =
       "^<select>"
       "<div aria-hidden=\"true\"></div>"
-      "<slot name=\"user-agent-custom-assign-slot\"></slot>"
+      "<slot></slot>"
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
       "<div aria-hidden=\"true\">^|</div>"
-      "<slot name=\"user-agent-custom-assign-slot\"></slot>"
+      "<slot></slot>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
   EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));

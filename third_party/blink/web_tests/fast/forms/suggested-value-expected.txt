@@ -85,7 +85,6 @@ instead of "initial value".
 |       aria-hidden="true"
 |       "initial value"
 |     <slot>
-|       name="user-agent-custom-assign-slot"
 | "input.value: initial value"
 | "internals.suggestedValue(input): suggested value"
 | "input.selectionStart: 0"

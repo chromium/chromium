@@ -173,9 +173,6 @@ class CORE_EXPORT HTMLSelectElement final
 
   void ResetTypeAheadSessionForTesting();
 
-  // Used for slot assignment.
-  static bool CanAssignToSelectSlot(const Node&);
-
   bool HasNonInBodyInsertionMode() const override { return true; }
 
   void Trace(Visitor*) const override;
@@ -221,6 +218,7 @@ class CORE_EXPORT HTMLSelectElement final
   void DetachLayoutTree(bool performing_reattach = false) override;
   void AppendToFormData(FormData&) override;
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
+  void ManuallyAssignSlots() override;
 
   void DefaultEventHandler(Event&) override;
 
@@ -283,6 +281,7 @@ class CORE_EXPORT HTMLSelectElement final
   mutable ListItems list_items_;
   TypeAhead type_ahead_;
   unsigned size_;
+  Member<HTMLSlotElement> option_slot_;
   Member<HTMLOptionElement> last_on_change_option_;
   Member<HTMLOptionElement> suggested_option_;
   bool uses_menu_list_ = true;

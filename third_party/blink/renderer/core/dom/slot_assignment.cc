@@ -25,10 +25,10 @@
 namespace blink {
 
 namespace {
+// TODO(1179356) Remove when removing custom slots.
 bool ShouldAssignToCustomSlot(const Node& node) {
   DCHECK(!IsA<HTMLDetailsElement>(node.parentElement()));
-  if (IsA<HTMLSelectElement>(node.parentElement()))
-    return HTMLSelectElement::CanAssignToSelectSlot(node);
+  DCHECK(!IsA<HTMLSelectElement>(node.parentElement()));
   if (IsA<HTMLOptGroupElement>(node.parentElement()))
     return HTMLOptGroupElement::CanAssignToOptGroupSlot(node);
   return false;
