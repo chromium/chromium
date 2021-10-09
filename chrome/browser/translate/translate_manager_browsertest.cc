@@ -1020,7 +1020,7 @@ IN_PROC_BROWSER_TEST_F(OverrideSitePrefsForAutoHrefTranslateBrowserTest,
 
 // Test if there was an error during translation.
 // Flaky on Linux: crbug.com/1200687
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_PageTranslationError DISABLED_PageTranslationError
 #else
 #define MAYBE_PageTranslationError PageTranslationError
