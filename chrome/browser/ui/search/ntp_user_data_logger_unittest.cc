@@ -46,13 +46,15 @@ using Samples = std::vector<Sample>;
 
 // Helper function that uses sensible defaults for irrelevant fields of
 // NTPTileImpression.
-ntp_tiles::NTPTileImpression MakeNTPTileImpression(int index,
-                                                   TileSource source,
-                                                   TileTitleSource title_source,
-                                                   TileVisualType visual_type) {
+ntp_tiles::NTPTileImpression MakeNTPTileImpression(
+    int index,
+    TileSource source,
+    TileTitleSource title_source,
+    TileVisualType visual_type,
+    GURL url_for_rapper = GURL()) {
   return ntp_tiles::NTPTileImpression(index, source, title_source, visual_type,
                                       favicon_base::IconType::kInvalid,
-                                      /*url_for_rappor=*/GURL());
+                                      url_for_rapper);
 }
 
 // Helper function that populates a list of expected impressions, each with the
@@ -108,11 +110,54 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordNumberOfTiles) {
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.NumberOfTiles"),
               ElementsAre(Bucket(ntp_tiles::kMaxNumTiles, 1)));
 
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("NewTabPage.NumberOfPreinstalledApps"),
+      ElementsAre(Bucket(0, 1)));
+
   // We should not log again for the same NTP.
   logger.LogMostVisitedLoaded(delta, /*using_most_visited=*/true,
                               /*is_visible=*/true);
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.NumberOfTiles"),
               ElementsAre(Bucket(ntp_tiles::kMaxNumTiles, 1)));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("NewTabPage.NumberOfPreinstalledApps"),
+      ElementsAre(Bucket(0, 1)));
+}
+
+TEST_F(NTPUserDataLoggerTest, ShouldRecordPreinstalledApps) {
+  base::HistogramTester histogram_tester;
+
+  // Impressions increment the associated bins.
+  // Ensure non-zero statistics.
+  TestNTPUserDataLogger logger(GURL("chrome://newtab/"));
+
+  const base::TimeDelta delta = base::Milliseconds(73);
+
+  GURL gmail_extension_url(
+      "chrome-extension://pjkljhegncpnkpknbcohdijeoejaedia/index.html");
+  logger.LogMostVisitedImpression(
+      MakeNTPTileImpression(0, TileSource::TOP_SITES, TileTitleSource::INFERRED,
+                            TileVisualType::ICON_REAL, gmail_extension_url));
+
+  for (int i = 1; i < ntp_tiles::kMaxNumTiles; ++i) {
+    logger.LogMostVisitedImpression(MakeNTPTileImpression(
+        i, TileSource::TOP_SITES, TileTitleSource::UNKNOWN,
+        TileVisualType::ICON_REAL));
+  }
+  logger.LogMostVisitedLoaded(delta, /*using_most_visited=*/true,
+                              /*is_visible=*/true);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("NewTabPage.NumberOfPreinstalledApps"),
+      ElementsAre(Bucket(1, 1)));
+
+  // We should not log again for the same NTP.
+  logger.LogMostVisitedLoaded(delta, /*using_most_visited=*/true,
+                              /*is_visible=*/true);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("NewTabPage.NumberOfPreinstalledApps"),
+      ElementsAre(Bucket(1, 1)));
 }
 
 TEST_F(NTPUserDataLoggerTest, ShouldNotRecordImpressionsBeforeAllTilesLoaded) {

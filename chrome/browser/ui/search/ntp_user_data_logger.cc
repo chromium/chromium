@@ -20,6 +20,7 @@
 #include "components/ntp_tiles/metrics.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "extensions/common/constants.h"
 
 namespace {
 
@@ -260,6 +261,12 @@ LogoClickType LoggingEventToLogoClick(NTPLoggingEventType event) {
   }
 }
 
+bool IsImpressionFromPreinstalledApp(
+    const ntp_tiles::NTPTileImpression& impression) {
+  return impression.url_for_rappor.is_valid() &&
+         impression.url_for_rappor.SchemeIs(extensions::kExtensionScheme) &&
+         extension_misc::IsPreinstalledAppId(impression.url_for_rappor.host());
+}
 }  // namespace
 
 // Helper macro to log a load time to UMA. There's no good reason why we don't
@@ -416,6 +423,10 @@ void NTPUserDataLogger::LogMostVisitedImpression(
 void NTPUserDataLogger::LogMostVisitedNavigation(
     const ntp_tiles::NTPTileImpression& impression) {
   ntp_tiles::metrics::RecordTileClick(impression);
+  if (IsImpressionFromPreinstalledApp(impression)) {
+    base::RecordAction(
+        base::UserMetricsAction("NewTabPage.PreinstalledApps.Clicked"));
+  }
 
   // Records the action. This will be available as a time-stamped stream
   // server-side and can be used to compute time-to-long-dwell.
@@ -440,6 +451,7 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time,
   }
 
   int tiles_count = 0;
+  int num_of_default_apps = 0;
   for (const absl::optional<ntp_tiles::NTPTileImpression>& impression :
        logged_impressions_) {
     if (!impression.has_value()) {
@@ -447,8 +459,14 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time,
     }
     ntp_tiles::metrics::RecordTileImpression(*impression);
     ++tiles_count;
+
+    if (IsImpressionFromPreinstalledApp(*impression)) {
+      ++num_of_default_apps;
+    }
   }
   ntp_tiles::metrics::RecordPageImpression(tiles_count);
+  UMA_HISTOGRAM_COUNTS_100("NewTabPage.NumberOfPreinstalledApps",
+                           num_of_default_apps);
 
   DVLOG(1) << "Emitting NTP load time: " << load_time << ", "
            << "number of tiles: " << tiles_count;

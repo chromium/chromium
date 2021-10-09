@@ -122,9 +122,11 @@ bool IsPreinstalledAppId(const std::string& app_id) {
       app_id == g_preinstalled_app_for_testing)
     return true;
 
-  return app_id == extension_misc::kGmailAppId ||
+  // Also update the duplicated function in extensions/common/constants.cc when
+  // changing the logic here.
+  return app_id == extension_misc::kGMailAppId ||
          app_id == extension_misc::kGoogleDocAppId ||
-         app_id == extension_misc::kDriveHostedAppId ||
+         app_id == extension_misc::kGoogleDriveAppId ||
          app_id == extension_misc::kGoogleSheetsAppId ||
          app_id == extension_misc::kGoogleSlidesAppId ||
          app_id == extension_misc::kYoutubeAppId;
