@@ -108,6 +108,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
   // Performs layout for the header.
   void LayoutHeader();
 
+  // Invalidate layout for the header.
+  void InvalidateLayout();
+
   // Get the height of the header.
   int GetHeaderHeight() const;
 
@@ -189,6 +192,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
   void LayoutHeaderInternal();
 
   gfx::Rect GetTitleBounds() const;
+
+  void UpdateSnapIcons();
 
   // The widget that the caption buttons act on. This can be different from
   // |view_|'s widget.

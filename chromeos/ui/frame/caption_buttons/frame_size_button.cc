@@ -8,11 +8,14 @@
 
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/widget/widget.h"
 
@@ -44,11 +47,19 @@ bool HitTestButton(const views::FrameCaptionButton* button,
 
 SnapDirection GetSnapDirection(const views::FrameCaptionButton* to_hover) {
   if (to_hover) {
+    const bool is_primary_display_layout = chromeos::IsDisplayLayoutPrimary(
+        display::Screen::GetScreen()->GetDisplayNearestWindow(
+            to_hover->GetWidget()->GetNativeWindow()));
+    const bool is_primary_snap =
+        is_primary_display_layout ||
+        !chromeos::wm::features::IsVerticalSnapEnabled();
     switch (to_hover->GetIcon()) {
-      case views::CAPTION_BUTTON_ICON_LEFT_SNAPPED:
-        return SnapDirection::kPrimary;
-      case views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED:
-        return SnapDirection::kSecondary;
+      case views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED:
+        return is_primary_snap ? SnapDirection::kPrimary
+                               : SnapDirection::kSecondary;
+      case views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED:
+        return is_primary_snap ? SnapDirection::kSecondary
+                               : SnapDirection::kPrimary;
       case views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE:
       case views::CAPTION_BUTTON_ICON_MINIMIZE:
       case views::CAPTION_BUTTON_ICON_CLOSE:
@@ -225,11 +236,12 @@ void FrameSizeButton::SetButtonsToSnapMode(
   // When using a right-to-left layout the close button is left of the size
   // button and the minimize button is right of the size button.
   if (base::i18n::IsRTL()) {
-    delegate_->SetButtonIcons(views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED,
-                              views::CAPTION_BUTTON_ICON_LEFT_SNAPPED, animate);
+    delegate_->SetButtonIcons(views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
+                              views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
+                              animate);
   } else {
-    delegate_->SetButtonIcons(views::CAPTION_BUTTON_ICON_LEFT_SNAPPED,
-                              views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED,
+    delegate_->SetButtonIcons(views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
+                              views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
                               animate);
   }
 }
@@ -275,8 +287,10 @@ const views::FrameCaptionButton* FrameSizeButton::GetButtonToHover(
   views::View::ConvertPointToScreen(this, &event_location_in_screen);
   const views::FrameCaptionButton* closest_button =
       delegate_->GetButtonClosestTo(event_location_in_screen);
-  if ((closest_button->GetIcon() == views::CAPTION_BUTTON_ICON_LEFT_SNAPPED ||
-       closest_button->GetIcon() == views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED) &&
+  if ((closest_button->GetIcon() ==
+           views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED ||
+       closest_button->GetIcon() ==
+           views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED) &&
       HitTestButton(closest_button, event_location_in_screen)) {
     return closest_button;
   }

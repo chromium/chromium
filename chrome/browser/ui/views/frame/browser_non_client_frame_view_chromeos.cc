@@ -496,6 +496,17 @@ void BrowserNonClientFrameViewChromeOS::OnDisplayTabletStateChanged(
   }
 }
 
+void BrowserNonClientFrameViewChromeOS::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  // When the display is rotated, the frame header may have invalid snap icons.
+  // For example, when |features::kVerticalSnapState| is enabled, rotating from
+  // landscape display to portrait display layout should update snap icons from
+  // left/right arrows to upward/downward arrows for top and bottom snaps.
+  if ((changed_metrics & DISPLAY_METRIC_ROTATION) && frame_header_)
+    frame_header_->InvalidateLayout();
+}
+
 void BrowserNonClientFrameViewChromeOS::OnTabletModeToggled(bool enabled) {
   if (!enabled && browser_view()->immersive_mode_controller()->IsRevealed()) {
     // Before updating the caption buttons state below (which triggers a

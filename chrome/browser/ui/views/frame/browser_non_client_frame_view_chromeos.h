@@ -94,6 +94,8 @@ class BrowserNonClientFrameViewChromeOS
 
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
 
   void OnTabletModeToggled(bool enabled);
 

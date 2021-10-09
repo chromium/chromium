@@ -39,8 +39,8 @@ class AssistantWebContainerCaptionButtonModel
 
       case views::CAPTION_BUTTON_ICON_MINIMIZE:
       case views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE:
-      case views::CAPTION_BUTTON_ICON_LEFT_SNAPPED:
-      case views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED:
+      case views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED:
+      case views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED:
       case views::CAPTION_BUTTON_ICON_MENU:
       case views::CAPTION_BUTTON_ICON_ZOOM:
       case views::CAPTION_BUTTON_ICON_LOCATION:

@@ -225,6 +225,14 @@ void HeaderView::OnWindowDestroying(aura::Window* window) {
   target_widget_ = nullptr;
 }
 
+void HeaderView::OnDisplayMetricsChanged(const display::Display& display,
+                                         uint32_t changed_metrics) {
+  if ((changed_metrics & chromeos::TabletState::DISPLAY_METRIC_ROTATION) &&
+      frame_header_) {
+    frame_header_->LayoutHeader();
+  }
+}
+
 views::View* HeaderView::avatar_icon() const {
   return avatar_icon_;
 }
