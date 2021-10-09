@@ -57,11 +57,11 @@
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
-#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_test_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -86,6 +86,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_application_info.h"
@@ -2465,6 +2466,50 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicy) {
   EXPECT_EQ(shelf_model()->items()[0].type, ash::TYPE_BROWSER_SHORTCUT);
   EXPECT_EQ(shelf_model()->items()[1].type, ash::TYPE_PINNED_APP);
   EXPECT_EQ(shelf_model()->items()[1].id.app_id, app_id);
+  // TODO(crbug.com/1157338): Update with the name of a test PWA.
+  EXPECT_EQ(shelf_model()->items()[1].title, u"WebApplicationInfo App Name");
+  EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
+            GetPinnableForAppID(app_id, profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyUpdate) {
+  // Install web app.
+  GURL app_url = GURL("https://example.org/");
+  web_app::AppId app_id = InstallWebApp(app_url);
+
+  // Set policy to pin the web app.
+  base::DictionaryValue entry;
+  entry.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey,
+               base::Value(app_url.spec()));
+  base::ListValue policy_value;
+  policy_value.Append(std::move(entry));
+  profile()->GetPrefs()->Set(prefs::kPolicyPinnedLauncherApps, policy_value);
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->FlushMojoCallsForTesting();
+
+  // Check web app is not pinned.
+  EXPECT_EQ(shelf_model()->item_count(), 1);
+  EXPECT_EQ(shelf_model()->items()[0].type, ash::TYPE_BROWSER_SHORTCUT);
+  EXPECT_EQ(AppListControllerDelegate::PIN_EDITABLE,
+            GetPinnableForAppID(app_id, profile()));
+
+  web_app::ExternallyInstalledWebAppPrefs web_app_prefs(
+      browser()->profile()->GetPrefs());
+  web_app_prefs.Insert(app_url, app_id,
+                       web_app::ExternalInstallSource::kExternalPolicy);
+  web_app::WebAppProvider::GetForTest(browser()->profile())
+      ->registrar()
+      .NotifyWebAppInstalledWithOsHooks(app_id);
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->FlushMojoCallsForTesting();
+
+  // Check web app is pinned and fixed.
+  EXPECT_EQ(shelf_model()->item_count(), 2);
+  EXPECT_EQ(shelf_model()->items()[0].type, ash::TYPE_BROWSER_SHORTCUT);
+  EXPECT_EQ(shelf_model()->items()[1].type, ash::TYPE_PINNED_APP);
+  EXPECT_EQ(shelf_model()->items()[1].id.app_id, app_id);
+  // TODO(crbug.com/1157338): Update with the name of a test PWA.
+  EXPECT_EQ(shelf_model()->items()[1].title, u"WebApplicationInfo App Name");
   EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
             GetPinnableForAppID(app_id, profile()));
 }

@@ -29,7 +29,8 @@ ShelfAppServiceAppUpdater::~ShelfAppServiceAppUpdater() = default;
 
 void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
   if (!update.ReadinessChanged() && !update.PausedChanged() &&
-      !update.ShowInShelfChanged() && !update.ShortNameChanged()) {
+      !update.ShowInShelfChanged() && !update.ShortNameChanged() &&
+      !update.PolicyIdChanged()) {
     return;
   }
 
@@ -70,6 +71,9 @@ void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
         return;
     }
   }
+
+  if (update.PolicyIdChanged())
+    delegate()->OnAppInstalled(browser_context(), app_id);
 
   if (update.PausedChanged()) {
     delegate()->OnAppUpdated(browser_context(), app_id, /*reload_icon=*/true);
