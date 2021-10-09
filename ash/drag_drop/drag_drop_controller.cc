@@ -709,6 +709,11 @@ void DragDropController::PerformDrop(
     aura::client::DragDropDelegate::DropCallback drop_cb,
     std::unique_ptr<TabDragDropDelegate> tab_drag_drop_delegate,
     base::ScopedClosureRunner drag_cancel) {
+  // Event copy constructor dooesn't copy the target. That's why we set it here.
+  // DragDropController observes the `drag_window_`, so if it's destroyed, the
+  // target will be set to nullptr.
+  ui::Event::DispatcherApi(&event).set_target(drag_window_);
+
   ui::OSExchangeData copied_data(drag_data->provider().Clone());
   if (drop_cb)
     std::move(drop_cb).Run(event, std::move(drag_data), operation_);
