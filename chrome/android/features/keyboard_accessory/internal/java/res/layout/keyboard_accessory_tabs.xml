@@ -7,7 +7,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:tabIndicatorHeight="0dp"
-    app:tabTextColor="?attr/default_icon_color"
+    app:tabTextColor="@color/default_icon_color"
     app:tabMaxWidth="@dimen/keyboard_accessory_tab_icon_width"
     app:tabPaddingStart="@dimen/keyboard_accessory_bar_item_padding"
     app:tabPaddingEnd="@dimen/keyboard_accessory_bar_item_padding"
