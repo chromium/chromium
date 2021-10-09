@@ -91,6 +91,17 @@ class CONTENT_EXPORT InterestGroupStorage {
   void RecordInterestGroupWin(const url::Origin& owner,
                               const std::string& name,
                               const std::string& ad_json);
+  // Records the K-anonymity data for an interest group owner/name combination.
+  void UpdateInterestGroupNameKAnonymity(
+      const BiddingInterestGroup::KAnonymityData& data,
+      const absl::optional<base::Time>& update_sent_time);
+  // Records the K-anonymity data for an interest group update URL.
+  void UpdateInterestGroupUpdateURLKAnonymity(
+      const BiddingInterestGroup::KAnonymityData& data,
+      const absl::optional<base::Time>& update_sent_time);
+  // Records the K-anonymity data for an ad.
+  void UpdateAdKAnonymity(const BiddingInterestGroup::KAnonymityData& data,
+                          const absl::optional<base::Time>& update_sent_time);
   // Gets a list of all interest group owners. Each owner will only appear
   // once.
   std::vector<url::Origin> GetAllInterestGroupOwners();

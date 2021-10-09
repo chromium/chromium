@@ -7,8 +7,12 @@
 
 #include "content/common/content_export.h"
 
+#include <vector>
+
+#include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -24,9 +28,36 @@ struct CONTENT_EXPORT BiddingInterestGroup {
   BiddingInterestGroup& operator=(BiddingInterestGroup&&) = default;
   ~BiddingInterestGroup();
 
+  // KAnonymityData contains the information related to K-anonymity for either
+  // an interest group or an ad. The interest groups are identified by update
+  // URL or by owner and name. An ad's unique identifier is considered the ad or
+  // ad component render URL. FLEDGE may not perform updates or report usage of
+  // interest groups without a sufficiently large k. FLEDGE may not display ads
+  // without a sufficiently large k.
+  struct CONTENT_EXPORT KAnonymityData {
+    bool operator==(const KAnonymityData& rhs) const {
+      return key == rhs.key && k == rhs.k && last_updated == rhs.last_updated;
+    }
+
+    // Unique identifier associated with the data being anonymized, usually a
+    // URL.
+    GURL key;
+    // The (noised) count of unique users that reported this key.
+    int k;
+    // The last time the unique user count was updated.
+    base::Time last_updated;
+  };
+
   auction_worklet::mojom::BiddingInterestGroupPtr group;
-  // Nothing here yet.
+  absl::optional<KAnonymityData> name_kanon;
+  absl::optional<KAnonymityData> update_url_kanon;
+  std::vector<KAnonymityData> ads_kanon;
 };
+
+// Stream operator so KAnonymityData can be used in assertion statements.
+CONTENT_EXPORT std::ostream& operator<<(
+    std::ostream& out,
+    const BiddingInterestGroup::KAnonymityData& kanon);
 
 }  // namespace content
 

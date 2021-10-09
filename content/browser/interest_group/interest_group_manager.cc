@@ -18,6 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "content/browser/interest_group/interest_group_storage.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"

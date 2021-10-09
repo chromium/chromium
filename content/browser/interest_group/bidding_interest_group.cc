@@ -16,4 +16,10 @@ BiddingInterestGroup::BiddingInterestGroup(
 BiddingInterestGroup::BiddingInterestGroup(BiddingInterestGroup&&) = default;
 BiddingInterestGroup::~BiddingInterestGroup() = default;
 
+std::ostream& operator<<(std::ostream& out,
+                         const BiddingInterestGroup::KAnonymityData& kanon) {
+  return out << "KAnonymityData[key=`" << kanon.key << "`, k=" << kanon.k
+             << ", last_updated=`" << kanon.last_updated << "`]";
+}
+
 }  // namespace content

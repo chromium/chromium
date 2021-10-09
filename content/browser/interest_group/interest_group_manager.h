@@ -17,7 +17,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_process_manager.h"
-#include "content/browser/interest_group/interest_group_storage.h"
+#include "content/browser/interest_group/bidding_interest_group.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -39,6 +39,8 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace content {
+
+class InterestGroupStorage;
 
 // InterestGroupManager is a per-StoragePartition class that owns shared
 // state needed to run FLEDGE auctions. It lives on the UI thread.
