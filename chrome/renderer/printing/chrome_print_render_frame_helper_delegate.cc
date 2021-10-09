@@ -32,7 +32,8 @@ ChromePrintRenderFrameHelperDelegate::ChromePrintRenderFrameHelperDelegate() =
 ChromePrintRenderFrameHelperDelegate::~ChromePrintRenderFrameHelperDelegate() =
     default;
 
-// Return the PDF object element if |frame| is the out of process PDF extension.
+// Return the PDF object element if `frame` is the out of process PDF extension
+// or its child frame.
 blink::WebElement ChromePrintRenderFrameHelperDelegate::GetPdfElement(
     blink::WebLocalFrame* frame) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -49,6 +50,15 @@ blink::WebElement ChromePrintRenderFrameHelperDelegate::GetPdfElement(
       }
     }
     NOTREACHED();
+    return blink::WebElement();
+  }
+
+  if (frame->Parent() &&
+      IsPdfInternalPluginAllowedOrigin(frame->Parent()->GetSecurityOrigin())) {
+    DCHECK(base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUnseasoned));
+    auto plugin_element = frame->GetDocument().QuerySelector("embed");
+    DCHECK(!plugin_element.IsNull());
+    return plugin_element;
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   return blink::WebElement();
