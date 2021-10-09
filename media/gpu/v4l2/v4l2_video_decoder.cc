@@ -16,10 +16,12 @@
 #include "media/base/media_log.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
+#include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/v4l2/v4l2_status.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend_stateful.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend_stateless.h"
 
@@ -153,7 +155,12 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
   // case.
   if (state_ == State::kDecoding) {
     if (!StopStreamV4L2Queue(true)) {
-      std::move(init_cb).Run(StatusCode::kV4l2FailedToStopStreamQueue);
+      // TODO(crbug/1103510): Make StopStreamV4L2Queue return a StatusOr, and
+      // pipe that back instead.
+      std::move(init_cb).Run(
+          Status(Status::Codes::kDecoderInitializeNeverCompleted)
+              .AddCause(
+                  V4L2Status(V4L2Status::Codes::kFailedToStopStreamQueue)));
       return;
     }
 
@@ -173,7 +180,11 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
     if (!device_) {
       VLOGF(1) << "Failed to create V4L2 device.";
       SetState(State::kError);
-      std::move(init_cb).Run(StatusCode::kV4l2NoDevice);
+      // TODO(crbug/1103510): Make V4L2Device::Create return a StatusOr, and
+      // pipe that back instead.
+      std::move(init_cb).Run(
+          Status(Status::Codes::kDecoderInitializeNeverCompleted)
+              .AddCause(V4L2Status(V4L2Status::Codes::kNoDevice)));
       return;
     }
 
@@ -190,7 +201,9 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
   if (profile_ == VIDEO_CODEC_PROFILE_UNKNOWN) {
     VLOGF(1) << "Unknown profile.";
     SetState(State::kError);
-    std::move(init_cb).Run(StatusCode::kV4l2NoDecoder);
+    std::move(init_cb).Run(
+        Status(Status::Codes::kDecoderInitializeNeverCompleted)
+            .AddCause(V4L2Status(V4L2Status::Codes::kNoProfile)));
     return;
   }
 
@@ -226,7 +239,7 @@ bool V4L2VideoDecoder::IsPlatformDecoder() const {
   return true;
 }
 
-StatusCode V4L2VideoDecoder::InitializeBackend() {
+V4L2Status V4L2VideoDecoder::InitializeBackend() {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(state_ == State::kInitialized);
@@ -235,7 +248,7 @@ StatusCode V4L2VideoDecoder::InitializeBackend() {
   if (!can_use_decoder_) {
     VLOGF(1) << "Reached maximum number of decoder instances ("
              << kMaxNumOfInstances << ")";
-    return StatusCode::kDecoderCreationFailed;
+    return V4L2Status::Codes::kMaxDecoderInstanceCount;
   }
 
   constexpr bool kStateful = false;
@@ -259,7 +272,7 @@ StatusCode V4L2VideoDecoder::InitializeBackend() {
     num_instances_.Decrement();
     can_use_decoder_ = false;
     VLOGF(1) << "No V4L2 API found for profile: " << GetProfileName(profile_);
-    return StatusCode::kV4l2NoDecoder;
+    return V4L2Status::Codes::kNoDriverSupportForFourcc;
   }
 
   struct v4l2_capability caps;
@@ -268,7 +281,7 @@ StatusCode V4L2VideoDecoder::InitializeBackend() {
       (caps.capabilities & kCapsRequired) != kCapsRequired) {
     VLOGF(1) << "ioctl() failed: VIDIOC_QUERYCAP, "
              << "caps check failed: 0x" << std::hex << caps.capabilities;
-    return StatusCode::kV4l2FailedFileCapabilitiesCheck;
+    return V4L2Status::Codes::kFailedFileCapabilitiesCheck;
   }
 
   // Create Input/Output V4L2Queue
@@ -276,7 +289,7 @@ StatusCode V4L2VideoDecoder::InitializeBackend() {
   output_queue_ = device_->GetQueue(V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
   if (!input_queue_ || !output_queue_) {
     VLOGF(1) << "Failed to create V4L2 queue.";
-    return StatusCode::kV4l2FailedResourceAllocation;
+    return V4L2Status::Codes::kFailedResourceAllocation;
   }
 
   const auto preferred_api_and_format = api_and_format.value();
@@ -297,28 +310,28 @@ StatusCode V4L2VideoDecoder::InitializeBackend() {
 
   if (!backend_->Initialize()) {
     VLOGF(1) << "Failed to initialize backend.";
-    return StatusCode::kV4l2FailedResourceAllocation;
+    return V4L2Status::Codes::kFailedResourceAllocation;
   }
 
   if (!SetupInputFormat(input_format_fourcc)) {
     VLOGF(1) << "Failed to setup input format.";
-    return StatusCode::kV4l2BadFormat;
+    return V4L2Status::Codes::kBadFormat;
   }
 
   if (input_queue_->AllocateBuffers(kNumInputBuffers, V4L2_MEMORY_MMAP) == 0) {
     VLOGF(1) << "Failed to allocate input buffer.";
-    return StatusCode::kV4l2FailedResourceAllocation;
+    return V4L2Status::Codes::kFailedResourceAllocation;
   }
 
   // Start streaming input queue and polling. This is required for the stateful
   // decoder, and doesn't hurt for the stateless one.
   if (!StartStreamV4L2Queue(false)) {
     VLOGF(1) << "Failed to start streaming.";
-    return StatusCode::kV4L2FailedToStartStreamQueue;
+    return V4L2Status::Codes::kFailedToStartStreamQueue;
   }
 
   SetState(State::kDecoding);
-  return StatusCode::kOk;
+  return V4L2Status::Codes::kOk;
 }
 
 bool V4L2VideoDecoder::SetupInputFormat(uint32_t input_format_fourcc) {
@@ -382,13 +395,14 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
   }
 
   // Ask the pipeline to pick the output format.
-  StatusOr<std::pair<Fourcc, gfx::Size>> status_or_output_format =
+  CroStatus::Or<std::pair<Fourcc, gfx::Size>> status_or_output_format =
       client_->PickDecoderOutputFormat(
           candidates, visible_rect, aspect_ratio_.GetNaturalSize(visible_rect),
           /*output_size=*/absl::nullopt, num_output_frames_,
           /*use+protected=*/false, /*need_aux_frame_pool=*/false);
   if (status_or_output_format.has_error()) {
     VLOGF(1) << "Failed to pick an output format.";
+    // TODO(crbug/1103510): Don't drop the error on the floor here.
     return false;
   }
   const auto output_format = std::move(status_or_output_format).value();
@@ -422,11 +436,12 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
     // modifier that we need to give to the driver. We should add a
     // GetGpuBufferLayout() method to DmabufVideoFramePool to query that without
     // having to re-initialize the pool.
-    StatusOr<GpuBufferLayout> status_or_layout = pool->Initialize(
+    CroStatus::Or<GpuBufferLayout> status_or_layout = pool->Initialize(
         fourcc, adjusted_size, visible_rect,
         aspect_ratio_.GetNaturalSize(visible_rect), num_output_frames_,
         /*use_protected=*/false);
     if (status_or_layout.has_error()) {
+      // TODO(crbug/1103510): Don't just drop this error.
       VLOGF(1) << "Failed to setup format to VFPool";
       return false;
     }
@@ -524,10 +539,12 @@ void V4L2VideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   }
 
   if (state_ == State::kInitialized) {
-    const StatusCode status = InitializeBackend();
-    if (status != StatusCode::kOk) {
+    V4L2Status status = InitializeBackend();
+    if (status != V4L2Status::Codes::kOk) {
       SetState(State::kError);
-      std::move(trampoline_decode_cb).Run(status);
+      std::move(trampoline_decode_cb)
+          .Run(Status(Status::Codes::kDecoderFailedDecode)
+                   .AddCause(std::move(status)));
       return;
     }
   }

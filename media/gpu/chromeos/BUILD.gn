@@ -46,6 +46,7 @@ source_set("chromeos") {
 source_set("common") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
+    "chromeos_status.h",
     "dmabuf_video_frame_pool.cc",
     "dmabuf_video_frame_pool.h",
     "gpu_buffer_layout.cc",

@@ -16,6 +16,7 @@
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
+#include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/image_processor_with_pool.h"
 #include "media/gpu/chromeos/video_frame_converter.h"
@@ -74,13 +75,9 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
     // with the selected candidate out of |candidates|. If false, the caller
     // must allocate its own buffers.
     //
-    // This method returns StatusCode::kAborted if the initialization of a frame
-    // pool is aborted. On any other failure, it returns
-    // StatusCode::kInvalidArgument.
-    //
     // Note: after a call to this method, callers should assume that a pointer
     // returned by a prior call to GetVideoFramePool() is no longer valid.
-    virtual StatusOr<std::pair<Fourcc, gfx::Size>> PickDecoderOutputFormat(
+    virtual CroStatus::Or<std::pair<Fourcc, gfx::Size>> PickDecoderOutputFormat(
         const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
         const gfx::Rect& decoder_visible_rect,
         const gfx::Size& decoder_natural_size,
@@ -162,7 +159,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // VideoDecoderMixin::Client implementation.
   DmabufVideoFramePool* GetVideoFramePool() const override;
   void PrepareChangeResolution() override;
-  StatusOr<std::pair<Fourcc, gfx::Size>> PickDecoderOutputFormat(
+  CroStatus::Or<std::pair<Fourcc, gfx::Size>> PickDecoderOutputFormat(
       const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
       const gfx::Rect& decoder_visible_rect,
       const gfx::Size& decoder_natural_size,

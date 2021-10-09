@@ -47,12 +47,12 @@ class MockVideoFramePool : public DmabufVideoFramePool {
 
   // DmabufVideoFramePool implementation.
   MOCK_METHOD6(Initialize,
-               StatusOr<GpuBufferLayout>(const Fourcc&,
-                                         const gfx::Size&,
-                                         const gfx::Rect&,
-                                         const gfx::Size&,
-                                         size_t,
-                                         bool));
+               CroStatus::Or<GpuBufferLayout>(const Fourcc&,
+                                              const gfx::Size&,
+                                              const gfx::Rect&,
+                                              const gfx::Size&,
+                                              size_t,
+                                              bool));
   MOCK_METHOD0(GetFrame, scoped_refptr<VideoFrame>());
   MOCK_METHOD0(IsExhausted, bool());
   MOCK_METHOD1(NotifyWhenFrameAvailable, void(base::OnceClosure));

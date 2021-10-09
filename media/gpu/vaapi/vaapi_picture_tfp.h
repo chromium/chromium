@@ -42,14 +42,14 @@ class VaapiTFPPicture : public VaapiPicture {
   ~VaapiTFPPicture() override;
 
   // VaapiPicture implementation.
-  Status Allocate(gfx::BufferFormat format) override;
+  VaapiStatus Allocate(gfx::BufferFormat format) override;
   bool ImportGpuMemoryBufferHandle(
       gfx::BufferFormat format,
       gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle) override;
   bool DownloadFromSurface(scoped_refptr<VASurface> va_surface) override;
 
  private:
-  Status Initialize();
+  VaapiStatus Initialize();
 
   x11::Connection* const connection_;
 

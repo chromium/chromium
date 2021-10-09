@@ -115,7 +115,7 @@ class MEDIA_GPU_EXPORT VaapiVideoDecodeAccelerator
 
   // Notify the client that an error has occurred and decoding cannot continue.
   void NotifyError(Error error);
-  void NotifyStatus(Status status);
+  void NotifyStatus(VaapiStatus status);
 
   // Queue a input buffer for decode.
   void QueueInputBuffer(scoped_refptr<DecoderBuffer> buffer,

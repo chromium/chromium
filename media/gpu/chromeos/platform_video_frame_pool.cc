@@ -138,7 +138,7 @@ scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
   return wrapped_frame;
 }
 
-StatusOr<GpuBufferLayout> PlatformVideoFramePool::Initialize(
+CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
     const Fourcc& fourcc,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -152,13 +152,13 @@ StatusOr<GpuBufferLayout> PlatformVideoFramePool::Initialize(
   VideoPixelFormat format = fourcc.ToVideoPixelFormat();
   if (format == PIXEL_FORMAT_UNKNOWN) {
     VLOGF(1) << "Unsupported fourcc: " << fourcc.ToString();
-    return Status(StatusCode::kInvalidArgument);
+    return CroStatus::Codes::kFourccUnknownFormat;
   }
 
 #if !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   if (use_protected) {
     VLOGF(1) << "Protected buffers unsupported";
-    return Status(StatusCode::kInvalidArgument);
+    return CroStatus::Codes::kProtectedContentUnsupported;
   }
 #endif
 
@@ -186,7 +186,7 @@ StatusOr<GpuBufferLayout> PlatformVideoFramePool::Initialize(
     if (!frame) {
       VLOGF(1) << "Failed to create video frame " << format << " (fourcc "
                << fourcc.ToString() << ")";
-      return Status(StatusCode::kInvalidArgument);
+      return CroStatus::Codes::kFailedToCreateVideoFrame;
     }
     frame_layout_ = GpuBufferLayout::Create(fourcc, frame->coded_size(),
                                             frame->layout().planes(),
@@ -194,7 +194,7 @@ StatusOr<GpuBufferLayout> PlatformVideoFramePool::Initialize(
     if (!frame_layout_) {
       VLOGF(1) << "Failed to create the layout (fourcc=" << fourcc.ToString()
                << ", coded_size=" << frame->coded_size().ToString() << ")";
-      return Status(StatusCode::kInvalidArgument);
+      return CroStatus::Codes::kFailedToGetFrameLayout;
     }
   }
 

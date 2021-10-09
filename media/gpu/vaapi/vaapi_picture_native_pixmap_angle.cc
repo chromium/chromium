@@ -5,6 +5,7 @@
 #include "media/gpu/vaapi/vaapi_picture_native_pixmap_angle.h"
 
 #include "media/gpu/vaapi/va_surface.h"
+#include "media/gpu/vaapi/vaapi_status.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
@@ -83,39 +84,39 @@ VaapiPictureNativePixmapAngle::~VaapiPictureNativePixmapAngle() {
     x11::Connection::Get()->FreePixmap({x_pixmap_});
 }
 
-Status VaapiPictureNativePixmapAngle::Allocate(gfx::BufferFormat format) {
+VaapiStatus VaapiPictureNativePixmapAngle::Allocate(gfx::BufferFormat format) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!(texture_id_ || client_texture_id_))
-    return StatusCode::kVaapiNoTexture;
+    return VaapiStatus::Codes::kNoTexture;
 
   if (!make_context_current_cb_ || !make_context_current_cb_.Run())
-    return StatusCode::kVaapiBadContext;
+    return VaapiStatus::Codes::kBadContext;
 
   auto image =
       base::MakeRefCounted<gl::GLImageEGLPixmap>(visible_size_, format);
   if (!image)
-    return StatusCode::kVaapiNoImage;
+    return VaapiStatus::Codes::kNoImage;
 
   x_pixmap_ = CreatePixmap(visible_size_);
   if (x_pixmap_ == x11::Pixmap::None)
-    return StatusCode::kVaapiNoPixmap;
+    return VaapiStatus::Codes::kNoPixmap;
 
   if (!image->Initialize(x_pixmap_))
-    return StatusCode::kVaapiFailedToInitializeImage;
+    return VaapiStatus::Codes::kFailedToInitializeImage;
 
   gl::ScopedTextureBinder texture_binder(texture_target_, texture_id_);
   if (!image->BindTexImage(texture_target_))
-    return StatusCode::kVaapiFailedToBindTexture;
+    return VaapiStatus::Codes::kFailedToBindTexture;
 
   gl_image_ = image;
 
   DCHECK(bind_image_cb_);
   if (!bind_image_cb_.Run(client_texture_id_, texture_target_, gl_image_,
                           /*can_bind_to_sampler=*/true)) {
-    return StatusCode::kVaapiFailedToBindImage;
+    return VaapiStatus::Codes::kFailedToBindImage;
   }
 
-  return OkStatus();
+  return VaapiStatus::Codes::kOk;
 }
 
 bool VaapiPictureNativePixmapAngle::ImportGpuMemoryBufferHandle(

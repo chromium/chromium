@@ -44,13 +44,13 @@ class VaapiPictureNativePixmapEgl : public VaapiPictureNativePixmap {
   ~VaapiPictureNativePixmapEgl() override;
 
   // VaapiPicture implementation.
-  Status Allocate(gfx::BufferFormat format) override;
+  VaapiStatus Allocate(gfx::BufferFormat format) override;
   bool ImportGpuMemoryBufferHandle(
       gfx::BufferFormat format,
       gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle) override;
 
  private:
-  Status Initialize(scoped_refptr<gfx::NativePixmap> pixmap);
+  VaapiStatus Initialize(scoped_refptr<gfx::NativePixmap> pixmap);
 };
 
 }  // namespace media

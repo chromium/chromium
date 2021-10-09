@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner_forward.h"
 #include "media/base/status.h"
 #include "media/base/video_frame.h"
+#include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/media_gpu_export.h"
@@ -42,15 +43,15 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
 
   // Sets the parameters of allocating frames and the maximum number of frames
   // which can be allocated.
-  // Returns a valid GpuBufferLayout if the initialization is successful.
-  // Returns StatusCode::kAborted if the initialization process is aborted.
-  // Returns StatusCode::kInvalidArgument if any other error occurs.
-  virtual StatusOr<GpuBufferLayout> Initialize(const Fourcc& fourcc,
-                                               const gfx::Size& coded_size,
-                                               const gfx::Rect& visible_rect,
-                                               const gfx::Size& natural_size,
-                                               size_t max_num_frames,
-                                               bool use_protected) = 0;
+  // Returns a valid GpuBufferLayout if the initialization is successful,
+  // otherwise returns any given error from the set of CroStatus::Codes.
+  virtual CroStatus::Or<GpuBufferLayout> Initialize(
+      const Fourcc& fourcc,
+      const gfx::Size& coded_size,
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      size_t max_num_frames,
+      bool use_protected) = 0;
 
   // Returns a frame from the pool with the layout that is returned by the
   // previous Initialize() method and zero timestamp. Returns nullptr if the

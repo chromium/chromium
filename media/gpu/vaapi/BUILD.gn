@@ -55,6 +55,7 @@ source_set("vaapi") {
     "vaapi_picture.h",
     "vaapi_picture_factory.cc",
     "vaapi_picture_factory.h",
+    "vaapi_status.h",
     "vaapi_video_decode_accelerator.cc",
     "vaapi_video_decode_accelerator.h",
     "vaapi_video_decoder.cc",

@@ -598,7 +598,7 @@ DmabufVideoFramePool* VideoDecoderPipeline::GetVideoFramePool() const {
   return main_frame_pool_.get();
 }
 
-StatusOr<std::pair<Fourcc, gfx::Size>>
+CroStatus::Or<std::pair<Fourcc, gfx::Size>>
 VideoDecoderPipeline::PickDecoderOutputFormat(
     const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
     const gfx::Rect& decoder_visible_rect,
@@ -611,7 +611,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
 
   if (candidates.empty())
-    return Status(StatusCode::kInvalidArgument);
+    return CroStatus::Codes::kNoDecoderOutputFormatCandidates;
 
   auxiliary_frame_pool_.reset();
   image_processor_.reset();
@@ -622,14 +622,13 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     for (const auto preferred_fourcc : kPreferredRenderableFourccs) {
       for (const auto& candidate : candidates) {
         if (candidate.first == Fourcc(preferred_fourcc)) {
-          StatusOr<GpuBufferLayout> status_or_layout =
+          CroStatus::Or<GpuBufferLayout> status_or_layout =
               main_frame_pool_->Initialize(
                   candidate.first, candidate.second, decoder_visible_rect,
                   decoder_natural_size, num_of_pictures, use_protected);
-          return status_or_layout.has_error()
-                     ? StatusOr<std::pair<Fourcc, gfx::Size>>(
-                           std::move(status_or_layout).error())
-                     : StatusOr<std::pair<Fourcc, gfx::Size>>(candidate);
+          if (status_or_layout.has_error())
+            return std::move(status_or_layout).error();
+          return candidate;
         }
       }
     }
@@ -646,7 +645,8 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
                                                 "ImageProcessor error")));
   if (!image_processor) {
     DVLOGF(2) << "Unable to find ImageProcessor to convert format";
-    return Status(StatusCode::kInvalidArgument);
+    // TODO(crbug/1103510): Make CreateWithInputCandidates return an Or type.
+    return CroStatus::Codes::kFailedToCreateImageProcessor;
   }
 
   if (need_aux_frame_pool) {
@@ -659,16 +659,16 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     auxiliary_frame_pool_ = std::make_unique<PlatformVideoFramePool>(
         /*gpu_memory_buffer_factory=*/nullptr);
     auxiliary_frame_pool_->set_parent_task_runner(decoder_task_runner_);
-    StatusOr<GpuBufferLayout> status_or_layout =
+    CroStatus::Or<GpuBufferLayout> status_or_layout =
         auxiliary_frame_pool_->Initialize(
             image_processor->input_config().fourcc,
             image_processor->input_config().size, decoder_visible_rect,
             decoder_natural_size, num_of_pictures, use_protected);
     if (status_or_layout.has_error()) {
       // A PlatformVideoFramePool should never abort initialization.
-      DCHECK_NE(status_or_layout.code(), StatusCode::kAborted);
+      DCHECK_NE(status_or_layout.code(), CroStatus::Codes::kResetRequired);
       DVLOGF(2) << "Could not initialize the auxiliary frame pool";
-      return Status(StatusCode::kInvalidArgument);
+      return std::move(status_or_layout).error();
     }
   }
 

@@ -29,6 +29,7 @@
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
+#include "media/gpu/v4l2/v4l2_status.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
@@ -151,7 +152,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
 
   // Continue backend initialization. Decoder will not take a hardware context
   // until InitializeBackend() is called.
-  StatusCode InitializeBackend();
+  V4L2Status InitializeBackend();
 
   // Pages with multiple V4L2VideoDecoder instances might run out of memory
   // (e.g. b/170870476) or crash (e.g. crbug.com/1109312). To avoid that and

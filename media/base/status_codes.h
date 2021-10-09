@@ -107,18 +107,6 @@ enum class StatusCode : StatusCodeType {
   kMojoDecoderNoConnection = 0x0404,
   kMojoDecoderDeletedWithoutInitialization = 0x0405,
 
-  // Chromeos Errors: 0x05
-  kChromeOSVideoDecoderNoDecoders = 0x0501,
-  kV4l2NoDevice = 0x0502,
-  kV4l2FailedToStopStreamQueue = 0x0503,
-  kV4l2NoDecoder = 0x0504,
-  kV4l2FailedFileCapabilitiesCheck = 0x0505,
-  kV4l2FailedResourceAllocation = 0x0506,
-  kV4l2BadFormat = 0x0507,
-  kV4L2FailedToStartStreamQueue = 0x0508,
-  kVaapiReinitializedDuringDecode = 0x0509,
-  kVaapiFailedAcceleratorCreation = 0x0510,
-
   // Encoder Error: 0x06
   kEncoderInitializeNeverCompleted = 0x0601,
   kEncoderInitializeTwice = 0x0602,
@@ -128,21 +116,6 @@ enum class StatusCode : StatusCodeType {
   kEncoderUnsupportedConfig = 0x0606,
   kEncoderInitializationError = 0x0607,
   kEncoderFailedFlush = 0x0608,
-
-  // VaapiVideoDecoder: 0x07
-  kVaapiBadContext = 0x0701,
-  kVaapiNoBuffer = 0x0702,
-  kVaapiNoBufferHandle = 0x0703,
-  kVaapiNoPixmap = 0x0704,
-  kVaapiNoImage = 0x0705,
-  kVaapiNoSurface = 0x0706,
-  kVaapiFailedToInitializeImage = 0x0707,
-  kVaapiFailedToBindTexture = 0x0708,
-  kVaapiFailedToBindImage = 0x0709,
-  kVaapiUnsupportedFormat = 0x070A,
-  kVaapiFailedToExportImage = 0x070B,
-  kVaapiBadImageSize = 0x070C,
-  kVaapiNoTexture = 0x070D,
 
   // Format Errors: 0x08
   kH264ParsingError = 0x0801,

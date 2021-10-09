@@ -29,7 +29,7 @@ VdaVideoFramePool::~VdaVideoFramePool() {
   weak_this_factory_.InvalidateWeakPtrs();
 }
 
-StatusOr<GpuBufferLayout> VdaVideoFramePool::Initialize(
+CroStatus::Or<GpuBufferLayout> VdaVideoFramePool::Initialize(
     const Fourcc& fourcc,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -41,7 +41,7 @@ StatusOr<GpuBufferLayout> VdaVideoFramePool::Initialize(
 
   if (use_protected) {
     LOG(ERROR) << "Cannot allocated protected buffers for VDA";
-    return Status(StatusCode::kInvalidArgument);
+    return CroStatus::Codes::kProtectedContentUnsupported;
   }
 
   visible_rect_ = visible_rect;
@@ -85,7 +85,7 @@ StatusOr<GpuBufferLayout> VdaVideoFramePool::Initialize(
   done.Wait();
 
   if (!layout_)
-    return Status(StatusCode::kInvalidArgument);
+    return CroStatus::Codes::kFailedToGetFrameLayout;
   return *layout_;
 }
 

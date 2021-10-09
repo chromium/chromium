@@ -122,7 +122,7 @@ class VaapiVideoDecodeAccelerator::InputBuffer {
   base::OnceCallback<void(int32_t id)> release_cb_;
 };
 
-void VaapiVideoDecodeAccelerator::NotifyStatus(Status status) {
+void VaapiVideoDecodeAccelerator::NotifyStatus(VaapiStatus status) {
   DCHECK(!status.is_ok());
   // Send a platform notification error
   NotifyError(PLATFORM_FAILURE);
