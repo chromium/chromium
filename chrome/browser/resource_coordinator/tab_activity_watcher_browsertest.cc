@@ -24,6 +24,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -770,6 +771,98 @@ IN_PROC_BROWSER_TEST_F(
     ukm_entry_checker_->ExpectNewEntry(kTabMetricsEntryName, test_urls_[0],
                                        expected_metrics);
   }
+}
+
+class TabActivityWatcherPrerenderingTest : public TabActivityWatcherTest {
+ public:
+  TabActivityWatcherPrerenderingTest()
+      : prerender_test_helper_(base::BindRepeating(
+            &TabActivityWatcherPrerenderingTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~TabActivityWatcherPrerenderingTest() override = default;
+
+  void SetUp() override {
+    prerender_test_helper_.SetUp(embedded_test_server());
+    TabActivityWatcherTest::SetUp();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_test_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetWebContentsAt(0);
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_test_helper_;
+};
+
+// Tests that all tabs metrics are logged with correct value and should not be
+// logged in prerendering.
+IN_PROC_BROWSER_TEST_F(TabActivityWatcherPrerenderingTest,
+                       SwitchTabsWithPrerendering) {
+  ukm::SourceId ukm_source_id_for_tab_0 = 0;
+  ukm::SourceId ukm_source_id_for_tab_1 = 0;
+  ukm::SourceId ukm_source_id_for_activated_page = 0;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_urls_[0]));
+  EXPECT_EQ(0u, ukm_entry_checker_->NumEntries(kTabMetricsEntryName));
+
+  // Load a page in the prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
+  prerender_helper().AddPrerender(prerender_url);
+
+  // Adding a new foreground tab logs the previously active tab.
+  AddTabAtIndex(1, test_urls_[1], ui::PAGE_TRANSITION_LINK);
+  {
+    SCOPED_TRACE("");
+    ukm_entry_checker_->ExpectNewEntry(
+        kTabMetricsEntryName, test_urls_[0],
+        {{TabManager_TabMetrics::kNavigationEntryCountName, 2}});
+
+    ukm_source_id_for_tab_0 = ExpectNewEntryWithSourceId(
+        test_urls_[0], kTabMetricsEntryName, 1,
+        {{TabManager_TabMetrics::kNavigationEntryCountName, 2}});
+  }
+
+  // Switching to another tab logs the previously active tab.
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, {TabStripModel::GestureType::kOther});
+  {
+    SCOPED_TRACE("");
+    ukm_entry_checker_->ExpectNewEntry(kTabMetricsEntryName, test_urls_[1],
+                                       kBasicMetricValues);
+
+    ukm_source_id_for_tab_1 = ExpectNewEntryWithSourceId(
+        test_urls_[1], kTabMetricsEntryName, 2, kBasicMetricValues);
+
+    ExpectNewEntryWithSourceId(
+        test_urls_[0], kFOCEntryName, 1,
+        {{TabManager_Background_ForegroundedOrClosed::kIsForegroundedName, 1}},
+        ukm_source_id_for_tab_0);
+  }
+  // Activating the prerendered page on the current active tab.
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+
+  // Switching to another tab logs the previously active tab.
+  browser()->tab_strip_model()->ActivateTabAt(
+      1, {TabStripModel::GestureType::kOther});
+  {
+    SCOPED_TRACE("");
+    UkmMetricMap expected_metrics = kBasicMetricValues;
+    expected_metrics[TabManager_TabMetrics::kNavigationEntryCountName] = 3;
+
+    // A new entry should be added by the prerendering activation.
+    ukm_entry_checker_->ExpectNewEntry(kTabMetricsEntryName, prerender_url,
+                                       expected_metrics);
+
+    ukm_source_id_for_activated_page = ExpectNewEntryWithSourceId(
+        prerender_url, kTabMetricsEntryName, 3, expected_metrics);
+  }
+
+  // ukm::SourceId is updated when the prerendered page is activated.
+  EXPECT_NE(ukm_source_id_for_tab_0, ukm_source_id_for_activated_page);
 }
 
 }  // namespace resource_coordinator
