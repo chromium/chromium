@@ -163,7 +163,8 @@
       "extension_types": ["extension"],
       "platforms": ["chromeos"],
       "allowlist": [
-        "75C7F4B720314B6CB1B5817CD86089DB95CD2461"  // http://crbug.com/899052
+        "75C7F4B720314B6CB1B5817CD86089DB95CD2461",  // http://crbug.com/899052
+        "A430CF8BD146137B32764433F69685A53BF11F03"   // http://crbug.com/1256996
       ]
     }
   ],
@@ -473,7 +474,8 @@
       "F2BCE012B9B7E2D57902B5A4F954EB01A7E548FD",  // http://crbug.com/1105137
       "D467F51D3846ED6D137F9FD403AE11CE416CD995",  // http://crbug.com/1105137
       "3823525AD445E0025E449F964C20922996B0F97F",  // http://crbug.com/1105137
-      "827B5D482FADCE120F4694AD0FA0680E3717C6EC"   // http://crbug.com/1105137
+      "827B5D482FADCE120F4694AD0FA0680E3717C6EC",  // http://crbug.com/1105137
+      "A430CF8BD146137B32764433F69685A53BF11F03"   // http://crbug.com/1256996
     ]
   }],
   "networkingPrivate": {
