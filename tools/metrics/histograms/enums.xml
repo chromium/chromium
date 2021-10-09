@@ -76951,6 +76951,20 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Context menu"/>
 </enum>
 
+<enum name="ShowChromeStartSegmentationResult">
+  <int value="0" label="Uninitialized"/>
+  <int value="1" label="Dont show Start surface"/>
+  <int value="2" label="Show Start surface"/>
+</enum>
+
+<enum name="ShowChromeStartSegmentationResultComparison">
+  <int value="0" label="Uninitialized."/>
+  <int value="1" label="Segmentation enabled and logic enabled."/>
+  <int value="2" label="Segmentation enabled and logic disabled."/>
+  <int value="3" label="Segmentation disabled and logic enabled."/>
+  <int value="4" label="Segmentation disabled and logic enabled."/>
+</enum>
+
 <enum name="ShownAfterCrashingReason">
   <summary>
     This enum describes the reason that a crashed subframe became visible.

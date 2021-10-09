@@ -2039,7 +2039,7 @@ public class StartSurfaceTest {
     @MediumTest
     @Feature({"StartSurface"})
     // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/single/behavioural_targeting/mv_tiles"
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/behavioural_targeting/model_mv_tiles"
         + "/user_clicks_threshold/1/num_days_user_click_below_threshold/2"})
     public void testStartWithBehaviouralTargeting() throws Exception {
         // clang-format on
@@ -2059,6 +2059,9 @@ public class StartSurfaceTest {
         Assert.assertFalse(manager.readBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false));
         Assert.assertEquals(0, manager.readInt(ChromePreferenceKeys.TAP_MV_TILES_COUNT, 0));
 
+        manager.writeInt(ChromePreferenceKeys.SHOW_START_SEGMENTATION_RESULT,
+                ReturnToChromeExperimentsUtil.ShowChromeStartSegmentationResult.DONT_SHOW);
+
         StartSurfaceConfiguration.USER_CLICK_THRESHOLD.setForTesting(1);
         int clicksHigherThreshold = StartSurfaceConfiguration.USER_CLICK_THRESHOLD.getValue();
         Assert.assertEquals(1, clicksHigherThreshold);
@@ -2072,6 +2075,10 @@ public class StartSurfaceTest {
         Assert.assertFalse(manager.readBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false));
         Assert.assertEquals(1, manager.readInt(ChromePreferenceKeys.TAP_MV_TILES_COUNT, 0));
 
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Startup.Android.ShowChromeStartSegmentationResultComparison"));
+
         // Verifies if the next decision time past and the clicks of MV tiles is higher than the
         // threshold, userBehaviourSupported() returns true. Besides, the next decision time is set
         // to NUM_DAYS_KEEP_SHOW_START_AT_STARTUP day's later, and MV tiles count is reset.
@@ -2082,17 +2089,29 @@ public class StartSurfaceTest {
         verifyNextDecisionTimeStampInDays(
                 manager, StartSurfaceConfiguration.NUM_DAYS_KEEP_SHOW_START_AT_STARTUP.getValue());
         Assert.assertEquals(0, manager.readInt(ChromePreferenceKeys.TAP_MV_TILES_COUNT, 0));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Startup.Android.ShowChromeStartSegmentationResultComparison",
+                        ReturnToChromeExperimentsUtil.ShowChromeStartSegmentationResultComparison
+                                .SEGMENTATION_DISABLED_LOGIC_ENABLED));
 
         // Verifies if the next decision time past and the clicks of MV tiles is lower than the
         // threshold, userBehaviourSupported() returns false. Besides, the next decision time is
         // set to NUM_DAYS_USER_CLICK_BELOW_THRESHOLD day's later.
         manager.writeLong(ChromePreferenceKeys.START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
                 System.currentTimeMillis() - 1);
+        manager.writeInt(ChromePreferenceKeys.SHOW_START_SEGMENTATION_RESULT,
+                ReturnToChromeExperimentsUtil.ShowChromeStartSegmentationResult.SHOW);
         Assert.assertEquals(0, manager.readInt(ChromePreferenceKeys.TAP_MV_TILES_COUNT, 0));
         Assert.assertFalse(ReturnToChromeExperimentsUtil.userBehaviourSupported());
         Assert.assertFalse(manager.readBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false));
         verifyNextDecisionTimeStampInDays(
                 manager, StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD.getValue());
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Startup.Android.ShowChromeStartSegmentationResultComparison",
+                        ReturnToChromeExperimentsUtil.ShowChromeStartSegmentationResultComparison
+                                .SEGMENTATION_ENABLED_LOGIC_DISABLED));
 
         StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.setForTesting("feeds");
         verifyBehaviourTypeRecordedAndChecked(manager);
@@ -2140,6 +2159,73 @@ public class StartSurfaceTest {
 
         // Resets the decision.
         manager.writeBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/behavioural_targeting/model"})
+    public void testStartSegmentationUsage() throws Exception {
+        // clang-format on
+        Assume.assumeTrue(mImmediateReturn);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+        Assert.assertFalse(cta.getLayoutManager().overviewVisible());
+
+        SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
+        // Verifies that the START_NEXT_SHOW_ON_STARTUP_DECISION_MS has been set.
+        long nextDecisionTime =
+                manager.readLong(ChromePreferenceKeys.START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
+                        ReturnToChromeExperimentsUtil.INVALID_DECISION_TIMESTAMP);
+        verifyNextDecisionTimeStampInDays(
+                manager, StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD.getValue());
+        Assert.assertFalse(manager.readBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false));
+        Assert.assertEquals(0, manager.readInt(ChromePreferenceKeys.TAP_MV_TILES_COUNT, 0));
+
+        manager.writeInt(ChromePreferenceKeys.SHOW_START_SEGMENTATION_RESULT,
+                ReturnToChromeExperimentsUtil.ShowChromeStartSegmentationResult.SHOW);
+
+        // Verifies that userBehaviourSupported() returns the same result before the next decision
+        // time arrives.
+        Assert.assertFalse(ReturnToChromeExperimentsUtil.userBehaviourSupported());
+        Assert.assertEquals(nextDecisionTime,
+                manager.readLong(ChromePreferenceKeys.START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
+                        ReturnToChromeExperimentsUtil.INVALID_DECISION_TIMESTAMP));
+        Assert.assertFalse(manager.readBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false));
+
+        // Verifies if the next decision time past, userBehaviourSupported() returns true. Besides,
+        // the next decision time is set to NUM_DAYS_KEEP_SHOW_START_AT_STARTUP day's later.
+        manager.writeLong(ChromePreferenceKeys.START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
+                System.currentTimeMillis() - 1);
+        Assert.assertTrue(ReturnToChromeExperimentsUtil.userBehaviourSupported());
+        Assert.assertTrue(manager.readBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false));
+        verifyNextDecisionTimeStampInDays(
+                manager, StartSurfaceConfiguration.NUM_DAYS_KEEP_SHOW_START_AT_STARTUP.getValue());
+
+        // Verifies if the next decision time past and segmentation says dont show,
+        // userBehaviourSupported() returns false. Besides, the next decision time is set to
+        // NUM_DAYS_USER_CLICK_BELOW_THRESHOLD day's later.
+        manager.writeInt(ChromePreferenceKeys.SHOW_START_SEGMENTATION_RESULT,
+                ReturnToChromeExperimentsUtil.ShowChromeStartSegmentationResult.DONT_SHOW);
+        manager.writeLong(ChromePreferenceKeys.START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
+                System.currentTimeMillis() - 1);
+        Assert.assertFalse(ReturnToChromeExperimentsUtil.userBehaviourSupported());
+        Assert.assertFalse(manager.readBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false));
+        verifyNextDecisionTimeStampInDays(
+                manager, StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD.getValue());
+
+        // Verifies that if segmentation stops returning results, then we continue to use the
+        // previous result.
+        manager.writeInt(ChromePreferenceKeys.SHOW_START_SEGMENTATION_RESULT,
+                ReturnToChromeExperimentsUtil.ShowChromeStartSegmentationResult.UNINITIALIZED);
+        manager.writeLong(ChromePreferenceKeys.START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
+                System.currentTimeMillis() - 1);
+        Assert.assertFalse(ReturnToChromeExperimentsUtil.userBehaviourSupported());
+        Assert.assertFalse(manager.readBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false));
+        verifyNextDecisionTimeStampInDays(
+                manager, StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD.getValue());
     }
 
     @Test

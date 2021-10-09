@@ -5,6 +5,7 @@
 package org.chromium.chrome.features.start_surface;
 
 import android.app.Activity;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -483,6 +484,9 @@ public class StartSurfaceCoordinator implements StartSurface {
             Log.i(TAG, "Recorded %s = %b", START_SHOWN_AT_STARTUP_UMA, isOverviewShownOnStartup);
             RecordHistogram.recordBooleanHistogram(
                     START_SHOWN_AT_STARTUP_UMA, isOverviewShownOnStartup);
+        }
+        if (!TextUtils.isEmpty(StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.getValue())) {
+            ReturnToChromeExperimentsUtil.cacheSegmentationResult();
         }
     }
 
