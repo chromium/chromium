@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -1618,7 +1619,14 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
   EXPECT_FALSE(base::PathExists(extra_files_dir));
 }
 
-IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
+// Flaky on Win7: crbug.com/1258150
+#if defined(OS_WIN)
+#define MAYBE_KeepAfterWarning DISABLED_KeepAfterWarning
+#else
+#define MAYBE_KeepAfterWarning KeepAfterWarning
+#endif
+IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
+                       MAYBE_KeepAfterWarning) {
   SetUpReporting();
 
   GURL url = embedded_test_server()->GetURL("/save_page/text.txt");
@@ -1791,7 +1799,13 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
   EXPECT_FALSE(base::PathExists(extra_files_dir));
 }
 
-IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
+// Flaky on Win7: crbug.com/1258150
+#if defined(OS_WIN)
+#define MAYBE_OpenNow DISABLED_OpenNow
+#else
+#define MAYBE_OpenNow OpenNow
+#endif
+IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, MAYBE_OpenNow) {
   SetUpReporting();
 
   GURL url = embedded_test_server()->GetURL("/save_page/text.txt");
