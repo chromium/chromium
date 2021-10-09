@@ -29,8 +29,6 @@ namespace ash {
 
 namespace {
 
-constexpr int kBarHeight = 40;
-
 // A boolean pref indicates whether the bar is set to show or hide through the
 // context menu. Showing the bar if this pref is true, hiding otherwise.
 constexpr char kBentoBarEnabled[] = "ash.bento_bar.enabled";
@@ -53,7 +51,7 @@ std::unique_ptr<views::Widget> CreatePersistentDesksBarWidget() {
   gfx::Rect bounds = display::Screen::GetScreen()
                          ->GetDisplayNearestWindow(root_window)
                          .bounds();
-  bounds.set_height(kBarHeight);
+  bounds.set_height(PersistentDesksBarController::kBarHeight);
   params.bounds = bounds;
   params.name = "PersistentDesksBarWidget";
 
@@ -115,12 +113,14 @@ void PersistentDesksBarController::OnActiveUserPrefServiceChanged(
   UpdateBarStateOnPrefChanges();
 }
 
-void PersistentDesksBarController::OnOverviewModeStarting() {
+void PersistentDesksBarController::OnOverviewModeWillStart() {
+  overview_mode_in_progress_ = true;
   DestroyBarWidget();
 }
 
 void PersistentDesksBarController::OnOverviewModeEndingAnimationComplete(
     bool canceled) {
+  overview_mode_in_progress_ = false;
   if (!canceled)
     MaybeInitBarWidget();
 }
@@ -311,8 +311,7 @@ bool PersistentDesksBarController::ShouldPersistentDesksBarBeCreated() const {
 
   // Do not create the bar in tablet mode, overview mode or if there is
   // only one desk.
-  if (TabletMode::Get()->InTabletMode() ||
-      shell->overview_controller()->InOverviewSession() ||
+  if (TabletMode::Get()->InTabletMode() || overview_mode_in_progress_ ||
       DesksController::Get()->desks().size() == 1) {
     return false;
   }
