@@ -931,11 +931,6 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
     }
   }
 
-  if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB) {
-    base::AutoReset<bool> tmp(&in_revert_, true);
-    view_->RevertAll();  // Revert the box to its unedited state.
-  }
-
   // Track whether the destination URL sends us to a search results page
   // using the default search provider.
   TemplateURLService* template_url_service = client_->GetTemplateURLService();
