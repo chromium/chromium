@@ -115,15 +115,27 @@
 #include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 
+// 这是 C++17 中的 <filesystem>
+// https://docs.microsoft.com/zh-cn/cpp/standard-library/filesystem?view=msvc-160
+// 基本上与 chromium 中的 file_path.h 类似。
+// 文件系统导航 <filesystem>
+// https://docs.microsoft.com/zh-cn/cpp/standard-library/file-system-navigation?view=msvc-160
+// std::filesystem::path 类似 这了的 FilePath，都支持跨平台。
+
+// std::string: char 字符列表或者是字节列表（bytes）
+// std::wstring: wchar_t 字符列表或者是宽子节列表
+
 // Windows-style drive letter support and pathname separator characters can be
 // enabled and disabled independently, to aid testing.  These #defines are
 // here so that the same setting can be used in both the implementation and
 // in the unit test.
 #if defined(OS_WIN)
-#define FILE_PATH_USES_DRIVE_LETTERS
-#define FILE_PATH_USES_WIN_SEPARATORS
+#define FILE_PATH_USES_DRIVE_LETTERS  // 文件路径使用驱动器字母(例："D:\"")
+#define FILE_PATH_USES_WIN_SEPARATORS // 文件路径使用windows分隔符
 #endif  // OS_WIN
 
+// 要可移植地打印路径名，请使用 PRFilePath（基于 PRIuS 和来自 C99 和 format_macros.h 
+// 的朋友），如下所示：
 // To print path names portably use PRFilePath (based on PRIuS and friends from
 // C99 and format_macros.h) like this:
 // base::StringPrintf("Path is %" PRFilePath ".\n", path.value().c_str());
@@ -134,10 +146,12 @@
 #endif  // OS_WIN
 
 // Macros for string literal initialization of FilePath::CharType[].
+// 字符串文字(字面量)初始化宏
 #if defined(OS_WIN)
-#define FILE_PATH_LITERAL(x) L##x
+// 字符串前面加L表示该字符串是Unicode字符串，win默认使用uniquecode编码
+#define FILE_PATH_LITERAL(x) L##x 
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-#define FILE_PATH_LITERAL(x) x
+#define FILE_PATH_LITERAL(x) x // 文件路径字面量
 #endif  // OS_WIN
 
 namespace base {
@@ -151,8 +165,9 @@ class PickleIterator;
 class BASE_EXPORT FilePath {
  public:
 #if defined(OS_WIN)
-  // On Windows, for Unicode-aware applications, native pathnames are wchar_t
-  // arrays encoded in UTF-16.
+  // On Windows, for Unicode-aware(支持Unicode) applications, native pathnames 
+  // are wchar_t arrays encoded in UTF-16.
+  // 在Windows上，对于支持Unicode的应用程序，本机路径名是以 UTF-16 编码的 wchar_t 数组
   typedef std::wstring StringType;
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   // On most platforms, native pathnames are char arrays, and the encoding
@@ -161,17 +176,19 @@ class BASE_EXPORT FilePath {
   typedef std::string StringType;
 #endif  // OS_WIN
 
-  typedef StringType::value_type CharType;
-  typedef BasicStringPiece<CharType> StringPieceType;
+  typedef StringType::value_type CharType; // 字符串中的 "字符" 类型，char/wchat_t
+  typedef BasicStringPiece<CharType> StringPieceType; // 字符串中 "切片" 类型
 
-  // Null-terminated array of separators used to separate components in
-  // hierarchical paths.  Each character in this array is a valid separator,
+  // Null-terminated（即：'\0'） array of separators used to separate components in
+  // hierarchical paths.  用于分隔分层路径中的组件的分隔符(例：'\')数组，以 '\0' 结尾终止.
+  // Each character in this array is a valid separator, 
+  // 这个数组中的每个字符都是一个有效的分隔符，
   // but kSeparators[0] is treated as the canonical separator and will be used
   // when composing pathnames.
   // 用于分隔分层路径中的组件的空终止分隔符数组。 此数组中的每个字符都是有效的分隔符，
-  // 但 kSeparators[0] 被视为规范分隔符，并将在组合路径名时使用。
+  // 但 kSeparators[0] 被视为规范分隔符（是根分隔符？例如：win的驱动器、linux的'/'），
+  // 并将在组合路径名时使用。
   static const CharType kSeparators[];
-
   // base::size(kSeparators).
   static const size_t kSeparatorsLength;
 
@@ -182,6 +199,7 @@ class BASE_EXPORT FilePath {
   static const CharType kParentDirectory[];
 
   // The character used to identify a file extension.
+  // 文件扩展分隔符，比如：/x/y/z.cpp 中的文件格式(也叫文件扩展名)分隔符点号 '.'
   static const CharType kExtensionSeparator;
 
   FilePath();
@@ -198,7 +216,6 @@ class BASE_EXPORT FilePath {
   FilePath& operator=(FilePath&& that) noexcept;
 
   bool operator==(const FilePath& that) const;
-
   bool operator!=(const FilePath& that) const;
 
   // Required for some STL containers and operations
@@ -228,7 +245,7 @@ class BASE_EXPORT FilePath {
   // Windows:  "C:\foo\bar"  ->  [ "C:", "\\", "foo", "bar" ]
   void GetComponents(std::vector<FilePath::StringType>* components) const;
 
-  // Returns true if this FilePath is a parent or ancestor of the |child|.
+  // Returns true if this FilePath is a parent or ancestor(祖先) of the |child|.
   // 如果此 FilePath 是 |child| 的父级或祖先，则返回 true。
   // Absolute and relative paths are accepted i.e. /foo is a parent to /foo/bar,
   // and foo is a parent to foo/bar. Any ancestor is considered a parent i.e. /a
@@ -310,10 +327,8 @@ class BASE_EXPORT FilePath {
   // path == "jojo.jpg"         suffix == " (1)", returns "jojo (1).jpg"
   // path == "C:\pics\jojo"     suffix == " (1)", returns "C:\pics\jojo (1)"
   // path == "C:\pics.old\jojo" suffix == " (1)", returns "C:\pics.old\jojo (1)"
-  FilePath InsertBeforeExtension(
-      StringPieceType suffix) const WARN_UNUSED_RESULT;
-  FilePath InsertBeforeExtensionASCII(
-      StringPiece suffix) const WARN_UNUSED_RESULT;
+  FilePath InsertBeforeExtension(StringPieceType suffix) const WARN_UNUSED_RESULT;
+  FilePath InsertBeforeExtensionASCII(StringPiece suffix) const WARN_UNUSED_RESULT;
 
   // Adds |extension| to |file_name|. Returns the current FilePath if
   // |extension| is empty. Returns "" if BaseName() == "." or "..".
@@ -352,8 +367,8 @@ class BASE_EXPORT FilePath {
 
   // Returns true if this FilePath contains an absolute path.  On Windows, an
   // absolute path begins with either a drive letter specification followed by
-  // a separator character, or with two separator characters.  On POSIX
-  // platforms, an absolute path begins with a separator character.
+  // a separator character(例: D:\), or with two separator characters(例: \\).  
+  // On POSIX platforms, an absolute path begins with a separator character(/).
   bool IsAbsolute() const;
 
   // Returns true if this FilePath is a network path which starts with 2 path
@@ -367,8 +382,7 @@ class BASE_EXPORT FilePath {
   // the input path is empty, an empty FilePath will be returned.
   FilePath AsEndingWithSeparator() const WARN_UNUSED_RESULT;
 
-  // Returns a copy of this FilePath that does not end with a trailing
-  // separator.
+  // Returns a copy of this FilePath that does not end with a trailing separator.
   FilePath StripTrailingSeparators() const WARN_UNUSED_RESULT;
 
   // Returns true if this FilePath contains an attempt to reference a parent
@@ -379,7 +393,7 @@ class BASE_EXPORT FilePath {
   // Warning: you can *not*, in general, go from a display name back to a real
   // path.  Only use this when displaying paths to users, not just when you
   // want to stuff a std::u16string into some other API.
-  std::u16string LossyDisplayName() const;
+  std::u16string LossyDisplayName() const; // lossy有损
 
   // Return the path as ASCII, or the empty string if the path is not ASCII.
   // This should only be used for cases where the FilePath is representing a
@@ -390,10 +404,10 @@ class BASE_EXPORT FilePath {
   //
   // This function is *unsafe* as there is no way to tell what encoding is
   // used in file names on POSIX systems other than Mac and Chrome OS,
-  // although UTF-8 is practically used everywhere these days. To mitigate
-  // the encoding issue, this function internally calls
+  // although UTF-8 is practically used everywhere these days. 
+  // To mitigate(缓解) the encoding issue, this function internally calls
   // SysNativeMBToWide() on POSIX systems other than Mac and Chrome OS,
-  // per assumption that the current locale's encoding is used in file
+  // per assumption(假设) that the current locale's encoding is used in file
   // names, but this isn't a perfect solution.
   //
   // Once it becomes safe to to stop caring about non-UTF-8 file names,
@@ -420,8 +434,9 @@ class BASE_EXPORT FilePath {
   void WriteToPickle(Pickle* pickle) const;
   bool ReadFromPickle(PickleIterator* iter);
 
-  // Normalize all path separators to backslash on Windows
+  // Normalize(归一化) all path separators to backslash(反斜杠\) on Windows
   // (if FILE_PATH_USES_WIN_SEPARATORS is true), or do nothing on POSIX systems.
+  // 在 Windows 上将所有路径分隔符规范化为反斜杠，或者在 POSIX 系统上什么都不做。
   FilePath NormalizePathSeparators() const;
 
   // Normalize all path separattors to given type on Windows
@@ -436,14 +451,16 @@ class BASE_EXPORT FilePath {
   // on parts of a file path, e.g., just the extension.
   // CompareIgnoreCase() returns -1, 0 or 1 for less-than, equal-to and
   // greater-than respectively.
-  static int CompareIgnoreCase(StringPieceType string1,
-                               StringPieceType string2);
+  static int CompareIgnoreCase(StringPieceType string1, StringPieceType string2);
+
   static bool CompareEqualIgnoreCase(StringPieceType string1,
                                      StringPieceType string2) {
+                                       
     return CompareIgnoreCase(string1, string2) == 0;
   }
   static bool CompareLessIgnoreCase(StringPieceType string1,
                                     StringPieceType string2) {
+
     return CompareIgnoreCase(string1, string2) < 0;
   }
 
@@ -451,8 +468,9 @@ class BASE_EXPORT FilePath {
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
 #if defined(OS_APPLE)
-  // Returns the string in the special canonical decomposed form as defined for
-  // HFS, which is close to, but not quite, decomposition form D. See
+  // Returns the string in the special canonical(典范) decomposed form as 
+  // defined for HFS, which is close to, but not quite, decomposition form D. 
+  // See:
   // http://developer.apple.com/mac/library/technotes/tn/tn1150.html#UnicodeSubtleties
   // for further comments.
   // Returns the epmty string if the conversion failed.
@@ -483,7 +501,7 @@ class BASE_EXPORT FilePath {
   // support UNC paths on Windows.
   void StripTrailingSeparatorsInternal();
 
-  StringType path_;
+  StringType path_; // std::string/std::wstring
 };
 
 BASE_EXPORT std::ostream& operator<<(std::ostream& out,
@@ -497,6 +515,7 @@ template <>
 struct hash<base::FilePath> {
   typedef base::FilePath argument_type;
   typedef std::size_t result_type;
+  
   result_type operator()(argument_type const& f) const {
     return hash<base::FilePath::StringType>()(f.value());
   }

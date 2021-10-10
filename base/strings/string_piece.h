@@ -112,8 +112,10 @@ class BasicStringPiece {
 
   constexpr BasicStringPiece() noexcept : ptr_(nullptr), length_(0) {}
   constexpr BasicStringPiece(const BasicStringPiece& other) noexcept = default;
-  constexpr BasicStringPiece& operator=(const BasicStringPiece& view) noexcept =
-      default;
+  
+  constexpr BasicStringPiece& operator=(const BasicStringPiece& view) 
+      noexcept = default;
+
   constexpr BasicStringPiece(const CharT* s, size_type count)
       : ptr_(s), length_(count) {}
   // Note: This doesn't just use traits_type::length(), since that

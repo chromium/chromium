@@ -35,17 +35,24 @@
 #elif defined(OS_APPLE)
 #include <CoreFoundation/CoreFoundation.h>
 #endif
-
 namespace base {
 
 using StringType = FilePath::StringType;
 using StringPieceType = FilePath::StringPieceType;
 
-namespace {
+namespace { // 匿名命名空间，是比static更好的源代码文件局部性语法
 
-const char* const kCommonDoubleExtensionSuffixes[] = {"gz", "xz", "bz2", "z",
-                                                      "bz"};
-const char* const kCommonDoubleExtensions[] = { "user.js" };
+const char* const kCommonDoubleExtensionSuffixes[] = {
+  "gz", 
+  "xz", 
+  "bz2", 
+  "z", 
+  "bz"
+};
+
+const char* const kCommonDoubleExtensions[] = { 
+  "user.js" 
+};
 
 const FilePath::CharType kStringTerminator = FILE_PATH_LITERAL('\0');
 
@@ -168,7 +175,8 @@ StringType::size_type ExtensionSeparatorPosition(const StringType& path) {
 // Returns true if path is "", ".", or "..".
 bool IsEmptyOrSpecialCase(const StringType& path) {
   // Special cases "", ".", and ".."
-  if (path.empty() || path == FilePath::kCurrentDirectory ||
+  if (path.empty() || 
+      path == FilePath::kCurrentDirectory || 
       path == FilePath::kParentDirectory) {
     return true;
   }
@@ -730,6 +738,7 @@ bool FilePath::ReadFromPickle(PickleIterator* iter) {
 
 int FilePath::CompareIgnoreCase(StringPieceType string1,
                                 StringPieceType string2) {
+
   // CharUpperW within user32 is used here because it will provide unicode
   // conversions regardless of locale. The STL alternative, towupper, has a
   // locale consideration that prevents it from converting all characters by
