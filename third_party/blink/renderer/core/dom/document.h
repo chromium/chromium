@@ -1666,9 +1666,6 @@ class CORE_EXPORT Document : public ContainerNode,
   }
 
   String GetFragmentDirective() const { return fragment_directive_string_; }
-  bool UseCountFragmentDirective() const {
-    return use_count_fragment_directive_;
-  }
 
   void ApplyScrollRestorationLogic();
 
@@ -2289,8 +2286,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   String fragment_directive_string_;
   Member<FragmentDirective> fragment_directive_;
-
-  bool use_count_fragment_directive_ = false;
 
   HeapHashMap<WeakMember<Element>, Member<ExplicitlySetAttrElementsMap>>
       element_explicitly_set_attr_elements_map_;

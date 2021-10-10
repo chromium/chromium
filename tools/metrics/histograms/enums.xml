@@ -33750,10 +33750,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3036" label="XRIsSessionSupported"/>
   <int value="3037" label="ScrollbarUseScrollbarButtonReversedDirection"/>
   <int value="3038" label="CSSSelectorPseudoScrollbarButtonReversedDirection"/>
-  <int value="3039" label="FragmentHasTildeAmpersandTilde"/>
-  <int value="3040" label="FragmentHasColonTildeColon"/>
-  <int value="3041" label="FragmentHasTildeAtTilde"/>
-  <int value="3042" label="FragmentHasAmpersandDelimiterQuestion"/>
+  <int value="3039" label="OBSOLETE_FragmentHasTildeAmpersandTilde"/>
+  <int value="3040" label="OBSOLETE_FragmentHasColonTildeColon"/>
+  <int value="3041" label="OBSOLETE_FragmentHasTildeAtTilde"/>
+  <int value="3042" label="OBSOLETE_FragmentHasAmpersandDelimiterQuestion"/>
   <int value="3043" label="InvalidFragmentDirective"/>
   <int value="3044" label="ContactsManagerGetProperties"/>
   <int value="3045" label="EvaluateScriptMovedBetweenElementDocuments"/>

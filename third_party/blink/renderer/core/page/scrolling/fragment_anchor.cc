@@ -33,32 +33,6 @@ FragmentAnchor* FragmentAnchor::TryCreate(const KURL& url,
     text_fragment_anchor_created = anchor;
   }
 
-  // Count cases of other delimiter candidates. We don't care about whether
-  // they're followed by a text directive since they've never been used with
-  // it.
-  if (url.HasFragmentIdentifier()) {
-    if (url.FragmentIdentifier().Find("~&~") != kNotFound) {
-      UseCounter::Count(frame.GetDocument(),
-                        WebFeature::kFragmentHasTildeAmpersandTilde);
-    }
-    if (url.FragmentIdentifier().Find("~@~") != kNotFound) {
-      UseCounter::Count(frame.GetDocument(),
-                        WebFeature::kFragmentHasTildeAtTilde);
-    }
-    if (url.FragmentIdentifier().Find("&delimiter?") != kNotFound) {
-      UseCounter::Count(frame.GetDocument(),
-                        WebFeature::kFragmentHasAmpersandDelimiterQuestion);
-    }
-  }
-
-  // For the actual delimiter, we must determine whether to use count it at
-  // the point where we strip the directive. We can't use count it at that
-  // point because the DocumentLoader hasn't yet been created.
-  if (frame.GetDocument()->UseCountFragmentDirective()) {
-    UseCounter::Count(frame.GetDocument(),
-                      WebFeature::kFragmentHasColonTildeColon);
-  }
-
   bool element_id_anchor_found = false;
   if (!anchor) {
     anchor = ElementFragmentAnchor::TryCreate(url, frame, should_scroll);
