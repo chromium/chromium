@@ -225,6 +225,7 @@ constexpr char kDeviceLabel[] = "MyUSB";
 std::u16string kFormatTitle = u"Format MyUSB";
 
 TEST_F(SystemNotificationManagerTest, FormatStart) {
+  base::HistogramTester histogram_tester;
   GetDeviceEventRouter()->OnFormatStarted(kDevicePath, kDeviceLabel,
                                           /*success=*/true);
   // Get the number of notifications from the NotificationDisplayService.
@@ -242,9 +243,13 @@ TEST_F(SystemNotificationManagerTest, FormatStart) {
   std::u16string kFormatStartMesssage = u"Formatting MyUSB\x2026";
   EXPECT_EQ(notification_strings.title, kFormatTitle);
   EXPECT_EQ(notification_strings.message, kFormatStartMesssage);
+  histogram_tester.ExpectUniqueSample(kNotificationShowHistogramName,
+                                      DeviceNotificationUmaType::FORMAT_START,
+                                      1);
 }
 
 TEST_F(SystemNotificationManagerTest, FormatSuccess) {
+  base::HistogramTester histogram_tester;
   GetDeviceEventRouter()->OnFormatCompleted(kDevicePath, kDeviceLabel,
                                             /*success=*/true);
   // Get the number of notifications from the NotificationDisplayService.
@@ -263,9 +268,13 @@ TEST_F(SystemNotificationManagerTest, FormatSuccess) {
   std::u16string kFormatSuccessMesssage = u"Formatted MyUSB";
   EXPECT_EQ(notification_strings.title, kFormatTitle);
   EXPECT_EQ(notification_strings.message, kFormatSuccessMesssage);
+  histogram_tester.ExpectUniqueSample(kNotificationShowHistogramName,
+                                      DeviceNotificationUmaType::FORMAT_SUCCESS,
+                                      1);
 }
 
 TEST_F(SystemNotificationManagerTest, FormatFail) {
+  base::HistogramTester histogram_tester;
   GetDeviceEventRouter()->OnFormatCompleted(kDevicePath, kDeviceLabel,
                                             /*success=*/false);
   // Get the number of notifications from the NotificationDisplayService.
@@ -283,6 +292,9 @@ TEST_F(SystemNotificationManagerTest, FormatFail) {
   std::u16string kFormatFailedMesssage = u"Could not format MyUSB";
   EXPECT_EQ(notification_strings.title, kFormatTitle);
   EXPECT_EQ(notification_strings.message, kFormatFailedMesssage);
+  histogram_tester.ExpectUniqueSample(kNotificationShowHistogramName,
+                                      DeviceNotificationUmaType::FORMAT_FAIL,
+                                      1);
 }
 
 constexpr char kPartitionLabel[] = "OEM";

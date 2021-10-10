@@ -214,6 +214,7 @@ void SystemNotificationManager::HandleDeviceEvent(
           l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_PROGRESS_MESSAGE,
                                      base::UTF8ToUTF16(event.device_label));
       notification = CreateNotification(id, title, message);
+      RecordDeviceNotificationMetric(DeviceNotificationUmaType::FORMAT_START);
       break;
     case file_manager_private::DEVICE_EVENT_TYPE_FORMAT_SUCCESS:
     case file_manager_private::DEVICE_EVENT_TYPE_FORMAT_FAIL:
@@ -230,10 +231,13 @@ void SystemNotificationManager::HandleDeviceEvent(
         message =
             l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_SUCCESS_MESSAGE,
                                        base::UTF8ToUTF16(event.device_label));
+        RecordDeviceNotificationMetric(
+            DeviceNotificationUmaType::FORMAT_SUCCESS);
       } else {
         message =
             l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_FAILURE_MESSAGE,
                                        base::UTF8ToUTF16(event.device_label));
+        RecordDeviceNotificationMetric(DeviceNotificationUmaType::FORMAT_FAIL);
       }
       notification = CreateNotification(id, title, message);
       break;
