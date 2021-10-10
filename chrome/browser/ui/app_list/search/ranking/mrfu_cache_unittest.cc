@@ -104,6 +104,8 @@ TEST_F(MrfuCacheTest, GetNormalized) {
   MrfuCache cache(GetPath(), TestingParams());
   Wait();
 
+  EXPECT_FLOAT_EQ(cache.GetNormalized("A"), 0.0f);
+
   cache.Use("A");
   cache.Use("B");
   cache.Use("A");
@@ -130,8 +132,12 @@ TEST_F(MrfuCacheTest, CorrectBoostCoeffApproximation) {
   EXPECT_NEAR(boost_coeff(cache), kExpected, 0.001f);
 }
 
-TEST_F(MrfuCacheTest, UseIgnoredBeforeInitComplete) {
+TEST_F(MrfuCacheTest, GetAndUseBeforeInitComplete) {
   MrfuCache cache(GetPath(), TestingParams());
+
+  // Get calls should return default values because init is incomplete.
+  EXPECT_FLOAT_EQ(cache.Get("A"), 0.0f);
+  EXPECT_FLOAT_EQ(cache.GetNormalized("A"), 0.0f);
 
   // The proto hasn't finished initializing from disk yet, so this use should be
   // ignored.
@@ -139,7 +145,10 @@ TEST_F(MrfuCacheTest, UseIgnoredBeforeInitComplete) {
 
   // Now the class is finished initializing.
   Wait();
+
+  // Get calls should return default values because the Use call was ignored.
   EXPECT_FLOAT_EQ(cache.Get("A"), 0.0f);
+  EXPECT_FLOAT_EQ(cache.GetNormalized("A"), 0.0f);
 }
 
 TEST_F(MrfuCacheTest, CleanupOnTooManyItems) {

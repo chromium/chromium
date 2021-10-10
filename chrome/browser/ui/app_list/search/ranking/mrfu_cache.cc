@@ -34,7 +34,7 @@ constexpr int kVersion = 2;
 //  - D is the decay coefficient
 //  - N is the boost factor
 //
-// We want an equation for the score after using an new item N times - ie.
+// We want an equation for the score after using a new item N times - ie.
 // f_N(0) - and then solve for k.
 //
 //    f(x) = Dx + (1-Dx)k
@@ -133,6 +133,8 @@ float MrfuCache::Get(const std::string& item) {
 }
 
 float MrfuCache::GetNormalized(const std::string& item) {
+  if (!proto_.initialized() || proto_->total_score() == 0.0f)
+    return 0.0f;
   return Get(item) / proto_->total_score();
 }
 
