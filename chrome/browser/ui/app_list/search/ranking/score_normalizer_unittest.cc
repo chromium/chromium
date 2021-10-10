@@ -13,6 +13,8 @@
 namespace app_list {
 namespace {
 
+constexpr double kDefaultScore = 0.5;
+
 void ExpectBinsEqual(const ScoreNormalizerProto* proto,
                      const std::vector<double>& dividers,
                      const std::vector<double>& counts) {
@@ -43,10 +45,10 @@ class ScoreNormalizerTest : public testing::Test {
 
   base::FilePath GetPath() { return temp_dir_.GetPath().Append("proto"); }
 
-  ScoreNormalizer::Params TestingParams() {
+  ScoreNormalizer::Params TestingParams(size_t bins = 4) {
     ScoreNormalizer::Params params;
     params.version = 3;
-    params.max_bins = 4;
+    params.max_bins = bins;
     params.write_delay = base::Seconds(0);
     return params;
   }
@@ -245,9 +247,7 @@ TEST_F(ScoreNormalizerTest, SmallRighthandedSplitMerge) {
 // Add scores to cause one split/merge, where the split index is to the right of
 // the merge index. In this case there's a gap between the split and merge.
 TEST_F(ScoreNormalizerTest, LargeRighthandedSplitMerge) {
-  auto params = TestingParams();
-  params.max_bins = 5;
-  ScoreNormalizer normalizer(GetPath(), params);
+  ScoreNormalizer normalizer(GetPath(), TestingParams(5));
   Wait();
 
   // Set up some bins.
@@ -261,6 +261,76 @@ TEST_F(ScoreNormalizerTest, LargeRighthandedSplitMerge) {
   normalizer.Update("testing", 5);
   ExpectBinsEqual(get_proto(normalizer), {2, 3, 4, 5},
                   {3.0, 2.0, 2.0, 1.5, 1.5});
+}
+
+// Tests early-exit cases when normalizing a score.
+TEST_F(ScoreNormalizerTest, NormalizeSpecialCases) {
+  {
+    // A normalizer that hasn't finished initializing.
+    ScoreNormalizer normalizer(GetPath(), TestingParams(5));
+    EXPECT_FLOAT_EQ(normalizer.Normalize("testing", 1.0), kDefaultScore);
+  }
+
+  {
+    // An empty normalizer
+    ScoreNormalizer normalizer(GetPath(), TestingParams(5));
+    Wait();
+    EXPECT_FLOAT_EQ(normalizer.Normalize("testing", 1.0), kDefaultScore);
+  }
+
+  {
+    // A normalizer with two bins
+    ScoreNormalizer normalizer(GetPath(), TestingParams(5));
+    Wait();
+    normalizer.Update("testing", 1.0);
+    EXPECT_FLOAT_EQ(normalizer.Normalize("testing", 1.0), kDefaultScore);
+  }
+}
+
+// Tests normalizing scores in the leftmost and rightmost bins.
+TEST_F(ScoreNormalizerTest, NormalizeEdgeBins) {
+  ScoreNormalizer normalizer(GetPath(), TestingParams(5));
+  Wait();
+
+  // Bin dividers are: -infinity, 2, 3, 4, 5
+  for (const auto& score : {1, 2, 3, 4, 0, 1, 2, 3, 4, 5})
+    normalizer.Update("testing", score);
+
+  // Very close to the leftmost bin's right boundary.
+  EXPECT_NEAR(normalizer.Normalize("testing", 2), 0.2 - 1.0e-5, 1.0e-3);
+  // Partway into the leftmost bin, offset should be 2/3.
+  EXPECT_FLOAT_EQ(normalizer.Normalize("testing", 1.5), 2.0 / 15.0);
+  // Far out into the leftmost bin, the score should tend to 0.
+  EXPECT_NEAR(normalizer.Normalize("testing", -10000), 0.0, 1.0e-3);
+
+  // Exactly on the rightmost bin's left boundary.
+  EXPECT_FLOAT_EQ(normalizer.Normalize("testing", 5), 0.8);
+  // Partway into the rightmost bin, offset should be 2/3.
+  EXPECT_FLOAT_EQ(normalizer.Normalize("testing", 5.5), 13.0 / 15.0);
+  // Far out into the rightmost bin, the score should tend to 1.
+  EXPECT_NEAR(normalizer.Normalize("testing", 10000), 1.0, 1.0e-3);
+}
+
+// Tests normalizing scores in the non-leftmost and non-rightmost bins.
+TEST_F(ScoreNormalizerTest, NormalizeMiddleBins) {
+  ScoreNormalizer normalizer(GetPath(), TestingParams(5));
+  Wait();
+
+  // Bin dividers are: -infinity, 2, 3, 4, 5
+  for (const auto& score : {1, 2, 3, 4, 0, 1, 2, 3, 4, 5})
+    normalizer.Update("testing", score);
+
+  // Halfway through the second bin:
+  // - bin index is 1
+  // - offset is 0.5
+  // So score should be (1 + 0.5) / 5
+  EXPECT_FLOAT_EQ(normalizer.Normalize("testing", 2.5), 0.3);
+
+  // Partway through the fourth bin:
+  // - bin index is 3
+  // - offset is 1/3
+  // So score should be (3 + 1/3) / 5
+  EXPECT_FLOAT_EQ(normalizer.Normalize("testing", 4.0 + 1.0 / 3.0), 2.0 / 3.0);
 }
 
 }  // namespace app_list

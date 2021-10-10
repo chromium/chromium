@@ -74,25 +74,41 @@ double ScoreNormalizer::Normalize(const std::string& name, double score) const {
     return kDefaultScore;
   }
 
+  // If we don't have any data for |name|, return a default score.
   const auto& normalizers = proto_->normalizers();
   const auto it = normalizers.find(name);
   if (it == normalizers.end()) {
     return kDefaultScore;
   }
 
-  // TODO(crbug.com/1199206): Add intra-bin scoring and handle the extreme bins
-  // better.
-
   const Bins& bins = it->second.bins();
+  size_t size = bins.size();
 
   // If we only have zero or one bins, there's no reasonable normalized score to
   // return, so use the default.
-  if (bins.size() < 2) {
+  if (size < 2) {
     return kDefaultScore;
   }
 
   size_t index = BinIndexFor(bins, score);
-  return static_cast<double>(index) / bins.size();
+  double offset;
+  if (index == 0) {
+    // The leftmost bin has a finite right boundary but a -infinite left
+    // boundary. Offset with a hyperbolic decay function bounded to (0,1].
+    offset = 1 / (bins[1].lower_divider() - score + 1);
+  } else if (index == size - 1) {
+    // The rightmost bin has a finite left boundary but an infinite right
+    // boundary. Offset with a hyperbolic decay function bounded to [0,1).
+    offset = 1 - 1 / (score - bins[index].lower_divider() + 1);
+  } else {
+    // If this is an 'internal' bin with finite left and right boundaries,
+    // offset linearly between the two boundaries.
+    double left = bins[index].lower_divider();
+    double right = bins[index + 1].lower_divider();
+    offset = (left == right) ? 0.0 : (score - left) / (right - left);
+  }
+
+  return (index + offset) / static_cast<double>(size);
 }
 
 void ScoreNormalizer::Update(const std::string& name, double score) {

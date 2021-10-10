@@ -135,3 +135,6 @@ Here are some things that anecdotally improve performance:
 
  - Allowing the merged bins to contain one of the split bins provides a small
    improvement in performance.
+
+Finally, we could replace this altogether with something that builds on FAME or
+the P^2 quantile estimation algorithm.
