@@ -464,19 +464,19 @@ TEST_P(PrePaintTreeWalkTest, CullRectUpdateOnSVGTransformChange) {
   )HTML");
 
   auto& foreign = *GetLayoutObjectByElementId("foreign");
-  EXPECT_EQ(IntRect(0, 0, 200, 200),
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 200),
             foreign.FirstFragment().GetCullRect().Rect());
 
   GetDocument().getElementById("rect")->setAttribute(
       html_names::kStyleAttr, "transform: translateX(20px)");
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_EQ(IntRect(0, 0, 200, 200),
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 200),
             foreign.FirstFragment().GetCullRect().Rect());
 
   GetDocument().getElementById("g")->setAttribute(
       html_names::kStyleAttr, "transform: translateY(20px)");
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_EQ(IntRect(0, -20, 200, 200),
+  EXPECT_EQ(gfx::Rect(0, -20, 200, 200),
             foreign.FirstFragment().GetCullRect().Rect());
 }
 

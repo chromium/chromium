@@ -46,9 +46,9 @@ void FramePainter::Paint(GraphicsContext& context,
 
   GetFrameView().NotifyPageThatContentAreaWillPaint();
 
-  CullRect document_cull_rect(
-      IntersectRects(cull_rect.Rect(), GetFrameView().FrameRect()));
-  document_cull_rect.Move(gfx::Vector2d(-GetFrameView().Location()));
+  CullRect document_cull_rect(gfx::IntersectRects(
+      cull_rect.Rect(), ToGfxRect(GetFrameView().FrameRect())));
+  document_cull_rect.Move(ToGfxVector2d(-GetFrameView().Location()));
 
   if (document_cull_rect.Rect().IsEmpty())
     return;

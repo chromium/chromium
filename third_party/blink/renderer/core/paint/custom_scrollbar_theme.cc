@@ -142,7 +142,7 @@ void CustomScrollbarTheme::PaintScrollCorner(
     return;
 
   DrawingRecorder recorder(context, display_item_client,
-                           DisplayItem::kScrollCorner, corner_rect);
+                           DisplayItem::kScrollCorner, ToGfxRect(corner_rect));
   // FIXME: Implement.
   context.FillRect(corner_rect, Color::kWhite, AutoDarkMode::Disabled());
 }
@@ -207,9 +207,9 @@ void CustomScrollbarTheme::PaintIntoRect(
     const LayoutCustomScrollbarPart& layout_custom_scrollbar_part,
     GraphicsContext& graphics_context,
     const PhysicalRect& rect) {
-  PaintInfo paint_info(graphics_context, CullRect(PixelSnappedIntRect(rect)),
-                       PaintPhase::kForeground, kGlobalPaintNormalPhase,
-                       kPaintLayerNoFlag);
+  PaintInfo paint_info(
+      graphics_context, CullRect(ToGfxRect(PixelSnappedIntRect(rect))),
+      PaintPhase::kForeground, kGlobalPaintNormalPhase, kPaintLayerNoFlag);
   ObjectPainter(layout_custom_scrollbar_part)
       .PaintAllPhasesAtomically(paint_info);
 }

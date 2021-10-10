@@ -145,7 +145,7 @@ class PagePopupChromeClient final : public EmptyChromeClient {
                            const LocalFrameView*) const override {
     gfx::Rect window_rect = popup_->WindowRectInScreen();
     gfx::Rect rect_in_dips =
-        popup_->widget_base_->BlinkSpaceToEnclosedDIPs(gfx::Rect(rect));
+        popup_->widget_base_->BlinkSpaceToEnclosedDIPs(ToGfxRect(rect));
     rect_in_dips.Offset(window_rect.x(), window_rect.y());
     return IntRect(rect_in_dips);
   }
@@ -437,7 +437,7 @@ void WebPagePopupImpl::Initialize(WebViewImpl* opener_web_view,
   popup_owner_client_rect_ =
       popup_client_->OwnerElement().getBoundingClientRect();
   popup_widget_host_->ShowPopup(
-      initial_rect_, GetAnchorRectInScreen(),
+      initial_rect_, ToGfxRect(GetAnchorRectInScreen()),
       WTF::Bind(&WebPagePopupImpl::DidShowPopup, WTF::Unretained(this)));
   should_defer_setting_window_rect_ = false;
   widget_base_->SetPendingWindowRect(initial_rect_);
@@ -623,7 +623,7 @@ void WebPagePopupImpl::SetWindowRect(const IntRect& rect_in_screen) {
     }
   }
 
-  gfx::Rect window_rect = rect_in_screen;
+  gfx::Rect window_rect = ToGfxRect(rect_in_screen);
 
   // Popups aren't emulated, but the WidgetScreenRect and WindowScreenRect
   // given to them are. When they set the WindowScreenRect it is based on those

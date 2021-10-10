@@ -800,7 +800,7 @@ static CullRect LegacyCullRect(const PaintLayerFragment& fragment,
   // space in which we will paint.
   new_cull_rect.Move(PhysicalOffset(
       RoundedIntPoint(fragment.root_fragment_data->PaintOffset())));
-  return CullRect(PixelSnappedIntRect(new_cull_rect));
+  return CullRect(ToGfxRect(PixelSnappedIntRect(new_cull_rect)));
 }
 
 void PaintLayerPainter::PaintBackgroundForFragmentsWithPhase(

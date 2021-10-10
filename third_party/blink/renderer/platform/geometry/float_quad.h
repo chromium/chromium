@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 struct SkPoint;
 
@@ -69,6 +70,13 @@ class PLATFORM_EXPORT FloatQuad {
 
   // Converts from an array of four SkPoints, as from SkMatrix::mapRectToQuad.
   explicit FloatQuad(const SkPoint (&)[4]);
+
+  explicit FloatQuad(const gfx::QuadF& q)
+      : p1_(q.p1()), p2_(q.p2()), p3_(q.p3()), p4_(q.p4()) {}
+
+  // This is deleted during blink geometry type to gfx migration.
+  // Use ToGfxQuadF() instead.
+  operator gfx::QuadF() const = delete;
 
   constexpr FloatPoint P1() const { return p1_; }
   constexpr FloatPoint P2() const { return p2_; }
@@ -181,6 +189,11 @@ constexpr bool operator==(const FloatQuad& a, const FloatQuad& b) {
 
 constexpr bool operator!=(const FloatQuad& a, const FloatQuad& b) {
   return !(a == b);
+}
+
+constexpr gfx::QuadF ToGfxQuadF(const FloatQuad& q) {
+  return gfx::QuadF(ToGfxPointF(q.P1()), ToGfxPointF(q.P2()),
+                    ToGfxPointF(q.P3()), ToGfxPointF(q.P4()));
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const FloatQuad&);

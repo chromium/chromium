@@ -672,7 +672,7 @@ void Canvas2DLayerBridge::FinalizeFrame() {
 
 void Canvas2DLayerBridge::DoPaintInvalidation(const IntRect& dirty_rect) {
   if (layer_ && raster_mode_ == RasterMode::kGPU)
-    layer_->SetNeedsDisplayRect(dirty_rect);
+    layer_->SetNeedsDisplayRect(ToGfxRect(dirty_rect));
 }
 
 scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot() {

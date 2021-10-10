@@ -2178,8 +2178,8 @@ TEST_F(WebFrameTest,
                                 WebInputEvent::GetStaticTimeStampForTests(),
                                 WebGestureDevice::kTouchscreen);
   gesture_event.SetFrameScale(1);
-  gesture_event.SetPositionInWidget(hit_point);
-  gesture_event.SetPositionInScreen(hit_point);
+  gesture_event.SetPositionInWidget(ToGfxPointF(hit_point));
+  gesture_event.SetPositionInScreen(ToGfxPointF(hit_point));
   web_view_helper.GetWebView()
       ->MainFrameImpl()
       ->GetFrame()
@@ -3249,7 +3249,7 @@ void SimulateDoubleTap(WebViewImpl* web_view_impl,
                        gfx::Point& point,
                        float& scale) {
   web_view_impl->AnimateDoubleTapZoom(
-      IntPoint(point), ComputeBlockBoundHelper(web_view_impl, point, false));
+      point, ComputeBlockBoundHelper(web_view_impl, point, false));
   EXPECT_TRUE(web_view_impl->FakeDoubleTapAnimationPendingForTesting());
   SimulatePageScale(web_view_impl, scale);
 }
@@ -3293,7 +3293,8 @@ TEST_F(WebFrameTest, DivAutoZoomParamsTest) {
   EXPECT_NEAR(wide_div.x(), scroll.X(), 20);
   EXPECT_EQ(0, scroll.Y());
 
-  SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), scroll, scale);
+  SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), ToGfxPoint(scroll),
+                             scale);
 
   // Test zoom out back to minimum scale.
   wide_block_bound = ComputeBlockBoundHelper(web_view_helper.GetWebView(),
@@ -3448,8 +3449,7 @@ TEST_F(WebFrameTest, DivAutoZoomMultipleDivsTest) {
 
   gfx::Rect block_bounds =
       ComputeBlockBoundHelper(web_view_helper.GetWebView(), top_point, false);
-  web_view_helper.GetWebView()->AnimateDoubleTapZoom(IntPoint(top_point),
-                                                     block_bounds);
+  web_view_helper.GetWebView()->AnimateDoubleTapZoom(top_point, block_bounds);
   EXPECT_TRUE(
       web_view_helper.GetWebView()->FakeDoubleTapAnimationPendingForTesting());
   SimulateDoubleTap(web_view_helper.GetWebView(), bottom_point, scale);
@@ -4004,7 +4004,7 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTest) {
   web_view_helper.GetWebView()->AdvanceFocus(true);
   // Zoom out slightly.
   const float within_tolerance_scale = scale * 0.9f;
-  SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), scroll,
+  SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), ToGfxPoint(scroll),
                              within_tolerance_scale);
   // Move focus back to the second edit box.
   web_view_helper.GetWebView()->AdvanceFocus(false);
@@ -4153,7 +4153,8 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTestZoomToLegibleScaleDisabled) {
                  (viewport_height / scale - edit_box_with_no_text.height()) / 2;
   EXPECT_NEAR(v_scroll, scroll.Y(), 2);
 
-  SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), scroll, scale);
+  SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), ToGfxPoint(scroll),
+                             scale);
 
   // Select the first textbox.
   web_view_helper.GetWebView()->AdvanceFocus(true);
@@ -4923,7 +4924,7 @@ TEST_F(WebFrameTest, FindInPageMatchRects) {
 
     // Select the match by the center of its rect.
     EXPECT_EQ(main_frame->EnsureTextFinder().SelectNearestFindMatch(
-                  result_rect.Center(), nullptr),
+                  ToGfxPointF(result_rect.Center()), nullptr),
               result_index + 1);
 
     // Check that the find result ordering matches with our expectations.
@@ -5222,10 +5223,14 @@ TEST_F(WebFrameTest, SetTickmarks) {
   RunPendingTasks();
   EXPECT_TRUE(find_in_page_client.FindResultsAreReady());
 
-  const Vector<IntRect> kExpectedOverridingTickmarks = {
-      IntRect(0, 0, 100, 100), IntRect(0, 20, 100, 100),
-      IntRect(0, 30, 100, 100)};
-  const Vector<IntRect> kResetTickmarks;
+  const Vector<gfx::Rect> kExpectedOverridingTickmarks = {
+      gfx::Rect(0, 0, 100, 100), gfx::Rect(0, 20, 100, 100),
+      gfx::Rect(0, 30, 100, 100)};
+  const Vector<IntRect> kExpectedOverridingTickmarksIntRect = {
+      IntRect(kExpectedOverridingTickmarks[0]),
+      IntRect(kExpectedOverridingTickmarks[1]),
+      IntRect(kExpectedOverridingTickmarks[2])};
+  const Vector<gfx::Rect> kResetTickmarks;
 
   {
     // Test SetTickmarks() with a null target WebElement.
@@ -5244,7 +5249,7 @@ TEST_F(WebFrameTest, SetTickmarks) {
     // Check the tickmarks are overridden correctly.
     Vector<IntRect> overriding_tickmarks_actual =
         layout_viewport->GetTickmarks();
-    EXPECT_EQ(kExpectedOverridingTickmarks, overriding_tickmarks_actual);
+    EXPECT_EQ(kExpectedOverridingTickmarksIntRect, overriding_tickmarks_actual);
 
     // Reset the tickmark behavior.
     main_frame->SetTickmarks(WebElement(), kResetTickmarks);
@@ -5275,7 +5280,7 @@ TEST_F(WebFrameTest, SetTickmarks) {
     // Check the tickmarks are overridden correctly.
     Vector<IntRect> overriding_tickmarks_actual =
         scrollable_area->GetTickmarks();
-    EXPECT_EQ(kExpectedOverridingTickmarks, overriding_tickmarks_actual);
+    EXPECT_EQ(kExpectedOverridingTickmarksIntRect, overriding_tickmarks_actual);
 
     // Reset the tickmark behavior.
     main_frame->SetTickmarks(target, kResetTickmarks);
@@ -6277,8 +6282,8 @@ class CompositedSelectionBoundsTest
                                   WebInputEvent::GetStaticTimeStampForTests(),
                                   WebGestureDevice::kTouchscreen);
     gesture_event.SetFrameScale(1);
-    gesture_event.SetPositionInWidget(hit_point);
-    gesture_event.SetPositionInScreen(hit_point);
+    gesture_event.SetPositionInWidget(ToGfxPointF(hit_point));
+    gesture_event.SetPositionInScreen(ToGfxPointF(hit_point));
 
     web_view_helper_.GetWebView()
         ->MainFrameImpl()
@@ -11989,14 +11994,14 @@ TEST_F(WebFrameSimTest, FindInPageSelectNextMatch) {
   ASSERT_EQ(2ul, web_match_rects.size());
 
   FloatRect result_rect = static_cast<FloatRect>(web_match_rects[0]);
-  frame->EnsureTextFinder().SelectNearestFindMatch(result_rect.Center(),
-                                                   nullptr);
+  frame->EnsureTextFinder().SelectNearestFindMatch(
+      ToGfxPointF(result_rect.Center()), nullptr);
 
   EXPECT_TRUE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
       box1_rect));
   result_rect = static_cast<FloatRect>(web_match_rects[1]);
-  frame->EnsureTextFinder().SelectNearestFindMatch(result_rect.Center(),
-                                                   nullptr);
+  frame->EnsureTextFinder().SelectNearestFindMatch(
+      ToGfxPointF(result_rect.Center()), nullptr);
 
   EXPECT_TRUE(
       frame_view->GetScrollableArea()->VisibleContentRect().Contains(box2_rect))
@@ -12486,7 +12491,7 @@ TEST_F(WebFrameSimTest, DoubleTapZoomWhileScrolled) {
   {
     gfx::Point point(445, 455);
     gfx::Rect block_bounds = ComputeBlockBoundHelper(&WebView(), point, false);
-    WebView().AnimateDoubleTapZoom(IntPoint(point), block_bounds);
+    WebView().AnimateDoubleTapZoom(point, block_bounds);
     EXPECT_TRUE(WebView().FakeDoubleTapAnimationPendingForTesting());
     ScrollOffset new_offset = ToScrollOffset(
         FloatPoint(WebView().FakePageScaleAnimationTargetPositionForTesting()));
@@ -12508,7 +12513,7 @@ TEST_F(WebFrameSimTest, DoubleTapZoomWhileScrolled) {
   {
     gfx::Point point(445, 455);
     gfx::Rect block_bounds = ComputeBlockBoundHelper(&WebView(), point, false);
-    WebView().AnimateDoubleTapZoom(IntPoint(point), block_bounds);
+    WebView().AnimateDoubleTapZoom(point, block_bounds);
     EXPECT_TRUE(WebView().FakeDoubleTapAnimationPendingForTesting());
     IntPoint target_offset(
         WebView().FakePageScaleAnimationTargetPositionForTesting());

@@ -508,14 +508,14 @@ void SpatialNavigationController::MoveInterestTo(Node* next_node) {
 }
 
 void SpatialNavigationController::DispatchMouseMoveAt(Element* element) {
-  FloatPoint event_position(-1, -1);
+  gfx::PointF event_position(-1, -1);
   if (element) {
-    event_position = RectInViewport(*element).Location();
-    event_position.Move(1, 1);
+    event_position = ToGfxPointF(RectInViewport(*element).Location());
+    event_position.Offset(1, 1);
   }
 
   // TODO(bokan): Can we get better screen coordinates?
-  FloatPoint event_position_screen = event_position;
+  gfx::PointF event_position_screen = event_position;
   int click_count = 0;
   WebMouseEvent fake_mouse_move_event(
       WebInputEvent::Type::kMouseMove, event_position, event_position_screen,

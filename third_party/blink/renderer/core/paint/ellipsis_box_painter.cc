@@ -53,7 +53,7 @@ void EllipsisBoxPainter::PaintEllipsis(const PaintInfo& paint_info,
   if (!ellipsis_box_.IsHorizontal())
     visual_rect.SetSize(visual_rect.Size().TransposedSize());
   DrawingRecorder recorder(context, ellipsis_box_, paint_info.phase,
-                           visual_rect);
+                           ToGfxRect(visual_rect));
 
   GraphicsContextStateSaver state_saver(context);
   if (!ellipsis_box_.IsHorizontal())

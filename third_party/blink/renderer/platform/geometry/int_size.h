@@ -115,16 +115,10 @@ class PLATFORM_EXPORT IntSize {
   explicit operator CGSize() const;
 #endif
 
-  // Use this only for logical sizes, which can not be negative. Things that are
-  // offsets instead, and can be negative, should use a gfx::Vector2d.
-  constexpr explicit operator gfx::Size() const {
-    return gfx::Size(width_, height_);
-  }
-  // IntSize is used as an offset, which can be negative, but gfx::Size can not.
-  // The Vector2d type is used for offsets instead.
-  constexpr explicit operator gfx::Vector2d() const {
-    return gfx::Vector2d(width_, height_);
-  }
+  // These are deleted during blink geometry type to gfx migration.
+  // Use ToGfxSize() and ToGfxVector2d() instead.
+  operator gfx::Size() const = delete;
+  operator gfx::Vector2d() const = delete;
 
   String ToString() const;
 
@@ -162,6 +156,17 @@ inline bool operator==(const IntSize& a, const IntSize& b) {
 
 inline bool operator!=(const IntSize& a, const IntSize& b) {
   return a.Width() != b.Width() || a.Height() != b.Height();
+}
+
+// Use this only for logical sizes, which can not be negative. Things that are
+// offsets instead, and can be negative, should use a gfx::Vector2d.
+constexpr gfx::Size ToGfxSize(const IntSize& s) {
+  return gfx::Size(s.Width(), s.Height());
+}
+// IntSize is used as an offset, which can be negative, but gfx::Size can not.
+// The Vector2d type is used for offsets instead.
+constexpr gfx::Vector2d ToGfxVector2d(const IntSize& s) {
+  return gfx::Vector2d(s.Width(), s.Height());
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const IntSize&);

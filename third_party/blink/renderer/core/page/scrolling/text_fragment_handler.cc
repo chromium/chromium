@@ -168,7 +168,7 @@ void TextFragmentHandler::ExtractFirstFragmentRect(
     break;
   }
 
-  std::move(callback).Run(gfx::Rect(rect_in_viewport));
+  std::move(callback).Run(ToGfxRect(rect_in_viewport));
 }
 
 void TextFragmentHandler::DidFinishSelectorGeneration(

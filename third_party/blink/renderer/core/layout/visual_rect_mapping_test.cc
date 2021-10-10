@@ -57,13 +57,13 @@ class VisualRectMappingTest : public PaintTestConfigurations,
     auto slow_map_rect = local_rect;
     object.MapToVisualRectInAncestorSpace(&ancestor, slow_map_rect);
 
-    FloatClipRect geometry_mapper_rect((FloatRect(local_rect)));
+    FloatClipRect geometry_mapper_rect(ToGfxRectF(FloatRect(local_rect)));
     const FragmentData& fragment_data = object.FirstFragment();
     if (fragment_data.HasLocalBorderBoxProperties()) {
       auto local_rect_copy = local_rect;
       object.MapToVisualRectInAncestorSpace(&ancestor, local_rect_copy,
                                             kUseGeometryMapper);
-      geometry_mapper_rect.SetRect(FloatRect(local_rect_copy));
+      geometry_mapper_rect.SetRect(ToGfxRectF(FloatRect(local_rect_copy)));
     }
 
     if (expected_visual_rect_in_ancestor.IsEmpty()) {

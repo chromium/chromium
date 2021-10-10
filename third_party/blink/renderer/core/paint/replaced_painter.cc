@@ -205,7 +205,7 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
 
     DrawingRecorder recorder(local_paint_info.context, layout_replaced_,
                              DisplayItem::kSelectionTint,
-                             selection_painting_int_rect);
+                             ToGfxRect(selection_painting_int_rect));
     Color selection_bg = HighlightPaintingUtils::HighlightBackgroundColor(
         layout_replaced_.GetDocument(), layout_replaced_.StyleRef(),
         layout_replaced_.GetNode(), kPseudoIdSelection);

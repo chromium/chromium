@@ -443,7 +443,7 @@ void AutoscrollController::StartMiddleClickAutoscroll(
   }
   page_->GetChromeClient().SetCursorOverridden(true);
   page_->GetChromeClient().AutoscrollStart(
-      position.ScaledBy(1 / frame->DevicePixelRatio()), frame);
+      ToGfxPointF(position.ScaledBy(1 / frame->DevicePixelRatio())), frame);
 }
 
 void AutoscrollController::Animate() {

@@ -206,20 +206,22 @@ class PLATFORM_EXPORT TransformationMatrix {
   // into the z=0 plane.
   FloatPoint MapPoint(const FloatPoint&) const;
   gfx::PointF MapPoint(const gfx::PointF& p) const {
-    return MapPoint(FloatPoint(p));
+    return ToGfxPointF(MapPoint(FloatPoint(p)));
   }
 
   // If the matrix has 3D components, the z component of the result is
   // dropped, effectively projecting the rect into the z=0 plane
   FloatRect MapRect(const FloatRect&) const;
   gfx::RectF MapRect(const gfx::RectF& r) const {
-    return MapRect(FloatRect(r));
+    return ToGfxRectF(MapRect(FloatRect(r)));
   }
 
   // Rounds the resulting mapped rectangle out. This is helpful for bounding
   // box computations but may not be what is wanted in other contexts.
   IntRect MapRect(const IntRect&) const;
-  gfx::Rect MapRect(const gfx::Rect& r) const { return MapRect(IntRect(r)); }
+  gfx::Rect MapRect(const gfx::Rect& r) const {
+    return ToGfxRect(MapRect(IntRect(r)));
+  }
   LayoutRect MapRect(const LayoutRect&) const;
 
   // If the matrix has 3D components, the z component of the result is

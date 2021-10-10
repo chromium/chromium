@@ -228,10 +228,10 @@ bool LineBoxList::HitTest(LineLayoutBoxModel layout_object,
 
   CullRect cull_rect(
       First()->IsHorizontal()
-          ? IntRect(point.left.ToInt(), hit_search_bounding_box.Y(), 1,
-                    hit_search_bounding_box.Height())
-          : IntRect(hit_search_bounding_box.X(), point.top.ToInt(),
-                    hit_search_bounding_box.Width(), 1));
+          ? gfx::Rect(point.left.ToInt(), hit_search_bounding_box.Y(), 1,
+                      hit_search_bounding_box.Height())
+          : gfx::Rect(hit_search_bounding_box.X(), point.top.ToInt(),
+                      hit_search_bounding_box.Width(), 1));
 
   if (!AnyLineIntersectsRect(layout_object, cull_rect, accumulated_offset))
     return false;

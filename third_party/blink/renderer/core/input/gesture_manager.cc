@@ -548,7 +548,7 @@ void GestureManager::ShowUnhandledTapUIIfNeeded(
 
     // Notify the Browser.
     auto tapped_info = mojom::blink::UnhandledTapInfo::New(
-        tapped_position_in_viewport, font_size, text_run_length);
+        ToGfxPoint(tapped_position_in_viewport), font_size, text_run_length);
     provider->ShowUnhandledTapUIIfNeeded(std::move(tapped_info));
   }
 #endif  // BUILDFLAG(ENABLE_UNHANDLED_TAP)

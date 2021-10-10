@@ -1375,19 +1375,19 @@ void AXObject::SerializeScrollAttributes(ui::AXNodeData* node_data) {
                               IsUserScrollable());
   // Provide x,y scroll info if scrollable in any way (programmatically or via
   // user).
-  const gfx::Point& scroll_offset = GetScrollOffset();
+  gfx::Point scroll_offset = ToGfxPoint(GetScrollOffset());
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollX,
                              scroll_offset.x());
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollY,
                              scroll_offset.y());
 
-  const gfx::Point& min_scroll_offset = MinimumScrollOffset();
+  gfx::Point min_scroll_offset = ToGfxPoint(MinimumScrollOffset());
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollXMin,
                              min_scroll_offset.x());
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollYMin,
                              min_scroll_offset.y());
 
-  const gfx::Point& max_scroll_offset = MaximumScrollOffset();
+  gfx::Point max_scroll_offset = ToGfxPoint(MaximumScrollOffset());
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollXMax,
                              max_scroll_offset.x());
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollYMax,

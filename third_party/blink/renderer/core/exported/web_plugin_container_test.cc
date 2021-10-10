@@ -1478,7 +1478,7 @@ TEST_F(WebPluginContainerTest, CompositedPluginCAP) {
       PropertyTreeState::Root());
   GraphicsContext graphics_context(*paint_controller);
   container->Paint(graphics_context, kGlobalPaintNormalPhase,
-                   CullRect(IntRect(10, 10, 400, 300)));
+                   CullRect(gfx::Rect(10, 10, 400, 300)));
   paint_controller->CommitNewDisplayItems();
 
   const auto& display_items =

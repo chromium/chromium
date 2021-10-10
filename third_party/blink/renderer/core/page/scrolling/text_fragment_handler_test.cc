@@ -416,7 +416,7 @@ TEST_P(TextFragmentHandlerTest, ExtractFirstTextFragmentRect) {
   ASSERT_EQ("This is a test page", PlainText(EphemeralRange(start, end)));
   IntRect rect(ComputeTextRect(EphemeralRange(start, end)));
   gfx::Rect expected_rect =
-      gfx::Rect(GetDocument().GetFrame()->View()->FrameToViewport(rect));
+      ToGfxRect(GetDocument().GetFrame()->View()->FrameToViewport(rect));
   // ExtractFirstTextFragmentsRect should return the first matched viewport
   // relative location.
   ASSERT_EQ(expected_rect.ToString(), "8,10 190x10");
@@ -465,7 +465,7 @@ TEST_P(TextFragmentHandlerTest, ExtractFirstTextFragmentRectScroll) {
   ASSERT_EQ("test page", PlainText(EphemeralRange(start, end)));
   IntRect rect(ComputeTextRect(EphemeralRange(start, end)));
   gfx::Rect expected_rect =
-      gfx::Rect(GetDocument().GetFrame()->View()->FrameToViewport(rect));
+      ToGfxRect(GetDocument().GetFrame()->View()->FrameToViewport(rect));
   // ExtractFirstTextFragmentsRect should return the first matched scaled
   // viewport relative location since the page is loaded zoomed in 4X
   ASSERT_EQ(expected_rect.ToString(), "432,296 360x44");
@@ -514,7 +514,7 @@ TEST_P(TextFragmentHandlerTest, ExtractFirstTextFragmentRectMultipleHighlight) {
   ASSERT_EQ("test page", PlainText(EphemeralRange(start, end)));
   IntRect rect(ComputeTextRect(EphemeralRange(start, end)));
   gfx::Rect expected_rect =
-      gfx::Rect(GetDocument().GetFrame()->View()->FrameToViewport(rect));
+      ToGfxRect(GetDocument().GetFrame()->View()->FrameToViewport(rect));
   // ExtractFirstTextFragmentsRect should return the first matched viewport
   // relative location.
   ASSERT_EQ(expected_rect.ToString(), "108,10 90x10");
@@ -563,7 +563,7 @@ TEST_P(TextFragmentHandlerTest,
   ASSERT_EQ("test page", PlainText(EphemeralRange(start, end)));
   IntRect rect(ComputeTextRect(EphemeralRange(start, end)));
   gfx::Rect expected_rect =
-      gfx::Rect(GetDocument().GetFrame()->View()->FrameToViewport(rect));
+      ToGfxRect(GetDocument().GetFrame()->View()->FrameToViewport(rect));
   // ExtractFirstTextFragmentsRect should return the first matched viewport
   // relative location.
   ASSERT_EQ(expected_rect.ToString(), "108,10 90x10");

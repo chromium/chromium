@@ -136,8 +136,8 @@ struct CORE_EXPORT PaintInfo {
   bool IntersectsCullRect(
       const PhysicalRect& rect,
       const PhysicalOffset& offset = PhysicalOffset()) const {
-    return cull_rect_.Intersects(
-        EnclosingIntRect(PhysicalRect(rect.offset + offset, rect.size)));
+    return cull_rect_.Intersects(ToGfxRect(
+        EnclosingIntRect(PhysicalRect(rect.offset + offset, rect.size))));
   }
 
   void ApplyInfiniteCullRect() { cull_rect_ = CullRect::Infinite(); }

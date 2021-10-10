@@ -4872,9 +4872,9 @@ void Document::SendFocusNotification(Element* new_focused_element,
     if (GetFrame()->GetWidgetForLocalRoot()) {
       element_bounds_in_dips =
           GetFrame()->GetWidgetForLocalRoot()->BlinkSpaceToEnclosedDIPs(
-              bounds_in_viewport);
+              ToGfxRect(bounds_in_viewport));
     } else {
-      element_bounds_in_dips = bounds_in_viewport;
+      element_bounds_in_dips = ToGfxRect(bounds_in_viewport);
     }
   }
 

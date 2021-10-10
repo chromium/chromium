@@ -151,8 +151,8 @@ void InspectorContrast::CollectNodesAndBuildRTreeIfNeeded() {
   rtree_.Build(
       elements_,
       [](const HeapVector<Member<Node>>& items, size_t index) {
-        return PixelSnappedIntRect(
-            GetNodeRect(items[static_cast<wtf_size_t>(index)]));
+        return ToGfxRect(PixelSnappedIntRect(
+            GetNodeRect(items[static_cast<wtf_size_t>(index)])));
       },
       [](const HeapVector<Member<Node>>& items, size_t index) {
         return items[static_cast<wtf_size_t>(index)];
@@ -290,7 +290,7 @@ std::vector<Node*> InspectorContrast::ElementsFromRect(const PhysicalRect& rect,
                                                        Document& document) {
   CollectNodesAndBuildRTreeIfNeeded();
   std::vector<Node*> overlapping_elements;
-  rtree_.Search(PixelSnappedIntRect(rect), &overlapping_elements);
+  rtree_.Search(ToGfxRect(PixelSnappedIntRect(rect)), &overlapping_elements);
   return overlapping_elements;
 }
 

@@ -610,7 +610,7 @@ void CompositedLayerMapping::UpdateSquashingLayerGeometry(
   }
 
   non_scrolling_squashing_layer_->SetSize(
-      gfx::Size(squash_layer_bounds.Size()));
+      ToGfxSize(squash_layer_bounds.Size()));
   // We can't non_scrolling_squashing_layer_->SetOffsetFromLayoutObject().
   // Squashing layer has special paint and invalidation logic that already
   // compensated for compositing bounds, setting it here would end up
@@ -665,7 +665,7 @@ void CompositedLayerMapping::UpdateMainGraphicsLayerGeometry(
     const IntRect& local_compositing_bounds) {
   graphics_layer_->SetOffsetFromLayoutObject(
       ToIntSize(local_compositing_bounds.Location()));
-  graphics_layer_->SetSize(gfx::Size(local_compositing_bounds.Size()));
+  graphics_layer_->SetSize(ToGfxSize(local_compositing_bounds.Size()));
 
   // m_graphicsLayer is the corresponding GraphicsLayer for this PaintLayer
   // and its non-compositing descendants. So, the visibility flag for
@@ -745,12 +745,12 @@ void CompositedLayerMapping::UpdateScrollingContentsLayerGeometry(
   scrolling_coordinator->UpdateCompositorScrollOffset(*layout_box.GetFrame(),
                                                       *scrollable_area);
 
-  if (gfx::Size(scroll_size) != scrolling_contents_layer_->Size() ||
+  if (ToGfxSize(scroll_size) != scrolling_contents_layer_->Size() ||
       scroll_container_size_changed) {
     scrolling_coordinator->ScrollableAreaScrollLayerDidChange(scrollable_area);
   }
 
-  scrolling_contents_layer_->SetSize(gfx::Size(scroll_size));
+  scrolling_contents_layer_->SetSize(ToGfxSize(scroll_size));
 
   scrolling_contents_layer_->SetOffsetFromLayoutObject(
       overflow_clip_rect.Location() - scrollable_area->ScrollOrigin());
@@ -816,7 +816,7 @@ void CompositedLayerMapping::UpdateForegroundLayerGeometry() {
 
   foreground_layer_->SetOffsetFromLayoutObject(
       ToIntSize(compositing_bounds.Location()));
-  foreground_layer_->SetSize(gfx::Size(compositing_bounds.Size()));
+  foreground_layer_->SetSize(ToGfxSize(compositing_bounds.Size()));
 }
 
 void CompositedLayerMapping::UpdateDecorationOutlineLayerGeometry(
@@ -824,7 +824,7 @@ void CompositedLayerMapping::UpdateDecorationOutlineLayerGeometry(
   if (!decoration_outline_layer_)
     return;
   decoration_outline_layer_->SetSize(
-      gfx::Size(relative_compositing_bounds_size));
+      ToGfxSize(relative_compositing_bounds_size));
   decoration_outline_layer_->SetOffsetFromLayoutObject(
       graphics_layer_->OffsetFromLayoutObject());
 }
@@ -1022,7 +1022,7 @@ void CompositedLayerMapping::PositionOverflowControlsLayers() {
     if (h_bar) {
       IntRect frame_rect = h_bar->FrameRect();
       layer->SetOffsetFromLayoutObject(ToIntSize(frame_rect.Location()));
-      layer->SetSize(gfx::Size(frame_rect.Size()));
+      layer->SetSize(ToGfxSize(frame_rect.Size()));
       if (layer->HasContentsLayer())
         layer->SetContentsRect(IntRect(IntPoint(), frame_rect.Size()));
     }
@@ -1036,7 +1036,7 @@ void CompositedLayerMapping::PositionOverflowControlsLayers() {
     if (v_bar) {
       IntRect frame_rect = v_bar->FrameRect();
       layer->SetOffsetFromLayoutObject(ToIntSize(frame_rect.Location()));
-      layer->SetSize(gfx::Size(frame_rect.Size()));
+      layer->SetSize(ToGfxSize(frame_rect.Size()));
       if (layer->HasContentsLayer())
         layer->SetContentsRect(IntRect(IntPoint(), frame_rect.Size()));
     }
@@ -1050,7 +1050,7 @@ void CompositedLayerMapping::PositionOverflowControlsLayers() {
         owning_layer_->GetScrollableArea()->ScrollCornerAndResizerRect();
     layer->SetOffsetFromLayoutObject(
         ToIntSize(scroll_corner_and_resizer.Location()));
-    layer->SetSize(gfx::Size(scroll_corner_and_resizer.Size()));
+    layer->SetSize(ToGfxSize(scroll_corner_and_resizer.Size()));
     layer->SetDrawsContent(!scroll_corner_and_resizer.IsEmpty());
     layer->SetHitTestable(!scroll_corner_and_resizer.IsEmpty());
   }
@@ -1544,13 +1544,15 @@ void CompositedLayerMapping::DoPaintTask(
       kPaintsIntoGroupedBacking) {
     // FIXME: GraphicsLayers need a way to split for multicol.
     PaintLayerPaintingInfo painting_info(
-        paint_info.paint_layer, CullRect(dirty_rect), kGlobalPaintNormalPhase,
+        paint_info.paint_layer, CullRect(ToGfxRect(dirty_rect)),
+        kGlobalPaintNormalPhase,
         paint_info.paint_layer->SubpixelAccumulation());
     PaintLayerPainter(*paint_info.paint_layer)
         .PaintLayerContents(context, painting_info, paint_layer_flags);
   } else {
     PaintLayerPaintingInfo painting_info(
-        paint_info.paint_layer, CullRect(dirty_rect), kGlobalPaintNormalPhase,
+        paint_info.paint_layer, CullRect(ToGfxRect(dirty_rect)),
+        kGlobalPaintNormalPhase,
         paint_info.paint_layer->SubpixelAccumulation());
     PaintLayerPainter(*paint_info.paint_layer)
         .Paint(context, painting_info, paint_layer_flags);
@@ -1567,7 +1569,7 @@ IntRect CompositedLayerMapping::RecomputeInterestRect(
 
   IntRect graphics_layer_bounds(IntPoint(), IntSize(graphics_layer->Size()));
 
-  FloatClipRect mapping_rect((FloatRect(graphics_layer_bounds)));
+  FloatClipRect mapping_rect(ToGfxRectF(FloatRect(graphics_layer_bounds)));
 
   auto source_state = graphics_layer->GetPropertyTreeState();
 
@@ -1746,7 +1748,7 @@ IntRect CompositedLayerMapping::PaintableRegion(
   IntRect layer_rect(IntPoint(), IntSize(graphics_layer->Size()));
   if (cull_rect.IsInfinite())
     return layer_rect;
-  cull_rect.Move(gfx::Vector2d(-graphics_layer->GetOffsetFromTransformNode()));
+  cull_rect.Move(ToGfxVector2d(-graphics_layer->GetOffsetFromTransformNode()));
   return Intersection(IntRect(cull_rect.Rect()), layer_rect);
 }
 
@@ -1904,8 +1906,8 @@ void CompositedLayerMapping::PaintScrollableArea(
 
   // cull_rect is in the space of the containing scrollable area in which
   // Scrollbar::Paint() will paint the scrollbar.
-  CullRect cull_rect(interest_rect);
-  cull_rect.Move(gfx::Vector2d(graphics_layer->OffsetFromLayoutObject()));
+  CullRect cull_rect(ToGfxRect(interest_rect));
+  cull_rect.Move(ToGfxVector2d(graphics_layer->OffsetFromLayoutObject()));
   PaintLayerScrollableArea* scrollable_area =
       owning_layer_->GetScrollableArea();
   ScrollableAreaPainter painter(*scrollable_area);

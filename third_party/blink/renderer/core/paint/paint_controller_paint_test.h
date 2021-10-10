@@ -56,7 +56,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
       CullRectUpdater(*GetLayoutView().Layer()).Update();
   }
 
-  void PaintContents(const IntRect& interest_rect) {
+  void PaintContents(const gfx::Rect& interest_rect) {
     GetDocument().View()->PaintContentsForTest(CullRect(interest_rect));
   }
 

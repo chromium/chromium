@@ -221,8 +221,8 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
 
   {
     ScrollPaintPropertyNode::State state;
-    state.container_rect = gfx::Rect(IntRect(IntPoint(), size_));
-    state.contents_size = gfx::Size(ContentsSize());
+    state.container_rect = gfx::Rect(ToGfxSize(size_));
+    state.contents_size = ToGfxSize(ContentsSize());
 
     state.user_scrollable_horizontal =
         UserInputScrollable(kHorizontalScrollbar);
@@ -432,7 +432,7 @@ void VisualViewport::MainFrameDidChangeSize() {
 
   // In unit tests we may not have initialized the layer tree.
   if (scroll_layer_)
-    scroll_layer_->SetBounds(gfx::Size(ContentsSize()));
+    scroll_layer_->SetBounds(ToGfxSize(ContentsSize()));
 
   needs_paint_property_update_ = true;
   ClampToBoundaries();
@@ -624,8 +624,8 @@ void VisualViewport::CreateLayers() {
 
   // TODO(crbug.com/1015625): Avoid scroll_layer_.
   scroll_layer_ = cc::Layer::Create();
-  scroll_layer_->SetScrollable(gfx::Size(size_));
-  scroll_layer_->SetBounds(gfx::Size(ContentsSize()));
+  scroll_layer_->SetScrollable(ToGfxSize(size_));
+  scroll_layer_->SetBounds(ToGfxSize(ContentsSize()));
   scroll_layer_->SetElementId(GetScrollElementId());
 
   InitializeScrollbars();
@@ -1133,7 +1133,7 @@ void VisualViewport::Paint(GraphicsContext& context) const {
                             "Inner Viewport Scroll Layer")));
     RecordForeignLayer(context, *debug_name_client,
                        DisplayItem::kForeignLayerViewportScroll, scroll_layer_,
-                       IntPoint(), &state);
+                       gfx::Point(), &state);
   }
 
   if (scrollbar_layer_horizontal_) {
@@ -1145,7 +1145,7 @@ void VisualViewport::Paint(GraphicsContext& context) const {
     RecordForeignLayer(context, *debug_name_client,
                        DisplayItem::kForeignLayerViewportScrollbar,
                        scrollbar_layer_horizontal_,
-                       IntPoint(0, size_.Height() - ScrollbarThickness()),
+                       gfx::Point(0, size_.Height() - ScrollbarThickness()),
                        &state);
   }
 
@@ -1158,7 +1158,7 @@ void VisualViewport::Paint(GraphicsContext& context) const {
     RecordForeignLayer(
         context, *debug_name_client,
         DisplayItem::kForeignLayerViewportScrollbar, scrollbar_layer_vertical_,
-        IntPoint(size_.Width() - ScrollbarThickness(), 0), &state);
+        gfx::Point(size_.Width() - ScrollbarThickness(), 0), &state);
   }
 }
 

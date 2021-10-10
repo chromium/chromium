@@ -398,7 +398,7 @@ v8::Local<v8::Object> WebRemoteFrameImpl::GlobalProxy() const {
 }
 
 gfx::Rect WebRemoteFrameImpl::GetCompositingRect() {
-  return GetFrame()->View()->GetCompositingRect();
+  return ToGfxRect(GetFrame()->View()->GetCompositingRect());
 }
 
 WebString WebRemoteFrameImpl::UniqueName() const {

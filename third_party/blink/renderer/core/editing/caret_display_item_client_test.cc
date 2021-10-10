@@ -106,7 +106,7 @@ TEST_P(CaretDisplayItemClientTest, CaretPaintInvalidation) {
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
                   GetCaretDisplayItemClient().Id(), "Caret",
-                  IntRect(8, 8, 1, 1), PaintInvalidationReason::kAppeared}));
+                  gfx::Rect(8, 8, 1, 1), PaintInvalidationReason::kAppeared}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
   // Move the caret to the end of the text. Should invalidate both the old and
@@ -129,10 +129,10 @@ TEST_P(CaretDisplayItemClientTest, CaretPaintInvalidation) {
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(
                   RasterInvalidationInfo{GetCaretDisplayItemClient().Id(),
-                                         "Caret", IntRect(8, 8, 1, 1),
+                                         "Caret", gfx::Rect(8, 8, 1, 1),
                                          PaintInvalidationReason::kCaret},
                   RasterInvalidationInfo{GetCaretDisplayItemClient().Id(),
-                                         "Caret", IntRect(8 + delta, 8, 1, 1),
+                                         "Caret", gfx::Rect(8 + delta, 8, 1, 1),
                                          PaintInvalidationReason::kCaret}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
@@ -150,11 +150,11 @@ TEST_P(CaretDisplayItemClientTest, CaretPaintInvalidation) {
   EXPECT_FALSE(GetCaretDisplayItemClient().IsValid());
   EXPECT_EQ(PhysicalRect(), CaretLocalRect());
 
-  EXPECT_THAT(
-      GetRasterInvalidationTracking()->Invalidations(),
-      UnorderedElementsAre(RasterInvalidationInfo{
-          GetCaretDisplayItemClient().Id(), "Caret",
-          IntRect(8 + delta, 8, 1, 1), PaintInvalidationReason::kDisappeared}));
+  EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
+              UnorderedElementsAre(RasterInvalidationInfo{
+                  GetCaretDisplayItemClient().Id(), "Caret",
+                  gfx::Rect(8 + delta, 8, 1, 1),
+                  PaintInvalidationReason::kDisappeared}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
@@ -202,10 +202,10 @@ TEST_P(CaretDisplayItemClientTest, CaretMovesBetweenBlocks) {
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(
                   RasterInvalidationInfo{GetCaretDisplayItemClient().Id(),
-                                         "Caret", IntRect(8, 8, 1, 1),
+                                         "Caret", gfx::Rect(8, 8, 1, 1),
                                          PaintInvalidationReason::kCaret},
                   RasterInvalidationInfo{GetCaretDisplayItemClient().Id(),
-                                         "Caret", IntRect(8, 9, 1, 1),
+                                         "Caret", gfx::Rect(8, 9, 1, 1),
                                          PaintInvalidationReason::kCaret}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
@@ -230,10 +230,10 @@ TEST_P(CaretDisplayItemClientTest, CaretMovesBetweenBlocks) {
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(
                   RasterInvalidationInfo{GetCaretDisplayItemClient().Id(),
-                                         "Caret", IntRect(8, 8, 1, 1),
+                                         "Caret", gfx::Rect(8, 8, 1, 1),
                                          PaintInvalidationReason::kCaret},
                   RasterInvalidationInfo{GetCaretDisplayItemClient().Id(),
-                                         "Caret", IntRect(8, 9, 1, 1),
+                                         "Caret", gfx::Rect(8, 9, 1, 1),
                                          PaintInvalidationReason::kCaret}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
@@ -336,10 +336,10 @@ TEST_P(CaretDisplayItemClientTest, CaretHideMoveAndShow) {
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(
                   RasterInvalidationInfo{GetCaretDisplayItemClient().Id(),
-                                         "Caret", IntRect(8, 8, 1, 1),
+                                         "Caret", gfx::Rect(8, 8, 1, 1),
                                          PaintInvalidationReason::kCaret},
                   RasterInvalidationInfo{GetCaretDisplayItemClient().Id(),
-                                         "Caret", IntRect(8 + delta, 8, 1, 1),
+                                         "Caret", gfx::Rect(8 + delta, 8, 1, 1),
                                          PaintInvalidationReason::kCaret}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }

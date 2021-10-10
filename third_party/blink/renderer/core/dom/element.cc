@@ -1625,7 +1625,7 @@ void Element::setScrollLeft(double new_left) {
                             scrollable_area->GetScrollOffset().Height());
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
         cc::SnapSelectionStrategy::CreateForEndPosition(
-            gfx::Vector2dF(scrollable_area->ScrollOffsetToPosition(end_offset)),
+            ToGfxVector2dF(scrollable_area->ScrollOffsetToPosition(end_offset)),
             true, false);
     absl::optional<FloatPoint> snap_point =
         scrollable_area->GetSnapPositionAndSetTarget(*strategy);
@@ -1677,7 +1677,7 @@ void Element::setScrollTop(double new_top) {
                             new_top * box->Style()->EffectiveZoom());
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
         cc::SnapSelectionStrategy::CreateForEndPosition(
-            gfx::Vector2dF(scrollable_area->ScrollOffsetToPosition(end_offset)),
+            ToGfxVector2dF(scrollable_area->ScrollOffsetToPosition(end_offset)),
             false, true);
     absl::optional<FloatPoint> snap_point =
         scrollable_area->GetSnapPositionAndSetTarget(*strategy);
@@ -1869,7 +1869,7 @@ void Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options) {
 
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
         cc::SnapSelectionStrategy::CreateForEndPosition(
-            gfx::Vector2dF(scrollable_area->ScrollOffsetToPosition(new_offset)),
+            ToGfxVector2dF(scrollable_area->ScrollOffsetToPosition(new_offset)),
             scroll_to_options->hasLeft(), scroll_to_options->hasTop());
     absl::optional<FloatPoint> snap_point =
         scrollable_area->GetSnapPositionAndSetTarget(*strategy);
@@ -1909,7 +1909,7 @@ void Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options) {
   FloatPoint new_position = viewport->ScrollPosition() +
                             FloatPoint(displacement.x(), displacement.y());
 
-  gfx::Vector2dF current_position(viewport->ScrollPosition());
+  gfx::Vector2dF current_position = ToGfxVector2dF(viewport->ScrollPosition());
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndAndDirection(
           current_position, displacement,
@@ -1949,7 +1949,7 @@ void Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
   FloatPoint new_position = viewport->ScrollOffsetToPosition(new_offset);
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndPosition(
-          gfx::Vector2dF(new_position), scroll_to_options->hasLeft(),
+          ToGfxVector2dF(new_position), scroll_to_options->hasLeft(),
           scroll_to_options->hasTop());
   new_position =
       viewport->GetSnapPositionAndSetTarget(*strategy).value_or(new_position);

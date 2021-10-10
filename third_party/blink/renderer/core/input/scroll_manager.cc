@@ -904,17 +904,16 @@ bool ScrollManager::GetSnapFlingInfoAndSetAnimatingSnapTarget(
     return false;
 
   FloatPoint current_position = scrollable_area->ScrollPosition();
-  *out_initial_position = gfx::Vector2dF(current_position);
+  *out_initial_position = ToGfxVector2dF(current_position);
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndAndDirection(
-          gfx::Vector2dF(*out_initial_position),
-          gfx::Vector2dF(natural_displacement),
+          *out_initial_position, natural_displacement,
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
   absl::optional<FloatPoint> snap_end =
       scrollable_area->GetSnapPositionAndSetTarget(*strategy);
   if (!snap_end.has_value())
     return false;
-  *out_target_position = gfx::Vector2dF(snap_end.value());
+  *out_target_position = ToGfxVector2dF(snap_end.value());
   return true;
 }
 

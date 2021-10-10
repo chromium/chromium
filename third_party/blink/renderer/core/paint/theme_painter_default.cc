@@ -186,7 +186,7 @@ bool ThemePainterDefault::PaintCheckbox(const Element& element,
   float zoom_level = style.EffectiveZoom();
   extra_params.button.zoom = zoom_level;
   GraphicsContextStateSaver state_saver(paint_info.context, false);
-  IntRect unzoomed_rect =
+  gfx::Rect unzoomed_rect =
       ApplyZoomToRect(rect, paint_info, state_saver, zoom_level);
 
   Platform::Current()->ThemeEngine()->Paint(
@@ -208,7 +208,7 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
   float zoom_level = style.EffectiveZoom();
   extra_params.button.zoom = zoom_level;
   GraphicsContextStateSaver state_saver(paint_info.context, false);
-  IntRect unzoomed_rect =
+  gfx::Rect unzoomed_rect =
       ApplyZoomToRect(rect, paint_info, state_saver, zoom_level);
 
   Platform::Current()->ThemeEngine()->Paint(
@@ -235,8 +235,8 @@ bool ThemePainterDefault::PaintButton(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartButton,
-      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
-      GetAccentColor(style));
+      GetWebThemeState(element), ToGfxRect(rect), &extra_params,
+      style.UsedColorScheme(), GetAccentColor(style));
   return false;
 }
 
@@ -265,8 +265,8 @@ bool ThemePainterDefault::PaintTextField(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartTextField,
-      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
-      GetAccentColor(style));
+      GetWebThemeState(element), ToGfxRect(rect), &extra_params,
+      style.UsedColorScheme(), GetAccentColor(style));
   return false;
 }
 
@@ -300,8 +300,8 @@ bool ThemePainterDefault::PaintMenuList(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartMenuList,
-      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
-      GetAccentColor(style));
+      GetWebThemeState(element), ToGfxRect(rect), &extra_params,
+      style.UsedColorScheme(), GetAccentColor(style));
   return false;
 }
 
@@ -319,8 +319,8 @@ bool ThemePainterDefault::PaintMenuListButton(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartMenuList,
-      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
-      GetAccentColor(style));
+      GetWebThemeState(element), ToGfxRect(rect), &extra_params,
+      style.UsedColorScheme(), GetAccentColor(style));
   return false;
 }
 
@@ -388,8 +388,8 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartSliderTrack,
-      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
-      GetAccentColor(style));
+      GetWebThemeState(element), ToGfxRect(rect), &extra_params,
+      style.UsedColorScheme(), GetAccentColor(style));
   return false;
 }
 
@@ -415,8 +415,8 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartSliderThumb,
-      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
-      accent_color);
+      GetWebThemeState(element), ToGfxRect(rect), &extra_params,
+      style.UsedColorScheme(), accent_color);
   return false;
 }
 
@@ -441,8 +441,8 @@ bool ThemePainterDefault::PaintInnerSpinButton(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartInnerSpinButton,
-      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
-      GetAccentColor(style));
+      GetWebThemeState(element), ToGfxRect(rect), &extra_params,
+      style.UsedColorScheme(), GetAccentColor(style));
   return false;
 }
 
@@ -468,8 +468,8 @@ bool ThemePainterDefault::PaintProgressBar(const Element& element,
   DirectionFlippingScope scope(layout_object, paint_info, rect);
   Platform::Current()->ThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartProgressBar,
-      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
-      GetAccentColor(style));
+      GetWebThemeState(element), ToGfxRect(rect), &extra_params,
+      style.UsedColorScheme(), GetAccentColor(style));
   return false;
 }
 
@@ -572,19 +572,19 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
   return false;
 }
 
-IntRect ThemePainterDefault::ApplyZoomToRect(
+gfx::Rect ThemePainterDefault::ApplyZoomToRect(
     const IntRect& rect,
     const PaintInfo& paint_info,
     GraphicsContextStateSaver& state_saver,
     float zoom_level) {
-  IntRect unzoomed_rect = rect;
+  gfx::Rect unzoomed_rect = ToGfxRect(rect);
   if (zoom_level != 1) {
     state_saver.Save();
-    unzoomed_rect.SetWidth(unzoomed_rect.Width() / zoom_level);
-    unzoomed_rect.SetHeight(unzoomed_rect.Height() / zoom_level);
-    paint_info.context.Translate(unzoomed_rect.X(), unzoomed_rect.Y());
+    unzoomed_rect.set_width(unzoomed_rect.width() / zoom_level);
+    unzoomed_rect.set_height(unzoomed_rect.height() / zoom_level);
+    paint_info.context.Translate(unzoomed_rect.x(), unzoomed_rect.y());
     paint_info.context.Scale(zoom_level, zoom_level);
-    paint_info.context.Translate(-unzoomed_rect.X(), -unzoomed_rect.Y());
+    paint_info.context.Translate(-unzoomed_rect.x(), -unzoomed_rect.y());
   }
 
   return unzoomed_rect;

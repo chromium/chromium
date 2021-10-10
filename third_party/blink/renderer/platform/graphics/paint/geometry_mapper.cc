@@ -240,7 +240,7 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
     // </div>
     // Either way, the element won't be renderable thus returning empty rect.
     success = true;
-    rect_to_map = FloatClipRect(FloatRect());
+    rect_to_map = FloatClipRect(gfx::RectF());
     return false;
   }
 
@@ -318,11 +318,12 @@ bool GeometryMapper::SlowLocalToAncestorVisualRectWithEffects(
         clip_behavior, inclusive_behavior, expand, success);
     if (!success || !intersects) {
       success = true;
-      mapping_rect = FloatClipRect(FloatRect());
+      mapping_rect = FloatClipRect(gfx::RectF());
       return false;
     }
 
-    mapping_rect = FloatClipRect(effect->MapRect(mapping_rect.Rect()));
+    mapping_rect =
+        FloatClipRect(effect->MapRect(ToGfxRectF(mapping_rect.Rect())));
     last_transform_and_clip_state = transform_and_clip_state;
   }
 
@@ -441,7 +442,7 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
             has_animation, has_fixed, success);
     if (!success) {
       success = true;
-      return FloatClipRect(FloatRect());
+      return FloatClipRect(gfx::RectF());
     }
 
     // Don't apply this clip if it's transformed by any animating transform.

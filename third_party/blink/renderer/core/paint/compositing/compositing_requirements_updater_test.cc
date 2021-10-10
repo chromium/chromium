@@ -102,7 +102,7 @@ TEST_F(CompositingRequirementsUpdaterTest,
                        ->GetRasterInvalidationTracking();
   EXPECT_TRUE(tracking->HasInvalidations());
 
-  EXPECT_EQ(IntRect(0, 0, 100, 100), tracking->Invalidations()[0].rect);
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100), tracking->Invalidations()[0].rect);
 }
 
 TEST_F(CompositingRequirementsUpdaterTest, NonTrivial3DTransforms) {

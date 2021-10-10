@@ -19,7 +19,8 @@ FloatRect ElementTimingUtils::ComputeIntersectionRect(
     const IntRect& int_visual_rect,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties) {
   // Compute the visible part of the image rect.
-  FloatClipRect visual_rect = FloatClipRect(FloatRect(int_visual_rect));
+  FloatClipRect visual_rect =
+      FloatClipRect(ToGfxRectF(FloatRect(int_visual_rect)));
   GeometryMapper::LocalToAncestorVisualRect(current_paint_chunk_properties,
                                             frame->View()
                                                 ->GetLayoutView()
@@ -29,7 +30,7 @@ FloatRect ElementTimingUtils::ComputeIntersectionRect(
   WebFrameWidgetImpl* widget =
       WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
   DCHECK(widget);
-  return FloatRect(widget->BlinkSpaceToDIPs(visual_rect.Rect()));
+  return FloatRect(widget->BlinkSpaceToDIPs(ToGfxRectF(visual_rect.Rect())));
 }
 
 }  // namespace blink

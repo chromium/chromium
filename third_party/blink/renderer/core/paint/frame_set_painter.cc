@@ -29,7 +29,7 @@ static Color BorderFillColor() {
 
 void FrameSetPainter::PaintColumnBorder(const PaintInfo& paint_info,
                                         const IntRect& border_rect) {
-  if (!paint_info.GetCullRect().Intersects(border_rect))
+  if (!paint_info.GetCullRect().Intersects(ToGfxRect(border_rect)))
     return;
 
   // FIXME: We should do something clever when borders from distinct framesets

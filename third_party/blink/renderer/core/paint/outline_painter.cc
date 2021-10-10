@@ -866,8 +866,8 @@ void OutlinePainter::PaintOutlineRects(
 
   IntRect united_outline_rect =
       UnionRectEvenIfEmpty(pixel_snapped_outline_rects);
-  IntRect visual_rect = united_outline_rect;
-  visual_rect.Inflate(OutlineOutsetExtent(style));
+  gfx::Rect visual_rect = ToGfxRect(united_outline_rect);
+  visual_rect.Outset(OutlineOutsetExtent(style));
   DrawingRecorder recorder(paint_info.context, client, paint_info.phase,
                            visual_rect);
 

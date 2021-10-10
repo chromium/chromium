@@ -72,7 +72,7 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
   physical_point.Scale(effective_zoom);
   physical_point = layout_view->LocalToAbsolutePoint(
       physical_point, kTraverseDocumentBoundaries);
-  gfx::PointF point = FloatPoint(physical_point);
+  gfx::PointF point = ToGfxPointF(FloatPoint(physical_point));
 
   LayoutBox* layout_box = nullptr;
   if (presentation_area_) {
@@ -113,7 +113,7 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
   border_box_rect_absolute.Intersect(PhysicalRect(
       local_frame_->GetPage()->GetVisualViewport().VisibleContentRect()));
 
-  gfx::RectF area = FloatRect(border_box_rect_absolute);
+  gfx::RectF area = ToGfxRectF(FloatRect(border_box_rect_absolute));
 
   // This is used to know if the user starts inking with the pointer down or
   // not, so that we can stop drawing delegated ink trails as quickly as

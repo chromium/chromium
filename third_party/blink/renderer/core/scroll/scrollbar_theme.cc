@@ -116,13 +116,13 @@ void ScrollbarTheme::PaintScrollCorner(
     return;
 
   DrawingRecorder recorder(context, display_item_client,
-                           DisplayItem::kScrollCorner, corner_rect);
+                           DisplayItem::kScrollCorner, ToGfxRect(corner_rect));
 #if defined(OS_MAC)
   context.FillRect(corner_rect, Color::kWhite, AutoDarkMode::Disabled());
 #else
   Platform::Current()->ThemeEngine()->Paint(
       context.Canvas(), WebThemeEngine::kPartScrollbarCorner,
-      WebThemeEngine::kStateNormal, gfx::Rect(corner_rect), nullptr,
+      WebThemeEngine::kStateNormal, ToGfxRect(corner_rect), nullptr,
       color_scheme);
 #endif
 }
@@ -147,7 +147,7 @@ void ScrollbarTheme::PaintTickmarks(GraphicsContext& context,
     return;
 
   DrawingRecorder recorder(context, scrollbar, DisplayItem::kScrollbarTickmarks,
-                           rect);
+                           ToGfxRect(rect));
   GraphicsContextStateSaver state_saver(context);
   context.SetShouldAntialias(false);
 
@@ -305,7 +305,8 @@ void ScrollbarTheme::PaintTrackAndButtons(GraphicsContext& context,
   IntRect visual_rect = scrollbar.FrameRect();
   visual_rect.MoveBy(offset);
   DrawingRecorder recorder(context, scrollbar,
-                           DisplayItem::kScrollbarTrackAndButtons, visual_rect);
+                           DisplayItem::kScrollbarTrackAndButtons,
+                           ToGfxRect(visual_rect));
 
   if (HasButtons(scrollbar)) {
     IntRect back_button_rect = BackButtonRect(scrollbar);

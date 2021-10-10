@@ -197,7 +197,7 @@ void ChromeClientImpl::ChromeDestroyed() {
 
 void ChromeClientImpl::SetWindowRect(const IntRect& r, LocalFrame& frame) {
   DCHECK_EQ(&frame, web_view_->MainFrameImpl()->GetFrame());
-  web_view_->MainFrameViewWidget()->SetWindowRect(r);
+  web_view_->MainFrameViewWidget()->SetWindowRect(ToGfxRect(r));
 }
 
 IntRect ChromeClientImpl::RootWindowRect(LocalFrame& frame) {
@@ -313,8 +313,8 @@ void ChromeClientImpl::Show(const blink::LocalFrameToken& opener_frame_token,
                             NavigationPolicy navigation_policy,
                             const IntRect& initial_rect,
                             bool user_gesture) {
-  web_view_->Show(opener_frame_token, navigation_policy, initial_rect,
-                  user_gesture);
+  web_view_->Show(opener_frame_token, navigation_policy,
+                  ToGfxRect(initial_rect), user_gesture);
 }
 
 bool ChromeClientImpl::ShouldReportDetailedMessageForSourceAndSeverity(
@@ -457,7 +457,7 @@ IntRect ChromeClientImpl::ViewportToScreen(
 
   gfx::Rect screen_rect =
       frame.GetWidgetForLocalRoot()->BlinkSpaceToEnclosedDIPs(
-          gfx::Rect(rect_in_viewport));
+          ToGfxRect(rect_in_viewport));
   gfx::Rect view_rect = frame.GetWidgetForLocalRoot()->ViewRect();
 
   screen_rect.Offset(view_rect.x(), view_rect.y());
@@ -563,7 +563,7 @@ void ChromeClientImpl::ShowMouseOverURL(const HitTestResult& result) {
               result.InnerNode()->GetLayoutObject())) {
         if (WebPluginContainerImpl* plugin_view = embedded->Plugin()) {
           url = plugin_view->Plugin()->LinkAtPosition(
-              result.RoundedPointInInnerNodeFrame());
+              ToGfxPoint(result.RoundedPointInInnerNodeFrame()));
         }
       }
     }

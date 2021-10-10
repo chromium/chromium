@@ -145,16 +145,11 @@ class PLATFORM_EXPORT FloatSize {
 #endif
 
   explicit operator SkSize() const { return SkSize::Make(width_, height_); }
-  // Use this only for logical sizes, which can not be negative. Things that are
-  // offsets instead, and can be negative, should use a gfx::Vector2dF.
-  constexpr explicit operator gfx::SizeF() const {
-    return gfx::SizeF(width_, height_);
-  }
-  // FloatSize is used as an offset, which can be negative, but gfx::SizeF can
-  // not. The Vector2dF type is used for offsets instead.
-  constexpr explicit operator gfx::Vector2dF() const {
-    return gfx::Vector2dF(width_, height_);
-  }
+
+  // These are deleted during blink geometry type to gfx migration.
+  // Use ToGfxSizeF() and ToGfxVector2dF() instead.
+  operator gfx::SizeF() const = delete;
+  operator gfx::Vector2dF() const = delete;
 
   String ToString() const;
 
@@ -223,6 +218,17 @@ inline IntSize ExpandedIntSize(const FloatSize& p) {
 inline IntPoint FlooredIntPoint(const FloatSize& p) {
   return IntPoint(ClampTo<int>(floorf(p.Width())),
                   ClampTo<int>(floorf(p.Height())));
+}
+
+// Use this only for logical sizes, which can not be negative. Things that are
+// offsets instead, and can be negative, should use a gfx::Vector2dF.
+constexpr gfx::SizeF ToGfxSizeF(const FloatSize& s) {
+  return gfx::SizeF(s.Width(), s.Height());
+}
+// FloatSize is used as an offset, which can be negative, but gfx::SizeF can
+// not. The Vector2dF type is used for offsets instead.
+constexpr gfx::Vector2dF ToGfxVector2dF(const FloatSize& s) {
+  return gfx::Vector2dF(s.Width(), s.Height());
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const FloatSize&);

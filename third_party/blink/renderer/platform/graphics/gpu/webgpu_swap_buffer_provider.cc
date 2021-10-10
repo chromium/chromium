@@ -163,7 +163,7 @@ WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const IntSize& size) {
   // Create a new swap buffer.
   current_swap_buffer_ = NewOrRecycledSwapBuffer(
       context_provider->ContextProvider()->SharedImageInterface(),
-      context_provider, gfx::Size(size));
+      context_provider, ToGfxSize(size));
 
   // Ensure the shared image is allocated and not in use service-side before
   // working with it

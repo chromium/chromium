@@ -434,7 +434,7 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
           paint_info.context, layout_table, paint_info.phase))
     return;
   DrawingRecorder recorder(paint_info.context, layout_table, paint_info.phase,
-                           visual_rect);
+                           ToGfxRect(visual_rect));
 
   PhysicalRect grid_paint_rect = fragment_.TableGridRect();
   grid_paint_rect.offset += paint_offset;

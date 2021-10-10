@@ -74,7 +74,7 @@ TEST_F(CullRectTest, IntersectsTransformed) {
 
 TEST_F(CullRectTest, Infinite) {
   EXPECT_TRUE(CullRect::Infinite().IsInfinite());
-  EXPECT_TRUE(CullRect(gfx::Rect(LayoutRect::InfiniteIntRect())).IsInfinite());
+  EXPECT_TRUE(CullRect(ToGfxRect(LayoutRect::InfiniteIntRect())).IsInfinite());
   EXPECT_FALSE(CullRect(gfx::Rect(0, 0, 100, 100)).IsInfinite());
 }
 

@@ -176,7 +176,7 @@ void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
     return;
 
   DrawingRecorder recorder(context, scrollbar, DisplayItem::kScrollbarThumb,
-                           rect);
+                           ToGfxRect(rect));
 
   WebThemeEngine::State state = WebThemeEngine::kStateNormal;
 
@@ -206,7 +206,7 @@ void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
   }
 
   Platform::Current()->ThemeEngine()->Paint(canvas, part, state,
-                                            gfx::Rect(rect), &params,
+                                            ToGfxRect(rect), &params,
                                             scrollbar.UsedColorScheme());
 
   if (scrollbar.IsLeftSideVerticalScrollbar())

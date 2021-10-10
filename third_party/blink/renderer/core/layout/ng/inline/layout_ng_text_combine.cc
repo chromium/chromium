@@ -246,12 +246,12 @@ PhysicalRect LayoutNGTextCombine::RecalcContentsInkOverflow() const {
   return local_ink_overflow;
 }
 
-IntRect LayoutNGTextCombine::VisualRectForPaint(
+gfx::Rect LayoutNGTextCombine::VisualRectForPaint(
     const PhysicalOffset& paint_offset) const {
   DCHECK_EQ(PhysicalFragmentCount(), 1u);
   PhysicalRect ink_overflow = GetPhysicalFragment(0)->InkOverflow();
   ink_overflow.Move(paint_offset);
-  return EnclosingIntRect(ink_overflow);
+  return ToGfxRect(EnclosingIntRect(ink_overflow));
 }
 
 void LayoutNGTextCombine::SetScaleX(float new_scale_x) {

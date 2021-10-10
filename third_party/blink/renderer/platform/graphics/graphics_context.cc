@@ -331,12 +331,13 @@ void GraphicsContext::CompositeRecord(sk_sp<PaintRecord> record,
       static_cast<cc::PaintFlags::FilterQuality>(ImageInterpolationQuality())));
   canvas_->save();
   canvas_->concat(SkMatrix::RectToRect(src, dest));
-  canvas_->drawImage(PaintImageBuilder::WithDefault()
-                         .set_paint_record(record, RoundedIntRect(src),
-                                           PaintImage::GetNextContentId())
-                         .set_id(PaintImage::GetNextId())
-                         .TakePaintImage(),
-                     0, 0, sampling, &flags);
+  canvas_->drawImage(
+      PaintImageBuilder::WithDefault()
+          .set_paint_record(record, ToGfxRect(RoundedIntRect(src)),
+                            PaintImage::GetNextContentId())
+          .set_id(PaintImage::GetNextId())
+          .TakePaintImage(),
+      0, 0, sampling, &flags);
   canvas_->restore();
 }
 

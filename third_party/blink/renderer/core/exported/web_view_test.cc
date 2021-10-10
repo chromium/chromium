@@ -546,7 +546,7 @@ TEST_F(WebViewTest, SetBaseBackgroundColorAndBlendWithExistingContent) {
   // would.
   LocalFrameView* view = web_view_helper_.LocalMainFrame()->GetFrameView();
   PaintLayer* root_layer = view->GetLayoutView()->Layer();
-  CullRect paint_rect(IntRect(0, 0, kWidth, kHeight));
+  CullRect paint_rect(gfx::Rect(0, 0, kWidth, kHeight));
   PaintLayerPaintingInfo painting_info(
       root_layer, paint_rect, kGlobalPaintNormalPhase, PhysicalOffset());
 
@@ -2694,12 +2694,12 @@ bool WebViewTest::TapElement(WebInputEvent::Type type, Element* element) {
   DCHECK(web_view_helper_.GetWebView());
   element->scrollIntoViewIfNeeded();
 
-  FloatPoint center(
+  gfx::PointF center(ToGfxPoint(
       web_view_helper_.GetWebView()
           ->MainFrameImpl()
           ->GetFrameView()
           ->FrameToScreen(element->GetLayoutObject()->AbsoluteBoundingBoxRect())
-          .Center());
+          .Center()));
 
   WebGestureEvent event(type, WebInputEvent::kNoModifiers,
                         WebInputEvent::GetStaticTimeStampForTests(),
@@ -4788,7 +4788,7 @@ class MockUnhandledTapNotifierImpl : public mojom::blink::UnhandledTapNotifier {
   int GetElementTextRunLength() const { return element_text_run_length_; }
   void Reset() {
     was_unhandled_tap_ = false;
-    tapped_position_ = IntPoint();
+    tapped_position_ = gfx::Point();
     element_text_run_length_ = 0;
     font_size_ = 0;
     receiver_.reset();

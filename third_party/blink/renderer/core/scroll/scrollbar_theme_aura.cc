@@ -255,7 +255,7 @@ void ScrollbarThemeAura::PaintTrack(GraphicsContext& context,
       scrollbar.Orientation() == kHorizontalScrollbar
           ? WebThemeEngine::kPartScrollbarHorizontalTrack
           : WebThemeEngine::kPartScrollbarVerticalTrack,
-      state, gfx::Rect(rect), &extra_params, scrollbar.UsedColorScheme());
+      state, ToGfxRect(rect), &extra_params, scrollbar.UsedColorScheme());
 }
 
 void ScrollbarThemeAura::PaintButton(GraphicsContext& gc,
@@ -272,7 +272,7 @@ void ScrollbarThemeAura::PaintButton(GraphicsContext& gc,
   extra_params.scrollbar_button.right_to_left =
       scrollbar.ContainerIsRightToLeft();
   Platform::Current()->ThemeEngine()->Paint(
-      gc.Canvas(), params.part, params.state, gfx::Rect(rect), &extra_params,
+      gc.Canvas(), params.part, params.state, ToGfxRect(rect), &extra_params,
       scrollbar.UsedColorScheme());
 }
 
@@ -283,7 +283,8 @@ void ScrollbarThemeAura::PaintThumb(GraphicsContext& gc,
                                                   DisplayItem::kScrollbarThumb))
     return;
 
-  DrawingRecorder recorder(gc, scrollbar, DisplayItem::kScrollbarThumb, rect);
+  DrawingRecorder recorder(gc, scrollbar, DisplayItem::kScrollbarThumb,
+                           ToGfxRect(rect));
 
   WebThemeEngine::State state;
   cc::PaintCanvas* canvas = gc.Canvas();
@@ -299,7 +300,7 @@ void ScrollbarThemeAura::PaintThumb(GraphicsContext& gc,
       scrollbar.Orientation() == kHorizontalScrollbar
           ? WebThemeEngine::kPartScrollbarHorizontalThumb
           : WebThemeEngine::kPartScrollbarVerticalThumb,
-      state, gfx::Rect(rect), nullptr, scrollbar.UsedColorScheme());
+      state, ToGfxRect(rect), nullptr, scrollbar.UsedColorScheme());
 }
 
 bool ScrollbarThemeAura::ShouldRepaintAllPartsOnInvalidation() const {

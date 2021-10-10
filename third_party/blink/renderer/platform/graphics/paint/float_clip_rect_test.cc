@@ -19,7 +19,7 @@ TEST_F(FloatClipRectTest, InfiniteRect) {
   EXPECT_FALSE(rect.HasRadius());
   EXPECT_TRUE(rect.IsTight());
 
-  FloatClipRect rect2((FloatRect(1, 2, 3, 4)));
+  FloatClipRect rect2(gfx::RectF(1, 2, 3, 4));
   EXPECT_FALSE(rect2.IsInfinite());
   EXPECT_FALSE(rect.HasRadius());
   EXPECT_TRUE(rect.IsTight());
@@ -33,7 +33,7 @@ TEST_F(FloatClipRectTest, MoveBy) {
   EXPECT_FALSE(rect.HasRadius());
   EXPECT_TRUE(rect.IsTight());
 
-  FloatClipRect rect2((FloatRect(1, 2, 3, 4)));
+  FloatClipRect rect2(gfx::RectF(1, 2, 3, 4));
   rect2.SetHasRadius();
   rect2.MoveBy(FloatPoint(5, 6));
   EXPECT_EQ(FloatRect(6, 8, 3, 4), rect2.Rect());
@@ -43,8 +43,8 @@ TEST_F(FloatClipRectTest, MoveBy) {
 
 TEST_F(FloatClipRectTest, Intersect) {
   FloatClipRect rect;
-  FloatClipRect rect1(FloatRect(1, 2, 3, 4));
-  FloatClipRect rect2(FloatRect(3, 4, 5, 6));
+  FloatClipRect rect1(gfx::RectF(1, 2, 3, 4));
+  FloatClipRect rect2(gfx::RectF(3, 4, 5, 6));
   rect2.SetHasRadius();
 
   rect.Intersect(rect1);
@@ -62,24 +62,24 @@ TEST_F(FloatClipRectTest, Intersect) {
 
 TEST_F(FloatClipRectTest, IntersectWithInfinite) {
   FloatClipRect infinite;
-  FloatRect large(0, 0, static_cast<float>(std::numeric_limits<int>::max()),
-                  static_cast<float>(std::numeric_limits<int>::max()));
+  gfx::RectF large(0, 0, static_cast<float>(std::numeric_limits<int>::max()),
+                   static_cast<float>(std::numeric_limits<int>::max()));
   FloatClipRect unclipped(large);
 
   unclipped.Intersect(infinite);
   EXPECT_FALSE(unclipped.IsInfinite());
-  EXPECT_EQ(large, unclipped.Rect());
+  EXPECT_EQ(large, ToGfxRectF(unclipped.Rect()));
 }
 
 TEST_F(FloatClipRectTest, InclusiveIntersectWithInfinite) {
   FloatClipRect infinite;
-  FloatRect large(0, 0, static_cast<float>(std::numeric_limits<int>::max()),
-                  static_cast<float>(std::numeric_limits<int>::max()));
+  gfx::RectF large(0, 0, static_cast<float>(std::numeric_limits<int>::max()),
+                   static_cast<float>(std::numeric_limits<int>::max()));
   FloatClipRect unclipped(large);
 
   ASSERT_TRUE(unclipped.InclusiveIntersect(infinite));
   EXPECT_FALSE(unclipped.IsInfinite());
-  EXPECT_EQ(large, unclipped.Rect());
+  EXPECT_EQ(large, ToGfxRectF(unclipped.Rect()));
 }
 
 TEST_F(FloatClipRectTest, SetHasRadius) {
@@ -111,7 +111,7 @@ TEST_F(FloatClipRectTest, Map) {
   // FloatClipRect::Map() assumes that the transform always makes the clip rect
   // not tight. The caller should use MoveBy() to keep tightness if the
   // transform is known to be identity or a 2d translation.
-  FloatClipRect rect2(FloatRect(1, 2, 3, 4));
+  FloatClipRect rect2(gfx::RectF(1, 2, 3, 4));
   rect2.Map(identity);
   EXPECT_EQ(FloatRect(1, 2, 3, 4), rect2.Rect());
   EXPECT_FALSE(rect2.IsTight());

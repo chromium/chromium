@@ -616,10 +616,10 @@ bool WebViewImpl::StartPageScaleAnimation(const IntPoint& target_position,
   DCHECK(does_composite_);
 
   VisualViewport& visual_viewport = GetPage()->GetVisualViewport();
-  gfx::Point clamped_point = target_position;
+  gfx::Point clamped_point = ToGfxPoint(target_position);
   if (!use_anchor) {
-    clamped_point =
-        visual_viewport.ClampDocumentOffsetAtScale(target_position, new_scale);
+    clamped_point = ToGfxPoint(
+        visual_viewport.ClampDocumentOffsetAtScale(target_position, new_scale));
     if (duration.is_zero()) {
       SetPageScaleFactor(new_scale);
 
@@ -642,8 +642,7 @@ bool WebViewImpl::StartPageScaleAnimation(const IntPoint& target_position,
     fake_page_scale_animation_page_scale_factor_ = new_scale;
   } else {
     MainFrameImpl()->FrameWidgetImpl()->StartPageScaleAnimation(
-        static_cast<gfx::Vector2d>(target_position), use_anchor, new_scale,
-        duration);
+        ToGfxVector2d(target_position), use_anchor, new_scale, duration);
   }
   return true;
 }
@@ -1391,7 +1390,7 @@ void WebViewImpl::PaintContent(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
 
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   main_view.PaintOutsideOfLifecycle(builder->Context(), kGlobalPaintNormalPhase,
-                                    CullRect(IntRect(rect)));
+                                    CullRect(rect));
   // Don't bother to save/restore here as the caller is expecting the canvas
   // to be modified and take care of it.
   canvas->clipRect(gfx::RectToSkRect(rect));
@@ -2257,12 +2256,12 @@ void WebViewImpl::SetVisualViewportOffset(const gfx::PointF& offset) {
 
 gfx::PointF WebViewImpl::VisualViewportOffset() const {
   DCHECK(GetPage());
-  return GetPage()->GetVisualViewport().VisibleRect().Location();
+  return ToGfxPointF(GetPage()->GetVisualViewport().VisibleRect().Location());
 }
 
 gfx::SizeF WebViewImpl::VisualViewportSize() const {
   DCHECK(GetPage());
-  return gfx::SizeF(GetPage()->GetVisualViewport().VisibleRect().Size());
+  return ToGfxSizeF(GetPage()->GetVisualViewport().VisibleRect().Size());
 }
 
 void WebViewImpl::SetPageScaleFactorAndLocation(float scale_factor,
@@ -2722,7 +2721,7 @@ void WebViewImpl::UpdateMainFrameLayoutSize() {
   gfx::Size layout_size = size_;
 
   if (GetSettings()->ViewportEnabled())
-    layout_size = gfx::Size(GetPageScaleConstraintsSet().GetLayoutSize());
+    layout_size = ToGfxSize(GetPageScaleConstraintsSet().GetLayoutSize());
 
   if (GetPage()->GetSettings().GetForceZeroLayoutHeight())
     layout_size.set_height(0);
@@ -3362,7 +3361,7 @@ void WebViewImpl::ResizeAfterLayout() {
 
   if (should_auto_resize_) {
     LocalFrameView* view = MainFrameImpl()->GetFrame()->View();
-    gfx::Size frame_size = gfx::Size(view->Size());
+    gfx::Size frame_size = ToGfxSize(view->Size());
     if (frame_size != size_) {
       size_ = frame_size;
 
@@ -3489,7 +3488,7 @@ WebHitTestResult WebViewImpl::HitTestResultForTap(
                             WebInputEvent::kNoModifiers, base::TimeTicks::Now(),
                             WebGestureDevice::kTouchscreen);
   // GestureTap is only ever from a touchscreen.
-  tap_event.SetPositionInWidget(FloatPoint(IntPoint(tap_point_window_pos)));
+  tap_event.SetPositionInWidget(gfx::PointF(tap_point_window_pos));
   tap_event.data.tap.tap_count = 1;
   tap_event.data.tap.width = tap_area.width();
   tap_event.data.tap.height = tap_area.height();

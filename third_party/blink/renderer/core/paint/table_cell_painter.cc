@@ -83,7 +83,7 @@ void TableCellPainter::PaintBoxDecorationBackground(
 
   const DisplayItemClient* client = nullptr;
   PhysicalRect paint_rect;
-  IntRect visual_rect;
+  gfx::Rect visual_rect;
   absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
   if (box_decoration_data.IsPaintingBackgroundInContentsSpace()) {
     // See BoxPainter::PaintBoxDecorationBackground() for explanations.
@@ -94,7 +94,7 @@ void TableCellPainter::PaintBoxDecorationBackground(
     paint_rect.Expand(layout_table_cell_.BorderBoxOutsets());
     client = &layout_table_cell_.GetScrollableArea()
                   ->GetScrollingBackgroundDisplayItemClient();
-    visual_rect = EnclosingIntRect(paint_rect);
+    visual_rect = ToGfxRect(EnclosingIntRect(paint_rect));
   } else {
     paint_rect = PaintRectNotIncludingVisualOverflow(paint_offset);
     visual_rect = BoxPainter(layout_table_cell_).VisualRect(paint_offset);

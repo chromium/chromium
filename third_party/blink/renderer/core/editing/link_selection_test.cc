@@ -261,8 +261,8 @@ TEST_F(LinkSelectionTest, SingleClickWithAltStartsDownloadWhenTextSelected) {
   const auto* range_to_select = MakeGarbageCollected<Range>(
       *document, text_to_select, 1, text_to_select, 20);
   const auto& selection_rect = range_to_select->BoundingBox();
-  main_frame_->MoveRangeSelection(selection_rect.MinXMinYCorner(),
-                                  selection_rect.MaxXMaxYCorner());
+  main_frame_->MoveRangeSelection(ToGfxPoint(selection_rect.MinXMinYCorner()),
+                                  ToGfxPoint(selection_rect.MaxXMaxYCorner()));
   EXPECT_FALSE(GetSelectionText().IsEmpty());
 
   EmulateMouseClick(left_point_in_link_, WebMouseEvent::Button::kLeft,

@@ -113,7 +113,7 @@ class BrowserControlsTest : public testing::Test,
     WebGestureEvent event(type, WebInputEvent::kNoModifiers,
                           WebInputEvent::GetStaticTimeStampForTests(),
                           WebGestureDevice::kTouchscreen);
-    event.SetPositionInWidget(FloatPoint(100, 100));
+    event.SetPositionInWidget(gfx::PointF(100, 100));
     if (type == WebInputEvent::Type::kGestureScrollUpdate) {
       event.data.scroll_update.delta_x = delta_x;
       event.data.scroll_update.delta_y = delta_y;
@@ -182,7 +182,7 @@ class BrowserControlsSimTest : public SimTest {
     WebGestureEvent event(type, WebInputEvent::kNoModifiers,
                           WebInputEvent::GetStaticTimeStampForTests(),
                           WebGestureDevice::kTouchscreen);
-    event.SetPositionInWidget(FloatPoint(100, 100));
+    event.SetPositionInWidget(gfx::PointF(100, 100));
     if (type == WebInputEvent::Type::kGestureScrollUpdate) {
       event.data.scroll_update.delta_x = delta_x;
       event.data.scroll_update.delta_y = delta_y;
@@ -1533,7 +1533,7 @@ TEST_F(BrowserControlsTest,
   const auto& raster_invalidations =
       GetRasterInvalidationTracking(*GetFrame()->View())->Invalidations();
   EXPECT_EQ(1u, raster_invalidations.size());
-  EXPECT_EQ(IntRect(0, 643, 412, 17), raster_invalidations[0].rect);
+  EXPECT_EQ(gfx::Rect(0, 643, 412, 17), raster_invalidations[0].rect);
   EXPECT_EQ(PaintInvalidationReason::kIncremental,
             raster_invalidations[0].reason);
 

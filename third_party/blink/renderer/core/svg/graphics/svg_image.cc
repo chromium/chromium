@@ -464,7 +464,8 @@ void SVGImage::PopulatePaintRecordForCurrentFrameForContainer(
   cc::PaintCanvas* canvas = recorder.beginRecording(dest_rect);
   DrawForContainer(draw_info, canvas, PaintFlags(), FloatRect(dest_rect),
                    FloatRect(FloatPoint(), size));
-  builder.set_paint_record(recorder.finishRecordingAsPicture(), dest_rect,
+  builder.set_paint_record(recorder.finishRecordingAsPicture(),
+                           ToGfxRect(dest_rect),
                            PaintImage::GetNextContentId());
 
   builder.set_completion_state(

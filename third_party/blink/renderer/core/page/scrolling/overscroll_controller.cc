@@ -61,9 +61,9 @@ void OverscrollController::HandleOverscroll(
   gfx::Vector2dF delta_in_viewport =
       gfx::ScaleVector2d(unused_delta, visual_viewport_->Scale());
   gfx::Vector2dF velocity_in_viewport = gfx::ScaleVector2d(
-      gfx::Vector2dF(velocity_in_root_frame), visual_viewport_->Scale());
-  gfx::PointF position_in_viewport =
-      visual_viewport_->RootFrameToViewport(position_in_root_frame);
+      ToGfxVector2dF(velocity_in_root_frame), visual_viewport_->Scale());
+  gfx::PointF position_in_viewport = ToGfxPointF(
+      visual_viewport_->RootFrameToViewport(position_in_root_frame));
 
   ResetAccumulated(scroll_result.did_scroll_x, scroll_result.did_scroll_y);
 

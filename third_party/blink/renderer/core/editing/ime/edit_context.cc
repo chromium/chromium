@@ -230,11 +230,11 @@ void EditContext::updateBounds(DOMRect* control_bounds,
   const DoubleRect control_bounds_double_rect(
       control_bounds->x(), control_bounds->y(), control_bounds->width(),
       control_bounds->height());
-  control_bounds_ = EnclosingIntRect(control_bounds_double_rect);
+  control_bounds_ = ToGfxRect(EnclosingIntRect(control_bounds_double_rect));
   const DoubleRect selection_bounds_double_rect(
       selection_bounds->x(), selection_bounds->y(), selection_bounds->width(),
       selection_bounds->height());
-  selection_bounds_ = EnclosingIntRect(selection_bounds_double_rect);
+  selection_bounds_ = ToGfxRect(EnclosingIntRect(selection_bounds_double_rect));
 }
 
 void EditContext::updateText(uint32_t start,

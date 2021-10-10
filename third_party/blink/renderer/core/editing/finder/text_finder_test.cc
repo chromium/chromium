@@ -94,7 +94,7 @@ gfx::RectF TextFinderTest::FindInPageRect(Node* start_container,
   const Position start_position(start_container, start_offset);
   const Position end_position(end_container, end_offset);
   const EphemeralRange range(start_position, end_position);
-  return gfx::RectF(FindInPageRectFromRange(range));
+  return ToGfxRectF(FindInPageRectFromRange(range));
 }
 
 TEST_F(TextFinderTest, FindTextSimple) {

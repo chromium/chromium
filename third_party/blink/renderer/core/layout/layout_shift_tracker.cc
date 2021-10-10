@@ -283,7 +283,7 @@ void LayoutShiftTracker::ObjectShifted(
   if (frame_view_->GetFrame().IsMainFrame()) {
     // Apply the visual viewport clip.
     clip_rect.Intersect(FloatClipRect(
-        frame_view_->GetPage()->GetVisualViewport().VisibleRect()));
+        ToGfxRectF(frame_view_->GetPage()->GetVisualViewport().VisibleRect())));
   }
 
   // If the clip region is empty, then the resulting layout shift isn't visible
@@ -486,8 +486,8 @@ double LayoutShiftTracker::SubframeWeightingFactor() const {
     return 1;
 
   // Map the subframe view rect into the coordinate space of the local root.
-  FloatClipRect subframe_cliprect =
-      FloatClipRect(FloatRect(FloatPoint(), FloatSize(frame_view_->Size())));
+  FloatClipRect subframe_cliprect(
+      gfx::RectF(gfx::SizeF(ToGfxSize(frame_view_->Size()))));
   const LocalFrame& local_root = frame.LocalFrameRoot();
   GeometryMapper::LocalToAncestorVisualRect(
       frame_view_->GetLayoutView()->FirstFragment().LocalBorderBoxProperties(),
@@ -786,7 +786,7 @@ void LayoutShiftTracker::SendLayoutShiftRectsToHud(
       for (IntRect rect : int_rects)
         blink_region.Unite(Region(rect));
       for (const IntRect& rect : blink_region.Rects())
-        rects.emplace_back(rect);
+        rects.emplace_back(ToGfxRect(rect));
       cc_layer->layer_tree_host()->hud_layer()->SetLayoutShiftRects(
           rects.ReleaseVector());
       cc_layer->layer_tree_host()->hud_layer()->SetNeedsPushProperties();

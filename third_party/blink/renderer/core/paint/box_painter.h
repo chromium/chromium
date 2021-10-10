@@ -57,7 +57,7 @@ class BoxPainter {
   // this visual rect, if it's easy and beneficial to do so.
   // In most cases we use BoxDrawingRecorder which calls this function, instead
   // of directly using this function.
-  IntRect VisualRect(const PhysicalOffset& paint_offset);
+  gfx::Rect VisualRect(const PhysicalOffset& paint_offset);
 
  private:
   void PaintBackground(const PaintInfo&,

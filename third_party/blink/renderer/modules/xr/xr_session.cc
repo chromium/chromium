@@ -818,15 +818,14 @@ ScriptPromise XRSession::requestHitTestSource(
 
   device::mojom::blink::XRRayPtr ray_mojo = device::mojom::blink::XRRay::New();
 
-  ray_mojo->origin = FloatPoint3D(origin_from_ray.MapPoint({0, 0, 0}));
+  ray_mojo->origin = ToGfxPoint3F(origin_from_ray.MapPoint({0, 0, 0}));
 
   // Zero out the translation of origin_from_ray matrix to correctly map a 3D
   // vector.
   origin_from_ray.Translate3d(-origin_from_ray.M41(), -origin_from_ray.M42(),
                               -origin_from_ray.M43());
 
-  auto direction = origin_from_ray.MapPoint({0, 0, -1});
-  ray_mojo->direction = {direction.X(), direction.Y(), direction.Z()};
+  ray_mojo->direction = ToGfxVector3dF(origin_from_ray.MapPoint({0, 0, -1}));
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();

@@ -2106,7 +2106,7 @@ TEST_P(FrameThrottlingTest, CullRectUpdate) {
   auto* child_layout_view = frame_document->GetLayoutView();
 
   EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
-  EXPECT_EQ(IntRect(0, 0, 100, 100),
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
             frame_object->FirstFragment().GetCullRect().Rect());
   EXPECT_FALSE(child_layout_view->Layer()->NeedsCullRectUpdate());
 
@@ -2115,7 +2115,7 @@ TEST_P(FrameThrottlingTest, CullRectUpdate) {
   GetDocument().getElementById("clip")->setAttribute(kStyleAttr,
                                                      "width: 630px");
   CompositeFrame();
-  EXPECT_EQ(IntRect(0, 0, 630, 100),
+  EXPECT_EQ(gfx::Rect(0, 0, 630, 100),
             frame_object->FirstFragment().GetCullRect().Rect());
   EXPECT_TRUE(child_layout_view->Layer()->NeedsCullRectUpdate());
 
@@ -2127,16 +2127,16 @@ TEST_P(FrameThrottlingTest, CullRectUpdate) {
   // frame.
   CompositeFrame();
   EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
-  EXPECT_EQ(IntRect(0, 0, 630, 100),
+  EXPECT_EQ(gfx::Rect(0, 0, 630, 100),
             frame_object->FirstFragment().GetCullRect().Rect());
   EXPECT_TRUE(child_layout_view->Layer()->NeedsCullRectUpdate());
 
   // The frame is unthrottled.
   CompositeFrame();
   EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
-  EXPECT_EQ(IntRect(0, 0, 630, 100),
+  EXPECT_EQ(gfx::Rect(0, 0, 630, 100),
             frame_object->FirstFragment().GetCullRect().Rect());
-  EXPECT_EQ(IntRect(0, 0, 630, 100),
+  EXPECT_EQ(gfx::Rect(0, 0, 630, 100),
             child_layout_view->FirstFragment().GetCullRect().Rect());
   EXPECT_FALSE(child_layout_view->Layer()->NeedsCullRectUpdate());
 }

@@ -80,12 +80,12 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
       !force_software_video_paint;
   if (paint_with_foreign_layer) {
     if (cc::Layer* layer = layout_video_.MediaElement()->CcLayer()) {
-      layer->SetBounds(gfx::Size(snapped_replaced_rect.Size()));
+      layer->SetBounds(ToGfxSize(snapped_replaced_rect.Size()));
       layer->SetIsDrawable(true);
       layer->SetHitTestable(true);
       RecordForeignLayer(context, layout_video_,
                          DisplayItem::kForeignLayerVideo, layer,
-                         snapped_replaced_rect.Location());
+                         ToGfxPoint(snapped_replaced_rect.Location()));
       return;
     }
   }

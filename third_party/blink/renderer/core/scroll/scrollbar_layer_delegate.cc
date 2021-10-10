@@ -77,13 +77,13 @@ bool ScrollbarLayerDelegate::IsOverlay() const {
 gfx::Rect ScrollbarLayerDelegate::ThumbRect() const {
   IntRect track_rect = scrollbar_->GetTheme().ThumbRect(*scrollbar_);
   track_rect.MoveBy(-scrollbar_->Location());
-  return track_rect;
+  return ToGfxRect(track_rect);
 }
 
 gfx::Rect ScrollbarLayerDelegate::TrackRect() const {
   IntRect track_rect = scrollbar_->GetTheme().TrackRect(*scrollbar_);
   track_rect.MoveBy(-scrollbar_->Location());
-  return track_rect;
+  return ToGfxRect(track_rect);
 }
 
 bool ScrollbarLayerDelegate::SupportsDragSnapBack() const {
@@ -98,7 +98,7 @@ gfx::Rect ScrollbarLayerDelegate::BackButtonRect() const {
   IntRect back_button_rect = scrollbar_->GetTheme().BackButtonRect(*scrollbar_);
   if (!back_button_rect.IsEmpty())
     back_button_rect.MoveBy(-scrollbar_->Location());
-  return back_button_rect;
+  return ToGfxRect(back_button_rect);
 }
 
 gfx::Rect ScrollbarLayerDelegate::ForwardButtonRect() const {
@@ -106,7 +106,7 @@ gfx::Rect ScrollbarLayerDelegate::ForwardButtonRect() const {
       scrollbar_->GetTheme().ForwardButtonRect(*scrollbar_);
   if (!forward_button_rect.IsEmpty())
     forward_button_rect.MoveBy(-scrollbar_->Location());
-  return forward_button_rect;
+  return ToGfxRect(forward_button_rect);
 }
 
 float ScrollbarLayerDelegate::Opacity() const {
@@ -125,13 +125,13 @@ bool ScrollbarLayerDelegate::UsesNinePatchThumbResource() const {
 
 gfx::Size ScrollbarLayerDelegate::NinePatchThumbCanvasSize() const {
   DCHECK(scrollbar_->GetTheme().UsesNinePatchThumbResource());
-  return static_cast<gfx::Size>(
+  return ToGfxSize(
       scrollbar_->GetTheme().NinePatchThumbCanvasSize(*scrollbar_));
 }
 
 gfx::Rect ScrollbarLayerDelegate::NinePatchThumbAperture() const {
   DCHECK(scrollbar_->GetTheme().UsesNinePatchThumbResource());
-  return scrollbar_->GetTheme().NinePatchThumbAperture(*scrollbar_);
+  return ToGfxRect(scrollbar_->GetTheme().NinePatchThumbAperture(*scrollbar_));
 }
 
 bool ScrollbarLayerDelegate::ShouldPaint() const {

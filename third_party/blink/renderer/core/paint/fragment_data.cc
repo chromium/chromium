@@ -179,9 +179,9 @@ void FragmentData::MapRectToFragment(const FragmentData& fragment,
     return;
   const auto& from_transform = LocalBorderBoxProperties().Transform();
   const auto& to_transform = fragment.LocalBorderBoxProperties().Transform();
-  rect.Offset(gfx::Vector2d(RoundedIntPoint(PaintOffset())));
+  rect.Offset(ToGfxVector2d(RoundedIntPoint(PaintOffset())));
   GeometryMapper::SourceToDestinationRect(from_transform, to_transform, rect);
-  rect.Offset(gfx::Vector2d(-RoundedIntPoint(fragment.PaintOffset())));
+  rect.Offset(ToGfxVector2d(-RoundedIntPoint(fragment.PaintOffset())));
 }
 
 }  // namespace blink

@@ -104,12 +104,10 @@ class PLATFORM_EXPORT IntPoint {
   operator CGPoint() const;
 #endif
 
-  constexpr operator gfx::Point() const { return gfx::Point(x_, y_); }
-  // IntPoint is used as an offset, but outside blink, the Vector2d type is used
-  // for offsets instead. Addition of Point+Vector2d gives an offseted Point.
-  constexpr explicit operator gfx::Vector2d() const {
-    return gfx::Vector2d(x_, y_);
-  }
+  // These are deleted during blink geometry type to gfx migration.
+  // Use ToGfxPoint() and ToGfxVector2d() instead.
+  operator gfx::Point() const = delete;
+  operator gfx::Vector2d() const = delete;
 
   String ToString() const;
 
@@ -161,6 +159,14 @@ inline IntSize ToIntSize(const IntPoint& a) {
 
 inline int IntPoint::DistanceSquaredToPoint(const IntPoint& point) const {
   return ((*this) - point).DiagonalLengthSquared();
+}
+
+constexpr gfx::Point ToGfxPoint(const IntPoint& p) {
+  return gfx::Point(p.X(), p.Y());
+}
+
+constexpr gfx::Vector2d ToGfxVector2d(const IntPoint& p) {
+  return gfx::Vector2d(p.X(), p.Y());
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const IntPoint&);

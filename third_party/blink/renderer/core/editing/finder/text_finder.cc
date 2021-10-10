@@ -318,8 +318,9 @@ bool TextFinder::FindInternal(int identifier,
       else if (active_match_index_ < 0)
         active_match_index_ = find_task_controller_->CurrentMatchCount() - 1;
     }
-    gfx::Rect selection_rect = OwnerFrame().GetFrameView()->ConvertToRootFrame(
-        active_match_->BoundingBox());
+    gfx::Rect selection_rect =
+        ToGfxRect(OwnerFrame().GetFrameView()->ConvertToRootFrame(
+            active_match_->BoundingBox()));
     ReportFindInPageSelection(selection_rect, active_match_index_ + 1,
                               identifier);
   }
@@ -538,7 +539,8 @@ void TextFinder::DidFindMatch(int identifier,
 
       // Notify browser of new location for the selected rectangle.
       ReportFindInPageSelection(
-          OwnerFrame().GetFrameView()->ConvertToRootFrame(result_bounds),
+          ToGfxRect(
+              OwnerFrame().GetFrameView()->ConvertToRootFrame(result_bounds)),
           active_match_index_ + 1, identifier);
     }
   }
@@ -684,7 +686,7 @@ gfx::RectF TextFinder::ActiveFindMatchRect() {
   if (!current_active_match_frame_ || !active_match_)
     return gfx::RectF();
 
-  return gfx::RectF(FindInPageRectFromRange(EphemeralRange(ActiveMatch())));
+  return ToGfxRectF(FindInPageRectFromRange(EphemeralRange(ActiveMatch())));
 }
 
 Vector<gfx::RectF> TextFinder::FindMatchRects() {
@@ -694,7 +696,7 @@ Vector<gfx::RectF> TextFinder::FindMatchRects() {
   match_rects.ReserveCapacity(match_rects.size() + find_matches_cache_.size());
   for (const FindMatch& match : find_matches_cache_) {
     DCHECK(!match.rect_.IsEmpty());
-    match_rects.push_back(match.rect_);
+    match_rects.push_back(ToGfxRectF(match.rect_));
   }
 
   return match_rects;
@@ -762,7 +764,7 @@ int TextFinder::SelectFindMatch(unsigned index, gfx::Rect* selection_rect) {
     OwnerFrame().GetFrame()->GetDocument()->ClearFocusedElement();
   }
 
-  IntRect active_match_rect;
+  gfx::Rect active_match_rect;
   IntRect active_match_bounding_box =
       ComputeTextRect(EphemeralRange(active_match_.Get()));
 
@@ -789,8 +791,9 @@ int TextFinder::SelectFindMatch(unsigned index, gfx::Rect* selection_rect) {
     }
 
     // Zoom to the active match.
-    active_match_rect = OwnerFrame().GetFrameView()->ConvertToRootFrame(
-        active_match_bounding_box);
+    active_match_rect =
+        ToGfxRect(OwnerFrame().GetFrameView()->ConvertToRootFrame(
+            active_match_bounding_box));
     OwnerFrame().LocalRoot()->FrameWidgetImpl()->ZoomToFindInPageRect(
         active_match_rect);
   }
@@ -965,8 +968,8 @@ void TextFinder::Scroll(std::unique_ptr<AsyncScrollContext> context) {
   // not set will result in a zoom reset on small devices.
   if (GetFrame()->GetDocument()->GetTextAutosizer()->PageNeedsAutosizing()) {
     OwnerFrame().LocalRoot()->FrameWidgetImpl()->ZoomToFindInPageRect(
-        OwnerFrame().GetFrameView()->ConvertToRootFrame(
-            ComputeTextRect(EphemeralRange(context->range))));
+        ToGfxRect(OwnerFrame().GetFrameView()->ConvertToRootFrame(
+            ComputeTextRect(EphemeralRange(context->range)))));
   }
 
   // DidFindMatch will race against this to add a text match marker to this

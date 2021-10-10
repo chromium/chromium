@@ -13,10 +13,13 @@
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+namespace gfx {
+class Rect;
+}
+
 namespace blink {
 
 class InlineFlowBox;
-class IntRect;
 class LayoutRect;
 class LayoutUnit;
 struct PaintInfo;
@@ -54,7 +57,7 @@ class InlineFlowBoxPainter : public InlineBoxPainterBase {
   void PaintMask(const PaintInfo&, const PhysicalOffset& paint_offset);
 
   PhysicalRect AdjustedFrameRect(const PhysicalOffset& paint_offset) const;
-  IntRect VisualRect(const PhysicalRect& adjusted_frame_rect) const;
+  gfx::Rect VisualRect(const PhysicalRect& adjusted_frame_rect) const;
 
   // Expands the bounds of the current paint chunk for hit test, and records
   // special touch action if any. This should be called in the background paint

@@ -89,7 +89,7 @@ static void UpdateCcTransformLocalMatrix(
     FloatPoint3D origin = transform_node.Origin();
     compositor_node.local.matrix() =
         TransformationMatrix::ToSkMatrix44(transform_node.Matrix());
-    compositor_node.origin = origin;
+    compositor_node.origin = ToGfxPoint3F(origin);
   }
   compositor_node.needs_local_transform_update = true;
 }
@@ -562,7 +562,7 @@ int PropertyTreeManager::EnsureCompositorClipNode(
 
   cc::ClipNode& compositor_node = *GetClipTree().Node(id);
 
-  compositor_node.clip = clip_node.PaintClipRect().Rect();
+  compositor_node.clip = ToGfxRectF(clip_node.PaintClipRect().Rect());
   compositor_node.transform_id =
       EnsureCompositorTransformNode(clip_node.LocalTransformSpace().Unalias());
   compositor_node.clip_type = cc::ClipNode::ClipType::APPLIES_LOCAL_CLIP;

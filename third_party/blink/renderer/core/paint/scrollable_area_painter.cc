@@ -34,9 +34,9 @@ void ScrollableAreaPainter::PaintResizer(GraphicsContext& context,
   if (!box->CanResize())
     return;
 
-  IntRect visual_rect =
-      GetScrollableArea().ResizerCornerRect(kResizerForPointer);
-  visual_rect.MoveBy(paint_offset);
+  gfx::Rect visual_rect =
+      ToGfxRect(GetScrollableArea().ResizerCornerRect(kResizerForPointer));
+  visual_rect.Offset(ToGfxVector2d(paint_offset));
   if (!cull_rect.Intersects(visual_rect))
     return;
 
@@ -53,22 +53,22 @@ void ScrollableAreaPainter::PaintResizer(GraphicsContext& context,
 
   DrawingRecorder recorder(context, client, DisplayItem::kResizer, visual_rect);
 
-  DrawPlatformResizerImage(context, visual_rect);
+  DrawPlatformResizerImage(context, IntRect(visual_rect));
 
   // Draw a frame around the resizer (1px grey line) if there are any scrollbars
   // present.  Clipping will exclude the right and bottom edges of this frame.
   if (GetScrollableArea().NeedsScrollCorner()) {
     GraphicsContextStateSaver state_saver(context);
-    context.Clip(visual_rect);
-    IntRect larger_corner = visual_rect;
-    larger_corner.SetSize(
-        IntSize(larger_corner.Width() + 1, larger_corner.Height() + 1));
+    context.Clip(IntRect(visual_rect));
+    gfx::Rect larger_corner = visual_rect;
+    larger_corner.set_size(
+        gfx::Size(larger_corner.width() + 1, larger_corner.height() + 1));
     context.SetStrokeColor(Color(217, 217, 217));
     context.SetStrokeThickness(1.0f);
     context.SetFillColor(Color::kTransparent);
     AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
         box->StyleRef(), DarkModeFilter::ElementRole::kBackground));
-    context.DrawRect(larger_corner, auto_dark_mode);
+    context.DrawRect(IntRect(larger_corner), auto_dark_mode);
   }
 }
 
@@ -80,8 +80,9 @@ void ScrollableAreaPainter::RecordResizerScrollHitTestData(
   if (!box->CanResize())
     return;
 
-  IntRect touch_rect = scrollable_area_->ResizerCornerRect(kResizerForTouch);
-  touch_rect.MoveBy(RoundedIntPoint(paint_offset));
+  gfx::Rect touch_rect =
+      ToGfxRect(scrollable_area_->ResizerCornerRect(kResizerForTouch));
+  touch_rect.Offset(ToGfxVector2d(RoundedIntPoint(paint_offset)));
   context.GetPaintController().RecordScrollHitTestData(
       DisplayItemClientForCorner(), DisplayItem::kResizerScrollHitTest, nullptr,
       touch_rect);
@@ -228,8 +229,8 @@ void ScrollableAreaPainter::PaintScrollbar(GraphicsContext& context,
                                            const CullRect& cull_rect) {
   // TODO(crbug.com/1020913): We should not round paint_offset but should
   // consider subpixel accumulation when painting scrollbars.
-  IntRect visual_rect = scrollbar.FrameRect();
-  visual_rect.MoveBy(paint_offset);
+  gfx::Rect visual_rect = ToGfxRect(scrollbar.FrameRect());
+  visual_rect.Offset(ToGfxVector2d(paint_offset));
   if (!cull_rect.Intersects(visual_rect))
     return;
 
@@ -279,7 +280,7 @@ void ScrollableAreaPainter::PaintScrollCorner(GraphicsContext& context,
                                               const CullRect& cull_rect) {
   IntRect visual_rect = GetScrollableArea().ScrollCornerRect();
   visual_rect.MoveBy(paint_offset);
-  if (!cull_rect.Intersects(visual_rect))
+  if (!cull_rect.Intersects(ToGfxRect(visual_rect)))
     return;
 
   if (const auto* scroll_corner = GetScrollableArea().ScrollCorner()) {

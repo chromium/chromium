@@ -2395,7 +2395,7 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
 
   FloatPoint end_point = ScrollOffsetToPosition(new_scroll_offset);
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
-      cc::SnapSelectionStrategy::CreateForEndPosition(gfx::Vector2dF(end_point),
+      cc::SnapSelectionStrategy::CreateForEndPosition(ToGfxVector2dF(end_point),
                                                       true, true);
   end_point = GetSnapPositionAndSetTarget(*strategy).value_or(end_point);
   new_scroll_offset = ScrollPositionToOffset(end_point);

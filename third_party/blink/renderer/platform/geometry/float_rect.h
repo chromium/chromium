@@ -191,9 +191,10 @@ class PLATFORM_EXPORT FloatRect {
   operator SkRect() const {
     return SkRect::MakeXYWH(X(), Y(), Width(), Height());
   }
-  constexpr operator gfx::RectF() const {
-    return gfx::RectF(X(), Y(), Width(), Height());
-  }
+
+  // This is deleted during blink geometry type to gfx migration.
+  // Use ToGfxRectF() instead.
+  operator gfx::RectF() const = delete;
 
 #if DCHECK_IS_ON()
   bool MayNotHaveExactIntRectRepresentation() const;
@@ -271,6 +272,10 @@ PLATFORM_EXPORT IntRect RoundedIntRect(const FloatRect&);
 PLATFORM_EXPORT FloatRect MapRect(const FloatRect&,
                                   const FloatRect& src_rect,
                                   const FloatRect& dest_rect);
+
+constexpr gfx::RectF ToGfxRectF(const FloatRect& r) {
+  return gfx::RectF(r.X(), r.Y(), r.Width(), r.Height());
+}
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const FloatRect&);
 PLATFORM_EXPORT WTF::TextStream& operator<<(WTF::TextStream&, const FloatRect&);

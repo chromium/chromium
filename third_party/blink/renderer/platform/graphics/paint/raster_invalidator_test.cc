@@ -399,14 +399,15 @@ TEST_P(RasterInvalidatorTest, ClipPropertyChangeSimple) {
   auto clip1 = CreateClip(*clip0, t0(), clip_rect);
 
   PropertyTreeState layer_state = PropertyTreeState::Root();
-  PaintChunkSubset chunks(TestPaintArtifact()
-                              .Chunk(0)
-                              .Properties(t0(), *clip0, e0())
-                              .Bounds(gfx::ToEnclosingRect(clip_rect.Rect()))
-                              .Chunk(1)
-                              .Properties(t0(), *clip1, e0())
-                              .Bounds(gfx::ToEnclosingRect(clip_rect.Rect()))
-                              .Build());
+  PaintChunkSubset chunks(
+      TestPaintArtifact()
+          .Chunk(0)
+          .Properties(t0(), *clip0, e0())
+          .Bounds(gfx::ToEnclosingRect(ToGfxRectF(clip_rect.Rect())))
+          .Chunk(1)
+          .Properties(t0(), *clip1, e0())
+          .Bounds(gfx::ToEnclosingRect(ToGfxRectF(clip_rect.Rect())))
+          .Build());
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
@@ -462,12 +463,13 @@ TEST_P(RasterInvalidatorTest, ClipChangeOnCachedSubsequence) {
   auto c1 = CreateClip(c0(), t0(), clip_rect);
 
   PropertyTreeState layer_state = PropertyTreeState::Root();
-  PaintChunkSubset chunks(TestPaintArtifact()
-                              .Chunk(0)
-                              .Properties(t0(), *c1, e0())
-                              .Bounds(gfx::ToEnclosingRect(clip_rect.Rect()))
-                              .IsMovedFromCachedSubsequence()
-                              .Build());
+  PaintChunkSubset chunks(
+      TestPaintArtifact()
+          .Chunk(0)
+          .Properties(t0(), *c1, e0())
+          .Bounds(gfx::ToEnclosingRect(ToGfxRectF(clip_rect.Rect())))
+          .IsMovedFromCachedSubsequence()
+          .Build());
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
@@ -503,7 +505,7 @@ TEST_P(RasterInvalidatorTest, ClipPropertyChangeWithOutsetForRasterEffects) {
       TestPaintArtifact()
           .Chunk(0)
           .Properties(t0(), *clip, e0())
-          .Bounds(gfx::ToEnclosingRect(clip_rect.Rect()))
+          .Bounds(gfx::ToEnclosingRect(ToGfxRectF(clip_rect.Rect())))
           .SetRasterEffectOutset(RasterEffectOutset::kWholePixel)
           .Build());
 

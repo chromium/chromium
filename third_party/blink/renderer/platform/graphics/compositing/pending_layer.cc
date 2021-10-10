@@ -31,7 +31,7 @@ const ClipPaintPropertyNode* HighestOutputClipBetween(
 // When possible, provides a clip rect that limits the visibility.
 absl::optional<gfx::RectF> VisibilityLimit(const PropertyTreeState& state) {
   if (&state.Clip().LocalTransformSpace() == &state.Transform())
-    return state.Clip().PaintClipRect().Rect();
+    return ToGfxRectF(state.Clip().PaintClipRect().Rect());
   if (const auto* scroll = state.Transform().ScrollNode()) {
     return gfx::RectF(
         gfx::Rect(scroll->ContainerRect().origin(), scroll->ContentsSize()));
@@ -188,9 +188,9 @@ void PendingLayer::Upcast(const PropertyTreeState& new_state) {
   FloatClipRect float_clip_rect(bounds_);
   GeometryMapper::LocalToAncestorVisualRect(property_tree_state_, new_state,
                                             float_clip_rect);
-  bounds_ = float_clip_rect.Rect();
+  bounds_ = ToGfxRectF(float_clip_rect.Rect());
 
-  rect_known_to_be_opaque_ = MapRectKnownToBeOpaque(new_state);
+  rect_known_to_be_opaque_ = ToGfxRectF(MapRectKnownToBeOpaque(new_state));
   property_tree_state_ = new_state;
 }
 
@@ -299,9 +299,9 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
 
   if (!dry_run) {
     chunks_.Merge(guest.Chunks());
-    bounds_ = merged_bounds;
+    bounds_ = ToGfxRectF(merged_bounds);
     property_tree_state_ = *merged_state;
-    rect_known_to_be_opaque_ = merged_rect_known_to_be_opaque;
+    rect_known_to_be_opaque_ = ToGfxRectF(merged_rect_known_to_be_opaque);
     text_known_to_be_on_opaque_background_ =
         merged_text_known_to_be_on_opaque_background;
     has_text_ |= guest.has_text_;

@@ -456,8 +456,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   }
 
   ContextMenuData data;
-  data.mouse_position = selected_frame->View()->FrameToViewport(
-      result.RoundedPointInInnerNodeFrame());
+  data.mouse_position = ToGfxPoint(selected_frame->View()->FrameToViewport(
+      result.RoundedPointInInnerNodeFrame()));
 
   data.edit_flags = ComputeEditFlags(
       *selected_frame->GetDocument(),

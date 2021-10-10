@@ -254,7 +254,7 @@ TEST_P(VisualViewportTest, TestResize) {
   gfx::Size web_view_size = WebView()->MainFrameViewWidget()->Size();
 
   // Make sure the visual viewport was initialized.
-  EXPECT_EQ(web_view_size, gfx::Size(visual_viewport.Size()));
+  EXPECT_EQ(web_view_size, ToGfxSize(visual_viewport.Size()));
 
   // Resizing the WebView should change the VisualViewport.
   web_view_size = gfx::Size(640, 480);
@@ -263,7 +263,7 @@ TEST_P(VisualViewportTest, TestResize) {
       web_view_size, web_view_size, WebView()->GetBrowserControls().Params());
   UpdateAllLifecyclePhases();
   EXPECT_EQ(web_view_size, WebView()->MainFrameViewWidget()->Size());
-  EXPECT_EQ(web_view_size, gfx::Size(visual_viewport.Size()));
+  EXPECT_EQ(web_view_size, ToGfxSize(visual_viewport.Size()));
 
   // Resizing the visual viewport shouldn't affect the WebView.
   IntSize new_viewport_size = IntSize(320, 200);
@@ -286,7 +286,7 @@ TEST_P(VisualViewportTest, TestVisibleContentRect) {
   IntSize scrollbar_size = IntSize(15, 15);
 
   WebView()->ResizeWithBrowserControls(
-      gfx::Size(size), gfx::Size(size),
+      ToGfxSize(size), ToGfxSize(size),
       WebView()->GetBrowserControls().Params());
   UpdateAllLifecyclePhases();
 
@@ -557,7 +557,7 @@ TEST_P(VisualViewportTest, TestVisibleRect) {
 
   // Viewport is whole frame.
   IntSize size = IntSize(400, 200);
-  WebView()->MainFrameViewWidget()->Resize(gfx::Size(size));
+  WebView()->MainFrameViewWidget()->Resize(ToGfxSize(size));
   UpdateAllLifecyclePhases();
   visual_viewport.SetSize(size);
 
@@ -2216,7 +2216,7 @@ TEST_P(VisualViewportTest, ResizeNonCompositedAndFixedBackground) {
       UnorderedElementsAre(RasterInvalidationInfo{
           ScrollingBackgroundClient(document).Id(),
           ScrollingBackgroundClient(document).DebugName(),
-          IntRect(0, 0, 640, 1000), PaintInvalidationReason::kBackground}));
+          gfx::Rect(0, 0, 640, 1000), PaintInvalidationReason::kBackground}));
 
   document->View()->SetTracksRasterInvalidations(false);
 
@@ -2233,7 +2233,7 @@ TEST_P(VisualViewportTest, ResizeNonCompositedAndFixedBackground) {
       UnorderedElementsAre(RasterInvalidationInfo{
           ScrollingBackgroundClient(document).Id(),
           ScrollingBackgroundClient(document).DebugName(),
-          IntRect(0, 0, 640, 1000), PaintInvalidationReason::kBackground}));
+          gfx::Rect(0, 0, 640, 1000), PaintInvalidationReason::kBackground}));
 
   document->View()->SetTracksRasterInvalidations(false);
 }
@@ -2338,12 +2338,12 @@ TEST_P(VisualViewportTest, InvalidateLayoutViewWhenDocumentSmallerThanView) {
     // unpainted area of background.
     EXPECT_FALSE(MainGraphicsLayerHasRasterInvalidations(document));
     ASSERT_TRUE(ScrollingContentsLayerHasRasterInvalidations(document));
-    EXPECT_THAT(
-        ScrollingContentsLayerRasterInvalidations(document),
-        UnorderedElementsAre(RasterInvalidationInfo{
-            ScrollingBackgroundClient(document).Id(),
-            ScrollingBackgroundClient(document).DebugName(),
-            IntRect(0, 590, 320, 50), PaintInvalidationReason::kIncremental}));
+    EXPECT_THAT(ScrollingContentsLayerRasterInvalidations(document),
+                UnorderedElementsAre(RasterInvalidationInfo{
+                    ScrollingBackgroundClient(document).Id(),
+                    ScrollingBackgroundClient(document).DebugName(),
+                    gfx::Rect(0, 590, 320, 50),
+                    PaintInvalidationReason::kIncremental}));
   }
 
   document->View()->SetTracksRasterInvalidations(false);

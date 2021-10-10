@@ -40,7 +40,7 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
   // TODO(fs): Should clip this with the bounds of the mask's PaintRecord.
   FloatRect visual_rect = properties->MaskClip()->PaintClipRect().Rect();
   DrawingRecorder recorder(context, display_item_client, DisplayItem::kSVGMask,
-                           EnclosingIntRect(visual_rect));
+                           ToGfxRect(EnclosingIntRect(visual_rect)));
 
   SVGResourceClient* client = SVGResources::GetClient(layout_object);
   const ComputedStyle& style = layout_object.StyleRef();

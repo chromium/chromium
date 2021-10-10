@@ -266,20 +266,20 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
     overlay_->PaintOverlayPage();
 
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      layer_->SetBounds(gfx::Size(size));
+      layer_->SetBounds(ToGfxSize(size));
       DEFINE_STATIC_LOCAL(
           Persistent<LiteralDebugNameClient>, debug_name_client,
           (MakeGarbageCollected<LiteralDebugNameClient>("InspectorOverlay")));
       RecordForeignLayer(graphics_context, *debug_name_client,
                          DisplayItem::kForeignLayerDevToolsOverlay, layer_,
-                         IntPoint(), &PropertyTreeState::Root());
+                         gfx::Point(), &PropertyTreeState::Root());
       return;
     }
 
     frame_overlay.Invalidate();
     DrawingRecorder recorder(graphics_context, frame_overlay,
                              DisplayItem::kFrameOverlay,
-                             IntRect(IntPoint(), size));
+                             gfx::Rect(ToGfxSize(size)));
     // The overlay frame is has a standalone paint property tree. Paint it in
     // its root space into a paint record, then draw the record into the proper
     // target space in the overlaid frame.

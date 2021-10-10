@@ -150,7 +150,7 @@ bool CanvasResource::PrepareAcceleratedTransferableResource(
     return false;
 
   *out_resource = viz::TransferableResource::MakeGL(
-      mailbox, GLFilter(), TextureTarget(), GetSyncToken(), gfx::Size(Size()),
+      mailbox, GLFilter(), TextureTarget(), GetSyncToken(), ToGfxSize(Size()),
       IsOverlayCandidate());
 
   out_resource->color_space = params_.GetSamplerGfxColorSpace();
@@ -173,7 +173,7 @@ bool CanvasResource::PrepareUnacceleratedTransferableResource(
   // TransferableResource. Clients are expected to render in N32 format but use
   // RGBA as the tagged format on resources.
   *out_resource = viz::TransferableResource::MakeSoftware(
-      mailbox, gfx::Size(Size()), viz::RGBA_8888);
+      mailbox, ToGfxSize(Size()), viz::RGBA_8888);
 
   out_resource->color_space = params_.GetSamplerGfxColorSpace();
 
@@ -209,7 +209,7 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
   // Software compositing lazily uses RGBA_8888 as the resource format
   // everywhere but the content is expected to be rendered in N32 format.
   base::MappedReadOnlyRegion shm = viz::bitmap_allocation::AllocateSharedBitmap(
-      gfx::Size(Size()), viz::RGBA_8888);
+      ToGfxSize(Size()), viz::RGBA_8888);
 
   if (!shm.IsValid())
     return;
@@ -366,7 +366,7 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     DCHECK(shared_image_usage_flags & gpu::SHARED_IMAGE_USAGE_DISPLAY);
 
     gpu_memory_buffer_ = gpu_memory_buffer_manager->CreateGpuMemoryBuffer(
-        gfx::Size(size), ColorParams().GetBufferFormat(),
+        ToGfxSize(size), ColorParams().GetBufferFormat(),
         gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, gpu::kNullSurfaceHandle,
         nullptr);
     if (!gpu_memory_buffer_)
@@ -407,7 +407,7 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
         surface_alpha_type, shared_image_usage_flags);
   } else {
     shared_image_mailbox = shared_image_interface->CreateSharedImage(
-        ColorParams().TransferableResourceFormat(), gfx::Size(size),
+        ColorParams().TransferableResourceFormat(), ToGfxSize(size),
         ColorParams().GetStorageGfxColorSpace(), surface_origin,
         surface_alpha_type, shared_image_usage_flags, gpu::kNullSurfaceHandle);
   }
@@ -755,7 +755,7 @@ CanvasResourceSkiaDawnSharedImage::CanvasResourceSkiaDawnSharedImage(
   gpu::Mailbox shared_image_mailbox;
 
   shared_image_mailbox = shared_image_interface->CreateSharedImage(
-      ColorParams().TransferableResourceFormat(), gfx::Size(size),
+      ColorParams().TransferableResourceFormat(), ToGfxSize(size),
       ColorParams().GetStorageGfxColorSpace(), surface_origin,
       ColorParams().GetSkAlphaType(), shared_image_usage_flags,
       gpu::kNullSurfaceHandle);
@@ -1323,7 +1323,7 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
   DCHECK(sii);
   gpu::SharedImageInterface::SwapChainMailboxes mailboxes =
       sii->CreateSwapChain(
-          ColorParams().TransferableResourceFormat(), gfx::Size(size),
+          ColorParams().TransferableResourceFormat(), ToGfxSize(size),
           ColorParams().GetStorageGfxColorSpace(), kTopLeft_GrSurfaceOrigin,
           kPremul_SkAlphaType, usage);
   back_buffer_mailbox_ = mailboxes.back_buffer;

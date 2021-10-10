@@ -67,7 +67,7 @@ void BoxPainter::PaintBoxDecorationBackground(
   bool painting_background_in_contents_space =
       BoxDecorationData::IsPaintingBackgroundInContentsSpace(paint_info,
                                                              layout_box_);
-  IntRect visual_rect;
+  gfx::Rect visual_rect;
   if (painting_background_in_contents_space) {
     // For the case where we are painting the background in the contents space,
     // we need to include the entire overflow rect.
@@ -82,9 +82,9 @@ void BoxPainter::PaintBoxDecorationBackground(
 
     background_client = &layout_box_.GetScrollableArea()
                              ->GetScrollingBackgroundDisplayItemClient();
-    visual_rect =
+    visual_rect = ToGfxRect(
         layout_box_.GetScrollableArea()->ScrollingBackgroundVisualRect(
-            paint_offset);
+            paint_offset));
   } else {
     paint_rect = layout_box_.PhysicalBorderBoxRect();
     paint_rect.Move(paint_offset);
@@ -100,7 +100,7 @@ void BoxPainter::PaintBoxDecorationBackground(
     PaintBoxDecorationBackgroundWithRect(
         contents_paint_state ? contents_paint_state->GetPaintInfo()
                              : paint_info,
-        visual_rect, paint_rect, *background_client);
+        IntRect(visual_rect), paint_rect, *background_client);
   }
 
   RecordHitTestData(paint_info, paint_rect, *background_client);
@@ -151,7 +151,8 @@ void BoxPainter::PaintBoxDecorationBackgroundWithRect(
     return;
 
   DrawingRecorder recorder(paint_info.context, background_client,
-                           DisplayItem::kBoxDecorationBackground, visual_rect);
+                           DisplayItem::kBoxDecorationBackground,
+                           ToGfxRect(visual_rect));
   GraphicsContextStateSaver state_saver(paint_info.context, false);
 
   bool needs_end_layer = false;
@@ -292,7 +293,7 @@ void BoxPainter::RecordHitTestData(const PaintInfo& paint_info,
     return;
 
   paint_info.context.GetPaintController().RecordHitTestData(
-      background_client, PixelSnappedIntRect(paint_rect),
+      background_client, ToGfxRect(PixelSnappedIntRect(paint_rect)),
       layout_box_.EffectiveAllowedTouchAction(),
       layout_box_.InsideBlockingWheelEventHandler());
 }
@@ -336,12 +337,12 @@ void BoxPainter::RecordScrollHitTestData(
                                       fragment->PaintOffset());
 }
 
-IntRect BoxPainter::VisualRect(const PhysicalOffset& paint_offset) {
+gfx::Rect BoxPainter::VisualRect(const PhysicalOffset& paint_offset) {
   DCHECK(!layout_box_.VisualRectRespectsVisibility() ||
          layout_box_.StyleRef().Visibility() == EVisibility::kVisible);
   PhysicalRect rect = layout_box_.PhysicalSelfVisualOverflowRect();
   rect.Move(paint_offset);
-  return EnclosingIntRect(rect);
+  return ToGfxRect(EnclosingIntRect(rect));
 }
 
 }  // namespace blink

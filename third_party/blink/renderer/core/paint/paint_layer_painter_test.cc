@@ -310,7 +310,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceOnCullRectChange) {
       *GetDisplayItemClientFromElementId("content3");
 
   UpdateAllLifecyclePhasesExceptPaint();
-  PaintContents(IntRect(0, 0, 400, 300));
+  PaintContents(gfx::Rect(0, 0, 400, 300));
 
   // Container1 is fully in the interest rect;
   // Container2 is partly (including its stacking chidren) in the interest rect;
@@ -327,7 +327,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceOnCullRectChange) {
 
   UpdateAllLifecyclePhasesExceptPaint();
   PaintController::CounterForTesting counter;
-  PaintContents(IntRect(0, 100, 300, 1000));
+  PaintContents(gfx::Rect(0, 100, 300, 1000));
   // Container1 becomes partly in the interest rect, but uses cached subsequence
   // because it was fully painted before;
   // Container2's intersection with the interest rect changes;
@@ -359,12 +359,12 @@ TEST_P(PaintLayerPainterTest,
 
   // |target| will be fully painted.
   UpdateAllLifecyclePhasesExceptPaint();
-  PaintContents(IntRect(0, 0, 400, 300));
+  PaintContents(gfx::Rect(0, 0, 400, 300));
 
   // |target| will be partially painted. Should not trigger under-invalidation
   // checking DCHECKs.
   UpdateAllLifecyclePhasesExceptPaint();
-  PaintContents(IntRect(0, 100, 300, 1000));
+  PaintContents(gfx::Rect(0, 100, 300, 1000));
 }
 
 TEST_P(PaintLayerPainterTest,
@@ -383,7 +383,7 @@ TEST_P(PaintLayerPainterTest,
   )HTML");
   UpdateAllLifecyclePhasesExceptPaint();
   // PaintResult of all subsequences will be MayBeClippedByCullRect.
-  PaintContents(IntRect(0, 0, 50, 300));
+  PaintContents(gfx::Rect(0, 0, 50, 300));
 
   const DisplayItemClient& container1 =
       *GetDisplayItemClientFromElementId("container1");
@@ -407,7 +407,7 @@ TEST_P(PaintLayerPainterTest,
                      "background-color: green");
   UpdateAllLifecyclePhasesExceptPaint();
   PaintController::CounterForTesting counter;
-  PaintContents(IntRect(0, 0, 50, 300));
+  PaintContents(gfx::Rect(0, 0, 50, 300));
   EXPECT_EQ(4u, counter.num_cached_items);
 
   EXPECT_THAT(ContentDisplayItems(),

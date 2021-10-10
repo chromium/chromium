@@ -551,7 +551,7 @@ void RemoteFrame::SetInsecureNavigationsSet(const WebVector<unsigned>& set) {
 
 void RemoteFrame::FrameRectsChanged(const IntRect& local_frame_rect,
                                     const IntRect& screen_space_rect) {
-  pending_visual_properties_.screen_space_rect = gfx::Rect(screen_space_rect);
+  pending_visual_properties_.screen_space_rect = ToGfxRect(screen_space_rect);
   pending_visual_properties_.local_frame_size =
       gfx::Size(local_frame_rect.Width(), local_frame_rect.Height());
   SynchronizeVisualProperties();
@@ -987,7 +987,7 @@ bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
 
   if (view_) {
     pending_visual_properties_.compositor_viewport =
-        view_->GetCompositingRect();
+        ToGfxRect(view_->GetCompositingRect());
     pending_visual_properties_.compositing_scale_factor =
         view_->GetCompositingScaleFactor();
   }

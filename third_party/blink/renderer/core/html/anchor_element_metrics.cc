@@ -190,7 +190,7 @@ mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
   IntRect viewport = root_frame_view->LayoutViewport()->VisibleContentRect();
   if (viewport.Size().IsEmpty())
     return metrics;
-  metrics->viewport_size = gfx::Size(viewport.Size());
+  metrics->viewport_size = ToGfxSize(viewport.Size());
 
   // Use the viewport size to normalize anchor element metrics.
   float base_height = static_cast<float>(viewport.Height());

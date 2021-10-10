@@ -325,7 +325,7 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
     DCHECK(layer);
     if (link_highlight_fragment.GetPath() != new_path) {
       link_highlight_fragment.SetPath(new_path);
-      layer->SetBounds(gfx::Size(bounding_rect.Size()));
+      layer->SetBounds(ToGfxSize(bounding_rect.Size()));
       layer->SetNeedsDisplay();
     }
 
@@ -335,9 +335,9 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
 
     auto property_tree_state = fragment->LocalBorderBoxProperties().Unalias();
     property_tree_state.SetEffect(Effect());
-    RecordForeignLayer(context, *debug_name_client,
-                       DisplayItem::kForeignLayerLinkHighlight, layer,
-                       bounding_rect.Location(), &property_tree_state);
+    RecordForeignLayer(
+        context, *debug_name_client, DisplayItem::kForeignLayerLinkHighlight,
+        layer, ToGfxPoint(bounding_rect.Location()), &property_tree_state);
   }
 
   DCHECK_EQ(index, fragments_.size());

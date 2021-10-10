@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -36,7 +37,8 @@ void SVGModelObjectPainter::RecordHitTestData(const LayoutObject& svg_object,
 
   paint_info.context.GetPaintController().RecordHitTestData(
       svg_object,
-      EnclosingIntRect(svg_object.VisualRectInLocalSVGCoordinates()),
+      gfx::ToEnclosingRect(
+          ToGfxRectF(svg_object.VisualRectInLocalSVGCoordinates())),
       svg_object.EffectiveAllowedTouchAction(),
       svg_object.InsideBlockingWheelEventHandler());
 }

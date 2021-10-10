@@ -70,7 +70,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
                                                 const PhysicalRect&,
                                                 const BoxDecorationData&);
 
-  IntRect VisualRect(const PhysicalOffset& paint_offset);
+  gfx::Rect VisualRect(const PhysicalOffset& paint_offset);
 
  protected:
   LayoutRectOutsets ComputeBorders() const override;

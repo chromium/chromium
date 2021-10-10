@@ -107,7 +107,7 @@ void CullRectUpdater::UpdateRecursively(PaintLayer& layer,
     PhysicalRect overflow_rect = box->PhysicalSelfVisualOverflowRect();
     overflow_rect.Move(box->FirstFragment().PaintOffset());
     if (!box->FirstFragment().GetCullRect().Intersects(
-            EnclosingIntRect(overflow_rect))) {
+            ToGfxRect(EnclosingIntRect(overflow_rect)))) {
       reset_subtree_is_out_of_cull_rect.emplace(&subtree_is_out_of_cull_rect_,
                                                 true);
     }

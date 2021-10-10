@@ -119,11 +119,11 @@ void NGInlineBoxFragmentPainterBase::PaintBackgroundBorderShadow(
       object_may_have_multiple_boxes, SidesToInclude());
 }
 
-IntRect NGInlineBoxFragmentPainterBase::VisualRect(
+gfx::Rect NGInlineBoxFragmentPainterBase::VisualRect(
     const PhysicalOffset& paint_offset) {
   PhysicalRect overflow_rect = inline_box_item_.SelfInkOverflow();
   overflow_rect.Move(paint_offset);
-  return EnclosingIntRect(overflow_rect);
+  return ToGfxRect(EnclosingIntRect(overflow_rect));
 }
 
 void NGLineBoxFragmentPainter::PaintBackgroundBorderShadow(

@@ -1793,7 +1793,7 @@ TEST_P(ScrollingTest, ScrollOffsetClobberedBeforeCompositingUpdate) {
   RootCcLayer()->layer_tree_host()->ApplyCompositorChanges(&commit_data);
   // The compositor offset is reflected in blink and cc scroll tree.
   EXPECT_EQ(compositor_delta,
-            gfx::Vector2dF(scrollable_area->ScrollPosition()));
+            ToGfxVector2dF(scrollable_area->ScrollPosition()));
   EXPECT_EQ(compositor_delta, CurrentScrollOffset(scroll_node));
 
   // Before updating the lifecycle, set the scroll offset back to what it was

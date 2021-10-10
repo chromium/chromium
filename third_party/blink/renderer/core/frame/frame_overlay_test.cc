@@ -48,7 +48,7 @@ class SolidColorOverlay : public FrameOverlay::Delegate {
     FloatRect rect(0, 0, size.Width(), size.Height());
     DrawingRecorder recorder(graphics_context, frame_overlay,
                              DisplayItem::kFrameOverlay,
-                             IntRect(IntPoint(), size));
+                             gfx::Rect(ToGfxSize(size)));
     graphics_context.FillRect(rect, color_, AutoDarkMode::Disabled());
   }
 
@@ -152,7 +152,7 @@ TEST_P(FrameOverlayTest, DeviceEmulationScale) {
     EXPECT_THAT(
         paint_controller.GetDisplayItemList(),
         ElementsAre(IsSameId(frame_overlay->Id(), DisplayItem::kFrameOverlay)));
-    EXPECT_EQ(IntRect(0, 0, 800, 600),
+    EXPECT_EQ(gfx::Rect(0, 0, 800, 600),
               paint_controller.GetDisplayItemList()[0].VisualRect());
     EXPECT_THAT(
         paint_controller.PaintChunks(),

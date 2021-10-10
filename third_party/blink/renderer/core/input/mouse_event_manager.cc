@@ -438,10 +438,10 @@ void MouseEventManager::RecomputeMouseHoverState() {
     button = WebPointerProperties::Button::kLeft;
     modifiers |= WebInputEvent::kLeftButtonDown;
   }
-  WebMouseEvent fake_mouse_move_event(WebInputEvent::Type::kMouseMove,
-                                      last_known_mouse_position_,
-                                      last_known_mouse_screen_position_, button,
-                                      0, modifiers, base::TimeTicks::Now());
+  WebMouseEvent fake_mouse_move_event(
+      WebInputEvent::Type::kMouseMove, ToGfxPointF(last_known_mouse_position_),
+      ToGfxPointF(last_known_mouse_screen_position_), button, 0, modifiers,
+      base::TimeTicks::Now());
   Vector<WebMouseEvent> coalesced_events, predicted_events;
   frame_->GetEventHandler().HandleMouseMoveEvent(
       TransformWebMouseEvent(view, fake_mouse_move_event), coalesced_events,

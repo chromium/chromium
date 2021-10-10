@@ -107,7 +107,7 @@ bool RemoteFrameView::UpdateViewportIntersectionsForSubtree(
 void RemoteFrameView::SetViewportIntersection(
     const mojom::blink::ViewportIntersectionState& intersection_state) {
   mojom::blink::ViewportIntersectionState new_state(intersection_state);
-  new_state.compositor_visible_rect = gfx::Rect(compositing_rect_);
+  new_state.compositor_visible_rect = ToGfxRect(compositing_rect_);
   if (!last_intersection_state_.Equals(new_state)) {
     last_intersection_state_ = new_state;
     GetFrame().SynchronizeVisualProperties();
@@ -269,7 +269,7 @@ void RemoteFrameView::Paint(GraphicsContext& context,
                             const GlobalPaintFlags flags,
                             const CullRect& rect,
                             const IntSize& paint_offset) const {
-  if (!rect.Intersects(FrameRect()))
+  if (!rect.Intersects(ToGfxRect(FrameRect())))
     return;
 
   const auto& owner_layout_object = *GetFrame().OwnerLayoutObject();
@@ -297,8 +297,8 @@ void RemoteFrameView::Paint(GraphicsContext& context,
 
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
       GetFrame().GetCcLayer()) {
-    auto offset = RoundedIntPoint(
-        GetLayoutEmbeddedContent()->ReplacedContentRect().offset);
+    auto offset = ToGfxPoint(RoundedIntPoint(
+        GetLayoutEmbeddedContent()->ReplacedContentRect().offset));
     RecordForeignLayer(context, owner_layout_object,
                        DisplayItem::kForeignLayerRemoteFrame,
                        GetFrame().GetCcLayer(), offset);
@@ -377,11 +377,11 @@ uint32_t RemoteFrameView::Print(const IntRect& rect,
   // represents the state of the remote frame. See also comments on
   // https://crrev.com/c/2245430/.
   uint32_t content_id = metafile->CreateContentForRemoteFrame(
-      rect, remote_frame_->GetFrameToken().value());
+      ToGfxRect(rect), remote_frame_->GetFrameToken().value());
 
   // Inform browser to print the remote subframe.
   remote_frame_->GetRemoteFrameHostRemote().PrintCrossProcessSubframe(
-      rect, metafile->GetDocumentCookie());
+      ToGfxRect(rect), metafile->GetDocumentCookie());
   return content_id;
 #else
   return 0;
@@ -403,12 +403,13 @@ uint32_t RemoteFrameView::CapturePaintPreview(const IntRect& rect,
       remote_frame_->GetEmbeddingToken();
   if (!maybe_embedding_token.has_value())
     return 0;
-  uint32_t content_id =
-      tracker->CreateContentForRemoteFrame(rect, maybe_embedding_token.value());
+  uint32_t content_id = tracker->CreateContentForRemoteFrame(
+      ToGfxRect(rect), maybe_embedding_token.value());
 
   // Send a request to the browser to trigger a capture of the remote frame.
   remote_frame_->GetRemoteFrameHostRemote()
-      .CapturePaintPreviewOfCrossProcessSubframe(rect, tracker->Guid());
+      .CapturePaintPreviewOfCrossProcessSubframe(ToGfxRect(rect),
+                                                 tracker->Guid());
   return content_id;
 }
 

@@ -48,9 +48,9 @@ void MultiColumnSetPainter::PaintColumnRules(
                                                   DisplayItem::kColumnRules))
     return;
 
-  DrawingRecorder recorder(paint_info.context, layout_multi_column_set_,
-                           DisplayItem::kColumnRules,
-                           PixelSnappedIntRect(UnionRect(column_rule_bounds)));
+  DrawingRecorder recorder(
+      paint_info.context, layout_multi_column_set_, DisplayItem::kColumnRules,
+      ToGfxRect(PixelSnappedIntRect(UnionRect(column_rule_bounds))));
 
   const ComputedStyle& block_style =
       layout_multi_column_set_.MultiColumnBlockFlow()->StyleRef();

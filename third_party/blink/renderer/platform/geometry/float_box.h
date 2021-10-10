@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/box_f.h"
 
 namespace blink {
 
@@ -55,6 +56,18 @@ class PLATFORM_EXPORT FloatBox {
 
   constexpr FloatBox(const FloatBox&) = default;
   constexpr FloatBox& operator=(const FloatBox&) = default;
+
+  explicit constexpr FloatBox(const gfx::BoxF& b)
+      : x_(b.x()),
+        y_(b.y()),
+        z_(b.z()),
+        width_(b.width()),
+        height_(b.height()),
+        depth_(b.depth()) {}
+
+  // This is deleted during blink geometry type to gfx migration.
+  // Use ToBoxF() instead.
+  operator gfx::BoxF() const = delete;
 
   void SetOrigin(const FloatPoint3D& origin) {
     x_ = origin.X();
@@ -137,6 +150,10 @@ constexpr bool operator==(const FloatBox& a, const FloatBox& b) {
 
 constexpr bool operator!=(const FloatBox& a, const FloatBox& b) {
   return !(a == b);
+}
+
+constexpr gfx::BoxF ToGfxBoxF(const FloatBox& b) {
+  return gfx::BoxF(b.X(), b.Y(), b.Z(), b.Width(), b.Height(), b.Depth());
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const FloatBox&);

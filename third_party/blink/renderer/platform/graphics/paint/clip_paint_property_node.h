@@ -89,7 +89,7 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
 
     void SetClipRect(const FloatRect& layout_clip_rect_arg,
                      const FloatRoundedRect& paint_clip_rect_arg) {
-      layout_clip_rect.SetRect(layout_clip_rect_arg);
+      layout_clip_rect.SetRect(ToGfxRectF(layout_clip_rect_arg));
       if (paint_clip_rect_arg.IsRounded())
         layout_clip_rect.SetHasRadius();
       paint_clip_rect = paint_clip_rect_arg;

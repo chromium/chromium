@@ -84,7 +84,7 @@ void UpdateWebMouseEventFromCoreMouseEvent(const MouseEvent& event,
 
   FloatPoint local_point = layout_object->AbsoluteToLocalFloatPoint(
       FloatPoint(event.AbsoluteLocation()));
-  web_event.SetPositionInWidget(local_point);
+  web_event.SetPositionInWidget(ToGfxPointF(local_point));
 }
 
 unsigned ToWebInputEventModifierFrom(WebMouseEvent::Button button) {
@@ -267,7 +267,7 @@ WebMouseEventBuilder::WebMouseEventBuilder(const LayoutObject* layout_object,
 
   FloatPoint local_point = layout_object->AbsoluteToLocalFloatPoint(
       FloatPoint(touch->AbsoluteLocation()));
-  SetPositionInWidget(local_point);
+  SetPositionInWidget(ToGfxPointF(local_point));
 
   pointer_type = WebPointerProperties::PointerType::kTouch;
 }

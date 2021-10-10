@@ -458,7 +458,7 @@ XRWebGLDrawingBuffer::CreateColorBuffer() {
                    gpu::SHARED_IMAGE_USAGE_GLES2 |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
   gpu::Mailbox mailbox = sii->CreateSharedImage(
-      alpha_ ? viz::RGBA_8888 : viz::RGBX_8888, gfx::Size(size_),
+      alpha_ ? viz::RGBA_8888 : viz::RGBX_8888, ToGfxSize(size_),
       gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
       gpu::kNullSurfaceHandle);
 

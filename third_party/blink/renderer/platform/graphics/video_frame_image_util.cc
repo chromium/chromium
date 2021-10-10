@@ -203,7 +203,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     DLOG(ERROR) << "An external CanvasResourceProvider must be provided when "
                    "providing a custom destination rect.";
     return nullptr;
-  } else if (!gfx::Rect(gfx::Size(resource_provider->Size()))
+  } else if (!gfx::Rect(ToGfxSize(resource_provider->Size()))
                   .Contains(final_dest_rect)) {
     DLOG(ERROR)
         << "Provided CanvasResourceProvider is too small. Expected at least "
@@ -251,7 +251,7 @@ bool DrawVideoFrameIntoResourceProvider(
     bool ignore_video_transformation) {
   DCHECK(frame);
   DCHECK(resource_provider);
-  DCHECK(gfx::Rect(gfx::Size(resource_provider->Size())).Contains(dest_rect));
+  DCHECK(gfx::Rect(ToGfxSize(resource_provider->Size())).Contains(dest_rect));
 
   if (frame->HasTextures()) {
     if (!raster_context_provider) {

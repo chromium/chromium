@@ -146,7 +146,7 @@ gfx::Point GetBaselinePoint(LocalFrameView* frame_view,
     if (NSFont* font = attributes[NSFontAttributeName])
       string_point.Move(0, ceil([font descender]));
   }
-  return string_point;
+  return ToGfxPoint(string_point);
 }
 
 }  // namespace
@@ -155,8 +155,7 @@ NSAttributedString* SubstringUtil::AttributedWordAtPoint(
     WebFrameWidgetImpl* frame_widget,
     gfx::Point point,
     gfx::Point& baseline_point) {
-  HitTestResult result =
-      frame_widget->CoreHitTestResultAt(FloatPoint(IntPoint(point)));
+  HitTestResult result = frame_widget->CoreHitTestResultAt(gfx::PointF(point));
 
   if (!result.InnerNode())
     return nil;

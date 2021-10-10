@@ -62,7 +62,7 @@ void BoxModelObjectPainter::PaintTextClipMask(
     const IntRect& mask_rect,
     const PhysicalOffset& paint_offset,
     bool object_has_multiple_boxes) {
-  PaintInfo mask_paint_info(paint_info.context, CullRect(mask_rect),
+  PaintInfo mask_paint_info(paint_info.context, CullRect(ToGfxRect(mask_rect)),
                             PaintPhase::kTextClip, kGlobalPaintNormalPhase, 0);
   mask_paint_info.SetFragmentID(paint_info.FragmentID());
   if (flow_box_) {

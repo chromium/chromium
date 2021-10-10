@@ -314,27 +314,27 @@ DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap(
     cc::SharedBitmapIdRegistrar* bitmap_registrar) {
   // When searching for a hit in SharedBitmap, we don't consider the bitmap
   // format (RGBA 8888 vs F16) since the allocated bitmap is always RGBA_8888.
-  auto* it = std::remove_if(recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
-                            [this](const RegisteredBitmap& registered) {
-                              return registered.bitmap->size() !=
-                                     static_cast<gfx::Size>(size_);
-                            });
+  auto* it =
+      std::remove_if(recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
+                     [this](const RegisteredBitmap& registered) {
+                       return registered.bitmap->size() != ToGfxSize(size_);
+                     });
   recycled_bitmaps_.Shrink(
       static_cast<wtf_size_t>(it - recycled_bitmaps_.begin()));
 
   if (!recycled_bitmaps_.IsEmpty()) {
     RegisteredBitmap recycled = std::move(recycled_bitmaps_.back());
     recycled_bitmaps_.pop_back();
-    DCHECK(recycled.bitmap->size() == static_cast<gfx::Size>(size_));
+    DCHECK(recycled.bitmap->size() == ToGfxSize(size_));
     return recycled;
   }
 
   const viz::SharedBitmapId id = viz::SharedBitmap::GenerateId();
   const viz::ResourceFormat format = viz::RGBA_8888;
-  base::MappedReadOnlyRegion shm = viz::bitmap_allocation::AllocateSharedBitmap(
-      static_cast<gfx::Size>(size_), format);
+  base::MappedReadOnlyRegion shm =
+      viz::bitmap_allocation::AllocateSharedBitmap(ToGfxSize(size_), format);
   auto bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
-      id, std::move(shm), static_cast<gfx::Size>(size_), format);
+      id, std::move(shm), ToGfxSize(size_), format);
   RegisteredBitmap registered = {
       bitmap, bitmap_registrar->RegisterSharedBitmapId(id, bitmap)};
   return registered;
@@ -435,7 +435,7 @@ void DrawingBuffer::ReadFramebufferIntoBitmapPixels(uint8_t* pixels) {
 
   // Readback in Skia native byte order (RGBA or BGRA) with kN32_SkColorType.
   const size_t buffer_size = viz::ResourceSizes::CheckedSizeInBytes<size_t>(
-      static_cast<gfx::Size>(size_), viz::RGBA_8888);
+      ToGfxSize(size_), viz::RGBA_8888);
   ReadBackFramebuffer(base::span<uint8_t>(pixels, buffer_size),
                       kN32_SkColorType, op);
 }
@@ -451,7 +451,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
       static_cast<uint8_t*>(registered.bitmap->memory()));
 
   *out_resource = viz::TransferableResource::MakeSoftware(
-      registered.bitmap->id(), static_cast<gfx::Size>(size_), viz::RGBA_8888);
+      registered.bitmap->id(), ToGfxSize(size_), viz::RGBA_8888);
   out_resource->color_space = storage_color_space_;
 
   // This holds a ref on the DrawingBuffer that will keep it alive until the
@@ -554,7 +554,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
     bool is_overlay_candidate = !!color_buffer_for_mailbox->gpu_memory_buffer;
     *out_resource = viz::TransferableResource::MakeGL(
         color_buffer_for_mailbox->mailbox, GL_LINEAR, texture_target_,
-        color_buffer_for_mailbox->produce_sync_token, gfx::Size(size_),
+        color_buffer_for_mailbox->produce_sync_token, ToGfxSize(size_),
         is_overlay_candidate);
     out_resource->color_space = storage_color_space_;
     out_resource->format = color_buffer_for_mailbox->format;
@@ -618,7 +618,7 @@ void DrawingBuffer::MailboxReleasedSoftware(RegisteredBitmap registered,
                                             bool lost_resource) {
   DCHECK(!sync_token.HasData());  // No sync tokens for software resources.
   if (destruction_in_progress_ || lost_resource || is_hidden_ ||
-      registered.bitmap->size() != static_cast<gfx::Size>(size_)) {
+      registered.bitmap->size() != ToGfxSize(size_)) {
     // Just delete the RegisteredBitmap, which will free the memory and
     // unregister it with the compositor.
     return;
@@ -1197,8 +1197,8 @@ bool DrawingBuffer::ResizeDefaultFramebuffer(const IntSize& size) {
                                  ? kTopLeft_GrSurfaceOrigin
                                  : kBottomLeft_GrSurfaceOrigin;
     premultiplied_alpha_false_mailbox_ = sii->CreateSharedImage(
-        back_color_buffer_->format, static_cast<gfx::Size>(size),
-        storage_color_space_, origin, kUnpremul_SkAlphaType,
+        back_color_buffer_->format, ToGfxSize(size), storage_color_space_,
+        origin, kUnpremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2 |
             gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
             gpu::SHARED_IMAGE_USAGE_RASTER,
@@ -1721,8 +1721,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
 
   if (UsingSwapChain()) {
     gpu::SharedImageInterface::SwapChainMailboxes mailboxes =
-        sii->CreateSwapChain(format, static_cast<gfx::Size>(size),
-                             storage_color_space_, origin, kPremul_SkAlphaType,
+        sii->CreateSwapChain(format, ToGfxSize(size), storage_color_space_,
+                             origin, kPremul_SkAlphaType,
                              usage | gpu::SHARED_IMAGE_USAGE_SCANOUT);
     back_buffer_mailbox = mailboxes.back_buffer;
     front_buffer_mailbox = mailboxes.front_buffer;
@@ -1753,7 +1753,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       }
 
       gpu_memory_buffer = gpu_memory_buffer_manager->CreateGpuMemoryBuffer(
-          gfx::Size(size), buffer_format, buffer_usage, gpu::kNullSurfaceHandle,
+          ToGfxSize(size), buffer_format, buffer_usage, gpu::kNullSurfaceHandle,
           nullptr);
 
       if (gpu_memory_buffer) {
@@ -1776,8 +1776,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         alpha_type = kUnpremul_SkAlphaType;
 
       back_buffer_mailbox = sii->CreateSharedImage(
-          format, static_cast<gfx::Size>(size), storage_color_space_, origin,
-          alpha_type, usage, gpu::kNullSurfaceHandle);
+          format, ToGfxSize(size), storage_color_space_, origin, alpha_type,
+          usage, gpu::kNullSurfaceHandle);
     }
   }
 

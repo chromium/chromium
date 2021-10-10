@@ -99,10 +99,10 @@ class ScrollAnchorTest : public testing::WithParamInterface<bool>,
     DCHECK_EQ(true, scrollbar->GetTheme().AllowsHitTest());
     int thumb_center = scrollbar->GetTheme().ThumbPosition(*scrollbar) +
                        scrollbar->GetTheme().ThumbLength(*scrollbar) / 2;
-    scrollbar_drag_point_ =
-        gfx::PointF(scrollbar->GetScrollableArea()
-                        ->ConvertFromScrollbarToContainingEmbeddedContentView(
-                            *scrollbar, IntPoint(0, thumb_center)));
+    scrollbar_drag_point_ = gfx::PointF(
+        ToGfxPoint(scrollbar->GetScrollableArea()
+                       ->ConvertFromScrollbarToContainingEmbeddedContentView(
+                           *scrollbar, IntPoint(0, thumb_center))));
     scrollbar->MouseDown(blink::WebMouseEvent(
         blink::WebInputEvent::Type::kMouseDown, *scrollbar_drag_point_,
         *scrollbar_drag_point_, blink::WebPointerProperties::Button::kLeft, 0,

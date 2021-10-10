@@ -84,7 +84,7 @@ TEST_F(GraphicsLayerTest, PaintRecursively) {
   root.AddChild(&layer2);
 
   client.SetPainter([&](const GraphicsLayer* layer, GraphicsContext& context,
-                        GraphicsLayerPaintingPhase, const gfx::Rect&) {
+                        GraphicsLayerPaintingPhase, const IntRect&) {
     if (layer == &root) {
       context.GetPaintController().RecordHitTestData(
           *layer, gfx::Rect(1, 2, 3, 4), TouchAction::kNone, false);

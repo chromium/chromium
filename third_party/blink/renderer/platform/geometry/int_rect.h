@@ -197,9 +197,10 @@ class PLATFORM_EXPORT IntRect {
   operator SkIRect() const {
     return SkIRect::MakeLTRB(X(), Y(), MaxX(), MaxY());
   }
-  constexpr operator gfx::Rect() const {
-    return gfx::Rect(X(), Y(), Width(), Height());
-  }
+
+  // This is deleted during blink geometry type to gfx migration.
+  // Use ToGfxRect() instead.
+  operator gfx::Rect() const = delete;
 
   String ToString() const;
 
@@ -254,6 +255,10 @@ constexpr bool operator==(const IntRect& a, const IntRect& b) {
 
 constexpr bool operator!=(const IntRect& a, const IntRect& b) {
   return !(a == b);
+}
+
+constexpr gfx::Rect ToGfxRect(const IntRect& r) {
+  return gfx::Rect(r.X(), r.Y(), r.Width(), r.Height());
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const IntRect&);

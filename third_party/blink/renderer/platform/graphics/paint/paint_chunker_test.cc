@@ -77,7 +77,7 @@ class TestDisplayItemRequiringSeparateChunk : public ForeignLayerDisplayItem {
       : ForeignLayerDisplayItem(client_id,
                                 DisplayItem::kForeignLayerPlugin,
                                 cc::Layer::Create(),
-                                IntPoint(),
+                                gfx::Point(),
                                 RasterEffectOutset::kNone,
                                 PaintInvalidationReason::kJustCreated) {}
 };

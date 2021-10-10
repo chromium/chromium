@@ -3539,23 +3539,23 @@ TEST_F(DisplayLockContextTest, CullRectUpdate) {
   // Check if the result is correct if we update the contents.
   auto* container = GetDocument().getElementById("container");
   auto* target = GetDocument().getElementById("target")->GetLayoutBox();
-  EXPECT_EQ(IntRect(0, 0, 100, 100),
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
             target->FirstFragment().GetCullRect().Rect());
 
   container->classList().Add("locked");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(IntRect(0, 0, 100, 100),
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
             target->FirstFragment().GetCullRect().Rect());
 
   GetDocument().getElementById("clip")->setAttribute(html_names::kStyleAttr,
                                                      "width: 200px");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(IntRect(0, 0, 100, 100),
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
             target->FirstFragment().GetCullRect().Rect());
 
   container->classList().Remove("locked");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(IntRect(0, 0, 200, 100),
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 100),
             target->FirstFragment().GetCullRect().Rect());
 }
 

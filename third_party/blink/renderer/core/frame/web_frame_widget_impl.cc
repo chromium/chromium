@@ -359,7 +359,7 @@ gfx::Rect WebFrameWidgetImpl::ComputeBlockBound(
   if (node) {
     IntRect absolute_rect = node->GetLayoutObject()->AbsoluteBoundingBoxRect();
     LocalFrame* frame = node->GetDocument().GetFrame();
-    return frame->View()->ConvertToRootFrame(absolute_rect);
+    return ToGfxRect(frame->View()->ConvertToRootFrame(absolute_rect));
   }
   return gfx::Rect();
 }
@@ -475,8 +475,8 @@ void WebFrameWidgetImpl::DragSourceEndedAt(const gfx::PointF& point_in_viewport,
     return;
   }
   gfx::PointF point_in_root_frame(
-      GetPage()->GetVisualViewport().ViewportToRootFrame(
-          FloatPoint(point_in_viewport)));
+      ToGfxPointF(GetPage()->GetVisualViewport().ViewportToRootFrame(
+          FloatPoint(point_in_viewport))));
 
   WebMouseEvent fake_mouse_move(
       WebInputEvent::Type::kMouseMove, point_in_root_frame, screen_point,
@@ -589,7 +589,7 @@ viz::FrameSinkId WebFrameWidgetImpl::GetFrameSinkIdAtPoint(
       local_point.MoveBy(-FloatPoint(box->PhysicalContentBoxOffset()));
 
     *local_point_in_dips =
-        widget_base_->BlinkSpaceToDIPs(gfx::PointF(local_point));
+        widget_base_->BlinkSpaceToDIPs(ToGfxPointF(local_point));
     return remote_frame_sink_id;
   }
 
@@ -861,10 +861,9 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
       if (web_view->SettingsImpl()->DoubleTapToZoomEnabled() &&
           web_view->MinimumPageScaleFactor() !=
               web_view->MaximumPageScaleFactor()) {
-        IntPoint pos_in_local_frame_root =
-            FlooredIntPoint(scaled_event.PositionInRootFrame());
-        auto block_bounds =
-            gfx::Rect(ComputeBlockBound(pos_in_local_frame_root, false));
+        gfx::Point pos_in_local_frame_root =
+            ToGfxPoint(FlooredIntPoint(scaled_event.PositionInRootFrame()));
+        auto block_bounds = ComputeBlockBound(pos_in_local_frame_root, false);
 
         if (ForMainFrame()) {
           web_view->AnimateDoubleTapZoom(pos_in_local_frame_root, block_bounds);
@@ -1180,8 +1179,8 @@ void WebFrameWidgetImpl::DisableDragAndDrop() {
 
 gfx::PointF WebFrameWidgetImpl::ViewportToRootFrame(
     const gfx::PointF& point_in_viewport) const {
-  return GetPage()->GetVisualViewport().ViewportToRootFrame(
-      FloatPoint(point_in_viewport));
+  return ToGfxPointF(GetPage()->GetVisualViewport().ViewportToRootFrame(
+      FloatPoint(point_in_viewport)));
 }
 
 WebViewImpl* WebFrameWidgetImpl::View() const {
@@ -3727,18 +3726,18 @@ void WebFrameWidgetImpl::CalculateSelectionBounds(
   // For subframes it will just be a 1:1 transformation and the browser
   // will then apply later transformations to these rects.
   VisualViewport& visual_viewport = GetPage()->GetVisualViewport();
-  anchor_root_frame = visual_viewport.RootFrameToViewport(
-      local_frame->View()->ConvertToRootFrame(anchor));
-  focus_root_frame = visual_viewport.RootFrameToViewport(
-      local_frame->View()->ConvertToRootFrame(focus));
+  anchor_root_frame = ToGfxRect(visual_viewport.RootFrameToViewport(
+      local_frame->View()->ConvertToRootFrame(anchor)));
+  focus_root_frame = ToGfxRect(visual_viewport.RootFrameToViewport(
+      local_frame->View()->ConvertToRootFrame(focus)));
 
   // Calculate the bounding box of the selection area.
   if (bounding_box_in_root_frame) {
     const IntRect bounding_box = EnclosingIntRect(
         CreateRange(selection.GetSelectionInDOMTree().ComputeRange())
             ->BoundingRect());
-    *bounding_box_in_root_frame = visual_viewport.RootFrameToViewport(
-        local_frame->View()->ConvertToRootFrame(bounding_box));
+    *bounding_box_in_root_frame = ToGfxRect(visual_viewport.RootFrameToViewport(
+        local_frame->View()->ConvertToRootFrame(bounding_box)));
   }
 }
 
@@ -4315,10 +4314,10 @@ WebFrameWidgetImpl::GetScrollParamsForFocusedEditableElement(
   mojom::blink::ScrollIntoViewParamsPtr params =
       ScrollAlignment::CreateScrollIntoViewParams();
   params->zoom_into_rect = View()->ShouldZoomToLegibleScale(element);
-  params->relative_element_bounds = NormalizeRect(
-      Intersection(absolute_element_bounds, maximal_rect), maximal_rect);
-  params->relative_caret_bounds = NormalizeRect(
-      Intersection(absolute_caret_bounds, maximal_rect), maximal_rect);
+  params->relative_element_bounds = ToGfxRectF(NormalizeRect(
+      Intersection(absolute_element_bounds, maximal_rect), maximal_rect));
+  params->relative_caret_bounds = ToGfxRectF(NormalizeRect(
+      Intersection(absolute_caret_bounds, maximal_rect), maximal_rect));
   params->behavior = mojom::blink::ScrollBehavior::kInstant;
   out_rect_to_scroll = PhysicalRect(maximal_rect);
   return params;

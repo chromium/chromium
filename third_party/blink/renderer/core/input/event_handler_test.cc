@@ -121,8 +121,8 @@ class TapEventBuilder : public WebGestureEvent {
                         WebInputEvent::kNoModifiers,
                         base::TimeTicks::Now(),
                         WebGestureDevice::kTouchscreen) {
-    SetPositionInWidget(position);
-    SetPositionInScreen(position);
+    SetPositionInWidget(ToGfxPointF(position));
+    SetPositionInScreen(ToGfxPointF(position));
     data.tap.tap_count = tap_count;
     data.tap.width = 5;
     data.tap.height = 5;
@@ -137,8 +137,8 @@ class TapDownEventBuilder : public WebGestureEvent {
                         WebInputEvent::kNoModifiers,
                         base::TimeTicks::Now(),
                         WebGestureDevice::kTouchscreen) {
-    SetPositionInWidget(position);
-    SetPositionInScreen(position);
+    SetPositionInWidget(ToGfxPointF(position));
+    SetPositionInScreen(ToGfxPointF(position));
     data.tap_down.width = 5;
     data.tap_down.height = 5;
     frame_scale_ = 1;
@@ -152,8 +152,8 @@ class ShowPressEventBuilder : public WebGestureEvent {
                         WebInputEvent::kNoModifiers,
                         base::TimeTicks::Now(),
                         WebGestureDevice::kTouchscreen) {
-    SetPositionInWidget(position);
-    SetPositionInScreen(position);
+    SetPositionInWidget(ToGfxPointF(position));
+    SetPositionInScreen(ToGfxPointF(position));
     data.show_press.width = 5;
     data.show_press.height = 5;
     frame_scale_ = 1;
@@ -167,8 +167,8 @@ class LongPressEventBuilder : public WebGestureEvent {
                         WebInputEvent::kNoModifiers,
                         base::TimeTicks::Now(),
                         WebGestureDevice::kTouchscreen) {
-    SetPositionInWidget(position);
-    SetPositionInScreen(position);
+    SetPositionInWidget(ToGfxPointF(position));
+    SetPositionInScreen(ToGfxPointF(position));
     data.long_press.width = 5;
     data.long_press.height = 5;
     frame_scale_ = 1;
@@ -1190,7 +1190,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromTabUpdatesTooltip) {
 
   Element* element = GetDocument().getElementById("b1");
   EXPECT_EQ("my tooltip 1", LastToolTipText());
-  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
+  EXPECT_EQ(ToGfxRect(element->BoundsInViewport()), LastToolTipBounds());
 
   // Doing the same but for a button that doesn't have a tooltip text should
   // still trigger a tooltip update. The browser-side TooltipController will
@@ -1198,7 +1198,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromTabUpdatesTooltip) {
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
   element = GetDocument().getElementById("b2");
   EXPECT_TRUE(LastToolTipText().IsNull());
-  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
+  EXPECT_EQ(ToGfxRect(element->BoundsInViewport()), LastToolTipBounds());
 }
 
 // macOS doesn't have keyboard-triggered tooltips.
@@ -1227,7 +1227,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromAccessKeyUpdatesTooltip) {
 
   Element* element = GetDocument().getElementById("b");
   EXPECT_EQ("my tooltip", LastToolTipText());
-  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
+  EXPECT_EQ(ToGfxRect(element->BoundsInViewport()), LastToolTipBounds());
 }
 
 // macOS doesn't have keyboard-triggered tooltips.
@@ -1251,7 +1251,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromMouseDoesntUpdateTooltip) {
 
   Element* element = GetDocument().getElementById("b");
   gfx::PointF mouse_press_point =
-      gfx::PointF(element->BoundsInViewport().Center());
+      ToGfxPointF(FloatPoint(element->BoundsInViewport().Center()));
   WebMouseEvent mouse_press_event(
       WebInputEvent::Type::kMouseDown, mouse_press_point, mouse_press_point,
       WebPointerProperties::Button::kLeft, 1,
@@ -1335,7 +1335,7 @@ TEST_F(EventHandlerTooltipTest,
 
   Element* element = GetDocument().getElementById("b1");
   EXPECT_EQ("my tooltip 1", LastToolTipText());
-  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
+  EXPECT_EQ(ToGfxRect(element->BoundsInViewport()), LastToolTipBounds());
 
   // Doing the same but for a button that doesn't have a tooltip text should
   // still trigger a tooltip update. The browser-side TooltipController will
@@ -1387,7 +1387,7 @@ TEST_F(EventHandlerTooltipTest,
 
   Element* element = GetDocument().getElementById("b1");
   EXPECT_EQ("my tooltip 1", LastToolTipText());
-  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
+  EXPECT_EQ(ToGfxRect(element->BoundsInViewport()), LastToolTipBounds());
 
   // Validate that blurring an element that is not focused will not just hide
   // the tooltip. It wouldn't make sense.
@@ -1395,7 +1395,7 @@ TEST_F(EventHandlerTooltipTest,
   element->blur();
 
   EXPECT_EQ("my tooltip 1", LastToolTipText());
-  EXPECT_EQ(GetDocument().getElementById("b1")->BoundsInViewport(),
+  EXPECT_EQ(ToGfxRect(GetDocument().getElementById("b1")->BoundsInViewport()),
             LastToolTipBounds());
 
   // Then, programmatically move the focus to another button that has no title
@@ -1411,7 +1411,7 @@ TEST_F(EventHandlerTooltipTest,
 
   element = GetDocument().getElementById("b1");
   EXPECT_EQ("my tooltip 1", LastToolTipText());
-  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
+  EXPECT_EQ(ToGfxRect(element->BoundsInViewport()), LastToolTipBounds());
 
   // Then, programmatically blur the button to validate that the tooltip gets
   // hidden.

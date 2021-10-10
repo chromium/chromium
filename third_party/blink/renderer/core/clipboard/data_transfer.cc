@@ -130,10 +130,11 @@ class DraggedNodeImageBuilder {
       FloatRect cull_rect = bounding_box;
       cull_rect.Move(
           FloatSize(layer->GetLayoutObject().FirstFragment().PaintOffset()));
-      cull_rect_scope.emplace(*layer, CullRect(EnclosingIntRect(cull_rect)));
+      cull_rect_scope.emplace(*layer,
+                              CullRect(ToGfxRect(EnclosingIntRect(cull_rect))));
     }
     PaintLayerPaintingInfo painting_info(
-        layer, CullRect(EnclosingIntRect(bounding_box)),
+        layer, CullRect(ToGfxRect(EnclosingIntRect(bounding_box))),
         kGlobalPaintFlattenCompositingLayers, PhysicalOffset());
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
 

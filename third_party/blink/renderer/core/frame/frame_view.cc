@@ -193,9 +193,9 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
   main_frame_gfx_transform.RoundTranslationComponents();
 
   SetViewportIntersection(mojom::blink::ViewportIntersectionState(
-      viewport_intersection, mainframe_intersection, gfx::Rect(),
-      occlusion_state, gfx::Size(frame.GetMainFrameViewportSize()),
-      gfx::Point(frame.GetMainFrameScrollOffset()), main_frame_gfx_transform));
+      ToGfxRect(viewport_intersection), ToGfxRect(mainframe_intersection),
+      gfx::Rect(), occlusion_state, ToGfxSize(frame.GetMainFrameViewportSize()),
+      ToGfxPoint(frame.GetMainFrameScrollOffset()), main_frame_gfx_transform));
 
   UpdateFrameVisibility(!viewport_intersection.IsEmpty());
 

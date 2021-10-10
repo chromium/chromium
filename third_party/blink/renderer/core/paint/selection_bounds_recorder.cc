@@ -130,7 +130,7 @@ SelectionBoundsRecorder::SelectionBoundsRecorder(
 SelectionBoundsRecorder::~SelectionBoundsRecorder() {
   absl::optional<PaintedSelectionBound> start;
   absl::optional<PaintedSelectionBound> end;
-  gfx::Rect selection_rect = PixelSnappedIntRect(selection_rect_);
+  gfx::Rect selection_rect = ToGfxRect(PixelSnappedIntRect(selection_rect_));
   const bool is_ltr = IsLtr(text_direction_);
   BoundEdges edges = GetBoundEdges(writing_mode_, is_ltr);
   if (state_ == SelectionState::kStart ||

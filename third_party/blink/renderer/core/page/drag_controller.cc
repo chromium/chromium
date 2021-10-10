@@ -124,8 +124,9 @@ static bool DragTypeIsValid(DragSourceAction action) {
 
 static WebMouseEvent CreateMouseEvent(DragData* drag_data) {
   WebMouseEvent result(
-      WebInputEvent::Type::kMouseMove, drag_data->ClientPosition(),
-      drag_data->GlobalPosition(), WebPointerProperties::Button::kLeft, 0,
+      WebInputEvent::Type::kMouseMove, ToGfxPointF(drag_data->ClientPosition()),
+      ToGfxPointF(drag_data->GlobalPosition()),
+      WebPointerProperties::Button::kLeft, 0,
       static_cast<WebInputEvent::Modifiers>(drag_data->GetModifiers()),
       base::TimeTicks::Now());
   // TODO(dtapuska): Really we should chnage DragData to store the viewport
@@ -1165,7 +1166,7 @@ std::unique_ptr<DragImage> DragController::DragImageForSelection(
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   frame.View()->PaintContentsOutsideOfLifecycle(
       builder->Context(), paint_flags,
-      CullRect(EnclosingIntRect(painting_rect)));
+      CullRect(ToGfxRect(EnclosingIntRect(painting_rect))));
 
   auto property_tree_state = frame.View()
                                  ->GetLayoutView()

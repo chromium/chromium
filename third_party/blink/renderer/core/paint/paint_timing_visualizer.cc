@@ -89,7 +89,7 @@ void PaintTimingVisualizer::RecordMainFrameViewport(
   IntRect viewport_rect = scrollable_area->VisibleContentRect();
 
   FloatClipRect float_clip_visual_rect =
-      FloatClipRect(FloatRect(viewport_rect));
+      FloatClipRect(ToGfxRectF(FloatRect(viewport_rect)));
   FloatRect float_visual_rect =
       frame_view.GetPaintTimingDetector().BlinkSpaceToDIPs(
           float_clip_visual_rect.Rect());

@@ -395,7 +395,7 @@ void HTMLVideoElement::PaintCurrentFrame(cc::PaintCanvas* canvas,
     media_flags.setBlendMode(SkBlendMode::kSrc);
   }
 
-  GetWebMediaPlayer()->Paint(canvas, dest_rect, media_flags);
+  GetWebMediaPlayer()->Paint(canvas, ToGfxRect(dest_rect), media_flags);
 }
 
 bool HTMLVideoElement::HasAvailableVideoFrame() const {

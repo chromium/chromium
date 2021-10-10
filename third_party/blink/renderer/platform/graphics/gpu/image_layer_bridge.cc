@@ -111,7 +111,7 @@ void ImageLayerBridge::SetUV(const FloatPoint& left_top,
   if (disposed_)
     return;
 
-  layer_->SetUV(left_top, right_bottom);
+  layer_->SetUV(ToGfxPointF(left_top), ToGfxPointF(right_bottom));
 }
 
 void ImageLayerBridge::Dispose() {

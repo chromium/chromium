@@ -642,7 +642,7 @@ void NGBoxFragmentPainter::PaintObject(
       paint_phase == PaintPhase::kDescendantBlockBackgroundsOnly) {
     NGTablePainter(box_fragment_)
         .PaintCollapsedBorders(paint_info, paint_offset,
-                               VisualRect(paint_offset));
+                               IntRect(VisualRect(paint_offset)));
   }
 
   if (ShouldPaintSelfOutline(paint_phase)) {
@@ -1010,7 +1010,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
   absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
   bool painting_background_in_contents_space =
       IsPaintingBackgroundInContentsSpace(paint_info);
-  IntRect visual_rect;
+  gfx::Rect visual_rect;
   if (painting_background_in_contents_space) {
     // For the case where we are painting the background in the contents space,
     // we need to include the entire overflow rect.
@@ -1027,8 +1027,9 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
 
     background_client = &layout_box.GetScrollableArea()
                              ->GetScrollingBackgroundDisplayItemClient();
-    visual_rect = layout_box.GetScrollableArea()->ScrollingBackgroundVisualRect(
-        paint_offset);
+    visual_rect =
+        ToGfxRect(layout_box.GetScrollableArea()->ScrollingBackgroundVisualRect(
+            paint_offset));
   } else {
     paint_rect.offset = paint_offset;
     paint_rect.size = box_fragment_.Size();
@@ -1044,12 +1045,12 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
     PaintBoxDecorationBackgroundWithRect(
         contents_paint_state ? contents_paint_state->GetPaintInfo()
                              : paint_info,
-        visual_rect, paint_rect, *background_client);
+        IntRect(visual_rect), paint_rect, *background_client);
   }
 
   if (ShouldRecordHitTestData(paint_info)) {
     paint_info.context.GetPaintController().RecordHitTestData(
-        *background_client, PixelSnappedIntRect(paint_rect),
+        *background_client, ToGfxRect(PixelSnappedIntRect(paint_rect)),
         PhysicalFragment().EffectiveAllowedTouchAction(),
         PhysicalFragment().InsideBlockingWheelEventHandler());
   }
@@ -1101,7 +1102,8 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRect(
     return;
 
   DrawingRecorder recorder(paint_info.context, background_client,
-                           DisplayItem::kBoxDecorationBackground, visual_rect);
+                           DisplayItem::kBoxDecorationBackground,
+                           ToGfxRect(visual_rect));
 
   if (PhysicalFragment().IsFieldsetContainer()) {
     NGFieldsetPainter(box_fragment_)
@@ -1278,7 +1280,7 @@ void NGBoxFragmentPainter::PaintColumnRules(
     return;
 
   DrawingRecorder recorder(paint_info.context, GetDisplayItemClient(),
-                           DisplayItem::kColumnRules, IntRect());
+                           DisplayItem::kColumnRules, gfx::Rect());
 
   const Color& rule_color =
       LayoutObject::ResolveColor(style, GetCSSPropertyColumnRuleColor());
@@ -1356,7 +1358,7 @@ void NGBoxFragmentPainter::PaintColumnRules(
     IntRect snapped_rule = PixelSnappedIntRect(rule);
     BoxBorderPainter::DrawBoxSide(paint_info.context, snapped_rule, box_side,
                                   rule_color, rule_style, auto_dark_mode);
-    recorder.UniteVisualRect(snapped_rule);
+    recorder.UniteVisualRect(ToGfxRect(snapped_rule));
 
     previous_column = current_column;
   }
@@ -1484,7 +1486,7 @@ inline void NGBoxFragmentPainter::PaintLineBox(
     PhysicalRect border_box = line_box_fragment.LocalRect();
     border_box.offset += child_offset;
     paint_info.context.GetPaintController().RecordHitTestData(
-        display_item_client, PixelSnappedIntRect(border_box),
+        display_item_client, ToGfxRect(PixelSnappedIntRect(border_box)),
         PhysicalFragment().EffectiveAllowedTouchAction(),
         PhysicalFragment().InsideBlockingWheelEventHandler());
   }
@@ -1627,7 +1629,7 @@ void NGBoxFragmentPainter::PaintBackplate(NGInlineCursor* line_boxes,
   const auto& backplates = BuildBackplate(line_boxes, paint_offset);
   DrawingRecorder recorder(paint_info.context, GetDisplayItemClient(),
                            DisplayItem::kForcedColorsModeBackplate,
-                           EnclosingIntRect(UnionRect(backplates)));
+                           ToGfxRect(EnclosingIntRect(UnionRect(backplates))));
   for (const auto backplate : backplates) {
     paint_info.context.FillRect(
         FloatRect(backplate), backplate_color,
@@ -1774,7 +1776,7 @@ void NGBoxFragmentPainter::PaintTextClipMask(const PaintInfo& paint_info,
                                              const IntRect& mask_rect,
                                              const PhysicalOffset& paint_offset,
                                              bool object_has_multiple_boxes) {
-  PaintInfo mask_paint_info(paint_info.context, CullRect(mask_rect),
+  PaintInfo mask_paint_info(paint_info.context, CullRect(ToGfxRect(mask_rect)),
                             PaintPhase::kTextClip, kGlobalPaintNormalPhase, 0);
   mask_paint_info.SetFragmentID(paint_info.FragmentID());
   if (!object_has_multiple_boxes) {
@@ -2595,7 +2597,7 @@ bool NGBoxFragmentPainter::HitTestOverflowControl(
                                             accumulated_offset);
 }
 
-IntRect NGBoxFragmentPainter::VisualRect(const PhysicalOffset& paint_offset) {
+gfx::Rect NGBoxFragmentPainter::VisualRect(const PhysicalOffset& paint_offset) {
   if (const auto* layout_box =
           DynamicTo<LayoutBox>(box_fragment_.GetLayoutObject()))
     return BoxPainter(*layout_box).VisualRect(paint_offset);
@@ -2603,7 +2605,7 @@ IntRect NGBoxFragmentPainter::VisualRect(const PhysicalOffset& paint_offset) {
   DCHECK(box_item_);
   PhysicalRect ink_overflow = box_item_->InkOverflow();
   ink_overflow.Move(paint_offset);
-  return EnclosingIntRect(ink_overflow);
+  return ToGfxRect(EnclosingIntRect(ink_overflow));
 }
 
 }  // namespace blink

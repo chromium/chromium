@@ -115,31 +115,28 @@ BuildScrollRectsForLayer(const cc::Layer* layer, bool report_wheel_scrollers) {
       layer->non_fast_scrollable_region();
   for (gfx::Rect rect : non_fast_scrollable_rects) {
     scroll_rects->emplace_back(BuildScrollRect(
-        IntRect(rect),
-        protocol::LayerTree::ScrollRect::TypeEnum::RepaintsOnScroll));
+        rect, protocol::LayerTree::ScrollRect::TypeEnum::RepaintsOnScroll));
   }
   const cc::Region& touch_event_handler_regions =
       layer->touch_action_region().GetAllRegions();
 
   for (gfx::Rect rect : touch_event_handler_regions) {
     scroll_rects->emplace_back(BuildScrollRect(
-        IntRect(rect),
-        protocol::LayerTree::ScrollRect::TypeEnum::TouchEventHandler));
+        rect, protocol::LayerTree::ScrollRect::TypeEnum::TouchEventHandler));
   }
 
   if (base::FeatureList::IsEnabled(::features::kWheelEventRegions)) {
     const cc::Region& wheel_event_handler_region = layer->wheel_event_region();
     for (gfx::Rect rect : wheel_event_handler_region) {
       scroll_rects->emplace_back(BuildScrollRect(
-          IntRect(rect),
-          protocol::LayerTree::ScrollRect::TypeEnum::WheelEventHandler));
+          rect, protocol::LayerTree::ScrollRect::TypeEnum::WheelEventHandler));
     }
   } else {
     if (report_wheel_scrollers) {
       scroll_rects->emplace_back(BuildScrollRect(
           // TODO(pdr): Use the correct region for wheel event handlers, see
           // https://crbug.com/841364.
-          gfx::Rect(0, 0, layer->bounds().width(), layer->bounds().height()),
+          gfx::Rect(layer->bounds()),
           protocol::LayerTree::ScrollRect::TypeEnum::WheelEventHandler));
     }
   }

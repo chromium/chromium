@@ -2378,7 +2378,7 @@ class FrameColorOverlay final : public FrameOverlay::Delegate {
       return;
     DrawingRecorder recorder(graphics_context, frame_overlay,
                              DisplayItem::kFrameOverlay,
-                             IntRect(IntPoint(), view->Size()));
+                             gfx::Rect(ToGfxSize(view->Size())));
     FloatRect rect(0, 0, view->Width(), view->Height());
     graphics_context.FillRect(
         rect, color_,
@@ -3132,7 +3132,7 @@ void LocalFrame::ExtractSmartClipDataInternal(const gfx::Rect& rect_in_viewport,
   SmartClipData clip_data =
       SmartClip(this).DataForRect(IntRect(rect_in_viewport));
   clip_text = clip_data.ClipData();
-  clip_rect = clip_data.RectInViewport();
+  clip_rect = ToGfxRect(clip_data.RectInViewport());
 
   IntPoint start_point(rect_in_viewport.x(), rect_in_viewport.y());
   IntPoint end_point(rect_in_viewport.x() + rect_in_viewport.width(),

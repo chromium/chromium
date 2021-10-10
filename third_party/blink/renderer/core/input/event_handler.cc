@@ -658,7 +658,7 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
       cursor.set_custom_bitmap(
           image->AsSkBitmapForCurrentFrame(kRespectImageOrientation));
       cursor.set_custom_hotspot(
-          DetermineHotSpot(*image, hot_spot_specified, hot_spot));
+          ToGfxPoint(DetermineHotSpot(*image, hot_spot_specified, hot_spot)));
       cursor.set_image_scale_factor(scale);
       return cursor;
     }
@@ -1954,7 +1954,7 @@ GestureEventWithHitTestResults EventHandler::HitTestResultForGestureEvent(
     // point-base hit test. Otherwise add padding and do rect-based hit test.
     if (GestureCorrespondsToAdjustedTouch(gesture_event)) {
       adjusted_event.ApplyTouchAdjustment(
-          touch_adjustment_result_.adjusted_point);
+          ToGfxPointF(touch_adjustment_result_.adjusted_point));
     } else {
       hit_rect_size = GetHitTestRectForAdjustment(
           *frame_, LayoutSize(adjusted_event.TapAreaInRootFrame()));

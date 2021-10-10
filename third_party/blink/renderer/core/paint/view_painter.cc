@@ -62,7 +62,7 @@ void ViewPainter::PaintRootGroup(const PaintInfo& paint_info,
           context, client, DisplayItem::kDocumentRootBackdrop)) {
     DrawingRecorder recorder(context, client,
                              DisplayItem::kDocumentRootBackdrop,
-                             pixel_snapped_background_rect);
+                             ToGfxRect(pixel_snapped_background_rect));
     context.FillRect(
         pixel_snapped_background_rect, base_background_color,
         PaintAutoDarkMode(layout_view_.StyleRef(),
@@ -243,7 +243,7 @@ void ViewPainter::PaintRootElementGroup(
   }
   DrawingRecorder recorder(context, background_client,
                            DisplayItem::kDocumentBackground,
-                           pixel_snapped_background_rect);
+                           ToGfxRect(pixel_snapped_background_rect));
 
   const Document& document = layout_view_.GetDocument();
   const LocalFrameView& frame_view = *layout_view_.GetFrameView();
@@ -328,7 +328,7 @@ void ViewPainter::PaintRootElementGroup(
     return;
   }
 
-  recorder.UniteVisualRect(paint_rect);
+  recorder.UniteVisualRect(ToGfxRect(paint_rect));
 
   BoxPainterBase::FillLayerOcclusionOutputList reversed_paint_list;
   bool should_draw_background_in_separate_buffer =

@@ -272,7 +272,7 @@ void ScrollingCoordinator::ScrollableAreaScrollLayerDidChange(
 
     // This call has to go through the GraphicsLayer method to preserve
     // invalidation code there.
-    graphics_layer->SetSize(gfx::Size(scroll_contents_size));
+    graphics_layer->SetSize(ToGfxSize(scroll_contents_size));
   }
   if (cc::ScrollbarLayerBase* scrollbar_layer =
           GetScrollbarLayer(scrollable_area, kHorizontalScrollbar)) {

@@ -79,7 +79,7 @@ gfx::Rect ChunkToLayerMapper::MapVisualRect(const gfx::Rect& rect) const {
   gfx::RectF mapped_rect(rect);
   translation_2d_or_matrix_.MapRect(mapped_rect);
   if (!mapped_rect.IsEmpty() && !clip_rect_.IsInfinite())
-    mapped_rect.Intersect(clip_rect_.Rect());
+    mapped_rect.Intersect(ToGfxRectF(clip_rect_.Rect()));
 
   gfx::Rect result;
   if (!mapped_rect.IsEmpty()) {
@@ -103,13 +103,13 @@ gfx::Rect ChunkToLayerMapper::MapVisualRect(const gfx::Rect& rect) const {
 // visual effects of the filters, though slowly.
 gfx::Rect ChunkToLayerMapper::MapUsingGeometryMapper(
     const gfx::Rect& rect) const {
-  FloatClipRect visual_rect((FloatRect(IntRect(rect))));
+  FloatClipRect visual_rect((gfx::RectF(rect)));
   GeometryMapper::LocalToAncestorVisualRect(chunk_state_, layer_state_,
                                             visual_rect);
   if (visual_rect.Rect().IsEmpty())
-    return IntRect();
+    return gfx::Rect();
 
-  gfx::RectF result(visual_rect.Rect());
+  gfx::RectF result = ToGfxRectF(visual_rect.Rect());
   result.Offset(-layer_offset_);
   InflateForRasterEffectOutset(result);
   return gfx::ToEnclosingRect(result);

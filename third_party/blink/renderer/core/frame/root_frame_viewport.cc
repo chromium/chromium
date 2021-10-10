@@ -347,7 +347,7 @@ PhysicalRect RootFrameViewport::ScrollIntoView(
 
   FloatPoint end_point = ScrollOffsetToPosition(new_scroll_offset);
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
-      cc::SnapSelectionStrategy::CreateForEndPosition(gfx::Vector2dF(end_point),
+      cc::SnapSelectionStrategy::CreateForEndPosition(ToGfxVector2dF(end_point),
                                                       true, true);
   if (GetLayoutBox()) {
     end_point = GetSnapPositionAndSetTarget(*strategy).value_or(end_point);

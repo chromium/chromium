@@ -37,9 +37,8 @@ std::unique_ptr<JSONObject> CCLayerAsJSON(const cc::Layer& layer,
   json->SetString("name", String(layer.DebugName().c_str()));
 
   if (layer.offset_to_transform_parent() != gfx::Vector2dF()) {
-    json->SetArray(
-        "position",
-        PointAsJSONArray(FloatPoint(layer.offset_to_transform_parent())));
+    json->SetArray("position",
+                   VectorAsJSONArray(layer.offset_to_transform_parent()));
   }
 
   // This is testing against gfx::Size(), *not* whether the size is empty.
@@ -109,7 +108,8 @@ int LayersAsJSON::AddTransformJSON(
 
   if (!transform.IsIdentityOr2DTranslation() &&
       !transform.Matrix().IsIdentityOrTranslation()) {
-    transform_json->SetArray("origin", Point3AsJSONArray(transform.Origin()));
+    transform_json->SetArray(
+        "origin", Point3AsJSONArray(ToGfxPoint3F(transform.Origin())));
   }
 
   if (!transform.FlattensInheritedTransform())

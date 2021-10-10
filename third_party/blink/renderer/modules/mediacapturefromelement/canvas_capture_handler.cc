@@ -203,7 +203,7 @@ void CanvasCaptureHandler::SendNewFrame(
   if (!image)
     return;
 
-  const auto size = gfx::Size(image->Size());
+  const auto size = ToGfxSize(image->Size());
   if (!media::VideoFrame::IsValidSize(size, gfx::Rect(size), size)) {
     DVLOG(1) << __func__ << " received frame with invalid size "
              << size.ToString();

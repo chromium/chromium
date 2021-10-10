@@ -286,7 +286,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollExcludeScrollbars) {
   EXPECT_EQ(DocContentClip(), overflow_clip->Parent());
   EXPECT_EQ(properties->PaintOffsetTranslation(),
             &overflow_clip->LocalTransformSpace());
-  EXPECT_EQ(FloatClipRect(FloatRect(10, 10, 100, 100)),
+  EXPECT_EQ(FloatClipRect(gfx::RectF(10, 10, 100, 100)),
             overflow_clip->LayoutClipRect());
 
   PaintLayer* paint_layer = GetPaintLayerByElementId("scroller");
@@ -294,7 +294,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollExcludeScrollbars) {
                   ->VerticalScrollbar()
                   ->IsOverlayScrollbar());
 
-  EXPECT_EQ(FloatClipRect(FloatRect(10, 10, 93, 93)),
+  EXPECT_EQ(FloatClipRect(gfx::RectF(10, 10, 93, 93)),
             overflow_clip->LayoutClipRectExcludingOverlayScrollbars());
 }
 
@@ -342,7 +342,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollExcludeScrollbarsSubpixel) {
   EXPECT_EQ(DocContentClip(), overflow_clip->Parent());
   EXPECT_EQ(properties->PaintOffsetTranslation(),
             &overflow_clip->LocalTransformSpace());
-  EXPECT_EQ(FloatClipRect(FloatRect(10, 10, 100.5, 100)),
+  EXPECT_EQ(FloatClipRect(gfx::RectF(10, 10, 100.5, 100)),
             overflow_clip->LayoutClipRect());
   EXPECT_EQ(FloatRoundedRect(10, 10, 101, 100), overflow_clip->PaintClipRect());
 
@@ -351,7 +351,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollExcludeScrollbarsSubpixel) {
                   ->VerticalScrollbar()
                   ->IsOverlayScrollbar());
 
-  EXPECT_EQ(FloatClipRect(FloatRect(10, 10, 93.5, 93)),
+  EXPECT_EQ(FloatClipRect(gfx::RectF(10, 10, 93.5, 93)),
             overflow_clip->LayoutClipRectExcludingOverlayScrollbars());
 }
 
@@ -1797,7 +1797,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SubpixelBorderRadiusClip) {
 
   const ClipPaintPropertyNode* border_radius_clip =
       div_properties->InnerBorderRadiusClip();
-  FloatClipRect expected_layout_clip_rect(FloatRect(0, 0.5, 100, 100));
+  FloatClipRect expected_layout_clip_rect(gfx::RectF(0, 0.5, 100, 100));
   expected_layout_clip_rect.SetHasRadius();
   EXPECT_EQ(expected_layout_clip_rect, border_radius_clip->LayoutClipRect());
   EXPECT_EQ(
@@ -2325,7 +2325,7 @@ TEST_P(PaintPropertyTreeBuilderTest, CSSClipSubpixel) {
   EXPECT_TRUE(DocScrollTranslation());
   EXPECT_EQ(DocScrollTranslation(),
             &clip_properties->CssClip()->LocalTransformSpace());
-  EXPECT_EQ(FloatClipRect(FloatRect(absolute_clip_rect)),
+  EXPECT_EQ(FloatClipRect(ToGfxRectF(FloatRect(absolute_clip_rect))),
             clip_properties->CssClip()->LayoutClipRect());
   EXPECT_EQ(FloatRoundedRect(PixelSnappedIntRect((absolute_clip_rect))),
             clip_properties->CssClip()->PaintClipRect());
@@ -5047,7 +5047,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowClipSubpixelPosition) {
   EXPECT_EQ(PhysicalOffset(LayoutUnit(31.5), LayoutUnit(20)),
             clipper->FirstFragment().PaintOffset());
   // Result is pixel-snapped.
-  EXPECT_EQ(FloatClipRect(FloatRect(31.5, 20, 400, 300)),
+  EXPECT_EQ(FloatClipRect(gfx::RectF(31.5, 20, 400, 300)),
             clip_properties->OverflowClip()->LayoutClipRect());
   EXPECT_EQ(FloatRoundedRect(32, 20, 400, 300),
             clip_properties->OverflowClip()->PaintClipRect());
@@ -5532,7 +5532,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowControlsClipSubpixel) {
   const auto* properties1 = PaintPropertiesForElement("div1");
   ASSERT_NE(nullptr, properties1);
   const auto* overflow_controls_clip = properties1->OverflowControlsClip();
-  EXPECT_EQ(FloatClipRect(FloatRect(0, 0, 5.5, 50)),
+  EXPECT_EQ(FloatClipRect(gfx::RectF(0, 0, 5.5, 50)),
             overflow_controls_clip->LayoutClipRect());
   EXPECT_EQ(FloatRoundedRect(0, 0, 6, 50),
             overflow_controls_clip->PaintClipRect());
@@ -5584,12 +5584,12 @@ TEST_P(PaintPropertyTreeBuilderTest, FragmentClipPixelSnapped) {
   const auto* second_clip =
       FragmentAt(flow_thread, 1).PaintProperties()->FragmentClip();
 
-  EXPECT_EQ(FloatClipRect(FloatRect(-999992, -999992, 2000000, 1000049.5)),
+  EXPECT_EQ(FloatClipRect(gfx::RectF(-999992, -999992, 2000000, 1000049.5)),
             first_clip->LayoutClipRect());
   EXPECT_EQ(FloatRoundedRect(-999992, -999992, 2000000, 1000050),
             first_clip->PaintClipRect());
 
-  EXPECT_EQ(FloatClipRect(FloatRect(-999967.25, 8, 2000000, 999950.5)),
+  EXPECT_EQ(FloatClipRect(gfx::RectF(-999967.25, 8, 2000000, 999950.5)),
             second_clip->LayoutClipRect());
   EXPECT_EQ(FloatRoundedRect(-999967, 8, 2000000, 999951),
             second_clip->PaintClipRect());

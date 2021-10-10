@@ -259,7 +259,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
   resources_.insert(resource_id, std::move(frame_resource));
 
   // TODO(crbug.com/869913): add unit testing for this.
-  const gfx::Size canvas_resource_size(canvas_resource->Size());
+  const gfx::Size canvas_resource_size = ToGfxSize(canvas_resource->Size());
 
   PostImageToPlaceholderIfNotBlocked(std::move(canvas_resource), resource_id);
 

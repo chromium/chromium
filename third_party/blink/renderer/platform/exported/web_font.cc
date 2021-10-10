@@ -113,8 +113,8 @@ gfx::RectF WebFont::SelectionRectForText(const WebTextRun& run,
                                          int height,
                                          int from,
                                          int to) const {
-  return private_->GetFont().SelectionRectForText(
-      run, FloatPoint(left_baseline), height, from, to);
+  return ToGfxRectF(private_->GetFont().SelectionRectForText(
+      run, FloatPoint(left_baseline), height, from, to));
 }
 
 }  // namespace blink

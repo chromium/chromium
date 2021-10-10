@@ -29,9 +29,13 @@ class PLATFORM_EXPORT CullRect {
   CullRect() = default;
   explicit CullRect(const gfx::Rect& rect) : rect_(rect) {}
 
-  static CullRect Infinite() { return CullRect(LayoutRect::InfiniteIntRect()); }
+  static CullRect Infinite() {
+    return CullRect(ToGfxRect(LayoutRect::InfiniteIntRect()));
+  }
 
-  bool IsInfinite() const { return rect_ == LayoutRect::InfiniteIntRect(); }
+  bool IsInfinite() const {
+    return rect_ == ToGfxRect(LayoutRect::InfiniteIntRect());
+  }
 
   bool Intersects(const gfx::Rect&) const;
   bool IntersectsTransformed(const AffineTransform&, const FloatRect&) const;

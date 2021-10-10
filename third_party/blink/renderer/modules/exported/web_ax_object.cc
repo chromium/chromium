@@ -542,7 +542,7 @@ WebAXObject WebAXObject::HitTest(const gfx::Point& point) const {
 
 gfx::Rect WebAXObject::GetBoundsInFrameCoordinates() const {
   LayoutRect rect = private_->GetBoundsInFrameCoordinates();
-  return EnclosingIntRect(rect);
+  return ToGfxRect(EnclosingIntRect(rect));
 }
 
 WebString WebAXObject::KeyboardShortcut() const {
@@ -1138,21 +1138,21 @@ gfx::Point WebAXObject::GetScrollOffset() const {
   if (IsDetached())
     return gfx::Point();
 
-  return private_->GetScrollOffset();
+  return ToGfxPoint(private_->GetScrollOffset());
 }
 
 gfx::Point WebAXObject::MinimumScrollOffset() const {
   if (IsDetached())
     return gfx::Point();
 
-  return private_->MinimumScrollOffset();
+  return ToGfxPoint(private_->MinimumScrollOffset());
 }
 
 gfx::Point WebAXObject::MaximumScrollOffset() const {
   if (IsDetached())
     return gfx::Point();
 
-  return private_->MaximumScrollOffset();
+  return ToGfxPoint(private_->MaximumScrollOffset());
 }
 
 void WebAXObject::SetScrollOffset(const gfx::Point& offset) const {
@@ -1193,7 +1193,7 @@ void WebAXObject::GetRelativeBounds(WebAXObject& offset_container,
   private_->GetRelativeBounds(&container, bounds, container_transform,
                               clips_children);
   offset_container = WebAXObject(container);
-  bounds_in_container = gfx::RectF(bounds);
+  bounds_in_container = ToGfxRectF(bounds);
 }
 
 void WebAXObject::GetAllObjectsWithChangedBounds(

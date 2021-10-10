@@ -131,12 +131,13 @@ class PLATFORM_EXPORT FloatPoint {
   operator CGPoint() const;
 #endif
 
-  constexpr operator gfx::PointF() const { return gfx::PointF(x_, y_); }
-  constexpr explicit operator gfx::Vector2dF() const {
-    return gfx::Vector2dF(x_, y_);
-  }
   explicit operator SkPoint() const { return SkPoint::Make(x_, y_); }
-  operator gfx::Point3F() const { return gfx::Point3F(x_, y_, 0.f); }
+
+  // These are deleted during blink geometry type to gfx migration.
+  // Use ToGfxPointF(), ToGfxPoint3F() and ToGfxVector2dF() instead.
+  operator gfx::PointF() const = delete;
+  operator gfx::Point3F() const = delete;
+  operator gfx::Vector2dF() const = delete;
 
   String ToString() const;
 
@@ -246,6 +247,18 @@ PLATFORM_EXPORT bool FindIntersection(const FloatPoint& p1,
                                       const FloatPoint& d1,
                                       const FloatPoint& d2,
                                       FloatPoint& intersection);
+
+constexpr gfx::PointF ToGfxPointF(const FloatPoint& p) {
+  return gfx::PointF(p.X(), p.Y());
+}
+
+constexpr gfx::Point3F ToGfxPoint3F(const FloatPoint& p) {
+  return gfx::Point3F(p.X(), p.Y(), 0.f);
+}
+
+constexpr gfx::Vector2dF ToGfxVector2dF(const FloatPoint& p) {
+  return gfx::Vector2dF(p.X(), p.Y());
+}
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const FloatPoint&);
 PLATFORM_EXPORT WTF::TextStream& operator<<(WTF::TextStream&,

@@ -140,7 +140,7 @@ scoped_refptr<cc::Layer> PaintArtifactCompositor::WrappedCcLayerForPendingLayer(
     DCHECK(pending_layer.GetGraphicsLayer());
     DCHECK(!pending_layer.GetGraphicsLayer()->ShouldCreateLayersAfterPaint());
     layer = &pending_layer.GetGraphicsLayer()->CcLayer();
-    layer_offset = gfx::Vector2dF(gfx::Vector2d(
+    layer_offset = gfx::Vector2dF(ToGfxVector2d(
         pending_layer.GetGraphicsLayer()->GetOffsetFromTransformNode()));
   } else {
     DCHECK_EQ(pending_layer.GetCompositingType(), PendingLayer::kForeignLayer);
@@ -654,7 +654,7 @@ void SynthesizedClip::UpdateLayer(bool needs_layer,
 
   layer_->SetOffsetToTransformParent(
       gfx::Vector2dF(layer_bounds.X(), layer_bounds.Y()));
-  layer_->SetBounds(gfx::Size(layer_bounds.Size()));
+  layer_->SetBounds(ToGfxSize(layer_bounds.Size()));
   rrect_ = new_rrect;
   path_ = path;
 }
@@ -1236,7 +1236,7 @@ bool PaintArtifactCompositor::DirectlySetScrollOffset(
     return false;
   PropertyTreeManager::DirectlySetScrollOffset(*root_layer_->layer_tree_host(),
                                                element_id,
-                                               gfx::Vector2dF(scroll_offset));
+                                               ToGfxVector2dF(scroll_offset));
   return true;
 }
 

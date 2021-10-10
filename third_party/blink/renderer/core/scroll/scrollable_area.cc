@@ -197,7 +197,7 @@ ScrollOffset ScrollableArea::ResolveScrollDelta(ScrollGranularity granularity,
   if (granularity == ScrollGranularity::kScrollByPercentage) {
     LocalFrame* local_frame = GetLayoutBox()->GetFrame();
     DCHECK(local_frame);
-    gfx::SizeF viewport = gfx::SizeF(
+    gfx::SizeF viewport = ToGfxSizeF(
         FloatSize(local_frame->GetPage()->GetVisualViewport().Size()));
 
     // Convert to screen coordinates (physical pixels).
@@ -205,7 +205,7 @@ ScrollOffset ScrollableArea::ResolveScrollDelta(ScrollGranularity granularity,
     step.Scale(page_scale_factor);
 
     gfx::Vector2dF pixel_delta =
-        cc::ScrollUtils::ResolveScrollPercentageToPixels(gfx::Vector2dF(delta),
+        cc::ScrollUtils::ResolveScrollPercentageToPixels(ToGfxVector2dF(delta),
                                                          step, viewport);
 
     // Rescale back to rootframe coordinates.
@@ -959,7 +959,7 @@ bool ScrollableArea::SnapForEndPosition(const FloatPoint& end_position,
   DCHECK(IsRootFrameViewport() || !GetLayoutBox()->IsGlobalRootScroller());
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndPosition(
-          gfx::Vector2dF(end_position), scrolled_x, scrolled_y);
+          ToGfxVector2dF(end_position), scrolled_x, scrolled_y);
   return PerformSnapping(*strategy, mojom::blink::ScrollBehavior::kSmooth,
                          std::move(on_finish));
 }
@@ -970,8 +970,7 @@ bool ScrollableArea::SnapForDirection(const ScrollOffset& delta,
   FloatPoint current_position = ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForDirection(
-          gfx::Vector2dF(current_position),
-          gfx::Vector2dF(delta.Width(), delta.Height()),
+          ToGfxVector2dF(current_position), ToGfxVector2dF(delta),
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
   return PerformSnapping(*strategy, mojom::blink::ScrollBehavior::kSmooth,
                          std::move(on_finish));
@@ -982,8 +981,7 @@ bool ScrollableArea::SnapForEndAndDirection(const ScrollOffset& delta) {
   FloatPoint current_position = ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndAndDirection(
-          gfx::Vector2dF(current_position),
-          gfx::Vector2dF(delta.Width(), delta.Height()),
+          ToGfxVector2dF(current_position), ToGfxVector2dF(delta),
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
   return PerformSnapping(*strategy);
 }
@@ -996,7 +994,7 @@ void ScrollableArea::SnapAfterLayout() {
   FloatPoint current_position = ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForTargetElement(
-          gfx::Vector2dF(current_position));
+          ToGfxVector2dF(current_position));
 
   PerformSnapping(*strategy, mojom::blink::ScrollBehavior::kInstant);
 }

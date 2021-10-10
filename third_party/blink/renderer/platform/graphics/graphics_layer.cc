@@ -296,7 +296,8 @@ bool GraphicsLayer::PaintRecursively(
         auto contents_state = layer.GetContentsPropertyTreeState();
         RecordForeignLayer(
             context, layer, DisplayItem::kForeignLayerContentsWrapper,
-            &contents_layer, layer.GetContentsOffsetFromTransformNode(),
+            &contents_layer,
+            ToGfxPoint(layer.GetContentsOffsetFromTransformNode()),
             &contents_state);
         pre_composited_layers.push_back(
             PreCompositedLayerInfo{subset_recorder.Get()});
@@ -423,8 +424,8 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
     if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
         PaintsContentOrHitTest()) {
       raster_under_invalidation_params.emplace(
-          EnsureRasterInvalidator().EnsureTracking(),
-          IntRect(PaintableRegion()), DebugName());
+          EnsureRasterInvalidator().EnsureTracking(), PaintableRegion(),
+          DebugName());
     }
 
     // If nothing changed in the layer, keep the original display item list.
@@ -482,7 +483,7 @@ void GraphicsLayer::UpdateContentsLayerBounds() {
     return;
 
   IntSize contents_size = contents_rect_.Size();
-  contents_layer_->SetBounds(gfx::Size(contents_size));
+  contents_layer_->SetBounds(ToGfxSize(contents_size));
 }
 
 void GraphicsLayer::SetContentsToCcLayer(
@@ -558,8 +559,10 @@ void GraphicsLayer::TrackRasterInvalidation(const DisplayItemClient& client,
   // This only tracks invalidations that the cc::Layer is fully invalidated
   // directly, e.g. from SetContentsNeedsDisplay(), etc. Other raster
   // invalidations are tracked in RasterInvalidator.
-  if (auto* tracking = GetRasterInvalidationTracking())
-    tracking->AddInvalidation(client.Id(), client.DebugName(), rect, reason);
+  if (auto* tracking = GetRasterInvalidationTracking()) {
+    tracking->AddInvalidation(client.Id(), client.DebugName(), ToGfxRect(rect),
+                              reason);
+  }
 }
 
 String GraphicsLayer::DebugName(const cc::Layer* layer) const {
@@ -720,9 +723,9 @@ void GraphicsLayer::SetContentsLayerState(
 }
 
 gfx::Rect GraphicsLayer::PaintableRegion() const {
-  return RuntimeEnabledFeatures::CullRectUpdateEnabled()
-             ? client_.PaintableRegion(this)
-             : previous_interest_rect_;
+  return ToGfxRect(RuntimeEnabledFeatures::CullRectUpdateEnabled()
+                       ? client_.PaintableRegion(this)
+                       : previous_interest_rect_);
 }
 
 scoped_refptr<cc::DisplayItemList> GraphicsLayer::PaintContentsToDisplayList() {

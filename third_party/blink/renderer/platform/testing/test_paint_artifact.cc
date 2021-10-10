@@ -69,7 +69,7 @@ TestPaintArtifact& TestPaintArtifact::ScrollHitTest(
 
 TestPaintArtifact& TestPaintArtifact::ForeignLayer(
     scoped_refptr<cc::Layer> layer,
-    const IntPoint& offset) {
+    const gfx::Point& offset) {
   DEFINE_STATIC_LOCAL(
       Persistent<LiteralDebugNameClient>, client,
       (MakeGarbageCollected<LiteralDebugNameClient>("ForeignLayer")));

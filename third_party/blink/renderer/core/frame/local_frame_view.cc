@@ -3911,7 +3911,7 @@ void LocalFrameView::PropagateFrameRects() {
   if (!frame_size_ || *frame_size_ != frame_size) {
     frame_size_ = frame_size;
     GetFrame().GetLocalFrameHostRemote().FrameSizeChanged(
-        gfx::Size(frame_size));
+        ToGfxSize(frame_size));
   }
 
   // It's possible for changing the frame rect to not generate a layout
@@ -4081,12 +4081,12 @@ bool LocalFrameView::CapturePaintPreview(GraphicsContext& context,
 
   // Create a placeholder ID that maps to an embedding token.
   context.Canvas()->recordCustomData(tracker->CreateContentForRemoteFrame(
-      FrameRect(), maybe_embedding_token.value()));
+      ToGfxRect(FrameRect()), maybe_embedding_token.value()));
   context.Restore();
 
   // Send a request to the browser to trigger a capture of the frame.
   GetFrame().GetLocalFrameHostRemote().CapturePaintPreviewOfSubframe(
-      FrameRect(), tracker->Guid());
+      ToGfxRect(FrameRect()), tracker->Guid());
   return true;
 }
 

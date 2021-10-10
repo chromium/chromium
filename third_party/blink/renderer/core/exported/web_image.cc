@@ -61,7 +61,7 @@ SkBitmap WebImage::FromData(const WebData& data,
   int frame_area_at_index = 0;
   for (wtf_size_t i = 0; i < frame_count; ++i) {
     const IntSize frame_size = decoder->FrameSizeAtIndex(i);
-    if (gfx::Size(frame_size) == desired_size) {
+    if (ToGfxSize(frame_size) == desired_size) {
       index = i;
       break;  // Perfect match.
     }

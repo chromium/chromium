@@ -27,10 +27,8 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/skia/include/core/SkPoint3.h"
-
-namespace gfx {
-class Point3F;
-}
+#include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/geometry/vector3d_f.h"
 
 namespace blink {
 
@@ -112,7 +110,11 @@ class PLATFORM_EXPORT FloatPoint3D {
   float DistanceTo(const FloatPoint3D& a) const;
 
   operator SkPoint3() const { return SkPoint3::Make(x_, y_, z_); }
-  operator gfx::Point3F() const { return gfx::Point3F(x_, y_, z_); }
+
+  // These are deleted during blink geometry type to gfx migration.
+  // Use ToGfxPoint3F() and ToGfxVector3dF() instead.
+  operator gfx::Point3F() const = delete;
+  operator gfx::Vector3dF() const = delete;
 
   String ToString() const;
 
@@ -163,6 +165,14 @@ inline FloatPoint3D operator*(const FloatPoint3D& v, float k) {
 
 inline float FloatPoint3D::DistanceTo(const FloatPoint3D& a) const {
   return (*this - a).length();
+}
+
+constexpr gfx::Point3F ToGfxPoint3F(const FloatPoint3D& p) {
+  return gfx::Point3F(p.X(), p.Y(), p.Z());
+}
+
+constexpr gfx::Vector3dF ToGfxVector3dF(const FloatPoint3D& p) {
+  return gfx::Vector3dF(p.X(), p.Y(), p.Z());
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const FloatPoint3D&);

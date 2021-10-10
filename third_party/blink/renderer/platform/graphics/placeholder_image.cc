@@ -32,6 +32,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSize.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -240,7 +241,7 @@ PaintImage PlaceholderImage::PaintImageForCurrentFrame() {
   auto builder = CreatePaintImageBuilder().set_completion_state(
       PaintImage::CompletionState::DONE);
 
-  const IntRect dest_rect(0, 0, size_.Width(), size_.Height());
+  const gfx::Rect dest_rect(0, 0, size_.Width(), size_.Height());
   if (paint_record_for_current_frame_) {
     return builder
         .set_paint_record(paint_record_for_current_frame_, dest_rect,
@@ -249,8 +250,9 @@ PaintImage PlaceholderImage::PaintImageForCurrentFrame() {
   }
 
   PaintRecorder paint_recorder;
-  Draw(paint_recorder.beginRecording(FloatRect(dest_rect)), PaintFlags(),
-       FloatRect(dest_rect), FloatRect(dest_rect), ImageDrawOptions());
+  SkRect sk_dest_rect = gfx::RectToSkRect(dest_rect);
+  Draw(paint_recorder.beginRecording(sk_dest_rect), PaintFlags(), sk_dest_rect,
+       sk_dest_rect, ImageDrawOptions());
 
   paint_record_for_current_frame_ = paint_recorder.finishRecordingAsPicture();
   paint_record_content_id_ = PaintImage::GetNextContentId();

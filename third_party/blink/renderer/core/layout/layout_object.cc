@@ -1999,7 +1999,7 @@ bool LayoutObject::MapToVisualRectInAncestorSpaceInternalFastPath(
   // or property_container->FirstFragment().ContentsProperties().
   rect.Move(FirstFragment().PaintOffset());
   if (property_container != ancestor) {
-    FloatClipRect clip_rect((FloatRect(rect)));
+    FloatClipRect clip_rect(ToGfxRectF(FloatRect(rect)));
     intersects = GeometryMapper::LocalToAncestorVisualRect(
         container_properties, ancestor->FirstFragment().ContentsProperties(),
         clip_rect, kIgnoreOverlayScrollbarSize,

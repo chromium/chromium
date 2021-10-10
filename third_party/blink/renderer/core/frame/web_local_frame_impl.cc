@@ -428,7 +428,7 @@ class ChromePrintContext : public PrintContext {
         builder->Context(),
         kGlobalPaintNormalPhase | kGlobalPaintFlattenCompositingLayers |
             kGlobalPaintAddUrlMetadata,
-        CullRect(page_rect));
+        CullRect(ToGfxRect(page_rect)));
     {
       ScopedPaintChunkProperties scoped_paint_chunk_properties(
           builder->Context().GetPaintController(), property_tree_state,
@@ -493,7 +493,7 @@ class ChromePluginPrintContext final : public ChromePrintContext {
 
   void ComputePageRects(const FloatSize& print_size) override {
     IntRect rect(IntPoint(0, 0), FlooredIntSize(print_size));
-    print_params_.print_content_area = rect;
+    print_params_.print_content_area = ToGfxRect(rect);
     page_rects_.Fill(rect, plugin_->PrintBegin(print_params_));
   }
 
@@ -560,7 +560,7 @@ class PaintPreviewContext : public PrintContext {
       flags |= kGlobalPaintAddUrlMetadata;
 
     frame_view->PaintContentsOutsideOfLifecycle(builder->Context(), flags,
-                                                CullRect(bounds));
+                                                CullRect(ToGfxRect(bounds)));
     if (include_linked_destinations) {
       // Add anchors.
       ScopedPaintChunkProperties scoped_paint_chunk_properties(
@@ -767,14 +767,14 @@ void WebLocalFrameImpl::CopyToFindPboard() {
 
 gfx::Vector2dF WebLocalFrameImpl::GetScrollOffset() const {
   if (ScrollableArea* scrollable_area = LayoutViewport()) {
-    return gfx::Vector2dF(scrollable_area->GetScrollOffset());
+    return ToGfxVector2dF(scrollable_area->GetScrollOffset());
   }
   return gfx::Vector2dF();
 }
 
 void WebLocalFrameImpl::SetScrollOffset(const gfx::Vector2dF& offset) {
   if (ScrollableArea* scrollable_area = LayoutViewport()) {
-    scrollable_area->SetScrollOffset(ScrollOffset(offset.x(), offset.y()),
+    scrollable_area->SetScrollOffset(ScrollOffset(offset),
                                      mojom::blink::ScrollType::kProgrammatic);
   }
 }
@@ -783,7 +783,7 @@ gfx::Size WebLocalFrameImpl::DocumentSize() const {
   if (!GetFrameView() || !GetFrameView()->GetLayoutView())
     return gfx::Size();
 
-  return gfx::Size(
+  return ToGfxSize(
       PixelSnappedIntRect(GetFrameView()->GetLayoutView()->DocumentRect())
           .Size());
 }
@@ -802,7 +802,7 @@ bool WebLocalFrameImpl::HasVisibleContent() const {
 
 gfx::Rect WebLocalFrameImpl::VisibleContentRect() const {
   if (LocalFrameView* view = GetFrameView())
-    return view->LayoutViewport()->VisibleContentRect();
+    return ToGfxRect(view->LayoutViewport()->VisibleContentRect());
   return gfx::Rect();
 }
 
@@ -1178,7 +1178,7 @@ bool WebLocalFrameImpl::FirstRectForCharacterRange(
   if (range.IsNull())
     return false;
   rect_in_viewport =
-      GetFrame()->View()->FrameToViewport(FirstRectForRange(range));
+      ToGfxRect(GetFrame()->View()->FrameToViewport(FirstRectForRange(range)));
   return true;
 }
 
@@ -1815,15 +1815,16 @@ gfx::Rect WebLocalFrameImpl::GetSelectionBoundsRectForTesting() const {
   DCHECK(GetFrame());  // Not valid after the Frame is detached.
   GetFrame()->View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kSelection);
-  return HasSelection() ? PixelSnappedIntRect(
-                              GetFrame()->Selection().AbsoluteUnclippedBounds())
-                        : gfx::Rect();
+  return HasSelection()
+             ? ToGfxRect(PixelSnappedIntRect(
+                   GetFrame()->Selection().AbsoluteUnclippedBounds()))
+             : gfx::Rect();
 }
 
 gfx::Point WebLocalFrameImpl::GetPositionInViewportForTesting() const {
   DCHECK(GetFrame());  // Not valid after the Frame is detached.
   LocalFrameView* view = GetFrameView();
-  return view->ConvertToRootFrame(IntPoint());
+  return ToGfxPoint(view->ConvertToRootFrame(IntPoint()));
 }
 
 // WebLocalFrameImpl public --------------------------------------------------

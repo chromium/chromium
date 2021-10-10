@@ -289,10 +289,6 @@ _CONFIG = [
             'gfx::Rect',
             'gfx::RectF',
             'gfx::RRectF',
-            'gfx::ScaleToCeiledSize',
-            'gfx::ScaleToEnclosingRectSafe',
-            'gfx::ScaleToFlooredSize',
-            'gfx::ScaleVector2d',
             'gfx::Size',
             'gfx::SizeF',
             'gfx::Transform',
@@ -301,9 +297,27 @@ _CONFIG = [
 
             # Chromium geometry operations.
             'cc::MathUtil',
+            'gfx::BoundingRect',
             'gfx::ComputeApproximateMaxScale',
             'gfx::ComputeTransform2dScaleComponents',
+            'gfx::IntersectRects',
+            'gfx::RectToSkIRect',
+            'gfx::RectToSkRect',
+            'gfx::ScaleToCeiledSize',
+            'gfx::ScaleToEnclosingRectSafe',
+            'gfx::ScaleToFlooredSize',
+            'gfx::ScaleVector2d',
+            'gfx::SubtractRects',
+            'gfx::ToCeiledPoint',
+            'gfx::ToCeiledSize',
+            'gfx::ToEnclosedRect',
+            'gfx::ToEnclosingRect',
             'gfx::ToFlooredPoint',
+            'gfx::ToFlooredSize',
+            'gfx::ToRoundedPoint',
+            'gfx::ToRoundedRect',
+            'gfx::ToRoundedSize',
+            'gfx::UniteRects',
 
             # Range type.
             'gfx::Range',
@@ -383,9 +397,6 @@ _CONFIG = [
             'cc::SnapSelectionStrategy',
             'cc::SnapStrictness',
             'cc::TargetSnapAreaElementIds',
-            'gfx::RectToSkRect',
-            'gfx::RectToSkIRect',
-            'gfx::ScrollOffset',
             'ui::ScrollGranularity',
 
             # Document transitions

@@ -70,7 +70,7 @@ void ScrollbarThemeOverlayMobile::PaintThumb(GraphicsContext& context,
     return;
 
   DrawingRecorder recorder(context, scrollbar, DisplayItem::kScrollbarThumb,
-                           rect);
+                           ToGfxRect(rect));
 
   const auto* box = scrollbar.GetScrollableArea()->GetLayoutBox();
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(

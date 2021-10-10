@@ -1298,7 +1298,7 @@ void MediaControlsImpl::UpdateOverflowMenuWanted() const {
   };
 
   // Current size of the media controls.
-  gfx::Size controls_size(size_);
+  gfx::Size controls_size = ToGfxSize(size_);
 
   // The video controls are more than one row so we need to allocate vertical
   // room and hide the overlay play button if there is not enough room.

@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_model_object.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -48,11 +49,11 @@ class SVGDrawingRecorder : public DrawingRecorder {
   SVGDrawingRecorder(GraphicsContext& context,
                      const LayoutObjectType& object,
                      DisplayItem::Type type)
-      : DrawingRecorder(
-            context,
-            object,
-            type,
-            EnclosingIntRect(object.VisualRectInLocalSVGCoordinates())) {
+      : DrawingRecorder(context,
+                        object,
+                        type,
+                        gfx::ToEnclosingRect(ToGfxRectF(
+                            object.VisualRectInLocalSVGCoordinates()))) {
     DCHECK(object.IsSVGChild());
     // We should not use this for SVG containers which paint effects only,
     // while VisualRectInLocalSVGCoordinates() contains visual rects from

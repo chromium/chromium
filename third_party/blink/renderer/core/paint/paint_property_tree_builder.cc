@@ -664,7 +664,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
 
   if (paint_offset_translation) {
     TransformPaintPropertyNode::State state{
-        gfx::Vector2dF(gfx::Vector2d(*paint_offset_translation))};
+        gfx::Vector2dF(ToGfxVector2d(*paint_offset_translation))};
     state.flags.flattens_inherited_transform =
         context_.current.should_flatten_inherited_transform;
     state.rendering_context_id = context_.current.rendering_context_id;
@@ -714,7 +714,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
     if (NeedsStickyTranslation(object_)) {
       const auto& box_model = To<LayoutBoxModelObject>(object_);
       TransformPaintPropertyNode::State state{
-          gfx::Vector2dF(FloatSize(box_model.StickyPositionOffset()))};
+          ToGfxVector2dF(FloatSize(box_model.StickyPositionOffset()))};
       // TODO(wangxianzhu): Not using GetCompositorElementId() here because
       // sticky elements don't work properly under multicol for now, to keep
       // consistency with CompositorElementIdFromUniqueObjectId() below.
@@ -773,11 +773,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
         constraint->top_offset = layout_constraint->top_offset.ToFloat();
         constraint->bottom_offset = layout_constraint->bottom_offset.ToFloat();
         constraint->constraint_box_rect =
-            FloatRect(box_model.ComputeStickyConstrainingRect());
-        constraint->scroll_container_relative_sticky_box_rect = FloatRect(
-            layout_constraint->scroll_container_relative_sticky_box_rect);
-        constraint->scroll_container_relative_containing_block_rect = FloatRect(
-            layout_constraint->scroll_container_relative_containing_block_rect);
+            ToGfxRectF(FloatRect(box_model.ComputeStickyConstrainingRect()));
+        constraint->scroll_container_relative_sticky_box_rect =
+            ToGfxRectF(FloatRect(
+                layout_constraint->scroll_container_relative_sticky_box_rect));
+        constraint->scroll_container_relative_containing_block_rect =
+            ToGfxRectF(FloatRect(
+                layout_constraint
+                    ->scroll_container_relative_containing_block_rect));
         if (PaintLayer* sticky_box_shifting_ancestor =
                 layout_constraint->nearest_sticky_layer_shifting_sticky_box) {
           constraint->nearest_element_shifting_sticky_box =
@@ -1045,7 +1048,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
         if (!disable_2d_translation_optimization &&
             matrix.IsIdentityOr2DTranslation()) {
           state.transform_and_origin = {
-              gfx::Vector2dF(matrix.To2DTranslation())};
+              ToGfxVector2dF(matrix.To2DTranslation())};
         } else {
           state.transform_and_origin = {matrix,
                                         TransformOrigin(box.StyleRef(), size)};
@@ -1963,10 +1966,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
         }
         state.SetClipRect(FloatRect(clip_rect), ToSnappedClipRect(clip_rect));
 
-        state.layout_clip_rect_excluding_overlay_scrollbars =
-            FloatClipRect(FloatRect(To<LayoutBox>(object_).OverflowClipRect(
+        state.layout_clip_rect_excluding_overlay_scrollbars = FloatClipRect(
+            ToGfxRectF(FloatRect(To<LayoutBox>(object_).OverflowClipRect(
                 context_.current.paint_offset,
-                kExcludeOverlayScrollbarSizeForHitTesting)));
+                kExcludeOverlayScrollbarSizeForHitTesting))));
       } else {
         DCHECK(object_.IsSVGViewportContainer());
         const auto& viewport_container =
@@ -2120,9 +2123,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       // The container bounds are snapped to integers to match the equivalent
       // bounds on cc::ScrollNode. The offset is snapped to match the current
       // integer offsets used in CompositedLayerMapping.
-      state.container_rect = PixelSnappedIntRect(
-          box.OverflowClipRect(context_.current.paint_offset));
-      state.contents_size = gfx::Size(scrollable_area->PixelSnappedContentsSize(
+      state.container_rect = ToGfxRect(PixelSnappedIntRect(
+          box.OverflowClipRect(context_.current.paint_offset)));
+      state.contents_size = ToGfxSize(scrollable_area->PixelSnappedContentsSize(
           context_.current.paint_offset));
 
       state.user_scrollable_horizontal =
@@ -2219,7 +2222,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       // ScrollTranslation in object_paint_properties.h for details.
       FloatPoint scroll_position = FloatPoint(box.ScrollOrigin()) +
                                    box.GetScrollableArea()->GetScrollOffset();
-      TransformPaintPropertyNode::State state{-gfx::Vector2dF(scroll_position)};
+      TransformPaintPropertyNode::State state{-ToGfxVector2dF(scroll_position)};
       if (!box.GetScrollableArea()->PendingScrollAnchorAdjustment().IsZero()) {
         context_.current.pending_scroll_anchor_adjustment +=
             box.GetScrollableArea()->PendingScrollAnchorAdjustment();

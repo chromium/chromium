@@ -578,8 +578,8 @@ void ConversionContext::StartEffect(const EffectPaintPropertyNode& effect) {
     // the bounds of the effect on an empty source. For empty chunks, or chunks
     // with empty bounds, with a filter applied that produces output even when
     // there's no input this will expand the bounds to match.
-    gfx::RectF filtered_bounds = current_effect_->MapRect(
-        gfx::RectF(effect.Filter().ReferenceBox().Center(), gfx::SizeF()));
+    gfx::RectF filtered_bounds = current_effect_->MapRect(gfx::RectF(
+        ToGfxPointF(effect.Filter().ReferenceBox().Center()), gfx::SizeF()));
     effect_bounds_stack_.back().bounds = filtered_bounds;
     // Emit an empty paint operation to add the filtered bounds (mapped to layer
     // space) to the visual rect of the filter's SaveLayerOp.
@@ -881,7 +881,8 @@ static void UpdateTouchActionRegion(
     TouchAction touch_action = touch_action_rect.allowed_touch_action;
     if ((touch_action & TouchAction::kPanX) != TouchAction::kNone)
       touch_action |= disable_cursor_control;
-    touch_action_region.Union(touch_action, gfx::ToEnclosingRect(rect.Rect()));
+    touch_action_region.Union(touch_action,
+                              gfx::ToEnclosingRect(ToGfxRectF(rect.Rect())));
   }
 }
 
@@ -897,7 +898,7 @@ static void UpdateWheelEventRegion(const HitTestData& hit_test_data,
       continue;
     }
     rect.MoveBy(FloatPoint(-layer_offset));
-    wheel_event_region.Union(gfx::ToEnclosingRect(rect.Rect()));
+    wheel_event_region.Union(gfx::ToEnclosingRect(ToGfxRectF(rect.Rect())));
   }
 }
 
@@ -934,7 +935,8 @@ static void UpdateNonFastScrollableRegion(
     return;
 
   rect.MoveBy(FloatPoint(-layer_offset));
-  non_fast_scrollable_region.Union(EnclosingIntRect(rect.Rect()));
+  non_fast_scrollable_region.Union(
+      gfx::ToEnclosingRect(ToGfxRectF(rect.Rect())));
 }
 
 static void UpdateTouchActionWheelEventHandlerAndNonFastScrollableRegions(

@@ -61,8 +61,8 @@ class ScrollBeginEventBuilder : public WebGestureEvent {
                         WebInputEvent::kNoModifiers,
                         base::TimeTicks::Now(),
                         device) {
-    SetPositionInWidget(position);
-    SetPositionInScreen(position);
+    SetPositionInWidget(ToGfxPointF(position));
+    SetPositionInScreen(ToGfxPointF(position));
     data.scroll_begin.delta_y_hint = delta.Y();
     frame_scale_ = 1;
   }

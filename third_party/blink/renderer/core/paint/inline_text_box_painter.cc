@@ -219,7 +219,8 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
     if (DrawingRecorder::UseCachedDrawingIfPossible(context, inline_text_box_,
                                                     paint_info.phase))
       return;
-    recorder.emplace(context, inline_text_box_, paint_info.phase, visual_rect);
+    recorder.emplace(context, inline_text_box_, paint_info.phase,
+                     ToGfxRect(visual_rect));
   }
 
   unsigned length = inline_text_box_.Len();
@@ -346,7 +347,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
         IntRect selection_visual_rect = EnclosingIntRect(selection_rect);
         if (rotation)
           selection_visual_rect = rotation->MapRect(selection_visual_rect);
-        recorder->UniteVisualRect(selection_visual_rect);
+        recorder->UniteVisualRect(ToGfxRect(selection_visual_rect));
       }
     }
   }

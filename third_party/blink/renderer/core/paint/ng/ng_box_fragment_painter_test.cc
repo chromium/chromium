@@ -76,7 +76,7 @@ TEST_P(NGBoxFragmentPainterTest, ScrollHitTestOrder) {
   HitTestData scroll_hit_test;
   scroll_hit_test.scroll_translation =
       scroller.FirstFragment().PaintProperties()->ScrollTranslation();
-  scroll_hit_test.scroll_hit_test_rect = IntRect(0, 0, 40, 40);
+  scroll_hit_test.scroll_hit_test_rect = gfx::Rect(0, 0, 40, 40);
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     EXPECT_THAT(
         ContentPaintChunks(),

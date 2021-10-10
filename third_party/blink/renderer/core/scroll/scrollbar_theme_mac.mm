@@ -324,7 +324,7 @@ void ScrollbarThemeMac::PaintTrack(GraphicsContext& context,
           : WebThemeEngine::Part::kPartScrollbarVerticalTrack;
   Platform::Current()->ThemeEngine()->Paint(
       context.Canvas(), track_part, WebThemeEngine::State::kStateNormal,
-      gfx::Rect(bounds), &params, params.scrollbar_extra.scrollbar_theme);
+      ToGfxRect(bounds), &params, params.scrollbar_extra.scrollbar_theme);
   if (opacity != 1)
     context.EndLayer();
 }
@@ -344,7 +344,8 @@ void ScrollbarThemeMac::PaintScrollCorner(
                                                   DisplayItem::kScrollCorner)) {
     return;
   }
-  DrawingRecorder recorder(context, item, DisplayItem::kScrollCorner, rect);
+  DrawingRecorder recorder(context, item, DisplayItem::kScrollCorner,
+                           ToGfxRect(rect));
 
   GraphicsContextStateSaver state_saver(context);
   context.Translate(rect.X(), rect.Y());
@@ -353,7 +354,7 @@ void ScrollbarThemeMac::PaintScrollCorner(
       GetPaintParams(*vertical_scrollbar, UsesOverlayScrollbars());
   Platform::Current()->ThemeEngine()->Paint(
       context.Canvas(), WebThemeEngine::Part::kPartScrollbarCorner,
-      WebThemeEngine::State::kStateNormal, gfx::Rect(bounds), &params,
+      WebThemeEngine::State::kStateNormal, ToGfxRect(bounds), &params,
       params.scrollbar_extra.scrollbar_theme);
 }
 
@@ -366,7 +367,7 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
     return;
   }
   DrawingRecorder recorder(context, scrollbar, DisplayItem::kScrollbarThumb,
-                           rect);
+                           ToGfxRect(rect));
 
   GraphicsContextStateSaver state_saver(context);
   context.Translate(rect.X(), rect.Y());
@@ -433,7 +434,7 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
           : WebThemeEngine::Part::kPartScrollbarVerticalThumb;
   Platform::Current()->ThemeEngine()->Paint(
       context.Canvas(), thumb_part, WebThemeEngine::State::kStateNormal,
-      gfx::Rect(bounds), &params, params.scrollbar_extra.scrollbar_theme);
+      ToGfxRect(bounds), &params, params.scrollbar_extra.scrollbar_theme);
   if (opacity != 1.0f)
     context.EndLayer();
 }
