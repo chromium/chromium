@@ -7175,6 +7175,9 @@ crbug.com/1256763 [ Win ] virtual/exotic-color-space/images/color-profile-svg-fi
 crbug.com/1256763 [ Mac ] virtual/exotic-color-space/images/color-profile-svg-fill-text.html [ Failure Pass ]
 crbug.com/1256763 [ Linux ] virtual/exotic-color-space/images/color-profile-svg-fill-text.html [ Failure Pass ]
 
+# Disabled to allow devtools-frontend roll
+crbug.com/1258618 virtual/portals/http/tests/devtools/portals/portals-elements-nesting-after-adoption.js [ Skip ]
+
 # Sheriff 2021-10-06
 crbug.com/1257298 svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableValues-attr.html [ Failure Pass ]
 crbug.com/1257304 http/tests/serviceworker/use-counter-third-party-page-register.html [ Failure Pass ]
