@@ -111,6 +111,14 @@ AX_BASE_EXPORT extern const base::Feature
 // text editing commands is enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationCommandsEnabled();
 
+// Enable a setup guide to walk through the steps of initially configuring
+// Switch Access.
+AX_BASE_EXPORT extern const base::Feature
+    kExperimentalAccessibilitySwitchAccessSetupGuide;
+
+// Returns true if setup guide for Switch Access is enabled.
+AX_BASE_EXPORT bool IsExperimentalAccessibilitySwitchAccessSetupGuideEnabled();
+
 // Enables high-quality, network-based voices in Select-to-speak.
 AX_BASE_EXPORT extern const base::Feature kEnhancedNetworkVoices;
 

@@ -22,8 +22,6 @@ AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityLanguageDetectionDynamic[];
 AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilitySwitchAccessText[];
-AX_BASE_EXPORT extern const char
-    kEnableExperimentalAccessibilitySwitchAccessSetupGuide[];
 
 // Returns true if experimental accessibility dictation extension is enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationExtensionEnabled();
