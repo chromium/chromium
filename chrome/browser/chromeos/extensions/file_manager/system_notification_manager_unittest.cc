@@ -31,6 +31,7 @@ namespace file_manager_private = extensions::api::file_manager_private;
 struct TestNotificationStrings {
   std::u16string title;
   std::u16string message;
+  std::vector<std::u16string> buttons;
 };
 
 // Notification platform bridge implementation for testing.
@@ -50,6 +51,8 @@ class TestNotificationPlatformBridgeDelegator
     notification_ids_.insert(notification.id());
     strings.title = notification.title();
     strings.message = notification.message();
+    for (const message_center::ButtonInfo& button : notification.buttons())
+      strings.buttons.push_back(button.title);
     notifications_[notification.id()] = strings;
   }
 
@@ -754,6 +757,8 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownDefault) {
   EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
   EXPECT_EQ(notification_strings.message,
             u"Sorry, your external storage device could not be recognized.");
+  EXPECT_EQ(notification_strings.buttons.size(), 1);
+  EXPECT_EQ(notification_strings.buttons[0], u"Format this device");
 }
 
 // The named version of the device fail unknown notification is
@@ -787,6 +792,8 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownNamed) {
   EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
   EXPECT_EQ(notification_strings.message,
             u"Sorry, the device MyUSB could not be recognized.");
+  EXPECT_EQ(notification_strings.buttons.size(), 1);
+  EXPECT_EQ(notification_strings.buttons[0], u"Format this device");
 }
 
 // Device fail unknown read only notifications are generated when
@@ -822,6 +829,8 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyDefault) {
   EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
   EXPECT_EQ(notification_strings.message,
             u"Sorry, your external storage device could not be recognized.");
+  // Device is read-only, expect no buttons present.
+  EXPECT_EQ(notification_strings.buttons.size(), 0);
 }
 
 // The named version of the read only device fail unknown notification is

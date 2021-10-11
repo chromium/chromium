@@ -567,6 +567,7 @@ SystemNotificationManager::MakeMountErrorNotification(
     file_manager_private::MountCompletedEvent& event,
     const Volume& volume) {
   std::unique_ptr<message_center::Notification> notification;
+  std::vector<message_center::ButtonInfo> notification_buttons;
   scoped_refptr<message_center::NotificationDelegate> delegate =
       new message_center::HandleNotificationClickDelegate(base::BindRepeating(
           &SystemNotificationManager::HandleRemovableNotificationClick,
@@ -601,6 +602,11 @@ SystemNotificationManager::MakeMountErrorNotification(
                 IDS_DEVICE_UNKNOWN_MESSAGE,
                 base::UTF8ToUTF16(volume.drive_label()));
           }
+          if (!volume.is_read_only()) {
+            // Give a format device button on the notification.
+            notification_buttons.push_back(message_center::ButtonInfo(
+                l10n_util::GetStringUTF16(IDS_DEVICE_UNKNOWN_BUTTON_LABEL)));
+          }
         }
         break;
       // We have a multi-partition device for which at least one mount
@@ -622,6 +628,7 @@ SystemNotificationManager::MakeMountErrorNotification(
     }
     notification =
         CreateNotification(kDeviceFailNotificationId, title, message, delegate);
+    notification->set_buttons(notification_buttons);
   }
   return notification;
 }
