@@ -5,15 +5,20 @@
 #ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_DIALOG_CONTROLLER_H_
 #define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_DIALOG_CONTROLLER_H_
 
+#include "ash/ash_export.h"
 #include "base/scoped_observation.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
+
+namespace aura {
+class Window;
+}
 
 namespace ash {
 
 // DesksTemplatesDialogController controls when to show the various confirmation
 // dialogs for modifying desk templates.
-class DesksTemplatesDialogController : public views::WidgetObserver {
+class ASH_EXPORT DesksTemplatesDialogController : public views::WidgetObserver {
  public:
   // The types of dialogs that desks templates can show. Each one has slight
   // variations in the UI.
@@ -38,10 +43,12 @@ class DesksTemplatesDialogController : public views::WidgetObserver {
   // owned by OverviewSession.
   static DesksTemplatesDialogController* Get();
 
+  const views::Widget* dialog_widget() const { return dialog_widget_; }
+
   // Shows the dialog according to `type`.
   // TODO(sammiequon): This should also take a vector of images for
   // `kUnsupported`, which should be empty for other types.
-  void Show(DialogType type);
+  void Show(DialogType type, aura::Window* root_window);
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

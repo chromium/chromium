@@ -4,9 +4,8 @@
 
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 
-#include "ash/public/cpp/shell_window_ids.h"
-#include "ash/shell.h"
 #include "base/bind.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -64,13 +63,15 @@ std::u16string GetDescriptionTextForType(
 }  // namespace
 
 // The client view of the dialog. Contains a label which is a description, and
-// optionally a couple images of unsupported apps.
+// optionally a couple images of unsupported apps. This dialog will block the
+// entire system.
 class DesksTemplatesDialog : public views::DialogDelegateView {
  public:
   METADATA_HEADER(DesksTemplatesDialog);
 
   explicit DesksTemplatesDialog(
       DesksTemplatesDialogController::DialogType type) {
+    SetModalType(ui::MODAL_TYPE_SYSTEM);
     SetTitle(GetTitleForType(type));
     SetShowCloseButton(false);
     SetButtonLabel(ui::DIALOG_BUTTON_OK, GetAcceptButtonTextForType(type));
@@ -122,19 +123,17 @@ DesksTemplatesDialogController* DesksTemplatesDialogController::Get() {
   return g_instance;
 }
 
-void DesksTemplatesDialogController::Show(DialogType type) {
+void DesksTemplatesDialogController::Show(DialogType type,
+                                          aura::Window* root_window) {
   if (dialog_widget_)
     dialog_widget_->CloseNow();
 
-  // TODO(sammiequon): Use the menu container for now as it is not activatable
-  // and therefore will not cause overview to exit when activating this dialog.
-  // We will need to revisit once we decide how modal we want the dialog to be,
-  // probably using context and setting system modal to the dialog.
-  aura::Window* parent =
-      Shell::GetPrimaryRootWindow()->GetChildById(kShellWindowId_MenuContainer);
+  // The dialog will show on the display associated with `root_window`, and will
+  // block all input since it is system modal.
+  DCHECK(root_window->IsRootWindow());
   dialog_widget_ = views::DialogDelegate::CreateDialogWidget(
       std::make_unique<DesksTemplatesDialog>(type),
-      /*context=*/nullptr, parent);
+      /*context=*/root_window, /*parent=*/nullptr);
   dialog_widget_->Show();
   dialog_widget_observation_.Observe(dialog_widget_);
 }

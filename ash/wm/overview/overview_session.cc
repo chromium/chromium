@@ -729,6 +729,15 @@ void OverviewSession::OnWindowActivating(
   if (gained_active && gained_active->GetId() == kShellWindowId_DesksBarWindow)
     return;
 
+  // Activating one of the confirmation dialogs associated with desks templates
+  // should not end overview.
+  if (gained_active && desks_templates_util::AreDesksTemplatesEnabled()) {
+    const views::Widget* dialog_widget =
+        desks_templates_dialog_controller_->dialog_widget();
+    if (dialog_widget && gained_active == dialog_widget->GetNativeWindow())
+      return;
+  }
+
   if (DesksController::Get()->AreDesksBeingModified()) {
     // Activating a desk from its mini view will activate its most-recently used
     // window, but this should not result in ending overview mode now.
@@ -976,6 +985,12 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   Shell* shell = Shell::Get();
   if (!shell->tablet_mode_controller()->InTabletMode() &&
       shell->app_list_controller()->IsVisible()) {
+    return;
+  }
+
+  // If a desk templates dialog is visible it should receive the key events.
+  if (desks_templates_util::AreDesksTemplatesEnabled() &&
+      desks_templates_dialog_controller_->dialog_widget()) {
     return;
   }
 

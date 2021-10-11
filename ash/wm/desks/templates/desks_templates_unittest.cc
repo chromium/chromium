@@ -12,9 +12,11 @@
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
+#include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -287,6 +289,40 @@ TEST_F(DesksTemplatesTest, NoWindowsLabelOnTemplateGridShow) {
   GetOverviewSession()->ShowDesksTemplatesGrids();
   EXPECT_FALSE(grid_list[0]->no_windows_widget());
   EXPECT_FALSE(grid_list[1]->no_windows_widget());
+}
+
+// Tests the modality of the dialogs shown in desks templates.
+TEST_F(DesksTemplatesTest, DialogSystemModal) {
+  UpdateDisplay("800x600,800x600");
+
+  ToggleOverview();
+  ASSERT_TRUE(GetOverviewSession());
+
+  // Show one of the dialogs. Activating the dialog keeps us in overview mode.
+  auto* dialog_controller = DesksTemplatesDialogController::Get();
+  dialog_controller->Show(DesksTemplatesDialogController::DialogType::kDelete,
+                          Shell::GetPrimaryRootWindow());
+  EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
+  ASSERT_TRUE(GetOverviewSession());
+
+  // Checks that pressing tab does not trigger overview keyboard traversal.
+  SendKey(ui::VKEY_TAB);
+  EXPECT_FALSE(
+      GetOverviewSession()->highlight_controller()->IsFocusHighlightVisible());
+
+  // Fetch the widget for the dialog and test that it appears on the primary
+  // root window.
+  const views::Widget* dialog_widget = dialog_controller->dialog_widget();
+  ASSERT_TRUE(dialog_widget);
+  EXPECT_EQ(Shell::GetPrimaryRootWindow(),
+            dialog_widget->GetNativeWindow()->GetRootWindow());
+
+  // Hit escape to delete the dialog. Tests that there are no more system modal
+  // windows open, and that we are still in overview because the dialog takes
+  // the escape event, not the overview session.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
+  EXPECT_FALSE(Shell::IsSystemModalWindowOpen());
+  EXPECT_TRUE(GetOverviewSession());
 }
 
 }  // namespace ash
