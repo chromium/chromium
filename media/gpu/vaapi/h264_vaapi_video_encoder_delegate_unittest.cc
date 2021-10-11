@@ -173,7 +173,8 @@ void H264VaapiVideoEncoderDelegateTest::EncodeFrame(bool force_keyframe) {
   auto encode_job = CreateEncodeJob(force_keyframe);
   EXPECT_TRUE(encoder_->PrepareEncodeJob(*encode_job.get()));
 
-  const H264Picture& pic = *encoder_->GetPicture(*encode_job.get());
+  const H264Picture& pic =
+      *reinterpret_cast<H264Picture*>(encode_job->picture().get());
   if (force_keyframe)
     EXPECT_EQ(pic.idr, true);
   EXPECT_EQ(pic.type == H264SliceHeader::kISlice, pic.idr);

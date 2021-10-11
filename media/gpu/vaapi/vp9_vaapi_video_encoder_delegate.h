@@ -95,8 +95,6 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   void NotifyEncodedChunkSize(VABufferID buffer_id,
                               VASurfaceID sync_surface_id);
 
-  scoped_refptr<VP9Picture> GetPicture(EncodeJob& job);
-
   bool SubmitFrameParameters(
       EncodeJob& job,
       const EncodeParams& encode_params,

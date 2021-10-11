@@ -194,6 +194,12 @@ void UpdatePictureForTemporalLayerEncoding(
     pic.abs_diff_pic_num_minus1 = abs_diff_pic_num - 1;
   }
 }
+
+scoped_refptr<H264Picture> GetH264Picture(
+    const VaapiVideoEncoderDelegate::EncodeJob& job) {
+  return base::WrapRefCounted(
+      reinterpret_cast<H264Picture*>(job.picture().get()));
+}
 }  // namespace
 
 H264VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
@@ -376,7 +382,7 @@ BitstreamBufferMetadata H264VaapiVideoEncoderDelegate::GetMetadata(
 
   auto metadata =
       VaapiVideoEncoderDelegate::GetMetadata(encode_job, payload_size);
-  auto picture = GetPicture(*encode_job);
+  auto picture = GetH264Picture(*encode_job);
   DCHECK(picture);
 
   metadata.h264 = picture->metadata_for_encoding;
@@ -387,7 +393,7 @@ BitstreamBufferMetadata H264VaapiVideoEncoderDelegate::GetMetadata(
 bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  scoped_refptr<H264Picture> pic = GetPicture(encode_job);
+  scoped_refptr<H264Picture> pic = GetH264Picture(encode_job);
   DCHECK(pic);
 
   if (encode_job.IsKeyframeRequested() || encoding_parameters_changed_)
@@ -1084,14 +1090,6 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
                      base::Unretained(this), packed_slice_header));
 
   return true;
-}
-
-scoped_refptr<H264Picture> H264VaapiVideoEncoderDelegate::GetPicture(
-    EncodeJob& job) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return base::WrapRefCounted(
-      reinterpret_cast<H264Picture*>(job.picture().get()));
 }
 
 bool H264VaapiVideoEncoderDelegate::SubmitPackedHeaders(

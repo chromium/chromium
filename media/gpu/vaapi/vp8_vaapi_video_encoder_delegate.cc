@@ -115,6 +115,11 @@ static scoped_refptr<base::RefCountedBytes> MakeRefCountedBytes(void* ptr,
       reinterpret_cast<uint8_t*>(ptr), size);
 }
 
+scoped_refptr<VP8Picture> GetVP8Picture(
+    const VaapiVideoEncoderDelegate::EncodeJob& job) {
+  return base::WrapRefCounted(
+      reinterpret_cast<VP8Picture*>(job.picture().get()));
+}
 }  // namespace
 
 VP8VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
@@ -221,7 +226,7 @@ bool VP8VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   frame_num_++;
   frame_num_ %= current_params_.kf_period_frames;
 
-  scoped_refptr<VP8Picture> picture = GetPicture(encode_job);
+  scoped_refptr<VP8Picture> picture = GetVP8Picture(encode_job);
   DCHECK(picture);
 
   UpdateFrameHeader(encode_job.IsKeyframeRequested());
@@ -353,14 +358,6 @@ void VP8VaapiVideoEncoderDelegate::UpdateReferenceFrames(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   reference_frames_.Refresh(picture);
-}
-
-scoped_refptr<VP8Picture> VP8VaapiVideoEncoderDelegate::GetPicture(
-    VaapiVideoEncoderDelegate::EncodeJob& job) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return base::WrapRefCounted(
-      reinterpret_cast<VP8Picture*>(job.picture().get()));
 }
 
 void VP8VaapiVideoEncoderDelegate::NotifyEncodedChunkSize(

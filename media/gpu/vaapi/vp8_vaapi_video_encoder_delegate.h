@@ -80,7 +80,6 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   void UpdateReferenceFrames(scoped_refptr<VP8Picture> picture);
   void Reset();
 
-  scoped_refptr<VP8Picture> GetPicture(EncodeJob& job);
   // Gets the encoded chunk size whose id is |buffer_id| and updates the bitrate
   // control.
   void NotifyEncodedChunkSize(VABufferID buffer_id,

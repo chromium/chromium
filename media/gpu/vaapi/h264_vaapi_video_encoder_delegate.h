@@ -102,8 +102,6 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   // Submits a H264BitstreamBuffer |buffer| to the driver.
   void SubmitH264BitstreamBuffer(scoped_refptr<H264BitstreamBuffer> buffer);
 
-  scoped_refptr<H264Picture> GetPicture(EncodeJob& job);
-
   bool SubmitPackedHeaders(EncodeJob& job,
                            scoped_refptr<H264BitstreamBuffer> packed_sps,
                            scoped_refptr<H264BitstreamBuffer> packed_pps);

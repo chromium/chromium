@@ -180,6 +180,11 @@ static scoped_refptr<base::RefCountedBytes> MakeRefCountedBytes(void* ptr,
       reinterpret_cast<uint8_t*>(ptr), size);
 }
 
+scoped_refptr<VP9Picture> GetVP9Picture(
+    const VaapiVideoEncoderDelegate::EncodeJob& job) {
+  return base::WrapRefCounted(
+      reinterpret_cast<VP9Picture*>(job.picture().get()));
+}
 }  // namespace
 
 VP9VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
@@ -332,7 +337,7 @@ bool VP9VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
     frame_num_ %= current_params_.kf_period_frames;
   }
 
-  scoped_refptr<VP9Picture> picture = GetPicture(encode_job);
+  scoped_refptr<VP9Picture> picture = GetVP9Picture(encode_job);
   DCHECK(picture);
 
   std::array<bool, kVp9NumRefsPerFrame> ref_frames_used = {false, false, false};
@@ -355,7 +360,7 @@ BitstreamBufferMetadata VP9VaapiVideoEncoderDelegate::GetMetadata(
 
   auto metadata =
       VaapiVideoEncoderDelegate::GetMetadata(encode_job, payload_size);
-  auto picture = GetPicture(*encode_job);
+  auto picture = GetVP9Picture(*encode_job);
   DCHECK(picture);
   metadata.vp9 = picture->metadata_for_encoding;
   return metadata;
@@ -526,14 +531,6 @@ void VP9VaapiVideoEncoderDelegate::NotifyEncodedChunkSize(
     error_cb_.Run();
 
   BitrateControlUpdate(encoded_chunk_size);
-}
-
-scoped_refptr<VP9Picture> VP9VaapiVideoEncoderDelegate::GetPicture(
-    EncodeJob& job) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return base::WrapRefCounted(
-      reinterpret_cast<VP9Picture*>(job.picture().get()));
 }
 
 bool VP9VaapiVideoEncoderDelegate::SubmitFrameParameters(
