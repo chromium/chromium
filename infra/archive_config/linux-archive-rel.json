@@ -74,7 +74,7 @@
         },
         {
             "files": [
-                "gen/layout_test_data/mojo/public/js",
+                "gen/layout_test_data/mojo/public.js",
                 "gen/mojo/public/js/bindings.js",
                 "gen/third_party/blink/public/mojom/contacts/contacts_manager.mojom.m.js",
                 "gen/third_party/blink/public/mojom/content_index/content_index.mojom.m.js",
