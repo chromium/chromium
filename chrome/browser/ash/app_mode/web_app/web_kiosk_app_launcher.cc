@@ -99,15 +99,16 @@ void WebKioskAppLauncher::OnAppDataObtained(
 
 void WebKioskAppLauncher::OnLacrosWindowCreated(
     crosapi::mojom::CreationResult result) {
-  if (result == crosapi::mojom::CreationResult::kSuccess) {
-    delegate_->OnAppWindowCreated();
-  } else {
+  if (result != crosapi::mojom::CreationResult::kSuccess) {
+    exo::WMHelper::GetInstance()->RemoveExoWindowObserver(this);
     LOG(ERROR) << "The lacros window failed to be created. Result: " << result;
     delegate_->OnLaunchFailed(KioskAppLaunchError::Error::kUnableToLaunch);
   }
 }
 
 void WebKioskAppLauncher::CreateNewLacrosWindow() {
+  DCHECK(exo::WMHelper::HasInstance());
+  exo::WMHelper::GetInstance()->AddExoWindowObserver(this);
   crosapi::BrowserManager::Get()->NewFullscreenWindow(
       GetCurrentApp()->GetLaunchableUrl(),
       base::BindOnce(&WebKioskAppLauncher::OnLacrosWindowCreated,
@@ -167,6 +168,12 @@ void WebKioskAppLauncher::OnStateChanged() {
     observation_.Reset();
     CreateNewLacrosWindow();
   }
+}
+
+void WebKioskAppLauncher::OnExoWindowCreated(aura::Window* window) {
+  CHECK(crosapi::browser_util::IsLacrosWindow(window));
+  exo::WMHelper::GetInstance()->RemoveExoWindowObserver(this);
+  delegate_->OnAppWindowCreated();
 }
 
 void WebKioskAppLauncher::SetDataRetrieverFactoryForTesting(

@@ -23,6 +23,8 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/exo/shell_surface_util.h"
+#include "components/exo/wm_helper_chromeos.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -56,6 +58,7 @@ const char kAppEmail[] = "lala@example.com";
 const char kAppInstallUrl[] = "https://example.com";
 const char kAppLaunchUrl[] = "https://example.com/launch";
 const char kAppLaunchBadUrl[] = "https://badexample.com";
+const char kLacrosAppId[] = "org.chromium.lacros.12345";
 const char kUserEmail[] = "user@example.com";
 const char16_t kAppTitle[] = u"app";
 
@@ -365,7 +368,8 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
   WebKioskAppLauncherUsingLacrosTest()
       : browser_manager_(std::make_unique<crosapi::FakeBrowserManager>()),
         fake_user_manager_(new ash::FakeChromeUserManager()),
-        scoped_user_manager_(base::WrapUnique(fake_user_manager_)) {
+        scoped_user_manager_(base::WrapUnique(fake_user_manager_)),
+        wm_helper_(std::make_unique<exo::WMHelperChromeOS>()) {
     scoped_feature_list_.InitAndEnableFeature(features::kWebKioskEnableLacros);
     crosapi::browser_util::SetLacrosEnabledForTest(true);
     crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
@@ -377,6 +381,13 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
     fake_user_manager()->LoginUser(account_id);
   }
 
+  void CreateLacrosWindowAndNotify() {
+    auto window = std::make_unique<aura::Window>(nullptr);
+    window->Init(ui::LAYER_SOLID_COLOR);
+    exo::SetShellApplicationId(window.get(), kLacrosAppId);
+    wm_helper()->NotifyExoWindowCreated(window.get());
+  }
+
   crosapi::FakeBrowserManager* browser_manager() const {
     return browser_manager_.get();
   }
@@ -385,11 +396,14 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
     return fake_user_manager_;
   }
 
+  exo::WMHelper* wm_helper() const { return wm_helper_.get(); }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
   ash::FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
+  std::unique_ptr<exo::WMHelper> wm_helper_;
 };
 
 TEST_F(WebKioskAppLauncherUsingLacrosTest, NormalFlow) {
@@ -415,6 +429,7 @@ TEST_F(WebKioskAppLauncherUsingLacrosTest, NormalFlow) {
   EXPECT_CALL(*delegate(), OnLaunchFailed(_)).Times(0);
   browser_manager()->set_is_running(true);
   launcher()->LaunchApp();
+  CreateLacrosWindowAndNotify();
   loop2.Run();
 }
 
@@ -443,6 +458,7 @@ TEST_F(WebKioskAppLauncherUsingLacrosTest, WaitBrowserManagerToRun) {
   launcher()->LaunchApp();
   browser_manager()->set_is_running(true);
   browser_manager()->StartRunning();
+  CreateLacrosWindowAndNotify();
   loop2.Run();
 }
 
