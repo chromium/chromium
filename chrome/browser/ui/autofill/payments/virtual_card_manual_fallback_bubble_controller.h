@@ -61,6 +61,9 @@ class VirtualCardManualFallbackBubbleController {
   // Returns the title text of the bubble.
   virtual std::u16string GetBubbleTitleText() const = 0;
 
+  // Returns the educational label shown in the body of the bubble.
+  virtual std::u16string GetEducationalBodyLabel() const = 0;
+
   // Returns the descriptive label of the virtual card number field.
   virtual std::u16string GetVirtualCardNumberFieldLabel() const = 0;
 

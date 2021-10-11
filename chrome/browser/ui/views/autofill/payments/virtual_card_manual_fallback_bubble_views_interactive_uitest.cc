@@ -71,8 +71,10 @@ class VirtualCardManualFallbackBubbleViewsInteractiveUiTest
                   const std::u16string& virtual_card_cvc) {
     ResetEventWaiterForSequence({BubbleEvent::BUBBLE_SHOWN});
     // Passing in empty image will fall back to use card network icon.
-    GetController()->ShowBubble(virtual_card, virtual_card_cvc,
-                                /*virtual_card_image=*/gfx::Image());
+    GetController()->ShowBubble(
+        /*masked_card_identifier_string=*/std::u16string(), virtual_card,
+        virtual_card_cvc,
+        /*virtual_card_image=*/gfx::Image());
     event_waiter_->Wait();
   }
 

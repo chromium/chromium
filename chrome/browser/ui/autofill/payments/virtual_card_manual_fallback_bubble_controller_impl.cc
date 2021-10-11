@@ -48,6 +48,7 @@ VirtualCardManualFallbackBubbleControllerImpl::
     ~VirtualCardManualFallbackBubbleControllerImpl() = default;
 
 void VirtualCardManualFallbackBubbleControllerImpl::ShowBubble(
+    const std::u16string& masked_card_identifier_string,
     const CreditCard* virtual_card,
     const std::u16string& virtual_card_cvc,
     const gfx::Image& virtual_card_image) {
@@ -56,6 +57,7 @@ void VirtualCardManualFallbackBubbleControllerImpl::ShowBubble(
   if (bubble_view())
     HideBubble();
 
+  masked_card_identifier_string_ = masked_card_identifier_string;
   virtual_card_ = *virtual_card;
   virtual_card_cvc_ = virtual_card_cvc;
   virtual_card_image_ = virtual_card_image;
@@ -93,8 +95,15 @@ VirtualCardManualFallbackBubbleControllerImpl::GetBubbleTitleIcon() const {
 
 std::u16string
 VirtualCardManualFallbackBubbleControllerImpl::GetBubbleTitleText() const {
+  return l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_TITLE,
+      masked_card_identifier_string_);
+}
+
+std::u16string
+VirtualCardManualFallbackBubbleControllerImpl::GetEducationalBodyLabel() const {
   return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_TITLE);
+      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_EDUCATIONAL_BODY_LABEL);
 }
 
 std::u16string

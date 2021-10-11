@@ -493,7 +493,10 @@
       Cancel
     </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_TITLE" desc="The title shown in the Autofill virtual card manual fallback bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
-      Virtual card number
+      Virtual card for <ph name="CARD_IDENTIFIER">$1<ex>Visa - 1234</ex></ph>
+    </message>
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_EDUCATIONAL_BODY_LABEL" desc="The label shown in body of the Autofill virtual card manual fallback bubble on Desktop. The label serves as a educational message to explain to users how to use the bubble to fill card information to the form. This bubble shows the complete information for the virtual card selected to fill the form.">
+      Virtual card number not filled in? Click card details to copy
     </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CARD_NUMBER_LABEL" desc="Text shown next to the virtual card number in the virtual card manual fallback bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
       Virtual number:

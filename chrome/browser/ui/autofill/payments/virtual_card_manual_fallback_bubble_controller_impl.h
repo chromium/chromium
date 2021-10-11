@@ -34,7 +34,8 @@ class VirtualCardManualFallbackBubbleControllerImpl
       const VirtualCardManualFallbackBubbleControllerImpl&) = delete;
 
   // Show the bubble view.
-  void ShowBubble(const CreditCard* virtual_card,
+  void ShowBubble(const std::u16string& masked_card_identifier_string,
+                  const CreditCard* virtual_card,
                   const std::u16string& virtual_card_cvc,
                   const gfx::Image& virtual_card_image);
 
@@ -45,6 +46,7 @@ class VirtualCardManualFallbackBubbleControllerImpl
   AutofillBubbleBase* GetBubble() const override;
   const gfx::Image& GetBubbleTitleIcon() const override;
   std::u16string GetBubbleTitleText() const override;
+  std::u16string GetEducationalBodyLabel() const override;
   std::u16string GetVirtualCardNumberFieldLabel() const override;
   std::u16string GetExpirationDateFieldLabel() const override;
   std::u16string GetCardholderNameFieldLabel() const override;
@@ -86,6 +88,10 @@ class VirtualCardManualFallbackBubbleControllerImpl
   bool IsWebContentsActive();
 
   void SetEventObserverForTesting(ObserverForTest* observer_for_test);
+
+  // The network + last four digits of card number for the related masked server
+  // card.
+  std::u16string masked_card_identifier_string_;
 
   // The cvc of the virtual card.
   std::u16string virtual_card_cvc_;
