@@ -164,9 +164,8 @@ void WebAppsPublisherHost::LoadIcon(const std::string& app_id,
                                     apps::mojom::IconType icon_type,
                                     int32_t size_hint_in_dip,
                                     LoadIconCallback callback) {
-  publisher_helper().LoadIcon(
-      app_id, std::move(icon_key), std::move(icon_type), size_hint_in_dip,
-      /*allow_placeholder_icon=*/false, std::move(callback));
+  publisher_helper().LoadIcon(app_id, std::move(icon_key), std::move(icon_type),
+                              size_hint_in_dip, std::move(callback));
 }
 
 content::WebContents* WebAppsPublisherHost::Launch(

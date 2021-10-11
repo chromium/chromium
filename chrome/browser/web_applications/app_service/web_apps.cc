@@ -184,8 +184,7 @@ void WebApps::LoadIcon(const std::string& app_id,
                        bool allow_placeholder_icon,
                        LoadIconCallback callback) {
   publisher_helper().LoadIcon(app_id, std::move(icon_key), std::move(icon_type),
-                              size_hint_in_dip, allow_placeholder_icon,
-                              std::move(callback));
+                              size_hint_in_dip, std::move(callback));
 }
 
 void WebApps::Launch(const std::string& app_id,

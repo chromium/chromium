@@ -521,7 +521,6 @@ void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
                                      apps::mojom::IconKeyPtr icon_key,
                                      apps::mojom::IconType icon_type,
                                      int32_t size_hint_in_dip,
-                                     bool allow_placeholder_icon,
                                      LoadIconCallback callback) {
   DCHECK(provider_);
 
