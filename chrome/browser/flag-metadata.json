@@ -3908,32 +3908,32 @@
   {
     "name": "ntp-chrome-cart-module",
     "owners": [ "wychen", "tiborg", "yuezhanggg" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 100
   },
   {
     "name": "ntp-drive-module",
     "owners": [ "mahmadi", "tiborg" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 100
   },
   {
     "name": "ntp-modules",
     "owners": [ "mahmadi", "tiborg" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 100
   },
   {
     "name": "ntp-modules-drag-and-drop",
     "owners": [ "lydialam", "mahmadi", "tiborg" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 100
   },
   {
     "name": "ntp-modules-redesigned",
     "owners": [ "doei", "mahmadi", "tiborg" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 100
   },
   {
     "name": "ntp-photos-module",
     "owners": [ "jerem", "tiborg" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 100
   },
   {
     "name": "ntp-realbox-pedals",
@@ -3948,7 +3948,7 @@
   {
     "name": "ntp-recipe-tasks-module",
     "owners": [ "mahmadi", "tiborg" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 100
   },
   {
     "name": "ntp-safe-browsing-module",
