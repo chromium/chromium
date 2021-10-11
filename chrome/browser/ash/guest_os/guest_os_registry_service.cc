@@ -418,10 +418,10 @@ std::set<std::string> GuestOsRegistryService::Registration::Extensions() const {
 std::set<std::string> GuestOsRegistryService::Registration::MimeTypes() const {
   if (pref_.is_none())
     return {};
-  // TODO(crbug.com/1258348): It may make sense for mime types to ignore case.
+  // Convert to lowercase ASCII to allow case-insensitive match.
   return ListToStringSet(pref_.FindKeyOfType(guest_os::prefs::kAppMimeTypesKey,
                                              base::Value::Type::LIST),
-                         /*to_lower_ascii=*/false);
+                         /*to_lower_ascii=*/true);
 }
 
 std::set<std::string> GuestOsRegistryService::Registration::Keywords() const {

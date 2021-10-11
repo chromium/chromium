@@ -59,7 +59,8 @@ bool HasSupportedMimeType(
     const std::string& container_name,
     const guest_os::GuestOsMimeTypesService& mime_types_service,
     const extensions::EntryInfo& entry) {
-  if (supported_mime_types.find(entry.mime_type) !=
+  // Use lowercase for insensitive match.
+  if (supported_mime_types.find(base::ToLowerASCII(entry.mime_type)) !=
       supported_mime_types.end()) {
     return true;
   }

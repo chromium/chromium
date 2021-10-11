@@ -154,6 +154,16 @@ TEST_F(GuestOsFileTasksTest, Termina_AppRegistered) {
   EXPECT_THAT(app_vm_types_, testing::ElementsAre(VM_TERMINA));
 }
 
+TEST_F(GuestOsFileTasksTest, Termina_IgnoreCase) {
+  AddApp("app1", "name1", {"Test/Mime1"}, {}, VM_TERMINA);
+  AddEntry("entry.txt", "tesT/mimE1");
+  FindGuestOsApps(&profile_, entries_, urls_, &app_ids_, &app_names_,
+                  &app_vm_types_);
+  EXPECT_THAT(app_ids_, testing::ElementsAre("app1"));
+  EXPECT_THAT(app_names_, testing::ElementsAre("name1"));
+  EXPECT_THAT(app_vm_types_, testing::ElementsAre(VM_TERMINA));
+}
+
 TEST_F(GuestOsFileTasksTest, Termina_NotEnabled) {
   fake_crostini_features_.set_enabled(false);
   AddApp("app1", "name1", {"test/mime1"}, {}, VM_TERMINA);
