@@ -29,12 +29,16 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical" />
 
+    <!-- The default android:breakStrategy is "high_quality", which tries to be
+         smart and ends up splitting email addresses containing ".". So use
+         "simple" instead. -->
     <TextView
         android:id="@+id/manage_devices_link"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
         android:gravity="center_vertical"
+        android:breakStrategy="simple"
         android:paddingStart="20dp" />
 
   </LinearLayout>
