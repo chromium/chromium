@@ -174,7 +174,7 @@ struct __attribute__((packed)) SlotSpanMetadata {
 
   // This includes padding due to rounding done at allocation; we don't know the
   // requested size at deallocation, so we use this in both places.
-  ALWAYS_INLINE size_t GetSizeForBookkeeping() const {
+  ALWAYS_INLINE size_t GetSlotSizeForBookkeeping() const {
     // This could be more precise for allocations where CanStoreRawSize()
     // returns true (large allocations). However this is called for *every*
     // allocation, so we don't want an extra branch there.

@@ -461,7 +461,7 @@ struct BASE_EXPORT PartitionRoot {
 
   static uint16_t SizeToBucketIndex(size_t size);
 
-  ALWAYS_INLINE void FreeSlotSpan(void* slot_start, SlotSpan* slot_span)
+  ALWAYS_INLINE void FreeInSlotSpan(void* slot_start, SlotSpan* slot_span)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Frees memory, with |slot_start| as returned by |RawAlloc()|.
@@ -856,7 +856,7 @@ ALWAYS_INLINE void PartitionAllocFreeForRefCounting(void* slot_start) {
 #endif
 
   root->total_size_of_brp_quarantined_bytes.fetch_sub(
-      slot_span->GetSizeForBookkeeping(), std::memory_order_relaxed);
+      slot_span->GetSlotSizeForBookkeeping(), std::memory_order_relaxed);
   root->total_count_of_brp_quarantined_slots.fetch_sub(
       1, std::memory_order_relaxed);
 
@@ -934,7 +934,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
     *usable_size = slot_span->GetUsableSize(this);
   }
   PA_DCHECK(slot_span->GetUtilizedSlotSize() <= slot_span->bucket->slot_size);
-  total_size_of_allocated_bytes += slot_span->GetSizeForBookkeeping();
+  total_size_of_allocated_bytes += slot_span->GetSlotSizeForBookkeeping();
   max_size_of_allocated_bytes =
       std::max(max_size_of_allocated_bytes, total_size_of_allocated_bytes);
   return slot_start;
@@ -1090,7 +1090,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 
     if (UNLIKELY(!(ref_count->ReleaseFromAllocator()))) {
       total_size_of_brp_quarantined_bytes.fetch_add(
-          slot_span->GetSizeForBookkeeping(), std::memory_order_relaxed);
+          slot_span->GetSlotSizeForBookkeeping(), std::memory_order_relaxed);
       total_count_of_brp_quarantined_slots.fetch_add(1,
                                                      std::memory_order_relaxed);
       return;
@@ -1124,10 +1124,10 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeSlotSpan(
+ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeInSlotSpan(
     void* slot_start,
     SlotSpan* slot_span) {
-  total_size_of_allocated_bytes -= slot_span->GetSizeForBookkeeping();
+  total_size_of_allocated_bytes -= slot_span->GetSlotSizeForBookkeeping();
   return slot_span->Free(slot_start);
 }
 
@@ -1173,7 +1173,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(void* slot_start,
   __asm__ __volatile__("" : : "r"(slot_start) : "memory");
 
   ScopedGuard guard{lock_};
-  FreeSlotSpan(slot_start, slot_span);
+  FreeInSlotSpan(slot_start, slot_span);
 }
 
 template <bool thread_safe>
@@ -1207,7 +1207,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeLocked(void* slot_start) {
   // may not expect that, but we never call this function on direct-mapped
   // allocations.
   PA_DCHECK(!IsDirectMappedBucket(slot_span->bucket));
-  FreeSlotSpan(slot_start, slot_span);
+  FreeInSlotSpan(slot_start, slot_span);
 }
 
 // static
