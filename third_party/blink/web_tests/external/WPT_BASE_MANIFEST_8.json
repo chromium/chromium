@@ -204507,13 +204507,104 @@
          {}
         ]
        ],
-       "top-layer-parent-opacity.html": [
-        "909ea73fd99301692ab60a2928601e2c2b5d1387",
+       "top-layer-parent-clip.html": [
+        "2a78bb21a995ab8a03b558007a6d99bd48b8633e",
         [
          null,
          [
           [
-           "/html/semantics/interactive-elements/the-dialog-element/top-layer-parent-opacity-ref.html",
+           "/html/semantics/interactive-elements/the-dialog-element/resources/green-dialog-and-backdrop.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "top-layer-parent-filter.html": [
+        "dcb14117fdeae18544e8a6433f2fcf9015226b47",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/resources/green-dialog-and-backdrop.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "top-layer-parent-mask.html": [
+        "eed867e2e717451fd187625c19fc8d7476f6e80b",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/resources/green-dialog-and-backdrop.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "top-layer-parent-opacity.html": [
+        "b759d79857f64ca6585355001ceca050d06b3c48",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/resources/green-dialog-and-backdrop.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "top-layer-parent-overflow-clip.html": [
+        "1382791a169a65f7a7bcc73a2459f03d68d7366b",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/resources/green-dialog-and-backdrop.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "top-layer-parent-overflow-hidden.html": [
+        "14c52b2de584c9fe3fbd19bb75e4e12721752152",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/resources/green-dialog-and-backdrop.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "top-layer-parent-overflow-scroll.html": [
+        "51b9625dec29bfcd1599de168ee3df680f7a16da",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/resources/green-dialog-and-backdrop.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "top-layer-parent-transform.html": [
+        "e5b398dfc1adeabd781ed0b681b63a5fd0100b6d",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/resources/green-dialog-and-backdrop.html",
            "=="
           ]
          ],
@@ -219976,14 +220067,6 @@
     ],
     "access-control-expose-headers-parsing.window-expected.txt": [
      "0fe27f2fdca8ae7eeb0f92e9bef2717a6d8ac1d1",
-     []
-    ],
-    "cors-safelisted-request-header.any-expected.txt": [
-     "292464bc0f023dba84b7679eca19e9f7e7b8afdf",
-     []
-    ],
-    "cors-safelisted-request-header.any.worker-expected.txt": [
-     "292464bc0f023dba84b7679eca19e9f7e7b8afdf",
      []
     ],
     "resources": {
@@ -282002,6 +282085,10 @@
          "a640a146231ec5503dc00c90b717fb6dec297f83",
          []
         ],
+        "green-dialog-and-backdrop.html": [
+         "b8851508e46b949803924627aa3bfd0473474456",
+         []
+        ],
         "submit.jpg": [
          "8909de24309e77c606b0f2a1795f69378a36a151",
          []
@@ -282017,10 +282104,6 @@
        ],
        "top-layer-nesting-ref.html": [
         "0a2936abbeda15ff475fa98d531445fd2b0ef1af",
-        []
-       ],
-       "top-layer-parent-opacity-ref.html": [
-        "e680f3f43a11253240e81c659a7da81a23e8e296",
         []
        ],
        "top-layer-stacking-correct-order-remove-readd-ref.html": [
