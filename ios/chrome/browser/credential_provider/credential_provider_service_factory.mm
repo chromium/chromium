@@ -65,12 +65,9 @@ CredentialProviderServiceFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForBrowserState(browser_state);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForBrowserState(browser_state);
-
   password_manager::AffiliationService* affiliation_service =
-      base::FeatureList::IsEnabled(
-          password_manager::features::kFillingAcrossAffiliatedWebsites)
-          ? IOSChromeAffiliationServiceFactory::GetForBrowserState(context)
-          : nullptr;
+      IOSChromeAffiliationServiceFactory::GetForBrowserState(context);
+
   return std::make_unique<CredentialProviderService>(
       browser_state->GetPrefs(), password_store, authentication_service,
       credential_store, identity_manager, sync_service, affiliation_service);
