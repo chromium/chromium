@@ -31,7 +31,8 @@ ntp_tiles::NTPTileImpression MakeNTPTileImpression(
       /*visual_type=*/
       ntp_tiles::TileVisualType::ICON_REAL /* unused on desktop */,
       /*icon_type=*/favicon_base::IconType::kInvalid /* unused on desktop */,
-      /*url_for_rappor=*/GURL() /* unused */);
+      /*url_for_rappor=*/
+      tile.url /* used on desktop for logging */);
 }
 
 }  // namespace

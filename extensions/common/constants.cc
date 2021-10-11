@@ -157,6 +157,9 @@ const char kBeFunkyAppId[] = "fjoomcalbeohjbnlcneddljemclcekeg";
 const char kClipchampAppId[] = "pfepfhbcedkbjdkanpimmmdjfgoddhkg";
 const char kGeForceNowAppId[] = "egmafekfmcnknbdlbfbhafbllplmjlhn";
 const char kZoomAppId[] = "jldpdkiafafcejhceeincjmlkmibemgj";
+const char kGoogleDocAppId[] = "aohghmighlieiainnegkcijnfilokake";
+const char kGoogleSheetsAppId[] = "felcaaldnbdncclmgdcncolpebgiejap";
+const char kGoogleSlidesAppId[] = "aapocclcgogkmnckokdopfmhonfmgoek";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(michaelpg): Deprecate old app IDs before adding new ones to avoid bloat.
@@ -188,6 +191,13 @@ bool IsSystemUIApp(base::StringPiece extension_id) {
   return false;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// TODO(https://crbug.com/1257275): remove after default app migration is done.
+bool IsPreinstalledAppId(const std::string& app_id) {
+  return app_id == kGMailAppId || app_id == kGoogleDocAppId ||
+         app_id == kGoogleDriveAppId || app_id == kGoogleSheetsAppId ||
+         app_id == kGoogleSlidesAppId || app_id == kYoutubeAppId;
+}
 
 const char kProdHangoutsExtensionId[] = "nckgahadagoaajjgafhacjanaoiihapd";
 const char* const kHangoutsExtensionIds[6] = {
