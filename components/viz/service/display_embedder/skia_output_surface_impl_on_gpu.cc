@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/viz/service/display_embedder/skia_output_surface_impl_on_gpu.h"
+
 #include <memory>
 
 #include "base/atomic_sequence_num.h"
@@ -44,10 +45,12 @@
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
+#include "skia/ext/rgba_to_yuva.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkDeferredDisplayList.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/gpu_fence_handle.h"
@@ -584,6 +587,62 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
   }
 }
 
+std::unique_ptr<gpu::SharedImageRepresentationSkia>
+SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
+    ResourceFormat resource_format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space) {
+  constexpr uint32_t kUsage = gpu::SHARED_IMAGE_USAGE_GLES2 |
+                              gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+                              gpu::SHARED_IMAGE_USAGE_RASTER |
+                              gpu::SHARED_IMAGE_USAGE_DISPLAY;
+
+  gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  bool result = shared_image_factory_->CreateSharedImage(
+      mailbox, resource_format, size, color_space, kBottomLeft_GrSurfaceOrigin,
+      kUnpremul_SkAlphaType, gpu::kNullSurfaceHandle, kUsage);
+  if (!result) {
+    DLOG(ERROR) << "Failed to create shared image.";
+    return nullptr;
+  }
+
+  auto representation = dependency_->GetSharedImageManager()->ProduceSkia(
+      mailbox, context_state_->memory_type_tracker(), context_state_);
+  shared_image_factory_->DestroySharedImage(mailbox);
+
+  return representation;
+}
+
+void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInMemory(
+    SkSurface* surface,
+    copy_output::RenderPassGeometry geometry,
+    const gfx::ColorSpace& color_space,
+    const SkIRect& src_rect,
+    SkSurface::RescaleMode rescale_mode,
+    bool is_downscale_or_identity_in_both_dimensions,
+    std::unique_ptr<CopyOutputRequest> request) {
+  // If we can't convert |color_space| to a SkColorSpace (e.g. PIECEWISE_HDR),
+  // request a sRGB destination color space for the copy result instead.
+  gfx::ColorSpace dest_color_space = color_space;
+  sk_sp<SkColorSpace> sk_color_space = color_space.ToSkColorSpace();
+  if (!sk_color_space) {
+    dest_color_space = gfx::ColorSpace::CreateSRGB();
+  }
+  SkImageInfo dst_info = SkImageInfo::Make(
+      geometry.result_selection.width(), geometry.result_selection.height(),
+      kN32_SkColorType, kPremul_SkAlphaType, sk_color_space);
+  std::unique_ptr<ReadPixelsContext> context =
+      std::make_unique<ReadPixelsContext>(std::move(request),
+                                          geometry.result_selection,
+                                          dest_color_space, weak_ptr_);
+  // Skia readback could be synchronous. Incremement counter in case
+  // ReadbackCompleted is called immediately.
+  num_readbacks_pending_++;
+  surface->asyncRescaleAndReadPixels(
+      dst_info, src_rect, SkSurface::RescaleGamma::kSrc, rescale_mode,
+      &CopyOutputResultSkiaRGBA::OnReadbackDone, context.release());
+}
+
 void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
     SkSurface* surface,
     copy_output::RenderPassGeometry geometry,
@@ -595,104 +654,54 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
   DCHECK_EQ(request->result_format(), CopyOutputRequest::ResultFormat::RGBA);
 
   switch (request->result_destination()) {
-    case CopyOutputRequest::ResultDestination::kSystemMemory: {
-      // Perform swizzle during readback.
-      constexpr bool skbitmap_is_bgra =
-          (kN32_SkColorType == kBGRA_8888_SkColorType);
-      // If we can't convert |color_space| to a SkColorSpace
-      // (e.g. PIECEWISE_HDR), request a sRGB destination color space for the
-      // copy result instead.
-      gfx::ColorSpace dest_color_space = color_space;
-      sk_sp<SkColorSpace> sk_color_space = color_space.ToSkColorSpace();
-      if (!sk_color_space) {
-        dest_color_space = gfx::ColorSpace::CreateSRGB();
-      }
-      SkImageInfo dst_info = SkImageInfo::Make(
-          geometry.result_selection.width(), geometry.result_selection.height(),
-          skbitmap_is_bgra ? kBGRA_8888_SkColorType : kRGBA_8888_SkColorType,
-          kPremul_SkAlphaType, sk_color_space);
-      std::unique_ptr<ReadPixelsContext> context =
-          std::make_unique<ReadPixelsContext>(std::move(request),
-                                              geometry.result_selection,
-                                              dest_color_space, weak_ptr_);
-      // Skia readback could be synchronous. Incremement counter in case
-      // ReadbackCompleted is called immediately.
-      num_readbacks_pending_++;
-      surface->asyncRescaleAndReadPixels(
-          dst_info, src_rect, SkSurface::RescaleGamma::kSrc, rescale_mode,
-          &CopyOutputResultSkiaRGBA::OnReadbackDone, context.release());
-
+    case CopyOutputRequest::ResultDestination::kSystemMemory:
+      CopyOutputRGBAInMemory(
+          surface, geometry, color_space, src_rect, rescale_mode,
+          is_downscale_or_identity_in_both_dimensions, std::move(request));
       break;
-    }
     case CopyOutputRequest::ResultDestination::kNativeTextures: {
-      gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
-      constexpr auto kUsage = gpu::SHARED_IMAGE_USAGE_GLES2 |
-                              gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
-                              gpu::SHARED_IMAGE_USAGE_RASTER |
-                              gpu::SHARED_IMAGE_USAGE_DISPLAY;
-      bool result = shared_image_factory_->CreateSharedImage(
-          mailbox, ResourceFormat::RGBA_8888,
+      auto representation = CreateSharedImageRepresentationSkia(
+          ResourceFormat::RGBA_8888,
           gfx::Size(geometry.result_bounds.width(),
                     geometry.result_bounds.height()),
-          color_space, kBottomLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType,
-          gpu::kNullSurfaceHandle, kUsage);
-      if (!result) {
+          color_space);
+
+      if (!representation) {
         DLOG(ERROR) << "Failed to create shared image.";
         return;
       }
-
-      auto representation = dependency_->GetSharedImageManager()->ProduceSkia(
-          mailbox, context_state_->memory_type_tracker(), context_state_);
-      shared_image_factory_->DestroySharedImage(mailbox);
 
       SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
       std::vector<GrBackendSemaphore> begin_semaphores;
       std::vector<GrBackendSemaphore> end_semaphores;
 
-      representation->SetCleared();
       auto scoped_write = representation->BeginScopedWriteAccess(
           0 /* final_msaa_count */, surface_props, &begin_semaphores,
           &end_semaphores,
           gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
-      SkSurface* dest_surface = scoped_write->surface();
-      dest_surface->wait(begin_semaphores.size(), begin_semaphores.data());
-      SkCanvas* dest_canvas = dest_surface->getCanvas();
+
+      absl::optional<SkVector> scaling;
       if (request->is_scaled()) {
-        dest_canvas->scale(static_cast<SkScalar>(request->scale_to().x()) /
+        scaling =
+            SkVector::Make(static_cast<SkScalar>(request->scale_to().x()) /
                                request->scale_from().x(),
                            static_cast<SkScalar>(request->scale_to().y()) /
                                request->scale_from().y());
       }
 
-      dest_canvas->clipRect(
-          SkRect::MakeXYWH(0, 0, src_rect.width(), src_rect.height()));
-      // TODO(b/197353769): Ideally, we should simply use a kSrc blending mode,
-      // but for some reason, this triggers some antialiasing code that causes
-      // various Vulkan tests to fail. We should investigate this and replace
-      // this clear with blend mode.
-      if (surface->imageInfo().alphaType() != kOpaque_SkAlphaType) {
-        dest_canvas->clear(SK_ColorTRANSPARENT);
-      }
-      auto sampling =
-          is_downscale_or_identity_in_both_dimensions
-              ? SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear)
-              : SkSamplingOptions({1.0f / 3, 1.0f / 3});
-      surface->draw(dest_canvas, -src_rect.x(), -src_rect.y(), sampling,
-                    nullptr);
-
-      GrFlushInfo flush_info;
-      flush_info.fNumSemaphores = end_semaphores.size();
-      flush_info.fSignalSemaphores = end_semaphores.data();
-      gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_,
-                                            &flush_info);
-      auto flush_result = dest_surface->flush(
-          SkSurface::BackendSurfaceAccess::kNoAccess, flush_info);
-      if (flush_result != GrSemaphoresSubmitted::kYes &&
-          !(begin_semaphores.empty() && end_semaphores.empty())) {
-        // TODO(penghuang): handle vulkan device lost.
-        DLOG(ERROR) << "dest_surface->flush() failed.";
+      bool success = RenderSurface(surface, src_rect, scaling,
+                                   is_downscale_or_identity_in_both_dimensions,
+                                   scoped_write->surface(), begin_semaphores,
+                                   end_semaphores);
+      if (!success) {
+        DLOG(ERROR) << "failed to render surface.";
         return;
       }
+
+      representation->SetCleared();
+
+      // Grab the mailbox before we transfer `representation`'s ownership:
+      gpu::Mailbox mailbox = representation->mailbox();
 
       auto gpu_callback = std::make_unique<ReleaseCallback>(base::BindOnce(
           &SkiaOutputSurfaceImplOnGpu::DestroyCopyOutputResourcesOnGpuThread,
@@ -716,6 +725,238 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
           std::move(release_callbacks)));
       break;
     }
+  }
+}
+
+bool SkiaOutputSurfaceImplOnGpu::RenderSurface(
+    SkSurface* surface,
+    const SkIRect& source_selection,
+    absl::optional<SkVector> scaling,
+    bool is_downscale_or_identity_in_both_dimensions,
+    SkSurface* dest_surface,
+    std::vector<GrBackendSemaphore>& begin_semaphores,
+    std::vector<GrBackendSemaphore>& end_semaphores) {
+  dest_surface->wait(begin_semaphores.size(), begin_semaphores.data());
+
+  SkCanvas* dest_canvas = dest_surface->getCanvas();
+  if (scaling.has_value()) {
+    dest_canvas->scale(scaling->x(), scaling->y());
+  }
+
+  dest_canvas->clipRect(SkRect::MakeXYWH(0, 0, source_selection.width(),
+                                         source_selection.height()));
+  // TODO(b/197353769): Ideally, we should simply use a kSrc blending mode,
+  // but for some reason, this triggers some antialiasing code that causes
+  // various Vulkan tests to fail. We should investigate this and replace
+  // this clear with blend mode.
+  if (surface->imageInfo().alphaType() != kOpaque_SkAlphaType) {
+    dest_canvas->clear(SK_ColorTRANSPARENT);
+  }
+
+  auto sampling =
+      is_downscale_or_identity_in_both_dimensions
+          ? SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear)
+          : SkSamplingOptions({1.0f / 3, 1.0f / 3});
+  surface->draw(dest_canvas, -source_selection.x(), -source_selection.y(),
+                sampling, /*paint=*/nullptr);
+
+  GrFlushInfo flush_info;
+  flush_info.fNumSemaphores = end_semaphores.size();
+  flush_info.fSignalSemaphores = end_semaphores.data();
+  gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_, &flush_info);
+  GrSemaphoresSubmitted flush_result = dest_surface->flush(
+      SkSurface::BackendSurfaceAccess::kNoAccess, flush_info);
+  if (flush_result != GrSemaphoresSubmitted::kYes &&
+      !(begin_semaphores.empty() && end_semaphores.empty())) {
+    // TODO(penghuang): handle vulkan device lost.
+    DLOG(ERROR) << "dest_surface->flush() failed.";
+    return false;
+  }
+
+  return true;
+}
+
+SkiaOutputSurfaceImplOnGpu::PlaneAccessData::PlaneAccessData() = default;
+SkiaOutputSurfaceImplOnGpu::PlaneAccessData::~PlaneAccessData() = default;
+
+bool SkiaOutputSurfaceImplOnGpu::CreateSurfacesForNV12Planes(
+    const SkYUVAInfo& yuva_info,
+    const gfx::ColorSpace& color_space,
+    std::array<PlaneAccessData, CopyOutputResult::kNV12MaxPlanes>&
+        plane_access_datas) {
+  std::array<SkISize, SkYUVAInfo::kMaxPlanes> plane_dimensions;
+  int plane_number = yuva_info.planeDimensions(plane_dimensions.data());
+
+  DCHECK_EQ(CopyOutputResult::kNV12MaxPlanes, static_cast<size_t>(plane_number))
+      << "We expect SkYUVAInfo to describe an NV12 data, which contains 2 "
+         "planes!";
+
+  for (int i = 0; i < plane_number; ++i) {
+    PlaneAccessData& plane_data = plane_access_datas[i];
+    const SkISize& plane_size = plane_dimensions[i];
+
+    const auto resource_format =
+        (i == 0) ? ResourceFormat::RED_8 : ResourceFormat::RG_88;
+    auto representation = CreateSharedImageRepresentationSkia(
+        resource_format, gfx::SkISizeToSize(plane_size), color_space);
+    if (!representation) {
+      return false;
+    }
+
+    SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
+
+    std::unique_ptr<gpu::SharedImageRepresentationSkia::ScopedWriteAccess>
+        scoped_write = representation->BeginScopedWriteAccess(
+            /*final_msaa_count=*/0, surface_props, &plane_data.begin_semaphores,
+            &plane_data.end_semaphores,
+            gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    SkSurface* dest_surface = scoped_write->surface();
+    dest_surface->wait(plane_data.begin_semaphores.size(),
+                       plane_data.begin_semaphores.data());
+
+    plane_data.mailbox = representation->mailbox();
+    plane_data.representation = std::move(representation);
+    plane_data.scoped_write = std::move(scoped_write);
+    plane_data.size = plane_size;
+  }
+
+  return true;
+}
+
+void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
+    SkSurface* surface,
+    copy_output::RenderPassGeometry geometry,
+    const gfx::ColorSpace& color_space,
+    const SkIRect& src_rect,
+    SkSurface::RescaleMode rescale_mode,
+    bool is_downscale_or_identity_in_both_dimensions,
+    std::unique_ptr<CopyOutputRequest> request) {
+  // Overview:
+  // 1. Try to create surfaces for NV12 planes (we know the needed size in
+  // advance). If this fails, send an empty result.
+  // 2. Render the desired region into a new SkSurface, taking into account
+  // desired scaling and clipping.
+  // 3. Grab an SkImage and convert it into multiple SkSurfaces created by
+  // step 1, one for each plane.
+  // 4. Depending on the result destination of the request, either:
+  // - pass ownership of the textures to the caller (native textures result)
+  // - schedule a read-back & expose its results to the caller (system memory
+  // result)
+
+  // The size of the destination is passed in via `geometry.result_selection` -
+  // it already takes into account the rect of the render pass that is being
+  // copied, as well as area, scaling & result_selection of the `request`.
+  const gfx::Size destination_size = geometry.result_selection.size();
+
+  SkYUVAInfo yuva_info(
+      gfx::SizeToSkISize(destination_size), SkYUVAInfo::PlaneConfig::kY_UV,
+      SkYUVAInfo::Subsampling::k420, kRec709_Limited_SkYUVColorSpace);
+
+  std::array<PlaneAccessData, CopyOutputResult::kNV12MaxPlanes>
+      plane_access_datas;
+  if (!CreateSurfacesForNV12Planes(yuva_info, color_space,
+                                   plane_access_datas)) {
+    // Send an empty result.
+    return;
+  }
+
+  // Create a destination for the scaled & clipped result:
+  auto representation = CreateSharedImageRepresentationSkia(
+      ResourceFormat::RGBA_8888, destination_size, color_space);
+  if (!representation) {
+    return;
+  }
+
+  SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+
+  auto scoped_write = representation->BeginScopedWriteAccess(
+      0 /* final_msaa_count */, surface_props, &begin_semaphores,
+      &end_semaphores,
+      gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
+
+  absl::optional<SkVector> scaling;
+  if (request->is_scaled()) {
+    scaling = SkVector::Make(static_cast<SkScalar>(request->scale_to().x()) /
+                                 request->scale_from().x(),
+                             static_cast<SkScalar>(request->scale_to().y()) /
+                                 request->scale_from().y());
+  }
+
+  bool success = RenderSurface(
+      surface, src_rect, scaling, is_downscale_or_identity_in_both_dimensions,
+      scoped_write->surface(), begin_semaphores, end_semaphores);
+  if (!success) {
+    DLOG(ERROR) << "failed to render surface.";
+    return;
+  }
+
+  representation->SetCleared();
+
+  auto source_image = scoped_write->surface()->makeImageSnapshot();
+  if (!source_image) {
+    DLOG(ERROR) << "failed to retrieve source_image.";
+    return;
+  }
+
+  // `skia::BlitRGBAToYUVA()` requires a buffer with 4 SkSurface* elements,
+  // let's allocate it and populate its first 2 entries with the surfaces
+  // obtained from |plane_access_datas|.
+  std::array<SkSurface*, SkYUVAInfo::kMaxPlanes> plane_surfaces = {
+      plane_access_datas[0].scoped_write->surface(),
+      plane_access_datas[1].scoped_write->surface(), nullptr, nullptr};
+
+  skia::BlitRGBAToYUVA(source_image.get(), plane_surfaces.data(), yuva_info);
+
+  for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
+    plane_access_datas[i].representation->SetCleared();
+
+    GrFlushInfo flush_info;
+    flush_info.fNumSemaphores = plane_access_datas[i].end_semaphores.size();
+    flush_info.fSignalSemaphores = plane_access_datas[i].end_semaphores.data();
+
+    gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_,
+                                          &flush_info);
+
+    auto flush_result = plane_surfaces[i]->flush(
+        SkSurface::BackendSurfaceAccess::kNoAccess, flush_info);
+    if (flush_result != GrSemaphoresSubmitted::kYes &&
+        !(begin_semaphores.empty() && end_semaphores.empty())) {
+      // TODO(penghuang): handle vulkan device lost.
+      DLOG(ERROR) << "plane_surfaces[i]->flush() failed for i=" << i;
+      return;
+    }
+  }
+
+  switch (request->result_destination()) {
+    case CopyOutputRequest::ResultDestination::kNativeTextures:
+      NOTREACHED()
+          << "Not yet supported, should be blocked by CopyOutputRequest ctor!";
+      break;
+    case CopyOutputRequest::ResultDestination::kSystemMemory: {
+      auto nv12_readback = base::MakeRefCounted<NV12PlanesReadbackContext>(
+          weak_ptr_, std::move(request), geometry.result_selection);
+
+      // Issue readbacks from the surfaces:
+      for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
+        SkImageInfo dst_info = SkImageInfo::Make(
+            plane_access_datas[i].size,
+            (i == 0) ? kAlpha_8_SkColorType : kR8G8_unorm_SkColorType,
+            kUnpremul_SkAlphaType);
+
+        auto context =
+            std::make_unique<NV12PlanePixelReadContext>(nv12_readback, i);
+
+        num_readbacks_pending_++;
+        plane_surfaces[i]->asyncRescaleAndReadPixels(
+            dst_info, SkIRect::MakeSize(plane_access_datas[i].size),
+            SkSurface::RescaleGamma::kSrc,
+            SkSurface::RescaleMode::kRepeatedLinear,
+            &CopyOutputResultSkiaNV12::OnNV12PlaneReadbackDone,
+            context.release());
+      }
+    } break;
   }
 }
 
@@ -826,6 +1067,13 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
                         source_selection.width(), source_selection.height());
   switch (request->result_format()) {
     case CopyOutputRequest::ResultFormat::I420_PLANES: {
+      DCHECK_EQ(geometry.result_selection.width() % 2, 0)
+          << "SkSurface::asyncRescaleAndReadPixelsYUV420() requires "
+             "destination width to be even!";
+      DCHECK_EQ(geometry.result_selection.height() % 2, 0)
+          << "SkSurface::asyncRescaleAndReadPixelsYUV420() requires "
+             "destination height to be even!";
+
       std::unique_ptr<ReadPixelsContext> context =
           std::make_unique<ReadPixelsContext>(std::move(request),
                                               geometry.result_selection,
@@ -842,8 +1090,9 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
       break;
     }
     case CopyOutputRequest::ResultFormat::NV12_PLANES: {
-      // TODO(https://crbug.com/1216287): Add support for NV12.
-      NOTREACHED();
+      CopyOutputNV12(surface, geometry, color_space, src_rect, rescale_mode,
+                     is_downscale_or_identity_in_both_dimensions,
+                     std::move(request));
       break;
     }
     case CopyOutputRequest::ResultFormat::RGBA: {

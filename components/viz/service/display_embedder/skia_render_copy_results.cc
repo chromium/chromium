@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
+#include "components/viz/service/display_embedder/skia_output_surface_impl_on_gpu.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 
@@ -204,6 +206,118 @@ bool CopyOutputResultSkiaYUV::ReadI420Planes(uint8_t* y_out,
   libyuv::CopyPlane(data2, result_->rowBytes(2), v_out, v_out_stride, width(2),
                     height(2));
   return true;
+}
+
+NV12PlanesReadbackContext::NV12PlanesReadbackContext(
+    base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu,
+    std::unique_ptr<CopyOutputRequest> request,
+    const gfx::Rect& result_rect)
+    : impl_on_gpu_(impl_on_gpu),
+      request_(std::move(request)),
+      result_rect_(result_rect) {}
+NV12PlanesReadbackContext::~NV12PlanesReadbackContext() = default;
+
+void NV12PlanesReadbackContext::PlaneReadbackDone(
+    int plane_index,
+    std::unique_ptr<const SkSurface::AsyncReadResult> async_result) {
+  DCHECK_LT(plane_index, 2) << "NV12 readback requests at most 2 planes!";
+
+  if (!impl_on_gpu_) {
+    // We could not identify the impl_on_gpu, which means there's nothing else
+    // we can do here (everything should already be cleaned up).
+    return;
+  }
+
+  impl_on_gpu_->ReadbackDone();
+
+  // Mark plane readback as completed and store results in the readback context:
+  outstanding_reads_--;
+  plane_results_[plane_index] = std::move(async_result);
+
+  // Check if all planes have finished readback, send the result and clean up
+  // the readback context if so:
+  if (outstanding_reads_ == 0) {
+    auto result = std::make_unique<CopyOutputResultSkiaNV12>(
+        impl_on_gpu_.get(), result_rect_, std::move(plane_results_));
+
+    request_->SendResult(std::move(result));
+  }
+}
+
+NV12PlanePixelReadContext::NV12PlanePixelReadContext(
+    scoped_refptr<NV12PlanesReadbackContext> nv12_planes_readback,
+    int plane_index)
+    : nv12_planes_readback(std::move(nv12_planes_readback)),
+      plane_index(plane_index) {}
+NV12PlanePixelReadContext::~NV12PlanePixelReadContext() = default;
+
+CopyOutputResultSkiaNV12::CopyOutputResultSkiaNV12(
+    SkiaOutputSurfaceImplOnGpu* impl,
+    const gfx::Rect& rect,
+    std::array<std::unique_ptr<const SkImage::AsyncReadResult>, 2>
+        async_read_results)
+    : CopyOutputResult(Format::I420_PLANES,
+                       Destination::kSystemMemory,
+                       rect,
+                       /*needs_lock_for_bitmap=*/false) {
+  DCHECK_EQ(0, size().width() % 2);
+  DCHECK_EQ(0, size().height() % 2);
+
+  for (auto& async_read_result : async_read_results) {
+    plane_readback_results_.push_back(std::make_unique<AsyncReadResultHelper>(
+        impl, std::move(async_read_result)));
+  }
+}
+
+CopyOutputResultSkiaNV12::~CopyOutputResultSkiaNV12() = default;
+
+bool CopyOutputResultSkiaNV12::ReadNV12Planes(uint8_t* y_out,
+                                              int y_out_stride,
+                                              uint8_t* uv_out,
+                                              int uv_out_stride) const {
+  const auto plane_pointer = [y_out, uv_out](int plane_number) {
+    return plane_number == 0 ? y_out : uv_out;
+  };
+
+  const auto plane_stride = [y_out_stride, uv_out_stride](int plane_number) {
+    return plane_number == 0 ? y_out_stride : uv_out_stride;
+  };
+
+  for (size_t i = 0; i < kNV12MaxPlanes; ++i) {
+    // The ptr to the helper is not set, which means that readback for this
+    // plane has failed. Return failure, partial results are not useful.
+    if (!plane_readback_results_[i]) {
+      return false;
+    }
+
+    const AsyncReadResultHelper& result = *plane_readback_results_[i].get();
+
+    // Hold the lock so the AsyncReadResultHelper will not be reset during
+    // pixel data reading.
+    base::AutoLock auto_lock(result.lock());
+    DCHECK_EQ(1, result->count());
+
+    // The |result| has been reset.
+    if (!result) {
+      return false;
+    }
+
+    auto* data = static_cast<const uint8_t*>(result->data(0));
+    libyuv::CopyPlane(data, result->rowBytes(0), plane_pointer(i),
+                      plane_stride(i), width(i), height(i));
+  }
+
+  return true;
+}
+
+// static
+void CopyOutputResultSkiaNV12::OnNV12PlaneReadbackDone(
+    void* c,
+    std::unique_ptr<const SkSurface::AsyncReadResult> async_result) {
+  auto context = base::WrapUnique(static_cast<NV12PlanePixelReadContext*>(c));
+
+  context->nv12_planes_readback->PlaneReadbackDone(context->plane_index,
+                                                   std::move(async_result));
 }
 
 }  // namespace viz

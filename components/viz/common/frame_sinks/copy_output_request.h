@@ -115,8 +115,13 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   // Optionally specify that only a portion of the result be generated. The
   // selection rect will be clamped to the result bounds, which always starts at
   // 0,0 and spans the post-scaling size of the copy area (see set_area()
-  // above).
+  // above). Only RGBA format supports odd-sized result selection.
   void set_result_selection(const gfx::Rect& selection) {
+    DCHECK(result_format_ == ResultFormat::RGBA ||
+           (selection.width() % 2 == 0 && selection.height() % 2 == 0))
+        << "CopyOutputRequest supports odd-sized result_selection() only for "
+           "RGBA!";
+
     result_selection_ = selection;
   }
   bool has_result_selection() const { return result_selection_.has_value(); }

@@ -153,6 +153,7 @@ bool CopyOutputResult::ReadRGBAPlane(uint8_t* dest, int stride) const {
   const SkBitmap& bitmap = scoped_sk_bitmap.bitmap();
   if (!bitmap.readyToDraw())
     return false;
+
   DCHECK(bitmap.colorSpace());
   SkImageInfo image_info =
       SkImageInfo::MakeN32(bitmap.width(), bitmap.height(), kPremul_SkAlphaType,
@@ -178,8 +179,6 @@ CopyOutputSkBitmapResult::CopyOutputSkBitmapResult(Format format,
                                                    const gfx::Rect& rect,
                                                    SkBitmap bitmap)
     : CopyOutputResult(format, Destination::kSystemMemory, rect, false) {
-  DCHECK(format == Format::RGBA || format == Format::I420_PLANES);
-
   if (!rect.IsEmpty()) {
     DCHECK(!bitmap.pixelRef() || bitmap.pixelRef()->unique());
     DCHECK(!bitmap.readyToDraw() || bitmap.colorSpace());

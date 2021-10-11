@@ -389,6 +389,10 @@ TEST_P(GLRendererCopierPixelTest, ExecutesCopyRequestNV12) {
   if (scale_by_half_) {
     // Check if width/2 and height/2 are even.
     if (kRequestArea.width() % 4 != 0 || kRequestArea.height() % 4 != 0) {
+      // TODO(https://crbug.com/1256483): Fail the test case after adjusting
+      // asset sizes, if we got odd dimensions it means that the assets have
+      // been accidentally changed to no longer be even, even after scaling by
+      // half.
       GTEST_SKIP() << " The test case expects the result size to match the "
                       "request size exactly, which is not possible with NV12 "
                       "when the request size dimensions aren't even.";
@@ -519,7 +523,7 @@ TEST_P(GLRendererCopierPixelTest, ExecutesCopyRequestNV12) {
 class GLRendererCopierDimensionsPixelTest
     : public cc::PixelTest,
       public testing::WithParamInterface<
-          std::tuple<CopyOutputResult::Destination, bool, bool, bool>> {
+          std::tuple<CopyOutputResult::Destination, bool, bool>> {
  public:
   void SetUp() override {
     SetUpGLWithoutRenderer(gfx::SurfaceOrigin::kBottomLeft);
@@ -530,7 +534,6 @@ class GLRendererCopierDimensionsPixelTest
     result_destination_ = std::get<0>(GetParam());
     scale_by_half_ = std::get<1>(GetParam());
     use_odd_offset_ = std::get<2>(GetParam());
-    use_odd_size_ = std::get<3>(GetParam());
 
     gl_ = context_provider()->ContextGL();
     copier_ = std::make_unique<GLRendererCopier>(context_provider(),
@@ -632,7 +635,6 @@ class GLRendererCopierDimensionsPixelTest
   bool scale_by_half_;
   bool flipped_source_ = false;
   bool use_odd_offset_;
-  bool use_odd_size_;
   SkBitmap source_bitmap_;
   gfx::Size source_bitmap_size_;
 
@@ -653,8 +655,7 @@ TEST_P(GLRendererCopierDimensionsPixelTest, ExecutesCopyRequestNV12) {
   }
 
   // Result should contain 1px green strip at the beginning if the offset is
-  // supposed to be odd. If the offset is even but width is odd, the result
-  // should contain 1px white strip at the end.
+  // supposed to be odd.
   const gfx::Rect request_area = [this]() {
     // Capture 2x2 or 4x4 blue strip fragment, depending on scaling.
     gfx::Rect result =
@@ -664,11 +665,6 @@ TEST_P(GLRendererCopierDimensionsPixelTest, ExecutesCopyRequestNV12) {
     // make sure that we capture 1 green pixel.
     if (use_odd_offset_) {
       result.set_x(result.x() - 1);
-    }
-
-    // Adjust the width as well.
-    if (use_odd_size_) {
-      result.set_width(result.width() + 1);
     }
 
     return result;
@@ -748,17 +744,11 @@ TEST_P(GLRendererCopierDimensionsPixelTest, ExecutesCopyRequestNV12) {
   // to YUV to have something to validate against:
   SkColor green_yuv = source_bitmap_yuv.getColor(4, 0);
   SkColor blue_yuv = source_bitmap_yuv.getColor(8, 0);
-  SkColor white_yuv = source_bitmap_yuv.getColor(12, 0);
 
   // Validate first row of luma (first color channel):
   for (int col = 0; col < luma_stride; ++col) {
     if (col == 0 && use_odd_offset_) {
       EXPECT_NEAR(luma_plane[col], SkColorGetR(green_yuv), GetTolerance());
-      continue;
-    }
-
-    if (col == luma_stride - 1 && use_odd_size_ && !use_odd_offset_) {
-      EXPECT_NEAR(luma_plane[col], SkColorGetR(white_yuv), GetTolerance());
       continue;
     }
 
@@ -773,13 +763,6 @@ TEST_P(GLRendererCopierDimensionsPixelTest, ExecutesCopyRequestNV12) {
     if (col == 0 && use_odd_offset_) {
       EXPECT_NEAR(chroma_planes[col], SkColorGetG(green_yuv), GetTolerance());
       EXPECT_NEAR(chroma_planes[col + 1], SkColorGetB(green_yuv),
-                  GetTolerance());
-      continue;
-    }
-
-    if (col == chroma_stride - 2 && use_odd_size_ && !use_odd_offset_) {
-      EXPECT_NEAR(chroma_planes[col], SkColorGetG(white_yuv), GetTolerance());
-      EXPECT_NEAR(chroma_planes[col + 1], SkColorGetB(white_yuv),
                   GetTolerance());
       continue;
     }
@@ -801,14 +784,21 @@ TEST_P(GLRendererCopierDimensionsPixelTest, ExecutesCopyRequestI420) {
                     "a texture.";
   }
 
-  // We'll ask for the area around the 3rd stripe (blue) - it should start at
-  // 9th pixel (index 8), assuming no scaling. Let's ask for area starting at
-  // 8th pixel (index 7) - should then get 1 green pixel in the result.
-  // Let's ask for 4-pixels-wide stripe (1 green, 3 blue).
-  // If the scaling is applied, the 3rd stripe (blue) starts at 5th pixel
-  // (index 4). Let's ask for 2-pixels-wide stripe (1 green, 1 blue)
-  const gfx::Rect request_area =
-      scale_by_half_ ? gfx::Rect(3, 0, 2, 2) : gfx::Rect(7, 0, 4, 4);
+  // Result should contain 1px green strip at the beginning if the offset is
+  // supposed to be odd.
+  const gfx::Rect request_area = [this]() {
+    // Capture 2x2 or 4x4 blue strip fragment, depending on scaling.
+    gfx::Rect result =
+        scale_by_half_ ? gfx::Rect(4, 0, 2, 2) : gfx::Rect(8, 0, 4, 4);
+
+    // If we are supposed to ask for a rect with odd offset,
+    // make sure that we capture 1 green pixel.
+    if (use_odd_offset_) {
+      result.set_x(result.x() - 1);
+    }
+
+    return result;
+  }();
 
   // Create and execute a CopyOutputRequest via the GLRendererCopier.
   std::unique_ptr<CopyOutputResult> result;
@@ -889,11 +879,12 @@ TEST_P(GLRendererCopierDimensionsPixelTest, ExecutesCopyRequestI420) {
 
   // Validate first row of luma (first channel):
   for (int col = 0; col < luma_stride; ++col) {
-    if (col == 0) {
+    if (col == 0 && use_odd_offset_) {
       EXPECT_NEAR(luma_plane[col], SkColorGetR(green_yuv), GetTolerance());
-    } else {
-      EXPECT_NEAR(luma_plane[col], SkColorGetR(blue_yuv), GetTolerance());
+      continue;
     }
+
+    EXPECT_NEAR(luma_plane[col], SkColorGetR(blue_yuv), GetTolerance());
   }
 
   // All other luma rows must match the first row:
@@ -901,11 +892,12 @@ TEST_P(GLRendererCopierDimensionsPixelTest, ExecutesCopyRequestI420) {
 
   // Validate first row of chroma_1 (second channel):
   for (int col = 0; col < chroma_stride; ++col) {
-    if (col == 0) {
+    if (col == 0 && use_odd_offset_) {
       EXPECT_NEAR(chroma_plane_1[col], SkColorGetG(green_yuv), GetTolerance());
-    } else {
-      EXPECT_NEAR(chroma_plane_1[col], SkColorGetG(blue_yuv), GetTolerance());
+      continue;
     }
+
+    EXPECT_NEAR(chroma_plane_1[col], SkColorGetG(blue_yuv), GetTolerance());
   }
 
   // All other chroma_1 rows must match the first row:
@@ -914,11 +906,12 @@ TEST_P(GLRendererCopierDimensionsPixelTest, ExecutesCopyRequestI420) {
 
   // Validate first row of chroma_2 (third channel):
   for (int col = 0; col < chroma_stride; ++col) {
-    if (col == 0) {
+    if (col == 0 && use_odd_offset_) {
       EXPECT_NEAR(chroma_plane_2[col], SkColorGetB(green_yuv), GetTolerance());
-    } else {
-      EXPECT_NEAR(chroma_plane_2[col], SkColorGetB(blue_yuv), GetTolerance());
+      continue;
     }
+
+    EXPECT_NEAR(chroma_plane_2[col], SkColorGetB(blue_yuv), GetTolerance());
   }
 
   // All other chroma_2 rows must match the first row:
@@ -959,8 +952,6 @@ INSTANTIATE_TEST_SUITE_P(
         // Result scaling: Scale by half?
         testing::Values(false, true),
         // Use odd offset?
-        testing::Values(false, true),
-        // Use odd width?
         testing::Values(false, true)));
 
 }  // namespace viz

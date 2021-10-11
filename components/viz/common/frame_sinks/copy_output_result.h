@@ -66,6 +66,7 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   // We need at most 3 planes to support the formats we're interested in (RGBA
   // format requires 1 plane, NV12 requires 2, I420 requires 3 planes).
   static constexpr size_t kMaxPlanes = 3;
+  static constexpr size_t kNV12MaxPlanes = 2;
 
   CopyOutputResult(Format format,
                    Destination destination,
@@ -153,38 +154,12 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   // results and when calculating sizes of memory regions for `ReadI420Planes()`
   // and `ReadNV12()` methods.
   //
-  // For chroma planes (both for U & for V), each pixel in a row of the result
-  // corresponds to "0.5 bytes". Therefore, if the result width is odd, we'll
-  // get a bit more information than what we got for luma plane:
-  //
-  //    (even offset)   or   (odd offset)
-  //      Y Y | Y ?           ? Y | Y Y
-  //       C  |  C             C  |  C
-  //      Y Y | Y ?           ? Y | Y Y
-  //
-  // Pipes separate groups of 2x2 pixels of the result.
-  // Y - luma values present in the results
-  // C - chroma (U & V) values present in the results
-  // ? - luma values that are not present in the results that correspond
-  //     to chroma values that are present in the results
-  // The behavior for odd-sized height is similar.
-  //
-  // For even width, we'll get:
-  //
-  //    (even offset)   or     (odd offset)
-  //      Y Y | Y Y           ? Y | Y Y | Y ?
-  //       C  |  C             C  |  C  |  ?
-  //      Y Y | Y Y           ? Y | Y Y | Y ?
-  //
-  // Note that there is a possibility to receive luma values without also
-  // receiving corresponding chroma values (even width, odd offset).
-  //
-  // Due to the above, callers should follow the memory region size requirements
-  // specified in `ReadI420Planes()` and `ReadNV12()` methods, and are advised
-  // to call `set_result_selection()` with an even-sized gfx::Rect if they
-  // intend to "stitch" the results into a subregion of an existing buffer by
-  // copying them. Memory region size calculation helpers are available in
-  // copy_output_util.h.
+  // Callers should follow the memory region size requirements specified in
+  // `ReadI420Planes()` and `ReadNV12()` methods, and are advised to call
+  // `set_result_selection()` with an even-sized, even-offset gfx::Rect
+  // if they intend to "stitch" the results into a subregion of an existing
+  // buffer by copying them. Memory region size calculation helpers are
+  // available in copy_output_util.h.
   //
 
   // Copies the image planes of an I420_PLANES result to the caller-provided
