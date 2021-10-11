@@ -101,7 +101,7 @@ class ClipboardOzone : public Clipboard {
                  const char* data_data,
                  size_t data_len) override;
 
-  std::vector<uint8_t> ReadPngInternal(ClipboardBuffer buffer) const;
+  base::span<uint8_t> ReadPngInternal(const ClipboardBuffer buffer) const;
 
   class AsyncClipboardOzone;
 

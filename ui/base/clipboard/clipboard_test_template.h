@@ -569,7 +569,9 @@ void WriteBitmap(Clipboard* clipboard,
                  const SkImageInfo& info,
                  const void* bitmap_data) {
   {
-    ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
+    ScopedClipboardWriter clipboard_writer(
+        ClipboardBuffer::kCopyPaste,
+        std::make_unique<DataTransferEndpoint>(url::Origin()));
     SkBitmap bitmap;
     ASSERT_TRUE(bitmap.setInfo(info));
     bitmap.setPixels(const_cast<void*>(bitmap_data));
@@ -1102,7 +1104,7 @@ TYPED_TEST(ClipboardTest, WriteImageEmptyParams) {
 
 // Policy controller is only intended to be used in Chrome OS, so the following
 // policy related tests are only run on Chrome OS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Test that copy/paste would work normally if the policy controller didn't
 // restrict the clipboard data.
 TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
@@ -1145,6 +1147,16 @@ TYPED_TEST(ClipboardTest, PolicyDisallow_ReadText) {
 
 TYPED_TEST(ClipboardTest, PolicyDisallow_ReadPng) {
   auto policy_controller = std::make_unique<MockPolicyController>();
+  constexpr U8x4 kBitMapData[4 * 3] = {
+      {0x26, 0x16, 0x06, 0x46}, {0x88, 0x59, 0x9f, 0xf6},
+      {0x37, 0x29, 0x3f, 0x79}, {0x86, 0xb9, 0x55, 0xfa},
+      {0x52, 0x21, 0x77, 0x78}, {0x30, 0x2a, 0x69, 0x87},
+      {0x25, 0x2a, 0x32, 0x36}, {0x1b, 0x40, 0x20, 0x43},
+      {0x21, 0x8c, 0x84, 0x91}, {0x3c, 0x7b, 0x17, 0xc3},
+      {0x5c, 0x15, 0x46, 0x69}, {0x52, 0x19, 0x17, 0x64},
+  };
+  WriteBitmap(&this->clipboard(), SkImageInfo::MakeN32Premul(4, 3),
+              reinterpret_cast<const void*>(kBitMapData));
   EXPECT_CALL(*policy_controller, IsClipboardReadAllowed)
       .WillRepeatedly(testing::Return(false));
   std::vector<uint8_t> image = clipboard_test_util::ReadPng(&this->clipboard());
@@ -1152,7 +1164,7 @@ TYPED_TEST(ClipboardTest, PolicyDisallow_ReadPng) {
   EXPECT_EQ(true, image.empty());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace ui
 
