@@ -3811,11 +3811,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "mobile-identity-consistency",
-    "owners": [ "bsazonov", "aliceywang", "msarda", "fernandex" ],
-    "expiry_milestone": 99
-  },
-  {
     "name": "mobile-identity-consistency-fre",
     "owners": [ "aliceywang", "msarda", "triploblastic" ],
     "expiry_milestone": 98
