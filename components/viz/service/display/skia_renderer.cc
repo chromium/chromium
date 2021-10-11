@@ -552,6 +552,15 @@ struct SkiaRenderer::DrawQuadParams {
     p.setAntiAlias(aa_flags != SkCanvas::kNone_QuadAAFlags);
     return p;
   }
+
+  SkPath draw_region_in_path() const {
+    if (draw_region) {
+      return SkPath::Polygon(draw_region->points,
+                             base::size(draw_region->points),
+                             /*isClosed=*/true);
+    }
+    return SkPath();
+  }
 };
 
 SkiaRenderer::DrawQuadParams::DrawQuadParams(const gfx::Transform& cdt,
@@ -1117,7 +1126,7 @@ void SkiaRenderer::PrepareCanvasForRPDQ(const DrawRPDQParams& rpdq_params,
 
   // Initially the backdrop filter fills the entire rect; if we draw less than
   // that we need to clear the excess.
-  bool post_backdrop_filter_clear_needed = params->draw_region.has_value();
+  bool post_backdrop_filter_clear_needed = !!params->draw_region;
 
   // Explicitly crop the input and the output to the backdrop bounds; this is
   // required for the backdrop-filter spec.
@@ -1178,13 +1187,12 @@ void SkiaRenderer::PrepareCanvasForRPDQ(const DrawRPDQParams& rpdq_params,
       current_canvas_->clipRRect(SkRRect(*rpdq_params.backdrop_filter_bounds),
                                  SkClipOp::kDifference, aa);
     }
-    if (params->draw_region.has_value()) {
-      SkPath clipPath;
-      clipPath.addPoly(params->draw_region->points, 4, true /* close */);
+    if (params->draw_region) {
+      SkPath clip_path = params->draw_region_in_path();
       if (rpdq_params.bypass_geometry) {
-        clipPath.transform(rpdq_params.bypass_geometry->transform);
+        clip_path.transform(rpdq_params.bypass_geometry->transform);
       }
-      current_canvas_->clipPath(clipPath, SkClipOp::kDifference, aa);
+      current_canvas_->clipPath(clip_path, SkClipOp::kDifference, aa);
     }
     current_canvas_->clear(SK_ColorTRANSPARENT);
     current_canvas_->restore();
@@ -1535,11 +1543,12 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
   // Invertibility was a requirement for being bypassable.
   DCHECK(inverted);
 
-  if (params->draw_region.has_value()) {
+  if (params->draw_region) {
     // The draw region was determined by the RPDQ's geometry, so map the
     // quadrilateral to the bypass'ed quad's coordinate space so that BSP
     // splitting is still respected.
-    rpdq_to_bypass.mapPoints(params->draw_region->points, 4);
+    rpdq_to_bypass.mapPoints(params->draw_region->points,
+                             base::size(params->draw_region->points));
   }
 
   // Compute draw params for the bypass quad from scratch, but since the
@@ -1630,7 +1639,7 @@ SkCanvas::SrcRectConstraint SkiaRenderer::ResolveTextureConstraints(
   // and change the visible rect so that the mapping from |visible_rect| to
   // |valid_texel_bounds| causes |draw_region| to map to original
   // |vis_tex_coords|
-  if (!params->draw_region.has_value()) {
+  if (!params->draw_region) {
     params->draw_region.emplace(gfx::QuadF(params->visible_rect));
   }
 
@@ -1701,9 +1710,9 @@ void SkiaRenderer::AddQuadToBatch(const SkImage* image,
   DCHECK(batched_quad_state_.constraint == constraint);
 
   // Add entry, with optional clip quad and shared transform
-  if (params->draw_region.has_value()) {
-    for (int i = 0; i < 4; ++i) {
-      batched_draw_regions_.push_back(params->draw_region->points[i]);
+  if (params->draw_region) {
+    for (const auto& point : params->draw_region->points) {
+      batched_draw_regions_.push_back(point);
     }
   }
 
@@ -1770,7 +1779,7 @@ void SkiaRenderer::DrawColoredQuad(SkColor color,
   color = SkColorSetA(color, params->opacity * SkColorGetA(color));
 
   const SkPoint* draw_region =
-      params->draw_region.has_value() ? params->draw_region->points : nullptr;
+      params->draw_region ? params->draw_region->points : nullptr;
 
   current_canvas_->experimental_DrawEdgeAAQuad(
       gfx::RectFToSkRect(params->visible_rect), draw_region,
@@ -1820,7 +1829,7 @@ void SkiaRenderer::DrawSingleImage(const SkImage* image,
   // Use -1 for matrix index since the cdt is set on the canvas.
   SkCanvas::ImageSetEntry entry = MakeEntry(image, matrix_index, *params);
   const SkPoint* draw_region =
-      params->draw_region.has_value() ? params->draw_region->points : nullptr;
+      params->draw_region ? params->draw_region->points : nullptr;
   current_canvas_->experimental_DrawEdgeAAImageSet(
       &entry, 1, draw_region, bypass_transform, params->sampling, paint,
       constraint);
@@ -1842,10 +1851,8 @@ void SkiaRenderer::DrawPaintOpBuffer(const cc::PaintOpBuffer* buffer,
   current_canvas_->clipRect(visible_rect);
 
   if (params->draw_region) {
-    SkPath clip_path;
-    clip_path.addPoly(params->draw_region->points, 4, true /* close */);
     bool aa = params->aa_flags != SkCanvas::kNone_QuadAAFlags;
-    current_canvas_->clipPath(clip_path, aa);
+    current_canvas_->clipPath(params->draw_region_in_path(), aa);
   }
 
   absl::optional<int> restore_count;
@@ -1890,12 +1897,9 @@ void SkiaRenderer::DrawDebugBorderQuad(const DebugBorderDrawQuad* quad,
   SkMatrix cdt;
   gfx::TransformToFlattenedSkMatrix(params->content_device_transform, &cdt);
 
-  SkPath path;
-  if (params->draw_region.has_value()) {
-    path.addPoly(params->draw_region->points, 4, true /* close */);
-  } else {
-    path.addRect(gfx::RectFToSkRect(params->visible_rect));
-  }
+  SkPath path = params->draw_region
+                    ? params->draw_region_in_path()
+                    : SkPath::Rect(gfx::RectFToSkRect(params->visible_rect));
   path.transform(cdt);
 
   SkPaint paint = params->paint(nullptr /* color_filter */);
@@ -1931,10 +1935,9 @@ void SkiaRenderer::DrawPictureQuad(const PictureDrawQuad* quad,
   SkRect visible_rect = gfx::RectFToSkRect(params->visible_rect);
   SkPaint paint = params->paint(GetContentColorFilter());
 
-  if (params->draw_region.has_value()) {
-    SkPath clip;
-    clip.addPoly(params->draw_region->points, 4, true /* close */);
-    current_canvas_->clipPath(clip, paint.isAntiAlias());
+  if (params->draw_region) {
+    current_canvas_->clipPath(params->draw_region_in_path(),
+                              paint.isAntiAlias());
   } else {
     current_canvas_->clipRect(visible_rect, paint.isAntiAlias());
   }
