@@ -71,6 +71,7 @@ public class AwComponentUpdateServiceSafeModeTest {
         Set<String> actions = new HashSet<>();
         actions.add(componentUpdaterResetActionId);
         when(mMockSafeModeController.queryActions(anyString())).thenReturn(actions);
+        when(mMockSafeModeController.isSafeModeEnabled(anyString())).thenReturn(true);
 
         Assert.assertFalse(mComponentUpdateService.maybeStartUpdates());
 

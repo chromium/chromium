@@ -35,8 +35,13 @@ public class ComponentUpdaterSafeModeUtils {
      */
     public static boolean executeSafeModeIfEnabled(File configDir) {
         SafeModeController controller = SafeModeController.getInstance();
-        Set<String> actions =
-                controller.queryActions(ContextUtils.getApplicationContext().getPackageName());
+        String packageName = ContextUtils.getApplicationContext().getPackageName();
+        if (!controller.isSafeModeEnabled(packageName)) {
+            RecordHistogram.recordBooleanHistogram(
+                    HISTOGRAM_COMPONENT_UPDATER_SAFEMODE_EXECUTED, false);
+            return false;
+        }
+        Set<String> actions = controller.queryActions(packageName);
 
         if (actions.isEmpty() || !actions.contains(RESET_COMPONENT_UPDATER_SAFEMODE_ACTION_ID)) {
             RecordHistogram.recordBooleanHistogram(
