@@ -57,6 +57,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   friend class VaapiVideoEncodeAcceleratorTest;
 
   using EncodeJob = VaapiVideoEncoderDelegate::EncodeJob;
+  using EncodeResult = VaapiVideoEncoderDelegate::EncodeResult;
 
   // Encoder state.
   enum State {
@@ -184,14 +185,14 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   scoped_refptr<VASurface> GetAvailableVASurfaceAsRefCounted(
       std::vector<std::unique_ptr<ScopedVASurface>>* va_surfaces);
 
-  // Returns a bitstream buffer to the client if both a previously executed job
-  // awaits to be completed and we have bitstream buffers available to download
+  // Returns a bitstream buffer to the client if we have both pending the
+  // encoded data to be completed and bitstream buffers available to download
   // the encoded data into.
   void TryToReturnBitstreamBuffer();
 
-  // Downloads encoded data produced as a result of running |encode_job| into
+  // Downloads encoded data produced as a result of running |encode_result| into
   // |buffer|, and returns it to the client.
-  void ReturnBitstreamBuffer(std::unique_ptr<EncodeJob> encode_job,
+  void ReturnBitstreamBuffer(std::unique_ptr<EncodeResult> encode_result,
                              std::unique_ptr<BitstreamBufferRef> buffer);
 
   // Puts the encoder into en error state and notifies the client
@@ -261,9 +262,9 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // BitstreamBuffers mapped, ready to be filled with encoded stream data.
   base::queue<std::unique_ptr<BitstreamBufferRef>> available_bitstream_buffers_;
 
-  // Jobs submitted to driver for encode, awaiting bitstream buffers to become
-  // available.
-  base::queue<std::unique_ptr<EncodeJob>> submitted_encode_jobs_;
+  // VASurfaces already encoded and waiting for the bitstream buffer to
+  // be downloaded.
+  base::queue<std::unique_ptr<EncodeResult>> pending_encode_results_;
 
   // Task runner for interacting with the client, and its checker.
   const scoped_refptr<base::SingleThreadTaskRunner> child_task_runner_;

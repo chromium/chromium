@@ -395,14 +395,7 @@ class VaapiVideoEncodeAcceleratorTest
         .WillOnce(Return(kEncodedChunkSize));
     EXPECT_CALL(*mock_encoder_, BitrateControlUpdate(kEncodedChunkSize))
         .WillOnce(Return());
-    EXPECT_CALL(*mock_vaapi_wrapper_,
-                DownloadFromVABuffer(kCodedBufferId, kInputSurfaceId, _,
-                                     output_buffer_size_, _))
-        .WillOnce(WithArgs<4>([](size_t* coded_data_size) {
-          *coded_data_size = kEncodedChunkSize;
-          return true;
-        }));
-    EXPECT_CALL(*mock_encoder_, GetMetadata(_, kEncodedChunkSize))
+    EXPECT_CALL(*mock_encoder_, GetMetadata(_, _))
         .WillOnce(WithArgs<0, 1>(
             [](VaapiVideoEncoderDelegate::EncodeJob* job, size_t payload_size) {
               // Same implementation in VP9VaapiVideoEncoderDelegate.
@@ -413,6 +406,13 @@ class VaapiVideoEncodeAcceleratorTest
                   reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding;
               return metadata;
             }));
+    EXPECT_CALL(*mock_vaapi_wrapper_,
+                DownloadFromVABuffer(kCodedBufferId, kInputSurfaceId, _,
+                                     output_buffer_size_, _))
+        .WillOnce(WithArgs<4>([](size_t* coded_data_size) {
+          *coded_data_size = kEncodedChunkSize;
+          return true;
+        }));
 
     constexpr int32_t kBitstreamId = 12;
     base::RunLoop run_loop;
@@ -600,14 +600,7 @@ class VaapiVideoEncodeAcceleratorTest
           .WillOnce(Return(kEncodedChunkSize));
       EXPECT_CALL(*mock_encoder_, BitrateControlUpdate(kEncodedChunkSize))
           .WillOnce(Return());
-      EXPECT_CALL(
-          *mock_vaapi_wrapper_,
-          DownloadFromVABuffer(kCodedBufferId, _, _, output_buffer_size_, _))
-          .WillOnce(WithArgs<4>([kEncodedChunkSize](size_t* coded_data_size) {
-            *coded_data_size = kEncodedChunkSize;
-            return true;
-          }));
-      EXPECT_CALL(*mock_encoder_, GetMetadata(_, kEncodedChunkSize))
+      EXPECT_CALL(*mock_encoder_, GetMetadata(_, _))
           .WillOnce(WithArgs<0, 1>([](VaapiVideoEncoderDelegate::EncodeJob* job,
                                       size_t payload_size) {
             // Same implementation in VP9VaapiVideoEncoderDelegate.
@@ -617,6 +610,13 @@ class VaapiVideoEncodeAcceleratorTest
             metadata.vp9 =
                 reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding;
             return metadata;
+          }));
+      EXPECT_CALL(
+          *mock_vaapi_wrapper_,
+          DownloadFromVABuffer(kCodedBufferId, _, _, output_buffer_size_, _))
+          .WillOnce(WithArgs<4>([kEncodedChunkSize](size_t* coded_data_size) {
+            *coded_data_size = kEncodedChunkSize;
+            return true;
           }));
     }
 

@@ -450,46 +450,47 @@ void VaapiVideoEncodeAccelerator::TryToReturnBitstreamBuffer() {
   if (state_ != kEncoding)
     return;
 
-  while (!submitted_encode_jobs_.empty() &&
-         submitted_encode_jobs_.front() == nullptr) {
+  while (!pending_encode_results_.empty() &&
+         pending_encode_results_.front() == nullptr) {
     // A null job indicates a flush command.
-    submitted_encode_jobs_.pop();
+    pending_encode_results_.pop();
     DVLOGF(2) << "FlushDone";
     DCHECK(flush_callback_);
     child_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(flush_callback_), true));
   }
 
-  if (submitted_encode_jobs_.empty() || available_bitstream_buffers_.empty())
+  if (pending_encode_results_.empty() || available_bitstream_buffers_.empty())
     return;
 
   auto buffer = std::move(available_bitstream_buffers_.front());
   available_bitstream_buffers_.pop();
-  auto encode_job = std::move(submitted_encode_jobs_.front());
-  submitted_encode_jobs_.pop();
+  auto encode_result = std::move(pending_encode_results_.front());
+  pending_encode_results_.pop();
 
-  ReturnBitstreamBuffer(std::move(encode_job), std::move(buffer));
+  ReturnBitstreamBuffer(std::move(encode_result), std::move(buffer));
 }
 
 void VaapiVideoEncodeAccelerator::ReturnBitstreamBuffer(
-    std::unique_ptr<EncodeJob> encode_job,
+    std::unique_ptr<EncodeResult> encode_result,
     std::unique_ptr<BitstreamBufferRef> buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-  const VABufferID coded_buffer_id = encode_job->coded_buffer_id();
   uint8_t* target_data = static_cast<uint8_t*>(buffer->shm->memory());
   size_t data_size = 0;
   if (!vaapi_wrapper_->DownloadFromVABuffer(
-          coded_buffer_id, encode_job->input_surface()->id(), target_data,
-          buffer->shm->size(), &data_size)) {
+          encode_result->coded_buffer_id(), encode_result->input_surface_id(),
+          target_data, buffer->shm->size(), &data_size)) {
     NOTIFY_ERROR(kPlatformFailureError, "Failed downloading coded buffer");
     return;
   }
-  DVLOGF(4) << "Returning bitstream buffer "
-            << (encode_job->IsKeyframeRequested() ? "(keyframe)" : "")
-            << " id: " << buffer->id << " size: " << data_size;
 
-  auto metadata = encoder_->GetMetadata(encode_job.get(), data_size);
-  encode_job.reset();
+  auto metadata = encode_result->metadata();
+  metadata.payload_size_bytes = data_size;
+  encode_result.reset();
+
+  DVLOGF(4) << "Returning bitstream buffer "
+            << (metadata.key_frame ? "(keyframe)" : "") << " id: " << buffer->id
+            << " size: " << data_size;
 
   child_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Client::BitstreamBufferReady, client_,
@@ -837,9 +838,10 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
   while (state_ == kEncoding && !input_queue_.empty()) {
     const std::unique_ptr<InputFrameRef>& input_frame = input_queue_.front();
     if (!input_frame) {
-      // If this is a flush (null) frame, don't create/submit a new encode job
-      // for it, but forward a null job to the |submitted_encode_jobs_| queue.
-      submitted_encode_jobs_.push(nullptr);
+      // If this is a flush (null) frame, don't create/submit a new encode
+      // result for it, but forward a null result to the
+      // |pending_encode_results_| queue.
+      pending_encode_results_.push(nullptr);
       input_queue_.pop();
       TryToReturnBitstreamBuffer();
       continue;
@@ -894,7 +896,9 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
         job->Execute();
       }
 
-      submitted_encode_jobs_.push(std::move(job));
+      auto metadata = encoder_->GetMetadata(job.get(), 0u);
+      pending_encode_results_.push(
+          std::make_unique<EncodeResult>(std::move(job), metadata));
       TryToReturnBitstreamBuffer();
     }
 
@@ -1055,12 +1059,12 @@ void VaapiVideoEncodeAccelerator::DestroyTask() {
   while (!input_queue_.empty())
     input_queue_.pop();
 
-  // Note ScopedVABuffer in EncodeJob must be destroyed before
+  // Note ScopedVABuffer owned by EncodeResults must be destroyed before
   // |vaapi_wrapper_| is destroyed to ensure VADisplay is valid on the
   // ScopedVABuffer's destruction.
-  DCHECK(vaapi_wrapper_ || submitted_encode_jobs_.empty());
-  while (!submitted_encode_jobs_.empty())
-    submitted_encode_jobs_.pop();
+  DCHECK(vaapi_wrapper_ || pending_encode_results_.empty());
+  while (!pending_encode_results_.empty())
+    pending_encode_results_.pop();
 
   encoder_ = nullptr;
 

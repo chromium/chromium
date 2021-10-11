@@ -169,6 +169,25 @@ class VaapiVideoEncoderDelegate {
     std::vector<scoped_refptr<CodecPicture>> reference_pictures_;
   };
 
+  // EncodeResult owns the necessary resource to keep the encoded buffer. The
+  // encoded buffer can be downloaded with the EncodeResult, for example, by
+  // calling VaapiWrapper::DownloadFromVABuffer().
+  class EncodeResult {
+   public:
+    EncodeResult(std::unique_ptr<EncodeJob> encode_job,
+                 const BitstreamBufferMetadata& metadata);
+    ~EncodeResult();
+
+    VASurfaceID input_surface_id() const;
+    VABufferID coded_buffer_id() const;
+
+    const BitstreamBufferMetadata& metadata() const;
+
+   private:
+    const std::unique_ptr<EncodeJob> encode_job_;
+    const BitstreamBufferMetadata metadata_;
+  };
+
   // Initializes the encoder with requested parameter set |config| and
   // |ave_config|. Returns false if the requested set of parameters is not
   // supported, true on success.

@@ -96,6 +96,26 @@ VaapiVideoEncoderDelegate::EncodeJob::picture() const {
   return picture_;
 }
 
+VaapiVideoEncoderDelegate::EncodeResult::EncodeResult(
+    std::unique_ptr<EncodeJob> encode_job,
+    const BitstreamBufferMetadata& metadata)
+    : encode_job_(std::move(encode_job)), metadata_(metadata) {}
+
+VaapiVideoEncoderDelegate::EncodeResult::~EncodeResult() = default;
+
+VASurfaceID VaapiVideoEncoderDelegate::EncodeResult::input_surface_id() const {
+  return encode_job_->input_surface()->id();
+}
+
+VABufferID VaapiVideoEncoderDelegate::EncodeResult::coded_buffer_id() const {
+  return encode_job_->coded_buffer_id();
+}
+
+const BitstreamBufferMetadata&
+VaapiVideoEncoderDelegate::EncodeResult::metadata() const {
+  return metadata_;
+}
+
 VaapiVideoEncoderDelegate::VaapiVideoEncoderDelegate(
     scoped_refptr<VaapiWrapper> vaapi_wrapper,
     base::RepeatingClosure error_cb)
