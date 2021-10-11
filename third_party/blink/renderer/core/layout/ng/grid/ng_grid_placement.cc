@@ -499,12 +499,24 @@ void NGGridPlacement::AutoPlacementCursor::UpdateItemsOverlappingMajorLine() {
                       items_overlapping_major_line_.end(),
                       ComparePlacedGridItemsByEnd));
 
-  // Notice that the |EndOnPreviousMajorLine| of an item "A" is the first
-  // position such that any upcoming grid position (located at a greater
-  // major/minor position) is guaranteed to not overlap with "A".
-  while (!items_overlapping_major_line_.IsEmpty() &&
-         items_overlapping_major_line_.front()->EndOnPreviousMajorLine() <=
-             current_position_) {
+  while (!items_overlapping_major_line_.IsEmpty()) {
+    // Notice that the |EndOnPreviousMajorLine| of an item "A" is the first
+    // position such that any upcoming grid position (located at a greater
+    // major/minor position) is guaranteed to not overlap with "A".
+    auto last_overlapping_position =
+        items_overlapping_major_line_.front()->EndOnPreviousMajorLine();
+
+    // We cannot discard any items since they're still overlapping.
+    if (current_position_ < last_overlapping_position)
+      break;
+
+    // When we are located at the major line right before the current item's
+    // major end line, we want to ensure that we move to the next major line
+    // since it won't be considered overlapping in |MoveToNextMajorLine| now
+    // that we moved past the item's |EndOnPreviousMajorLine|.
+    if (current_position_.major_line == last_overlapping_position.major_line)
+      should_move_to_next_item_major_end_line_ = false;
+
     std::pop_heap(items_overlapping_major_line_.begin(),
                   items_overlapping_major_line_.end(),
                   ComparePlacedGridItemsByEnd);
@@ -512,12 +524,20 @@ void NGGridPlacement::AutoPlacementCursor::UpdateItemsOverlappingMajorLine() {
   }
 
   while (next_placed_item_ && next_placed_item_->Start() <= current_position_) {
-    if (current_position_ < next_placed_item_->EndOnPreviousMajorLine()) {
+    auto last_overlapping_position =
+        next_placed_item_->EndOnPreviousMajorLine();
+
+    // If the current position's major line overlaps the next placed item, we
+    // should retry the auto-placement algorithm on the next major line before
+    // trying to skip to the nearest major end line of an overlapping item.
+    if (current_position_.major_line <= last_overlapping_position.major_line)
+      should_move_to_next_item_major_end_line_ = false;
+
+    if (current_position_ < last_overlapping_position) {
       items_overlapping_major_line_.emplace_back(next_placed_item_);
       std::push_heap(items_overlapping_major_line_.begin(),
                      items_overlapping_major_line_.end(),
                      ComparePlacedGridItemsByEnd);
-      has_new_item_overlapping_major_line_ = true;
     }
     next_placed_item_ = next_placed_item_->Next();
   }
@@ -543,7 +563,7 @@ void NGGridPlacement::AutoPlacementCursor::MoveToNextMajorLine(
     const bool allow_minor_line_movement) {
   ++current_position_.major_line;
 
-  if (!has_new_item_overlapping_major_line_ &&
+  if (should_move_to_next_item_major_end_line_ &&
       !items_overlapping_major_line_.IsEmpty()) {
     DCHECK_GE(items_overlapping_major_line_.front()->MajorEndLine(),
               current_position_.major_line);
@@ -553,7 +573,7 @@ void NGGridPlacement::AutoPlacementCursor::MoveToNextMajorLine(
 
   if (allow_minor_line_movement)
     current_position_.minor_line = 0;
-  has_new_item_overlapping_major_line_ = false;
+  should_move_to_next_item_major_end_line_ = true;
 }
 
 void NGGridPlacement::AutoPlacementCursor::InsertPlacedItemAtCurrentPosition(
@@ -570,7 +590,7 @@ void NGGridPlacement::AutoPlacementCursor::InsertPlacedItemAtCurrentPosition(
   next_placed_item_ = new_placed_item;
 
   MoveToMinorLine(new_placed_item->MinorEndLine());
-  has_new_item_overlapping_major_line_ = true;
+  UpdateItemsOverlappingMajorLine();
 }
 
 void NGGridPlacement::PlacedGridItemsList::AppendCurrentItemsToOrderedList() {

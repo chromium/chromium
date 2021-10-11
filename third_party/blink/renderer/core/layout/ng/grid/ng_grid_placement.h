@@ -87,7 +87,7 @@ class CORE_EXPORT NGGridPlacement {
   class AutoPlacementCursor {
    public:
     explicit AutoPlacementCursor(const PlacedGridItem* first_placed_item)
-        : has_new_item_overlapping_major_line_(false),
+        : should_move_to_next_item_major_end_line_(true),
           next_placed_item_(first_placed_item) {}
 
     void MoveCursorToFitGridSpan(
@@ -119,7 +119,7 @@ class CORE_EXPORT NGGridPlacement {
     void UpdateItemsOverlappingMajorLine();
 
     Vector<const PlacedGridItem*, 16> items_overlapping_major_line_;
-    bool has_new_item_overlapping_major_line_ : 1;
+    bool should_move_to_next_item_major_end_line_ : 1;
     const PlacedGridItem* next_placed_item_;
     GridPosition current_position_;
   };
