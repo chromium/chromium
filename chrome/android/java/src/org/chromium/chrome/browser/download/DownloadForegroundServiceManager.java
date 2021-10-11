@@ -20,9 +20,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.download.DownloadNotificationService.DownloadStatus;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
@@ -131,7 +131,7 @@ public class DownloadForegroundServiceManager {
         if (downloadUpdate == null) return;
         // If foreground service is disallowed, don't handle active download updates. Only stopping
         // the foreground service is allowed.
-        if (isActive(downloadUpdate.mDownloadStatus) && !canStartForegroundService()) return;
+        if (isActive(downloadUpdate.mDownloadStatus) && !canStartForeground()) return;
 
         // When nothing has been initialized, just bind the service.
         if (!mIsServiceBound) {
@@ -258,7 +258,9 @@ public class DownloadForegroundServiceManager {
 
     @VisibleForTesting
     void startOrUpdateForegroundService(DownloadUpdate update) {
-        Log.w(TAG, "startOrUpdateForegroundService id: " + update.mNotificationId);
+        Log.w(TAG,
+                "startOrUpdateForegroundService id: " + update.mNotificationId
+                        + ", startForeground() Called: " + mStartForegroundCalled);
 
         int notificationId = update.mNotificationId;
         Notification notification = update.mNotification;
@@ -329,6 +331,7 @@ public class DownloadForegroundServiceManager {
                 stopForegroundNotification, mPinnedNotificationId, oldNotification);
 
         mBoundService = null;
+        mStartForegroundCalled = false;
 
         mPinnedNotificationId = INVALID_NOTIFICATION_ID;
     }
@@ -360,8 +363,13 @@ public class DownloadForegroundServiceManager {
         mStopServiceDelayed = true;
     }
 
-    private boolean canStartForegroundService() {
-        if (AppHooks.get().canStartForegroundServiceWhileInvisible()) return true;
-        return ApplicationStatus.hasVisibleActivities();
+    /**
+     * @return Whether startForeground() is allowed to be called.
+     */
+    private boolean canStartForeground() {
+        if (!BuildInfo.isAtLeastS()) return true;
+        // If foreground service is started, startForeground() must be called.
+        return ApplicationStatus.hasVisibleActivities()
+                || (mIsServiceBound && !mStartForegroundCalled);
     }
 }
