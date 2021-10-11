@@ -9,10 +9,10 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/location.h"
+#include "base/task/task_traits.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
@@ -65,7 +65,11 @@ bool EnsureDirectoryIsEmpty(const base::FilePath& directory_path,
 
 }  // namespace
 
-FilesCleanupHandler::FilesCleanupHandler() = default;
+FilesCleanupHandler::FilesCleanupHandler() {
+  task_runner_ = base::ThreadPool::CreateTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+}
 
 FilesCleanupHandler::~FilesCleanupHandler() = default;
 
@@ -76,15 +80,15 @@ void FilesCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
     return;
   }
 
-  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&FilesCleanupHandler::CleanupTaskOnIOThread,
+      base::BindOnce(&FilesCleanupHandler::CleanupTaskOnTaskRunner,
                      base::Unretained(this), profile),
       base::BindOnce(&FilesCleanupHandler::CleanupTaskDone,
                      base::Unretained(this), std::move(callback)));
 }
 
-bool FilesCleanupHandler::CleanupTaskOnIOThread(Profile* profile) {
+bool FilesCleanupHandler::CleanupTaskOnTaskRunner(Profile* profile) {
   base::FilePath my_files_path =
       profile->GetPath().AppendASCII(kFolderNameMyFiles);
   base::FilePath downloads_path =
@@ -110,7 +114,6 @@ bool FilesCleanupHandler::CleanupTaskOnIOThread(Profile* profile) {
 
 void FilesCleanupHandler::CleanupTaskDone(CleanupHandlerCallback callback,
                                           bool success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
     std::move(callback).Run(
         "Files cleanup error: Failed to delete all files and directories");
