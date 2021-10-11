@@ -253,22 +253,32 @@ void VerifyWinPlatformVersion(std::string version) {
 
   boolean is_supported = false;
   // Verify that the major and minor versions are supported.
-  api->IsApiContractPresentByMajor(universal_contract_name.Get(), major_version,
-                                   &is_supported);
-  EXPECT_TRUE(is_supported);
-  api->IsApiContractPresentByMajorAndMinor(universal_contract_name.Get(),
-                                           major_version, minor_version,
-                                           &is_supported);
-  EXPECT_TRUE(is_supported);
+  result = api->IsApiContractPresentByMajor(universal_contract_name.Get(),
+                                            major_version, &is_supported);
+  EXPECT_EQ(result, S_OK);
+  EXPECT_TRUE(is_supported)
+      << " expected major version " << major_version << " to be supported.";
+  result = api->IsApiContractPresentByMajorAndMinor(
+      universal_contract_name.Get(), major_version, minor_version,
+      &is_supported);
+  EXPECT_EQ(result, S_OK);
+  EXPECT_TRUE(is_supported)
+      << " expected major version " << major_version << " and minor version "
+      << minor_version << " to be supported.";
 
   // Verify that the next highest value is not supported.
-  api->IsApiContractPresentByMajorAndMinor(universal_contract_name.Get(),
-                                           major_version, minor_version + 1,
-                                           &is_supported);
-  EXPECT_FALSE(is_supported);
-  api->IsApiContractPresentByMajor(universal_contract_name.Get(),
-                                   major_version + 1, &is_supported);
-  EXPECT_FALSE(is_supported);
+  result = api->IsApiContractPresentByMajorAndMinor(
+      universal_contract_name.Get(), major_version, minor_version + 1,
+      &is_supported);
+  EXPECT_EQ(result, S_OK);
+  EXPECT_FALSE(is_supported) << " expected minor version " << minor_version + 1
+                             << " to not be supported with a major version of "
+                             << major_version << ".";
+  result = api->IsApiContractPresentByMajor(universal_contract_name.Get(),
+                                            major_version + 1, &is_supported);
+  EXPECT_EQ(result, S_OK);
+  EXPECT_FALSE(is_supported) << " expected major version " << major_version + 1
+                             << " to not be supported.";
 }
 #endif  // defined(OS_WIN)
 
