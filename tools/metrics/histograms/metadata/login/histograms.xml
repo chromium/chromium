@@ -93,6 +93,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Login.MountNamespaceCreationSuccess" enum="Boolean"
     expires_after="2021-10-10">
+  <obsolete>
+    Removed in M97.
+  </obsolete>
   <owner>betuls@chromium.org</owner>
   <owner>jorgelo@chromium.org</owner>
   <owner>chromeos-security-core@google.com</owner>
