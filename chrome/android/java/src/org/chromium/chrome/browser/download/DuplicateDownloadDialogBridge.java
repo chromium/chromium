@@ -46,7 +46,10 @@ public class DuplicateDownloadDialogBridge {
     public void showDialog(WindowAndroid windowAndroid, String filePath, String pageUrl,
             long totalBytes, boolean duplicateExists, OTRProfileID otrProfileID, long callbackId) {
         Activity activity = windowAndroid.getActivity().get();
-        if (activity == null) onConfirmed(callbackId, false);
+        if (activity == null) {
+            onConfirmed(callbackId, false);
+            return;
+        }
         new DuplicateDownloadDialog().show(activity,
                 ((ModalDialogManagerHolder) activity).getModalDialogManager(), filePath, pageUrl,
                 totalBytes, duplicateExists, otrProfileID,
