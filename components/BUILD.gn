@@ -760,6 +760,8 @@ if (!is_ios) {
 
     if (is_android) {
       sources += [
+        "autofill_assistant/browser/mock_script_executor_delegate.cc",
+        "autofill_assistant/browser/mock_script_executor_delegate.h",
         "autofill_assistant/browser/web/web_controller_browsertest.cc",
         "test/android/browsertests_apk/components_browser_tests_jni_onload.cc",
       ]

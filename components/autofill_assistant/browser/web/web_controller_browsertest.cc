@@ -16,6 +16,10 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
+#include "components/autofill_assistant/browser/actions/wait_for_dom_action.h"
+#include "components/autofill_assistant/browser/mock_script_executor_delegate.h"
+#include "components/autofill_assistant/browser/script.h"
+#include "components/autofill_assistant/browser/script_executor.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/top_padding.h"
@@ -37,6 +41,7 @@ namespace autofill_assistant {
 
 using ::testing::AnyOf;
 using ::testing::IsEmpty;
+using ::testing::Return;
 
 // Flag to enable site per process to enforce OOPIFs.
 const char* kSitePerProcess = "site-per-process";
@@ -184,6 +189,14 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
                       ClientStatus* status_output,
                       const ClientStatus& status) {
     *status_output = status;
+    std::move(done_callback).Run();
+  }
+
+  void OnProcessedAction(
+      base::OnceClosure done_callback,
+      ClientStatus* status_output,
+      std::unique_ptr<ProcessedActionProto> processed_action) {
+    *status_output = ClientStatus(processed_action->status());
     std::move(done_callback).Run();
   }
 
@@ -2978,6 +2991,67 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, FocusAndBlur) {
   EXPECT_TRUE(
       content::EvalJs(shell(), R"(document.activeElement === document.body)")
           .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WaitForDomForUniqueElement) {
+  MockScriptExecutorDelegate mock_script_executor_delegate;
+  ON_CALL(mock_script_executor_delegate, GetWebController)
+      .WillByDefault(Return(web_controller_.get()));
+  std::vector<std::unique_ptr<Script>> ordered_interrupts;
+  ScriptExecutor script_executor(
+      /* script_path= */ std::string(), /* additional_context= */ nullptr,
+      /* global_payload= */ std::string(), /* script_payload= */ std::string(),
+      /* listener= */ nullptr, &ordered_interrupts,
+      &mock_script_executor_delegate);
+
+  ActionProto action_proto;
+  auto* wait_for_dom = action_proto.mutable_wait_for_dom();
+  auto* condition = wait_for_dom->mutable_wait_condition();
+  condition->mutable_client_id()->set_identifier("e");
+  condition->set_require_unique_element(true);
+  // This element is unique.
+  *condition->mutable_match() = ToSelectorProto("#select");
+
+  WaitForDomAction action(&script_executor, action_proto);
+  base::RunLoop run_loop;
+  ClientStatus status;
+  action.ProcessAction(
+      base::BindOnce(&WebControllerBrowserTest::OnProcessedAction,
+                     base::Unretained(this), run_loop.QuitClosure(), &status));
+  run_loop.Run();
+  EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
+  EXPECT_TRUE(script_executor.GetElementStore()->HasElement("e"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       WaitForDomForNonUniqueElement) {
+  MockScriptExecutorDelegate mock_script_executor_delegate;
+  ON_CALL(mock_script_executor_delegate, GetWebController)
+      .WillByDefault(Return(web_controller_.get()));
+  std::vector<std::unique_ptr<Script>> ordered_interrupts;
+  ScriptExecutor script_executor(
+      /* script_path= */ std::string(), /* additional_context= */ nullptr,
+      /* global_payload= */ std::string(), /* script_payload= */ std::string(),
+      /* listener= */ nullptr, &ordered_interrupts,
+      &mock_script_executor_delegate);
+
+  ActionProto action_proto;
+  auto* wait_for_dom = action_proto.mutable_wait_for_dom();
+  auto* condition = wait_for_dom->mutable_wait_condition();
+  condition->mutable_client_id()->set_identifier("e");
+  condition->set_require_unique_element(true);
+  // This element is not unique.
+  *condition->mutable_match() = ToSelectorProto("div");
+
+  WaitForDomAction action(&script_executor, action_proto);
+  base::RunLoop run_loop;
+  ClientStatus status;
+  action.ProcessAction(
+      base::BindOnce(&WebControllerBrowserTest::OnProcessedAction,
+                     base::Unretained(this), run_loop.QuitClosure(), &status));
+  run_loop.Run();
+  EXPECT_EQ(status.proto_status(), ELEMENT_RESOLUTION_FAILED);
+  EXPECT_FALSE(script_executor.GetElementStore()->HasElement("e"));
 }
 
 }  // namespace autofill_assistant
