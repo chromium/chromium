@@ -176,7 +176,6 @@ class CORE_EXPORT InspectorPageAgent final
   protocol::Response generateTestReport(const String& message,
                                         Maybe<String> group) override;
 
-  protocol::Response setProduceCompilationCache(bool enabled) override;
   protocol::Response produceCompilationCache(
       std::unique_ptr<protocol::Array<protocol::Page::CompilationCacheParams>>
           scripts) override;
@@ -297,7 +296,6 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorAgentState::String pictograph_font_family_;
   InspectorAgentState::Integer standard_font_size_;
   InspectorAgentState::Integer fixed_font_size_;
-  InspectorAgentState::Boolean produce_compilation_cache_;
 };
 
 }  // namespace blink

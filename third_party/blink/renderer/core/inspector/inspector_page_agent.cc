@@ -491,8 +491,7 @@ InspectorPageAgent::InspectorPageAgent(
       fantasy_font_family_(&agent_state_, /*default_value=*/WTF::String()),
       pictograph_font_family_(&agent_state_, /*default_value=*/WTF::String()),
       standard_font_size_(&agent_state_, /*default_value=*/0),
-      fixed_font_size_(&agent_state_, /*default_value=*/0),
-      produce_compilation_cache_(&agent_state_, /*default_value=*/false) {}
+      fixed_font_size_(&agent_state_, /*default_value=*/0) {}
 
 void InspectorPageAgent::Restore() {
   if (enabled_.Get())
@@ -1715,12 +1714,10 @@ void InspectorPageAgent::DidProduceCompilationCache(
   if (url.IsEmpty())
     return;
   String url_string = url.GetString();
-  if (!produce_compilation_cache_.Get()) {
-    auto requested = requested_compilation_cache_.find(url_string);
-    if (requested == requested_compilation_cache_.end())
-      return;
-    requested_compilation_cache_.erase(requested);
-  }
+  auto requested = requested_compilation_cache_.find(url_string);
+  if (requested == requested_compilation_cache_.end())
+    return;
+  requested_compilation_cache_.erase(requested);
   if (source.SourceLocationType() != ScriptSourceLocationType::kExternalFile)
     return;
   // TODO(caseq): should we rather issue updates if compiled code differs?
@@ -1753,15 +1750,6 @@ void InspectorPageAgent::FileChooserOpened(LocalFrame* frame,
       IdentifiersFactory::FrameId(frame), DOMNodeIds::IdForNode(element),
       multiple ? protocol::Page::FileChooserOpened::ModeEnum::SelectMultiple
                : protocol::Page::FileChooserOpened::ModeEnum::SelectSingle);
-}
-
-Response InspectorPageAgent::setProduceCompilationCache(bool enabled) {
-  if (!enabled_.Get())
-    return Response::ServerError("Agent needs to be enabled first");
-  produce_compilation_cache_.Set(enabled);
-  if (!enabled)
-    requested_compilation_cache_.clear();
-  return Response::Success();
 }
 
 Response InspectorPageAgent::produceCompilationCache(
