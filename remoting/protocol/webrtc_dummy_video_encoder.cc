@@ -4,17 +4,9 @@
 
 #include "remoting/protocol/webrtc_dummy_video_encoder.h"
 
-#include <algorithm>
-#include <vector>
-
 #include "base/bind.h"
-#include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
-#include "base/synchronization/lock.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "build/build_config.h"
 #include "remoting/protocol/video_channel_state_observer.h"
 #include "remoting/protocol/webrtc_video_encoder_wrapper.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
@@ -22,175 +14,6 @@
 
 namespace remoting {
 namespace protocol {
-
-WebrtcDummyVideoEncoder::WebrtcDummyVideoEncoder(
-    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-    base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer,
-    WebrtcDummyVideoEncoderFactory* factory)
-    : main_task_runner_(main_task_runner),
-      state_(kUninitialized),
-      video_channel_state_observer_(video_channel_state_observer),
-      factory_(factory) {}
-
-WebrtcDummyVideoEncoder::~WebrtcDummyVideoEncoder() {
-  if (factory_) {
-    factory_->EncoderDestroyed(this);
-  }
-}
-
-int32_t WebrtcDummyVideoEncoder::InitEncode(
-    const webrtc::VideoCodec* codec_settings,
-    int32_t number_of_cores,
-    size_t max_payload_size) {
-  DCHECK(codec_settings);
-  base::AutoLock lock(lock_);
-  int stream_count = codec_settings->numberOfSimulcastStreams;
-  // Validate request is to support a single stream.
-  if (stream_count > 1) {
-    for (int i = 0; i < stream_count; ++i) {
-      if (codec_settings->simulcastStream[i].maxBitrate != 0) {
-        LOG(ERROR) << "Simulcast unsupported";
-        return WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
-      }
-    }
-  }
-  state_ = kInitialized;
-  return WEBRTC_VIDEO_CODEC_OK;
-}
-
-int32_t WebrtcDummyVideoEncoder::RegisterEncodeCompleteCallback(
-    webrtc::EncodedImageCallback* callback) {
-  base::AutoLock lock(lock_);
-  encoded_callback_ = callback;
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&VideoChannelStateObserver::OnEncoderReady,
-                                video_channel_state_observer_));
-  return WEBRTC_VIDEO_CODEC_OK;
-}
-
-int32_t WebrtcDummyVideoEncoder::Release() {
-  base::AutoLock lock(lock_);
-  encoded_callback_ = nullptr;
-  return WEBRTC_VIDEO_CODEC_OK;
-}
-
-int32_t WebrtcDummyVideoEncoder::Encode(
-    const webrtc::VideoFrame& frame,
-    const std::vector<webrtc::VideoFrameType>* frame_types) {
-  // WebrtcDummyVideoCapturer doesn't generate any video frames, so Encode() can
-  // be called only from VCMGenericEncoder::RequestFrame() to request a key
-  // frame.
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&VideoChannelStateObserver::OnKeyFrameRequested,
-                                video_channel_state_observer_));
-  return WEBRTC_VIDEO_CODEC_OK;
-}
-
-void WebrtcDummyVideoEncoder::SetRates(
-    const RateControlParameters& parameters) {
-  main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VideoChannelStateObserver::OnTargetBitrateChanged,
-                     video_channel_state_observer_,
-                     parameters.bitrate.get_sum_kbps()));
-  // framerate is not expected to be valid given we never report captured
-  // frames.
-}
-
-void WebrtcDummyVideoEncoder::OnRttUpdate(int64_t rtt_ms) {
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&VideoChannelStateObserver::OnRttUpdate,
-                                video_channel_state_observer_,
-                                base::Milliseconds(rtt_ms)));
-}
-
-webrtc::EncodedImageCallback::Result WebrtcDummyVideoEncoder::SendEncodedFrame(
-    const WebrtcVideoEncoder::EncodedFrame& frame) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  const uint8_t* buffer =
-      reinterpret_cast<const uint8_t*>(base::data(frame.data));
-  size_t buffer_size = frame.data.size();
-  base::AutoLock lock(lock_);
-  if (state_ == kUninitialized) {
-    LOG(ERROR) << "encoder interface uninitialized";
-    return webrtc::EncodedImageCallback::Result(
-        webrtc::EncodedImageCallback::Result::ERROR_SEND_FAILED);
-  }
-
-  webrtc::EncodedImage encoded_image;
-  encoded_image.SetEncodedData(
-      webrtc::EncodedImageBuffer::Create(buffer, buffer_size));
-  encoded_image._encodedWidth = frame.size.width();
-  encoded_image._encodedHeight = frame.size.height();
-  encoded_image._frameType = frame.key_frame
-                                 ? webrtc::VideoFrameType::kVideoFrameKey
-                                 : webrtc::VideoFrameType::kVideoFrameDelta;
-  int64_t capture_time_ms =
-      (frame.capture_time - base::TimeTicks()).InMilliseconds();
-  int64_t encode_start_time_ms =
-      (frame.encode_start - base::TimeTicks()).InMilliseconds();
-  int64_t encode_finish_time_ms =
-      (frame.encode_finish - base::TimeTicks()).InMilliseconds();
-  encoded_image.capture_time_ms_ = capture_time_ms;
-  encoded_image.SetTimestamp(static_cast<uint32_t>(capture_time_ms * 90));
-  encoded_image.playout_delay_.min_ms = 0;
-  encoded_image.playout_delay_.max_ms = 0;
-  encoded_image.timing_.encode_start_ms = encode_start_time_ms;
-  encoded_image.timing_.encode_finish_ms = encode_finish_time_ms;
-  encoded_image.content_type_ = webrtc::VideoContentType::SCREENSHARE;
-
-  webrtc::CodecSpecificInfo codec_specific_info;
-  codec_specific_info.codecType = frame.codec;
-
-  if (frame.codec == webrtc::kVideoCodecVP8) {
-    webrtc::CodecSpecificInfoVP8* vp8_info =
-        &codec_specific_info.codecSpecific.VP8;
-    vp8_info->temporalIdx = webrtc::kNoTemporalIdx;
-  } else if (frame.codec == webrtc::kVideoCodecVP9) {
-    webrtc::CodecSpecificInfoVP9* vp9_info =
-        &codec_specific_info.codecSpecific.VP9;
-    vp9_info->inter_pic_predicted = !frame.key_frame;
-    vp9_info->ss_data_available = frame.key_frame;
-    vp9_info->spatial_layer_resolution_present = frame.key_frame;
-    if (frame.key_frame) {
-      vp9_info->width[0] = frame.size.width();
-      vp9_info->height[0] = frame.size.height();
-    }
-    vp9_info->num_spatial_layers = 1;
-    vp9_info->gof_idx = webrtc::kNoGofIdx;
-    vp9_info->temporal_idx = webrtc::kNoTemporalIdx;
-    vp9_info->flexible_mode = false;
-    vp9_info->temporal_up_switch = true;
-    vp9_info->inter_layer_predicted = false;
-    vp9_info->first_frame_in_picture = true;
-    vp9_info->end_of_picture = true;
-    vp9_info->spatial_layer_resolution_present = false;
-  } else if (frame.codec == webrtc::kVideoCodecH264) {
-#if defined(USE_H264_ENCODER)
-    webrtc::CodecSpecificInfoH264* h264_info =
-        &codec_specific_info.codecSpecific.H264;
-    h264_info->packetization_mode =
-        webrtc::H264PacketizationMode::NonInterleaved;
-#else
-    NOTREACHED();
-#endif
-  } else {
-    NOTREACHED();
-  }
-
-  DCHECK(encoded_callback_);
-  return encoded_callback_->OnEncodedImage(encoded_image, &codec_specific_info);
-}
-
-webrtc::VideoEncoder::EncoderInfo WebrtcDummyVideoEncoder::GetEncoderInfo()
-    const {
-  EncoderInfo info;
-  // TODO(mirtad): Set this flag correctly per encoder.
-  info.is_hardware_accelerated = true;
-  // Set internal source to true to directly provide encoded frames to webrtc.
-  info.has_internal_source = true;
-  return info;
-}
 
 WebrtcDummyVideoEncoderFactory::WebrtcDummyVideoEncoderFactory()
     : main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
@@ -237,11 +60,6 @@ void WebrtcDummyVideoEncoderFactory::SetVideoChannelStateObserver(
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   base::AutoLock lock(lock_);
   video_channel_state_observer_ = video_channel_state_observer;
-}
-
-void WebrtcDummyVideoEncoderFactory::EncoderDestroyed(
-    WebrtcDummyVideoEncoder* encoder) {
-  // TODO(crbug.com/1192865): Remove this method.
 }
 
 }  // namespace protocol

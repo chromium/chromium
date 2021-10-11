@@ -13,8 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner_forward.h"
-#include "remoting/codec/webrtc_video_encoder.h"
-#include "remoting/protocol/webrtc_video_encoder_wrapper.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 
@@ -22,62 +20,10 @@ namespace remoting {
 namespace protocol {
 
 class VideoChannelStateObserver;
-class WebrtcDummyVideoEncoderFactory;
 
-// WebrtcDummyVideoEncoder implements webrtc::VideoEncoder interface for WebRTC.
-// It's responsible for getting  feedback on network bandwidth, latency & RTT
-// and passing this information to the WebrtcVideoStream through the callbacks
-// in WebrtcDummyVideoEncoderFactory. Video frames are captured and encoded
-// outside of this dummy encoder (in WebrtcVideoEncoder called from
-// WebrtcVideoStream). They are passed to SendEncodedFrame() to be delivered to
-// the network layer.
-// TODO(crbug.com/1192865): Remove this class and move the factory into new
-// {.cc, .h} files.
-class WebrtcDummyVideoEncoder : public webrtc::VideoEncoder {
- public:
-  enum State { kUninitialized = 0, kInitialized };
-
-  WebrtcDummyVideoEncoder(
-      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-      base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer,
-      WebrtcDummyVideoEncoderFactory* factory);
-  ~WebrtcDummyVideoEncoder() override;
-
-  // webrtc::VideoEncoder overrides.
-  int32_t InitEncode(const webrtc::VideoCodec* codec_settings,
-                     int32_t number_of_cores,
-                     size_t max_payload_size) override;
-  int32_t RegisterEncodeCompleteCallback(
-      webrtc::EncodedImageCallback* callback) override;
-  int32_t Release() override;
-  int32_t Encode(
-      const webrtc::VideoFrame& frame,
-      const std::vector<webrtc::VideoFrameType>* frame_types) override;
-  void SetRates(const RateControlParameters& parameters) override;
-  webrtc::VideoEncoder::EncoderInfo GetEncoderInfo() const override;
-  void OnRttUpdate(int64_t rtt_ms) override;
-
-  webrtc::EncodedImageCallback::Result SendEncodedFrame(
-      const WebrtcVideoEncoder::EncodedFrame& frame);
-
- private:
-  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-
-  // Protects |encoded_callback_| and |state_|.
-  base::Lock lock_;
-  State state_;
-  webrtc::EncodedImageCallback* encoded_callback_ = nullptr;
-
-  base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer_;
-
-  // Holds a reference to the creating factory, if any. Will be notified
-  // when this instance is released, so it can stop delivering frames.
-  WebrtcDummyVideoEncoderFactory* factory_ = nullptr;
-};
-
-// This is the encoder factory implementation that is passed to
-// WebRTC at the time of creation of peer connection. The encoder
-// factory primarily manages creation of encoder.
+// This is the encoder factory that is passed to WebRTC when the peer connection
+// is created. This factory creates the video encoder, which is an instance of
+// WebrtcVideoEncoderWrapper which wraps a video codec from remoting/codec.
 class WebrtcDummyVideoEncoderFactory : public webrtc::VideoEncoderFactory {
  public:
   WebrtcDummyVideoEncoderFactory();
@@ -97,8 +43,6 @@ class WebrtcDummyVideoEncoderFactory : public webrtc::VideoEncoderFactory {
 
   void SetVideoChannelStateObserver(
       base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer);
-
-  void EncoderDestroyed(WebrtcDummyVideoEncoder* encoder);
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
