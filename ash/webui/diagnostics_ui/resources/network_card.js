@@ -115,6 +115,12 @@ Polymer({
       value: -1,
     },
 
+    /** @private */
+    timeoutInMs_: {
+      type: Number,
+      value: 30000,
+    },
+
     /** @protected {boolean} */
     isMissingNameServers_: {
       type: Boolean,
@@ -136,7 +142,7 @@ Polymer({
 
   /** @private */
   observeNetwork_() {
-    // If necessary, clear setInterval and reset the timerId.
+    // If necessary, clear setTimeout and reset the timerId.
     this.resetTimer_();
 
     // Reset this flag in case we were unable to obtain an IP Address for the
@@ -177,22 +183,20 @@ Polymer({
     this.set('network', network);
     let isIpAddressMissing = !network.ipConfig || !network.ipConfig.ipAddress;
     let isTimerInProgress = this.timerId_ !== -1;
+    let isConnecting = network.state === NetworkState.kConnecting;
 
     if (!isIpAddressMissing) {
       this.isMissingNameServers_ = isNetworkMissingNameServers(network);
+      // Reset this flag if the current network now has a valid IP Address.
+      this.unableToObtainIpAddress_ = false;
     }
 
-    if (isIpAddressMissing && !isTimerInProgress) {
-      // Seconds to wait before displaying the troubleshooting banner.
-      let maxTicks = 30;
-      let tickCount = 0;
-      this.timerId_ = setInterval(() => {
-        if (tickCount >= maxTicks) {
-          this.resetTimer_();
-          this.unableToObtainIpAddress_ = true;
-        }
-        tickCount++;
-      }, 1000);
+    if ((isIpAddressMissing && isConnecting) && !isTimerInProgress) {
+      // Wait 30 seconds before displaying the troubleshooting banner.
+      this.timerId_ = setTimeout(() => {
+        this.resetTimer_();
+        this.unableToObtainIpAddress_ = true;
+      }, this.timeoutInMs_);
     }
   },
 
@@ -379,7 +383,7 @@ Polymer({
   /** @private */
   resetTimer_() {
     if (this.timerId_ !== -1) {
-      clearInterval(this.timerId_);
+      clearTimeout(this.timerId_);
       this.timerId_ = -1;
     }
   },

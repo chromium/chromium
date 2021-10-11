@@ -38,8 +38,9 @@ export function networkCardTestSuite() {
 
   /**
    * @param {string} guid
+   * @param {?number} timeout
    */
-  function initializeNetworkCard(guid) {
+  function initializeNetworkCard(guid, timeout = undefined) {
     assertFalse(!!networkCardElement);
     provider.setFakeNetworkGuidInfo(fakeNetworkGuidInfoList);
     provider.setFakeNetworkState('wifiGuid', [fakeWifiNetwork]);
@@ -62,6 +63,10 @@ export function networkCardTestSuite() {
         document.createElement('network-card'));
     assertTrue(!!networkCardElement);
     networkCardElement.guid = guid;
+    if (timeout || timeout === 0) {
+      /** @suppress {visibility} */
+      networkCardElement.timeoutInMs_ = timeout;
+    }
     document.body.appendChild(networkCardElement);
 
     return flushTasks();
@@ -141,6 +146,25 @@ export function networkCardTestSuite() {
    */
   function getTimerId() {
     return networkCardElement.timerId_;
+  }
+
+  /** @return {string} */
+  function getTroubleshootingHeader() {
+    return getTroubleConnectingElement().troubleshootingInfo.header;
+  }
+
+  /** @return {string} */
+  function getTroubleshootingLinkText() {
+    return getTroubleConnectingElement().troubleshootingInfo.linkText;
+  }
+
+  /**
+   * Get unableToObtainIpAddress_ private member for testing.
+   * @suppress {visibility} // access private member
+   * @return {boolean}
+   */
+  function getUnableToObtainIpAddress() {
+    return networkCardElement.unableToObtainIpAddress_;
   }
 
   test('CardTitleWiFiConnectedInitializedCorrectly', () => {
@@ -256,6 +280,31 @@ export function networkCardTestSuite() {
         })
         .then(() => changeGuid('ethernetGuid'))
         .then(() => {
+          // After a network change event, the timer should have been cleared
+          // and reset.
+          assertTrue(getTimerId() === -1);
+        });
+  });
+
+  test('IpMissingShowsTroubleshootingAfterDelay', () => {
+    return initializeNetworkCard('wifiGuidNoIpAddress', 0)
+        .then(() => flushTasks())
+        .then(() => {
+          assertTrue(isVisible(getTroubleConnectingElement()));
+          // Verify banner header and link text.
+          dx_utils.assertTextContains(
+              loadTimeData.getString('noIpAddressText'),
+              getTroubleshootingHeader());
+          dx_utils.assertTextContains(
+              loadTimeData.getString('visitSettingsToConfigureLinkText'),
+              getTroubleshootingLinkText());
+          // Timer should have been cleared.
+          assertTrue(getTimerId() === -1);
+        })
+        .then(() => changeGuid('ethernetGuid'))
+        .then(() => {
+          // Flag should have been reset.
+          assertFalse(getUnableToObtainIpAddress());
           // After a network change event, the timer should have been cleared
           // and reset.
           assertTrue(getTimerId() === -1);

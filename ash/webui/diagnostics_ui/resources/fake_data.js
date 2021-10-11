@@ -446,7 +446,7 @@ export let fakeWifiNetworkInvalidNameServers = {
 
 /** @type {!Network} */
 export let fakeWifiNetworkNoIpAddress = {
-  state: NetworkState.kNotConnected,
+  state: NetworkState.kConnecting,
   type: NetworkType.kWiFi,
   typeProperties: {
     wifi: {
