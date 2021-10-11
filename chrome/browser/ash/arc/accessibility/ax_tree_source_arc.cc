@@ -24,6 +24,7 @@
 
 namespace arc {
 
+using AXBooleanProperty = mojom::AccessibilityBooleanProperty;
 using AXEventData = mojom::AccessibilityEventData;
 using AXEventType = mojom::AccessibilityEventType;
 using AXIntProperty = mojom::AccessibilityIntProperty;
@@ -367,7 +368,9 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
 
   // TODO(hirokisato): Handle CLEAR_ACCESSIBILITY_FOCUS event.
   if (event_data.event_type == AXEventType::VIEW_FOCUSED) {
-    if (source_node && source_node->IsVisibleToUser()) {
+    if (source_node && source_node->IsVisibleToUser() &&
+        GetBooleanProperty(source_node->GetNode(),
+                           AXBooleanProperty::FOCUSED)) {
       // Sometimes Android sets focus on unfocusable node, e.g. ListView.
       AccessibilityInfoDataWrapper* adjusted_node =
           UseFullFocusMode()

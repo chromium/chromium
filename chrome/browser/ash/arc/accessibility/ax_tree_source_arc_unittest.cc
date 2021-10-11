@@ -734,6 +734,7 @@ TEST_F(AXTreeSourceArcTest, OnWindowStateChangedEvent) {
 
   // focus moved to node3 for some reason.
   event->event_type = AXEventType::VIEW_FOCUSED;
+  SetProperty(node3, AXBooleanProperty::FOCUSED, true);
   event->source_id = node3->id;
   CallNotifyAccessibilityEvent(event.get());
 
@@ -817,9 +818,10 @@ TEST_F(AXTreeSourceArcTest, OnFocusEvent) {
   node2->window_id = 100;
   SetProperty(node2, AXBooleanProperty::IMPORTANCE, true);
   SetProperty(node2, AXBooleanProperty::VISIBLE_TO_USER, true);
+  SetProperty(node2, AXBooleanProperty::FOCUSED, true);
   SetProperty(node2, AXStringProperty::TEXT, "sample string2.");
 
-  // Chrome should focus to node2, even if node1 has 'focus' in Android.
+  // Chrome should focus to node2, even if node1 has ax focused in Android.
   event->source_id = node2->id;
   CallNotifyAccessibilityEvent(event.get());
 
@@ -827,7 +829,9 @@ TEST_F(AXTreeSourceArcTest, OnFocusEvent) {
   EXPECT_TRUE(CallGetTreeData(&data));
   EXPECT_EQ(node2->id, data.focus_id);
 
-  // Chrome should focus to node1, even if Android sends focus on List.
+  // Chrome should focus to node1, when Android sends focus on List.
+  SetProperty(node2, AXBooleanProperty::FOCUSED, false);
+  SetProperty(root, AXBooleanProperty::FOCUSED, true);
   event->source_id = root->id;
   CallNotifyAccessibilityEvent(event.get());
 
@@ -1089,6 +1093,7 @@ TEST_F(AXTreeSourceArcTest, SyncFocus) {
   node1->id = 1;
   node1->window_id = 100;
   SetProperty(node1, AXBooleanProperty::FOCUSABLE, true);
+  SetProperty(node1, AXBooleanProperty::FOCUSED, true);
   SetProperty(node1, AXBooleanProperty::IMPORTANCE, true);
   SetProperty(node1, AXBooleanProperty::VISIBLE_TO_USER, true);
   SetProperty(node1, AXStringProperty::CONTENT_DESCRIPTION, "node1");
@@ -1115,9 +1120,17 @@ TEST_F(AXTreeSourceArcTest, SyncFocus) {
   EXPECT_TRUE(CallGetTreeData(&data));
   EXPECT_EQ(node1->id, data.focus_id);
 
-  // Focus event to a non-important node. The descendant important node |node1|
+  // Focus event from a non-important node. The ancestry important node |node1|
   // gets focus instead.
   event->source_id = node3->id;
+  event->event_type = AXEventType::VIEW_FOCUSED;
+  CallNotifyAccessibilityEvent(event.get());
+
+  EXPECT_TRUE(CallGetTreeData(&data));
+  EXPECT_EQ(node1->id, data.focus_id);
+
+  // Focus event from a non-focused node. Focus won't be updated.
+  event->source_id = node2->id;
   event->event_type = AXEventType::VIEW_FOCUSED;
   CallNotifyAccessibilityEvent(event.get());
 
@@ -1254,7 +1267,7 @@ TEST_F(AXTreeSourceArcTest, EnsureNodeIdMapCleared) {
   CallNotifyAccessibilityEvent(event.get());
 }
 
-TEST_F(AXTreeSourceArcTest, ControlReceivesFocus) {
+TEST_F(AXTreeSourceArcTest, ControlWithoutNameReceivesFocus) {
   auto event = AXEventData::New();
   event->source_id = 1;
   event->task_id = 1;
@@ -1281,6 +1294,7 @@ TEST_F(AXTreeSourceArcTest, ControlReceivesFocus) {
   SetProperty(node, AXStringProperty::TEXT, "");
   SetProperty(node, AXBooleanProperty::VISIBLE_TO_USER, true);
   SetProperty(node, AXBooleanProperty::FOCUSABLE, true);
+  SetProperty(node, AXBooleanProperty::FOCUSED, true);
   SetProperty(node, AXBooleanProperty::IMPORTANCE, true);
 
   CallNotifyAccessibilityEvent(event.get());
