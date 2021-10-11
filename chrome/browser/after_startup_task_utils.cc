@@ -26,6 +26,10 @@
 #include "ui/views/linux_ui/linux_ui.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 using content::BrowserThread;
 
 namespace {
@@ -220,6 +224,16 @@ void AfterStartupTaskUtils::StartMonitoringStartup() {
   // For Android, startup completion is signaled via
   // AfterStartupTaskUtils.java. We do not use the StartupObserver.
 #if !defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // For Lacros, there may not be a Browser created at startup.
+  if (chromeos::LacrosService::Get()->init_params()->initial_browser_action ==
+      crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&SetBrowserStartupIsComplete));
+    return;
+  }
+#endif
+
   StartupObserver::Start();
 #endif  // !defined(OS_ANDROID)
 
