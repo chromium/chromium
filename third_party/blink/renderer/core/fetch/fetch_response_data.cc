@@ -338,6 +338,7 @@ void FetchResponseData::InitFromResourceResponse(
   SetMimeType(response.MimeType());
   SetRequestMethod(request_method);
   SetResponseTime(response.ResponseTime());
+  SetCacheStorageCacheName(response.CacheStorageCacheName());
 
   if (response.WasCached()) {
     SetResponseSource(network::mojom::FetchResponseSource::kHttpCache);

@@ -569,7 +569,8 @@ void ServiceWorkerSubresourceLoader::StartResponse(
   // for a script.
   auto request_destination = resource_request_.destination;
   if (response->side_data_blob &&
-      request_destination == network::mojom::RequestDestination::kScript) {
+      (request_destination == network::mojom::RequestDestination::kScript ||
+       response->mime_type == "application/wasm")) {
     side_data_as_blob_.Bind(std::move(response->side_data_blob->blob));
     side_data_as_blob_->ReadSideData(base::BindOnce(
         &ServiceWorkerSubresourceLoader::OnSideDataReadingComplete,

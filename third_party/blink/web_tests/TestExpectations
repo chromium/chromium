@@ -6865,3 +6865,6 @@ crbug.com/1247850 virtual/file-system-access-access-handle-incognito/external/wp
 
 # Sheriff 2021-10-01
 crbug.com/1254963 [ Win ] external/wpt/mathml/presentation-markup/mrow/inferred-mrow-stretchy.html [ Crash Pass ]
+
+# Skip devtools test hitting an unexpected tracing infrastructure exception 2021-10-04
+crbug.com/1255679 http/tests/devtools/service-workers/service-workers-wasm-test.js [ Skip ]

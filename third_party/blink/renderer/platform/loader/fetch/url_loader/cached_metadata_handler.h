@@ -38,6 +38,8 @@ class PLATFORM_EXPORT CachedMetadataSender {
                                   mojom::blink::CodeCacheType,
                                   WTF::String,
                                   base::Time,
+                                  scoped_refptr<const SecurityOrigin>,
+                                  const String&,
                                   const uint8_t*,
                                   size_t);
 
