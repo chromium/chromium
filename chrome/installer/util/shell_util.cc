@@ -96,6 +96,8 @@ const wchar_t kRegProgId[] = L"ProgId";
 
 const wchar_t kFilePathSeparator[] = L"\\";
 
+const wchar_t kFileHandlerProgIds[] = L"FileHandlerProgIds";
+
 // Returns the current (or installed) browser's ProgId (e.g.
 // "ChromeHTML|suffix|").
 // |suffix| can be the empty string.
@@ -2588,6 +2590,22 @@ bool ShellUtil::GetOldUserSpecificRegistrySuffix(std::wstring* suffix) {
 }
 
 // static
+bool ShellUtil::RegisterFileHandlerProgIdsForAppId(
+    const std::wstring& prog_id,
+    std::vector<std::wstring>& file_handler_prog_ids) {
+  std::vector<std::unique_ptr<RegistryEntry>> entries;
+
+  // Save file handler prog_ids in the registry for use during uninstallation.
+  const std::wstring prog_id_path =
+      base::StrCat({ShellUtil::kRegClasses, kFilePathSeparator, prog_id});
+  entries.push_back(std::make_unique<RegistryEntry>(
+      prog_id_path, kFileHandlerProgIds,
+      base::JoinString(file_handler_prog_ids, L";")));
+
+  return AddRegistryEntries(HKEY_CURRENT_USER, entries);
+}
+
+// static
 bool ShellUtil::AddFileAssociations(
     const std::wstring& prog_id,
     const base::CommandLine& command_line,
@@ -2660,7 +2678,7 @@ bool ShellUtil::DeleteFileAssociations(const std::wstring& prog_id) {
       // HKEY_CURRENT_USER\Software\Classes\.<extension>\OpenWithProgids;
       // this removes |prog_id| from the list of handlers for |file_extension|.
       base::StrAppend(&extension_path,
-                      {kFilePathSeparator, ShellUtil::kRegOpenWithProgids});
+                      {kFilePathSeparator, kRegOpenWithProgids});
       InstallUtil::DeleteRegistryValue(HKEY_CURRENT_USER, extension_path,
                                        WorkItem::kWow64Default, prog_id);
 
