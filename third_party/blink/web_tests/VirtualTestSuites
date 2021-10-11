@@ -324,30 +324,30 @@
     "prefix": "dark-mode-default",
     "bases": ["dark-mode/colors",
               "dark-mode/images"],
-    "args": ["--blink-settings=forceDarkModeEnabled=true"]
+    "args": ["--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true"]
   },
   {
     "prefix": "dark-mode-images-filter-all",
     "bases": ["dark-mode/images"],
-    "args": ["--blink-settings=forceDarkModeEnabled=true",
+    "args": ["--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
              "--dark-mode-settings=ImagePolicy=0"]
   },
   {
     "prefix": "dark-mode-images-filter-none",
     "bases": ["dark-mode/images"],
-    "args": ["--blink-settings=forceDarkModeEnabled=true",
+    "args": ["--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
              "--dark-mode-settings=ImagePolicy=1"]
   },
   {
     "prefix": "dark-mode-images-grayscale",
     "bases": ["dark-mode/images"],
-    "args": ["--blink-settings=forceDarkModeEnabled=true",
+    "args": ["--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
              "--dark-mode-settings=ImagePolicy=0,ImageGrayScalePercent=1.0"]
   },
   {
     "prefix": "dark-mode-increase-text-contrast",
     "bases": ["dark-mode/colors"],
-    "args": ["--blink-settings=forceDarkModeEnabled=true",
+    "args": ["--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
              "--dark-mode-settings=IncreaseTextContrast=1"]
   },
   {
@@ -640,7 +640,7 @@
     "bases": ["external/wpt/css/css-color-adjust/rendering/dark-color-scheme",
               "fast/forms/color-scheme",
               "http/tests/eye-dropper"],
-    "args": ["--force-dark-mode",
+    "args": ["--blink-settings=preferredColorScheme=0",
              "--enable-features=EyeDropper"]
   },
   {
