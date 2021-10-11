@@ -264,14 +264,19 @@ public class BookmarkUtils {
         }
 
         BookmarkId bookmarkId = null;
+        // Use "New tab" as title for both incognito and regular NTP.
+        String title = tab.getTitle();
+        if (tab.getUrl().getSpec().equals(UrlConstants.NTP_URL)) {
+            title = context.getResources().getString(R.string.new_tab_title);
+        }
         // The shopping list experiment saves extra metadata along with the bookmark.
         if (ChromeFeatureList.isInitialized()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.SHOPPING_LIST)) {
             bookmarkId = bookmarkModel.addPowerBookmark(tab.getWebContents(), parent,
-                    bookmarkModel.getChildCount(parent), tab.getTitle(), tab.getUrl());
+                    bookmarkModel.getChildCount(parent), title, tab.getUrl());
         } else {
             bookmarkId = bookmarkModel.addBookmark(
-                    parent, bookmarkModel.getChildCount(parent), tab.getTitle(), tab.getUrl());
+                    parent, bookmarkModel.getChildCount(parent), title, tab.getUrl());
         }
         // TODO(lazzzis): remove log after bookmark sync is fixed, crbug.com/986978
         if (bookmarkId == null) {
