@@ -156,10 +156,13 @@ class MdIPHBubbleButton : public views::MdTextButton {
 BEGIN_METADATA(MdIPHBubbleButton, views::MdTextButton)
 END_METADATA
 
-class CloseTutorialButton : public views::ImageButton {
+// Displays a simple "X" close button that will close a promo bubble view.
+// The alt-text and button callback can be set based on the needs of the
+// specific bubble.
+class ClosePromoButton : public views::ImageButton {
  public:
-  METADATA_HEADER(CloseTutorialButton);
-  explicit CloseTutorialButton(PressedCallback callback) {
+  METADATA_HEADER(ClosePromoButton);
+  ClosePromoButton(int accessible_name_id, PressedCallback callback) {
     SetCallback(callback);
     SetImage(
         views::ImageButton::STATE_NORMAL,
@@ -169,11 +172,11 @@ class CloseTutorialButton : public views::ImageButton {
         this,
         std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
     views::InkDrop::Get(this)->SetBaseColor(kBubbleButtonHighlightColor);
-    SetAccessibleName(l10n_util::GetStringUTF16(IDS_CLOSE_TUTORIAL));
+    SetAccessibleName(l10n_util::GetStringUTF16(accessible_name_id));
   }
 };
 
-BEGIN_METADATA(CloseTutorialButton, views::ImageButton)
+BEGIN_METADATA(ClosePromoButton, views::ImageButton)
 END_METADATA
 
 class DotView : public views::View {
@@ -317,6 +320,7 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
     icon_view = bubble_body_container->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
             *params.body_icon, text_color, kBodyIconSize)));
+    icon_view->SetAccessibleName(l10n_util::GetStringUTF16(IDS_CHROME_TIP));
   }
 
   // This callback is used by both the close button and additional buttons.
@@ -328,12 +332,15 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
   };
 
   // Add close button (optional).
-  CloseTutorialButton* close_button = nullptr;
+  ClosePromoButton* close_button = nullptr;
   if (params.has_close_button) {
+    int close_string_id =
+        params.tutorial_progress_current ? IDS_CLOSE_TUTORIAL : IDS_CLOSE_PROMO;
     close_button =
         (top_row_container ? top_row_container : bubble_body_container)
-            ->AddChildView(
-                std::make_unique<CloseTutorialButton>(base::BindRepeating(
+            ->AddChildView(std::make_unique<ClosePromoButton>(
+                close_string_id,
+                base::BindRepeating(
                     close_bubble_and_run_callback, base::Unretained(this),
                     params.dismiss_callback.has_value()
                         ? std::move(params.dismiss_callback.value())
