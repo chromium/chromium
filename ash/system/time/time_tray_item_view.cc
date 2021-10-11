@@ -18,15 +18,18 @@ namespace ash {
 
 namespace tray {
 
-TimeTrayItemView::TimeTrayItemView(Shelf* shelf, UnifiedSystemTrayModel* model)
+TimeTrayItemView::TimeTrayItemView(
+    Shelf* shelf,
+    UnifiedSystemTrayModel* model,
+    absl::optional<TimeView::OnTimeViewActionPerformedCallback> callback)
     : TrayItemView(shelf), model_(model), session_observer_(this) {
   system_tray_model_observation_.Observe(model_);
 
   TimeView::ClockLayout clock_layout =
       shelf->IsHorizontalAlignment() ? TimeView::ClockLayout::HORIZONTAL_CLOCK
                                      : TimeView::ClockLayout::VERTICAL_CLOCK;
-  time_view_ =
-      new TimeView(clock_layout, Shell::Get()->system_tray_model()->clock());
+  time_view_ = new TimeView(
+      clock_layout, Shell::Get()->system_tray_model()->clock(), callback);
 
   AddChildView(time_view_);
 

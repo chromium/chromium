@@ -2976,7 +2976,7 @@ This file contains the strings for ash.
 
       <!-- Calendar  -->
       <message name="IDS_ASH_CALENDAR_BUBBLE_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar bubble and the information in it.">
-      Calendar, <ph name="current_month_year">$1<ex>August 2021</ex></ph>
+        Calendar, <ph name="current_month_year">$1<ex>August 2021</ex></ph>
       </message>
 
       <message name="IDS_ASH_CALENDAR_TITLE" desc="The label used as the title of the unified system tray calendar view.">
@@ -2984,11 +2984,11 @@ This file contains the strings for ash.
       </message>
 
       <message name="IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar up button.">
-      Show previous month
+        Show previous month
       </message>
 
       <message name="IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar down button.">
-      Show next month
+        Show next month
       </message>
 
       <message name="IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar today's button.">

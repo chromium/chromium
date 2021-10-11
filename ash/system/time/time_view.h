@@ -36,12 +36,19 @@ namespace tray {
 // Exported for tests.
 class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
  public:
+  // A callback which will be called in `PerformAction`.
+  using OnTimeViewActionPerformedCallback =
+      base::RepeatingCallback<void(const ui::Event& event)>;
+
   enum class ClockLayout {
     HORIZONTAL_CLOCK,
     VERTICAL_CLOCK,
   };
 
-  TimeView(ClockLayout clock_layout, ClockModel* model);
+  TimeView(ClockLayout clock_layout,
+           ClockModel* model,
+           absl::optional<OnTimeViewActionPerformedCallback>
+               perform_action_callback = absl::nullopt);
 
   TimeView(const TimeView&) = delete;
   TimeView& operator=(const TimeView&) = delete;
@@ -124,6 +131,9 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   base::OneShotTimer timer_;
 
   ClockModel* const model_;
+
+  // The callback will be called in `PerformAction`.
+  absl::optional<OnTimeViewActionPerformedCallback> callback_;
 };
 
 }  // namespace tray

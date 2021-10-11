@@ -11,19 +11,21 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/macros.h"
 #include "base/scoped_observation.h"
+#include "time_view.h"
 
 namespace ash {
 class Shelf;
 
 namespace tray {
 
-class TimeView;
-
 class ASH_EXPORT TimeTrayItemView : public TrayItemView,
                                     public SessionObserver,
                                     public UnifiedSystemTrayModel::Observer {
  public:
-  TimeTrayItemView(Shelf* shelf, UnifiedSystemTrayModel* model);
+  TimeTrayItemView(Shelf* shelf,
+                   UnifiedSystemTrayModel* model,
+                   absl::optional<TimeView::OnTimeViewActionPerformedCallback>
+                       callback = absl::nullopt);
 
   TimeTrayItemView(const TimeTrayItemView&) = delete;
   TimeTrayItemView& operator=(const TimeTrayItemView&) = delete;

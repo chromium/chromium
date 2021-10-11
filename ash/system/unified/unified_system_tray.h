@@ -11,7 +11,9 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/system/time/time_view.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -164,6 +166,10 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;
 
+  // Repeating callback passed to TimeView which is called when an action is
+  // performed.
+  void OnTimeViewActionPerformed(const ui::Event& event);
+
   std::u16string GetAccessibleNameForQuickSettingsBubble();
 
   AshMessagePopupCollection* GetMessagePopupCollection();
@@ -224,7 +230,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   ManagedDeviceTrayItemView* const managed_device_view_;
   CameraMicTrayItemView* const camera_view_;
   CameraMicTrayItemView* const mic_view_;
-  tray::TimeTrayItemView* const time_view_;
+  tray::TimeTrayItemView* time_view_ = nullptr;
 
   tray::NetworkTrayView* network_tray_view_ = nullptr;
 
@@ -234,6 +240,8 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   base::OneShotTimer timer_;
 
   bool first_interaction_recorded_ = false;
+
+  base::WeakPtrFactory<UnifiedSystemTray> weak_factory_{this};
 };
 
 }  // namespace ash

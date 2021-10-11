@@ -162,8 +162,11 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
           new CameraMicTrayItemView(shelf,
                                     CameraMicTrayItemView::Type::kCamera)),
       mic_view_(
-          new CameraMicTrayItemView(shelf, CameraMicTrayItemView::Type::kMic)),
-      time_view_(new tray::TimeTrayItemView(shelf, model())) {
+          new CameraMicTrayItemView(shelf, CameraMicTrayItemView::Type::kMic)) {
+  time_view_ = new tray::TimeTrayItemView(
+      shelf, model(),
+      base::BindRepeating(&UnifiedSystemTray::OnTimeViewActionPerformed,
+                          weak_factory_.GetWeakPtr()));
   tray_container()->SetMargin(
       kUnifiedTrayContentPadding -
           ShelfConfig::Get()->status_area_hit_region_padding(),
@@ -384,6 +387,28 @@ void UnifiedSystemTray::OnShelfConfigUpdated() {
       kUnifiedTrayContentPadding -
           ShelfConfig::Get()->status_area_hit_region_padding(),
       0);
+}
+
+void UnifiedSystemTray::OnTimeViewActionPerformed(const ui::Event& event) {
+  int visible_item_count = 0;
+  for (auto* item : tray_items_) {
+    if (item->GetVisible())
+      ++visible_item_count;
+  }
+  // If there are >= 2 icons in front of the time view (total items >= 3 if
+  // includes time_view), show calendar bubble; otherwise show quick setting
+  // bubble.
+  if (visible_item_count < 3) {
+    TrayBackgroundView::PerformAction(event);
+    return;
+  }
+
+  if (GetBubbleWidget()) {
+    CloseBubble();
+  } else {
+    ShowBubble();
+    bubble_->ShowCalendarView();
+  }
 }
 
 void UnifiedSystemTray::SetTrayEnabled(bool enabled) {

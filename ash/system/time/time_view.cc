@@ -62,8 +62,13 @@ std::u16string FormatDate(const base::Time& time) {
 
 }  // namespace
 
-TimeView::TimeView(ClockLayout clock_layout, ClockModel* model)
-    : ActionableView(TrayPopupInkDropStyle::INSET_BOUNDS), model_(model) {
+TimeView::TimeView(
+    ClockLayout clock_layout,
+    ClockModel* model,
+    absl::optional<OnTimeViewActionPerformedCallback> perform_action_callback)
+    : ActionableView(TrayPopupInkDropStyle::INSET_BOUNDS),
+      model_(model),
+      callback_(perform_action_callback) {
   SetTimer(base::Time::Now());
   SetFocusBehavior(FocusBehavior::NEVER);
   model_->AddObserver(this);
@@ -149,7 +154,9 @@ const char* TimeView::GetClassName() const {
 }
 
 bool TimeView::PerformAction(const ui::Event& event) {
-  return false;
+  if (callback_.has_value())
+    callback_->Run(event);
+  return true;
 }
 
 void TimeView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -162,8 +169,8 @@ void TimeView::ChildPreferredSizeChanged(views::View* child) {
 }
 
 bool TimeView::OnMousePressed(const ui::MouseEvent& event) {
-  // Let the event fall through.
-  return false;
+  // Let `PerformAction` get called.
+  return true;
 }
 
 void TimeView::OnGestureEvent(ui::GestureEvent* event) {
