@@ -19,8 +19,10 @@ void CHROMEOS_EXPORT EnableCoreSchedulingIfAvailable();
 // vulnerable.
 bool CHROMEOS_EXPORT IsCoreSchedulingAvailable();
 
-// Returns number of physical cores.
-int CHROMEOS_EXPORT NumberOfProcessorsForCoreScheduling();
+// Returns number of physical cores. This is useful when deciding the number of
+// crosvm vCPUs for devices with per-vCPU core scheduling. When the device uses
+// per-VM core scheduling, use base::SysInfo::NumberOfProcessors() instead.
+int CHROMEOS_EXPORT NumberOfPhysicalCores();
 
 }  // namespace system
 }  // namespace chromeos

@@ -156,7 +156,7 @@ class BlockingMethodCaller;
 namespace system {
 class StatisticsProviderImpl;
 bool IsCoreSchedulingAvailable();
-int NumberOfProcessorsForCoreScheduling();
+int NumberOfPhysicalCores();
 }
 }
 namespace chrome_cleaner {
@@ -473,7 +473,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend Profile* ::GetLastProfileMac();  // crbug.com/1176734
   friend bool PathProviderWin(int, FilePath*);
   friend bool chromeos::system::IsCoreSchedulingAvailable();
-  friend int chromeos::system::NumberOfProcessorsForCoreScheduling();
+  friend int chromeos::system::NumberOfPhysicalCores();
 
   ScopedAllowBlocking(const Location& from_here = Location::Current());
   ~ScopedAllowBlocking();

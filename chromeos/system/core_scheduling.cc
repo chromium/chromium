@@ -117,7 +117,7 @@ bool IsCoreSchedulingAvailable() {
   return has_vulns;
 }
 
-int NumberOfProcessorsForCoreScheduling() {
+int NumberOfPhysicalCores() {
   // cat /sys/devices/system/cpu/cpu[0-9]*/topology/thread_siblings_list |\
   //   sort -u | wc -l
   static const int num_physical_cores = []() {

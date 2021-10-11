@@ -906,12 +906,11 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     // use, set |cpus| to the number of physical cores. Otherwise, set the
     // variable to the number of logical cores minus the ones disabled by
     // chrome://flags/#scheduler-configuration.
-    const int32_t cpus =
-        (chromeos::system::IsCoreSchedulingAvailable() &&
-         !use_per_vm_core_scheduling)
-            ? chromeos::system::NumberOfProcessorsForCoreScheduling()
-            : base::SysInfo::NumberOfProcessors() -
-                  start_params_.num_cores_disabled;
+    const int32_t cpus = (chromeos::system::IsCoreSchedulingAvailable() &&
+                          !use_per_vm_core_scheduling)
+                             ? chromeos::system::NumberOfPhysicalCores()
+                             : base::SysInfo::NumberOfProcessors() -
+                                   start_params_.num_cores_disabled;
     DCHECK_LT(0, cpus);
 
     std::vector<std::string> kernel_cmdline = GenerateKernelCmdline(
