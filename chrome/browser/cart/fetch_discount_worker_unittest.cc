@@ -275,7 +275,8 @@ class FetchDiscountWorkerTest : public testing::Test {
     features_.InitAndEnableFeatureWithParameters(
         ntp_features::kNtpChromeCartModule,
         {{ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, "true"},
-         {"discount-fetch-delay", "6h"}});
+         {"discount-fetch-delay", "6h"},
+         {"partner-merchant-pattern", "(foo.com)"}});
   }
   void SetUp() override {
     test_shared_url_loader_factory_ =
@@ -393,6 +394,7 @@ TEST_F(FetchDiscountWorkerTest, TestStart_DiscountUpdatedWithRBDDiscount) {
 
   fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
   task_environment_.RunUntilIdle();
+  EXPECT_EQ(1, FakeCartDiscountFetcher::GetFetchCount());
 }
 
 TEST_F(FetchDiscountWorkerTest, TestStart_DiscountUpdatedWithCouponDiscount) {
@@ -423,6 +425,7 @@ TEST_F(FetchDiscountWorkerTest, TestStart_DiscountUpdatedWithCouponDiscount) {
 
   fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
   task_environment_.RunUntilIdle();
+  EXPECT_EQ(1, FakeCartDiscountFetcher::GetFetchCount());
 }
 
 TEST_F(FetchDiscountWorkerTest, TestStart_DiscountUpdatedClearDiscount) {
@@ -451,6 +454,7 @@ TEST_F(FetchDiscountWorkerTest, TestStart_DiscountUpdatedClearDiscount) {
 
   fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
   task_environment_.RunUntilIdle();
+  EXPECT_EQ(1, FakeCartDiscountFetcher::GetFetchCount());
 }
 
 TEST_F(FetchDiscountWorkerTest, TestStart_FetcherRefetched) {
@@ -515,4 +519,29 @@ TEST_F(FetchDiscountWorkerTest, TestTesterFetch) {
 
   fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
   task_environment_.RunUntilIdle();
+  EXPECT_EQ(1, FakeCartDiscountFetcher::GetFetchCount());
+}
+
+TEST_F(FetchDiscountWorkerTest, TestFetchSkippedForNonPartnerMerchants) {
+  // Mock that there is a non-partner-merchant cart.
+  const char mock_merchant[] = "bar.com";
+  const char mock_merchant_url[] = "https://www.bar.com/cart";
+  const cart_db::ChromeCartContentProto mock_merchant_cart_proto =
+      BuildCartContentProto(mock_merchant, mock_merchant_url,
+                            kMockMerchantATimestamp);
+
+  CartDiscountFetcher::CartDiscountMap fake_result;
+  CreateCartDiscountFetcherFactory(std::move(fake_result), false);
+
+  CartDB::KeyAndValue mockMerchantACartContentKeyAndProto =
+      std::make_pair(mock_merchant, mock_merchant_cart_proto);
+  std::vector<CartDB::KeyAndValue> loader_fake_data(
+      1, mockMerchantACartContentKeyAndProto);
+  fake_cart_service_delegate_->SetCartLoadFakeData(loader_fake_data);
+
+  CreateWorker();
+
+  fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0, FakeCartDiscountFetcher::GetFetchCount());
 }
