@@ -3586,6 +3586,7 @@ static_library("browser") {
       "cart/cart_discount_link_fetcher.h",
       "cart/cart_discount_metric_collector.cc",
       "cart/cart_discount_metric_collector.h",
+      "cart/cart_features.cc",
       "cart/cart_features.h",
       "cart/cart_handler.cc",
       "cart/cart_handler.h",
