@@ -127,6 +127,9 @@ class ItemSuggestCache {
   // number of queries to the ItemSuggest backend.
   base::Time time_of_last_update_;
 
+  // Start time for latency metrics.
+  base::TimeTicks update_start_time_;
+
   const bool enabled_;
   const GURL server_url_;
   const base::TimeDelta min_time_between_updates_;

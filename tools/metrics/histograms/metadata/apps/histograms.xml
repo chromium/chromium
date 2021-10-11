@@ -507,6 +507,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.DriveZeroStateProvider.ShouldWarm" enum="Boolean"
+    expires_after="2022-06-30">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Whether or not the the ItemSuggest cache should be warmed on login. Reported
+    once per login, when the DriveZeroStateProvider is created.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.DriveZeroStateProvider.Status"
     enum="DriveZeroStateProviderStatus" expires_after="2022-05-01">
   <owner>tby@chromium.org</owner>
@@ -610,6 +621,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>wrong@chromium.org</owner>
   <summary>
     Records the outcome of a call to ItemSuggest. Reported once per call.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.ItemSuggestCache.UpdateCacheLatency" units="ms"
+    expires_after="2022-01-31">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Records the latency from the start of a call to UpdateCache to the time when
+    results are finalised. Reported once each time results are successfully
+    obtained, which corresponds to a kOk status being recorded in
+    Apps.AppList.ItemSuggestCache.Status.
   </summary>
 </histogram>
 
