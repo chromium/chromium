@@ -2275,6 +2275,10 @@ try_.chromium_mac_ios_builder(
 try_.infra_builder(
     name = "linux-bootstrap",
     bootstrap = True,
+    mirrors = [
+        "ci/linux-bootstrap",
+        "ci/linux-bootstrap-tests",
+    ],
 )
 
 try_.infra_builder(

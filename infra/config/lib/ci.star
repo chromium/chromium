@@ -73,6 +73,10 @@ def ci_builder(
     if not branches.matches(branch_selector):
         return
 
+    try_only_kwargs = [k for k in ("mirrors", "try_settings") if k in kwargs]
+    if try_only_kwargs:
+        fail("CI builders cannot specify the following try-only arguments: {}".format(try_only_kwargs))
+
     # Branch builders should never close the tree, only builders from the main
     # "ci" bucket.
     bucket = defaults.get_value_from_kwargs("bucket", kwargs)
