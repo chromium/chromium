@@ -131,10 +131,7 @@ template("chrome_ios_eg2_test_app_host") {
       ios_application_icons_target,
     ]
 
-    if (!defined(extra_substitutions)) {
-      extra_substitutions = []
-    }
-    extra_substitutions += [
+    extra_substitutions = [
       "CHROMIUM_BUNDLE_ID=$bundle_identifier",
       "CHROMIUM_HANDOFF_ID=$chromium_handoff_id",
       "CHROMIUM_SHORT_NAME=$target_name",
