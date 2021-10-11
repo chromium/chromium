@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,8 +14,10 @@
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -295,6 +298,32 @@ void PersistProtocolHandlersUserChoice(
   provider->os_integration_manager().UpdateProtocolHandlers(
       app_id, /*force_shortcut_updates_if_needed=*/true,
       std::move(update_finished_callback));
+}
+
+void PersistFileHandlersUserChoice(Profile* profile,
+                                   const AppId& app_id,
+                                   bool allowed,
+                                   base::OnceClosure update_finished_callback) {
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kDesktopPWAsFileHandlingSettingsGated));
+  web_app::WebAppProvider* const provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+  DCHECK(provider);
+
+  {
+    ScopedRegistryUpdate update(&provider->sync_bridge());
+    web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+    app_to_update->SetFileHandlerApprovalState(
+        allowed ? ApiApprovalState::kAllowed : ApiApprovalState::kDisallowed);
+  }
+
+  if (allowed) {
+    std::move(update_finished_callback).Run();
+  } else {
+    provider->os_integration_manager().UpdateFileHandlers(
+        app_id, FileHandlerUpdateAction::kRemove,
+        std::move(update_finished_callback));
+  }
 }
 
 }  // namespace web_app

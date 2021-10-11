@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/file_handlers_permission_helper.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/common/chrome_features.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
 #include "url/gurl.h"
@@ -45,8 +47,8 @@ FileHandlersPermissionHelper::~FileHandlersPermissionHelper() = default;
 void FileHandlersPermissionHelper::WillInstallApp(
     const WebApplicationInfo& web_app_info) {
   // This step is necessary in case this app shares an origin with another PWA
-  // which already asked for file handling permissions, and the new app asks to
-  // handle more file types.
+  // which already asked for file handling permissions, and the new app asks
+  // to handle more file types.
   MaybeResetPermission(web_app_info);
 }
 
@@ -67,23 +69,27 @@ FileHandlerUpdateAction FileHandlersPermissionHelper::WillUpdateApp(
   // and Camera System Web Apps (SWAs), which have permissions granted by
   // default. This exception and check is only relevant in ChromeOS, the only
   // platform where SWAs are in use.
-  if (url == kChromeUIMediaAppURL || url == kChromeUICameraAppURL) {
+  if (url == kChromeUIMediaAppURL || url == kChromeUICameraAppURL)
     return FileHandlerUpdateAction::kUpdate;
+
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsFileHandlingSettingsGated)) {
+    // TODO(estade): reset approval to ask if the file handlers have changed.
+  } else {
+    // It's possible we'll downgrade the permission and then fail to update OS
+    // integrations (ex. if the disk or icon downloads fail), but this is ok
+    // because these failures should rarely occur.
+    ContentSetting content_setting = MaybeResetPermission(web_app_info);
+
+    // If the permission is "BLOCK", leave it as is. When permission is
+    // "BLOCK", the `OnContentSettingChanged()` and
+    // `DetectAndCorrectFileHandlingPermissionBlocks()` should capture the
+    // permission change and make sure the OS and db state are in sync with the
+    // PermissionManager permission setting. Therefore, manifest update task
+    // should not update file handlers due to blocked permission state.
+    if (content_setting == CONTENT_SETTING_BLOCK)
+      return FileHandlerUpdateAction::kNoUpdate;
   }
-
-  // It's possible we'll downgrade the permission and then fail to update OS
-  // integrations (ex. if the disk or icon downloads fail), but this is ok
-  // because these failures should rarely occur.
-  ContentSetting content_setting = MaybeResetPermission(web_app_info);
-
-  // If the permission is "BLOCK", leave it as is. When permission is
-  // "BLOCK", the `OnContentSettingChanged()` and
-  // `DetectAndCorrectFileHandlingPermissionBlocks()` should capture the
-  // permission change and make sure the OS and db state are in sync with the
-  // PermissionManager permission setting. Therefore, manifest update task
-  // should not update file handlers due to blocked permission state.
-  if (content_setting == CONTENT_SETTING_BLOCK)
-    return FileHandlerUpdateAction::kNoUpdate;
 
   // TODO(https://crbug.com/1197013): Consider trying to re-use the comparison
   // results from the ManifestUpdateTask.
@@ -176,6 +182,11 @@ ContentSetting FileHandlersPermissionHelper::MaybeResetPermission(
 
 void FileHandlersPermissionHelper::UpdateAppsMatchingPattern(
     const ContentSettingsPattern& pattern) {
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsFileHandlingSettingsGated)) {
+    return;
+  }
+
   ScopedRegistryUpdate update(&finalizer_->sync_bridge());
   for (const AppId& app_id : finalizer_->registrar().GetAppIds()) {
     const WebApp* app = finalizer_->GetWebAppRegistrar().GetAppById(app_id);
@@ -196,7 +207,7 @@ void FileHandlersPermissionHelper::UpdateAppsMatchingPattern(
         permission_blocked ? FileHandlerUpdateAction::kRemove
                            : FileHandlerUpdateAction::kUpdate;
     finalizer_->os_integration_manager().UpdateFileHandlers(
-        app_id, file_handlers_need_os_update);
+        app_id, file_handlers_need_os_update, base::DoNothing());
   }
 }
 

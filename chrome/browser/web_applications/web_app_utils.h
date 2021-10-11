@@ -118,6 +118,13 @@ void PersistProtocolHandlersUserChoice(
     bool allowed,
     base::OnceClosure update_finished_callback);
 
+// Updates the File Handling API approval state for the given app. If
+// necessary, it also updates the registration with the OS.
+void PersistFileHandlersUserChoice(Profile* profile,
+                                   const AppId& app_id,
+                                   bool allowed,
+                                   base::OnceClosure update_finished_callback);
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Enables System Web Apps so we can test SWA features in Lacros, even we don't
 // have actual SWAs in Lacros.

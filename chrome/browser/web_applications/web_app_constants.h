@@ -276,6 +276,12 @@ enum class FileHandlerUpdateAction {
   kNoUpdate = 2,
 };
 
+enum class ApiApprovalState {
+  kRequiresPrompt = 0,
+  kAllowed = 1,
+  kDisallowed = 2,
+};
+
 using LaunchHandler = blink::Manifest::LaunchHandler;
 
 // A result how `WebAppIconDownloader` processed the list of icon urls.

@@ -22,6 +22,8 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/color_utils.h"
 
+namespace web_app {
+
 namespace {
 
 std::string ColorToString(absl::optional<SkColor> color) {
@@ -29,9 +31,18 @@ std::string ColorToString(absl::optional<SkColor> color) {
                            : "none";
 }
 
-}  // namespace
+std::string ApiApprovalStateToString(ApiApprovalState state) {
+  switch (state) {
+    case ApiApprovalState::kRequiresPrompt:
+      return "kRequiresPrompt";
+    case ApiApprovalState::kAllowed:
+      return "kAllowed";
+    case ApiApprovalState::kDisallowed:
+      return "kDisallowed";
+  }
+}
 
-namespace web_app {
+}  // namespace
 
 WebApp::WebApp(const AppId& app_id)
     : app_id_(app_id),
@@ -244,6 +255,10 @@ void WebApp::SetFileHandlers(apps::FileHandlers file_handlers) {
   file_handlers_ = std::move(file_handlers);
 }
 
+void WebApp::SetFileHandlerApprovalState(ApiApprovalState approval_state) {
+  file_handler_approval_state_ = approval_state;
+}
+
 void WebApp::SetShareTarget(absl::optional<apps::ShareTarget> share_target) {
   share_target_ = std::move(share_target);
 }
@@ -433,6 +448,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.manifest_id_,
         app.client_data_.system_web_app_data,
         app.file_handler_permission_blocked_,
+        app.file_handler_approval_state_,
         app.window_controls_overlay_enabled_,
         app.is_storage_isolated_,
         app.launch_handler_
@@ -533,6 +549,9 @@ base::Value WebApp::AsDebugValue() const {
 
   root.SetBoolKey("file_handler_permission_blocked",
                   file_handler_permission_blocked_);
+
+  root.SetStringKey("file_handler_approval_state",
+                    ApiApprovalStateToString(file_handler_approval_state_));
 
   root.SetKey("file_handlers", ConvertDebugValueList(file_handlers_));
 

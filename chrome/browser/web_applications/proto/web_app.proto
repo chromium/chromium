@@ -238,4 +238,13 @@ message WebAppProto {
 
   // A background color to be used when the app is opened in dark mode.
   optional uint32 dark_mode_theme_color = 41;
+
+  // Should be kept in sync with `ApiApprovalState` in web_app_constants.h.
+  enum ApiApprovalState {
+    REQUIRES_PROMPT = 0;
+    ALLOWED = 1;
+    DISALLOWED = 2;
+  }
+
+  optional ApiApprovalState file_handler_approval_state = 42;
 }

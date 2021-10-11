@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -296,8 +297,15 @@ const absl::optional<GURL> WebAppFileHandlerManager::GetMatchingFileHandlerURL(
     return absl::nullopt;
 
   const WebApp* web_app = registrar_->GetAppById(app_id);
-  if (web_app && web_app->file_handler_permission_blocked())
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsFileHandlingSettingsGated)) {
+    if (web_app && web_app->file_handler_approval_state() ==
+                       ApiApprovalState::kDisallowed) {
+      return absl::nullopt;
+    }
+  } else if (web_app && web_app->file_handler_permission_blocked()) {
     return absl::nullopt;
+  }
 
   const apps::FileHandlers* file_handlers = GetAllFileHandlers(app_id);
   if (!file_handlers)

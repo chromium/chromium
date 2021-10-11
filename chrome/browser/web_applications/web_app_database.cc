@@ -153,6 +153,30 @@ LaunchHandlerNavigateExistingClientToProto(
   }
 }
 
+ApiApprovalState ProtoToApiApprovalState(
+    WebAppProto::ApiApprovalState approval_state) {
+  switch (approval_state) {
+    case WebAppProto_ApiApprovalState_REQUIRES_PROMPT:
+      return ApiApprovalState::kRequiresPrompt;
+    case WebAppProto_ApiApprovalState_ALLOWED:
+      return ApiApprovalState::kAllowed;
+    case WebAppProto_ApiApprovalState_DISALLOWED:
+      return ApiApprovalState::kDisallowed;
+  }
+}
+
+WebAppProto::ApiApprovalState ApiApprovalStateToProto(
+    ApiApprovalState approval_state) {
+  switch (approval_state) {
+    case ApiApprovalState::kRequiresPrompt:
+      return WebAppProto_ApiApprovalState_REQUIRES_PROMPT;
+    case ApiApprovalState::kAllowed:
+      return WebAppProto_ApiApprovalState_ALLOWED;
+    case ApiApprovalState::kDisallowed:
+      return WebAppProto_ApiApprovalState_DISALLOWED;
+  }
+}
+
 }  // anonymous namespace
 
 WebAppDatabase::WebAppDatabase(AbstractWebAppDatabaseFactory* database_factory,
@@ -469,6 +493,9 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   local_data->set_file_handler_permission_blocked(
       web_app.file_handler_permission_blocked());
+
+  local_data->set_file_handler_approval_state(
+      ApiApprovalStateToProto(web_app.file_handler_approval_state()));
 
   local_data->set_window_controls_overlay_enabled(
       web_app.window_controls_overlay_enabled());
@@ -940,9 +967,15 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     }
     web_app->SetManifestUrl(manifest_url);
   }
-  if (local_data.has_file_handler_permission_blocked())
+  if (local_data.has_file_handler_permission_blocked()) {
     web_app->SetFileHandlerPermissionBlocked(
         local_data.file_handler_permission_blocked());
+  }
+
+  if (local_data.has_file_handler_approval_state()) {
+    web_app->SetFileHandlerApprovalState(
+        ProtoToApiApprovalState(local_data.file_handler_approval_state()));
+  }
 
   if (local_data.has_window_controls_overlay_enabled()) {
     web_app->SetWindowControlsOverlayEnabled(

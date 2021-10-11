@@ -577,7 +577,16 @@ const apps::ProtocolHandlers* WebAppRegistrar::GetAppProtocolHandlers(
 bool WebAppRegistrar::IsAppFileHandlerPermissionBlocked(
     const web_app::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->file_handler_permission_blocked() : false;
+  if (!web_app)
+    return false;
+
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsFileHandlingSettingsGated)) {
+    return web_app->file_handler_approval_state() ==
+           ApiApprovalState::kDisallowed;
+  }
+
+  return web_app->file_handler_permission_blocked();
 }
 
 absl::optional<GURL> WebAppRegistrar::GetAppScopeInternal(

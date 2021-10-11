@@ -83,6 +83,30 @@ void OnPersistProtocolHandlersUserChoiceCompleted(
                          std::move(app_launched_callback)));
 }
 
+void OnPersistFileHandlersUserChoiceCompleted(
+    const base::CommandLine& command_line,
+    const base::FilePath& cur_dir,
+    Profile* profile,
+    std::vector<base::FilePath> launch_files,
+    const AppId& app_id,
+    std::unique_ptr<ScopedKeepAlive> keep_alive,
+    std::vector<std::unique_ptr<ScopedProfileKeepAlive>> profile_keep_alives,
+    FinalizeWebAppLaunchCallback app_launched_callback,
+    bool allowed) {
+  if (!allowed)
+    return;  // Allow the process to exit without opening a browser.
+
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->BrowserAppLauncher()
+      ->LaunchAppWithCallback(
+          app_id, command_line, cur_dir,
+          /*url_handler_launch_url=*/absl::nullopt,
+          /*protocol_handler_launch_url=*/absl::nullopt, launch_files,
+          base::BindOnce(&OnAppLaunched, std::move(keep_alive),
+                         std::move(profile_keep_alives),
+                         std::move(app_launched_callback)));
+}
+
 void OnProtocolHandlerDialogCompleted(
     const base::CommandLine& command_line,
     const base::FilePath& cur_dir,
@@ -119,18 +143,18 @@ void OnFileHandlerDialogCompleted(
     FinalizeWebAppLaunchCallback app_launched_callback,
     bool allowed,
     bool remember_user_choice) {
-  if (!allowed)
-    return;
+  auto launch_callback =
+      base::BindOnce(&OnPersistFileHandlersUserChoiceCompleted, command_line,
+                     cur_dir, profile, std::move(launch_files), app_id,
+                     std::move(keep_alive), std::move(profile_keep_alives),
+                     std::move(app_launched_callback), allowed);
 
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->BrowserAppLauncher()
-      ->LaunchAppWithCallback(
-          app_id, command_line, cur_dir,
-          /*url_handler_launch_url=*/absl::nullopt,
-          /*protocol_handler_launch_url=*/absl::nullopt, launch_files,
-          base::BindOnce(&OnAppLaunched, std::move(keep_alive),
-                         std::move(profile_keep_alives),
-                         std::move(app_launched_callback)));
+  if (remember_user_choice) {
+    PersistFileHandlersUserChoice(profile, app_id, allowed,
+                                  std::move(launch_callback));
+  } else {
+    std::move(launch_callback).Run();
+  }
 }
 
 // Tries to launch the web app when the `provider` is ready. `startup_callback`
@@ -222,17 +246,37 @@ void OnWebAppSystemReadyMaybeLaunchFileHandler(
     return;
   }
 
+  const WebApp* web_app = provider->registrar().GetAppById(app_id);
+  if (!web_app) {
+    std::move(startup_callback).Run();
+    return;
+  }
+
   auto launch_callback = base::BindOnce(
       &OnFileHandlerDialogCompleted, command_line, cur_dir, profile,
       std::move(launch_files), app_id, std::move(keep_alive),
       std::move(profile_keep_alives), std::move(app_launched_callback));
 
-  // ShowWebAppProtocolHandlerIntentPicker keeps the `profile` alive through
-  // running of `launch_callback`.
-  // TODO(estade): this should use a file handling dialog, but until that's
-  // implemented, this reuses the PH dialog as a stand-in.
-  chrome::ShowWebAppProtocolHandlerIntentPicker(
-      *file_handler_url, profile, app_id, std::move(launch_callback));
+  switch (web_app->file_handler_approval_state()) {
+    case ApiApprovalState::kRequiresPrompt:
+      // ShowWebAppProtocolHandlerIntentPicker keeps the `profile` alive through
+      // holding onto `launch_callback`.
+      // TODO(estade): this should use a file handling dialog, but until that's
+      // implemented, this reuses the PH dialog as a stand-in.
+      chrome::ShowWebAppProtocolHandlerIntentPicker(GURL("https://example.com"),
+                                                    profile, app_id,
+                                                    std::move(launch_callback));
+      break;
+    case ApiApprovalState::kAllowed:
+      std::move(launch_callback)
+          .Run(/*allowed=*/true, /*remember_user_choice=*/false);
+      break;
+    case ApiApprovalState::kDisallowed:
+      // The disallowed case should have been handled by
+      // `GetMatchingFileHandlerURL()`.
+      NOTREACHED();
+      break;
+  }
 }
 
 }  // namespace

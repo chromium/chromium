@@ -142,6 +142,10 @@ class WebApp {
     return file_handler_permission_blocked_;
   }
 
+  ApiApprovalState file_handler_approval_state() const {
+    return file_handler_approval_state_;
+  }
+
   const absl::optional<apps::ShareTarget>& share_target() const {
     return share_target_;
   }
@@ -273,6 +277,7 @@ class WebApp {
           shortcuts_menu_item_infos);
   void SetDownloadedShortcutsMenuIconsSizes(std::vector<IconSizes> icon_sizes);
   void SetFileHandlers(apps::FileHandlers file_handlers);
+  void SetFileHandlerApprovalState(ApiApprovalState approval_state);
   void SetShareTarget(absl::optional<apps::ShareTarget> share_target);
   void SetAdditionalSearchTerms(
       std::vector<std::string> additional_search_terms);
@@ -362,7 +367,15 @@ class WebApp {
   ClientData client_data_;
   GURL manifest_url_;
   absl::optional<std::string> manifest_id_;
+  // A flag that's meant to represent the state of the File Handler API
+  // permission (used when DesktopPWAsFileHandlingSettingsGated is *not*
+  // enabled). When the permission is blocked, file handling shouldn't be
+  // registered with the OS.
   bool file_handler_permission_blocked_ = false;
+  // The state of the user's approval of the app's use of the File Handler API
+  // (used when DesktopPWAsFileHandlingSettingsGated is enabled).
+  ApiApprovalState file_handler_approval_state_ =
+      ApiApprovalState::kRequiresPrompt;
   bool window_controls_overlay_enabled_ = false;
   bool is_storage_isolated_ = false;
   absl::optional<LaunchHandler> launch_handler_;

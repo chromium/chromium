@@ -182,7 +182,8 @@ class OsIntegrationManager {
 
   virtual void UpdateFileHandlers(
       const AppId& app_id,
-      FileHandlerUpdateAction file_handlers_need_os_update);
+      FileHandlerUpdateAction file_handlers_need_os_update,
+      base::OnceClosure finished_callback);
 
   // Updates protocol handler registrations with the OS.
   // If `force_shortcut_updates_if_needed` is true, then also update the

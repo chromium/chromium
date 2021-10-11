@@ -196,8 +196,9 @@ TEST_F(OsIntegrationManagerTest, UpdateOsHooksEverything) {
   WebApplicationInfo web_app_info;
   base::StringPiece old_name = "test-name";
 
-  EXPECT_CALL(manager,
-              UpdateFileHandlers(app_id, FileHandlerUpdateAction::kUpdate))
+  EXPECT_CALL(
+      manager,
+      UpdateFileHandlers(app_id, FileHandlerUpdateAction::kUpdate, testing::_))
       .Times(1);
   EXPECT_CALL(manager, UpdateShortcuts(app_id, old_name, testing::_)).Times(1);
   EXPECT_CALL(manager, UpdateShortcutsMenu(app_id, testing::_)).Times(1);

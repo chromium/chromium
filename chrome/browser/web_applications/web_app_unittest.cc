@@ -175,6 +175,7 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
       "MONOCHROME": [  ]
    },
    "downloaded_shortcuts_menu_icons_sizes": [  ],
+   "file_handler_approval_state": "kRequiresPrompt",
    "file_handler_permission_blocked": false,
    "file_handlers": [  ],
    "manifest_icons": [  ],
@@ -260,6 +261,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       "MONOCHROME": [ 47, 3 ],
       "index": 2
    } ],
+   "file_handler_approval_state": "kRequiresPrompt",
    "file_handler_permission_blocked": false,
    "file_handlers": [ {
       "accept": [ {

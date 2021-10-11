@@ -253,7 +253,7 @@ void OsIntegrationManager::UpdateOsHooks(
   if (g_suppress_os_hooks_for_testing_)
     return;
 
-  UpdateFileHandlers(app_id, file_handlers_need_os_update);
+  UpdateFileHandlers(app_id, file_handlers_need_os_update, base::DoNothing());
   UpdateShortcuts(app_id, old_name, base::DoNothing());
   UpdateShortcutsMenu(app_id, web_app_info);
   UpdateUrlHandlers(app_id, base::DoNothing());
@@ -618,29 +618,42 @@ void OsIntegrationManager::UpdateUrlHandlers(
 
 void OsIntegrationManager::UpdateFileHandlers(
     const AppId& app_id,
-    FileHandlerUpdateAction file_handlers_need_os_update) {
+    FileHandlerUpdateAction file_handlers_need_os_update,
+    base::OnceClosure finished_callback) {
   if (!IsFileHandlingAPIAvailable(app_id) ||
       file_handlers_need_os_update == FileHandlerUpdateAction::kNoUpdate) {
+    std::move(finished_callback).Run();
     return;
   }
+
+  // Convert `finished_callback` to a format that takes a bool.
+  auto finished_callback_with_bool =
+      base::BindOnce([](base::OnceClosure finished_callback,
+                        bool success) { std::move(finished_callback).Run(); },
+                     std::move(finished_callback));
 
   base::OnceCallback<void(bool)> callback_after_removal;
   if (file_handlers_need_os_update == FileHandlerUpdateAction::kUpdate) {
     callback_after_removal = base::BindOnce(
         [](base::WeakPtr<OsIntegrationManager> os_integration_manager,
-           const AppId& app_id, bool unregister_success) {
+           const AppId& app_id,
+           base::OnceCallback<void(bool success)> finished_callback,
+           bool unregister_success) {
           // Re-register file handlers regardless of `unregister_success`.
           // TODO(https://crbug.com/1124047): Report `unregister_success` in
           // an UMA metric.
-          if (!os_integration_manager)
+          if (!os_integration_manager) {
+            std::move(finished_callback).Run(false);
             return;
-          os_integration_manager->RegisterFileHandlers(app_id,
-                                                       base::DoNothing());
+          }
+          os_integration_manager->RegisterFileHandlers(
+              app_id, std::move(finished_callback));
         },
-        weak_ptr_factory_.GetWeakPtr(), app_id);
+        weak_ptr_factory_.GetWeakPtr(), app_id,
+        std::move(finished_callback_with_bool));
   } else {
     DCHECK_EQ(file_handlers_need_os_update, FileHandlerUpdateAction::kRemove);
-    callback_after_removal = base::DoNothing();
+    callback_after_removal = std::move(finished_callback_with_bool);
   }
 
   // Update file handlers via complete uninstallation, then potential
