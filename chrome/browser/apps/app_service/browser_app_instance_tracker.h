@@ -55,14 +55,6 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   BrowserAppInstanceTracker& operator=(const BrowserAppInstanceTracker&) =
       delete;
 
-  // A factory method to make the creation of the tracker optional to keep it
-  // behind a flag.
-  // TODO(crbug.com/1203992): Remove this when the
-  // |kBrowserAppInstanceTracking| flag is removed.
-  static std::unique_ptr<BrowserAppInstanceTracker> Create(
-      Profile* profile,
-      AppRegistryCache& app_registry_cache);
-
   // Get all instances by app ID. Returns a set of unowned pointers.
   std::set<const BrowserAppInstance*> GetAppInstancesByAppId(
       const std::string& app_id) const;

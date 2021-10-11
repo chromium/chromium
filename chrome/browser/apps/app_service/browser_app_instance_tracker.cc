@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -137,16 +136,6 @@ BrowserAppInstanceTracker::~BrowserAppInstanceTracker() {
     // TODO(crbug.com/1236273): Remove when confident it does not happen.
     base::debug::DumpWithoutCrashing();
   }
-}
-
-std::unique_ptr<BrowserAppInstanceTracker> BrowserAppInstanceTracker::Create(
-    Profile* profile,
-    AppRegistryCache& app_registry_cache) {
-  if (!features::IsBrowserAppInstanceTrackingEnabled()) {
-    return nullptr;
-  }
-  return std::make_unique<BrowserAppInstanceTracker>(profile,
-                                                     app_registry_cache);
 }
 
 std::set<const BrowserAppInstance*>

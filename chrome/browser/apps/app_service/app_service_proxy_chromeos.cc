@@ -48,11 +48,15 @@ bool g_omit_plugin_vm_apps_for_testing_ = false;
 }  // anonymous namespace
 
 AppServiceProxyChromeOs::AppServiceProxyChromeOs(Profile* profile)
-    : AppServiceProxyBase(profile),
-      browser_app_instance_tracker_(
-          BrowserAppInstanceTracker::Create(profile_, app_registry_cache_)),
-      browser_app_instance_registry_(BrowserAppInstanceRegistry::Create(
-          browser_app_instance_tracker_.get())) {
+    : AppServiceProxyBase(profile) {
+  if (features::IsBrowserAppInstanceTrackingEnabled()) {
+    browser_app_instance_tracker_ =
+        std::make_unique<apps::BrowserAppInstanceTracker>(profile_,
+                                                          app_registry_cache_);
+    browser_app_instance_registry_ =
+        std::make_unique<apps::BrowserAppInstanceRegistry>(
+            *browser_app_instance_tracker_);
+  }
   Initialize();
 }
 

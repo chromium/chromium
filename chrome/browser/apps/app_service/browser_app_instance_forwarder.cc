@@ -12,7 +12,6 @@
 #include "chrome/browser/lacros/window_utility.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "chromeos/crosapi/mojom/browser_app_instance_registry.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -29,14 +28,6 @@ BrowserAppInstanceForwarder::BrowserAppInstanceForwarder(
       controller_receiver_.BindNewPipeAndPassRemoteWithVersion());
 }
 BrowserAppInstanceForwarder::~BrowserAppInstanceForwarder() = default;
-
-std::unique_ptr<BrowserAppInstanceForwarder>
-BrowserAppInstanceForwarder::Create(BrowserAppInstanceTracker* tracker) {
-  if (!features::IsBrowserAppInstanceTrackingEnabled()) {
-    return nullptr;
-  }
-  return std::make_unique<BrowserAppInstanceForwarder>(*tracker);
-}
 
 void BrowserAppInstanceForwarder::OnBrowserWindowAdded(
     const apps::BrowserWindowInstance& instance) {
