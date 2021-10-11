@@ -7,14 +7,20 @@
   #icon {
     padding-inline-end: 12px;
   }
+
+  #troubleShootingContainer {
+    padding-inline: 20px;
+  }
 </style>
 <diagnostics-card is-networking-card
     hide-data-points="[[!showNetworkDataPoints_]]">
   <template is="dom-if" if="[[showTroubleshootingCard_]]">
-    <network-troubleshooting id="networkTroubleshooting"
-        slot="left-panel"
-        troubleshooting-info="[[troubleshootingInfo_]]">
-    </network-troubleshooting>
+    <div slot="left-panel" id="troubleShootingContainer">
+      <network-troubleshooting id="networkTroubleshooting"
+          slot="left-panel"
+          troubleshooting-info="[[troubleshootingInfo_]]">
+      </network-troubleshooting>
+    </div>
   </template>
   <div id="cardTitle" slot="title" tabindex="0">
     <diagnostics-network-icon id="icon" network="[[network]]">
