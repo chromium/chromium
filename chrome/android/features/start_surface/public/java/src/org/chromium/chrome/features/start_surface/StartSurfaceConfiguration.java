@@ -132,12 +132,18 @@ public class StartSurfaceConfiguration {
             new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
                     NUM_DAYS_USER_CLICK_BELOW_THRESHOLD_PARAM, 7);
 
-    private static final String SIGN_IN_PROMO_SHOW_SINCE_LAST_BACKGROUND_LIMIT_MS_PARAM =
-            "sign_in_promo_show_since_last_background_limit_ms";
+    private static final String SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS_PARAM =
+            "signin_promo_NTP_since_first_time_shown_limit_hours";
     public static final IntCachedFieldTrialParameter
-            SIGN_IN_PROMO_SHOW_SINCE_LAST_BACKGROUNDED_LIMIT_MS =
+            SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS =
                     new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
-                            SIGN_IN_PROMO_SHOW_SINCE_LAST_BACKGROUND_LIMIT_MS_PARAM, -1);
+                            SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS_PARAM, -1);
+
+    private static final String SIGNIN_PROMO_NTP_RESET_AFTER_HOURS_PARAM =
+            "signin_promo_NTP_reset_after_hours";
+    public static final IntCachedFieldTrialParameter SIGNIN_PROMO_NTP_RESET_AFTER_HOURS =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                    SIGNIN_PROMO_NTP_RESET_AFTER_HOURS_PARAM, -1);
 
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
     private static final String INSTANT_START_SUBFIX = ".Instant";

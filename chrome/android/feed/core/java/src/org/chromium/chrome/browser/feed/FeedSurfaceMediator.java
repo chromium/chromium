@@ -678,6 +678,7 @@ public class FeedSurfaceMediator
      * @return Whether the SignPromo should be visible.
      */
     private boolean createSignInPromoIfNeeded() {
+        SigninPromoController.resetNTPSyncPromoLimitsIfHiddenForTooLong();
         if (!SignInPromo.shouldCreatePromo()
                 || !SigninPromoController.canShowSyncPromo(
                         SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)) {

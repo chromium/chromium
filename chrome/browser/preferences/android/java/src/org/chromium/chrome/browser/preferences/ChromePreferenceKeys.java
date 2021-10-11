@@ -895,7 +895,7 @@ public final class ChromePreferenceKeys {
             "signin_promo_last_shown_account_names";
     public static final String SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION =
             "signin_promo_last_shown_chrome_version";
-    public static final String SIGNIN_PROMO_NTP_PROMO_EXPIRED = "Chrome.SigninPromo.Expired";
+
     /**
      * Whether the user dismissed the personalized sign in promo from the new tab page.
      * Default value is false.
@@ -904,6 +904,11 @@ public final class ChromePreferenceKeys {
             "ntp.personalized_signin_promo_dismissed";
     public static final String SIGNIN_PROMO_NTP_PROMO_SUPPRESSION_PERIOD_START =
             "ntp.signin_promo_suppression_period_start";
+    public static final String SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME =
+            "Chrome.SigninPromoNTP.FirstShownTime";
+    public static final String SIGNIN_PROMO_NTP_LAST_SHOWN_TIME =
+            "Chrome.SigninPromoNTP.LastShownTime";
+
     /**
      * Personalized signin promo preference.
      */
@@ -1140,7 +1145,8 @@ public final class ChromePreferenceKeys {
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SHARING_LAST_SHARED_COMPONENT_NAME,
                 SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP,
-                SIGNIN_PROMO_NTP_PROMO_EXPIRED,
+                SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME,
+                SIGNIN_PROMO_NTP_LAST_SHOWN_TIME,
                 START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
                 START_SHOW_ON_STARTUP,
                 TAP_FEED_CARDS_COUNT,
