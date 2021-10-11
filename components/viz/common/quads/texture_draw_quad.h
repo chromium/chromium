@@ -85,10 +85,6 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   // This optional damage is in target render pass coordinate space.
   absl::optional<gfx::Rect> damage_rect;
 
-  // Identifier passed through by the video decoder that allows us to validate
-  // if a protected surface can still be displayed. Non-zero when valid.
-  uint32_t hw_protected_validation_id = 0;
-
   struct OverlayResources {
     OverlayResources();
 

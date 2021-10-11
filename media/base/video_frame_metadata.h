@@ -133,10 +133,6 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // PROTECTED_VIDEO is also set to true.
   bool hw_protected = false;
 
-  // Identifier used to query if a HW protected video frame can still be
-  // properly displayed or not. Non-zero when valid.
-  uint32_t hw_protected_validation_id = 0;
-
 #if BUILDFLAG(USE_VAAPI)
   // The ID of the VA-API protected session used to decode this frame, if
   // applicable. The proper type is VAProtectedSessionID. However, in order to

@@ -577,16 +577,10 @@ void VaapiVideoDecoder::SurfaceReady(scoped_refptr<VASurface> va_surface,
     video_frame = std::move(wrapped_frame);
   }
 
-  if (cdm_context_ref_ && !transcryption_) {
-    // For protected content we also need to set the ID for validating protected
-    // surfaces in the VideoFrame metadata so we can check if the surface is
-    // still valid once we get to the compositor stage.
-    uint32_t protected_instance_id = vaapi_wrapper_->GetProtectedInstanceID();
-    video_frame->metadata().hw_protected_validation_id = protected_instance_id;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Additionally, we store the VA-API protected session ID so that it can be
-    // re-used for scaling the decoded video frame later in the pipeline.
+  if (cdm_context_ref_ && !transcryption_) {
+    // Store the VA-API protected session ID so that it can be re-used for
+    // scaling the decoded video frame later in the pipeline.
     VAProtectedSessionID va_protected_session_id =
         vaapi_wrapper_->GetProtectedSessionID();
 
@@ -599,8 +593,8 @@ void VaapiVideoDecoder::SurfaceReady(scoped_refptr<VASurface> va_surface,
         "does not match the type exposed by VaapiWrapper");
     video_frame->metadata().hw_va_protected_session_id =
         va_protected_session_id;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const auto gfx_color_space = color_space.ToGfxColorSpace();
   if (gfx_color_space.IsValid())

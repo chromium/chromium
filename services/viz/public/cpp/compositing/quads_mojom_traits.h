@@ -471,12 +471,6 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
     return quad->overlay_priority_hint;
   }
 
-  static uint32_t hw_protected_validation_id(const viz::DrawQuad& input) {
-    const viz::TextureDrawQuad* quad =
-        viz::TextureDrawQuad::MaterialCast(&input);
-    return quad->hw_protected_validation_id;
-  }
-
   static const absl::optional<gfx::Rect>& damage_rect(
       const viz::DrawQuad& input) {
     const viz::TextureDrawQuad* quad =

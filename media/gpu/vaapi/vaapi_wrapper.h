@@ -245,12 +245,6 @@ class MEDIA_GPU_EXPORT VaapiWrapper
 
   static uint32_t BufferFormatToVARTFormat(gfx::BufferFormat fmt);
 
-  // Returns the current instance identifier for the protected content system.
-  // This can be used to detect when protected context loss has occurred, so any
-  // protected surfaces associated with a specific instance ID can be
-  // invalidated when the ID changes.
-  static uint32_t GetProtectedInstanceID();
-
   // Creates |num_surfaces| VASurfaceIDs of |va_format|, |size| and
   // |surface_usage_hints| and, if successful, creates a |va_context_id_| of the
   // same size. |surface_usage_hints| may affect an alignment and tiling of the
