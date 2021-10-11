@@ -12,8 +12,9 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/ash/policy/dlp/dlp_window_observer.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
@@ -40,7 +41,8 @@ class DlpReportingManager;
 // WebContents and whether any of them are currently visible.
 // If any confidential WebContents is visible, the corresponding restrictions
 // will be enforced according to the current enterprise policy.
-class DlpContentManager : public DlpWindowObserver::Delegate {
+class DlpContentManager : public DlpContentObserver,
+                          public DlpWindowObserver::Delegate {
  public:
   // Creates the instance if not yet created.
   // There will always be a single instance created on the first access.
@@ -178,20 +180,15 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
 
   // Initializing to be called separately to make testing possible
   virtual void Init();
-  // Called from DlpContentTabHelper:
-  // Being called when confidentiality state changes for |web_contents|, e.g.
-  // because of navigation.
-  virtual void OnConfidentialityChanged(
+
+  // DlpContentObserver overrides:
+  void OnConfidentialityChanged(
       content::WebContents* web_contents,
-      const DlpContentRestrictionSet& restriction_set);
-  // Called when |web_contents| is about to be destroyed.
-  virtual void OnWebContentsDestroyed(content::WebContents* web_contents);
-  // Should return which restrictions are being applied to the |url| according
-  // to the policies.
-  virtual DlpContentRestrictionSet GetRestrictionSetForURL(
-      const GURL& url) const;
-  // Called when |web_contents| becomes visible or not.
-  virtual void OnVisibilityChanged(content::WebContents* web_contents);
+      const DlpContentRestrictionSet& restriction_set) override;
+  void OnWebContentsDestroyed(content::WebContents* web_contents) override;
+  DlpContentRestrictionSet GetRestrictionSetForURL(
+      const GURL& url) const override;
+  void OnVisibilityChanged(content::WebContents* web_contents) override;
 
   // Helper to remove |web_contents| from the confidential set.
   void RemoveFromConfidential(content::WebContents* web_contents);

@@ -1,0 +1,47 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_OBSERVER_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_OBSERVER_H_
+
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
+
+class GURL;
+
+namespace content {
+class WebContents;
+}  // namespace content
+
+namespace policy {
+
+// Interface for a class observing changed in Data Leak Prevention restricted
+// content per WebContents object.
+class DlpContentObserver {
+ public:
+  // Returns proper implementation of the interface. Never returns nullptr.
+  static DlpContentObserver* Get();
+
+  virtual ~DlpContentObserver() = default;
+
+  // Being called when confidentiality state changes for |web_contents|, e.g.
+  // because of navigation.
+  virtual void OnConfidentialityChanged(
+      content::WebContents* web_contents,
+      const DlpContentRestrictionSet& restriction_set) = 0;
+
+  // Called when |web_contents| is about to be destroyed.
+  virtual void OnWebContentsDestroyed(content::WebContents* web_contents) = 0;
+
+  // Should return which restrictions are being applied to the |url| according
+  // to the policies.
+  virtual DlpContentRestrictionSet GetRestrictionSetForURL(
+      const GURL& url) const = 0;
+
+  // Called when |web_contents| becomes visible or not.
+  virtual void OnVisibilityChanged(content::WebContents* web_contents) = 0;
+};
+
+}  // namespace policy
+
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_OBSERVER_H_

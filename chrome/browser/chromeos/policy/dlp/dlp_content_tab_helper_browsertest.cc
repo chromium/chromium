@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/dlp/dlp_content_tab_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 
 #include "base/path_service.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -42,13 +42,9 @@ class DlpContentTabHelperBrowserTest
             DlpContentTabHelper::IgnoreDlpRulesManagerForTesting()) {}
 
  protected:
-  void SetUp() override {
-    extensions::PlatformAppBrowserTest::SetUp();
-  }
+  void SetUp() override { extensions::PlatformAppBrowserTest::SetUp(); }
 
-  void TearDown() override {
-    extensions::PlatformAppBrowserTest::TearDown();
-  }
+  void TearDown() override { extensions::PlatformAppBrowserTest::TearDown(); }
 
   MockDlpContentManager mock_dlp_content_manager_;
   ScopedDlpContentManagerForTesting scoped_dlp_content_manager_;
