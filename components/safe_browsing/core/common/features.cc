@@ -74,6 +74,9 @@ const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
 const base::Feature kSimplifiedUrlDisplay{"SimplifiedUrlDisplay",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kTailoredSecurityIntegration{
+    "TailoredSecurityIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kOmitNonUserGesturesFromReferrerChain{
     "SafeBrowsingOmitNonUserGesturesFromReferrerChain",
     base::FEATURE_DISABLED_BY_DEFAULT};

@@ -141,6 +141,9 @@ extern const base::Feature kRealTimeUrlLookupReferrerChainForEnterprise;
 // default and control groups of the experiment.
 extern const base::Feature kSimplifiedUrlDisplay;
 
+// Controls whether the integration of tailored security settings is enabled.
+extern const base::Feature kTailoredSecurityIntegration;
+
 // Specifies which non-resource HTML Elements to collect based on their tag and
 // attributes. It's a single param containing a comma-separated list of pairs.
 // For example: "tag1,id,tag1,height,tag2,foo" - this will collect elements with
