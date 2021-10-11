@@ -90,6 +90,10 @@ bool IsChineseEngine(const std::string& engine_id) {
          engine_id == "zh-hant-t-i0-und";
 }
 
+bool IsJapaneseEngine(const std::string& engine_id) {
+  return engine_id == "nacl_mozc_jp" || engine_id == "nacl_mozc_us";
+}
+
 bool IsUsEnglishEngine(const std::string& engine_id) {
   return engine_id == "xkb:us::eng";
 }
@@ -105,6 +109,8 @@ bool ShouldRouteToNativeMojoEngine(const std::string& engine_id) {
 
   return (features::IsSystemChinesePhysicalTypingEnabled() &&
           IsChineseEngine(engine_id)) ||
+         (features::IsSystemJapanesePhysicalTypingEnabled() &&
+          IsJapaneseEngine(engine_id)) ||
          (features::IsSystemKoreanPhysicalTypingEnabled() &&
           IsKoreanEngine(engine_id)) ||
          (features::IsSystemLatinPhysicalTypingEnabled() &&

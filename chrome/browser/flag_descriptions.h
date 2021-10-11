@@ -2930,6 +2930,9 @@ extern const char kSyncSettingsCategorizationDescription[];
 extern const char kSystemChinesePhysicalTypingName[];
 extern const char kSystemChinesePhysicalTypingDescription[];
 
+extern const char kSystemJapanesePhysicalTypingName[];
+extern const char kSystemJapanesePhysicalTypingDescription[];
+
 extern const char kSystemKoreanPhysicalTypingName[];
 extern const char kSystemKoreanPhysicalTypingDescription[];
 

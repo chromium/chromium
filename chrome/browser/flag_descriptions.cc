@@ -5086,6 +5086,12 @@ const char kSystemChinesePhysicalTypingDescription[] =
     "Use the system input engine instead of the Chrome extension for physical "
     "typing in Chinese.";
 
+const char kSystemJapanesePhysicalTypingName[] =
+    "Use system IME for Japanese typing";
+const char kSystemJapanesePhysicalTypingDescription[] =
+    "Use the system input engine instead of the Chrome extension for physical "
+    "typing in Japanese.";
+
 const char kSystemKoreanPhysicalTypingName[] =
     "Use system IME for Korean typing";
 const char kSystemKoreanPhysicalTypingDescription[] =
