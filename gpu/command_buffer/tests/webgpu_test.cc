@@ -293,7 +293,7 @@ TEST_F(WebGPUTest, RequestDeviceAfterContextLost) {
   EXPECT_TRUE(called);
 }
 
-TEST_F(WebGPUTest, RequestDeviceWitUnsupportedExtension) {
+TEST_F(WebGPUTest, RequestDeviceWitUnsupportedFeature) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
@@ -301,10 +301,10 @@ TEST_F(WebGPUTest, RequestDeviceWitUnsupportedExtension) {
 
   Initialize(WebGPUTest::Options());
 
-  // Create device with unsupported extensions, expect to fail to create and
+  // Create device with unsupported features, expect to fail to create and
   // return nullptr
   WGPUDeviceProperties unsupported_device_properties = {};
-  unsupported_device_properties.invalidExtension = true;
+  unsupported_device_properties.invalidFeature = true;
   WGPUDevice device = nullptr;
   bool done = false;
 
@@ -323,7 +323,7 @@ TEST_F(WebGPUTest, RequestDeviceWitUnsupportedExtension) {
   }
   EXPECT_EQ(device, nullptr);
 
-  // Create device again with supported extensions, expect success and not
+  // Create device again with supported features, expect success and not
   // blocked by the last failure
   GetNewDevice();
 }
