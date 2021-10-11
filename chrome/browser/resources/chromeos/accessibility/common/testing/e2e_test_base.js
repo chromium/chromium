@@ -33,7 +33,7 @@ E2ETestBase = class extends testing.Test {
   testGenPreamble() {
     GEN(`
     TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
-    if (ash_starter().HasLacrosArgument()) {
+    if (ash_starter()->HasLacrosArgument()) {
       crosapi::BrowserManager::Get()->NewTab();
       ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
     }

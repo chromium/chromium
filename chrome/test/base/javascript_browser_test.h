@@ -33,6 +33,7 @@ class JavaScriptBrowserTest : public InProcessBrowserTest {
 
   // InProcessBrowserTest overrides.
   void SetUpInProcessBrowserTestFixture() override;
+  void TearDownInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
 
   // Builds a vector of strings of all added javascript libraries suitable for
@@ -48,7 +49,7 @@ class JavaScriptBrowserTest : public InProcessBrowserTest {
                                     std::vector<base::Value> args);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  test::AshBrowserTestStarter& ash_starter() { return ash_starter_; }
+  test::AshBrowserTestStarter* ash_starter() { return ash_starter_.get(); }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
@@ -59,7 +60,7 @@ class JavaScriptBrowserTest : public InProcessBrowserTest {
   std::vector<base::FilePath> library_search_paths_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  test::AshBrowserTestStarter ash_starter_;
+  std::unique_ptr<test::AshBrowserTestStarter> ash_starter_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
