@@ -5903,16 +5903,6 @@ const FeatureEntry kFeatureEntries[] = {
          kEnhancedProtectionPromoCardVariations,
          "EnhancedProtectionPromoCard")},
 
-    {"safe-browsing-passwordcheck-integration-for-saved-passwords-android",
-     flag_descriptions::
-         kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroidName,
-     flag_descriptions::
-         kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         safe_browsing::
-             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)},
-
     {"safe-browsing-password-protection-for-signed-in-users",
      flag_descriptions::kPasswordProtectionForSignedInUsersName,
      flag_descriptions::kPasswordProtectionForSignedInUsersDescription,

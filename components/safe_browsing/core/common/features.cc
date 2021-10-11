@@ -118,7 +118,7 @@ const base::Feature kSafeBrowsingPageLoadToken{
 const base::Feature
     kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid{
         "SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid",
-        base::FEATURE_DISABLED_BY_DEFAULT};
+        base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSafeBrowsingSeparateNetworkContexts{
     "SafeBrowsingSeparateNetworkContexts", base::FEATURE_ENABLED_BY_DEFAULT};

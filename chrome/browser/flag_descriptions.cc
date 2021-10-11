@@ -3493,13 +3493,6 @@ const char kSafeBrowsingClientSideDetectionAndroidName[] =
 const char kSafeBrowsingClientSideDetectionAndroidDescription[] =
     "Enable DOM feature collection on Safe Browsing pings on Android";
 
-const char kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroidName[] =
-    "Safe Browsing PasswordCheck Integration for Saved Passwords Android";
-const char
-    kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroidDescription[] =
-        "Allows Android Chrome users to change their saved passwords through "
-        "password reuse warnings on phishing or low reputation sites.";
-
 const char kEnhancedProtectionPromoAndroidName[] =
     "Enable enhanced protection promo card on Android on the New Tab Page";
 const char kEnhancedProtectionPromoAndroidDescription[] =

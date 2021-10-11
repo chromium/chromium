@@ -4685,15 +4685,6 @@
     "expiry_milestone": 96
   },
   {
-    "name":
-      "safe-browsing-passwordcheck-integration-for-saved-passwords-android",
-    "owners": [
-      "rsamp",
-      "chrome-safebrowsing-core@google.com"
-    ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "safety-tips",
     "owners": [ "jdeblasio", "estark", "meacer" ],
     "expiry_milestone": 89

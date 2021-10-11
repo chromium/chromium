@@ -122,7 +122,9 @@ TEST_F(PasswordReuseControllerAndroidTest, VerifyButtonText) {
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures(
-        {safe_browsing::kPasswordProtectionForSignedInUsers}, {});
+        {safe_browsing::kPasswordProtectionForSignedInUsers},
+        {safe_browsing::
+             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid});
 
     password_type.set_account_type(ReusedPasswordAccountType::SAVED_PASSWORD);
     password_type.set_is_account_syncing(false);
