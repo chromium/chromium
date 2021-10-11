@@ -75,7 +75,7 @@ void DigitalGoodsFactoryImpl::CreateDigitalGoods(
 // Private methods:
 
 DigitalGoodsFactoryImpl::DigitalGoodsFactoryImpl(content::RenderFrameHost* rfh)
-    : content::RenderDocumentHostUserData<DigitalGoodsFactoryImpl>(rfh),
+    : content::DocumentUserData<DigitalGoodsFactoryImpl>(rfh),
       receiver_(this) {}
 
 void DigitalGoodsFactoryImpl::BindRequest(
@@ -83,6 +83,6 @@ void DigitalGoodsFactoryImpl::BindRequest(
   receiver_.Bind(std::move(receiver));
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(DigitalGoodsFactoryImpl);
+DOCUMENT_USER_DATA_KEY_IMPL(DigitalGoodsFactoryImpl);
 
 }  // namespace apps

@@ -7,14 +7,14 @@
 
 #include <string>
 
-#include "content/public/browser/render_document_host_user_data.h"
+#include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom.h"
 
 namespace apps {
 
 class DigitalGoodsFactoryImpl
-    : public content::RenderDocumentHostUserData<DigitalGoodsFactoryImpl>,
+    : public content::DocumentUserData<DigitalGoodsFactoryImpl>,
       public payments::mojom::DigitalGoodsFactory {
  public:
   ~DigitalGoodsFactoryImpl() override;
@@ -29,8 +29,8 @@ class DigitalGoodsFactoryImpl
 
  private:
   explicit DigitalGoodsFactoryImpl(content::RenderFrameHost* render_frame_host);
-  friend class content::RenderDocumentHostUserData<DigitalGoodsFactoryImpl>;
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+  friend class content::DocumentUserData<DigitalGoodsFactoryImpl>;
+  DOCUMENT_USER_DATA_KEY_DECL();
 
   void BindRequest(
       mojo::PendingReceiver<payments::mojom::DigitalGoodsFactory> receiver);

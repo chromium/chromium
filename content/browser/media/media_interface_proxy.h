@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/media/media_interface_factory_holder.h"
-#include "content/public/browser/render_document_host_user_data.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/common/cdm_info.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
@@ -44,9 +44,8 @@ class RenderFrameHost;
 // This implements the media::mojom::InterfaceFactory interface for a
 // RenderFrameHostImpl to help create remote media components in different
 // processes.
-class MediaInterfaceProxy final
-    : public RenderDocumentHostUserData<MediaInterfaceProxy>,
-      public media::mojom::InterfaceFactory {
+class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
+                                  public media::mojom::InterfaceFactory {
  public:
   ~MediaInterfaceProxy() final;
 
@@ -90,9 +89,9 @@ class MediaInterfaceProxy final
                  CreateCdmCallback create_cdm_cb) final;
 
  private:
-  friend class RenderDocumentHostUserData<MediaInterfaceProxy>;
+  friend class DocumentUserData<MediaInterfaceProxy>;
   explicit MediaInterfaceProxy(RenderFrameHost* rfh);
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+  DOCUMENT_USER_DATA_KEY_DECL();
 
   // Gets services provided by the browser (at RenderFrameHost level) to the
   // mojo media (or CDM) service running remotely. |cdm_file_system_id| is

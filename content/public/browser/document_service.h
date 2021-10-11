@@ -37,7 +37,7 @@ namespace content {
 // - if the RenderFrameHost is deleted (for example, the <iframe> element the
 //   RenderFrameHost represents is removed from the DOM) or
 // - if the RenderFrameHost commits a cross-document navigation. Specifically,
-//   DocumentService instances (and RenderDocumentHostUserData instances)
+//   DocumentService instances (and DocumentUserData instances)
 //   are deleted with the same timing, before the last committed origin and
 //   URL have been updated.
 //
@@ -48,7 +48,7 @@ namespace content {
 //
 // - `DocumentService` when there may be multiple instances per
 //   RenderFrameHost.
-// - `RenderDocumentHostUserData` when there should only be a single instance
+// - `DocumentUserData` when there should only be a single instance
 //   per RenderFrameHost.
 //
 // There are very few circumstances where a Mojo interface needs to be reused

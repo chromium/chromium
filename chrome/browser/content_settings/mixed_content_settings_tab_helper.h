@@ -44,7 +44,7 @@ class MixedContentSettingsTabHelper
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
   // TODO(crbug.com/1071232): When RenderDocument is implemented, make this a
-  // RenderDocumentHostUserData.
+  // DocumentUserData.
   class PageSettings {
    public:
     explicit PageSettings(content::RenderFrameHost* render_frame_host);

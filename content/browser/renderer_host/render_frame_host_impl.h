@@ -2130,19 +2130,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Document-associated data. This is cleared whenever a new document is hosted
   // by this RenderFrameHost. Please refer to the description at
-  // content/public/browser/render_document_host_user_data.h for more details.
-  base::SupportsUserData::Data* GetRenderDocumentHostUserData(
-      const void* key) const {
+  // content/public/browser/document_user_data.h for more details.
+  base::SupportsUserData::Data* GetDocumentUserData(const void* key) const {
     return document_associated_data_->GetUserData(key);
   }
 
-  void SetRenderDocumentHostUserData(
-      const void* key,
-      std::unique_ptr<base::SupportsUserData::Data> data) {
+  void SetDocumentUserData(const void* key,
+                           std::unique_ptr<base::SupportsUserData::Data> data) {
     document_associated_data_->SetUserData(key, std::move(data));
   }
 
-  void RemoveRenderDocumentHostUserData(const void* key) {
+  void RemoveDocumentUserData(const void* key) {
     document_associated_data_->RemoveUserData(key);
   }
 
@@ -2491,8 +2489,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessSSLBrowserTest,
                            UnloadHandlersArePowerfulGrandChild);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplTest, ExpectedMainWorldOrigin);
-  FRIEND_TEST_ALL_PREFIXES(RenderDocumentHostUserDataTest,
-                           CheckInPendingDeletionState);
+  FRIEND_TEST_ALL_PREFIXES(DocumentUserDataTest, CheckInPendingDeletionState);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC);
 
   class DroppedInterfaceRequestLogger;
@@ -3836,8 +3833,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // be reset when committing a cross-document navigation in this
   // RenderFrameHost. RenderFrameHostImpl stores internal members here
   // directly while consumers of RenderFrameHostImpl should store data via
-  // GetRenderDocumentHostUserData(). Please refer to the description at
-  // content/public/browser/render_document_host_user_data.h for more details.
+  // GetDocumentUserData(). Please refer to the description at
+  // content/public/browser/document_user_data.h for more details.
   struct DocumentAssociatedData : public base::SupportsUserData {
     DocumentAssociatedData(RenderFrameHostImpl& document);
     ~DocumentAssociatedData() override;

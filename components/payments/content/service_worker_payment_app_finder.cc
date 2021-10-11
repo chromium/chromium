@@ -475,7 +475,7 @@ void ServiceWorkerPaymentAppFinder::IgnorePaymentMethodForTest(
 
 ServiceWorkerPaymentAppFinder::ServiceWorkerPaymentAppFinder(
     content::RenderFrameHost* rfh)
-    : content::RenderDocumentHostUserData<ServiceWorkerPaymentAppFinder>(rfh),
+    : content::DocumentUserData<ServiceWorkerPaymentAppFinder>(rfh),
       ignored_methods_({methods::kGooglePlayBilling}),
       test_downloader_(nullptr) {}
 
@@ -485,6 +485,6 @@ void ServiceWorkerPaymentAppFinder::
   test_downloader_ = std::move(downloader);
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(ServiceWorkerPaymentAppFinder);
+DOCUMENT_USER_DATA_KEY_IMPL(ServiceWorkerPaymentAppFinder);
 
 }  // namespace payments

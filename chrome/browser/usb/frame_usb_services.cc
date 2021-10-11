@@ -33,7 +33,7 @@ const char kPermissionsPolicyViolation[] =
 }  // namespace
 
 FrameUsbServices::FrameUsbServices(RenderFrameHost* rfh)
-    : content::RenderDocumentHostUserData<FrameUsbServices>(rfh) {
+    : content::DocumentUserData<FrameUsbServices>(rfh) {
   // Create UsbTabHelper on creating FrameUsbServices.
   UsbTabHelper::CreateForWebContents(
       WebContents::FromRenderFrameHost(&render_frame_host()));
@@ -80,4 +80,4 @@ void FrameUsbServices::CreateFrameUsbServices(
       ->InitializeWebUsbService(std::move(receiver));
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(FrameUsbServices);
+DOCUMENT_USER_DATA_KEY_IMPL(FrameUsbServices);

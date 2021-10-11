@@ -19,7 +19,7 @@ class RenderFrameHostImpl;
 // An implementation of blink::mojom::FileChooser and FileSelectListener
 // associated to RenderFrameHost.
 // TODO(sreejakshetty): Make FileChooserImpl per-frame and associate with
-// RenderDocumentHostUserData to ensure that the state is correctly tracked and
+// DocumentUserData to ensure that the state is correctly tracked and
 // deleted.
 class CONTENT_EXPORT FileChooserImpl : public blink::mojom::FileChooser,
                                        public WebContentsObserver {

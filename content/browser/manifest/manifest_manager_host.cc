@@ -17,7 +17,7 @@
 namespace content {
 
 ManifestManagerHost::ManifestManagerHost(RenderFrameHost* rfh)
-    : RenderDocumentHostUserData<ManifestManagerHost>(rfh) {
+    : DocumentUserData<ManifestManagerHost>(rfh) {
   // Check that |rfh| is a main frame.
   DCHECK(!rfh->GetParent());
 }
@@ -94,5 +94,5 @@ void ManifestManagerHost::ManifestUrlChanged(const GURL& manifest_url) {
       .UpdateManifestUrl(manifest_url);
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(ManifestManagerHost);
+DOCUMENT_USER_DATA_KEY_IMPL(ManifestManagerHost);
 }  // namespace content

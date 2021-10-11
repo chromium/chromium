@@ -9,16 +9,15 @@
 #include <vector>
 
 #include "components/arc/pay/arc_digital_goods_bridge.h"
-#include "content/public/browser/render_document_host_user_data.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_widget_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom.h"
 
 namespace apps {
 
-class DigitalGoodsImpl
-    : public content::RenderDocumentHostUserData<DigitalGoodsImpl>,
-      public payments::mojom::DigitalGoods {
+class DigitalGoodsImpl : public content::DocumentUserData<DigitalGoodsImpl>,
+                         public payments::mojom::DigitalGoods {
  public:
   ~DigitalGoodsImpl() override;
 
@@ -37,8 +36,8 @@ class DigitalGoodsImpl
 
  private:
   explicit DigitalGoodsImpl(content::RenderFrameHost* render_frame_host);
-  friend class content::RenderDocumentHostUserData<DigitalGoodsImpl>;
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+  friend class content::DocumentUserData<DigitalGoodsImpl>;
+  DOCUMENT_USER_DATA_KEY_DECL();
 
   arc::ArcDigitalGoodsBridge* GetArcDigitalGoodsBridge();
 

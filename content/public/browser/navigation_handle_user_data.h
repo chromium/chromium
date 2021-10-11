@@ -20,7 +20,7 @@ namespace content {
 // - NavigationHandle is deleted, or
 // - DeleteForCurrentNavigation is called.
 //
-// This is similar to RenderDocumentHostUserData but attached to a navigation
+// This is similar to DocumentUserData but attached to a navigation
 // instead. This class can be used before there's a document assigned for this
 // navigation. Example usage of NavigationHandleUserData:
 //

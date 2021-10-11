@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
 // Tests what happens when the ExtensionMsg_ExecuteCode is sent *after* sending
 // a Commit IPC to the renderer (i.e. after ReadyToCommit) but *before* a
 // corresponding DidCommit IPC has been received by the browser process.  See
-// also the "RenderDocumentHostUserData race w/ Commit IPC" section in the
+// also the "DocumentUserData race w/ Commit IPC" section in the
 // document here:
 // https://docs.google.com/document/d/1MFprp2ss2r9RNamJ7Jxva1bvRZvec3rzGceDGoJ6vW0/edit#heading=h.n2ppjzx4jpzt
 // TODO(crbug.com/936696): Remove the test after RenderDocument is shipped.

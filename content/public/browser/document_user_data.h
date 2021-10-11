@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_RENDER_DOCUMENT_HOST_USER_DATA_H_
-#define CONTENT_PUBLIC_BROWSER_RENDER_DOCUMENT_HOST_USER_DATA_H_
+#ifndef CONTENT_PUBLIC_BROWSER_DOCUMENT_USER_DATA_H_
+#define CONTENT_PUBLIC_BROWSER_DOCUMENT_USER_DATA_H_
 
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
@@ -13,49 +13,49 @@ namespace content {
 
 class RenderFrameHost;
 
-CONTENT_EXPORT base::SupportsUserData::Data* GetRenderDocumentHostUserData(
+CONTENT_EXPORT base::SupportsUserData::Data* GetDocumentUserData(
     const RenderFrameHost* rfh,
     const void* key);
 
-CONTENT_EXPORT void SetRenderDocumentHostUserData(
+CONTENT_EXPORT void SetDocumentUserData(
     RenderFrameHost* rfh,
     const void* key,
     std::unique_ptr<base::SupportsUserData::Data> data);
 
-CONTENT_EXPORT void RemoveRenderDocumentHostUserData(RenderFrameHost* rfh,
-                                                     const void* key);
+CONTENT_EXPORT void RemoveDocumentUserData(RenderFrameHost* rfh,
+                                           const void* key);
 
 // This class approximates the lifetime of a single blink::Document in the
 // browser process. At the moment RenderFrameHost can correspond to multiple
 // blink::Documents (when RenderFrameHost is reused for same-process
-// navigation). RenderDocumentHostUserData is created when a user of an API
+// navigation). DocumentUserData is created when a user of an API
 // inherits this class and calls CreateForCurrentDocument.
 //
-// RenderDocumentHostUserData is cleared when either:
+// DocumentUserData is cleared when either:
 // - RenderFrameHost is deleted, or
 // - A cross-document non-bfcached navigation is committed in the same
-// RenderFrameHost i.e., RenderDocumentHostUserData persists when a document is
+// RenderFrameHost i.e., DocumentUserData persists when a document is
 // put in the BackForwardCache. It will still be present when the user navigates
 // back to the document.
 //
-// RenderDocumentHostUserData is assumed to be associated with the document in
+// DocumentUserData is assumed to be associated with the document in
 // the RenderFrameHost. It can be associated even before RenderFrameHost commits
 // i.e., on speculative RFHs and gets destroyed along with speculative RFHs if
 // it ends up never committing.
 //
 // Note: RenderFrameHost is being replaced with RenderDocumentHost
 // [https://crbug.com/936696]. After this is completed, every
-// RenderDocumentHostUserData object will be 1:1 with RenderFrameHost. Also
+// DocumentUserData object will be 1:1 with RenderFrameHost. Also
 // RenderFrameHost/RenderDocument would start inheriting directly from
 // SupportsUserData then we wouldn't need the use of
-// GetRenderDocumentHostUserData/SetRenderDocumentHostUserData anymore.
+// GetDocumentUserData/SetDocumentUserData anymore.
 //
 // This is similar to WebContentsUserData but attached to a document instead.
-// Example usage of RenderDocumentHostUserData:
+// Example usage of DocumentUserData:
 //
 // --- in foo_document_helper.h ---
 // class FooDocumentHelper
-//     : public content::RenderDocumentHostUserData<FooDocumentHelper> {
+//     : public content::DocumentUserData<FooDocumentHelper> {
 //  public:
 //   ~FooDocumentHelper() override;
 //
@@ -63,35 +63,35 @@ CONTENT_EXPORT void RemoveRenderDocumentHostUserData(RenderFrameHost* rfh,
 //
 //  private:
 //   // No public constructors to force going through static methods of
-//   // RenderDocumentHostUserData (e.g. CreateForCurrentDocument).
+//   // DocumentUserData (e.g. CreateForCurrentDocument).
 //   explicit FooDocumentHelper(content::RenderFrameHost* rfh);
 //
-//   friend RenderDocumentHostUserData;
-//   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+//   friend DocumentUserData;
+//   DOCUMENT_USER_DATA_KEY_DECL();
 //
 //   // ... more private stuff here ...
 // };
 //
 // --- in foo_document_helper.cc ---
-// RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(FooDocumentHelper);
+// DOCUMENT_USER_DATA_KEY_IMPL(FooDocumentHelper);
 //
 // FooDocumentHelper::FooDocumentHelper(content::RenderFrameHost* rfh)
-//     : RenderDocumentHostUserData(rfh) { ... }
+//     : DocumentUserData(rfh) { ... }
 template <typename T>
-class RenderDocumentHostUserData : public base::SupportsUserData::Data {
+class DocumentUserData : public base::SupportsUserData::Data {
  public:
   template <typename... Args>
   static void CreateForCurrentDocument(RenderFrameHost* rfh, Args&&... args) {
     DCHECK(rfh);
     if (!GetForCurrentDocument(rfh)) {
       T* data = new T(rfh, std::forward<Args>(args)...);
-      SetRenderDocumentHostUserData(rfh, UserDataKey(), base::WrapUnique(data));
+      SetDocumentUserData(rfh, UserDataKey(), base::WrapUnique(data));
     }
   }
 
   static T* GetForCurrentDocument(RenderFrameHost* rfh) {
     DCHECK(rfh);
-    return static_cast<T*>(GetRenderDocumentHostUserData(rfh, UserDataKey()));
+    return static_cast<T*>(GetDocumentUserData(rfh, UserDataKey()));
   }
 
   static T* GetOrCreateForCurrentDocument(RenderFrameHost* rfh) {
@@ -107,14 +107,14 @@ class RenderDocumentHostUserData : public base::SupportsUserData::Data {
   static void DeleteForCurrentDocument(RenderFrameHost* rfh) {
     DCHECK(rfh);
     DCHECK(GetForCurrentDocument(rfh));
-    RemoveRenderDocumentHostUserData(rfh, UserDataKey());
+    RemoveDocumentUserData(rfh, UserDataKey());
   }
 
   // Returns the RenderFrameHost associated with `this` object of a subclass
-  // which inherits from RenderDocumentHostUserData.
+  // which inherits from DocumentUserData.
   //
   // The returned `render_frame_host()` is guaranteed to live as long as `this`
-  // RenderDocumentHostUserData (due to how UserData works - RenderFrameHost
+  // DocumentUserData (due to how UserData works - RenderFrameHost
   // owns `this` UserData).  Note that only the lifetime of
   // `render_frame_host()` is guaranteed, but not its state - e.g. the frame may
   // be `!IsActive()`.
@@ -123,8 +123,7 @@ class RenderDocumentHostUserData : public base::SupportsUserData::Data {
  protected:
   // TODO(https://crbug.com/1252044): Take a reference instead of a pointer
   // (here + transitively/as-far-as-reasonably-possible in callers).
-  explicit RenderDocumentHostUserData(RenderFrameHost* rfh)
-      : render_frame_host_(rfh) {
+  explicit DocumentUserData(RenderFrameHost* rfh) : render_frame_host_(rfh) {
     CHECK(rfh);
   }
 
@@ -139,17 +138,15 @@ class RenderDocumentHostUserData : public base::SupportsUserData::Data {
 // Users won't be able to instantiate the template if they miss declaring the
 // user data key.
 // This macro declares a static variable inside the class that inherits from
-// RenderDocumentHostUserData. The address of this static variable is used as
+// DocumentUserData. The address of this static variable is used as
 // the key to store/retrieve an instance of the class on/from a WebState.
-#define RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL() \
-  static constexpr int kUserDataKey = 0
+#define DOCUMENT_USER_DATA_KEY_DECL() static constexpr int kUserDataKey = 0
 
 // This macro instantiates the static variable declared by the previous macro.
 // It must live in a .cc file to ensure that there is only one instantiation
 // of the static variable.
-#define RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(Type) \
-  const int Type::kUserDataKey
+#define DOCUMENT_USER_DATA_KEY_IMPL(Type) const int Type::kUserDataKey
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_RENDER_DOCUMENT_HOST_USER_DATA_H_
+#endif  // CONTENT_PUBLIC_BROWSER_DOCUMENT_USER_DATA_H_

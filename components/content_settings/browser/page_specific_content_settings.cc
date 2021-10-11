@@ -119,7 +119,7 @@ PageSpecificContentSettings::WebContentsHandler::WebContentsHandler(
       map_(delegate_->GetSettingsMap()) {
   DCHECK(!PageSpecificContentSettings::GetForCurrentDocument(
       web_contents->GetMainFrame()));
-  content::RenderDocumentHostUserData<PageSpecificContentSettings>::
+  content::DocumentUserData<PageSpecificContentSettings>::
       CreateForCurrentDocument(web_contents->GetMainFrame(), *this,
                                delegate_.get());
 }
@@ -222,7 +222,7 @@ void PageSpecificContentSettings::WebContentsHandler::DidFinishNavigation(
 
   if (WillNavigationCreateNewPageSpecificContentSettingsOnCommit(
           navigation_handle)) {
-    content::RenderDocumentHostUserData<PageSpecificContentSettings>::
+    content::DocumentUserData<PageSpecificContentSettings>::
         CreateForCurrentDocument(navigation_handle->GetRenderFrameHost(), *this,
                                  delegate_.get());
     InflightNavigationContentSettings* inflight_settings =
@@ -291,8 +291,7 @@ PageSpecificContentSettings::PageSpecificContentSettings(
     content::RenderFrameHost* main_frame,
     PageSpecificContentSettings::WebContentsHandler& handler,
     Delegate* delegate)
-    : content::RenderDocumentHostUserData<PageSpecificContentSettings>(
-          main_frame),
+    : content::DocumentUserData<PageSpecificContentSettings>(main_frame),
       handler_(handler),
       delegate_(delegate),
       map_(delegate_->GetSettingsMap()),
@@ -963,6 +962,6 @@ void PageSpecificContentSettings::MaybeUpdateLocationBar() {
   delegate_->UpdateLocationBar();
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(PageSpecificContentSettings);
+DOCUMENT_USER_DATA_KEY_IMPL(PageSpecificContentSettings);
 
 }  // namespace content_settings

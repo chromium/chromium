@@ -21,7 +21,7 @@ namespace content {
 // At the moment some navigations might create a new blink::Document in the
 // existing RenderFrameHost, which will lead to a creation of a new Page
 // associated with the same main RenderFrameHost. See the comment in
-// |RenderDocumentHostUserData| for more details and crbug.com/936696 for the
+// |DocumentUserData| for more details and crbug.com/936696 for the
 // progress on always creating a new RenderFrameHost for each new document.
 
 // Page is created when a main document is created, which can happen in the

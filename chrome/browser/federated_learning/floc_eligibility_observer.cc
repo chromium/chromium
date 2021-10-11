@@ -81,7 +81,7 @@ void FlocEligibilityObserver::OnInterestCohortApiUsed() {
 }
 
 FlocEligibilityObserver::FlocEligibilityObserver(content::RenderFrameHost* rfh)
-    : content::RenderDocumentHostUserData<FlocEligibilityObserver>(rfh),
+    : content::DocumentUserData<FlocEligibilityObserver>(rfh),
       web_contents_(content::WebContents::FromRenderFrameHost(rfh)) {}
 
 void FlocEligibilityObserver::OnOptInSignalObserved() {
@@ -98,6 +98,6 @@ void FlocEligibilityObserver::OnOptInSignalObserved() {
   observed_opt_in_signal_ = true;
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(FlocEligibilityObserver);
+DOCUMENT_USER_DATA_KEY_IMPL(FlocEligibilityObserver);
 
 }  // namespace federated_learning

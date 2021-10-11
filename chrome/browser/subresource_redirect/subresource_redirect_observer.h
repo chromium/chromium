@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "chrome/common/subresource_redirect_service.mojom.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
-#include "content/public/browser/render_document_host_user_data.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -28,8 +28,7 @@ class OriginRobotsRulesCache;
 // happens or the web contents is destroyed. This should be created only when
 // subresource redirect compression is allowed for the document.
 class ImageCompressionAppliedDocument
-    : public content::RenderDocumentHostUserData<
-          ImageCompressionAppliedDocument> {
+    : public content::DocumentUserData<ImageCompressionAppliedDocument> {
  public:
   enum State {
     kDisabled,
@@ -60,8 +59,7 @@ class ImageCompressionAppliedDocument
  private:
   explicit ImageCompressionAppliedDocument(
       content::RenderFrameHost* render_frame_host);
-  friend class content::RenderDocumentHostUserData<
-      ImageCompressionAppliedDocument>;
+  friend class content::DocumentUserData<ImageCompressionAppliedDocument>;
 
   // Maintains whether https image compression was attempted for the last
   // navigation. Even though image compression was attempted, it doesn't mean at
@@ -70,7 +68,7 @@ class ImageCompressionAppliedDocument
   // least one public image even though they are fully private.
   State state_ = kDisabled;
 
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+  DOCUMENT_USER_DATA_KEY_DECL();
 };
 
 // Sends the public image URL hints to renderer.

@@ -104,12 +104,12 @@ NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationData);
 
 ImageCompressionAppliedDocument::ImageCompressionAppliedDocument(
     content::RenderFrameHost* render_frame_host)
-    : content::RenderDocumentHostUserData<ImageCompressionAppliedDocument>(
+    : content::DocumentUserData<ImageCompressionAppliedDocument>(
           render_frame_host) {}
 
 ImageCompressionAppliedDocument::~ImageCompressionAppliedDocument() = default;
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(ImageCompressionAppliedDocument);
+DOCUMENT_USER_DATA_KEY_IMPL(ImageCompressionAppliedDocument);
 
 // static
 ImageCompressionAppliedDocument::State

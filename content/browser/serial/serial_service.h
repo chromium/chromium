@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/render_document_host_user_data.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/serial_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -23,11 +23,10 @@ namespace content {
 class RenderFrameHost;
 class SerialChooser;
 
-class SerialService
-    : public blink::mojom::SerialService,
-      public SerialDelegate::Observer,
-      public device::mojom::SerialPortConnectionWatcher,
-      public content::RenderDocumentHostUserData<SerialService> {
+class SerialService : public blink::mojom::SerialService,
+                      public SerialDelegate::Observer,
+                      public device::mojom::SerialPortConnectionWatcher,
+                      public content::DocumentUserData<SerialService> {
  public:
   explicit SerialService(RenderFrameHost* render_frame_host);
 
@@ -55,7 +54,7 @@ class SerialService
   void OnPortManagerConnectionError() override;
 
  private:
-  friend class content::RenderDocumentHostUserData<SerialService>;
+  friend class content::DocumentUserData<SerialService>;
 
   void FinishGetPorts(GetPortsCallback callback,
                       std::vector<device::mojom::SerialPortInfoPtr> ports);
@@ -76,7 +75,7 @@ class SerialService
 
   base::WeakPtrFactory<SerialService> weak_factory_{this};
 
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+  DOCUMENT_USER_DATA_KEY_DECL();
 };
 
 }  // namespace content

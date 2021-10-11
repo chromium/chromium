@@ -10,7 +10,7 @@
 namespace content {
 
 CloseListenerHost::CloseListenerHost(RenderFrameHost* render_frame_host)
-    : RenderDocumentHostUserData<CloseListenerHost>(render_frame_host) {}
+    : DocumentUserData<CloseListenerHost>(render_frame_host) {}
 
 CloseListenerHost::~CloseListenerHost() = default;
 
@@ -31,6 +31,6 @@ bool CloseListenerHost::SignalIfActive() {
   return true;
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(CloseListenerHost);
+DOCUMENT_USER_DATA_KEY_IMPL(CloseListenerHost);
 
 }  // namespace content

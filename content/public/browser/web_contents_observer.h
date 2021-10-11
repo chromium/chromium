@@ -69,7 +69,7 @@ struct Referrer;
 // helpers will suffice:
 //
 // - Classes that have a 1:1 relationship with one RenderFrameHost can often
-//   use `RenderDocumentHostUserData` instead.
+//   use `DocumentUserData` instead.
 // - Mojo interface implementations that have a 1 RenderFrameHost to many
 //   instances relationship can often use `DocumentService` instead.
 //
@@ -321,10 +321,10 @@ class CONTENT_EXPORT WebContentsObserver {
   // HasCommitted.
   //
   // The per-document / per-page data should be stored in
-  // RenderDocumentHostUserData / PageUserData instead of resetting it in
+  // DocumentUserData / PageUserData instead of resetting it in
   // DidFinishNavigation. (In particular, the page might be stored in the
   // back-forward cache instead of being deleted. See comments in PageUserData /
-  // RenderDocumentHostUserData for more details).
+  // DocumentUserData for more details).
   virtual void DidFinishNavigation(NavigationHandle* navigation_handle) {}
 
   // Called after the contents replaces the |predecessor_contents| in its

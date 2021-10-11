@@ -17,7 +17,7 @@ namespace content {
 // PageUserData is created when a user of an API inherits this class and calls
 // CreateForPage.
 //
-// PageUserData is similar to RenderDocumentHostUserData, but is attached to the
+// PageUserData is similar to DocumentUserData, but is attached to the
 // page (1:1 with main document) instead of any document. Prefer using
 // PageUserData for main-document-only data.
 //

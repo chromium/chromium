@@ -1532,7 +1532,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
     delegate_->RenderFrameDeleted(this);
 
   // Resetting `document_associated_data_` destroys live `DocumentService` and
-  // `RenderDocumentHostUserData` instances. It is important for them to be
+  // `DocumentUserData` instances. It is important for them to be
   // destroyed before the body of the `RenderFrameHostImpl` destructor
   // completes. Among other things, this ensures that any `SafeRef`s from
   // `DocumentService` and `RenderFrameHostUserData` subclasses are still valid

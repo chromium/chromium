@@ -9,9 +9,9 @@
 #include <unordered_map>
 
 #include "content/common/content_export.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
-#include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -36,7 +36,7 @@ class RenderProcessHost;
 // owner.
 //
 // PermissionServiceContext instances associated with a RenderFrameHost must be
-// created via the RenderDocumentHostUserData static factories, as these
+// created via the DocumentUserData static factories, as these
 // instances are deleted when a new document is commited.
 class CONTENT_EXPORT PermissionServiceContext
     : public RenderProcessHostObserver {
@@ -85,7 +85,7 @@ class CONTENT_EXPORT PermissionServiceContext
   class PermissionSubscription;
   struct DocumentPermissionServiceContextHolder;
 
-  // Use RenderDocumentHostUserData static methods to create instances attached
+  // Use DocumentUserData static methods to create instances attached
   // to a RenderFrameHost.
   explicit PermissionServiceContext(RenderFrameHost* render_frame_host);
 

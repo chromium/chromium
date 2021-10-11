@@ -8,7 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/id_map.h"
 #include "base/macros.h"
-#include "content/public/browser/render_document_host_user_data.h"
+#include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
@@ -21,9 +21,8 @@ namespace content {
 // associated with the main frame of the observed WebContents. It handles the
 // IPC messaging with the child process.
 // TODO(mlamouri): keep a cached version and a dirty bit here.
-class ManifestManagerHost
-    : public RenderDocumentHostUserData<ManifestManagerHost>,
-      public blink::mojom::ManifestUrlChangeObserver {
+class ManifestManagerHost : public DocumentUserData<ManifestManagerHost>,
+                            public blink::mojom::ManifestUrlChangeObserver {
  public:
   ManifestManagerHost(const ManifestManagerHost&) = delete;
   ManifestManagerHost& operator=(const ManifestManagerHost&) = delete;
@@ -48,7 +47,7 @@ class ManifestManagerHost
  private:
   explicit ManifestManagerHost(RenderFrameHost* render_frame_host);
 
-  friend class RenderDocumentHostUserData<ManifestManagerHost>;
+  friend class DocumentUserData<ManifestManagerHost>;
 
   using CallbackMap = base::IDMap<std::unique_ptr<GetManifestCallback>>;
 
@@ -70,7 +69,7 @@ class ManifestManagerHost
   mojo::AssociatedReceiver<blink::mojom::ManifestUrlChangeObserver>
       manifest_url_change_observer_receiver_{this};
 
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+  DOCUMENT_USER_DATA_KEY_DECL();
 };
 
 }  // namespace content

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/render_document_host_user_data.h"
+#include "content/public/browser/document_user_data.h"
 
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
@@ -44,9 +44,9 @@ namespace {
 
 int next_id = 0;
 
-// Example class which inherits the RenderDocumentHostUserData, all the data is
+// Example class which inherits the DocumentUserData, all the data is
 // associated to the lifetime of the document.
-class Data : public RenderDocumentHostUserData<Data> {
+class Data : public DocumentUserData<Data> {
  public:
   ~Data() override = default;
 
@@ -56,20 +56,20 @@ class Data : public RenderDocumentHostUserData<Data> {
 
  private:
   explicit Data(RenderFrameHost* render_frame_host)
-      : RenderDocumentHostUserData<Data>(render_frame_host) {
+      : DocumentUserData<Data>(render_frame_host) {
     unique_id_ = ++next_id;
   }
 
-  friend class content::RenderDocumentHostUserData<Data>;
+  friend class content::DocumentUserData<Data>;
 
   int unique_id_;
 
   base::WeakPtrFactory<Data> weak_ptr_factory_{this};
 
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+  DOCUMENT_USER_DATA_KEY_DECL();
 };
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(Data);
+DOCUMENT_USER_DATA_KEY_IMPL(Data);
 
 // Observer class to track creation of new popups. It is used
 // in subsequent tests.
@@ -99,9 +99,9 @@ class PopupCreatedObserver : public WebContentsDelegate {
 
 }  // namespace
 
-class RenderDocumentHostUserDataTest : public ContentBrowserTest {
+class DocumentUserDataTest : public ContentBrowserTest {
  public:
-  ~RenderDocumentHostUserDataTest() override = default;
+  ~DocumentUserDataTest() override = default;
 
  protected:
   void SetUpOnMainThread() override {
@@ -118,8 +118,8 @@ class RenderDocumentHostUserDataTest : public ContentBrowserTest {
   }
 };
 
-// Test basic functionality of RenderDocumentHostUserData.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
+// Test basic functionality of DocumentUserData.
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
                        GetCreateAndDeleteForCurrentDocument) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -146,9 +146,8 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   EXPECT_FALSE(Data::GetForCurrentDocument(rfh_a));
 }
 
-// Test GetOrCreateForCurrentDocument API of RenderDocumentHostUserData.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
-                       GetOrCreateForCurrentDocument) {
+// Test GetOrCreateForCurrentDocument API of DocumentUserData.
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, GetOrCreateForCurrentDocument) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
 
@@ -172,10 +171,9 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   EXPECT_TRUE(created_data);
 }
 
-// Tests that RenderDocumentHostUserData objects are different for each
+// Tests that DocumentUserData objects are different for each
 // RenderFrameHost in FrameTree when there are multiple frames.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
-                       CheckForMultipleRFHsInFrameTree) {
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, CheckForMultipleRFHsInFrameTree) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
@@ -185,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   RenderFrameHostImpl* rfh_a = top_frame_host();
   RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
 
-  // 2) Create RenderDocumentHostUserData associated with both RenderFrameHosts
+  // 2) Create DocumentUserData associated with both RenderFrameHosts
   // a and b.
   Data::CreateForCurrentDocument(rfh_a);
   Data* data_a = Data::GetForCurrentDocument(rfh_a);
@@ -194,16 +192,16 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   EXPECT_TRUE(data_a);
   EXPECT_TRUE(data_b);
 
-  // 3) Check that RDHUD objects for both RenderFrameHost a and b have different
+  // 3) Check that DUD objects for both RenderFrameHost a and b have different
   // unique_id's.
   EXPECT_NE(data_a->unique_id(), data_b->unique_id());
 }
 
-// Tests that RenderDocumentHostUserData object is preserved when the renderer
-// process crashes even when RenderFrameHost still exists, but the RDHUD object
+// Tests that DocumentUserData object is preserved when the renderer
+// process crashes even when RenderFrameHost still exists, but the DUD object
 // is cleared if the RenderFrameHost is reused for the new RenderFrame creation
 // when the previous renderer process crashes.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
                        CrashedFrameUserDataIsPreservedAndDeletedOnReset) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -212,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* rfh_a = top_frame_host();
 
-  // 2) Create RenderDocumentHostUserData associated with A.
+  // 2) Create DocumentUserData associated with A.
   Data::CreateForCurrentDocument(rfh_a);
   base::WeakPtr<Data> data = Data::GetForCurrentDocument(rfh_a)->GetWeakPtr();
   EXPECT_TRUE(data);
@@ -224,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   renderer_process->Shutdown(0);
   crash_observer.Wait();
 
-  // 4) RDHUD shouldn't be cleared after the renderer crash.
+  // 4) DUD shouldn't be cleared after the renderer crash.
   EXPECT_FALSE(rfh_a->IsRenderFrameLive());
   EXPECT_TRUE(data);
 
@@ -239,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
                           },
                           &did_clear_user_data));
 
-  // 6) Re-initialize RenderFrame, now RDHUD should be cleared on new
+  // 6) Re-initialize RenderFrame, now DUD should be cleared on new
   // RenderFrame creation after crash when
   // RenderFrameHostImpl::RenderFrameDeleted was called.
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
@@ -251,21 +249,21 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   RenderFrameHostImpl* new_rfh_a = top_frame_host();
   EXPECT_TRUE(new_rfh_a->IsRenderFrameLive());
 
-  // 7) RDHUD should be cleared after initialization.
+  // 7) DUD should be cleared after initialization.
   EXPECT_FALSE(data);
 
-  // 8) Check RDHUD object creation after new RenderFrame creation.
+  // 8) Check DUD object creation after new RenderFrame creation.
   Data::CreateForCurrentDocument(new_rfh_a);
   base::WeakPtr<Data> new_data =
       Data::GetForCurrentDocument(new_rfh_a)->GetWeakPtr();
   EXPECT_TRUE(new_data);
 }
 
-// Tests that RenderDocumentHostUserData object is not cleared when speculative
+// Tests that DocumentUserData object is not cleared when speculative
 // RFH commits after the renderer hosting the current RFH (of old URL) crashes
 // i.e., while navigating to a new URL (using speculative RFH) and having the
 // current RFH (of old URL) not alive.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
                        CheckWithFrameCrashDuringNavigation) {
   // TODO(sreejakshetty): Investigate why the data is being deleted after crash
   // when BackForwardCache is enabled.
@@ -292,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   // and also use PAGE_TRANSITION_LINK for the navigation to ensure that the
   // speculative RFH is going to use the same BrowsingInstance as the original
   // RFH. Otherwise, we'd create a new speculative RFH at ReadyToCommit time,
-  // deleting the RDHUD we created for the first speculative RFH.
+  // deleting the DUD we created for the first speculative RFH.
   DisableProactiveBrowsingInstanceSwapFor(rfh_a);
   shell()->LoadURLForFrame(url_b, std::string(),
                            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK));
@@ -306,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
             NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
   EXPECT_TRUE(pending_rfh);
 
-  // 3) Get the RenderDocumentHostUserData associated with the speculative
+  // 3) Get the DocumentUserData associated with the speculative
   // RenderFrameHost.
   Data::CreateForCurrentDocument(pending_rfh);
   base::WeakPtr<Data> data =
@@ -320,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   renderer_process->Shutdown(0);
   crash_observer.Wait();
 
-  // 5) Check that the RDHUD object is not cleared after renderer process
+  // 5) Check that the DUD object is not cleared after renderer process
   // crashes.
   EXPECT_EQ(top_frame_host(), rfh_a);
   EXPECT_FALSE(pending_rfh->IsActive());
@@ -339,11 +337,11 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   EXPECT_TRUE(data);
 }
 
-// Tests that RenderDocumentHostUserData object is not cleared when speculative
+// Tests that DocumentUserData object is not cleared when speculative
 // RFH commits after renderer hosting the current RFH (of old URL) which happens
 // before navigating to a new URL (using Speculative RFH) and having the current
 // RenderFrameHost (of old URL) not alive.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
                        CheckWithFrameCrashBeforeNavigation) {
   if (ShouldSkipEarlyCommitPendingForCrashedFrame())
     return;
@@ -385,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   EXPECT_TRUE(current_rfh);
   EXPECT_TRUE(current_rfh->IsActive());
 
-  // 4) Get the RenderDocumentHostUserData associated with speculative
+  // 4) Get the DocumentUserData associated with speculative
   // RenderFrameHost.
   Data::CreateForCurrentDocument(current_rfh);
   base::WeakPtr<Data> data =
@@ -403,10 +401,10 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   EXPECT_TRUE(data);
 }
 
-// Tests that RenderDocumentHostUserData object is created for speculative
+// Tests that DocumentUserData object is created for speculative
 // RenderFrameHost and check if they point to same object before and after
 // commit.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
                        CheckIDsForSpeculativeRFHBeforeAndAfterCommit) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -453,9 +451,9 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   EXPECT_EQ(data_before_commit->unique_id(), data_after_commit->unique_id());
 }
 
-// Tests that RenderDocumentHostUserData object is deleted when the speculative
+// Tests that DocumentUserData object is deleted when the speculative
 // RenderFrameHost gets deleted before being able to commit.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, SpeculativeRFHDeleted) {
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, SpeculativeRFHDeleted) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
@@ -493,13 +491,13 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, SpeculativeRFHDeleted) {
   EXPECT_TRUE(delete_speculative_c.deleted());
 
   // 5) Once the speculative RenderFrameHost is deleted, the associated
-  // RenderDocumentHostUserData should be deleted.
+  // DocumentUserData should be deleted.
   EXPECT_FALSE(data);
 }
 
-// Tests that RenderDocumentHostUserData is cleared when the RenderFrameHost is
+// Tests that DocumentUserData is cleared when the RenderFrameHost is
 // deleted.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, RenderFrameHostDeleted) {
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, RenderFrameHostDeleted) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
@@ -521,16 +519,15 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, RenderFrameHostDeleted) {
   EXPECT_TRUE(ExecJs(root, "document.querySelector('iframe').remove()"));
 
   // 4) Once the RenderFrameHost is deleted, the associated
-  // RenderDocumentHostUserData should be deleted.
+  // DocumentUserData should be deleted.
   delete_observer_rfh_b.WaitUntilDeleted();
   EXPECT_FALSE(data);
 }
 
-// Tests that RenderDocumentHostUserData object is not cleared when the
+// Tests that DocumentUserData object is not cleared when the
 // RenderFrameHost is in pending deletion state for both main frame and sub
 // frame.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
-                       CheckInPendingDeletionState) {
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, CheckInPendingDeletionState) {
   ASSERT_TRUE(embedded_test_server()->Start());
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   GURL url_ab(embedded_test_server()->GetURL(
@@ -545,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   // Test needs these RenderFrameHosts to be pending deletion after navigating
   // but it doesn't happen with BackForwardCache as it is stored in cache.
   // BFCache case is covered explicitly by
-  // "RenderDocumentHostUserDataWithBackForwardCacheTest.
+  // "DocumentUserDataWithBackForwardCacheTest.
   //      BackForwardCacheNavigation" test.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
                                     BackForwardCache::TEST_ASSUMES_NO_CACHING);
@@ -554,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   LeaveInPendingDeletionState(rfh_a);
   LeaveInPendingDeletionState(rfh_b);
 
-  // 3) Create RDHUD object for both rfh_a and rfh_b before running unload
+  // 3) Create DUD object for both rfh_a and rfh_b before running unload
   // handlers.
   Data::CreateForCurrentDocument(rfh_a);
   Data::CreateForCurrentDocument(rfh_b);
@@ -567,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   // 4) Navigate from A(B) to C.
   EXPECT_TRUE(NavigateToURL(shell(), url_c));
 
-  // 5) Check RDHUD objects |data_a| and |data_b| are not cleared when rfh_a and
+  // 5) Check DUD objects |data_a| and |data_b| are not cleared when rfh_a and
   // rfh_b are in pending deletion state.
   EXPECT_EQ(rfh_a->lifecycle_state(),
             RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
@@ -580,10 +577,9 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   EXPECT_FALSE(rfh_b->IsActive());
 }
 
-// Tests that RenderDocumentHostUserData associated with RenderFrameHost is not
+// Tests that DocumentUserData associated with RenderFrameHost is not
 // cleared on same document navigation.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
-                       CommitSameDocumentNavigation) {
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, CommitSameDocumentNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_a2(embedded_test_server()->GetURL("a.com", "/title1.html#2"));
@@ -602,16 +598,16 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(url_a2, web_contents()->GetMainFrame()->GetLastCommittedURL());
 
-  // 4) Check if the RDHUD objects are pointing to the same instance after
+  // 4) Check if the DUD objects are pointing to the same instance after
   // navigation.
   Data* data2 = Data::GetForCurrentDocument(rfh_a);
   EXPECT_TRUE(data2);
   EXPECT_EQ(data->unique_id(), data2->unique_id());
 }
 
-// Tests that RenderDocumentHostUserData object is not cleared when navigation
+// Tests that DocumentUserData object is not cleared when navigation
 // is cancelled.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, CancelledNavigation) {
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, CancelledNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -650,9 +646,9 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, CancelledNavigation) {
   EXPECT_EQ(data->unique_id(), data2->unique_id());
 }
 
-// Tests that RenderDocumentHostUserData object is cleared when a failed
+// Tests that DocumentUserData object is cleared when a failed
 // navigation results in an error page.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, FailedNavigation) {
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, FailedNavigation) {
   // This test is only valid if error page isolation is enabled.
   if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(true))
     return;
@@ -686,15 +682,15 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, FailedNavigation) {
   EXPECT_TRUE(observer.is_error());
   EXPECT_EQ(net::ERR_DNS_TIMED_OUT, observer.net_error_code());
 
-  // 4) The associated RenderDocumentHostUserData object should be deleted.
+  // 4) The associated DocumentUserData object should be deleted.
   delete_observer_rfh_a.WaitUntilDeleted();
   EXPECT_FALSE(data);
 }
 
-// Tests that RenderDocumentHostUserData object is cleared when it is neither a
+// Tests that DocumentUserData object is cleared when it is neither a
 // same document navigation nor when it is stored in back-forward cache after
 // navigating away.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, CrossSiteNavigation) {
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, CrossSiteNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -716,12 +712,12 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, CrossSiteNavigation) {
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
   EXPECT_NE(rfh_a, top_frame_host());
 
-  // 4) Both rfh_a and RDHUD should be deleted.
+  // 4) Both rfh_a and DUD should be deleted.
   delete_observer_rfh_a.WaitUntilDeleted();
   EXPECT_FALSE(data);
 }
 
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, SameSiteNavigation) {
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, SameSiteNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
@@ -743,14 +739,14 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, SameSiteNavigation) {
   // 3) Navigate to A2.
   EXPECT_TRUE(NavigateToURL(shell(), url_a2));
 
-  // 4) The associated RenderDocumentHostUserData should be deleted.
+  // 4) The associated DocumentUserData should be deleted.
   EXPECT_FALSE(data);
 }
 
 // This test ensures that the data created during the new WebContents
 // initialisation is not lost during the initial "navigation" triggered by the
 // window.open.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, WindowOpen) {
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, WindowOpen) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   int popup_data_id = -1;
@@ -791,7 +787,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, WindowOpen) {
   web_contents()->SetDelegate(nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, BlankIframe) {
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, BlankIframe) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -835,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, BlankIframe) {
   EXPECT_THAT(current_ids, testing::ElementsAre(starting_id, starting_id + 1));
 }
 
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, SrcDocIframe) {
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, SrcDocIframe) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -882,8 +878,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, SrcDocIframe) {
 // This test doesn't actually work at the moment and documents the current
 // behaviour rather than intended one.
 // TODO(sreejakshetty): Fix it.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
-                       AttachOnCreatingInitialFrame) {
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest, AttachOnCreatingInitialFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -910,7 +905,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   // when we started a navigation (IsRenderFrameLive == false). It will complete
   // its initialisation, dispatching RenderFrameCreated, but during the
   // navigation commit we will consider the document in it to be reset later
-  // when we commit the navigation. In the short term, we should not reset RDHUD
+  // when we commit the navigation. In the short term, we should not reset DUD
   // in that case. In the long term, we probably should create a new
   // RenderFrameHost here.
   EXPECT_TRUE(observed_frame_creation);
@@ -918,11 +913,10 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
       Data::GetForCurrentDocument(shell()->web_contents()->GetMainFrame()));
 }
 
-// Test RenderDocumentHostUserData with BackForwardCache feature enabled.
-class RenderDocumentHostUserDataWithBackForwardCacheTest
-    : public RenderDocumentHostUserDataTest {
+// Test DocumentUserData with BackForwardCache feature enabled.
+class DocumentUserDataWithBackForwardCacheTest : public DocumentUserDataTest {
  public:
-  RenderDocumentHostUserDataWithBackForwardCacheTest() {
+  DocumentUserDataWithBackForwardCacheTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kBackForwardCache,
           // Set a very long TTL before expiration (longer than the test
@@ -937,9 +931,9 @@ class RenderDocumentHostUserDataWithBackForwardCacheTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests that RenderDocumentHostUserData object is not cleared on storing and
+// Tests that DocumentUserData object is not cleared on storing and
 // restoring a page from back-forward cache.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataWithBackForwardCacheTest,
+IN_PROC_BROWSER_TEST_F(DocumentUserDataWithBackForwardCacheTest,
                        BackForwardCacheNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));

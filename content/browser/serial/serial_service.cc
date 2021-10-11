@@ -40,7 +40,7 @@ blink::mojom::SerialPortInfoPtr ToBlinkType(
 }  // namespace
 
 SerialService::SerialService(RenderFrameHost* rfh)
-    : RenderDocumentHostUserData<SerialService>(rfh) {
+    : DocumentUserData<SerialService>(rfh) {
   DCHECK(render_frame_host().IsFeatureEnabled(
       blink::mojom::PermissionsPolicyFeature::kSerial));
   // Serial API is not supported for back-forward cache for now because we
@@ -209,6 +209,6 @@ void SerialService::DecrementActiveFrameCount() {
   web_contents_impl->DecrementSerialActiveFrameCount();
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(SerialService);
+DOCUMENT_USER_DATA_KEY_IMPL(SerialService);
 
 }  // namespace content

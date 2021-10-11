@@ -48,7 +48,7 @@ namespace {
 //    content::ChildProcessSecurityPolicy.
 // 2. This robustly handles initial empty documents (see the *InitialEmptyDoc*
 //    tests in //content_script_tracker_browsertest.cc) and isn't impacted
-//    by ReadyToCommit races associated with RenderDocumentHostUserData.
+//    by ReadyToCommit races associated with DocumentUserData.
 // For more information see:
 // https://docs.google.com/document/d/1MFprp2ss2r9RNamJ7Jxva1bvRZvec3rzGceDGoJ6vW0/edit#
 class RenderProcessHostUserData : public base::SupportsUserData::Data {

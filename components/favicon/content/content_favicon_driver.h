@@ -9,9 +9,9 @@
 
 #include "base/macros.h"
 #include "components/favicon/core/favicon_driver_impl.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/reload_type.h"
-#include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
@@ -52,10 +52,10 @@ class ContentFaviconDriver
   // TODO(crbug.com/1205018): these two classes are current used to ensure that
   // we disregard manifest URL updates that arrive prior to onload firing.
   struct DocumentManifestData
-      : public content::RenderDocumentHostUserData<DocumentManifestData> {
+      : public content::DocumentUserData<DocumentManifestData> {
     explicit DocumentManifestData(content::RenderFrameHost* rfh);
     ~DocumentManifestData() override;
-    RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+    DOCUMENT_USER_DATA_KEY_DECL();
     bool has_manifest_url = false;
   };
 

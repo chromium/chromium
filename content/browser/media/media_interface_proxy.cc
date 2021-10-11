@@ -217,7 +217,7 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
 }  // namespace
 
 MediaInterfaceProxy::MediaInterfaceProxy(RenderFrameHost* render_frame_host)
-    : RenderDocumentHostUserData(render_frame_host) {
+    : DocumentUserData(render_frame_host) {
   DVLOG(1) << __func__;
 
   std::string cdm_file_system_id;
@@ -592,6 +592,6 @@ void MediaInterfaceProxy::OnChromeOsCdmCreated(
 }
 #endif  // defined(OS_CHROMEOS)
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(MediaInterfaceProxy);
+DOCUMENT_USER_DATA_KEY_IMPL(MediaInterfaceProxy);
 
 }  // namespace content

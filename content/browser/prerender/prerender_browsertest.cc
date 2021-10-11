@@ -38,12 +38,12 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/disallow_activation_reason.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_type.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
-#include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -115,9 +115,9 @@ RenderFrameHost* FindRenderFrameHost(Page& page, const GURL& url) {
       page, base::BindRepeating(&content::FrameHasSourceUrl, url));
 }
 
-// Example class which inherits the RenderDocumentHostUserData, all the data is
+// Example class which inherits the DocumentUserData, all the data is
 // associated to the lifetime of the document.
-class DocumentData : public RenderDocumentHostUserData<DocumentData> {
+class DocumentData : public DocumentUserData<DocumentData> {
  public:
   ~DocumentData() override = default;
 
@@ -127,16 +127,16 @@ class DocumentData : public RenderDocumentHostUserData<DocumentData> {
 
  private:
   explicit DocumentData(RenderFrameHost* render_frame_host)
-      : RenderDocumentHostUserData<DocumentData>(render_frame_host) {}
+      : DocumentUserData<DocumentData>(render_frame_host) {}
 
-  friend class content::RenderDocumentHostUserData<DocumentData>;
+  friend class content::DocumentUserData<DocumentData>;
 
   base::WeakPtrFactory<DocumentData> weak_ptr_factory_{this};
 
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+  DOCUMENT_USER_DATA_KEY_DECL();
 };
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(DocumentData);
+DOCUMENT_USER_DATA_KEY_IMPL(DocumentData);
 
 class PrerenderBrowserTest : public ContentBrowserTest {
  public:
@@ -2519,9 +2519,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                    "getDirectory (prerendering: false)"}));
 }
 
-// Tests that RenderDocumentHostUserData object is not cleared on activating a
+// Tests that DocumentUserData object is not cleared on activating a
 // prerendered page.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RenderDocumentHostUserData) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DocumentUserData) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
 

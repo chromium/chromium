@@ -112,14 +112,13 @@ void DigitalGoodsImpl::ListPurchases(ListPurchasesCallback callback) {
 
 // Private methods:
 DigitalGoodsImpl::DigitalGoodsImpl(content::RenderFrameHost* rfh)
-    : content::RenderDocumentHostUserData<DigitalGoodsImpl>(rfh),
-      receiver_(this) {}
+    : content::DocumentUserData<DigitalGoodsImpl>(rfh), receiver_(this) {}
 
 arc::ArcDigitalGoodsBridge* DigitalGoodsImpl::GetArcDigitalGoodsBridge() {
   return arc::ArcDigitalGoodsBridge::GetForBrowserContext(
       render_frame_host().GetBrowserContext());
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(DigitalGoodsImpl);
+DOCUMENT_USER_DATA_KEY_IMPL(DigitalGoodsImpl);
 
 }  // namespace apps

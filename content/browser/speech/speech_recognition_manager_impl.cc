@@ -26,7 +26,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/render_document_host_user_data.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
@@ -59,7 +59,7 @@ SpeechRecognitionManagerImpl* g_speech_recognition_manager_impl;
 int SpeechRecognitionManagerImpl::next_requester_id_ = 0;
 
 class FrameSessionTracker
-    : public content::RenderDocumentHostUserData<FrameSessionTracker> {
+    : public content::DocumentUserData<FrameSessionTracker> {
  public:
   using FrameDeletedCallback =
       base::RepeatingCallback<void(int /* session_id */)>;
@@ -111,10 +111,10 @@ class FrameSessionTracker
 
  private:
   explicit FrameSessionTracker(content::RenderFrameHost* rfh)
-      : RenderDocumentHostUserData<FrameSessionTracker>(rfh) {}
+      : DocumentUserData<FrameSessionTracker>(rfh) {}
 
-  friend class content::RenderDocumentHostUserData<FrameSessionTracker>;
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+  friend class content::DocumentUserData<FrameSessionTracker>;
+  DOCUMENT_USER_DATA_KEY_DECL();
 
   void AddSession(int session_id) { sessions_.insert(session_id); }
 
@@ -128,7 +128,7 @@ class FrameSessionTracker
   std::set<int> sessions_;
 };
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(FrameSessionTracker);
+DOCUMENT_USER_DATA_KEY_IMPL(FrameSessionTracker);
 
 SpeechRecognitionManager* SpeechRecognitionManager::GetInstance() {
   if (manager_for_tests_)

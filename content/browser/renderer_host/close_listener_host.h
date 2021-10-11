@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_CLOSE_LISTENER_HOST_H_
 
 #include "content/common/content_export.h"
-#include "content/public/browser/render_document_host_user_data.h"
+#include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/close_watcher/close_listener.mojom.h"
 
@@ -15,7 +15,7 @@ namespace content {
 // CloseListenerHost is a helper class that notifies a CloseListener
 // in the renderer host of a close signal (e.g., an android back button press).
 class CONTENT_EXPORT CloseListenerHost
-    : public RenderDocumentHostUserData<CloseListenerHost> {
+    : public DocumentUserData<CloseListenerHost> {
  public:
   ~CloseListenerHost() override;
   CloseListenerHost(const CloseListenerHost&) = delete;
@@ -26,10 +26,10 @@ class CONTENT_EXPORT CloseListenerHost
 
  private:
   explicit CloseListenerHost(RenderFrameHost* render_frame_host);
-  friend class RenderDocumentHostUserData<CloseListenerHost>;
+  friend class DocumentUserData<CloseListenerHost>;
 
   mojo::Remote<blink::mojom::CloseListener> close_listener_;
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+  DOCUMENT_USER_DATA_KEY_DECL();
 };
 
 }  // namespace content
