@@ -66,6 +66,7 @@ source_set("first_run") {
     "//ios/chrome/browser/geolocation",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/signin",
