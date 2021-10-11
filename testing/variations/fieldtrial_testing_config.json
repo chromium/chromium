@@ -2008,6 +2008,21 @@
             ]
         }
     ],
+    "ChromeOSWallpaperMigration": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WallpaperWebUI"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeShareLongScreenshot": [
         {
             "platforms": [
