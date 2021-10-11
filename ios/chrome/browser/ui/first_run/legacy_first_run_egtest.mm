@@ -140,12 +140,6 @@ id<GREYMatcher> SkipSigninButton() {
   [[EarlGrey selectElementWithMatcher:SkipSigninButton()]
       performAction:grey_tap()];
 
-  // Dismiss the location prompt.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT))]
-      performAction:grey_tap()];
-
   [[EarlGrey selectElementWithMatcher:FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -217,13 +211,6 @@ id<GREYMatcher> SkipSigninButton() {
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:MatchInWindowWithNumber(0, SkipSigninButton())]
-      performAction:grey_tap()];
-
-  // Dismiss the location prompt.
-  [[EarlGrey selectElementWithMatcher:
-                 MatchInWindowWithNumber(
-                     0, grey_text(l10n_util::GetNSString(
-                            IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT)))]
       performAction:grey_tap()];
 
   // Check for both fake omniboxes visibility.
