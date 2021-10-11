@@ -10,6 +10,7 @@ import("../../oobe_auto_imports.gni")
 group("polymer3_elements") {
   public_deps = [
     ":active_directory_password_change_module",
+    ":gaia_password_changed_module",
     ":management_transition_module",
   ]
 }
@@ -22,7 +23,6 @@ js_type_check("closure_compile_local") {
   uses_legacy_modules = true
   deps = [
     ":encryption_migration",
-    ":gaia_password_changed",
     ":lacros_data_migration",
     ":offline_login",
     ":update_required_card",
@@ -34,6 +34,7 @@ js_type_check("closure_compile_module") {
   closure_flags = default_closure_args
   deps = [
     ":active_directory_password_change.m",
+    ":gaia_password_changed.m",
     ":management_transition.m",
   ]
 }
@@ -49,19 +50,6 @@ js_library("encryption_migration") {
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
-  ]
-}
-
-js_library("gaia_password_changed") {
-  deps = [
-    "../..:login_ui_tools",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_next_button",
-    "../../components/buttons:oobe_text_button",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog",
   ]
 }
 
@@ -109,6 +97,20 @@ js_library("active_directory_password_change.m") {
   extra_deps = [ ":active_directory_password_change_module" ]
 }
 
+js_library("gaia_password_changed.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/gaia_password_changed.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_next_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/dialogs:oobe_loading_dialog.m",
+  ]
+  extra_deps = [ ":gaia_password_changed_module" ]
+}
+
 js_library("management_transition.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/management_transition.m.js" ]
   deps = [
@@ -125,6 +127,14 @@ js_library("management_transition.m") {
 polymer_modulizer("active_directory_password_change") {
   js_file = "active_directory_password_change.js"
   html_file = "active_directory_password_change.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("gaia_password_changed") {
+  js_file = "gaia_password_changed.js"
+  html_file = "gaia_password_changed.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

@@ -44,6 +44,7 @@ oobe_auto_imports = [
   "chrome/browser/resources/chromeos/login/components/oobe_types.html|OobeTypes",
   "chrome/browser/resources/chromeos/login/components/web_view_helper.html|WebViewHelper",
   "chrome/browser/resources/chromeos/login/cr_ui.html|Oobe",
+  "chrome/browser/resources/chromeos/login/login_ui_tools.html|addSubmitListener",
   "ui/webui/resources/cr_components/chromeos/network/mojo_interface_provider.html|MojoInterfaceProviderImpl",
   "ui/webui/resources/cr_components/chromeos/network/network_list_types.html|NetworkList",
   "ui/webui/resources/cr_components/chromeos/network/onc_mojo.html|OncMojo",
@@ -56,4 +57,5 @@ oobe_namespace_rewrites = [
   "Polymer.mixinBehaviors|mixinBehaviors",
   "Polymer.Element|PolymerElement",
   "network_config.MojoInterfaceProviderImpl|MojoInterfaceProviderImpl",
+  "cr.ui.LoginUITools.addSubmitListener|addSubmitListener",
 ]
