@@ -35,7 +35,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
 
 class Spin : public PlatformThread::Delegate {
  public:
-  Spin(MaybeSpinLock<true>* lock, uint32_t* data)
+  Spin(MaybeLock<true>* lock, uint32_t* data)
       : lock_(lock), data_(data), should_stop_(false) {}
   ~Spin() override = default;
 
@@ -60,7 +60,7 @@ class Spin : public PlatformThread::Delegate {
   int started_count() const { return started_count_; }
 
  private:
-  MaybeSpinLock<true>* lock_;
+  MaybeLock<true>* lock_;
   uint32_t* data_ GUARDED_BY(lock_);
   std::atomic<bool> should_stop_;
   std::atomic<int> started_count_{0};
@@ -90,7 +90,7 @@ TEST(PartitionLockPerfTest, Simple) {
 TEST(PartitionLockPerfTest, WithCompetingThreads) {
   uint32_t data = 0;
 
-  MaybeSpinLock<true> lock;
+  MaybeLock<true> lock;
 
   // Starts a competing thread executing the same loop as this thread.
   Spin thread_main(&lock, &data);

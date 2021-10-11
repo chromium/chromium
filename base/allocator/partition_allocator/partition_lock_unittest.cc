@@ -25,26 +25,26 @@ class LambdaThreadDelegate : public PlatformThread::Delegate {
   RepeatingClosure f_;
 };
 
-TEST(PartitionAllocSpinLockTest, Simple) {
-  MaybeSpinLock<true> lock;
+TEST(PartitionAllocLockTest, Simple) {
+  MaybeLock<true> lock;
   lock.Lock();
   lock.Unlock();
 }
 
-MaybeSpinLock<true> g_lock;
-TEST(PartitionAllocSpinLockTest, StaticLockStartsUnlocked) {
+MaybeLock<true> g_lock;
+TEST(PartitionAllocLockTest, StaticLockStartsUnlocked) {
   g_lock.Lock();
   g_lock.Unlock();
 }
 
-TEST(PartitionAllocSpinLockTest, Contended) {
+TEST(PartitionAllocLockTest, Contended) {
   int counter = 0;  // *Not* atomic.
   std::vector<PlatformThreadHandle> thread_handles;
   constexpr int iterations_per_thread = 1000000;
   constexpr int num_threads = 4;
 
-  MaybeSpinLock<true> lock;
-  MaybeSpinLock<true> start_lock;
+  MaybeLock<true> lock;
+  MaybeLock<true> start_lock;
 
   LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
     start_lock.Lock();
@@ -73,14 +73,14 @@ TEST(PartitionAllocSpinLockTest, Contended) {
   EXPECT_EQ(iterations_per_thread * num_threads, counter);
 }
 
-TEST(PartitionAllocSpinLockTest, SlowThreads) {
+TEST(PartitionAllocLockTest, SlowThreads) {
   int counter = 0;  // *Not* atomic.
   std::vector<PlatformThreadHandle> thread_handles;
   constexpr int iterations_per_thread = 100;
   constexpr int num_threads = 4;
 
-  MaybeSpinLock<true> lock;
-  MaybeSpinLock<true> start_lock;
+  MaybeLock<true> lock;
+  MaybeLock<true> start_lock;
 
   LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
     start_lock.Lock();
@@ -111,8 +111,8 @@ TEST(PartitionAllocSpinLockTest, SlowThreads) {
   EXPECT_EQ(iterations_per_thread * num_threads, counter);
 }
 
-TEST(PartitionAllocSpinLockTest, AssertAcquired) {
-  MaybeSpinLock<true> lock;
+TEST(PartitionAllocLockTest, AssertAcquired) {
+  MaybeLock<true> lock;
   lock.Lock();
   lock.AssertAcquired();
   lock.Unlock();
@@ -121,13 +121,13 @@ TEST(PartitionAllocSpinLockTest, AssertAcquired) {
 // AssertAcquired() is only enforced with DCHECK()s.
 #if defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
 
-TEST(PartitionAllocSpinLockTest, AssertAcquiredDeathTest) {
-  MaybeSpinLock<true> lock;
+TEST(PartitionAllocLockTest, AssertAcquiredDeathTest) {
+  MaybeLock<true> lock;
   EXPECT_DEATH(lock.AssertAcquired(), "");
 }
 
-TEST(PartitionAllocSpinLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
-  MaybeSpinLock<true> lock;
+TEST(PartitionAllocLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
+  MaybeLock<true> lock;
   // NO_THREAD_SAFETY_ANALYSIS: The checker rightfully points out that the lock
   // is still held at the end of the function, which is what we want here.
   LambdaThreadDelegate delegate{

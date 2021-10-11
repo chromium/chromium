@@ -273,7 +273,7 @@ struct BASE_EXPORT PartitionRoot {
 
   // Not used on the fastest path (thread cache allocations), but on the fast
   // path of the central allocator.
-  internal::MaybeSpinLock<thread_safe> lock_;
+  internal::MaybeLock<thread_safe> lock_;
 
   Bucket buckets[kNumBuckets] = {};
   Bucket sentinel_bucket;
