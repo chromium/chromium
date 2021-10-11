@@ -3894,7 +3894,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Conversions.CreateReportStatus"
-    enum="ConversionStorageCreateReportStatus" expires_after="M98">
+    enum="ConversionStorageCreateReportStatus" expires_after="M99">
   <owner>apaseltiner@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3906,7 +3906,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Conversions.DeleteSentReportOperation"
-    enum="ConversionPostSendReportDeleteEvent" expires_after="M98">
+    enum="ConversionPostSendReportDeleteEvent" expires_after="M99">
   <owner>apaseltiner@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
