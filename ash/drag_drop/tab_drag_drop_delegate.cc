@@ -130,12 +130,13 @@ void TabDragDropDelegate::DragUpdate(const gfx::Point& location_in_screen) {
   tab_dragging_recorder_->RequestNext();
 }
 
-void TabDragDropDelegate::Drop(const gfx::Point& location_in_screen,
-                               const ui::OSExchangeData& drop_data) {
+void TabDragDropDelegate::DropAndDeleteSelf(
+    const gfx::Point& location_in_screen,
+    const ui::OSExchangeData& drop_data) {
   tab_dragging_recorder_.reset();
 
   auto closure = base::BindOnce(&TabDragDropDelegate::OnNewBrowserWindowCreated,
-                                base::Unretained(this), location_in_screen);
+                                base::Owned(this), location_in_screen);
   NewWindowDelegate::GetPrimary()->NewWindowForWebUITabDrop(
       source_window_, drop_data, std::move(closure));
 }
