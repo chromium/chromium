@@ -17,6 +17,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/account_id/account_id.h"
+#include "components/app_restore/app_launch_info.h"
 #include "components/desks_storage/core/desk_model_observer.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
@@ -69,6 +70,9 @@ constexpr char kTestPwaAppId[] = "test_pwa_app_id";
 constexpr char kTestChromeAppId[] = "test_chrome_app_id";
 constexpr char kUuidFormat[] = "9e186d5a-502e-49ce-9ee1-00000000000%d";
 constexpr char kNameFormat[] = "template %d";
+constexpr char kTestUrlFormat[] = "https://www.testdomain%d.com/";
+constexpr int kDefaultTemplateIndex = 1;
+constexpr int kBrowserWindowId = 1555;
 const base::GUID kTestUuid1 =
     base::GUID::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 1));
 const base::GUID kTestUuid2 =
@@ -106,10 +110,10 @@ void FillExampleBrowserAppWindow(WorkspaceDeskSpecifics_App* app) {
   BrowserAppWindow* app_window =
       app->mutable_app()->mutable_browser_app_window();
   BrowserAppTab* tab1 = app_window->add_tabs();
-  tab1->set_url("https://www.testdomain1.com/");
+  tab1->set_url(base::StringPrintf(kTestUrlFormat, 1));
 
   BrowserAppTab* tab2 = app_window->add_tabs();
-  tab2->set_url("https://www.testdomain2.com/");
+  tab2->set_url(base::StringPrintf(kTestUrlFormat, 2));
 
   app_window->set_active_tab_index(1);
 
@@ -183,6 +187,52 @@ WorkspaceDeskSpecifics CreateWorkspaceDeskSpecifics(
       base::StringPrintf(kNameFormat, templateIndex), created_time);
 }
 
+std::unique_ptr<ash::DeskTemplate> CreateTemplateWithBrowserFromScratch(
+    int template_index,
+    const base::Time& created_time) {
+  const std::string template_uuid =
+      base::StringPrintf(kUuidFormat, template_index);
+  const std::string template_name =
+      base::StringPrintf(kNameFormat, template_index);
+  auto desk_template = std::make_unique<ash::DeskTemplate>(
+      template_uuid, template_name, created_time);
+
+  auto restore_data = std::make_unique<app_restore::RestoreData>();
+  auto browser_info = std::make_unique<app_restore::AppLaunchInfo>(
+      extension_misc::kChromeAppId, kBrowserWindowId);
+  browser_info->urls = {GURL(base::StringPrintf(kTestUrlFormat, 1)),
+                        GURL(base::StringPrintf(kTestUrlFormat, 2))};
+
+  restore_data->AddAppLaunchInfo(std::move(browser_info));
+  desk_template->set_desk_restore_data(std::move(restore_data));
+
+  return desk_template;
+}
+
+WorkspaceDeskSpecifics CreateBrowserTemplateExpectedValue(
+    int template_index,
+    const base::Time& created_time) {
+  WorkspaceDeskSpecifics expected_desk_specifics;
+  expected_desk_specifics.set_uuid(
+      base::StringPrintf(kUuidFormat, template_index));
+  expected_desk_specifics.set_name(
+      base::StringPrintf(kNameFormat, template_index));
+  expected_desk_specifics.set_created_time_usec(
+      created_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  Desk* expected_desk = expected_desk_specifics.mutable_desk();
+  WorkspaceDeskSpecifics_App* app = expected_desk->add_apps();
+  app->set_window_id(kBrowserWindowId);
+  BrowserAppWindow* browser_window =
+      app->mutable_app()->mutable_browser_app_window();
+
+  BrowserAppTab* first_tab = browser_window->add_tabs();
+  first_tab->set_url(GURL(base::StringPrintf(kTestUrlFormat, 1)).spec());
+  BrowserAppTab* second_tab = browser_window->add_tabs();
+  second_tab->set_url(GURL(base::StringPrintf(kTestUrlFormat, 2)).spec());
+
+  return expected_desk_specifics;
+}
+
 ModelTypeState StateWithEncryption(const std::string& encryption_key_name) {
   ModelTypeState state;
   state.set_encryption_key_name(encryption_key_name);
@@ -218,7 +268,7 @@ MATCHER_P(UuidIs, e, "") {
 MATCHER_P(EqualsSpecifics, expected, "") {
   if (arg.SerializeAsString() != expected.SerializeAsString()) {
     *result_listener << "Expected:\n"
-                     << expected.SerializeAsString() << "Actual\n"
+                     << expected.SerializeAsString() << "\nActual\n"
                      << arg.SerializeAsString() << "\n";
     return false;
   }
@@ -271,8 +321,9 @@ class DeskSyncBridgeTest : public testing::Test {
 
     deltas.push_back(
         MakeApp(kTestPwaAppId, "Test PWA App", apps::mojom::AppType::kWeb));
+    // chromeAppId returns kExtension in the real Apps cache.
     deltas.push_back(MakeApp(extension_misc::kChromeAppId, "Chrome Browser",
-                             apps::mojom::AppType::kWeb));
+                             apps::mojom::AppType::kExtension));
     deltas.push_back(MakeApp(kTestChromeAppId, "Test Chrome App",
                              apps::mojom::AppType::kExtension));
 
@@ -412,6 +463,25 @@ TEST_F(DeskSyncBridgeTest, DeskTemplateConversionShouldBeLossless) {
       bridge()->ToSyncProto(desk_template.get());
 
   EXPECT_THAT(converted_desk_proto, EqualsSpecifics(desk_proto));
+}
+
+// Tests that URLs are saved properly when converting a DeskTemplate
+// to its protobuf form.
+TEST_F(DeskSyncBridgeTest, EnsureBrowserWindowsSavedProperly) {
+  CreateBridge();
+  base::Time created_time = base::Time::Now();
+
+  // Uses a different method to instantiate the template that doesn't rely
+  // on the assumption that the template is instantiated from a proto, but
+  // rather is captured and saved for the first time.
+  std::unique_ptr<DeskTemplate> desk_template =
+      CreateTemplateWithBrowserFromScratch(kDefaultTemplateIndex, created_time);
+  WorkspaceDeskSpecifics converted_desk_proto =
+      bridge()->ToSyncProto(desk_template.get());
+  WorkspaceDeskSpecifics expected_desk_proto =
+      CreateBrowserTemplateExpectedValue(kDefaultTemplateIndex, created_time);
+
+  EXPECT_THAT(converted_desk_proto, EqualsSpecifics(expected_desk_proto));
 }
 
 TEST_F(DeskSyncBridgeTest, IsBridgeReady) {

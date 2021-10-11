@@ -457,7 +457,12 @@ void FillWorkspaceDeskSpecifics(
       const int window_id = window_id_to_launch_info.first;
       const app_restore::AppRestoreData* app_restore_data =
           window_id_to_launch_info.second.get();
-      const apps::mojom::AppType app_type = apps_cache->GetAppType(app_id);
+      // The apps cache returns kExtension for browser windows, therefore we
+      // short circuit the cache retrieval if we get the browser ID.
+      const apps::mojom::AppType app_type =
+          app_id == extension_misc::kChromeAppId
+              ? apps::mojom::AppType::kWeb
+              : apps_cache->GetAppType(app_id);
 
       WorkspaceDeskSpecifics_App* app =
           out_entry_proto->mutable_desk()->add_apps();
