@@ -42,7 +42,7 @@ void ParentAccessUIHandlerImpl::GetOAuthToken(GetOAuthTokenCallback callback) {
 
   oauth2_access_token_fetcher_ =
       identity_manager_->CreateAccessTokenFetcherForAccount(
-          identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+          identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync),
           "parent_access", scopes,
           base::BindOnce(&ParentAccessUIHandlerImpl::OnAccessTokenFetchComplete,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
