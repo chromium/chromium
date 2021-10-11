@@ -636,8 +636,8 @@ testcase.breadcrumbsDontExceedAvailableViewport = async () => {
   // The relayout occurs asynchronously, so there's a chance after navigating
   // to the directory the below calculation occurs prior to the relayout
   // happening, repeat until the values agree with each other.
+  const caller = getCaller();
   await repeatUntil(async () => {
-    const caller = getCaller();
     const actualDialogHeaderWidth = await remoteCall.waitForElementStyles(
         appId, 'div.dialog-header', ['width']);
     if (expectedDialogHeaderWidth.renderedWidth !==
