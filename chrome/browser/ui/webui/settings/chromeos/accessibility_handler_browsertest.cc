@@ -187,7 +187,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, OnSodaErrorNotification) {
   ASSERT_TRUE(WasWebUIListenerCalledWithStringArgument(
       "dictation-locale-menu-subtitle-changed",
       "Couldn’t download English (United States) speech files. Download will "
-      "be attempted later. Speech is sent to Google for processing for now."));
+      "be attempted later. Speech is sent to Google for processing until "
+      "download is completed."));
 }
 
 // Verifies that the correct listener is fired when the language pack matching
@@ -206,7 +207,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest,
   ASSERT_TRUE(WasWebUIListenerCalledWithStringArgument(
       "dictation-locale-menu-subtitle-changed",
       "Couldn’t download English (United States) speech files. Download will "
-      "be attempted later. Speech is sent to Google for processing for now."));
+      "be attempted later. Speech is sent to Google for processing until "
+      "download is completed."));
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, DictationLocalesCalculation) {

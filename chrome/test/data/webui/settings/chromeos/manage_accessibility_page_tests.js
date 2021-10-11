@@ -378,17 +378,18 @@ suite('ManageAccessibilityPageTests', function() {
     page.prefs.settings.a11y.dictation_locale.value = 'es';
     assertEquals(
         'Couldn’t download Spanish speech files. Download will be attempted ' +
-            'later. Speech is sent to Google for processing for now.',
+            'later. Speech is sent to Google for processing until download ' +
+            'is completed.',
         page.computeDictationLocaleSubtitle_());
 
     page.prefs.settings.a11y.dictation_locale.value = 'de';
     assertEquals(
-        'German speech is sent to Google for processing.',
+        'German speech is sent to Google for processing',
         page.computeDictationLocaleSubtitle_());
 
     page.prefs.settings.a11y.dictation_locale.value = 'fr-FR';
     assertEquals(
-        'French (France) speech is sent to Google for processing.',
+        'French (France) speech is sent to Google for processing',
         page.computeDictationLocaleSubtitle_());
 
     // Only use the subtitle override once.
@@ -396,7 +397,7 @@ suite('ManageAccessibilityPageTests', function() {
     assertEquals('Testing', page.computeDictationLocaleSubtitle_());
     assertFalse(page.useDictationLocaleSubtitleOverride_);
     assertEquals(
-        'French (France) speech is sent to Google for processing.',
+        'French (France) speech is sent to Google for processing',
         page.computeDictationLocaleSubtitle_());
   });
 });

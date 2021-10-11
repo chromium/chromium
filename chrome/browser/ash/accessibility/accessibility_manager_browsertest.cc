@@ -315,7 +315,7 @@ void AssertSodaNotificationShownForDictation(
   const std::u16string kDescription =
       success ? u"Speech is now processed locally and Dictation works offline"
               : u"Download will be attempted later. Speech will be sent to "
-                u"Google for processing for now.";
+                u"Google for processing until download is completed.";
   message_center::SystemNotificationWarningLevel warning =
       success
           ? message_center::SystemNotificationWarningLevel::NORMAL

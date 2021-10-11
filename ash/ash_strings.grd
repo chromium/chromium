@@ -3912,7 +3912,7 @@ Here are some things you can try to get started.
         Couldn't download <ph name="Language">$1<ex>English</ex></ph> speech files
       </message>
       <message name="IDS_ASH_A11Y_DICTATION_NOTIFICATION_SODA_DOWNLOAD_FAILED_DESC" desc="The text for a notification that is shown when speech recognition files fail to download.">
-        Download will be attempted later. Speech will be sent to Google for processing for now.
+        Download will be attempted later. Speech will be sent to Google for processing until download is completed.
       </message>
 
       <!-- Strings for persistent desks bar-->
