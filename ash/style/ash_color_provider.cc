@@ -264,12 +264,6 @@ bool AshColorProvider::IsDarkModeEnabled() const {
   if (!features::IsDarkLightModeEnabled() && override_light_mode_as_default_)
     return false;
 
-  // Keep colors in OOBE as LIGHT regardless `kDarkLightMode` is enabled or not.
-  if (Shell::Get()->session_controller()->GetSessionState() ==
-      session_manager::SessionState::OOBE) {
-    return false;
-  }
-
   // Keep it at dark mode if it is not in an active user session or
   // kDarkLightMode feature is not enabled.
   // TODO(minch): Make LIGHT as the color mode while it is not in an active user
