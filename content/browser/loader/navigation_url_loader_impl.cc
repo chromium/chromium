@@ -1449,9 +1449,6 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
     mojo::ScopedDataPipeConsumerHandle response_body,
     const GlobalRequestID& global_request_id,
     bool is_download) {
-  // TODO(https://crbug.com/1068896): Remove
-  // "Navigation.NavigationURLLoaderImplIOPostTime" histogram as well.
-
   TRACE_EVENT_NESTABLE_ASYNC_END2(
       "navigation", "Navigation timeToResponseStarted", TRACE_ID_LOCAL(this),
       "&NavigationURLLoaderImpl", static_cast<void*>(this), "success", true);

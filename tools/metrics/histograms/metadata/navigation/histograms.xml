@@ -1015,6 +1015,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Navigation.NavigationURLLoaderImplIOPostTime"
     units="microseconds" expires_after="M79">
+  <obsolete>
+    Removed May 2020.
+  </obsolete>
   <owner>jam@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <summary>
