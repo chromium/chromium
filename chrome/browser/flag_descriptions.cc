@@ -5206,6 +5206,10 @@ const char kWindowControlMenuDescription[] =
     "Enables the accelerator (Control + Alt + F) to float current active "
     "window.";
 
+const char kLauncherNudgeName[] = "Enable launcher nudge";
+const char kLauncherNudgeDescription[] =
+    "Enables nudges that bring new users' attention to the launcher button.";
+
 // Prefer keeping this section sorted to adding new definitions down here.
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

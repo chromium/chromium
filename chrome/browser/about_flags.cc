@@ -6652,6 +6652,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceShowContinueSectionName,
      flag_descriptions::kForceShowContinueSectionDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(app_list_features::kForceShowContinueSection)},
+    {"launcher-nudge", flag_descriptions::kLauncherNudgeName,
+     flag_descriptions::kLauncherNudgeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kShelfLauncherNudge)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

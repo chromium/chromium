@@ -3000,6 +3000,9 @@ extern const char kWifiSyncAndroidDescription[];
 extern const char kWindowControlMenu[];
 extern const char kWindowControlMenuDescription[];
 
+extern const char kLauncherNudgeName[];
+extern const char kLauncherNudgeDescription[];
+
 // Prefer keeping this section sorted to adding new declarations down here.
 
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)

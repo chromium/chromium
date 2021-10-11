@@ -52047,6 +52047,7 @@ from previous Chrome versions.
   <int value="1159760152"
       label="ContextMenuSearchAndShopWithGoogleLens:disabled"/>
   <int value="1161822401" label="LoginDetection:enabled"/>
+  <int value="1162420462" label="ShelfLauncherNudge:disabled"/>
   <int value="1162693272" label="MacCoreLocationImplementation:disabled"/>
   <int value="1163255347" label="ash-enable-touch-view-touch-feedback"/>
   <int value="1164377197" label="SwipingFromLeftEdgeToGoBack:enabled"/>
@@ -52914,6 +52915,7 @@ from previous Chrome versions.
   <int value="1825940786" label="ChromeHomePromo:disabled"/>
   <int value="1827369558" label="AndroidPayIntegrationV1:disabled"/>
   <int value="1828660283" label="enable-webfonts-intervention-trigger"/>
+  <int value="1829231569" label="ShelfLauncherNudge:enabled"/>
   <int value="1829259057" label="MediaAppHandlesPdf:enabled"/>
   <int value="1830460973" label="disable-network-settings-config"/>
   <int value="1831103529" label="MediaNotificationsCounter:disabled"/>

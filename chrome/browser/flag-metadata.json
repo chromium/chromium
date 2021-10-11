@@ -3577,6 +3577,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "launcher-nudge",
+    "owners": [ "wcwang", "//ash/app_list/OWNERS" ],
+    "expiry_milestone": 104
+  },
+  {
     "name": "launcher-query-highlighting",
     "owners": ["wrong", "tby", "thanhdng"],
     "expiry_milestone": 95
