@@ -1,14 +1,10 @@
 {
   "$build/archive": {
-    "archive_datas": [
-      {
-        "archive_type": "ARCHIVE_TYPE_FILES",
-        "files": [
-          "chrome_100_percent.pak"
-        ],
-        "gcs_bucket": "chromium-browser-snapshots",
-        "gcs_path": "experimental/Linux_x64/{%position%}"
-      }
+    "source_side_spec_path": [
+      "src",
+      "infra",
+      "archive_config",
+      "linux-archive-rel.json"
     ]
   },
   "$build/goma": {
