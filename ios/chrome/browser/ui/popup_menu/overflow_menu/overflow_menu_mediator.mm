@@ -22,9 +22,20 @@ OverflowMenuAction* CreateOverflowMenuAction(int nameID, NSString* imageName) {
                                enterpriseDisabled:NO];
 }
 
+OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
+                                                       NSString* imageName) {
+  NSString* name = l10n_util::GetNSString(nameID);
+  return [[OverflowMenuDestination alloc] initWithName:name
+                                             imageName:imageName
+                                    enterpriseDisabled:NO];
+}
+
 }  // namespace
 
 @interface OverflowMenuMediator ()
+
+@property(nonatomic, strong) OverflowMenuDestination* bookmarksDestination;
+@property(nonatomic, strong) OverflowMenuDestination* historyDestination;
 
 @property(nonatomic, strong) OverflowMenuAction* openIncognitoTabAction;
 
@@ -42,9 +53,15 @@ OverflowMenuAction* CreateOverflowMenuAction(int nameID, NSString* imageName) {
 }
 
 - (OverflowMenuModel*)createModel {
+  self.bookmarksDestination = CreateOverflowMenuDestination(
+      IDS_IOS_TOOLS_MENU_BOOKMARKS, @"overflow_menu_destination_bookmarks");
+  self.historyDestination = CreateOverflowMenuDestination(
+      IDS_IOS_TOOLS_MENU_HISTORY, @"overflow_menu_destination_history");
   self.openIncognitoTabAction = CreateOverflowMenuAction(
       IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, @"popup_menu_new_incognito_tab");
-  return [[OverflowMenuModel alloc] initWithDestinations:@[]
+  return [[OverflowMenuModel alloc] initWithDestinations:@[
+    self.bookmarksDestination, self.historyDestination
+  ]
                                                  actions:@[
                                                    self.openIncognitoTabAction,
                                                  ]];

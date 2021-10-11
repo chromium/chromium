@@ -9,9 +9,6 @@ import SwiftUI
   /// The user-visible name of the destination.
   public let name: String
 
-  /// The color used for the background of the destination icon.
-  public let color: Color
-
   /// The name of the image used to load the image for SwiftUI.
   let imageName: String
 
@@ -25,12 +22,10 @@ import SwiftUI
 
   public init(
     name: String,
-    color: UIColor,
     imageName: String,
     enterpriseDisabled: Bool
   ) {
     self.name = name
-    self.color = Color(color)
     self.imageName = imageName
     self.enterpriseDisabled = enterpriseDisabled
   }

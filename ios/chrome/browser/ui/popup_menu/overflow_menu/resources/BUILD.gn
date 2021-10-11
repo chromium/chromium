@@ -1,0 +1,25 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("overflow_menu_destination_bookmarks") {
+  sources = [
+    "overflow_menu_destination_bookmarks.imageset/Contents.json",
+    "overflow_menu_destination_bookmarks.imageset/overflow_menu_destination_bookmarks@2x.png",
+    "overflow_menu_destination_bookmarks.imageset/overflow_menu_destination_bookmarks@3x.png",
+    "overflow_menu_destination_bookmarks.imageset/overflow_menu_destination_bookmarks_dark@2x.png",
+    "overflow_menu_destination_bookmarks.imageset/overflow_menu_destination_bookmarks_dark@3x.png",
+  ]
+}
+
+imageset("overflow_menu_destination_history") {
+  sources = [
+    "overflow_menu_destination_history.imageset/Contents.json",
+    "overflow_menu_destination_history.imageset/overflow_menu_destination_history@2x.png",
+    "overflow_menu_destination_history.imageset/overflow_menu_destination_history@3x.png",
+    "overflow_menu_destination_history.imageset/overflow_menu_destination_history_dark@2x.png",
+    "overflow_menu_destination_history.imageset/overflow_menu_destination_history_dark@3x.png",
+  ]
+}
