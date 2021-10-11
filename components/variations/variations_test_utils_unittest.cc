@@ -67,8 +67,8 @@ TEST_P(SignedSeedDataTest, HasStudyNames) {
                                       signed_seed_data.study_names));
 }
 
-INSTANTIATE_TEST_CASE_P(VariationsTestUtils,
-                        SignedSeedDataTest,
-                        ::testing::Values(kTestSeedData, kCrashingSeedData));
+INSTANTIATE_TEST_SUITE_P(VariationsTestUtils,
+                         SignedSeedDataTest,
+                         ::testing::Values(kTestSeedData, kCrashingSeedData));
 
 }  // namespace variations
