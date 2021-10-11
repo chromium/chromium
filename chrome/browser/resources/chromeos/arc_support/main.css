@@ -76,26 +76,23 @@ p.title {
 }
 
 .button-active-directory-auth {
-  margin: 26px 18px 0 26px;
+  margin: 26px 24px 0 26px;
 }
 
 #button-retry,
 #button-agree,
 #button-next {
-  margin-inline-end: 18px;
-}
-
-#button-cancel {
-  margin-inline-end: 6px;
+  margin-inline-end: 24px;
 }
 
 #button-run-network-tests,
-#button-send-feedback {
-  margin-inline-end: 18px;
+#button-send-feedback,
+#button-cancel {
+  margin-inline-end: 8px;
 }
 
 #button-send-feedback {
-  margin-inline-start: 18px;
+  margin-inline-start: 24px;
 }
 
 #overlay-text-content p {
