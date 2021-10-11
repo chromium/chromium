@@ -83,6 +83,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -147,7 +148,6 @@
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "extensions/browser/extension_registry.h"
@@ -678,7 +678,7 @@ void Stop(Browser* browser) {
 
 void NewWindow(Browser* browser) {
   Profile* const profile = browser->profile();
-#if BUILDFLAG(ENABLE_EXTENSIONS) && defined(OS_MAC)
+#if defined(OS_MAC)
   // Web apps should open a window to their launch page.
   if (browser->app_controller()) {
     const web_app::AppId app_id = browser->app_controller()->app_id();
@@ -700,6 +700,7 @@ void NewWindow(Browser* browser) {
     return;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Hosted apps should open a window to their launch page.
   const extensions::Extension* extension = GetExtensionForBrowser(browser);
   if (extension && extension->is_hosted_app()) {
@@ -712,7 +713,8 @@ void NewWindow(Browser* browser) {
         extensions::AppLaunchInfo::GetLaunchWebURL(extension));
     return;
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // defined(OS_MAC)
   NewEmptyWindow(profile->GetOriginalProfile());
 }
 
