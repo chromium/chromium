@@ -410,8 +410,8 @@
       'mac-archive-rel-goma-rbe-latest': 'release_bot_mac_strip_minimal_symbols',
 
 
-      'chromeos-amd64-generic-rel-goma-rbe-canary': 'chromeos_amd64-generic',
-      'chromeos-amd64-generic-rel-goma-rbe-latest': 'chromeos_amd64-generic',
+      'chromeos-amd64-generic-rel-goma-rbe-canary': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized',
+      'chromeos-amd64-generic-rel-goma-rbe-latest': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized',
       'android-archive-dbg-goma-rbe-ats-canary': 'android_without_codecs_debug_bot',
       'android-archive-dbg-goma-rbe-ats-latest': 'android_without_codecs_debug_bot',
       'android-archive-dbg-goma-rbe-canary': 'android_without_codecs_debug_bot',

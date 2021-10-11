@@ -191,21 +191,23 @@
     }
   },
   "chromeos-amd64-generic-rel-goma-rbe-canary": {
-    "args_file": "//build/args/chromeos/amd64-generic.gni",
+    "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
     "gn_args": {
       "dcheck_always_on": false,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_goma": true,
+      "use_real_dbus_clients": false
     }
   },
   "chromeos-amd64-generic-rel-goma-rbe-latest": {
-    "args_file": "//build/args/chromeos/amd64-generic.gni",
+    "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
     "gn_args": {
       "dcheck_always_on": false,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_goma": true,
+      "use_real_dbus_clients": false
     }
   },
   "ios-device-goma-rbe-canary-clobber": {
