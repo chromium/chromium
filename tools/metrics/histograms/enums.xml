@@ -5235,6 +5235,14 @@ others/histograms.xml -->
   <int value="3" label="DELETE ALL"/>
 </enum>
 
+<enum name="AutocompleteActionPredictorNoStatePrefetchStatus">
+  <int value="0" label="NSP not started"/>
+  <int value="1" label="NSP cancelled"/>
+  <int value="2" label="NSP unused"/>
+  <int value="3" label="NSP hit finished"/>
+  <int value="4" label="NSP hit unfinished"/>
+</enum>
+
 <enum name="AutocompleteEvents">
   <int value="0" label="Suggestions Shown"/>
   <int value="1" label="Suggestion Selected"/>
