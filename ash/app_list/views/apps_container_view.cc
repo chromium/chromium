@@ -441,6 +441,7 @@ void AppsContainerView::ShowFolderForItemView(
 
 void AppsContainerView::ShowApps(AppListItemView* folder_item_view,
                                  bool select_folder) {
+  DVLOG(1) << __FUNCTION__;
   if (app_list_folder_view_->IsAnimationRunning())
     return;
 
@@ -458,6 +459,7 @@ void AppsContainerView::ShowApps(AppListItemView* folder_item_view,
 }
 
 void AppsContainerView::ResetForShowApps() {
+  DVLOG(1) << __FUNCTION__;
   UpdateSuggestionChips();
   UpdateRecentApps();
   SetShowState(SHOW_APPS, false);
@@ -484,6 +486,10 @@ bool AppsContainerView::IsInFolderView() const {
 }
 
 void AppsContainerView::ReparentDragEnded() {
+  DVLOG(1) << __FUNCTION__;
+  // The container will be showing apps if the folder was deleted mid-drag.
+  if (show_state_ == SHOW_APPS)
+    return;
   DCHECK_EQ(SHOW_ITEM_REPARENT, show_state_);
   show_state_ = AppsContainerView::SHOW_APPS;
 }

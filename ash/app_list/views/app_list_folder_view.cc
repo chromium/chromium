@@ -780,28 +780,9 @@ void AppListFolderView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
-void AppListFolderView::OnViewIsDeleting(views::View* view) {
-  DCHECK_EQ(view, folder_item_view_);
-
-  const bool hidden_for_reparent = hide_for_reparent_;
-  ResetState(/*restore_folder_item_view_state=*/false);
-
-  if (!hidden_for_reparent) {
-    folder_controller_->ShowApps(/*folder_item_view=*/nullptr,
-                                 /*select_folder=*/false);
-  }
-}
-
 void AppListFolderView::OnAppListItemWillBeDeleted(AppListItem* item) {
   if (item == folder_item_) {
-    // Cache `hide_for_reparent_` state, as it will be cleared by
-    // `ResetState()`.
-    const bool hidden_for_reparent = hide_for_reparent_;
     ResetState(/*restore_folder_item_view_state=*/true);
-
-    // Do not change state if it is hidden.
-    if (hidden_for_reparent || contents_container_->layer()->opacity() == 0.0f)
-      return;
 
     // If the folder item associated with this view is removed from the model,
     // (e.g. the last item in the folder was deleted), reset the view and signal
@@ -814,6 +795,7 @@ void AppListFolderView::OnAppListItemWillBeDeleted(AppListItem* item) {
 }
 
 void AppListFolderView::ResetState(bool restore_folder_item_view_state) {
+  DVLOG(1) << __FUNCTION__;
   if (folder_item_) {
     items_grid_view_->ClearSelectedView();
     items_grid_view_->SetItemList(nullptr);

@@ -21,7 +21,6 @@
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
-#include "ui/views/view_observer.h"
 
 namespace ash {
 
@@ -111,9 +110,6 @@ class ASH_EXPORT AppListFolderView
 
   // AppListModelObserver
   void OnAppListItemWillBeDeleted(AppListItem* item) override;
-
-  // views::ViewObserver:
-  void OnViewIsDeleting(views::View* view) override;
 
   // Updates preferred bounds of this view based on the activated folder item
   // icon's bounds.
