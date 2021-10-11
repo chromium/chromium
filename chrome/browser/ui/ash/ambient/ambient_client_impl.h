@@ -35,14 +35,21 @@ class AmbientClientImpl : public ash::AmbientClient {
       mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver) override;
   bool ShouldUseProdServer() override;
 
+  const std::map<base::UnguessableToken,
+                 std::unique_ptr<signin::AccessTokenFetcher>>&
+  token_fetchers_for_testing() const {
+    return token_fetchers_;
+  }
+
  private:
-  void GetAccessToken(GetAccessTokenCallback callback,
-                      const std::string& gaia_id,
-                      GoogleServiceAuthError error,
-                      signin::AccessTokenInfo access_token_info);
+  void OnGetAccessToken(GetAccessTokenCallback callback,
+                        base::UnguessableToken fetcher_id,
+                        const std::string& gaia_id,
+                        GoogleServiceAuthError error,
+                        signin::AccessTokenInfo access_token_info);
 
-  std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
-
+  std::map<base::UnguessableToken, std::unique_ptr<signin::AccessTokenFetcher>>
+      token_fetchers_;
   base::WeakPtrFactory<AmbientClientImpl> weak_factory_{this};
 };
 

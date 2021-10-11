@@ -124,16 +124,17 @@ void AmbientClientImpl::RequestAccessToken(GetAccessTokenCallback callback) {
   CoreAccountInfo account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   const signin::ScopeSet scopes{kPhotosOAuthScope, kBackdropOAuthScope};
-  // TODO(b/148463064): Handle retry refresh token and multiple requests.
-  // Currently only one request is allowed.
-  DCHECK(!access_token_fetcher_);
-  access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
-      account_info.account_id, /*oauth_consumer_name=*/"ChromeOS_AmbientMode",
-      scopes,
-      base::BindOnce(&AmbientClientImpl::GetAccessToken,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     account_info.gaia),
-      signin::AccessTokenFetcher::Mode::kImmediate);
+  auto fetcher_id = base::UnguessableToken::Create();
+  auto access_token_fetcher =
+      identity_manager->CreateAccessTokenFetcherForAccount(
+          account_info.account_id,
+          /*oauth_consumer_name=*/"ChromeOS_AmbientMode", scopes,
+          base::BindOnce(&AmbientClientImpl::OnGetAccessToken,
+                         weak_factory_.GetWeakPtr(), std::move(callback),
+                         fetcher_id, account_info.gaia),
+          signin::AccessTokenFetcher::Mode::kImmediate);
+
+  token_fetchers_.insert({fetcher_id, std::move(access_token_fetcher)});
 }
 
 void AmbientClientImpl::DownloadImage(
@@ -186,14 +187,13 @@ bool AmbientClientImpl::ShouldUseProdServer() {
          channel == version_info::Channel::BETA;
 }
 
-void AmbientClientImpl::GetAccessToken(
+void AmbientClientImpl::OnGetAccessToken(
     GetAccessTokenCallback callback,
+    base::UnguessableToken fetcher_id,
+
     const std::string& gaia_id,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
-  // It's safe to delete AccessTokenFetcher from inside its own callback.
-  access_token_fetcher_.reset();
-
   if (error.state() == GoogleServiceAuthError::NONE) {
     std::move(callback).Run(gaia_id, access_token_info.token,
                             access_token_info.expiration_time);
@@ -203,5 +203,6 @@ void AmbientClientImpl::GetAccessToken(
                             /*access_token=*/std::string(),
                             /*expiration_time=*/base::Time::Now());
   }
-}
 
+  token_fetchers_.erase(fetcher_id);
+}

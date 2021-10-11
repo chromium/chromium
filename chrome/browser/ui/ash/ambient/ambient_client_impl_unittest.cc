@@ -142,3 +142,22 @@ TEST_F(AmbientClientImplTest, DownloadImageWithNewUrl) {
   image_downloader().last_request_headers().GetHeader("Authorization", &out);
   EXPECT_EQ("Bearer access_token", out);
 }
+
+TEST_F(AmbientClientImplTest, DownloadImageWithNewUrlMultipleTimes) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(ash::features::kAmbientModeNewUrl);
+
+  identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+  AddAndLoginUser(AccountId::FromUserEmailGaiaId(
+      profile()->GetProfileUserName(), kTestGaiaId));
+  // make sure multiple images can download at the same time.
+  ambient_client().DownloadImage("test_url_1", base::DoNothing());
+  ambient_client().DownloadImage("test_url_2", base::DoNothing());
+  ambient_client().DownloadImage("test_url_3", base::DoNothing());
+
+  EXPECT_EQ(3, ambient_client().token_fetchers_for_testing().size());
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0, ambient_client().token_fetchers_for_testing().size());
+}
