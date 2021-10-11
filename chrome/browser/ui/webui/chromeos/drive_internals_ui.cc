@@ -449,13 +449,12 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
                      integration_service->GetMountPointPath().AsUTF8Unsafe());
     }
 
-    const char* kPathPreferences[] = {
+    const char* const kPathPreferences[] = {
         prefs::kSelectFileLastDirectory,
         prefs::kSaveFileDefaultDirectory,
         prefs::kDownloadDefaultDirectory,
     };
-    for (size_t i = 0; i < base::size(kPathPreferences); ++i) {
-      const char* const key = kPathPreferences[i];
+    for (const char* key : kPathPreferences) {
       AppendKeyValue(&paths, key,
                      profile()->GetPrefs()->GetFilePath(key).AsUTF8Unsafe());
     }
@@ -529,7 +528,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
   void UpdateDriveRelatedPreferencesSection() {
     SetSectionEnabled("drive-related-preferences-section", true);
 
-    const char* kDriveRelatedPreferences[] = {
+    const char* const kDriveRelatedPreferences[] = {
         drive::prefs::kDisableDrive,
         drive::prefs::kDisableDriveOverCellular,
         drive::prefs::kDriveFsWasLaunchedAtLeastOnce,
@@ -540,11 +539,10 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
     PrefService* pref_service = profile()->GetPrefs();
 
     base::ListValue preferences;
-    for (size_t i = 0; i < base::size(kDriveRelatedPreferences); ++i) {
-      const std::string key = kDriveRelatedPreferences[i];
+    for (const char* key : kDriveRelatedPreferences) {
       // As of now, all preferences are boolean.
       const std::string value =
-          (pref_service->GetBoolean(key.c_str()) ? "true" : "false");
+          (pref_service->GetBoolean(key) ? "true" : "false");
       AppendKeyValue(&preferences, key, value);
     }
 

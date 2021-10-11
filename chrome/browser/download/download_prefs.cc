@@ -143,23 +143,21 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
   // is set (this happens during the initial preference registration in static
   // RegisterProfilePrefs()), alter by GetDefaultDownloadDirectoryForProfile().
   // file_manager::util::MigratePathFromOldFormat will do this.
-  const char* path_pref[] = {
-      prefs::kSaveFileDefaultDirectory,
-      prefs::kDownloadDefaultDirectory
-  };
-  for (size_t i = 0; i < base::size(path_pref); ++i) {
-    const base::FilePath current = prefs->GetFilePath(path_pref[i]);
+  const char* const kPathPrefs[] = {prefs::kSaveFileDefaultDirectory,
+                                    prefs::kDownloadDefaultDirectory};
+  for (const char* path_pref : kPathPrefs) {
+    const base::FilePath current = prefs->GetFilePath(path_pref);
     base::FilePath migrated;
     if (!current.empty() &&
         file_manager::util::MigratePathFromOldFormat(
             profile_, GetDefaultDownloadDirectory(), current, &migrated)) {
-      prefs->SetFilePath(path_pref[i], migrated);
+      prefs->SetFilePath(path_pref, migrated);
     } else if (file_manager::util::MigrateToDriveFs(profile_, current,
                                                     &migrated)) {
-      prefs->SetFilePath(path_pref[i], migrated);
+      prefs->SetFilePath(path_pref, migrated);
     } else if (download_dir_util::ExpandDrivePolicyVariable(profile_, current,
                                                             &migrated)) {
-      prefs->SetFilePath(path_pref[i], migrated);
+      prefs->SetFilePath(path_pref, migrated);
     }
   }
 
