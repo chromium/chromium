@@ -4,9 +4,11 @@
 
 #include "ash/system/audio/audio_detailed_view.h"
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/audio/mic_gain_slider_controller.h"
@@ -17,6 +19,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/vector_icons/vector_icons.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"
@@ -86,9 +89,13 @@ AudioDetailedView::AudioDetailedView(DetailedViewDelegate* delegate)
   } else {
     Update();
   }
+
+  Shell::Get()->accessibility_controller()->AddObserver(this);
 }
 
-AudioDetailedView::~AudioDetailedView() = default;
+AudioDetailedView::~AudioDetailedView() {
+  Shell::Get()->accessibility_controller()->RemoveObserver(this);
+}
 
 void AudioDetailedView::Update() {
   UpdateAudioDevices();
@@ -154,6 +161,19 @@ void AudioDetailedView::UpdateAudioDevices() {
 void AudioDetailedView::UpdateScrollableList() {
   scroll_content()->RemoveAllChildViews();
   device_map_.clear();
+
+  // Add live caption toggle.
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  if (controller->IsLiveCaptionSettingVisibleInTray()) {
+    live_caption_view_ = AddScrollListCheckableItem(
+        vector_icons::kLiveCaptionOnIcon,
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION),
+        controller->live_caption().enabled(),
+        controller->IsEnterpriseIconVisibleForLiveCaption());
+    scroll_content()->AddChildView(
+        TrayPopupUtils::CreateListSubHeaderSeparator());
+  }
 
   // Add audio output devices.
   const bool has_output_devices = output_devices_.size() > 0;
@@ -286,6 +306,14 @@ void AudioDetailedView::OnInputNoiseCancellationTogglePressed() {
 }
 
 void AudioDetailedView::HandleViewClicked(views::View* view) {
+  if (live_caption_view_ && view == live_caption_view_) {
+    AccessibilityControllerImpl* controller =
+        Shell::Get()->accessibility_controller();
+    controller->live_caption().SetEnabled(
+        !controller->live_caption().enabled());
+    return;
+  }
+
   AudioDeviceMap::iterator iter = device_map_.find(view);
   if (iter == device_map_.end())
     return;
@@ -297,6 +325,15 @@ void AudioDetailedView::HandleViewClicked(views::View* view) {
   } else {
     audio_handler->SwitchToDevice(device, true,
                                   CrasAudioHandler::ACTIVATE_BY_USER);
+  }
+}
+
+void AudioDetailedView::OnAccessibilityStatusChanged() {
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  if (live_caption_view_ && controller->IsLiveCaptionSettingVisibleInTray()) {
+    TrayPopupUtils::UpdateCheckMarkVisibility(
+        live_caption_view_, controller->live_caption().enabled());
   }
 }
 
