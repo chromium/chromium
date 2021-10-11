@@ -174,13 +174,13 @@ class LaunchProcess {
   content::WebContents* Run();
 
  private:
-  const apps::ShareTarget* MaybeGetShareTarget();
+  const apps::ShareTarget* MaybeGetShareTarget() const;
   std::tuple<GURL, bool /*is_file_handling*/> GetLaunchUrl(
-      const apps::ShareTarget* share_target);
-  WindowOpenDisposition GetNavigationDisposition();
+      const apps::ShareTarget* share_target) const;
+  WindowOpenDisposition GetNavigationDisposition() const;
   content::WebContents* MaybeLaunchSystemWebApp(const GURL& launch_url);
   std::tuple<Browser*, WindowOpenDisposition> EnsureBrowser();
-  Browser* MaybeFindBrowserForLaunch();
+  Browser* MaybeFindBrowserForLaunch() const;
   Browser* CreateBrowserForLaunch();
   content::WebContents* NavigateBrowser(
       Browser* browser,
@@ -243,7 +243,7 @@ content::WebContents* LaunchProcess::Run() {
   return web_contents;
 }
 
-const apps::ShareTarget* LaunchProcess::MaybeGetShareTarget() {
+const apps::ShareTarget* LaunchProcess::MaybeGetShareTarget() const {
   bool is_share_intent =
       params_.intent &&
       (params_.intent->action == apps_util::kIntentActionSend ||
@@ -254,7 +254,7 @@ const apps::ShareTarget* LaunchProcess::MaybeGetShareTarget() {
 }
 
 std::tuple<GURL, bool /*is_file_handling*/> LaunchProcess::GetLaunchUrl(
-    const apps::ShareTarget* share_target) {
+    const apps::ShareTarget* share_target) const {
   GURL launch_url;
   bool is_file_handling = false;
   bool is_note_taking_intent =
@@ -295,7 +295,7 @@ std::tuple<GURL, bool /*is_file_handling*/> LaunchProcess::GetLaunchUrl(
   return {launch_url, is_file_handling};
 }
 
-WindowOpenDisposition LaunchProcess::GetNavigationDisposition() {
+WindowOpenDisposition LaunchProcess::GetNavigationDisposition() const {
   // Only CURRENT_TAB and NEW_FOREGROUND_TAB dispositions are supported for web
   // app launches.
   return params_.disposition == WindowOpenDisposition::CURRENT_TAB
@@ -337,7 +337,7 @@ std::tuple<Browser*, WindowOpenDisposition> LaunchProcess::EnsureBrowser() {
   return {browser, navigation_disposition};
 }
 
-Browser* LaunchProcess::MaybeFindBrowserForLaunch() {
+Browser* LaunchProcess::MaybeFindBrowserForLaunch() const {
   if (params_.container == apps::mojom::LaunchContainer::kLaunchContainerTab) {
     return chrome::FindTabbedBrowser(
         &profile_, /*match_original_profiles=*/false,
