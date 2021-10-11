@@ -846,7 +846,11 @@ void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
       // Note: StopAndClear sets IsSyncRequested to false, which ensures that
       // Sync-the-feature remains off.
       StopAndClear();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+      // TODO(https://crbug.com/1233933): Update this when Lacros profiles
+      //     support signed-in-but-not-consented-to-sync state.
+
       // On every platform except ChromeOS, revoke the Sync consent in
       // IdentityManager after a dashboard clear.
       if (!IsLocalSyncEnabled() &&
