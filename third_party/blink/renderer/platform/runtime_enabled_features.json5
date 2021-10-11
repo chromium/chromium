@@ -1097,7 +1097,7 @@
     },
     {
       name: "FontSynthesis",
-      status: "test",
+      status: "stable",
     },
     // For simulating Android's overlay fullscreen video in web tests on Linux.
     {

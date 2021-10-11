@@ -188,6 +188,9 @@ All changes to this list should go through Blink's feature review process: http:
     font-size
     font-stretch
     font-style
+    font-synthesis-small-caps
+    font-synthesis-style
+    font-synthesis-weight
     font-variant-caps
     font-variant-east-asian
     font-variant-ligatures
@@ -575,6 +578,10 @@ All changes to this list should go through Blink's feature review process: http:
         font-variant-numeric
         font-weight
         line-height
+    font-synthesis
+        font-synthesis-small-caps
+        font-synthesis-style
+        font-synthesis-weight
     font-variant
         font-variant-caps
         font-variant-east-asian
