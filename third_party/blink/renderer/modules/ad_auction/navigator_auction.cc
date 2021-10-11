@@ -64,12 +64,13 @@ String ErrorInvalidAuctionConfigJson(const AuctionAdConfig& config,
 // JSON and Origin conversion helpers.
 
 bool Jsonify(const ScriptState& script_state,
-             const v8::Local<v8::Object> object,
+             const v8::Local<v8::Value>& value,
              String& output) {
   v8::Local<v8::String> v8_string;
-  if (!v8::JSON::Stringify(script_state.GetContext(), object)
-           .ToLocal(&v8_string))
+  if (!v8::JSON::Stringify(script_state.GetContext(), value)
+           .ToLocal(&v8_string)) {
     return false;
+  }
   output = ToCoreString(v8_string);
   // JSON.stringify can fail to produce a string value in one of two ways: it
   // can throw an exception (as with unserializable objects), or it can return
@@ -193,8 +194,7 @@ bool CopyUserBiddingSignalsFromIdlToMojo(const ScriptState& script_state,
                                          mojom::blink::InterestGroup& output) {
   if (!input.hasUserBiddingSignals())
     return true;
-  if (!Jsonify(script_state,
-               input.userBiddingSignals().V8Value().As<v8::Object>(),
+  if (!Jsonify(script_state, input.userBiddingSignals().V8Value(),
                output.user_bidding_signals)) {
     exception_state.ThrowTypeError(
         ErrorInvalidInterestGroupJson(input, "userBiddingSignals"));
@@ -223,8 +223,7 @@ bool CopyAdsFromIdlToMojo(const ExecutionContext& context,
     }
     mojo_ad->render_url = render_url;
     if (ad->hasMetadata()) {
-      if (!Jsonify(script_state, ad->metadata().V8Value().As<v8::Object>(),
-                   mojo_ad->metadata)) {
+      if (!Jsonify(script_state, ad->metadata().V8Value(), mojo_ad->metadata)) {
         exception_state.ThrowTypeError(
             ErrorInvalidInterestGroupJson(input, "ad metadata"));
         return false;
@@ -254,8 +253,7 @@ bool CopyAdComponentsFromIdlToMojo(const ExecutionContext& context,
     }
     mojo_ad->render_url = render_url;
     if (ad->hasMetadata()) {
-      if (!Jsonify(script_state, ad->metadata().V8Value().As<v8::Object>(),
-                   mojo_ad->metadata)) {
+      if (!Jsonify(script_state, ad->metadata().V8Value(), mojo_ad->metadata)) {
         exception_state.ThrowTypeError(
             ErrorInvalidInterestGroupJson(input, "ad metadata"));
         return false;
@@ -346,7 +344,7 @@ bool CopyAuctionSignalsFromIdlToMojo(const ScriptState& script_state,
                                      mojom::blink::AuctionAdConfig& output) {
   if (!input.hasAuctionSignals())
     return true;
-  if (!Jsonify(script_state, input.auctionSignals().V8Value().As<v8::Object>(),
+  if (!Jsonify(script_state, input.auctionSignals().V8Value(),
                output.auction_signals)) {
     exception_state.ThrowTypeError(
         ErrorInvalidAuctionConfigJson(input, "auctionSignals"));
@@ -361,7 +359,7 @@ bool CopySellerSignalsFromIdlToMojo(const ScriptState& script_state,
                                     mojom::blink::AuctionAdConfig& output) {
   if (!input.hasSellerSignals())
     return true;
-  if (!Jsonify(script_state, input.sellerSignals().V8Value().As<v8::Object>(),
+  if (!Jsonify(script_state, input.sellerSignals().V8Value(),
                output.seller_signals)) {
     exception_state.ThrowTypeError(
         ErrorInvalidAuctionConfigJson(input, "sellerSignals"));
@@ -388,8 +386,7 @@ bool CopyPerBuyerSignalsFromIdlToMojo(const ScriptState& script_state,
       return false;
     }
     String buyer_signals_str;
-    if (!Jsonify(script_state,
-                 per_buyer_signal.second.V8Value().As<v8::Object>(),
+    if (!Jsonify(script_state, per_buyer_signal.second.V8Value(),
                  buyer_signals_str)) {
       exception_state.ThrowTypeError(
           ErrorInvalidAuctionConfigJson(input, "perBuyerSignals"));
