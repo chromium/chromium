@@ -61,8 +61,6 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     }
 
     public static final int DEFAULT_SNACKBAR_DURATION_MS = 3000;
-    // For snackbars with long strings where a longer duration is favorable.
-    public static final int DEFAULT_SNACKBAR_DURATION_LONG_MS = 8000;
     private static final int ACCESSIBILITY_MODE_SNACKBAR_DURATION_MS = 30000;
 
     // Used instead of the constant so tests can override the value.
