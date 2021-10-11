@@ -28,9 +28,11 @@
   <div class="cr-secondary-text">$i18n{privacyReviewWelcomeCardSubHeader}</div>
 </div>
 <div class="footer">
-  <cr-checkbox>
-    $i18n{privacyReviewWelcomeCardDontShowAgainCheckbox}
-  </cr-checkbox>
+  <settings-checkbox id="dontShowAgainCheckbox"
+      pref="{{prefs.privacy_review.show_welcome_card}}"
+      label="$i18n{privacyReviewWelcomeCardDontShowAgainCheckbox}"
+      inverted no-set-pref>
+  </settings-checkbox>
   <cr-button class="action-button" id="startButton"
       on-click="onStartButtonClick_">
     $i18n{privacyReviewWelcomeCardStartButton}

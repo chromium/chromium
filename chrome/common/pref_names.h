@@ -1201,6 +1201,8 @@ extern const char kLastWhatsNewVersion[];
 extern const char kLensRegionSearchEnabled[];
 #endif
 
+extern const char kPrivacyReviewShowWelcomeCard[];
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

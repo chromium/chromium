@@ -3367,4 +3367,7 @@ const char kLastWhatsNewVersion[] = "browser.last_whats_new_version";
 const char kLensRegionSearchEnabled[] = "policy.lens_region_search_enabled";
 #endif
 
+// A boolean indicating whether the Privacy Review Welcome Card should be shown.
+const char kPrivacyReviewShowWelcomeCard[] = "privacy_review.show_welcome_card";
+
 }  // namespace prefs

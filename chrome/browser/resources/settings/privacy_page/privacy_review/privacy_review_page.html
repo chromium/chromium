@@ -33,7 +33,7 @@
   <template is="dom-if"
       if="[[showFragment_(
              privacyReviewStepEnum_.WELCOME, privacyReviewStep_)]]">
-      <privacy-review-welcome-fragment id="welcomeFragment"
+      <privacy-review-welcome-fragment id="welcomeFragment" prefs="{{prefs}}"
           on-start-button-click="onNextButtonClick_">
       </privacy-review-welcome-fragment>
   </template>

@@ -23,6 +23,7 @@ import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resource
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
+import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {routes} from '../../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
 
@@ -47,11 +48,11 @@ interface PrivacyReviewStepComponents {
   isAvailable(): boolean;
 }
 
-const PrivacyReviewBase =
-    RouteObserverMixin(WebUIListenerMixin(I18nMixin(PolymerElement))) as {
-      new (): PolymerElement & I18nMixinInterface &
-      WebUIListenerMixinInterface & RouteObserverMixinInterface
-    };
+const PrivacyReviewBase = RouteObserverMixin(WebUIListenerMixin(
+                              I18nMixin(PrefsMixin(PolymerElement)))) as {
+  new (): PolymerElement & I18nMixinInterface & WebUIListenerMixinInterface &
+  RouteObserverMixinInterface & PrefsMixinInterface
+};
 
 /** @polymer */
 export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
@@ -144,7 +145,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
           onForwardNavigation: () => {
             this.navigateToCard_(PrivacyReviewStep.MSBB);
           },
-          isAvailable: () => true,
+          isAvailable: () => this.showWelcomeCard_(),
         },
       ],
       [
@@ -295,6 +296,10 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   private isSyncOn_(): boolean {
     return !!this.syncStatus_ && !!this.syncStatus_.signedIn &&
         !this.syncStatus_.hasError;
+  }
+
+  private showWelcomeCard_(): boolean {
+    return this.getPref('privacy_review.show_welcome_card').value;
   }
 
   private showHeader_(): boolean {

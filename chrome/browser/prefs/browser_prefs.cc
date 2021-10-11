@@ -1415,6 +1415,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 #endif
 
+  registry->RegisterBooleanPref(prefs::kPrivacyReviewShowWelcomeCard, true);
+
   RegisterProfilePrefsForMigration(registry);
 }
 

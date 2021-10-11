@@ -272,6 +272,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kDnsOverHttpsTemplates] =
       settings_api::PrefType::PREF_TYPE_STRING;
 
+  // Privacy Review
+  (*s_allowlist)[::prefs::kPrivacyReviewShowWelcomeCard] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+
   // Privacy Sandbox page
   (*s_allowlist)[::prefs::kPrivacySandboxApisEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;

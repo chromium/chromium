@@ -218,6 +218,16 @@ suite('PrivacyReviewEnabled', function() {
     document.body.innerHTML = '';
     page = /** @type {!SettingsPrivacyPageElement} */
         (document.createElement('settings-privacy-page'));
+    page.prefs = {
+      // Need privacy_sandbox pref for the page's setup.
+      privacy_sandbox: {
+        apis_enabled: {value: true},
+      },
+      privacy_review: {
+        show_welcome_card:
+            {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true},
+      },
+    };
     document.body.appendChild(page);
     return flushTasks();
   });
