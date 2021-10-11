@@ -60,6 +60,7 @@
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_dlc_installer.h"
 #include "components/arc/session/arc_session.h"
 #include "components/arc/session/connection_holder.h"
 #include "components/arc/session/file_system_status.h"
@@ -871,6 +872,18 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     if (file_system_status_rewriter_for_testing_)
       file_system_status_rewriter_for_testing_.Run(&file_system_status);
 
+    VLOG(2) << "Wait for DLC installation if necessary";
+    // Waits for a stable state (kInstalled/kUninstalled) and proceeds
+    // regardless of installation result because even if the installation
+    // has failed, it will only affect limited functionality (e.g. without
+    // Houdini library for ARM apps). ARCVM should still continue to start.
+    ArcDlcInstaller::Get()->WaitForStableState(base::BindOnce(
+        &ArcVmClientAdapter::LoadDemoResources, weak_factory_.GetWeakPtr(),
+        std::move(callback), std::move(file_system_status)));
+  }
+
+  void LoadDemoResources(chromeos::VoidDBusMethodCallback callback,
+                         FileSystemStatus file_system_status) {
     VLOG(2) << "Retrieving demo session apps path";
     DCHECK(demo_mode_delegate_);
     demo_mode_delegate_->EnsureOfflineResourcesLoaded(base::BindOnce(

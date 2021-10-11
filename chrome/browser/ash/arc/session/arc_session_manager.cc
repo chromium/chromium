@@ -61,6 +61,7 @@
 #include "components/arc/metrics/arc_metrics_service.h"
 #include "components/arc/metrics/stability_metrics_manager.h"
 #include "components/arc/session/arc_data_remover.h"
+#include "components/arc/session/arc_dlc_installer.h"
 #include "components/arc/session/arc_instance_mode.h"
 #include "components/arc/session/arc_management_transition.h"
 #include "components/arc/session/arc_session.h"
@@ -466,6 +467,14 @@ ArcSessionManager::ExpansionResult ReadSaltInternal() {
   return ArcSessionManager::ExpansionResult{salt, true};
 }
 
+// Checks whether ARC DLCs needs to be installed/uninstalled. Currently,
+// "houdini-rvc-dlc" is the only enabled DLC, so we only need to check
+// for the presence of kEnableHoudiniDlc flag in the command line.
+bool IsDlcRequired() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      chromeos::switches::kEnableHoudiniDlc);
+}
+
 }  // namespace
 
 // This class is used to track statuses on OptIn flow. It is created in case ARC
@@ -544,10 +553,12 @@ ArcSessionManager::ArcSessionManager(
     chromeos::SessionManagerClient::Get()->AddObserver(this);
   ResetStabilityMetrics();
   chromeos::ConciergeClient::Get()->AddVmObserver(this);
+  arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
 }
 
 ArcSessionManager::~ArcSessionManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  arc_dlc_installer_.reset();
 
   chromeos::ConciergeClient::Get()->RemoveVmObserver(this);
 
@@ -624,6 +635,9 @@ void ArcSessionManager::OnSessionStopped(ArcStopReason reason,
     observer.OnArcSessionStopped(reason);
 
   MaybeStartArcDataRemoval();
+
+  if (!enable_requested_ && IsDlcRequired())
+    arc_dlc_installer_->RequestDisable();
 }
 
 void ArcSessionManager::OnSessionRestarting() {
@@ -1001,6 +1015,8 @@ void ArcSessionManager::RequestEnable() {
 
   VLOG(1) << "ARC opt-in. Starting ARC session.";
 
+  if (IsDlcRequired())
+    arc_dlc_installer_->RequestEnable();
   // |directly_started_| flag must be preserved during the internal ARC restart.
   // So set it only when ARC is externally requested to start.
   directly_started_ = RequestEnableImpl();

@@ -405,6 +405,12 @@ const char kEnableHoudini[] = "enable-houdini";
 // Enables the use of 64-bit Houdini library for ARM binary translation.
 const char kEnableHoudini64[] = "enable-houdini64";
 
+// Enables the use of Houdini DLC library for ARM binary translation. This is
+// independent of choosing between the 32-bit vs 64-bit Houdini library. Houdini
+// DLC library will be downloaded and installed at run-time instead of at build
+// time.
+const char kEnableHoudiniDlc[] = "enable-houdini-dlc";
+
 // Enables the use of 32-bit NDK translation library for ARM binary translation.
 const char kEnableNdkTranslation[] = "enable-ndk-translation";
 
