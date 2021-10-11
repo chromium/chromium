@@ -495,6 +495,12 @@ export class FileManagerUI {
     document.addEventListener('dragend', () => {
       this.dragInProcess = false;
     });
+
+    // Observe the dialog header content box size: the breadcrumb and action
+    // bar buttons can become wide enough to extend past the available viewport,
+    // and this.layoutChanged_() is used to clamp their size to the viewport.
+    const resizeObserver = new ResizeObserver(() => this.layoutChanged_());
+    resizeObserver.observe(queryRequiredElement('div.dialog-header'));
   }
 
   /**
@@ -572,7 +578,6 @@ export class FileManagerUI {
    * Relayouts the UI.
    */
   relayout() {
-    this.locationLine.truncate();
     // May not be available during initialization.
     if (this.listContainer.currentListType !==
         ListContainer.ListType.UNINITIALIZED) {

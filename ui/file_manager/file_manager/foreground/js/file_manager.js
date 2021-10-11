@@ -680,8 +680,8 @@ export class FileManager extends EventTarget {
         util.queryDecoratedElement('#file-context-menu', Menu));
     this.toolbarController_ = new ToolbarController(
         this.ui_.toolbar, this.ui_.dialogNavigationList, this.ui_.listContainer,
-        assert(this.ui_.locationLine), this.selectionHandler_,
-        this.directoryModel_, this.volumeManager_, this.fileOperationManager_,
+        this.selectionHandler_, this.directoryModel_, this.volumeManager_,
+        this.fileOperationManager_,
         /** @type {!A11yAnnounce} */ (this.ui_));
     this.actionsController_ = new ActionsController(
         this.volumeManager_, assert(this.metadataModel_), this.directoryModel_,

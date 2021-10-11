@@ -5,7 +5,7 @@
  * @fileoverview Tests that breadcrumbs work.
  */
 
-import {ENTRIES, EntryType, getUserActionCount, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {ENTRIES, EntryType, getCaller, getUserActionCount, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {expandTreeItem, navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -590,4 +590,62 @@ testcase.breadcrumbsEliderMenuItemTabRight = async () => {
   // Check: the "third" main button should be focused.
   await remoteCall.waitForElement(
       appId, ['bread-crumb', 'button[id="third"]:focus']);
+};
+
+/**
+ * Tests that when the breadcrumbs + action bar buttons exceed the available
+ * viewport width, their width is updated to fit the space instead of exceeding
+ * the viewport and having some of the action bar buttons not visible.
+ */
+testcase.breadcrumbsDontExceedAvailableViewport = async () => {
+  const nestedFolderTestEntries = createNestedTestFolders(2);
+
+  // Open FilesApp on Downloads containing the test entries.
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, nestedFolderTestEntries, []);
+
+  // Get the current window width and height.
+  const appWindow = await remoteCall.getWindows();
+  const {outerWidth, outerHeight} = appWindow[appId];
+
+  // Get the spacer with between breadcrumbs and action bar buttons, this
+  // indicates the available space we can resize the window before the text in
+  // the breadcrumb is clamped.
+  const spacerWidth = await remoteCall.waitForElementStyles(
+      appId, 'div.dialog-header > .spacer', ['width']);
+
+  // Shrink the window by the available spacer width -10px to ensure the
+  // breadcrumbs don't start clamping text.
+  const newWindowWidth = outerWidth - spacerWidth.renderedWidth + 10;
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'resizeWindow', appId, [newWindowWidth, outerHeight]));
+
+  // Wait for the window to resize.
+  await remoteCall.waitForWindowGeometry(appId, newWindowWidth, outerHeight);
+
+  // Identify the current width of the dialog header, this is the expected
+  // width when navigating to a long folder name after layout calculation.
+  const expectedDialogHeaderWidth = await remoteCall.waitForElementStyles(
+      appId, 'div.dialog-header', ['width']);
+
+  // Navigate to deepest folder.
+  const breadcrumb = '/My files/Downloads/' +
+      nestedFolderTestEntries.map(e => e.nameText).join('/');
+  await navigateWithDirectoryTree(appId, breadcrumb);
+
+  // The relayout occurs asynchronously, so there's a chance after navigating
+  // to the directory the below calculation occurs prior to the relayout
+  // happening, repeat until the values agree with each other.
+  await repeatUntil(async () => {
+    const caller = getCaller();
+    const actualDialogHeaderWidth = await remoteCall.waitForElementStyles(
+        appId, 'div.dialog-header', ['width']);
+    if (expectedDialogHeaderWidth.renderedWidth !==
+        actualDialogHeaderWidth.renderedWidth) {
+      return pending(
+          caller, 'Expected dialog header width is %s, got %s',
+          expectedDialogHeaderWidth.renderedWidth,
+          actualDialogHeaderWidth.renderedWidth);
+    }
+  });
 };

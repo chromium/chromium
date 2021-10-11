@@ -1278,7 +1278,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("breadcrumbsEliderMenuClickOutside"),
                       TestCase("breadcrumbsEliderMenuItemClick"),
                       TestCase("breadcrumbsEliderMenuItemTabLeft"),
-                      TestCase("breadcrumbsEliderMenuItemTabRight")));
+                      TestCase("breadcrumbsEliderMenuItemTabRight"),
+                      TestCase("breadcrumbsDontExceedAvailableViewport")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FormatDialog, /* format_dialog.js */

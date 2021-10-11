@@ -17,7 +17,6 @@ import {FileSelectionHandler} from './file_selection.js';
 import {A11yAnnounce} from './ui/a11y_announce.js';
 import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 import {ListContainer} from './ui/list_container.js';
-import {LocationLine} from './ui/location_line.js';
 
 /**
  * This class controls wires toolbar UI and selection model. When selection
@@ -30,8 +29,6 @@ export class ToolbarController {
    * @param {!HTMLElement} navigationList Navigation list on the left pane. The
    *     position of silesSelectedLabel depends on the navitaion list's width.
    * @param {!ListContainer} listContainer List container.
-   * @param {!LocationLine} locationLine Location line shown on the left side of
-   *     the toolbar.
    * @param {!FileSelectionHandler} selectionHandler
    * @param {!DirectoryModel} directoryModel
    * @param {!VolumeManager} volumeManager
@@ -39,8 +36,8 @@ export class ToolbarController {
    * @param {!A11yAnnounce} a11y
    */
   constructor(
-      toolbar, navigationList, listContainer, locationLine, selectionHandler,
-      directoryModel, volumeManager, fileOperationManager, a11y) {
+      toolbar, navigationList, listContainer, selectionHandler, directoryModel,
+      volumeManager, fileOperationManager, a11y) {
     /**
      * @private {!HTMLElement}
      * @const
@@ -207,12 +204,6 @@ export class ToolbarController {
     this.listContainer_ = listContainer;
 
     /**
-     * @private {!LocationLine}
-     * @const
-     */
-    this.locationLine_ = locationLine;
-
-    /**
      * @private {!FileSelectionHandler}
      * @const
      */
@@ -288,17 +279,6 @@ export class ToolbarController {
 
     this.directoryModel_.addEventListener(
         'directory-changed', this.updateCurrentDirectoryButtons_.bind(this));
-
-    // Watch visibility of toolbar buttons to update the width of location line.
-    const observer =
-        new MutationObserver(this.onToolbarButtonsMutated_.bind(this));
-    const toolbarButtons =
-        this.toolbar_.querySelectorAll('.icon-button, .combobutton');
-    for (let i = 0; i < toolbarButtons.length; i++) {
-      observer.observe(
-          toolbarButtons[i],
-          /** @type MutationObserverInit */ ({attributes: true}));
-    }
   }
 
   /**
@@ -465,16 +445,6 @@ export class ToolbarController {
     this.toolbar_.ownerDocument.body.addEventListener('focusin', (e) => {
       this.sharesheetButton_.removeAttribute('menu-shown');
     }, {once: true});
-  }
-
-  /**
-   * Handles the mutation event occurred on attributes of toolbar buttons.
-   * Toolbar buttons visibility can affect the available width for location
-   * line.
-   * @private
-   */
-  onToolbarButtonsMutated_() {
-    this.locationLine_.truncate();
   }
 
   /** @private */

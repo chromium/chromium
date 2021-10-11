@@ -1268,7 +1268,6 @@ js_library("toolbar_controller") {
     "ui:a11y_announce",
     "ui:file_list_selection_model",
     "ui:list_container",
-    "ui:location_line",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
