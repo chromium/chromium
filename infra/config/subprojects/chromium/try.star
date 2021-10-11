@@ -886,6 +886,10 @@ try_.chromium_chromiumos_builder(
 )
 
 try_.chromium_chromiumos_builder(
+    name = "linux-lacros-dbg",
+)
+
+try_.chromium_chromiumos_builder(
     name = "linux-lacros-rel",
     builderless = not settings.is_main,
     cores = 16,
