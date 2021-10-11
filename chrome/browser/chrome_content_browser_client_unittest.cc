@@ -602,8 +602,7 @@ namespace {
 constexpr char kEmail[] = "test@test.com";
 std::unique_ptr<KeyedService> CreateTestPolicyCertService(
     content::BrowserContext* context) {
-  return policy::PolicyCertService::CreateForTesting(
-      kEmail, user_manager::UserManager::Get());
+  return policy::PolicyCertService::CreateForTesting(kEmail);
 }
 }  // namespace
 

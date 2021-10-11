@@ -117,8 +117,7 @@ KeyedService* PolicyCertServiceFactory::BuildServiceInstanceFor(
   if (chromeos::ProfileHelper::Get()->IsSigninProfile(profile)) {
     return new PolicyCertService(profile, policy_certificate_provider,
                                  /*may_use_profile_wide_trust_anchors=*/false,
-                                 /*user_id=*/std::string(),
-                                 /*user_manager=*/nullptr);
+                                 /*user_id=*/std::string());
   }
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
@@ -132,9 +131,9 @@ KeyedService* PolicyCertServiceFactory::BuildServiceInstanceFor(
       user == user_manager->GetPrimaryUser() &&
       user->GetType() != user_manager::USER_TYPE_GUEST;
 
-  return new PolicyCertService(
-      profile, policy_certificate_provider, may_use_profile_wide_trust_anchors,
-      user->GetAccountId().GetUserEmail(), user_manager);
+  return new PolicyCertService(profile, policy_certificate_provider,
+                               may_use_profile_wide_trust_anchors,
+                               user->GetAccountId().GetUserEmail());
 }
 
 content::BrowserContext* PolicyCertServiceFactory::GetBrowserContextToUse(

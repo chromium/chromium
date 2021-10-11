@@ -49,8 +49,7 @@ constexpr char kUserGaiaId[] = "0123456789";
 
 std::unique_ptr<KeyedService> CreateTestPolicyCertService(
     content::BrowserContext* context) {
-  return policy::PolicyCertService::CreateForTesting(
-      kUser, user_manager::UserManager::Get());
+  return policy::PolicyCertService::CreateForTesting(kUser);
 }
 
 // A user manager that does not set profiles as loaded and notifies observers

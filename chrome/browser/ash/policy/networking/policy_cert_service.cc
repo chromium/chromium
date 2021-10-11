@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/network/onc/certificate_scope.h"
 #include "chromeos/network/policy_certificate_provider.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -39,20 +38,17 @@ PolicyCertService::PolicyCertService(
     Profile* profile,
     chromeos::PolicyCertificateProvider* policy_certificate_provider,
     bool may_use_profile_wide_trust_anchors,
-    const std::string& user_id,
-    user_manager::UserManager* user_manager)
+    const std::string& user_id)
     : profile_(profile),
       policy_certificate_provider_(policy_certificate_provider),
       may_use_profile_wide_trust_anchors_(may_use_profile_wide_trust_anchors),
-      user_id_(user_id),
-      user_manager_(user_manager) {
+      user_id_(user_id) {
   DCHECK(policy_certificate_provider_);
 
   // Only allow using profile-wide trust anchors if a user is associated with
   // this Profile. Profiles without a user would be e.g. the sign-in screen
   // Profile which are not supposed to have profile-wide trust anchors.
-  CHECK((user_manager_ && !user_id_.empty()) ||
-        !may_use_profile_wide_trust_anchors_);
+  CHECK(!user_id_.empty() || !may_use_profile_wide_trust_anchors_);
 
   policy_certificate_provider_->AddPolicyProvidedCertsObserver(this);
   profile_wide_all_server_and_authority_certs_ =
@@ -61,13 +57,11 @@ PolicyCertService::PolicyCertService(
   profile_wide_trust_anchors_ = GetAllowedProfileWideTrustAnchors();
 }
 
-PolicyCertService::PolicyCertService(const std::string& user_id,
-                                     user_manager::UserManager* user_manager)
+PolicyCertService::PolicyCertService(const std::string& user_id)
     : profile_(nullptr),
       policy_certificate_provider_(nullptr),
       may_use_profile_wide_trust_anchors_(true),
-      user_id_(user_id),
-      user_manager_(user_manager) {}
+      user_id_(user_id) {}
 
 void PolicyCertService::OnPolicyProvidedCertsChanged() {
   profile_wide_all_server_and_authority_certs_ =
@@ -183,29 +177,14 @@ net::CertificateList PolicyCertService::GetAllowedProfileWideTrustAnchors() {
   if (!may_use_profile_wide_trust_anchors_)
     return {};
 
-  net::CertificateList trust_anchors =
-      policy_certificate_provider_->GetWebTrustedCertificates(
-          chromeos::onc::CertificateScope::Default());
-
-  // Do not use certificates installed via ONC policy if the current session has
-  // multiple profiles. This is important to make sure that any possibly tainted
-  // data is absolutely confined to the managed profile and never, ever leaks to
-  // any other profile.
-  if (!trust_anchors.empty() && user_manager_ &&
-      user_manager_->GetLoggedInUsers().size() > 1u) {
-    LOG(ERROR) << "Ignoring ONC-pushed certificates update because multiple "
-               << "users are logged in.";
-    return {};
-  }
-
-  return trust_anchors;
+  return policy_certificate_provider_->GetWebTrustedCertificates(
+      chromeos::onc::CertificateScope::Default());
 }
 
 // static
 std::unique_ptr<PolicyCertService> PolicyCertService::CreateForTesting(
-    const std::string& user_id,
-    user_manager::UserManager* user_manager) {
-  return base::WrapUnique(new PolicyCertService(user_id, user_manager));
+    const std::string& user_id) {
+  return base::WrapUnique(new PolicyCertService(user_id));
 }
 
 void PolicyCertService::SetPolicyTrustAnchorsForTesting(

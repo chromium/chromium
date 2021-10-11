@@ -22,10 +22,6 @@ namespace base {
 class FilePath;
 }
 
-namespace user_manager {
-class UserManager;
-}
-
 namespace net {
 class X509Certificate;
 typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
@@ -57,8 +53,7 @@ class PolicyCertService : public KeyedService,
       Profile* profile,
       chromeos::PolicyCertificateProvider* policy_certificate_provider,
       bool may_use_profile_wide_trust_anchors,
-      const std::string& user_id,
-      user_manager::UserManager* user_manager);
+      const std::string& user_id);
 
   PolicyCertService(const PolicyCertService&) = delete;
   PolicyCertService& operator=(const PolicyCertService&) = delete;
@@ -89,8 +84,7 @@ class PolicyCertService : public KeyedService,
       net::CertificateList* out_trust_anchors) const;
 
   static std::unique_ptr<PolicyCertService> CreateForTesting(
-      const std::string& user_id,
-      user_manager::UserManager* user_manager);
+      const std::string& user_id);
 
   // Sets the profile-wide policy-provided trust anchors reported by this
   // PolicyCertService. This is only callable for instances created through
@@ -100,8 +94,7 @@ class PolicyCertService : public KeyedService,
 
  private:
   // Constructor used by CreateForTesting.
-  PolicyCertService(const std::string& user_id,
-                    user_manager::UserManager* user_manager);
+  explicit PolicyCertService(const std::string& user_id);
 
   // Returns all allowed policy-provided certificates that have requested "Web"
   // trust and have profile-wide scope. If |may_use_profile_wide_trust_anchors_|
@@ -120,7 +113,6 @@ class PolicyCertService : public KeyedService,
   // This will be an empty string for a PolicyCertService which is tied to a
   // Profile without user association (e.g. the sign-in screen Profile).
   const std::string user_id_;
-  user_manager::UserManager* const user_manager_;
 
   // Caches all server and CA certificates that have profile-wide scope from
   // |policy_certificate_provider_|.
