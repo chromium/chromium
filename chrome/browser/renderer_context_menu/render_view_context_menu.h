@@ -221,7 +221,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   void AppendClickToCallItem();
 #endif
   void AppendSharedClipboardItem();
-  void AppendLensRegionSearchItem();
+  void AppendRegionSearchItem();
   void AppendQRCodeGeneratorItem(bool for_image, bool draw_icon);
 
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint(
@@ -243,7 +243,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   bool IsRouteMediaEnabled() const;
   bool IsOpenLinkOTREnabled() const;
   bool IsSearchWebForEnabled() const;
-  bool IsLensRegionSearchEnabled() const;
+  bool IsRegionSearchEnabled() const;
 
   // Command execution functions.
   void ExecOpenWebApp();
@@ -257,7 +257,8 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   void ExecCopyLinkText();
   void ExecCopyImageAt();
   void ExecSearchLensForImage();
-  void ExecLensRegionSearch();
+  void ExecRegionSearch(int event_flags,
+                        bool is_google_default_search_provider);
   void ExecSearchWebForImage();
   void ExecLoadImage();
   void ExecPlayPause();
