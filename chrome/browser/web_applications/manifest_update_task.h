@@ -118,7 +118,9 @@ class ManifestUpdateTask final
   void OnDidGetInstallableData(const webapps::InstallableData& data);
   bool IsUpdateNeededForManifest() const;
   void LoadAndCheckIconContents();
-  void OnIconsDownloaded(IconsDownloadedResult result, IconsMap icons_map);
+  void OnIconsDownloaded(IconsDownloadedResult result,
+                         IconsMap icons_map,
+                         DownloadedIconsHttpResults icons_http_results);
   void OnAllIconsRead(IconsMap downloaded_icons_map,
                       IconBitmaps disk_icon_bitmaps);
   void OnPostAppIdentityUpdateCheck(

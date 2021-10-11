@@ -197,15 +197,18 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
            is_installable);
 }
 
-void WebAppDataRetriever::OnIconsDownloaded(IconsDownloadedResult result,
-                                            IconsMap icons_map) {
+void WebAppDataRetriever::OnIconsDownloaded(
+    IconsDownloadedResult result,
+    IconsMap icons_map,
+    DownloadedIconsHttpResults icons_http_results) {
   if (ShouldStopRetrieval())
     return;
 
   Observe(nullptr);
   icon_downloader_.reset();
 
-  // TODO(crbug.com/1238622): Report `IconsDownloadedResult`to the callback.
+  // TODO(crbug.com/1238622): Report `IconsDownloadedResult`and
+  // `DownloadedIconsHttpResults` to the callback.
   std::move(get_icons_callback_).Run(std::move(icons_map));
 }
 

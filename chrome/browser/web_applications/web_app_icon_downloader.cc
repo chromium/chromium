@@ -102,7 +102,7 @@ void WebAppIconDownloader::FetchIcons(const std::vector<GURL>& urls) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback_), IconsDownloadedResult::kCompleted,
-                       icons_map_));
+                       std::move(icons_map_), std::move(icons_http_results_)));
   }
 }
 
@@ -140,11 +140,13 @@ void WebAppIconDownloader::DidDownloadFavicon(
   }
 
   icons_map_[image_url] = bitmaps;
+  icons_http_results_[image_url] = http_status_code;
 
   // Once all requests have been resolved, perform post-download tasks.
   if (in_progress_requests_.empty() && !need_favicon_urls_) {
     std::move(callback_).Run(IconsDownloadedResult::kCompleted,
-                             std::move(icons_map_));
+                             std::move(icons_map_),
+                             std::move(icons_http_results_));
   }
 }
 
@@ -168,8 +170,12 @@ void WebAppIconDownloader::DidUpdateFaviconURL(
 void WebAppIconDownloader::CancelDownloads() {
   in_progress_requests_.clear();
   icons_map_.clear();
-  if (callback_)
-    std::move(callback_).Run(IconsDownloadedResult::kCancelled, icons_map_);
+  icons_http_results_.clear();
+
+  if (callback_) {
+    std::move(callback_).Run(IconsDownloadedResult::kCancelled, IconsMap{},
+                             DownloadedIconsHttpResults{});
+  }
 }
 
 }  // namespace web_app

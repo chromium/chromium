@@ -38,7 +38,8 @@ class WebAppIconDownloader : public content::WebContentsObserver {
 
   using WebAppIconDownloaderCallback =
       base::OnceCallback<void(IconsDownloadedResult result,
-                              IconsMap icons_map)>;
+                              IconsMap icons_map,
+                              DownloadedIconsHttpResults icons_http_results)>;
 
   // |extra_favicon_urls| allows callers to provide icon urls that aren't
   // provided by the renderer (e.g touch icons on non-android environments).
@@ -107,6 +108,8 @@ class WebAppIconDownloader : public content::WebContentsObserver {
 
   // The icons which were downloaded. Populated by FetchIcons().
   IconsMap icons_map_;
+  // The http status codes resulted from url downloading requests.
+  DownloadedIconsHttpResults icons_http_results_;
 
   // Request ids of in-progress requests.
   std::set<int> in_progress_requests_;

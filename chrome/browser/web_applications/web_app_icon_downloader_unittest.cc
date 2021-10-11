@@ -103,12 +103,15 @@ class TestWebAppIconDownloader : public WebAppIconDownloader {
 
   size_t pending_requests() const { return in_progress_requests_.size(); }
 
-  void DownloadsComplete(IconsDownloadedResult result, IconsMap map) {
+  void DownloadsComplete(IconsDownloadedResult result,
+                         IconsMap icons_map,
+                         DownloadedIconsHttpResults icons_http_results) {
     icons_download_result_ = result;
-    favicon_map_ = std::move(map);
+    icons_map_ = std::move(icons_map);
+    icons_http_results_ = std::move(icons_http_results);
   }
 
-  IconsMap favicon_map() const { return favicon_map_; }
+  const IconsMap& icons_map() const { return icons_map_; }
 
   void CompleteImageDownload(
       int id,
@@ -138,7 +141,10 @@ class TestWebAppIconDownloader : public WebAppIconDownloader {
 
  private:
   std::vector<blink::mojom::FaviconURLPtr> initial_favicon_urls_;
-  IconsMap favicon_map_;
+
+  IconsMap icons_map_;
+  DownloadedIconsHttpResults icons_http_results_;
+
   int id_counter_;
   absl::optional<IconsDownloadedResult> icons_download_result_;
 };
@@ -161,8 +167,8 @@ TEST_F(WebAppIconDownloaderTest, SimpleDownload) {
   downloader.CompleteImageDownload(0, 200, favicon_urls[0]->icon_url, sizes);
   EXPECT_EQ(0u, downloader.pending_requests());
 
-  EXPECT_EQ(1u, downloader.favicon_map().size());
-  EXPECT_EQ(1u, downloader.favicon_map()[favicon_url].size());
+  EXPECT_EQ(1u, downloader.icons_map().size());
+  EXPECT_EQ(1u, downloader.icons_map().at(favicon_url).size());
   EXPECT_EQ(downloader.icons_download_result(),
             IconsDownloadedResult::kCompleted);
   histogram_tester_.ExpectUniqueSample(kHistogramForCreateName, 2, 1);
@@ -187,8 +193,8 @@ TEST_F(WebAppIconDownloaderTest, NoHTTPStatusCode) {
   downloader.CompleteImageDownload(0, 0, favicon_urls[0]->icon_url, sizes);
   EXPECT_EQ(0u, downloader.pending_requests());
 
-  EXPECT_EQ(1u, downloader.favicon_map().size());
-  EXPECT_EQ(1u, downloader.favicon_map()[favicon_url].size());
+  EXPECT_EQ(1u, downloader.icons_map().size());
+  EXPECT_EQ(1u, downloader.icons_map().at(favicon_url).size());
   EXPECT_EQ(downloader.icons_download_result(),
             IconsDownloadedResult::kCompleted)
       << "Should not consider data: URL or HTTP status code of 0 a failure";
@@ -216,8 +222,8 @@ TEST_F(WebAppIconDownloaderTest, DownloadWithUrlsFromWebContentsNotification) {
   downloader.CompleteImageDownload(0, 200, favicon_urls[0]->icon_url, sizes);
   EXPECT_EQ(0u, downloader.pending_requests());
 
-  EXPECT_EQ(1u, downloader.favicon_map().size());
-  EXPECT_EQ(1u, downloader.favicon_map()[favicon_url].size());
+  EXPECT_EQ(1u, downloader.icons_map().size());
+  EXPECT_EQ(1u, downloader.icons_map().at(favicon_url).size());
   EXPECT_EQ(downloader.icons_download_result(),
             IconsDownloadedResult::kCompleted);
   histogram_tester_.ExpectUniqueSample(kHistogramForCreateName, 2, 1);
@@ -265,10 +271,10 @@ TEST_F(WebAppIconDownloaderTest, DownloadMultipleUrls) {
                                    std::vector<gfx::Size>());
   EXPECT_EQ(0u, downloader.pending_requests());
 
-  EXPECT_EQ(3u, downloader.favicon_map().size());
-  EXPECT_EQ(0u, downloader.favicon_map()[empty_favicon].size());
-  EXPECT_EQ(1u, downloader.favicon_map()[favicon_url_1].size());
-  EXPECT_EQ(2u, downloader.favicon_map()[favicon_url_2].size());
+  EXPECT_EQ(3u, downloader.icons_map().size());
+  EXPECT_EQ(0u, downloader.icons_map().at(empty_favicon).size());
+  EXPECT_EQ(1u, downloader.icons_map().at(favicon_url_1).size());
+  EXPECT_EQ(2u, downloader.icons_map().at(favicon_url_2).size());
   EXPECT_EQ(downloader.icons_download_result(),
             IconsDownloadedResult::kCompleted);
   histogram_tester_.ExpectUniqueSample(kHistogramForCreateName, 2, 3);
@@ -303,9 +309,9 @@ TEST_F(WebAppIconDownloaderTest, SkipPageFavicons) {
   downloader.CompleteImageDownload(1, 200, favicon_url_2, sizes_2);
   EXPECT_EQ(0u, downloader.pending_requests());
 
-  EXPECT_EQ(1u, downloader.favicon_map().size());
-  EXPECT_EQ(1u, downloader.favicon_map()[favicon_url_1].size());
-  EXPECT_EQ(0u, downloader.favicon_map()[favicon_url_2].size());
+  EXPECT_EQ(1u, downloader.icons_map().size());
+  EXPECT_EQ(1u, downloader.icons_map().at(favicon_url_1).size());
+  EXPECT_EQ(0u, downloader.icons_map().count(favicon_url_2));
   EXPECT_EQ(downloader.icons_download_result(),
             IconsDownloadedResult::kCompleted);
   histogram_tester_.ExpectUniqueSample(kHistogramForCreateName, 2, 1);
@@ -329,7 +335,7 @@ TEST_F(WebAppIconDownloaderTest, PageNavigates) {
       ->Commit();
 
   EXPECT_EQ(0u, downloader.pending_requests());
-  EXPECT_TRUE(downloader.favicon_map().empty());
+  EXPECT_TRUE(downloader.icons_map().empty());
   EXPECT_EQ(downloader.icons_download_result(),
             IconsDownloadedResult::kCancelled);
 }
@@ -380,8 +386,8 @@ TEST_F(WebAppIconDownloaderTest, PageNavigatesSameDocument) {
   downloader.CompleteImageDownload(0, 200, favicon_url, sizes);
   EXPECT_EQ(0u, downloader.pending_requests());
 
-  EXPECT_EQ(1u, downloader.favicon_map().size());
-  EXPECT_EQ(1u, downloader.favicon_map()[favicon_url].size());
+  EXPECT_EQ(1u, downloader.icons_map().size());
+  EXPECT_EQ(1u, downloader.icons_map().at(favicon_url).size());
   EXPECT_EQ(downloader.icons_download_result(),
             IconsDownloadedResult::kCompleted);
   histogram_tester_.ExpectUniqueSample(kHistogramForCreateName, 2, 1);
@@ -421,7 +427,7 @@ TEST_F(WebAppIconDownloaderPrerenderTest, PrerenderedPageNavigates) {
 
   // Ensure prerender activation cancel pending download requests.
   EXPECT_EQ(0u, downloader.pending_requests());
-  EXPECT_TRUE(downloader.favicon_map().empty());
+  EXPECT_TRUE(downloader.icons_map().empty());
   EXPECT_EQ(downloader.icons_download_result(),
             IconsDownloadedResult::kCancelled);
 }
