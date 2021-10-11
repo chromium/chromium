@@ -48396,6 +48396,7 @@ from previous Chrome versions.
   <int value="-1619757314" label="touch-scrolling-mode"/>
   <int value="-1619146163" label="OverrideSitePrefsForHrefTranslate:disabled"/>
   <int value="-1618707999" label="enable-webfonts-intervention-v2"/>
+  <int value="-1617805422" label="WebViewUseMetricsUploadService:enabled"/>
   <int value="-1617183455" label="OfflineRecentPages:disabled"/>
   <int value="-1616855537" label="enable-manual-password-generation:disabled"/>
   <int value="-1615901413" label="NewMacNotificationAPI:enabled"/>
@@ -52120,6 +52121,7 @@ from previous Chrome versions.
       label="SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid:disabled"/>
   <int value="1247293682" label="topchrome-md"/>
   <int value="1249215617" label="SelectToSpeakNavigationControl:enabled"/>
+  <int value="1249861983" label="WebViewUseMetricsUploadService:disabled"/>
   <int value="1250071868" label="disable-timezone-tracking-option"/>
   <int value="1250776846" label="DnsProxyEnableDOH:enabled"/>
   <int value="1251663392" label="ArcImageCopyPasteCompat:disabled"/>

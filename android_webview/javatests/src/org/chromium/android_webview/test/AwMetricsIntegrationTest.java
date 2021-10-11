@@ -36,6 +36,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.components.metrics.AndroidMetricsLogUploader;
 import org.chromium.components.metrics.AndroidMetricsServiceClient;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
 import org.chromium.components.metrics.MetricsSwitches;
@@ -86,6 +87,13 @@ public class AwMetricsIntegrationTest {
         mPlatformServiceBridge = new MetricsTestPlatformServiceBridge();
         PlatformServiceBridge.injectInstance(mPlatformServiceBridge);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Explicitly send the data to PlatformServiceBridge and avoid sending the data via
+            // MetricsUploadService to avoid unexpected failures due to service connections, IPCs
+            // ... etc in tests as testing the service behaviour is outside the scope of these
+            // integeration tests.
+            AndroidMetricsLogUploader.setUploader(
+                    (byte[] data) -> { PlatformServiceBridge.getInstance().logMetrics(data); });
+
             // Need to configure the metrics delay first, because
             // handleMinidumpsAndSetMetricsConsent() triggers MetricsService initialization. The
             // first upload for each test case will be triggered with minimal latency, and

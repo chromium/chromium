@@ -620,6 +620,7 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/gfx/JavaBrowserViewRendererHelper.java",
     "java/src/org/chromium/android_webview/gfx/RectUtils.java",
     "java/src/org/chromium/android_webview/gfx/RootBeginFrameSourceWebView.java",
+    "java/src/org/chromium/android_webview/metrics/AwMetricsLogUploader.java",
     "java/src/org/chromium/android_webview/metrics/AwMetricsServiceClient.java",
     "java/src/org/chromium/android_webview/metrics/AwNonembeddedUmaReplayer.java",
     "java/src/org/chromium/android_webview/permission/AwGeolocationCallback.java",
