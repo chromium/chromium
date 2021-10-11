@@ -32,6 +32,7 @@ class SearchResultObserver;
 // default style.
 class APP_LIST_MODEL_EXPORT SearchResult {
  public:
+  using Category = ash::AppListSearchResultCategory;
   using ResultType = ash::AppListSearchResultType;
   using DisplayType = ash::SearchResultDisplayType;
   using MetricsType = ash::SearchResultType;
@@ -105,6 +106,9 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   void set_display_score(double display_score) {
     metadata_->display_score = display_score;
   }
+
+  Category category() const { return metadata_->category; }
+  void set_category(Category category) { metadata_->category = category; }
 
   DisplayType display_type() const { return metadata_->display_type; }
   void set_display_type(DisplayType display_type) {
