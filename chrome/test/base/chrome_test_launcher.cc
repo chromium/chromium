@@ -213,7 +213,7 @@ int LaunchChromeTests(size_t parallel_jobs,
                       char** argv) {
   // TODO(preethim): Debugging for crbug.com/1235878.
   // Will revert within a day or two after reproing in CI.
-  LOG(INFO) << "LaunchChromeTests.\n";
+  fprintf(stdout, "LaunchChromeTests.\n");
 #if defined(OS_MAC)
   // Set up the path to the framework so resources can be loaded. This is also
   // performed in ChromeTestSuite, but in browser tests that only affects the

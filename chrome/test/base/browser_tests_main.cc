@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/logging.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
@@ -19,13 +18,13 @@
 int main(int argc, char** argv) {
   // TODO(preethim): Debugging for crbug.com/1235878.
   // Will revert within a day or two after reproing in CI.
-  LOG(INFO) << "Starting browser_tests.\n";
+  fprintf(stdout, "Starting browser_tests.\n");
   base::CommandLine::Init(argc, argv);
   size_t parallel_jobs = base::NumParallelJobs(/*cores_per_job=*/2);
   if (parallel_jobs == 0U) {
     // TODO(preethim): Debugging for crbug.com/1235878.
     // Will revert within a day or two after reproing in CI.
-    LOG(INFO) << "parallel_jobs is 0. Exiting.\n";
+    fprintf(stdout, "parallel_jobs is 0. Exiting.\n");
     return 1;
   }
 

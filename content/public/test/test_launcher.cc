@@ -317,7 +317,7 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
 
   // TODO(preethim): Debugging for crbug.com/1235878.
   // Will revert within a day or two after reproing in CI.
-  LOG(INFO) << "Content Test Launcher- Launching Tests.\n";
+  fprintf(stdout, "Content Test Launcher- Launching Tests.\n");
   base::CommandLine::Init(argc, argv);
   AppendCommandLineSwitches();
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
