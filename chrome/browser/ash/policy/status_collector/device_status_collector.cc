@@ -18,6 +18,7 @@
 #include <utility>
 
 #include "ash/components/audio/cras_audio_handler.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
@@ -66,6 +67,8 @@
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -2028,7 +2031,6 @@ void DeviceStatusCollector::SampleDischargeRate(
       it->second.set_charge_rate(percent);
     }
   }
-
 }
 
 void DeviceStatusCollector::ReceiveCPUTemperature(
@@ -2311,6 +2313,19 @@ bool DeviceStatusCollector::GetNetworkConfiguration(
       interface->set_iccid((*device)->iccid());
     if (!(*device)->path().empty())
       interface->set_device_path((*device)->path());
+
+    // Report EIDs for cellular connections.
+    if ((*device)->type() == shill::kTypeCellular &&
+        ash::features::IsESimPolicyEnabled()) {
+      std::vector<std::string> eids;
+      for (const auto& euicc_path :
+           chromeos::HermesManagerClient::Get()->GetAvailableEuiccs()) {
+        chromeos::HermesEuiccClient::Properties* properties =
+            chromeos::HermesEuiccClient::Get()->GetProperties(euicc_path);
+        interface->add_eids(properties->eid().value());
+      }
+    }
+
     anything_reported = true;
   }
 

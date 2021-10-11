@@ -918,6 +918,11 @@ message NetworkInterface {
 
   // The mobile directory number associated with the device's sim card.
   optional string mdn = 7;
+
+  // List of EID (EUICC Identifier) of all cellular EUICCs
+  // (Embedded Universal Integrated Circuit Cards) on the device.
+  // 32 decimal digits encoded as ASCII string. e.g.
+  repeated string eids = 8;
 }
 
 // Information about configured/visible networks - this is separate from

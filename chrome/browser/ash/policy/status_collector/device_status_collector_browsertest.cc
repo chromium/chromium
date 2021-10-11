@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "ash/components/audio/cras_audio_handler.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/environment.h"
@@ -23,6 +24,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -3762,6 +3764,14 @@ TEST_F(DeviceStatusCollectorTest, GenerateAppInfo) {
   EXPECT_EQ(session_status_.app_infos(1).active_time_periods_size(), 0);
 }
 
+struct FakeSimSlotInfo {
+  std::string object_path;
+  std::string eid;
+  bool is_active;
+  uint32_t physical_slot;
+} kFakeSimSlots[] = {{"euicc_path", "123", true, 1},
+                     {"euicc_path2", "234", false, 2}};
+
 // Fake device state.
 struct FakeDeviceData {
   const char* device_path;
@@ -3889,6 +3899,11 @@ class DeviceStatusCollectorNetworkTest : public DeviceStatusCollectorTest {
                                          /*notify_changed=*/true);
       }
     }
+    for (const auto& slotInfo : kFakeSimSlots) {
+      chromeos::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
+          dbus::ObjectPath(slotInfo.object_path), slotInfo.eid,
+          slotInfo.is_active, slotInfo.physical_slot);
+    }
 
     network_handler_test_helper_.profile_test()->AddProfile(
         kShillFakeProfilePath, kShillFakeUserhash);
@@ -3956,9 +3971,7 @@ class DeviceStatusCollectorNetworkTest : public DeviceStatusCollectorTest {
     ASSERT_EQ(base::size(kFakeNetworks), state_list.size());
   }
 
-  void TearDown() override {
-    DeviceStatusCollectorTest::TearDown();
-  }
+  void TearDown() override { DeviceStatusCollectorTest::TearDown(); }
 
   void ClearNetworkData() {
     chromeos::ShillDeviceClient::TestInterface* device_client =
@@ -4026,7 +4039,13 @@ class DeviceStatusCollectorNetworkInterfacesTest
             iface->mac_address() == dev.mac_address &&
             iface->meid() == dev.meid && iface->imei() == dev.imei &&
             iface->device_path() == dev.device_path &&
-            iface->mdn() == dev.mdn && iface->iccid() == dev.iccid) {
+            iface->mdn() == dev.mdn && iface->iccid() == dev.iccid &&
+            (iface->type() != em::NetworkInterface::TYPE_CELLULAR ||
+             base::ranges::equal(iface->eids().begin(), iface->eids().end(),
+                                 kFakeSimSlots,
+                                 kFakeSimSlots + base::size(kFakeSimSlots),
+                                 base::ranges::equal_to(), base::identity(),
+                                 &FakeSimSlotInfo::eid))) {
           found_match = true;
           break;
         }
@@ -4053,8 +4072,10 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, DISABLED_TestNoInterfaces) {
 }
 
 TEST_F(DeviceStatusCollectorNetworkInterfacesTest, Default) {
-  // Network interfaces should be reported by default, i.e if the policy is not
-  // set.
+  scoped_feature_list_.InitAndEnableFeature(ash::features::kESimPolicy);
+
+  // Network interfaces should be reported by default, i.e if the policy is
+  // not set.
   GetStatus();
   VerifyReporting();
 
@@ -4072,6 +4093,8 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, Default) {
 }
 
 TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfUnaffiliatedUser) {
+  scoped_feature_list_.InitAndEnableFeature(ash::features::kESimPolicy);
+
   // Network interfaces should be reported for unaffiliated users.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDeviceNetworkConfiguration, true);
@@ -4083,6 +4106,8 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfUnaffiliatedUser) {
 }
 
 TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfAffiliatedUser) {
+  scoped_feature_list_.InitAndEnableFeature(ash::features::kESimPolicy);
+
   // Network interfaces should be reported for affiliated users.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDeviceNetworkConfiguration, true);
@@ -4094,6 +4119,8 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfAffiliatedUser) {
 }
 
 TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfPublicSession) {
+  scoped_feature_list_.InitAndEnableFeature(ash::features::kESimPolicy);
+
   // Network interfaces should be reported if in public session.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDeviceNetworkConfiguration, true);
@@ -4107,6 +4134,8 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfPublicSession) {
 }
 
 TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfKioskMode) {
+  scoped_feature_list_.InitAndEnableFeature(ash::features::kESimPolicy);
+
   // Network interfaces should be reported if in kiosk mode.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDeviceNetworkConfiguration, true);
