@@ -2764,6 +2764,9 @@ extern const char kNearbySharingDeviceContactsDescription[];
 extern const char kNearbySharingWebRtcName[];
 extern const char kNearbySharingWebRtcDescription[];
 
+extern const char kPcieBillboardNotificationName[];
+extern const char kPcieBillboardNotificationDescription[];
+
 extern const char kPerformantSplitViewResizing[];
 extern const char kPerformantSplitViewResizingDescription[];
 

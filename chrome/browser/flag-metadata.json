@@ -4399,6 +4399,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "pcie-billboard-notification",
+    "owners": [ "jimmyxgong", "cros-peripherals@google.com"],
+    "expiry_milestone": 102
+  },
+  {
     "name": "pdf-unseasoned",
     "owners": [ "dhoss", "kmoon", "nigi", "thestig"],
     "expiry_milestone": 97

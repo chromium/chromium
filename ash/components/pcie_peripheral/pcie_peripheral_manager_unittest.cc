@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/pciguard/fake_pciguard_client.h"
 #include "chromeos/dbus/pciguard/pciguard_client.h"
 #include "chromeos/dbus/typecd/fake_typecd_client.h"
@@ -371,6 +373,9 @@ TEST_F(PciePeripheralManagerTest, BlockedDeviceReceived) {
 }
 
 TEST_F(PciePeripheralManagerTest, BillboardDevice) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPcieBillboardNotification);
+
   InitializeManager(/*is_guest_profile=*/false,
                     /*is_pcie_tunneling_allowed=*/true);
 
