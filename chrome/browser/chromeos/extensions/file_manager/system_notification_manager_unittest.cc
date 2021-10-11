@@ -301,6 +301,7 @@ constexpr char kPartitionLabel[] = "OEM";
 std::u16string kPartitionTitle = u"Format OEM";
 
 TEST_F(SystemNotificationManagerTest, PartitionFail) {
+  base::HistogramTester histogram_tester;
   GetDeviceEventRouter()->OnPartitionCompleted(kDevicePath, kPartitionLabel,
                                                /*success=*/false);
   // Get the number of notifications from the NotificationDisplayService.
@@ -319,6 +320,9 @@ TEST_F(SystemNotificationManagerTest, PartitionFail) {
   std::u16string kPartitionFailMesssage = u"Could not format OEM";
   EXPECT_EQ(notification_strings.title, kPartitionTitle);
   EXPECT_EQ(notification_strings.message, kPartitionFailMesssage);
+  histogram_tester.ExpectUniqueSample(kNotificationShowHistogramName,
+                                      DeviceNotificationUmaType::PARTITION_FAIL,
+                                      1);
 }
 
 TEST_F(SystemNotificationManagerTest, RenameFail) {

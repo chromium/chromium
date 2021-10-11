@@ -237,7 +237,10 @@ void SystemNotificationManager::HandleDeviceEvent(
         message =
             l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_FAILURE_MESSAGE,
                                        base::UTF8ToUTF16(event.device_label));
-        RecordDeviceNotificationMetric(DeviceNotificationUmaType::FORMAT_FAIL);
+        RecordDeviceNotificationMetric(
+            event.type == file_manager_private::DEVICE_EVENT_TYPE_FORMAT_FAIL
+                ? DeviceNotificationUmaType::FORMAT_FAIL
+                : DeviceNotificationUmaType::PARTITION_FAIL);
       }
       notification = CreateNotification(id, title, message);
       break;
