@@ -55,13 +55,6 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
     virtual void RemoveAppRestoreData(const base::FilePath& profile_path,
                                       const std::string& app_id,
                                       int32_t restore_window_id) = 0;
-
-    // Applies properties from `window_info` to the given `property_handler`.
-    // This is called from `GetWindowInfo()` when a full restore window is
-    // created, or from `arc_read_handler_` when a task is ready for a full
-    // restore window that has already been created.
-    virtual void ApplyProperties(WindowInfo* window_info,
-                                 ui::PropertyHandler* property_handler) = 0;
   };
 
   ArcReadHandler(const base::FilePath& profile_path, Delegate* delegate);

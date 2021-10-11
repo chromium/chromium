@@ -90,12 +90,6 @@ bool HasBrowser(const base::FilePath& profile_path);
 COMPONENT_EXPORT(APP_RESTORE)
 bool HasWindowInfo(int32_t restore_window_id);
 
-// Modifies `out_params` based on the window info associated with
-// `restore_window_id`.
-COMPONENT_EXPORT(APP_RESTORE)
-void ModifyWidgetParams(int32_t restore_window_id,
-                        views::Widget::InitParams* out_params);
-
 COMPONENT_EXPORT(APP_RESTORE)
 void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path);
 

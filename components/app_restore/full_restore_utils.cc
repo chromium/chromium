@@ -104,15 +104,6 @@ bool HasWindowInfo(int32_t restore_window_id) {
       restore_window_id);
 }
 
-void ModifyWidgetParams(int32_t restore_window_id,
-                        views::Widget::InitParams* out_params) {
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return;
-
-  FullRestoreReadHandler::GetInstance()->ModifyWidgetParams(restore_window_id,
-                                                            out_params);
-}
-
 void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path) {
   FullRestoreReadHandler::GetInstance()
       ->AddChromeBrowserLaunchInfoForTesting(  // IN-TEST

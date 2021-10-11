@@ -24,7 +24,6 @@
 #include "components/sessions/core/session_id.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/views/widget/widget_delegate.h"
 
 namespace full_restore {
 
@@ -125,36 +124,6 @@ void FullRestoreReadHandler::RemoveAppRestoreData(
     return;
 
   restore_data->RemoveAppRestoreData(app_id, restore_window_id);
-}
-
-void FullRestoreReadHandler::ApplyProperties(
-    app_restore::WindowInfo* window_info,
-    ui::PropertyHandler* property_handler) {
-  DCHECK(window_info);
-  DCHECK(property_handler);
-
-  // Create a clone so `property_handler` can have complete ownership of a copy
-  // of WindowInfo.
-  app_restore::WindowInfo* window_info_clone = window_info->Clone();
-  property_handler->SetProperty(app_restore::kWindowInfoKey, window_info_clone);
-
-  if (window_info->activation_index) {
-    const int32_t index = *window_info->activation_index;
-    // kActivationIndexKey is owned, which allows for passing in this raw
-    // pointer.
-    property_handler->SetProperty(app_restore::kActivationIndexKey,
-                                  std::make_unique<int32_t>(index));
-    // Windows opened from full restore should not be activated. Widgets that
-    // are shown are activated by default. Force the widget to not be
-    // activatable; the activation will be restored in ash once the window is
-    // launched.
-    property_handler->SetProperty(app_restore::kLaunchedFromFullRestoreKey,
-                                  true);
-  }
-  if (window_info->pre_minimized_show_state_type) {
-    property_handler->SetProperty(aura::client::kPreMinimizedShowStateKey,
-                                  *window_info->pre_minimized_show_state_type);
-  }
 }
 
 void FullRestoreReadHandler::OnTaskCreated(const std::string& app_id,
@@ -275,6 +244,14 @@ std::unique_ptr<app_restore::WindowInfo> FullRestoreReadHandler::GetWindowInfo(
   return GetWindowInfo(restore_window_id);
 }
 
+std::unique_ptr<app_restore::WindowInfo>
+FullRestoreReadHandler::GetWindowInfoForActiveProfile(
+    int32_t restore_window_id) {
+  if (!base::Contains(should_check_restore_data_, active_profile_path_))
+    return nullptr;
+  return GetWindowInfo(restore_window_id);
+}
+
 std::unique_ptr<app_restore::AppLaunchInfo>
 FullRestoreReadHandler::GetArcAppLaunchInfo(const std::string& app_id,
                                             int32_t session_id) {
@@ -306,61 +283,6 @@ int32_t FullRestoreReadHandler::GetArcRestoreWindowIdForSessionId(
     return 0;
 
   return arc_read_handler_->GetArcRestoreWindowIdForSessionId(session_id);
-}
-
-void FullRestoreReadHandler::ModifyWidgetParams(
-    int32_t restore_window_id,
-    views::Widget::InitParams* out_params) {
-  DCHECK(out_params);
-
-  const bool is_arc_app =
-      out_params->init_properties_container.GetProperty(
-          aura::client::kAppType) == static_cast<int>(ash::AppType::ARC_APP);
-  std::unique_ptr<app_restore::WindowInfo> window_info;
-  if (is_arc_app) {
-    window_info = arc_read_handler_
-                      ? arc_read_handler_->GetWindowInfo(restore_window_id)
-                      : nullptr;
-  } else {
-    // If full restore is not running, try and get `window_info` from desk
-    // templates. Otherwise, default to getting `window_info` from full restore.
-    // TODO(sammiequon): Separate full restore and desk templates logic.
-    if (!IsFullRestoreRunning()) {
-      window_info =
-          app_restore::DeskTemplateReadHandler::GetInstance()->GetWindowInfo(
-              restore_window_id);
-    }
-    if (!window_info &&
-        base::Contains(should_check_restore_data_, active_profile_path_)) {
-      window_info = GetWindowInfo(restore_window_id);
-    }
-  }
-  if (!window_info)
-    return;
-
-  ApplyProperties(window_info.get(), &out_params->init_properties_container);
-
-  if (window_info->desk_id)
-    out_params->workspace = base::NumberToString(*window_info->desk_id);
-  if (window_info->current_bounds)
-    out_params->bounds = *window_info->current_bounds;
-  if (window_info->window_state_type) {
-    // ToWindowShowState will make us lose some ash-specific types (left/right
-    // snap). Ash is responsible for restoring these states by checking
-    // GetWindowInfo.
-    out_params->show_state =
-        chromeos::ToWindowShowState(*window_info->window_state_type);
-  }
-
-  // Register to track when the widget has initialized. If a delegate is not
-  // set, then the widget creator is responsible for calling
-  // OnWidgetInitialized.
-  views::WidgetDelegate* delegate = out_params->delegate;
-  if (delegate) {
-    delegate->RegisterWidgetInitializedCallback(
-        base::BindOnce(&FullRestoreReadHandler::OnWidgetInitialized,
-                       weak_factory_.GetWeakPtr(), delegate));
-  }
 }
 
 int32_t FullRestoreReadHandler::GetArcSessionId() {
@@ -472,11 +394,6 @@ void FullRestoreReadHandler::RemoveAppRestoreData(int32_t window_id) {
   RemoveAppRestoreData(profile_path, app_id, window_id);
 
   window_id_to_app_restore_info_.erase(it);
-}
-
-void FullRestoreReadHandler::OnWidgetInitialized(
-    views::WidgetDelegate* delegate) {
-  FullRestoreInfo::GetInstance()->OnWidgetInitialized(delegate->GetWidget());
 }
 
 app_restore::RestoreData* FullRestoreReadHandler::GetRestoreData(

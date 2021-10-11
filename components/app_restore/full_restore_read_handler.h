@@ -22,7 +22,6 @@
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-#include "ui/views/widget/widget.h"
 
 namespace app_restore {
 struct AppLaunchInfo;
@@ -64,6 +63,10 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   FullRestoreReadHandler& operator=(const FullRestoreReadHandler&) = delete;
   ~FullRestoreReadHandler() override;
 
+  app_restore::ArcReadHandler* arc_read_handler() {
+    return arc_read_handler_.get();
+  }
+
   // aura::EnvObserver:
   void OnWindowInitialized(aura::Window* window) override;
 
@@ -82,8 +85,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   void RemoveAppRestoreData(const base::FilePath& profile_path,
                             const std::string& app_id,
                             int32_t restore_window_id) override;
-  void ApplyProperties(app_restore::WindowInfo* window_info,
-                       ui::PropertyHandler* property_handler) override;
 
   // app_restore::AppRestoreArcInfo::Observer:
   void OnTaskCreated(const std::string& app_id,
@@ -127,6 +128,11 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   // Gets the window information for |window|.
   std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(aura::Window* window);
 
+  // Gets the window information for the active profile associated with
+  // `restore_window_id`.
+  std::unique_ptr<app_restore::WindowInfo> GetWindowInfoForActiveProfile(
+      int32_t restore_window_id);
+
   // Gets the ARC app launch information from the full restore file for `app_id`
   // and `session_id`.
   std::unique_ptr<app_restore::AppLaunchInfo> GetArcAppLaunchInfo(
@@ -142,11 +148,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
 
   // Returns the restore window id for the ARC app's |session_id|.
   int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
-
-  // Modifies `out_params` based on the window info associated with
-  // `restore_window_id`.
-  void ModifyWidgetParams(int32_t restore_window_id,
-                          views::Widget::InitParams* out_params);
 
   // Generates the ARC session id (1,000,000,001 - INT_MAX) for restored ARC
   // apps.
@@ -186,10 +187,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
 
   // Removes AppRestoreData for |restore_window_id|.
   void RemoveAppRestoreData(int32_t restore_window_id);
-
-  // Callback that is invoked after the widget associated with |delegate| is
-  // initialized.
-  void OnWidgetInitialized(views::WidgetDelegate* delegate);
 
   app_restore::RestoreData* GetRestoreData(const base::FilePath& profile_path);
 

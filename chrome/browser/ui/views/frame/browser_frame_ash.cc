@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -193,7 +194,7 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
       aura::client::kAppType, static_cast<int>(is_app ? ash::AppType::CHROME_APP
                                                       : ash::AppType::BROWSER));
 
-  full_restore::ModifyWidgetParams(restore_id, &params);
+  app_restore::ModifyWidgetParams(restore_id, &params);
   // Override session restore bounds with Full Restore bounds if they exist.
   if (!params.bounds.IsEmpty())
     browser->set_override_bounds(params.bounds);

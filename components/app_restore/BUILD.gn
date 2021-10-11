@@ -11,6 +11,8 @@ component("app_restore") {
     "app_restore_arc_info.h",
     "app_restore_data.cc",
     "app_restore_data.h",
+    "app_restore_utils.cc",
+    "app_restore_utils.h",
     "arc_read_handler.cc",
     "arc_read_handler.h",
     "arc_save_handler.cc",

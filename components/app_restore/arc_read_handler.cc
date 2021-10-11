@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
@@ -208,7 +209,7 @@ void ArcReadHandler::UpdateWindowCandidates(int32_t task_id,
     // info.
     std::unique_ptr<WindowInfo> window_info = GetWindowInfo(restore_window_id);
     if (window_info)
-      delegate_->ApplyProperties(window_info.get(), *window_it);
+      ApplyProperties(window_info.get(), *window_it);
   }
 
   // Remove the window from the hidden container.
