@@ -257,19 +257,16 @@ void ShowDisabledNotification(CaptureAllowance allowance) {
           : vector_icons::kBusinessIcon);
 }
 
-// Shows a notification informing the user that video recording was stopped. If
-// |for_hdcp| is true, then this was due to a content-enforced protection,
-// otherwise it was due to DLP which is admin enforced.
-void ShowVideoRecordingStoppedNotification(bool for_hdcp) {
+// Shows a notification informing the user that video recording was stopped due
+// to a content-enforced protection.
+void ShowVideoRecordingStoppedByHdcpNotification() {
   ShowNotification(
       kScreenCaptureStoppedNotificationId,
-      for_hdcp ? IDS_ASH_SCREEN_CAPTURE_HDCP_STOPPED_TITLE
-               : IDS_ASH_SCREEN_CAPTURE_DLP_STOPPED_TITLE,
-      for_hdcp ? IDS_ASH_SCREEN_CAPTURE_HDCP_BLOCKED_MESSAGE
-               : IDS_ASH_SCREEN_CAPTURE_DLP_STOPPED_MESSAGE,
+      IDS_ASH_SCREEN_CAPTURE_HDCP_STOPPED_TITLE,
+      IDS_ASH_SCREEN_CAPTURE_HDCP_BLOCKED_MESSAGE,
       /*optional_fields=*/{}, /*delegate=*/nullptr,
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING,
-      for_hdcp ? kCaptureModeIcon : vector_icons::kBusinessIcon);
+      kCaptureModeIcon);
 }
 
 // Copies the bitmap representation of the given |image| to the clipboard.
@@ -638,7 +635,7 @@ void CaptureModeController::RefreshContentProtection() {
     // the service immediately so as not to record any further frames.
     RecordEndRecordingReason(EndRecordingReason::kHdcpInterruption);
     FinalizeRecording(/*success=*/false, gfx::ImageSkia());
-    ShowVideoRecordingStoppedNotification(/*for_hdcp=*/true);
+    ShowVideoRecordingStoppedByHdcpNotification();
   }
 }
 
@@ -1331,7 +1328,6 @@ void CaptureModeController::BeginVideoRecording(
 }
 
 void CaptureModeController::InterruptVideoRecording() {
-  ShowVideoRecordingStoppedNotification(/*for_hdcp=*/false);
   EndVideoRecording(EndRecordingReason::kDlpInterruption);
 }
 

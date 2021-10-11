@@ -28,6 +28,10 @@ constexpr char kScreenCapturePausedNotificationPrefix[] =
     "screen_capture_dlp_paused-";
 constexpr char kScreenCaptureResumedNotificationPrefix[] =
     "screen_capture_dlp_resumed-";
+constexpr char kScreenCaptureBlockedNotificationId[] =
+    "screen_capture_dlp_blocked";
+constexpr char kVideoCaptureStoppedNotificationId[] =
+    "video_capture_dlp_stopped";
 constexpr char kDlpPolicyNotifierId[] = "policy.dlp";
 
 void OnNotificationClicked(const std::string id) {
@@ -108,6 +112,21 @@ void ShowDlpScreenCaptureResumedNotification(const std::string& capture_id,
       l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_TITLE),
       l10n_util::GetStringFUTF16(IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_MESSAGE,
                                  app_title));
+}
+
+void ShowDlpScreenCaptureDisabledNotification() {
+  ShowDlpNotification(
+      kScreenCaptureBlockedNotificationId,
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_CAPTURE_DISABLED_TITLE),
+      l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_SCREEN_CAPTURE_DISABLED_MESSAGE));
+}
+
+void ShowDlpVideoCaptureStoppedNotification() {
+  ShowDlpNotification(
+      kVideoCaptureStoppedNotificationId,
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_VIDEO_CAPTURE_STOPPED_TITLE),
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_VIDEO_CAPTURE_STOPPED_MESSAGE));
 }
 
 }  // namespace policy

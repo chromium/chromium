@@ -26,6 +26,12 @@ void HideDlpScreenCaptureResumedNotification(const std::string& capture_id);
 void ShowDlpScreenCaptureResumedNotification(const std::string& capture_id,
                                              const std::u16string& app_title);
 
+// Shows a notification that screen capture is not allowed due to DLP rules.
+void ShowDlpScreenCaptureDisabledNotification();
+
+// Shows a notification that video capture is stopped due to DLP rules.
+void ShowDlpVideoCaptureStoppedNotification();
+
 }  // namespace policy
 
 #endif  // CHROME_BROWSER_ASH_POLICY_DLP_DLP_NOTIFICATION_HELPER_H_

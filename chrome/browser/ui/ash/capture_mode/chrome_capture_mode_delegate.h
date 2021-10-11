@@ -28,7 +28,8 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
 
   // Interrupts an on going video recording if any, due to some restricted
   // content showing up on the screen, or if screen capture becomes locked.
-  void InterruptVideoRecordingIfAny();
+  // Returns true if a video recording was interrupted, and false otherwise.
+  bool InterruptVideoRecordingIfAny();
 
   // ash::CaptureModeDelegate:
   base::FilePath GetUserDefaultDownloadsFolder() const override;

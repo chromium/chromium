@@ -72,9 +72,12 @@ void ChromeCaptureModeDelegate::SetIsScreenCaptureLocked(bool locked) {
     InterruptVideoRecordingIfAny();
 }
 
-void ChromeCaptureModeDelegate::InterruptVideoRecordingIfAny() {
-  if (interrupt_video_recording_callback_)
+bool ChromeCaptureModeDelegate::InterruptVideoRecordingIfAny() {
+  if (interrupt_video_recording_callback_) {
     std::move(interrupt_video_recording_callback_).Run();
+    return true;
+  }
+  return false;
 }
 
 base::FilePath ChromeCaptureModeDelegate::GetUserDefaultDownloadsFolder()

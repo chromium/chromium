@@ -70,6 +70,12 @@ bool IsReported(RestrictionLevelAndUrl restriction_info) {
          IsBlocked(restriction_info);
 }
 
+// If there is an on going video recording, interrupts it and notifies the user.
+void InterruptVideoRecording() {
+  if (ChromeCaptureModeDelegate::Get()->InterruptVideoRecordingIfAny())
+    ShowDlpVideoCaptureStoppedNotification();
+}
+
 }  // namespace
 
 static DlpContentManager* g_dlp_content_manager = nullptr;
@@ -176,7 +182,7 @@ bool DlpContentManager::IsScreenCaptureRestricted(
 
 void DlpContentManager::OnVideoCaptureStarted(const ScreenshotArea& area) {
   if (IsVideoCaptureRestricted(area)) {
-    ChromeCaptureModeDelegate::Get()->InterruptVideoRecordingIfAny();
+    InterruptVideoRecording();
     return;
   }
   DCHECK(!running_video_capture_info_.has_value());
@@ -570,7 +576,7 @@ void DlpContentManager::CheckRunningVideoCapture() {
   MaybeReportEvent(restriction_info, DlpRulesManager::Restriction::kScreenshot);
   if (IsBlocked(restriction_info)) {
     DlpBooleanHistogram(dlp::kVideoCaptureInterruptedUMA, true);
-    ChromeCaptureModeDelegate::Get()->InterruptVideoRecordingIfAny();
+    InterruptVideoRecording();
     running_video_capture_info_.reset();
   }
   if (IsWarn(restriction_info)) {
@@ -660,7 +666,7 @@ void DlpContentManager::CheckScreenCaptureRestriction(
     RestrictionLevelAndUrl restriction_info,
     OnDlpRestrictionChecked callback) {
   if (IsBlocked(restriction_info)) {
-    // TODO(aidazolic): Show the blocked notification
+    ShowDlpScreenCaptureDisabledNotification();
     std::move(callback).Run(false);
   } else if (IsWarn(restriction_info)) {
     if (user_allowed_screen_capture_) {
