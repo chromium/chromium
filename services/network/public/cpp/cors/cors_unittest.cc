@@ -504,6 +504,41 @@ TEST_F(CorsTest, CorsUnsafeRequestHeaderNames) {
       List({"content-type", "hoge"}));
 }
 
+TEST_F(CorsTest, CheckCorsRangeSafelist) {
+  // Missing values
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", ""));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "500"));
+
+  // Case
+  EXPECT_TRUE(IsCorsSafelistedHeader("range", "bytes=100-200"));
+  EXPECT_TRUE(IsCorsSafelistedHeader("Range", "bytes=100-200"));
+  EXPECT_TRUE(IsCorsSafelistedHeader("RANGE", "bytes=100-200"));
+  EXPECT_TRUE(IsCorsSafelistedHeader("range", "BYTES=100-200"));
+
+  // Valid values
+  EXPECT_TRUE(IsCorsSafelistedHeader("range", "bytes=100-"));
+
+  // Multiple ranges
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=100-200,300-400"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=100-200,400"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=100-200-400"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=100-200,400-"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=-50,100-"));
+
+  // Invalid ranges
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=200-100"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=-200--100"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=-50-50"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=-200"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=100"));
+
+  // Invalid charset.
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes = 100-200"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes =100-200"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", "bytes=,100-200"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("range", ",bytes=,100-200"));
+}
+
 TEST_F(CorsTest, NoCorsSafelistedHeaderName) {
   EXPECT_TRUE(IsNoCorsSafelistedHeaderName("accept"));
   EXPECT_TRUE(IsNoCorsSafelistedHeaderName("AcCePT"));
