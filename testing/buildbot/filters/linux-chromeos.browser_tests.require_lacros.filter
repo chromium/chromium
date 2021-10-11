@@ -3,7 +3,12 @@
 # For more information, please see //chrome/test/base/chromeos/README.md.
 DemoAshRequiresLacrosTest*
 ChromeVox*
-
+SwitchAccess*
+SelectToSpeak*
+AccessibilityExtension*
+Autoclick*
+*Magn*.*
+Dictation*
 # TODO(crbug.com/1245416) Enable more accessibility tests.
 -ChromeVoxBackgroundTest.SwipeLeftRight4ByContainers
 -ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
@@ -16,3 +21,10 @@ ChromeVox*
 -ChromeVoxPanelTest.LinkMenu
 -ChromeVoxPortalsTest.PortalName
 -ChromeVoxPortalsTest.ShouldFocusPortal
+-DictationE2ETest.*
+-SelectToSpeakEnhancedNetworkTtsVoicesTest.*
+-SelectToSpeakNavigationControlTest.*
+-SwitchAccessFocusRingManagerTest.BackButtonForMenuFocus
+-SwitchAccessFocusRingManagerTest.GroupFocus
+-SwitchAccessItemScanManagerTest.*
+-SwitchAccessPointScanManagerTest.PointScanLeftClick
