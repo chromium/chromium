@@ -32,6 +32,16 @@ ConditionValidator::Result OnceConditionValidator::MeetsConditions(
   result.session_rate_ok =
       shown_features_.find(feature.name) == shown_features_.end();
 
+  result.snooze_expiration_ok =
+      !event_model.IsSnoozeDismissed(config.trigger.name) &&
+      (event_model.GetLastSnoozeTimestamp(config.trigger.name) <
+       base::Time::Now() - base::Days(config.snooze_params.snooze_interval));
+
+  result.should_show_snooze =
+      result.snooze_expiration_ok &&
+      event_model.GetSnoozeCount(config.trigger.name, config.trigger.window,
+                                 current_day) < config.snooze_params.max_limit;
+
   return result;
 }
 
