@@ -562,6 +562,13 @@ public class ContextualSearchBarControl {
         mSearchBarTermOpacity = fadingInPercentage;
     }
 
+    /**
+     * @return Whether the animation for the in bar related searches animation is running.
+     */
+    boolean inBarRelatedSearchesAnimationIsRunning() {
+        return mInBarRelatedSearchesAnimation != null && mInBarRelatedSearchesAnimation.isRunning();
+    }
+
     /** Animates showing Related Searches in the bottom part of the Bar. */
     void animateInBarRelatedSearches(boolean shouldGrowNotShrink) {
         if (mInBarRelatedSearchesAnimation != null && mInBarRelatedSearchesAnimation.isRunning()) {
