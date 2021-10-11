@@ -83,7 +83,8 @@ abstract class Linker {
     protected static final boolean DEBUG = LibraryLoader.DEBUG;
 
     // Constants used to pass the shared RELRO Bundle through Binder.
-    private static final String SHARED_RELROS = "org.chromium.base.android.linker.shared_relros";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static final String SHARED_RELROS = "org.chromium.base.android.linker.shared_relros";
     private static final String BASE_LOAD_ADDRESS =
             "org.chromium.base.android.linker.base_load_address";
 
@@ -159,6 +160,12 @@ abstract class Linker {
     @GuardedBy("mLock")
     @State
     protected int mState = State.UNINITIALIZED;
+
+    void pretendLibraryIsLoadedForTesting() {
+        synchronized (mLock) {
+            mState = State.DONE;
+        }
+    }
 
     private static Linker sLinkerForAssert;
 

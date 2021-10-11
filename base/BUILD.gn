@@ -3987,6 +3987,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/library_loader/LinkerJni.java",
       "android/java/src/org/chromium/base/library_loader/LoaderErrors.java",
       "android/java/src/org/chromium/base/library_loader/ModernLinker.java",
+      "android/java/src/org/chromium/base/library_loader/ModernLinkerJni.java",
       "android/java/src/org/chromium/base/library_loader/NativeLibraryPreloader.java",
       "android/java/src/org/chromium/base/library_loader/ProcessInitException.java",
       "android/java/src/org/chromium/base/lifetime/DestroyChecker.java",

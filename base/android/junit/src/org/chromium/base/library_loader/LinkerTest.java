@@ -4,6 +4,8 @@
 
 package org.chromium.base.library_loader;
 
+import android.os.Bundle;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -35,17 +37,22 @@ public class LinkerTest {
     @Mock
     Linker.Natives mNativeMock;
 
+    @Mock
+    ModernLinker.Natives mModernLinkerNativeMock;
+
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Before
     public void setUp() {
         Linker.setNativesForTesting(mNativeMock);
+        ModernLinker.setModernLinkerNativesForTesting(mModernLinkerNativeMock);
     }
 
     @After
     public void tearDown() {
         Linker.setNativesForTesting(null);
+        ModernLinker.setModernLinkerNativesForTesting(null);
     }
 
     static Linker.LibInfo anyLibInfo() {
@@ -178,6 +185,40 @@ public class LinkerTest {
         Mockito.verify(mNativeMock).findRegionReservedByWebViewZygote(anyLibInfo());
         Mockito.verify(mNativeMock)
                 .findMemoryRegionAtRandomAddress(anyLibInfo(), ArgumentMatchers.anyBoolean());
+    }
+
+    @Test
+    @SmallTest
+    public void testRelroSharingStatusHistogram() {
+        // Set up.
+        Linker linker = Mockito.spy(new ModernLinker());
+        Mockito.doNothing().when(linker).loadLinkerJniLibraryLocked();
+        Mockito.when(mModernLinkerNativeMock.getRelroSharingResult()).thenReturn(1);
+        Linker.LibInfo libInfo = Mockito.spy(new Linker.LibInfo());
+        long someAddress = 1 << 12;
+        libInfo.mLoadAddress = someAddress;
+        // Set a fake RELRO FD so that it is not silently ignored when taking the LibInfo from the
+        // (simulated) outside.
+        libInfo.mRelroFd = 1023;
+        // Ignore closing the fake FD.
+        Mockito.doNothing().when(libInfo).close();
+        // Create the bundle following the _internal_ format of the Linker. Not great, but shorter
+        // than factoring out this logic from the Linker only for testing.
+        Bundle relros = libInfo.toBundle();
+        Bundle b = new Bundle();
+        b.putBundle(Linker.SHARED_RELROS, relros);
+
+        // Exercise.
+        linker.ensureInitialized(
+                /* asRelroProducer= */ false, PreferAddress.RESERVE_HINT, someAddress);
+        linker.pretendLibraryIsLoadedForTesting();
+        linker.takeSharedRelrosFromBundle(b);
+
+        // Verify.
+        Mockito.verify(linker).keepMemoryReservationUntilLoad();
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "ChromiumAndroidLinker.RelroSharingStatus2"));
     }
 
     @Test

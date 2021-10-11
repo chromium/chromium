@@ -72037,9 +72037,20 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="RelroSharingStatus">
-  <int value="0" label="Not attempted (this value must not be recorded)"/>
+  <int value="0" label="Using shared RELRO failed: other reasons"/>
   <int value="1" label="Using shared RELRO succeeded"/>
-  <int value="2" label="Using shared RELRO failed, contents did not match"/>
+  <int value="2" label="Using shared RELRO failed: contents did not match"/>
+  <int value="3" label="Using shared RELRO failed: RELRO FD was not provided"/>
+  <int value="4"
+      label="Using shared RELRO failed: RELRO region not found in the current
+             process"/>
+  <int value="5"
+      label="Using shared RELRO failed: could not find shared memory
+             functions"/>
+  <int value="6"
+      label="Using shared RELRO failed: failed to mmap on top of previous
+             RELRO"/>
+  <int value="7" label="Using shared RELRO failed: invalid RELRO information"/>
 </enum>
 
 <enum name="RemoteBookmarkUpdateError">

@@ -2807,12 +2807,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromiumAndroidLinker.RelroSharingStatus"
     enum="RelroSharingStatus" expires_after="2022-10-01">
+  <obsolete>
+    Upgraded to ChromiumAndroidLinker.RelroSharingStatus2 around 2021-10.
+  </obsolete>
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
     Recorded when RELRO is replaced with a shared memory region, in all
     processes consuming RELRO. Indicates whether the replacement was a success.
     ModernLinker only.
+  </summary>
+</histogram>
+
+<histogram name="ChromiumAndroidLinker.RelroSharingStatus2"
+    enum="RelroSharingStatus" expires_after="2022-10-01">
+  <owner>lizeb@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Recorded when RELRO is replaced with a shared memory region, in all
+    processes consuming RELRO. Indicates whether the replacement was a success.
+    ModernLinker only.
+
+    See a description of RELRO sharing here:
+    https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/android_native_libraries.md#RELRO-Sharing
   </summary>
 </histogram>
 

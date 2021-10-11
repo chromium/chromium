@@ -49,7 +49,7 @@ namespace {
 // Record of the Java VM passed to JNI_OnLoad().
 static JavaVM* s_java_vm = nullptr;
 
-// Guarded by |sLock| in Linker.java.
+// Guarded by |mLock| in Linker.java.
 RelroSharingStatus s_relro_sharing_status = RelroSharingStatus::NOT_ATTEMPTED;
 
 }  // namespace
@@ -472,18 +472,22 @@ bool NativeLibInfo::CompareRelroAndReplaceItBy(
     const NativeLibInfo& other_lib_info) {
   if (other_lib_info.relro_fd_ == -1) {
     LOG_ERROR("No shared region to use");
+    s_relro_sharing_status = RelroSharingStatus::EXTERNAL_RELRO_FD_NOT_PROVIDED;
     return false;
   }
 
   if (!FindRelroAndLibraryRangesInElf()) {
     LOG_ERROR("Could not find RELRO from externally provided address: 0x%p",
               reinterpret_cast<void*>(other_lib_info.load_address_));
+    s_relro_sharing_status = RelroSharingStatus::EXTERNAL_RELRO_NOT_FOUND;
     return false;
   }
 
   SharedMemoryFunctions functions;
-  if (!functions.IsWorking())
+  if (!functions.IsWorking()) {
+    s_relro_sharing_status = RelroSharingStatus::NO_SHMEM_FUNCTIONS;
     return false;
+  }
   if (!RelroIsIdentical(other_lib_info, functions)) {
     LOG_ERROR("RELRO is not identical");
     s_relro_sharing_status = RelroSharingStatus::NOT_IDENTICAL;
@@ -500,8 +504,7 @@ bool NativeLibInfo::CompareRelroAndReplaceItBy(
   //    and receiving it
   if (!other_lib_info.ReplaceRelroWithSharedOne(functions)) {
     LOG_ERROR("Failed to use relro_fd");
-    // TODO(pasko): Introduce RelroSharingStatus::OTHER for rare RELRO sharing
-    // failures like this one.
+    s_relro_sharing_status = RelroSharingStatus::REMAP_FAILED;
     return false;
   }
 
@@ -525,7 +528,7 @@ bool NativeLibInfo::SharedMemoryFunctionsSupportedForTesting() {
 }
 
 JNI_GENERATOR_EXPORT jboolean
-Java_org_chromium_base_library_1loader_ModernLinker_nativeLoadLibrary(
+Java_org_chromium_base_library_1loader_ModernLinkerJni_nativeLoadLibrary(
     JNIEnv* env,
     jclass clazz,
     jstring jdlopen_ext_path,
@@ -546,15 +549,17 @@ Java_org_chromium_base_library_1loader_ModernLinker_nativeLoadLibrary(
 }
 
 JNI_GENERATOR_EXPORT jboolean
-Java_org_chromium_base_library_1loader_ModernLinker_nativeUseRelros(
+Java_org_chromium_base_library_1loader_ModernLinkerJni_nativeUseRelros(
     JNIEnv* env,
     jclass clazz,
     jobject lib_info_obj) {
   LOG_INFO("Entering");
   // Copy the contents from the Java-side LibInfo object.
   NativeLibInfo incoming_lib_info = {env, lib_info_obj};
-  if (!incoming_lib_info.CopyFromJavaObject())
+  if (!incoming_lib_info.CopyFromJavaObject()) {
+    s_relro_sharing_status = RelroSharingStatus::CORRUPTED_IN_JAVA;
     return false;
+  }
 
   // Create an empty NativeLibInfo to extract the current information about the
   // loaded library and later compare with the contents of the
@@ -569,7 +574,7 @@ Java_org_chromium_base_library_1loader_ModernLinker_nativeUseRelros(
 }
 
 JNI_GENERATOR_EXPORT jint
-Java_org_chromium_base_library_1loader_ModernLinker_nativeGetRelroSharingResult(
+Java_org_chromium_base_library_1loader_ModernLinkerJni_nativeGetRelroSharingResult(
     JNIEnv* env,
     jclass clazz) {
   return static_cast<jint>(s_relro_sharing_status);

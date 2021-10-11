@@ -4,6 +4,8 @@
 
 package org.chromium.base.library_loader;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JniIgnoreNatives;
 import org.chromium.base.metrics.RecordHistogram;
@@ -45,7 +47,8 @@ class ModernLinker extends Linker {
         } else if (relroMode == RelroSharingMode.PRODUCE) {
             // Create the shared RELRO, and store it.
             mLocalLibInfo.mLibFilePath = libFilePath;
-            if (nativeLoadLibrary(libFilePath, mLocalLibInfo, true /* spawnRelroRegion */)) {
+            if (getModernLinkerJni().loadLibrary(
+                        libFilePath, mLocalLibInfo, true /* spawnRelroRegion */)) {
                 if (DEBUG) {
                     Log.i(TAG, "Successfully spawned RELRO: mLoadAddress=0x%x, mLoadSize=%d",
                             mLocalLibInfo.mLoadAddress, mLocalLibInfo.mLoadSize);
@@ -65,7 +68,8 @@ class ModernLinker extends Linker {
         } else {
             assert relroMode == RelroSharingMode.CONSUME;
             assert mRemoteLibInfo == null || libFilePath.equals(mRemoteLibInfo.mLibFilePath);
-            if (!nativeLoadLibrary(libFilePath, mLocalLibInfo, false /* spawnRelroRegion */)) {
+            if (!getModernLinkerJni().loadLibrary(
+                        libFilePath, mLocalLibInfo, false /* spawnRelroRegion */)) {
                 resetAndThrow(String.format("Unable to load library: %s", libFilePath));
             }
             assert mLocalLibInfo.mRelroFd == -1;
@@ -98,15 +102,15 @@ class ModernLinker extends Linker {
             Log.i(TAG, "Received mRemoteLibInfo: mLoadAddress=0x%x, mLoadSize=%d",
                     mRemoteLibInfo.mLoadAddress, mRemoteLibInfo.mLoadSize);
         }
-        nativeUseRelros(mRemoteLibInfo);
+        getModernLinkerJni().useRelros(mRemoteLibInfo);
         mRemoteLibInfo.close();
         if (DEBUG) Log.i(TAG, "Immediate RELRO availability: %b", relroAvailableImmediately);
         RecordHistogram.recordBooleanHistogram(
                 "ChromiumAndroidLinker.RelroAvailableImmediately", relroAvailableImmediately);
-        int status = nativeGetRelroSharingResult();
+        int status = getModernLinkerJni().getRelroSharingResult();
         assert status != RelroSharingStatus.NOT_ATTEMPTED;
         RecordHistogram.recordEnumeratedHistogram(
-                "ChromiumAndroidLinker.RelroSharingStatus", status, RelroSharingStatus.COUNT);
+                "ChromiumAndroidLinker.RelroSharingStatus2", status, RelroSharingStatus.COUNT);
     }
 
     @GuardedBy("mLock")
@@ -116,8 +120,23 @@ class ModernLinker extends Linker {
         throw new UnsatisfiedLinkError(message);
     }
 
-    private static native boolean nativeLoadLibrary(
-            String libFilePath, LibInfo libInfo, boolean spawnRelroRegion);
-    private static native boolean nativeUseRelros(LibInfo libInfo);
-    private static native int nativeGetRelroSharingResult();
+    // Intentionally omitting @NativeMethods because generation of the stubs it requires (as
+    // GEN_JNI.java) is disabled by the @JniIgnoreNatives.
+    interface Natives {
+        boolean loadLibrary(String libFilePath, LibInfo libInfo, boolean spawnRelroRegion);
+        boolean useRelros(LibInfo libInfo);
+        int getRelroSharingResult();
+    }
+
+    private static ModernLinker.Natives sNativesInstance;
+
+    static void setModernLinkerNativesForTesting(Natives instance) {
+        sNativesInstance = instance;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static ModernLinker.Natives getModernLinkerJni() {
+        if (sNativesInstance != null) return sNativesInstance;
+        return new ModernLinkerJni(); // R8 optimizes away all construction except the initial one.
+    }
 }
