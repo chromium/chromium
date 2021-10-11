@@ -2033,8 +2033,8 @@ const char kPdfXfaFormsDescription[] =
     "Enables support for XFA forms in PDFs. "
     "Has no effect if Chrome was not built with XFA support.";
 
-const char kForceWebContentsDarkModeName[] = "Force Dark Mode for Web Contents";
-const char kForceWebContentsDarkModeDescription[] =
+const char kAutoWebContentsDarkModeName[] = "Auto Dark Mode for Web Contents";
+const char kAutoWebContentsDarkModeDescription[] =
     "Automatically render all web contents using a dark theme.";
 
 const char kForcedColorsName[] = "Forced Colors";

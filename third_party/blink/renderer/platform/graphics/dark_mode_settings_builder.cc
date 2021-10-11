@@ -23,7 +23,7 @@ namespace {
 const constexpr DarkModeInversionAlgorithm kDefaultDarkModeInversionAlgorithm =
     DarkModeInversionAlgorithm::kInvertLightnessLAB;
 const constexpr DarkModeImagePolicy kDefaultDarkModeImagePolicy =
-    DarkModeImagePolicy::kFilterNone;
+    DarkModeImagePolicy::kFilterSmart;
 const constexpr int kDefaultTextBrightnessThreshold = 150;
 const constexpr int kDefaultBackgroundBrightnessThreshold = 205;
 const constexpr bool kDefaultDarkModeIsGrayscale = false;
