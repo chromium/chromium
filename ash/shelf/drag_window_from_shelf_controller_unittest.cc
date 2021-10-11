@@ -14,6 +14,7 @@
 #include "ash/shelf/drag_window_from_shelf_controller_test_api.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_metrics.h"
+#include "ash/shelf/window_scale_animation.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/wallpaper_constants.h"
@@ -31,10 +32,14 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/aura/client/window_parenting_client.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/transient_window_manager.h"
+#include "ui/wm/core/window_modality_controller.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -121,6 +126,23 @@ class DragWindowFromShelfControllerTest : public AshTestBase {
 
   DragWindowFromShelfController* window_drag_controller() {
     return window_drag_controller_.get();
+  }
+
+  std::unique_ptr<aura::Window> CreateTransientModalChildWindow(
+      aura::Window* transient_parent,
+      const gfx::Rect& bounds) {
+    auto child = std::make_unique<aura::Window>(
+        nullptr, aura::client::WINDOW_TYPE_POPUP);
+    child->Init(ui::LAYER_NOT_DRAWN);
+    child->SetBounds(bounds);
+    wm::AddTransientChild(transient_parent, child.get());
+    aura::client::ParentWindowWithContext(
+        child.get(), transient_parent->GetRootWindow(), bounds);
+    child->Show();
+
+    child->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+    wm::SetModalParent(child.get(), transient_parent);
+    return child;
   }
 
  private:
@@ -1270,6 +1292,67 @@ TEST_F(DragWindowFromShelfControllerTest,
   // Ensure that the right window is still in the overview.
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window2.get()));
   EXPECT_TRUE(overview_session->IsWindowInOverview(window2.get()));
+}
+
+// Tests that even if the animation for transient child is completed first, the
+// transient child will become visible after returning back to the window from
+// overview mode. Regression test for https://crbug.com/1240843.
+TEST_F(DragWindowFromShelfControllerTest,
+       TransientChildWindowIsVisibleAfterMinimizingOnFastAnimation) {
+  // Use the fast animation for transient child window to ensure its animation
+  // could be done faster than its parent.
+  auto enable_fast_animation_for_transient_child =
+      WindowScaleAnimation::EnableScopedFastAnimationForTransientChildForTest();
+
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  UpdateDisplay("1366x768");
+  const gfx::Rect shelf_bounds =
+      Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
+
+  auto window = CreateTestWindow();
+  auto window_transient = CreateTransientModalChildWindow(
+      window.get(), gfx::Rect(0, 20, 1366, 728));
+  wm::TransientWindowManager::GetOrCreate(window_transient.get())
+      ->set_parent_controls_visibility(true);
+
+  StartDrag(window_transient.get(), shelf_bounds.right_center());
+  Drag(gfx::Point(745, 616), 47, -47);
+  EndDrag(gfx::Point(1366, 0), -1815.28);
+  WaitForHomeLauncherAnimationToFinish();
+
+  aura::Window* home_screen_window =
+      Shell::Get()->app_list_controller()->GetHomeScreenWindow();
+  EXPECT_TRUE(home_screen_window);
+  EXPECT_TRUE(home_screen_window->IsVisible());
+
+  EXPECT_FALSE(window->IsVisible());
+  EXPECT_FALSE(window_transient->IsVisible());
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kExitHomeLauncher);
+
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  auto* overview_grid =
+      overview_controller->overview_session()->GetGridWithRootWindow(
+          Shell::GetPrimaryRootWindow());
+  EXPECT_TRUE(overview_grid);
+  ASSERT_EQ(1u, overview_grid->window_list().size());
+
+  OverviewItem* overview_item = overview_grid->window_list()[0].get();
+
+  // Click on |overview_item| to exit overview mode and show windows.
+  const gfx::Point view_center =
+      overview_item->GetBoundsOfSelectedItem().CenterPoint();
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(view_center);
+  event_generator->ClickLeftButton();
+  ASSERT_FALSE(overview_controller->InOverviewSession());
+
+  // Both transient child and parent windows should become visible.
+  EXPECT_TRUE(window->IsVisible());
+  EXPECT_TRUE(window_transient->IsVisible());
 }
 
 }  // namespace ash

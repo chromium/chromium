@@ -686,17 +686,11 @@ void DragWindowFromShelfController::ScaleDownWindowAfterDrag() {
       /*percent_shown=*/100,
       display::Screen::GetScreen()->GetPrimaryDisplay().id());
 
-  // Do the scale-down transform for the entire transient tree.
-  for (auto* window : GetTransientTreeIterator(window_)) {
-    // self-destructed when window transform animation is done.
-    new WindowScaleAnimation(
-        window, WindowScaleAnimation::WindowScaleType::kScaleDownToShelf,
-        window == window_
-            ? base::BindOnce(
-                  &DragWindowFromShelfController::OnWindowScaledDownAfterDrag,
-                  weak_ptr_factory_.GetWeakPtr())
-            : base::NullCallback());
-  }
+  new WindowScaleAnimation(
+      window_, WindowScaleAnimation::WindowScaleType::kScaleDownToShelf,
+      base::BindOnce(
+          &DragWindowFromShelfController::OnWindowScaledDownAfterDrag,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DragWindowFromShelfController::OnWindowScaledDownAfterDrag() {
@@ -710,15 +704,12 @@ void DragWindowFromShelfController::OnWindowScaledDownAfterDrag() {
 }
 
 void DragWindowFromShelfController::ScaleUpToRestoreWindowAfterDrag() {
-  // Do the scale up transform for the entire transient tee.
-  for (auto* window : GetTransientTreeIterator(window_)) {
-    new WindowScaleAnimation(
-        window, WindowScaleAnimation::WindowScaleType::kScaleUpToRestore,
-        base::BindOnce(
-            &DragWindowFromShelfController::OnWindowRestoredToOrignalBounds,
-            weak_ptr_factory_.GetWeakPtr(),
-            /*should_end_overview=*/!started_in_overview_));
-  }
+  new WindowScaleAnimation(
+      window_, WindowScaleAnimation::WindowScaleType::kScaleUpToRestore,
+      base::BindOnce(
+          &DragWindowFromShelfController::OnWindowRestoredToOrignalBounds,
+          weak_ptr_factory_.GetWeakPtr(),
+          /*should_end_overview=*/!started_in_overview_));
 }
 
 void DragWindowFromShelfController::OnWindowRestoredToOrignalBounds(
