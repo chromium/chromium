@@ -27,6 +27,16 @@ if (is_chrome_branded) {
   package_base_path = "chromium/fuchsia"
 }
 
+# Archives related specifically to `fuchsia.web`
+_web_engine_directory = "web_engine"
+
+# Archives related specifically to Chrome browser.
+_chrome_directory = "chrome"
+
+# Archives of tools intended to be run on a Linux/Mac host rather than the
+# Fuchsia device.
+_host_tools_directory = "host_tools"
+
 # Extracts the numeric Chrome build ID and writes it to a file in the output
 # directory.
 #
@@ -50,11 +60,8 @@ if (target_cpu == "x64") {
 # a manifest file.
 #
 # Parameters:
-#   package_basename: Determines the package basename in CIPD. Only required if
-#                     |package_relative_path| is not specified
-#   package_relative_path: Specify the package location relative to the fuchsia/
-#                          CIPD subdirectory. Defaults to a package name
-#                          based on |package_basename|.
+#   package_subdirectory: Specify the subdirectory relative to
+#                         |package_base_path| in which the package is put.
 #   description: Sets the "description" field in CIPD package definition.
 #
 # Optional parameters used directly by fuchsia_cipd_package template:
@@ -68,8 +75,7 @@ if (target_cpu == "x64") {
 template("cipd_archive") {
   forward_variables_from(invoker,
                          [
-                           "package_basename",
-                           "package_relative_path",
+                           "package_subdirectory",
                            "description",
                            "install_mode",
                            "sources",
@@ -78,11 +84,6 @@ template("cipd_archive") {
                            "deps",
                            "testonly",
                          ])
-
-  assert(
-      (defined(package_basename) && !defined(package_relative_path)) ||
-          (!defined(package_basename) && defined(package_relative_path)),
-      "only one of \"package_basename\" and \"package_relative_path\" should be set")
 
   # Produces a consolidated license file.
   action("${target_name}_license") {
@@ -113,15 +114,8 @@ template("cipd_archive") {
   sources += get_target_outputs(":${target_name}_license")
 
   fuchsia_cipd_package(target_name) {
-    if (!defined(package_relative_path)) {
-      package_relative_path = "${package_basename}-$targetarch"
-    }
-
-    package = "${package_base_path}/${package_relative_path}"
-
-    if (!defined(package_definition_name)) {
-      package_definition_name = "${target_name}.yaml"
-    }
+    package = "${package_base_path}/${package_subdirectory}/${targetarch}/${target_name}"
+    package_definition_name = "${target_name}.yaml"
 
     # Always use absolute path.
     use_absolute_root_path = true
@@ -137,8 +131,7 @@ template("cipd_archive") {
 #                   each set.
 #
 # Required parameters used by the cipd_archive template:
-#   "package_basename",
-#   "package_relative_path",
+#   "package_subdirectory",
 #
 # Optional parameters used by the cipd_archive template:
 #   "description"
@@ -151,8 +144,7 @@ template("cipd_archive") {
 template("cipd_test_archive") {
   forward_variables_from(invoker,
                          [
-                           "package_basename",
-                           "package_relative_path",
+                           "package_subdirectory",
                            "description",
                            "install_mode",
                            "data",
@@ -187,38 +179,36 @@ template("cipd_test_archive") {
   }
 }
 
-cipd_archive("webrunner") {
-  package_basename = "webrunner"
-  description = "Prebuilt Chrome and Web Runner binaries for Fuchsia."
+cipd_archive("web_runner") {
+  package_subdirectory = _web_engine_directory
+  description = "Prebuilt WebRunner binaries for Fuchsia."
 
-  deps = [
-    "//fuchsia/engine:web_engine",
-    "//fuchsia/engine:web_engine_with_webui",
-    "//fuchsia/runners:web_runner_pkg",
-  ]
-  sources = [
-    "${root_gen_dir}/fuchsia/engine/web_engine/web_engine.far",
-    "${root_gen_dir}/fuchsia/engine/web_engine_with_webui/web_engine_with_webui.far",
-    "${root_gen_dir}/fuchsia/runners/web_runner/web_runner.far",
-  ]
+  deps = [ "//fuchsia/runners:web_runner_pkg" ]
+  sources = [ "${root_gen_dir}/fuchsia/runners/web_runner/web_runner.far" ]
 }
 
-cipd_archive("castrunner") {
-  package_basename = "castrunner"
+cipd_archive("web_engine") {
+  package_subdirectory = _web_engine_directory
+  description = "Prebuilt WebEngine binaries for Fuchsia."
+
+  deps = [ "//fuchsia/engine:web_engine" ]
+  sources = [ "${root_gen_dir}/fuchsia/engine/web_engine/web_engine.far" ]
+}
+
+cipd_archive("cast_runner") {
+  package_subdirectory = _web_engine_directory
   description = "Prebuilt Cast application Runner binaries for Fuchsia."
 
   deps = [ "//fuchsia/runners:cast_runner_pkg" ]
-
   sources = [ "${root_gen_dir}/fuchsia/runners/cast_runner/cast_runner.far" ]
 }
 
 cipd_archive("web_engine_shell") {
-  package_basename = "web_engine_shell"
+  package_subdirectory = _web_engine_directory
   description = "Simple command-line embedder for WebEngine."
   testonly = true
 
   deps = [ "//fuchsia/engine:web_engine_shell_pkg" ]
-
   sources =
       [ "${root_gen_dir}/fuchsia/engine/web_engine_shell/web_engine_shell.far" ]
 }
@@ -247,17 +237,17 @@ action("strip_chromedriver_binary") {
 }
 
 cipd_archive("chromedriver") {
-  package_relative_path = "chromedriver/\${os}-\${arch}"
+  package_subdirectory = "${_host_tools_directory}/\${os}"
   description = "Prebuilt Chromedriver binary for Fuchsia host."
   install_mode = "copy"
-  deps = [ ":strip_chromedriver_binary" ]
   testonly = true
 
+  deps = [ ":strip_chromedriver_binary" ]
   sources = [ _stripped_chromedriver_file ]
 }
 
 cipd_test_archive("tests") {
-  package_basename = "tests"
+  package_subdirectory = _web_engine_directory
   description = "Prebuilt Chromium tests for Fuchsia."
   testonly = true
 
@@ -328,7 +318,7 @@ build_id_dir(_build_ids_target) {
 
 fuchsia_cipd_package(_debug_symbols_archive_name) {
   testonly = true
-  package = "${package_base_path}/debug-symbols-${targetarch}"
+  package = "${package_base_path}/${_web_engine_directory}/${targetarch}/debug-symbols"
   package_root = _debug_symbols_outdir
   package_definition_name = "${target_name}.yaml"
   package_definition_dir = "${target_gen_dir}/${target_name}"
@@ -339,20 +329,11 @@ fuchsia_cipd_package(_debug_symbols_archive_name) {
   deps = [ ":${_build_ids_target}" ]
 }
 
-cipd_archive("clear_key_cdm") {
-  testonly = true
-  package_basename = "libclearkeycdm"
-  description = "Prebuilt libclearkeycdm.so binary for Fuchsia."
-
-  deps = [ "//media/cdm/library_cdm/clear_key_cdm:clear_key_cdm" ]
-
-  sources = [ "${root_out_dir}/lib/libclearkeycdm.so" ]
-}
-
 # TODO(crbug.com/1247812): Separately upload chrome's debug symbols.
 cipd_archive("chrome") {
-  package_relative_path = "${target_name}/${targetarch}/${target_name}"
+  package_subdirectory = _chrome_directory
   description = "Prebuilt Chrome browser package."
+
   deps = [ "//chrome/app:chrome_pkg" ]
   sources = [ "${root_gen_dir}/chrome/app/chrome/chrome.far" ]
 }
@@ -360,8 +341,9 @@ cipd_archive("chrome") {
 # A group for production archives to ensure nothing is testonly.
 group("production_archives") {
   deps = [
-    ":castrunner",
-    ":webrunner",
+    ":cast_runner",
+    ":web_engine",
+    ":web_runner",
   ]
   if (!is_chrome_branded) {
     deps += [ ":chrome" ]
@@ -385,7 +367,6 @@ group("cipd") {
 
     # Symbols are not uploaded for the following.
     ":chromedriver",
-    ":clear_key_cdm",
     ":debug_symbols",
   ]
   visibility = []  # Required to replace the file default.
