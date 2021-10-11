@@ -34,6 +34,11 @@ export class PrivacyReviewDescriptionItemElement extends PolymerElement {
         type: String,
         value: '',
       },
+
+      labelHtml: {
+        type: String,
+        value: '',
+      },
     };
   }
 }
