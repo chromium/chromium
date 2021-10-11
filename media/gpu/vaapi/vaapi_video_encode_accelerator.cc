@@ -883,7 +883,7 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
     }
 
     for (auto&& job : jobs) {
-      if (!encoder_->PrepareEncodeJob(job.get())) {
+      if (!encoder_->PrepareEncodeJob(*job.get())) {
         NOTIFY_ERROR(kPlatformFailureError, "Failed preparing an encode job.");
         return;
       }

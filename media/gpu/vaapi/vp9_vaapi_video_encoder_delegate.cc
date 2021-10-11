@@ -314,19 +314,19 @@ size_t VP9VaapiVideoEncoderDelegate::GetMaxNumOfRefFrames() const {
   return kVp9NumRefFrames;
 }
 
-bool VP9VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob* encode_job) {
+bool VP9VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (svc_layers_) {
-    if (svc_layers_->UpdateEncodeJob(encode_job->IsKeyframeRequested(),
+    if (svc_layers_->UpdateEncodeJob(encode_job.IsKeyframeRequested(),
                                      current_params_.kf_period_frames)) {
-      encode_job->ProduceKeyframe();
+      encode_job.ProduceKeyframe();
     }
   } else {
-    if (encode_job->IsKeyframeRequested())
+    if (encode_job.IsKeyframeRequested())
       frame_num_ = 0;
 
     if (frame_num_ == 0)
-      encode_job->ProduceKeyframe();
+      encode_job.ProduceKeyframe();
 
     frame_num_++;
     frame_num_ %= current_params_.kf_period_frames;
@@ -336,7 +336,7 @@ bool VP9VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob* encode_job) {
   DCHECK(picture);
 
   std::array<bool, kVp9NumRefsPerFrame> ref_frames_used = {false, false, false};
-  SetFrameHeader(encode_job->IsKeyframeRequested(), picture.get(),
+  SetFrameHeader(encode_job.IsKeyframeRequested(), picture.get(),
                  &ref_frames_used);
   if (!SubmitFrameParameters(encode_job, current_params_, picture,
                              reference_frames_, ref_frames_used)) {
@@ -355,7 +355,7 @@ BitstreamBufferMetadata VP9VaapiVideoEncoderDelegate::GetMetadata(
 
   auto metadata =
       VaapiVideoEncoderDelegate::GetMetadata(encode_job, payload_size);
-  auto picture = GetPicture(encode_job);
+  auto picture = GetPicture(*encode_job);
   DCHECK(picture);
   metadata.vp9 = picture->metadata_for_encoding;
   return metadata;
@@ -529,15 +529,15 @@ void VP9VaapiVideoEncoderDelegate::NotifyEncodedChunkSize(
 }
 
 scoped_refptr<VP9Picture> VP9VaapiVideoEncoderDelegate::GetPicture(
-    EncodeJob* job) {
+    EncodeJob& job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return base::WrapRefCounted(
-      reinterpret_cast<VP9Picture*>(job->picture().get()));
+      reinterpret_cast<VP9Picture*>(job.picture().get()));
 }
 
 bool VP9VaapiVideoEncoderDelegate::SubmitFrameParameters(
-    EncodeJob* job,
+    EncodeJob& job,
     const EncodeParams& encode_params,
     scoped_refptr<VP9Picture> pic,
     const Vp9ReferenceFrameVector& ref_frames,
@@ -573,7 +573,7 @@ bool VP9VaapiVideoEncoderDelegate::SubmitFrameParameters(
                 : VA_INVALID_ID;
   }
 
-  pic_param.coded_buf = job->coded_buffer_id();
+  pic_param.coded_buf = job.coded_buffer_id();
   DCHECK_NE(pic_param.coded_buf, VA_INVALID_ID);
 
   if (frame_header->IsKeyframe()) {
@@ -627,20 +627,20 @@ bool VP9VaapiVideoEncoderDelegate::SubmitFrameParameters(
   pic_param.log2_tile_rows = frame_header->tile_rows_log2;
   pic_param.log2_tile_columns = frame_header->tile_cols_log2;
 
-  job->AddSetupCallback(
+  job.AddSetupCallback(
       base::BindOnce(&VaapiVideoEncoderDelegate::SubmitBuffer,
                      base::Unretained(this), VAEncSequenceParameterBufferType,
                      MakeRefCountedBytes(&seq_param, sizeof(seq_param))));
 
-  job->AddSetupCallback(
+  job.AddSetupCallback(
       base::BindOnce(&VaapiVideoEncoderDelegate::SubmitBuffer,
                      base::Unretained(this), VAEncPictureParameterBufferType,
                      MakeRefCountedBytes(&pic_param, sizeof(pic_param))));
 
-  job->AddPostExecuteCallback(
+  job.AddPostExecuteCallback(
       base::BindOnce(&VP9VaapiVideoEncoderDelegate::NotifyEncodedChunkSize,
-                     base::Unretained(this), job->coded_buffer_id(),
-                     job->input_surface()->id()));
+                     base::Unretained(this), job.coded_buffer_id(),
+                     job.input_surface()->id()));
   return true;
 }
 

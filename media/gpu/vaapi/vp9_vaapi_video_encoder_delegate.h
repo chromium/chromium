@@ -67,7 +67,7 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
                    uint32_t framerate) override;
   gfx::Size GetCodedSize() const override;
   size_t GetMaxNumOfRefFrames() const override;
-  bool PrepareEncodeJob(EncodeJob* encode_job) override;
+  bool PrepareEncodeJob(EncodeJob& encode_job) override;
   void BitrateControlUpdate(uint64_t encoded_chunk_size_bytes) override;
   BitstreamBufferMetadata GetMetadata(EncodeJob* encode_job,
                                       size_t payload_size) override;
@@ -95,10 +95,10 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   void NotifyEncodedChunkSize(VABufferID buffer_id,
                               VASurfaceID sync_surface_id);
 
-  scoped_refptr<VP9Picture> GetPicture(EncodeJob* job);
+  scoped_refptr<VP9Picture> GetPicture(EncodeJob& job);
 
   bool SubmitFrameParameters(
-      EncodeJob* job,
+      EncodeJob& job,
       const EncodeParams& encode_params,
       scoped_refptr<VP9Picture> pic,
       const Vp9ReferenceFrameVector& ref_frames,

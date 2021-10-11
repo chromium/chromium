@@ -442,7 +442,7 @@ void VP9VaapiVideoEncoderDelegateTest::
 
   // TODO(mcasas): Consider setting expectations on MockVaapiWrapper calls.
 
-  EXPECT_TRUE(encoder_->PrepareEncodeJob(encode_job.get()));
+  EXPECT_TRUE(encoder_->PrepareEncodeJob(*encode_job.get()));
 
   // TODO(hiroh): Test for encoder_->reference_frames_.
 

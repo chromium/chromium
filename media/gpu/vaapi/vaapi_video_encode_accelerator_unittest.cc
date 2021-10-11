@@ -210,7 +210,7 @@ class MockVP9VaapiVideoEncoderDelegate : public VP9VaapiVideoEncoderDelegate {
   MOCK_CONST_METHOD0(GetBitstreamBufferSize, size_t());
   MOCK_CONST_METHOD0(GetMaxNumOfRefFrames, size_t());
   MOCK_METHOD2(GetMetadata, BitstreamBufferMetadata(EncodeJob*, size_t));
-  MOCK_METHOD1(PrepareEncodeJob, bool(EncodeJob*));
+  MOCK_METHOD1(PrepareEncodeJob, bool(EncodeJob&));
   MOCK_METHOD1(BitrateControlUpdate, void(uint64_t));
   MOCK_METHOD0(GetSVCLayerResolutions, std::vector<gfx::Size>());
   bool UpdateRates(const VideoBitrateAllocation&, uint32_t) override {
@@ -364,16 +364,16 @@ class VaapiVideoEncodeAcceleratorTest
         .WillOnce(WithArgs<0>([encoder = encoder_.get(), kCodedBufferId,
                                use_temporal_layer_encoding,
                                va_surface_id = kInputSurfaceId](
-                                  VaapiVideoEncoderDelegate::EncodeJob* job) {
+                                  VaapiVideoEncoderDelegate::EncodeJob& job) {
           if (use_temporal_layer_encoding) {
             // Set Vp9Metadata on temporal layer encoding.
-            CodecPicture* picture = job->picture().get();
+            CodecPicture* picture = job.picture().get();
             reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding =
                 Vp9Metadata();
           }
           auto* vaapi_encoder =
               reinterpret_cast<VaapiVideoEncodeAccelerator*>(encoder);
-          job->AddPostExecuteCallback(base::BindOnce(
+          job.AddPostExecuteCallback(base::BindOnce(
               &VP9VaapiVideoEncoderDelegate::NotifyEncodedChunkSize,
               base::Unretained(reinterpret_cast<VP9VaapiVideoEncoderDelegate*>(
                   vaapi_encoder->encoder_.get())),
@@ -576,14 +576,14 @@ class VaapiVideoEncodeAcceleratorTest
       EXPECT_CALL(*mock_encoder_, PrepareEncodeJob(_))
           .WillOnce(WithArgs<0>(
               [encoder = encoder_.get(), kCodedBufferId,
-               input_surface_id](VaapiVideoEncoderDelegate::EncodeJob* job) {
+               input_surface_id](VaapiVideoEncoderDelegate::EncodeJob& job) {
                 // Set Vp9Metadata on spatial layer encoding.
-                CodecPicture* picture = job->picture().get();
+                CodecPicture* picture = job.picture().get();
                 reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding =
                     Vp9Metadata();
                 auto* vaapi_encoder =
                     reinterpret_cast<VaapiVideoEncodeAccelerator*>(encoder);
-                job->AddPostExecuteCallback(base::BindOnce(
+                job.AddPostExecuteCallback(base::BindOnce(
                     &VP9VaapiVideoEncoderDelegate::NotifyEncodedChunkSize,
                     base::Unretained(
                         reinterpret_cast<VP9VaapiVideoEncoderDelegate*>(
