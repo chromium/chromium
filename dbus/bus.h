@@ -185,6 +185,7 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   struct CHROME_DBUS_EXPORT Options {
     Options();
     ~Options();
+    Options(const Options&) = delete;
 
     BusType bus_type;  // SESSION by default.
     ConnectionType connection_type;  // PRIVATE by default.
