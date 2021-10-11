@@ -15,8 +15,9 @@ GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"');
 
+/* eslint-disable no-var */
+
 /** Test fixture for shared Polymer 3 elements. */
-// eslint-disable-next-line no-var
 var OSSettingsV3BrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
@@ -34,7 +35,6 @@ var OSSettingsV3BrowserTest = class extends PolymerTest {
   }
 };
 
-// eslint-disable-next-line no-var
 var OSSettingsDevicePageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
@@ -46,7 +46,6 @@ TEST_F(
     'OSSettingsDevicePageV3Test', 'All',
     () => mocha.grep('/^((?!arrow_key_arrangement_disabled).)*$/').run());
 
-// eslint-disable-next-line no-var
 var OSSettingsDevicePageKeyboardArrangementDisabledV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
@@ -67,7 +66,6 @@ TEST_F(
     'OSSettingsDevicePageKeyboardArrangementDisabledV3Test', 'All',
     () => mocha.grep('/.*arrow_key_arrangement_disabled.*/').run());
 
-// eslint-disable-next-line no-var
 var OSSettingsNearbyShareSubPageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
@@ -84,7 +82,6 @@ var OSSettingsNearbyShareSubPageV3Test = class extends OSSettingsV3BrowserTest {
 
 TEST_F('OSSettingsNearbyShareSubPageV3Test', 'All', () => mocha.run());
 
-// eslint-disable-next-line no-var
 var OSSettingsPrivacyPageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
@@ -97,7 +94,6 @@ var OSSettingsPrivacyPageV3Test = class extends OSSettingsV3BrowserTest {
   }
 };
 
-// eslint-disable-next-line no-var
 var OSSettingsPeoplePageAccountManagerV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
@@ -113,7 +109,6 @@ var OSSettingsPeoplePageAccountManagerV3Test =
 
 TEST_F('OSSettingsPeoplePageAccountManagerV3Test', 'All', () => mocha.run());
 
-// eslint-disable-next-line no-var
 var OSSettingsPeoplePageAccountManagerV3TestWithAccountManagementFlowsV2Enabled =
     class extends OSSettingsPeoplePageAccountManagerV3Test {
   /** @override */
@@ -136,7 +131,6 @@ TEST_F('OSSettingsPrivacyPageV3Test', 'PrivacePage_OfficialBuild', () => {
 });
 GEN('#endif');
 
-// eslint-disable-next-line no-var
 var OSSettingsPrivacyPageV3TestWithAccountManagementFlowsV2Enabled =
     class extends OSSettingsPrivacyPageV3Test {
   /** @override */
@@ -159,7 +153,6 @@ TEST_F(
     });
 GEN('#endif');
 
-// eslint-disable-next-line no-var
 var OSSettingsLockScreenPageV3Test = class extends OSSettingsPrivacyPageV3Test {
   /** @override */
   get browsePreload() {
@@ -176,7 +169,6 @@ TEST_F('OSSettingsLockScreenPageV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var OSSettingsLockScreenPageV3TestWithAccountManagementFlowsV2Enabled =
     class extends OSSettingsLockScreenPageV3Test {
   /** @override */
@@ -191,7 +183,6 @@ TEST_F(
       mocha.run();
     });
 
-// eslint-disable-next-line no-var
 var OSSettingsUserPageV3TestWithAccountManagementFlowsV2Enabled =
     class extends OSSettingsLockScreenPageV3Test {
   /** @override */
@@ -206,7 +197,6 @@ TEST_F(
       mocha.run();
     });
 
-// eslint-disable-next-line no-var
 var OSSettingsPeoplePageOsSyncV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
@@ -228,7 +218,6 @@ TEST_F('OSSettingsPeoplePageOsSyncV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var OSSettingsPeoplePageOsSyncOptionalDisabledV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
@@ -252,7 +241,6 @@ TEST_F('OSSettingsPeoplePageOsSyncOptionalDisabledV3Test', 'AllJsTests', () => {
 });
 
 
-// eslint-disable-next-line no-var
 var OSSettingsPeoplePageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
@@ -272,7 +260,6 @@ TEST_F('OSSettingsPeoplePageV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var OSSettingsPeoplePageV3TestWithAccountManagementFlowsV2Enabled =
     class extends OSSettingsPeoplePageV3Test {
   /** @override */
@@ -293,7 +280,6 @@ TEST_F(
 
 // TODO(crbug.com/1234871) Move this test back into the list of tests below once
 // Bluetooth revamp is launched.
-// eslint-disable-next-line no-var
 var OSSettingsOsSettingsPageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
@@ -315,7 +301,6 @@ TEST_F('OSSettingsOsSettingsPageV3Test', 'AllJsTests', () => {
 
 // TODO(crbug.com/1234871) Move this test back into the list of tests below once
 // Bluetooth revamp is launched.
-// eslint-disable-next-line no-var
 var OSSettingsOsPairedBluetoothListItemV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
@@ -338,7 +323,6 @@ TEST_F('OSSettingsOsPairedBluetoothListItemV3Test', 'AllJsTests', () => {
 
 // TODO(crbug.com/1237598) Move this test back into the list of tests below once
 // Bluetooth revamp is launched.
-// eslint-disable-next-line no-var
 var OSSettingsOsBluetoothDeviceDetailSubpageV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */

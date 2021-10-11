@@ -10,6 +10,8 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "chrome/browser/ui/webui/welcome/helpers.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
+/* eslint-disable no-var */
+
 /** Test fixture for Polymer welcome elements. */
 const WelcomeBrowserTest = class extends PolymerTest {
   /** @override */
@@ -28,7 +30,6 @@ const WelcomeBrowserTest = class extends PolymerTest {
   }
 };
 
-// eslint-disable-next-line no-var
 var WelcomeAppChooserTest = class extends WelcomeBrowserTest {
   /** @override */
   get browsePreload() {
@@ -40,7 +41,6 @@ TEST_F('WelcomeAppChooserTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var WelcomeWelcomeAppTest = class extends WelcomeBrowserTest {
   /** @override */
   get browsePreload() {
@@ -52,7 +52,6 @@ TEST_F('WelcomeWelcomeAppTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var WelcomeSigninViewTest = class extends WelcomeBrowserTest {
   /** @override */
   get browsePreload() {
@@ -64,7 +63,6 @@ TEST_F('WelcomeSigninViewTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var WelcomeNavigationBehaviorTest = class extends WelcomeBrowserTest {
   /** @override */
   get browsePreload() {
@@ -76,7 +74,6 @@ TEST_F('WelcomeNavigationBehaviorTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var WelcomeModuleMetricsTest = class extends WelcomeBrowserTest {
   /** @override */
   get browsePreload() {
@@ -88,7 +85,6 @@ TEST_F('WelcomeModuleMetricsTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var WelcomeSetAsDefaultTest = class extends WelcomeBrowserTest {
   /** @override */
   get browsePreload() {
@@ -100,7 +96,6 @@ TEST_F('WelcomeSetAsDefaultTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var WelcomeNtpBackgroundTest = class extends WelcomeBrowserTest {
   /** @override */
   get browsePreload() {

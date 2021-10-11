@@ -16,7 +16,8 @@ GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#endif');
 
-// eslint-disable-next-line no-var
+/* eslint-disable no-var */
+
 var InlineLoginBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
@@ -51,7 +52,6 @@ TEST_F('InlineLoginBrowserTest', 'BackButton', function() {
 });
 
 GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
-// eslint-disable-next-line no-var
 var InlineLoginBrowserTestWithAccountManagementFlowsV2Enabled =
     class extends InlineLoginBrowserTest {
   /** @override */
@@ -84,7 +84,6 @@ TEST_F(
       this.runMochaTest(inline_login_test.TestNames.BackButton);
     });
 
-// eslint-disable-next-line no-var
 var InlineLoginWelcomePageBrowserTest = class extends InlineLoginBrowserTest {
   /** @override */
   get featureList() {

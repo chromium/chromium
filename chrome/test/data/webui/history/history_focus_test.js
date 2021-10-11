@@ -11,6 +11,8 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
+/* eslint-disable no-var */
+
 const HistoryFocusTest = class extends PolymerInteractiveUITest {
   /** @override */
   get browsePreload() {
@@ -18,7 +20,6 @@ const HistoryFocusTest = class extends PolymerInteractiveUITest {
   }
 };
 
-// eslint-disable-next-line no-var
 var HistoryToolbarFocusTest = class extends HistoryFocusTest {
   /** @override */
   get browsePreload() {
@@ -37,7 +38,6 @@ TEST_F('HistoryToolbarFocusTest', 'MAYBE_All', function() {
 });
 GEN('#undef MAYBE_All');
 
-// eslint-disable-next-line no-var
 var HistoryListFocusTest = class extends HistoryFocusTest {
   /** @override */
   get browsePreload() {
@@ -50,7 +50,6 @@ TEST_F('HistoryListFocusTest', 'DISABLED_All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var HistorySyncedDeviceManagerFocusTest = class extends HistoryFocusTest {
   /** @override */
   get browsePreload() {
@@ -62,7 +61,6 @@ TEST_F('HistorySyncedDeviceManagerFocusTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var HistoryItemFocusTest = class extends HistoryFocusTest {
   /** @override */
   get browsePreload() {

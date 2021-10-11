@@ -9,8 +9,9 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
+/* eslint-disable no-var */
+
 /** Test fixture for shared Polymer 3 components using Mojo. */
-// eslint-disable-next-line no-var
 var CrComponentsMojoBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
@@ -30,7 +31,6 @@ TEST_F('CrComponentsCustomizeThemesTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrComponentsMostVisitedTest = class extends CrComponentsMojoBrowserTest {
   /** @override */
   get browsePreload() {

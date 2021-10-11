@@ -8,6 +8,8 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
+/* eslint-disable no-var */
+
 const EduLoginTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
@@ -24,7 +26,6 @@ const EduLoginTest = class extends PolymerTest {
   }
 };
 
-// eslint-disable-next-line no-var
 var EduLoginButtonTest = class extends EduLoginTest {
   /** @override */
   get browsePreload() {
@@ -61,7 +62,6 @@ TEST_F('EduLoginButtonTest', 'BackButtonRtlIcon', function() {
   this.runMochaTest(edu_login_button_tests.TestNames.BackButtonRtlIcon);
 });
 
-// eslint-disable-next-line no-var
 var EduLoginParentsTest = class extends EduLoginTest {
   /** @override */
   get browsePreload() {

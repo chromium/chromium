@@ -9,7 +9,8 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
-// eslint-disable-next-line no-var
+/* eslint-disable no-var */
+
 var DownloadsTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
@@ -17,7 +18,6 @@ var DownloadsTest = class extends PolymerTest {
   }
 };
 
-// eslint-disable-next-line no-var
 var DownloadsItemTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
@@ -29,7 +29,6 @@ TEST_F('DownloadsItemTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var DownloadsManagerTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
@@ -41,7 +40,6 @@ TEST_F('DownloadsManagerTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var DownloadsToolbarTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
@@ -53,7 +51,6 @@ TEST_F('DownloadsToolbarTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var DownloadsUrlTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
@@ -81,7 +78,6 @@ TEST_F('DownloadsUrlTest', 'All', async function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var DownloadsSearchServiceTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {

@@ -9,8 +9,9 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
+/* eslint-disable no-var */
+
 /** Test fixture for shared Polymer 3 elements. */
-// eslint-disable-next-line no-var
 var CrSettingsInteractiveUITest = class extends PolymerInteractiveUITest {
   /** @override */
   get browsePreload() {
@@ -18,7 +19,6 @@ var CrSettingsInteractiveUITest = class extends PolymerInteractiveUITest {
   }
 };
 
-// eslint-disable-next-line no-var
 var CrSettingsAnimatedPagesTest = class extends CrSettingsInteractiveUITest {
   /** @override */
   get browsePreload() {
@@ -30,7 +30,6 @@ TEST_F('CrSettingsAnimatedPagesTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrSettingsPaymentsSectionTest = class extends CrSettingsInteractiveUITest {
   /** @override */
   get browsePreload() {
@@ -42,7 +41,6 @@ TEST_F('CrSettingsPaymentsSectionTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrSettingsSyncPageTest = class extends CrSettingsInteractiveUITest {
   /** @override */
   get browsePreload() {
@@ -54,7 +52,6 @@ TEST_F('CrSettingsSyncPageTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrSettingsSecureDnsTest = class extends CrSettingsInteractiveUITest {
   /** @override */
   get browsePreload() {
@@ -66,7 +63,6 @@ TEST_F('CrSettingsSecureDnsTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var SettingsUIInteractiveTest = class extends CrSettingsInteractiveUITest {
   /** @override */
   get browsePreload() {
@@ -106,7 +102,6 @@ TEST_F('SettingsUIInteractiveTest', 'MAYBE_SettingsUISearch', function() {
   runMochaSuite('SettingsUISearch');
 });
 
-// eslint-disable-next-line no-var
 var CrSettingsMenuInteractiveTest = class extends CrSettingsInteractiveUITest {
   /** @override */
   get browsePreload() {
