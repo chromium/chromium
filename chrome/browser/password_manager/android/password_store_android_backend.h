@@ -9,6 +9,8 @@
 #include <unordered_map>
 
 #include "base/containers/small_map.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
@@ -37,6 +39,8 @@ class PasswordStoreAndroidBackend
   ~PasswordStoreAndroidBackend() override;
 
  private:
+  SEQUENCE_CHECKER(main_sequence_checker_);
+
   // Stub class for handling sync events.
   class SyncModelTypeControllerDelegate
       : public syncer::ModelTypeControllerDelegate {
@@ -158,6 +162,7 @@ class PasswordStoreAndroidBackend
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSyncControllerDelegate();
 
+  void QueueNewJob(JobId job_id, JobReturnHandler return_handler);
   JobReturnHandler GetAndEraseJob(JobId job_id);
 
   // Observer to propagate remote form changes to.
@@ -166,15 +171,17 @@ class PasswordStoreAndroidBackend
   // Delegate to handle sync events.
   SyncModelTypeControllerDelegate sync_controller_delegate_;
 
-  // TaskRunner for all the background operations.
+  // TaskRunner to run responses on the correct thread.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   // Used to store callbacks for each invoked jobs since callbacks can't be
   // called via JNI directly.
-  JobMap request_for_job_;
+  JobMap request_for_job_ GUARDED_BY_CONTEXT(main_sequence_checker_);
 
   // This object is the proxy to the JNI bridge that performs the API requests.
   std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge_;
+
+  base::WeakPtrFactory<PasswordStoreAndroidBackend> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

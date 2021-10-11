@@ -46,7 +46,7 @@ class PasswordStoreAndroidBackendBridge {
   virtual ~PasswordStoreAndroidBackendBridge() = default;
 
   // Sets the `consumer` that is notified on job completion.
-  virtual void SetConsumer(Consumer* consumer) = 0;
+  virtual void SetConsumer(base::WeakPtr<Consumer> consumer) = 0;
 
   // Triggers an asynchronous request to retrieve all stored passwords. The
   // registered `Consumer` is notified with `OnCompleteWithLogins` when the

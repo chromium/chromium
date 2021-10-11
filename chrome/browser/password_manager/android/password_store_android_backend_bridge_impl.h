@@ -42,7 +42,7 @@ class PasswordStoreAndroidBackendBridgeImpl
 
  private:
   // Implements PasswordStoreAndroidBackendBridge interface.
-  void SetConsumer(Consumer* consumer) override;
+  void SetConsumer(base::WeakPtr<Consumer> consumer) override;
   JobId GetAllLogins() override WARN_UNUSED_RESULT;
 
   JobId GetNextJobId() WARN_UNUSED_RESULT;
@@ -51,8 +51,8 @@ class PasswordStoreAndroidBackendBridgeImpl
   JobId last_job_id_{0};
 
   // Weak reference to the `Consumer` that is notified when a job completes. It
-  // is required to outlive this bridge.
-  Consumer* consumer_ = nullptr;
+  // outlives this bridge but tasks may be posted to it.
+  base::WeakPtr<Consumer> consumer_ = nullptr;
 
   // This object is an instance of PasswordStoreAndroidBackendBridgeImpl, i.e.
   // the Java counterpart to this class.
