@@ -26,6 +26,7 @@ source_set("tabs") {
   ]
   public_deps = [ "//ios/chrome/browser/tabs" ]
   deps = [
+    ":constants",
     "resources:open_new_tab_background",
     "resources:tabstrip_background_tab",
     "resources:tabstrip_foreground_tab",
@@ -95,6 +96,14 @@ source_set("coordinator") {
   ]
 }
 
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tab_strip_constants.h",
+    "tab_strip_constants.mm",
+  ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -130,6 +139,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "tab_strip_egtest.mm" ]
   deps = [
+    ":constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",

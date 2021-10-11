@@ -114,6 +114,44 @@ BOOL LongPressCellAndDragToOffsetOf(NSString* src_accessibility_identifier,
   return YES;
 }
 
+BOOL LongPressLinkAndDragToView(NSString* src_accessibility_identifier,
+                                int src_window_number,
+                                NSString* dst_accessibility_identifier,
+                                int dst_window_number,
+                                CGVector dst_normalized_offset) {
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+  XCUIElementQuery* src_query = GetQueryMatchingIdentifierInWindow(
+      app, src_accessibility_identifier, src_window_number,
+      XCUIElementTypeLink);
+
+  XCUIElementQuery* dst_query = GetQueryMatchingIdentifierInWindow(
+      app, dst_accessibility_identifier, dst_window_number, XCUIElementTypeAny);
+
+  if (src_query.count == 0 || dst_query.count == 0)
+    return NO;
+  XCUIElement* src_element = [src_query elementBoundByIndex:0];
+  XCUIElement* dst_element = [dst_query elementBoundByIndex:0];
+
+  XCUICoordinate* start_point =
+      [src_element coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
+  XCUICoordinate* end_point =
+      [dst_element coordinateWithNormalizedOffset:dst_normalized_offset];
+
+  [start_point pressForDuration:1.5
+           thenDragToCoordinate:end_point
+                   withVelocity:XCUIGestureVelocityDefault
+            thenHoldForDuration:1.0];
+
+  return YES;
+}
+
+BOOL LongPressLinkAndDragToView(NSString* src_accessibility_identifier,
+                                NSString* dst_accessibility_identifier) {
+  return LongPressLinkAndDragToView(src_accessibility_identifier, 0,
+                                    dst_accessibility_identifier, 0,
+                                    CGVectorMake(0.5, 0.5));
+}
+
 BOOL DragWindowSplitterToSize(int first_window_number,
                               int second_window_number,
                               CGFloat first_window_normalized_screen_size) {
