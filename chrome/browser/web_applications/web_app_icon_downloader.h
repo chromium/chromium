@@ -92,6 +92,7 @@ class WebAppIconDownloader : public content::WebContentsObserver {
       content::RenderFrameHost* rfh,
       const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
 
+  void CompleteCallback();
   void CancelDownloads();
 
   // Whether we need to fetch favicons from the renderer.
