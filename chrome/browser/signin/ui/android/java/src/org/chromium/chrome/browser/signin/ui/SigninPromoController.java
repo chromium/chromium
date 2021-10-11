@@ -60,6 +60,7 @@ public class SigninPromoController {
     /** Suffix strings for promo shown count preference. */
     private static final String BOOKMARKS = "Bookmarks";
     private static final String NTP = "Ntp";
+    private static final String RECENT_TABS = "RecentTabs";
     private static final String SETTINGS = "Settings";
 
     private @Nullable DisplayableProfileData mProfileData;
@@ -210,6 +211,8 @@ public class SigninPromoController {
                 return ChromePreferenceKeys.SIGNIN_PROMO_SHOW_COUNT.createKey(BOOKMARKS);
             case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
                 return ChromePreferenceKeys.SIGNIN_PROMO_SHOW_COUNT.createKey(NTP);
+            case SigninAccessPoint.RECENT_TABS:
+                return ChromePreferenceKeys.SIGNIN_PROMO_SHOW_COUNT.createKey(RECENT_TABS);
             case SigninAccessPoint.SETTINGS:
                 return ChromePreferenceKeys.SIGNIN_PROMO_SHOW_COUNT.createKey(SETTINGS);
             default:
