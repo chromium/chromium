@@ -296,22 +296,6 @@ bool MigratePathFromOldFormat(Profile* profile,
   return false;
 }
 
-bool MigrateFromDownloadsToMyFiles(Profile* profile,
-                                   const base::FilePath& old_path,
-                                   base::FilePath* new_path) {
-  const base::FilePath old_base =
-      profile->GetPath().Append(kFolderNameDownloads);
-  const base::FilePath new_base = GetDownloadsFolderForProfile(profile);
-  if (new_base == old_base)
-    return false;
-  base::FilePath relative;
-  if (AppendRelativePath(old_base, old_path, &relative)) {
-    *new_path = new_base.Append(relative);
-    return old_path != *new_path;
-  }
-  return false;
-}
-
 bool MigrateToDriveFs(Profile* profile,
                       const base::FilePath& old_path,
                       base::FilePath* new_path) {

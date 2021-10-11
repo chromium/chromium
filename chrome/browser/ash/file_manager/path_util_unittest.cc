@@ -205,36 +205,6 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
   chromeos::disks::DiskMountManager::Shutdown();
 }
 
-TEST_F(FileManagerPathUtilTest, MigrateFromDownlaodsToMyFiles) {
-  base::FilePath home("/home/chronos/u-0123456789abcdef");
-  base::FilePath result;
-  base::FilePath downloads = home.Append("Downloads");
-  base::FilePath file = home.Append("Downloads/file.txt");
-  base::FilePath inhome = home.Append("NotDownloads");
-  base::FilePath myfiles = home.Append("MyFiles");
-  base::FilePath myfilesFile = home.Append("MyFiles/file.txt");
-  base::FilePath myfilesDownloads = home.Append("MyFiles/Downloads");
-  base::FilePath myfilesDownloadsFile =
-      home.Append("MyFiles/Downloads/file.txt");
-  base::FilePath other("/some/other/path");
-  base::test::ScopedRunningOnChromeOS running_on_chromeos;
-  // MyFilesVolume enabled, migrate paths under Downloads.
-  EXPECT_TRUE(
-      MigrateFromDownloadsToMyFiles(profile_.get(), downloads, &result));
-  EXPECT_EQ(result, myfilesDownloads);
-  EXPECT_TRUE(MigrateFromDownloadsToMyFiles(profile_.get(), file, &result));
-  EXPECT_EQ(result, myfilesDownloadsFile);
-  EXPECT_FALSE(MigrateFromDownloadsToMyFiles(profile_.get(), inhome, &result));
-  EXPECT_FALSE(MigrateFromDownloadsToMyFiles(profile_.get(), myfiles, &result));
-  EXPECT_FALSE(
-      MigrateFromDownloadsToMyFiles(profile_.get(), myfilesFile, &result));
-  EXPECT_FALSE(
-      MigrateFromDownloadsToMyFiles(profile_.get(), myfilesDownloads, &result));
-  EXPECT_FALSE(MigrateFromDownloadsToMyFiles(profile_.get(),
-                                             myfilesDownloadsFile, &result));
-  EXPECT_FALSE(MigrateFromDownloadsToMyFiles(profile_.get(), other, &result));
-}
-
 TEST_F(FileManagerPathUtilTest, MultiProfileDownloadsFolderMigration) {
   // MigratePathFromOldFormat is explicitly disabled on Linux build.
   // So we need to fake that this is real ChromeOS system.
