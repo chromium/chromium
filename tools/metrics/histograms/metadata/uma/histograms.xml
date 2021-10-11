@@ -765,6 +765,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="UMA.StructuredMetrics.InternalError"
     enum="StructuredMetricsInternalError" expires_after="2022-02-27">
+  <obsolete>
+    Removed 10/08/2021. This histogram had a recording bug that grouped failed
+    key errors with failed event errors. Prefer to use InternalError2.
+  </obsolete>
+  <owner>tby@chromium.org</owner>
+  <owner>rkaplow@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <summary>
+    Records unexpected internal errors of the structured metrics system. The
+    bucket proportion of this metric is not meaningful.
+  </summary>
+</histogram>
+
+<histogram name="UMA.StructuredMetrics.InternalError2"
+    enum="StructuredMetricsInternalError2" expires_after="2022-02-27">
   <owner>tby@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>

@@ -10,7 +10,7 @@ namespace metrics {
 namespace structured {
 
 void LogInternalError(StructuredMetricsError error) {
-  UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.InternalError", error);
+  UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.InternalError2", error);
 }
 
 void LogPrefReadError(PersistentPrefStore::PrefReadError error) {

@@ -80328,6 +80328,29 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="StructuredMetricsInternalError">
+  <obsolete>
+    Deprecated as of 10/08/2021. Histogram using this enum had a recording bug
+    that grouped failed key errors with failed event erorrs. Prefer to use
+    StructuredMetrcsInternalError2.
+  </obsolete>
+  <int value="0" label="Missing key (deprecated)"/>
+  <int value="1" label="Wrong key length"/>
+  <int value="2" label="Missing last rotation"/>
+  <int value="3" label="Missing rotation period"/>
+  <int value="4" label="Failed uint conversion"/>
+  <int value="5" label="Failed key or event read error"/>
+  <int value="6" label="Failed key or event parse error"/>
+  <int value="7" label="Failed key or event write error"/>
+  <int value="8" label="Failed key or event serialization"/>
+  <int value="9" label="Unused"/>
+  <int value="10" label="Unused"/>
+  <int value="11" label="Unused"/>
+  <int value="12" label="Unused"/>
+  <int value="13" label="Uninitialized recorder"/>
+  <int value="14" label="Invalid event parsed"/>
+</enum>
+
+<enum name="StructuredMetricsInternalError2">
   <int value="0" label="Missing key (deprecated)"/>
   <int value="1" label="Wrong key length"/>
   <int value="2" label="Missing last rotation"/>
