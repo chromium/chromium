@@ -25,15 +25,16 @@ const char* const kExemptExtensions[] = {
 
 namespace chromeos {
 
-ExtensionCleanupHandler::ExtensionCleanupHandler()
-    : profile_(ProfileManager::GetActiveUserProfile()),
-      extension_service_(
-          extensions::ExtensionSystem::Get(profile_)->extension_service()) {}
+ExtensionCleanupHandler::ExtensionCleanupHandler() = default;
 
 ExtensionCleanupHandler::~ExtensionCleanupHandler() = default;
 
 void ExtensionCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
   DCHECK(callback_.is_null());
+
+  profile_ = ProfileManager::GetActiveUserProfile();
+  extension_service_ =
+      extensions::ExtensionSystem::Get(profile_)->extension_service();
 
   if (!profile_) {
     std::move(callback).Run(
