@@ -2655,6 +2655,24 @@ const FeatureEntry::FeatureVariation kReadLaterVariations[] = {
     {"(with app menu item)", kReadLaterInAppMenu,
      base::size(kReadLaterInAppMenu), nullptr}};
 
+const FeatureEntry::FeatureParam kBookmarksRefreshVisuals[] = {
+    {"bookmark_visuals_enabled", "true"}};
+const FeatureEntry::FeatureParam kBookmarksRefreshAppMenu[] = {
+    {"add_bookmark_in_app_menu", "true"},
+    {"edit_bookmark_in_app_menu", "true"}};
+const FeatureEntry::FeatureParam kBookmarksRefreshWithEverything[] = {
+    {"bookmark_visuals_enabled", "true"},
+    {"add_bookmark_in_app_menu", "true"},
+    {"edit_bookmark_in_app_menu", "true"}};
+
+const FeatureEntry::FeatureVariation kBookmarksRefreshVariations[] = {
+    {"(manager visuals only)", kBookmarksRefreshVisuals,
+     base::size(kBookmarksRefreshVisuals), nullptr},
+    {"(app menu)", kBookmarksRefreshAppMenu,
+     base::size(kBookmarksRefreshAppMenu), nullptr},
+    {"(everything)", kBookmarksRefreshWithEverything,
+     base::size(kBookmarksRefreshWithEverything), nullptr}};
+
 const FeatureEntry::FeatureParam kScrollCaptureInMemory[] = {
     {"in_memory_capture", "true"}};
 
@@ -7570,7 +7588,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"bookmarks-refresh", flag_descriptions::kBookmarksRefreshName,
      flag_descriptions::kBookmarksRefreshDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kBookmarksRefresh)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kBookmarksRefresh,
+                                    kBookmarksRefreshVariations,
+                                    "BookmarksRefresh")},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

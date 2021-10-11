@@ -38,8 +38,7 @@ import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+
 /**
  * Tests for the power bookmark experience.
  */
@@ -63,14 +62,19 @@ public class PowerBookmarkTest extends DummyUiChromeActivityTestCase {
     private PowerBookmarkShoppingItemRow mPowerBookmarkShoppingItemRow;
     private ViewGroup mContentView;
 
+    public void setupFeatureOverrides() {
+        FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
+        testValuesOverride.addFeatureFlagOverride(ChromeFeatureList.BOOKMARKS_REFRESH, true);
+        testValuesOverride.addFieldTrialParamOverride(ChromeFeatureList.BOOKMARKS_REFRESH,
+                BookmarkFeatures.BOOKMARK_VISUALS_ENABLED, "true");
+        FeatureList.setTestValues(testValuesOverride);
+    }
+
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
-
-        Map<String, Boolean> enabledFeatures = new HashMap<>();
-        enabledFeatures.put(ChromeFeatureList.BOOKMARKS_REFRESH, true);
-        FeatureList.setTestFeatures(enabledFeatures);
+        setupFeatureOverrides();
 
         mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         mBitmap.eraseColor(Color.GREEN);

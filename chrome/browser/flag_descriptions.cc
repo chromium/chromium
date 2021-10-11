@@ -2099,9 +2099,9 @@ const char kBookmarksImprovedSaveFlowName[] = "Improved bookmarks save flow";
 const char kBookmarksImprovedSaveFlowDescription[] =
     "Enabled an improved save flow for bookmarks.";
 
-const char kBookmarksRefreshName[] = "Bookmarks visual refresh";
+const char kBookmarksRefreshName[] = "Bookmarks refresh";
 const char kBookmarksRefreshDescription[] =
-    "Enalbed a visual refresh for bookmarks.";
+    "Enable various changes to bookmarks.";
 
 const char kPrerender2Name[] = "Prerender2";
 const char kPrerender2Description[] =

@@ -2008,8 +2008,11 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
-    public void testBookmarksVisualRefreshFolders() throws Exception {
+    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:bookmark_visuals_enabled/true"})
+    public void
+    testBookmarksVisualRefreshFolders() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(BookmarkPromoHeader.PromoState.PROMO_NONE);
         addFolder(TEST_FOLDER_TITLE);
         addFolder(TEST_FOLDER_TITLE);
@@ -2035,8 +2038,11 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
-    public void testBookmarksVisualRefreshBookmarks() throws Exception {
+    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:bookmark_visuals_enabled/true"})
+    public void
+    testBookmarksVisualRefreshBookmarks() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(BookmarkPromoHeader.PromoState.PROMO_NONE);
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
@@ -2062,8 +2068,11 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
-    public void testBookmarksVisualRefreshBookmarksAndFolder() throws Exception {
+    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:bookmark_visuals_enabled/true"})
+    public void
+    testBookmarksVisualRefreshBookmarksAndFolder() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(BookmarkPromoHeader.PromoState.PROMO_NONE);
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
         addFolder(TEST_FOLDER_TITLE);

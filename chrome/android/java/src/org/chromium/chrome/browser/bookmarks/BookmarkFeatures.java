@@ -16,13 +16,17 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
  * menu. Default: {@code false}</li>
  * <li>{@code edit_bookmark_in_app_menu}: boolean; show "Edit Bookmark" in the app menu. Default:
  * {@code false}</li>
+ * <li>{@code bookmark_visuals_enabled}: boolean; refresh the visual looks of the bookmarks
+ * manager. Default: {@code false}</li>
  * </ul>
  */
 public class BookmarkFeatures {
+    private static final boolean BOOKMARK_VISUALS_ENABLED_DEFAULT = false;
     private static final boolean IMPROVED_SAVE_FLOW_AUTODISMISS_ENABLED_DEFAULT = true;
     // This is the same as the default dismiss time for snackbars.
     private static final int IMPROVED_SAVE_FLOW_AUTODISMISS_TIME_MS_DEFAULT = 3000;
 
+    static final String BOOKMARK_VISUALS_ENABLED = "bookmark_visuals_enabled";
     static final String AUTODISMISS_ENABLED_PARAM_NAME = "autodismiss_enabled";
     static final String AUTODISMISS_LENGTH_PARAM_NAME = "autodismiss_length_ms";
 
@@ -50,6 +54,13 @@ public class BookmarkFeatures {
     public static boolean isBookmarksRefreshEnabled() {
         return FeatureList.isInitialized()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.BOOKMARKS_REFRESH);
+    }
+
+    public static boolean isBookmarksVisualRefreshEnabled() {
+        return isBookmarksRefreshEnabled()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.BOOKMARKS_REFRESH, BOOKMARK_VISUALS_ENABLED,
+                        BOOKMARK_VISUALS_ENABLED_DEFAULT);
     }
 
     public static boolean isAddBookmarkMenuItemEnabled() {
