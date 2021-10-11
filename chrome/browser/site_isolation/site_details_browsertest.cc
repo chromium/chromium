@@ -30,9 +30,12 @@
 #include "components/metrics/metrics_service.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/switches.h"
 #include "extensions/common/value_builder.h"
@@ -41,6 +44,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 using base::Bucket;
 using content::WebContents;
@@ -801,4 +805,149 @@ IN_PROC_BROWSER_TEST_F(
               DependingOnPolicy(ElementsAre(Bucket(1, 2)),
                                 ElementsAre(Bucket(1, 1), Bucket(3, 1)),
                                 ElementsAre(Bucket(1, 1), Bucket(5, 1))));
+}
+
+class PrerenderSiteDetailsBrowserTest : public InProcessBrowserTest {
+ public:
+  PrerenderSiteDetailsBrowserTest()
+      : prerender_helper_(
+            base::BindRepeating(&PrerenderSiteDetailsBrowserTest::web_contents,
+                                base::Unretained(this))) {
+    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
+  }
+  ~PrerenderSiteDetailsBrowserTest() override = default;
+
+  PrerenderSiteDetailsBrowserTest(const PrerenderSiteDetailsBrowserTest&) =
+      delete;
+  PrerenderSiteDetailsBrowserTest& operator=(
+      const PrerenderSiteDetailsBrowserTest&) = delete;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    InProcessBrowserTest::SetUp();
+  }
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ protected:
+  content::WebContents* web_contents() const {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+  content::test::PrerenderTestHelper prerender_helper_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrerenderSiteDetailsBrowserTest,
+                       MemoryDetailsForPrerender) {
+  // Navigate to an initial page.
+  auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Load a page in the prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
+  int host_id = prerender_helper_.AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+
+  scoped_refptr<TestMemoryDetails> details = new TestMemoryDetails();
+  details->StartFetchAndWait();
+  // Currently we don't collect the title of the prerendering page.
+  EXPECT_EQ(1U, details->CountPageTitles());
+}
+
+class FencedFrameSiteDetailsBrowserTest : public InProcessBrowserTest {
+ public:
+  FencedFrameSiteDetailsBrowserTest() = default;
+  ~FencedFrameSiteDetailsBrowserTest() override = default;
+
+  FencedFrameSiteDetailsBrowserTest(const FencedFrameSiteDetailsBrowserTest&) =
+      delete;
+  FencedFrameSiteDetailsBrowserTest& operator=(
+      const FencedFrameSiteDetailsBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ protected:
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+  content::WebContents* web_contents() const {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(FencedFrameSiteDetailsBrowserTest,
+                       MemoryDetailsForFencedFrame) {
+  auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Load a fenced frame.
+  GURL fenced_frame_url = embedded_test_server()->GetURL("/title2.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), fenced_frame_url);
+  ASSERT_TRUE(fenced_frame_host);
+
+  scoped_refptr<TestMemoryDetails> details = new TestMemoryDetails();
+  details->StartFetchAndWait();
+  // Currently we don't collect the title of the fenced frame.
+  EXPECT_EQ(1U, details->CountPageTitles());
+}
+
+class BackForwardCacheSiteDetailsBrowserTest : public InProcessBrowserTest {
+ public:
+  BackForwardCacheSiteDetailsBrowserTest() {
+    // Enable BackForwardCache.
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache,
+          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {features::kBackForwardCacheMemoryControls});
+  }
+  ~BackForwardCacheSiteDetailsBrowserTest() override = default;
+
+  BackForwardCacheSiteDetailsBrowserTest(
+      const BackForwardCacheSiteDetailsBrowserTest&) = delete;
+  BackForwardCacheSiteDetailsBrowserTest& operator=(
+      const BackForwardCacheSiteDetailsBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ protected:
+  content::WebContents* web_contents() const {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheSiteDetailsBrowserTest,
+                       MemoryDetailsForBackForwardCache) {
+  const GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  EXPECT_EQ(web_contents()->GetVisibility(), content::Visibility::VISIBLE);
+
+  // Navigate to A.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+
+  // Navigate to B.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+
+  scoped_refptr<TestMemoryDetails> details = new TestMemoryDetails();
+  details->StartFetchAndWait();
+  // Currently we don't collect the title of the back forward cache.
+  EXPECT_EQ(1U, details->CountPageTitles());
 }

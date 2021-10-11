@@ -259,8 +259,8 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
 #endif
 
     // Use the list of widgets to iterate over the WebContents instances whose
-    // main RenderFrameHosts are in |process|. Refine our determination of the
-    // |process.renderer_type|, and record the page titles.
+    // primary main RenderFrameHosts are in |process|. Refine our determination
+    // of the |process.renderer_type|, and record the page titles.
     for (content::RenderWidgetHost* widget : widgets_by_pid[process.pid]) {
       DCHECK_EQ(render_process_host, widget->GetProcess());
 
@@ -276,10 +276,15 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
         continue;
       }
 
-      // If this is a RVH for a subframe; skip it to avoid double-counting the
-      // WebContents.
-      if (rvh != contents->GetMainFrame()->GetRenderViewHost())
+      // We check the title and the renderer type only of the primary main
+      // frame, not subframes or non-primary main frames. It is OK because this
+      // logic is used to get the title and the renderer type only for
+      // chrome://system and for printing the details to the error log when
+      // the tab is oom-killed.
+      if (rvh !=
+          contents->GetPrimaryPage().GetMainDocument().GetRenderViewHost()) {
         continue;
+      }
 
       // The rest of this block will happen only once per WebContents.
       GURL page_url = contents->GetLastCommittedURL();
