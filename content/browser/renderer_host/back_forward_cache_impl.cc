@@ -33,6 +33,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/frame/event_page_show_persisted.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-shared.h"
 #if defined(OS_ANDROID)
@@ -997,6 +998,10 @@ std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
     int navigation_entry_id,
     blink::mojom::PageRestoreParamsPtr page_restore_params) {
   TRACE_EVENT0("navigation", "BackForwardCache::RestoreEntry");
+  blink::RecordUMAEventPageShowPersisted(
+      blink::EventPageShowPersisted::
+          kYesInBrowser_BackForwardCache_RestoreEntry_Attempt);
+
   // Select the RenderFrameHostImpl matching the navigation entry.
   auto matching_entry =
       std::find_if(entries_.begin(), entries_.end(),
@@ -1029,6 +1034,9 @@ std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
 
   RestoreBrowserControlsState(entry->render_frame_host());
 
+  blink::RecordUMAEventPageShowPersisted(
+      blink::EventPageShowPersisted::
+          kYesInBrowser_BackForwardCache_RestoreEntry_Succeed);
   return entry;
 }
 
@@ -1262,6 +1270,9 @@ void BackForwardCacheImpl::WillCommitNavigationToCachedEntry(
           },
           base::TimeTicks::Now(), std::move(done_callback)));
 
+  blink::RecordUMAEventPageShowPersisted(
+      blink::EventPageShowPersisted::
+          kYesInBrowser_BackForwardCache_WillCommitNavigationToCachedEntry);
   for (auto* rvh : bfcache_entry.render_view_hosts()) {
     rvh->PrepareToLeaveBackForwardCache(cb);
   }

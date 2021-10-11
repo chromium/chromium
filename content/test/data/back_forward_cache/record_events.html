@@ -1,3 +1,6 @@
+<!-- Ensure we don't over-count with cross-site subframes for
+  https://crbug.com/1234634. -->
+<iframe src="https://c.com/title1.html"></iframe>
 <script>
   window.testObservedEvents = [];
   let event_list = [

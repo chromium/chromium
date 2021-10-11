@@ -10,7 +10,6 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/public/browser/render_process_host.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/blink/public/common/frame/event_page_show_persisted.h"
 
 namespace {
 constexpr base::TimeDelta kBackForwardCacheTimeoutInSeconds = base::Seconds(3);
@@ -161,22 +160,6 @@ void PageLifecycleStateManager::SendUpdatesToRendererIfNeeded(
     // page lifecycle state) has changed since last sent to renderer. It is
     // possible that the web contents state has changed but the effective state
     // has not.
-  }
-
-  if (last_state_sent_to_renderer_) {
-    // This logic detects whether the page is being restored from back-forward
-    // cache or not, and is the same as
-    //   * WebViewImpl::SetPageLifecycleStateInternal and
-    //   * Page::DispatchedPagehidePersistedAndStillHidden
-    // in Blink.
-    bool old_state_shown = last_state_sent_to_renderer_->pagehide_dispatch ==
-                           blink::mojom::PagehideDispatch::kNotDispatched;
-    bool new_state_shown = new_state->pagehide_dispatch ==
-                           blink::mojom::PagehideDispatch::kNotDispatched;
-    if (!old_state_shown && new_state_shown) {
-      blink::RecordUMAEventPageShowPersisted(
-          blink::EventPageShowPersisted::kYesInBrowser);
-    }
   }
 
   last_state_sent_to_renderer_ = new_state.Clone();

@@ -22,10 +22,17 @@ enum class EventPageShowPersisted {
   // should be almost the same as kYesInRenderer. See crbug.com/1234634.
   kYesInBrowser = 2,
 
+  // Browser triggers a pageshow event with persisted flag, counted in the
+  // back-forward cache code. The recorded count should be almost the same as
+  // kYesInRenderer. See crbug.com/1234634.
+  kYesInBrowser_BackForwardCache_WillCommitNavigationToCachedEntry = 3,
+  kYesInBrowser_BackForwardCache_RestoreEntry_Attempt = 4,
+  kYesInBrowser_BackForwardCache_RestoreEntry_Succeed = 5,
+
   // There is not kNoInBrowser as we don't have to compare the counts of
   // pageshow events without persisted between browser and renderer so far.
 
-  kMaxValue = kYesInBrowser,
+  kMaxValue = kYesInBrowser_BackForwardCache_RestoreEntry_Succeed,
 };
 
 BLINK_COMMON_EXPORT void RecordUMAEventPageShowPersisted(
