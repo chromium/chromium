@@ -392,16 +392,6 @@ void AmbientBackendControllerImpl::UpdateSettings(
       weak_factory_.GetWeakPtr(), settings, std::move(callback)));
 }
 
-void AmbientBackendControllerImpl::FetchSettingPreview(
-    int preview_width,
-    int preview_height,
-    OnSettingPreviewFetchedCallback callback) {
-  Shell::Get()->ambient_controller()->RequestAccessToken(
-      base::BindOnce(&AmbientBackendControllerImpl::FetchSettingPreviewInternal,
-                     weak_factory_.GetWeakPtr(), preview_width, preview_height,
-                     std::move(callback)));
-}
-
 void AmbientBackendControllerImpl::FetchPersonalAlbums(
     int banner_width,
     int banner_height,
@@ -608,47 +598,6 @@ void AmbientBackendControllerImpl::OnUpdateSettings(
   }
 
   std::move(callback).Run(success);
-}
-
-void AmbientBackendControllerImpl::FetchSettingPreviewInternal(
-    int preview_width,
-    int preview_height,
-    OnSettingPreviewFetchedCallback callback,
-    const std::string& gaia_id,
-    const std::string& access_token) {
-  if (gaia_id.empty() || access_token.empty()) {
-    DVLOG(2) << "Failed to fetch access token";
-    // Returns an empty instance to indicate the failure.
-    std::move(callback).Run(/*preview_urls=*/{});
-    return;
-  }
-
-  BackdropClientConfig::Request request =
-      backdrop_client_config_.CreateFetchSettingPreviewRequest(
-          preview_width, preview_height, gaia_id, access_token);
-  std::unique_ptr<network::ResourceRequest> resource_request =
-      CreateResourceRequest(request);
-  auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
-  auto* loader_ptr = backdrop_url_loader.get();
-  loader_ptr->Start(
-      std::move(resource_request), /*request_body=*/absl::nullopt,
-      NO_TRAFFIC_ANNOTATION_YET,
-      base::BindOnce(&AmbientBackendControllerImpl::OnSettingPreviewFetched,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(backdrop_url_loader)));
-}
-
-void AmbientBackendControllerImpl::OnSettingPreviewFetched(
-    OnSettingPreviewFetchedCallback callback,
-    std::unique_ptr<BackdropURLLoader> backdrop_url_loader,
-    std::unique_ptr<std::string> response) {
-  DCHECK(backdrop_url_loader);
-
-  // Parse the |SettingPreviewResponse| out from the response string.
-  // Note that the |preview_urls| can be empty if the parsing has failed.
-  std::vector<std::string> preview_urls =
-      BackdropClientConfig::ParseSettingPreviewResponse(*response);
-  std::move(callback).Run(std::move(preview_urls));
 }
 
 void AmbientBackendControllerImpl::FetchPersonalAlbumsInternal(
