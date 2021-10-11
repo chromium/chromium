@@ -206,11 +206,17 @@ class KioskLaunchController
   // within the allocated time.
   base::OneShotTimer extension_wait_timer_;
 
-  // Observe the installation status of extensions. This object is only used
-  // when Lacros is enabled.
+  // Observe the installation status of extensions in Ash. This object is
+  // only used when Lacros is disabled.
+  base::ScopedObservation<extensions::ForceInstalledTracker,
+                          extensions::ForceInstalledTracker::Observer>
+      force_installed_observation_for_ash_{this};
+
+  // Observe the installation status of extensions in Lacros. This object is
+  // only used when Lacros is enabled.
   base::ScopedObservation<crosapi::ForceInstalledTrackerAsh,
                           extensions::ForceInstalledTracker::Observer>
-      observation_{this};
+      force_installed_observation_for_lacros_{this};
 
   base::WeakPtrFactory<KioskLaunchController> weak_ptr_factory_{this};
 };

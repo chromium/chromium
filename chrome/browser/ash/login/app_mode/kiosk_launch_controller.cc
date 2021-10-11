@@ -385,7 +385,8 @@ void KioskLaunchController::OnAppPrepared() {
   // Launch lacros-chrome if the corresponding feature flags are enabled.
   if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession()) {
     // Start observing the installation status of extensions in Lacros.
-    observation_.Observe(GetForceInstalledTrackerAsh());
+    force_installed_observation_for_lacros_.Observe(
+        GetForceInstalledTrackerAsh());
     StartTimerToWaitForExtensions();
 
     // Initialize and start Lacros for preparing force-installed extensions.
@@ -397,7 +398,7 @@ void KioskLaunchController::OnAppPrepared() {
       GetForceInstalledTracker(profile_);
 
   if (tracker && !tracker->IsReady()) {
-    tracker->AddObserver(this);
+    force_installed_observation_for_ash_.Observe(tracker);
     StartTimerToWaitForExtensions();
   } else {
     OnForceInstalledExtensionsReady();
@@ -567,15 +568,10 @@ void KioskLaunchController::OnOldEncryptionDetected(
 void KioskLaunchController::OnForceInstalledExtensionsReady() {
   app_state_ = AppState::kInstalled;
 
-  if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession()) {
-    observation_.Reset();
-  } else {
-    // TODO (crbug.com/1257958): use ScopedObservation for this tracker as well.
-    extensions::ForceInstalledTracker* tracker =
-        GetForceInstalledTracker(profile_);
-    if (tracker)
-      tracker->RemoveObserver(this);
-  }
+  if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession())
+    force_installed_observation_for_lacros_.Reset();
+  else
+    force_installed_observation_for_ash_.Reset();
 
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
