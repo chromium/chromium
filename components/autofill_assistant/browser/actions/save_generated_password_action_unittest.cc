@@ -21,10 +21,9 @@ const char kGeneratedPassword[] = "mX.12pq";
 }  // namespace
 
 namespace autofill_assistant {
+
 using ::base::test::RunOnceCallback;
 using ::testing::_;
-using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;

@@ -22,7 +22,6 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::WithArgs;
 
 // A callback that expects to be called immediately.

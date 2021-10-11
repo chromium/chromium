@@ -19,17 +19,15 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
+
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
-using ::testing::ReturnRef;
 using ::testing::SizeIs;
 using ::testing::StrEq;
-using ::testing::StrictMock;
-using ::testing::UnorderedElementsAre;
 using ::testing::WithArgs;
 
 class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {

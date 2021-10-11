@@ -15,8 +15,6 @@ namespace autofill_assistant {
 
 using ::testing::Eq;
 using ::testing::IsEmpty;
-using ::testing::Pair;
-using ::testing::SizeIs;
 using ::testing::UnorderedElementsAreArray;
 
 TEST(TriggerContextTest, Empty) {

@@ -38,7 +38,6 @@ using ::testing::Eq;
 using ::testing::IsSupersetOf;
 using ::testing::Not;
 using ::testing::Pair;
-using ::testing::UnorderedElementsAre;
 
 void AddReplacement(ValueExpression::Chunk* chunk,
                     const std::string& match,

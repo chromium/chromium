@@ -33,7 +33,6 @@ const char kExpirationYear[] = "2050";
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::Eq;
-using ::testing::Expectation;
 using ::testing::InSequence;
 using ::testing::NotNull;
 using ::testing::Pointee;

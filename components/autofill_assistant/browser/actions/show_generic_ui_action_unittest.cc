@@ -30,7 +30,6 @@ using ::testing::_;
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Invoke;
-using ::testing::IsNull;
 using ::testing::Not;
 using ::testing::Property;
 using ::testing::Return;

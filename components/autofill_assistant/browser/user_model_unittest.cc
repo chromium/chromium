@@ -17,7 +17,6 @@ using ::testing::InSequence;
 using ::testing::IsNull;
 using ::testing::Pair;
 using ::testing::Property;
-using ::testing::SizeIs;
 using ::testing::StrEq;
 using ::testing::UnorderedElementsAre;
 

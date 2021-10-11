@@ -71,7 +71,6 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::NiceMock;
-using ::testing::NotNull;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::SizeIs;

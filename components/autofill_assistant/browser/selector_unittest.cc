@@ -8,10 +8,10 @@
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using ::testing::UnorderedElementsAre;
-
 namespace autofill_assistant {
 namespace {
+
+using ::testing::UnorderedElementsAre;
 
 TEST(SelectorTest, ConstructorSimple) {
   Selector selector({"#test"});

@@ -13,12 +13,9 @@
 namespace autofill_assistant {
 
 using ::testing::_;
-using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::NiceMock;
-using ::testing::Property;
 using ::testing::Return;
-using ::testing::StrEq;
 
 namespace {
 

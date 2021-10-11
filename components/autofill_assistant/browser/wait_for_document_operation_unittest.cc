@@ -23,7 +23,6 @@ using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Property;
-using ::testing::Return;
 
 class WaitForDocumentOperationTest : public testing::Test {
  public:

@@ -17,7 +17,6 @@ namespace autofill_assistant {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::NiceMock;
-using ::testing::Return;
 
 namespace {
 

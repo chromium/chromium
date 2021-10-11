@@ -23,10 +23,8 @@ const char kMemoryKeyForGeneratedPassword[] = "memory-key-for-generation";
 }  // namespace
 
 namespace autofill_assistant {
-using ::base::test::RunOnceCallback;
+
 using ::testing::_;
-using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;

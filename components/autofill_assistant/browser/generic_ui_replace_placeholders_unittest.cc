@@ -10,8 +10,6 @@ namespace autofill_assistant {
 namespace {
 
 using ::testing::_;
-using ::testing::Eq;
-using ::testing::UnorderedElementsAreArray;
 
 TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInViews) {
   std::map<std::string, std::string> mappings{{"i", "1"}};

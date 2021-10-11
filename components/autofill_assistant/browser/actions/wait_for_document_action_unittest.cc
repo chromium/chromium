@@ -23,16 +23,9 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
-using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::InSequence;
-using ::testing::Invoke;
-using ::testing::IsEmpty;
-using ::testing::IsNull;
-using ::testing::Pointee;
-using ::testing::Property;
 using ::testing::Return;
-using ::testing::SizeIs;
 
 class WaitForDocumentActionTest : public testing::Test {
  public:

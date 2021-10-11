@@ -37,7 +37,6 @@ using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::SizeIs;
-using ::testing::UnorderedElementsAre;
 using ::testing::WithArgs;
 
 const char kValue[] = "Some Value";

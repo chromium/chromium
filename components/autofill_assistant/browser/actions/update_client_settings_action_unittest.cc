@@ -14,13 +14,8 @@ namespace autofill_assistant {
 namespace {
 
 using ::testing::_;
-using ::testing::AllOf;
-using ::testing::Field;
-using ::testing::IsEmpty;
-using ::testing::Pair;
 using ::testing::Property;
 using ::testing::Return;
-using ::testing::UnorderedElementsAre;
 
 class UpdateClientSettingsActionTest : public testing::Test {
  public:

@@ -21,6 +21,7 @@ const char kFakeUsername[] = "user@example.com";
 }  // namespace
 
 namespace autofill_assistant {
+
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::Pointee;

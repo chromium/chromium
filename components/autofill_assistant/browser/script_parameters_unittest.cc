@@ -12,7 +12,6 @@ namespace autofill_assistant {
 
 using ::testing::Eq;
 using ::testing::IsEmpty;
-using ::testing::Pair;
 using ::testing::UnorderedElementsAreArray;
 
 TEST(ScriptParametersTest, Create) {

@@ -18,13 +18,13 @@
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace autofill_assistant {
+
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::IsEmpty;
-
-namespace autofill_assistant {
 
 // User-friendly RectF string representation for matchers.
 std::string ToString(const RectF& rect) {

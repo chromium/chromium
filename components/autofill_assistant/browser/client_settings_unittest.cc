@@ -9,7 +9,6 @@ namespace autofill_assistant {
 
 namespace {
 
-using testing::ElementsAre;
 using testing::Field;
 using testing::IsEmpty;
 using testing::Pair;

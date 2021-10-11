@@ -14,7 +14,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::ElementsAre;
-using ::testing::Eq;
 using ::testing::Pair;
 using ::testing::SizeIs;
 

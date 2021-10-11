@@ -22,8 +22,6 @@ using ::testing::_;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Eq;
-using ::testing::InSequence;
-using ::testing::Key;
 using ::testing::Not;
 using ::testing::Pair;
 using ::testing::WithArgs;

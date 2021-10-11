@@ -21,7 +21,6 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::InSequence;
-using ::testing::Return;
 
 class ElementActionUtilTest : public testing::Test {
  public:

@@ -20,11 +20,6 @@ namespace {
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Invoke;
-using ::testing::IsEmpty;
-using ::testing::IsNull;
-using ::testing::Pointee;
-using ::testing::Property;
-using ::testing::SizeIs;
 
 class ConfigureBottomSheetActionTest : public testing::Test {
  public:

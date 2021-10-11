@@ -24,18 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::FormData;
-using autofill::FormFieldData;
-using password_manager::PasswordForm;
-using password_manager::PasswordManager;
-using testing::_;
-using testing::Invoke;
-using testing::Mock;
-using testing::Return;
-using testing::WithArg;
-
 namespace autofill_assistant {
-
 namespace {
 const char kFakeUrl[] = "http://www.example.com/";
 const char kFakeUrl2[] = "https://www.example2.com";
@@ -48,6 +37,15 @@ const char16_t kFakeNewPassword16[] = u"new_password";
 const char16_t kFormDataName[] = u"the-form-name";
 const char16_t kPasswordElement[] = u"password-element";
 const char16_t kUsernameElement[] = u"username-element";
+
+using autofill::FormData;
+using autofill::FormFieldData;
+using password_manager::PasswordForm;
+using password_manager::PasswordManager;
+using testing::_;
+using testing::Mock;
+using testing::Return;
+using testing::WithArg;
 
 class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
