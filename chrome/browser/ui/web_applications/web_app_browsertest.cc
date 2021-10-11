@@ -1147,7 +1147,15 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenu) {
 #endif
 
 #if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX)
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
+
+// Times out, see https://crbug.com/1257751
+#if defined(OS_MAC) || defined(OS_LINUX)
+#define MAYBE_WebAppCreateAndDeleteShortcut \
+  DISABLED_WebAppCreateAndDeleteShortcut
+#else
+#define MAYBE_WebAppCreateAndDeleteShortcut WebAppCreateAndDeleteShortcut
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_WebAppCreateAndDeleteShortcut) {
   os_hooks_suppress_.reset();
 
   base::ScopedAllowBlockingForTesting allow_blocking;
