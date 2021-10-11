@@ -167,9 +167,10 @@ class BASE_EXPORT AddressPoolManagerBitmap {
 #if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
   static std::array<std::atomic_bool, kAddressSpaceSize / kSuperPageSize>
       brp_forbidden_super_page_map_;
-#endif  // BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
+#else
   static std::array<std::atomic_uint32_t, kAddressSpaceSize / kSuperPageSize>
       super_page_refcount_map_;
+#endif
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 };
 

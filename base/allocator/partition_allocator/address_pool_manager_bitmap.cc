@@ -31,10 +31,11 @@ std::bitset<AddressPoolManagerBitmap::kBRPPoolBits>
 std::array<std::atomic_bool,
            AddressPoolManagerBitmap::kAddressSpaceSize / kSuperPageSize>
     AddressPoolManagerBitmap::brp_forbidden_super_page_map_;
-#endif
+#else
 std::array<std::atomic_uint32_t,
            AddressPoolManagerBitmap::kAddressSpaceSize / kSuperPageSize>
     AddressPoolManagerBitmap::super_page_refcount_map_;
+#endif
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 }  // namespace internal
 }  // namespace base
