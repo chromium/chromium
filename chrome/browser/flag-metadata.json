@@ -100,7 +100,7 @@
   {
     "name": "allow-insecure-localhost",
     "owners": [ "security-dev" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 101
   },
   {
     "name": "allow-previews",
