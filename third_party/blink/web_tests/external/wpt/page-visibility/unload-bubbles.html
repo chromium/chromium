@@ -11,11 +11,7 @@ async_test(function(t) {
       w.close();
       return;
     }
-
-    const {state, target, bubbles} = event.data
-    assert_equals(state, "hidden");
-    assert_equals(target, "#document");
-    assert_equals(bubbles, true);
+    assert_equals(event.data, "hidden");
     t.done();
   });
 });
