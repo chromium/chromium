@@ -8,11 +8,9 @@
 #include <utility>
 
 #include "ash/public/cpp/style/color_provider.h"
-#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
@@ -170,20 +168,19 @@ void AddTitle(views::GridLayout* layout,
   layout->AddPaddingRow(views::GridLayout::kFixedSize, kAfterTitleSpacing);
 }
 
-// Adds icon and title pair obtained from the |web_contents| to the container's
+// Adds icon and title pair of the |confidential_content| to the container's
 // layout.
 void AddConfidentialContentRow(views::GridLayout* layout,
-                               content::WebContents* web_contents) {
+                               DlpConfidentialContent confidential_content) {
   ash::ColorProvider* color_provider = ash::ColorProvider::Get();
   // Add the icon
   layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
   views::ImageView* icon =
       layout->AddView(std::make_unique<views::ImageView>());
-  icon->SetImage(
-      favicon::TabFaviconFromWebContents(web_contents).AsImageSkia());
+  icon->SetImage(confidential_content.icon);
   // Add the title
-  views::Label* title =
-      layout->AddView(std::make_unique<views::Label>(web_contents->GetTitle()));
+  views::Label* title = layout->AddView(
+      std::make_unique<views::Label>(confidential_content.title));
   title->SetMultiLine(true);
   title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title->SetAllowCharacterBreak(true);
@@ -194,12 +191,12 @@ void AddConfidentialContentRow(views::GridLayout* layout,
   title->SetLineHeight(kBodyLineHeight);
 }
 
-// If the |confidential_web_contents| vector is not empty, adds a padding row
-// and a scrollable view listing the given contents to the warn dialog's layout.
+// If the |confidential_contents| is not empty, adds a padding row and a
+// scrollable view listing the given contents to the warn dialog's layout.
 void MaybeAddConfidentialContent(
     views::GridLayout* layout,
-    const std::vector<content::WebContents*>& confidential_web_contents) {
-  if (confidential_web_contents.empty())
+    const DlpConfidentialContents& confidential_contents) {
+  if (confidential_contents.empty())
     return;
   // First add padding between the message and the list
   layout->AddPaddingRow(views::GridLayout::kFixedSize, kBodyContentSpacing);
@@ -223,17 +220,17 @@ void MaybeAddConfidentialContent(
                         /*resize_percent=*/1.0,
                         views::GridLayout::ColumnSize::kUsePreferred,
                         /*fixed_width=*/0, /*min_width=*/0);
-  for (content::WebContents* web_contents : confidential_web_contents)
-    AddConfidentialContentRow(scrollable_layout, web_contents);
+  for (const DlpConfidentialContent& confidential_content :
+       confidential_contents)
+    AddConfidentialContentRow(scrollable_layout, confidential_content);
 }
 
 // Adds dialog body to the warn dialog's layout, that consists of the main
 // message determined by |restriction| and optionally a scrollable list of
 // confidential content.
-void AddBody(
-    views::GridLayout* layout,
-    DlpWarnDialog::Restriction restriction,
-    const std::vector<content::WebContents*>& confidential_web_contents) {
+void AddBody(views::GridLayout* layout,
+             DlpWarnDialog::Restriction restriction,
+             const DlpConfidentialContents& confidential_contents) {
   ash::ColorProvider* color_provider = ash::ColorProvider::Get();
   // Add the message
   layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
@@ -249,7 +246,7 @@ void AddBody(
   message->SetLineHeight(kBodyLineHeight);
   message->SizeToFit(kDialogWidth);
   // Add the confidential content list, if applicable
-  MaybeAddConfidentialContent(layout, confidential_web_contents);
+  MaybeAddConfidentialContent(layout, confidential_contents);
   // Add padding after the entire dialog body
   layout->AddPaddingRow(views::GridLayout::kFixedSize, kAfterBodySpacing);
 }
@@ -262,25 +259,25 @@ void DlpWarnDialog::ShowDlpPrintWarningDialog(
     base::OnceClosure cancel_callback) {
   ShowDlpWarningDialog(std::move(accept_callback), std::move(cancel_callback),
                        Restriction::kPrinting,
-                       /*confidential_web_contents=*/{});
+                       /*confidential_contents=*/{});
 }
 
 // static
 void DlpWarnDialog::ShowDlpScreenCaptureWarningDialog(
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback,
-    const std::vector<content::WebContents*>& confidential_web_contents) {
+    const DlpConfidentialContents& confidential_contents) {
   ShowDlpWarningDialog(std::move(accept_callback), std::move(cancel_callback),
-                       Restriction::kScreenCapture, confidential_web_contents);
+                       Restriction::kScreenCapture, confidential_contents);
 }
 
 // static
 void DlpWarnDialog::ShowDlpVideoCaptureWarningDialog(
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback,
-    const std::vector<content::WebContents*>& confidential_web_contents) {
+    const DlpConfidentialContents& confidential_contents) {
   ShowDlpWarningDialog(std::move(accept_callback), std::move(cancel_callback),
-                       Restriction::kVideoCapture, confidential_web_contents);
+                       Restriction::kVideoCapture, confidential_contents);
 }
 
 // static
@@ -288,10 +285,10 @@ void DlpWarnDialog::ShowDlpWarningDialog(
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback,
     Restriction restriction,
-    const std::vector<content::WebContents*>& confidential_web_contents) {
+    const DlpConfidentialContents& confidential_contents) {
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       new DlpWarnDialog(std::move(accept_callback), std::move(cancel_callback),
-                        restriction, confidential_web_contents),
+                        restriction, confidential_contents),
       /*context=*/nullptr, /*parent=*/nullptr);
   widget->Show();
 }
@@ -300,7 +297,7 @@ DlpWarnDialog::DlpWarnDialog(
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback,
     Restriction restriction,
-    const std::vector<content::WebContents*>& confidential_web_contents) {
+    const DlpConfidentialContents& confidential_contents) {
   SetAcceptCallback(std::move(accept_callback));
   SetCancelCallback(std::move(cancel_callback));
 
@@ -324,7 +321,7 @@ DlpWarnDialog::DlpWarnDialog(
 
   AddManagedIcon(layout_manager);
   AddTitle(layout_manager, restriction);
-  AddBody(layout_manager, restriction, confidential_web_contents);
+  AddBody(layout_manager, restriction, confidential_contents);
 }
 
 BEGIN_METADATA(DlpWarnDialog, views::DialogDelegateView)

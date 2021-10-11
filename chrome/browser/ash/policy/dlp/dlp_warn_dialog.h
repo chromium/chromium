@@ -5,15 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_DLP_DLP_WARN_DIALOG_H_
 #define CHROME_BROWSER_ASH_POLICY_DLP_DLP_WARN_DIALOG_H_
 
-#include <vector>
-
 #include "base/callback_forward.h"
+#include "chrome/browser/ash/policy/dlp/dlp_confidential_contents.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
-
-namespace content {
-class WebContents;
-}  // namespace content
 
 namespace policy {
 
@@ -35,22 +30,22 @@ class DlpWarnDialog : public views::DialogDelegateView {
                                         base::OnceClosure cancel_callback);
 
   // Shows a warning dialog that informs the user that screen capture is not
-  // recommended due to |confidential_web_contents| visible. Calls one of
+  // recommended due to |confidential_contents| visible. Calls one of
   // |accept_callback| or |cancel_callback| based on the user's choice whether
   // to proceed or not.
   static void ShowDlpScreenCaptureWarningDialog(
       base::OnceClosure accept_callback,
       base::OnceClosure cancel_callback,
-      const std::vector<content::WebContents*>& confidential_web_contents);
+      const DlpConfidentialContents& confidential_contents);
 
   // Shows a warning dialog that informs the user that video capture is not
-  // recommended due to |confidential_web_contents| visible. Calls one of
+  // recommended due to |confidential_contents| visible. Calls one of
   // |accept_callback| or |cancel_callback| based on the user's choice whether
   // to proceed or not.
   static void ShowDlpVideoCaptureWarningDialog(
       base::OnceClosure accept_callback,
       base::OnceClosure cancel_callback,
-      const std::vector<content::WebContents*>& confidential_web_contents);
+      const DlpConfidentialContents& confidential_contents);
 
   DlpWarnDialog(const DlpWarnDialog&) = delete;
   DlpWarnDialog& operator=(const DlpWarnDialog&) = delete;
@@ -63,13 +58,12 @@ class DlpWarnDialog : public views::DialogDelegateView {
       base::OnceClosure accept_callback,
       base::OnceClosure cancel_callback,
       Restriction restriction,
-      const std::vector<content::WebContents*>& confidential_web_contents);
+      const DlpConfidentialContents& confidential_contents);
 
-  DlpWarnDialog(
-      base::OnceClosure accept_callback,
-      base::OnceClosure cancel_callback,
-      Restriction restriction,
-      const std::vector<content::WebContents*>& confidential_web_contents);
+  DlpWarnDialog(base::OnceClosure accept_callback,
+                base::OnceClosure cancel_callback,
+                Restriction restriction,
+                const DlpConfidentialContents& confidential_contents);
 };
 
 }  // namespace policy

@@ -201,7 +201,7 @@ void DlpContentManager::CheckStoppedVideoCapture(
     DlpWarnDialog::ShowDlpVideoCaptureWarningDialog(
         base::BindOnce(std::move(split.first), true),
         base::BindOnce(std::move(split.second), false),
-        /*confidential_web_contents=*/{});
+        /*confidential_contents=*/{});
   }
   running_video_capture_info_.reset();
 }
@@ -682,7 +682,7 @@ void DlpContentManager::CheckScreenCaptureRestriction(
                   base::BindOnce(&DlpContentManager::OnScreenCaptureUserAllowed,
                                  base::Unretained(this))),
           base::BindOnce(std::move(split.second), false),
-          /*confidential_web_contents=*/{});
+          /*confidential_contents=*/{});
     }
   } else {
     std::move(callback).Run(true);

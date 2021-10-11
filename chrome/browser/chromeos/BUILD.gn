@@ -2349,6 +2349,8 @@ source_set("chromeos") {
     "../ash/policy/dlp/dlp_clipboard_bubble_constants.h",
     "../ash/policy/dlp/dlp_clipboard_notifier.cc",
     "../ash/policy/dlp/dlp_clipboard_notifier.h",
+    "../ash/policy/dlp/dlp_confidential_contents.cc",
+    "../ash/policy/dlp/dlp_confidential_contents.h",
     "../ash/policy/dlp/dlp_content_manager.cc",
     "../ash/policy/dlp/dlp_content_manager.h",
     "../ash/policy/dlp/dlp_content_restriction_set.cc",
