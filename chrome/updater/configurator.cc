@@ -177,7 +177,12 @@ update_client::ActivityDataService* Configurator::GetActivityDataService()
 }
 
 bool Configurator::IsPerUserInstall() const {
-  return true;
+  switch (GetUpdaterScope()) {
+    case UpdaterScope::kSystem:
+      return false;
+    case UpdaterScope::kUser:
+      return true;
+  }
 }
 
 std::unique_ptr<update_client::ProtocolHandlerFactory>
