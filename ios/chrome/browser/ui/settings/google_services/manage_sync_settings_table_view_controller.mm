@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_service_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_view_controller_model_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -71,6 +72,7 @@
   } else if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
     TableViewInfoButtonCell* managedCell =
         base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+    managedCell.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     [managedCell.trailingButton addTarget:self
                                    action:@selector(didTapManagedUIInfoButton:)
                          forControlEvents:UIControlEventTouchUpInside];
