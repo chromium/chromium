@@ -95,7 +95,6 @@ import './parental_controls_page/parental_controls_page.m.js';
 import './settings_scheduler_slider/settings_scheduler_slider.js';
 
 export {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
-export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from '../people_page/account_manager_browser_proxy.js';
 export {ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from '../people_page/profile_info_browser_proxy.js';
 export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.js';
 export {CrSettingsPrefs} from '../prefs/prefs_types.js';
@@ -139,6 +138,7 @@ export {AppManagementStoreClientImpl} from './os_apps_page/app_management_page/s
 export {convertOptionalBoolToBool, createEmptyState, createInitialState, createPermission, getPermissionValueBool} from './os_apps_page/app_management_page/util.js';
 export {setAppNotificationProviderForTesting} from './os_apps_page/app_notifications_page/mojo_interface_provider.js';
 export {osPageVisibility} from './os_page_visibility.m.js';
+export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './os_people_page/account_manager_browser_proxy.js';
 export {FingerprintBrowserProxyImpl, FingerprintResultType} from './os_people_page/fingerprint_browser_proxy.m.js';
 export {OsSyncBrowserProxyImpl} from './os_people_page/os_sync_browser_proxy.m.js';
 export {FingerprintLocation, FingerprintSetupStep} from './os_people_page/setup_fingerprint_dialog.m.js';

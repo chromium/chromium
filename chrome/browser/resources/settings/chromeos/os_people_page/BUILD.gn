@@ -12,6 +12,7 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":account_manager.m",
+    ":account_manager_browser_proxy",
     ":fingerprint_browser_proxy.m",
     ":fingerprint_list.m",
     ":lock_screen.m",
@@ -28,15 +29,19 @@ js_type_check("closure_compile_module") {
   ]
 }
 
+js_library("account_manager_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+}
+
 js_library("account_manager.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_people_page/account_manager.m.js" ]
   deps = [
+    ":account_manager_browser_proxy",
     "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
     "..:route_observer_behavior",
     "../..:router",
-    "../../people_page:account_manager_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
@@ -129,6 +134,7 @@ js_library("lock_state_behavior.m") {
 js_library("os_people_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_people_page/os_people_page.m.js" ]
   deps = [
+    ":account_manager_browser_proxy",
     ":lock_screen.m",
     ":lock_state_behavior.m",
     ":os_sync_controls.m",
@@ -137,7 +143,6 @@ js_library("os_people_page.m") {
     "..:os_route.m",
     "..:route_observer_behavior",
     "../..:router",
-    "../../people_page:account_manager_browser_proxy",
     "../parental_controls_page:parental_controls_page.m",
     "//chrome/browser/resources/settings/people_page:profile_info_browser_proxy",
     "//chrome/browser/resources/settings/people_page:sync_browser_proxy",

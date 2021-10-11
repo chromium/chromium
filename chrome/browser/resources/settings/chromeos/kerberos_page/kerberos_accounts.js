@@ -22,7 +22,7 @@ import {getImage} from '//resources/js/icon.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import {loadTimeData} from '../../i18n_setup.js';
-import {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl, Account} from '../../people_page/account_manager_browser_proxy.js';
+import {Account} from '../os_people_page/account_manager_browser_proxy.js';
 import {Router, Route} from '../../router.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 import '../../settings_shared_css.js';

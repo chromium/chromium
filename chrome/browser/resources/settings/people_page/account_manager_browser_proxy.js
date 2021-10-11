@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview Stripped down fork of
+ * c/b/r/settings/chromeos/os_people_page/account_manager_browser_proxy.js.
+ * Re-uses the same WebUI message handler class.
+ */
+
 // clang-format off
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
@@ -29,36 +35,6 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
      * @return {!Promise<!Array<Account>>}
      */
     getAccounts() {}
-
-    /**
-     * Triggers the 'Add account' flow.
-     */
-    addAccount() {}
-
-    /**
-     * Triggers the re-authentication flow for the account pointed to by
-     * |accountEmail|.
-     * @param {string} accountEmail
-     */
-    reauthenticateAccount(accountEmail) {}
-
-    /**
-     * Triggers the migration dialog for the account pointed to by
-     * |accountEmail|.
-     * @param {string} accountEmail
-     */
-    migrateAccount(accountEmail) {}
-
-    /**
-     * Removes |account| from Account Manager.
-     * @param {?Account} account
-     */
-    removeAccount(account) {}
-
-    /**
-     * Displays the Account Manager welcome dialog if required.
-     */
-    showWelcomeDialogIfRequired() {}
   }
 
   /**
@@ -68,31 +44,6 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
     /** @override */
     getAccounts() {
       return sendWithPromise('getAccounts');
-    }
-
-    /** @override */
-    addAccount() {
-      chrome.send('addAccount');
-    }
-
-    /** @override */
-    reauthenticateAccount(accountEmail) {
-      chrome.send('reauthenticateAccount', [accountEmail]);
-    }
-
-    /** @override */
-    migrateAccount(accountEmail) {
-      chrome.send('migrateAccount', [accountEmail]);
-    }
-
-    /** @override */
-    removeAccount(account) {
-      chrome.send('removeAccount', [account]);
-    }
-
-    /** @override */
-    showWelcomeDialogIfRequired() {
-      chrome.send('showWelcomeDialogIfRequired');
     }
 
     /** @return {!AccountManagerBrowserProxy} */
