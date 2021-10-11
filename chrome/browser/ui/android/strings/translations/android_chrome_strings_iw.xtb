@@ -57,6 +57,7 @@
 <translation id="1310482092992808703">קיבוץ כרטיסיות</translation>
 <translation id="1311657260431405215">‏קוד ה-QR הזה אינו כתובת URL‏: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
+<translation id="1320912611264252795">תהליך שמירת תיקיות הסימניות שפתוחות בגובה מלא</translation>
 <translation id="1327257854815634930">היסטוריית הניווט פתוחה</translation>
 <translation id="1331212799747679585">‏לא ניתן לעדכן את Chrome. אפשרויות נוספות</translation>
 <translation id="1332501820983677155">‏מקשי קיצור לתכונות של Google Chrome‏</translation>
@@ -83,6 +84,7 @@
 <translation id="1466383950273130737">‏בחירת השפה ב-Chrome</translation>
 <translation id="147113415845704694">‏אפשר לנסות לשאול "What’s the weather today?‎"</translation>
 <translation id="1477626028522505441">הורדת <ph name="FILE_NAME" /> נכשלה עקב בעיות בשרת.</translation>
+<translation id="148482509007564431">תהליך שמירת הסימנייה</translation>
 <translation id="1492417797159476138">שם המשתמש הזה כבר נשמר לאתר זה</translation>
 <translation id="1493287004536771723">בחרת לעקוב אחר <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">מנוע חיפוש</translation>
@@ -263,6 +265,7 @@
 <translation id="2631006050119455616">חסכת</translation>
 <translation id="2645657967708199252">חיבור ה-<ph name="CONNECTION_TYPE" /> עשוי להאט את ההורדה</translation>
 <translation id="2647434099613338025">להוספת שפה</translation>
+<translation id="2649068648233607930">הדפדפן שלך מנוהל על ידי <ph name="DOMAIN" /></translation>
 <translation id="2650751991977523696">האם להוריד את הקובץ שוב?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{קובץ אודיו אחד (#)}two{# קובצי אודיו}many{# קובצי אודיו}other{# קובצי אודיו}}</translation>
 <translation id="2656405586795711023">אפליקציות אינטרנט</translation>
@@ -428,6 +431,7 @@
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
 <translation id="3616113530831147358">אודיו</translation>
 <translation id="3622349720008044802">ניהול החלונות</translation>
+<translation id="3624977496395967031">צריך ללחוץ כדי לפתוח את אפשרויות המיון</translation>
 <translation id="3631987586758005671">השיתוף עם <ph name="DEVICE_NAME" /> מתבצע</translation>
 <translation id="3632295766818638029">חשוף סיסמה</translation>
 <translation id="363596933471559332">כניסה אוטומטית לאתרים באמצעות פרטי כניסה מאוחסנים. כשתכונה זו כבויה, יהיה עליך לבצע אימות לפני כל כניסה לאתר.</translation>
@@ -497,6 +501,7 @@
 <translation id="4084682180776658562">סימנייה</translation>
 <translation id="4084712963632273211">‏מאת <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />מוגש על-ידי Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">למחוק נתוני יישומים?</translation>
+<translation id="4096227151372679484">תהליך שמירת הסימניות שפתוחות בחצי הגובה</translation>
 <translation id="4099578267706723511">‏אם שולחים אלינו נתוני שימוש ודוחות קריסה, עוזרים לשפר את Chrome.</translation>
 <translation id="410351446219883937">הפעלה אוטומטית</translation>
 <translation id="4108314971463891922">מעקב</translation>
@@ -605,6 +610,7 @@
 <translation id="4766678251456904326">הוספת חשבון למכשיר</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{תוזמנה הורדה אחת.}two{תוזמנו # הורדות.}many{תוזמנו # הורדות.}other{תוזמנו # הורדות.}}</translation>
 <translation id="4791358705705538979">עוזרת להשלים משימות, כמו תשלום בקופה, באינטרנט</translation>
+<translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">‏הצפנה באמצעות ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות מ-Google Pay
 
 כדי לשנות את ההגדרה הזו צריך <ph name="BEGIN_LINK" />לאפס את הסנכרון<ph name="END_LINK" /></translation>
@@ -628,6 +634,7 @@
 <translation id="4885273946141277891">‏מספר בלתי נתמך של מופעי Chrome.</translation>
 <translation id="4905823827770127520">הוספת קישור לדף</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
+<translation id="4909709702739934280">הדפדפן מנוהל על ידי מנהל המערכת</translation>
 <translation id="4910889077668685004">אפליקציות תשלום</translation>
 <translation id="4912413785358399818">העברת הכרטיסייה</translation>
 <translation id="4913161338056004800">איפוס הנתונים הסטטיסטיים</translation>
@@ -1150,6 +1157,7 @@
 <translation id="7926975587469166629">כינוי הכרטיס</translation>
 <translation id="7929962904089429003">פתיחת התפריט</translation>
 <translation id="7930998711684428189">הצגת אזהרה אם סיסמאות נחשפות עקב פרצה באבטחת מידע.</translation>
+<translation id="7939485076072265087">יצירת כרטיס מעוצב עם הדגשה</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> אינו מעודכן.</translation>
 <translation id="7944772052836377867">כדי לסנכרן צריך לאמת את הזהות שלך</translation>
 <translation id="7947953824732555851">קבלה וכניסה</translation>
@@ -1268,6 +1276,7 @@
 <translation id="8562452229998620586">הסיסמאות השמורות יופיעו כאן.</translation>
 <translation id="856481929701340285">בקש אתר לשולחן העבודה</translation>
 <translation id="8569404424186215731">מאז <ph name="DATE" /></translation>
+<translation id="8570677896027847510">לא ניתן להוריד את הקובץ באופן מאובטח</translation>
 <translation id="8571213806525832805">מארבעת השבועות האחרונים</translation>
 <translation id="8572344201470131220">התמונה הועתקה</translation>
 <translation id="8583805026567836021">נתוני החשבון נמחקים</translation>
@@ -1320,6 +1329,7 @@
 <translation id="8912362522468806198">‏חשבון Google</translation>
 <translation id="8920114477895755567">בהמתנה לפרטי ההורים.</translation>
 <translation id="8922289737868596582">כדי להשתמש בדפים במצב אופליין, אפשר להוריד אותם דרך הלחצן 'אפשרויות נוספות'</translation>
+<translation id="8924575305646776101"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> מוכנה לשימוש</translation>
 <translation id="8928626432984354940">רשימת תיקיות הסימניות שפתוחות בחצי הגובה</translation>
 <translation id="8937267401510745927">‏כדי לעזור לך להשלים משימות, Google תקבל את כתובות ה-URL והתוכן של אתרים שבהם נעשה שימוש ב-Assistant, וכן את המידע שנשלח דרך Assistant. ייתכן שהמידע הזה יישמר בחשבון Google שלך. ניתן להשבית את Assistant דרך ההגדרות של Chrome.</translation>
@@ -1354,8 +1364,10 @@
 <translation id="9086455579313502267">אין אפשרות לגשת לרשת</translation>
 <translation id="9100505651305367705">יש להציע הצגת מאמרים בתצוגה פשוטה, כשהאפשרות נתמכת</translation>
 <translation id="9100610230175265781">יש להזין ביטוי סיסמה</translation>
+<translation id="9101137867221042551">ניהול</translation>
 <translation id="9102803872260866941">כרטיסיית התצוגה המקדימה נפתחה</translation>
 <translation id="9104217018994036254">רשימת המכשירים שאפשר לשתף איתם כרטיסייה.</translation>
+<translation id="9106148373857059373">תהליך שמירת הסימנייה נסגר</translation>
 <translation id="9108312223223904744">תמיכה בטלפון כמפתח אבטחה</translation>
 <translation id="9108808586816295166">‏ה-DNS המאובטח לא יהיה בהכרח זמין תמיד</translation>
 <translation id="9133397713400217035">הצעות לתוכן במצב אופליין</translation>
