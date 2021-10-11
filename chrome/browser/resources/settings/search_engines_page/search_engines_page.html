@@ -40,7 +40,8 @@
           hidden="[[!matchingDefaultEngines_.length]]"
           engines="[[matchingDefaultEngines_]]"
           is-active-search-engines-flag-enabled=
-            "[[isActiveSearchEnginesFlagEnabled_]]">
+            "[[isActiveSearchEnginesFlagEnabled_]]"
+          name-column-header="$i18n{searchEnginesSearchEngine}">
       </settings-search-engines-list>
     </template>
     <template is="dom-if" if="[[isActiveSearchEnginesFlagEnabled_]]">
@@ -117,7 +118,8 @@
           engines="[[matchingOtherEngines_]]"
           scroll-target="[[subpageScrollTarget]]"
           is-active-search-engines-flag-enabled=
-                "[[isActiveSearchEnginesFlagEnabled_]]">
+                "[[isActiveSearchEnginesFlagEnabled_]]"
+          name-column-header="$i18n{searchEnginesSearchEngine}">
       </settings-search-engines-list>
     </div>
 

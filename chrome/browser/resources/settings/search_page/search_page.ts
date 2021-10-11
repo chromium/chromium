@@ -19,14 +19,16 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
+import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from '../search_engines_page/search_engines_browser_proxy.js';
 
-const SettingsSearchPageElementBase = BaseMixin(PolymerElement);
+const SettingsSearchPageElementBase = BaseMixin(I18nMixin(PolymerElement));
 
 /** @polymer */
 export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
@@ -56,9 +58,22 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
       searchEnginesFilter_: String,
 
       focusConfig_: Object,
+
+      isActiveSearchEnginesFlagEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isActiveSearchEnginesFlagEnabled'),
+      },
+
+      searchEnginesPageTitle_: {
+        type: String,
+        computed: 'computeSearchEnginesPageTitle_()',
+      },
     };
   }
 
+  searchEnginesPageTitle_: String;
+  private isActiveSearchEnginesFlagEnabled_: boolean;
   private searchEngines_: Array<SearchEngine>;
   private searchEnginesFilter_: string;
   private focusConfig_: Map<string, string>|null;
@@ -110,6 +125,12 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   private isDefaultSearchEngineEnforced_(
       pref: chrome.settingsPrivate.PrefObject): boolean {
     return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
+  }
+
+  private computeSearchEnginesPageTitle_(): String {
+    return this.isActiveSearchEnginesFlagEnabled_ ?
+        this.i18n('searchEnginesManageSiteSearch') :
+        this.i18n('searchEnginesManage');
   }
 }
 

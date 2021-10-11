@@ -1488,15 +1488,27 @@ are declared in tools/grit/grit_rule.gni.
         ''' - '''
       </message>
       <if expr="not use_titlecase">
-        <message name="IDS_EDIT_SEARCH_ENGINES"
+        <message name="IDS_MANAGE_SEARCH_ENGINES"
                  desc="Title of the popup menu item that takes the user to 'Manage search engines' in Settings.">
           &amp;Manage search engines...
         </message>
       </if>
       <if expr="use_titlecase">
-        <message name="IDS_EDIT_SEARCH_ENGINES"
+        <message name="IDS_MANAGE_SEARCH_ENGINES"
                  desc="In Title Case: Title of the popup menu item that takes the user to 'Manage search engines' in Settings.">
           &amp;Manage Search Engines...
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH"
+                 desc="Title of the popup menu item that takes the user to 'Manage search engines and site search' in Settings.">
+          &amp;Manage search engines and site search
+        </message>
+      </if>
+      <if expr="use_titlecase">
+        <message name="IDS_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH"
+                 desc="In Title Case: Title of the popup menu item that takes the user to 'Manage search engines and site search' in Settings.">
+          &amp;Manage Search Engines and Site Search
         </message>
       </if>
 
