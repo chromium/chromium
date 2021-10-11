@@ -126,10 +126,6 @@ class FullRestoreService : public KeyedService,
   // Chrome is run. Otherwise, returns false.
   bool ShouldShowNotification();
 
-  // Records the new window count when the user takes action on the full restore
-  // notification.
-  void RecordWindowCount(const std::string& restore_action);
-
   Profile* profile_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
 

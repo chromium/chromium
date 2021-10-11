@@ -107,7 +107,6 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
     if (arc_save_handler_)
       arc_save_handler_->OnWindowInitialized(window);
 
-    ++window_count_;
     return;
   }
 
@@ -115,7 +114,6 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
   if (!SessionID::IsValidValue(window_id))
     return;
 
-  ++window_count_;
   observed_windows_.AddObservation(window);
 
   std::string* app_id_str = window->GetProperty(app_restore::kAppIdKey);

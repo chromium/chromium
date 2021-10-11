@@ -141,11 +141,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <variants name="RestoreAction">
   <variant name="CloseByUser"
-      summary="The full restore notfication is closed by user"/>
+      summary="The full restore notfication is closed by user">
+    <obsolete>
+      Removed October 2021.
+    </obsolete>
+  </variant>
   <variant name="CloseNotByUser"
-      summary="The full restore notfication is not closed by user"/>
-  <variant name="NotRestore" summary="No thanks is clicked"/>
-  <variant name="Restore" summary="Restore is clicked"/>
+      summary="The full restore notfication is not closed by user">
+    <obsolete>
+      Removed October 2021.
+    </obsolete>
+  </variant>
+  <variant name="NotRestore" summary="No thanks is clicked">
+    <obsolete>
+      Removed October 2021.
+    </obsolete>
+  </variant>
+  <variant name="Restore" summary="Restore is clicked">
+    <obsolete>
+      Removed October 2021.
+    </obsolete>
+  </variant>
 </variants>
 
 <histogram name="Apps.ActivatedCount.{AppType}" units="units"
@@ -2822,6 +2838,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.WindowCount.{RestoreAction}" units="unit"
     expires_after="2021-12-30">
+  <obsolete>
+    Removed October 2021.
+  </obsolete>
   <owner>nancylingwang@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>

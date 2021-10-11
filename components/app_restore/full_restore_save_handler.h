@@ -170,8 +170,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
   // the window's associated AppRestoreData.
   std::string GetAppId(aura::Window* window);
 
-  int window_count() const { return window_count_; }
-
   base::OneShotTimer* GetTimerForTesting() { return &save_timer_; }
 
   // Since this is a singleton, tests may need to clear it between tests.
@@ -280,9 +278,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
   // When one of the above condition is matched, allow_save_ is set as true to
   // permit `save_timer_` to start periodically triggering saving to disk.
   bool allow_save_ = false;
-
-  // The number of window created. This is used for metrics only.
-  int window_count_ = 0;
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observer_{this};
 

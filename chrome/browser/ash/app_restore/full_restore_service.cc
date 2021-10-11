@@ -50,12 +50,6 @@ const char kRestoreForCrashNotificationHistogramName[] =
 const char kRestoreSettingHistogramName[] = "Apps.RestoreSetting";
 const char kRestoreInitSettingHistogramName[] = "Apps.RestoreInitSetting";
 
-constexpr char kWindowCountHistogramPrefix[] = "Apps.WindowCount.";
-constexpr char kRestoreHistogramSuffix[] = "Restore";
-constexpr char kNotRestoreHistogramSuffix[] = "NotRestore";
-constexpr char kCloseByUserHistogramSuffix[] = "CloseByUser";
-constexpr char kCloseNotByUserHistogramSuffix[] = "CloseNotByUser";
-
 // static
 FullRestoreService* FullRestoreService::GetForProfile(Profile* profile) {
   return static_cast<FullRestoreService*>(
@@ -221,8 +215,6 @@ void FullRestoreService::Close(bool by_user) {
     RecordRestoreAction(
         notification_->id(),
         by_user ? RestoreAction::kCloseByUser : RestoreAction::kCloseNotByUser);
-    RecordWindowCount(by_user ? kCloseByUserHistogramSuffix
-                              : kCloseNotByUserHistogramSuffix);
   }
   notification_ = nullptr;
 
@@ -247,7 +239,6 @@ void FullRestoreService::Click(const absl::optional<int>& button_index,
 
     // Restore if the user clicks the notification body.
     RecordRestoreAction(notification_->id(), RestoreAction::kRestore);
-    RecordWindowCount(kRestoreHistogramSuffix);
     Restore();
 
     // If the user selects restore, don't start the save timer. Wait for the
@@ -270,7 +261,6 @@ void FullRestoreService::Click(const absl::optional<int>& button_index,
   // Close the crash notification if the user clicks the cancel button of the
   // crash notification.
   RecordRestoreAction(notification_->id(), RestoreAction::kCancel);
-  RecordWindowCount(kNotRestoreHistogramSuffix);
   MaybeCloseNotification();
 }
 
@@ -454,12 +444,6 @@ void FullRestoreService::OnPreferenceChanged(const std::string& pref_name) {
 bool FullRestoreService::ShouldShowNotification() {
   return app_launch_handler_ && app_launch_handler_->HasRestoreData() &&
          !::first_run::IsChromeFirstRun() && !close_notification_;
-}
-
-void FullRestoreService::RecordWindowCount(const std::string& restore_action) {
-  base::UmaHistogramCounts100(
-      kWindowCountHistogramPrefix + restore_action,
-      ::full_restore::FullRestoreSaveHandler::GetInstance()->window_count());
 }
 
 ScopedRestoreForTesting::ScopedRestoreForTesting() {
