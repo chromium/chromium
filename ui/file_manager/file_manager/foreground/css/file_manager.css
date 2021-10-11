@@ -479,13 +479,13 @@ body.files-ng div.splitter.splitter-active .splitter-button .icon {
 }
 
 body.check-select .dialog-header {
-  background: white;
-  border-bottom: 1px solid rgb(219, 219, 219);
+  background: var(--cros-bg-color);
+  border-bottom: 1px solid var(--cros-separator-color);
   border-top: 1px solid transparent;
 }
 
 body.check-select .dialog-header.files-ng {
-  color: var(--google-blue-600);
+  color: var(--cros-text-color-prominent);
 }
 
 /* Display a grey border during check-select mode if we're in a dialog. (This
@@ -515,12 +515,14 @@ body[type='open-multi-file'].check-select .dialog-header {
 
 .dialog-header.files-ng cr-button,
 .dialog-header.files-ng button {
-  --hover-bg-color: rgba(0, 0, 0, 4%);
-  --ink-color: rgba(0, 0, 0, 88%);
+  --active-bg: var(--cros-ripple-color);
+  --hover-bg-color: var(--cros-ripple-color);
+  --ink-color: var(--cros-ripple-color);
+  --ripple-opacity: 100%;
   --text-color: currentColor;
   border: 1px solid transparent;
   border-radius: 18px;
-  color: var(--google-grey-700);
+  color: var(--cros-text-color-primary);
   height: 36px;
   margin: 0 6px;
   min-width: 36px;
@@ -538,26 +540,30 @@ html.pointer-active .dialog-header.files-ng cr-button:not(:active):hover {
   width: 48px;
 }
 
-.dialog-header.files-ng *[menu-shown] {
-  background-color: rgba(0, 0, 0, 12%);
+.dialog-header.files-ng button[menu-shown] {
+  background: linear-gradient(var(--cros-ripple-color),
+                              var(--cros-ripple-color)),
+              var(--cros-ripple-color);
 }
 
 .dialog-header.files-ng button:not([menu-shown]):not(:active):hover {
-  background-color: rgba(0, 0, 0, 4%);
+  background-color: var(--cros-ripple-color);
 }
 
 html.pointer-active .dialog-header.files-ng button:not([menu-shown]):not(:active):hover {
-  background-color: unset;
+  background-color: var(--cros-ripple-color);
   cursor: default;
 }
 
 .dialog-header.files-ng button:active {
-  background-color: rgba(0, 0, 0, 12%);
+  background: linear-gradient(var(--cros-ripple-color),
+                              var(--cros-ripple-color)),
+              var(--cros-ripple-color);
 }
 
 html.focus-outline-visible .dialog-header.files-ng cr-button:not(:active):focus,
 html.focus-outline-visible .dialog-header.files-ng button:not(:active):focus {
-  border: 1px solid var(--google-blue-600);
+  border: 1px solid var(--cros-focus-ring-color);
 }
 
 .dialog-header.files-ng files-ripple,
@@ -567,7 +573,7 @@ html.focus-outline-visible .dialog-header.files-ng button:not(:active):focus {
 
 body.check-select button,
 body.check-select button:hover {
-  color: rgb(90, 90, 90);
+  color: var(--cros-text-color-primary);
 }
 
 .dialog-header .icon-button > paper-ripple,
@@ -576,14 +582,14 @@ body.check-select button:hover {
 }
 
 body.check-select .dialog-header button paper-ripple {
-  color: rgb(90, 90, 90);
+  color: var(--cros-text-color-primary);
 }
 
 /** Avoid highlighting if element doesn't have focus by tab (tabindex=-1)
  *  or if focusing during mouse click event ":active" pseudo-selector. */
 html.focus-outline-visible.files-ng .dialog-header
     .menu-button:focus:not([tabindex='-1']):not(:active) {
-  background-color: rgba(255, 255, 255, 20%);
+  background-color: transparent;
 }
 
 body.check-select .dialog-header
@@ -947,7 +953,7 @@ body.files-ng #cancel-selection-button {
 }
 
 html.focus-outline-visible body.files-ng #cancel-selection-button:focus:not([tabindex='-1']):not(:active) {
-  border: 1px solid var(--google-blue-600);
+  border: 1px solid var(--cros-icon-color-prominent);
 }
 
 body.files-ng #cancel-selection-button > span#cancel-selection-label {
@@ -958,7 +964,7 @@ body.files-ng #cancel-selection-button .icon-arrow-back {
   -webkit-mask-image: url(../images/files/ui/list_check.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  background-color: var(--google-blue-600);
+  background-color: var(--cros-icon-color-prominent);
   flex: none;
   height: 20px;
   width: 20px;
