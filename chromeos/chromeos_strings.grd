@@ -1912,7 +1912,7 @@ Try tapping the mic to ask me anything.
         Something went wrong. Try reopening the app.
       </message>
       <message name="IDS_PERSONALIZATION_APP_SET_WALLPAPER_ERROR" desc="Label for the error toast notification when setting wallpaper failed">
-        There was an error. Please try again by choosing other images.
+        Something went wrong. Try choosing a wallpaper again or reopen the app.
       </message>
       <message name="IDS_PERSONALIZATION_APP_DISMISS" desc="Label for the toast notification dismiss action">
         Dismiss
