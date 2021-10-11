@@ -403,7 +403,8 @@ TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyMaxOperations) {
 }
 
 // TODO(crbug.com/1239374): Fix test on Android L and re-enable.
-#if defined(OS_ANDROID)
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_Font \
   DISABLED_IdentifiabilityStudyDigest_Font
 #else
@@ -439,7 +440,8 @@ TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDisabled) {
 }
 
 // TODO(crbug.com/1239374): Fix test on Android and re-enable.
-#if defined(OS_ANDROID)
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_StrokeText \
   DISABLED_IdentifiabilityStudyDigest_StrokeText
 #else
@@ -462,7 +464,8 @@ TEST_F(CanvasRenderingContext2DAPITest,
 }
 
 // TODO(crbug.com/1239374): Fix test on Android and re-enable.
-#if defined(OS_ANDROID)
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_FillText \
   DISABLED_IdentifiabilityStudyDigest_FillText
 #else
@@ -485,7 +488,8 @@ TEST_F(CanvasRenderingContext2DAPITest,
 }
 
 // TODO(crbug.com/1239374): Fix test on Android and re-enable.
-#if defined(OS_ANDROID)
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_TextAlign \
   DISABLED_IdentifiabilityStudyDigest_TextAlign
 #else
@@ -508,7 +512,8 @@ TEST_F(CanvasRenderingContext2DAPITest,
 }
 
 // TODO(crbug.com/1239374): Fix test on Android and re-enable.
-#if defined(OS_ANDROID)
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_TextBaseline \
   DISABLED_IdentifiabilityStudyDigest_TextBaseline
 #else
@@ -531,7 +536,8 @@ TEST_F(CanvasRenderingContext2DAPITest,
 }
 
 // TODO(crbug.com/1239374): Fix test on Android and re-enable.
-#if defined(OS_ANDROID)
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_StrokeStyle \
   DISABLED_IdentifiabilityStudyDigest_StrokeStyle
 #else
@@ -556,7 +562,8 @@ TEST_F(CanvasRenderingContext2DAPITest,
 }
 
 // TODO(crbug.com/1239374): Fix test on Android and re-enable.
-#if defined(OS_ANDROID)
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_FillStyle \
   DISABLED_IdentifiabilityStudyDigest_FillStyle
 #else
@@ -581,7 +588,8 @@ TEST_F(CanvasRenderingContext2DAPITest,
 }
 
 // TODO(crbug.com/1239374): Fix test on Android and re-enable.
-#if defined(OS_ANDROID)
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_Combo \
   DISABLED_IdentifiabilityStudyDigest_Combo
 #else
@@ -612,7 +620,8 @@ TEST_F(CanvasRenderingContext2DAPITest,
 }
 
 // TODO(crbug.com/1239374): Fix test on Android L and re-enable.
-#if defined(OS_ANDROID)
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_putImageData \
   DISABLED_IdentifiabilityStudyDigest_putImageData
 #else
@@ -639,7 +648,8 @@ TEST_F(CanvasRenderingContext2DAPITest,
 }
 
 // TODO(crbug.com/1239374): Fix test on Android L and re-enable.
-#if defined(OS_ANDROID)
+// TODO(crbug.com/1258605): Fix test on Windows and re-enable.
+#if defined(OS_ANDROID) || defined(OS_WIN)
 #define MAYBE_IdentifiabilityStudyDigest_drawImage \
   DISABLED_IdentifiabilityStudyDigest_drawImage
 #else
