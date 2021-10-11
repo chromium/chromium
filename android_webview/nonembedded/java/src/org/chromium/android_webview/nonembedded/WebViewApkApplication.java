@@ -46,6 +46,10 @@ public class WebViewApkApplication extends Application {
     private static final String TAG = "WebViewApkApp";
 
     // Called by the framework for ALL processes. Runs before ContentProviders are created.
+    //
+    // Logic here is specific for standalone WebView and trichrome but does not run by
+    // Monochrome. Common logic between all WebView flavours should be go into
+    // maybeInitProcessGlobals instead which is called by Monochrome too.
     // Quirk: context.getApplicationContext() returns null during this method.
     @Override
     protected void attachBaseContext(Context context) {
@@ -63,12 +67,6 @@ public class WebViewApkApplication extends Application {
         // MonochromeApplication has its own locale configuration already, so call this here
         // rather than in maybeInitProcessGlobals.
         ResourceBundle.setAvailablePakLocales(AwLocaleConfig.getWebViewSupportedPakLocales());
-
-        // Only register nonembedded SafeMode actions for webview_apk or webview_service processes.
-        if (isWebViewProcess()) {
-            SafeModeController controller = SafeModeController.getInstance();
-            controller.registerActions(NonembeddedSafeModeActionsList.sList);
-        }
     }
 
     @Override
@@ -94,6 +92,11 @@ public class WebViewApkApplication extends Application {
             UmaRecorderHolder.setUpNativeUmaRecorder(false);
 
             UmaRecorderHolder.setNonNativeDelegate(new AwNonembeddedUmaRecorder());
+
+            // Only register nonembedded SafeMode actions for webview_apk or webview_service
+            // processes.
+            SafeModeController controller = SafeModeController.getInstance();
+            controller.registerActions(NonembeddedSafeModeActionsList.sList);
         }
 
         // Limit to N+ since external services were added in N.
