@@ -188,7 +188,8 @@ public final class ProductionSupportedFlagList {
                     "Enables GetUserMedia API will only resolve when the document calling it has"
                             + "focus"),
             Flag.baseFeature(AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE,
-                    "Upload UMA metrics logs through MetricsUploadService not via GMS-core."),
+                    "Upload UMA metrics logs through MetricsUploadService not via GMS-core"
+                            + " directly."),
             Flag.baseFeature(AwFeatures.WEBVIEW_LOG_FIRST_PARTY_PAGE_TIME_SPENT,
                     "Enables logging whether it was a first party page when logging"
                             + " PageTimeSpent."),
