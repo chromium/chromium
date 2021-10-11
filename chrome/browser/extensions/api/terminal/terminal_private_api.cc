@@ -349,6 +349,7 @@ void TerminalPrivateOpenTerminalProcessFunction::OpenVmshellProcess(
   if (!base::StartsWith(cwd, kCwdTerminalIdPrefix)) {
     return OpenProcess(user_id_hash, std::move(cmdline));
   }
+  cmdline.RemoveSwitch(kSwitchCurrentWorkingDir);
 
   // The cwd has this format `terminal_id:<terminal_id>`. We need to convert the
   // terminal id to the pid of the shell process inside the container.
