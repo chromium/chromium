@@ -26,7 +26,7 @@ js_type_check("closure_compile_local") {
   deps = [
     ":fake_oobe",
     ":hd_iron_icon",
-    ":html-echo",
+    ":html_echo",
     ":long_touch_detector",
     ":oobe_i18n_dropdown",
     ":oobe_select",
@@ -45,6 +45,7 @@ group("closure_compile_module") {
     # Local targets
     ":display_manager_types.m",
     ":hd_iron_icon.m",
+    ":html_echo.m",
     ":long_touch_detector.m",
     ":network_select_login.m",
     ":oobe_a11y_option.m",
@@ -67,6 +68,7 @@ group("polymer3_elements") {
 
     # Local targets
     ":hd_iron_icon_module",
+    ":html_echo_module",
     ":long_touch_detector_module",
     ":network_select_login_module",
     ":oobe_a11y_option_module",
@@ -107,7 +109,7 @@ js_library("fake_oobe") {
 js_library("hd_iron_icon") {
 }
 
-js_library("html-echo") {
+js_library("html_echo") {
 }
 
 js_library("long_touch_detector") {
@@ -146,6 +148,14 @@ js_library("hd_iron_icon.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":hd_iron_icon_module" ]
+}
+
+js_library("html_echo.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/html_echo.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":html_echo_module" ]
 }
 
 js_library("long_touch_detector.m") {
@@ -209,6 +219,12 @@ js_library("web_view_loader.m") {
 polymer_modulizer("hd_iron_icon") {
   js_file = "hd_iron_icon.js"
   html_file = "hd_iron_icon.html"
+  html_type = "dom-module"
+}
+
+polymer_modulizer("html_echo") {
+  js_file = "html_echo.js"
+  html_file = "html_echo.html"
   html_type = "dom-module"
 }
 
