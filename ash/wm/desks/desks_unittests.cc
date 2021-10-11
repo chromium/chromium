@@ -6382,6 +6382,41 @@ TEST_F(PersistentDesksBarTest, UpdateBarStateOnPrefChanges) {
   EXPECT_FALSE(bar_controller->IsEnabled());
 }
 
+// Tests desks bar's position in overview and app window's position in
+// split view.
+TEST_F(PersistentDesksBarTest, SnappingWindowsInOverview) {
+  UpdateDisplay("800x600");
+  NewDesk();
+  std::unique_ptr<aura::Window> window1 =
+      CreateTestWindow(gfx::Rect(0, 0, 300, 300));
+  std::unique_ptr<aura::Window> window2 =
+      CreateTestWindow(gfx::Rect(0, 0, 300, 300));
+  EnterOverview();
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewSession* overview_session = overview_controller->overview_session();
+  OverviewGrid* overview_grid =
+      overview_session->GetGridWithRootWindow(Shell::GetPrimaryRootWindow());
+  OverviewItem* overview_item_1 =
+      overview_session->GetOverviewItemForWindow(window1.get());
+  OverviewItem* overview_item_2 =
+      overview_session->GetOverviewItemForWindow(window2.get());
+
+  // Test the desks bar is at the top of the display while trying to snap a
+  // window in overview mode.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  DragItemToPoint(overview_item_1, gfx::Point(0, 300), event_generator);
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_EQ(overview_grid->desks_widget()->GetNativeWindow()->bounds().y(), 0);
+
+  // Test windows are at the correct position after snapping.
+  DragItemToPoint(overview_item_2, gfx::Point(800, 300), event_generator);
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  const int bar_height = PersistentDesksBarController::kBarHeight;
+  EXPECT_EQ(window1->GetBoundsInScreen().y(), bar_height);
+  EXPECT_EQ(window2->GetBoundsInScreen().y(), bar_height);
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.
