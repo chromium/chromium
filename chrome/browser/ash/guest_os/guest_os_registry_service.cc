@@ -77,12 +77,14 @@ base::Value ProtoToDictionary(const App::LocaleString& locale_string) {
   return result;
 }
 
-std::set<std::string> ListToStringSet(const base::Value* list) {
+std::set<std::string> ListToStringSet(const base::Value* list,
+                                      bool to_lower_ascii = false) {
   std::set<std::string> result;
   if (!list)
     return result;
   for (const base::Value& value : list->GetList())
-    result.insert(value.GetString());
+    result.insert(to_lower_ascii ? base::ToLowerASCII(value.GetString())
+                                 : value.GetString());
   return result;
 }
 
@@ -407,15 +409,19 @@ std::string GuestOsRegistryService::Registration::ExecutableFileName() const {
 std::set<std::string> GuestOsRegistryService::Registration::Extensions() const {
   if (pref_.is_none())
     return {};
+  // Convert to lowercase ASCII to allow case-insensitive match.
   return ListToStringSet(pref_.FindKeyOfType(guest_os::prefs::kAppExtensionsKey,
-                                             base::Value::Type::LIST));
+                                             base::Value::Type::LIST),
+                         /*to_lower_ascii=*/true);
 }
 
 std::set<std::string> GuestOsRegistryService::Registration::MimeTypes() const {
   if (pref_.is_none())
     return {};
+  // TODO(crbug.com/1258348): It may make sense for mime types to ignore case.
   return ListToStringSet(pref_.FindKeyOfType(guest_os::prefs::kAppMimeTypesKey,
-                                             base::Value::Type::LIST));
+                                             base::Value::Type::LIST),
+                         /*to_lower_ascii=*/false);
 }
 
 std::set<std::string> GuestOsRegistryService::Registration::Keywords() const {
