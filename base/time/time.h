@@ -118,6 +118,24 @@ class BASE_EXPORT TimeDelta {
  public:
   constexpr TimeDelta() = default;
 
+  // Converts units of time to TimeDeltas.
+  // These conversions treat minimum argument values as min type values or -inf,
+  // and maximum ones as max type values or +inf; and their results will produce
+  // an is_min() or is_max() TimeDelta. WARNING: Floating point arithmetic is
+  // such that FromXXXD(t.InXXXF()) may not precisely equal |t|. Hence, floating
+  // point values should not be used for storage.
+  static constexpr TimeDelta FromDays(int64_t days);
+  static constexpr TimeDelta FromHours(int64_t hours);
+  static constexpr TimeDelta FromMinutes(int64_t minutes);
+  static constexpr TimeDelta FromSecondsD(double secs);
+  static constexpr TimeDelta FromSeconds(int64_t secs);
+  static constexpr TimeDelta FromMillisecondsD(double ms);
+  static constexpr TimeDelta FromMilliseconds(int64_t ms);
+  static constexpr TimeDelta FromMicrosecondsD(double us);
+  static constexpr TimeDelta FromMicroseconds(int64_t us);
+  static constexpr TimeDelta FromNanosecondsD(double ns);
+  static constexpr TimeDelta FromNanoseconds(int64_t ns);
+
 #if defined(OS_WIN)
   static TimeDelta FromQPCValue(LONGLONG qpc_value);
   // TODO(crbug.com/989694): Avoid base::TimeDelta factory functions
@@ -133,6 +151,9 @@ class BASE_EXPORT TimeDelta {
 #if defined(OS_MAC)
   static TimeDelta FromMachTime(uint64_t mach_time);
 #endif  // defined(OS_MAC)
+
+  // Converts a frequency in Hertz (cycles per second) into a period.
+  static constexpr TimeDelta FromHz(double frequency);
 
   // Converts an integer value representing TimeDelta to a class. This is used
   // when deserializing a |TimeDelta| structure, using a value known to be
@@ -918,6 +939,68 @@ template <typename T, time_internal::EnableIfFloat<T> = 0>
 constexpr TimeDelta Hertz(T n) {
   return TimeDelta::FromInternalValue(
       saturated_cast<int64_t>(Time::kMicrosecondsPerSecond / n));
+}
+
+// Deprecated TimeDelta conversion functions, to be replaced by the above.
+
+// static
+constexpr TimeDelta TimeDelta::FromDays(int64_t days) {
+  return Days(days);
+}
+
+// static
+constexpr TimeDelta TimeDelta::FromHours(int64_t hours) {
+  return Hours(hours);
+}
+
+// static
+constexpr TimeDelta TimeDelta::FromMinutes(int64_t minutes) {
+  return Minutes(minutes);
+}
+
+// static
+constexpr TimeDelta TimeDelta::FromSecondsD(double secs) {
+  return Seconds(secs);
+}
+
+// static
+constexpr TimeDelta TimeDelta::FromSeconds(int64_t secs) {
+  return Seconds(secs);
+}
+
+// static
+constexpr TimeDelta TimeDelta::FromMillisecondsD(double ms) {
+  return Milliseconds(ms);
+}
+
+// static
+constexpr TimeDelta TimeDelta::FromMilliseconds(int64_t ms) {
+  return Milliseconds(ms);
+}
+
+// static
+constexpr TimeDelta TimeDelta::FromMicrosecondsD(double us) {
+  return Microseconds(us);
+}
+
+// static
+constexpr TimeDelta TimeDelta::FromMicroseconds(int64_t us) {
+  return Microseconds(us);
+}
+
+// static
+constexpr TimeDelta TimeDelta::FromNanosecondsD(double ns) {
+  return Nanoseconds(ns);
+}
+
+// static
+constexpr TimeDelta TimeDelta::FromNanoseconds(int64_t ns) {
+  return Nanoseconds(ns);
+}
+
+// static
+constexpr TimeDelta TimeDelta::FromHz(double frequency) {
+  return Hertz(frequency);
 }
 
 // TimeDelta functions that must appear below the declarations of Time/TimeDelta
