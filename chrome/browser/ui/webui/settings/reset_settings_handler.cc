@@ -270,8 +270,7 @@ void ResetSettingsHandler::HandleGetTriggeredResetToolName(
   AllowJavascript();
 
   CHECK_EQ(1U, args->GetList().size());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
 
   // Set up the localized strings for the triggered profile reset dialog.
   // Custom reset tool names are supported on Windows only.
@@ -295,7 +294,7 @@ void ResetSettingsHandler::HandleGetTriggeredResetToolName(
   }
 
   base::Value string_value(reset_tool_name);
-  ResolveJavascriptCallback(*callback_id, string_value);
+  ResolveJavascriptCallback(callback_id, string_value);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

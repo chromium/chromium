@@ -130,10 +130,9 @@ void ManageProfileHandler::HandleGetAvailableIcons(
   profiles::UpdateGaiaProfileInfoIfNeeded(profile_);
 
   CHECK_EQ(1U, args->GetList().size());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
 
-  ResolveJavascriptCallback(*callback_id, base::Value(GetAvailableIcons()));
+  ResolveJavascriptCallback(callback_id, base::Value(GetAvailableIcons()));
 }
 
 std::vector<base::Value> ManageProfileHandler::GetAvailableIcons() {

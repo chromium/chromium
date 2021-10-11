@@ -373,8 +373,7 @@ void SafetyCheckHandler::HandlePerformSafetyCheck(const base::ListValue* args) {
 
 void SafetyCheckHandler::HandleGetParentRanDisplayString(
     const base::ListValue* args) {
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
 
   // Send updated timestamp-based display strings to all SC children who have
   // such strings.
@@ -393,7 +392,7 @@ void SafetyCheckHandler::HandleGetParentRanDisplayString(
 
   // String update for the parent.
   ResolveJavascriptCallback(
-      *callback_id,
+      callback_id,
       base::Value(GetStringForParentRan(safety_check_completion_time_)));
 }
 

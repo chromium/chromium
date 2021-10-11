@@ -145,7 +145,8 @@ void ParseConfigurationArguments(const base::ListValue* args,
                                  SyncConfigInfo* config,
                                  const base::Value** callback_id) {
   std::string json;
-  if (args->Get(0, callback_id) && args->GetString(1, &json) && !json.empty())
+  if ((*callback_id = &args->GetList()[0]) && args->GetString(1, &json) &&
+      !json.empty())
     CHECK(GetConfiguration(json, config));
   else
     NOTREACHED();
@@ -414,10 +415,9 @@ void PeopleHandler::HandleSetDatatypes(const base::ListValue* args) {
 void PeopleHandler::HandleGetStoredAccounts(const base::ListValue* args) {
   AllowJavascript();
   CHECK_EQ(1U, args->GetList().size());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
 
-  ResolveJavascriptCallback(*callback_id, GetStoredAccountsList());
+  ResolveJavascriptCallback(callback_id, GetStoredAccountsList());
 }
 
 void PeopleHandler::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
@@ -457,22 +457,20 @@ base::Value PeopleHandler::GetStoredAccountsList() {
 void PeopleHandler::HandleStartSyncingWithEmail(const base::ListValue* args) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_));
-  const base::Value* email;
-  const base::Value* is_default_promo_account;
-  CHECK(args->Get(0, &email));
-  CHECK(args->Get(1, &is_default_promo_account));
+  const base::Value& email = args->GetList()[0];
+  const base::Value& is_default_promo_account = args->GetList()[1];
 
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
 
   AccountInfo maybe_account =
       IdentityManagerFactory::GetForProfile(profile_)
-          ->FindExtendedAccountInfoByEmailAddress(email->GetString());
+          ->FindExtendedAccountInfoByEmailAddress(email.GetString());
 
   signin_ui_util::EnableSyncFromMultiAccountPromo(
       browser, maybe_account,
       signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
-      is_default_promo_account->GetBool());
+      is_default_promo_account.GetBool());
 #else
   // TODO(jamescook): Enable sync on non-DICE platforms (e.g. Chrome OS).
   NOTIMPLEMENTED();
@@ -685,10 +683,9 @@ void PeopleHandler::HandleGetSyncStatus(const base::ListValue* args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args->GetList().size());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
 
-  ResolveJavascriptCallback(*callback_id, *GetSyncStatusDictionary());
+  ResolveJavascriptCallback(callback_id, *GetSyncStatusDictionary());
 }
 
 void PeopleHandler::HandleSyncPrefsDispatch(const base::ListValue* args) {

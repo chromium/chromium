@@ -45,8 +45,7 @@ void LanguagesHandler::RegisterMessages() {
 
 void LanguagesHandler::HandleGetProspectiveUILanguage(
     const base::ListValue* args) {
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
 
   AllowJavascript();
 
@@ -61,7 +60,7 @@ void LanguagesHandler::HandleGetProspectiveUILanguage(
         language::prefs::kApplicationLocale);
   }
 
-  ResolveJavascriptCallback(*callback_id, base::Value(locale));
+  ResolveJavascriptCallback(callback_id, base::Value(locale));
 }
 
 void LanguagesHandler::HandleSetProspectiveUILanguage(

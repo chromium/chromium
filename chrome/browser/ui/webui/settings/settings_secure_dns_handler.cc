@@ -173,9 +173,8 @@ void SecureDnsHandler::HandleGetSecureDnsSetting(const base::ListValue* args) {
 
 void SecureDnsHandler::HandleParseCustomDnsEntry(const base::ListValue* args) {
   AllowJavascript();
-  const base::Value* callback_id;
+  const base::Value& callback_id = args->GetList()[0];
   std::string custom_entry;
-  CHECK(args->Get(0, &callback_id));
   CHECK(args->GetString(1, &custom_entry));
 
   // Return all templates in the entry, or none if they are not all valid.
@@ -186,7 +185,7 @@ void SecureDnsHandler::HandleParseCustomDnsEntry(const base::ListValue* args) {
     }
   }
   secure_dns::UpdateValidationHistogram(!templates.GetList().empty());
-  ResolveJavascriptCallback(*callback_id, templates);
+  ResolveJavascriptCallback(callback_id, templates);
 }
 
 void SecureDnsHandler::HandleProbeCustomDnsTemplate(

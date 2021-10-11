@@ -252,10 +252,9 @@ SearchEnginesHandler::CreateDictionaryForEngine(int index, bool is_default) {
 void SearchEnginesHandler::HandleGetSearchEnginesList(
     const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
   AllowJavascript();
-  ResolveJavascriptCallback(*callback_id, *GetSearchEnginesList());
+  ResolveJavascriptCallback(callback_id, *GetSearchEnginesList());
 }
 
 void SearchEnginesHandler::HandleSetDefaultSearchEngine(
@@ -339,14 +338,13 @@ void SearchEnginesHandler::HandleValidateSearchEngineInput(
     const base::ListValue* args) {
   CHECK_EQ(3U, args->GetList().size());
 
-  const base::Value* callback_id;
+  const base::Value& callback_id = args->GetList()[0];
   std::string field_name;
   std::string field_value;
-  CHECK(args->Get(0, &callback_id));
   CHECK(args->GetString(1, &field_name));
   CHECK(args->GetString(2, &field_value));
   ResolveJavascriptCallback(
-      *callback_id, base::Value(CheckFieldValidity(field_name, field_value)));
+      callback_id, base::Value(CheckFieldValidity(field_name, field_value)));
 }
 
 bool SearchEnginesHandler::CheckFieldValidity(const std::string& field_name,

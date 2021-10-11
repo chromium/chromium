@@ -730,8 +730,7 @@ void SiteSettingsHandler::HandleGetDefaultValueForContentType(
   AllowJavascript();
 
   CHECK_EQ(2U, args->GetList().size());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
   std::string type;
   CHECK(args->GetString(1, &type));
 
@@ -742,7 +741,7 @@ void SiteSettingsHandler::HandleGetDefaultValueForContentType(
 
   base::DictionaryValue category;
   site_settings::GetContentCategorySetting(map, content_type, &category);
-  ResolveJavascriptCallback(*callback_id, category);
+  ResolveJavascriptCallback(callback_id, category);
 }
 
 void SiteSettingsHandler::HandleGetAllSites(const base::ListValue* args) {
@@ -950,8 +949,7 @@ void SiteSettingsHandler::HandleGetExceptionList(const base::ListValue* args) {
   AllowJavascript();
 
   CHECK_EQ(2U, args->GetList().size());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
   std::string type;
   CHECK(args->GetString(1, &type));
   ContentSettingsType content_type =
@@ -979,7 +977,7 @@ void SiteSettingsHandler::HandleGetExceptionList(const base::ListValue* args) {
         /*incognito=*/true, exceptions.get());
   }
 
-  ResolveJavascriptCallback(*callback_id, *exceptions.get());
+  ResolveJavascriptCallback(callback_id, *exceptions.get());
 }
 
 void SiteSettingsHandler::HandleGetChooserExceptionList(
@@ -987,8 +985,7 @@ void SiteSettingsHandler::HandleGetChooserExceptionList(
   AllowJavascript();
 
   CHECK_EQ(2U, args->GetList().size());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
   std::string type;
   CHECK(args->GetString(1, &type));
   const site_settings::ChooserTypeNameEntry* chooser_type =
@@ -997,7 +994,7 @@ void SiteSettingsHandler::HandleGetChooserExceptionList(
 
   base::Value exceptions = site_settings::GetChooserExceptionListFromProfile(
       profile_, *chooser_type);
-  ResolveJavascriptCallback(*callback_id, std::move(exceptions));
+  ResolveJavascriptCallback(callback_id, std::move(exceptions));
 }
 
 void SiteSettingsHandler::HandleGetOriginPermissions(
@@ -1286,12 +1283,11 @@ void SiteSettingsHandler::HandleResetChooserExceptionForSite(
 void SiteSettingsHandler::HandleIsOriginValid(const base::ListValue* args) {
   AllowJavascript();
   CHECK_EQ(2U, args->GetList().size());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
   std::string origin_string;
   CHECK(args->GetString(1, &origin_string));
 
-  ResolveJavascriptCallback(*callback_id,
+  ResolveJavascriptCallback(callback_id,
                             base::Value(GURL(origin_string).is_valid()));
 }
 
@@ -1299,8 +1295,7 @@ void SiteSettingsHandler::HandleIsPatternValidForType(
     const base::ListValue* args) {
   AllowJavascript();
   CHECK_EQ(3U, args->GetList().size());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
   std::string pattern_string;
   CHECK(args->GetString(1, &pattern_string));
   std::string type;
@@ -1313,7 +1308,7 @@ void SiteSettingsHandler::HandleIsPatternValidForType(
   base::Value return_value(base::Value::Type::DICTIONARY);
   return_value.SetKey(kIsValidKey, base::Value(is_valid));
   return_value.SetKey(kReasonKey, base::Value(std::move(reason)));
-  ResolveJavascriptCallback(*callback_id, return_value);
+  ResolveJavascriptCallback(callback_id, return_value);
 }
 
 void SiteSettingsHandler::HandleUpdateIncognitoStatus(

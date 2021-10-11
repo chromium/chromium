@@ -57,10 +57,9 @@ void PrivacySandboxHandler::HandleGetFlocId(const base::ListValue* args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args->GetList().size());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
 
-  ResolveJavascriptCallback(*callback_id,
+  ResolveJavascriptCallback(callback_id,
                             GetFlocIdInformation(Profile::FromWebUI(web_ui())));
 }
 
