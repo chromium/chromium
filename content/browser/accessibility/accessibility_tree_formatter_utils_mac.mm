@@ -283,6 +283,13 @@ OptionalNSObject AttributeInvoker::InvokeForAXTextMarkerRange(
 OptionalNSObject AttributeInvoker::InvokeForArray(
     const id target,
     const AXPropertyNode& property_node) const {
+  if (property_node.name_or_value == "count") {
+    if (property_node.arguments.size()) {
+      LOG(ERROR) << "count attribute is called as a method";
+      return OptionalNSObject::Error();
+    }
+    return OptionalNSObject([NSNumber numberWithInt:[target count]]);
+  }
   if (!property_node.IsArray() || property_node.arguments.size() != 1) {
     LOG(ERROR) << "Array operator[] is expected, got: "
                << property_node.ToString();

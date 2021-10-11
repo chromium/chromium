@@ -516,6 +516,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Chain_Array_Count) {
+  TestScript(R"~~(data:text/html,
+                    <p id='p'><span>1</span><span>2</span><span>3</span></p>)~~",
+             {"p.AXChildren.count"},
+             R"~~(p.AXChildren.count=3
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_Chain_TextRange_Anchor) {
   TestScript(R"~~(data:text/html,
                     <p id='p'>Paragraph</p>)~~",
