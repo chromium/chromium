@@ -273,13 +273,14 @@ void ProximityAuthWebUIHandler::ToggleUnlockKey(const base::ListValue* args) {
   std::string public_key_b64, public_key;
   bool make_unlock_key;
   if (args->GetList().size() != 2 || !args->GetString(0, &public_key_b64) ||
-      !args->GetBoolean(1, &make_unlock_key) ||
+      !args->GetList()[1].is_bool() ||
       !base::Base64UrlDecode(public_key_b64,
                              base::Base64UrlDecodePolicy::REQUIRE_PADDING,
                              &public_key)) {
     PA_LOG(ERROR) << "Invalid arguments to toggleUnlockKey";
     return;
   }
+  make_unlock_key = args->GetList()[1].GetBool();
 
   device_sync_client_->SetSoftwareFeatureState(
       public_key, multidevice::SoftwareFeature::kSmartLockHost,

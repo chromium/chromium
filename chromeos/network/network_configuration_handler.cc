@@ -658,7 +658,8 @@ void NetworkConfigurationHandler::ClearPropertiesSuccessCallback(
 
   for (size_t i = 0; i < result.GetList().size(); ++i) {
     bool success = false;
-    result.GetBoolean(i, &success);
+    if (result.GetList()[i].is_bool())
+      success = result.GetList()[i].GetBool();
     if (!success) {
       // If a property was cleared that has never been set, the clear will fail.
       // We do not track which properties have been set, so just log the error.
