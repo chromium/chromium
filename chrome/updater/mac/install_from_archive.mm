@@ -25,6 +25,11 @@
 namespace updater {
 namespace {
 
+constexpr int kPermissionsMask = base::FILE_PERMISSION_USER_MASK |
+                                 base::FILE_PERMISSION_GROUP_MASK |
+                                 base::FILE_PERMISSION_READ_BY_OTHERS |
+                                 base::FILE_PERMISSION_EXECUTE_BY_OTHERS;
+
 bool RunHDIUtil(const std::vector<std::string>& args,
                 std::string* command_output) {
   base::FilePath hdiutil_path("/usr/bin/hdiutil");
@@ -103,40 +108,6 @@ bool IsInstallScriptExecutable(const base::FilePath& script_path) {
 
   constexpr int kExecutableMask = base::FILE_PERMISSION_EXECUTE_BY_USER;
   return (permissions & kExecutableMask) == kExecutableMask;
-}
-
-bool ConfirmFilePermissions(const base::FilePath& root_path) {
-  constexpr int kPermissionsMask = base::FILE_PERMISSION_USER_MASK |
-                                   base::FILE_PERMISSION_GROUP_MASK |
-                                   base::FILE_PERMISSION_READ_BY_OTHERS |
-                                   base::FILE_PERMISSION_EXECUTE_BY_OTHERS;
-
-  base::FileEnumerator file_enumerator(
-      root_path, false,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES |
-          base::FileEnumerator::SHOW_SYM_LINKS);
-
-  for (base::FilePath path = file_enumerator.Next(); !path.empty();
-       path = file_enumerator.Next()) {
-    if (!SetPosixFilePermissions(path, kPermissionsMask)) {
-      VLOG(0) << "Couldn't set file permissions for for: " << path.value();
-      return false;
-    }
-
-    base::File::Info file_info;
-    if (!base::GetFileInfo(path, &file_info)) {
-      VLOG(0) << "Couldn't get file info for: " << path.value();
-      return false;
-    }
-
-    // If file path is real directory and not a link, recurse into it.
-    if (file_info.is_directory && !base::IsLink(path)) {
-      if (!ConfirmFilePermissions(path))
-        return false;
-    }
-  }
-
-  return true;
 }
 
 int RunExecutable(const base::FilePath& mounted_dmg_path,
@@ -271,7 +242,7 @@ int InstallFromZip(const base::FilePath& zip_file_path,
     return static_cast<int>(InstallErrors::kFailedToExpandZip);
   }
 
-  if (!ConfirmFilePermissions(dest_path)) {
+  if (!ConfirmFilePermissions(dest_path, kPermissionsMask)) {
     return static_cast<int>(InstallErrors::kCouldNotConfirmAppPermissions);
   }
 
@@ -299,7 +270,7 @@ int InstallFromApp(const base::FilePath& app_file_path,
 
   // Need to make sure that the app at the path being installed has the correect
   // permissions.
-  if (!ConfirmFilePermissions(app_file_path)) {
+  if (!ConfirmFilePermissions(app_file_path, kPermissionsMask)) {
     return static_cast<int>(InstallErrors::kCouldNotConfirmAppPermissions);
   }
 

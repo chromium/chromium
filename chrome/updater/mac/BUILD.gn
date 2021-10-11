@@ -11,6 +11,7 @@ import("//chrome/updater/branding.gni")
 group("mac") {
   deps = [
     ":browser_install_script",
+    ":privileged_helper",
     ":updater_bundle",
     ":updater_install_script",
     "//chrome/updater/mac/signing",
@@ -46,6 +47,43 @@ mac_app_bundle("updater_bundle_test") {
     ":updater_bundle_helpers",
     "//chrome/updater:base",
     "//chrome/updater:constants_test",
+  ]
+}
+
+source_set("privileged_helper_sources") {
+  sources = [
+    "privileged_helper/server.h",
+    "privileged_helper/server.mm",
+    "privileged_helper/service.h",
+    "privileged_helper/service.mm",
+    "privileged_helper/service_protocol.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/updater:base",
+    "//chrome/updater:branding_header",
+    "//chrome/updater:constants_prod",
+  ]
+}
+
+executable("privileged_helper") {
+  output_name = privileged_helper_name
+
+  sources = [ "privileged_helper/main.mm" ]
+  deps = [
+    ":privileged_helper_sources",
+    "//base",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
+
+  inputs = [ "privileged_helper/Info.plist" ]
+  ldflags = [
+    "-sectcreate",
+    "__TEXT",
+    "__info_plist",
+    rebase_path(inputs[0], root_build_dir),
   ]
 }
 

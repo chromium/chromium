@@ -368,6 +368,8 @@ if (is_win || is_mac) {
       "CRASH_STAGING_UPLOAD_URL=\"$crash_staging_upload_url\"",
       "-e",
       "DEVICE_MANAGEMENT_SERVER_URL=\"$device_management_server_url\"",
+      "-e",
+      "PRIVILEGED_HELPER_NAME=\"$privileged_helper_name\"",
     ]
 
     template_file = "updater_branding.h.in"
@@ -556,6 +558,7 @@ if (is_win || is_mac) {
         "policy/mac/managed_preference_policy_manager_impl_unittest.mm",
         "policy/mac/managed_preference_policy_manager_unittest.cc",
         "test/integration_tests_mac.mm",
+        "util_mac_unittest.mm",
       ]
 
       deps += [
