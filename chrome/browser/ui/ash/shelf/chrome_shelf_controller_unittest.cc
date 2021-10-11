@@ -1296,7 +1296,11 @@ class V2App {
 class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
     : public ChromeShelfControllerTestBase {
  protected:
-  MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest() = default;
+  MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest() {
+    // Lacros does not support the ChromeOS Legacy multi profile feature.
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kLacrosSupport);
+  }
   MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest(
       const MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest&) =
       delete;
@@ -1413,6 +1417,7 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   ProfileToNameMap created_profiles_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class ChromeShelfControllerMultiProfileWithArcTest
