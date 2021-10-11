@@ -186,6 +186,11 @@ const char kEnableDiscoverFeedPreviewName[] = "Enable discover feed preview";
 const char kEnableDiscoverFeedPreviewDescription[] =
     "Enable showing a live preview for discover feed long-press menu.";
 
+const char kEnableDiscoverFeedShorterCacheName[] =
+    "Enable discover feed shorter cache";
+const char kEnableDiscoverFeedShorterCacheDescription[] =
+    "Enable more ghost cards by using a shorter cache.";
+
 const char kEnableDiscoverFeedStaticResourceServingName[] =
     "Enable discover feed static resource serving";
 const char kEnableDiscoverFeedStaticResourceServingDescription[] =

@@ -786,7 +786,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"credential-provider-extension-promo",
      flag_descriptions::kCredentialProviderExtensionPromoName,
      flag_descriptions::kCredentialProviderExtensionPromoDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kCredentialProviderExtensionPromo)}};
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kCredentialProviderExtensionPromo)},
+    {"enable-discover-feed-shorter-cache",
+     flag_descriptions::kEnableDiscoverFeedShorterCacheName,
+     flag_descriptions::kEnableDiscoverFeedShorterCacheDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableDiscoverFeedShorterCache)},
+};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

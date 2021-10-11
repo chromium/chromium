@@ -11,6 +11,9 @@
 // the feed context menu.
 extern const base::Feature kEnableDiscoverFeedPreview;
 
+// Feature flag to enable shorter cache so that more ghost cards appear.
+extern const base::Feature kEnableDiscoverFeedShorterCache;
+
 // Feature flag to enable improving the usage of memory of the NTP.
 extern const base::Feature kEnableNTPMemoryEnhancement;
 
@@ -36,5 +39,8 @@ bool IsDiscoverFeedPreviewEnabled();
 
 // Whether the discover feed appflows are enabled.
 bool IsDiscoverFeedAppFlowsEnabled();
+
+// Whether the discover feed shorter cache is enabled.
+bool IsDiscoverFeedShorterCacheEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_FEATURE_H_
