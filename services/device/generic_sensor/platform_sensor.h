@@ -105,10 +105,6 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   // Note: this method is thread-safe.
   void UpdateSharedBufferAndNotifyClients(const SensorReading& reading);
 
-  // Updates shared buffer with provided SensorReading
-  // Note: this method is thread-safe.
-  void UpdateSharedBuffer(const SensorReading& reading);
-
   void NotifySensorReadingChanged();
   void NotifySensorError();
 
@@ -125,6 +121,10 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
 
  private:
   friend class base::RefCountedThreadSafe<PlatformSensor>;
+
+  // Updates shared buffer with provided SensorReading
+  // Note: this method is thread-safe.
+  void UpdateSharedBuffer(const SensorReading& reading);
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
