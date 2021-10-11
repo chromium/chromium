@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.PendingIntent;
+import android.content.Context;
 import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
@@ -95,6 +96,22 @@ public class PriceDropNotifierUnitTest {
         }
     }
 
+    static class TestPriceDropNotifier extends PriceDropNotifier {
+        private final ImageFetcher mMockImageFetcher;
+
+        TestPriceDropNotifier(Context context, ImageFetcher imageFetcher,
+                NotificationWrapperBuilder notificationBuilder,
+                NotificationManagerProxy notificationManager) {
+            super(context, notificationBuilder, notificationManager);
+            mMockImageFetcher = imageFetcher;
+        }
+
+        @Override
+        protected ImageFetcher getImageFetcher() {
+            return mMockImageFetcher;
+        }
+    }
+
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -120,7 +137,7 @@ public class PriceDropNotifierUnitTest {
     @Before
     public void setUp() {
         ShadowLog.stream = System.out;
-        mPriceDropNotifier = new PriceDropNotifier(ContextUtils.getApplicationContext(),
+        mPriceDropNotifier = new TestPriceDropNotifier(ContextUtils.getApplicationContext(),
                 mImageFetcher, mNotificationBuilder, mNotificationManagerProxy);
         ChromeBrowserInitializer.setForTesting(mChromeInitializer);
         when(mNotificationBuilder.buildNotificationWrapper()).thenReturn(mNotificationWrapper);
