@@ -318,13 +318,13 @@ bool ImageTransportSurfaceOverlayMacBase<BaseClass>::ScheduleOverlayPlane(
       gfx::RRectF(),  // rounded_corner_bounds
       0,              // sorting_context_id
       gfx::Transform(), image,
-      overlay_plane_data.crop_rect,      // contents_rect
-      overlay_plane_data.damage_rect,    // rect
-      SK_ColorTRANSPARENT,               // background_color
-      0,                                 // edge_aa_mask
-      1.f,                               // opacity
-      GL_LINEAR,                         // filter
-      gfx::ProtectedVideoType::kClear);  // protected_video_type
+      overlay_plane_data.crop_rect,       // contents_rect
+      overlay_plane_data.display_bounds,  // rect
+      SK_ColorTRANSPARENT,                // background_color
+      0,                                  // edge_aa_mask
+      1.f,                                // opacity
+      GL_LINEAR,                          // filter
+      gfx::ProtectedVideoType::kClear);   // protected_video_type
   return ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
       ->ScheduleCALayer(overlay_as_calayer_params);
 }
