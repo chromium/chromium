@@ -68,7 +68,6 @@ class SpellCheckerSessionBridge {
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   bool java_object_initialization_failed_;
-  bool active_session_;
 };
 
 #endif  // COMPONENTS_SPELLCHECK_BROWSER_SPELLCHECKER_SESSION_BRIDGE_ANDROID_H_

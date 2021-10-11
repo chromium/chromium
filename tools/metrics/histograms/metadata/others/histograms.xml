@@ -16338,6 +16338,10 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Spellcheck.Android.Available" enum="BooleanAvailable"
     expires_after="2021-10-10">
+  <obsolete>
+    Removed 2021/10: This histogram was added as part of an investigation that
+    has been completed.
+  </obsolete>
   <owner>timvolodine@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
