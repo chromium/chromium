@@ -29,8 +29,7 @@ namespace {
 bool ShouldAssignToCustomSlot(const Node& node) {
   DCHECK(!IsA<HTMLDetailsElement>(node.parentElement()));
   DCHECK(!IsA<HTMLSelectElement>(node.parentElement()));
-  if (IsA<HTMLOptGroupElement>(node.parentElement()))
-    return HTMLOptGroupElement::CanAssignToOptGroupSlot(node);
+  DCHECK(!IsA<HTMLOptGroupElement>(node.parentElement()));
   return false;
 }
 }  // anonymous namespace

@@ -47,8 +47,9 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
   String GroupLabelText() const;
   HTMLDivElement& OptGroupLabelElement() const;
 
-  // Used for slot assignment.
-  static bool CanAssignToOptGroupSlot(const Node&);
+  void ManuallyAssignSlots() override;
+
+  void Trace(Visitor*) const override;
 
  private:
   bool SupportsFocus() const override;
@@ -62,6 +63,8 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
   void RemovedFrom(ContainerNode&) override;
 
   void UpdateGroupLabel();
+
+  Member<HTMLSlotElement> opt_group_slot_;
 };
 
 }  // namespace blink
