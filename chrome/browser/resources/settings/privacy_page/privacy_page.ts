@@ -25,6 +25,7 @@ import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {BaseMixin} from '../base_mixin.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -51,8 +52,8 @@ interface SiteDataDetailsSubpageElement extends HTMLElement {
 }
 
 const SettingsPrivacyPageElementBase =
-    RouteObserverMixin(
-        WebUIListenerMixin(I18nMixin(PrefsMixin(PolymerElement)))) as {
+    RouteObserverMixin(WebUIListenerMixin(
+        I18nMixin(PrefsMixin(BaseMixin(PolymerElement))))) as {
       new ():
           PolymerElement & I18nMixinInterface & WebUIListenerMixinInterface &
       PrefsMixinInterface & RouteObserverMixinInterface

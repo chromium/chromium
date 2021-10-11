@@ -33,6 +33,7 @@ import {getImage} from 'chrome://resources/js/icon.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {BaseMixin} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {PageVisibility} from '../page_visibility.js';
@@ -55,7 +56,7 @@ interface SettingsPeoplePageElement {
 }
 
 const SettingsPeoplePageElementBase =
-    RouteObserverMixin(WebUIListenerMixin(PolymerElement)) as {
+    RouteObserverMixin(WebUIListenerMixin(BaseMixin(PolymerElement))) as {
       new (): PolymerElement & WebUIListenerMixinInterface &
       RouteObserverMixinInterface
     };

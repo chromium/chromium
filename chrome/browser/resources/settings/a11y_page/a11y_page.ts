@@ -25,6 +25,7 @@ import './live_caption_section.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {BaseMixin} from '../base_mixin.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
@@ -34,7 +35,8 @@ import {Router} from '../router.js';
 import {CaptionsBrowserProxyImpl} from './captions_browser_proxy.js';
 // </if>
 
-const SettingsA11YPageElementBase = WebUIListenerMixin(PolymerElement);
+const SettingsA11YPageElementBase =
+    WebUIListenerMixin(BaseMixin(PolymerElement));
 
 class SettingsA11YPageElement extends SettingsA11YPageElementBase {
   static get is() {
