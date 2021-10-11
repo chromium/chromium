@@ -93,15 +93,6 @@ source_set("web_applications") {
     "web_app_file_handler_registration.h",
     "web_app_helpers.cc",
     "web_app_helpers.h",
-
-    # TODO(nigeltao): move these two files from
-    # //chrome/browser/web_applications to a stand-alone
-    # //components/web_app_icon_downloader?
-    #
-    # There's //components/image_fetcher as well as code split between
-    # //content/public/browser/manifest_icon_downloader.h and
-    # //content/browser/manfest/manifest_icon_downloader.cc. Some or all of
-    # those might be similar enough to merge.
     "web_app_icon_downloader.cc",
     "web_app_icon_downloader.h",
     "web_app_icon_generator.cc",

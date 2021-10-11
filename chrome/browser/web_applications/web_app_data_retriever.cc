@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "components/webapps/browser/installable/installable_data.h"
@@ -196,12 +197,15 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
            is_installable);
 }
 
-void WebAppDataRetriever::OnIconsDownloaded(bool success, IconsMap icons_map) {
+void WebAppDataRetriever::OnIconsDownloaded(IconsDownloadedResult result,
+                                            IconsMap icons_map) {
   if (ShouldStopRetrieval())
     return;
 
   Observe(nullptr);
   icon_downloader_.reset();
+
+  // TODO(crbug.com/1238622): Report `IconsDownloadedResult`to the callback.
   std::move(get_icons_callback_).Run(std::move(icons_map));
 }
 

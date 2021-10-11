@@ -24,16 +24,19 @@ struct InstallableData;
 }
 
 namespace web_app {
-enum class AppIdentityUpdate;
-struct IconDiff;
 
 class WebAppIconManager;
-class WebAppRegistrar;
-class WebAppUiManager;
 class WebAppInstallManager;
-class OsIntegrationManager;
+class WebAppRegistrar;
 class WebAppSyncBridge;
+class WebAppUiManager;
+class OsIntegrationManager;
+
+enum class AppIdentityUpdate;
+enum class IconsDownloadedResult;
 enum class InstallResultCode;
+
+struct IconDiff;
 
 // This enum is recorded by UMA, the numeric values must not change.
 enum ManifestUpdateResult {
@@ -115,7 +118,7 @@ class ManifestUpdateTask final
   void OnDidGetInstallableData(const webapps::InstallableData& data);
   bool IsUpdateNeededForManifest() const;
   void LoadAndCheckIconContents();
-  void OnIconsDownloaded(bool success, IconsMap icons_map);
+  void OnIconsDownloaded(IconsDownloadedResult result, IconsMap icons_map);
   void OnAllIconsRead(IconsMap downloaded_icons_map,
                       IconBitmaps disk_icon_bitmaps);
   void OnPostAppIdentityUpdateCheck(

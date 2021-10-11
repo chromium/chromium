@@ -342,10 +342,11 @@ void ManifestUpdateTask::LoadAndCheckIconContents() {
   icon_downloader_->Start();
 }
 
-void ManifestUpdateTask::OnIconsDownloaded(bool success, IconsMap icons_map) {
+void ManifestUpdateTask::OnIconsDownloaded(IconsDownloadedResult result,
+                                           IconsMap icons_map) {
   DCHECK_EQ(stage_, Stage::kPendingIconDownload);
 
-  if (!success) {
+  if (result != IconsDownloadedResult::kCompleted) {
     DestroySelf(ManifestUpdateResult::kIconDownloadFailed);
     return;
   }

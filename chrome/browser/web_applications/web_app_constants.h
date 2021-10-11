@@ -278,6 +278,14 @@ enum class FileHandlerUpdateAction {
 
 using LaunchHandler = blink::Manifest::LaunchHandler;
 
+// A result how `WebAppIconDownloader` processed the list of icon urls.
+enum class IconsDownloadedResult {
+  // Icon downloading requests fulfilled.
+  kCompleted,
+  // All icon downloading requests cancelled.
+  kCancelled,
+};
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_CONSTANTS_H_

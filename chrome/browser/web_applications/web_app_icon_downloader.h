@@ -24,6 +24,8 @@ class Size;
 
 namespace web_app {
 
+enum class IconsDownloadedResult;
+
 // Class to help download all icons (including favicons and web app manifest
 // icons) for a tab.
 class WebAppIconDownloader : public content::WebContentsObserver {
@@ -35,7 +37,8 @@ class WebAppIconDownloader : public content::WebContentsObserver {
   };
 
   using WebAppIconDownloaderCallback =
-      base::OnceCallback<void(bool success, IconsMap icons_map)>;
+      base::OnceCallback<void(IconsDownloadedResult result,
+                              IconsMap icons_map)>;
 
   // |extra_favicon_urls| allows callers to provide icon urls that aren't
   // provided by the renderer (e.g touch icons on non-android environments).
