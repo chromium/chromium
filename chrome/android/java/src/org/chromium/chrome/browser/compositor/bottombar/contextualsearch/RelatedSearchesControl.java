@@ -148,6 +148,11 @@ public class RelatedSearchesControl {
         return !mIsVisible || mControlView == null ? 0f : mHeightPx;
     }
 
+    /** Returns the maximum height of the control. */
+    float getMaximumHeightPx() {
+        return mContentHeightPx;
+    }
+
     /**
      * Returns the amount of padding that is redundant between the Related Searches carousel that is
      * shown in the Bar with the content above it. The content above has its own padding that

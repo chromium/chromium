@@ -597,16 +597,21 @@ public class ContextualSearchBarControl {
     /** Returns the maximum height of the Related Searches UI that we show right in the Bar. */
     private float getInBarRelatedSearchesMaximumHeight() {
         float currentRelatedSearchesMaxHeight =
-                mContextualSearchPanel.getRelatedSearchesMaximumHeightDps();
+                mContextualSearchPanel.getInBarRelatedSearchesMaximumHeightDps();
         return currentRelatedSearchesMaxHeight > 0f
                 ? currentRelatedSearchesMaxHeight
                 : mInBarRelatedSearchesMaxHeightForShrinkAnimation;
     }
 
-    /** Caches the current Related Searches max height so we can use it when animating them away. */
+    /**
+     * Caches the current Related Searches max height so we can use it when shrinking the Bar to
+     * animate the carousel away.
+     * The caller needs to call this when an expanding animation has reached its maximum height, but
+     * may call it repeatedly as long as the Bar keeps growing.
+     */
     private void cacheMaxHeightForShrinkAnimation() {
         mInBarRelatedSearchesMaxHeightForShrinkAnimation =
-                mContextualSearchPanel.getRelatedSearchesMaximumHeightDps();
+                mContextualSearchPanel.getInBarRelatedSearchesMaximumHeightDps();
     }
 
     /** Clears the Related Searches max height used for animating them away. */

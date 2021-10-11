@@ -190,6 +190,19 @@ public class ContextualSearchManagerTest {
     private static final String LOW_PRIORITY_INVALID_SEARCH_ENDPOINT = "/s/invalid";
     private static final String CONTEXTUAL_SEARCH_PREFETCH_PARAM = "&pf=c";
 
+    // DOM element IDs in our test page based on what functions they trigger.
+    // TODO(donnd): add more, and also the associated Search Term, or build a similar mapping.
+    /**
+     * The DOM node for the word "search" on the test page, which causes a plain search response
+     * with the Search Term "Search" from the Fake server.
+     */
+    private static final String SIMPLE_SEARCH_NODE_ID = "search";
+    /**
+     * The DOM node for the word "intelligence" on the test page, which causes a search response
+     * for the Search Term "Intelligence" and also includes Related Searches suggestions.
+     */
+    private static final String RELATED_SEARCHES_NODE_ID = "intelligence";
+
     /**
      * Feature maps that we use for parameterized tests.
      */
@@ -4072,6 +4085,37 @@ public class ContextualSearchManagerTest {
         // Close the panel
         closePanel();
         // TODO(donnd): Validate UMA metrics once we log in-bar selections.
+    }
+
+    /**
+     * Tests that the offset of the SERP is unaffected by whether we are showing Related Searches
+     * in the Bar or not. See https://crbug.com/1250546.
+     * @throws Exception
+     */
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    public void testRelatedSearchesInBarSerpOffset() throws Exception {
+        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
+        mFakeServer.reset();
+        simulateResolveSearch(SIMPLE_SEARCH_NODE_ID);
+        float plainSearchBarHeight = mPanel.getBarHeight();
+        float plainSearchContentY = mPanel.getContentY();
+        closePanel();
+
+        // Bring up a panel with Related Searches in order to expand the Bar
+        simulateResolveSearch(RELATED_SEARCHES_NODE_ID);
+        // Wait for the animation to start growing the Bar.
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    mPanel.getInBarRelatedSearchesAnimatedHeightDps(), Matchers.greaterThan(0f));
+        });
+        // We should have a taller Bar, but that should not affect the Y offset of the content.
+        Assert.assertNotEquals(
+                "Test code failure - unable to open panels with differing Bar heights!",
+                plainSearchBarHeight, mPanel.getBarHeight(), 0.1f);
+        Assert.assertEquals("SERP content offsets with and without Related Searches should match!",
+                plainSearchContentY, mPanel.getContentY(), 0.1f);
     }
 
     @Test
