@@ -669,7 +669,7 @@ void AmbientBackendControllerImpl::FetchPersonalAlbumsInternal(
   BackdropClientConfig::Request request =
       backdrop_client_config_.CreateFetchPersonalAlbumsRequest(
           banner_width, banner_height, num_albums, resume_token, gaia_id,
-          access_token);
+          access_token, features::IsAmbientModeNewUrlEnabled());
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateResourceRequest(request);
   auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
