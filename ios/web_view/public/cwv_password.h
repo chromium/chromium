@@ -17,6 +17,7 @@ CWV_EXPORT
 
 // Display friendly title for this object.
 @property(nonatomic, copy, readonly) NSString* title;
+
 // The url for which this password can be used in its login form.
 @property(nonatomic, copy, readonly) NSString* site;
 

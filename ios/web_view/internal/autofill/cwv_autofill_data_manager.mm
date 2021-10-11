@@ -8,9 +8,11 @@
 
 #include "base/bind.h"
 #include "base/notreached.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_impl.h"
@@ -21,6 +23,8 @@
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
 #import "ios/web_view/public/cwv_autofill_data_manager_observer.h"
+#import "ios/web_view/public/cwv_credential_provider_extension_utils.h"
+#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -265,6 +269,22 @@ class WebViewPasswordStoreObserver
 
 - (void)deletePassword:(CWVPassword*)password {
   _passwordStore->RemoveLogin(*[password internalPasswordForm]);
+}
+
+- (void)addNewPasswordForUsername:(NSString*)username
+                serviceIdentifier:(NSString*)serviceIdentifier
+               keychainIdentifier:(NSString*)keychainIdentifier {
+  password_manager::PasswordForm form;
+
+  GURL url(base::SysNSStringToUTF8(serviceIdentifier));
+  DCHECK(url.is_valid());
+
+  form.url = password_manager_util::StripAuthAndParams(url);
+  form.signon_realm = form.url.GetOrigin().spec();
+  form.username_value = base::SysNSStringToUTF16(username);
+  form.encrypted_password = base::SysNSStringToUTF8(keychainIdentifier);
+
+  _passwordStore->AddLogin(form);
 }
 
 #pragma mark - Private Methods

@@ -12,6 +12,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 // Utils for implementing the iOS credential provider extension.
+// The credential provider extension is usually resource constrained, and so
+// should limit API usage to those defined in this class.
 CWV_EXPORT
 @interface CWVCredentialProviderExtensionUtils : NSObject
 
