@@ -54,8 +54,8 @@
                 "mojo_core.dll.pdb",
                 "notification_helper.exe.pdb",
                 "setup.exe.pdb",
-                "swiftshader/libEGL.dll.pdb",
-                "swiftshader/libGLESv2.dll.pdb",
+                "swiftshader\\libEGL.dll.pdb",
+                "swiftshader\\libGLESv2.dll.pdb",
                 "vk_swiftshader.dll.pdb",
                 "vulkan-1.dll.pdb"
             ],
@@ -94,7 +94,7 @@
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
-            "dirs": ["gen/third_party/devtools-frontend/src/front_end"],
+            "dirs": ["gen\\third_party\\devtools-frontend\\src\\front_end"],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Win_x64/{%position%}/devtools-frontend.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
