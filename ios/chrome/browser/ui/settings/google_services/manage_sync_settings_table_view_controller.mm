@@ -165,9 +165,8 @@
 - (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
   EnterpriseInfoPopoverViewController* bubbleViewController =
       [[EnterpriseInfoPopoverViewController alloc]
-          initWithMessage:
-              l10n_util::GetNSString(
-                  IDS_IOS_ENTERPRISE_MANAGED_SETTING_SYNC_EVERYTHING_MESSAGE)
+          initWithMessage:l10n_util::GetNSString(
+                              IDS_IOS_ENTERPRISE_MANAGED_SYNC)
            enterpriseName:nil];
   [self presentViewController:bubbleViewController animated:YES completion:nil];
 

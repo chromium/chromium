@@ -1910,6 +1910,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_ENTERPRISE_MANAGED_SETTING_SYNC_EVERYTHING_MESSAGE" desc="Text displayed to inform the user that the setting 'sync everything' is managed by an Enterprise policy. [iOS only]">
         Your organization doesn't allow for you to sync everything.
       </message>
+      <message name="IDS_IOS_ENTERPRISE_MANAGED_SYNC" desc="Text displayed to inform the user that syncable types are limited (i.e. managed). [iOS only]">
+        Your organization limits what you can sync.
+      </message>
       <message name="IDS_IOS_ENTERPRISE_MANAGED_SYNC_DETAILS" desc="Text displayed to inform the user that syncable types are limited (i.e. managed). Includes a details link. [iOS only]">
         Your organization limits what you can sync. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Details<ph name="END_LINK">END_LINK</ph>
       </message>
