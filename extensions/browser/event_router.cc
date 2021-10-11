@@ -110,9 +110,26 @@ void NotifyEventDispatched(content::BrowserContext* browser_context,
 
 LazyContextId LazyContextIdForBrowserContext(BrowserContext* browser_context,
                                              const EventListener* listener) {
-  if (listener->is_for_service_worker())
+  auto* registry = ExtensionRegistry::Get(browser_context);
+  DCHECK(registry);
+
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(listener->extension_id());
+  const bool is_service_worker_based_extension =
+      extension && BackgroundInfo::IsServiceWorkerBased(extension);
+  // Note: It is possible that the prefs' listener->is_for_service_worker() and
+  // its extension background type do not agree. This happens when one changes
+  // extension's manifest, typically during unpacked extension development.
+  // Fallback to non-Service worker based LazyContextId to avoid surprising
+  // ServiceWorkerTaskQueue (and crashing), see https://crbug.com/1239752 for
+  // details.
+  // TODO(lazyboy): Clean these inconsistencies across different types of event
+  // listener and their corresponding background types.
+  if (is_service_worker_based_extension && listener->is_for_service_worker()) {
     return LazyContextId(browser_context, listener->extension_id(),
                          listener->listener_url());
+  }
+
   return LazyContextId(browser_context, listener->extension_id());
 }
 
