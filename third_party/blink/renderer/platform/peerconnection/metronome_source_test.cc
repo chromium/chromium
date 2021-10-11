@@ -23,7 +23,8 @@ class MetronomeSourceTest : public ::testing::Test {
       : task_environment_(
             base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        metronome_source_(base::MakeRefCounted<MetronomeSource>()) {}
+        metronome_source_(
+            base::MakeRefCounted<MetronomeSource>(kMetronomeTick)) {}
 
  protected:
   base::test::TaskEnvironment task_environment_;

@@ -20,6 +20,17 @@
 
 namespace blink {
 
+const base::Feature kWebRtcMetronomeTaskQueue{
+    "WebRtcMetronomeTaskQueue", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<base::TimeDelta> kWebRtcMetronomeTaskQueueTick{
+    &kWebRtcMetronomeTaskQueue, "tick",
+    // 64 Hz default value for the WebRtcMetronomeTaskQueue experiment.
+    base::Hertz(64)};
+
+const base::FeatureParam<bool> kWebRtcMetronomeTaskQueueExcludePacer{
+    &kWebRtcMetronomeTaskQueue, "exclude_pacer", /*default_value=*/true};
+
 namespace {
 
 class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
@@ -172,13 +183,14 @@ class WebrtcMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
   explicit WebrtcMetronomeTaskQueueFactory(
       scoped_refptr<MetronomeSource> metronome_source)
       : metronome_source_(std::move(metronome_source)),
-        high_priority_task_queue_factory_(CreateWebRtcTaskQueueFactory()) {}
+        high_priority_task_queue_factory_(CreateWebRtcTaskQueueFactory()),
+        exclude_pacer_(kWebRtcMetronomeTaskQueueExcludePacer.Get()) {}
 
   std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
   CreateTaskQueue(absl::string_view name, Priority priority) const override {
-    if (priority == webrtc::TaskQueueFactory::Priority::HIGH) {
-      return high_priority_task_queue_factory_->CreateTaskQueue(
-          name, webrtc::TaskQueueFactory::Priority::HIGH);
+    if ((priority == webrtc::TaskQueueFactory::Priority::HIGH) ||
+        (exclude_pacer_ && name.compare("TaskQueuePacedSender") == 0)) {
+      return high_priority_task_queue_factory_->CreateTaskQueue(name, priority);
     }
     return std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>(
         new WebRtcMetronomeTaskQueue(metronome_source_));
@@ -190,6 +202,7 @@ class WebrtcMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
   // the metronome, i.e. at higher timer precision.
   const std::unique_ptr<webrtc::TaskQueueFactory>
       high_priority_task_queue_factory_;
+  const bool exclude_pacer_;
 };
 
 }  // namespace

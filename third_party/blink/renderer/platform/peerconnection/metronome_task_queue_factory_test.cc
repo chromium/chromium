@@ -29,7 +29,8 @@ constexpr base::TimeDelta kMetronomeTick = base::Hertz(64);
 class TestMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
  public:
   TestMetronomeTaskQueueFactory()
-      : metronome_source_(base::MakeRefCounted<blink::MetronomeSource>()),
+      : metronome_source_(
+            base::MakeRefCounted<blink::MetronomeSource>(kMetronomeTick)),
         factory_(CreateWebRtcMetronomeTaskQueueFactory(metronome_source_)) {}
 
   std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
@@ -56,7 +57,8 @@ class MetronomeTaskQueueFactoryTest : public ::testing::Test {
       : task_environment_(
             base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        metronome_source_(base::MakeRefCounted<MetronomeSource>()),
+        metronome_source_(
+            base::MakeRefCounted<MetronomeSource>(kMetronomeTick)),
         task_queue_factory_(
             CreateWebRtcMetronomeTaskQueueFactory(metronome_source_)) {}
 

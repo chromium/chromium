@@ -20,7 +20,7 @@
 
 namespace blink {
 
-// The MetronomeSource posts tasks every 15.625 ms (64 Hz) to its listeners.
+// The MetronomeSource posts tasks every metronome tick to its listeners.
 // When coelescing a large number of wakeup sources onto the metronome this can
 // greatly reduce the number of Idle Wake Ups, but it must be used with caution:
 // when initiating a MetronomeSource we pay the wakeup cost up-front, regardless
@@ -73,7 +73,7 @@ class RTC_EXPORT MetronomeSource final
     base::TimeTicks wakeup_time_ GUARDED_BY(wakeup_time_lock_);
   };
 
-  MetronomeSource();
+  explicit MetronomeSource(base::TimeDelta metronome_tick);
   MetronomeSource(const MetronomeSource&) = delete;
   MetronomeSource& operator=(const MetronomeSource&) = delete;
 

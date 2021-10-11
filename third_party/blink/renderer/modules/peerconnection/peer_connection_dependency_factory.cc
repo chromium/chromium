@@ -68,6 +68,7 @@
 #include "third_party/webrtc/rtc_base/openssl_stream_adapter.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "third_party/webrtc/rtc_base/ssl_adapter.h"
+#include "third_party/webrtc_overrides/metronome_task_queue_factory.h"
 #include "third_party/webrtc_overrides/task_queue_factory.h"
 
 namespace WTF {
@@ -437,6 +438,12 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
   worker_thread_started_event.Wait();
   CHECK(!GetChromeWorkerThread() || GetWorkerThread());
 
+  if (!metronome_source_ &&
+      base::FeatureList::IsEnabled(kWebRtcMetronomeTaskQueue)) {
+    metronome_source_ = base::MakeRefCounted<MetronomeSource>(
+        kWebRtcMetronomeTaskQueueTick.Get());
+  }
+
   base::WaitableEvent start_signaling_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
@@ -538,7 +545,10 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
       GetWorkerThread() ? GetWorkerThread() : GetSignalingThread();
   pcf_deps.signaling_thread = GetSignalingThread();
   pcf_deps.network_thread = GetNetworkThread();
-  pcf_deps.task_queue_factory = CreateWebRtcTaskQueueFactory();
+  pcf_deps.task_queue_factory =
+      !metronome_source_
+          ? CreateWebRtcTaskQueueFactory()
+          : CreateWebRtcMetronomeTaskQueueFactory(metronome_source_);
   pcf_deps.call_factory = webrtc::CreateCallFactory();
   pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>(
       pcf_deps.task_queue_factory.get());
@@ -568,31 +578,72 @@ bool PeerConnectionDependencyFactory::PeerConnectionFactoryCreated() {
   return !!pc_factory_;
 }
 
+void PeerConnectionDependencyFactory::AddUseMetronomeSourceListener(
+    UseMetronomeSourceListener* use_metronome_source_listener) {
+  use_metronome_source_listeners_.push_back(use_metronome_source_listener);
+  if (open_peer_connections_ && metronome_source_) {
+    use_metronome_source_listener->OnCanUseMetronome(metronome_source_);
+  }
+}
+
+void PeerConnectionDependencyFactory::RemoveUseMetronomeSourceListener(
+    UseMetronomeSourceListener* use_metronome_source_listener) {
+  wtf_size_t pos =
+      use_metronome_source_listeners_.Find(use_metronome_source_listener);
+  DCHECK(pos != kNotFound);
+  use_metronome_source_listeners_.EraseAt(pos);
+}
+
 scoped_refptr<webrtc::PeerConnectionInterface>
 PeerConnectionDependencyFactory::CreatePeerConnection(
     const webrtc::PeerConnectionInterface::RTCConfiguration& config,
     blink::WebLocalFrame* web_frame,
     webrtc::PeerConnectionObserver* observer,
     ExceptionState& exception_state) {
-  CHECK(web_frame);
   CHECK(observer);
   if (!GetPcFactory().get())
     return nullptr;
 
-  rtc::SetAllowLegacyTLSProtocols(
-      web_frame->Client()->AllowRTCLegacyTLSProtocols());
   webrtc::PeerConnectionDependencies dependencies(observer);
-  dependencies.allocator = CreatePortAllocator(web_frame);
+  // |web_frame| may be null in tests, e.g. if
+  // RTCPeerConnectionHandler::InitializeForTest() is used.
+  if (web_frame) {
+    rtc::SetAllowLegacyTLSProtocols(
+        web_frame->Client()->AllowRTCLegacyTLSProtocols());
+    dependencies.allocator = CreatePortAllocator(web_frame);
+  }
   dependencies.async_resolver_factory = CreateAsyncResolverFactory();
   auto pc_or_error = GetPcFactory()->CreatePeerConnectionOrError(
       config, std::move(dependencies));
   if (pc_or_error.ok()) {
+    ++open_peer_connections_;
+    if (open_peer_connections_ == 1u && metronome_source_) {
+      for (auto* use_metronome_source_listener :
+           use_metronome_source_listeners_) {
+        use_metronome_source_listener->OnCanUseMetronome(metronome_source_);
+      }
+    }
     // Convert from rtc::scoped_refptr to scoped_refptr
     return pc_or_error.value().get();
   } else {
     // Convert error
     ThrowExceptionFromRTCError(pc_or_error.error(), exception_state);
     return nullptr;
+  }
+}
+
+size_t PeerConnectionDependencyFactory::open_peer_connections() const {
+  return open_peer_connections_;
+}
+
+void PeerConnectionDependencyFactory::OnPeerConnectionClosed() {
+  DCHECK(open_peer_connections_);
+  --open_peer_connections_;
+  if (!open_peer_connections_ && metronome_source_) {
+    for (auto* use_metronome_source_listener :
+         use_metronome_source_listeners_) {
+      use_metronome_source_listener->OnStopUsingMetronome(metronome_source_);
+    }
   }
 }
 
