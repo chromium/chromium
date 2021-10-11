@@ -298,6 +298,9 @@ extern const base::FeatureParam<bool>
     kHappinessTrackingSurveysForDesktopSettingsPrivacyNoSandbox;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kHappinessTrackingSurveysForDesktopPrivacyReview;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kHappinessTrackingSurveysForDesktopNtpModules;
 
 COMPONENT_EXPORT(CHROME_FEATURES)

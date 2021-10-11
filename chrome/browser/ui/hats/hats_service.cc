@@ -33,20 +33,21 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/network_change_notifier.h"
 
-constexpr char kHatsSurveyTriggerTesting[] = "testing";
+constexpr char kHatsSurveyTriggerAccuracyTips[] = "accuracy-tips";
+constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
+constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
+constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
+constexpr char kHatsSurveyTriggerNtpModules[] = "ntp-modules";
+constexpr char kHatsSurveyTriggerPrivacyReview[] = "privacy-review";
 constexpr char kHatsSurveyTriggerPrivacySandbox[] = "privacy-sandbox";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
-constexpr char kHatsSurveyTriggerNtpModules[] = "ntp-modules";
+constexpr char kHatsSurveyTriggerTesting[] = "testing";
 constexpr char kHatsSurveyTriggerTrustSafetyPrivacySettings[] =
     "ts-privacy-settings";
 constexpr char kHatsSurveyTriggerTrustSafetyTrustedSurface[] =
     "ts-trusted-surface";
 constexpr char kHatsSurveyTriggerTrustSafetyTransactions[] = "ts-transactions";
-constexpr char kHatsSurveyTriggerAccuracyTips[] = "accuracy-tips";
-constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
-constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
-constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
 
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "HLpeYy5Av0ugnJ3q1cK0XzzA8UHv";
@@ -134,6 +135,9 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
       /*presupplied_trigger_id=*/absl::nullopt,
       std::vector<std::string>{"3P cookies blocked",
                                "Privacy Sandbox enabled"});
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForDesktopPrivacyReview,
+      kHatsSurveyTriggerPrivacyReview);
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopPrivacySandbox,
       kHatsSurveyTriggerPrivacySandbox,
