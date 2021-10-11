@@ -788,6 +788,8 @@ public final class ChromePreferenceKeys {
     public static final String OPEN_NEW_TAB_PAGE_COUNT = "Chrome.StartSurface.OpenNewTabPageCount";
     public static final String OPEN_HISTORY_COUNT = "Chrome.StartSurface.OpenHistoryCount";
     public static final String OPEN_RECENT_TABS_COUNT = "Chrome.StartSurface.OpenRecentTabCount";
+    public static final String SHOW_START_SEGMENTATION_RESULT =
+            "Chrome.StartSurface.ShowSegmentationResult";
 
     /**
      * Contains a trial group that was used to determine whether the reached code profiler should be
@@ -1123,6 +1125,7 @@ public final class ChromePreferenceKeys {
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SHARING_LAST_SHARED_COMPONENT_NAME,
+                SHOW_START_SEGMENTATION_RESULT,
                 SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP,
                 SIGNIN_PROMO_SHOW_COUNT.pattern(),
                 SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME,

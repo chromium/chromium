@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -48,12 +50,16 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.optimization_guide.proto.ModelsProto.OptimizationTarget;
+import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
@@ -65,6 +71,8 @@ public final class ReturnToChromeExperimentsUtil {
     @VisibleForTesting
     public static final long INVALID_DECISION_TIMESTAMP = -1L;
     public static final long MILLISECONDS_PER_DAY = TimeUtils.SECONDS_PER_DAY * 1000;
+
+    private static final String START_SEGMENTATION_PLATFORM_KEY = "chrome_start_android";
 
     /** An inner class to monitor the state of a newly create Tab. */
     private static class TabStateObserver implements UrlFocusChangeListener {
@@ -552,28 +560,72 @@ public final class ReturnToChromeExperimentsUtil {
             return false;
         }
 
+        boolean previousResult = SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.START_SHOW_ON_STARTUP, false);
         // Returns the current decision before the next decision timestamp.
         if (System.currentTimeMillis() < nextDecisionTimestamp) {
-            return SharedPreferencesManager.getInstance().readBoolean(
-                    ChromePreferenceKeys.START_SHOW_ON_STARTUP, false);
+            return previousResult;
         }
 
-        // Shows the start surface st startup for a period of time If the user has clicked the UI;
-        // otherwise, hides it.
-        boolean showStartOnStartup = false;
+        // Shows the start surface st startup for a period of time if the behaviour tests return
+        // positive, otherwise, hides it.
+        String behaviourType = StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.getValue();
+        // The behaviour type strings can contain
+        // 1. A feature name, in which case the prefs with the click counts are used to make
+        //    decision.
+        // 2. Just "all", in which case the threshold is applied to any of the feature usage.
+        // 3. Prefixed: "model_<feature>", in which case we still use the click count prefs for
+        //    making decision, but also record a comparison histogram with result from segmentation
+        //    platform.
+        // 4. Just "model", in which case we do not use click count prefs and instead just use the
+        //    result from segmentation.
+        boolean shouldAskModel = behaviourType.startsWith("model");
+        boolean shouldUseCodeResult = !behaviourType.equals("model");
+        String key = getBehaviourType(behaviourType);
+        boolean resetAllCounts = false;
         int threshold = StartSurfaceConfiguration.USER_CLICK_THRESHOLD.getValue();
-        if (TextUtils.equals("all", StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.getValue())) {
-            showStartOnStartup =
-                    manager.readInt(ChromePreferenceKeys.TAP_MV_TILES_COUNT) >= threshold
-                    || manager.readInt(ChromePreferenceKeys.TAP_FEED_CARDS_COUNT) >= threshold
-                    || manager.readInt(ChromePreferenceKeys.OPEN_NEW_TAB_PAGE_COUNT) >= threshold
-                    || manager.readInt(ChromePreferenceKeys.OPEN_RECENT_TABS_COUNT) >= threshold
-                    || manager.readInt(ChromePreferenceKeys.OPEN_HISTORY_COUNT) >= threshold;
+
+        boolean resultFromCode = false;
+        boolean resultFromModel = false;
+
+        if (shouldUseCodeResult) {
+            if (TextUtils.equals(
+                        "all", StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.getValue())) {
+                resultFromCode =
+                        manager.readInt(ChromePreferenceKeys.TAP_MV_TILES_COUNT) >= threshold
+                        || manager.readInt(ChromePreferenceKeys.TAP_FEED_CARDS_COUNT) >= threshold
+                        || manager.readInt(ChromePreferenceKeys.OPEN_NEW_TAB_PAGE_COUNT)
+                                >= threshold
+                        || manager.readInt(ChromePreferenceKeys.OPEN_RECENT_TABS_COUNT) >= threshold
+                        || manager.readInt(ChromePreferenceKeys.OPEN_HISTORY_COUNT) >= threshold;
+                resetAllCounts = true;
+            } else {
+                assert key != null;
+                int clicks = manager.readInt(key, 0);
+                resultFromCode = clicks >= threshold;
+            }
+        }
+        if (shouldAskModel) {
+            // When segmentation is not ready with results yet, use the result from click count
+            // prefs. If we do not have that too, then we do not want to switch the current behavior
+            // frequently, so use the existing setting to show start or not.
+            boolean defaultResult = shouldUseCodeResult ? resultFromCode : previousResult;
+            resultFromModel = getBehaviourResultFromSegmentation(defaultResult);
+            if (shouldUseCodeResult) {
+                // Record a comparison between segmentation and hard coded logic when code result
+                // should be used.
+                recordSegmentationResultComparison(resultFromCode);
+            } else {
+                // Clear all the prefs state, the result does not matter in this case.
+                resetAllCounts = true;
+            }
+        }
+
+        boolean showStartOnStartup = shouldUseCodeResult ? resultFromCode : resultFromModel;
+        if (resetAllCounts) {
             resetTargetBehaviourAndNextDecisionTimeForAllCounts(showStartOnStartup);
         } else {
-            String key =
-                    getBehaviourType(StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.getValue());
-            showStartOnStartup = manager.readInt(key, 0) >= threshold;
+            assert key != null;
             resetTargetBehaviourAndNextDecisionTime(showStartOnStartup, key);
         }
         return showStartOnStartup;
@@ -586,16 +638,22 @@ public final class ReturnToChromeExperimentsUtil {
     private static @Nullable String getBehaviourType(String behaviourType) {
         switch (behaviourType) {
             case "mv_tiles":
+            case "model_mv_tiles":
                 return ChromePreferenceKeys.TAP_MV_TILES_COUNT;
             case "feeds":
+            case "model_feeds":
                 return ChromePreferenceKeys.TAP_FEED_CARDS_COUNT;
             case "open_new_tab":
+            case "model_open_new_tab":
                 return ChromePreferenceKeys.OPEN_NEW_TAB_PAGE_COUNT;
             case "open_history":
+            case "model_open_history":
                 return ChromePreferenceKeys.OPEN_HISTORY_COUNT;
             case "open_recent_tabs":
+            case "model_open_recent_tabs":
                 return ChromePreferenceKeys.OPEN_RECENT_TABS_COUNT;
             default:
+                // Valid when the type is "model" when the decision is made by segmentation model.
                 return null;
         }
     }
@@ -639,6 +697,115 @@ public final class ReturnToChromeExperimentsUtil {
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.OPEN_RECENT_TABS_COUNT);
         SharedPreferencesManager.getInstance().removeKey(ChromePreferenceKeys.OPEN_HISTORY_COUNT);
+    }
+
+    // Constants with ShowChromeStartSegmentationResult in enums.xml.
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({ShowChromeStartSegmentationResult.UNINITIALIZED,
+            ShowChromeStartSegmentationResult.DONT_SHOW, ShowChromeStartSegmentationResult.SHOW})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ShowChromeStartSegmentationResult {
+        int UNINITIALIZED = 0;
+        int DONT_SHOW = 1;
+        int SHOW = 2;
+        int NUM_ENTRIES = 3;
+    }
+
+    /*
+     * Computes result of the segmentation platform and store to prefs.
+     */
+    public static void cacheSegmentationResult() {
+        SegmentationPlatformService segmentationPlatformService =
+                SegmentationPlatformServiceFactory.getForProfile(
+                        Profile.getLastUsedRegularProfile());
+        segmentationPlatformService.getSelectedSegment(START_SEGMENTATION_PLATFORM_KEY, result -> {
+            @ShowChromeStartSegmentationResult
+            int resultEnum;
+            if (!result.isReady) {
+                resultEnum = ShowChromeStartSegmentationResult.UNINITIALIZED;
+            } else if (result.selectedSegment
+                    == OptimizationTarget.OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID) {
+                resultEnum = ShowChromeStartSegmentationResult.SHOW;
+            } else {
+                resultEnum = ShowChromeStartSegmentationResult.DONT_SHOW;
+            }
+            SharedPreferencesManager.getInstance().writeInt(
+                    ChromePreferenceKeys.SHOW_START_SEGMENTATION_RESULT, resultEnum);
+        });
+    }
+
+    /**
+     * Returns whether to show Start surface based on segmentation result. When unavailable, returns
+     * default value given.
+     */
+    private static boolean getBehaviourResultFromSegmentation(boolean defaultResult) {
+        @ShowChromeStartSegmentationResult
+        int resultEnum = SharedPreferencesManager.getInstance().readInt(
+                ChromePreferenceKeys.SHOW_START_SEGMENTATION_RESULT);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Startup.Android.ShowChromeStartSegmentationResult", resultEnum,
+                ShowChromeStartSegmentationResult.NUM_ENTRIES);
+        switch (resultEnum) {
+            case ShowChromeStartSegmentationResult.DONT_SHOW:
+                return false;
+            case ShowChromeStartSegmentationResult.SHOW:
+                return true;
+
+            case ShowChromeStartSegmentationResult.UNINITIALIZED:
+            default:
+                return defaultResult;
+        }
+    }
+
+    // Constants with ShowChromeStartSegmentationResultComparison in enums.xml.
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({ShowChromeStartSegmentationResultComparison.UNINITIALIZED,
+            ShowChromeStartSegmentationResultComparison.SEGMENTATION_ENABLED_LOGIC_ENABLED,
+            ShowChromeStartSegmentationResultComparison.SEGMENTATION_ENABLED_LOGIC_DISABLED,
+            ShowChromeStartSegmentationResultComparison.SEGMENTATION_DISABLED_LOGIC_ENABLED,
+            ShowChromeStartSegmentationResultComparison.SEGMENTATION_DISABLED_LOGIC_DISABLED})
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting
+    public @interface ShowChromeStartSegmentationResultComparison {
+        int UNINITIALIZED = 0;
+        int SEGMENTATION_ENABLED_LOGIC_ENABLED = 1;
+        int SEGMENTATION_ENABLED_LOGIC_DISABLED = 2;
+        int SEGMENTATION_DISABLED_LOGIC_ENABLED = 3;
+        int SEGMENTATION_DISABLED_LOGIC_DISABLED = 4;
+        int NUM_ENTRIES = 5;
+    }
+
+    /*
+     * Records UMA to compare the result of segmentation platform with hard coded logics.
+     */
+    private static void recordSegmentationResultComparison(boolean existingResult) {
+        @ShowChromeStartSegmentationResult
+        int segmentationResult = SharedPreferencesManager.getInstance().readInt(
+                ChromePreferenceKeys.SHOW_START_SEGMENTATION_RESULT);
+        @ShowChromeStartSegmentationResultComparison
+        int comparison = ShowChromeStartSegmentationResultComparison.UNINITIALIZED;
+        switch (segmentationResult) {
+            case ShowChromeStartSegmentationResult.UNINITIALIZED:
+                comparison = ShowChromeStartSegmentationResultComparison.UNINITIALIZED;
+                break;
+            case ShowChromeStartSegmentationResult.SHOW:
+                comparison = existingResult ? ShowChromeStartSegmentationResultComparison
+                                                      .SEGMENTATION_ENABLED_LOGIC_ENABLED
+                                            : ShowChromeStartSegmentationResultComparison
+                                                      .SEGMENTATION_ENABLED_LOGIC_DISABLED;
+                break;
+            case ShowChromeStartSegmentationResult.DONT_SHOW:
+                comparison = existingResult ? ShowChromeStartSegmentationResultComparison
+                                                      .SEGMENTATION_DISABLED_LOGIC_ENABLED
+                                            : ShowChromeStartSegmentationResultComparison
+                                                      .SEGMENTATION_DISABLED_LOGIC_DISABLED;
+                break;
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                "Startup.Android.ShowChromeStartSegmentationResultComparison", comparison,
+                ShowChromeStartSegmentationResultComparison.NUM_ENTRIES);
     }
 
     /**
