@@ -157,6 +157,7 @@ static_library("renderer") {
     "//chrome/common/performance_manager/mojom",
     "//chrome/common/search:mojo_bindings",
     "//components/autofill/content/renderer",
+    "//components/autofill_assistant/content/renderer",
     "//components/base32",
     "//components/cdm/renderer",
     "//components/content_capture/common",

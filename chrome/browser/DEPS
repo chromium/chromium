@@ -44,6 +44,8 @@ include_rules = [
   "+components/account_manager_core",
   "+components/assist_ranker",
   "+components/autofill_assistant/browser",
+  "+components/autofill_assistant/content/browser",
+  "+components/autofill_assistant/content/common",
   "+components/autofill/content/browser",
   "+components/autofill/content/common",
   "+components/autofill/core/browser",

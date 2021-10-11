@@ -1,0 +1,18 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("renderer") {
+  sources = [
+    "autofill_assistant_agent.cc",
+    "autofill_assistant_agent.h",
+  ]
+
+  deps = [
+    "//components/autofill_assistant/content/common:mojo_interfaces",
+    "//content/public/common:common",
+    "//content/public/renderer:renderer",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public/common",
+  ]
+}

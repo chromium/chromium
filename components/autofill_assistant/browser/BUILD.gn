@@ -295,6 +295,7 @@ static_library("browser") {
     "//components/autofill/core/common",
     "//components/autofill_assistant/browser/devtools",
     "//components/autofill_assistant/browser/public:public",
+    "//components/autofill_assistant/content/browser",
     "//components/google/core/common:common",
     "//components/keyed_service/core",
     "//components/password_manager/content/browser:browser",
