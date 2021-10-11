@@ -47,7 +47,8 @@ import './os_search_result_row.js';
 import {recordSettingChange, recordSearch, setUserActionRecorderForTesting, recordPageFocus, recordPageBlur, recordClick, recordNavigation} from '../metrics_recorder.m.js';
 import {getSearchHandler, setSearchHandlerForTesting} from '../search_handler.m.js';
 import '../../settings_shared_css.js';
-import {Router, Route, RouteObserverBehavior} from '../../router.js';
+import {Router, Route} from '../../router.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
 import {routes} from '../os_route.m.js';
 
 Polymer({

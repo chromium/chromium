@@ -121,6 +121,7 @@ js_library("input_method_util.m") {
   deps = [
     ":input_method_settings",
     "..:os_route.m",
+    "..:route_observer_behavior",
     "../..:router",
     "//ui/webui/resources/js:cr.m",
   ]
@@ -150,6 +151,7 @@ js_library("input_page.m") {
     ":os_edit_dictionary_page.m",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
+    "..:route_observer_behavior",
     "../..:i18n_setup",
     "../..:router",
     "../keyboard_shortcut_banner:keyboard_shortcut_banner",
@@ -204,6 +206,7 @@ js_library("os_languages_page_v2.m") {
     "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
+    "..:route_observer_behavior",
     "../..:i18n_setup",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -243,6 +246,7 @@ js_library("smart_inputs_page.m") {
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "..:prefs_behavior",
+    "..:route_observer_behavior",
     "../..:router",
     "//ui/webui/resources/js:load_time_data.m",
   ]

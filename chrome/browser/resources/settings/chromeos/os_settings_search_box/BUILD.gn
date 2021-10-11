@@ -19,6 +19,7 @@ js_library("os_search_result_row") {
   deps = [
     "..:os_icons.m",
     "..:os_route.m",
+    "..:route_observer_behavior",
     "..:search_handler.m",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
@@ -35,6 +36,7 @@ js_library("os_settings_search_box") {
     ":os_search_result_row",
     "..:metrics_recorder.m",
     "..:os_route.m",
+    "..:route_observer_behavior",
     "..:search_handler.m",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",

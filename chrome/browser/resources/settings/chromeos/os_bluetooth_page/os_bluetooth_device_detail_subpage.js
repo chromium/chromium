@@ -20,8 +20,9 @@ import {getBatteryPercentage, getDeviceName} from 'chrome://resources/cr_compone
 import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
-import {Route, RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../../router.js';
+import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 const mojom = chromeos.bluetoothConfig.mojom;
 

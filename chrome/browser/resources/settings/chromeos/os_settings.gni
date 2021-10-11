@@ -192,7 +192,6 @@ settings_auto_imports = [
   "chrome/browser/resources/settings/i18n_setup.html|loadTimeData",
   "chrome/browser/resources/settings/chromeos/prefs_behavior.html|PrefsBehavior",
   "chrome/browser/resources/settings/prefs/prefs_types.html|CrSettingsPrefs",
-  "chrome/browser/resources/settings/router.html|Router,Route,RouteObserverBehavior",
 ]
 
 os_settings_auto_imports = settings_auto_imports +
@@ -236,6 +235,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "chrome/browser/resources/settings/chromeos/personalization_page/wallpaper_browser_proxy.html|WallpaperBrowserProxy,WallpaperBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/parental_controls_page/parental_controls_browser_proxy.html|ParentalControlsBrowserProxy,ParentalControlsBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/route_origin_behavior.html|RouteOriginBehaviorImpl,RouteOriginBehavior",
+                             "chrome/browser/resources/settings/chromeos/route_observer_behavior.html|RouteObserverBehavior",
                              "chrome/browser/resources/settings/controls/settings_dropdown_menu.html|DropdownMenuOptionList",
                              "chrome/browser/resources/settings/chromeos/global_scroll_target_behavior.html|GlobalScrollTargetBehavior,setGlobalScrollTarget",
                              "chrome/browser/resources/settings/chromeos/os_languages_page/languages_browser_proxy.html|LanguagesBrowserProxy,LanguagesBrowserProxyImpl",
@@ -244,7 +244,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "chrome/browser/resources/settings/people_page/profile_info_browser_proxy.html|ProfileInfoBrowserProxyImpl,ProfileInfoBrowserProxy,ProfileInfo",
                              "chrome/browser/resources/settings/people_page/sync_browser_proxy.html|SyncBrowserProxyImpl,SyncBrowserProxy,StatusAction,SyncStatus,SyncPrefs",
                              "chrome/browser/resources/settings/route.html|routes",
-                             "chrome/browser/resources/settings/router.html|Router,Route,RouteObserverBehavior",
+                             "chrome/browser/resources/settings/router.html|Router,Route",
                              "chrome/browser/resources/settings/chromeos/os_search_page/search_engines_browser_proxy.html|SearchEngine,SearchEnginesBrowserProxy,SearchEnginesBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/os_printing_page/cups_printers_browser_proxy.html|CupsPrintersBrowserProxy,CupsPrintersBrowserProxyImpl,CupsPrinterInfo,PrinterSetupResult,CupsPrintersList,PrinterPpdMakeModel,ManufacturersInfo,ModelsInfo,PrintServerResult,PrinterMakeModel",
                              "chrome/browser/resources/settings/chromeos/os_printing_page/cups_printers_entry_list_behavior.html|CupsPrintersEntryListBehavior",
@@ -480,6 +480,7 @@ os_settings_migrated_imports = cr_components_migrated_imports + [
                                  "chrome/browser/resources/settings/chromeos/os_settings_search_box/os_search_result_row.html",
                                  "chrome/browser/resources/settings/chromeos/personalization_page/change_picture_browser_proxy.html",
                                  "chrome/browser/resources/settings/chromeos/personalization_page/wallpaper_browser_proxy.html",
+                                 "chrome/browser/resources/settings/chromeos/route_observer_behavior.html",
                                  "chrome/browser/resources/settings/chromeos/settings_scheduler_slider/settings_scheduler_slider.html",
                                  "chrome/browser/resources/settings/chromeos/keyboard_shortcut_banner/keyboard_shortcut_banner.html",
                                  "chrome/browser/resources/settings/controls/controlled_button.html",

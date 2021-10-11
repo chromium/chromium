@@ -411,40 +411,6 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
     return RouteObserverMixin;
   });
 
-  /** @polymerBehavior */
-  export const RouteObserverBehavior = {
-    /** @override */
-    attached() {
-      routerInstance.addObserver(this);
-
-      // Emulating Polymer data bindings, the observer is called when the
-      // element starts observing the route.
-      this.currentRouteChanged(routerInstance.currentRoute, undefined);
-    },
-
-    /** @override */
-    detached() {
-      routerInstance.removeObserver(this);
-    },
-
-    /**
-     * @param {!Route} newRoute
-     * @param {!Route=} opt_oldRoute
-     */
-    currentRouteChanged(newRoute, opt_oldRoute) {
-      assertNotReached();
-    },
-  };
-
-  /** @interface */
-  export class RouteObserverBehaviorInterface {
-    /**
-     * @param {!Route} newRoute
-     * @param {!Route=} opt_oldRoute
-     */
-    currentRouteChanged(newRoute, opt_oldRoute) {}
-  }
-
   /** @interface */
   export class RouteObserverMixinInterface {
     /**

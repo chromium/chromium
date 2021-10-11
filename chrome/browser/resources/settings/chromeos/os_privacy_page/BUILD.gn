@@ -21,6 +21,7 @@ js_library("os_privacy_page") {
     ":peripheral_data_access_protection_dialog",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
+    "..:route_observer_behavior",
     "../..:router",
     "../os_people_page:lock_screen.m",
     "../os_people_page:lock_state_behavior.m",

@@ -16,6 +16,7 @@ js_library("os_settings_main") {
   deps = [
     "..:os_page_visibility.m",
     "..:os_route.m",
+    "..:route_observer_behavior",
     "../..:router",
     "../os_settings_page:os_settings_page",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

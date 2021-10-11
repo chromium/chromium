@@ -25,6 +25,7 @@ js_library("change_picture.m") {
     "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
+    "..:route_observer_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
@@ -52,6 +53,7 @@ js_library("dark_mode_subpage.m") {
   deps = [
     "..:os_route.m",
     "..:prefs_behavior",
+    "..:route_observer_behavior",
     "../..:router",
     "//ui/webui/resources/js:load_time_data",
   ]
@@ -64,6 +66,7 @@ js_library("personalization_page.m") {
     ":wallpaper_browser_proxy",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
+    "..:route_observer_behavior",
     "../..:router",
     "../ambient_mode_page:ambient_mode_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

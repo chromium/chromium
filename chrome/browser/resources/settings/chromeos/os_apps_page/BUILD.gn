@@ -26,6 +26,7 @@ js_library("android_apps_subpage") {
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "..:prefs_behavior",
+    "..:route_observer_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",

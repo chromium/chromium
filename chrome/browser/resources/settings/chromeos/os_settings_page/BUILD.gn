@@ -22,6 +22,7 @@ js_library("os_settings_page") {
     ":settings_idle_load",
     "..:os_page_visibility.m",
     "..:os_route.m",
+    "..:route_observer_behavior",
     "../..:router",
     "../bluetooth_page:bluetooth_page",
     "../crostini_page:crostini_page",

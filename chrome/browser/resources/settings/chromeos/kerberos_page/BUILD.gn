@@ -23,6 +23,7 @@ js_library("kerberos_accounts") {
     "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
+    "..:route_observer_behavior",
     "../..:router",
     "../../people_page:account_manager_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -58,6 +59,7 @@ js_library("kerberos_add_account_dialog") {
 js_library("kerberos_page") {
   deps = [
     "..:os_route.m",
+    "..:route_observer_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",

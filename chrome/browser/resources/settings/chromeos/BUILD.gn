@@ -279,6 +279,7 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/personalization_page/wallpaper_browser_proxy.js",
     "chromeos/prefs_behavior.js",
     "chromeos/os_privacy_page/peripheral_data_access_browser_proxy.js",
+    "chromeos/route_observer_behavior.js",
     "people_page/account_manager_browser_proxy.js",
     "people_page/profile_info_browser_proxy.js",
     "chromeos/ambient_mode_page/ambient_mode_browser_proxy.js",
@@ -586,6 +587,7 @@ group("closure_compile_module") {
     "os_apps_page/app_management_page:closure_compile_module",
     "os_apps_page/app_management_page/borealis_page:closure_compile_module",
     "os_apps_page/app_management_page/plugin_vm_page:closure_compile_module",
+    "os_apps_page/app_notifications_page:closure_compile",
     "os_bluetooth_page:closure_compile_module",
     "os_files_page:closure_compile_module",
     "os_languages_page:closure_compile_module",
@@ -621,6 +623,7 @@ js_type_check("closure_compile_local_module") {
     ":os_settings_routes.m",
     ":pref_to_setting_metric_converter.m",
     ":prefs_behavior",
+    ":route_observer_behavior",
     ":route_origin_behavior.m",
     ":search_handler.m",
   ]
@@ -646,6 +649,7 @@ js_library("deep_linking_behavior.m") {
 
 js_library("global_scroll_target_behavior") {
   deps = [
+    ":route_observer_behavior",
     "..:router",
     "//ui/webui/resources/js:promise_resolver.m",
   ]
@@ -710,6 +714,13 @@ js_library("pref_to_setting_metric_converter.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/pref_to_setting_metric_converter.m.js" ]
   deps = [ "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js_library_for_compile" ]
   extra_deps = [ ":modulize" ]
+}
+
+js_library("route_observer_behavior") {
+  deps = [
+    "..:router",
+    "//ui/webui/resources/js:assert.m",
+  ]
 }
 
 js_library("route_origin_behavior.m") {

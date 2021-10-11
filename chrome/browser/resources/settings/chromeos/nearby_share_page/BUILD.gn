@@ -134,6 +134,7 @@ js_library("nearby_share_subpage.m") {
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "..:prefs_behavior",
+    "..:route_observer_behavior",
     "../..:router",
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page.m",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
