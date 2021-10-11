@@ -9,10 +9,12 @@
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/files/file_path.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -29,18 +31,32 @@ constexpr gfx::Size kSettingsSize{256, 248};
 
 constexpr gfx::RoundedCornersF kBorderRadius{10.f};
 
-// All the options in the CaptureMode settings view.
-enum CaptureSettingsOption {
-  kAudioOff = 0,
-  kAudioMicrophone,
-  kDownloadsFolder,
-  kCustomFolder,
-};
+// Returns the bounds of the settings widget in screen coordinates relative to
+// the bounds of the |capture_mode_bar_view| based on its given preferred
+// |settings_view_size|.
+gfx::Rect GetWidgetBounds(CaptureModeBarView* capture_mode_bar_view,
+                          const gfx::Size& settings_view_size) {
+  DCHECK(capture_mode_bar_view);
+
+  return gfx::Rect(
+      capture_mode_bar_view->settings_button()->GetBoundsInScreen().right() -
+          kSettingsSize.width(),
+      capture_mode_bar_view->GetBoundsInScreen().y() -
+          capture_mode::kSpaceBetweenCaptureBarAndSettingsMenu -
+          settings_view_size.height(),
+      kSettingsSize.width(), settings_view_size.height());
+}
+
+CaptureModeController::CaptureFolder GetCurrentCaptureFolder() {
+  return CaptureModeController::Get()->GetCurrentCaptureFolder();
+}
 
 }  // namespace
 
-CaptureModeAdvancedSettingsView::CaptureModeAdvancedSettingsView()
-    : audio_input_menu_group_(
+CaptureModeAdvancedSettingsView::CaptureModeAdvancedSettingsView(
+    CaptureModeSession* session)
+    : capture_mode_session_(session),
+      audio_input_menu_group_(
           AddChildView(std::make_unique<CaptureModeMenuGroup>(
               this,
               kCaptureModeMicIcon,
@@ -60,8 +76,9 @@ CaptureModeAdvancedSettingsView::CaptureModeAdvancedSettingsView()
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_DOWNLOADS),
       kDownloadsFolder);
   save_to_menu_group_->AddMenuItem(
-      base::BindRepeating(&CaptureModeAdvancedSettingsView::HandleMenuClick,
-                          base::Unretained(this)),
+      base::BindRepeating(
+          &CaptureModeAdvancedSettingsView::OnSelectFolderMenuItemPressed,
+          base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_SELECT_FOLDER));
 
   auto* color_provider = AshColorProvider::Get();
@@ -85,32 +102,45 @@ CaptureModeAdvancedSettingsView::CaptureModeAdvancedSettingsView()
 CaptureModeAdvancedSettingsView::~CaptureModeAdvancedSettingsView() = default;
 
 gfx::Rect CaptureModeAdvancedSettingsView::GetBounds(
-    CaptureModeBarView* capture_mode_bar_view) {
+    CaptureModeBarView* capture_mode_bar_view,
+    CaptureModeAdvancedSettingsView* content_view) {
   DCHECK(capture_mode_bar_view);
 
-  return gfx::Rect(
-      capture_mode_bar_view->settings_button()->GetBoundsInScreen().right() -
-          kSettingsSize.width(),
-      capture_mode_bar_view->GetBoundsInScreen().y() -
-          capture_mode::kSpaceBetweenCaptureBarAndSettingsMenu -
-          kSettingsSize.height(),
-      kSettingsSize.width(), kSettingsSize.height());
+  const gfx::Size settings_size =
+      content_view ? content_view->GetPreferredSize() : kSettingsSize;
+  return GetWidgetBounds(capture_mode_bar_view, settings_size);
+}
+
+void CaptureModeAdvancedSettingsView::OnCaptureFolderMayHaveChanged() {
+  const auto custom_path =
+      CaptureModeController::Get()->GetCustomCaptureFolder();
+  if (!custom_path.empty()) {
+    save_to_menu_group_->AddOrUpdateExistingOption(
+        custom_path.BaseName().AsUTF16Unsafe(), kCustomFolder);
+  } else {
+    save_to_menu_group_->RemoveOptionIfAny(kCustomFolder);
+  }
+  save_to_menu_group_->RefreshOptionsSelections();
+}
+
+void CaptureModeAdvancedSettingsView::OnDefaultCaptureFolderSelectionChanged() {
+  save_to_menu_group_->RefreshOptionsSelections();
 }
 
 void CaptureModeAdvancedSettingsView::OnOptionSelected(int option_id) const {
+  auto* controller = CaptureModeController::Get();
   switch (option_id) {
     case kAudioOff:
-      CaptureModeController::Get()->EnableAudioRecording(false);
+      controller->EnableAudioRecording(false);
       break;
     case kAudioMicrophone:
-      CaptureModeController::Get()->EnableAudioRecording(true);
+      controller->EnableAudioRecording(true);
       break;
     case kDownloadsFolder:
+      controller->SetUsesDefaultCaptureFolder(true);
+      break;
     case kCustomFolder:
-      // TODO(conniekxu|afakhry): Handle |kDownloadsFolder| and |kCustomFolder|
-      // options in the following up CLs. For now we only support
-      // |kDownloadsFolder| for |save_to_menu_group_|, that's why we don't need
-      // to handle it explicitly here.
+      controller->SetUsesDefaultCaptureFolder(false);
       break;
     default:
       return;
@@ -123,13 +153,10 @@ bool CaptureModeAdvancedSettingsView::IsOptionChecked(int option_id) const {
       return !CaptureModeController::Get()->enable_audio_recording();
     case kAudioMicrophone:
       return CaptureModeController::Get()->enable_audio_recording();
-    // TODO(conniekxu|afakhry): Handle |kDownloadsFolder| and |kCustomFolder|
-    // options in the following up CLs. For now we only support
-    // |kDownloadsFolder|, hence we return true/false directly here.
     case kDownloadsFolder:
-      return true;
+      return GetCurrentCaptureFolder().is_default_downloads_folder;
     case kCustomFolder:
-      return false;
+      return !GetCurrentCaptureFolder().is_default_downloads_folder;
     default:
       return false;
   }
@@ -144,7 +171,9 @@ views::View* CaptureModeAdvancedSettingsView::GetOffOptionForTesting() {
   return audio_input_menu_group_->GetOptionForTesting(kAudioOff);  // IN-TEST
 }
 
-void CaptureModeAdvancedSettingsView::HandleMenuClick() {}
+void CaptureModeAdvancedSettingsView::OnSelectFolderMenuItemPressed() {
+  capture_mode_session_->OpenFolderSelectionDialog();
+}
 
 BEGIN_METADATA(CaptureModeAdvancedSettingsView, views::View)
 END_METADATA

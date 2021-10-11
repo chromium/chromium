@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -475,7 +476,8 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
       base_window ? base_window->GetNativeWindow() : owner.window;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  can_resize_ = !ash::TabletMode::IsInTabletMode();
+  can_resize_ =
+      !ash::TabletMode::IsInTabletMode() && !ash::IsCaptureModeSessionActive();
 #endif
 
   if (ash::features::IsFileManagerSwaEnabled()) {

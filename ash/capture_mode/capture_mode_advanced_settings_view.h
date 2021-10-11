@@ -17,6 +17,16 @@ class Separator;
 namespace ash {
 
 class CaptureModeBarView;
+class CaptureModeMenuGroup;
+class CaptureModeSession;
+
+// All the options in the CaptureMode settings view.
+enum CaptureSettingsOption {
+  kAudioOff = 0,
+  kAudioMicrophone,
+  kDownloadsFolder,
+  kCustomFolder,
+};
 
 // TODO(conniekxu): This will replace CaptureModeSettingsView once
 // feature 'ImprovedScreenCaptureSettings' is fully launched.
@@ -29,7 +39,7 @@ class ASH_EXPORT CaptureModeAdvancedSettingsView
  public:
   METADATA_HEADER(CaptureModeAdvancedSettingsView);
 
-  CaptureModeAdvancedSettingsView();
+  explicit CaptureModeAdvancedSettingsView(CaptureModeSession* session);
   CaptureModeAdvancedSettingsView(const CaptureModeAdvancedSettingsView&) =
       delete;
   CaptureModeAdvancedSettingsView& operator=(
@@ -37,8 +47,24 @@ class ASH_EXPORT CaptureModeAdvancedSettingsView
   ~CaptureModeAdvancedSettingsView() override;
 
   // Gets the ideal bounds in screen coordinates of the settings widget on
-  // the given 'capture_mode_bar_view'.
-  static gfx::Rect GetBounds(CaptureModeBarView* capture_mode_bar_view);
+  // the given |capture_mode_bar_view|. If |content_view| is not null, it will
+  // be used to get the preferred size to calculate the final bounds. Otherwise,
+  // a default size will be used.
+  static gfx::Rect GetBounds(
+      CaptureModeBarView* capture_mode_bar_view,
+      CaptureModeAdvancedSettingsView* content_view = nullptr);
+
+  // Called when the folder, in which the captured files will be saved, may have
+  // changed. This may result in adding or removing a menu option for the folder
+  // that was added or removed. This means that the preferred size of this view
+  // can possibly change, and therefore it's the responsibility of the caller to
+  // to set the proper bounds on the widget.
+  void OnCaptureFolderMayHaveChanged();
+
+  // Called when we change the setting to force-use the default downloads folder
+  // as the save folder. This results in updating which folder menu option is
+  // currently selected.
+  void OnDefaultCaptureFolderSelectionChanged();
 
   // CaptureModeMenuGroup::Delegate:
   void OnOptionSelected(int option_id) const override;
@@ -52,11 +78,16 @@ class ASH_EXPORT CaptureModeAdvancedSettingsView
   views::View* GetOffOptionForTesting();
 
  private:
-  // TODO(afakhry|conniekxu): This is the callback function on menu item click.
-  // It will be only used by the menu item in |save_to_menu_| for now. It should
-  // open the folder window for user to select a folder to save the captured
-  // files to.
-  void HandleMenuClick();
+  friend class CaptureModeAdvancedSettingsTestApi;
+
+  // Called when the "Select folder" menu item in the |save_to_menu_group_| is
+  // pressed. It opens the folder selection dialog so that user can pick a
+  // location in which captured files will be saved.
+  void OnSelectFolderMenuItemPressed();
+
+  // A reference to the session that owns this view indirectly by owning its
+  // containing widget.
+  CaptureModeSession* const capture_mode_session_;  // Not null;
 
   // "Audio input" menu group that users can select an audio input from for
   // screen capture recording. It has "Off" and "Microphone" options for now.

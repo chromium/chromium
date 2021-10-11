@@ -3535,6 +3535,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_VIDEO_RECORD" desc="The capture label message which shows in the middel of the captured region in region video record mode or shows in the middle of the screen in fullscreen video record mode.">
         Record
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_SAVE_TO_DIALOG_TITLE" desc="The title of the folder selection dialog, where users can select a location to save their captured images and screen recordings.">
+        Select a folder to save to
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_TOOLTIP_FULLSCREEN_SCREENSHOT" desc="Tooltip of the fullscreen toggle button when in image capture mode.">
         Take full screen screenshot
       </message>

@@ -13,8 +13,11 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/containers/cxx20_erase_vector.h"
+#include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/controls/button/button.h"
@@ -78,6 +81,9 @@ void SetInkDropForButton(views::Button* button) {
   views::InstallRectHighlightPathGenerator(button);
 }
 
+// -----------------------------------------------------------------------------
+// CaptureModeMenuHeader:
+
 // The header of the menu group, which has an icon and a text label. Not user
 // interactable.
 class CaptureModeMenuHeader : public views::View {
@@ -112,6 +118,11 @@ class CaptureModeMenuHeader : public views::View {
 BEGIN_METADATA(CaptureModeMenuHeader, views::View)
 END_METADATA
 
+}  // namespace
+
+// -----------------------------------------------------------------------------
+// CaptureModeMenuItem:
+
 // A button which has a text label. Its behavior on click can be customized.
 // For selecting folder, a folder window will be opened on click.
 class CaptureModeMenuItem : public views::Button {
@@ -127,6 +138,8 @@ class CaptureModeMenuItem : public views::Button {
     ConfigLabelView(label_view_);
     CreateAndInitBoxLayoutForView(this);
     SetInkDropForButton(this);
+    GetViewAccessibility().OverrideIsLeaf(true);
+    SetAccessibleName(label_view_->GetText());
   }
 
   CaptureModeMenuItem(const CaptureModeMenuItem&) = delete;
@@ -140,7 +153,8 @@ class CaptureModeMenuItem : public views::Button {
 BEGIN_METADATA(CaptureModeMenuItem, views::Button)
 END_METADATA
 
-}  // namespace
+// -----------------------------------------------------------------------------
+// CaptureModeOption:
 
 // A button which represents an option of the menu group. It has a text label
 // and a checked icon. The checked icon will be shown on button click and any
@@ -172,6 +186,8 @@ class CaptureModeOption : public views::Button {
     auto* box_layout = CreateAndInitBoxLayoutForView(this);
     box_layout->SetFlexForView(label_view_, 1);
     SetInkDropForButton(this);
+    GetViewAccessibility().OverrideIsLeaf(true);
+    SetAccessibleName(GetOptionLabel());
   }
 
   CaptureModeOption(const CaptureModeOption&) = delete;
@@ -179,6 +195,15 @@ class CaptureModeOption : public views::Button {
   ~CaptureModeOption() override = default;
 
   int id() const { return id_; }
+
+  const std::u16string& GetOptionLabel() const {
+    return label_view_->GetText();
+  }
+
+  void SetOptionLabel(std::u16string option_label) {
+    SetAccessibleName(option_label);
+    label_view_->SetText(std::move(option_label));
+  }
 
   void SetOptionChecked(bool checked) {
     checked_icon_view_->SetVisible(checked);
@@ -194,6 +219,9 @@ class CaptureModeOption : public views::Button {
 
 BEGIN_METADATA(CaptureModeOption, views::Button)
 END_METADATA
+
+// -----------------------------------------------------------------------------
+// CaptureModeMenuGroup:
 
 CaptureModeMenuGroup::CaptureModeMenuGroup(Delegate* delegate,
                                            const gfx::VectorIcon& header_icon,
@@ -221,30 +249,79 @@ void CaptureModeMenuGroup::AddOption(std::u16string option_label,
           /*checked=*/delegate_->IsOptionChecked(option_id))));
 }
 
+void CaptureModeMenuGroup::AddOrUpdateExistingOption(
+    std::u16string option_label,
+    int option_id) {
+  auto* option = GetOptionById(option_id);
+
+  if (option) {
+    option->SetOptionLabel(std::move(option_label));
+    return;
+  }
+
+  AddOption(std::move(option_label), option_id);
+}
+
+void CaptureModeMenuGroup::RefreshOptionsSelections() {
+  for (auto* option : options_)
+    option->SetOptionChecked(delegate_->IsOptionChecked(option->id()));
+}
+
+void CaptureModeMenuGroup::RemoveOptionIfAny(int option_id) {
+  auto* option = GetOptionById(option_id);
+  if (!option)
+    return;
+
+  options_container_->RemoveChildViewT(option);
+  base::Erase(options_, option);
+}
+
 void CaptureModeMenuGroup::AddMenuItem(views::Button::PressedCallback callback,
                                        std::u16string item_label) {
-  views::View::AddChildView(
-      std::make_unique<CaptureModeMenuItem>(callback, std::move(item_label)));
+  menu_items_.push_back(views::View::AddChildView(
+      std::make_unique<CaptureModeMenuItem>(callback, std::move(item_label))));
+}
+
+bool CaptureModeMenuGroup::IsOptionChecked(int option_id) const {
+  auto* option = GetOptionById(option_id);
+  return option && option->IsOptionChecked();
 }
 
 views::View* CaptureModeMenuGroup::GetOptionForTesting(int option_id) {
-  for (auto* option : options_) {
-    if (option->id() == option_id)
-      return option;
-  }
-  return nullptr;
+  return GetOptionById(option_id);
 }
 
-bool CaptureModeMenuGroup::IsOptionCheckedForTesting(views::View* option) {
-  return static_cast<CaptureModeOption*>(option)->IsOptionChecked();
+views::View* CaptureModeMenuGroup::GetSelectFolderMenuItemForTesting() {
+  DCHECK_EQ(1u, menu_items_.size());
+  return menu_items_[0];
+}
+
+std::u16string CaptureModeMenuGroup::GetOptionLabelForTesting(
+    int option_id) const {
+  auto* option = GetOptionById(option_id);
+  DCHECK(option);
+  return option->GetOptionLabel();
+}
+
+CaptureModeOption* CaptureModeMenuGroup::GetOptionById(int option_id) const {
+  auto iter =
+      base::ranges::find_if(options_, [option_id](CaptureModeOption* option) {
+        return option->id() == option_id;
+      });
+  return iter == options_.end() ? nullptr : *iter;
 }
 
 void CaptureModeMenuGroup::HandleOptionClick(int option_id) {
-  for (auto* option : options_)
-    option->SetOptionChecked(option_id == option->id());
+  DCHECK(GetOptionById(option_id));
+
+  // The order here matters. We need to tell the delegate first about a change
+  // in the selection, before we refresh the checked icons, since for that we
+  // need to query the delegate.
   delegate_->OnOptionSelected(option_id);
+  RefreshOptionsSelections();
 }
 
 BEGIN_METADATA(CaptureModeMenuGroup, views::View)
 END_METADATA
+
 }  // namespace ash

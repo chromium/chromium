@@ -103,11 +103,23 @@ class ASH_EXPORT CaptureModeController
   // update |last_capture_region_update_time_|.
   void SetUserCaptureRegion(const gfx::Rect& region, bool by_user);
 
+  // Sets whether the currently logged in user selected to use the default
+  // "Downloads" folder as the current save location, even while they already
+  // have a currently set custom folder. When this setting is true, any
+  // currently set custom folder is ignored but not removed.
+  // This can only be called when user is logged in.
+  void SetUsesDefaultCaptureFolder(bool value);
+
   // Sets the given |path| as the custom save location of captured images and
-  // videos for the currently logged in user (i.e. can only be called when user
-  // is logged in). Setting an empty |path| clears any custom selected folder
-  // resulting in using the default downloads folder.
+  // videos for the currently logged in user. Setting an empty |path| clears any
+  // custom selected folder resulting in using the default downloads folder.
+  // Calling this function will reset the value of "UsesDefaultCaptureFolder" to
+  // false, since it means the user wants to switch to a custom folder when it's
+  // set.
+  // This can only be called when user is logged in.
   void SetCustomCaptureFolder(const base::FilePath& path);
+
+  base::FilePath GetCustomCaptureFolder() const;
 
   // Returns the folder in which all taken screenshots and videos will be saved.
   // It can be the temp directory if the user is not logged in, the default

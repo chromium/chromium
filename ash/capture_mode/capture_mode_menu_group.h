@@ -5,6 +5,7 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_MENU_GROUP_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_MENU_GROUP_H_
 
+#include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -17,6 +18,7 @@ struct VectorIcon;
 
 namespace ash {
 
+class CaptureModeMenuItem;
 class CaptureModeOption;
 
 // Defines a view that groups together related capture mode settings in an
@@ -51,6 +53,19 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   // visible all the time.
   void AddOption(std::u16string option_label, int option_id);
 
+  // If an option with the given |option_id| exists, it will be updated with the
+  // given |option_label|. Otherwise, a new option will be added.
+  void AddOrUpdateExistingOption(std::u16string option_label, int option_id);
+
+  // Refreshes which options are currently selected and showing checked icons
+  // next to their labels. This calls back into the |Delegate| to check each
+  // option's selection state.
+  void RefreshOptionsSelections();
+
+  // Removes an option with the given |option_id| if it exists. Does nothing
+  // otherwise.
+  void RemoveOptionIfAny(int option_id);
+
   // Adds a menu item which has text to the menu group. Each menu item can have
   // its own customized behavior. For example, file save menu group's menu item
   // will open a folder window for user to select a new folder to save the
@@ -58,11 +73,22 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   void AddMenuItem(views::Button::PressedCallback callback,
                    std::u16string item_label);
 
-  // For tests only:
+  // Returns true if the option with the given |option_id| is checked, if such
+  // option exists.
+  bool IsOptionChecked(int option_id) const;
+
+  // For tests only.
   views::View* GetOptionForTesting(int option_id);
-  bool IsOptionCheckedForTesting(views::View* option);
+  views::View* GetSelectFolderMenuItemForTesting();
+  std::u16string GetOptionLabelForTesting(int option_id) const;
 
  private:
+  friend class CaptureModeAdvancedSettingsTestApi;
+
+  // Returns the option whose ID is |option_id|, and nullptr if no such option
+  // exists.
+  CaptureModeOption* GetOptionById(int option_id) const;
+
   // This is the callback function on option click. It will select the
   // clicked/pressed button, and unselect any previously selected button.
   void HandleOptionClick(int option_id);
@@ -80,6 +106,9 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   // folder, we need to add it to the end of the options instead of adding it
   // after the menu item.
   views::View* options_container_;
+
+  // Menu items added by calling AddMenuItem().
+  std::vector<CaptureModeMenuItem*> menu_items_;
 };
 
 }  // namespace ash

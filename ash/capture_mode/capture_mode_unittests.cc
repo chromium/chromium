@@ -9,6 +9,7 @@
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/capture_mode/capture_label_view.h"
+#include "ash/capture_mode/capture_mode_advanced_settings_test_api.h"
 #include "ash/capture_mode/capture_mode_advanced_settings_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_button.h"
@@ -24,6 +25,7 @@
 #include "ash/capture_mode/capture_mode_type_view.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/capture_mode/fake_folder_selection_dialog_factory.h"
 #include "ash/capture_mode/recording_overlay_controller.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
@@ -284,6 +286,11 @@ class CaptureModeSessionTestApi {
 
   bool HasFocus() const { return session_->focus_cycler_->HasFocus(); }
 
+  bool IsFolderSelectionDialogShown() const {
+    return session_->folder_selection_dialog_controller_ &&
+           session_->folder_selection_dialog_controller_->dialog_window();
+  }
+
  private:
   const CaptureModeSession* const session_;
 };
@@ -325,6 +332,12 @@ class CaptureModeTest : public AshTestBase {
     auto* session = CaptureModeController::Get()->capture_mode_session();
     DCHECK(session);
     return CaptureModeSessionTestApi(session).capture_mode_settings_widget();
+  }
+
+  bool IsFolderSelectionDialogShown() const {
+    auto* session = CaptureModeController::Get()->capture_mode_session();
+    DCHECK(session);
+    return CaptureModeSessionTestApi(session).IsFolderSelectionDialogShown();
   }
 
   CaptureModeToggleButton* GetImageToggleButton() const {
@@ -4058,6 +4071,34 @@ TEST_F(CaptureModeTest, CaptureFolderSetToDefaultDownloads) {
   EXPECT_TRUE(capture_folder.is_default_downloads_folder);
 }
 
+TEST_F(CaptureModeTest, UsesDefaultFolderWithCustomFolderSet) {
+  auto* controller = CaptureModeController::Get();
+  auto* test_delegate = controller->delegate_for_testing();
+
+  const base::FilePath custom_folder(FILE_PATH_LITERAL("/home/tests"));
+  controller->SetCustomCaptureFolder(custom_folder);
+  auto capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_FALSE(capture_folder.is_default_downloads_folder);
+
+  // If the user selects to force use the default downloads folder even while
+  // a custom folder is set, we should respect that, but we shouldn't clear the
+  // custom folder.
+  controller->SetUsesDefaultCaptureFolder(true);
+  const auto default_downloads_folder =
+      test_delegate->GetUserDefaultDownloadsFolder();
+  capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_EQ(capture_folder.path, default_downloads_folder);
+  EXPECT_TRUE(capture_folder.is_default_downloads_folder);
+
+  // Setting another custom folder value, would reset the
+  // "UsesDefaultCaptureFolder" value, and the new custom folder will be used.
+  const base::FilePath custom_folder2(FILE_PATH_LITERAL("/home/tests2"));
+  controller->SetCustomCaptureFolder(custom_folder2);
+  capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_EQ(capture_folder.path, custom_folder2);
+  EXPECT_FALSE(capture_folder.is_default_downloads_folder);
+}
+
 TEST_F(CaptureModeTest, CaptureFolderSetToEmptyPath) {
   auto* controller = CaptureModeController::Get();
   auto* test_delegate = controller->delegate_for_testing();
@@ -4708,6 +4749,12 @@ class CaptureModeAdvancedSettingsTest : public CaptureModeTest {
     scoped_feature_list_.InitAndEnableFeature(
         features::kImprovedScreenCaptureSettings);
     CaptureModeTest::SetUp();
+    FakeFolderSelectionDialogFactory::Start();
+  }
+
+  void TearDown() override {
+    FakeFolderSelectionDialogFactory::Stop();
+    CaptureModeTest::TearDown();
   }
 
   CaptureModeAdvancedSettingsView* GetCaptureModeAdvancedSettingsView() const {
@@ -4731,23 +4778,18 @@ TEST_F(CaptureModeAdvancedSettingsTest, AudioInputSettingsMenu) {
   ClickOnView(GetSettingsButton(), event_generator);
   EXPECT_FALSE(controller->enable_audio_recording());
 
-  CaptureModeAdvancedSettingsView* settings_view =
-      GetCaptureModeAdvancedSettingsView();
+  CaptureModeAdvancedSettingsTestApi test_api;
   CaptureModeMenuGroup* audio_input_menu_group =
-      settings_view->GetAudioInputMenuGroupForTesting();
-  views::View* microphone_option =
-      settings_view->GetMicrophoneOptionForTesting();
-  views::View* off_option = settings_view->GetOffOptionForTesting();
-  EXPECT_TRUE(audio_input_menu_group->IsOptionCheckedForTesting(off_option));
-  EXPECT_FALSE(
-      audio_input_menu_group->IsOptionCheckedForTesting(microphone_option));
+      test_api.GetAudioInputMenuGroup();
+  EXPECT_TRUE(audio_input_menu_group->IsOptionChecked(kAudioOff));
+  EXPECT_FALSE(audio_input_menu_group->IsOptionChecked(kAudioMicrophone));
 
   // Click on the |microphone| option. It should be checked after click along
   // with |off| is unchecked. Recording preference is set to microphone.
+  views::View* microphone_option = test_api.GetMicrophoneOption();
   ClickOnView(microphone_option, event_generator);
-  EXPECT_TRUE(
-      audio_input_menu_group->IsOptionCheckedForTesting(microphone_option));
-  EXPECT_FALSE(audio_input_menu_group->IsOptionCheckedForTesting(off_option));
+  EXPECT_TRUE(audio_input_menu_group->IsOptionChecked(kAudioMicrophone));
+  EXPECT_FALSE(audio_input_menu_group->IsOptionChecked(kAudioOff));
   EXPECT_TRUE(controller->enable_audio_recording());
 
   // Test that the user selected audio preference for audio recording is
@@ -4755,6 +4797,171 @@ TEST_F(CaptureModeAdvancedSettingsTest, AudioInputSettingsMenu) {
   SendKey(ui::VKEY_ESCAPE, event_generator);
   StartImageRegionCapture();
   EXPECT_TRUE(controller->enable_audio_recording());
+}
+
+TEST_F(CaptureModeAdvancedSettingsTest, SelectFolderFromDialog) {
+  auto* controller = StartImageRegionCapture();
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(GetSettingsButton(), event_generator);
+
+  // Initially there should only be an option for the default downloads folder.
+  CaptureModeAdvancedSettingsTestApi test_api;
+  EXPECT_TRUE(test_api.GetDefaultDownloadsOption());
+  EXPECT_FALSE(test_api.GetCustomFolderOptionIfAny());
+  CaptureModeMenuGroup* save_to_menu_group = test_api.GetSaveToMenuGroup();
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+
+  ClickOnView(test_api.GetSelectFolderMenuItem(), event_generator);
+  EXPECT_TRUE(IsFolderSelectionDialogShown());
+
+  auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
+  auto* dialog_window = dialog_factory->GetDialogWindow();
+  auto* window_state = WindowState::Get(dialog_window);
+  ASSERT_TRUE(window_state);
+  EXPECT_FALSE(window_state->CanMaximize());
+  EXPECT_FALSE(window_state->CanMinimize());
+  EXPECT_FALSE(window_state->CanResize());
+
+  // Accepting the dialog with a folder selection should dismiss it and add a
+  // new option for the custom selected folder in the settings menu.
+  const base::FilePath custom_folder(FILE_PATH_LITERAL("/home/tests/foo"));
+  dialog_factory->AcceptPath(custom_folder);
+  EXPECT_FALSE(IsFolderSelectionDialogShown());
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kCustomFolder));
+  EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+  EXPECT_EQ(u"foo",
+            save_to_menu_group->GetOptionLabelForTesting(kCustomFolder));
+
+  // This should update the folder that will be used by the controller.
+  auto capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_EQ(capture_folder.path, custom_folder);
+  EXPECT_FALSE(capture_folder.is_default_downloads_folder);
+}
+
+TEST_F(CaptureModeAdvancedSettingsTest, DismissDialogWithoutSelection) {
+  auto* controller = StartImageRegionCapture();
+  const auto old_capture_folder = controller->GetCurrentCaptureFolder();
+
+  // Open the settings menu, and click the "Select folder" menu item.
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(GetSettingsButton(), event_generator);
+  CaptureModeAdvancedSettingsTestApi test_api;
+  ClickOnView(test_api.GetSelectFolderMenuItem(), event_generator);
+  EXPECT_TRUE(IsFolderSelectionDialogShown());
+
+  // Cancel and dismiss the dialog. There should be no change in the folder
+  // selection.
+  auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
+  dialog_factory->CancelDialog();
+  EXPECT_FALSE(IsFolderSelectionDialogShown());
+  EXPECT_FALSE(test_api.GetCustomFolderOptionIfAny());
+  CaptureModeMenuGroup* save_to_menu_group = test_api.GetSaveToMenuGroup();
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+
+  const auto new_capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_EQ(old_capture_folder.path, new_capture_folder.path);
+  EXPECT_EQ(old_capture_folder.is_default_downloads_folder,
+            new_capture_folder.is_default_downloads_folder);
+}
+
+TEST_F(CaptureModeAdvancedSettingsTest, AcceptUpdatedCustomFolderFromDialog) {
+  // Begin a new session with a pre-configured custom folder.
+  auto* controller = CaptureModeController::Get();
+  controller->SetCustomCaptureFolder(
+      base::FilePath(FILE_PATH_LITERAL("/home/tests/foo")));
+  StartImageRegionCapture();
+
+  // Open the settings menu and check there already exists an item for that
+  // pre-configured custom folder.
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(GetSettingsButton(), event_generator);
+  CaptureModeAdvancedSettingsTestApi test_api;
+  EXPECT_TRUE(test_api.GetDefaultDownloadsOption());
+  auto* custom_folder_view = test_api.GetCustomFolderOptionIfAny();
+  EXPECT_TRUE(custom_folder_view);
+  CaptureModeMenuGroup* save_to_menu_group = test_api.GetSaveToMenuGroup();
+  EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kCustomFolder));
+
+  // Now open the folder selection dialog and select a different folder. The
+  // existing *same* item in the menu should be updated.
+  ClickOnView(test_api.GetSelectFolderMenuItem(), event_generator);
+  EXPECT_TRUE(IsFolderSelectionDialogShown());
+
+  auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
+  const base::FilePath new_folder(FILE_PATH_LITERAL("/home/bar"));
+  dialog_factory->AcceptPath(new_folder);
+  EXPECT_FALSE(IsFolderSelectionDialogShown());
+
+  EXPECT_EQ(custom_folder_view, test_api.GetCustomFolderOptionIfAny());
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kCustomFolder));
+  EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+  EXPECT_EQ(u"bar",
+            save_to_menu_group->GetOptionLabelForTesting(kCustomFolder));
+
+  // This should update the folder that will be used by the controller.
+  const auto capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_EQ(capture_folder.path, new_folder);
+  EXPECT_FALSE(capture_folder.is_default_downloads_folder);
+}
+
+TEST_F(CaptureModeAdvancedSettingsTest,
+       AcceptDefaultDownloadsFolderFromDialog) {
+  // Begin a new session with a pre-configured custom folder.
+  auto* controller = CaptureModeController::Get();
+  controller->SetCustomCaptureFolder(
+      base::FilePath(FILE_PATH_LITERAL("/home/tests/foo")));
+  StartImageRegionCapture();
+
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(GetSettingsButton(), event_generator);
+  CaptureModeAdvancedSettingsTestApi test_api;
+  ClickOnView(test_api.GetSelectFolderMenuItem(), event_generator);
+
+  // Selecting the same folder as the default downloads folder should result in
+  // removing the custom folder option from the menu.
+  auto* test_delegate = controller->delegate_for_testing();
+  const auto default_downloads_folder =
+      test_delegate->GetUserDefaultDownloadsFolder();
+  auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
+  dialog_factory->AcceptPath(default_downloads_folder);
+  EXPECT_FALSE(IsFolderSelectionDialogShown());
+  EXPECT_TRUE(test_api.GetDefaultDownloadsOption());
+  EXPECT_FALSE(test_api.GetCustomFolderOptionIfAny());
+  CaptureModeMenuGroup* save_to_menu_group = test_api.GetSaveToMenuGroup();
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+}
+
+TEST_F(CaptureModeAdvancedSettingsTest, SwitchWhichFolderToUserFromOptions) {
+  // Begin a new session with a pre-configured custom folder.
+  auto* controller = CaptureModeController::Get();
+  const base::FilePath custom_path(FILE_PATH_LITERAL("/home/tests/foo"));
+  controller->SetCustomCaptureFolder(custom_path);
+  StartImageRegionCapture();
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(GetSettingsButton(), event_generator);
+
+  // Clicking the "Downloads" option will set it as the folder of choice, but
+  // won't clear the custom folder.
+  CaptureModeAdvancedSettingsTestApi test_api;
+  ClickOnView(test_api.GetDefaultDownloadsOption(), event_generator);
+  CaptureModeMenuGroup* save_to_menu_group = test_api.GetSaveToMenuGroup();
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+  EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kCustomFolder));
+  const auto default_downloads_folder =
+      controller->delegate_for_testing()->GetUserDefaultDownloadsFolder();
+  auto capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_EQ(capture_folder.path, default_downloads_folder);
+  EXPECT_TRUE(capture_folder.is_default_downloads_folder);
+  EXPECT_EQ(custom_path, controller->GetCustomCaptureFolder());
+
+  // Clicking on the custom folder option will switch back to using it.
+  ClickOnView(test_api.GetCustomFolderOptionIfAny(), event_generator);
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kCustomFolder));
+  EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+  capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_EQ(capture_folder.path, custom_path);
+  EXPECT_FALSE(capture_folder.is_default_downloads_folder);
 }
 
 // Tests that when capture label widget overlaps with settings widget, hide
@@ -4786,7 +4993,7 @@ TEST_F(CaptureModeAdvancedSettingsTest,
 
   // Update display size to make capture label widget overlap with settings
   // widget.
-  UpdateDisplay("1100x800");
+  UpdateDisplay("1100x700");
   controller = StartImageRegionCapture();
 
   // Tests that capture label widget overlaps with settings widget and is hidden

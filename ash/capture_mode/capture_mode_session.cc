@@ -11,11 +11,13 @@
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_menu_group.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_settings_view.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/capture_window_observer.h"
+#include "ash/capture_mode/folder_selection_dialog_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/screen_orientation_controller.h"
@@ -27,6 +29,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_dimmer.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
@@ -697,7 +700,8 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown) {
           "CaptureModeSettingsWidget"));
       capture_mode_advanced_settings_view_ =
           capture_mode_settings_widget_->SetContentsView(
-              std::make_unique<CaptureModeAdvancedSettingsView>());
+              std::make_unique<CaptureModeAdvancedSettingsView>(this));
+      OnCaptureFolderMayHaveChanged();
     } else {
       capture_mode_settings_widget_->Init(CreateWidgetParams(
           parent, CaptureModeSettingsView::GetBounds(capture_mode_bar_view_),
@@ -771,6 +775,14 @@ void CaptureModeSession::StartCountDown(
   }
 }
 
+void CaptureModeSession::OpenFolderSelectionDialog() {
+  DCHECK(!folder_selection_dialog_controller_);
+  cursor_setter_.reset();
+  folder_selection_dialog_controller_ =
+      std::make_unique<FolderSelectionDialogController>(/*delegate=*/this,
+                                                        current_root_);
+}
+
 bool CaptureModeSession::IsInCountDownAnimation() const {
   if (is_shutting_down_)
     return false;
@@ -778,6 +790,26 @@ bool CaptureModeSession::IsInCountDownAnimation() const {
   CaptureLabelView* label_view =
       static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
   return label_view->IsInCountDownAnimation();
+}
+
+void CaptureModeSession::OnCaptureFolderMayHaveChanged() {
+  if (!capture_mode_settings_widget_)
+    return;
+
+  DCHECK(capture_mode_advanced_settings_view_);
+  capture_mode_advanced_settings_view_->OnCaptureFolderMayHaveChanged();
+  capture_mode_settings_widget_->SetBounds(
+      CaptureModeAdvancedSettingsView::GetBounds(
+          capture_mode_bar_view_, capture_mode_advanced_settings_view_));
+}
+
+void CaptureModeSession::OnDefaultCaptureFolderSelectionChanged() {
+  if (!capture_mode_settings_widget_)
+    return;
+
+  DCHECK(capture_mode_advanced_settings_view_);
+  capture_mode_advanced_settings_view_
+      ->OnDefaultCaptureFolderSelectionChanged();
 }
 
 void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
@@ -792,6 +824,12 @@ void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
 }
 
 void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
+  if (folder_selection_dialog_controller_) {
+    if (folder_selection_dialog_controller_->ShouldConsumeEvent(event))
+      event->StopPropagation();
+    return;
+  }
+
   if (event->type() != ui::ET_KEY_PRESSED)
     return;
 
@@ -920,6 +958,16 @@ void CaptureModeSession::OnDisplayMetricsChanged(
   if (capture_label_widget_)
     UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   layer()->SchedulePaint(layer()->bounds());
+}
+
+void CaptureModeSession::OnFolderSelected(const base::FilePath& path) {
+  CaptureModeController::Get()->SetCustomCaptureFolder(path);
+}
+
+void CaptureModeSession::OnSelectionWindowClosed() {
+  DCHECK(folder_selection_dialog_controller_);
+  folder_selection_dialog_controller_.reset();
+  cursor_setter_ = std::make_unique<CursorSetter>();
 }
 
 void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
@@ -1128,6 +1176,12 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
 
 void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
                                         bool is_touch) {
+  if (folder_selection_dialog_controller_) {
+    if (folder_selection_dialog_controller_->ShouldConsumeEvent(event))
+      event->StopPropagation();
+    return;
+  }
+
   // If we're currently in countdown animation, don't further handle any
   // located events. However we should stop the event propagation here to
   // prevent other event handlers from handling this event.

@@ -201,6 +201,12 @@ enum NonContainerWindowId {
   // Only one window exists whenever the display settings page is open with
   // multiple displays connected.
   kShellWindowId_DisplayIdentificationHighlightWindow,
+
+  // The window hosting the folder selection menu for capture mode, which is not
+  // parented to a top-level container, yet it needs to be uniquely identified
+  // so that we can allow a WindowState to be created for it, since it can be
+  // dragged around.
+  kShellWindowId_CaptureModeFolderSelectionDialog,
 };
 
 // A list of system modal container IDs. The order of the list is important that

@@ -95,6 +95,11 @@ constexpr base::TimeDelta kResetCaptureRegionDuration = base::Minutes(8);
 constexpr char kCustomCapturePathPrefName[] =
     "ash.capture_mode.custom_save_path";
 
+// The name of a boolean pref that indicates whether the default downloads path
+// is currently selected even if a custom capture path is set.
+constexpr char kUsesDefaultCapturePathPrefName[] =
+    "ash.capture_mode.uses_default_capture_path";
+
 // The screenshot notification button index.
 enum ScreenshotNotificationButtonIndex {
   BUTTON_EDIT = 0,
@@ -315,6 +320,15 @@ void EmitServiceRecordingStatus(recording::mojom::RecordingStatus status) {
   }
 }
 
+PrefService* GetActiveUserPrefService() {
+  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
+
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  DCHECK(pref_service);
+  return pref_service;
+}
+
 }  // namespace
 
 CaptureModeController::CaptureModeController(
@@ -398,6 +412,8 @@ CaptureModeController* CaptureModeController::Get() {
 void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterFilePathPref(kCustomCapturePathPrefName,
                                  /*default_value=*/base::FilePath());
+  registry->RegisterBooleanPref(kUsesDefaultCapturePathPrefName,
+                                /*default_value=*/false);
 }
 
 bool CaptureModeController::IsActive() const {
@@ -508,16 +524,33 @@ void CaptureModeController::SetUserCaptureRegion(const gfx::Rect& region,
     last_capture_region_update_time_ = base::TimeTicks::Now();
 }
 
-void CaptureModeController::SetCustomCaptureFolder(const base::FilePath& path) {
-  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
+void CaptureModeController::SetUsesDefaultCaptureFolder(bool value) {
+  GetActiveUserPrefService()->SetBoolean(kUsesDefaultCapturePathPrefName,
+                                         value);
 
-  auto* pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  DCHECK(pref_service);
+  if (IsActive())
+    capture_mode_session_->OnDefaultCaptureFolderSelectionChanged();
+}
+
+void CaptureModeController::SetCustomCaptureFolder(const base::FilePath& path) {
+  auto* pref_service = GetActiveUserPrefService();
   pref_service->SetFilePath(kCustomCapturePathPrefName, path);
 
-  // TODO(https://crbug.com/1250885): Propagate the changes to the capture
-  // session (if any).
+  // When this function is called, it means the user is switching back to the
+  // custom capture folder, and we need to reset the setting to force using the
+  // default downloads folder.
+  pref_service->SetBoolean(kUsesDefaultCapturePathPrefName, false);
+
+  if (IsActive())
+    capture_mode_session_->OnCaptureFolderMayHaveChanged();
+}
+
+base::FilePath CaptureModeController::GetCustomCaptureFolder() const {
+  const auto custom_path =
+      GetActiveUserPrefService()->GetFilePath(kCustomCapturePathPrefName);
+  return custom_path != delegate_->GetUserDefaultDownloadsFolder()
+             ? custom_path
+             : base::FilePath();
 }
 
 CaptureModeController::CaptureFolder
@@ -533,7 +566,8 @@ CaptureModeController::GetCurrentCaptureFolder() const {
       Shell::Get()->session_controller()->GetActivePrefService();
   const auto default_downloads_folder =
       delegate_->GetUserDefaultDownloadsFolder();
-  if (pref_service) {
+  if (pref_service &&
+      !pref_service->GetBoolean(kUsesDefaultCapturePathPrefName)) {
     const auto custom_path =
         pref_service->GetFilePath(kCustomCapturePathPrefName);
     if (!custom_path.empty()) {

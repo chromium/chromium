@@ -971,8 +971,12 @@ WindowState* WindowState::Get(aura::Window* window) {
   // WindowState is only for windows in top level container, unless they are
   // temporarily hidden when launched by window restore. The will be reparented
   // to a top level container soon, and need a WindowState.
+  // The window of capture mode folder selection dialog is also special. It's
+  // not parented to a top level container, but it needs a window state since it
+  // can be dragged around.
   if (!IsToplevelContainer(window->parent()) &&
-      !IsTemporarilyHiddenForFullrestore(window)) {
+      !IsTemporarilyHiddenForFullrestore(window) &&
+      window->GetId() != kShellWindowId_CaptureModeFolderSelectionDialog) {
     return nullptr;
   }
 
