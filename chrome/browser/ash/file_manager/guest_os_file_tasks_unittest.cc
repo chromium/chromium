@@ -175,6 +175,16 @@ TEST_F(GuestOsFileTasksTest, PluginVm_AppRegistered) {
   EXPECT_THAT(app_vm_types_, testing::ElementsAre(PLUGIN_VM));
 }
 
+TEST_F(GuestOsFileTasksTest, PluginVm_IgnoreCase) {
+  AddApp("app1", "name1", {}, {"Txt"}, PLUGIN_VM);
+  AddEntry("entry.txT", "test/mime1");
+  FindGuestOsApps(&profile_, entries_, urls_, &app_ids_, &app_names_,
+                  &app_vm_types_);
+  EXPECT_THAT(app_ids_, testing::ElementsAre("app1"));
+  EXPECT_THAT(app_names_, testing::ElementsAre("name1 (Windows)"));
+  EXPECT_THAT(app_vm_types_, testing::ElementsAre(PLUGIN_VM));
+}
+
 TEST_F(GuestOsFileTasksTest, PluginVm_NotEnabled) {
   fake_plugin_vm_features_.set_enabled(false);
   AddApp("app1", "name1", {}, {"txt"}, PLUGIN_VM);
