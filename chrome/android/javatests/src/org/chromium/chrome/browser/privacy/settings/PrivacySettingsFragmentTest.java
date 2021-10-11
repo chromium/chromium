@@ -29,6 +29,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -119,8 +120,8 @@ public class PrivacySettingsFragmentTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testRenderIncognitoLockView_DeviceScreenLockDisabled() throws IOException {
-        IncognitoReauthManager.setShouldShowSettingForTesting(true);
-        IncognitoReauthManager.setIsDeviceScreenLockEnabledForTesting(false);
+        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
+        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(false);
 
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
@@ -134,8 +135,8 @@ public class PrivacySettingsFragmentTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testRenderIncognitoLockView_DeviceScreenLockEnabled() throws IOException {
-        IncognitoReauthManager.setShouldShowSettingForTesting(true);
-        IncognitoReauthManager.setIsDeviceScreenLockEnabledForTesting(true);
+        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
+        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(true);
 
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();

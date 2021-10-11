@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingSwitchPreference;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings;
 import org.chromium.chrome.browser.privacy_review.PrivacyReviewDialog;
@@ -165,12 +166,13 @@ public class PrivacySettings
     private void setUpIncognitoReauthPreference() {
         IncognitoReauthSettingSwitchPreference incognitoReauthPreference =
                 (IncognitoReauthSettingSwitchPreference) findPreference(PREF_INCOGNITO_LOCK);
-        if (!IncognitoReauthManager.shouldShowSetting()) {
+        if (!IncognitoReauthManager.isIncognitoReauthFeatureAvailable()) {
             incognitoReauthPreference.setVisible(false);
             return;
         }
         incognitoReauthPreference.setLinkClickDelegate(() -> {
-            getActivity().startActivity(IncognitoReauthManager.getSystemLocationSettingsIntent());
+            getActivity().startActivity(
+                    IncognitoReauthSettingUtils.getSystemLocationSettingsIntent());
         });
         incognitoReauthPreference.setOnPreferenceChangeListener(this);
 
@@ -178,13 +180,13 @@ public class PrivacySettings
     }
 
     private void updateIncognitoReauthPreference() {
-        if (!IncognitoReauthManager.shouldShowSetting()) return;
+        if (!IncognitoReauthManager.isIncognitoReauthFeatureAvailable()) return;
         IncognitoReauthSettingSwitchPreference incognitoReauthPreference =
                 (IncognitoReauthSettingSwitchPreference) findPreference(PREF_INCOGNITO_LOCK);
         incognitoReauthPreference.setSummary(
-                IncognitoReauthManager.getSummaryString(getActivity()));
+                IncognitoReauthSettingUtils.getSummaryString(getActivity()));
         incognitoReauthPreference.setPreferenceInteractable(
-                IncognitoReauthManager.isDeviceScreenLockEnabled());
+                IncognitoReauthSettingUtils.isDeviceScreenLockEnabled());
 
         boolean lastPrefValue = UserPrefs.get(Profile.getLastUsedRegularProfile())
                                         .getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID);

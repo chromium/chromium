@@ -12,6 +12,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthManager.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthSettingSwitchPreference.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthSettingUtils.java",
   ]
   deps = [
     "//base:base_java",
