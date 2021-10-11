@@ -63,16 +63,16 @@ static_assert(sizeof(void*) != 8, "");
 // - On Linux, futex(2)
 // - On Windows, a fast userspace "try" operation which is available
 //   with SRWLock
-// - On macOS 10.14+, pthread.
+// - Otherwise, a fast userspace pthread_mutex_trylock().
 //
 // On macOS, pthread_mutex_trylock() is fast by default starting with macOS
 // 10.14. Chromium targets an earlier version, so it cannot be known at
-// compile-time. However, ARM64 macOS devices shipped *after* this release, so
-// they necessarily have a fast implementation.
+// compile-time. So we use something different. On other POSIX systems, we
+// assume that pthread_mutex_trylock() is suitable.
 //
 // Otherwise, a userspace spinlock implementation is used.
 #if defined(PA_HAS_LINUX_KERNEL) || defined(OS_WIN) || \
-    (defined(OS_MAC) && defined(ARCH_CPU_ARM64)) || defined(OS_FUCHSIA)
+    (defined(OS_POSIX) && !defined(OS_APPLE)) || defined(OS_FUCHSIA)
 #define PA_HAS_FAST_MUTEX
 #endif
 
