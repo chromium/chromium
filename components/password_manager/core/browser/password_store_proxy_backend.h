@@ -63,9 +63,6 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegateFactory() override;
 
-  base::RepeatingCallback<void(bool)> pending_initialization_calls_;
-  base::RepeatingClosure pending_shutdown_calls_;
-
   std::unique_ptr<PasswordStoreBackend> main_backend_;
   std::unique_ptr<PasswordStoreBackend> shadow_backend_;
 };

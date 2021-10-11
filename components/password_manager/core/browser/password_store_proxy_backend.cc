@@ -45,30 +45,29 @@ void PasswordStoreProxyBackend::InitBackend(
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
-  DCHECK(!pending_initialization_calls_);
-  pending_initialization_calls_ = base::BarrierCallback<bool>(
-      /*num_callbacks=*/2,
-      base::BindOnce(&InvokeCallbackWithCombinedStatus, std::move(completion)));
+  base::RepeatingCallback<void(bool)> pending_initialization_calls =
+      base::BarrierCallback<bool>(
+          /*num_callbacks=*/2, base::BindOnce(&InvokeCallbackWithCombinedStatus,
+                                              std::move(completion)));
 
   main_backend_->InitBackend(std::move(remote_form_changes_received),
                              std::move(sync_enabled_or_disabled_cb),
-                             base::BindOnce(pending_initialization_calls_));
+                             base::BindOnce(pending_initialization_calls));
   shadow_backend_->InitBackend(base::DoNothing(), base::DoNothing(),
-                               base::BindOnce(pending_initialization_calls_));
+                               base::BindOnce(pending_initialization_calls));
 }
 
 void PasswordStoreProxyBackend::Shutdown(base::OnceClosure shutdown_completed) {
-  DCHECK(!pending_shutdown_calls_);
-  pending_shutdown_calls_ = base::BarrierClosure(
+  base::RepeatingClosure pending_shutdown_calls = base::BarrierClosure(
       /*num_closures=*/2, std::move(shutdown_completed));
   PasswordStoreBackend* backend = main_backend_.get();
   backend->Shutdown(base::BindOnce(&DeleteBackendAndInvokeCallback,
                                    std::move(main_backend_),
-                                   pending_shutdown_calls_));
+                                   pending_shutdown_calls));
   backend = shadow_backend_.get();
   backend->Shutdown(base::BindOnce(&DeleteBackendAndInvokeCallback,
                                    std::move(shadow_backend_),
-                                   pending_shutdown_calls_));
+                                   pending_shutdown_calls));
 }
 
 void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsReply callback) {
