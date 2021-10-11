@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/gpu/drm_render_node_path_finder.h"
 
 #include <fcntl.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
