@@ -358,7 +358,9 @@ MediaAppUIBrowserTest.MultipleSelectionLaunch = async () => {
   const selectedIndexes = [1, 3];
   const directory = await launchWithFiles(directoryContents, selectedIndexes);
 
-  assertFilenamesToBe('1.png,3.png');
+  // Expect filenames to be sorted in the default reverse lexicographical order.
+  assertEquals(TEST_ONLY.sortOrder, SortOrder.Z_FIRST);
+  assertFilenamesToBe('3.png,1.png');
 };
 
 // Tests that we show error UX when trying to launch an unopenable file.

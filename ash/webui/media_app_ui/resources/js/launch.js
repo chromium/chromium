@@ -944,10 +944,34 @@ async function processOtherFilesInDirectory(
     return ProcessOtherFilesResult.ABORT;
   }
 
+  await sortFiles(relatedFiles);
+  const name = focusFile.name;
+  const focusIndex = relatedFiles.findIndex(i => i.handle.name === name);
+  entryIndex = 0;
+  if (focusIndex === -1) {
+    // The focus file is no longer there i.e. might have been deleted, should be
+    // missing from `currentFiles` as well.
+    currentFiles.push(...relatedFiles);
+    return ProcessOtherFilesResult.FOCUS_FILE_MISSING;
+  } else {
+    // Rotate the sorted files so focusIndex becomes index 0 such that we have
+    // [focus file, ...files larger, ...files smaller].
+    currentFiles.push(...relatedFiles.slice(focusIndex + 1));
+    currentFiles.push(...relatedFiles.slice(0, focusIndex));
+    return ProcessOtherFilesResult.FOCUS_FILE_RELEVANT;
+  }
+}
+
+/**
+ * Sorts the given `files` by `sortOrder`.
+ * @param {!Array<!FileDescriptor>} files
+ * @private
+ */
+async function sortFiles(files) {
   if (sortOrder === SortOrder.NEWEST_FIRST) {
     // If we are sorting by modification time we need to have the actual File
     // object available.
-    for (const descriptor of relatedFiles) {
+    for (const descriptor of files) {
       // TODO(b/166210455): Remove this call to getFile as it may be slow for
       // android files see b/172529567. Leaving it in at the moment since sort
       // order is not set to NEWEST_FIRST in any production release and there is
@@ -965,7 +989,7 @@ async function processOtherFilesInDirectory(
   // order. More recent (i.e. higher timestamp) files should appear first. In
   // the case where timestamps are equal, the files will be sorted
   // lexicographically according to their names.
-  relatedFiles.sort((a, b) => {
+  files.sort((a, b) => {
     if (sortOrder === SortOrder.NEWEST_FIRST) {
       // Sort null files last if they racily appear.
       if (!a.file && !b.file) {
@@ -988,21 +1012,6 @@ async function processOtherFilesInDirectory(
             b.handle.name, [],
             {usage: 'sort', numeric: true, sensitivity: 'base'});
   });
-  const name = focusFile.name;
-  const focusIndex = relatedFiles.findIndex(i => i.handle.name === name);
-  entryIndex = 0;
-  if (focusIndex === -1) {
-    // The focus file is no longer there i.e. might have been deleted, should be
-    // missing form `currentFiles` as well.
-    currentFiles.push(...relatedFiles);
-    return ProcessOtherFilesResult.FOCUS_FILE_MISSING;
-  } else {
-    // Rotate the sorted files so focusIndex becomes index 0 such that we have
-    // [focus file, ...files larger, ...files smaller].
-    currentFiles.push(...relatedFiles.slice(focusIndex + 1));
-    currentFiles.push(...relatedFiles.slice(0, focusIndex));
-    return ProcessOtherFilesResult.FOCUS_FILE_RELEVANT;
-  }
 }
 
 /**
@@ -1162,6 +1171,7 @@ async function launchWithMultipleSelection(directory, handles) {
       });
     }
   }
+  await sortFiles(currentFiles);
   entryIndex = currentFiles.length > 0 ? 0 : -1;
   currentDirectoryHandle = directory;
   await sendFilesToGuest();
