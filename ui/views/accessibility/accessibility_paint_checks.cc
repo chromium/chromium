@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -28,11 +29,31 @@ std::string GetViewTreeAsString(View* view) {
 void RunAccessibilityPaintChecks(View* view) {
   if (view->GetProperty(kSkipAccessibilityPaintChecks))
     return;
+
   ui::AXNodeData node_data;
   view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
 
   if (!node_data.HasState(ax::mojom::State::kFocusable))
     return;
+
+// TODO(crbug.com/1218186): Enable these checks on ash. One of the current
+// failures seem to be SearchResultPageView marking itself as ignored
+// (temporarily), which marks focusable children as ignored. One way of enabling
+// these here would be to turn `kSkipAccessibilityPaintChecks` into a cascading
+// property or introduce a cascading property specifically for the current
+// misbehavior in SearchResultPageView to be able to suppress that and enable
+// the CHECK elsewhere.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  CHECK(!node_data.HasState(ax::mojom::State::kIgnored))
+      << " " << view << ": " << view->GetClassName()
+      << " is focusable and should not be ignored.\n"
+      << GetViewTreeAsString(view);
+
+  CHECK(!node_data.IsInvisible())
+      << " " << view << ": " << view->GetClassName()
+      << " is focusable and should not be invisible.\n"
+      << GetViewTreeAsString(view);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Focusable nodes must have an accessible name, otherwise screen reader users
   // will not know what they landed on. For example, the reload button should
