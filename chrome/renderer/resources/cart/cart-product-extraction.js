@@ -552,22 +552,15 @@ function getProductIdFromMatches(productIdMatches, matchIndex = undefined) {
   return null;
 }
 
-function extractProductId(url, imageUrl, item) {
+function getProductIdWithPattern(sourceMap, patternMap) {
   const hostname = window.location.hostname;
-  if (typeof idExtractionMap === 'undefined' ||
-      idExtractionMap === undefined) {
-    return null;
-  }
-  const source_map = {"product_url": url,
-    "product_image_url": imageUrl,
-    "product_element": item.outerHTML};
-  for (const source_name of Object.keys(source_map)) {
-    if (idExtractionMap[source_name] === undefined ||
-      !(hostname in idExtractionMap[source_name])) {
+  for (const sourceName of Object.keys(sourceMap)) {
+    if (patternMap[sourceName] === undefined ||
+      !(hostname in patternMap[sourceName])) {
       continue;
     }
-    const source = source_map[source_name];
-    const heuristic = idExtractionMap[source_name][hostname];
+    const source = sourceMap[sourceName];
+    const heuristic = patternMap[sourceName][hostname];
     if (Array.isArray(heuristic)) {
       return getProductIdFromMatches(source.match(
         new RegExp(heuristic[0], 'i')), heuristic[1]);
@@ -575,6 +568,31 @@ function extractProductId(url, imageUrl, item) {
       return getProductIdFromMatches(source.match(
         new RegExp(heuristic, 'i')));
     }
+  }
+  return null;
+}
+
+function extractProductId(url, imageUrl, item) {
+  const idExtractionMapNotExist =
+    typeof idExtractionMap === 'undefined' ||
+    idExtractionMap === undefined;
+  const couponIdExtractionMapNotExist =
+    typeof couponIdExtractionMap === 'undefined' ||
+    couponIdExtractionMap === undefined;
+  if (idExtractionMapNotExist && couponIdExtractionMapNotExist) {
+    return null;
+  }
+  let productId = null;
+  const sourceMap = {"product_url": url,
+    "product_image_url": imageUrl,
+    "product_element": item.outerHTML};
+  if (!idExtractionMapNotExist) {
+    productId = getProductIdWithPattern(sourceMap, idExtractionMap);
+    if (productId !== null) return productId;
+  }
+  if (!couponIdExtractionMapNotExist) {
+    productId = getProductIdWithPattern(sourceMap, couponIdExtractionMap);
+    if (productId !== null) return productId;
   }
   return null;
 }

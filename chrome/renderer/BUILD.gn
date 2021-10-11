@@ -410,6 +410,8 @@ static_library("renderer") {
     sources += [
       "cart/commerce_hint_agent.cc",
       "cart/commerce_hint_agent.h",
+      "cart/commerce_renderer_feature_list.cc",
+      "cart/commerce_renderer_feature_list.h",
       "media/chrome_speech_recognition_client.cc",
       "media/chrome_speech_recognition_client.h",
       "searchbox/searchbox.cc",
