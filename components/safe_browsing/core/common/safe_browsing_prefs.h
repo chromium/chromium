@@ -111,6 +111,10 @@ extern const char kSafeBrowsingMetricsLastLogTime[];
 // Used for logging metrics. Structure: go/sb-event-ts-pref-struct.
 extern const char kSafeBrowsingEventTimestamps[];
 
+// A timestamp indicating the last time the account tailored security boolean
+// was updated.
+extern const char kAccountTailoredSecurityUpdateTimestamp[];
+
 }  // namespace prefs
 
 namespace safe_browsing {
