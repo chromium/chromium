@@ -73,16 +73,19 @@ class RTxtGenerator(object):
       ret.update(self._ExtractNewIdsFromNode(child))
     return ret
 
-  def _ExtractNewIdsFromXml(self, xml_path):
+  def _ParseXml(self, xml_path):
     try:
-      root = ElementTree.parse(xml_path).getroot()
+      return ElementTree.parse(xml_path).getroot()
     except Exception as e:
       raise RuntimeError('Failure parsing {}:\n  {}'.format(xml_path, e))
-    return self._ExtractNewIdsFromNode(root)
+
+  def _ExtractNewIdsFromXml(self, xml_path):
+    return self._ExtractNewIdsFromNode(self._ParseXml(xml_path))
 
   def _ParseValuesXml(self, xml_path):
     ret = set()
-    root = ElementTree.parse(xml_path).getroot()
+    root = self._ParseXml(xml_path)
+
     assert root.tag == 'resources'
     for child in root:
       if child.tag == 'eat-comment':
