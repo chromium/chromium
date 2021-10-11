@@ -6853,21 +6853,6 @@
             ]
         }
     ],
-    "SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingPasswordProtectionForSignedInUsers": [
         {
             "platforms": [
@@ -6898,6 +6883,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SafeBrowsingPasswordProtectionRequestWithToken"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SafeBrowsingRealTimeUrlLookupReferrerChainForEnterprise": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingRealTimeUrlLookupReferrerChainForEnterprise"
                     ]
                 }
             ]
