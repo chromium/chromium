@@ -331,12 +331,6 @@ const char kSharedHighlightingUseBlocklistIOSDescription[] =
     "restrictions make it unlikely that a URL can be generated and actually "
     "work when shared.";
 
-const char kLocationPermissionsPromptName[] =
-    "Location Permisssions Prompt Experiment";
-const char kLocationPermissionsPromptDescription[] =
-    "When enabled, a different user experience flow will be shown to ask for "
-    "location permissions.";
-
 const char kLockBottomToolbarName[] = "Lock bottom toolbar";
 const char kLockBottomToolbarDescription[] =
     "When enabled, the bottom toolbar will not get collapsed when scrolling "

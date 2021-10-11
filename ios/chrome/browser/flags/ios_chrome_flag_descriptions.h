@@ -280,11 +280,6 @@ extern const char kIOSPersistCrashRestoreDescription[];
 extern const char kIOSSharedHighlightingColorChangeName[];
 extern const char kIOSSharedHighlightingColorChangeDescription[];
 
-// Title and description for the flag to experiment with different location
-// permission user experiences.
-extern const char kLocationPermissionsPromptName[];
-extern const char kLocationPermissionsPromptDescription[];
-
 // Title and description for the flag to lock the bottom toolbar into place.
 extern const char kLockBottomToolbarName[];
 extern const char kLockBottomToolbarDescription[];

@@ -41,9 +41,6 @@ extern const base::Feature kIncognitoBrandConsistencyForIOS;
 // Feature flag to enable revamped Incognito NTP page.
 extern const base::Feature kIncognitoNtpRevamp;
 
-// Feature flag that experiments with new location permissions user experiences.
-extern const base::Feature kLocationPermissionsPrompt;
-
 // Feature flag that experiments with the default browser fullscreen promo UI.
 extern const base::Feature kDefaultBrowserFullscreenPromoExperiment;
 

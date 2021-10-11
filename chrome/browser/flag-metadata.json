@@ -3621,11 +3621,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "location-permissions-prompt",
-    "owners": [ "thegreenfrog", "bling-flags@google.com" ],
-    "expiry_milestone": 91
-  },
-  {
     "name": "lock-screen-media-controls",
     "owners": [ "beccahughes", "media-dev" ],
     "expiry_milestone": 82
