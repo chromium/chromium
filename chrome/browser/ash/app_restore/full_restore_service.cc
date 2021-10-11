@@ -131,8 +131,11 @@ void FullRestoreService::Init() {
   if (!can_be_inited_)
     return;
 
-  // If the restore ddata has not been loaded, wait for it.
-  if (!app_launch_handler_->IsRestoreDataLoaded())
+  // If the restore data has not been loaded, wait for it. For test cases,
+  // `app_launch_handler_` might be reset as null because test cases might be
+  // finished before Init is called, so check `app_launch_handler_` to prevent
+  // crash for test cases.
+  if (!app_launch_handler_ || !app_launch_handler_->IsRestoreDataLoaded())
     return;
 
   if (is_shut_down_)
