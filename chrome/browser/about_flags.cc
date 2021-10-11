@@ -7660,7 +7660,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebMidiDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWebMidi)},
 #if defined(OS_ANDROID)
-    {"canvas-oop-rasterization",
+    {"use-real-color-space-for-android-video",
      flag_descriptions::kUseRealColorSpaceForAndroidVideoName,
      flag_descriptions::kUseRealColorSpaceForAndroidVideoDescription,
      kOsAndroid, FEATURE_VALUE_TYPE(media::kUseRealColorSpaceForAndroidVideo)},
