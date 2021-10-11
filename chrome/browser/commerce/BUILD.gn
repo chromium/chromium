@@ -12,5 +12,9 @@ source_set("feature_list") {
     "commerce_feature_list.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//third_party/re2:re2",
+    "//url:url",
+  ]
 }

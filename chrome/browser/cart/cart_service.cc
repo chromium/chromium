@@ -138,7 +138,8 @@ void CartService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 GURL CartService::AppendUTM(const GURL& base_url, bool is_discount_enabled) {
-  DCHECK(base_url.is_valid() && cart_features::IsPartnerMerchant(base_url));
+  DCHECK(base_url.is_valid() &&
+         cart_features::IsRuleDiscountPartnerMerchant(base_url));
 
   if (kRbdUtmParam.Get()) {
     return net::AppendOrReplaceQueryParameter(
@@ -332,11 +333,12 @@ void CartService::GetDiscountURL(
     const GURL& cart_url,
     base::OnceCallback<void(const ::GURL&)> callback) {
   auto url = cart_url;
-  if (cart_features::IsPartnerMerchant(cart_url)) {
+  if (cart_features::IsRuleDiscountPartnerMerchant(cart_url)) {
     url = AppendUTM(cart_url, IsCartDiscountEnabled());
   }
 
-  if (!cart_features::IsPartnerMerchant(cart_url) || !IsCartDiscountEnabled()) {
+  if (!cart_features::IsRuleDiscountPartnerMerchant(cart_url) ||
+      !IsCartDiscountEnabled()) {
     std::move(callback).Run(url);
     CartDiscountMetricCollector::RecordClickedOnDiscount(false);
     return;
@@ -395,7 +397,8 @@ void CartService::OnDiscountURLFetched(
 void CartService::PrepareForNavigation(const GURL& cart_url,
                                        bool is_navigating) {
   metrics_tracker_->PrepareToRecordUKM(cart_url);
-  if (is_navigating || !cart_features::IsPartnerMerchant(cart_url) ||
+  if (is_navigating ||
+      !cart_features::IsRuleDiscountPartnerMerchant(cart_url) ||
       !IsCartDiscountEnabled()) {
     return;
   }

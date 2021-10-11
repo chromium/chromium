@@ -16,7 +16,12 @@ constexpr base::FeatureParam<base::TimeDelta> kDiscountFetchDelayParam(
     "discount-fetch-delay",
     base::TimeDelta::FromHours(6));
 
-// Check if a URL belongs to a partner merchant.
+// Check if a URL belongs to a partner merchant of rule discount.
+bool IsRuleDiscountPartnerMerchant(const GURL& url);
+
+// Check if a URL belongs to a partner merchant of any discount types.
+// TODO(crbug.com/1253633): Move this method to commerce_feature_list after
+// modularizing CartService-related components.
 bool IsPartnerMerchant(const GURL& url);
 }  // namespace cart_features
 

@@ -28,7 +28,7 @@ class DiscountURLLoader;
 class FetchDiscountWorker;
 
 // Service to maintain and read/write data for chrome cart module.
-// TODO(crbug.com/1157892) Make this BrowserContext-based and get rid of Profile
+// TODO(crbug.com/1253633) Make this BrowserContext-based and get rid of Profile
 // usage so that we can modularize this.
 class CartService : public history::HistoryServiceObserver,
                     public KeyedService {

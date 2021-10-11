@@ -5,6 +5,7 @@
 #include "chrome/browser/cart/cart_features.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/commerce/commerce_feature_list.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace cart_features {
@@ -26,11 +27,16 @@ const re2::RE2& GetPartnerMerchantPattern() {
 
 }  // namespace
 
-bool IsPartnerMerchant(const GURL& url) {
+bool IsRuleDiscountPartnerMerchant(const GURL& url) {
   const std::string& url_string = url.spec();
   return RE2::PartialMatch(
       re2::StringPiece(url_string.data(), url_string.size()),
       GetPartnerMerchantPattern());
+}
+
+bool IsPartnerMerchant(const GURL& url) {
+  return commerce::IsCouponDiscountPartnerMerchant(url) ||
+         IsRuleDiscountPartnerMerchant(url);
 }
 
 }  // namespace cart_features

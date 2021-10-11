@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/cart/cart_discount_fetcher.h"
 #include "chrome/browser/cart/cart_service_factory.h"
+#include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -272,11 +273,18 @@ class FakeVariationsClient : public variations::VariationsClient {
 class FetchDiscountWorkerTest : public testing::Test {
  public:
   FetchDiscountWorkerTest() {
-    features_.InitAndEnableFeatureWithParameters(
-        ntp_features::kNtpChromeCartModule,
-        {{ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, "true"},
-         {"discount-fetch-delay", "6h"},
-         {"partner-merchant-pattern", "(foo.com)"}});
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+        enabled_features;
+    base::FieldTrialParams cart_params, coupon_params;
+    cart_params["NtpChromeCartModuleAbandonedCartDiscountParam"] = "true";
+    cart_params["discount-fetch-delay"] = "6h";
+    cart_params["partner-merchant-pattern"] = "(foo.com)";
+    enabled_features.emplace_back(ntp_features::kNtpChromeCartModule,
+                                  cart_params);
+    coupon_params["coupon-partner-merchant-pattern"] = "(qux.com)";
+    enabled_features.emplace_back(commerce::kRetailCoupons, coupon_params);
+    features_.InitWithFeaturesAndParameters(enabled_features,
+                                            /*disabled_features*/ {});
   }
   void SetUp() override {
     test_shared_url_loader_factory_ =
@@ -544,4 +552,30 @@ TEST_F(FetchDiscountWorkerTest, TestFetchSkippedForNonPartnerMerchants) {
   fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(0, FakeCartDiscountFetcher::GetFetchCount());
+}
+
+TEST_F(FetchDiscountWorkerTest, TestFetchForCouponPartnerMerchants) {
+  // Mock that there is a coupon partner merchant cart.
+  const char mock_merchant[] = "qux.com";
+  const char mock_merchant_url[] = "https://www.qux.com/cart";
+  const cart_db::ChromeCartContentProto mock_merchant_cart_proto =
+      BuildCartContentProto(mock_merchant, mock_merchant_url,
+                            kMockMerchantATimestamp);
+
+  CartDiscountFetcher::CartDiscountMap fake_result;
+  CreateCartDiscountFetcherFactory(std::move(fake_result), false);
+
+  CartDB::KeyAndValue mockMerchantACartContentKeyAndProto =
+      std::make_pair(mock_merchant, mock_merchant_cart_proto);
+  std::vector<CartDB::KeyAndValue> loader_fake_data(
+      1, mockMerchantACartContentKeyAndProto);
+  fake_cart_service_delegate_->SetCartLoadFakeData(loader_fake_data);
+  fake_cart_service_delegate_->SetCartDiscountUpdateExpectedData(
+      mock_merchant_cart_proto, false);
+
+  CreateWorker();
+
+  fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1, FakeCartDiscountFetcher::GetFetchCount());
 }
