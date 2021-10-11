@@ -7304,6 +7304,7 @@
                 {
                     "name": "ShrinkLogo",
                     "params": {
+                        "show_return_to_recent_tab": "true",
                         "shrink_logo": "true"
                     },
                     "enable_features": [
