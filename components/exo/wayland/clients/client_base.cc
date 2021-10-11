@@ -14,6 +14,7 @@
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <presentation-time-client-protocol.h>
+#include <stylus-unstable-v2-client-protocol.h>
 #include <sys/mman.h>
 #include <unistd.h>
 #include <wayland-client-core.h>
@@ -178,6 +179,9 @@ void RegistryHandler(void* data,
   } else if (strcmp(interface, "xdg_wm_base") == 0) {
     globals->xdg_wm_base.reset(static_cast<xdg_wm_base*>(
         wl_registry_bind(registry, id, &xdg_wm_base_interface, version)));
+  } else if (strcmp(interface, "zcr_stylus_v2") == 0) {
+    globals->stylus.reset(static_cast<zcr_stylus_v2*>(
+        wl_registry_bind(registry, id, &zcr_stylus_v2_interface, version)));
   }
 }
 
@@ -779,6 +783,8 @@ bool ClientBase::Init(const InitParams& params) {
     wl_touch* touch = wl_seat_get_touch(globals_.seat.get());
     wl_touch_add_listener(touch, &kTouchListener, this);
   }
+  if (params.use_stylus)
+    SetupPointerStylus();
 
   return true;
 }
@@ -1236,6 +1242,34 @@ void ClientBase::SetupAuraShellIfAvailable() {
   }
 
   zaura_surface_set_frame(aura_surface.get(), ZAURA_SURFACE_FRAME_TYPE_NORMAL);
+}
+
+void ClientBase::SetupPointerStylus() {
+  if (!globals_.stylus) {
+    LOG(ERROR) << "Can't find stylus interface";
+    return;
+  }
+
+  wl_pointer_ = base::WrapUnique(
+      static_cast<wl_pointer*>(wl_seat_get_pointer(globals_.seat.get())));
+
+  zcr_pointer_stylus_ = base::WrapUnique(
+      static_cast<zcr_pointer_stylus_v2*>(zcr_stylus_v2_get_pointer_stylus(
+          globals_.stylus.get(), wl_pointer_.get())));
+  if (!zcr_pointer_stylus_) {
+    LOG(ERROR) << "Can't get pointer stylus";
+    return;
+  }
+
+  static zcr_pointer_stylus_v2_listener kPointerStylusV2Listener = {
+      [](void* data, struct zcr_pointer_stylus_v2* x, uint32_t y) {},
+      [](void* data, struct zcr_pointer_stylus_v2* x, uint32_t y,
+         wl_fixed_t z) {},
+      [](void* data, struct zcr_pointer_stylus_v2* x, uint32_t y, wl_fixed_t z,
+         wl_fixed_t a) {},
+  };
+  zcr_pointer_stylus_v2_add_listener(zcr_pointer_stylus_.get(),
+                                     &kPointerStylusV2Listener, this);
 }
 
 }  // namespace clients

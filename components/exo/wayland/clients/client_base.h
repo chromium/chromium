@@ -67,6 +67,7 @@ class ClientBase {
     bool use_vulkan = false;
     bool use_xdg = false;
     bool use_release_fences = false;
+    bool use_stylus = false;
   };
 
   struct Globals {
@@ -91,6 +92,7 @@ class ClientBase {
         linux_explicit_synchronization;
     std::unique_ptr<zcr_vsync_feedback_v1> vsync_feedback;
     std::unique_ptr<zcr_color_space_v1> color_space;
+    std::unique_ptr<zcr_stylus_v2> stylus;
   };
 
   struct Buffer {
@@ -219,6 +221,8 @@ class ClientBase {
   std::unique_ptr<xdg_toplevel> xdg_toplevel_;
   std::unique_ptr<zxdg_surface_v6> zxdg_surface_;
   std::unique_ptr<zxdg_toplevel_v6> zxdg_toplevel_;
+  std::unique_ptr<wl_pointer> wl_pointer_;
+  std::unique_ptr<zcr_pointer_stylus_v2> zcr_pointer_stylus_;
   Globals globals_;
 #if defined(USE_GBM)
   base::ScopedFD drm_fd_;
@@ -242,6 +246,7 @@ class ClientBase {
 
  private:
   void SetupAuraShellIfAvailable();
+  void SetupPointerStylus();
 };
 
 }  // namespace clients

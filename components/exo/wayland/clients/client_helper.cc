@@ -78,6 +78,7 @@ DEFAULT_DELETER(zwp_text_input_manager_v1, zwp_text_input_manager_v1_destroy)
 DEFAULT_DELETER(zcr_secure_output_v1, zcr_secure_output_v1_destroy)
 DEFAULT_DELETER(zcr_alpha_compositing_v1, zcr_alpha_compositing_v1_destroy)
 DEFAULT_DELETER(zcr_stylus_v2, zcr_stylus_v2_destroy)
+DEFAULT_DELETER(zcr_pointer_stylus_v2, zcr_pointer_stylus_v2_destroy)
 DEFAULT_DELETER(zcr_cursor_shapes_v1, zcr_cursor_shapes_v1_destroy)
 DEFAULT_DELETER(zcr_gaming_input_v2, zcr_gaming_input_v2_destroy)
 DEFAULT_DELETER(zcr_keyboard_configuration_v1,
