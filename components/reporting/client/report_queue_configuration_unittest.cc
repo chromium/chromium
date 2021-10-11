@@ -90,6 +90,30 @@ TEST_F(ReportQueueConfigurationTest,
                    .ok());
 }
 
+TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithDeviceEventType) {
+  EXPECT_OK(ReportQueueConfiguration::Create(
+      EventType::kDevice, kValidDestination, kValidCallback));
+}
+
+TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithUserEventType) {
+  EXPECT_OK(ReportQueueConfiguration::Create(
+      EventType::kUser, kValidDestination, kValidCallback));
+}
+
+TEST_F(ReportQueueConfigurationTest,
+       ValidateConfigurationWithEventTypeInvalidDestination) {
+  EXPECT_FALSE(ReportQueueConfiguration::Create(
+                   EventType::kDevice, kInvalidDestination, kValidCallback)
+                   .ok());
+}
+
+TEST_F(ReportQueueConfigurationTest,
+       ValidateConfigurationWithEventTypeInvalidCallback) {
+  EXPECT_FALSE(ReportQueueConfiguration::Create(
+                   EventType::kDevice, kValidDestination, kInvalidCallback)
+                   .ok());
+}
+
 TEST_F(ReportQueueConfigurationTest, UsesProvidedPolicyCheckCallback) {
   const Destination destination = Destination::UPLOAD_EVENTS;
 

@@ -19,17 +19,34 @@ ReportQueueConfiguration::ReportQueueConfiguration() = default;
 ReportQueueConfiguration::~ReportQueueConfiguration() = default;
 
 StatusOr<std::unique_ptr<ReportQueueConfiguration>>
-ReportQueueConfiguration::Create(base::StringPiece dm_token,
+ReportQueueConfiguration::Create(EventType event_type,
                                  Destination destination,
                                  PolicyCheckCallback policy_check_callback) {
   auto config = base::WrapUnique<ReportQueueConfiguration>(
       new ReportQueueConfiguration());
 
-  RETURN_IF_ERROR(config->SetDMToken(dm_token));
+  RETURN_IF_ERROR(config->SetEventType(event_type));
   RETURN_IF_ERROR(config->SetDestination(destination));
   RETURN_IF_ERROR(config->SetPolicyCheckCallback(policy_check_callback));
 
   return config;
+}
+
+StatusOr<std::unique_ptr<ReportQueueConfiguration>>
+ReportQueueConfiguration::Create(base::StringPiece dm_token,
+                                 Destination destination,
+                                 PolicyCheckCallback policy_check_callback) {
+  auto config_result = Create(/*event_type=*/EventType::kDevice, destination,
+                              policy_check_callback);
+  if (!config_result.ok()) {
+    return config_result;
+  }
+
+  std::unique_ptr<ReportQueueConfiguration> config =
+      std::move(config_result.ValueOrDie());
+  RETURN_IF_ERROR(config->SetDMToken(dm_token));
+
+  return std::move(config);
 }
 
 Status ReportQueueConfiguration::SetPolicyCheckCallback(
@@ -39,6 +56,11 @@ Status ReportQueueConfiguration::SetPolicyCheckCallback(
                    "PolicyCheckCallback must not be null"));
   }
   policy_check_callback_ = std::move(policy_check_callback);
+  return Status::StatusOK();
+}
+
+Status ReportQueueConfiguration::SetEventType(EventType event_type) {
+  event_type_ = event_type;
   return Status::StatusOK();
 }
 
