@@ -1359,7 +1359,7 @@
     Get started
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_DONT_SHOW_AGAIN_CHECKBOX" desc="Text of a checkbox in the welcome card in the privacy review that prevents the welcome card from being shown again in the future.">
-    Don’t show again
+    Don’t show this step again
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_HEADER" desc="A header shown at the top of the completion card in the privacy review that informs users that they completed the privacy review.">
     Review completed!
