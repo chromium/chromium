@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest, OneCardSelected) {
   InvokePaymentRequestUI();
   OpenPaymentMethodScreen();
 
-  PaymentRequest* request = GetPaymentRequests().front();
+  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
   EXPECT_EQ(1U, request->state()->available_apps().size());
 
   views::View* list_view = dialog_view()->GetViewByID(
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest,
   InvokePaymentRequestUI();
   OpenPaymentMethodScreen();
 
-  PaymentRequest* request = GetPaymentRequests().front();
+  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
   EXPECT_EQ(2U, request->state()->available_apps().size());
   EXPECT_EQ(request->state()->available_apps().front().get(),
             request->state()->selected_app());

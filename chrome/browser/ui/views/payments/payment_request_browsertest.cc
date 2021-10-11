@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/payments/content/payment_request.h"
+#include "components/payments/content/payment_request_web_contents_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -32,16 +33,26 @@
 #endif
 
 namespace payments {
-namespace {
 
 using ::testing::UnorderedElementsAre;
 
-class PaymentRequestTest : public PaymentRequestBrowserTestBase {};
+class PaymentRequestWebContentsManagerTest
+    : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestWebContentsManagerTest(
+      const PaymentRequestWebContentsManagerTest&) = delete;
+  PaymentRequestWebContentsManagerTest& operator=(
+      const PaymentRequestWebContentsManagerTest&) = delete;
+
+ protected:
+  PaymentRequestWebContentsManagerTest() {}
+};
 
 // If the page creates multiple PaymentRequest objects, it should not crash.
-IN_PROC_BROWSER_TEST_F(PaymentRequestTest, MultipleRequests) {
+IN_PROC_BROWSER_TEST_F(PaymentRequestWebContentsManagerTest, MultipleRequests) {
   NavigateTo("/payment_request_multiple_requests.html");
-  const std::vector<PaymentRequest*> payment_requests = GetPaymentRequests();
+  const std::vector<PaymentRequest*> payment_requests =
+      GetPaymentRequests(GetActiveWebContents());
   EXPECT_EQ(5U, payment_requests.size());
 }
 
@@ -254,7 +265,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentMethodIdentifierTest,
   NavigateTo("/payment_request_payment_method_identifier_test.html");
   InvokePaymentRequestWithJs("buy();");
 
-  std::vector<PaymentRequest*> requests = GetPaymentRequests();
+  std::vector<PaymentRequest*> requests =
+      GetPaymentRequests(GetActiveWebContents());
   EXPECT_EQ(1u, requests.size());
   std::vector<std::string> supported_card_networks =
       requests[0]->spec()->supported_card_networks();
@@ -272,7 +284,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentMethodIdentifierTest,
   NavigateTo("/payment_request_payment_method_identifier_test.html");
   InvokePaymentRequestWithJs("buyHelper([basicCardMethod]);");
 
-  std::vector<PaymentRequest*> requests = GetPaymentRequests();
+  std::vector<PaymentRequest*> requests =
+      GetPaymentRequests(GetActiveWebContents());
   EXPECT_EQ(1u, requests.size());
   std::vector<std::string> supported_card_networks =
       requests[0]->spec()->supported_card_networks();
@@ -299,7 +312,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentMethodIdentifierTest, Url_Valid) {
       "  supportedMethods: 'basic-card'"
       "}]);");
 
-  std::vector<PaymentRequest*> requests = GetPaymentRequests();
+  std::vector<PaymentRequest*> requests =
+      GetPaymentRequests(GetActiveWebContents());
   EXPECT_EQ(1u, requests.size());
   std::vector<GURL> url_payment_method_identifiers =
       requests[0]->spec()->url_payment_method_identifiers();
@@ -378,5 +392,4 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSettingsLinkTest, ClickSettingsLink) {
       new_tab_contents->GetVisibleURL().spec());
 }
 
-}  // namespace
 }  // namespace payments

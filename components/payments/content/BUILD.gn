@@ -123,6 +123,8 @@ static_library("content") {
       "payment_request_display_manager.h",
       "payment_request_state.cc",
       "payment_request_state.h",
+      "payment_request_web_contents_manager.cc",
+      "payment_request_web_contents_manager.h",
       "payment_response_helper.cc",
       "payment_response_helper.h",
       "secure_payment_confirmation_controller.cc",
