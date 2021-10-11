@@ -39,9 +39,19 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) CupsJob {
     ABORTED      // an error occurred causing the printer to give up
   };
 
+  // Possible reasons sent by CUPS in job-state-reason sorted lexicographically.
+  // The strings are hardcoded in CUPS code and these strings the only once are
+  // currently needed.
+  enum class JobStateReason {
+    kJobCompletedWithErrors = 0,
+  };
+
   CupsJob();
   CupsJob(const CupsJob& other);
   ~CupsJob();
+
+  // Returns true if `job`.state_reasons contains `reason`.
+  bool ContainsStateReason(JobStateReason reason) const;
 
   // job id
   int id = -1;
