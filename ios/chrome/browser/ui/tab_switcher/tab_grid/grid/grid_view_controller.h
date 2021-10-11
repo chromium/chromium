@@ -22,6 +22,7 @@
 @class GridTransitionLayout;
 @class GridViewController;
 @protocol IncognitoReauthCommands;
+@protocol PriceCardDataSource;
 @protocol ThumbStripCommands;
 
 // Protocol used to relay relevant user interactions from a grid UI.
@@ -96,6 +97,8 @@
 @property(nonatomic, weak) id<GridDragDropHandler> dragDropHandler;
 // Data source for images.
 @property(nonatomic, weak) id<GridImageDataSource> imageDataSource;
+// Data source for acquiring data to power PriceCardView
+@property(nonatomic, weak) id<PriceCardDataSource> priceCardDataSource;
 // YES if the selected cell is visible in the grid.
 @property(nonatomic, readonly, getter=isSelectedCellVisible)
     BOOL selectedCellVisible;

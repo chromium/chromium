@@ -4,6 +4,8 @@
 
 source_set("commerce") {
   sources = [
+    "price_alert_util.h",
+    "price_alert_util.mm",
     "shopping_persisted_data_tab_helper.h",
     "shopping_persisted_data_tab_helper.mm",
   ]

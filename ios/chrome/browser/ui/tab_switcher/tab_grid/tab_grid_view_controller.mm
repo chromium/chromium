@@ -511,6 +511,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   _regularTabsImageDataSource = regularTabsImageDataSource;
 }
 
+- (void)setPriceCardDataSource:(id<PriceCardDataSource>)priceCardDataSource {
+  self.regularTabsViewController.priceCardDataSource = priceCardDataSource;
+  _priceCardDataSource = priceCardDataSource;
+}
+
 - (id<GridConsumer>)incognitoTabsConsumer {
   return self.incognitoTabsViewController;
 }

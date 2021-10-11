@@ -43,6 +43,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/bookmarks",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/commerce:price_card",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/default_promo",
     "//ios/chrome/browser/ui/gestures",

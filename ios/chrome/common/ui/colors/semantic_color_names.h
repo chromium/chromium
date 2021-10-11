@@ -56,6 +56,11 @@ extern NSString* const kBlueColor;
 extern NSString* const kBlueHaloColor;
 // Standard green color.
 extern NSString* const kGreenColor;
+
+// Other shades of green from the palette.
+extern NSString* const kGreen50Color;
+extern NSString* const kGreen700Color;
+
 // Standard red color. This is most commonly used for the tint color on
 // destructive controls.
 extern NSString* const kRedColor;

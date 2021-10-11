@@ -94,6 +94,10 @@ extern const CGFloat kGridCellSelectIconSize;
 extern const CGFloat kGridCellSelectionRingGapWidth;
 extern const CGFloat kGridCellSelectionRingTintWidth;
 
+// PriceCardView constants
+extern const CGFloat kGridCellPriceDropTopSpacing;
+extern const CGFloat kGridCellPriceDropLeadingSpacing;
+
 // Horizontal distance from the center of the plus sign image to the trailing of
 // the tab grid.
 extern const CGFloat kPlusSignImageTrailingCenterDistance;
