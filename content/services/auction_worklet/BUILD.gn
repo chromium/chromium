@@ -14,6 +14,8 @@ source_set("auction_worklet") {
     "auction_v8_devtools_session.h",
     "auction_v8_helper.cc",
     "auction_v8_helper.h",
+    "auction_v8_inspector_util.cc",
+    "auction_v8_inspector_util.h",
     "auction_worklet_service_impl.cc",
     "auction_worklet_service_impl.h",
     "bidder_worklet.cc",
@@ -58,6 +60,7 @@ source_set("tests") {
   sources = [
     "auction_downloader_unittest.cc",
     "auction_v8_helper_unittest.cc",
+    "auction_v8_inspector_util_unittest.cc",
     "bidder_worklet_unittest.cc",
     "debug_command_queue_unittest.cc",
     "seller_worklet_unittest.cc",

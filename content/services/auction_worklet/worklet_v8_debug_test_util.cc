@@ -14,13 +14,13 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner_forward.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/auction_v8_inspector_util.h"
 #include "v8/include/v8-inspector.h"
 #include "v8/include/v8-locker.h"
 
@@ -28,19 +28,10 @@ namespace auction_worklet {
 
 namespace {
 
-v8_inspector::StringView ToStringView(const std::string& str) {
-  return v8_inspector::StringView(reinterpret_cast<const uint8_t*>(str.data()),
-                                  str.size());
-}
-
 std::string ToString(v8_inspector::StringView sv) {
-  if (sv.is8Bit()) {
-    return std::string(reinterpret_cast<const char*>(sv.characters8()),
-                       sv.length());
-  } else {
-    return base::UTF16ToUTF8(base::StringPiece16(
-        reinterpret_cast<const char16_t*>(sv.characters16()), sv.length()));
-  }
+  std::vector<uint8_t> string_bytes = GetStringBytes(sv);
+  return std::string(reinterpret_cast<const char*>(string_bytes.data()),
+                     string_bytes.size());
 }
 
 }  // namespace

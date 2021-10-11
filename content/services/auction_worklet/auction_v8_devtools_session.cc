@@ -13,9 +13,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner_forward.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/auction_v8_inspector_util.h"
 #include "content/services/auction_worklet/debug_command_queue.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
@@ -25,22 +25,6 @@
 #include "third_party/inspector_protocol/crdtp/span.h"
 
 namespace auction_worklet {
-
-namespace {
-
-std::vector<uint8_t> Get8BitStringFrom(v8_inspector::StringBuffer* msg) {
-  const v8_inspector::StringView& s = msg->string();
-  if (s.is8Bit()) {
-    return std::vector<uint8_t>(s.characters8(), s.characters8() + s.length());
-  } else {
-    std::string converted = base::UTF16ToUTF8(base::StringPiece16(
-        reinterpret_cast<const char16_t*>(s.characters16()), s.length()));
-    const uint8_t* data = reinterpret_cast<const uint8_t*>(converted.data());
-    return std::vector<uint8_t>(data, data + converted.size());
-  }
-}
-
-}  // namespace
 
 // IOSession, which handles the pipe passed to the `io_session` parameter of
 // DevToolsAgent::AttachDevToolsSession(), runs on a non-V8 sequence (except
@@ -196,13 +180,13 @@ void AuctionV8DevToolsSession::sendResponse(
     int call_id,
     std::unique_ptr<v8_inspector::StringBuffer> message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  SendProtocolResponseImpl(call_id, Get8BitStringFrom(message.get()));
+  SendProtocolResponseImpl(call_id, GetStringBytes(message.get()));
 }
 
 void AuctionV8DevToolsSession::sendNotification(
     std::unique_ptr<v8_inspector::StringBuffer> message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  SendNotificationImpl(Get8BitStringFrom(message.get()));
+  SendNotificationImpl(GetStringBytes(message.get()));
 }
 
 void AuctionV8DevToolsSession::flushProtocolNotifications() {
