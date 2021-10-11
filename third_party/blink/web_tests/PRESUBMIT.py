@@ -32,9 +32,11 @@ def _CheckTestharnessResults(input_api, output_api):
 
     args = [input_api.python_executable, checker_path]
     args.extend(baseline_files)
-    _, errs = input_api.subprocess.Popen(args,
+    _, errs = input_api.subprocess.Popen(
+        args,
         stdout=input_api.subprocess.PIPE,
-        stderr=input_api.subprocess.PIPE).communicate()
+        stderr=input_api.subprocess.PIPE,
+        universal_newlines=True).communicate()
     if errs:
         return [output_api.PresubmitError(errs)]
     return []
