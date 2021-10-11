@@ -121,10 +121,6 @@ p {
   width: 100%;
 }
 
-.local-web-approvals-enabled .frame-blocked {
-  margin-top: 50px;
-}
-
 #main-message {
   margin-top: 36px;
 }
@@ -194,8 +190,8 @@ p {
   font-weight: bold;
 }
 
-/* Styles for when the local web approvals flag is enabled. */
-.local-web-approvals-enabled button {
+/* Styles for when the web filter interstitial refresh flag is enabled. */
+.interstitial-refresh-enabled button {
   font-size: 13px;
   font-weight: 500;
   height: 32px;
@@ -203,39 +199,67 @@ p {
   padding: 6px 16px;
 }
 
-.local-web-approvals-enabled .secondary-button {
+.interstitial-refresh-enabled .secondary-button {
   background: var(--background-color);
   border: 1px solid var(--google-gray-300);
   color: var(--google-blue-600);
 }
 
-.local-web-approvals-enabled .secondary-button:active {
+.interstitial-refresh-enabled .secondary-button:active {
   background: var(--secondary-button-hover-fill-color);
 }
 
-.local-web-approvals-enabled h1 {
+.interstitial-refresh-enabled h1 {
   font-family: "Google Sans", sans-serif;
 }
 
-.local-web-approvals-enabled p {
+.interstitial-refresh-enabled p {
   color: var(--paragraph-color);
   font-size: 14px;
 }
 
-.local-web-approvals-enabled .icon {
+.interstitial-refresh-enabled .icon {
   display: none;
 }
 
-.local-web-approvals-enabled #illustration-light-theme {
+.interstitial-refresh-enabled #illustration-light-theme {
   display: inline;
 }
 
-.local-web-approvals-enabled .frame-blocked {
+.interstitial-refresh-enabled .frame-blocked {
   display: flex;
   flex-direction: column;
+  margin-top: 50px;
   max-width: 432px;
 }
 
+.interstitial-refresh-enabled .go-back-button {
+  float: right;
+  margin-left: 24px;
+}
+
+.interstitial-refresh-enabled #custodians-information {
+  margin-top: 0;
+}
+
+.interstitial-refresh-enabled .custodian-information {
+  margin-top: 24px;
+}
+
+.interstitial-refresh-enabled .avatar-img {
+  border: none;
+}
+
+.interstitial-refresh-enabled .custodian-name {
+  display: none;
+}
+
+.interstitial-refresh-enabled .custodian-email {
+  font-size: 13px;
+}
+
+/* Local approvals button is only shown when the local web approvals flag
+is enabled. */
 .local-approvals-button {
   float: right;
   margin-left: 24px;
@@ -245,31 +269,6 @@ p {
   background: var(--primary-button-fill-color-active);
 }
 
-.local-web-approvals-enabled .go-back-button {
-  float: right;
-  margin-left: 24px;
-}
-
-.local-web-approvals-enabled #custodians-information {
-  margin-top: 0;
-}
-
-.local-web-approvals-enabled .custodian-information {
-  margin-top: 24px;
-}
-
-.local-web-approvals-enabled .avatar-img {
-  border: none;
-}
-
-.local-web-approvals-enabled .custodian-name {
-  display: none;
-}
-
-.local-web-approvals-enabled .custodian-email {
-  font-size: 13px;
-}
-
 @media (prefers-color-scheme: dark) {
   body.supervised-user-block {
     --avatar-stroke-color: var(--google-blue-100);
@@ -277,20 +276,20 @@ p {
     --custodian-name-color: var(--google-gray-500);
   }
 
-  body.supervised-user-block.local-web-approvals-enabled {
+  body.supervised-user-block.interstitial-refresh-enabled {
     --header-color: #e9eaed;
     --paragraph-color: var(--google-gray-500);
   }
 
-  .local-web-approvals-enabled #illustration-light-theme {
+  .interstitial-refresh-enabled #illustration-light-theme {
     display: none;
   }
 
-  .local-web-approvals-enabled #illustration-dark-theme {
+  .interstitial-refresh-enabled #illustration-dark-theme {
     display: inline;
   }
 
-  .local-web-approvals-enabled .remote-approvals-button {
+  .interstitial-refresh-enabled .remote-approvals-button {
     color: var(--google-blue-300);
     border-color: var(--secondary-button-border-color);
   }
@@ -317,28 +316,29 @@ margin to 0. This will be useful for subframes. */
   }
 }
 
-/* Narrow width styles when local web approvals is enabled. */
+/* Narrow width styles when the web filter interstitial refresh flag is
+enabled. */
 @media (max-width: 480px) {
-  .local-web-approvals-enabled {
+  .interstitial-refresh-enabled {
     padding: 0;
     margin: auto;
   }
 
-  .local-web-approvals-enabled button,
-  .local-web-approvals-enabled [dir='rtl'] button {
+  .interstitial-refresh-enabled button,
+  .interstitial-refresh-enabled [dir='rtl'] button {
     width: initial;
   }
 
-  .local-web-approvals-enabled button {
+  .interstitial-refresh-enabled button {
     margin: 0 4px 16px 4px;
   }
 
-  .local-web-approvals-enabled #illustration-light-theme,
-  .local-web-approvals-enabled #illustration-dark-theme {
+  .interstitial-refresh-enabled #illustration-light-theme,
+  .interstitial-refresh-enabled #illustration-dark-theme {
     display: none;
   }
 
-  .local-web-approvals-enabled .frame-blocked {
+  .interstitial-refresh-enabled .frame-blocked {
     align-items: center;
     background-color: rgba(232, 234, 237, .38);;
     border-radius: 12px;
@@ -346,33 +346,33 @@ margin to 0. This will be useful for subframes. */
     width: 284px;
   }
 
-  .local-web-approvals-enabled .message-container {
+  .interstitial-refresh-enabled .message-container {
     align-items: center;
   }
 
-  .local-web-approvals-enabled #main-message {
+  .interstitial-refresh-enabled #main-message {
     margin-top: 32px;
     text-align: center;
   }
 
-  .local-web-approvals-enabled #custodians-information {
+  .interstitial-refresh-enabled #custodians-information {
     margin-top: 8px;
   }
 
-  .local-web-approvals-enabled .custodian-information {
+  .interstitial-refresh-enabled .custodian-information {
     margin-top: 8px;
   }
 
-  .local-web-approvals-enabled .custodian-contact {
+  .interstitial-refresh-enabled .custodian-contact {
     height: 24px;
   }
 
-  .local-web-approvals-enabled .avatar-img {
+  .interstitial-refresh-enabled .avatar-img {
     height: 24px;
     width: 24px;
   }
 
-  .local-web-approvals-enabled .button-container {
+  .interstitial-refresh-enabled .button-container {
     display: flex;
     flex-direction: row-reverse;
     flex-wrap: wrap;
@@ -380,13 +380,13 @@ margin to 0. This will be useful for subframes. */
     margin: 24px 0 16px;
   }
 
-  .local-web-approvals-enabled .go-back-button {
+  .interstitial-refresh-enabled .go-back-button {
     margin-left: 4px;
   }
 }
 
 @media (prefers-color-scheme: dark) and (max-width: 480px) {
-  .local-web-approvals-enabled .frame-blocked {
+  .interstitial-refresh-enabled .frame-blocked {
     background-color: initial;
   }
 }

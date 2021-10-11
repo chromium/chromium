@@ -95,8 +95,12 @@ std::string BuildHtml(bool allow_access_requests,
   strings.SetString("secondCustodianEmail", second_custodian_email);
   strings.SetBoolean("alreadySentRequest", already_sent_request);
   strings.SetBoolean("isMainFrame", is_main_frame);
+  bool web_filter_interstitial_refresh_enabled =
+      supervised_users::IsWebFilterInterstitialRefreshEnabled();
   bool local_web_approvals_enabled =
       supervised_users::IsLocalWebApprovalsEnabled();
+  strings.SetBoolean("isWebFilterInterstitialRefreshEnabled",
+                     web_filter_interstitial_refresh_enabled);
   strings.SetBoolean("isLocalWebApprovalsEnabled", local_web_approvals_enabled);
   bool is_automatically_blocked = ReasonIsAutomatic(reason);
 
@@ -107,12 +111,12 @@ std::string BuildHtml(bool allow_access_requests,
     block_header =
         l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_HEADER_NOT_SIGNED_IN);
   } else if (allow_access_requests) {
-      block_header =
-          l10n_util::GetStringUTF16(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER);
-      block_message = l10n_util::GetStringUTF16(
-          local_web_approvals_enabled && is_automatically_blocked
-              ? IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_SAFE_SITES_BLOCKED
-              : IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE);
+    block_header =
+        l10n_util::GetStringUTF16(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER);
+    block_message = l10n_util::GetStringUTF16(
+        web_filter_interstitial_refresh_enabled && is_automatically_blocked
+            ? IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_SAFE_SITES_BLOCKED
+            : IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE);
   } else {
     block_header = l10n_util::GetStringUTF16(
         IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED);
@@ -128,7 +132,7 @@ std::string BuildHtml(bool allow_access_requests,
   strings.SetBoolean("showFeedbackLink", is_automatically_blocked);
   strings.SetString("feedbackLink", l10n_util::GetStringUTF16(
                                         IDS_BLOCK_INTERSTITIAL_SEND_FEEDBACK));
-  if (local_web_approvals_enabled) {
+  if (web_filter_interstitial_refresh_enabled) {
     strings.SetString(
         "remoteApprovalsButton",
         l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_SEND_MESSAGE_BUTTON));
@@ -153,7 +157,7 @@ std::string BuildHtml(bool allow_access_requests,
   std::u16string request_sent_message;
   std::u16string request_failed_message;
   std::u16string request_sent_description;
-  if (local_web_approvals_enabled) {
+  if (web_filter_interstitial_refresh_enabled) {
     request_sent_message = l10n_util::GetStringUTF16(
         IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_MESSAGE);
     request_sent_description = l10n_util::GetStringUTF16(

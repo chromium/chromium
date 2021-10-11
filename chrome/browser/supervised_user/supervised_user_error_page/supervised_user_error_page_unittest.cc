@@ -58,7 +58,7 @@ struct BuildHtmlTestParameter {
   const std::string& second_custodian_email;
   FilteringBehaviorReason reason;
   bool has_two_parents;
-  bool is_local_web_approvals_enabled;
+  bool is_web_filter_interstitial_refresh_enabled;
 };
 
 class SupervisedUserErrorPageTest_BuildHtml
@@ -67,7 +67,7 @@ class SupervisedUserErrorPageTest_BuildHtml
 TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
   BuildHtmlTestParameter param = GetParam();
   base::test::ScopedFeatureList scoped_feature_list_;
-  if (param.is_local_web_approvals_enabled) {
+  if (param.is_web_filter_interstitial_refresh_enabled) {
     scoped_feature_list_.InitWithFeatures(
         /* enabled_features */ {supervised_users::kWebFilterInterstitialRefresh,
                                 supervised_users::kLocalWebApprovals},
@@ -100,37 +100,36 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
   // Messages containing parameters aren't tested since they get modified before
   // they are added to the result.
   if (param.allow_access_requests) {
-      EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
-                              IDS_CHILD_BLOCK_INTERSTITIAL_HEADER)));
-      if (param.is_local_web_approvals_enabled &&
-          (param.reason == ASYNC_CHECKER || param.reason == DENYLIST)) {
-        EXPECT_THAT(
-            result,
-            testing::HasSubstr(l10n_util::GetStringUTF8(
-                IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_SAFE_SITES_BLOCKED)));
-      } else {
-        EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
-                                IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE)));
-      }
+    EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
+                            IDS_CHILD_BLOCK_INTERSTITIAL_HEADER)));
+    if (param.is_web_filter_interstitial_refresh_enabled &&
+        (param.reason == ASYNC_CHECKER || param.reason == DENYLIST)) {
       EXPECT_THAT(
           result,
-          testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
-              IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED))));
-      // This string is used for a button that is always present in the DOM, but
-      // only visible when local web approvals is enabled.
+          testing::HasSubstr(l10n_util::GetStringUTF8(
+              IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_SAFE_SITES_BLOCKED)));
+    } else {
       EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
-                              IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_BUTTON)));
-      if (param.is_local_web_approvals_enabled) {
-        EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
-                                IDS_BLOCK_INTERSTITIAL_SEND_MESSAGE_BUTTON)));
-        EXPECT_THAT(result, testing::HasSubstr(
-                                l10n_util::GetStringUTF8(IDS_REQUEST_SENT_OK)));
-      } else {
-        EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
-                                IDS_BLOCK_INTERSTITIAL_REQUEST_ACCESS_BUTTON)));
-        EXPECT_THAT(result, testing::HasSubstr(
-                                l10n_util::GetStringUTF8(IDS_BACK_BUTTON)));
-      }
+                              IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE)));
+    }
+    EXPECT_THAT(result,
+                testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
+                    IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED))));
+    // This string is used for a button that is always present in the DOM, but
+    // only visible when local web approvals is enabled.
+    EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
+                            IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_BUTTON)));
+    if (param.is_web_filter_interstitial_refresh_enabled) {
+      EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
+                              IDS_BLOCK_INTERSTITIAL_SEND_MESSAGE_BUTTON)));
+      EXPECT_THAT(result, testing::HasSubstr(
+                              l10n_util::GetStringUTF8(IDS_REQUEST_SENT_OK)));
+    } else {
+      EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
+                              IDS_BLOCK_INTERSTITIAL_REQUEST_ACCESS_BUTTON)));
+      EXPECT_THAT(result, testing::HasSubstr(
+                              l10n_util::GetStringUTF8(IDS_BACK_BUTTON)));
+    }
 
   } else {
     EXPECT_THAT(result,
@@ -143,7 +142,7 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
                 testing::HasSubstr(l10n_util::GetStringUTF8(
                     IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED)));
   }
-  if (param.is_local_web_approvals_enabled) {
+  if (param.is_web_filter_interstitial_refresh_enabled) {
     EXPECT_THAT(result,
                 testing::HasSubstr(l10n_util::GetStringUTF8(
                     IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_MESSAGE)));
