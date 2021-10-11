@@ -754,7 +754,9 @@ void PdfViewPluginBase::DestroyPreviewEngine() {
 }
 
 void PdfViewPluginBase::LoadUrl(base::StringPiece url, bool is_print_preview) {
-  last_progress_sent_ = 0;
+  // `last_progress_sent_` should only be reset for the primary load.
+  if (!is_print_preview)
+    last_progress_sent_ = 0;
 
   UrlRequest request;
   request.url = std::string(url);
@@ -1253,8 +1255,10 @@ void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
     OnGeometryChanged(zoom_, device_scale_);
 
     // Send 100% loading progress only after initial layout negotiated.
-    if (last_progress_sent_ < 100)
+    if (last_progress_sent_ < 100 &&
+        document_load_state_ == DocumentLoadState::kComplete) {
       SendLoadingProgress(/*percentage=*/100);
+    }
   }
 
   gfx::Vector2dF scroll_offset(message.FindDoubleKey("xOffset").value(),

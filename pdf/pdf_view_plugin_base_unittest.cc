@@ -495,6 +495,20 @@ TEST_F(PdfViewPluginBaseTest, DocumentLoadProgressResetByLoadUrl) {
   })")));
 }
 
+TEST_F(PdfViewPluginBaseTest,
+       DocumentLoadProgressNotResetByLoadUrlWithPrintPreview) {
+  fake_plugin_.DocumentLoadProgress(2, 100);
+  fake_plugin_.clear_sent_messages();
+  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal).WillOnce([]() {
+    return std::make_unique<testing::NiceMock<MockUrlLoader>>();
+  });
+
+  fake_plugin_.LoadUrl("fake-url", /*is_print_preview=*/true);
+  fake_plugin_.DocumentLoadProgress(3, 100);
+
+  EXPECT_THAT(fake_plugin_.sent_messages(), IsEmpty());
+}
+
 TEST_F(PdfViewPluginBaseTest, CreateUrlLoaderInFullFrame) {
   fake_plugin_.set_full_frame_for_testing(true);
   ASSERT_TRUE(fake_plugin_.full_frame());
@@ -896,9 +910,35 @@ TEST_F(PdfViewPluginBaseTest, HandleSetBackgroundColorMessage) {
   EXPECT_EQ(kNewBackgroundColor, fake_plugin_.GetBackgroundColor());
 }
 
-TEST_F(PdfViewPluginBaseWithEngineTest, HandleViewportMessageInitially) {
+TEST_F(PdfViewPluginBaseWithEngineTest,
+       HandleViewportMessageBeforeDocumentLoadComplete) {
   auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
   EXPECT_CALL(*engine, ApplyDocumentLayout(DocumentLayout::Options()));
+
+  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+    "type": "viewport",
+    "userInitiated": false,
+    "zoom": 1,
+    "layoutOptions": {
+      "direction": 0,
+      "defaultPageOrientation": 0,
+      "twoUpViewEnabled": false,
+    },
+    "xOffset": 0,
+    "yOffset": 0,
+    "pinchPhase": 0,
+  })"));
+
+  EXPECT_THAT(fake_plugin_.sent_messages(), IsEmpty());
+}
+
+TEST_F(PdfViewPluginBaseWithEngineTest,
+       HandleViewportMessageAfterDocumentLoadComplete) {
+  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
+  EXPECT_CALL(*engine, ApplyDocumentLayout(DocumentLayout::Options()));
+
+  fake_plugin_.DocumentLoadComplete();
+  fake_plugin_.clear_sent_messages();
 
   fake_plugin_.HandleMessage(base::test::ParseJson(R"({
     "type": "viewport",

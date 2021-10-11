@@ -356,7 +356,8 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
 }
 
 /**
- * The background color used for print preview (--google-grey-refresh-300).
+ * The background color used for print preview (--google-grey-refresh-300). Keep
+ * in sync with `ChromePdfStreamDelegate::MapToOriginalUrl()`.
  * @type {number}
  */
 const PRINT_PREVIEW_BACKGROUND_COLOR = 0xffdadce0;

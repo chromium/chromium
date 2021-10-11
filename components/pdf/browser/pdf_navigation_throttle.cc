@@ -102,12 +102,9 @@ PdfNavigationThrottle::WillStartRequest() {
   if (!contents)
     return PROCEED;
 
-  const absl::optional<PdfStreamDelegate::StreamInfo> stream =
-      stream_delegate_->GetStreamInfo(contents);
-  if (!stream.has_value())
-    return PROCEED;
-
-  if (navigation_handle()->GetURL() != stream->stream_url)
+  const absl::optional<GURL> original_url = stream_delegate_->MapToOriginalUrl(
+      contents, navigation_handle()->GetURL());
+  if (!original_url.has_value())
     return PROCEED;
 
   // Uses the same pattern as `PDFIFrameNavigationThrottle` to redirect
@@ -116,7 +113,7 @@ PdfNavigationThrottle::WillStartRequest() {
   // and replace its content.
   content::OpenURLParams params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
-  params.url = stream->original_url;
+  params.url = original_url.value();
   params.transition = ui::PAGE_TRANSITION_AUTO_SUBFRAME;
   params.is_pdf = true;
 

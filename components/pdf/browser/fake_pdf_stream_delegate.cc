@@ -29,6 +29,15 @@ FakePdfStreamDelegate::FakePdfStreamDelegate() {
 
 FakePdfStreamDelegate::~FakePdfStreamDelegate() = default;
 
+absl::optional<GURL> FakePdfStreamDelegate::MapToOriginalUrl(
+    content::WebContents* contents,
+    const GURL& stream_url) {
+  if (!stream_info_ || stream_info_->stream_url != stream_url)
+    return absl::nullopt;
+
+  return stream_info_->original_url;
+}
+
 absl::optional<PdfStreamDelegate::StreamInfo>
 FakePdfStreamDelegate::GetStreamInfo(content::WebContents* contents) {
   EXPECT_TRUE(contents);
