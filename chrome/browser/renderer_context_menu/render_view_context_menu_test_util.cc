@@ -11,7 +11,7 @@
 #include "ui/base/models/menu_model.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #endif
 
 using ui::MenuModel;

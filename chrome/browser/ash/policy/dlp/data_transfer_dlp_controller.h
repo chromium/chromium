@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/dlp/dlp_clipboard_notifier.h"
 #include "chrome/browser/ash/policy/dlp/dlp_drag_drop_notifier.h"
-#include "chrome/browser/ash/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 

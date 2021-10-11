@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_DLP_DLP_RULES_MANAGER_IMPL_H_
-#define CHROME_BROWSER_ASH_POLICY_DLP_DLP_RULES_MANAGER_IMPL_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_RULES_MANAGER_IMPL_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_RULES_MANAGER_IMPL_H_
 
-#include "chrome/browser/ash/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 
 #include <map>
 #include <memory>
@@ -105,4 +105,4 @@ class DlpRulesManagerImpl : public DlpRulesManager {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_DLP_DLP_RULES_MANAGER_IMPL_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_RULES_MANAGER_IMPL_H_

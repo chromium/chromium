@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chrome/browser/ash/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 
 namespace policy {
 

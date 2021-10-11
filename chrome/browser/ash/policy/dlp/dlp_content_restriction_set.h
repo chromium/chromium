@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONTENT_RESTRICTION_SET_H_
 #define CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONTENT_RESTRICTION_SET_H_
 
-#include "chrome/browser/ash/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 
 #include <array>
 

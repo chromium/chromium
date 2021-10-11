@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/util/status.h"
 

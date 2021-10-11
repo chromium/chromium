@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/ash/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/ash/policy/dlp/dlp_reporting_manager_test_helper.h"
-#include "chrome/browser/ash/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/reporting/util/status.h"
 #include "components/user_manager/scoped_user_manager.h"
