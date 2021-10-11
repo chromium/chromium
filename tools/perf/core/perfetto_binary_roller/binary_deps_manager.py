@@ -7,6 +7,7 @@ import os
 import posixpath
 import stat
 import subprocess
+import six
 
 import py_utils
 from py_utils import cloud_storage
@@ -25,7 +26,7 @@ CONFIG_PATH = os.path.abspath(
 
 
 def _GetHostArch():
-  uname_arch = subprocess.check_output(['uname', '-m']).strip()
+  uname_arch = six.ensure_str(subprocess.check_output(['uname', '-m']).strip())
   if uname_arch == 'armv7l':
     return 'arm'
   elif uname_arch == 'aarch64':
@@ -34,7 +35,7 @@ def _GetHostArch():
 
 
 def _GetBinaryArch(binary_name):
-  file_output = subprocess.check_output(['file', binary_name])
+  file_output = six.ensure_str(subprocess.check_output(['file', binary_name]))
   file_arch = file_output.split(',')[1].strip()
   if file_arch == 'x86-64':
     return 'x86_64'
