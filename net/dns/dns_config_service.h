@@ -10,7 +10,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -75,6 +74,12 @@ class NET_EXPORT_PRIVATE DnsConfigService {
     watch_failed_ = watch_failed;
   }
 
+  // Simulates a watcher trigger by calling OnConfigChanged().
+  void TriggerOnConfigChangedForTesting(bool succeeded) {
+    // Directly call ...Delayed() version to skip past delay logic.
+    OnConfigChangedDelayed(succeeded);
+  }
+
  protected:
   // Watcher to observe for changes to DNS config or HOSTS (via overriding
   // `Watch()` with platform specifics) and trigger necessary refreshes on
@@ -118,38 +123,47 @@ class NET_EXPORT_PRIVATE DnsConfigService {
     // the lifetime of the created reader.
     HostsReader(base::FilePath::StringPieceType hosts_file_path,
                 DnsConfigService& service);
+    ~HostsReader() override;
 
     HostsReader(const HostsReader&) = delete;
     HostsReader& operator=(const HostsReader&) = delete;
 
    protected:
-    ~HostsReader() override;
+    class WorkItem : public SerialWorker::WorkItem {
+     public:
+      explicit WorkItem(base::FilePath hosts_file_path);
+      ~WorkItem() override;
 
-    // Reads the HOSTS file and parses to a `DnsHosts`. Returns nullopt on
-    // failure. Will be called on a separate blockable ThreadPool thread.
-    //
-    // Override if needed to implement platform-specific behavior, e.g. for a
-    // platform-specific HOSTS format.
-    virtual absl::optional<DnsHosts> ReadHosts();
+      // Override if needed to implement platform-specific behavior, e.g. for a
+      // platform-specific HOSTS format.
+      virtual absl::optional<DnsHosts> ReadHosts();
 
-    // Adds any necessary additional entries to the given `DnsHosts`. Returns
-    // false on failure. Will be called on a separate blockable ThreadPool
-    // thread.
-    //
-    // Override if needed to implement platform-specific behavior.
-    virtual bool AddAdditionalHostsTo(DnsHosts& in_out_dns_hosts);
+      // Adds any necessary additional entries to the given `DnsHosts`. Returns
+      // false on failure.
+      //
+      // Override if needed to implement platform-specific behavior.
+      virtual bool AddAdditionalHostsTo(DnsHosts& in_out_dns_hosts);
+
+      // SerialWorker::WorkItem:
+      void DoWork() final;
+
+     private:
+      friend HostsReader;
+
+      absl::optional<DnsHosts> hosts_;
+      const base::FilePath hosts_file_path_;
+    };
 
     // SerialWorker:
-    void DoWork() final;
-    void OnWorkFinished() final;
+    std::unique_ptr<SerialWorker::WorkItem> CreateWorkItem() override;
+    void OnWorkFinished(
+        std::unique_ptr<SerialWorker::WorkItem> work_item) final;
 
    private:
     // Raw pointer to owning DnsConfigService. This must never be accessed
     // inside DoWork(), since service may be destroyed while SerialWorker is
     // running on worker thread.
     DnsConfigService* const service_;
-    // Written in DoWork, read in OnWorkFinished, no locking necessary.
-    absl::optional<DnsHosts> hosts_;
 
     const base::FilePath hosts_file_path_;
   };
@@ -206,7 +220,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
 
   // Created only if needed in ReadHostsNow() to avoid creating unnecessarily if
   // overridden for a platform-specific implementation.
-  scoped_refptr<HostsReader> hosts_reader_;
+  std::unique_ptr<HostsReader> hosts_reader_;
 
   // Started in Invalidate*, cleared in On*Read.
   base::OneShotTimer timer_;

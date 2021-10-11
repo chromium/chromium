@@ -4,6 +4,8 @@
 
 #include "net/dns/serial_worker.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
@@ -25,17 +27,33 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
   // The class under test
   class TestSerialWorker : public SerialWorker {
    public:
+    class TestWorkItem : public SerialWorker::WorkItem {
+     public:
+      explicit TestWorkItem(SerialWorkerTest* test) : test_(test) {}
+
+      void DoWork() override {
+        ASSERT_TRUE(test_);
+        test_->OnWork();
+      }
+
+     private:
+      SerialWorkerTest* test_;
+    };
+
     explicit TestSerialWorker(SerialWorkerTest* t) : test_(t) {}
-    void DoWork() override {
-      ASSERT_TRUE(test_);
-      test_->OnWork();
+    ~TestSerialWorker() override = default;
+
+    std::unique_ptr<SerialWorker::WorkItem> CreateWorkItem() override {
+      return std::make_unique<TestWorkItem>(test_);
     }
-    void OnWorkFinished() override {
+
+    void OnWorkFinished(
+        std::unique_ptr<SerialWorker::WorkItem> work_item) override {
       ASSERT_TRUE(test_);
       test_->OnWorkFinished();
     }
+
    private:
-    ~TestSerialWorker() override = default;
     SerialWorkerTest* test_;
   };
 
@@ -47,7 +65,7 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
   void OnWork() {
     { // Check that OnWork is executed serially.
       base::AutoLock lock(work_lock_);
-      EXPECT_FALSE(work_running_) << "DoRead is not called serially!";
+      EXPECT_FALSE(work_running_) << "`DoWork()` is not called serially!";
       work_running_ = true;
     }
     BreakNow("OnWork");
@@ -69,6 +87,7 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
   void OnWorkFinished() {
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
     EXPECT_EQ(output_value_, input_value_);
+    ++work_finished_calls_;
     BreakNow("OnWorkFinished");
   }
 
@@ -105,9 +124,10 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
   // Helpers for tests.
 
   // Lets OnWork run and waits for it to complete. Can only return if OnWork is
-  // executed on a concurrent thread.
-  void WaitForWork() {
-    RunUntilBreak("OnWork");
+  // executed on a concurrent thread. Before calling, OnWork() must already have
+  // been started and blocked (ensured by running `RunUntilBreak("OnWork")`).
+  void UnblockWork() {
+    ASSERT_TRUE(work_running_);
     work_allowed_.Signal();
     work_called_.Wait();
   }
@@ -115,17 +135,16 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
   // test::Test methods
   void SetUp() override {
     task_runner_ = base::ThreadTaskRunnerHandle::Get();
-    worker_ = new TestSerialWorker(this);
   }
 
   void TearDown() override {
     // Cancel the worker to catch if it makes a late DoWork call.
-    worker_->Cancel();
+    worker_.Cancel();
     // Check if OnWork is stalled.
     EXPECT_FALSE(work_running_) << "OnWork should be done by TearDown";
     // Release it for cleanliness.
     if (work_running_) {
-      WaitForWork();
+      UnblockWork();
     }
   }
 
@@ -142,34 +161,89 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
   bool work_running_;
   base::Lock work_lock_;
 
+  int work_finished_calls_ = 0;
+
   // Task runner for this thread.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // WatcherDelegate under test.
-  scoped_refptr<TestSerialWorker> worker_;
+  TestSerialWorker worker_{this};
 
   std::string breakpoint_;
   base::RunLoop* run_loop_ = nullptr;
 };
 
-TEST_F(SerialWorkerTest, ExecuteAndSerializeReads) {
+TEST_F(SerialWorkerTest, RunWorkMultipleTimes) {
   for (int i = 0; i < 3; ++i) {
     ++input_value_;
-    worker_->WorkNow();
-    WaitForWork();
+    worker_.WorkNow();
+    RunUntilBreak("OnWork");
+    EXPECT_EQ(work_finished_calls_, i);
+    UnblockWork();
     RunUntilBreak("OnWorkFinished");
+    EXPECT_EQ(work_finished_calls_, i + 1);
 
     EXPECT_TRUE(base::CurrentThread::Get()->IsIdleForTesting());
   }
+}
 
+TEST_F(SerialWorkerTest, TriggerTwoTimesBeforeRun) {
   // Schedule two calls. OnWork checks if it is called serially.
   ++input_value_;
-  worker_->WorkNow();
-  // read is blocked, so this will have to induce re-work
-  worker_->WorkNow();
-  WaitForWork();
-  WaitForWork();
+  worker_.WorkNow();
+  // Work is blocked, so this will have to induce re-work
+  worker_.WorkNow();
+
+  // Expect 2 cycles through work.
+  RunUntilBreak("OnWork");
+  UnblockWork();
+  RunUntilBreak("OnWork");
+  UnblockWork();
   RunUntilBreak("OnWorkFinished");
+
+  EXPECT_EQ(work_finished_calls_, 1);
+
+  // No more tasks should remain.
+  EXPECT_TRUE(base::CurrentThread::Get()->IsIdleForTesting());
+}
+
+TEST_F(SerialWorkerTest, TriggerThreeTimesBeforeRun) {
+  // Schedule two calls. OnWork checks if it is called serially.
+  ++input_value_;
+  worker_.WorkNow();
+  // Work is blocked, so this will have to induce re-work
+  worker_.WorkNow();
+  // Repeat work is already scheduled, so this should be a noop.
+  worker_.WorkNow();
+
+  // Expect 2 cycles through work.
+  RunUntilBreak("OnWork");
+  UnblockWork();
+  RunUntilBreak("OnWork");
+  UnblockWork();
+  RunUntilBreak("OnWorkFinished");
+
+  EXPECT_EQ(work_finished_calls_, 1);
+
+  // No more tasks should remain.
+  EXPECT_TRUE(base::CurrentThread::Get()->IsIdleForTesting());
+}
+
+TEST_F(SerialWorkerTest, RetriggerDuringRun) {
+  // Trigger work and wait until blocked.
+  worker_.WorkNow();
+  RunUntilBreak("OnWork");
+
+  worker_.WorkNow();
+  worker_.WorkNow();
+
+  // Expect a second work cycle after completion of current.
+  UnblockWork();
+  RunUntilBreak("OnWork");
+  UnblockWork();
+  RunUntilBreak("OnWorkFinished");
+
+  EXPECT_EQ(work_finished_calls_, 1);
 
   // No more tasks should remain.
   EXPECT_TRUE(base::CurrentThread::Get()->IsIdleForTesting());

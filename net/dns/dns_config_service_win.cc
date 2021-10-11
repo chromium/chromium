@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/free_deleter.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -491,33 +492,50 @@ class DnsConfigServiceWin::Watcher
 class DnsConfigServiceWin::ConfigReader : public SerialWorker {
  public:
   explicit ConfigReader(DnsConfigServiceWin& service) : service_(&service) {}
-
- private:
   ~ConfigReader() override {}
 
-  void DoWork() override {
-    absl::optional<WinDnsSystemSettings> settings = ReadWinSystemDnsSettings();
-    if (settings.has_value())
-      dns_config_ = ConvertSettingsToDnsConfig(settings.value());
+  // SerialWorker::
+  std::unique_ptr<SerialWorker::WorkItem> CreateWorkItem() override {
+    return std::make_unique<WorkItem>();
   }
 
-  void OnWorkFinished() override {
+  void OnWorkFinished(std::unique_ptr<SerialWorker::WorkItem>
+                          serial_worker_work_item) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(serial_worker_work_item);
     DCHECK(!IsCancelled());
-    if (dns_config_.has_value()) {
-      service_->OnConfigRead(std::move(dns_config_).value());
+
+    WorkItem* work_item = static_cast<WorkItem*>(serial_worker_work_item.get());
+    if (work_item->dns_config_.has_value()) {
+      service_->OnConfigRead(std::move(work_item->dns_config_).value());
     } else {
       LOG(WARNING) << "Failed to read DnsConfig.";
       // Try again in a while in case DnsConfigWatcher missed the signal.
       base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, base::BindOnce(&ConfigReader::WorkNow, this),
+          FROM_HERE, base::BindOnce(&ConfigReader::WorkNow, AsWeakPtr()),
           base::Seconds(kRetryIntervalSeconds));
     }
   }
 
+ private:
+  class WorkItem : public SerialWorker::WorkItem {
+   public:
+    ~WorkItem() override = default;
+
+    void DoWork() override {
+      absl::optional<WinDnsSystemSettings> settings =
+          ReadWinSystemDnsSettings();
+      if (settings.has_value())
+        dns_config_ = ConvertSettingsToDnsConfig(settings.value());
+    }
+
+   private:
+    friend DnsConfigServiceWin::ConfigReader;
+    absl::optional<DnsConfig> dns_config_;
+  };
+
   DnsConfigServiceWin* service_;
   // Written in DoWork(), read in OnWorkFinished(). No locking required.
-  absl::optional<DnsConfig> dns_config_;
 };
 
 // Extension of DnsConfigService::HostsReader that fills in localhost and local
@@ -527,18 +545,30 @@ class DnsConfigServiceWin::HostsReader : public DnsConfigService::HostsReader {
   explicit HostsReader(DnsConfigServiceWin& service)
       : DnsConfigService::HostsReader(GetHostsPath().value(), service) {}
 
+  ~HostsReader() override = default;
+
   HostsReader(const HostsReader&) = delete;
   HostsReader& operator=(const HostsReader&) = delete;
 
- protected:
-  bool AddAdditionalHostsTo(DnsHosts& in_out_dns_hosts) override {
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::MAY_BLOCK);
-    return AddLocalhostEntriesTo(in_out_dns_hosts);
+  // SerialWorker:
+  std::unique_ptr<SerialWorker::WorkItem> CreateWorkItem() override {
+    return std::make_unique<WorkItem>(GetHostsPath());
   }
 
  private:
-  ~HostsReader() override = default;
+  class WorkItem : public DnsConfigService::HostsReader::WorkItem {
+   public:
+    explicit WorkItem(base::FilePath hosts_file_path)
+        : DnsConfigService::HostsReader::WorkItem(std::move(hosts_file_path)) {}
+
+    ~WorkItem() override = default;
+
+    bool AddAdditionalHostsTo(DnsHosts& in_out_dns_hosts) override {
+      base::ScopedBlockingCall scoped_blocking_call(
+          FROM_HERE, base::BlockingType::MAY_BLOCK);
+      return AddLocalhostEntriesTo(in_out_dns_hosts);
+    }
+  };
 };
 
 DnsConfigServiceWin::DnsConfigServiceWin()
@@ -556,18 +586,19 @@ DnsConfigServiceWin::~DnsConfigServiceWin() {
 }
 
 void DnsConfigServiceWin::ReadConfigNow() {
+  if (!config_reader_)
+    config_reader_ = std::make_unique<ConfigReader>(*this);
   config_reader_->WorkNow();
 }
 
 void DnsConfigServiceWin::ReadHostsNow() {
+  if (!hosts_reader_)
+    hosts_reader_ = std::make_unique<HostsReader>(*this);
   hosts_reader_->WorkNow();
 }
 
 bool DnsConfigServiceWin::StartWatching() {
-  if (!config_reader_)
-    config_reader_ = base::MakeRefCounted<ConfigReader>(*this);
-  if (!hosts_reader_)
-    hosts_reader_ = base::MakeRefCounted<HostsReader>(*this);
+  DCHECK(!watcher_);
   // TODO(szym): re-start watcher if that makes sense. http://crbug.com/116139
   watcher_ = std::make_unique<Watcher>(*this);
   return watcher_->Watch();

@@ -17,7 +17,6 @@
 
 #include "base/macros.h"
 #include "base/memory/free_deleter.h"
-#include "base/memory/ref_counted.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_config_service.h"
@@ -80,8 +79,8 @@ class NET_EXPORT_PRIVATE DnsConfigServiceWin : public DnsConfigService {
   bool StartWatching() override;
 
   std::unique_ptr<Watcher> watcher_;
-  scoped_refptr<ConfigReader> config_reader_;
-  scoped_refptr<HostsReader> hosts_reader_;
+  std::unique_ptr<ConfigReader> config_reader_;
+  std::unique_ptr<HostsReader> hosts_reader_;
 };
 
 }  // namespace internal

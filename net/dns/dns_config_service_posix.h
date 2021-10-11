@@ -56,7 +56,7 @@ class NET_EXPORT_PRIVATE DnsConfigServicePosix : public DnsConfigService {
   class ConfigReader;
 
   std::unique_ptr<Watcher> watcher_;
-  scoped_refptr<ConfigReader> config_reader_;
+  std::unique_ptr<ConfigReader> config_reader_;
 };
 
 // Returns nullopt iff a valid config could not be determined.

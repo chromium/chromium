@@ -92,79 +92,94 @@ class DnsConfigServiceAndroid::ConfigReader : public SerialWorker {
                         android::DnsServerGetter dns_server_getter)
       : dns_server_getter_(std::move(dns_server_getter)), service_(&service) {}
 
+  ~ConfigReader() override = default;
+
   ConfigReader(const ConfigReader&) = delete;
   ConfigReader& operator=(const ConfigReader&) = delete;
 
-  void DoWork() override {
-    dns_config_.emplace();
-    dns_config_->unhandled_options = false;
-
-    if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-        base::android::SDK_VERSION_MARSHMALLOW) {
-      if (!dns_server_getter_.Run(
-              &dns_config_->nameservers, &dns_config_->dns_over_tls_active,
-              &dns_config_->dns_over_tls_hostname, &dns_config_->search)) {
-        dns_config_.reset();
-      }
-      return;
-    }
-
-    if (IsVpnPresent()) {
-      dns_config_->unhandled_options = true;
-    }
-
-    // NOTE(pauljensen): __system_property_get and the net.dns1/2 properties are
-    // not supported APIs, but they're only read on pre-Marshmallow Android
-    // which was released years ago and isn't changing.
-    char property_value[PROP_VALUE_MAX];
-    __system_property_get("net.dns1", property_value);
-    std::string dns1_string = property_value;
-    __system_property_get("net.dns2", property_value);
-    std::string dns2_string = property_value;
-    if (dns1_string.empty() && dns2_string.empty()) {
-      dns_config_.reset();
-      return;
-    }
-
-    IPAddress dns1_address;
-    IPAddress dns2_address;
-    bool parsed1 = dns1_address.AssignFromIPLiteral(dns1_string);
-    bool parsed2 = dns2_address.AssignFromIPLiteral(dns2_string);
-    if (!parsed1 && !parsed2) {
-      dns_config_.reset();
-      return;
-    }
-
-    if (parsed1) {
-      IPEndPoint dns1(dns1_address, dns_protocol::kDefaultPort);
-      dns_config_->nameservers.push_back(dns1);
-    }
-    if (parsed2) {
-      IPEndPoint dns2(dns2_address, dns_protocol::kDefaultPort);
-      dns_config_->nameservers.push_back(dns2);
-    }
+  std::unique_ptr<SerialWorker::WorkItem> CreateWorkItem() override {
+    return std::make_unique<WorkItem>(dns_server_getter_);
   }
 
-  void OnWorkFinished() override {
+  void OnWorkFinished(std::unique_ptr<SerialWorker::WorkItem>
+                          serial_worker_work_item) override {
+    DCHECK(serial_worker_work_item);
     DCHECK(!IsCancelled());
-    if (dns_config_.has_value()) {
-      service_->OnConfigRead(std::move(dns_config_).value());
+
+    WorkItem* work_item = static_cast<WorkItem*>(serial_worker_work_item.get());
+    if (work_item->dns_config_.has_value()) {
+      service_->OnConfigRead(std::move(work_item->dns_config_).value());
     } else {
       LOG(WARNING) << "Failed to read DnsConfig.";
     }
   }
 
  private:
-  ~ConfigReader() override = default;
+  class WorkItem : public SerialWorker::WorkItem {
+   public:
+    explicit WorkItem(android::DnsServerGetter dns_server_getter)
+        : dns_server_getter_(std::move(dns_server_getter)) {}
+
+    void DoWork() override {
+      dns_config_.emplace();
+      dns_config_->unhandled_options = false;
+
+      if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+          base::android::SDK_VERSION_MARSHMALLOW) {
+        if (!dns_server_getter_.Run(
+                &dns_config_->nameservers, &dns_config_->dns_over_tls_active,
+                &dns_config_->dns_over_tls_hostname, &dns_config_->search)) {
+          dns_config_.reset();
+        }
+        return;
+      }
+
+      if (IsVpnPresent()) {
+        dns_config_->unhandled_options = true;
+      }
+
+      // NOTE(pauljensen): __system_property_get and the net.dns1/2 properties
+      // are not supported APIs, but they're only read on pre-Marshmallow
+      // Android which was released years ago and isn't changing.
+      char property_value[PROP_VALUE_MAX];
+      __system_property_get("net.dns1", property_value);
+      std::string dns1_string = property_value;
+      __system_property_get("net.dns2", property_value);
+      std::string dns2_string = property_value;
+      if (dns1_string.empty() && dns2_string.empty()) {
+        dns_config_.reset();
+        return;
+      }
+
+      IPAddress dns1_address;
+      IPAddress dns2_address;
+      bool parsed1 = dns1_address.AssignFromIPLiteral(dns1_string);
+      bool parsed2 = dns2_address.AssignFromIPLiteral(dns2_string);
+      if (!parsed1 && !parsed2) {
+        dns_config_.reset();
+        return;
+      }
+
+      if (parsed1) {
+        IPEndPoint dns1(dns1_address, dns_protocol::kDefaultPort);
+        dns_config_->nameservers.push_back(dns1);
+      }
+      if (parsed2) {
+        IPEndPoint dns2(dns2_address, dns_protocol::kDefaultPort);
+        dns_config_->nameservers.push_back(dns2);
+      }
+    }
+
+   private:
+    friend class ConfigReader;
+    android::DnsServerGetter dns_server_getter_;
+    absl::optional<DnsConfig> dns_config_;
+  };
 
   android::DnsServerGetter dns_server_getter_;
 
-  // Raw pointer to owning DnsConfigService. This must never be accessed inside
-  // DoWork(), since service may be destroyed while SerialWorker is running
-  // on worker thread.
+  // Raw pointer to owning DnsConfigService.
   DnsConfigServiceAndroid* const service_;
-  // Written in DoWork, read in OnWorkFinished, no locking necessary.
-  absl::optional<DnsConfig> dns_config_;
 };
 
 DnsConfigServiceAndroid::DnsConfigServiceAndroid()
@@ -184,8 +199,8 @@ void DnsConfigServiceAndroid::ReadConfigNow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!config_reader_) {
     DCHECK(dns_server_getter_);
-    config_reader_ = base::MakeRefCounted<ConfigReader>(
-        *this, std::move(dns_server_getter_));
+    config_reader_ =
+        std::make_unique<ConfigReader>(*this, std::move(dns_server_getter_));
   }
   config_reader_->WorkNow();
 }

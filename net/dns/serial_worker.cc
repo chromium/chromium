@@ -4,6 +4,8 @@
 
 #include "net/dns/serial_worker.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
@@ -15,10 +17,16 @@
 
 namespace net {
 
-SerialWorker::SerialWorker()
-    : base::RefCountedDeleteOnSequence<SerialWorker>(
-          base::SequencedTaskRunnerHandle::Get()),
-      state_(State::kIdle) {}
+namespace {
+std::unique_ptr<SerialWorker::WorkItem> DoWork(
+    std::unique_ptr<SerialWorker::WorkItem> work_item) {
+  DCHECK(work_item);
+  work_item->DoWork();
+  return work_item;
+}
+}  // namespace
+
+SerialWorker::SerialWorker() : state_(State::kIdle) {}
 
 SerialWorker::~SerialWorker() = default;
 
@@ -30,16 +38,15 @@ void SerialWorker::WorkNow() {
       // PostTaskAndReply fails to post task back to the original
       // task runner. In this case the callback is not destroyed, and the
       // weak reference allows SerialWorker instance to be deleted.
-      base::ThreadPool::PostTaskAndReply(
+      base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE,
           {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-          base::BindOnce(&SerialWorker::DoWork, this),
-          base::BindOnce(&SerialWorker::OnWorkJobFinished,
-                         weak_factory_.GetWeakPtr()));
+          base::BindOnce(&DoWork, CreateWorkItem()),
+          base::BindOnce(&SerialWorker::OnWorkJobFinished, AsWeakPtr()));
       state_ = State::kWorking;
       return;
     case State::kWorking:
-      // Remember to re-read after |DoRead| finishes.
+      // Remember to re-read after `DoWork()` finishes.
       state_ = State::kPending;
       return;
     case State::kCancelled:
@@ -55,22 +62,34 @@ void SerialWorker::Cancel() {
   state_ = State::kCancelled;
 }
 
-void SerialWorker::OnWorkJobFinished() {
+void SerialWorker::OnWorkJobFinished(std::unique_ptr<WorkItem> work_item) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (state_) {
     case State::kCancelled:
       return;
     case State::kWorking:
       state_ = State::kIdle;
-      this->OnWorkFinished();
+      OnWorkFinished(std::move(work_item));
       return;
     case State::kPending:
-      state_ = State::kIdle;
-      WorkNow();
+      // `WorkNow()` was retriggered while working, so need to redo work
+      // immediately to ensure up-to-date results. Reuse `work_item` rather than
+      // returning it to the derived class (and letting it potentially act on a
+      // potential obsolete result).
+      state_ = State::kWorking;
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE,
+          {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+          base::BindOnce(&DoWork, std::move(work_item)),
+          base::BindOnce(&SerialWorker::OnWorkJobFinished, AsWeakPtr()));
       return;
     default:
       NOTREACHED() << "Unexpected state " << static_cast<int>(state_);
   }
+}
+
+base::WeakPtr<SerialWorker> SerialWorker::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace net

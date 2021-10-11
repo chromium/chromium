@@ -5,9 +5,10 @@
 #ifndef NET_DNS_SERIAL_WORKER_H_
 #define NET_DNS_SERIAL_WORKER_H_
 
+#include <memory>
+
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
@@ -15,25 +16,41 @@
 
 namespace net {
 
-// SerialWorker executes a job on ThreadPool serially -- **once at a time**.
-// On |WorkNow|, a call to |DoWork| is scheduled on ThreadPool. Once it
-// completes, |OnWorkFinished| is called on the origin thread. If |WorkNow| is
-// called (1 or more times) while |DoWork| is already under way, |DoWork| will
-// be called once: after current |DoWork| completes, before a call to
-// |OnWorkFinished|.
+// `SerialWorker` executes a job on `ThreadPool` serially -- **one at a time**.
+// On `WorkNow()`, a `WorkItem` is created using `CreateWorkItem()` and sent to
+// the `ThreadPool`. There, a call to `DoWork()` is made. On completion of work,
+// `OnWorkFinished()` is called on the origin thread (if the `SerialWorker` is
+// still alive), passing back the `WorkItem` to allow retrieving any results or
+// passed objects. If `WorkNow()` is called (1 or more times) while a `WorkItem`
+// is already under way, after completion of the work and before any call is
+// made to `OnWorkFinished()` the same `WorkItem` will be passed back to the
+// `ThreadPool`, and `DoWork()` will be called once more.
 //
 // This behavior is designed for updating a result after some trigger, for
 // example reading a file once FilePathWatcher indicates it changed.
 //
-// Derived classes should store results of work done in |DoWork| in dedicated
-// fields and read them in |OnWorkFinished| which is executed on the origin
-// thread. This avoids the need to template this class.
-//
-// This implementation avoids locking by using the |state_| member to ensure
-// that |DoWork| and |OnWorkFinished| cannot execute in parallel.
-class NET_EXPORT_PRIVATE SerialWorker
-    : public base::RefCountedDeleteOnSequence<SerialWorker> {
+// Derived classes should store results of work in the `WorkItem` and retrieve
+// results from it when passed back to `OnWorkFinished()`. The `SerialWorker` is
+// guaranteed to only run one `WorkItem` at a time, always passing it back to
+// `OnWorkFinished()` before calling `CreateWorkItem()` again. Therefore, a
+// derived class may safely pass objects between `WorkItem`s, or even reuse the
+// same `WorkItem`, to allow storing helper objects directly in the `WorkItem`.
+// However, it is not guaranteed that the `SerialWorker` will remain alive while
+// the `WorkItem` runs. Therefore, the `WorkItem` should never access any memory
+// owned by the `SerialWorker` or derived class.
+class NET_EXPORT_PRIVATE SerialWorker {
  public:
+  // A work item that will be passed to and run on the `ThreadPool` (potentially
+  // multiple times if the `SerialWorker` needs to run again immediately) and
+  // then passed back to the origin thread on completion. Expected usage is to
+  // store any parameters, results, and helper objects in the `WorkItem` and
+  // read results from it when passed back to the origin thread.
+  class WorkItem {
+   public:
+    virtual ~WorkItem() = default;
+    virtual void DoWork() = 0;
+  };
+
   SerialWorker();
 
   SerialWorker(const SerialWorker&) = delete;
@@ -49,16 +66,16 @@ class NET_EXPORT_PRIVATE SerialWorker
   bool IsCancelled() const { return state_ == State::kCancelled; }
 
  protected:
-  friend class base::DeleteHelper<SerialWorker>;
-  friend class base::RefCountedDeleteOnSequence<SerialWorker>;
   // protected to allow sub-classing, but prevent deleting
   virtual ~SerialWorker();
 
-  // Executed on ThreadPool, at most once at a time.
-  virtual void DoWork() = 0;
+  // Create a new WorkItem to be passed to and run on the ThreadPool.
+  virtual std::unique_ptr<WorkItem> CreateWorkItem() = 0;
 
-  // Executed on origin thread after |DoRead| completes.
-  virtual void OnWorkFinished() = 0;
+  // Executed on origin thread after `WorkItem` completes.
+  virtual void OnWorkFinished(std::unique_ptr<WorkItem> work_item) = 0;
+
+  base::WeakPtr<SerialWorker> AsWeakPtr();
 
   // Used to verify that the constructor, WorkNow(), Cancel() and
   // OnWorkJobFinished() are called on the same sequence.
@@ -73,7 +90,7 @@ class NET_EXPORT_PRIVATE SerialWorker
   };
 
   // Called on the the origin thread after |DoWork| completes.
-  void OnWorkJobFinished();
+  void OnWorkJobFinished(std::unique_ptr<WorkItem> work_item);
 
   State state_;
 

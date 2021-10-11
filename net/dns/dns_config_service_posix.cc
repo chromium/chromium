@@ -184,29 +184,40 @@ class DnsConfigServicePosix::ConfigReader : public SerialWorker {
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
+  ~ConfigReader() override = default;
+
   ConfigReader(const ConfigReader&) = delete;
   ConfigReader& operator=(const ConfigReader&) = delete;
 
-  void DoWork() override { dns_config_ = ReadDnsConfig(); }
+  std::unique_ptr<SerialWorker::WorkItem> CreateWorkItem() override {
+    return std::make_unique<WorkItem>();
+  }
 
-  void OnWorkFinished() override {
+  void OnWorkFinished(std::unique_ptr<SerialWorker::WorkItem>
+                          serial_worker_work_item) override {
+    DCHECK(serial_worker_work_item);
     DCHECK(!IsCancelled());
-    if (dns_config_.has_value()) {
-      service_->OnConfigRead(std::move(dns_config_).value());
+
+    WorkItem* work_item = static_cast<WorkItem*>(serial_worker_work_item.get());
+    if (work_item->dns_config_.has_value()) {
+      service_->OnConfigRead(std::move(work_item->dns_config_).value());
     } else {
       LOG(WARNING) << "Failed to read DnsConfig.";
     }
   }
 
  private:
-  ~ConfigReader() override = default;
+  class WorkItem : public SerialWorker::WorkItem {
+   public:
+    void DoWork() override { dns_config_ = ReadDnsConfig(); }
 
-  // Raw pointer to owning DnsConfigService. This must never be accessed inside
-  // DoWork(), since service may be destroyed while SerialWorker is running
-  // on worker thread.
+   private:
+    friend class ConfigReader;
+    absl::optional<DnsConfig> dns_config_;
+  };
+
+  // Raw pointer to owning DnsConfigService.
   DnsConfigServicePosix* const service_;
-  // Written in DoWork, read in OnWorkFinished, no locking necessary.
-  absl::optional<DnsConfig> dns_config_;
 };
 
 DnsConfigServicePosix::DnsConfigServicePosix()
@@ -228,6 +239,8 @@ void DnsConfigServicePosix::RefreshConfig() {
 }
 
 void DnsConfigServicePosix::ReadConfigNow() {
+  if (!config_reader_)
+    CreateReader();
   config_reader_->WorkNow();
 }
 
@@ -241,7 +254,7 @@ bool DnsConfigServicePosix::StartWatching() {
 void DnsConfigServicePosix::CreateReader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!config_reader_);
-  config_reader_ = base::MakeRefCounted<ConfigReader>(*this);
+  config_reader_ = std::make_unique<ConfigReader>(*this);
 }
 
 absl::optional<DnsConfig> ConvertResStateToDnsConfig(

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "net/android/network_library.h"
 #include "net/base/net_export.h"
@@ -49,7 +48,7 @@ class NET_EXPORT_PRIVATE DnsConfigServiceAndroid : public DnsConfigService {
   class ConfigReader;
 
   std::unique_ptr<Watcher> watcher_;
-  scoped_refptr<ConfigReader> config_reader_;
+  std::unique_ptr<ConfigReader> config_reader_;
   android::DnsServerGetter dns_server_getter_;
 };
 

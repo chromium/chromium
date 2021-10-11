@@ -16,13 +16,17 @@
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/sys_byteorder.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner_forward.h"
+#include "base/task/single_thread_task_runner_forward.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_waitable_event.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/ip_address.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/dns_config.h"
@@ -30,6 +34,7 @@
 #include "net/dns/nsswitch_reader.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/test/test_with_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -158,9 +163,80 @@ class CallbackHelper {
   base::RunLoop run_loop_;
 };
 
+// Helper to allow blocking on some point in the ThreadPool.
+class BlockingHelper {
+ public:
+  ~BlockingHelper() { EXPECT_EQ(state_, State::kUnblocked); }
+
+  // Called by the test code to wait for the block point to be reached.
+  void WaitUntilBlocked() {
+    CHECK_EQ(state_, State::kUnblocked);
+    state_ = State::kRunningUntilBlock;
+
+    CHECK(!run_loop_ || !run_loop_->running());
+    run_loop_.emplace();
+    run_loop_->Run();
+
+    CHECK_EQ(state_, State::kBlocked);
+  }
+
+  // Called by the ThreadPool code on reaching the block point.
+  void WaitUntilUnblocked() {
+    block_event_.Reset();
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&BlockingHelper::OnBlockedCallback,
+                                          base::Unretained(this)));
+    block_event_.Wait();
+    blocker_event_.Signal();
+  }
+
+  // Called by the test code to unblock the ThreadPool code.
+  void Unblock() {
+    CHECK_EQ(state_, State::kBlocked);
+    CHECK(!block_event_.IsSignaled());
+
+    state_ = State::kUnblocked;
+
+    blocker_event_.Reset();
+    block_event_.Signal();
+    blocker_event_.Wait();
+  }
+
+ private:
+  enum class State {
+    kRunningUntilBlock,
+    kBlocked,
+    kUnblocked,
+  };
+
+  void OnBlockedCallback() {
+    CHECK_EQ(state_, State::kRunningUntilBlock);
+    CHECK(run_loop_.has_value());
+    CHECK(run_loop_->running());
+
+    state_ = State::kBlocked;
+    run_loop_->Quit();
+  }
+
+  State state_ = State::kUnblocked;
+  absl::optional<base::RunLoop> run_loop_;
+  base::TestWaitableEvent block_event_;
+  base::TestWaitableEvent blocker_event_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_ =
+      base::ThreadTaskRunnerHandle::Get();
+};
+
 class TestResolvReader : public ResolvReader {
  public:
+  ~TestResolvReader() override {
+    if (value_)
+      CloseResState(value_.get());
+  }
+
   void set_value(std::unique_ptr<struct __res_state> value) {
+    CHECK(!value_);
+    CHECK(closed_);
+
     value_ = std::move(value);
     closed_ = false;
   }
@@ -169,6 +245,10 @@ class TestResolvReader : public ResolvReader {
 
   // ResolvReader:
   std::unique_ptr<struct __res_state> GetResState() override {
+    if (blocking_helper_)
+      blocking_helper_->WaitUntilUnblocked();
+
+    CHECK(value_);
     return std::move(value_);
   }
 
@@ -183,9 +263,14 @@ class TestResolvReader : public ResolvReader {
     }
   }
 
+  void set_blocking_helper(BlockingHelper* blocking_helper) {
+    blocking_helper_ = blocking_helper;
+  }
+
  private:
   std::unique_ptr<struct __res_state> value_;
-  bool closed_ = false;
+  bool closed_ = true;  // Start "closed" until a value is set.
+  BlockingHelper* blocking_helper_ = nullptr;
 };
 
 class TestNsswitchReader : public NsswitchReader {
@@ -849,6 +934,60 @@ TEST_F(DnsConfigServiceLinuxTest, RejectsNsswitchUnknown) {
   ASSERT_TRUE(config.has_value());
   EXPECT_TRUE(config->IsValid());
   EXPECT_TRUE(config->unhandled_options);
+}
+
+TEST_F(DnsConfigServiceLinuxTest, FreshReadsAfterAdditionalTriggers) {
+  BlockingHelper blocking_helper;
+  resolv_reader_->set_blocking_helper(&blocking_helper);
+
+  CallbackHelper callback_helper;
+  service_.ReadConfig(callback_helper.GetCallback());
+
+  // Expect work to be blocked.
+  blocking_helper.WaitUntilBlocked();
+  ASSERT_FALSE(callback_helper.GetResult());
+
+  // Signal config changes (trigger a few times to confirm only one fresh read
+  // is performed).
+  service_.TriggerOnConfigChangedForTesting(/*succeeded=*/true);
+  service_.TriggerOnConfigChangedForTesting(/*succeeded=*/true);
+  service_.TriggerOnConfigChangedForTesting(/*succeeded=*/true);
+
+  // Initial results (expect to be replaced with second read)
+  auto res = std::make_unique<struct __res_state>();
+  InitializeResState(res.get());
+  resolv_reader_->set_value(std::move(res));
+  nsswitch_reader_->set_value(kBasicNsswitchConfig);
+
+  // Unblock first read (expect no completion because second read should begin
+  // immediately)
+  blocking_helper.Unblock();
+  blocking_helper.WaitUntilBlocked();
+  ASSERT_FALSE(callback_helper.GetResult());
+  EXPECT_TRUE(resolv_reader_->closed());
+
+  // Setup a new config to confirm a fresh read is performed.
+  res = std::make_unique<struct __res_state>();
+  res->options = RES_INIT | RES_RECURSE | RES_DEFNAMES | RES_DNSRCH;
+  struct sockaddr_in sa = {};
+  sa.sin_family = AF_INET;
+  sa.sin_port = base::HostToNet16(1000);
+  inet_pton(AF_INET, "1.2.3.4", &sa.sin_addr);
+  res->nsaddr_list[0] = sa;
+  res->nscount = 1;
+  resolv_reader_->set_value(std::move(res));
+
+  // Unblock second read (expect completion)
+  blocking_helper.Unblock();
+  absl::optional<DnsConfig> config = callback_helper.WaitForResult();
+
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
+
+  IPEndPoint expected(IPAddress(1, 2, 3, 4), 1000);
+  EXPECT_THAT(config.value().nameservers, testing::ElementsAre(expected));
+
+  EXPECT_TRUE(resolv_reader_->closed());
 }
 
 }  // namespace

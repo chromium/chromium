@@ -67,7 +67,7 @@ class NET_EXPORT_PRIVATE DnsConfigServiceLinux : public DnsConfigService {
       std::make_unique<NsswitchReader>();
 
   std::unique_ptr<Watcher> watcher_;
-  scoped_refptr<ConfigReader> config_reader_;
+  std::unique_ptr<ConfigReader> config_reader_;
 };
 
 }  // namespace internal

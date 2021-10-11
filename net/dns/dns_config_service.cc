@@ -4,6 +4,7 @@
 
 #include "net/dns/dns_config_service.h"
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -11,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -98,7 +98,13 @@ DnsConfigService::HostsReader::HostsReader(
 
 DnsConfigService::HostsReader::~HostsReader() = default;
 
-absl::optional<DnsHosts> DnsConfigService::HostsReader::ReadHosts() {
+DnsConfigService::HostsReader::WorkItem::WorkItem(
+    base::FilePath hosts_file_path)
+    : hosts_file_path_(std::move(hosts_file_path)) {}
+
+DnsConfigService::HostsReader::WorkItem::~WorkItem() = default;
+
+absl::optional<DnsHosts> DnsConfigService::HostsReader::WorkItem::ReadHosts() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   DCHECK(!hosts_file_path_.empty());
@@ -109,13 +115,13 @@ absl::optional<DnsHosts> DnsConfigService::HostsReader::ReadHosts() {
   return dns_hosts;
 }
 
-bool DnsConfigService::HostsReader::AddAdditionalHostsTo(
+bool DnsConfigService::HostsReader::WorkItem::AddAdditionalHostsTo(
     DnsHosts& in_out_dns_hosts) {
   // Nothing to add in base implementation.
   return true;
 }
 
-void DnsConfigService::HostsReader::DoWork() {
+void DnsConfigService::HostsReader::WorkItem::DoWork() {
   hosts_ = ReadHosts();
   if (!hosts_.has_value())
     return;
@@ -124,9 +130,18 @@ void DnsConfigService::HostsReader::DoWork() {
     hosts_.reset();
 }
 
-void DnsConfigService::HostsReader::OnWorkFinished() {
-  if (hosts_.has_value()) {
-    service_->OnHostsRead(std::move(hosts_).value());
+std::unique_ptr<SerialWorker::WorkItem>
+DnsConfigService::HostsReader::CreateWorkItem() {
+  return std::make_unique<WorkItem>(hosts_file_path_);
+}
+
+void DnsConfigService::HostsReader::OnWorkFinished(
+    std::unique_ptr<SerialWorker::WorkItem> serial_worker_work_item) {
+  DCHECK(serial_worker_work_item);
+
+  WorkItem* work_item = static_cast<WorkItem*>(serial_worker_work_item.get());
+  if (work_item->hosts_.has_value()) {
+    service_->OnHostsRead(std::move(work_item->hosts_).value());
   } else {
     LOG(WARNING) << "Failed to read DnsHosts.";
   }
@@ -138,7 +153,7 @@ void DnsConfigService::ReadHostsNow() {
   if (!hosts_reader_) {
     DCHECK(!hosts_file_path_.empty());
     hosts_reader_ =
-        base::MakeRefCounted<HostsReader>(hosts_file_path_.value(), *this);
+        std::make_unique<HostsReader>(hosts_file_path_.value(), *this);
   }
   hosts_reader_->WorkNow();
 }
