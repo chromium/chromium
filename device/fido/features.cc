@@ -35,10 +35,10 @@ extern const base::Feature kWebAuthCableServerLink {
 
 extern const base::Feature kWebAuthCableSecondFactor {
   "WebAuthenticationCableSecondFactor",
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX) || defined(OS_ANDROID)
-      // This is default-disabled on Android because it involves changes that
-      // alter the interaction with the Sync service and thus needs to be rolled
-      // out gradually.
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+// If updating this, also update kWebAuthCableServerLink.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else
       base::FEATURE_ENABLED_BY_DEFAULT
