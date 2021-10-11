@@ -2097,6 +2097,13 @@ PaintLayer* PaintLayer::HitTestLayer(PaintLayer* root_layer,
   DCHECK_GE(layout_object.GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
 
+  if (UNLIKELY(layout_object.NeedsLayout() &&
+               !layout_object.ChildLayoutBlockedByDisplayLock())) {
+    // Skip if we need layout. This should never happen. See crbug.com/1244130
+    NOTREACHED();
+    return nullptr;
+  }
+
   if (!IsSelfPaintingLayer() && !HasSelfPaintingLayerDescendant())
     return nullptr;
 
