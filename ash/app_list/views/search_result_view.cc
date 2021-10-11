@@ -164,6 +164,7 @@ void SearchResultView::OnResultChanged() {
   OnMetadataChanged();
   UpdateTitleText();
   UpdateDetailsText();
+  UpdateAccessibleName();
   SchedulePaint();
 }
 
@@ -202,8 +203,6 @@ void SearchResultView::UpdateTitleText() {
     title_label_->SetText(result()->title());
     StyleTitleLabel();
   }
-
-  UpdateAccessibleName();
 }
 
 void SearchResultView::UpdateDetailsText() {
@@ -213,7 +212,6 @@ void SearchResultView::UpdateDetailsText() {
     details_label_->SetText(result()->details());
     StyleDetailsLabel();
   }
-  UpdateAccessibleName();
 }
 
 void SearchResultView::StyleTitleLabel() {
