@@ -53,10 +53,9 @@ class FieldTrialTest {
 
   virtual ~FieldTrialTest();
 
-  void SetNetworkQueriesWithVariationsService(
-      bool enable,
-      float query_probability,
-      NetworkTimeTracker::FetchBehavior fetch_behavior);
+  void SetFeatureParams(bool enable,
+                        float query_probability,
+                        NetworkTimeTracker::FetchBehavior fetch_behavior);
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

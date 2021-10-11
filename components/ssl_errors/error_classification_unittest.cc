@@ -381,7 +381,7 @@ TEST_F(SSLErrorClassificationTest, NetworkClockStateHistogram) {
       std::unique_ptr<base::Clock>(clock),
       std::unique_ptr<const base::TickClock>(tick_clock), &pref_service,
       shared_url_loader_factory);
-  field_trial_test()->SetNetworkQueriesWithVariationsService(
+  field_trial_test()->SetFeatureParams(
       true, 0.0,
       network_time::NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND);
 

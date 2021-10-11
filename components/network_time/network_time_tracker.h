@@ -16,6 +16,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "url/gurl.h"
 
 class PrefRegistrySimple;
@@ -43,7 +44,7 @@ const int64_t kTicksResolutionMs = base::Time::kMinLowResolutionThresholdMs;
 const int64_t kTicksResolutionMs = 1;  // Assume 1ms for non-windows platforms.
 #endif
 
-// Variations Service feature that enables network time service querying.
+// Feature that enables network time service querying.
 extern const base::Feature kNetworkTimeServiceQuerying;
 
 // A class that receives network time updates and can provide the network time

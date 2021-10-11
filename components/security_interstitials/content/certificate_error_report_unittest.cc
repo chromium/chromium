@@ -234,7 +234,7 @@ TEST(ErrorReportTest, NetworkTimeQueryingFeatureInfo) {
 
   std::unique_ptr<network_time::FieldTrialTest> field_trial_test(
       new network_time::FieldTrialTest());
-  field_trial_test->SetNetworkQueriesWithVariationsService(
+  field_trial_test->SetFeatureParams(
       true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY);
 
   scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory =

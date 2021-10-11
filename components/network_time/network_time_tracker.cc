@@ -10,9 +10,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -25,7 +28,6 @@
 #include "components/network_time/network_time_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/variations/variations_associated_data.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
@@ -34,6 +36,20 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+// Time updates happen in two ways. First, other components may call
+// UpdateNetworkTime() if they happen to obtain the time securely. This will
+// likely be deprecated in favor of the second way, which is scheduled time
+// queries issued by NetworkTimeTracker itself.
+//
+// On startup, the clock state may be read from a pref. (This, too, may be
+// deprecated.) After that, the time is checked every |kCheckTimeInterval|. A
+// "check" means the possibility, but not the certainty, of a time query. A time
+// query may be issued at random, or if the network time is believed to have
+// become inaccurate.
+//
+// After issuing a query, the next check will not happen until
+// |kBackoffMinutes|. This delay is doubled in the event of an error.
 
 namespace network_time {
 
@@ -49,34 +65,42 @@ const base::Feature kNetworkTimeServiceQuerying{
 
 namespace {
 
-// Time updates happen in two ways. First, other components may call
-// UpdateNetworkTime() if they happen to obtain the time securely.  This will
-// likely be deprecated in favor of the second way, which is scheduled time
-// queries issued by NetworkTimeTracker itself.
+// Duration between time checks. The value should be greater than zero. Note
+// that a "check" is not necessarily a network time query!
+constexpr base::FeatureParam<base::TimeDelta> kCheckTimeInterval{
+    &kNetworkTimeServiceQuerying, "CheckTimeInterval", base::Seconds(360)};
+
+// Probability that a check will randomly result in a query. Checks are made
+// every |kCheckTimeInterval|. The default values are chosen with the goal of a
+// high probability that a query will be issued every 24 hours. The value should
+// fall between 0.0 and 1.0 (inclusive).
+constexpr base::FeatureParam<double> kRandomQueryProbability{
+    &kNetworkTimeServiceQuerying, "RandomQueryProbability", .012};
+
+// The |kFetchBehavior| parameter can have three values:
 //
-// On startup, the clock state may be read from a pref.  (This, too, may be
-// deprecated.)  After that, the time is checked every
-// |kCheckTimeIntervalSeconds|.  A "check" means the possibility, but not the
-// certainty, of a time query.  A time query may be issued at random, or if the
-// network time is believed to have become inaccurate.
+// - "background-only": Time queries will be issued in the background as
+//   needed (when the clock loses sync), but on-demand time queries will
+//   not be issued (i.e. StartTimeFetch() will not start time queries.)
 //
-// After issuing a query, the next check will not happen until
-// |kBackoffMinutes|.  This delay is doubled in the event of an error.
+// - "on-demand-only": Time queries will not be issued except when
+//   StartTimeFetch() is called. This is the default value.
+//
+// - "background-and-on-demand": Time queries will be issued both in the
+//   background as needed and also on-demand.
+constexpr base::FeatureParam<NetworkTimeTracker::FetchBehavior>::Option
+    kFetchBehaviorOptions[] = {
+        {NetworkTimeTracker::FETCHES_IN_BACKGROUND_ONLY, "background-only"},
+        {NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY, "on-demand-only"},
+        {NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND,
+         "background-and-on-demand"},
+};
+constexpr base::FeatureParam<NetworkTimeTracker::FetchBehavior> kFetchBehavior{
+    &kNetworkTimeServiceQuerying, "FetchBehavior",
+    NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY, &kFetchBehaviorOptions};
 
 // Minimum number of minutes between time queries.
 const uint32_t kBackoffMinutes = 60;
-
-// Number of seconds between time checks.  This may be overridden via Variations
-// Service.
-// Note that a "check" is not necessarily a network time query!
-const uint32_t kCheckTimeIntervalSeconds = 360;
-
-// Probability that a check will randomly result in a query.  This may
-// be overridden via Variations Service.  Checks are made every
-// |kCheckTimeIntervalSeconds|.  The default values are chosen with
-// the goal of a high probability that a query will be issued every 24
-// hours.
-const float kRandomQueryProbability = .012f;
 
 // Number of time measurements performed in a given network time calculation.
 const uint32_t kNumTimeMeasurements = 7;
@@ -107,24 +131,6 @@ const uint32_t kTimeServerMaxSkewSeconds = 10;
 
 const char kTimeServiceURL[] = "http://clients2.google.com/time/1/current";
 
-const char kVariationsServiceCheckTimeIntervalSeconds[] =
-    "CheckTimeIntervalSeconds";
-const char kVariationsServiceRandomQueryProbability[] =
-    "RandomQueryProbability";
-
-// This parameter can have three values:
-//
-// - "background-only": Time queries will be issued in the background as
-//   needed (when the clock loses sync), but on-demand time queries will
-//   not be issued (i.e. StartTimeFetch() will not start time queries.)
-//
-// - "on-demand-only": Time queries will not be issued except when
-//   StartTimeFetch() is called. This is the default value.
-//
-// - "background-and-on-demand": Time queries will be issued both in the
-//   background as needed and also on-demand.
-const char kVariationsServiceFetchBehavior[] = "FetchBehavior";
-
 // This is an ECDSA prime256v1 named-curve key.
 const int kKeyVersion = 5;
 const uint8_t kKeyPubBytes[] = {
@@ -144,27 +150,6 @@ std::string GetServerProof(
                                            &proof)
              ? proof
              : std::string();
-}
-
-base::TimeDelta CheckTimeInterval() {
-  int64_t seconds;
-  const std::string param = variations::GetVariationParamValueByFeature(
-      kNetworkTimeServiceQuerying, kVariationsServiceCheckTimeIntervalSeconds);
-  if (!param.empty() && base::StringToInt64(param, &seconds) && seconds > 0) {
-    return base::Seconds(seconds);
-  }
-  return base::Seconds(kCheckTimeIntervalSeconds);
-}
-
-double RandomQueryProbability() {
-  double probability;
-  const std::string param = variations::GetVariationParamValueByFeature(
-      kNetworkTimeServiceQuerying, kVariationsServiceRandomQueryProbability);
-  if (!param.empty() && base::StringToDouble(param, &probability) &&
-      probability >= 0.0 && probability <= 1.0) {
-    return probability;
-  }
-  return kRandomQueryProbability;
 }
 
 void RecordFetchValidHistogram(bool valid) {
@@ -281,15 +266,7 @@ bool NetworkTimeTracker::AreTimeFetchesEnabled() const {
 }
 
 NetworkTimeTracker::FetchBehavior NetworkTimeTracker::GetFetchBehavior() const {
-  const std::string param = variations::GetVariationParamValueByFeature(
-      kNetworkTimeServiceQuerying, kVariationsServiceFetchBehavior);
-  if (param == "background-only")
-    return FETCHES_IN_BACKGROUND_ONLY;
-  if (param == "on-demand-only")
-    return FETCHES_ON_DEMAND_ONLY;
-  if (param == "background-and-on-demand")
-    return FETCHES_IN_BACKGROUND_AND_ON_DEMAND;
-  return FETCHES_ON_DEMAND_ONLY;
+  return kFetchBehavior.Get();
 }
 
 void NetworkTimeTracker::SetTimeServerURLForTesting(const GURL& url) {
@@ -395,7 +372,7 @@ NetworkTimeTracker::NetworkTimeResult NetworkTimeTracker::GetNetworkTime(
 
 bool NetworkTimeTracker::StartTimeFetch(base::OnceClosure closure) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  FetchBehavior behavior = GetFetchBehavior();
+  FetchBehavior behavior = kFetchBehavior.Get();
   if (behavior != FETCHES_ON_DEMAND_ONLY &&
       behavior != FETCHES_IN_BACKGROUND_AND_ON_DEMAND) {
     return false;
@@ -429,9 +406,14 @@ bool NetworkTimeTracker::StartTimeFetch(base::OnceClosure closure) {
 void NetworkTimeTracker::CheckTime() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
+  base::TimeDelta interval = kCheckTimeInterval.Get();
+  if (interval < base::TimeDelta()) {
+    interval = kCheckTimeInterval.default_value;
+  }
+
   // If NetworkTimeTracker is waking up after a backoff, this will reset the
   // timer to its default faster frequency.
-  QueueCheckTime(CheckTimeInterval());
+  QueueCheckTime(interval);
 
   if (!ShouldIssueTimeQuery()) {
     return;
@@ -590,8 +572,9 @@ void NetworkTimeTracker::OnURLLoaderComplete(
 }
 
 void NetworkTimeTracker::QueueCheckTime(base::TimeDelta delay) {
+  DCHECK_GE(delay, base::TimeDelta()) << "delay must be non-negative";
   // Check if the user is opted in to background time fetches.
-  FetchBehavior behavior = GetFetchBehavior();
+  FetchBehavior behavior = kFetchBehavior.Get();
   if (behavior == FETCHES_IN_BACKGROUND_ONLY ||
       behavior == FETCHES_IN_BACKGROUND_AND_ON_DEMAND) {
     timer_.Start(FROM_HERE, delay, this, &NetworkTimeTracker::CheckTime);
@@ -599,7 +582,7 @@ void NetworkTimeTracker::QueueCheckTime(base::TimeDelta delay) {
 }
 
 bool NetworkTimeTracker::ShouldIssueTimeQuery() {
-  // Do not query the time service if not enabled via Variations Service.
+  // Do not query the time service if the feature is not enabled.
   if (!AreTimeFetchesEnabled()) {
     return false;
   }
@@ -617,7 +600,12 @@ bool NetworkTimeTracker::ShouldIssueTimeQuery() {
   }
 
   // Otherwise, make the decision at random.
-  return base::RandDouble() < RandomQueryProbability();
+  double probability = kRandomQueryProbability.Get();
+  if (probability < 0.0 || probability > 1.0) {
+    probability = kRandomQueryProbability.default_value;
+  }
+
+  return base::RandDouble() < probability;
 }
 
 }  // namespace network_time

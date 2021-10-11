@@ -644,7 +644,7 @@ class SSLErrorHandlerDateInvalidTest
         test_server_(new net::EmbeddedTestServer) {
     network_time::NetworkTimeTracker::RegisterPrefs(pref_service_.registry());
 
-    field_trial_test()->SetNetworkQueriesWithVariationsService(
+    field_trial_test()->SetFeatureParams(
         false, 0.0,
         network_time::NetworkTimeTracker::FETCHES_IN_BACKGROUND_ONLY);
   }
@@ -1127,7 +1127,7 @@ TEST_F(SSLErrorHandlerDateInvalidTest, MAYBE_TimeQueryStarted) {
       base::BindRepeating(&network_time::GoodTimeResponseHandler));
   EXPECT_TRUE(test_server()->Start());
   tracker()->SetTimeServerURLForTesting(test_server()->GetURL("/"));
-  field_trial_test()->SetNetworkQueriesWithVariationsService(
+  field_trial_test()->SetFeatureParams(
       true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY);
   error_handler()->StartHandlingError();
 
@@ -1192,7 +1192,7 @@ TEST_F(SSLErrorHandlerDateInvalidTest, MAYBE_TimeQueryHangs) {
       &WaitForRequest, wait_for_time_query_loop.QuitClosure()));
   EXPECT_TRUE(test_server()->Start());
   tracker()->SetTimeServerURLForTesting(test_server()->GetURL("/"));
-  field_trial_test()->SetNetworkQueriesWithVariationsService(
+  field_trial_test()->SetFeatureParams(
       true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY);
   error_handler()->StartHandlingError();
   EXPECT_TRUE(error_handler()->IsTimerRunningForTesting());
