@@ -249,9 +249,8 @@ void ZeroSuggestProvider::ResetSession() {
   set_field_trial_triggered(false);
 }
 
-ZeroSuggestProvider::ZeroSuggestProvider(
-    AutocompleteProviderClient* client,
-    AutocompleteProviderListener* listener)
+ZeroSuggestProvider::ZeroSuggestProvider(AutocompleteProviderClient* client,
+                                         AutocompleteProviderListener* listener)
     : BaseSearchProvider(AutocompleteProvider::TYPE_ZERO_SUGGEST, client),
       listener_(listener),
       result_type_running_(NONE) {
@@ -297,7 +296,7 @@ const AutocompleteInput ZeroSuggestProvider::GetInput(bool is_keyword) const {
 }
 
 bool ZeroSuggestProvider::ShouldAppendExtraParams(
-      const SearchSuggestionParser::SuggestResult& result) const {
+    const SearchSuggestionParser::SuggestResult& result) const {
   // We always use the default provider for search, so append the params.
   return true;
 }
@@ -488,6 +487,12 @@ bool ZeroSuggestProvider::AllowZeroSuggestSuggestions(
                    omnibox::kClobberTriggersContextualWebZeroSuggest);
       }
 
+      if (IsSearchResultsPage(page_class)) {
+        return input.focus_type() == OmniboxFocusType::DELETED_PERMANENT_TEXT &&
+               base::FeatureList::IsEnabled(
+                   omnibox::kClobberTriggersSRPZeroSuggest);
+      }
+
       return false;
     };
 
@@ -576,15 +581,9 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::TypeOfResultToRun(
     return REMOTE_NO_URL;
   }
 
-  const bool context_eligible_for_web_contextual_suggestions =
-      (current_page_classification == OmniboxEventProto::OTHER) ||
-      (current_page_classification ==
-           OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT &&
-       base::FeatureList::IsEnabled(
-           omnibox::kOnFocusSuggestionsContextualWebAllowSRP));
-
-  // Contextual Open Web - (same client side behavior for multiple variants).
-  if (context_eligible_for_web_contextual_suggestions && can_send_current_url) {
+  // Contextual Open Web - does NOT include Search Results Page.
+  if (current_page_classification == OmniboxEventProto::OTHER &&
+      can_send_current_url) {
     if (input.focus_type() == OmniboxFocusType::ON_FOCUS &&
         (base::FeatureList::IsEnabled(
              omnibox::kOnFocusSuggestionsContextualWeb) ||
@@ -596,6 +595,21 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::TypeOfResultToRun(
     if (input.focus_type() == OmniboxFocusType::DELETED_PERMANENT_TEXT &&
         base::FeatureList::IsEnabled(
             omnibox::kClobberTriggersContextualWebZeroSuggest)) {
+      return REMOTE_SEND_URL;
+    }
+  }
+
+  // Search Results page classification only.
+  if (IsSearchResultsPage(current_page_classification) &&
+      can_send_current_url) {
+    if (input.focus_type() == OmniboxFocusType::ON_FOCUS &&
+        base::FeatureList::IsEnabled(
+            omnibox::kOnFocusSuggestionsContextualWebAllowSRP)) {
+      return REMOTE_SEND_URL;
+    }
+
+    if (input.focus_type() == OmniboxFocusType::DELETED_PERMANENT_TEXT &&
+        base::FeatureList::IsEnabled(omnibox::kClobberTriggersSRPZeroSuggest)) {
       return REMOTE_SEND_URL;
     }
   }

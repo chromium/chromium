@@ -112,10 +112,16 @@ const base::Feature kDynamicMaxAutocomplete{"OmniboxDynamicMaxAutocomplete",
 
 // If enabled, when the user clears the whole omnibox text (i.e. via Backspace),
 // Chrome will request remote ZeroSuggest suggestions for the OTHER page
-// classification (contextual web).
+// classification (contextual web), which does NOT include the SRP.
 const base::Feature kClobberTriggersContextualWebZeroSuggest{
     "OmniboxClobberTriggersContextualWebZeroSuggest",
     enabled_by_default_desktop_only};
+
+// If enabled, when the user clears the whole omnibox text (i.e. via Backspace),
+// Chrome will request remote ZeroSuggest suggestions for the SRP (search
+// results page).
+const base::Feature kClobberTriggersSRPZeroSuggest{
+    "OmniboxClobberTriggersSRPZeroSuggest", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Used to adjust the age threshold since the last visit in order to consider a
 // normalized keyword search term as a zero-prefix suggestion. If disabled, the
@@ -140,6 +146,11 @@ const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP{
 //  - Default (search queries)
 //  - SRP specific toggle (enables SRP on top of Web Pages for features below)
 //  - On-Content Suggestions
+//
+// TODO(tommycli): It's confusing whether Contextual Web includes SRP or not.
+// `kOnFocusSuggestionsContextualWebAllowSRP` suggests it's included, but
+// `kClobberTriggersContextualWebZeroSuggest` suggests it's not. Make this
+// consistent, probably by renaming flags to distinguish between OTHER and SRP.
 const base::Feature kOnFocusSuggestionsContextualWeb{
     "OmniboxOnFocusSuggestionsContextualWeb",
     base::FEATURE_DISABLED_BY_DEFAULT};

@@ -156,50 +156,76 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroSuggestSuggestions) {
                                  TestSchemeClassifier());
   prefix_input.set_focus_type(OmniboxFocusType::DEFAULT);
 
-  AutocompleteInput on_focus_input(base::ASCIIToUTF16(input_url),
+  AutocompleteInput on_focus_other(base::ASCIIToUTF16(input_url),
                                    metrics::OmniboxEventProto::OTHER,
                                    TestSchemeClassifier());
-  on_focus_input.set_current_url(GURL(input_url));
-  on_focus_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+  on_focus_other.set_current_url(GURL(input_url));
+  on_focus_other.set_focus_type(OmniboxFocusType::ON_FOCUS);
 
-  AutocompleteInput on_clobber_input(std::u16string(),
+  AutocompleteInput on_focus_serp(
+      base::ASCIIToUTF16(input_url),
+      metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+      TestSchemeClassifier());
+  on_focus_serp.set_current_url(GURL(input_url));
+  on_focus_serp.set_focus_type(OmniboxFocusType::ON_FOCUS);
+
+  AutocompleteInput on_clobber_other(std::u16string(),
                                      metrics::OmniboxEventProto::OTHER,
                                      TestSchemeClassifier());
-  on_clobber_input.set_current_url(GURL(input_url));
-  on_clobber_input.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
+  on_clobber_other.set_current_url(GURL(input_url));
+  on_clobber_other.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
+
+  AutocompleteInput on_clobber_serp(
+      std::u16string(),
+      metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+      TestSchemeClassifier());
+  on_clobber_serp.set_current_url(GURL(input_url));
+  on_clobber_serp.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
 
   // Disable on-clobber.
   {
     base::test::ScopedFeatureList features;
-    features.InitAndDisableFeature(
-        omnibox::kClobberTriggersContextualWebZeroSuggest);
+    features.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            omnibox::kClobberTriggersContextualWebZeroSuggest,
+            omnibox::kClobberTriggersSRPZeroSuggest,
+        });
 
     // ZeroSuggest should never deal with prefix suggestions.
     EXPECT_FALSE(provider_->AllowZeroSuggestSuggestions(prefix_input));
 
-    EXPECT_TRUE(provider_->AllowZeroSuggestSuggestions(on_focus_input));
+    EXPECT_TRUE(provider_->AllowZeroSuggestSuggestions(on_focus_other));
+    EXPECT_TRUE(provider_->AllowZeroSuggestSuggestions(on_focus_serp));
 
-    EXPECT_FALSE(provider_->AllowZeroSuggestSuggestions(on_clobber_input));
+    EXPECT_FALSE(provider_->AllowZeroSuggestSuggestions(on_clobber_other));
+    EXPECT_FALSE(provider_->AllowZeroSuggestSuggestions(on_clobber_serp));
   }
 
-  // Enable on-clobber.
+  // Enable on-clobber for OTHER.
   {
     base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(
-        omnibox::kClobberTriggersContextualWebZeroSuggest);
+    features.InitWithFeatures(
+        /*enabled_features=*/{omnibox::
+                                  kClobberTriggersContextualWebZeroSuggest},
+        /*disabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest});
     EXPECT_FALSE(provider_->AllowZeroSuggestSuggestions(prefix_input));
-    EXPECT_TRUE(provider_->AllowZeroSuggestSuggestions(on_focus_input));
-    EXPECT_TRUE(provider_->AllowZeroSuggestSuggestions(on_clobber_input));
-
-    // Sanity check that we only affect the OTHER page classification.
-    AutocompleteInput on_clobber_serp(
-        std::u16string(),
-        metrics::OmniboxEventProto::
-            SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT,
-        TestSchemeClassifier());
-    on_clobber_serp.set_current_url(GURL(input_url));
-    on_clobber_serp.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
+    EXPECT_TRUE(provider_->AllowZeroSuggestSuggestions(on_focus_other));
+    EXPECT_TRUE(provider_->AllowZeroSuggestSuggestions(on_clobber_other));
     EXPECT_FALSE(provider_->AllowZeroSuggestSuggestions(on_clobber_serp));
+  }
+
+  // Enable on-clobber for SRP.
+  {
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        /*enabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest},
+        /*disabled_features=*/{
+            omnibox::kClobberTriggersContextualWebZeroSuggest});
+    EXPECT_FALSE(provider_->AllowZeroSuggestSuggestions(prefix_input));
+    EXPECT_TRUE(provider_->AllowZeroSuggestSuggestions(on_focus_other));
+    EXPECT_FALSE(provider_->AllowZeroSuggestSuggestions(on_clobber_other));
+    EXPECT_TRUE(provider_->AllowZeroSuggestSuggestions(on_clobber_serp));
   }
 }
 
