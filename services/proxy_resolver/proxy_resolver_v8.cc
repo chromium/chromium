@@ -372,8 +372,13 @@ class SharedIsolateFactory {
     if (!holder_) {
       // Do one-time initialization for V8.
       if (!has_initialized_v8_) {
-#ifdef V8_USE_EXTERNAL_STARTUP_DATA
+#if defined(V8_USE_EXTERNAL_STARTUP_DATA)
+#if defined(USE_V8_CONTEXT_SNAPSHOT)
+        gin::V8Initializer::LoadV8Snapshot(
+            gin::V8Initializer::V8SnapshotFileType::kWithAdditionalContext);
+#else
         gin::V8Initializer::LoadV8Snapshot();
+#endif
 #endif
 
         // The performance of the proxy resolver is limited by DNS resolution,

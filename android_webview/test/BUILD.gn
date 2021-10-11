@@ -588,7 +588,11 @@ test("android_webview_unittests") {
     "../nonembedded/component_updater/installer_policies/aw_package_names_allowlist_component_installer_policy_unittest.cc",
   ]
 
-  deps += [ "//v8:v8_external_startup_data_assets" ]
+  if (use_v8_context_snapshot) {
+    deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
+  } else {
+    deps += [ "//v8:v8_external_startup_data_assets" ]
+  }
 }
 
 android_assets("android_webview_unittests_assets") {
