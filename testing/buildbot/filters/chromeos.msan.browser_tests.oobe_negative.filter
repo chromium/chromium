@@ -107,6 +107,7 @@
 -OobeTestApiTest.*
 -OobeZeroTouchInteractiveUITest.*
 -OsInstallScreenTest.*
+-OsTrialScreenTest.*
 -PackagedLicenseScreenTest.*
 -ParentalHandoffScreenBrowserTest.*
 -ParentalHandoffScreenChildBrowserTest.*

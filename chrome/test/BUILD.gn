@@ -3130,6 +3130,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/login/screens/multidevice_setup_screen_browsertest.cc",
         "../browser/ash/login/screens/network_screen_browsertest.cc",
         "../browser/ash/login/screens/os_install_screen_browsertest.cc",
+        "../browser/ash/login/screens/os_trial_screen_browsertest.cc",
         "../browser/ash/login/screens/packaged_license_screen_browsertest.cc",
         "../browser/ash/login/screens/parental_handoff_screen_browsertest.cc",
         "../browser/ash/login/screens/pin_setup_screen_browsertest.cc",
