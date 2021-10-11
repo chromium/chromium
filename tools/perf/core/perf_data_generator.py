@@ -316,8 +316,8 @@ FYI_BUILDERS = {
     },
     'fuchsia-builder-perf-fyi': {
         'additional_compile_targets': [
-            'web_engine_shell_pkg', 'http_pkg', 'cast_runner_pkg',
-            'web_runner_pkg', 'chromedriver', 'chromium_builder_perf'
+            'web_engine_shell_pkg', 'cast_runner_pkg', 'web_runner_pkg',
+            'chromedriver', 'chromium_builder_perf'
         ],
     },
 }

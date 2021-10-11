@@ -957,10 +957,6 @@
     "label": "//headless:headless_unittests",
     "type": "console_test_launcher",
   },
-  "http_pkg": {
-    "label": "//fuchsia/http:http_pkg",
-    "type": "additonal_compile_target",
-  },
   "incremental_javac_junit_tests": {
     "label": "//build/android/test:incremental_javac_junit_tests",
     "type": "junit_test",
