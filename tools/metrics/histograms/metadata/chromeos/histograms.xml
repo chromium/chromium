@@ -1602,13 +1602,15 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.AppCount2.{AppType}" units="apps"
-    expires_after="M95">
+    expires_after="2022-10-08">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>
     Records number of {AppType} apps found for a given intent in the Sharesheet
     when the sharesheet is invoked. Has 100 exponential buckets. (The original
     histogram had 1000 linear buckets).
+
+    Warning: this histogram was expired from M95 to M96; data may be missing.
   </summary>
   <token key="AppType">
     <variant name="All" summary="all apps"/>
@@ -1618,7 +1620,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.FileCount" units="files"
-    expires_after="2022-05-01">
+    expires_after="2022-10-08">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>
@@ -1628,14 +1630,14 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.FormFactor"
-    enum="ChromeOSSharesheetFormFactor" expires_after="2022-04-24">
+    enum="ChromeOSSharesheetFormFactor" expires_after="2022-10-08">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>Records the form factor when the Sharesheet is invoked.</summary>
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.IsDriveFolder" enum="Boolean"
-    expires_after="M97">
+    expires_after="2022-10-08">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>
@@ -1645,7 +1647,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.IsImagePreviewPressed"
-    enum="BooleanSelected" expires_after="2022-04-24">
+    enum="BooleanSelected" expires_after="2022-10-08">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>
@@ -1655,23 +1657,29 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.LaunchSource"
-    enum="ChromeOSSharesheetLaunchSource" expires_after="M95">
+    enum="ChromeOSSharesheetLaunchSource" expires_after="2022-10-08">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
-  <summary>Records the source from which the Sharesheet is invoked.</summary>
+  <summary>
+    Records the source from which the Sharesheet is invoked.
+
+    Warning: this histogram was expired from M95 to M96; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.ShareActionCount"
-    enum="ChromeOSSharesheetAction" expires_after="M95">
+    enum="ChromeOSSharesheetAction" expires_after="2022-10-08">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>
     Records each action found for a given intent when the Sharesheet is invoked.
+
+    Warning: this histogram was expired from M95 to M96; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.UserAction"
-    enum="ChromeOSSharesheetAction" expires_after="2022-04-10">
+    enum="ChromeOSSharesheetAction" expires_after="2022-10-08">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>Records user action on sharesheet invocations.</summary>
