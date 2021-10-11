@@ -76,9 +76,27 @@ std::vector<ui::AXPropertyFilter> DumpAccessibilityTreeTest::DefaultFilters()
 void DumpAccessibilityTreeTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   DumpAccessibilityTestBase::SetUpCommandLine(command_line);
-  // Enable <dialog>, which is used in some tests.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableExperimentalWebPlatformFeatures);
+  // Enable auto expand <details> element, which is used in some tests.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "AutoExpandDetailsElement");
+  // Enable MathMLCore, used in other tests.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "MathMLCore");
+  // Enable KeyboardFocusableScrollers, used by AccessibilityScrollableOverflow.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "KeyboardFocusableScrollers");
+  // Enable HighlightAPI, used by AccessibilityCSSPseudoElementHighligh.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "HighlightAPI");
+  // Enable ARIA touch pass through, used by AccessibilityAriaTouchPassthrough.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "AccessibilityAriaTouchPassthrough");
+  // Enable AccessibilityAriaVirtualContent.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "AccessibilityAriaVirtualContent");
+  // Enable ComputedAccessibilityInfo.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "ComputedAccessibilityInfo");
   // Enable accessibility object model, used in other tests.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kEnableBlinkFeatures, "AccessibilityObjectModel");
