@@ -26,10 +26,8 @@ TEST(CalendarApiUrlGeneratorTest, GetEventListUrl) {
   EXPECT_EQ(
       "https://www.googleapis.com/calendar/v3/calendars/primary/"
       "events?timeMin=2021-06-13T18%3A00%3A00.000Z"
-      "&timeMax=2021-06-16T18%3A00%3A00.000Z"
-      "&singleEvents=true",
-      url_generator_.GetCalendarEventListUrl(start, end, /*single_events=*/true)
-          .spec());
+      "&timeMax=2021-06-16T18%3A00%3A00.000Z",
+      url_generator_.GetCalendarEventListUrl(start, end).spec());
 }
 
 }  // namespace calendar

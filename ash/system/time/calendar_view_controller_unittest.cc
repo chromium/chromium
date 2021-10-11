@@ -9,8 +9,6 @@
 
 #include "ash/test/ash_test_base.h"
 #include "base/time/time.h"
-#include "google_apis/calendar/calendar_api_response_types.h"
-#include "google_apis/common/api_error_codes.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {

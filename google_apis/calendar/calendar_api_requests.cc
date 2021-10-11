@@ -67,8 +67,7 @@ CalendarApiEventsRequest::CalendarApiEventsRequest(
 CalendarApiEventsRequest::~CalendarApiEventsRequest() = default;
 
 GURL CalendarApiEventsRequest::GetURLInternal() const {
-  return url_generator_.GetCalendarEventListUrl(start_time_, end_time_,
-                                                /*single_events=*/true);
+  return url_generator_.GetCalendarEventListUrl(start_time_, end_time_);
 }
 
 void CalendarApiEventsRequest::ProcessURLFetchResults(
