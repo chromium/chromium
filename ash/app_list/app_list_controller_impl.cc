@@ -272,7 +272,7 @@ GetTransitionFromMetricsAnimationInfo(
 }  // namespace
 
 AppListControllerImpl::AppListControllerImpl()
-    : model_(std::make_unique<AppListModel>()),
+    : model_(std::make_unique<AppListModel>(/*app_list_model_delegate=*/this)),
       fullscreen_presenter_(std::make_unique<AppListPresenterImpl>(this)) {
   if (features::IsProductivityLauncherEnabled())
     bubble_presenter_ = std::make_unique<AppListBubblePresenter>(this);
@@ -511,7 +511,8 @@ void AppListControllerImpl::FindOrCreateOemFolder(
   AppListFolderItem* oem_folder = model_->FindFolderItem(kOemFolderId);
   if (!oem_folder) {
     std::unique_ptr<AppListFolderItem> new_folder =
-        std::make_unique<AppListFolderItem>(kOemFolderId);
+        std::make_unique<AppListFolderItem>(kOemFolderId,
+                                            /*app_list_model_delegate=*/this);
     syncer::StringOrdinal oem_position = preferred_oem_position.IsValid()
                                              ? preferred_oem_position
                                              : GetOemFolderPos();
@@ -1250,6 +1251,13 @@ void AppListControllerImpl::OnUiVisibilityChanged(
   }
 }
 
+void AppListControllerImpl::RequestPositionUpdate(
+    std::string id,
+    const syncer::StringOrdinal& new_position) {
+  if (client_)
+    client_->OnSetPositionRequested(profile_id_, std::move(id), new_position);
+}
+
 base::ScopedClosureRunner
 AppListControllerImpl::DisableHomeScreenBackgroundBlur() {
   AppListView* const app_list_view = fullscreen_presenter_->GetView();
@@ -1951,7 +1959,8 @@ syncer::StringOrdinal AppListControllerImpl::GetOemFolderPos() {
 std::unique_ptr<AppListItem> AppListControllerImpl::CreateAppListItem(
     std::unique_ptr<AppListItemMetadata> metadata) {
   std::unique_ptr<AppListItem> app_list_item =
-      metadata->is_folder ? std::make_unique<AppListFolderItem>(metadata->id)
+      metadata->is_folder ? std::make_unique<AppListFolderItem>(
+                                metadata->id, /*app_list_model_delegate=*/this)
                           : std::make_unique<AppListItem>(metadata->id);
   app_list_item->SetMetadata(std::move(metadata));
   return app_list_item;

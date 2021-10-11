@@ -138,6 +138,10 @@ class AppListModelUpdater {
   virtual void OnPageBreakItemDeleted(const std::string& id) = 0;
   virtual void OnSortRequested(ash::AppListSortOrder order) = 0;
 
+  // Methods for handling app list item updates initiated from ash:
+  virtual void HandleSetPosition(std::string id,
+                                 const syncer::StringOrdinal& new_position) = 0;
+
   virtual void AddObserver(AppListModelUpdaterObserver* observer) = 0;
   virtual void RemoveObserver(AppListModelUpdaterObserver* observer) = 0;
 

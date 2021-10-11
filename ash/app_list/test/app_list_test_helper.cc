@@ -30,7 +30,7 @@ AppListTestHelper::AppListTestHelper() {
   DCHECK(app_list_controller_);
 
   // Use a new app list client for each test
-  app_list_client_ = std::make_unique<TestAppListClient>();
+  app_list_client_ = std::make_unique<TestAppListClient>(app_list_controller_);
   app_list_controller_->SetClient(app_list_client_.get());
 }
 

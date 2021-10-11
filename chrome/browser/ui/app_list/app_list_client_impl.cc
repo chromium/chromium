@@ -586,6 +586,18 @@ void AppListClientImpl::OnAppListSortRequested(int profile_id,
   requested_model_updater->OnSortRequested(order);
 }
 
+void AppListClientImpl::OnSetPositionRequested(
+    int profile_id,
+    std::string id,
+    const syncer::StringOrdinal& new_position) {
+  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  if (requested_model_updater != current_model_updater_ ||
+      !requested_model_updater) {
+    return;
+  }
+  requested_model_updater->HandleSetPosition(std::move(id), new_position);
+}
+
 void AppListClientImpl::MaybeRecordViewShown() {
   // Record the time duration between session activation and the first launcher
   // showing if the current user is new.

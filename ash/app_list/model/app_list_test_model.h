@@ -11,6 +11,7 @@
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "base/macros.h"
 
 namespace ui {
@@ -21,8 +22,11 @@ namespace ash {
 
 namespace test {
 
-// Extends AppListModel with helper functions for use in tests.
-class AppListTestModel : public AppListModel {
+// Extends AppListModel with helper functions for use in tests. This class also
+// overrides `AppListModelDelegate` in order to emulate the process of handling
+// the requests to update app list items. In the product code, these requests
+// are handled in the browser side.
+class AppListTestModel : public AppListModel, public AppListModelDelegate {
  public:
   class AppListTestItem : public AppListItem {
    public:
@@ -48,6 +52,11 @@ class AppListTestModel : public AppListModel {
 
   AppListTestModel(const AppListTestModel&) = delete;
   AppListTestModel& operator=(const AppListTestModel&) = delete;
+
+  // AppListModelDelegate:
+  void RequestPositionUpdate(
+      std::string id,
+      const syncer::StringOrdinal& new_position) override;
 
   // Raw pointer version convenience versions of AppListModel methods.
   AppListItem* AddItem(AppListItem* item);

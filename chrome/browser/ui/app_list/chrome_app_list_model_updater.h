@@ -108,6 +108,10 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   void OnPageBreakItemDeleted(const std::string& id) override;
   void OnSortRequested(ash::AppListSortOrder order) override;
 
+  // Methods to handle app list item updates initiated from ash:
+  void HandleSetPosition(std::string id,
+                         const syncer::StringOrdinal& new_position) override;
+
   void AddObserver(AppListModelUpdaterObserver* observer) override;
   void RemoveObserver(AppListModelUpdaterObserver* observer) override;
 

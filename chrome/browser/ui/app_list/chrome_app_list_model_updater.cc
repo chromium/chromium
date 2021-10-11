@@ -596,6 +596,13 @@ void ChromeAppListModelUpdater::OnSortRequested(ash::AppListSortOrder order) {
     observer.OnAppListSortRequested(order);
 }
 
+void ChromeAppListModelUpdater::HandleSetPosition(
+    std::string id,
+    const syncer::StringOrdinal& new_position) {
+  DCHECK(FindItem(id));
+  SetItemPosition(id, new_position);
+}
+
 std::vector<ChromeAppListItem*> ChromeAppListModelUpdater::GetTopLevelItems()
     const {
   std::vector<ChromeAppListItem*> top_level_items;

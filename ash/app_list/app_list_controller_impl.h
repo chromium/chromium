@@ -21,6 +21,7 @@
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
+#include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -75,7 +76,8 @@ class ASH_EXPORT AppListControllerImpl
       public aura::WindowObserver,
       public AssistantControllerObserver,
       public AssistantUiModelObserver,
-      public apps::AppRegistryCache::Observer {
+      public apps::AppRegistryCache::Observer,
+      public AppListModelDelegate {
  public:
   AppListControllerImpl();
 
@@ -298,6 +300,11 @@ class ASH_EXPORT AppListControllerImpl
       AssistantVisibility old_visibility,
       absl::optional<AssistantEntryPoint> entry_point,
       absl::optional<AssistantExitPoint> exit_point) override;
+
+  // AppListModelDelegate:
+  void RequestPositionUpdate(
+      std::string id,
+      const syncer::StringOrdinal& new_position) override;
 
   // Gets the home screen window, if available, or null if the home screen
   // window is being hidden for effects (e.g. when dragging windows or

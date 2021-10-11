@@ -30,6 +30,7 @@ namespace ash {
 
 class AppListConfig;
 class AppListItemList;
+class AppListModelDelegate;
 
 // AppListFolderItem implements the model/controller for folders.
 class APP_LIST_MODEL_EXPORT AppListFolderItem
@@ -47,7 +48,8 @@ class APP_LIST_MODEL_EXPORT AppListFolderItem
 
   static const char kItemType[];
 
-  explicit AppListFolderItem(const std::string& id);
+  AppListFolderItem(const std::string& id,
+                    AppListModelDelegate* app_list_model_delegate);
 
   AppListFolderItem(const AppListFolderItem&) = delete;
   AppListFolderItem& operator=(const AppListFolderItem&) = delete;

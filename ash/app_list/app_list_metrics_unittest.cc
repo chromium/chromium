@@ -711,7 +711,8 @@ TEST_F(AppListAppCountMetricTest, RecordApplistItemCounts) {
 
   // Create a folder and add 3 items to it.
   const std::string folder_id = base::StringPrintf("folder_id");
-  auto folder = std::make_unique<AppListFolderItem>(folder_id);
+  auto folder = std::make_unique<AppListFolderItem>(
+      folder_id, Shell::Get()->app_list_controller());
   model->AddItem(std::move(folder));
   for (int i = 0; i < 3; i++) {
     auto item =

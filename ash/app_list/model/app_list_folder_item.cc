@@ -4,6 +4,8 @@
 
 #include "ash/app_list/model/app_list_folder_item.h"
 
+#include <utility>
+
 #include "ash/app_list/model/app_list_item_list.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -13,10 +15,12 @@
 
 namespace ash {
 
-AppListFolderItem::AppListFolderItem(const std::string& id)
+AppListFolderItem::AppListFolderItem(
+    const std::string& id,
+    AppListModelDelegate* app_list_model_delegate)
     : AppListItem(id),
       folder_type_(id == kOemFolderId ? FOLDER_TYPE_OEM : FOLDER_TYPE_NORMAL),
-      item_list_(std::make_unique<AppListItemList>()) {
+      item_list_(std::make_unique<AppListItemList>(app_list_model_delegate)) {
   EnsureIconsForAvailableConfigTypes(
       {AppListConfigType::kLarge, AppListConfigType::kMedium,
        AppListConfigType::kSmall},

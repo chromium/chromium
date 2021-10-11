@@ -25,6 +25,7 @@ class AppListFolderItem;
 class AppListItem;
 class AppListItemList;
 class AppListModelObserver;
+class AppListModelDelegate;
 
 // Main model for the app list. Holds AppListItemList, which owns a list of
 // AppListItems and is displayed in the grid view.
@@ -33,7 +34,7 @@ class AppListModelObserver;
 // the model needs to notify its observers when this occurs.
 class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
  public:
-  AppListModel();
+  explicit AppListModel(AppListModelDelegate* app_list_model_delegate);
 
   AppListModel(const AppListModel&) = delete;
   AppListModel& operator=(const AppListModel&) = delete;
@@ -170,6 +171,9 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   // must do so.
   std::unique_ptr<AppListItem> RemoveItemFromFolder(AppListFolderItem* folder,
                                                     AppListItem* item);
+
+  // Used to initiate updates on app list items from the ash side.
+  AppListModelDelegate* const app_list_model_delegate_;
 
   std::unique_ptr<AppListItemList> top_level_item_list_;
 

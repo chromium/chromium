@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -14,7 +15,8 @@
 
 namespace ash {
 
-AppListItemList::AppListItemList() = default;
+AppListItemList::AppListItemList(AppListModelDelegate* app_list_model_delegate)
+    : app_list_model_delegate_(app_list_model_delegate) {}
 
 AppListItemList::~AppListItemList() = default;
 
@@ -48,6 +50,10 @@ bool AppListItemList::FindItemIndex(const std::string& id, size_t* index) {
 }
 
 void AppListItemList::MoveItem(size_t from_index, size_t to_index) {
+  // TODO(https://crbug.com/1257779): this function triggers updates in item
+  // positions from ash so this function should be moved to
+  // `AppListModelDelegate`.
+
   DCHECK_LT(from_index, item_count());
   // Speculative fix for crash, possibly due to single-item folders
   // (see https://crbug.com/937431).
@@ -69,12 +75,14 @@ void AppListItemList::MoveItem(size_t from_index, size_t to_index) {
   if (from_index == to_index)
     return;
 
-  auto target_item = std::move(app_list_items_[from_index]);
+  AppListItem* target_item = app_list_items_[from_index].get();
   DVLOG(2) << "MoveItem: " << from_index << " -> " << to_index << " ["
            << target_item->position().ToDebugString() << "]";
-  // Remove the target item. If |from_index| <= |to_index| this changes the
-  // item |to_index| points to, but that's OK.
-  app_list_items_.erase(app_list_items_.begin() + from_index);
+
+  if (from_index < to_index) {
+    // Calculate as if the item at `from_index` is removed from the list.
+    ++to_index;
+  }
 
   // Update the position
   AppListItem* prev = to_index > 0 ? item_at(to_index - 1) : nullptr;
@@ -93,19 +101,16 @@ void AppListItemList::MoveItem(size_t from_index, size_t to_index) {
       FixItemPosition(to_index);
     new_position = prev->position().CreateBetween(next->position());
   }
-  target_item->set_position(new_position);
 
   DVLOG(2) << "Move: "
            << " Prev: " << (prev ? prev->position().ToDebugString() : "(none)")
            << " Next: " << (next ? next->position().ToDebugString() : "(none)")
            << " -> " << new_position.ToDebugString();
 
-  // Insert the item and notify observers.
-  app_list_items_.insert(app_list_items_.begin() + to_index,
-                         std::move(target_item));
-  AppListItem* item = item_at(to_index);
-  for (auto& observer : observers_)
-    observer.OnListItemMoved(from_index, to_index, item);
+  // Update app list items through a delegate so that the browser side always
+  // updates app list items before the ash side.
+  app_list_model_delegate_->RequestPositionUpdate(target_item->id(),
+                                                  new_position);
 }
 
 void AppListItemList::SetItemPosition(AppListItem* item,
@@ -289,30 +294,39 @@ size_t AppListItemList::GetItemSortOrderIndex(
 }
 
 void AppListItemList::FixItemPosition(size_t index) {
+  // TODO(https://crbug.com/1257779): this function triggers updates in item
+  // positions from ash so this function should be moved to
+  // `AppListModelDelegate`.
+
   DVLOG(1) << "FixItemPosition: " << index;
   size_t nitems = item_count();
   DCHECK_LT(index, nitems);
   DCHECK_GT(index, 0u);
   // Update the position of |index| and any necessary subsequent items.
   // First, find the next item that has a different position.
-  AppListItem* prev = item_at(index - 1);
+  const syncer::StringOrdinal duplicate_position =
+      item_at(index - 1)->position();
   size_t last_index = index + 1;
   for (; last_index < nitems; ++last_index) {
-    if (!item_at(last_index)->position().Equals(prev->position()))
+    if (!item_at(last_index)->position().Equals(duplicate_position))
       break;
   }
+
+  // Store the pairs of ids and new positions before requesting to update
+  // positions. Because position update may result in item list reorder.
+  std::vector<std::pair<std::string, syncer::StringOrdinal>> id_position_pairs;
+
+  syncer::StringOrdinal new_position = duplicate_position;
   AppListItem* last = last_index < nitems ? item_at(last_index) : nullptr;
   for (size_t i = index; i < last_index; ++i) {
-    AppListItem* cur = item_at(i);
-    if (last)
-      cur->set_position(prev->position().CreateBetween(last->position()));
-    else
-      cur->set_position(prev->position().CreateAfter());
-    prev = cur;
+    new_position = last ? new_position.CreateBetween(last->position())
+                        : new_position.CreateAfter();
+    id_position_pairs.emplace_back(item_at(i)->id(), new_position);
   }
-  AppListItem* item = item_at(index);
-  for (auto& observer : observers_)
-    observer.OnListItemMoved(index, index, item);
+
+  for (const auto& pair : id_position_pairs) {
+    app_list_model_delegate_->RequestPositionUpdate(pair.first, pair.second);
+  }
 }
 
 }  // namespace ash

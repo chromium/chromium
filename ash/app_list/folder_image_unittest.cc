@@ -9,7 +9,7 @@
 
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
-#include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/model/app_list_test_model.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "base/macros.h"
@@ -69,9 +69,10 @@ class FolderImageTest
   ~FolderImageTest() override = default;
 
   void SetUp() override {
+    app_list_model_ = std::make_unique<test::AppListTestModel>();
     folder_image_ = std::make_unique<FolderImage>(
         AppListConfigProvider::Get().GetConfigForType(GetParam(), true),
-        app_list_model_.top_level_item_list());
+        app_list_model_->top_level_item_list());
 
     // Populate the AppListModel with three items (to test that the FolderImage
     // correctly supports having fewer than four icons).
@@ -94,10 +95,10 @@ class FolderImageTest
     item->SetDefaultIcon(CreateSquareBitmapWithColor(
         SharedAppListConfig::instance().default_grid_icon_dimension(),
         icon_color));
-    app_list_model_.AddItem(std::move(item));
+    static_cast<AppListModel*>(app_list_model_.get())->AddItem(std::move(item));
   }
 
-  AppListModel app_list_model_;
+  std::unique_ptr<test::AppListTestModel> app_list_model_;
 
   std::unique_ptr<FolderImage> folder_image_;
 
@@ -120,14 +121,14 @@ TEST_P(FolderImageTest, UpdateListTest) {
   EXPECT_TRUE(ImagesAreEqual(icon1, folder_image_->icon()));
 
   // Swap two items. Ensure that the observer fired and the icon changed.
-  app_list_model_.top_level_item_list()->MoveItem(2, 1);
+  app_list_model_->top_level_item_list()->MoveItem(2, 1);
   EXPECT_TRUE(observer_.updated());
   observer_.Reset();
   gfx::ImageSkia icon2 = folder_image_->icon();
   EXPECT_FALSE(ImagesAreEqual(icon1, icon2));
 
   // Swap back items. Ensure that the observer fired and the icon changed back.
-  app_list_model_.top_level_item_list()->MoveItem(2, 1);
+  app_list_model_->top_level_item_list()->MoveItem(2, 1);
   EXPECT_TRUE(observer_.updated());
   observer_.Reset();
   EXPECT_TRUE(ImagesAreEqual(icon1, folder_image_->icon()));
@@ -147,7 +148,7 @@ TEST_P(FolderImageTest, UpdateListTest) {
   EXPECT_TRUE(ImagesAreEqual(icon3, folder_image_->icon()));
 
   // Delete an item. Ensure that the observer fired and the icon changed.
-  app_list_model_.DeleteItem("app2");
+  app_list_model_->DeleteItem("app2");
   EXPECT_TRUE(observer_.updated());
   observer_.Reset();
   gfx::ImageSkia icon4 = folder_image_->icon();
@@ -158,7 +159,7 @@ TEST_P(FolderImageTest, UpdateItemTest) {
   gfx::ImageSkia icon1 = folder_image_->icon();
 
   // Change an item's icon. Ensure that the observer fired and the icon changed.
-  app_list_model_.FindItem("app2")->SetDefaultIcon(CreateSquareBitmapWithColor(
+  app_list_model_->FindItem("app2")->SetDefaultIcon(CreateSquareBitmapWithColor(
       SharedAppListConfig::instance().default_grid_icon_dimension(),
       SK_ColorMAGENTA));
   EXPECT_TRUE(observer_.updated());
@@ -167,8 +168,8 @@ TEST_P(FolderImageTest, UpdateItemTest) {
 }
 
 TEST_P(FolderImageTest, GetTargetIconRectInFolderWithSingleItem) {
-  app_list_model_.DeleteItem("app2");
-  app_list_model_.DeleteItem("app3");
+  app_list_model_->DeleteItem("app2");
+  app_list_model_->DeleteItem("app3");
   const AppListConfig* config =
       AppListConfigProvider::Get().GetConfigForType(GetParam(), false);
   ASSERT_TRUE(config);
@@ -191,14 +192,14 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithSingleItem) {
         config->item_icon_in_folder_icon_dimension());
 
     gfx::Rect item_1_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_.FindItem("app1"), test_rect);
+        *config, app_list_model_->FindItem("app1"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_1_bounds.size());
     EXPECT_EQ(test_rect_center, item_1_bounds.CenterPoint());
   }
 }
 
 TEST_P(FolderImageTest, GetTargetIconRectInFolderWithTwoItems) {
-  app_list_model_.DeleteItem("app3");
+  app_list_model_->DeleteItem("app3");
   const AppListConfig* config =
       AppListConfigProvider::Get().GetConfigForType(GetParam(), false);
   ASSERT_TRUE(config);
@@ -221,7 +222,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithTwoItems) {
         config->item_icon_in_folder_icon_dimension());
 
     gfx::Rect item_1_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_.FindItem("app1"), test_rect);
+        *config, app_list_model_->FindItem("app1"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_1_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() - config->item_icon_in_folder_icon_margin() / 2,
@@ -229,7 +230,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithTwoItems) {
     EXPECT_EQ(test_rect_center.y(), item_1_bounds.CenterPoint().y());
 
     gfx::Rect item_2_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_.FindItem("app2"), test_rect);
+        *config, app_list_model_->FindItem("app2"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_2_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() + config->item_icon_in_folder_icon_margin() / 2,
@@ -261,7 +262,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithThreeItems) {
         config->item_icon_in_folder_icon_dimension());
 
     gfx::Rect item_1_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_.FindItem("app1"), test_rect);
+        *config, app_list_model_->FindItem("app1"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_1_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() - config->item_icon_in_folder_icon_margin() / 2,
@@ -271,7 +272,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithThreeItems) {
         item_1_bounds.bottom());
 
     gfx::Rect item_2_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_.FindItem("app2"), test_rect);
+        *config, app_list_model_->FindItem("app2"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_2_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() + config->item_icon_in_folder_icon_margin() / 2,
@@ -281,7 +282,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithThreeItems) {
         item_2_bounds.bottom());
 
     gfx::Rect item_3_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_.FindItem("app3"), test_rect);
+        *config, app_list_model_->FindItem("app3"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_3_bounds.size());
     EXPECT_EQ(test_rect_center.x(), item_3_bounds.CenterPoint().x());
     EXPECT_EQ(
@@ -315,7 +316,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFourItems) {
         config->item_icon_in_folder_icon_dimension());
 
     gfx::Rect item_1_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_.FindItem("app1"), test_rect);
+        *config, app_list_model_->FindItem("app1"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_1_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() - config->item_icon_in_folder_icon_margin() / 2,
@@ -325,7 +326,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFourItems) {
         item_1_bounds.bottom());
 
     gfx::Rect item_2_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_.FindItem("app2"), test_rect);
+        *config, app_list_model_->FindItem("app2"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_2_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() + config->item_icon_in_folder_icon_margin() / 2,
@@ -335,7 +336,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFourItems) {
         item_2_bounds.bottom());
 
     gfx::Rect item_3_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_.FindItem("app3"), test_rect);
+        *config, app_list_model_->FindItem("app3"), test_rect);
     EXPECT_EQ(
         test_rect_center.x() - config->item_icon_in_folder_icon_margin() / 2,
         item_3_bounds.right());
@@ -344,7 +345,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFourItems) {
         item_3_bounds.y());
 
     gfx::Rect item_4_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_.FindItem("app4"), test_rect);
+        *config, app_list_model_->FindItem("app4"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_4_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() + config->item_icon_in_folder_icon_margin() / 2,
@@ -381,7 +382,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFiveItems) {
         config->item_icon_in_folder_icon_dimension());
 
     gfx::Rect item_1_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_.FindItem("app1"), test_rect);
+        *config, app_list_model_->FindItem("app1"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_1_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() - config->item_icon_in_folder_icon_margin() / 2,
@@ -391,7 +392,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFiveItems) {
         item_1_bounds.bottom());
 
     gfx::Rect item_2_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_.FindItem("app2"), test_rect);
+        *config, app_list_model_->FindItem("app2"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_2_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() + config->item_icon_in_folder_icon_margin() / 2,
@@ -401,7 +402,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFiveItems) {
         item_2_bounds.bottom());
 
     gfx::Rect item_3_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_.FindItem("app3"), test_rect);
+        *config, app_list_model_->FindItem("app3"), test_rect);
     EXPECT_EQ(
         test_rect_center.x() - config->item_icon_in_folder_icon_margin() / 2,
         item_3_bounds.right());
@@ -410,7 +411,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFiveItems) {
         item_3_bounds.y());
 
     gfx::Rect item_4_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_.FindItem("app4"), test_rect);
+        *config, app_list_model_->FindItem("app4"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_4_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() + config->item_icon_in_folder_icon_margin() / 2,
@@ -420,7 +421,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFiveItems) {
         item_4_bounds.y());
 
     gfx::Rect item_5_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_.FindItem("app5"), test_rect);
+        *config, app_list_model_->FindItem("app5"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_5_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() + config->item_icon_in_folder_icon_margin() / 2,

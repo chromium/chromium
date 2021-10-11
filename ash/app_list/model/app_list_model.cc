@@ -14,8 +14,10 @@
 
 namespace ash {
 
-AppListModel::AppListModel()
-    : top_level_item_list_(std::make_unique<AppListItemList>()) {
+AppListModel::AppListModel(AppListModelDelegate* app_list_model_delegate)
+    : app_list_model_delegate_(app_list_model_delegate),
+      top_level_item_list_(
+          std::make_unique<AppListItemList>(app_list_model_delegate)) {
   item_list_scoped_observations_.AddObservation(top_level_item_list_.get());
 }
 
@@ -158,7 +160,8 @@ const std::string AppListModel::MergeItems(const std::string& target_item_id,
   std::string new_folder_id = AppListFolderItem::GenerateId();
   DVLOG(2) << "Creating folder for merge: " << new_folder_id;
   std::unique_ptr<AppListItem> new_folder_ptr =
-      std::make_unique<AppListFolderItem>(new_folder_id);
+      std::make_unique<AppListFolderItem>(new_folder_id,
+                                          app_list_model_delegate_);
   new_folder_ptr->set_position(target_item_ptr->position());
   AppListFolderItem* new_folder =
       static_cast<AppListFolderItem*>(AddItemToRootListAndNotify(
@@ -341,7 +344,7 @@ AppListFolderItem* AppListModel::FindOrCreateFolderItem(
 
   DVLOG(2) << "Creating new folder: " << folder_id;
   std::unique_ptr<AppListFolderItem> new_folder =
-      std::make_unique<AppListFolderItem>(folder_id);
+      std::make_unique<AppListFolderItem>(folder_id, app_list_model_delegate_);
   new_folder->set_position(
       top_level_item_list_->CreatePositionBefore(syncer::StringOrdinal()));
   AppListItem* new_folder_item = AddItemToRootListAndNotify(

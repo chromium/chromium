@@ -141,6 +141,12 @@ class ASH_PUBLIC_EXPORT AppListClient {
   virtual void OnAppListSortRequested(int profile_id,
                                       AppListSortOrder order) = 0;
 
+  // Methods called from Ash to update app list items:
+  virtual void OnSetPositionRequested(
+      int profile_id,
+      std::string id,
+      const syncer::StringOrdinal& new_position) = 0;
+
  protected:
   virtual ~AppListClient() = default;
 };

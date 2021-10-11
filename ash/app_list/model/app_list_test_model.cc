@@ -67,10 +67,17 @@ void AppListTestModel::AppListTestItem::SetPosition(
 
 // AppListTestModel
 
-AppListTestModel::AppListTestModel() = default;
+AppListTestModel::AppListTestModel()
+    : AppListModel(/*app_list_model_delegate=*/this) {}
 
 AppListItem* AppListTestModel::AddItem(AppListItem* item) {
   return AppListModel::AddItem(base::WrapUnique(item));
+}
+
+void AppListTestModel::RequestPositionUpdate(
+    std::string id,
+    const syncer::StringOrdinal& new_position) {
+  SetItemPosition(FindItem(id), new_position);
 }
 
 AppListItem* AppListTestModel::AddItemToFolder(AppListItem* item,
@@ -107,7 +114,8 @@ AppListFolderItem* AppListTestModel::CreateAndPopulateFolderWithApps(int n) {
 }
 
 AppListFolderItem* AppListTestModel::CreateAndAddOemFolder() {
-  AppListFolderItem* folder = new AppListFolderItem(ash::kOemFolderId);
+  AppListFolderItem* folder = new AppListFolderItem(
+      ash::kOemFolderId, /*app_list_model_delegate=*/this);
   return static_cast<AppListFolderItem*>(AddItem(folder));
 }
 

@@ -241,7 +241,7 @@ class AppListMainViewTest : public views::ViewsTestBase,
 
  protected:
   TestAppListColorProvider color_provider_;  // Needed by AppListView.
-  AppListView* app_list_view_ = nullptr;  // Owned by native widget.
+  AppListView* app_list_view_ = nullptr;     // Owned by native widget.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
 
  private:
