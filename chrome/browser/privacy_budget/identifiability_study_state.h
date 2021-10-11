@@ -25,6 +25,7 @@
 #include "chrome/common/privacy_budget/order_preserving_set.h"
 #include "chrome/common/privacy_budget/types.h"
 #include "components/prefs/pref_service.h"
+#include "identifiability_study_group_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
@@ -102,8 +103,9 @@ class IdentifiabilityStudyState {
   void ResetPersistedState();
 
   void InitStateForAssignedBlockSampling();
-  static int SelectMultinomialChoice(const std::vector<double>& weights,
-                                     unsigned bin_count);
+  void InitStateForRandomSurfaceSampling();
+
+  static int SelectMultinomialChoice(const std::vector<double>& weights);
 
   // Initializes from fields persisted in `pref_service_`.
   void InitFromPrefs();
@@ -240,6 +242,9 @@ class IdentifiabilityStudyState {
       std::vector<OffsetType> dropped_offsets,
       std::vector<OffsetType> offsets);
 
+  // Wrapper around some of the experiment field trial params.
+  IdentifiabilityStudyGroupSettings settings_;
+
   // `pref_service_` pointee must outlive `this`. Used for persistent state.
   PrefService* pref_service_ = nullptr;
 
@@ -331,8 +336,6 @@ class IdentifiabilityStudyState {
   // All valid `generation_` values are positive and non-zero. A value of zero
   // implies that the study is not active.
   const int generation_;
-
-  const bool is_using_assigned_block_sampling_;
 
   // Hard cap on the number of identifiable surfaces we will sample per client.
   // The limit is specified based on the surface valuation as known to
