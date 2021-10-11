@@ -129,83 +129,15 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
 #pragma mark - WKNavigationDelegate
 
 - (void)webView:(WKWebView*)webView
-    decidePolicyForNavigationAction:(WKNavigationAction*)navigationAction
+    decidePolicyForNavigationAction:(WKNavigationAction*)action
                         preferences:(WKWebpagePreferences*)preferences
-                    decisionHandler:
-                        (void (^)(WKNavigationActionPolicy,
-                                  WKWebpagePreferences*))decisionHandler
-    API_AVAILABLE(ios(13)) {
-  web::UserAgentType userAgentType =
-      [self userAgentForNavigationAction:navigationAction webView:webView];
-
-  if (navigationAction.navigationType == WKNavigationTypeBackForward &&
-      userAgentType != web::UserAgentType::NONE &&
-      self.webStateImpl->GetUserAgentForSessionRestoration() !=
-          web::UserAgentType::AUTOMATIC) {
-    // When navigating back to a page with a UserAgent that wasn't automatic,
-    // let's reuse this user agent for next navigations.
-    self.webStateImpl->SetUserAgent(userAgentType);
-  }
-
-  if (navigationAction.navigationType == WKNavigationTypeReload &&
-      userAgentType != web::UserAgentType::NONE &&
-      web::wk_navigation_util::URLNeedsUserAgentType(
-          net::GURLWithNSURL(navigationAction.request.URL))) {
-    // When reloading the page, the UserAgent will be updated to the one for the
-    // new page.
-    web::NavigationItem* item = [[CRWNavigationItemHolder
-        holderForBackForwardListItem:webView.backForwardList.currentItem]
-        navigationItem];
-    if (item) {
-      item->SetUserAgentType(userAgentType);
-      if (base::FeatureList::IsEnabled(
-              web::features::kCreatePendingItemForPostFormSubmission)) {
-        if (web::wk_navigation_util::IsRestoreSessionUrl(item->GetURL())) {
-          self.webStateImpl->SetUserAgent(userAgentType);
-        }
-      }
-    }
-  }
+                    decisionHandler:(void (^)(WKNavigationActionPolicy,
+                                              WKWebpagePreferences*))handler {
+  const web::UserAgentType userAgentType =
+      [self userAgentForNavigationAction:action webView:webView];
 
   if (userAgentType != web::UserAgentType::NONE) {
-    NSString* userAgentString = base::SysUTF8ToNSString(
-        web::GetWebClient()->GetUserAgent(userAgentType));
-    if (![webView.customUserAgent isEqualToString:userAgentString]) {
-      webView.customUserAgent = userAgentString;
-    }
-  }
-
-  WKContentMode contentMode = userAgentType == web::UserAgentType::DESKTOP
-                                  ? WKContentModeDesktop
-                                  : WKContentModeMobile;
-
-  [self webView:webView
-      decidePolicyForNavigationAction:navigationAction
-                      decisionHandler:^(WKNavigationActionPolicy policy) {
-                        preferences.preferredContentMode = contentMode;
-                        decisionHandler(policy, preferences);
-                      }];
-}
-
-- (void)webView:(WKWebView*)webView
-    decidePolicyForNavigationAction:(WKNavigationAction*)action
-                    decisionHandler:
-                        (void (^)(WKNavigationActionPolicy))decisionHandler {
-  [self didReceiveWKNavigationDelegateCallback];
-
-  BOOL forceBlockUniversalLinks = self.blockUniversalLinksOnNextDecidePolicy;
-  self.blockUniversalLinksOnNextDecidePolicy = NO;
-
-  if (@available(iOS 13, *)) {
-  } else {
-    // As webView:decidePolicyForNavigationAction:preferences:decisionHandler:
-    // is only called for iOS 13, the code is duplicated here to also have it
-    // for iOS 12.
-    web::UserAgentType userAgentType =
-        [self userAgentForNavigationAction:action webView:webView];
-
     if (action.navigationType == WKNavigationTypeBackForward &&
-        userAgentType != web::UserAgentType::NONE &&
         self.webStateImpl->GetUserAgentForSessionRestoration() !=
             web::UserAgentType::AUTOMATIC) {
       // When navigating back to a page with a UserAgent that wasn't automatic,
@@ -214,7 +146,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     }
 
     if (action.navigationType == WKNavigationTypeReload &&
-        userAgentType != web::UserAgentType::NONE &&
         web::wk_navigation_util::URLNeedsUserAgentType(
             net::GURLWithNSURL(action.request.URL))) {
       // When reloading the page, the UserAgent will be updated to the one for
@@ -233,14 +164,25 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
       }
     }
 
-    if (userAgentType != web::UserAgentType::NONE) {
-      NSString* userAgentString = base::SysUTF8ToNSString(
-          web::GetWebClient()->GetUserAgent(userAgentType));
-      if (![webView.customUserAgent isEqualToString:userAgentString]) {
-        webView.customUserAgent = userAgentString;
-      }
+    NSString* userAgentString = base::SysUTF8ToNSString(
+        web::GetWebClient()->GetUserAgent(userAgentType));
+    if (![webView.customUserAgent isEqualToString:userAgentString]) {
+      webView.customUserAgent = userAgentString;
     }
   }
+
+  const WKContentMode contentMode = userAgentType == web::UserAgentType::DESKTOP
+                                        ? WKContentModeDesktop
+                                        : WKContentModeMobile;
+  auto decisionHandler = ^(WKNavigationActionPolicy policy) {
+    preferences.preferredContentMode = contentMode;
+    handler(policy, preferences);
+  };
+
+  [self didReceiveWKNavigationDelegateCallback];
+
+  BOOL forceBlockUniversalLinks = self.blockUniversalLinksOnNextDecidePolicy;
+  self.blockUniversalLinksOnNextDecidePolicy = NO;
 
   _webProcessCrashed = NO;
   if (self.beingDestroyed) {

@@ -819,9 +819,10 @@ class CRWWebControllerPolicyDeciderTest : public CRWWebControllerTest {
   void SetUp() override {
     CRWWebControllerTest::SetUp();
   }
-  // Calls webView:decidePolicyForNavigationAction:decisionHandler: callback
-  // and waits for decision handler call. Returns false if decision handler
-  // policy parameter didn't match |expected_policy| or if the call timed out.
+  // Calls webView:decidePolicyForNavigationAction:preferences:decisionHandler:
+  // callback and waits for decision handler call. Returns false if decision
+  // handler policy parameter didn't match |expected_policy| or if the call
+  // timed out.
   bool VerifyDecidePolicyForNavigationAction(
       NSURLRequest* request,
       WKNavigationActionPolicy expected_policy) WARN_UNUSED_RESULT {
@@ -833,19 +834,24 @@ class CRWWebControllerPolicyDeciderTest : public CRWWebControllerTest {
     frame_info.mainFrame = YES;
     navigation_action.targetFrame = frame_info;
 
-    // Call decidePolicyForNavigationResponse and wait for decisionHandler's
-    // callback.
+    WKWebpagePreferences* preferences = [[WKWebpagePreferences alloc] init];
+
+    // Call webView:decidePolicyForNavigationAction:preferences:decisionHandler:
+    // and wait for decisionHandler's callback.
     __block bool policy_match = false;
     __block bool callback_called = false;
     [navigation_delegate_ webView:mock_web_view_
         decidePolicyForNavigationAction:navigation_action
-                        decisionHandler:^(WKNavigationActionPolicy policy) {
+                            preferences:preferences
+                        decisionHandler:^(WKNavigationActionPolicy policy,
+                                          WKWebpagePreferences* preferences) {
                           policy_match = expected_policy == policy;
                           callback_called = true;
                         }];
     callback_called = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
       return callback_called;
     });
+
     return policy_match;
   }
 
