@@ -97,7 +97,6 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_object.h"
@@ -663,38 +662,6 @@ bool LocalFrameView::LayoutFromRootObject(LayoutObject& root) {
   return true;
 }
 
-void LocalFrameView::PrepareLayoutAnalyzer() {
-  bool is_tracing = false;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(
-      TRACE_DISABLED_BY_DEFAULT("blink.debug.layout"), &is_tracing);
-  if (!is_tracing) {
-    analyzer_.reset();
-    return;
-  }
-  if (!analyzer_)
-    analyzer_ = std::make_unique<LayoutAnalyzer>();
-  analyzer_->Reset();
-}
-
-std::unique_ptr<TracedValue> LocalFrameView::AnalyzerCounters() {
-  if (!analyzer_)
-    return std::make_unique<TracedValue>();
-  std::unique_ptr<TracedValue> value = analyzer_->ToTracedValue();
-  value->SetString("host", GetLayoutView()->GetDocument().location()->host());
-  value->SetString(
-      "frame",
-      String::Format("0x%" PRIxPTR, reinterpret_cast<uintptr_t>(frame_.Get())));
-  value->SetInteger(
-      "contentsHeightAfterLayout",
-      PixelSnappedIntRect(GetLayoutView()->DocumentRect()).Height());
-  value->SetInteger("visibleHeight", Height());
-  value->SetInteger("approximateBlankCharacterCount",
-                    base::saturated_cast<int>(
-                        FontFaceSetDocument::ApproximateBlankCharacterCount(
-                            *frame_->GetDocument())));
-  return value;
-}
-
 #define PERFORM_LAYOUT_TRACE_CATEGORIES \
   "blink,benchmark,rail," TRACE_DISABLED_BY_DEFAULT("blink.debug.layout")
 
@@ -790,7 +757,6 @@ void LocalFrameView::PerformLayout() {
   TRACE_EVENT_BEGIN1(
       PERFORM_LAYOUT_TRACE_CATEGORIES, "LocalFrameView::performLayout",
       "contentsHeightBeforeLayout", contents_height_before_layout);
-  PrepareLayoutAnalyzer();
 
   if (in_subtree_layout && HasOrthogonalWritingModeRoots()) {
     // If we're going to lay out from each subtree root, rather than once from
@@ -814,10 +780,6 @@ void LocalFrameView::PerformLayout() {
     // TODO(szager): Remove this after diagnosing crash.
     DocumentLifecycle::CheckNoTransitionScope check_no_transition(Lifecycle());
     if (in_subtree_layout) {
-      if (analyzer_) {
-        analyzer_->Increment(LayoutAnalyzer::kPerformLayoutRootLayoutObjects,
-                             layout_subtree_root_list_.size());
-      }
       // This map will be used to avoid rebuilding several times the fragment
       // tree spine of a common ancestor.
       HeapHashMap<Member<const LayoutBlock>, unsigned> fragment_tree_spines;
@@ -873,9 +835,8 @@ void LocalFrameView::PerformLayout() {
 
   Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
 
-  TRACE_EVENT_END1(PERFORM_LAYOUT_TRACE_CATEGORIES,
-                   "LocalFrameView::performLayout", "counters",
-                   AnalyzerCounters());
+  TRACE_EVENT_END0(PERFORM_LAYOUT_TRACE_CATEGORIES,
+                   "LocalFrameView::performLayout");
   FirstMeaningfulPaintDetector::From(*document)
       .MarkNextPaintAsMeaningfulIfNeeded(
           layout_object_counter_, contents_height_before_layout,

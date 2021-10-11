@@ -30,7 +30,6 @@
 #include <limits>
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_table_col.h"
@@ -1011,7 +1010,6 @@ int LayoutTableSection::CalcRowLogicalHeight() {
 void LayoutTableSection::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
-  LayoutAnalyzer::Scope analyzer(*this);
   CHECK(!NeedsCellRecalc());
   DCHECK(!Table()->NeedsSectionRecalc());
 
@@ -1211,8 +1209,6 @@ void LayoutTableSection::LayoutRows() {
 #endif
 
   DCHECK(!NeedsLayout());
-
-  LayoutAnalyzer::Scope analyzer(*this);
 
   // FIXME: Changing the height without a layout can change the overflow so it
   // seems wrong.

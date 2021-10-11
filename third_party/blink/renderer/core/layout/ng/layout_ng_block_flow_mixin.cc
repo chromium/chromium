@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
@@ -264,8 +263,6 @@ void LayoutNGBlockFlowMixin<Base>::DirtyLinesFromChangedChild(
 
 template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::UpdateNGBlockLayout() {
-  LayoutAnalyzer::BlockScope analyzer(*this);
-
   if (Base::IsOutOfFlowPositioned()) {
     LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout();
     return;

@@ -87,8 +87,6 @@ blink_core_sources_layout = [
   "hit_testing_transform_state.cc",
   "hit_testing_transform_state.h",
   "intrinsic_sizing_info.h",
-  "layout_analyzer.cc",
-  "layout_analyzer.h",
   "layout_block.cc",
   "layout_block.h",
   "layout_block_flow.cc",

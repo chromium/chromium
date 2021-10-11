@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
 
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
@@ -286,7 +285,6 @@ bool LayoutSVGShape::StrokeContains(const HitTestLocation& location,
 
 void LayoutSVGShape::UpdateLayout() {
   NOT_DESTROYED();
-  LayoutAnalyzer::Scope analyzer(*this);
 
   // The cached stroke may be affected by the ancestor transform, and so needs
   // to be cleared regardless of whether the shape or bounds have changed.

@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/core/layout/layout_iframe.h"
 
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
 
 namespace blink {
@@ -53,7 +52,6 @@ PaintLayerType LayoutIFrame::LayerTypeRequired() const {
 void LayoutIFrame::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
-  LayoutAnalyzer::Scope analyzer(*this);
 
   UpdateLogicalWidth();
   // No kids to layout as a replaced element.

@@ -85,7 +85,6 @@ class GraphicsLayer;
 class HTMLVideoElement;
 class JSONObject;
 class KURL;
-class LayoutAnalyzer;
 class LayoutBox;
 class LayoutEmbeddedObject;
 class LayoutObject;
@@ -105,7 +104,6 @@ class ScrollableArea;
 class Scrollbar;
 class ScrollingCoordinator;
 class ScrollingCoordinatorContext;
-class TracedValue;
 class TransformState;
 class LocalFrameUkmAggregator;
 class WebPluginContainerImpl;
@@ -598,8 +596,6 @@ class CORE_EXPORT LocalFrameView final
 
   int ViewportHeight() const;
 
-  LayoutAnalyzer* GetLayoutAnalyzer() { return analyzer_.get(); }
-
   bool LocalFrameTreeAllowsThrottling() const;
   bool LocalFrameTreeForcesThrottling() const;
 
@@ -932,9 +928,6 @@ class CORE_EXPORT LocalFrameView final
 
   ScrollingCoordinator* GetScrollingCoordinator() const;
 
-  void PrepareLayoutAnalyzer();
-  std::unique_ptr<TracedValue> AnalyzerCounters();
-
   void CollectAnnotatedRegions(LayoutObject&,
                                Vector<AnnotatedRegionValue>&) const;
 
@@ -1078,8 +1071,6 @@ class CORE_EXPORT LocalFrameView final
   IntSize layout_overflow_size_;
 
   bool root_layer_did_scroll_;
-
-  std::unique_ptr<LayoutAnalyzer> analyzer_;
 
   // Mark if something has changed in the mapping from Frame to GraphicsLayer
   // and the Frame Timing regions should be recalculated.

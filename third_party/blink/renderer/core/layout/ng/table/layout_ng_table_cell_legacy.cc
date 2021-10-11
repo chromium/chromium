@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell_legacy.h"
 
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -20,7 +19,6 @@ LayoutNGTableCellLegacy::LayoutNGTableCellLegacy(Element* element)
 
 void LayoutNGTableCellLegacy::UpdateBlockLayout(bool relayout_children) {
   NOT_DESTROYED();
-  LayoutAnalyzer::BlockScope analyzer(*this);
 
   SetOverrideLogicalWidth(LogicalWidth().ClampNegativeToZero());
   UpdateInFlowBlockLayout();

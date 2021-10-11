@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
@@ -39,8 +38,6 @@ bool LayoutNGFlexibleBox::HasLeftOverflow() const {
 }
 
 void LayoutNGFlexibleBox::UpdateBlockLayout(bool relayout_children) {
-  LayoutAnalyzer::BlockScope analyzer(*this);
-
   if (IsOutOfFlowPositioned()) {
     UpdateOutOfFlowBlockLayout();
     return;

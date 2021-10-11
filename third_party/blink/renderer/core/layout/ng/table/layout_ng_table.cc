@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
@@ -121,7 +120,6 @@ bool LayoutNGTable::HasBackgroundForPaint() const {
 
 void LayoutNGTable::UpdateBlockLayout(bool relayout_children) {
   NOT_DESTROYED();
-  LayoutAnalyzer::BlockScope analyzer(*this);
 
   if (IsOutOfFlowPositioned()) {
     UpdateOutOfFlowBlockLayout();

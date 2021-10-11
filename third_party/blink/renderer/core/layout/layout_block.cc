@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/layout/box_layout_extra_input.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_grid.h"
@@ -423,8 +422,6 @@ void LayoutBlock::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(!GetScrollableArea() || GetScrollableArea()->GetScrollAnchor());
 
-  LayoutAnalyzer::Scope analyzer(*this);
-
   bool needs_scroll_anchoring =
       IsScrollContainer() &&
       GetScrollableArea()->ShouldPerformScrollAnchoring();
@@ -779,11 +776,7 @@ bool LayoutBlock::SimplifiedLayout() {
   }
 
   UpdateAfterLayout();
-
   ClearNeedsLayout();
-
-  if (LayoutAnalyzer* analyzer = GetFrameView()->GetLayoutAnalyzer())
-    analyzer->Increment(LayoutAnalyzer::kLayoutObjectsThatNeedSimplifiedLayout);
 
   return true;
 }
