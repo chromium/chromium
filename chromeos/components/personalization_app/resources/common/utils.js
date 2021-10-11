@@ -8,6 +8,20 @@
  */
 
 /**
+ * @param {string} layout
+ * @return {chromeos.personalizationApp.mojom.WallpaperLayout}
+ */
+export function getWallpaperLayoutEnum(layout) {
+  switch (layout) {
+    case 'FILL':
+      return chromeos.personalizationApp.mojom.WallpaperLayout.kCenterCropped;
+    case 'CENTER': // fall through
+    default:
+      return chromeos.personalizationApp.mojom.WallpaperLayout.kCenter;
+  }
+}
+
+/**
  * Checks if argument is an array with non-zero length.
  * @param {?Object} maybeArray
  * @return {boolean}

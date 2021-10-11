@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js'
 import {Action} from 'chrome://resources/js/cr/ui/store.m.js';
 import {DisplayableImage} from './personalization_reducers.js';
 
@@ -26,6 +27,7 @@ export const ActionName = {
   SET_SELECTED_IMAGE: 'set_selected_image',
   SET_UPDATED_DAILY_REFRESH_IMAGE: 'set_updated_daily_refreshed_image',
   DISMISS_ERROR: 'dismiss_error',
+  SET_FULLSCREEN_ENABLED: 'set_fullscreen_enabled',
 };
 
 
@@ -193,4 +195,13 @@ export function setSelectedImageAction(image) {
  */
 export function dismissErrorAction() {
   return {name: ActionName.DISMISS_ERROR};
+}
+
+/**
+ * @param {boolean} enabled
+ * @return {!Action}
+ */
+export function setFullscreenEnabledAction(enabled) {
+  assert(typeof enabled === 'boolean');
+  return {name: ActionName.SET_FULLSCREEN_ENABLED, enabled};
 }

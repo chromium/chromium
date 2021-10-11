@@ -34,6 +34,14 @@
     left: 16px;
     max-width: 380px;
   }
+  wallpaper-fullscreen {
+    bottom: 0;
+    height: 100%;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+  }
 </style>
 <div id="container">
   <!-- dwell-time is set to 200ms to populate history state more quickly while
@@ -59,4 +67,5 @@
   <!-- Prevent the right margin from collapsing when window gets very narrow -->
   <div id="rightspacer"></div>
   <personalization-toast></personalization-toast>
+  <wallpaper-fullscreen></wallpaper-fullscreen>
 </div>

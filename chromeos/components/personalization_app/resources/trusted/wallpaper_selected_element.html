@@ -145,7 +145,7 @@
     --iron-icon-width: 20px;
   }
 
-  #preview {
+  #fullscreen {
     bottom: 12px;
     border: none;
     border-radius: 18px;
@@ -157,7 +157,7 @@
     width: 36px;
   }
 
-  #preview iron-icon {
+  #fullscreen iron-icon {
     --iron-icon-height: 36px;
     --iron-icon-width: 36px;
   }
@@ -175,9 +175,9 @@
     <div id="imageContainer">
       <img src="[[getImageSrc_(image_)]]" aria-hidden="true">
       <template is="dom-if" if="[[showPreviewButton_]]">
-        <cr-button id="preview" circle-ripple on-click="onClickPreview_"
+        <cr-button id="fullscreen" circle-ripple on-click="onClickFullscreen_"
             aria-label="[[i18n('ariaLabelViewFullScreen')]]">
-          <iron-icon icon="personalization36:preview"></iron-icon>
+          <iron-icon icon="personalization36:fullscreen"></iron-icon>
         </cr-button>
       </template>
     </div>

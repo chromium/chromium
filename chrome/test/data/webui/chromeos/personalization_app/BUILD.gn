@@ -21,6 +21,7 @@ js_type_check("closure_compile") {
     ":test_mojo_interface_provider",
     ":test_personalization_store",
     ":wallpaper_collections_element_test",
+    ":wallpaper_fullscreen_element_test",
     ":wallpaper_images_element_test",
     ":wallpaper_selected_element_test",
   ]
@@ -61,6 +62,7 @@ js_library("personalization_app_component_test") {
   deps = [
     ":local_images_element_test",
     ":wallpaper_collections_element_test",
+    ":wallpaper_fullscreen_element_test",
     ":wallpaper_images_element_test",
     ":wallpaper_selected_element_test",
   ]
@@ -111,6 +113,19 @@ js_library("wallpaper_collections_element_test") {
     "../..:test_util",
     "//chromeos/components/personalization_app/resources/common:iframe_api",
     "//chromeos/components/personalization_app/resources/trusted:wallpaper_collections_element",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("wallpaper_fullscreen_element_test") {
+  deps = [
+    ":personalization_app_test_utils",
+    ":test_mojo_interface_provider",
+    "../..:chai_assert",
+    "../..:test_util",
+    "//chromeos/components/personalization_app/resources/common:iframe_api",
+    "//chromeos/components/personalization_app/resources/trusted:wallpaper_fullscreen_element",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

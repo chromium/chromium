@@ -13,6 +13,7 @@ polymer_element_files = [
   "wallpaper_breadcrumb_element.js",
   "wallpaper_collections_element.js",
   "wallpaper_error_element.js",
+  "wallpaper_fullscreen_element.js",
   "wallpaper_images_element.js",
   "wallpaper_selected_element.js",
 ]
@@ -45,6 +46,13 @@ js_library("local_images_element") {
   ]
 }
 
+js_library("wallpaper_fullscreen_element") {
+  deps = [
+    ":personalization_store",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("mojo_interface_provider") {
   deps = [
     "../../mojom:mojom_js_library_for_compile",
@@ -67,6 +75,7 @@ js_library("personalization_app") {
     ":styles",
     ":wallpaper_breadcrumb_element",
     ":wallpaper_collections_element",
+    ":wallpaper_fullscreen_element",
     ":wallpaper_images_element",
     ":wallpaper_selected_element",
   ]

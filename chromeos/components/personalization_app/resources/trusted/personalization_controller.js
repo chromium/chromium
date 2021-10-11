@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js'
 import {isNonEmptyArray} from '../common/utils.js';
 import {beginLoadImagesForCollectionsAction, beginLoadLocalImageDataAction, beginLoadLocalImagesAction, beginLoadSelectedImageAction, beginSelectImageAction, beginUpdateDailyRefreshImageAction, endSelectImageAction, setCollectionsAction, setDailyRefreshCollectionIdAction, setImagesForCollectionAction, setLocalImageDataAction, setLocalImagesAction, setSelectedImageAction, setUpdatedDailyRefreshImageAction} from './personalization_actions.js';
+import {WallpaperLayout, WallpaperType} from './personalization_reducers.js';
 import {PersonalizationStore} from './personalization_store.js';
 
 /**
@@ -159,6 +161,15 @@ export async function selectWallpaper(image, provider, store) {
  * @param {!PersonalizationStore} store
  */
 export async function setCustomWallpaperLayout(layout, provider, store) {
+  const image = store.data.currentSelected;
+  assert(image.type === WallpaperType.kCustomized);
+  assert(
+      layout === WallpaperLayout.kCenter ||
+      layout === WallpaperLayout.kCenterCropped);
+
+  if (image.layout === layout)
+    return;
+
   store.dispatch(beginLoadSelectedImageAction());
   await provider.setCustomWallpaperLayout(layout);
 }

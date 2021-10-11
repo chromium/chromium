@@ -15,6 +15,7 @@ import './personalization_toast_element.js';
 import './wallpaper_breadcrumb_element.js';
 import './wallpaper_collections_element.js';
 import './wallpaper_error_element.js';
+import './wallpaper_fullscreen_element.js';
 import './wallpaper_images_element.js';
 import './wallpaper_selected_element.js';
 import './styles.js';

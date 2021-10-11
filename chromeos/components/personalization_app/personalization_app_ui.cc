@@ -80,7 +80,8 @@ void AddStrings(content::WebUIDataSource* source) {
       {"loadWallpaperError", IDS_PERSONALIZATION_APP_LOAD_WALLPAPER_ERROR},
       {"dismiss", IDS_PERSONALIZATION_APP_DISMISS},
       {"ariaLabelViewFullScreen",
-       IDS_PERSONALIZATION_APP_ARIA_LABEL_VIEW_FULL_SCREEN}};
+       IDS_PERSONALIZATION_APP_ARIA_LABEL_VIEW_FULL_SCREEN},
+      {"exitFullscreen", IDS_PERSONALIZATION_APP_EXIT_FULL_SCREEN}};
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();
 }

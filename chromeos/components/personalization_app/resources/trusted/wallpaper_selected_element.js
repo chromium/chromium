@@ -11,12 +11,12 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../common/icons.js';
-import {assert} from 'chrome://resources/js/assert.m.js'
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {isNonEmptyArray} from '../common/utils.js';
+import {getWallpaperLayoutEnum, isNonEmptyArray} from '../common/utils.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
-import {beginLoadSelectedImageAction, setSelectedImageAction} from './personalization_actions.js';
+import {beginLoadSelectedImageAction, setFullscreenEnabledAction, setSelectedImageAction} from './personalization_actions.js';
 import {getDailyRefreshCollectionId, setCustomWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './personalization_controller.js';
 import {WallpaperLayout, WallpaperType} from './personalization_reducers.js';
 import {Paths} from './personalization_router_element.js';
@@ -404,14 +404,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @private
    */
   onClickLayoutIcon_(event) {
-    const image = this.getState().currentSelected;
-    const layout =
-        this.getWallpaperLayoutEnum(event.currentTarget.dataset.layout);
-    if (image.layout === layout)
-      return;
-    assert(
-        layout === WallpaperLayout.kCenter ||
-        layout === WallpaperLayout.kCenterCropped);
+    const layout = getWallpaperLayoutEnum(event.currentTarget.dataset.layout);
     setCustomWallpaperLayout(layout, this.wallpaperProvider_, this.getStore());
   }
 
@@ -561,21 +554,6 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {string} layout
-   * @return {chromeos.personalizationApp.mojom.WallpaperLayout}
-   */
-  getWallpaperLayoutEnum(layout) {
-    switch (layout) {
-      case 'CENTER':
-        return WallpaperLayout.kCenter;
-      case 'FILL':
-        return WallpaperLayout.kCenterCropped;
-      default:
-        return WallpaperLayout.kCenter;
-    }
-  }
-
-  /**
    * Return a container class depending on loading state.
    * @param {boolean} isLoading
    * @param {boolean} showImage
@@ -587,8 +565,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /** @private */
-  onClickPreview_() {
-    console.log('Full screen preview not implemented yet');
+  onClickFullscreen_() {
+    assert(!this.getState().fullscreen);
+    this.dispatch(setFullscreenEnabledAction(/*enabled=*/ true));
   }
 }
 

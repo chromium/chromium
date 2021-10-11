@@ -18,6 +18,7 @@ export class TestWallpaperProvider extends TestBrowserProxy {
       'getLocalImageThumbnail',
       'setWallpaperObserver',
       'selectWallpaper',
+      'setCustomWallpaperLayout',
       'setDailyRefreshCollectionId',
       'getDailyRefreshCollectionId',
       'updateDailyRefreshWallpaper',
@@ -164,7 +165,7 @@ export class TestWallpaperProvider extends TestBrowserProxy {
 
   /** @override */
   setCustomWallpaperLayout(layout) {
-    this.methodCalled('selectCustomWallpaperLayout', layout);
+    this.methodCalled('setCustomWallpaperLayout', layout);
   }
 
   /** @override */

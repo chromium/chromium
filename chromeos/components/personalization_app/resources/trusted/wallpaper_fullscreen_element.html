@@ -1,0 +1,26 @@
+<style>
+  #container {
+    background-color: transparent;
+    height: 100%;
+    pointer-events: auto;
+    width: 100%;
+  }
+</style>
+<div id="container" hidden>
+  <button on-click="onClickExit_" id="exit">[[i18n('exitFullscreen')]]</button>
+  <template is="dom-if" if="[[showLayoutOptions_]]">
+    <div id="layoutButtons">
+      <button on-click="onClickLayout_"
+          data-layout="FILL">[[i18n('fill')]]</button>
+      <button on-click="onClickLayout_"
+          data-layout="CENTER">[[i18n('center')]]</button>
+    </div>
+  </template>
+  <template is="dom-if" if="[[showDailyRefresh_]]">
+    <button id="refresh"
+        on-click="onClickUpdateDailyRefresh_">[[i18n('refresh')]]</button>
+  </template>
+  <template is="dom-if" if="[[image_]]">
+    <img src="[[image_.url.url]]">
+  </template>
+</div>

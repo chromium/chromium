@@ -98,6 +98,7 @@ export let DailyRefreshState;
  *   pendingSelected: ?DisplayableImage,
  *   dailyRefresh: !DailyRefreshState,
  *   error: ?string,
+ *   fullscreen: boolean,
  * }}
  */
 export let PersonalizationState;
@@ -122,6 +123,7 @@ export function emptyState() {
     pendingSelected: null,
     dailyRefresh: {collectionId: null},
     error: null,
+    fullscreen: false,
   };
 }
 
@@ -393,6 +395,20 @@ function errorReducer(state, action) {
   }
 }
 
+/**
+ * @param {boolean} state
+ * @param {!Action} action
+ * @return {boolean}
+ */
+ function fullscreenReducer(state, action) {
+  switch (action.name) {
+    case ActionName.SET_FULLSCREEN_ENABLED:
+      return (/** @type {{enabled: boolean}} */(action)).enabled;
+    default:
+      return state;
+  }
+}
+
 const root = combineReducers({
   backdrop: backdropReducer,
   loading: loadingReducer,
@@ -401,6 +417,7 @@ const root = combineReducers({
   pendingSelected: pendingSelectedReducer,
   dailyRefresh: dailyRefreshReducer,
   error: errorReducer,
+  fullscreen: fullscreenReducer,
 });
 
 /**
