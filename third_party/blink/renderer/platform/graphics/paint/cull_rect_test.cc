@@ -146,14 +146,14 @@ TEST_F(CullRectTest, ApplyScrollTranslationPartialScrollingContents) {
   // Inverse transformed: (3020, 5010, 30, 50)
   // Expanded: (-980, 1010, 8030, 8050)
   // Then clipped by the contents rect.
-  EXPECT_EQ(IntRect(0, 1010, 7050, 6990), cull_rect.Rect());
+  EXPECT_EQ(IntRect(20, 1010, 7030, 7000), cull_rect.Rect());
 
   cull_rect = CullRect::Infinite();
   EXPECT_EQ(kExpandedForPartialScrollingContents,
             ApplyScrollTranslation(cull_rect, *scroll_translation));
-  // This result differs from the above result in height (7050 vs 7060)
+  // This result differs from the above result in width (7030 vs 7040)
   // because it's not clipped by the infinite input cull rect.
-  EXPECT_EQ(IntRect(0, 1010, 7060, 6990), cull_rect.Rect());
+  EXPECT_EQ(IntRect(20, 1010, 7040, 7000), cull_rect.Rect());
 }
 
 TEST_F(CullRectTest,
@@ -179,7 +179,7 @@ TEST_F(CullRectTest,
   cull_rect = CullRect::Infinite();
   EXPECT_EQ(kNotExpanded,
             ApplyScrollTranslation(cull_rect, *scroll_translation));
-  // This result differs from the above result in height (40 vs 30)
+  // This result differs from the above result in width (40 vs 30)
   // because it's not clipped by the infinite input cull rect.
   EXPECT_EQ(IntRect(3020, 5010, 40, 50), cull_rect.Rect());
 }
@@ -237,12 +237,12 @@ TEST_F(CullRectTest, ApplyScrollTranslationWholeScrollingContents) {
   // Inverse transformed: (30, 25, 30, 50)
   // Expanded: (-3970, -3975, 8030, 8050)
   // Then clipped by the contents rect.
-  EXPECT_EQ(IntRect(0, 0, 2000, 2000), cull_rect.Rect());
+  EXPECT_EQ(IntRect(20, 10, 2000, 2000), cull_rect.Rect());
 
   cull_rect = CullRect::Infinite();
   EXPECT_EQ(kExpandedForWholeScrollingContents,
             ApplyScrollTranslation(cull_rect, *scroll_translation));
-  EXPECT_EQ(IntRect(0, 0, 2000, 2000), cull_rect.Rect());
+  EXPECT_EQ(IntRect(20, 10, 2000, 2000), cull_rect.Rect());
 }
 
 TEST_F(CullRectTest,
@@ -435,7 +435,7 @@ TEST_F(CullRectTest, SingleScrollWholeScrollingContents) {
   CullRect cull_rect1(IntRect(0, 0, 50, 100));
   cull_rect1.ApplyPaintProperties(state1, state1, scroll_translation_state,
                                   absl::nullopt);
-  EXPECT_EQ(IntRect(0, 0, 2000, 2000), cull_rect1.Rect());
+  EXPECT_EQ(IntRect(20, 10, 2000, 2000), cull_rect1.Rect());
 
   CullRect old_cull_rect = cull_rect1;
   old_cull_rect.Move(IntSize(1, 1));
@@ -448,7 +448,7 @@ TEST_F(CullRectTest, SingleScrollWholeScrollingContents) {
   CullRect cull_rect3 = CullRect::Infinite();
   cull_rect3.ApplyPaintProperties(state1, state1, scroll_translation_state,
                                   absl::nullopt);
-  EXPECT_EQ(IntRect(0, 0, 2000, 2000), cull_rect3.Rect());
+  EXPECT_EQ(IntRect(20, 10, 2000, 2000), cull_rect3.Rect());
 }
 
 TEST_F(CullRectTest, ApplyTransformsWithOrigin) {
@@ -479,9 +479,9 @@ TEST_F(CullRectTest, SingleScrollPartialScrollingContents) {
   CullRect cull_rect1(IntRect(0, 0, 50, 100));
   cull_rect1.ApplyPaintProperties(state1, state1, scroll_translation_state,
                                   absl::nullopt);
-  EXPECT_EQ(IntRect(0, 1010, 7050, 6990), cull_rect1.Rect());
+  EXPECT_EQ(IntRect(20, 1010, 7030, 7000), cull_rect1.Rect());
 
-  CullRect old_cull_rect(IntRect(0, 1100, 7050, 6900));
+  CullRect old_cull_rect(IntRect(20, 1100, 7050, 6910));
   CullRect cull_rect2(IntRect(0, 0, 50, 100));
   // Use old_cull_rect if the new cull rect didn't change enough.
   cull_rect2.ApplyPaintProperties(state1, state1, scroll_translation_state,
@@ -498,9 +498,9 @@ TEST_F(CullRectTest, SingleScrollPartialScrollingContents) {
   CullRect cull_rect4 = CullRect::Infinite();
   cull_rect4.ApplyPaintProperties(state1, state1, scroll_translation_state,
                                   absl::nullopt);
-  // This result differs from the first result in height (7050 vs 7060)
+  // This result differs from the first result in width (7030 vs 7040)
   // because it's not clipped by the infinite input cull rect.
-  EXPECT_EQ(IntRect(0, 1010, 7060, 6990), cull_rect4.Rect());
+  EXPECT_EQ(IntRect(20, 1010, 7040, 7000), cull_rect4.Rect());
 }
 
 TEST_F(CullRectTest, TransformUnderScrollTranslation) {
@@ -520,9 +520,9 @@ TEST_F(CullRectTest, TransformUnderScrollTranslation) {
   // except that the offset is adjusted with |t2|.
   CullRect cull_rect1(IntRect(0, 0, 50, 100));
   cull_rect1.ApplyPaintProperties(state1, state1, state2, absl::nullopt);
-  EXPECT_EQ(IntRect(-2000, -1990, 7050, 6990), cull_rect1.Rect());
+  EXPECT_EQ(IntRect(-1980, -1990, 7030, 7000), cull_rect1.Rect());
 
-  CullRect old_cull_rect(IntRect(-2000, -1900, 7050, 6900));
+  CullRect old_cull_rect(IntRect(-1980, -1990, 7030, 7000));
   CullRect cull_rect2(IntRect(0, 0, 50, 100));
   // Use old_cull_rect if the new cull rect didn't change enough.
   cull_rect2.ApplyPaintProperties(state1, state1, state2, old_cull_rect);
@@ -538,7 +538,7 @@ TEST_F(CullRectTest, TransformUnderScrollTranslation) {
   cull_rect4.ApplyPaintProperties(state1, state1, state2, absl::nullopt);
   // This result differs from the first result in height (7050 vs 7060)
   // because it's not clipped by the infinite input cull rect.
-  EXPECT_EQ(IntRect(-2000, -1990, 7060, 6990), cull_rect4.Rect());
+  EXPECT_EQ(IntRect(-1980, -1990, 7040, 7000), cull_rect4.Rect());
 }
 
 TEST_F(CullRectTest, TransformEscapingScroll) {
@@ -599,7 +599,7 @@ TEST_F(CullRectTest, SmallScrollContentsAfterBigScrollContents) {
   CullRect cull_rect1(IntRect(0, 0, 50, 100));
   cull_rect1.ApplyPaintProperties(state1, state1, scroll_translation_state2,
                                   absl::nullopt);
-  EXPECT_EQ(IntRect(0, 0, 200, 400), cull_rect1.Rect());
+  EXPECT_EQ(IntRect(30, 20, 200, 400), cull_rect1.Rect());
 
   CullRect old_cull_rect = cull_rect1;
   old_cull_rect.Move(IntSize(1, 1));
@@ -639,9 +639,9 @@ TEST_F(CullRectTest, BigScrollContentsAfterSmallScrollContents) {
   // After the second scroll offset: (3020, 5010, 50, 100)
   // Expanded: (-980, 1010, 8050, 8100)
   // Then clipped by the contents rect.
-  EXPECT_EQ(IntRect(0, 1010, 7070, 8100), cull_rect1.Rect());
+  EXPECT_EQ(IntRect(20, 1010, 7050, 8100), cull_rect1.Rect());
 
-  CullRect old_cull_rect(IntRect(0, 1100, 7070, 8100));
+  CullRect old_cull_rect(IntRect(20, 1100, 7050, 8100));
   CullRect cull_rect2(IntRect(0, 0, 100, 200));
   // Use old_cull_rect if the new cull rect didn't change enough.
   cull_rect2.ApplyPaintProperties(state1, state1, scroll_translation_state2,

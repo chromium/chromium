@@ -115,7 +115,8 @@ CullRect::ApplyTransformResult CullRect::ApplyScrollTranslation(
 
   // Expand the cull rect for scrolling contents for composited scrolling.
   rect_.Inflate(LocalPixelDistanceToExpand(root_transform, scroll_translation));
-  IntRect contents_rect(IntPoint(), scroll->ContentsSize());
+  IntRect contents_rect(scroll->ContainerRect().Location(),
+                        scroll->ContentsSize());
   rect_.Intersect(contents_rect);
   return rect_ == contents_rect ? kExpandedForWholeScrollingContents
                                 : kExpandedForPartialScrollingContents;
@@ -259,8 +260,9 @@ bool CullRect::ApplyPaintProperties(
   bool expanded = false;
   if (last_scroll_translation_result == kExpandedForPartialScrollingContents) {
     DCHECK(last_transform->ScrollNode());
-    expansion_bounds.emplace(IntPoint(),
-                             last_transform->ScrollNode()->ContentsSize());
+    expansion_bounds.emplace(
+        last_transform->ScrollNode()->ContainerRect().Location(),
+        last_transform->ScrollNode()->ContentsSize());
     if (last_transform != &destination.Transform() ||
         last_clip != &destination.Clip()) {
       // Map expansion_bounds in the same way as we did for rect_ in the last
