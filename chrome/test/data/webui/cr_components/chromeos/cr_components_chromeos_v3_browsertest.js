@@ -55,6 +55,9 @@ GEN('#include "content/public/test/browser_test.h"');
  ['RoutineGroup', 'network_health/routine_group_test.js'],
 ].forEach(test => registerTest('NetworkHealth', 'connectivity-diagnostics', ...test));
 
+[['TrafficCounters', 'traffic_counters/traffic_counters_test.js'],
+].forEach(test => registerTest('TrafficCounters', 'network', ...test));
+
 [
  ['Integration', 'multidevice_setup/integration_test.m.js'],
  ['SetupSucceededPage', 'multidevice_setup/setup_succeeded_page_test.m.js'],

@@ -1,7 +1,7 @@
 <style include="network-shared"></style>
 <h2>[[i18n('TrafficCountersTrafficCounters')]]</h2>
 <div class="button-group">
-  <cr-button on-click="onRequestTrafficCountersClick_">
+  <cr-button id="requestButton" on-click="onRequestTrafficCountersClick_">
     [[i18n('TrafficCountersRequestTrafficCounters')]]
   </cr-button>
 </div>
@@ -13,15 +13,15 @@
     <span slot="header">
       <img class="type-icon" src="[[getNetworkTypeIcon_(network.type)]]">
     </span>
-    <div class="network-attribute-container">
+    <div id="name" class="network-attribute-container">
       <div class="network-attribute-label">[[i18n('OncName')]]</div>
       <span class="network-attribute-value">[[network.name]]</span>
     </div>
-    <div class="network-attribute-container">
+    <div id="guid" class="network-attribute-container">
       <div class="network-attribute-label">[[i18n('TrafficCountersGuid')]]</div>
       <span class="network-attribute-value">[[network.guid]]</span>
     </div>
-    <div class="network-attribute-container">
+    <div id="counters" class="network-attribute-container">
       <div class="network-attribute-label">
         [[i18n('TrafficCountersTrafficCounters')]]
       </div>
@@ -29,7 +29,7 @@
         [[countersToString_(network.counters)]]
       </span>
     </div>
-    <div class="network-attribute-container">
+    <div id="time" class="network-attribute-container">
       <div class="network-attribute-label">
         [[i18n('TrafficCountersLastResetTime')]]
       </div>
@@ -37,9 +37,9 @@
         [[lastResetTimeString_(network)]]
       </span>
     </div>
-    <div class="network-attribute-container">
+    <div id="reset" class="network-attribute-container">
       <div class="button-group">
-        <cr-button on-click="onResetTrafficCountersClick_">
+        <cr-button id="resetButton" on-click="onResetTrafficCountersClick_">
           [[i18n('TrafficCountersResetTrafficCounters')]]
         </cr-button>
       </div>

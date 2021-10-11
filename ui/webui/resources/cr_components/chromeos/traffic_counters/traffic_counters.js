@@ -10,6 +10,8 @@ import {CrosNetworkConfig} from 'chrome://resources/mojo/chromeos/services/netwo
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {TrafficCountersAdapter} from './traffic_counters_adapter.js';
+
 /**
  * @fileoverview Polymer element for a container used in displaying network
  * traffic information.
@@ -121,25 +123,24 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
     super();
 
     /**
-     * Network Config mojo remote.
-     * @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote}
-     */
-    this.networkConfig_ =
-        chromeos.networkConfig.mojom.CrosNetworkConfig.getRemote();
-
-    /**
      * Expanded state per network type.
      * @private {!Array<boolean>}
      */
     this.typeExpanded_ = [];
+
+    /**
+     * Adapter to access traffic counters functionality.
+     * @private {!TrafficCountersAdapter}
+     */
+    this.trafficCountersAdapter_ = new TrafficCountersAdapter();
   }
 
   /**
    * Handles requests to request traffic counters.
    * @private
    */
-  onRequestTrafficCountersClick_() {
-    this.fetchTrafficCountersForActiveNetworks_();
+  async onRequestTrafficCountersClick_() {
+    await this.fetchTrafficCountersForActiveNetworks_();
   }
 
   /**
@@ -149,10 +150,15 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
    */
   async onResetTrafficCountersClick_(event) {
     const network = event.model.network;
-    this.networkConfig_.resetTrafficCounters(network.guid);
-    const trafficCounters =
-        await this.getTrafficCountersForNetwork_(network.guid);
-    const lastResetTime = await this.getLastResetTime(network.guid);
+    await this.trafficCountersAdapter_.resetTrafficCountersForNetwork(
+        network.guid);
+    let trafficCounters =
+        await this.trafficCountersAdapter_.requestTrafficCountersForNetwork(
+            network.guid);
+    trafficCounters = this.convertSourceEnumToString_(trafficCounters);
+    const lastResetTime =
+        await this.trafficCountersAdapter_.requestLastResetTimeForNetwork(
+            network.guid);
     const foundIdx = this.networks_.findIndex(n => n.guid === network.guid);
     if (foundIdx === -1) {
       return;
@@ -166,57 +172,16 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
 
   /**
    * Requests traffic counters for networks.
-   * @private
+   * @return {!Promise<!Array<!Network>>} information about networks
    */
   async fetchTrafficCountersForActiveNetworks_() {
-    this.networks_ = [];
-    const filter = {
-      filter: chromeos.networkConfig.mojom.FilterType.kActive,
-      networkType: chromeos.networkConfig.mojom.NetworkType.kAll,
-      limit: chromeos.networkConfig.mojom.NO_LIMIT,
-    };
-    const networkStateList =
-        await this.networkConfig_.getNetworkStateList(filter);
-    for (const networkState of networkStateList.result) {
-      const trafficCounters =
-          await this.getTrafficCountersForNetwork_(networkState.guid);
-      const lastResetTime = await this.getLastResetTime(networkState.guid);
-      this.push(
-          'networks_',
-          createNetwork(
-              networkState.guid, networkState.name, networkState.type,
-              trafficCounters, lastResetTime));
+    const networks = await this.trafficCountersAdapter_
+                         .requestTrafficCountersForActiveNetworks();
+    for (const network of networks) {
+      network.counters = this.convertSourceEnumToString_(network.counters);
     }
-  }
-
-  /**
-   * Requests and sets traffic counters for the given network.
-   * @param {string} guid
-   * @return {!Promise<!Array<!Object>>} traffic counters for network with guid
-   * @private
-   */
-  async getTrafficCountersForNetwork_(guid) {
-    const trafficCountersObj =
-        await this.networkConfig_.requestTrafficCounters(guid);
-    this.convertSourceEnumToString_(trafficCountersObj.trafficCounters);
-    return trafficCountersObj.trafficCounters;
-  }
-
-  /**
-   * Gets last reset time.
-   * @param {string} guid
-   * @return {?Promise<?mojoBase.mojom.Time>} last reset
-   *     time for network with guid
-   * @private
-   */
-  async getLastResetTime(guid) {
-    const managedPropertiesPromise =
-        await this.networkConfig_.getManagedProperties(guid);
-    if (!managedPropertiesPromise || !managedPropertiesPromise.result) {
-      return null;
-    }
-
-    return managedPropertiesPromise.result.trafficCounterResetTime || null;
+    this.networks_ = networks;
+    return this.networks_;
   }
 
   /**
@@ -276,7 +241,8 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
 
   /**
    * Convert the traffic counters' source enum to a readable string.
-   * @param {!Array<!Object>} counters
+   * @param {!Array<!Object>} counters with source enum
+   * @return {!Array<!Object>} counters with source string
    * @private
    */
   convertSourceEnumToString_(counters) {
@@ -310,6 +276,7 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
           counter.source = this.i18n('TrafficCountersSystem');
       }
     }
+    return counters;
   }
 
   /**

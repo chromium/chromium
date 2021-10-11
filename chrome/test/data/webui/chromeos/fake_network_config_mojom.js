@@ -75,6 +75,9 @@
     /** @private {!Array<chromeos.networkConfig.mojom.VpnProvider>} */
     this.vpnProviders_ = [];
 
+    /** @private {!Map<string, !Array<!Object>>} */
+    this.trafficCountersMap_ = new Map();
+
     this.resetForTest();
   }
 
@@ -140,6 +143,8 @@
      'configureNetwork',
      'getAlwaysOnVpn',
      'getSupportedVpnTypes',
+     'requestTrafficCounters',
+     'resetTrafficCounters',
     ].forEach((methodName) => {
       this.resolverMap_.set(methodName, new PromiseResolver());
     });
@@ -227,6 +232,36 @@
     const managed = this.managedProperties_.get(guid);
     if (managed) {
       managed.connectionState = state;
+    }
+    this.onActiveNetworksChanged();
+  }
+
+  /**
+   * @param {string} guid
+   * @param {!Array<!Object>} trafficCounters counters for guid
+   */
+  setTrafficCountersForTest(guid, trafficCounters) {
+    const network = this.networkStates_.find(state => {
+      return state.guid === guid;
+    });
+    assert(!!network, 'Network not found: ' + guid);
+
+    this.trafficCountersMap_.set(guid, trafficCounters);
+  }
+
+  /**
+   * @param {string} guid
+   * @param {?mojoBase.mojom.Time} lastResetTime last reset
+   * time for network with guid
+   */
+  setLastResetTimeForTest(guid, lastResetTime) {
+    const network = this.networkStates_.find(state => {
+      return state.guid === guid;
+    });
+    assert(!!network, 'Network not found: ' + guid);
+    const managed = this.managedProperties_.get(guid);
+    if (managed) {
+      managed.trafficCounterResetTime = lastResetTime;
     }
     this.onActiveNetworksChanged();
   }
@@ -592,5 +627,29 @@
    */
   setAlwaysOnVpn(properties) {
     this.alwaysOnVpnProperties_ = properties;
+  }
+
+  /**
+   * @param {string} guid
+   * @return {!Promise<!Array<!Object>>} traffic counters for network with guid
+   */
+  requestTrafficCounters(guid) {
+    return new Promise(resolve => {
+      this.methodCalled('requestTrafficCounters');
+      resolve({trafficCounters: this.trafficCountersMap_.get(guid)});
+    });
+  }
+
+  /**
+   * @param {string} guid
+   */
+  resetTrafficCounters(guid) {
+    const trafficCounters = this.trafficCountersMap_.get(guid);
+    assert(!!trafficCounters, 'Network not found: ' + guid);
+    trafficCounters.forEach(function(counter) {
+      counter.rxBytes = 0;
+      counter.txBytes = 0;
+    });
+    this.methodCalled('resetTrafficCounters');
   }
 }
