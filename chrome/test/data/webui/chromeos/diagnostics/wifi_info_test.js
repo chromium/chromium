@@ -4,6 +4,7 @@
 
 import 'chrome://diagnostics/wifi_info.js';
 import {Network, SecurityType, WiFiStateProperties} from 'chrome://diagnostics/diagnostics_types.js';
+import {getSignalStrength} from 'chrome://diagnostics/diagnostics_utils.js';
 import {fakeDisconnectedWifiNetwork, fakeWifiNetwork, fakeWiFiStateProperties} from 'chrome://diagnostics/fake_data.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -76,7 +77,8 @@ export function wifiInfoTestSuite() {
       assertDataPointHasExpectedHeaderAndValue(
           wifiInfoElement, '#signalStrength',
           wifiInfoElement.i18n('networkSignalStrengthLabel'),
-          `${fakeWifiNetwork.typeProperties.wifi.signalStrength}`);
+          getSignalStrength(
+              fakeWifiNetwork.typeProperties.wifi.signalStrength));
       assertDataPointHasExpectedHeaderAndValue(
           wifiInfoElement, '#channel',
           wifiInfoElement.i18n('networkChannelLabel'),

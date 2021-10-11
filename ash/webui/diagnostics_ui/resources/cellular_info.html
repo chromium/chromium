@@ -22,7 +22,8 @@
           orientation="horizontal">
       </data-point>
       <data-point id="signalStrength" header="[[i18n('networkSignalStrengthLabel')]]"
-          value="[[network.typeProperties.cellular.signalStrength]]"
+          value="[[computeSignalStrength_(
+            network.typeProperties.cellular.signalStrength)]]"
           orientation="horizontal">
       </data-point>
     </div>

@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/cellular_info.js';
 
-import {getLockType} from 'chrome://diagnostics/diagnostics_utils.js';
+import {getLockType, getSignalStrength} from 'chrome://diagnostics/diagnostics_utils.js';
 import {fakeCellularNetwork} from 'chrome://diagnostics/fake_data.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
@@ -76,7 +76,8 @@ export function cellularInfoTestSuite() {
       assertDataPointHasExpectedHeaderAndValue(
           cellularInfoElement, '#signalStrength',
           cellularInfoElement.i18n('networkSignalStrengthLabel'),
-          fakeCellularNetwork.typeProperties.cellular.signalStrength);
+          getSignalStrength(
+              fakeCellularNetwork.typeProperties.cellular.signalStrength));
       assertDataPointHasExpectedHeaderAndValue(
           cellularInfoElement, '#simLocked',
           cellularInfoElement.i18n('networkSimLockStatusLabel'),

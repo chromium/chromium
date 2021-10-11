@@ -340,3 +340,30 @@ export function getNetworkCardTitle(networkType, networkState) {
 
   return `${titleForCard}`;
 }
+
+/**
+ * @param {number} value
+ * @return {string}
+ */
+export function getSignalStrength(value) {
+  assert(typeof value === 'number');
+  assert(value >= 0 && value <= 100);
+
+  if (value <= 1) {
+    return '';
+  }
+
+  if (value <= 25) {
+    return loadTimeData.getStringF('signalStrength_Weak', value);
+  }
+
+  if (value <= 50) {
+    return loadTimeData.getStringF('signalStrength_Average', value);
+  }
+
+  if (value <= 75) {
+    return loadTimeData.getStringF('signalStrength_Good', value);
+  }
+
+  return loadTimeData.getStringF('signalStrength_Excellent', value);
+}

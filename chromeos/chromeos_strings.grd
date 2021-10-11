@@ -1073,6 +1073,18 @@ Try tapping the mic to ask me anything.
       <message name="IDS_NETWORK_DIAGNOSTICS_MISSING_NAME_SERVERS_TEXT" desc="The text shown when no name servers are configured.">
         No name servers are configured
       </message>
+      <message name="IDS_DIAGNOSTICS_NETWORK_SIGNAL_STRENGTH_WEAK" desc="Label used to describe the signal strength of a network connection when the signal is weak.">
+        Weak (<ph name="SIGNAL_STRENGTH">$1<ex>(20)</ex></ph>)
+      </message>
+      <message name="IDS_DIAGNOSTICS_NETWORK_SIGNAL_STRENGTH_AVERAGE" desc="Label used to describe the signal strength of a network connection when the signal is average.">
+        Average (<ph name="SIGNAL_STRENGTH">$1<ex>(43)</ex></ph>)
+      </message>
+      <message name="IDS_DIAGNOSTICS_NETWORK_SIGNAL_STRENGTH_GOOD" desc="Label used to describe the signal strength of a network connection when the signal is good.">
+        Good (<ph name="SIGNAL_STRENGTH">$1<ex>(71)</ex></ph>)
+      </message>
+      <message name="IDS_DIAGNOSTICS_NETWORK_SIGNAL_STRENGTH_EXCELLENT" desc="Label used to describe the signal strength of a network connection when the signal is excellent.">
+        Excellent (<ph name="SIGNAL_STRENGTH">$1<ex>(94)</ex></ph>)
+      </message>
 
       <!-- Input diagnostics -->
       <message name="IDS_INPUT_DIAGNOSTICS_RUN_TEST" desc="Text for the button that runs a test for a specific input device">

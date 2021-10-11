@@ -11,7 +11,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LockType, Network, RoamingState} from './diagnostics_types.js';
-import {getLockType} from './diagnostics_utils.js';
+import {getLockType, getSignalStrength} from './diagnostics_utils.js';
 
 /**
  * @fileoverview
@@ -110,5 +110,17 @@ Polymer({
     return (simLocked && lockType !== LockType.kNone) ?
         this.i18n('networkSimLockedText', getLockType(lockType)) :
         this.i18n('networkSimUnlockedText');
+  },
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  computeSignalStrength_() {
+    if (this.network.typeProperties && this.network.typeProperties.cellular) {
+      return getSignalStrength(
+          this.network.typeProperties.cellular.signalStrength);
+    }
+    return '';
   },
 });

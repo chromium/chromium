@@ -12,7 +12,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, SecurityType} from './diagnostics_types.js';
-import {getSubnetMaskFromRoutingPrefix} from './diagnostics_utils.js';
+import {getSignalStrength, getSubnetMaskFromRoutingPrefix} from './diagnostics_utils.js';
 import {convertFrequencyToChannel} from './frequency_channel_utils.js';
 
 /**
@@ -102,9 +102,8 @@ Polymer({
    * @return {string}
    */
   computeSignalStrength_() {
-    if (this.network.typeProperties && this.network.typeProperties.wifi &&
-        this.network.typeProperties.wifi.signalStrength > 1) {
-      return `${this.network.typeProperties.wifi.signalStrength}`;
+    if (this.network.typeProperties && this.network.typeProperties.wifi) {
+      return getSignalStrength(this.network.typeProperties.wifi.signalStrength);
     }
     return '';
   }

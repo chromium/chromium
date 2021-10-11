@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {NetworkType, RoutineType} from 'chrome://diagnostics/diagnostics_types.js';
-import {convertKibToGibDecimalString, getNetworkCardTitle, getRoutineGroups, getSubnetMaskFromRoutingPrefix, setDisplayStateInTitleForTesting} from 'chrome://diagnostics/diagnostics_utils.js';
+import {convertKibToGibDecimalString, getNetworkCardTitle, getRoutineGroups, getSignalStrength, getSubnetMaskFromRoutingPrefix, setDisplayStateInTitleForTesting} from 'chrome://diagnostics/diagnostics_utils.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
@@ -119,5 +119,14 @@ export function diagnosticsUtilsTestSuite() {
     // Default state is to not display connection details in title.
     setDisplayStateInTitleForTesting(false);
     assertEquals('Ethernet', getNetworkCardTitle('Ethernet', 'Online'));
+  });
+
+  test('GetSignalStrength', () => {
+    assertEquals(getSignalStrength(0), '');
+    assertEquals(getSignalStrength(1), '');
+    assertEquals(getSignalStrength(14), 'Weak (14)');
+    assertEquals(getSignalStrength(33), 'Average (33)');
+    assertEquals(getSignalStrength(63), 'Good (63)');
+    assertEquals(getSignalStrength(98), 'Excellent (98)');
   });
 }
