@@ -74,7 +74,6 @@
         },
         {
             "files": [
-                "gen/layout_test_data/mojo/public.js",
                 "gen/mojo/public/js/bindings.js",
                 "gen/third_party/blink/public/mojom/contacts/contacts_manager.mojom.m.js",
                 "gen/third_party/blink/public/mojom/content_index/content_index.mojom.m.js",
@@ -108,6 +107,7 @@
                 "gen/services/shape_detection/public/mojom/*.mojom.m.js",
                 "gen/ui/gfx/mojom/*.mojom.m.js"
             ],
+            "dirs":["gen/layout_test_data/mojo/public/js"],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "experimental/Linux_x64/{%position%}/mojojs.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
