@@ -19,6 +19,7 @@ import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.annotations.AccessedByNative;
 import org.chromium.base.annotations.JniIgnoreNatives;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -112,6 +113,12 @@ abstract class Linker {
     @GuardedBy("mLock")
     private boolean mLinkerWasWaitingSynchronously;
 
+    // Keeps stats about searching the WebView memory reservation. After each _successful_ library
+    // load a UMA histogram is recorded using this data.
+    @GuardedBy("mLock")
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    WebViewReservationSearchResult mWebviewReservationSearchResult;
+
     /**
      * The state machine of library loading.
      *
@@ -179,6 +186,28 @@ abstract class Linker {
                 return "RESERVE_RANDOM";
             default:
                 return String.valueOf(a);
+        }
+    }
+
+    /**
+     * A helper class to group a couple of stats related to WebView reservation lookup, and
+     * recording a histogram after that.
+     */
+    private static class WebViewReservationSearchResult {
+        private final boolean mSuccess;
+        private final long mDurationMs;
+
+        WebViewReservationSearchResult(boolean searchSucceeded, long searchDurationMs) {
+            mSuccess = searchSucceeded;
+            mDurationMs = searchDurationMs;
+        }
+
+        private void recordHistograms(String suffix) {
+            String successAsString = mSuccess ? "Found" : "NotFound";
+            RecordHistogram.recordTimesHistogram(
+                    "ChromiumAndroidLinker.TimeToFindWebViewReservation." + successAsString + "."
+                            + suffix,
+                    mDurationMs);
         }
     }
 
@@ -267,7 +296,7 @@ abstract class Linker {
     // Initializes the |mLocalLibInfo| and reserves the address range chosen (only when
     // keepMemoryReservationUntilLoad() returns true).
     @GuardedBy("mLock")
-    final void chooseAndReserveMemoryRange(
+    private void chooseAndReserveMemoryRange(
             boolean asRelroProducer, @PreferAddress int preference, long addressHint) {
         mLocalLibInfo = new LibInfo();
         mRelroProducer = asRelroProducer;
@@ -275,7 +304,12 @@ abstract class Linker {
         boolean keepReservation = keepMemoryReservationUntilLoad();
         switch (preference) {
             case PreferAddress.FIND_RESERVED:
-                if (getLinkerJni().findRegionReservedByWebViewZygote(mLocalLibInfo)) {
+                long startTimeMs = SystemClock.uptimeMillis();
+                boolean reservationFound =
+                        getLinkerJni().findRegionReservedByWebViewZygote(mLocalLibInfo);
+                long durationMs = SystemClock.uptimeMillis() - startTimeMs;
+                saveWebviewReservationSearchStats(reservationFound, durationMs);
+                if (reservationFound) {
                     assert isNonZeroLoadAddress(mLocalLibInfo);
                     if (addressHint == 0 || addressHint == mLocalLibInfo.mLoadAddress) {
                         // Subtle: Both the producer and the consumer are expected to find the same
@@ -301,6 +335,26 @@ abstract class Linker {
                 // Intentional fallthrough.
             case PreferAddress.RESERVE_RANDOM:
                 getLinkerJni().findMemoryRegionAtRandomAddress(mLocalLibInfo, keepReservation);
+        }
+    }
+
+    @GuardedBy("mLock")
+    private void saveWebviewReservationSearchStats(boolean succeeded, long durationMs) {
+        assert mState == State.UNINITIALIZED;
+        assert mWebviewReservationSearchResult == null;
+        mWebviewReservationSearchResult = new WebViewReservationSearchResult(succeeded, durationMs);
+    }
+
+    /**
+     * Records UMA histograms related to library loading.
+     *
+     * @param suffix to append to the histogram name before recording it. A process type
+     * (e.g. "Browser") can be used here to avoid making the Linker aware of the process type.
+     */
+    void recordHistograms(String suffix) {
+        synchronized (mLock) {
+            if (mWebviewReservationSearchResult == null) return;
+            mWebviewReservationSearchResult.recordHistograms(suffix);
         }
     }
 
@@ -698,7 +752,7 @@ abstract class Linker {
         /**
          * Finds the (named) address range reservation made by the system zygote and dedicated for
          * loading the native library. Reads /proc/self/maps, which is a slow operation (up to a few
-         * ms). TODO(pasko): collect measurements of the duration.
+         * ms).
          *
          * @param libInfo holds the output values: |mLoadAddress| and |mLoadSize|. On success saves
          *                the start address and the size of the webview memory reservation to them.

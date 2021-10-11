@@ -263,7 +263,7 @@ public class LibraryLoader {
                 // For devices avoiding the App Zygote in
                 // ChildConnectionAllocator.createVariableSize() the FIND_RESERVED search can be
                 // avoided: a random region is sufficient. TODO(pasko): Investigate whether it is
-                // worth coordinatiing with the ChildConnectionAllocator. To speed up process
+                // worth coordinating with the ChildConnectionAllocator. To speed up process
                 // creation.
                 int preferAddress = attemptProduceRelro ? Linker.PreferAddress.RESERVE_RANDOM
                                                         : Linker.PreferAddress.FIND_RESERVED;
@@ -381,14 +381,24 @@ public class LibraryLoader {
             }
         }
 
-        private String getLoadHistogramName() {
+        private void recordLinkerHistogramsAfterLibraryLoad() {
+            if (!useChromiumLinker()) return;
+            // When recording a sample in the App Zygote it gets copied to each forked process and
+            // hence gets duplicated in the uploads. Avoiding such duplication would require
+            // serializing the samples, sending them to the browser process and disambiguating by,
+            // for example, Zygote PID in ChildProcessConnection.java. A few rough performance
+            // estimations do not require this complexity.
+            getLinker().recordHistograms(creationAsString());
+        }
+
+        private String creationAsString() {
             switch (mCreatedIn) {
                 case CreatedIn.MAIN:
-                    return "ChromiumAndroidLinker.BrowserLoadTime2";
+                    return "Browser";
                 case CreatedIn.ZYGOTE:
-                    return "ChromiumAndroidLinker.ZygoteLoadTime2";
+                    return "Zygote";
                 case CreatedIn.CHILD_WITHOUT_ZYGOTE:
-                    return "ChromiumAndroidLinker.ChildLoadTime2";
+                    return "Child";
                 default:
                     assert false : "Must initialize as one of {Browser,Zygote,Child}";
                     return "";
@@ -396,7 +406,8 @@ public class LibraryLoader {
         }
 
         private void recordLoadTimeHistogram(long loadTimeMs) {
-            RecordHistogram.recordTimesHistogram(getLoadHistogramName(), loadTimeMs);
+            RecordHistogram.recordTimesHistogram(
+                    "ChromiumAndroidLinker." + creationAsString() + "LoadTime2", loadTimeMs);
         }
     }
 
@@ -791,6 +802,7 @@ public class LibraryLoader {
         }
 
         linker.loadLibrary(library); // May throw UnsatisfiedLinkError.
+        getMediator().recordLinkerHistogramsAfterLibraryLoad();
     }
 
     @GuardedBy("mLock")

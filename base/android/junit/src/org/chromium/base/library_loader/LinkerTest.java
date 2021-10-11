@@ -21,13 +21,15 @@ import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.library_loader.Linker.PreferAddress;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /**
  *  Tests for {@link Linker}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 @SuppressWarnings("GuardedBy") // doNothing().when(...).methodLocked() cannot resolve |mLock|.
 public class LinkerTest {
     @Mock
@@ -165,7 +167,7 @@ public class LinkerTest {
         // Set up.
         Linker linker = Mockito.spy(new ModernLinker());
         Mockito.doNothing().when(linker).loadLinkerJniLibraryLocked();
-        // The lookup of the region succeeds.
+        // The lookup of the region fails.
         Mockito.when(mNativeMock.findRegionReservedByWebViewZygote(anyLibInfo())).thenReturn(false);
 
         // Exercise.
@@ -220,5 +222,48 @@ public class LinkerTest {
         // Unfortunately there does not seem to be an elegant way to set |mLoadAddress| without
         // extracting creation of mLocalLibInfo from ensureInitialized(). Hence no checks are
         // present here involving the exact value of |mLoadAddress|.
+    }
+
+    @Test
+    @SmallTest
+    public void testWebviewRegionSearchHistograms() {
+        // Set up.
+        Linker linker = Mockito.spy(new ModernLinker());
+        Mockito.doNothing().when(linker).loadLinkerJniLibraryLocked();
+        // The lookup of the region succeeds.
+        Mockito.when(mNativeMock.findRegionReservedByWebViewZygote(anyLibInfo())).thenReturn(true);
+        Mockito.when(linker.isNonZeroLoadAddress(anyLibInfo())).thenReturn(true);
+
+        // Exercise.
+        linker.ensureInitialized(
+                /* asRelroProducer= */ false, PreferAddress.FIND_RESERVED, 0);
+        linker.recordHistograms("Zygote");
+
+        // Verify.
+        Assert.assertNotNull(linker.mWebviewReservationSearchResult);
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "ChromiumAndroidLinker.TimeToFindWebViewReservation.Found.Zygote"));
+    }
+
+    @Test
+    @SmallTest
+    public void testWebviewRegionSearchFailedHistograms() {
+        // Set up.
+        Linker linker = Mockito.spy(new ModernLinker());
+        Mockito.doNothing().when(linker).loadLinkerJniLibraryLocked();
+        // The lookup of the region fails.
+        Mockito.when(mNativeMock.findRegionReservedByWebViewZygote(anyLibInfo())).thenReturn(false);
+
+        // Exercise.
+        linker.ensureInitialized(
+                /* asRelroProducer= */ false, PreferAddress.FIND_RESERVED, 0);
+        linker.recordHistograms("Child");
+
+        // Verify.
+        Assert.assertNotNull(linker.mWebviewReservationSearchResult);
+        Assert.assertEquals(1,
+                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                        "ChromiumAndroidLinker.TimeToFindWebViewReservation.NotFound.Child"));
     }
 }
