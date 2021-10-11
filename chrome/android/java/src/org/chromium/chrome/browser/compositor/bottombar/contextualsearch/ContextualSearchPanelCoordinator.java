@@ -293,6 +293,11 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
     }
 
     @Override
+    public ViewGroup getContainerView() {
+        return null;
+    }
+
+    @Override
     public boolean isPanelOpened() {
         return mBottomSheetController.isSheetOpen();
     }
