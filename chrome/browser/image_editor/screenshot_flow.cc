@@ -38,7 +38,7 @@ namespace image_editor {
 
 // Colors for semitransparent overlay.
 static constexpr SkColor kColorSemitransparentOverlayMask =
-    SkColorSetARGB(0x30, 0x00, 0x00, 0x00);
+    SkColorSetARGB(0x7F, 0x00, 0x00, 0x00);
 static constexpr SkColor kColorSemitransparentOverlayVisible =
     SkColorSetARGB(0x00, 0x00, 0x00, 0x00);
 static constexpr SkColor kColorSelectionRect = SkColorSetRGB(0xEE, 0xEE, 0xEE);
