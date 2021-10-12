@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "services/device/generic_sensor/platform_sensor_util.h"
@@ -72,23 +73,16 @@ bool PlatformSensor::StopListening(Client* client,
     return false;
 
   auto& config_list = client_entry->second;
-  auto config_entry = std::find(config_list.begin(), config_list.end(), config);
-  if (config_entry == config_list.end())
+  if (base::Erase(config_list, config) == 0)
     return false;
-
-  config_list.erase(config_entry);
 
   return UpdateSensorInternal(config_map_);
 }
 
 bool PlatformSensor::StopListening(Client* client) {
   DCHECK(client);
-  auto client_entry = config_map_.find(client);
-  if (client_entry == config_map_.end())
+  if (config_map_.erase(client) == 0)
     return false;
-
-  config_map_.erase(client_entry);
-
   return UpdateSensorInternal(config_map_);
 }
 
