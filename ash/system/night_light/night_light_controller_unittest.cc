@@ -1919,7 +1919,7 @@ TEST_F(AmbientEQTest, TestAmbientColorMatrix) {
   }
 
   // Turn color temperature down.
-  float ambient_temperature = SimulateAmbientColorFromPowerd(8000, 7350.0f);
+  SimulateAmbientColorFromPowerd(8000, 7350.0f);
   auto internal_rgb = GetDisplayCompositorRGBScaleFactors(kInternalDisplayId);
   auto external_rgb = GetDisplayCompositorRGBScaleFactors(kExternalDisplayId);
 
@@ -1932,7 +1932,7 @@ TEST_F(AmbientEQTest, TestAmbientColorMatrix) {
   EXPECT_TRUE((external_rgb - gfx::Vector3dF(1.0f, 1.0f, 1.0f)).IsZero());
 
   // Turn color temperature up.
-  ambient_temperature = SimulateAmbientColorFromPowerd(2700, 5800.0f);
+  SimulateAmbientColorFromPowerd(2700, 5800.0f);
   internal_rgb = GetDisplayCompositorRGBScaleFactors(kInternalDisplayId);
   external_rgb = GetDisplayCompositorRGBScaleFactors(kExternalDisplayId);
 
