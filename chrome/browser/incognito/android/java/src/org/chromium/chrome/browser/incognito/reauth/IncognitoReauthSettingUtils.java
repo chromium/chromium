@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.KeyguardManager;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -13,6 +17,7 @@ import android.text.style.ForegroundColorSpan;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.incognito.R;
 import org.chromium.ui.text.SpanApplier;
 
@@ -25,14 +30,17 @@ public class IncognitoReauthSettingUtils {
     /**
      * @return A boolean indicating if the screen lock is enabled in device or not.
      */
+    @TargetApi(Build.VERSION_CODES.M)
     public static boolean isDeviceScreenLockEnabled() {
         if (sIsDeviceScreenLockEnabledForTesting != null) {
             return sIsDeviceScreenLockEnabledForTesting;
         }
 
-        // TODO(crbug.com/1227656): This would be added later when the Incognito reauth MVC is in
-        // place.
-        return false;
+        KeyguardManager keyguardManager =
+                ((KeyguardManager) ContextUtils.getApplicationContext().getSystemService(
+                        Context.KEYGUARD_SERVICE));
+        assert keyguardManager != null;
+        return keyguardManager.isDeviceSecure();
     }
 
     /**
