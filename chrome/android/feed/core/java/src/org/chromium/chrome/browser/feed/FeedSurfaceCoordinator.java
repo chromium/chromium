@@ -400,6 +400,21 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
         mRootView.removeAllViews();
     }
 
+    /**
+     * Enables/disables the pull-to-refresh.
+     *
+     * @param enabled Whether the pull-to-refresh should be enabled.
+     */
+    public void enableSwipeRefresh(boolean enabled) {
+        if (mSwipeRefreshLayout != null) {
+            if (enabled) {
+                mSwipeRefreshLayout.enableSwipe(null);
+            } else {
+                mSwipeRefreshLayout.disableSwipe();
+            }
+        }
+    }
+
     @Override
     public ContextMenuManager.TouchEnabledDelegate getTouchEnabledDelegate() {
         return mMediator;

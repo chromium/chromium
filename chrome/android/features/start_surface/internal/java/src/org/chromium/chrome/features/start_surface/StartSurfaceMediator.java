@@ -758,6 +758,14 @@ class StartSurfaceMediator
         }
 
         mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, isVisible);
+
+        // Pull-to-refresh is not supported when explore surface is not visible, i.e. in tab
+        // switcher mode.
+        FeedSurfaceCoordinator feedSurfaceCoordinator =
+                mPropertyModel.get(FEED_SURFACE_COORDINATOR);
+        if (feedSurfaceCoordinator != null) {
+            feedSurfaceCoordinator.enableSwipeRefresh(isVisible);
+        }
     }
 
     private void updateIncognitoMode(boolean isIncognito) {
