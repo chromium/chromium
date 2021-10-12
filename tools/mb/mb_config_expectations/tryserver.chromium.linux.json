@@ -596,6 +596,19 @@
       "use_goma": false
     }
   },
+  "linux-headless-shell-rel": {
+    "args_file": "//build/args/headless.gn",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_ffmpeg_video_decoders": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "media_use_ffmpeg": false,
+      "media_use_libvpx": false,
+      "proprietary_codecs": false,
+      "use_goma": true
+    }
+  },
   "linux-inverse-fieldtrials-fyi-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
