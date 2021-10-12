@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -221,8 +222,14 @@ void SupervisedUserNavigationThrottleTest::SetUpOnMainThread() {
 }
 
 // Tests that prerendering fails in supervised user mode.
+#if defined(OS_CHROMEOS)
+// TODO(crbug.com/1259146): Flaky on ChromeOS.
+#define MAYBE_DisallowPrerendering DISABLED_DisallowPrerendering
+#else
+#define MAYBE_DisallowPrerendering DisallowPrerendering
+#endif
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
-                       DisallowPrerendering) {
+                       MAYBE_DisallowPrerendering) {
   base::HistogramTester histogram_tester;
   const GURL initial_url = embedded_test_server()->GetURL("/simple.html");
   const GURL allowed_url =
