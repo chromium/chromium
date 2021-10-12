@@ -137,7 +137,7 @@ preprocess_if_expr("preprocess") {
     "on_startup_page/startup_urls_page_browser_proxy.ts",
     "open_window_proxy.ts",
     "page_visibility.ts",
-    "people_page/sync_browser_proxy.js",
+    "people_page/sync_browser_proxy.ts",
     "people_page/profile_info_browser_proxy.js",
     "prefs/prefs_mixin.ts",
     "prefs/prefs.ts",
@@ -410,7 +410,6 @@ js_library("settings") {
   deps = [
     ":i18n_setup",
     ":lifetime_browser_proxy",
-    "people_page:sync_browser_proxy",
   ]
   extra_deps = [ ":build_ts" ]
 }
@@ -604,7 +603,7 @@ ts_library("build_ts") {
     "people_page/profile_info_browser_proxy.js",
     "people_page/signout_dialog.ts",
     "people_page/sync_account_control.ts",
-    "people_page/sync_browser_proxy.js",
+    "people_page/sync_browser_proxy.ts",
     "people_page/sync_controls.ts",
     "people_page/sync_encryption_options.ts",
     "people_page/sync_page.ts",

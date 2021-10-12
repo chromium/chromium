@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {PageStatus, StoredAccount, SyncBrowserProxy, SyncStatus} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {PageStatus} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // #import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 // clang-format on

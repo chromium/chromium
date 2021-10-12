@@ -6,7 +6,7 @@
 
 import 'chrome://settings/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SyncBrowserProxy, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.js';
 
 suite('AvatarIcon', function() {

@@ -286,7 +286,6 @@ preprocess_if_expr("preprocess_v3") {
     "people_page/profile_info_browser_proxy.js",
     "chromeos/ambient_mode_page/ambient_mode_browser_proxy.js",
     "chromeos/ambient_mode_page/constants.js",
-    "people_page/sync_browser_proxy.js",
     "router.js",
   ]
 }
@@ -322,6 +321,7 @@ preprocess_if_expr("copy_browser_settings_tsc") {
     "lifetime_browser_proxy.js",
     "people_page/signout_dialog.js",
     "people_page/sync_account_control.js",
+    "people_page/sync_browser_proxy.js",
     "people_page/sync_controls.js",
     "people_page/sync_encryption_options.js",
     "people_page/sync_page.js",

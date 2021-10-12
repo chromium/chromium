@@ -140,7 +140,6 @@ js_type_check("closure_compile") {
     #":test_profile_info_browser_proxy",
     #":test_reset_browser_proxy",
     #":test_search_engines_browser_proxy",
-    ":test_sync_browser_proxy",
 
     #":zoom_levels_tests",
   ]
@@ -180,13 +179,6 @@ js_library("test_lifetime_browser_proxy") {
 }
 
 js_library("test_search_engines_browser_proxy") {
-  deps = [
-    "..:test_browser_proxy",
-    "//chrome/browser/resources/settings:settings",
-  ]
-}
-
-js_library("test_sync_browser_proxy") {
   deps = [
     "..:test_browser_proxy",
     "//chrome/browser/resources/settings:settings",

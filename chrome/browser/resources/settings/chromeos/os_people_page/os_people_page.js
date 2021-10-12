@@ -464,11 +464,6 @@ Polymer({
   },
 
   /** @private */
-  onSigninTap_() {
-    this.syncBrowserProxy_.startSignIn();
-  },
-
-  /** @private */
   onDisconnectDialogClosed_(e) {
     this.showSignoutDialog_ = false;
     cr.ui.focusWithoutInk(assert(this.$$('#disconnectButton')));

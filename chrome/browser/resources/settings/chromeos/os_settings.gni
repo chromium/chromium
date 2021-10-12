@@ -242,7 +242,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "chrome/browser/resources/settings/lifetime_browser_proxy.html|LifetimeBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/os_people_page/account_manager_browser_proxy.html|AccountManagerBrowserProxy,AccountManagerBrowserProxyImpl,Account",
                              "chrome/browser/resources/settings/people_page/profile_info_browser_proxy.html|ProfileInfoBrowserProxyImpl,ProfileInfoBrowserProxy,ProfileInfo",
-                             "chrome/browser/resources/settings/people_page/sync_browser_proxy.html|SyncBrowserProxyImpl,SyncBrowserProxy,StatusAction,SyncStatus,SyncPrefs",
+                             "chrome/browser/resources/settings/people_page/sync_browser_proxy.html|SyncBrowserProxyImpl,StatusAction",
                              "chrome/browser/resources/settings/route.html|routes",
                              "chrome/browser/resources/settings/router.html|Router,Route",
                              "chrome/browser/resources/settings/chromeos/os_search_page/search_engines_browser_proxy.html|SearchEngine,SearchEnginesBrowserProxy,SearchEnginesBrowserProxyImpl",
