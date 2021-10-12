@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.feed;
 import static junit.framework.Assert.assertEquals;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.eq;
@@ -32,6 +31,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -101,7 +101,9 @@ public class FeedSurfaceMediatorTest {
     @Mock
     private TemplateUrlService mUrlService;
     @Mock
-    private FeedStream mStream;
+    private FeedStream mForYouStream;
+    @Mock
+    private FeedStream mFollowingStream;
     @Mock
     private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
     @Mock
@@ -116,6 +118,9 @@ public class FeedSurfaceMediatorTest {
 
     @Before
     public void setUp() {
+        // Print logs to stdout.
+        ShadowLog.stream = System.out;
+
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
         mocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
@@ -125,9 +130,11 @@ public class FeedSurfaceMediatorTest {
         when(mIdentityService.getSigninManager(any(Profile.class))).thenReturn(mSigninManager);
         when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
+        when(mFeedSurfaceCoordinator.isActive()).thenReturn(true);
         when(mFeedSurfaceCoordinator.getRecyclerView()).thenReturn(new RecyclerView(mActivity));
-        when(mFeedSurfaceCoordinator.getStream()).thenReturn(mStream);
-        when(mFeedSurfaceCoordinator.createFeedStream(anyBoolean())).thenReturn(mStream);
+        when(mFeedSurfaceCoordinator.getStream()).thenReturn(mForYouStream);
+        when(mFeedSurfaceCoordinator.createFeedStream(eq(false))).thenReturn(mFollowingStream);
+        when(mFeedSurfaceCoordinator.createFeedStream(eq(true))).thenReturn(mForYouStream);
         when(mFeedSurfaceCoordinator.getLaunchReliabilityLogger())
                 .thenReturn(mLaunchReliabilityLogger);
         when(mFeedSurfaceCoordinator.getHybridListRenderer()).thenReturn(mHybridListRenderer);
@@ -135,7 +142,8 @@ public class FeedSurfaceMediatorTest {
                 .thenReturn(mFeedSurfaceLifecycleManager);
         ObservableSupplierImpl<Boolean> hasUnreadContent = new ObservableSupplierImpl<>();
         hasUnreadContent.set(false);
-        when(mStream.hasUnreadContent()).thenReturn(hasUnreadContent);
+        when(mForYouStream.hasUnreadContent()).thenReturn(hasUnreadContent);
+        when(mFollowingStream.hasUnreadContent()).thenReturn(hasUnreadContent);
 
         FeedSurfaceMediator.setPrefForTest(mPrefChangeRegistrar, mPrefService);
         FeedFeatures.setFakePrefsForTest(mPrefService);
@@ -198,30 +206,37 @@ public class FeedSurfaceMediatorTest {
 
     @Test
     public void updateContent_openingTabIdFollowing() {
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         PropertyModel sectionHeaderModel = SectionHeaderListProperties.create();
         mFeedSurfaceMediator =
                 createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, sectionHeaderModel);
         mFeedSurfaceMediator.updateContent();
 
+        verify(mForYouStream, never()).bind(any(), any(), any(), any(), any(), any(), anyInt());
+        verify(mFollowingStream, times(1)).bind(any(), any(), any(), any(), any(), any(), anyInt());
         assertEquals(FeedSurfaceCoordinator.StreamTabId.FOLLOWING,
                 sectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
     }
 
     @Test
     public void updateContent_openingTabIdForYou() {
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         PropertyModel sectionHeaderModel = SectionHeaderListProperties.create();
         mFeedSurfaceMediator =
                 createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, sectionHeaderModel);
         mFeedSurfaceMediator.updateContent();
 
+        verify(mForYouStream, times(1)).bind(any(), any(), any(), any(), any(), any(), anyInt());
+        verify(mFollowingStream, never()).bind(any(), any(), any(), any(), any(), any(), anyInt());
         assertEquals(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
                 sectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
     }
 
     @Test
     public void testOnSurfaceClosed_launchInProgress() {
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         mFeedSurfaceMediator = createMediator();
-        mFeedSurfaceMediator.bindStream(mStream);
+        mFeedSurfaceMediator.updateContent();
 
         when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(true);
         mFeedSurfaceMediator.onSurfaceClosed();
@@ -232,8 +247,9 @@ public class FeedSurfaceMediatorTest {
 
     @Test
     public void testOnSurfaceClosed_noLaunchInProgress() {
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         mFeedSurfaceMediator = createMediator();
-        mFeedSurfaceMediator.bindStream(mStream);
+        mFeedSurfaceMediator.updateContent();
 
         when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(false);
         mFeedSurfaceMediator.onSurfaceClosed();
@@ -388,11 +404,11 @@ public class FeedSurfaceMediatorTest {
                 .add(SectionHeaderProperties.createSectionHeader("Following"));
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, model);
 
-        when(mStream.getOptionsView()).thenReturn(mView);
+        when(mForYouStream.getOptionsView()).thenReturn(mView);
         mFeedSurfaceMediator.setStreamForTesting(
-                FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mStream);
+                FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mForYouStream);
         mFeedSurfaceMediator.setStreamForTesting(
-                FeedSurfaceCoordinator.StreamTabId.FOR_YOU, mStream);
+                FeedSurfaceCoordinator.StreamTabId.FOR_YOU, mForYouStream);
 
         OnSectionHeaderSelectedListener listener =
                 mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
@@ -417,9 +433,9 @@ public class FeedSurfaceMediatorTest {
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, model);
 
         mFeedSurfaceMediator.setStreamForTesting(
-                FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mStream);
+                FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mForYouStream);
         mFeedSurfaceMediator.setStreamForTesting(
-                FeedSurfaceCoordinator.StreamTabId.FOR_YOU, mStream);
+                FeedSurfaceCoordinator.StreamTabId.FOR_YOU, mForYouStream);
 
         OnSectionHeaderSelectedListener listener =
                 mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
@@ -444,11 +460,11 @@ public class FeedSurfaceMediatorTest {
                 .add(SectionHeaderProperties.createSectionHeader("Following"));
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, model);
 
-        when(mStream.getOptionsView()).thenReturn(mView);
+        when(mForYouStream.getOptionsView()).thenReturn(mView);
         mFeedSurfaceMediator.setStreamForTesting(
-                FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mStream);
+                FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mForYouStream);
         mFeedSurfaceMediator.setStreamForTesting(
-                FeedSurfaceCoordinator.StreamTabId.FOR_YOU, mStream);
+                FeedSurfaceCoordinator.StreamTabId.FOR_YOU, mForYouStream);
 
         OnSectionHeaderSelectedListener listener =
                 mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
@@ -472,9 +488,9 @@ public class FeedSurfaceMediatorTest {
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, model);
 
         mFeedSurfaceMediator.setStreamForTesting(
-                FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mStream);
+                FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mForYouStream);
         mFeedSurfaceMediator.setStreamForTesting(
-                FeedSurfaceCoordinator.StreamTabId.FOR_YOU, mStream);
+                FeedSurfaceCoordinator.StreamTabId.FOR_YOU, mForYouStream);
 
         OnSectionHeaderSelectedListener listener =
                 mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
@@ -494,11 +510,11 @@ public class FeedSurfaceMediatorTest {
                 .add(SectionHeaderProperties.createSectionHeader("Following"));
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, model);
 
-        when(mStream.getOptionsView()).thenReturn(mView);
+        when(mForYouStream.getOptionsView()).thenReturn(mView);
         mFeedSurfaceMediator.setStreamForTesting(
-                FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mStream);
+                FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mForYouStream);
         mFeedSurfaceMediator.setStreamForTesting(
-                FeedSurfaceCoordinator.StreamTabId.FOR_YOU, mStream);
+                FeedSurfaceCoordinator.StreamTabId.FOR_YOU, mForYouStream);
 
         OnSectionHeaderSelectedListener listener =
                 mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
@@ -520,9 +536,9 @@ public class FeedSurfaceMediatorTest {
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, model);
 
         mFeedSurfaceMediator.setStreamForTesting(
-                FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mStream);
+                FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mForYouStream);
         mFeedSurfaceMediator.setStreamForTesting(
-                FeedSurfaceCoordinator.StreamTabId.FOR_YOU, mStream);
+                FeedSurfaceCoordinator.StreamTabId.FOR_YOU, mForYouStream);
 
         OnSectionHeaderSelectedListener listener =
                 mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();

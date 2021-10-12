@@ -169,8 +169,9 @@ public class FeedSurfaceMediator
                 headerList.get(index).set(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
                         ViewVisibility.VISIBLE);
             }
-
-            bindStream(newStream);
+            if (!mSettingUpStreams) {
+                bindStream(newStream);
+            }
         }
 
         @Override
@@ -299,6 +300,9 @@ public class FeedSurfaceMediator
 
     private final HashMap<Integer, Stream> mTabToStreamMap = new HashMap<>();
     private Stream mCurrentStream;
+    // Whether we're currently adding the streams. If this is true, streams should not be bound yet.
+    // This avoids automatically binding the first stream when it's added.
+    private boolean mSettingUpStreams;
 
     /**
      * @param coordinator The {@link FeedSurfaceCoordinator} that interacts with this class.
@@ -459,6 +463,8 @@ public class FeedSurfaceMediator
      */
     private void initializePropertiesForStream() {
         if (mHasHeader) {
+            assert !mSettingUpStreams;
+            mSettingUpStreams = true;
             mSectionHeaderModel.set(SectionHeaderListProperties.ON_TAB_SELECTED_CALLBACK_KEY,
                     new FeedSurfaceHeaderSelectedCallback());
 
@@ -488,6 +494,7 @@ public class FeedSurfaceMediator
             if (mTabToStreamMap.size() <= mRestoreTabId) mRestoreTabId = 0;
             mSectionHeaderModel.set(
                     SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, mRestoreTabId);
+            mSettingUpStreams = false;
         } else {
             // Show feed if there is no header that would allow user to hide feed.
             // This is currently only relevant for the two panes start surface.
@@ -499,8 +506,7 @@ public class FeedSurfaceMediator
             mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, 0);
         }
 
-        if (mCoordinator.isActive()
-                && mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY)) {
+        if (mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY)) {
             bindStream(mTabToStreamMap.get(
                     mSectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY)));
         } else {
@@ -600,6 +606,11 @@ public class FeedSurfaceMediator
         if (mCurrentStream != null) {
             unbindStream(/* shouldPlaceSpacer = */ true);
         }
+        // Don't bind before the coordinator is active, or when the feed should not show.
+        if (!mCoordinator.isActive()
+                || !mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY)) {
+            return;
+        }
         mCurrentStream = stream;
         mCurrentStream.addOnContentChangedListener(mStreamContentChangedListener);
 
@@ -669,8 +680,6 @@ public class FeedSurfaceMediator
     private void rebindStream() {
         // If a stream is already bound, then do nothing.
         if (mCurrentStream != null) return;
-        // If feed shouldn't be shown, do nothing.
-        if (!mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY)) return;
         // Find the stream that should be bound and bind it. If no stream matches, then we haven't
         // fully set up yet. This will be taken care of by setup.
         Stream stream = mTabToStreamMap.get(
