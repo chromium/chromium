@@ -1449,8 +1449,7 @@
   "performance_web_engine_test_suite": {
     "args": [
       "../../content/test/gpu/run_telemetry_benchmark_fuchsia.py",
-      "--system-log-template",
-      "system_log",
+      "--per-test-logs-dir",
     ],
     "label": "//content/test:performance_web_engine_test_suite",
     "script": "//testing/scripts/run_performance_tests.py",

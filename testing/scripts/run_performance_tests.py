@@ -461,13 +461,12 @@ class TelemetryCommandGenerator(object):
     return selection_args
 
   def _generate_syslog_args(self):
-    if self._options.system_log_template:
+    if self._options.per_test_logs_dir:
       isolated_out_dir = os.path.dirname(
           self._options.isolated_script_test_output)
-      return ['--system-log-file', os.path.join(
+      return ['--logs-dir', os.path.join(
           isolated_out_dir,
-          self.benchmark,
-          self._options.system_log_template)]
+          self.benchmark)]
     return []
 
 
@@ -609,9 +608,9 @@ def parse_arguments(args):
                       ' to run in lieu of indexing into our benchmark bot maps',
                       required=False)
   # crbug.com/1236245: This allows for per-benchmark device logs.
-  parser.add_argument('--system-log-template',
-                      help='File name template for system logs for each '
-                      'benchmark', required=False)
+  parser.add_argument('--per-test-logs-dir',
+                      help='Require --logs-dir args for test', required=False,
+                      default=False)
   # Some executions may have a different sharding scheme and/or set of tests.
   # These files must live in src/tools/perf/core/shard_maps
   parser.add_argument('--test-shard-map-filename', type=str, required=False)
