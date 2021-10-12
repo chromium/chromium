@@ -6,16 +6,13 @@ import test_util
 from absl import app
 
 
-def getShadowDom(driver, root, selector):
-  el = root.find_element_by_css_selector(selector)
-  return driver.execute_script("return arguments[0].shadowRoot", el)
-
-
-def getNestedShadowDom(driver, selectors):
-  el = driver
-  for selector in selectors:
-    el = getShadowDom(driver, el, selector)
-  return el
+def getElementFromShadowRoot(driver, element, selector):
+  if element is None:
+    return None
+  else:
+    return driver.execute_script(
+        "return arguments[0].shadowRoot.querySelector(arguments[1])", element,
+        selector)
 
 
 def main(argv):
@@ -23,12 +20,16 @@ def main(argv):
   driver.get("chrome://settings/passwords")
 
   # The settings is nested within multiple shadow doms - extract it.
-  el = getNestedShadowDom(driver, [
-      "settings-ui", "settings-main", "settings-basic-page",
-      "settings-autofill-page", "passwords-section", "#passwordToggle"
-  ])
+  selectors = [
+      "settings-main", "settings-basic-page", "settings-autofill-page",
+      "passwords-section", "#passwordToggle", "cr-toggle"
+  ]
 
-  if el.find_element_by_css_selector("cr-toggle").get_attribute("checked"):
+  el = driver.find_element_by_css_selector("settings-ui")
+  for selector in selectors:
+    el = getElementFromShadowRoot(driver, el, selector)
+
+  if el.get_attribute("checked"):
     print("TRUE")
   else:
     print("FALSE")
