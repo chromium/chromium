@@ -245,7 +245,7 @@ void DoSplitviewTransformAnimation(
     ui::Layer* layer,
     SplitviewAnimationType type,
     const gfx::Transform& target_transform,
-    std::unique_ptr<ui::ImplicitAnimationObserver> animation_observer) {
+    const std::vector<ui::ImplicitAnimationObserver*>& animation_observers) {
   if (layer->GetTargetTransform() == target_transform)
     return;
 
@@ -271,8 +271,8 @@ void DoSplitviewTransformAnimation(
 
   ui::LayerAnimator* animator = layer->GetAnimator();
   ui::ScopedLayerAnimationSettings settings(animator);
-  if (animation_observer.get())
-    settings.AddObserver(animation_observer.release());
+  for (ui::ImplicitAnimationObserver* animation_observer : animation_observers)
+    settings.AddObserver(animation_observer);
   ApplyAnimationSettings(&settings, animator,
                          ui::LayerAnimationElement::TRANSFORM, duration, tween,
                          preemption_strategy, delay);

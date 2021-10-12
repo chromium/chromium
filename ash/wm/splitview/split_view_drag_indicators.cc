@@ -5,6 +5,7 @@
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 
 #include <utility>
+#include <vector>
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -583,11 +584,11 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
         DoSplitviewTransformAnimation(
             preview_label_layer,
             SPLITVIEW_ANIMATION_PREVIEW_AREA_TEXT_SLIDE_OUT,
-            preview_label_transform, /*animation_observer=*/nullptr);
+            preview_label_transform, /*animation_observers=*/{});
         DoSplitviewTransformAnimation(
             other_highlight_label_layer,
             SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_TEXT_SLIDE_OUT,
-            other_highlight_label_transform, /*animation_observer=*/nullptr);
+            other_highlight_label_transform, /*animation_observers=*/{});
       } else {
         // Put the labels where they belong.
         preview_label_layer->SetTransform(preview_label_transform);
@@ -606,11 +607,11 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
         // Animate the labels sliding in.
         DoSplitviewTransformAnimation(
             preview_label_layer, SPLITVIEW_ANIMATION_PREVIEW_AREA_TEXT_SLIDE_IN,
-            gfx::Transform(), /*animation_observer=*/nullptr);
+            gfx::Transform(), /*animation_observers=*/{});
         DoSplitviewTransformAnimation(
             other_highlight_label_layer,
             SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_TEXT_SLIDE_IN, gfx::Transform(),
-            /*animation_observer=*/nullptr);
+            /*animation_observers=*/{});
       } else {
         // Put the labels where they belong.
         preview_label_layer->SetTransform(gfx::Transform());

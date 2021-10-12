@@ -7,6 +7,7 @@
 
 #include <limits>
 #include <memory>
+#include <vector>
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"

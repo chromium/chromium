@@ -5,6 +5,8 @@
 #ifndef ASH_WM_SPLITVIEW_SPLIT_VIEW_UTILS_H_
 #define ASH_WM_SPLITVIEW_SPLIT_VIEW_UTILS_H_
 
+#include <vector>
+
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -113,7 +115,7 @@ void DoSplitviewTransformAnimation(
     ui::Layer* layer,
     SplitviewAnimationType type,
     const gfx::Transform& target_transform,
-    std::unique_ptr<ui::ImplicitAnimationObserver> animation_observer);
+    const std::vector<ui::ImplicitAnimationObserver*>& animation_observers);
 
 // Animates |layer|'s clip rect based on |type|.
 void DoSplitviewClipRectAnimation(

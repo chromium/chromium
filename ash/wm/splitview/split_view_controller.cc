@@ -24,9 +24,11 @@
 #include "ash/style/default_colors.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
@@ -2501,12 +2503,33 @@ void SplitViewController::SetTransformWithAnimation(
     if (new_start_transform != window_iter->layer()->GetTargetTransform())
       window_iter->SetTransform(new_start_transform);
 
-    DoSplitviewTransformAnimation(
-        window_iter->layer(), SPLITVIEW_ANIMATION_SET_WINDOW_TRANSFORM,
-        new_target_transform,
-        window_iter == window
-            ? std::make_unique<WindowTransformAnimationObserver>(window)
-            : nullptr);
+    std::vector<ui::ImplicitAnimationObserver*> animation_observers;
+    if (window_iter == window) {
+      animation_observers.push_back(
+          new WindowTransformAnimationObserver(window));
+
+      // If the overview exit animation is in progress or is about to start, add
+      // the |window| snap animation as one of the animations to be completed
+      // before |OverviewController::OnEndingAnimationComplete| should be called
+      // to unpause occlusion tracking, unblur the wallpaper, etc.
+      OverviewController* overview_controller =
+          Shell::Get()->overview_controller();
+      if (overview_controller->IsCompletingShutdownAnimations() ||
+          (overview_controller->overview_session() &&
+           overview_controller->overview_session()->is_shutting_down() &&
+           overview_controller->overview_session()
+                   ->enter_exit_overview_type() !=
+               OverviewEnterExitType::kImmediateExit)) {
+        auto overview_exit_animation_observer =
+            std::make_unique<ExitAnimationObserver>();
+        animation_observers.push_back(overview_exit_animation_observer.get());
+        overview_controller->AddExitAnimationObserver(
+            std::move(overview_exit_animation_observer));
+      }
+    }
+    DoSplitviewTransformAnimation(window_iter->layer(),
+                                  SPLITVIEW_ANIMATION_SET_WINDOW_TRANSFORM,
+                                  new_target_transform, animation_observers);
   }
 }
 

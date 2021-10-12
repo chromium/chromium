@@ -202,8 +202,9 @@ void OverviewController::AddExitAnimationObserver(
     std::unique_ptr<DelayedAnimationObserver> animation_observer) {
   // No delayed animations should be created when overview mode is set to exit
   // immediately.
-  DCHECK_NE(overview_session_->enter_exit_overview_type(),
-            OverviewEnterExitType::kImmediateExit);
+  DCHECK(IsCompletingShutdownAnimations() ||
+         overview_session_->enter_exit_overview_type() !=
+             OverviewEnterExitType::kImmediateExit);
 
   animation_observer->SetOwner(this);
   delayed_animations_.push_back(std::move(animation_observer));

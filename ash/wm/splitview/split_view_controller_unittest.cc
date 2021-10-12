@@ -34,6 +34,7 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
+#include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/drag_window_resizer.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -684,6 +685,34 @@ TEST_F(SplitViewControllerTest, ExitOverviewTest) {
   EXPECT_EQ(split_view_controller()->right_window(), window3.get());
   EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
   CheckOverviewEnterExitHistogram("ExitInSplitView", {1, 0}, {0, 1});
+}
+
+// Tests that in split view with a single overview window, when overview is
+// ended, the wallpaper stays blurred until the window finishes animating.
+TEST_F(SplitViewControllerTest,
+       WallpaperUnblurredAfterLoneOverviewWindowSnapAnimationCompleted) {
+  const gfx::Rect bounds(400, 400);
+  std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
+  ToggleOverview();
+  split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
+
+  WallpaperWidgetController* wallpaper_widget_controller =
+      Shell::GetPrimaryRootWindowController()->wallpaper_widget_controller();
+  EXPECT_GT(wallpaper_widget_controller->GetWallpaperBlur(), 0);
+  EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
+
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  ToggleOverview();
+  EXPECT_GT(wallpaper_widget_controller->GetWallpaperBlur(), 0);
+  EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
+
+  WaitForOverviewExitAnimation();
+  // The wallpaper is unblurred without animation, because the wallpaper is
+  // covered by the windows and the split view divider.
+  EXPECT_EQ(wallpaper_widget_controller->GetWallpaperBlur(), 0);
+  EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
 }
 
 // Tests that if split view mode is active when entering overview, the overview
