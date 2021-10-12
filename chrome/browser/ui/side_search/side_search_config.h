@@ -17,7 +17,7 @@ class GURL;
 // Stores per-profile configuration data for side search.
 class SideSearchConfig : public base::SupportsUserData::Data {
  public:
-  using SidePanelURLValidator = base::RepeatingCallback<bool(const GURL&)>;
+  using URLTestConditionCallback = base::RepeatingCallback<bool(const GURL&)>;
 
   SideSearchConfig();
   SideSearchConfig(const SideSearchConfig&) = delete;
@@ -30,11 +30,13 @@ class SideSearchConfig : public base::SupportsUserData::Data {
   // Returns whether a `url` in the side panel should be allowed to commit in
   // the side panel or if it should be redirected to the content frame.
   bool ShouldNavigateInSidePanel(const GURL& url);
+  void SetShouldNavigateInSidePanelCalback(URLTestConditionCallback callback);
 
   // Returns whether the side panel can be shown for the `url`. This is used to
   // avoid having the side panel on pages on which it doesn't make sense to have
   // it appear (e.g. NTP).
   bool CanShowSidePanelForURL(const GURL& url);
+  void SetCanShowSidePanelForURLCallback(URLTestConditionCallback callback);
 
   // Gets and sets the bit that determines whether or not the SRP is available.
   // TODO(tluk): Move the code that tests for availability into this class.
@@ -47,6 +49,9 @@ class SideSearchConfig : public base::SupportsUserData::Data {
   // Whether or not the service providing the SRP for the side panel is
   // available or not.
   bool is_side_panel_srp_available_ = false;
+
+  URLTestConditionCallback should_navigate_in_side_panel_callback_;
+  URLTestConditionCallback can_show_side_panel_for_url_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_CONFIG_H_

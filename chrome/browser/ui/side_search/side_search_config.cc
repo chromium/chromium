@@ -13,9 +13,22 @@ namespace {
 
 constexpr char kSideSearchConfigKey[] = "side_search_config_key";
 
+// Default condition test for CanShowSidePanelForURL() for the Google DSE.
+// TODO(tluk): This should be defined elsewhere as we move to support generic
+// DSEs.
+bool GoogleSRPShouldNavigateInSidePanel(const GURL& url) {
+  return !google_util::IsGoogleSearchUrl(url) &&
+         !google_util::IsGoogleHomePageUrl(url) &&
+         url.spec() != chrome::kChromeUINewTabURL;
+}
+
 }  // namespace
 
-SideSearchConfig::SideSearchConfig() = default;
+SideSearchConfig::SideSearchConfig()
+    : should_navigate_in_side_panel_callback_(
+          base::BindRepeating(google_util::IsGoogleSearchUrl)),
+      can_show_side_panel_for_url_callback_(base::BindRepeating(
+          base::BindRepeating(GoogleSRPShouldNavigateInSidePanel))) {}
 
 SideSearchConfig::~SideSearchConfig() = default;
 
@@ -32,11 +45,20 @@ SideSearchConfig* SideSearchConfig::Get(content::BrowserContext* context) {
 }
 
 bool SideSearchConfig::ShouldNavigateInSidePanel(const GURL& url) {
-  return google_util::IsGoogleSearchUrl(url);
+  return should_navigate_in_side_panel_callback_.Run(url);
+}
+
+void SideSearchConfig::SetShouldNavigateInSidePanelCalback(
+    URLTestConditionCallback callback) {
+  should_navigate_in_side_panel_callback_ = std::move(callback);
 }
 
 bool SideSearchConfig::CanShowSidePanelForURL(const GURL& url) {
-  return is_side_panel_srp_available_ && !ShouldNavigateInSidePanel(url) &&
-         !google_util::IsGoogleHomePageUrl(url) &&
-         url.spec() != chrome::kChromeUINewTabURL;
+  return is_side_panel_srp_available_ &&
+         can_show_side_panel_for_url_callback_.Run(url);
+}
+
+void SideSearchConfig::SetCanShowSidePanelForURLCallback(
+    URLTestConditionCallback callback) {
+  can_show_side_panel_for_url_callback_ = std::move(callback);
 }
