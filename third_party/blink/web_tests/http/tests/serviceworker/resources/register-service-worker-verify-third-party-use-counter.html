@@ -20,11 +20,8 @@ window.onmessage = (msg) => {
         return reg.unregister();
     })
     .then(successful => {
-      if (successful) {
-        msg.source.postMessage('unregister_done', '*');
-      } else {
-        msg.source.postMessage('unregister_failed', '*');
-      }
+      // Report "done" as long as unregister completed.
+      msg.source.postMessage('unregister_done', '*');
     });
   } else {
     msg.source.postMessage('unexpected_message', '*');
