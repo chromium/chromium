@@ -254,3 +254,12 @@ class DeviceTarget(target.Target):
     self.RunCommandPiped('dm reboot')
     time.sleep(_REBOOT_SLEEP_PERIOD)
     self.Start()
+
+  def Stop(self):
+    try:
+      super(DeviceTarget, self).Stop()
+    finally:
+      # End multiplexed ssh connection, ensure that ssh logging stops before
+      # tests/scripts return.
+      if self.IsStarted():
+        self.RunCommand(['-O', 'exit'])
