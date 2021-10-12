@@ -880,7 +880,6 @@ void SplitViewController::AttachSnappingWindow(aura::Window* window,
   OverviewSession* overview_session = GetOverviewSession();
   RemoveSnappingWindowFromOverviewIfApplicable(overview_session, window);
 
-  bool do_divider_spawn_animation = false;
   if (state_ == State::kNoSnap) {
     // Add observers when the split view mode starts.
     Shell::Get()->AddShellObserver(this);
@@ -901,20 +900,6 @@ void SplitViewController::AttachSnappingWindow(aura::Window* window,
     // There is no divider bar in clamshell splitview mode.
     if (split_view_type_ == SplitViewType::kTabletType) {
       split_view_divider_ = std::make_unique<SplitViewDivider>(this);
-      // The divider spawn animation adds a finishing touch to the |window|
-      // animation that generally accommodates snapping by dragging, but if
-      // |window| is currently minimized then it will undergo the unminimizing
-      // animation instead. Therefore skip the divider spawn animation if
-      // |window| is minimized.
-      if (!WindowState::Get(window)->IsMinimized() &&
-          !window->transform().IsIdentity()) {
-        // For the divider spawn animation, at the end of the delay, the divider
-        // shall be visually aligned with an edge of |window|. This effect will
-        // be more easily achieved after |window| has been snapped and the
-        // corresponding transform animation has begun. So for now, just set a
-        // flag to indicate that the divider spawn animation should be done.
-        do_divider_spawn_animation = true;
-      }
     }
 
     splitview_start_time_ = base::Time::Now();
