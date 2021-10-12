@@ -2133,6 +2133,7 @@ Ulteriori dettagli:
 <translation id="8041089156583427627">Invia feedback</translation>
 <translation id="8041940743680923270">Usa predefinita globale (Chiedi)</translation>
 <translation id="8042918947222776840">Scegli il metodo di ritiro</translation>
+<translation id="8052898407431791827">Copiato negli appunti</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" non è configurato correttamente. La disinstallazione di "<ph name="SOFTWARE_NAME" />" solitamente risolve il problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Si è verificato un problema.</translation>
 <translation id="8067872629359326442">Hai appena inserito la tua password su un sito ingannevole. Chromium può aiutarti. Per cambiare la password e informare Google che il tuo account potrebbe essere a rischio, fai clic su Proteggi account.</translation>
@@ -2330,7 +2331,6 @@ Ulteriori dettagli:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> è il tuo codice per <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Aggiungi questa scheda ai preferiti</translation>
 <translation id="8751426954251315517">Riprova la prossima volta</translation>
-<translation id="8757526089434340176">Offerta Google Pay disponibile</translation>
 <translation id="8759274551635299824">La carta è scaduta</translation>
 <translation id="87601671197631245">Le tue informazioni (ad esempio password, messaggi o numeri di carte di credito) inviate a questo sito potrebbero essere a rischio, poiché il sito utilizza una configurazione di sicurezza obsoleta.</translation>
 <translation id="8761567432415473239">La funzione Navigazione sicura di Google <ph name="BEGIN_LINK" />ha trovato di recente programmi dannosi<ph name="END_LINK" /> su <ph name="SITE" />.</translation>

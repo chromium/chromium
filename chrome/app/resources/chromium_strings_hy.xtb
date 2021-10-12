@@ -43,7 +43,6 @@
 <translation id="2560420686485554789">Ֆայլեր ներբեռնելու համար Chromium-ին անհրաժեշտ է պահեստի օգտագործման թույլտվություն</translation>
 <translation id="2572494885440352020">Chromium օգնական</translation>
 <translation id="2577788541081224677">Chromium-ի ձեր տվյալները բոլոր սարքերում օգտագործելու համար մուտք գործեք և միացրեք համաժամացումը։</translation>
-<translation id="2580426763510374355">Տեղադրել Chromium OS-ը</translation>
 <translation id="2583187216237139145">Աշխատանքային պրոֆիլի ադմինիստրատորը կարող է ջնջել Chromium-ի բոլոր տվյալները, որոնք ստեղծվում են այս պրոֆիլի օգտագործման ընթացքում (օրինակ՝ էջանիշներ, պատմություն, գաղտնաբառեր և այլ կարգավորումներ)։ <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Թարմացումը կիրառելու համար հարկավոր է վերագործարկել Chromium OS-ը:</translation>
 <translation id="2648074677641340862">Տեղադրման ժամանակ օպերացիոն համակարգի սխալ տեղի ունեցավ: Նորից տեղադրեք Chromium-ը:</translation>
@@ -56,8 +55,6 @@
 <translation id="2847479871509788944">Հեռացնել Chromium-ից...</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2910007522516064972">&amp;Chromium-ի մասին</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Վերջին հիշեցում․ տեղադրման արդյունքում <ph name="BEGIN_BOLD" />ձեր կոշտ սկավառակում առկա բոլոր տվյալները կջնջվեն<ph name="END_BOLD" />։ Համոզվեք, որ պահուստավորել եք ձեզ անհրաժեշտ տվյալները։<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Հենց որ տեղադրումը սկսվի, այն հնարավոր չի լինի չեղարկել։<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium-ը թարմացված է</translation>
 <translation id="2983934633046890458">Chromium-ը փորձում է փոխել գաղտնաբառերը:</translation>
 <translation id="3032706164202344641">Chromium-ը չի կարող ստուգել ձեր գաղտնաբառերը։ Փորձեք ավելի ուշ։</translation>
@@ -81,7 +78,6 @@
 <translation id="3350761136195634146">Այս հաշվի հետ կապված Chromium-ի պրոֆիլ արդեն գոյություն ունի</translation>
 <translation id="3406848076815591792">Անցնե՞լ Chromium-ի ընթացիկ պրոֆիլ</translation>
 <translation id="3430503420100763906">Chromium պրոֆիլների միջոցով դուք կարող եք օգտագործել դիտարկիչն առանձին այլ օտատերերից։ Ստեղծեք պրոֆիլներ ձեր ընկերների և ընտանիքի անդամների, կամ գործնական և անձնական նպատակների համար։</translation>
-<translation id="3433271666494956603">Chromium OS-ը տեղադրվում է</translation>
 <translation id="347328004046849135">Chromium-ը կտեղեկացնի ձեզ, երբ կոտրված գաղտնաբառ օգտագործեք։</translation>
 <translation id="3474745554856756813"><ph name="ITEMS_COUNT" /> տարր կջնջվի այս սարքից: Հետագայում ձեր տվյալներն առբերելու համար մուտք գործեք Chromium <ph name="USER_EMAIL" /> հաշվով:</translation>
 <translation id="3497319089134299931">Chromium-ի այլ պրոֆիլի կարող եք անցնել <ph name="SHORTCUT" /> ստեղների համադրության միջոցով</translation>
@@ -109,7 +105,6 @@
 <translation id="4264410486868823224">Կայքը (<ph name="MANAGER" />) պահանջում է, որ դուք նախքան սարքն օգտագործելը կարդաք և ընդունեք հետևյալ Օգտագործման պայմանները։ Այս պայմանները չեն ընդլայնում, փոփոխում կամ սահմանափակում Google Chromium OS-ի պայմանները։</translation>
 <translation id="4271805377592243930">Chromium-ի օգնության էջ</translation>
 <translation id="4285930937574705105">Անհայտ սխալի պատճառով տեղադրումը չհաջողվեց: Եթե Chromium-ը բաց է, փակեք այն և կրկին փորձեք:</translation>
-<translation id="429583012151745428">Տեղադրումը դեռ չի ավարտվել։ Չանջատեք սարքը։ Պետք է որ քսան րոպեից ավել չտևի։ Տեղադրումից հետո համակարգիչն ավտոմատ կանջատվի։</translation>
 <translation id="4407044323746248786">Փակե՞լ Chromium-ը։</translation>
 <translation id="4415566066719264597">Թույլատրել Chromium-ին աշխատել ֆոնային ռեժիմում</translation>
 <translation id="4423735387467980091">Հարմարեցնել և վերահսկել Chromium-ը</translation>
@@ -203,7 +198,6 @@
 <translation id="6734291798041940871">Chromium-ն արդեն տեղադրված է ձեր համակարգչում բոլոր օգտատերերի համար:</translation>
 <translation id="673636774878526923">Chromium-ի ձեր տվյալները ձեր բոլոր սարքերում օգտագործելու համար մուտք գործեք և միացրեք համաժամացումը։</translation>
 <translation id="6774082503108938489">Ձեր ծնողն անջատել է «Թույլտվություններ կայքերի, հավելվածների և ընդլայնումների համար» պարամետրը Chromium-ում։ Այս <ph name="EXTENSION_TYPE_PARAMETER" />ն արգելափակված է և չի կարող միացվել։</translation>
-<translation id="6827182711503025204">Chromium OS-ը տեղադրելու դեպքում ձեր սարքում առկա բոլոր տվյալները կվրագրվեն։</translation>
 <translation id="6847869444787758381">Chromium-ը ձեզ տեղյակ կպահի, եթե ձեր գաղտնաբառերի անվտագությանը սպառնալիք լինի</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (պատճենվել է Chromium-ում)</translation>

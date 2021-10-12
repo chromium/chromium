@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Par Chromium</translation>
 <translation id="1257458525759135959">Lai saglabātu attēlus, pieskarieties vienumam Iestatījumi un atļaujiet Chromium pievienot fotoattēlus.</translation>
 <translation id="1289216811211435351">Pāriešana uz Chromium</translation>
+<translation id="1354592789402432496">Administrators pieprasa pierakstīšanos ar organizācijas kontu. Konti, kuru lietošanu administrators ir aizliedzis, ir paslēpti.</translation>
 <translation id="1361748954329991663">Pārlūka Chromium versija ir novecojusi. Ja veikalā <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> nav pieejami atjauninājumi, iespējams, jūsu ierīcē vairs netiek atbalstītas pārlūka Chromium jaunās versijas.</translation>
 <translation id="1370204544543370355">Lai pilnvērtīgi izmantotu pārlūku Chromium, pierakstieties tajā, izmantojot savu Google kontu</translation>
 <translation id="1431818719585918472">Atļaujiet pārlūkā Chromium bloķēt inkognito cilnes.</translation>
@@ -22,6 +23,7 @@
 <translation id="2168108852149185974">Daži papildinājumi var izraisīt pārlūka Chromium avarēšanu. Lūdzu, atinstalējiet šos papildinājumus:</translation>
 <translation id="2178608107313874732">Chromium pašlaik nevar izmantot jūsu kameru.</translation>
 <translation id="2195025571279539885">Vai vēlaties, lai Chromium nākamreiz piedāvātu šīs vietnes lapas, kuru saturs ir šādā valodā: <ph name="LANGUAGE_NAME" />?</translation>
+<translation id="2426113998523353159">Saskaņā ar jūsu organizācijas prasībām, lai izmantotu pārlūku Chromium, jums ir jāpierakstās.</translation>
 <translation id="2450140762465183767">Tagad varat izmantot Chromium ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
 <translation id="2478931088402984578">Atlasiet <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
 <translation id="2567507405773541360">Vairāk iespēju vienkāršajā un drošajā pārlūkā Chromium, kas tagad ir vēl ātrāks</translation>
@@ -50,6 +52,7 @@
 <translation id="5171868502429358653">Pierakstīšanās pārlūkprogrammā Chromium</translation>
 <translation id="5224391634244552924">Nav saglabātu paroļu. Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="5308226104666789935">Pārlūkā Chromium nevar pārbaudīt atjauninājumu pieejamību.</translation>
+<translation id="5324242752415821224">Saskaņā ar jūsu organizācijas prasībām, lai izmantotu pārlūku Chromium, jums ir jāpierakstās. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Vai iestatīt Chromium kā noklusējuma pārlūku?</translation>
 <translation id="5521125884468363740">Lai skatītu cilnes no visām ierīcēm, kurās izmantojat pārlūku Chromium, pierakstieties un ieslēdziet sinhronizāciju.</translation>
 <translation id="5573014823074921752">Chromium padoms. Lai iegūtu vairāk ciļņu iespēju, rīkjoslā, kas atrodas ekrāna apakšdaļā vai augšdaļā, pieskarieties pogai Rādīt cilnes un turiet to.</translation>
@@ -63,6 +66,7 @@
 2. Pieskarieties vienumam “Noklusējuma pārlūka lietotne”.
 3. Atlasiet Chromium.</translation>
 <translation id="6155422572367400359">Pierakstieties šajā vietnē, savā Google kontā un pārlūkprogrammā Chromium. Sinhronizāciju varēsiet ieslēgt vēlāk.</translation>
+<translation id="6183442264225539303">Pierakstieties šajā vietnē un pārlūkā Chromium. Sinhronizāciju varat ieslēgt vēlāk.</translation>
 <translation id="6268381023930128611">Vai izrakstīties no Chromium?</translation>
 <translation id="632825460376924298">Atļaut pierakstīšanos pārlūkā Chromium</translation>
 <translation id="6337530241089703714">Izvēlieties, vai notīrīt Chromium datus no šīs ierīces vai tos paturēt</translation>

@@ -360,7 +360,6 @@
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384849755549338773">在其他語言的網站上使用 Google 翻譯</translation>
 <translation id="138784436342154190">要還原預設起始網頁嗎？</translation>
-<translation id="1388047369870196878">安裝 CloudReady 2.0</translation>
 <translation id="1388253969141979417">可以使用麥克風</translation>
 <translation id="1388728792929436380">「<ph name="DEVICE_TYPE" />」會在更新完成時重新啟動。</translation>
 <translation id="139013308650923562">可以使用裝置上安裝的字型</translation>
@@ -1680,7 +1679,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> 之下的網站也會進行重設。</translation>
 <translation id="2735712963799620190">設定時間</translation>
 <translation id="2737363922397526254">收合...</translation>
-<translation id="2737916598897808047">「<ph name="APP_NAME" />」要求與 <ph name="TARGET_NAME" /> 分享螢幕內容。</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> 要求與 <ph name="TARGET_NAME" /> 分享螢幕內容。</translation>
 <translation id="2738030019664645674">禁止網站使用裝置上安裝的字型</translation>
 <translation id="2738771556149464852">此日期之前：</translation>
 <translation id="2739191690716947896">偵錯</translation>
@@ -1955,7 +1954,6 @@
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你在今天內透過 Wi-Fi 連線下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。}other{<ph name="MANAGER" /> 要求你在期限內透過 Wi-Fi 連線下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。}}</translation>
 <translation id="3009300415590184725">你確定要取消行動數據服務設定程序嗎？</translation>
 <translation id="3009779501245596802">索引資料庫</translation>
-<translation id="3009984992511490972">在這部裝置上安裝 CloudReady 2.0。</translation>
 <translation id="3010279545267083280">已刪除密碼</translation>
 <translation id="3011384993885886186">暖灰色</translation>
 <translation id="3011488081941333749">系統會在你離開時將 <ph name="DOMAIN" /> 產生的 Cookie 清除</translation>
@@ -2380,7 +2378,6 @@
 <translation id="3476303763173086583">傳送使用狀況與診斷資料。讓系統自動將診斷資料以及裝置和應用程式的使用狀況資料傳送給 Google，協助改善你的 Android 使用體驗。這些資料將有助於系統和應用程式提高穩定性及做出其他改善，並不會用於識別貴子女的身分。部分匯總資料還能夠為 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提供幫助。這項<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />是由裝置擁有者執行。擁有者可選擇將這個裝置的診斷資料與使用狀況資料傳送給 Google。如果貴子女的「其他網路和應用程式活動」設定為開啟，系統可能會將這些資料儲存到他們的 Google 帳戶。<ph name="BEGIN_LINK2" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">糟糕！系統無法擷取裝置政策。</translation>
 <translation id="347785443197175480">繼續允許 <ph name="HOST" /> 存取你的攝影機和麥克風</translation>
-<translation id="3478813605045578676">註冊作業只有在安裝完成後才能執行。如要管理這部裝置，請先安裝 CloudReady。</translation>
 <translation id="3479552764303398839">現在不要</translation>
 <translation id="3479685872808224578">偵測不到列印伺服器。請檢查位址是否正確，然後再試一次。</translation>
 <translation id="3480612136143976912">自訂即時字幕的文字大小和樣式。部分應用程式及網站也會套用這項設定。</translation>
@@ -2582,7 +2579,6 @@
 <translation id="3694027410380121301">選取前一個分頁</translation>
 <translation id="369489984217678710">密碼和其他登入資料</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{已完成安全性檢查。系統將上傳你的資料。}=1{已完成安全性檢查。系統將上傳你的檔案。}other{已完成安全性檢查。系統將上傳你的檔案。}}</translation>
-<translation id="3696576298374669274">顯示服務記錄</translation>
 <translation id="3699624789011381381">電子郵件地址</translation>
 <translation id="3699920817649120894">要停用同步處理和個人化功能嗎？</translation>
 <translation id="3700888195348409686">展示中 (<ph name="PAGE_ORIGIN" />)</translation>
@@ -4159,7 +4155,6 @@
 <translation id="5431318178759467895">彩色</translation>
 <translation id="543338862236136125">修改密碼</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 加密</translation>
-<translation id="5434473680236142631">歡迎使用 CloudReady 2.0</translation>
 <translation id="5435779377906857208">一律允許 <ph name="HOST" /> 存取你的位置資訊</translation>
 <translation id="5436492226391861498">正在等待 Proxy 通道...</translation>
 <translation id="5436510242972373446">搜尋 <ph name="SITE_NAME" />：</translation>
@@ -4676,7 +4671,6 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{為確保你可以持續瀏覽網路，請要求你的管理員移除這個應用程式。}other{為確保你可以持續瀏覽網路，請要求你的管理員移除這些應用程式。}}</translation>
 <translation id="5997337190805127100">進一步瞭解網站存取權</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個與「<ph name="SEARCH_TEXT" />」相符的搜尋結果</translation>
-<translation id="6001839398155993679">立即開始</translation>
 <translation id="6001999913519612328">執行診斷測試。</translation>
 <translation id="6002210667729577411">將群組移到新視窗</translation>
 <translation id="6002452033851752583">已從你的 Google 帳戶中刪除密碼</translation>
@@ -4732,7 +4726,6 @@
 <translation id="6057312498756061228">這個檔案的大小過大，無法進行安全性檢查。可開啟的檔案大小上限為 50 MB。</translation>
 <translation id="6057381398996433816">這個網站已遭封鎖，無法使用動作感應器和光源感應器。</translation>
 <translation id="6059276912018042191">最近開啟的 Chrome 分頁</translation>
-<translation id="6059347142391822629">當焦點移至 [完成] 按鈕時，按下開關即可關閉指南。</translation>
 <translation id="6059652578941944813">憑證階層</translation>
 <translation id="6061882183774845124">將連結傳送至裝置</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人聲音與<ph name="SUPERVISED_USER_NAME" />相似或擁有其聲音錄音檔，或許就能存取孩子的個人化搜尋結果。為了節省電池電量，你可以在<ph name="SUPERVISED_USER_NAME" />的 Google 助理設定中進行選取，讓系統只有在裝置接上充電器時才會啟動「Ok Google」。</translation>
@@ -5018,6 +5011,7 @@
 <translation id="6359706544163531585">停用淺色主題</translation>
 <translation id="6361850914223837199">錯誤詳細資料：</translation>
 <translation id="6362853299801475928">回報問題(&amp;R)...</translation>
+<translation id="6363786367719063276">查看記錄</translation>
 <translation id="6363990818884053551">如要開始同步處理，請驗證你的身分</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">新增家人好友</translation>
@@ -5210,8 +5204,6 @@
 <translation id="6569911211938664415">系統會將密碼儲存在你的 Google 帳戶 (<ph name="ACCOUNT" />) 中，方便你在任何裝置上使用密碼</translation>
 <translation id="6573497332121198392">無法移除捷徑</translation>
 <translation id="657402800789773160">重新載入這個網頁(&amp;R)</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />為獲得最佳體驗，請將 CloudReady 2.0 安裝至內部磁碟。你也可以之後再透過登入畫面安裝。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />如果現在還不想安裝，可透過 USB 執行並試用 CloudReady 2.0。這種做法可保留現有作業系統和資料，但儲存空間及效能可能會有所限制。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">已取消下載：<ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">網路健康狀態數據匯報</translation>
 <translation id="6579369886355986318">顯示所有控制項(&amp;C)</translation>
@@ -6071,7 +6063,6 @@
 <translation id="7509246181739783082">驗證身分</translation>
 <translation id="7509539379068593709">解除安裝應用程式</translation>
 <translation id="7511415964832680006">在啟用狀態下，網站可能會使用這裡顯示的隱私保護技術提供內容和服務，包括對於跨網站追蹤的替代性措施。本服務可能會陸續新增更多試用功能。</translation>
-<translation id="7514236770834963598">檢查目前對於最重要的隱私權與安全性控制項的設定</translation>
 <translation id="7514239104543605883">複製到你的裝置</translation>
 <translation id="7514365320538308">下載</translation>
 <translation id="7514417110442087199">新增指派設定</translation>
@@ -6308,7 +6299,6 @@
 按下已指派的外接切換裝置或按鍵，則可移除指派設定。</translation>
 <translation id="7750228210027921155">子母畫面</translation>
 <translation id="7751260505918304024">全部顯示</translation>
-<translation id="7751855202867682241">保留現有作業系統，並透過 USB 執行 CloudReady 2.0。</translation>
 <translation id="7753735457098489144">儲存空間不足，無法安裝。如要釋出空間，請刪除裝置儲存空間中的檔案。</translation>
 <translation id="7754347746598978109">不得使用 JavaScript</translation>
 <translation id="7754704193130578113">下載每個檔案前先詢問儲存位置</translation>
@@ -7357,7 +7347,6 @@
 <translation id="8845001906332463065">尋求協助</translation>
 <translation id="8846132060409673887">閱讀這部電腦的製造商和型號資訊</translation>
 <translation id="8846163936679269230">重設 eSIM 卡設定檔</translation>
-<translation id="8846746259444262774">安裝失敗</translation>
 <translation id="8847523528195140327">蓋上機蓋時登出帳戶</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">隱藏</translation>

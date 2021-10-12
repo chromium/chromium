@@ -23,6 +23,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1104621072296271835">Dine enheder fungerer endnu bedre sammen</translation>
 <translation id="1119348796022671382">Tilstanden med temafarver anvender farver fra din baggrund til at give grænsefladen en svag farve.</translation>
 <translation id="112308213915226829">Skjul hylde automatisk</translation>
+<translation id="1142002900084379065">Seneste billeder</translation>
 <translation id="1148499908455722006">Åbn dialogboks med oplysninger om <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Parrede enheder</translation>
@@ -179,6 +180,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2298170939937364391">Forstørrelse af fuld skærm er aktiveret. Tryk på Ctrl+Søg+M igen for at deaktivere funktionen.</translation>
 <translation id="2302092602801625023">Denne konto administreres af Family Link</translation>
 <translation id="2303600792989757991">Skift vinduesoversigt</translation>
+<translation id="2318576281648121272">I dag <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Et bogstav tilbage</translation>
 <translation id="2339073806695260576">Tryk på knappen for styluspen på hylden for at skrive en note, tage et screenshot eller bruge lasermarkøren og luppen.</translation>
 <translation id="2341729377289034582">Altid lodret</translation>
@@ -200,6 +202,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2435457462613246316">Vis adgangskode</translation>
 <translation id="24452542372838207">Udvid notifikation</translation>
 <translation id="2450205753526923158">Screenshottilstand</translation>
+<translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Bekræft opløsningen</translation>
 <translation id="2475982808118771221">Der opstod en fejl</translation>
 <translation id="2482878487686419369">Notifikationer</translation>
@@ -278,6 +281,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3100274880412651815">Luk optagelsestilstand</translation>
 <translation id="3105917916468784889">Tag screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Fjern forslag</translation>
 <translation id="3126069444801937830">Genstart for at opdatere</translation>
 <translation id="3139942575505304791">Skrivebord 1</translation>
 <translation id="315116470104423982">Mobildata</translation>
@@ -317,6 +321,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3413817803639110246">Der er intet at se endnu</translation>
 <translation id="3428447136709161042">Afbryd forbindelsen til <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Stryg fra højre for at gå tilbage</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="343571671045587506">Rediger påmindelse</translation>
 <translation id="3435967511775410570">Fingeraftrykket blev genkendt</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4642092649622328492">Tag et delvist screenshot</translation>
 <translation id="4659419629803378708">ChromeVox er aktiveret</translation>
 <translation id="4665114317261903604">Slå Forstyr ikke til eller fra. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Downloader <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Lås enheden op med forældrekode</translation>
 <translation id="4702647871202761252">Privatlivsskærmen er slået fra</translation>
 <translation id="4706121060329443414">Downloaden forsøges senere. Tale sendes i mellemtiden til behandling hos Google.</translation>
@@ -640,6 +646,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5744083938413354016">Tryk og træk</translation>
 <translation id="5745612484876805746">Nattelys aktiveres automatisk ved solopgang</translation>
 <translation id="5750765938512549687">Bluetooth er slået fra</translation>
+<translation id="576341972084747908">Downloader skadelig <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Nattelys er slået til.</translation>
 <translation id="5769373120130404283">Privatlivsskærm</translation>
 <translation id="5777841717266010279">Vil du afslutte skærmdeling?</translation>
@@ -781,6 +788,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6852052252232534364">Aktivér</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Der skal angives ét ciffer mere}one{Der skal angives # ciffer mere}other{Der skal angives # cifre mere}}</translation>
+<translation id="6867938213751067702">Download af <ph name="FILENAME" /> er sat på pause</translation>
 <translation id="6878400149835617132">Genvejen er deaktiveret</translation>
 <translation id="6886172995547742638">Din <ph name="DEVICE_TYPE" />-enhed præsterer muligvis dårligere. Brug en certificeret USB-C-strømadapter på minimum <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Tryk på pil ned for at skifte vindue</translation>

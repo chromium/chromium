@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
+<translation id="1113173431709655881">Режим камере</translation>
 <translation id="1175958423215084756">Линк је откривен. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Слике у галерији</translation>
 <translation id="1300209025925956156">Скенирајте документ</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">Започни снимање</translation>
 <translation id="2599796128805996109">Задња камера</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> сек</translation>
+<translation id="2761536921376153655">Тип скенирања</translation>
 <translation id="2879583609344924966">Камера <ph name="CAMERA" /> је прикључена.</translation>
 <translation id="2968794441791257519">Слике и видео снимци који су снимљени помоћу камере ће се преместити у директоријум Преузимања. Можете да им приступите у Датотекама.
 
@@ -99,9 +101,11 @@
 <translation id="698156982839284926">3 секунде</translation>
 <translation id="712848772518857951">Желите ли стварно да уклоните ове ставке (<ph name="COUNT" />)?</translation>
 <translation id="7134221860976209830">Тајмер за 10 секунди</translation>
+<translation id="7191890674911603392">Тип записа</translation>
 <translation id="7243947652761655814">Резолуција видео снимка</translation>
 <translation id="7337660886763914220">Грешке система датотека.</translation>
 <translation id="7450541714075000668">Текст је копиран</translation>
+<translation id="7476762461674917065">Прикажи опцију за снимање GIF-а</translation>
 <translation id="7488619942230388918">Снимите GIF видео</translation>
 <translation id="7557677699350329807">Пређи на следећу камеру</translation>
 <translation id="7607002721634913082">Паузирано</translation>

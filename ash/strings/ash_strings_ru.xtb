@@ -317,6 +317,7 @@
 <translation id="3413817803639110246">Уведомлений нет.</translation>
 <translation id="3428447136709161042">Отключиться от сети "<ph name="NETWORK_NAME" />"</translation>
 <translation id="3430396595145920809">Чтобы вернуться, проведите по экрану от правого края</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Изменить напоминание</translation>
 <translation id="3435967511775410570">Отпечаток распознан</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>

@@ -58,6 +58,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1881378885488531302">Nem sikerült az IP-cím lekérése</translation>
 <translation id="1887850431809612466">Hardver ellenőrzése</translation>
+<translation id="1901646112321215184">Nincs konfigurálva DNS-kiszolgáló</translation>
 <translation id="1905710495812624430">Elérte az engedélyezett kísérletek maximális számát.</translation>
 <translation id="1908234395526491708">Hibás UDP-kérelmek.</translation>
 <translation id="1930797645656624981">Chrome OS beviteli módszere szolgáltatás</translation>
@@ -74,6 +75,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">VÁRAKOZIK</translation>
 <translation id="2161394479394250669">Nyomtatási feladat megszakítása</translation>
+<translation id="2180197493692062006">Hiba történt. Próbálja meg újra megnyitni az alkalmazást.</translation>
 <translation id="2209788852729124853">Forgalomszámlálók visszaállítása</translation>
 <translation id="2212733584906323460">Névfeloldás</translation>
 <translation id="2217935453350629363">Jelenlegi sebesség</translation>
@@ -89,6 +91,7 @@
 <translation id="2391082728065870591">Visszajelzési jelentés küldése</translation>
 <translation id="2407209115954268704">SIM-zárolás állapota</translation>
 <translation id="2418150275289244458">Megnyitás a Beállításokban</translation>
+<translation id="2421798028054665193"><ph name="TOTAL_PAGES" />/<ph name="CURRENT_PAGE" />. oldalon lévő kép</translation>
 <translation id="2446553403094072641">Lebegőpontos pontosság</translation>
 <translation id="2448312741937722512">Típus</translation>
 <translation id="2461822463642141190">Jelenlegi</translation>
@@ -107,11 +110,13 @@
 <translation id="2860473693272905224">Helyezze az újabb oldalt a szkennerre</translation>
 <translation id="2872961005593481000">Leállítás</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> lemerítve <ph name="NUM_SECONDS" /> másodperc alatt.</translation>
+<translation id="2927511423571448384">Nem sikerült a tűzfalon keresztül HTTP-protokollt használó (a 80-as porton hozzáférhető) webhelyekhez csatlakozni Androidról</translation>
 <translation id="3008341117444806826">FRISSÍTÉS</translation>
 <translation id="3009958530611748826">Válassza ki a mentés helyét</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Befejező pont</translation>
 <translation id="3069085583900247081">Sikertelen teszt</translation>
+<translation id="3076387335132326640">Nyílt hálózatot használ</translation>
 <translation id="3083667275341675831">Connectivity Diagnostics</translation>
 <translation id="3091839911843451378">Sikertelen – Leállítva</translation>
 <translation id="3102119246920354026">Gyorsítótár</translation>
@@ -199,6 +204,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-s akkumulátor</translation>
 <translation id="4561801978359312462">SIM feloldva</translation>
 <translation id="4562494484721939086">Nincs szolgáltatás</translation>
+<translation id="4567024731344774461">Nem sikerült feloldani a DNS-t Androidról</translation>
 <translation id="458794348635939462">Nem sikerült az összes gazdagép feloldása</translation>
 <translation id="4593212453765072419">Proxyhitelesítés szükséges</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />. oldal az összesen <ph name="TOTAL_PAGE_NUMBER" /> oldalból A nyomtatási feladat törléséhez nyomja meg az Enter billentyűt.</translation>
@@ -223,6 +229,7 @@
 <translation id="484790837831576105">(Android) DNS-felbontás</translation>
 <translation id="4848429997038228357">FUT</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} próbálkozás maradt.}other{<ph name="ERROR_MESSAGE" /> {0} próbálkozás maradt.}}</translation>
+<translation id="4871137769558798671">Nem sikerült a tűzfalon keresztül HTTPS-protokollt használó (a 443-as porton hozzáférhető) webhelyekhez csatlakozni</translation>
 <translation id="4880328057631981605">Hozzáférési pont neve</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Azonnal válasszon új jelszót</translation>
@@ -258,6 +265,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">verzió: <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Ablak áthelyezése a kívánt asztalra</translation>
+<translation id="5304899856529773394">EvDo</translation>
 <translation id="5315873049536339193">Azonosítás</translation>
 <translation id="5317780077021120954">Mentés</translation>
 <translation id="5318334351163689047">Hibás TCP-kérések.</translation>
@@ -279,6 +287,8 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5502931783115429516">Az Android nem fut</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5546352997259770619">Alacsony jelerősség. Próbálkozzon közelebb helyezkedni a hozzáférési ponthoz.</translation>
+<translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Újbóli beolvasás</translation>
 <translation id="5669267381087807207">Aktiválás</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -319,6 +329,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Az akkumulátor kapacitása egyre csökken a folyamatos használat során</translation>
 <translation id="6191293864534840972">Rosszul formázott névszerverek</translation>
+<translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nem áll rendelkezésre szkenner</translation>
 <translation id="6232017090690406397">Akkumulátor</translation>
 <translation id="6243280677745499710">Jelenleg beállított</translation>
@@ -328,6 +339,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="636850387210749493">Vállalat rögzítése</translation>
 <translation id="6379086450106841622">Érintőképernyő</translation>
 <translation id="6388847657025262518">A szkenner dokumentumadagolója beragadt. Ellenőrizze az adagolót, és próbálja újra.</translation>
+<translation id="6395640744968320699">Nem sikerült a tűzfalon keresztül HTTP-protokollt használó (a 80-as porton hozzáférhető) webhelyekhez csatlakozni</translation>
 <translation id="641081527798843608">Tárgyegyeztetés</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Jó</translation>
@@ -335,6 +347,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6472207088655375767">Egyszer használatos jelszó</translation>
 <translation id="6480327114083866287">Kezelő: <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Leállt – Papírelakadás</translation>
+<translation id="6498608540383876992">Nem sikerült csatlakozni az átjáróhoz</translation>
 <translation id="6516990319416533844">Az akkumulátor töltési sebességének teszteléséhez egy kis ideig hagyja merülni az akkumulátort</translation>
 <translation id="6517239166834772319">Felfedezés</translation>
 <translation id="6527081081771465939">Ismeretlen Wi-Fi biztonsági protokoll</translation>
@@ -382,6 +395,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7271040990581020067">A szkenner jelenleg használatban van. Próbálja újra később.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Háttérképgyűjtemények</translation>
+<translation id="7292680402155138244">Hosszú a várakozási idő a HTTPS-protokollt használó (a 443-as porton hozzáférhető) webhelyekhez való csatlakozáskor</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -432,12 +446,15 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7994702968232966508">EAP módszer</translation>
 <translation id="8020238979854764615">Valami hiba történt. Próbálkozzon újra úgy, hogy más képeket választ.</translation>
 <translation id="802154636333426148">Nem sikerült a letöltés</translation>
+<translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Visszajelzés küldése</translation>
 <translation id="8075838845814659848">Töltöttségi szint</translation>
 <translation id="808894953321890993">Jelszó módosítása</translation>
 <translation id="811820734797650957">(Android) Az átjáró pingelhető</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Forgalomszámlálók kérése</translation>
+<translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8177708084858970226">Nem sikerült feloldani a DNS-t</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Előnyök</translation>
 <translation id="8230672074305416752">Nem sikerült az alapértelmezett hálózati átjáró pingelése</translation>
@@ -449,6 +466,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8297006494302853456">Gyenge</translation>
 <translation id="8302368968391049045">HTTPS-tűzfal</translation>
 <translation id="8318753676953949627">Nincsenek képek</translation>
+<translation id="8346875532700229909">Nem sikerült csatlakozni az átjáróhoz Androidról</translation>
 <translation id="8347227221149377169">Nyomtatási feladatok</translation>
 <translation id="8352772353338965963">Adjon hozzá egy fiókot a többfiókos bejelentkezéshez. Az összes bejelentkezett fiók elérhető a jelszó megadása nélkül, ezért ezt a funkciót csak megbízható fiókokkal használja.</translation>
 <translation id="8364946094152050673">Üres névszerverek</translation>
@@ -480,6 +498,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8747900814994928677">Módosítás megerősítése</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="879568662008399081">Előfordulhat, hogy a hálózat hitelesítési portállal rendelkezik</translation>
 <translation id="8798099450830957504">Alapértelmezett</translation>
 <translation id="8798441408945964110">Szolgáltató neve</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
@@ -503,6 +522,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Keresés}=1{Keresés {NUMBER_OF_PAGES} oldalon}other{Keresés {NUMBER_OF_PAGES} oldalon}}</translation>
 <translation id="9003704114456258138">Frekvencia</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9062831201344759865">A DNS-feloldás várakozási ideje túl hosszú</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Jelenleg felhasznált</translation>

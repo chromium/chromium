@@ -58,6 +58,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1881378885488531302">ບໍ່ສາມາດຮັບທີ່ຢູ່ IP ໄດ້</translation>
 <translation id="1887850431809612466">ການປັບປຸງແກ້ໄຂຮາດແວ</translation>
+<translation id="1901646112321215184">ບໍ່ໄດ້ຕັ້ງຄ່າເຊີບເວີ DNS</translation>
 <translation id="1905710495812624430">ເກີນຈຳນວນຄວາມພະຍາຍາມສູງສຸດແລ້ວ.</translation>
 <translation id="1908234395526491708">ຂໍ UDP ບໍ່ສຳເລັດ</translation>
 <translation id="1930797645656624981">ການບໍລິການວິທີການປ້ອນຂໍ້ມູນຂອງ Chrome OS</translation>
@@ -74,6 +75,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">ເຂົ້າຄິວແລ້ວ</translation>
 <translation id="2161394479394250669">ຍົກເລີກວຽກພິມ</translation>
+<translation id="2180197493692062006">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງເປີດແອັບຄືນໃໝ່.</translation>
 <translation id="2209788852729124853">ຣີເຊັດຕົວນັບທຣາບຟິກ</translation>
 <translation id="2212733584906323460">ການຈຳແນກຊື່</translation>
 <translation id="2217935453350629363">ຄວາມໄວປັດຈຸບັນ</translation>
@@ -89,6 +91,7 @@
 <translation id="2391082728065870591">ສົ່ງລາຍງານຄຳຕິຊົມ</translation>
 <translation id="2407209115954268704">ສະຖານະການລັອກຊິມ</translation>
 <translation id="2418150275289244458">ເປີດໃນການຕັ້ງຄ່າ</translation>
+<translation id="2421798028054665193">ຮູບທີ <ph name="CURRENT_PAGE" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">ຄວາມຖືກຕ້ອງຂອງຈຸດລອຍຕົວ</translation>
 <translation id="2448312741937722512">ປະ​ເພດ</translation>
 <translation id="2461822463642141190">ປັດຈຸບັນ</translation>
@@ -107,11 +110,13 @@
 <translation id="2860473693272905224">ວາງໜ້າອື່ນໃສ່ເຄື່ອງສະແກນ</translation>
 <translation id="2872961005593481000">ມອດ</translation>
 <translation id="2878387241690264070">ຄາຍປະຈຸ <ph name="RATE" /> ໃນ <ph name="NUM_SECONDS" /> ວິນາທີ.</translation>
+<translation id="2927511423571448384">ບໍ່ສາມາດເຊື່ອມຕໍ່ຜ່ານ firewall ຫາເວັບໄຊ HTTP (ຜອດ 80) ຈາກ Android ໄດ້</translation>
 <translation id="3008341117444806826">ໂຫຼດຂໍ້ມູນໃໝ່</translation>
 <translation id="3009958530611748826">ເລືອກໂຟນເດີທີ່ຈະບັນທຶກໄວ້ໃນ</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ຈຸດສິ້ນສຸດ</translation>
 <translation id="3069085583900247081">ທົດສອບບໍ່ສຳເລັດ</translation>
+<translation id="3076387335132326640">ທ່ານກຳລັງໃຊ້ເຄືອຂ່າຍເປີດຢູ່</translation>
 <translation id="3083667275341675831">ການວິນິໄສການເຊື່ອມຕໍ່</translation>
 <translation id="3091839911843451378">ບໍ່ສຳເລັດ, ຢຸດແລ້ວ</translation>
 <translation id="3102119246920354026">ແຄ​ຊ໌</translation>
@@ -199,6 +204,7 @@
 <translation id="455835558791489930">ແບັດເຕີຣີ <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="4561801978359312462">ປົດລັອກຊິມແລ້ວ</translation>
 <translation id="4562494484721939086">ບໍ່ມີການບໍລິການ</translation>
+<translation id="4567024731344774461">ບໍ່ສາມາດລະບຸ DNS ຈາກ Android ໄດ້</translation>
 <translation id="458794348635939462">ແກ້ໄຂບັນຫາໂຮສທັງໝົດບໍ່ສຳເລັດ</translation>
 <translation id="4593212453765072419">ຈຳເປັນຕ້ອງພິສູດຢືນຢັນພຣັອກຊີ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGE_NUMBER" />. ກົດ Enter ເພື່ອຍົກເລີກວຽກພິມ.</translation>
@@ -223,6 +229,7 @@
 <translation id="484790837831576105">(Android) DNS resolution</translation>
 <translation id="4848429997038228357">ກຳລັງດຳເນີນຢູ່</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{ຍັງເຫຼືອຄວາມພະຍາຍາມອີກ <ph name="ERROR_MESSAGE" /> {0} ຄັ້ງ}other{ຍັງເຫຼືອຄວາມພະຍາຍາມອີກ <ph name="ERROR_MESSAGE" /> {0} ຄັ້ງ}}</translation>
+<translation id="4871137769558798671">ບໍ່ສາມາດເຊື່ອມຕໍ່ຜ່ານ firewall ຫາເວັບໄຊ HTTPS (ຜອດ 443) ໄດ້</translation>
 <translation id="4880328057631981605">ຊື່​ຈຸດ​ເຂົ້າ​ເຖິງ</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">ເລືອກລະຫັດຜ່ານໃໝ່ໃນທັນທີ</translation>
@@ -258,6 +265,7 @@
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">ເວີຊັນ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">ຍ້າຍໜ້າຈໍໄປຍັງໂຕະ</translation>
+<translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ລະບຸຕົວຕົນ</translation>
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5318334351163689047">ຂໍ TCP ບໍ່ສຳເລັດ</translation>
@@ -279,6 +287,8 @@
 <translation id="5502931783115429516">Android ບໍ່ໄດ້ຖືກເອີ້ນໃຊ້ຢູ່</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5546352997259770619">ຄວາມແຮງສັນຍານຕ່ຳ, ໃຫ້ລອງຍ້າຍໄປໃກ້ຈຸດເຂົ້າເຖິງຫຼາຍຂຶ້ນ</translation>
+<translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ສະແກນຄືນໃໝ່</translation>
 <translation id="5669267381087807207">ກຳລັງເປີດນຳໃຊ້</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -319,6 +329,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ຄວາມຈຸຂອງແບັດເຕີຣີຫຼຸດລົງເມື່ອໃຊ້ໄປເລື້ອຍໆ</translation>
 <translation id="6191293864534840972">ເຊີບເວີຊື່ຜິດຮູບແບບ</translation>
+<translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ບໍ່ມີເຄື່ອງສະແກນ</translation>
 <translation id="6232017090690406397">ແບັດເຕີຣີ</translation>
 <translation id="6243280677745499710">ຕັ້ງຕອນນີ້ເລີຍ</translation>
@@ -328,6 +339,7 @@
 <translation id="636850387210749493">ການລົງທະບຽນວິສາຫະກິດ</translation>
 <translation id="6379086450106841622">ໜ້າຈໍສຳຜັດ</translation>
 <translation id="6388847657025262518">ຕົວປ້ອນເອກະສານຂອງເຄື່ອງສະແກນຕິດຂັດ. ກະລຸນາກວດສອບຕົວປ້ອນເອກະສານແລ້ວລອງໃໝ່.</translation>
+<translation id="6395640744968320699">ບໍ່ສາມາດເຊື່ອມຕໍ່ຜ່ານ firewall ຫາເວັບໄຊ HTTP (ຜອດ 80) ໄດ້</translation>
 <translation id="641081527798843608">ຫົວຂໍ້ກົງກັນ</translation>
 <translation id="6423239382391657905">ເປີດVPN</translation>
 <translation id="6456394469623773452">ດີ</translation>
@@ -335,6 +347,7 @@
 <translation id="6472207088655375767">OTP​:</translation>
 <translation id="6480327114083866287">ຈັດການໂດຍ <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">ຢຸດພິມ - ເຈ້ຍຕິດ</translation>
+<translation id="6498608540383876992">ບໍ່ສາມາດຕິດຕໍ່ເກດເວໄດ້</translation>
 <translation id="6516990319416533844">ເພື່ອທົດສອບອັດຕາການສາກແບັດເຕີຣີ, ໃຫ້ປ່ອຍໃຫ້ມີການໃຊ້ແບັດເຕີຣີເປັນໄລຍະເວລາສັ້ນໆ</translation>
 <translation id="6517239166834772319">ສຳຫຼວດ</translation>
 <translation id="6527081081771465939">ໂປຣໂຕຄໍຮັກສາຄວາມປອດໄພ WiFi ທີ່ບໍ່ຮູ້ຈັກ</translation>
@@ -383,6 +396,7 @@
 <translation id="7271040990581020067">ຕອນນີ້ມີຄົນໃຊ້ເຄື່ອງສະແກນຢູ່. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">ຄໍເລັກຊັນຮູບພື້ນຫຼັງ</translation>
+<translation id="7292680402155138244">ເວລາຕອບສະໜອງຫາເວັບໄຊ HTTPS (ຜອດ 443) ສູງ</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -433,12 +447,15 @@
 <translation id="7994702968232966508">ວິທີການ EAP</translation>
 <translation id="8020238979854764615">ເກີດຄວາມຜິດພາດຂຶ້ນ. ກະລຸນາລອງໃໝ່ໂດຍການເລືອກຮູບອື່ນ.</translation>
 <translation id="802154636333426148">ການດາວໂຫຼດບໍ່ສຳເລັດ</translation>
+<translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">ສົ່ງຄຳຕິຊົມ</translation>
 <translation id="8075838845814659848">ການສາກທີ່ເຫຼືອ</translation>
 <translation id="808894953321890993">ປ່ຽນລະຫັດຜ່ານ</translation>
 <translation id="811820734797650957">(Android) ສາມາດ Ping ເກດເວໄດ້</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ຮ້ອງຂໍຕົວນັບທຣາບຟິກ</translation>
+<translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8177708084858970226">ບໍ່ສາມາດລະບຸ DNS ໄດ້</translation>
 <translation id="8206859287963243715">ເຊວລູລາ</translation>
 <translation id="8208861521865154048">ສິດທິປະໂຫຍດຕ່າງໆ</translation>
 <translation id="8230672074305416752">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
@@ -450,6 +467,7 @@
 <translation id="8297006494302853456">ອ່ອນ</translation>
 <translation id="8302368968391049045">HTTPS Firewall</translation>
 <translation id="8318753676953949627">ບໍ່ມີຮູບ</translation>
+<translation id="8346875532700229909">ບໍ່ສາມາດຕິດຕໍ່ເກດເວຈາກ Android ໄດ້</translation>
 <translation id="8347227221149377169">ວຽກການພິມ</translation>
 <translation id="8352772353338965963">ເພີ່ມບັນຊີໃສ່ຫຼາຍການລົງຊື່ເຂົ້າໃສ່. ສາມາດເຂົ້າ​ຫາທຸກບັນຊີທີ່ລົງຊື່ເຂົ້າ​ໃຊ້ແລ້ວໂດຍບໍ່ຕ້ອງມີລະຫັດຜ່ານ, ດັ່ງນັ້ນຄວນໃຊ້ແຕ່ຄຸນສົມບັດນີ້ກັບແຕ່ບັນຊີທີ່ເຊື່ອຖືໄດ້ເທົ່ານັ້ນ.</translation>
 <translation id="8364946094152050673">ເຊີບເວີຊື່ຫວ່າງເປົ່າ</translation>
@@ -481,6 +499,7 @@
 <translation id="8747900814994928677">ຢືນຢັນການປ່ຽນແປງ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="879568662008399081">ເຄືອຂ່າຍນີ້ອາດມີຊ່ອງ​ທາງ​ເຂົ້າ​ຮັກ​ສາ​ໄວ້</translation>
 <translation id="8798099450830957504">ຄ່າ​ມາດຕະຖານ</translation>
 <translation id="8798441408945964110">ຊື່ຜູ້ໃຫ້ບໍລິການ</translation>
 <translation id="8814190375133053267">Wi​-Fi</translation>
@@ -504,6 +523,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ສະແກນ}=1{ສະແກນໜ້າ {NUMBER_OF_PAGES}}other{ສະແກນໜ້າ {NUMBER_OF_PAGES}}}</translation>
 <translation id="9003704114456258138">ຄວາມຖີ່</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9062831201344759865">DNS resolution ມີເວລາຕອບສະໜອງສູງ</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">ການນຳໃຊ້ໃນປັດຈຸບັນ</translation>

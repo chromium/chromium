@@ -88,8 +88,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2926676257163822632">Svaga lösenord är lätta att lista ut. Låt Chrome <ph name="BEGIN_LINK" />skapa och spara starka lösenord åt dig<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Du behöver ge Chrome kamerabehörighet för den här webbplatsen</translation>
 <translation id="2929907241665500097">Ett fel uppstod och Chrome uppdaterades inte. <ph name="BEGIN_LINK" />Åtgärda uppdateringsproblem och misslyckade uppdateringar i Chrome.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />En sista påminnelse: installationen <ph name="BEGIN_BOLD" />rensar hårddisken fullständigt<ph name="END_BOLD" />. Se till att du har säkerhetskopierat all data som du vill behålla.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />När installationen har påbörjats går den inte att avbryta.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – nätverksinloggning – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome körs i bakgrundsläge.</translation>
 <translation id="3059710691562604940">Säker webbsökning har inaktiverats. Du rekommenderas att aktivera funktionen i Chrome.</translation>
@@ -137,7 +135,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4251615635259297716">Koppla dina uppgifter i Chrome till det här kontot</translation>
 <translation id="4281844954008187215">Användarvillkor</translation>
 <translation id="4293420128516039005">Genom att logga in kan du synkronisera och anpassa Chrome på alla enheter du använder</translation>
-<translation id="429583012151745428">Installation pågår. Stäng inte av enheten Installationen bör ta högst 20 minuter. Datorn stängs av automatiskt när installationen är klar.</translation>
 <translation id="4325083532956419387">Chrome OS-version</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-in)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -183,7 +180,6 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog om d
 <translation id="5430073640787465221">Inställningsfilen är skadad eller ogiltig.
 
 Google Chrome kan inte återställa dina inställningar.</translation>
-<translation id="5486618155264784386">Installera Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome försöker visa lösenord.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Om en inställning saknas på den här sidan tittar du i <ph name="LINK_BEGIN" />
@@ -238,7 +234,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7155997830309522122">Om så är fallet ska du redigera det sparade lösenordet i Chrome så att det matchar det nya lösenordet.</translation>
 <translation id="7161904924553537242">Välkommen till Google Chrome</translation>
 <translation id="7242029209006116544">Du loggar in med ett hanterat konto och ger dess administratör kontroll över din Google Chrome-profil. Dina Chrome-uppgifter, t.ex. dina appar, bokmärken, din historik, dina lösenord och andra inställningar, knyts permanent till <ph name="USER_NAME" />. Du kommer att kunna ta bort dessa uppgifter via instrumentpanelen i Google Konton, men du kommer inte att kunna koppla dessa uppgifter till ett annat konto. Du kan skapa en ny profil om du vill hålla dina befintliga Chrome-uppgifter separata. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Installationen av Chrome OS pågår</translation>
 <translation id="7295052994004373688">Användargränssnittet i Google Chrome visas på det här språket</translation>
 <translation id="7296210096911315575">Viktig användnings- och säkerhetsinformation</translation>
 <translation id="7308322188646931570">Du behöver ge Chrome åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>

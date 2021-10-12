@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">O Chromium necessita de acesso ao armazenamento para transferir ficheiros.</translation>
 <translation id="2572494885440352020">Ajuda do Chromium</translation>
 <translation id="2577788541081224677">Para aceder aos seus itens do Chromium em todos os seus dispositivos, inicie sessão para ativar a sincronização.</translation>
-<translation id="2580426763510374355">Instalar o Chromium OS</translation>
 <translation id="2583187216237139145">Os dados do Chromium gerados durante a utilização deste perfil (como a criação de marcadores, histórico, palavras-passe e outras definições) podem ser removidos pelo administrador do perfil de trabalho. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">O SO Chromium tem de ser reiniciado para aplicar a atualização.</translation>
 <translation id="2648074677641340862">Ocorreu um erro no sistema operativo durante a instalação. Descarregue novamente o Chromium.</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">Remover do Chromium...</translation>
 <translation id="2885378588091291677">Gestor de tarefas</translation>
 <translation id="2910007522516064972">Acerca do &amp;Chromium</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Só mais um lembrete: a instalação <ph name="BEGIN_BOLD" />apaga todo o seu disco rígido<ph name="END_BOLD" />. Certifique-se de que tem uma cópia de segurança dos dados importantes.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Não pode cancelar a instalação depois de a iniciar.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">O Chromium está atualizado</translation>
 <translation id="2983934633046890458">O Chromium está a tentar editar palavras-passe.</translation>
 <translation id="3032706164202344641">O Chromium não consegue verificar as suas palavras-passe. Tente novamente mais tarde.</translation>
@@ -79,7 +76,6 @@
 <translation id="3350761136195634146">Já existe um perfil do Chromium com esta conta.</translation>
 <translation id="3406848076815591792">Pretende mudar para o perfil do Chromium existente?</translation>
 <translation id="3430503420100763906">Com os perfis do Chromium, pode separar todos os seus itens do Chromium. Crie perfis para amigos e familiares ou separe o trabalho da diversão.</translation>
-<translation id="3433271666494956603">Instalação do SO Chromium em curso</translation>
 <translation id="347328004046849135">O Chromium envia-lhe uma notificação quando iniciar sessão com uma palavra-passe comprometida.</translation>
 <translation id="3474745554856756813">Esta ação elimina <ph name="ITEMS_COUNT" /> itens deste dispositivo. Para recuperar os dados mais tarde, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">O atalho <ph name="SHORTCUT" /> permite alternar entre perfis do Chromium</translation>
@@ -107,7 +103,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" /> requer a leitura e aceitação dos seguintes Termos de Utilização antes de utilizar este dispositivo. Estes termos não ampliam, não modificam nem limitam os Termos do Chromium OS.</translation>
 <translation id="4271805377592243930">Obter ajuda relacionada com o Chromium</translation>
 <translation id="4285930937574705105">A instalação falhou devido a um erro não especificado. Se o Chromium estiver em execução, feche-o e tente de novo.</translation>
-<translation id="429583012151745428">A instalação está em curso. Não desligue o dispositivo. A instalação não deve demorar mais de vinte minutos. O computador será automaticamente encerrado após a instalação.</translation>
 <translation id="4407044323746248786">Pretende sair do Chromium mesmo assim?</translation>
 <translation id="4415566066719264597">Permitir que o Chromium seja executado em segundo plano</translation>
 <translation id="4423735387467980091">Personalizar e controlar o Chromium</translation>
@@ -201,7 +196,6 @@ Algumas funcionalidades podem não estar disponíveis. Especifique um diretório
 <translation id="6734291798041940871">O Chromium já está instalado para todos os utilizadores no seu computador.</translation>
 <translation id="673636774878526923">Para aceder aos seus itens do Chromium em todos os seus dispositivos, inicie sessão e, em seguida, ative a sincronização.</translation>
 <translation id="6774082503108938489">O teu pai/mãe desativou as "Autorizações para sites, apps e extensões" para o Chromium. Não é permitido ativar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="6827182711503025204">A instalação do SO Chromium substitui todos os dados no seu dispositivo.</translation>
 <translation id="6847869444787758381">O Chromium indica-lhe se as suas palavras-passe forem comprometidas.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiado para o Chromium)</translation>

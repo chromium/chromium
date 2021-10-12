@@ -337,6 +337,7 @@
 <translation id="2025186561304664664">Proxy 已設為自動設定。</translation>
 <translation id="2025891858974379949">不安全的內容</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />檢查 Proxy和防火牆<ph name="END_LINK" /></translation>
+<translation id="2034971124472263449">仍要儲存</translation>
 <translation id="2036983605131262583">替用卷</translation>
 <translation id="2042213636306070719">紙匣 7</translation>
 <translation id="204357726431741734">登入即可使用儲存在 Google 帳戶中的密碼</translation>
@@ -378,6 +379,7 @@
 <translation id="2154054054215849342">您的網域無法使用同步處理功能</translation>
 <translation id="2154484045852737596">編輯付款信用卡</translation>
 <translation id="2161656808144014275">文字</translation>
+<translation id="2162510787844374618">正在與銀行連線…</translation>
 <translation id="2164510882479075877">請檢查 <ph name="HOST_NAME" /> 中是否有錯字。</translation>
 <translation id="2166049586286450108">完整管理存取權</translation>
 <translation id="2166378884831602661">這個網站無法提供安全連線</translation>
@@ -646,6 +648,7 @@
 <translation id="3145945101586104090">無法將回應解碼</translation>
 <translation id="3150653042067488994">伺服器暫時發生錯誤</translation>
 <translation id="3154506275960390542">這個網頁含有可能不經安全途徑提交內容的表格。其他人可能會在傳輸期間查看您的資料，攻擊者也可能會修改這些資料，導致伺服器接收不同內容。</translation>
+<translation id="3154987252551138431">使用「咫尺共享」時發生問題</translation>
 <translation id="315504272643575312">您的帳戶由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="3157931365184549694">還原</translation>
 <translation id="3158539265159265653">光碟</translation>
@@ -904,6 +907,7 @@
 <translation id="3963721102035795474">閱讀器模式</translation>
 <translation id="3963837677003247395">要以手動方式繼續操作嗎？</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{無}=1{來自 1 個網站}other{來自 # 個網站}}</translation>
+<translation id="3969052498612555048">找不到驗證碼嗎？<ph name="BEGIN_LINK" />取得新的驗證碼<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">計算中…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 已遭封鎖</translation>
 <translation id="3973357910713125165">執行 Chrome 安全檢查按鈕，㩒一下 Enter 鍵就可以喺 Chrome 設定度執行安全檢查</translation>
@@ -1038,6 +1042,7 @@
 <translation id="4348834659292907206">與 <ph name="SITE" /> 的連線並不安全</translation>
 <translation id="4350629523305688469">多功能紙匣</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> 要求掃瞄附近的藍牙裝置，並已找到以下裝置：</translation>
+<translation id="4351175281479794167">輸入驗證碼</translation>
 <translation id="4356973930735388585">攻擊者可能會透過此網站試圖在您的電腦上安裝危險程式，藉此竊取或刪除您的資料 (例如相片、密碼、訊息或信用卡資料)。</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode 政策發生錯誤，因此系統無法套用您指定的範本。</translation>
 <translation id="4358461427845829800">管理付款方法…</translation>
@@ -1194,6 +1199,7 @@
 <translation id="4853901935952445031">2022 年 2 月後，此網站將不能使用 U2F API。如果您是網站擁有者，請為該網站改用 Web Authentication API。</translation>
 <translation id="4854362297993841467">不支援此送貨方式，請選擇其他方式。</translation>
 <translation id="4854853140771946034">在 Google Keep 中快速建立新筆記</translation>
+<translation id="485902285759009870">正在確認驗證碼…</translation>
 <translation id="4876188919622883022">簡化檢視</translation>
 <translation id="4876305945144899064">沒有使用者名稱</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{無}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
@@ -1224,6 +1230,7 @@
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">展開清單</translation>
 <translation id="4968522289500246572">此應用程式專為流動裝置而設，可能無法正常調整大小。應用程式可能會發生問題或重新啟動。</translation>
+<translation id="4969341057194253438">刪除錄影</translation>
 <translation id="4973922308112707173">雙孔 (頂端)</translation>
 <translation id="4984088539114770594">要使用麥克風嗎？</translation>
 <translation id="4984339528288761049">Prc5 (信封)</translation>
@@ -1250,6 +1257,7 @@
 <translation id="5040262127954254034">私隱權</translation>
 <translation id="5043480802608081735">您複製的連結</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
+<translation id="5056425809654826431">{NUM_FILES,plural, =1{如要使用「咫尺共享」傳送此檔案，請在裝置上騰出空間 (<ph name="DISK_SPACE_SIZE" />)}other{如要使用「咫尺共享」傳送這些檔案，請在裝置上騰出空間 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="5056549851600133418">為您推薦的文章</translation>
 <translation id="5061227663725596739">您是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>
 <translation id="5066056036849835175">列印記錄</translation>
@@ -1769,6 +1777,7 @@
 <translation id="6895330447102777224">您的信用卡已完成驗證</translation>
 <translation id="6897140037006041989">使用者代理程式</translation>
 <translation id="6898699227549475383">機構 (O)</translation>
+<translation id="6899000063526916106">請輸入 <ph name="NUMBER_OF_DIGITS" /> 位數驗證碼</translation>
 <translation id="6907293445143367439">允許 <ph name="SITE_NAME" /> 執行以下操作：</translation>
 <translation id="6910240653697687763"><ph name="URL" /> 要求全權控制 MIDI 裝置</translation>
 <translation id="691024665142758461">下載多個檔案</translation>
@@ -1819,6 +1828,7 @@
 <translation id="7062635574500127092">藍綠色</translation>
 <translation id="706295145388601875">在 Chrome 設定中新增並管理地址</translation>
 <translation id="7064851114919012435">聯絡人資訊</translation>
+<translation id="7068733155164172741">請輸入 <ph name="OTP_LENGTH" /> 位數驗證碼</translation>
 <translation id="70705239631109039">您的連線並非完全安全</translation>
 <translation id="7075452647191940183">要求過大</translation>
 <translation id="7079718277001814089">此網站含有惡意軟件</translation>
@@ -2014,6 +2024,7 @@
 <translation id="7667346355482952095">傳回的政策憑證為空白或與目前憑證不符</translation>
 <translation id="7668654391829183341">不明的裝置</translation>
 <translation id="7669271284792375604">攻擊者可能會經由此網站，嘗試誘使您安裝妨礙瀏覽體驗的程式 (例如變更您的首頁，或在您瀏覽的網站上顯示多餘的廣告)。</translation>
+<translation id="7669907849388166732">{COUNT,plural, =1{在標示為機密的資料所執行的動作 (自登入起已報告 1 個動作)。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />}other{在標示為機密的資料所執行的動作 (自登入起已報告 # 個動作)。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">出紙槽 6</translation>
 <translation id="7676643023259824263">搵剪貼簿文字：<ph name="TEXT" /></translation>
 <translation id="7679367271685653708">在 Chrome 設定中查看並管理您的瀏覽記錄</translation>
@@ -2127,6 +2138,7 @@
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="8041940743680923270">使用全域預設值 (要求確認)</translation>
 <translation id="8042918947222776840">選擇取貨方式</translation>
+<translation id="8052898407431791827">已複製到剪貼簿</translation>
 <translation id="8057711352706143257">無法正確安裝「<ph name="SOFTWARE_NAME" />」，解除安裝「<ph name="SOFTWARE_NAME" />」通常能修正相關問題。<ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">很抱歉，系統發生錯誤。</translation>
 <translation id="8067872629359326442">您剛才在欺詐網站上輸入了密碼。Chromium 可以就此提供協助。如需變更密碼或通知 Google 您的帳戶可能面臨風險，請按 [保護帳戶]。</translation>
@@ -2196,6 +2208,7 @@
 <translation id="8282947398454257691">掌握您的專屬裝置識別碼</translation>
 <translation id="8284769179630993263">在 Chrome 設定中管理安全瀏覽等功能</translation>
 <translation id="8286036467436129157">登入</translation>
+<translation id="8287501787477690853">由於螢幕上有機密內容，因此管理員不建議擷取螢幕截圖或錄影。</translation>
 <translation id="8288807391153049143">顯示憑證</translation>
 <translation id="8289355894181816810">如果您不確定這是什麼意思，請與網絡管理員聯絡。</translation>
 <translation id="8293206222192510085">新增書籤</translation>
@@ -2228,6 +2241,7 @@
 <translation id="8364627913115013041">未設定。</translation>
 <translation id="8368027906805972958">不明或不支援的裝置 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play 服務</translation>
+<translation id="8369073279043109617">取得新的驗證碼</translation>
 <translation id="8371889962595521444">自訂根憑證</translation>
 <translation id="8374636051559112948">不定</translation>
 <translation id="8380941800586852976">不安全</translation>
@@ -2265,6 +2279,7 @@
 <translation id="8507227106804027148">指令列</translation>
 <translation id="8508648098325802031">搜尋圖示</translation>
 <translation id="8511402995811232419">管理 Cookie</translation>
+<translation id="8519478486928352883">由於螢幕上有機密內容，因此管理員不建議擷取螢幕截圖或錄影。</translation>
 <translation id="8522552481199248698">Chrome 可助您保護 Google 帳戶並變更密碼。</translation>
 <translation id="8530813470445476232">清除您的瀏覽記錄、Cookie、快取以及其他 Chrome 設定</translation>
 <translation id="8533619373899488139">請前往 &lt;strong&gt;chrome://policy&lt;/strong&gt; 查看被封鎖的網址清單，以及由系統管理員強制執行的其他政策。</translation>
@@ -2273,6 +2288,7 @@
 <translation id="8542014550340843547">三釘 (底部)</translation>
 <translation id="8543181531796978784">您可以<ph name="BEGIN_ERROR_LINK" />報告偵測問題<ph name="END_ERROR_LINK" />；或如果您瞭解安全性風險，也可以<ph name="BEGIN_LINK" />瀏覽這個不安全的網站<ph name="END_LINK" />。</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{重設權限}other{重設權限}}</translation>
+<translation id="8555010941760982128">結帳時請使用此宣傳代碼</translation>
 <translation id="8557066899867184262">信用卡驗證碼 (CVC) 位於信用卡背面。</translation>
 <translation id="8558485628462305855">如要觀看擴張實境內容，請先更新 ARCore</translation>
 <translation id="8559762987265718583">您裝置的日期和時間 (<ph name="DATE_AND_TIME" />) 不正確，因此無法建立私人連線至 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />。</translation>
@@ -2312,6 +2328,7 @@
 <translation id="8718314106902482036">未完成付款程序</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />，<ph name="DESCRIPTION" />，搜尋建議</translation>
 <translation id="8719528812645237045">多孔 (頂端)</translation>
+<translation id="8723535127346307411">輸入驗證碼</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8726549941689275341">頁面大小：</translation>
 <translation id="8730621377337864115">完成</translation>
@@ -2323,7 +2340,6 @@
 <translation id="8742371904523228557">您的 <ph name="ORIGIN" /> 驗證碼是 <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">將此分頁加入書籤</translation>
 <translation id="8751426954251315517">請稍候再試</translation>
-<translation id="8757526089434340176">提供 Google Pay 優惠</translation>
 <translation id="8759274551635299824">此信用卡已過期</translation>
 <translation id="87601671197631245">此網站的安全性設定過舊，因此您傳送給此網站的資料 (例如密碼、訊息或信用卡資料) 可能會外洩。</translation>
 <translation id="8761567432415473239">Google 安全瀏覽最近在「<ph name="SITE" />」<ph name="BEGIN_LINK" />發現有害程式<ph name="END_LINK" />。</translation>
@@ -2453,6 +2469,7 @@
 <translation id="9191834167571392248">打孔 (左下方)</translation>
 <translation id="9199905725844810519">已封鎖列印功能</translation>
 <translation id="9205078245616868884">您已使用同步密碼短語加密資料，請輸入密碼短語開始同步資料。</translation>
+<translation id="920511547311754821">找不到驗證碼嗎？<ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">無法新增文章。</translation>
 <translation id="9213433120051936369">自訂外觀</translation>
 <translation id="9215416866750762878">有應用程式令 Chrome 無法安全地連接至此網站</translation>

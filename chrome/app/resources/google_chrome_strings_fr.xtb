@@ -87,8 +87,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2926676257163822632">Les mots de passe peu sécurisés sont faciles à deviner. Laissez Chrome <ph name="BEGIN_LINK" />créer et mémoriser des mots de passe sécurisés à votre place<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome a besoin de l'autorisation d'accéder à la caméra pour ce site</translation>
 <translation id="2929907241665500097">Échec de la mise à jour de Chrome en raison d'une erreur. <ph name="BEGIN_LINK" />Découvrez comment résoudre ce type de problème.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Un dernier rappel : l'installation <ph name="BEGIN_BOLD" />effacera la totalité de votre disque dur<ph name="END_BOLD" />. Assurez-vous que toutes vos données importantes sont sauvegardées.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Une fois commencée, l'installation ne peut être annulée.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Connexion au réseau - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome est exécuté en mode arrière-plan.</translation>
 <translation id="3059710691562604940">La navigation sécurisée étant désactivée, Chrome vous recommande de l'activer.</translation>
@@ -136,7 +134,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4251615635259297716">Associer vos données Chrome à ce compte ?</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
 <translation id="4293420128516039005">Se connecter pour synchroniser et personnaliser Chrome sur vos appareils</translation>
-<translation id="429583012151745428">L'installation est en cours. N'éteignez pas l'appareil. Cela ne devrait pas prendre plus de 20 minutes. L'ordinateur s'éteindra automatiquement après l'installation.</translation>
 <translation id="4325083532956419387">Version de Chrome OS</translation>
 <translation id="4328355335528187361">Google Chrome pour les développeurs (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -182,7 +179,6 @@ Certaines fonctionnalités peuvent être indisponibles. Veuillez spécifier un r
 <translation id="5430073640787465221">Le fichier des préférences est endommagé ou n'est pas valide. 
 
 Google Chrome ne peut pas récupérer vos paramètres.</translation>
-<translation id="5486618155264784386">Installer Chrome OS</translation>
 <translation id="556024056938947818">Tentative d'affichage des mots de passe dans Google Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Si un paramètre ne s'affiche pas sur cette page, accédez aux <ph name="LINK_BEGIN" />paramètres Chrome OS<ph name="LINK_END" /></translation>
@@ -236,7 +232,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7155997830309522122">Si oui, veuillez modifier votre mot de passe enregistré dans Chrome pour qu'il corresponde à votre nouveau mot de passe.</translation>
 <translation id="7161904924553537242">Bienvenue dans Google Chrome</translation>
 <translation id="7242029209006116544">Vous vous connectez avec un compte géré et donnez le contrôle de votre profil Google Chrome à son administrateur. Vos données Chrome, telles que les applications, les favoris, l'historique, les mots de passe et les autres paramètres, vont être définitivement associées à <ph name="USER_NAME" />. Vous pouvez supprimer ces données via le tableau de bord des comptes Google, mais vous ne pouvez pas les associer à un autre compte. Vous pouvez éventuellement créer un nouveau profil pour maintenir vos données Chrome séparées. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Installation de Chrome OS en cours</translation>
 <translation id="7295052994004373688">Cette langue est utilisée pour l'UI de Google Chrome</translation>
 <translation id="7296210096911315575">Informations importantes concernant l'utilisation et la sécurité</translation>
 <translation id="7308322188646931570">Pour télécharger des fichiers, Chrome a besoin d'accéder à l'espace de stockage</translation>

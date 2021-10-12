@@ -58,6 +58,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1881378885488531302">IP ઍડ્રેસ મેળવી શકાયું નથી</translation>
 <translation id="1887850431809612466">હાર્ડવેર પુનરાવર્તન</translation>
+<translation id="1901646112321215184">કોઈ DNS સર્વરની ગોઠવણી કરવામાં આવી નથી</translation>
 <translation id="1905710495812624430">મહત્તમ મંજૂર પ્રયત્નોની સંખ્યા ઓળંગાઈ.</translation>
 <translation id="1908234395526491708">UDP વિનંતી નિષ્ફળ થઈ</translation>
 <translation id="1930797645656624981">Chrome OS ઇનપુટ પદ્ધતિ સેવા</translation>
@@ -74,6 +75,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">કતારમાં</translation>
 <translation id="2161394479394250669">પ્રિન્ટ જોબ રદ કરો</translation>
+<translation id="2180197493692062006">કંઈક ખોટું થયું. ઍપ ફરીથી ખોલવાનો પ્રયાસ કરી જુઓ.</translation>
 <translation id="2209788852729124853">ટ્રાફિક કાઉન્ટર રીસેટ કરો</translation>
 <translation id="2212733584906323460">નામનું રિઝોલ્યુશન</translation>
 <translation id="2217935453350629363">વર્તમાન ઝડપ</translation>
@@ -89,6 +91,7 @@
 <translation id="2391082728065870591">પ્રતિસાદ રિપોર્ટ મોકલો</translation>
 <translation id="2407209115954268704">સિમ કાર્ડનું લૉક સ્ટેટસ</translation>
 <translation id="2418150275289244458">સેટિંગમાં ખોલો</translation>
+<translation id="2421798028054665193"><ph name="TOTAL_PAGES" />માંથી <ph name="CURRENT_PAGE" />ની છબી</translation>
 <translation id="2446553403094072641">ફ્લોટિંગ પૉઇન્ટની સચોટતા</translation>
 <translation id="2448312741937722512">પ્રકાર</translation>
 <translation id="2461822463642141190">વર્તમાન</translation>
@@ -107,11 +110,13 @@
 <translation id="2860473693272905224">બીજા પેજને સ્કૅનર પર મૂકો</translation>
 <translation id="2872961005593481000">શટ ડાઉન કરો</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> સેકન્ડમાં <ph name="RATE" /> ડિસ્ચાર્જ.</translation>
+<translation id="2927511423571448384">ફાયરવૉલ મારફતે Androidથી HTTP (પોર્ટ 80) વેબસાઇટ સાથે કનેક્ટ કરી શકતા નથી</translation>
 <translation id="3008341117444806826">રિફ્રેશ કરો</translation>
 <translation id="3009958530611748826">સ્કૅન જેમાં સાચવવાના છે તે ફોલ્ડર પસંદ કરો</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">છેવટ</translation>
 <translation id="3069085583900247081">પરીક્ષણ નિષ્ફળ થયું</translation>
+<translation id="3076387335132326640">તમે ઓપન નેટવર્કનો ઉપયોગ કરી રહ્યાં છો</translation>
 <translation id="3083667275341675831">કનેક્ટિવિટીના નિદાનો</translation>
 <translation id="3091839911843451378">નિષ્ફળ થયું - પ્રિન્ટર બંધ થઈ ગયું છે</translation>
 <translation id="3102119246920354026">કેશ</translation>
@@ -199,6 +204,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh બૅટરી</translation>
 <translation id="4561801978359312462">સિમ કાર્ડ અનલૉક છે</translation>
 <translation id="4562494484721939086">કોઈ સેવા નથી</translation>
+<translation id="4567024731344774461">Androidથી DNSનું નિરાકરણ કરી શકતા નથી</translation>
 <translation id="458794348635939462">બધા હોસ્ટ રિઝોલ્વ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="4593212453765072419">પ્રોક્સી પ્રમાણીકરણ આવશ્યક છે</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />માંથી <ph name="PRINTED_PAGE_NUMBER" />. પ્રિન્ટ કરવાનું અટકાવવા માટે, Enter કી દબાવો.</translation>
@@ -223,6 +229,7 @@
 <translation id="484790837831576105">(Android) DNS રિઝોલ્યુશન</translation>
 <translation id="4848429997038228357">ચાલુ છે</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} પ્રયત્ન બાકી}one{<ph name="ERROR_MESSAGE" /> {0} પ્રયત્ન બાકી}other{<ph name="ERROR_MESSAGE" /> {0} પ્રયત્ન બાકી}}</translation>
+<translation id="4871137769558798671">ફાયરવૉલ મારફતે HTTPS (પોર્ટ 443) વેબસાઇટ સાથે કનેક્ટ કરી શકતા નથી</translation>
 <translation id="4880328057631981605">ઍક્સેસ પૉઇન્ટનું નામ</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">તરત જ નવો પાસવર્ડ પસંદ કરો</translation>
@@ -257,6 +264,7 @@
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">વર્ઝન <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">વિન્ડોને 'ડેસ્ક' સબમેનૂ પર ખસેડો</translation>
+<translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ઓળખ</translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5318334351163689047">TCP વિનંતી નિષ્ફળ થઈ</translation>
@@ -278,6 +286,8 @@
 <translation id="5502931783115429516">Android કામ કરી રહ્યું નથી</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5546352997259770619">સિગ્નલની પ્રબળતા ઓછી હોવાથી, ઍક્સેસ પૉઇન્ટની નજીક જવાનો પ્રયાસ કરો</translation>
+<translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ફરી સ્કૅન કરો</translation>
 <translation id="5669267381087807207">ચાલુ થાય છે</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -318,6 +328,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">વપરાશની સાથે જ બૅટરીની ક્ષમતા ઘટવા લાગે છે</translation>
 <translation id="6191293864534840972">અયોગ્ય ફોર્મેટ ધરાવતા નામ સર્વર</translation>
+<translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">કોઈ સ્કૅનર ઉપલબ્ધ નથી</translation>
 <translation id="6232017090690406397">બૅટરી</translation>
 <translation id="6243280677745499710">હાલમાં સેટ કરેલ</translation>
@@ -327,6 +338,7 @@
 <translation id="636850387210749493">સંગઠન નોંધણી</translation>
 <translation id="6379086450106841622">ટચસ્ક્રીન</translation>
 <translation id="6388847657025262518">સ્કૅનરનું દસ્તાવેજ ફીડર જામ થઈ ગયું છે. ફીડર ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
+<translation id="6395640744968320699">ફાયરવૉલ મારફતે HTTP (પોર્ટ 80) વેબસાઇટ સાથે કનેક્ટ કરી શકતા નથી</translation>
 <translation id="641081527798843608">વિષય મેળ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">સરસ</translation>
@@ -334,6 +346,7 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="649050271426829538">બંધ - કાગળ ફસાયો</translation>
+<translation id="6498608540383876992">ગેટવે સાથે સંપર્ક કરી શકતા નથી</translation>
 <translation id="6516990319416533844">બૅટરી ચાર્જિંગના રેટનું પરીક્ષણ કરવા માટે, થોડા સમય માટે તમારી બૅટરી વપરાવા દો</translation>
 <translation id="6517239166834772319">શોધખોળ કરો</translation>
 <translation id="6527081081771465939">વાઇ-ફાઇ સુરક્ષાનો અજાણ્યો પ્રોટોકૉલ</translation>
@@ -381,6 +394,7 @@
 <translation id="7271040990581020067">સ્કૅનર હાલમાં ઉપયોગમાં છે. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">વૉલપેપરના સંગ્રહો</translation>
+<translation id="7292680402155138244">HTTPS (પોર્ટ 443) વેબસાઇટ માટે વિલંબતાનો સમય ઘણો વધુ છે</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -431,12 +445,15 @@
 <translation id="7994702968232966508">EAP પદ્ધતિ</translation>
 <translation id="8020238979854764615">તેમાં ભૂલ હતી. કૃપા કરીને અન્ય છબીઓ પસંદ કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="802154636333426148">ડાઉનલોડ નિષ્ફળ થયું</translation>
+<translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">પ્રતિસાદ મોકલો</translation>
 <translation id="8075838845814659848">બાકી રહેલું બૅટરી ચાર્જિંગ</translation>
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>
 <translation id="811820734797650957">(Android) ગેટવેને પિંગ કરી શકાય છે</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ટ્રાફિક કાઉન્ટરની વિનંતી કરો</translation>
+<translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8177708084858970226">DNSનું નિરાકરણ કરી શકતા નથી</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>
 <translation id="8208861521865154048">લાભ</translation>
 <translation id="8230672074305416752">ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
@@ -448,6 +465,7 @@
 <translation id="8297006494302853456">નબળું</translation>
 <translation id="8302368968391049045">HTTPS ફાયરવૉલ</translation>
 <translation id="8318753676953949627">કોઈ છબી ઉપલબ્ધ નથી</translation>
+<translation id="8346875532700229909">Androidથી ગેટવે સાથે સંપર્ક કરી શકતા નથી</translation>
 <translation id="8347227221149377169">પ્રિન્ટ કરવાના કામો</translation>
 <translation id="8352772353338965963">એકથી વધુ સાઇન ઇન કરવા એક એકાઉન્ટ ઉમેરો. બધા સાઇન ઇન એકાઉન્ટ પાસવર્ડ વગર ઉપયોગ કરી શકાય છે, તેથી આ સુવિધા માત્ર વિશ્વસનીય એકાઉન્ટ સાથે ઉપયોગમાં આવવી જોઇએ.</translation>
 <translation id="8364946094152050673">સર્વરના કોઈ નામ આપવામાં આવ્યા નથી</translation>
@@ -479,6 +497,7 @@
 <translation id="8747900814994928677">ફેરફાર કન્ફર્મ કરો</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="879568662008399081">આ નેટવર્કમાં કૅપ્ટિવ પોર્ટલ હોઈ શકે છે</translation>
 <translation id="8798099450830957504">ડિફૉલ્ટ</translation>
 <translation id="8798441408945964110">પ્રદાતાનું નામ</translation>
 <translation id="8814190375133053267">વાઇ-ફાઇ</translation>
@@ -502,6 +521,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{સ્કૅન કરો}=1{{NUMBER_OF_PAGES} પેજ સ્કૅન કરો}one{{NUMBER_OF_PAGES} પેજ સ્કૅન કરો}other{{NUMBER_OF_PAGES} પેજ સ્કૅન કરો}}</translation>
 <translation id="9003704114456258138">આવર્તન</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9062831201344759865">DNSના રિઝોલ્યુશનની વિલંબતાનો સમય ઘણો વધુ છે</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">બ્લૂટૂથ</translation>
 <translation id="9088306295921699330">વર્તમાન વપરાશ</translation>

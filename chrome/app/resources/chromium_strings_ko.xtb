@@ -43,7 +43,6 @@
 <translation id="2560420686485554789">파일을 다운로드하려면 Chromium에 저장소 액세스 권한이 있어야 합니다</translation>
 <translation id="2572494885440352020">Chromium 도우미</translation>
 <translation id="2577788541081224677">모든 기기에서 Chromium 계정 정보에 액세스하려면 로그인하여 동기화하세요.</translation>
-<translation id="2580426763510374355">Chromium OS 설치</translation>
 <translation id="2583187216237139145">북마크, 방문 기록, 비밀번호, 기타 설정 생성 등 이 프로필을 사용하는 동안 생성된 모든 Chromium 데이터는 직장 프로필 관리자가 삭제할 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">업데이트를 적용하려면 Chromium OS를 다시 시작해야 합니다.</translation>
 <translation id="2648074677641340862">설치 중 운영체제 오류가 발생했습니다. Chromium을 다시 다운로드하세요.</translation>
@@ -56,8 +55,6 @@
 <translation id="2847479871509788944">Chromium에서 제거...</translation>
 <translation id="2885378588091291677">작업 관리자</translation>
 <translation id="2910007522516064972">Chromium 정보</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />마지막 알림: 설치를 진행하면 <ph name="BEGIN_BOLD" />하드 드라이브에 있는 모든 데이터가 삭제됩니다.<ph name="END_BOLD" />. 중요한 데이터를 모두 백업했는지 확인해 주시기 바랍니다.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />설치가 시작되면 취소할 수 없습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium이 최신 버전임</translation>
 <translation id="2983934633046890458">Chromium에서 비밀번호를 수정하려고 합니다.</translation>
 <translation id="3032706164202344641">Chromium에서 비밀번호를 확인할 수 없습니다. 나중에 다시 시도하세요.</translation>
@@ -81,7 +78,6 @@
 <translation id="3350761136195634146">이 계정을 사용하는 Chromium 프로필이 이미 존재합니다.</translation>
 <translation id="3406848076815591792">기존 Chromium 프로필로 전환하시겠습니까?</translation>
 <translation id="3430503420100763906">Chromium 프로필을 사용하면 모든 Chromium 데이터를 분리할 수 있습니다. 친구와 가족을 위한 프로필을 만들거나 업무용과 개인용 프로필을 구분하세요.</translation>
-<translation id="3433271666494956603">Chromium OS 설치 진행 중</translation>
 <translation id="347328004046849135">유출된 비밀번호로 로그인하면 Chromium에서 알림을 표시합니다.</translation>
 <translation id="3474745554856756813">항목 <ph name="ITEMS_COUNT" />개가 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chromium에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> 바로가기를 사용하여 Chromium 프로필 간에 전환하세요</translation>
@@ -109,7 +105,6 @@
 <translation id="4264410486868823224">기기를 사용하기 전에 <ph name="MANAGER" />에서 다음 서비스 약관을 읽고 이에 동의해야 합니다. 이 약관은 Chromium OS 약관을 확대, 수정 또는 제한하지 않습니다.</translation>
 <translation id="4271805377592243930">Chromium 도움말 보기</translation>
 <translation id="4285930937574705105">확인되지 않은 오류로 설치에 실패했습니다. Chromium이 실행 중인 경우 종료한 후 다시 실행하세요.</translation>
-<translation id="429583012151745428">설치가 진행 중입니다. 기기를 끄지 마세요. 설치는 20분 이내에 완료됩니다. 설치가 끝나면 컴퓨터가 자동으로 종료됩니다.</translation>
 <translation id="4407044323746248786">Chromium을 종료하시겠습니까?</translation>
 <translation id="4415566066719264597">백그라운드에서 Chromium을 실행</translation>
 <translation id="4423735387467980091">Chromium 맞춤설정 및 제어</translation>
@@ -203,7 +198,6 @@
 <translation id="6734291798041940871">모든 사용자가 사용할 수 있도록 컴퓨터에 Chromium이 이미 설치되어 있습니다.</translation>
 <translation id="673636774878526923">모든 기기에서 Chromium 계정 정보에 액세스하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
 <translation id="6774082503108938489">부모님이 Chromium의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지하셨습니다. 이 <ph name="EXTENSION_TYPE_PARAMETER" /> 사용은 허용되지 않습니다.</translation>
-<translation id="6827182711503025204">Chromium OS를 설치하면 기기의 모든 데이터를 덮어쓰게 됩니다</translation>
 <translation id="6847869444787758381">비밀번호가 유출되면 Chromium에서 알려줍니다.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay(Chromium에 복사됨)</translation>

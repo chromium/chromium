@@ -43,7 +43,6 @@
 <translation id="2560420686485554789">Файл татахын тулд Chromium-д сангийн хандалт шаардлагатай</translation>
 <translation id="2572494885440352020">Chromium-ийн туслагч</translation>
 <translation id="2577788541081224677">Та бүх төхөөрөмж дээрээ Chromium-н зүйлсдээ хандахын тулд нэвтэрч синк хийхийг асаана уу.</translation>
-<translation id="2580426763510374355">Chromium OS суулгах</translation>
 <translation id="2583187216237139145">Энэ профайлыг ашиглах үед үүссэн Chromium-н аливаа өгөгдлийг (хавчуурга, түүх, нууц үг болон бусад тохиргоог үүсгэх зэрэг) ажлын профайлын админ хасах боломжтой. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Шинэчлэлтийг хэрэгжүүлэхийн тулд Chromium үйлдлийн системийг дахин эхлүүлнэ үү.</translation>
 <translation id="2648074677641340862">Суулгалтын явцад үйлдлийн системийн алдаа гарлаа. Chromium-ыг дахин татаж авна уу.</translation>
@@ -56,8 +55,6 @@
 <translation id="2847479871509788944">Chromium-аас устгах ...</translation>
 <translation id="2885378588091291677">Асуудлын менежер</translation>
 <translation id="2910007522516064972">Chromium-ын тухай</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Хамгийн сүүлийн нэг сануулагч: суулгаснаар <ph name="BEGIN_BOLD" />таны хатуу дискийг бүхэлд нь устгана<ph name="END_BOLD" />. Та аливаа чухал өгөгдлөө хуулбарласан эсэхээ шалгана уу.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Суулгаж эхэлмэгц үүнийг цуцлах боломжгүй.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium-г шинэчилсэн байна</translation>
 <translation id="2983934633046890458">Chromium нууц үгсийг засахаар оролдож байна.</translation>
 <translation id="3032706164202344641">Chromium таны нууц үгсийг шалгах боломжгүй байна. Дараа дахин оролдоно уу.</translation>
@@ -79,7 +76,6 @@
 <translation id="3350761136195634146">Энэ бүртгэлтэй Chromium-н профайл аль хэдийн байна</translation>
 <translation id="3406848076815591792">Chromium-н одоо байгаа профайл руу сэлгэх үү?</translation>
 <translation id="3430503420100763906">Та Chromium профайлаар Chromium-н бүх зүйлээ тусгаарлах боломжтой. Найзууд, гэр бүлдээ профайл үүсгэх эсвэл ажил болон дуртай зүйлээ хооронд нь хуваагаарай.</translation>
-<translation id="3433271666494956603">Chromium OS-г суулгаж байна</translation>
 <translation id="347328004046849135">Таныг алдагдсан нууц үгээр нэвтрэх үед Chromium танд мэдэгдэнэ</translation>
 <translation id="3474745554856756813">Энэ нь төхөөрөмжөөс <ph name="ITEMS_COUNT" /> зүйл устгана. Өгөгдлөө дараа сэргээхийн тулд Chromium-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> Chromium-н профайлууд хооронд сэлгэх боломжтой</translation>
@@ -107,7 +103,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" /> танаас энэ төхөөрөмжийг ашиглахаасаа өмнө дараах Үйлчилгээний нөхцөлийг уншиж, зөвшөөрөхийг шаардаж байна. Эдгээр нөхцөл нь Chromium үйлдлийн системийн нөхцөлийг өргөтгөж, өөрчилж, хязгаарлахгүй.</translation>
 <translation id="4271805377592243930">Chromium-с тусламж авах</translation>
 <translation id="4285930937574705105">Гэнэтийн асуудлаас болж суулгах ажиллагаа амжилтгүй боллоо. Хэрвээ Chromium яг одоо ажиллаж байгаа бол хаагаад дахин оролдож үзнэ үү.</translation>
-<translation id="429583012151745428">Суулгаж байна. Төхөөрөмжийг бүү унтраагаарай. Суулгахад хорин минутаас дээш хугацаа зарцуулахгүй. Суулгасны дараа машин автоматаар унтарна.</translation>
 <translation id="4407044323746248786">Ямар ч байсан Chromium-с гарах уу?</translation>
 <translation id="4415566066719264597">Chromium-г цаана ажиллуулахыг зөвшөөрөх</translation>
 <translation id="4423735387467980091">Chromium-ыг гүйцэтгэх ба хянах</translation>
@@ -201,7 +196,6 @@
 <translation id="6734291798041940871">Chromium-г таны компьютерийн бүх хэрэглэгчид суулгасан байна.</translation>
 <translation id="673636774878526923">Та бүх төхөөрөмж дээрээ Chromium-н зүйлсдээ хандахын тулд нэвтэрч, дараа нь синк хийхийг асаана уу.</translation>
 <translation id="6774082503108938489">Таны эцэг эх Chromium-н "Сайтууд, аппууд болон өргөтгөлүүдийн зөвшөөрөл"-ийг унтраасан байна. Энэ <ph name="EXTENSION_TYPE_PARAMETER" />-г идэвхжүүлэхийг зөвшөөрдөггүй.</translation>
-<translation id="6827182711503025204">Chromium OS-г суулгаснаар таны төхөөрөмж дээрх бүх өгөгдлийг давхарлаж бичих болно.</translation>
 <translation id="6847869444787758381">Хэрэв таны нууц үг алдагдсан байвал Chromium танд мэдэгдэнэ</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium-д хуулсан)</translation>

@@ -360,7 +360,6 @@
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1384849755549338773">主动为采用其他语言的网站提供 Google 翻译服务</translation>
 <translation id="138784436342154190">要恢复默认启动页吗？</translation>
-<translation id="1388047369870196878">安装 CloudReady 2.0</translation>
 <translation id="1388253969141979417">允许使用您的麦克风</translation>
 <translation id="1388728792929436380">待更新完毕后，<ph name="DEVICE_TYPE" /> 将会重启。</translation>
 <translation id="139013308650923562">可以使用您设备上安装的字体</translation>
@@ -1951,7 +1950,6 @@
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您今天连接到 Wi-Fi 并下载更新。您也可使用按流量计费的网络连接进行下载（可能需要支付相应费用）。}other{<ph name="MANAGER" /> 要求您在截止日期前连接到 Wi-Fi 并下载更新。您也可使用按流量计费的网络连接进行下载（可能需要支付相应费用）。}}</translation>
 <translation id="3009300415590184725">确定要取消移动数据服务安装过程吗？</translation>
 <translation id="3009779501245596802">索引型数据库</translation>
-<translation id="3009984992511490972">将此设备转换成一部 CloudReady 2.0 设备。</translation>
 <translation id="3010279545267083280">密码已删除</translation>
 <translation id="3011384993885886186">暖灰色</translation>
 <translation id="3011488081941333749">系统将在您退出时清除来自 <ph name="DOMAIN" /> 的 Cookie</translation>
@@ -2376,7 +2374,6 @@
 <translation id="3476303763173086583">发送使用情况数据和诊断数据。通过自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您孩子的 Android 使用体验。这些数据不会被用来辨识您孩子的身份，而是会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />是由此设备的所有者强制指定的。此设备的所有者可以选择向 Google 发送此设备的诊断数据和使用情况数据。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。<ph name="BEGIN_LINK2" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">糟糕！系统未能成功抓取您设备的政策。</translation>
 <translation id="347785443197175480">继续允许 <ph name="HOST" /> 使用您的摄像头和麦克风</translation>
-<translation id="3478813605045578676">安装后才能注册。如需管理此设备，请先安装 CloudReady。</translation>
 <translation id="3479552764303398839">以后再说</translation>
 <translation id="3479685872808224578">检测不到打印服务器。请检查该地址，然后重试。</translation>
 <translation id="3480612136143976912">为实时字幕自定义字幕大小和样式。部分应用和网站也会使用此设置。</translation>
@@ -2578,7 +2575,6 @@
 <translation id="3694027410380121301">选择上一个标签</translation>
 <translation id="369489984217678710">密码和其他登录数据</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{已完成安全检查。系统将会上传您的数据。}=1{已完成安全检查。系统将会上传您的文件。}other{已完成安全检查。系统将会上传您的文件。}}</translation>
-<translation id="3696576298374669274">显示服务日志</translation>
 <translation id="3699624789011381381">电子邮件地址</translation>
 <translation id="3699920817649120894">要关闭同步和个性化功能吗？</translation>
 <translation id="3700888195348409686">展示中 (<ph name="PAGE_ORIGIN" />)</translation>
@@ -4155,7 +4151,6 @@
 <translation id="5431318178759467895">彩色</translation>
 <translation id="543338862236136125">修改密码</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 加密</translation>
-<translation id="5434473680236142631">欢迎使用 CloudReady 2.0</translation>
 <translation id="5435779377906857208">始终允许 <ph name="HOST" /> 使用您的位置信息</translation>
 <translation id="5436492226391861498">正在等待代理隧道的响应...</translation>
 <translation id="5436510242972373446">用 <ph name="SITE_NAME" /> 搜索：</translation>
@@ -4672,7 +4667,6 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{为确保您能够继续浏览网页，请让您的管理员卸载这款应用。}other{为确保您能够继续浏览网页，请让您的管理员卸载这些应用。}}</translation>
 <translation id="5997337190805127100">详细了解网站访问权限</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
-<translation id="6001839398155993679">开始</translation>
 <translation id="6001999913519612328">运行诊断测试。</translation>
 <translation id="6002210667729577411">将标签页组移至新窗口</translation>
 <translation id="6002452033851752583">密码已从您的 Google 帐号中删除</translation>
@@ -4728,7 +4722,6 @@
 <translation id="6057312498756061228">这个文件太大，无法进行安全检查。您只能打开不超过 50 MB 的文件。</translation>
 <translation id="6057381398996433816">此网站已被禁止使用动态传感器和光传感器。</translation>
 <translation id="6059276912018042191">最近打开的 Chrome 标签页</translation>
-<translation id="6059347142391822629">在焦点位于“完成”按钮上时按您的开关可关闭此指南。</translation>
 <translation id="6059652578941944813">证书层次结构</translation>
 <translation id="6061882183774845124">将链接发送到您的设备</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：如果有人在语音上与<ph name="SUPERVISED_USER_NAME" />相似或拥有后者的语音录音，此人可能也能获取后者的个人信息相关结果。为了省电，您可以在<ph name="SUPERVISED_USER_NAME" />的 Google 助理设置中选择让“Ok Google”指令仅在此设备已接通电源时可用。</translation>
@@ -5014,6 +5007,7 @@
 <translation id="6359706544163531585">停用浅色主题</translation>
 <translation id="6361850914223837199">错误详情：</translation>
 <translation id="6362853299801475928">报告问题(&amp;R)...</translation>
+<translation id="6363786367719063276">查看日志</translation>
 <translation id="6363990818884053551">若要开始同步，请验证是您本人在操作</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">添加亲朋好友</translation>
@@ -5206,8 +5200,6 @@
 <translation id="6569911211938664415">系统会将密码保存在您的 Google 帐号 (<ph name="ACCOUNT" />) 中，以便您在任意设备上使用</translation>
 <translation id="6573497332121198392">无法移除快捷方式</translation>
 <translation id="657402800789773160">重新加载此页(&amp;R)</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />为获得最佳体验，请将 CloudReady 2.0 安装到您的内部磁盘。您也可等到需要时再从登录屏幕安装它。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />如果尚未做好安装前的准备工作，您可从 USB 运行它来试用一下。这样做不会更改您的现有操作系统和数据，但可能会在存储和性能方面受到限制。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">已取消下载“<ph name="FILE_NAME" />”</translation>
 <translation id="657866106756413002">网络状况概要</translation>
 <translation id="6579369886355986318">显示所有控件(&amp;C)</translation>
@@ -6067,7 +6059,6 @@
 <translation id="7509246181739783082">验证您的身份</translation>
 <translation id="7509539379068593709">卸载应用</translation>
 <translation id="7511415964832680006">如果此控件已开启，网站可能会使用此处所示的隐私保护技术来提供其内容和服务。这些技术包括跨网站跟踪机制的替代方案。随着时间的推移，我们可能会添加更多试用版功能。</translation>
-<translation id="7514236770834963598">检查您目前在最重要的隐私和安全控件方面的设置</translation>
 <translation id="7514239104543605883">复制到您的设备</translation>
 <translation id="7514365320538308">下载</translation>
 <translation id="7514417110442087199">添加分配关系</translation>
@@ -6304,7 +6295,6 @@
 按已分配的开关键或键盘按键即可撤消分配。</translation>
 <translation id="7750228210027921155">画中画</translation>
 <translation id="7751260505918304024">全部显示</translation>
-<translation id="7751855202867682241">请从 USB（而非您的操作系统）中运行 CloudReady 2.0。</translation>
 <translation id="7753735457098489144">存储空间不足，安装失败。如需释放空间，请从设备存储空间中删除文件。</translation>
 <translation id="7754347746598978109">不允许使用 JavaScript</translation>
 <translation id="7754704193130578113">下载前询问每个文件的保存位置</translation>
@@ -7352,7 +7342,6 @@
 <translation id="8845001906332463065">获取帮助</translation>
 <translation id="8846132060409673887">查看此计算机的制造商和型号</translation>
 <translation id="8846163936679269230">重置 eSIM 卡配置文件</translation>
-<translation id="8846746259444262774">安装失败</translation>
 <translation id="8847523528195140327">合盖后退出帐号</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">已隐藏</translation>

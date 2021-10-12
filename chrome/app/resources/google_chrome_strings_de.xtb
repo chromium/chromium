@@ -84,8 +84,6 @@
 <translation id="2926676257163822632">Schwache Passwörter sind einfach zu erraten. Erlauben Sie Chrome, ein <ph name="BEGIN_LINK" />sicheres Passwort für Ihre Onlinekonten zu erstellen und zu speichern<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome benötigt die Kameraberechtigung für diese Website</translation>
 <translation id="2929907241665500097">Chrome konnte aufgrund eines Fehlers nicht aktualisiert werden. Wie Sie Updateprobleme und Fehler bei der Aktualisierung von Chrome beheben, <ph name="BEGIN_LINK" />erfahren Sie hier<ph name="END_LINK" />.</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Eine letzte Erinnerung: Durch die Installation <ph name="BEGIN_BOLD" />wird Ihre gesamte Festplatte gelöscht<ph name="END_BOLD" />. Kontrollieren Sie daher noch einmal, ob Sie alle wichtigen Daten gesichert haben.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Sobald die Installation gestartet wurde, kann sie nicht mehr abgebrochen werden.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Netzwerkanmeldung – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome wird im Hintergrundmodus ausgeführt.</translation>
 <translation id="3059710691562604940">Safe Browsing ist deaktiviert. Es wird empfohlen, diese Funktion zu aktivieren.</translation>
@@ -133,7 +131,6 @@
 <translation id="4251615635259297716">Ihre Chrome-Daten mit diesem Konto verknüpfen?</translation>
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>
 <translation id="4293420128516039005">Wenn Sie sich anmelden, wird Chrome auf allen Ihren Geräten synchronisiert und personalisiert</translation>
-<translation id="429583012151745428">Die Installation wird durchgeführt. Schalten Sie das Gerät nicht aus. Die Installation sollte nicht länger als zwanzig Minuten dauern. Der Computer wird nach der Installation automatisch heruntergefahren.</translation>
 <translation id="4325083532956419387">Chrome OS-Version</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -175,7 +172,6 @@
 <translation id="5386244825306882791">Die Erweiterung legt auch fest, welche Seite beim Start von Chrome oder bei der Suche über die Omnibox angezeigt wird.</translation>
 <translation id="5394833366792865639">Chrome-Tab freigeben</translation>
 <translation id="5430073640787465221">Ihre Einstellungsdatei ist beschädigt oder ungültig. Google Chrome kann Ihre Einstellungen nicht wiederherstellen.</translation>
-<translation id="5486618155264784386">Chrome OS installieren</translation>
 <translation id="556024056938947818">Google Chrome versucht, Passwörter anzuzeigen.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Wenn Sie auf dieser Seite eine Einstellung nicht finden können, sehen Sie in den <ph name="LINK_BEGIN" />Einstellungen von Chrome OS<ph name="LINK_END" /> nach</translation>
@@ -229,7 +225,6 @@
 <translation id="7155997830309522122">Falls ja, ändern Sie Ihr gespeichertes Passwort in Chrome, damit es mit dem neuen Passwort übereinstimmt.</translation>
 <translation id="7161904924553537242">Willkommen bei Chrome</translation>
 <translation id="7242029209006116544">Sie melden sich mit einem verwalteten Konto an und ermöglichen dessen Administrator Zugriff auf Ihr Google Chrome-Profil. Ihre Chrome-Daten, wie Apps, Lesezeichen, Verlauf, Passwörter und andere Einstellungen, werden dauerhaft mit <ph name="USER_NAME" /> verknüpft. Sie können diese Daten über das Google Konten-Dashboard löschen, aber nicht mit einem anderen Konto verknüpfen. Wenn Sie Ihre bestehenden Chrome-Daten getrennt halten möchten, können Sie stattdessen ein neues Profil erstellen. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Chrome OS-Installation läuft</translation>
 <translation id="7295052994004373688">Diese Sprache wird für die Google Chrome-UI verwendet</translation>
 <translation id="7296210096911315575">Wichtige Informationen zu Verwendung und Sicherheit</translation>
 <translation id="7308322188646931570">Chrome benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>

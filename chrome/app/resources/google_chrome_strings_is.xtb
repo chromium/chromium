@@ -87,8 +87,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2926676257163822632">Léleg aðgangsorð eru þau sem auðvelt er að giska á. Leyfðu Chrome <ph name="BEGIN_LINK" />að búa til traust aðgangsorð fyrir þig og muna þau<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome verður að fá leyfi fyrir myndavél fyrir þetta vefsvæði</translation>
 <translation id="2929907241665500097">Chrome uppfærðist ekki, eitthvað fór úrskeiðis. <ph name="BEGIN_LINK" />Lagaðu uppfærsluvandamál Chrome og uppfærslur sem mistókust.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Lokaáminning: Uppsetningin <ph name="BEGIN_BOLD" />eyðir öllu efni af harða diskinum<ph name="END_BOLD" />. Gættu þess að taka afrit af öllum gögnum sem þú vilt geyma.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Ekki er hægt að stöðva uppsetninguna eftir að hún hefst.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – innskráning á net – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome er í bakgrunnsstillingu.</translation>
 <translation id="3059710691562604940">Slökkt er á öruggri vefskoðun. Chrome mælir með því að kveikt sé á henni.</translation>
@@ -136,7 +134,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4251615635259297716">Tengja Chrome gögnin þín við þennan reikning?</translation>
 <translation id="4281844954008187215">Þjónustuskilmálar</translation>
 <translation id="4293420128516039005">Skráðu þig inn til að samstilla Chrome í tækjunum þínum og gera það að þínu</translation>
-<translation id="429583012151745428">Uppsetning stendur yfir. Ekki slökkva á tækinu. Uppsetningin ætti ekki að taka meira en tuttugu mínútur. Tækið slekkur sjálfkrafa á sér þegar uppsetningu er lokið.</translation>
 <translation id="4325083532956419387">Útgáfa Chrome OS</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-inn)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -182,7 +179,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöpp
 <translation id="5430073640787465221">Kjörstillingaskráin þín er skemmd eða ógild.
 
 Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
-<translation id="5486618155264784386">Setja upp Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome er að reyna að birta aðgangsorð.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-inn)</translation>
 <translation id="5657226924540934362">Ef stilling sést ekki á þessari síðu skaltu athuga <ph name="LINK_BEGIN" />
@@ -237,7 +233,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7155997830309522122">Ef svo er skaltu breyta vistaða aðgangsorðinu í Chrome í nýja aðgangsorðið.</translation>
 <translation id="7161904924553537242">Velkomin(n) í Google Chrome</translation>
 <translation id="7242029209006116544">Þú ert að skrá þig inn á stýrðan reikning og gefur stjórnanda hans stjórn yfir Google Chrome prófílnum þínum. Gögnin þín í Chrome, s.s. forrit, bókamerki, ferill, aðgangsorð og aðrar stillingar, verða tengd varanlega við <ph name="USER_NAME" />. Þú getur eytt þessum gögnum á stjórnborði Google reikninga en getur ekki tengt þau öðrum reikningi. Einnig getur þú búið til nýjan prófíl til að halda eldri gögnum þínum á Chrome aðskildum. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Uppsetning Chrome OS stendur yfir</translation>
 <translation id="7295052994004373688">Þetta tungumál er notað til að birta notendaviðmót Google Chrome</translation>
 <translation id="7296210096911315575">Mikilvægar notkunar- og öryggisupplýsingar</translation>
 <translation id="7308322188646931570">Chrome þarf aðgang að geymslu til að geta sótt skrár</translation>

@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">તમારા ઉપકરણો એક સાથે હોય ત્યારે વધુ કાર્યક્ષમ હોય છે</translation>
 <translation id="1119348796022671382">થીમ આધારિત કલર મોડ ઇન્ટરફેસને આછો રંગ આપવા માટે તમારા વૉલપેપરમાંથી મેળવવામાં આવેલા રંગોનો ઉપયોગ કરે છે.</translation>
 <translation id="112308213915226829">સ્વતઃછુપાવો શેલ્ફ</translation>
+<translation id="1142002900084379065">તાજેતરના ફોટા</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> માટે માહિતી સંવાદ ખોલો</translation>
 <translation id="1150989369772528668">કૅલેન્ડર</translation>
 <translation id="1153356358378277386">જોડી કરેલા ઉપકરણો</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">પૂર્ણ-સ્ક્રીન મૅગ્નિફાયર ચાલુ કર્યું. ટૉગલ કરીને તેને બંધ કરવા માટે ફરીથી Ctrl+Search+M દબાવો.</translation>
 <translation id="2302092602801625023">આ એકાઉન્ટ Family Link દ્વારા મેનેજ થાય છે</translation>
 <translation id="2303600792989757991">ટોગલ વિન્ડો વિહંગાવલોકન</translation>
+<translation id="2318576281648121272">આજે <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">એક અક્ષર પાછળ જાઓ</translation>
 <translation id="2339073806695260576">એક નોંધ અથવા સ્ક્રીનશૉટ લેવા, લેઝર પૉઇન્ટર અથવા મૅગ્નિફાયિંગ ગ્લાસનો ઉપયોગ કરવા માટે શેલ્ફ પરના સ્ટાઇલસ બટન પર ટૅપ કરો.</translation>
 <translation id="2341729377289034582">ઊભી સ્થિતિ પર લૉક કરેલું છે</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
 <translation id="24452542372838207">નોટિફિકેશન વિસ્તૃત કરો</translation>
 <translation id="2450205753526923158">સ્ક્રીનશૉટ મોડ</translation>
+<translation id="2456008742792828469">કૅલેન્ડર, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">રિઝોલ્યુશન કન્ફર્મ કરો</translation>
 <translation id="2475982808118771221">કોઈ ભૂલ આવી છે</translation>
 <translation id="2482878487686419369">નોટિફિકેશનો</translation>
@@ -278,6 +281,7 @@
 <translation id="3100274880412651815">કૅપ્ચર મોડ છોડી દો</translation>
 <translation id="3105917916468784889">સ્ક્રીનશૉટ લો</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">સૂચન કાઢી નાખો</translation>
 <translation id="3126069444801937830">અપડેટ કરવા માટે પુનઃપ્રારંભ કરો</translation>
 <translation id="3139942575505304791">ડેસ્ક 1</translation>
 <translation id="315116470104423982">મોબાઇલ ડેટા</translation>
@@ -317,6 +321,7 @@
 <translation id="3413817803639110246">હજુ સુધી જોવા માટે કંઈ નથી</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />માંથી ડિસ્કનેક્ટ કરો</translation>
 <translation id="3430396595145920809">પાછળ જવા માટે, જમણેથી ડાબે સ્વાઇપ કરો</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">રિમાઇન્ડરમાં ફેરફાર કરો</translation>
 <translation id="3435967511775410570">ફિંગરપ્રિન્ટ ઓળખવામાં આવી છે</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@
 <translation id="4642092649622328492">આંશિક સ્ક્રીનશૉટ લો</translation>
 <translation id="4659419629803378708">ChromeVox સક્ષમ કર્યું</translation>
 <translation id="4665114317261903604">'ખલેલ પાડશો નહીં'ને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081"><ph name="FILENAME" /> ડાઉનલોડ કરી રહ્યાં છીએ</translation>
 <translation id="4696813013609194136">માતાપિતાના કોડ વડે ડિવાઇસને અનલૉક કરો</translation>
 <translation id="4702647871202761252">પ્રાઇવસી સ્ક્રીન બંધ છે</translation>
 <translation id="4706121060329443414">થોડા સમય પછી ડાઉનલોડ કરવાનો પ્રયાસ કરવામાં આવશે. હાલ પૂરતું સ્પીચ પ્રક્રિયા કરવા માટે Googleને મોકલવામાં આવશે.</translation>
@@ -640,6 +646,7 @@
 <translation id="5744083938413354016">ખેંચવાને ટૅપ કરો</translation>
 <translation id="5745612484876805746">સૂર્યાસ્ત વખતે રાત્રિ પ્રકાશ ઑટોમૅટિક રીતે ચાલુ થાય છે</translation>
 <translation id="5750765938512549687">બ્લૂટૂથ બંધ છે</translation>
+<translation id="576341972084747908">જોખમી <ph name="FILENAME" /> ડાઉનલોડ કરો</translation>
 <translation id="576453121877257266">રાત્રિ પ્રકાશ ચાલુ છે.</translation>
 <translation id="5769373120130404283">પ્રાઇવસી સ્ક્રીન</translation>
 <translation id="5777841717266010279">સ્ક્રીન શેરિંગ રોકીએ?</translation>
@@ -781,6 +788,7 @@
 <translation id="6852052252232534364">ક્લિકથી સક્રિય</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> સેકન્ડ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{એક અંક બાકી}one{# અંક બાકી}other{# અંક બાકી}}</translation>
+<translation id="6867938213751067702"><ph name="FILENAME" />નું ડાઉનલોડ થોભાવ્યું</translation>
 <translation id="6878400149835617132">શૉર્ટકટ બંધ કર્યો</translation>
 <translation id="6886172995547742638">તમારા <ph name="DEVICE_TYPE" />માં નબળું કાર્યપ્રદર્શન થઈ શકે છે. પ્રમાણિત <ph name="PREFERRED_MINIMUM_POWER" />W અથવા તેથી વધુના USB-C પાવર અડૅપ્ટરનો ઉપયોગ કરો.</translation>
 <translation id="688631446150864480">વિન્ડો સ્વિચ કરવા માટે, નીચેની ઍરો કી દબાવો</translation>

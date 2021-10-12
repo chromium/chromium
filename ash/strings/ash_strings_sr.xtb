@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">Уређаји заједно функционишу још боље</translation>
 <translation id="1119348796022671382">Режим тематских боја користи боје изведене из позадине да би се благо обојио интефејс.</translation>
 <translation id="112308213915226829">Аутоматски сакриј полицу</translation>
+<translation id="1142002900084379065">Недавне слике</translation>
 <translation id="1148499908455722006">Отвара дијалог са информацијама за корисника <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Календар</translation>
 <translation id="1153356358378277386">Упарени уређаји</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">Лупа за цео екран је омогућена. Поново притисните Ctrl + тастер за претрагу + M да бисте је искључили.</translation>
 <translation id="2302092602801625023">Овим налогом управља Family Link</translation>
 <translation id="2303600792989757991">Укључи/искључи преглед прозора</translation>
+<translation id="2318576281648121272">Данас <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Слово уназад</translation>
 <translation id="2339073806695260576">Додирните дугме писаљке на полици да бисте направили белешку и снимак екрана и да бисте користили ласерски показивач или лупу.</translation>
 <translation id="2341729377289034582">Вертикални приказ је закључан</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">Прикажи лозинку</translation>
 <translation id="24452542372838207">Прошири обавештење</translation>
 <translation id="2450205753526923158">Режим снимка екрана</translation>
+<translation id="2456008742792828469">Календар, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Потврдите резолуцију</translation>
 <translation id="2475982808118771221">Дошло је до грешке</translation>
 <translation id="2482878487686419369">Обавештења</translation>
@@ -278,6 +281,7 @@
 <translation id="3100274880412651815">Одбаците режим снимања</translation>
 <translation id="3105917916468784889">Сними екран</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Уклони предлог</translation>
 <translation id="3126069444801937830">Покрените поново да бисте ажурирали</translation>
 <translation id="3139942575505304791">Радна површина 1</translation>
 <translation id="315116470104423982">Мобилни подаци</translation>
@@ -317,6 +321,7 @@
 <translation id="3413817803639110246">Још увек нема шта да се види</translation>
 <translation id="3428447136709161042">Прекините везу са мрежом <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Превуците са десне стране да бисте се вратили</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Измени подсетник</translation>
 <translation id="3435967511775410570">Отисак је препознат</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@
 <translation id="4642092649622328492">Направите делимичан снимак екрана</translation>
 <translation id="4659419629803378708">ChromeVox је омогућен</translation>
 <translation id="4665114317261903604">Укључите/искључите режим Не узнемиравај. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Преузима се фајл <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Откључајте уређај помоћу кода родитеља</translation>
 <translation id="4702647871202761252">Екран за приватност је искључен</translation>
 <translation id="4706121060329443414">Пробаћемо преузимање касније. Говор ће за сада бити послат Google-у ради обраде.</translation>
@@ -640,6 +646,7 @@
 <translation id="5744083938413354016">Превлачење додиром</translation>
 <translation id="5745612484876805746">Ноћно светло се аутоматски укључује када сунце зађе</translation>
 <translation id="5750765938512549687">Bluetooth је искључен</translation>
+<translation id="576341972084747908">Преузимате опасан фајл <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Ноћно светло је укључено.</translation>
 <translation id="5769373120130404283">Екран за приватност</translation>
 <translation id="5777841717266010279">Желите ли да прекинете дељење екрана?</translation>
@@ -781,6 +788,7 @@
 <translation id="6852052252232534364">Активирајте</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостала је једна цифра}one{Преостала је # цифра}few{Преостале су # цифре}other{Преостало је # цифара}}</translation>
+<translation id="6867938213751067702">Преузимање је паузирано <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Пречица је искључена</translation>
 <translation id="6886172995547742638">То може негативно да утиче на рад уређаја <ph name="DEVICE_TYPE" />. Користите сертификовани USB-C адаптер од <ph name="PREFERRED_MINIMUM_POWER" /> W или јачи.</translation>
 <translation id="688631446150864480">Притискајте тастер са стрелицом надоле да бисте мењали прозоре</translation>

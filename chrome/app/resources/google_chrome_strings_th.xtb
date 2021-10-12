@@ -83,8 +83,6 @@
 <translation id="2926676257163822632">รหัสผ่านที่ไม่รัดกุมนั้นคาดเดาได้ง่าย ให้ Chrome <ph name="BEGIN_LINK" />สร้างและจดจำรหัสผ่านที่รัดกุมให้คุณ<ph name="END_LINK" /></translation>
 <translation id="2926952073016206995">Chrome ต้องการสิทธิ์เข้าถึงกล้องสำหรับเว็บไซต์นี้</translation>
 <translation id="2929907241665500097">Chrome ไม่ได้อัปเดตเนื่องจากเกิดข้อผิดพลาด <ph name="BEGIN_LINK" />โปรดแก้ปัญหาการอัปเดต Chrome และการอัปเดตที่ไม่สำเร็จ<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />การช่วยเตือนครั้งสุดท้าย: การติดตั้ง<ph name="BEGIN_BOLD" />จะลบฮาร์ดไดรฟ์ทั้งหมด<ph name="END_BOLD" /> โปรดตรวจสอบว่าคุณสำรองข้อมูลที่สำคัญแล้ว<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />เมื่อเริ่มการติดตั้งแล้วจะยกเลิกไม่ได้<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - หน้าลงชื่อเข้าใช้ของเครือข่าย - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome กำลังอยู่ในโหมดทำงานในพื้นหลัง</translation>
 <translation id="3059710691562604940">Google Safe Browsing ปิดอยู่ Chrome ขอแนะนำให้เปิด</translation>
@@ -132,7 +130,6 @@
 <translation id="4251615635259297716">เชื่อมโยงข้อมูล Chrome กับบัญชีนี้ไหม</translation>
 <translation id="4281844954008187215">ข้อกำหนดในการให้บริการ</translation>
 <translation id="4293420128516039005">ลงชื่อเข้าใช้เพื่อซิงค์และปรับเปลี่ยน Chrome ในอุปกรณ์ต่างๆ</translation>
-<translation id="429583012151745428">อยู่ระหว่างการติดตั้ง โปรดอย่าปิดอุปกรณ์ การติดตั้งน่าจะใช้เวลาไม่เกิน 20 นาที อุปกรณ์จะปิดโดยอัตโนมัติหลังการติดตั้ง</translation>
 <translation id="4325083532956419387">เวอร์ชัน Chrome OS</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -174,7 +171,6 @@
 <translation id="5386244825306882791">อีกทั้งยังควบคุมหน้าที่จะแสดงเมื่อคุณเปิด Chrome หรือทำการค้นหาจากแถบอเนกประสงค์ด้วย</translation>
 <translation id="5394833366792865639">แชร์แท็บ Chrome</translation>
 <translation id="5430073640787465221">ไฟล์ค่ากำหนดของคุณขัดข้องหรือไม่ถูกต้อง Google Chrome ไม่สามารถกู้คืนการตั้งค่าของคุณได้</translation>
-<translation id="5486618155264784386">ติดตั้ง Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome กำลังพยายามแสดงรหัสผ่าน</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">หากการตั้งค่าไม่แสดงในหน้านี้ โปรดดูที่<ph name="LINK_BEGIN" />การตั้งค่า Chrome OS<ph name="LINK_END" /></translation>
@@ -228,7 +224,6 @@
 <translation id="7155997830309522122">หากเปลี่ยนแล้ว โปรดแก้ไขรหัสผ่านที่บันทึกไว้ใน Chrome ให้ตรงกับรหัสผ่านใหม่</translation>
 <translation id="7161904924553537242">ยินดีต้อนรับสู่ Google Chrome</translation>
 <translation id="7242029209006116544">คุณกำลังลงชื่อเข้าใช้ด้วยบัญชีที่จัดการ และให้การควบคุมระดับผู้ดูแลระบบของบัญชีดังกล่าวเหนือโปรไฟล์ Google Chrome ของคุณ ข้อมูล Chrome เช่น แอป บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จะเชื่อมโยงอย่างถาวรกับ <ph name="USER_NAME" /> คุณจะสามารถลบข้อมูลนี้ผ่านทางแผงควบคุมบัญชี Google แต่คุณจะไม่สามารถเชื่อมโยงข้อมูลนี้กับบัญชีอื่น คุณสามารถเลือกที่จะสร้างโปรไฟล์ใหม่เพื่อแยกเก็บข้อมูล Chrome ที่มีอยู่ของคุณ <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">กำลังติดตั้ง Chrome OS</translation>
 <translation id="7295052994004373688">นี่เป็นภาษาที่ใช้ในการแสดง UI ของ Google Chrome</translation>
 <translation id="7296210096911315575">ข้อมูลสำคัญเกี่ยวกับการใช้งานและความปลอดภัย</translation>
 <translation id="7308322188646931570">Chrome ต้องการสิทธิ์เข้าถึงพื้นที่เก็บข้อมูลเพื่อดาวน์โหลดไฟล์</translation>

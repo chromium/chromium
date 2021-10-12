@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Извеждане на запитване, когато сайт иска да открива устройства с Bluetooth в близост (препоръчително)</translation>
 <translation id="2315043854645842844">Избраният сертификат от страната на клиента не се поддържа от операционната система.</translation>
 <translation id="2359808026110333948">Напред</translation>
+<translation id="2379925928934107488">Прилагане на тъмната тема към сайтовете, стига да е възможно и когато Chrome използва тъмната тема</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е разрешен}other{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е разрешен}}</translation>
 <translation id="2434158240863470628">Изтеглянето завърши <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Достъпът до местоположението е изключен и за това устройство. Включете го от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Разгънато – кликнете за свиване.</translation>
 <translation id="2586657967955657006">Буферна памет</translation>
+<translation id="2597457036804169544">Без прилагане на тъмната тема към сайтовете</translation>
 <translation id="2621115761605608342">Разрешаване на JavaScript за конкретен сайт.</translation>
 <translation id="2653659639078652383">Изпращане</translation>
 <translation id="2677748264148917807">Излизане</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Спиране на звука, възпроизвеждан от сайтовете</translation>
 <translation id="3744111561329211289">Синхронизиране на заден план</translation>
 <translation id="3763247130972274048">Докоснете два пъти левия или десния край на прозореца с видеоклипа, за да пропуснете 10 сек</translation>
+<translation id="3797520601150691162">Без прилагане на тъмната тема към конкретен сайт</translation>
 <translation id="381841723434055211">Телефонни номера</translation>
 <translation id="3835233591525155343">Използването на устройството ви</translation>
 <translation id="385051799172605136">Назад</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">Сайтовете не могат да извеждат подкани за изпращане на известия</translation>
 <translation id="5516455585884385570">Отваряне на настройките за известия</translation>
 <translation id="5527111080432883924">Извеждане на запитване, преди да се разреши на сайтовете да четат текста и изображенията от буферната памет (препоръчително)</translation>
+<translation id="5553374991681107062">Най-новите</translation>
 <translation id="5556459405103347317">Повторно зареждане</translation>
 <translation id="5596627076506792578">Още опции</translation>
 <translation id="5649053991847567735">Автоматични изтегляния</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">Обикновено блокирате известията. За да разрешите, докоснете „Подробности“.</translation>
 <translation id="7423098979219808738">Първо ще се извежда запитване</translation>
 <translation id="7423538860840206698">Достъпът за четене до буферната памет е блокиран</translation>
+<translation id="7425915948813553151">Тъмна тема за сайтовете</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Сайт използва микрофона ви</translation>
 <translation id="7561196759112975576">Винаги</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">Наистина ли искате да изчистите всички локални данни, включително „бисквитките“, и да нулирате всички разрешения за този уебсайт?</translation>
 <translation id="8007176423574883786">Изключено за това устройство</translation>
 <translation id="802154636333426148">Изтеглянето не бе успешно</translation>
+<translation id="8042586301629853791">Сортиране по:</translation>
 <translation id="8067883171444229417">Възпроизвеждане на видеоклипа</translation>
 <translation id="8068648041423924542">Сертификатът не може да бъде избран.</translation>
 <translation id="8087000398470557479">Това съдържание се показва от Google, а източникът му е <ph name="DOMAIN_NAME" />.</translation>

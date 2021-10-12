@@ -57,6 +57,7 @@
 <translation id="1310482092992808703">گروه‌بندی برگه‌ها</translation>
 <translation id="1311657260431405215">این رمزینه پاسخ‌سریع یک نشانی وب نیست: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
+<translation id="1320912611264252795">پوشه‌های جریان ذخیره نشانک به‌صورت کامل باز شده است</translation>
 <translation id="1327257854815634930">سابقه «پیمایش» باز است.</translation>
 <translation id="1331212799747679585">‏Chrome به‌روزرسانی نشد. گزینه‌های دیگر</translation>
 <translation id="1332501820983677155">‏میان‌برهای ویژه Google Chrome</translation>
@@ -83,6 +84,7 @@
 <translation id="1466383950273130737">‏انتخاب زبان Chrome</translation>
 <translation id="147113415845704694">بپرسید «آب‌وهوای امروز چطور است؟»</translation>
 <translation id="1477626028522505441">به‌دلیل مشکلاتی در سرور، بارگیری <ph name="FILE_NAME" /> انجام نشد.</translation>
+<translation id="148482509007564431">جریان ذخیره نشانک</translation>
 <translation id="1492417797159476138">قبلاً این نام کاربری را برای این سایت ذخیره کرده‌اید</translation>
 <translation id="1493287004536771723"><ph name="SITE_NAME" /> را دنبال می‌کنید</translation>
 <translation id="1506061864768559482">موتور جستجو</translation>
@@ -180,6 +182,7 @@
 <translation id="2139186145475833000">افزودن به صفحه اصلی</translation>
 <translation id="2141396931810938595">براساس میزان استفاده شما</translation>
 <translation id="214888715418183969">‏انتخاب کنید می‌خواهید چه چیزهایی با Chrome هم‌رسانی شود. از سنجه‌هایی که هم‌رسانی می‌کنید برای کمک به بهبود ویژگی‌ها، عملکرد، و پایداری Chrome استفاده خواهد شد.</translation>
+<translation id="2149973817440762519">ویرایش نشانک</translation>
 <translation id="2154484045852737596">ویرایش کارت</translation>
 <translation id="2154710561487035718">کپی نشانی وب</translation>
 <translation id="2156074688469523661">سایت‌های باقی‌مانده (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -262,6 +265,7 @@
 <translation id="2631006050119455616">ذخیره شده</translation>
 <translation id="2645657967708199252">اتصال <ph name="CONNECTION_TYPE" /> ممکن است سرعت بارگیری شما را کاهش دهد</translation>
 <translation id="2647434099613338025">افزودن زبان</translation>
+<translation id="2649068648233607930">مرورگرتان توسط <ph name="DOMAIN" /> مدیریت می‌شود</translation>
 <translation id="2650751991977523696">فایل دوباره بارگیری شود؟</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# فایل صوتی}one{# فایل صوتی}other{# فایل صوتی}}</translation>
 <translation id="2656405586795711023">برنامه‌های وب</translation>
@@ -403,6 +407,7 @@
 <translation id="3429160811076349561">ویژگی‌های آزمایشی خاموش است</translation>
 <translation id="3440975416244667276">برای دریافت اطلاعات مرتبط بیشتر، لمس کنید و نگه دارید</translation>
 <translation id="3443221991560634068">تازه‌سازی صفحه کنونی</translation>
+<translation id="3444179773590444986">مایلید بازخوردتان را درباره طرح زمینه تیره برای سایت‌ها هم‌رسانی کنید؟</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{یک بارگیری زمان‌بندی شد}one{# بارگیری زمان‌بندی شد}other{# بارگیری زمان‌بندی شد}}</translation>
 <translation id="3478363558367712427">می‌توانید موتور جستجویتان را انتخاب کنید</translation>
 <translation id="3493531032208478708">درباره محتوای پیشنهادی <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -427,6 +432,7 @@
 <translation id="3602290021589620013">پیش‌نمایش</translation>
 <translation id="3616113530831147358">صوتی</translation>
 <translation id="3622349720008044802">مدیریت پنجره‌ها</translation>
+<translation id="3624977496395967031">برای باز کردن گزینه‌های مرتب‌سازی، کلیک کنید</translation>
 <translation id="3631987586758005671">درحال هم‌رسانی با <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">نمایش گذرواژه</translation>
 <translation id="363596933471559332">با استفاده از اعتبارنامه‌های ذخیره شده، به‌طور خودکار به سیستم وب‌سایت‌ها وارد شوید. وقتی این قابلیت خاموش است، هر بار قبل از وارد شدن به سیستم وب‌سایت از شما خواسته می‌شود اطلاعات را تأیید کنید.</translation>
@@ -496,7 +502,7 @@
 <translation id="4084682180776658562">نشانک</translation>
 <translation id="4084712963632273211">‏از<ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />توسط Google ارائه می‌شود<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">داده‌های برنامه پاک شود؟</translation>
-<translation id="4095189195365058471">خواندن در فرصتی دیگر <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
+<translation id="4096227151372679484">جریان ذخیره نشانک به‌صورت نیمه باز شده است</translation>
 <translation id="4099578267706723511">‏‫با ارسال آمار کاربرد و گزارش‌های خرابی به Google، به بهتر شدن Chrome کمک کنید.</translation>
 <translation id="410351446219883937">پخش خودکار</translation>
 <translation id="4108314971463891922">دنبال کردن</translation>
@@ -585,6 +591,7 @@
 <translation id="4663499661119906179">دیدن سایت‌ها و داستان‌های برتر ویژه شما</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> نشانک حذف شد</translation>
 <translation id="4668347365065281350">همه داده‌هایی که سایت‌ها ذخیره کرده‌اند، ازجمله کوکی‌ها و دیگر داده‌هایی که به‌طور محلی ذخیره شده‌اند</translation>
+<translation id="4678082183394354975">‏طرح زمینه تیره برای سایت‌ها در Chrome روشن است</translation>
 <translation id="4684427112815847243">همگام‌سازی همه</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}one{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}}</translation>
 <translation id="4696983787092045100">ارسال نوشتار به دستگاه‌های شما</translation>
@@ -605,6 +612,7 @@
 <translation id="4766678251456904326">افزودن حساب به دستگاه</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{۱ بارگیری زمان‌بندی شد.}one{# بارگیری زمان‌بندی شد.}other{# بارگیری زمان‌بندی شد.}}</translation>
 <translation id="4791358705705538979">به شما کمک می‌کند برخی کارها، مثل تسویه‌حساب، را در وب انجام دهید</translation>
+<translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">‏رمزگذاری گذرعبارت شامل روش‌های پرداخت و نشانی‌های موجود در Google Pay نمی‌شود.
 
 برای تغییر این تنظیم، <ph name="BEGIN_LINK" />همگام‌سازی را بازنشانی کنید<ph name="END_LINK" /></translation>
@@ -628,6 +636,7 @@
 <translation id="4885273946141277891">‏این تعداد از نسخه‌های Chrome پشتیبانی نمی‌شود.</translation>
 <translation id="4905823827770127520">افزودن پیوند صفحه</translation>
 <translation id="4908869848243824489">‏«یافته‌ها» از Google</translation>
+<translation id="4909709702739934280">سرپرست شما مرورگرتان را مدیریت می‌کند</translation>
 <translation id="4910889077668685004">برنامه‌های پرداخت</translation>
 <translation id="4912413785358399818">انتقال برگه</translation>
 <translation id="4913161338056004800">بازنشانی آمار</translation>
@@ -641,7 +650,6 @@
 <translation id="4943872375798546930">نتیجه‌ای پیدا نشد</translation>
 <translation id="4957722034734105353">اطلاعات بیشتر...</translation>
 <translation id="4961107849584082341">ترجمه این صفحه به زبان‌های دیگر</translation>
-<translation id="4970824347203572753">در مکان شما دردسترس نیست</translation>
 <translation id="4971735654804503942">‏محافظت سریع‌تر و پیشگیرانه دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک. رخنه در گذرواژه را به شما هشدار می‌دهد. عملکرد این ویژگی متکی بر ارسال داده‌های مرور به Google‌ است.</translation>
 <translation id="497421865427891073">جلو رفتن</translation>
 <translation id="4988210275050210843">درحال بارگیری فایل (<ph name="MEGABYTES" />).</translation>
@@ -725,7 +733,6 @@
 <translation id="5483197086164197190">‏پیمایش در Chrome</translation>
 <translation id="5487521232677179737">پاک کردن داده‌ها</translation>
 <translation id="549025011754480756">نحوه جستجو با صدایتان</translation>
-<translation id="5500777121964041360">ممکن است در مکان شما دردسترس نباشد</translation>
 <translation id="5512137114520586844"><ph name="PARENT_NAME" /> این حساب را مدیریت می‌کند.</translation>
 <translation id="5514904542973294328">توسط سرپرست این دستگاه غیرفعال شده است</translation>
 <translation id="5515439363601853141">برای مشاهده گذرواژه‌تان، قفل صفحه را باز کنید</translation>
@@ -768,6 +775,7 @@
 <translation id="5754350196967618083">«یافته‌ها» بازخوانی نمی‌شود</translation>
 <translation id="5763382633136178763">برگه‌های ناشناس</translation>
 <translation id="5763514718066511291">برای کپی کردن نشانی وب این برنامه ضربه بزنید</translation>
+<translation id="5765517223145864268">درباره تجربه‌تان به ما بگویید. یا <ph name="BEGIN_LINK" />تنظیماتتان را تغییر دهید<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">توضیح:</translation>
 <translation id="5767013862801005129"><ph name="TAB_TITLE" /> بازیابی شد، برگه</translation>
 <translation id="5776970333778123608">داده‌های غیرمهم</translation>
@@ -879,7 +887,6 @@
 <translation id="6364438453358674297">پیشنهاد از سابقه حذف شود؟</translation>
 <translation id="6378173571450987352">جزئیات: مرتب‌شده براساس مقدار داده استفاده‌شده</translation>
 <translation id="6379829913050047669">‏<ph name="APP_NAME" /> در Chrome باز می‌شود. با ادامه دادن، با <ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Google Chrome و سیستم‌عامل Chrome<ph name="END_LINK2" /> موافقت می‌کنید.</translation>
-<translation id="6381421346744604172">تاریک کردن وب‌سایت‌ها</translation>
 <translation id="6395288395575013217">پیوند</translation>
 <translation id="6397616442223433927">دوباره آنلاین شدید</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> در <ph name="VIOLATED_URL" /></translation>
@@ -956,6 +963,7 @@
 <translation id="6738516213925468394">داده‌ها با  <ph name="BEGIN_LINK" />گذرعبارت همگام‌سازی<ph name="END_LINK" /> شما در <ph name="TIME" /> رمز می‌شود. برای شروع همگام‌سازی، آن را وارد کنید.</translation>
 <translation id="6738867403308150051">در حال بارگیری…</translation>
 <translation id="6751521182688001123">به‌سرعت برگه جدیدی باز کنید. برای ویرایش این میان‌بر، لمس کنید و نگه دارید.</translation>
+<translation id="6756507620369789050">هم‌رسانی بازخورد</translation>
 <translation id="6767294960381293877">فهرست نیمه‌باز دستگاه‌هایی که می‌توان با آن‌ها برگه هم‌رسانی کرد.</translation>
 <translation id="6783942555455976443">این صفحه را برای خواندن در فرصتی دیگر ذخیره کنید و یادآوری دریافت کنید</translation>
 <translation id="6795633245022906657">به‌سرعت برگه جدیدی باز کنید. برای ویرایش این میان‌بر، به «تنظیمات» بروید.</translation>
@@ -1047,6 +1055,7 @@
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="7352939065658542140">ویدیو</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{اشتراک‌گذاری ۱ مورد انتخاب‌شده}one{اشتراک‌گذاری # مورد انتخاب‌شده}other{اشتراک‌گذاری # مورد انتخاب‌شده}}</translation>
+<translation id="7356631068872238169">حذف از «فهرست خواندن»</translation>
 <translation id="7359002509206457351">دسترسی به روش‌های پرداخت</translation>
 <translation id="7375125077091615385">نوع:</translation>
 <translation id="7376560087009844242">با لحاظ کردن بخش بیشتری از نوشتار صفحه، ممکن هنگام استفاده از «لمس کردن برای جستجو» نتایج بهتری دریافت کنید. همواره می‌توانید با رفتن به <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> این مورد را تغییر دهید.</translation>
@@ -1153,6 +1162,7 @@
 <translation id="7926975587469166629">نام مستعار کارت</translation>
 <translation id="7929962904089429003">باز کردن منو</translation>
 <translation id="7930998711684428189">اگر گذرواژه‌ها به‌دلیل نقض داده لو رفته باشد، به شما هشدار می‌دهد.</translation>
+<translation id="7939485076072265087">ایجاد کارت سبْک‌دار با نوشتار برجسته</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> قدیمی است.</translation>
 <translation id="7944772052836377867">همگام‌سازی باید هویتتان را تأیید کند</translation>
 <translation id="7947953824732555851">پذیرش و ورود به سیستم</translation>
@@ -1210,7 +1220,6 @@
 <translation id="8218052821161047641">صفحه سریع</translation>
 <translation id="8218622182176210845">مدیریت حساب</translation>
 <translation id="8223642481677794647">منوی کارت فید</translation>
-<translation id="8224471946457685718">‏بارگیری مقالات برای شما با Wi-Fi</translation>
 <translation id="8250920743982581267">اسناد</translation>
 <translation id="825412236959742607">‏این صفحه حافظه خیلی زیادی استفاده می‌کند، به‌همین‌دلیل Chrome برخی از محتوا را پاک کرد.</translation>
 <translation id="8260126382462817229">دوباره سعی کنید به سیستم وارد شوید</translation>
@@ -1218,6 +1227,7 @@
 <translation id="8266862848225348053">مکان بارگیری</translation>
 <translation id="8274165955039650276">مشاهده بارگیری‌ها</translation>
 <translation id="8281886186245836920">رد شدن</translation>
+<translation id="8282297628636750033">استفاده از طرح زمینه تیره برای سایت‌ها، هرگاه ممکن باشد</translation>
 <translation id="8284326494547611709">زیرنویس‌ها</translation>
 <translation id="829672787777123339">درحال اتصال به دستگاه…</translation>
 <translation id="8310344678080805313">برگه‌های استاندارد</translation>
@@ -1272,6 +1282,7 @@
 <translation id="8562452229998620586">گذرواژه‌های ذخیره شده در اینجا ظاهر می‌شود.</translation>
 <translation id="856481929701340285">درخواست نمای رایانه</translation>
 <translation id="8569404424186215731">از <ph name="DATE" /></translation>
+<translation id="8570677896027847510">نمی‌توان این فایل را به‌طور ایمن بارگیری کرد</translation>
 <translation id="8571213806525832805">۴ هفته گذشته</translation>
 <translation id="8572344201470131220">تصویر کپی شد</translation>
 <translation id="8583805026567836021">پاک‌سازی داده‌های حساب</translation>
@@ -1324,6 +1335,7 @@
 <translation id="8912362522468806198">‏حساب Google</translation>
 <translation id="8920114477895755567">در انتظار اطلاعات والدین.</translation>
 <translation id="8922289737868596582">برای استفاده از صفحه‌ها در حالت آفلاین، آن‌ها را با دکمه «گزینه‌های بیشتر» بارگیری کنید</translation>
+<translation id="8924575305646776101"><ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> آماده است</translation>
 <translation id="8928626432984354940">فهرست پوشه‌های نشانک تا نیمه باز شد</translation>
 <translation id="8937267401510745927">‏برای کمک به انجام کارها، Google نشانی‌های وب و محتوای سایت‌هایی را که در آن‌ها از «دستیار» استفاده می‌کنید، و همچنین اطلاعاتی را که ازطریق «دستیار» ارسال می‌کنید دریافت خواهد کرد. ممکن است این اطلاعات در «حساب Google» شما ذخیره شود. می‌توانید «دستیار» را در «تنظیمات Chrome» خاموش کنید.</translation>
@@ -1349,6 +1361,7 @@
 <translation id="9063523880881406963">خاموش کردن درخواست سایت رایانه‌ای</translation>
 <translation id="9065203028668620118">ویرایش</translation>
 <translation id="9065383040763568503">‏داده‌های ذخیره‌شده‌ای که ازنظر Chrome مهم نیستند، (مثل سایت‌هایی که هیچ تنظیماتی ذخیره نکرده‌اند یا سایت‌هایی که زیاد از آن‌ها بازدید نمی‌کنید)</translation>
+<translation id="906781307897697745">در <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">صفحه خوانده‌نشده‌ای وجود ندارد</translation>
 <translation id="9070377983101773829">شروع جستجوی گفتاری</translation>
 <translation id="9074336505530349563">‏برای اینکه Google محتوای شخصی‌شده به شما پیشنهاد دهد، به سیستم وارده شوید و همگام‌سازی را روشن کنید</translation>
@@ -1358,8 +1371,10 @@
 <translation id="9086455579313502267">دسترسی به شبکه امکان‌پذیر نیست</translation>
 <translation id="9100505651305367705">پیشنهاد نمایش مقالات در نمای ساده‌شده، درصورت پشتیبانی</translation>
 <translation id="9100610230175265781">گذرعبارت لازم است</translation>
+<translation id="9101137867221042551">مدیریت</translation>
 <translation id="9102803872260866941">برگه پیش‌نمایش باز است</translation>
 <translation id="9104217018994036254">فهرست دستگاه‌هایی که می‌توان با آن‌ها برگه هم‌رسانی کرد.</translation>
+<translation id="9106148373857059373">جریان ذخیره نشانک بسته شده است</translation>
 <translation id="9108312223223904744">«تلفن» به‌عنوان «پشتیبان کلید امنیتی»</translation>
 <translation id="9108808586816295166">‏ممکن است DNS ایمن همیشه در دسترس نباشد</translation>
 <translation id="9133397713400217035">کاوش درحالت آفلاین</translation>

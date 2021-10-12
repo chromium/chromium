@@ -23,6 +23,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1104621072296271835">Cihazlarınız birlikdə daha yaxşı işləyir</translation>
 <translation id="1119348796022671382">Temalı rəng rejimi interfeysi azca rəngləndirmək üçün divar kağızından çıxarılmış rəngləri istifadə edir.</translation>
 <translation id="112308213915226829">Rəfi avtomatik gizlədin</translation>
+<translation id="1142002900084379065">Son fotolar</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> üçün məlumat dialoqunu açın</translation>
 <translation id="1150989369772528668">Təqvim</translation>
 <translation id="1153356358378277386">Birləşmiş cihazlar</translation>
@@ -179,6 +180,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2298170939937364391">Tam Ekran Böyüdücüsü aktiv edildi. Rejimi deaktiv etmək üçün Ctrl+Search+M düymələrinə basın.</translation>
 <translation id="2302092602801625023">Bu hesab Family Link tərəfindən idarə olunur</translation>
 <translation id="2303600792989757991">Pəncərə ümumi görünüşünə keçirin</translation>
+<translation id="2318576281648121272">Bu gün <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Hərf üzrə geri qayıdın</translation>
 <translation id="2339073806695260576">Qeyd götürmək, skrinşot çəkmək assistent, lazer göstəricisi və ya lupadan istifadə etmək üçün fırça düyməsinə klikləyin.</translation>
 <translation id="2341729377289034582">Şaquli formada kilidləndi</translation>
@@ -200,6 +202,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2435457462613246316">Parol görünsün</translation>
 <translation id="24452542372838207">Bildirişi genişləndirin</translation>
 <translation id="2450205753526923158">Skrinşot rejimi</translation>
+<translation id="2456008742792828469">Təqvim, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Əksetmə qabiliyyətini təsdiq edin</translation>
 <translation id="2475982808118771221">Xəta baş verdi</translation>
 <translation id="2482878487686419369">Bildirişlər</translation>
@@ -278,6 +281,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3100274880412651815">Çəkim rejimini qapadın</translation>
 <translation id="3105917916468784889">Skrinşot çəkin</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Təklifi Silin</translation>
 <translation id="3126069444801937830">Güncəlləşmək üçün yenidən başladın</translation>
 <translation id="3139942575505304791">Masa 1</translation>
 <translation id="315116470104423982">Mobil data</translation>
@@ -317,6 +321,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3413817803639110246">Göstərmək üçün bildiriş yoxdur</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> ilə bağlantı kəsilsin</translation>
 <translation id="3430396595145920809">Geri qayıtmaq üçün sağdan sürüşdürün</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Xatırlatmaya düzəliş edin</translation>
 <translation id="3435967511775410570">Barmaq izi tanındı</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4642092649622328492">Natamam skrinşot çəkin</translation>
 <translation id="4659419629803378708">ChromeVox aktiv edildi</translation>
 <translation id="4665114317261903604">"Narahat etməyin" rejiminə keçin. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081"><ph name="FILENAME" /> endirilir</translation>
 <translation id="4696813013609194136">Cihazı valideyn kodu ilə kiliddən çıxarın</translation>
 <translation id="4702647871202761252">Məxfilik ekranı deaktivdir</translation>
 <translation id="4706121060329443414">Endirməyə daha sonra cəhd ediləcək. Danışıq hələlik emal üçün Google'a göndəriləcək.</translation>
@@ -640,6 +646,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5744083938413354016">Klikləyərək çəkmək</translation>
 <translation id="5745612484876805746">Gecə İşığı gün batanda avtomatik aktiv edilir</translation>
 <translation id="5750765938512549687">Bluetooth deaktivdir</translation>
+<translation id="576341972084747908"><ph name="FILENAME" /> endirilməsi təhlükəlidir</translation>
 <translation id="576453121877257266">Gecə İşığı aktivdir.</translation>
 <translation id="5769373120130404283">Məxfilik ekranı</translation>
 <translation id="5777841717266010279">Ekran paylaşımı dayandırılsın?</translation>
@@ -781,6 +788,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6852052252232534364">Aktiv etmək üçün klikləyin</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> san</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bir rəqəm qalıb}other{# rəqəm qalıb}}</translation>
+<translation id="6867938213751067702"><ph name="FILENAME" /> endirilməsi durdurulub</translation>
 <translation id="6878400149835617132">Qısayol deaktiv edildi</translation>
 <translation id="6886172995547742638">Sizin <ph name="DEVICE_TYPE" /> aşağı performans göstərə bilər. Sertifikatlı <ph name="PREFERRED_MINIMUM_POWER" />W və ya daha yüksək USB-C cərəyan yuvasından istifadə edin.</translation>
 <translation id="688631446150864480">Pəncərələri dəyişdirmək üçün Aşağı ox düyməsini basın</translation>

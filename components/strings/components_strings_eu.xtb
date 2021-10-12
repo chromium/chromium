@@ -2123,6 +2123,7 @@ Xehetasun gehiago:
 <translation id="8041089156583427627">Bidali oharrak</translation>
 <translation id="8041940743680923270">Erabili balio lehenetsi orokorra (galdetzea)</translation>
 <translation id="8042918947222776840">Aukeratu jasotze-metodoa</translation>
+<translation id="8052898407431791827">Kopiatu da arbelean</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" ez dago behar bezala konfiguratuta. "<ph name="SOFTWARE_NAME" />" desinstalatuta konpondu ohi da arazo hori. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Arazoren bat izan da.</translation>
 <translation id="8067872629359326442">Webgune engainagarri batean idatzi duzu pasahitza. Chromium-ek lagundu egin diezazuke. Pasahitza aldatzeko eta Google-ri agian kontua arriskuan dagoela jakinarazteko, egin klik Babestu kontua botoian.</translation>
@@ -2319,7 +2320,6 @@ Xehetasun gehiago:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> da <ph name="ORIGIN" /> webgunerako kodea</translation>
 <translation id="874918643257405732">Egin fitxa honen laster-marka</translation>
 <translation id="8751426954251315517">Saiatu berriro geroago</translation>
-<translation id="8757526089434340176">Google Pay-ren eskaintza bat dago erabilgarri</translation>
 <translation id="8759274551635299824">Iraungita dago txartela</translation>
 <translation id="87601671197631245">Webgune honek segurtasun-konfigurazio zaharkitu bat erabiltzen du; ondorioz, baliteke zure informazioa (adibidez, pasahitzak, mezuak edo kreditu-txartelak) agerian uztea webgune honetara bidaltzen duzunean.</translation>
 <translation id="8761567432415473239">Google-ren Arakatze seguruak <ph name="BEGIN_LINK" />programa kaltegarriak aurkitu ditu<ph name="END_LINK" /> <ph name="SITE" /> webgunean.</translation>

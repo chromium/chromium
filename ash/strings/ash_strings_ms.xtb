@@ -23,6 +23,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1104621072296271835">Peranti anda akan berfungsi lebih baik bersama-sama</translation>
 <translation id="1119348796022671382">Mod warna bertema menggunakan warna yang diekstrak daripada kertas dinding anda untuk mewarnakan sedikit antara muka tersebut.</translation>
 <translation id="112308213915226829">Autosembunyi rak</translation>
+<translation id="1142002900084379065">Foto baru-baru ini</translation>
 <translation id="1148499908455722006">Buka dialog maklumat untuk <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendar</translation>
 <translation id="1153356358378277386">Peranti digandingkan</translation>
@@ -179,6 +180,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2298170939937364391">Penggadang Skrin Penuh didayakan. Tekan Ctrl+Cari+M semula untuk mematikannya.</translation>
 <translation id="2302092602801625023">Akaun ini diurus oleh Family Link</translation>
 <translation id="2303600792989757991">Togol gambaran keseluruhan tetingkap</translation>
+<translation id="2318576281648121272">Hari ini <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Undur satu huruf</translation>
 <translation id="2339073806695260576">Ketik butang stilus pada rak untuk mencatat nota, mengambil tangkapan skrin, menggunakan penuding laser atau kanta pembesar.</translation>
 <translation id="2341729377289034582">Dikunci menegak</translation>
@@ -200,6 +202,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2435457462613246316">Paparkan kata laluan</translation>
 <translation id="24452542372838207">Kembangkan pemberitahuan</translation>
 <translation id="2450205753526923158">Mod tangkapan skrin</translation>
+<translation id="2456008742792828469">Kalendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Sahkan Peleraian</translation>
 <translation id="2475982808118771221">Ralat berlaku</translation>
 <translation id="2482878487686419369">Pemberitahuan</translation>
@@ -278,6 +281,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3100274880412651815">Ketepikan mod tangkap</translation>
 <translation id="3105917916468784889">Ambil tangkapan skrin</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Alih Keluar Cadangan</translation>
 <translation id="3126069444801937830">Mulakan semula untuk mengemas kini</translation>
 <translation id="3139942575505304791">Meja 1</translation>
 <translation id="315116470104423982">Data mudah alih</translation>
@@ -317,6 +321,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3413817803639110246">Tiada apa-apa untuk dilihat</translation>
 <translation id="3428447136709161042">Putuskan sambungan daripada <ph name="NETWORK_NAME" />?</translation>
 <translation id="3430396595145920809">Leret dari kanan untuk kembali</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Edit peringatan</translation>
 <translation id="3435967511775410570">Cap jari dikenali</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -504,6 +509,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4642092649622328492">Ambil tangkapan skrin separa</translation>
 <translation id="4659419629803378708">ChromeVox didayakan</translation>
 <translation id="4665114317261903604">Togol Jangan ganggu. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Memuat turun <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Buka kunci peranti menggunakan kod ibu bapa</translation>
 <translation id="4702647871202761252">Skrin privasi dimatikan</translation>
 <translation id="4706121060329443414">Muat turun akan cuba dilakukan kemudian. Buat masa sekarang, pertuturan akan dihantar kepada Google untuk diproses.</translation>
@@ -641,6 +647,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5744083938413354016">Penyeretan ketik</translation>
 <translation id="5745612484876805746">Cahaya Malam akan dihidupkan secara automatik pada waktu matahari terbenam</translation>
 <translation id="5750765938512549687">Bluetooth dimatikan</translation>
+<translation id="576341972084747908">Muat turun berbahaya <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Cahaya Malam dihidupkan.</translation>
 <translation id="5769373120130404283">Skrin privasi</translation>
 <translation id="5777841717266010279">Hentikan perkongsian skrin?</translation>
@@ -782,6 +789,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6852052252232534364">Klik untuk aktifkan</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> saat</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Tinggal satu angka}other{Tinggal # angka}}</translation>
+<translation id="6867938213751067702">Muat turun dijeda <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Pintasan dimatikan</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> anda mungkin menunjukkan prestasi yang lebih rendah. Gunakan penyesuai kuasa USB-C <ph name="PREFERRED_MINIMUM_POWER" />W ke atas yang diperakui.</translation>
 <translation id="688631446150864480">Tekan kekunci Anak panah ke bawah untuk menukar tetingkap</translation>

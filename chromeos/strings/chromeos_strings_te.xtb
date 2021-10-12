@@ -58,6 +58,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1881378885488531302">IP అడ్రస్‌ను పొందడం సాధ్యపడలేదు</translation>
 <translation id="1887850431809612466">హార్డ్‌వేర్ పునర్విమర్శ</translation>
+<translation id="1901646112321215184">DNS సర్వర్‌లు ఏవీ కాన్ఫిగర్ చేయబడలేదు</translation>
 <translation id="1905710495812624430">అనుమతించిన గరిష్ట ప్రయత్నాలు మించిపోయారు.</translation>
 <translation id="1908234395526491708">UDP రిక్వెస్ట్ వైఫల్యాలు</translation>
 <translation id="1930797645656624981">Chrome OS ఇన్‌పుట్ విధానం సేవ</translation>
@@ -74,6 +75,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">క్రమవరుసలో ఉంచబడింది</translation>
 <translation id="2161394479394250669">ప్రింట్ టాస్క్‌ను రద్దు చేయి</translation>
+<translation id="2180197493692062006">ఏదో తప్పు జరిగింది. యాప్‌ను తిరిగి తెరవడానికి ట్రై చేయండి.</translation>
 <translation id="2209788852729124853">ట్రాఫిక్ కౌంటర్‌లను రీసెట్ చేయండి</translation>
 <translation id="2212733584906323460">పేరు రిజల్యూషన్</translation>
 <translation id="2217935453350629363">ప్రస్తుత వేగం</translation>
@@ -89,6 +91,7 @@
 <translation id="2391082728065870591">ఫీడ్‌బ్యాక్ రిపోర్ట్‌ను పంపు</translation>
 <translation id="2407209115954268704">SIM లాక్ స్టేటస్</translation>
 <translation id="2418150275289244458">సెట్టింగ్‌లలో తెరువు</translation>
+<translation id="2421798028054665193"><ph name="TOTAL_PAGES" />లో <ph name="CURRENT_PAGE" />వ ఇమేజ్</translation>
 <translation id="2446553403094072641">ఫ్లోటింగ్ పాయింట్ ఖచ్చితత్వం</translation>
 <translation id="2448312741937722512">రకం</translation>
 <translation id="2461822463642141190">ప్రస్తుత</translation>
@@ -107,11 +110,13 @@
 <translation id="2860473693272905224">స్కానర్ మీద మరొక పేజీని పెట్టండి</translation>
 <translation id="2872961005593481000">షట్ డౌన్ చేయండి</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> డిశ్చార్జ్ చేయబడింది.</translation>
+<translation id="2927511423571448384">Android నుండి ఫైర్‌వాల్ ద్వారా HTTP (పోర్ట్ 80) వెబ్‌సైట్‌లకు కనెక్ట్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="3008341117444806826">రిఫ్రెష్ చేయి</translation>
 <translation id="3009958530611748826">దీనిలో సేవ్ చేయడానికి ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ముగింపుపాయింట్</translation>
 <translation id="3069085583900247081">పరీక్ష విఫలమైంది</translation>
+<translation id="3076387335132326640">మీరు ఓపెన్ నెట్‌వర్క్‌ను ఉపయోగిస్తున్నారు</translation>
 <translation id="3083667275341675831">కనెక్టివిటీ సమస్య విశ్లేషణ</translation>
 <translation id="3091839911843451378">విఫలమైంది - ఆగిపోయింది</translation>
 <translation id="3102119246920354026">కాష్</translation>
@@ -199,6 +204,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh బ్యాటరీ</translation>
 <translation id="4561801978359312462">SIM అన్‌లాక్ చేయబడింది</translation>
 <translation id="4562494484721939086">సేవ లేదు</translation>
+<translation id="4567024731344774461">Android నుండి DNSను పరిష్కరించడం సాధ్యపడలేదు</translation>
 <translation id="458794348635939462">హోస్ట్‌లను పరిష్కరించడంలో విఫలమైంది</translation>
 <translation id="4593212453765072419">ప్రాక్సీ ప్రామాణీకరణ అవసరం</translation>
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />లో <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />. ప్రింట్ టాస్క్‌ను రద్దు చేయడానికి ఎంటర్ నొక్కండి.</translation>
@@ -223,6 +229,7 @@
 <translation id="484790837831576105">(Android) DNS రిజల్యూషన్</translation>
 <translation id="4848429997038228357">రన్ అవుతోంది</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ప్రయత్నం మిగిలి ఉంది}other{<ph name="ERROR_MESSAGE" /> {0} ప్రయత్నాలు మిగిలి ఉన్నాయి}}</translation>
+<translation id="4871137769558798671">HTTPS (పోర్ట్ 443) వెబ్‌సైట్‌లకు ఫైర్‌వాల్ ద్వారా కనెక్ట్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="4880328057631981605">యాక్సెస్ స్థానం పేరు</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">వెంటనే ఒక కొత్త దానిని ఎంచుకోండి</translation>
@@ -257,6 +264,7 @@
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">వెర్షన్ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">విండోను డెస్క్‌కు తరలించు</translation>
+<translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">గుర్తింపు</translation>
 <translation id="5317780077021120954">సేవ్ చేయి</translation>
 <translation id="5318334351163689047">TCP రిక్వెస్ట్ వైఫల్యాలు</translation>
@@ -278,6 +286,8 @@
 <translation id="5502931783115429516">Android రన్ అవ్వడం లేదు</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5546352997259770619">సిగ్నల్ సామర్థ్యం తక్కువగా ఉంది, యాక్సెస్ పాయింట్‌కు దగ్గరగా జరపడానికి ట్రై చేయండి</translation>
+<translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">మళ్లీ స్కాన్ చేయండి</translation>
 <translation id="5669267381087807207">సక్రియమవుతోంది</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -318,6 +328,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">వినియోగంతో బ్యాటరీ సామర్థ్యం క్షీణిస్తుంది</translation>
 <translation id="6191293864534840972">పేరు తప్పుగా ఉన్న సర్వర్లు</translation>
+<translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">స్కానర్‌లు ఏవీ అందుబాటులో లేవు</translation>
 <translation id="6232017090690406397">బ్యాటరీ</translation>
 <translation id="6243280677745499710">ప్రస్తుతం సెట్ చేసినది</translation>
@@ -327,6 +338,7 @@
 <translation id="636850387210749493">ఎంటర్‌ప్రైజ్ నమోదు</translation>
 <translation id="6379086450106841622">టచ్‌స్క్రీన్</translation>
 <translation id="6388847657025262518">స్కానర్ డాక్యుమెంట్ ఫీడర్ ఇరుక్కుపోయింది. ఫీడర్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
+<translation id="6395640744968320699">ఫైర్‌వాల్ ద్వారా HTTP (పోర్ట్ 80) వెబ్‌సైట్‌లకు కనెక్ట్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="641081527798843608">విషయ సరిపోలిక</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">శ్రేష్టమైనది</translation>
@@ -334,6 +346,7 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ద్వారా మేనేజ్ చేయబడుతోంది</translation>
 <translation id="649050271426829538">ఆగిపోయింది - కాగితం జామ్ అయింది</translation>
+<translation id="6498608540383876992">గేట్‌వేను సంప్రదించడం సాధ్యపడలేదు</translation>
 <translation id="6516990319416533844">బ్యాటరీ ఛార్జ్ అయ్యే రేట్‌ను పరీక్షించడానికి, కొంత వ్యవధి పాటు మీ బ్యాటరీని తగ్గనివ్వండి</translation>
 <translation id="6517239166834772319">అన్వేషణ</translation>
 <translation id="6527081081771465939">తెలియని WiFi భద్రతా ప్రోటోకాల్</translation>
@@ -381,6 +394,7 @@
 <translation id="7271040990581020067">స్కానర్ ప్రస్తుతం వినియోగంలో ఉంది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">వాల్‌పేపర్ కలెక్షన్‌లు</translation>
+<translation id="7292680402155138244">HTTPS (పోర్ట్ 443) వెబ్‌సైట్‌లకు అధిక ప్రతిస్పందన సమయం</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -431,12 +445,15 @@
 <translation id="7994702968232966508">EAP పద్ధతి</translation>
 <translation id="8020238979854764615">ఎర్రర్ ఏర్పడింది. ఇతర ఇమేజ్‌లను ఎంచుకోవడం ద్వారా దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="802154636333426148">డౌన్‌లోడ్ విఫలమైంది</translation>
+<translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">ప్రతిస్పందనను పంపండి</translation>
 <translation id="8075838845814659848">మిగిలిన ఛార్జ్</translation>
 <translation id="808894953321890993">పాస్‌వర్డ్‌ను మార్చు</translation>
 <translation id="811820734797650957">(Android) గేట్‌వేను పింగ్ చేయవచ్చు</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ట్రాఫిక్ కౌంటర్‌ల కోసం రిక్వెస్ట్ చేయండి</translation>
+<translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8177708084858970226">DNSను పరిష్కరించడం సాధ్యపడలేదు</translation>
 <translation id="8206859287963243715">సెల్యులార్</translation>
 <translation id="8208861521865154048">పెర్క్‌లు</translation>
 <translation id="8230672074305416752">డిఫాల్ట్ నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
@@ -448,6 +465,7 @@
 <translation id="8297006494302853456">బలహీనం</translation>
 <translation id="8302368968391049045">HTTPS ఫైర్‌వాల్</translation>
 <translation id="8318753676953949627">ఇమేజ్‌లు లేవు</translation>
+<translation id="8346875532700229909">Android నుండి గేట్‌వేను సంప్రదించడం సాధ్యపడలేదు</translation>
 <translation id="8347227221149377169">ప్రింట్ టాస్క్‌లు</translation>
 <translation id="8352772353338965963">బహుళ సైన్ ఇన్ కోసం ఖాతాను జోడించండి. అన్ని సైన్ ఇన్ చేసిన ఖాతాలను పాస్‌వర్డ్ లేకుండానే యాక్సెస్‌ చేయవచ్చు. కాబ‌ట్టి ఈ ఫీచ‌ర్‌ను విశ్వసనీయ ఖాతాలతో మాత్రమే ఉపయోగించాలి.</translation>
 <translation id="8364946094152050673">ఖాళీ పేరు సర్వర్‌లు</translation>
@@ -479,6 +497,7 @@
 <translation id="8747900814994928677">మార్పును నిర్ధారించండి</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="879568662008399081">ఈ నెట్‌వర్క్‌లో క్యాప్టివ్ పోర్టల్ ఉండవచ్చు</translation>
 <translation id="8798099450830957504">డిఫాల్ట్</translation>
 <translation id="8798441408945964110">ప్రదాత పేరు</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
@@ -502,6 +521,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{స్కాన్ చేయండి}=1{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}other{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}}</translation>
 <translation id="9003704114456258138">పౌనఃపున్యం</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9062831201344759865">DNS రిజల్యూషన్ అధిక ప్రతిస్పందన సమయాన్ని కలిగి ఉంది</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">బ్లూటూత్</translation>
 <translation id="9088306295921699330">ప్రస్తుత వినియోగం</translation>

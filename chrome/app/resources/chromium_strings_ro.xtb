@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">Pentru a descărca fișiere, Chromium necesită acces la stocare</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">Pentru a accesa informațiile din Chromium pe toate dispozitivele, conectează-te ca să poți activa sincronizarea.</translation>
-<translation id="2580426763510374355">Instalează sistemul de operare Chromium</translation>
 <translation id="2583187216237139145">Toate datele Chromium generate în timpul folosirii acestui profil (precum marcajele create, istoricul, parolele și alte setări) pot fi eliminate de administratorul profilului de serviciu. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Pentru a se aplica actualizarea, sistemul de operare Chromium trebuie să fie repornit.</translation>
 <translation id="2648074677641340862">S-a produs o eroare de sistem de operare în timpul instalării. Descărcați din nou Chromium.</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">Elimină din Chromium...</translation>
 <translation id="2885378588091291677">Manager de activități</translation>
 <translation id="2910007522516064972">Despre &amp;Chromium</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Un ultim memento: instalarea <ph name="BEGIN_BOLD" />va șterge toate datele de pe hard disk<ph name="END_BOLD" />. Asigură-te că ai făcut backup datelor pe care vrei să le păstrezi.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Odată ce începe instalarea, nu o poți anula.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium este actualizat</translation>
 <translation id="2983934633046890458">Chromium încearcă să modifice parolele.</translation>
 <translation id="3032706164202344641">Chromium nu îți poate verifica parolele. Încearcă din nou mai târziu.</translation>
@@ -79,7 +76,6 @@
 <translation id="3350761136195634146">Există deja un profil Chromium asociat acestui cont</translation>
 <translation id="3406848076815591792">Schimbi la profilul Chromium existent?</translation>
 <translation id="3430503420100763906">Cu ajutorul profilurilor Chromium, poți păstra separat toate informațiile din Chromium. Creează profiluri pentru prieteni și familie sau pentru muncă și timp liber.</translation>
-<translation id="3433271666494956603">Se instalează sistemul de operare Chromium</translation>
 <translation id="347328004046849135">Chromium te va anunța dacă te conectezi folosind o parolă compromisă</translation>
 <translation id="3474745554856756813">Astfel, se vor șterge <ph name="ITEMS_COUNT" /> elemente de pe acest dispozitiv. Pentru a recupera datele mai târziu, conectează-te la Chromium ca <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> poate comuta între profilurile Chromium</translation>
@@ -107,7 +103,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" /> îți solicită să citești și să accepți Termenii și condițiile următoare înainte de a folosi acest dispozitiv. Aceste condiții nu extind, nu modifică și nu limitează Condițiile sistemului de operare Chromium.</translation>
 <translation id="4271805377592243930">Obține ajutor privind Chromium</translation>
 <translation id="4285930937574705105">Instalarea a eșuat din cauza unei erori necunoscute. Dacă Chromium rulează în acest moment, închideți-l și încercați din nou.</translation>
-<translation id="429583012151745428">Instalarea este în curs. Nu închide dispozitivul. Procesul ar trebui să dureze cel mult 20 de minute. Dispozitivul se va închide automat după instalare.</translation>
 <translation id="4407044323746248786">Ieși din Chromium oricum?</translation>
 <translation id="4415566066719264597">Permite Chromium să ruleze în fundal</translation>
 <translation id="4423735387467980091">Personalizați și controlați Chromium</translation>
@@ -201,7 +196,6 @@ Este posibil ca unele funcții să nu fie disponibile. Specificați un director 
 <translation id="6734291798041940871">Chromium este instalat deja pentru toți utilizatorii de pe computerul tău.</translation>
 <translation id="673636774878526923">Pentru a accesa informațiile din Chromium pe toate dispozitivele, conectează-te, apoi activează sincronizarea.</translation>
 <translation id="6774082503108938489">Părintele tău a dezactivat opțiunea „Permisiuni pentru site-uri, aplicații și extensii” în Chromium. Activarea acestei <ph name="EXTENSION_TYPE_PARAMETER" /> nu este permisă.</translation>
-<translation id="6827182711503025204">Instalarea sistemului de operare Chromium va înlocui toate datele de pe dispozitiv.</translation>
 <translation id="6847869444787758381">Chromium te anunță dacă parolele tale sunt compromise</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiat în Chromium)</translation>

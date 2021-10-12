@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">Chromium vajab failide allalaadimiseks juurdepääsu salvestusruumile</translation>
 <translation id="2572494885440352020">Chromiumi abiline</translation>
 <translation id="2577788541081224677">Selleks et oma Chromiumi sisule kõigis oma seadmetes juurde pääseda, logige sisse, et saaksite sünkroonimise sisse lülitada.</translation>
-<translation id="2580426763510374355">Installi Chromium OS</translation>
 <translation id="2583187216237139145">Kõik Chromiumi andmed, mis luuakse selle profiili kasutamise ajal (nt järjehoidjad, ajalugu, paroolid ja muud seaded), saab tööprofiili administraator eemaldada. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS tuleb värskenduse rakendamiseks taaskäivitada.</translation>
 <translation id="2648074677641340862">Installimisel ilmnes operatsioonisüsteemi viga. Laadige Chromium uuesti alla.</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">Chromiumist eemaldamine ...</translation>
 <translation id="2885378588091291677">Tegumihaldur</translation>
 <translation id="2910007522516064972">Teave &amp;Chromiumi kohta</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Viimane meeldetuletus: installimisel <ph name="BEGIN_BOLD" />tühjendatakse kogu kõvaketas<ph name="END_BOLD" />. Veenduge, et oleksite kõik olulised andmed varundanud.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Pärast installimise alustamist ei saa seda tühistada.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium on ajakohane</translation>
 <translation id="2983934633046890458">Chromium üritab paroole muuta.</translation>
 <translation id="3032706164202344641">Chromium ei saa teie paroole kontrollida. Proovige hiljem uuesti.</translation>
@@ -79,7 +76,6 @@
 <translation id="3350761136195634146">Selle kontoga Chromiumi profiil on juba olemas</translation>
 <translation id="3406848076815591792">Kas lülituda olemasolevale Chromiumi profiilile?</translation>
 <translation id="3430503420100763906">Chromiumi profiilidega saate eraldada kogu oma Chromiumi sisu. Looge profiile sõprade või pereliikmete jaoks või eraldage nende abil töö ja lõbu.</translation>
-<translation id="3433271666494956603">Toimub Chromium OS-i installimine</translation>
 <translation id="347328004046849135">Chromium teavitab teid, kui logite sisse ohustatud parooliga</translation>
 <translation id="3474745554856756813">See kustutab seadmest <ph name="ITEMS_COUNT" /> üksust. Hiljem oma andmete toomiseks logige Chromiumi sisse kasutajana <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Chromiumi profiilide vahel vahetamiseks vajutage klahve <ph name="SHORTCUT" /></translation>
@@ -107,7 +103,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" /> nõuab, et loete enne selle seadme kasutamist läbi järgmised teenusetingimused ja nõustute nendega. Need tingimused ei laienda, muuda ega piira Chromium OS-i tingimusi.</translation>
 <translation id="4271805377592243930">Chromiumi puhul abi hankimine</translation>
 <translation id="4285930937574705105">Installimine ebaõnnestus tundmatu vea tõttu. Kui Chromium praegu töötab, siis sulgege see ja proovige uuesti.</translation>
-<translation id="429583012151745428">Installimine on pooleli. Ärge lülitage seadet välja. Installimine ei tohiks võtta kauem kui 20 minutit. Pärast installimist lülitub arvuti automaatselt välja.</translation>
 <translation id="4407044323746248786">Kas väljuda Chromiumist ikkagi?</translation>
 <translation id="4415566066719264597">Luba Chromiumil taustal töötada</translation>
 <translation id="4423735387467980091">Chromiumi kohandamine ja juhtimine</translation>
@@ -201,7 +196,6 @@ On võimalik, et mõni funktsioon ei ole saadaval. Määrake muu profiilikataloo
 <translation id="6734291798041940871">Chromium on arvutisse kõigi kasutajate jaoks juba installitud.</translation>
 <translation id="673636774878526923">Selleks et oma Chromiumi sisule kõigis oma seadmetes juurde pääseda, logige sisse ja lülitage siis sisse sünkroonimine.</translation>
 <translation id="6774082503108938489">Sinu vanem lülitas valiku „Saitide, rakenduste ja laienduste load” Chromiumi puhul välja. Laienduse <ph name="EXTENSION_TYPE_PARAMETER" /> lubamine on keelatud.</translation>
-<translation id="6827182711503025204">Chromium OS-i installimisel kirjutatakse üle kõik teie seadmes olevad andmed.</translation>
 <translation id="6847869444787758381">Chromium annab teile teada, kui teie paroolid ohtu satuvad</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopeeritud Chromiumi)</translation>

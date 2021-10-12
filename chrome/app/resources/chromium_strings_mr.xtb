@@ -42,7 +42,6 @@
 <translation id="2560420686485554789">फाइल डाउनलोड करण्यासाठी Chromium ला स्टोरेज ॲक्सेस हवा आहे</translation>
 <translation id="2572494885440352020">Chromium मदतनीस</translation>
 <translation id="2577788541081224677">तुमच्या सर्व डिव्हाइसवर तुमचा Chromium आशय अ‍ॅक्सेस करण्यासाठी, साइन इन करा जेणेकरून तुम्ही सिंक सुरू शकता.</translation>
-<translation id="2580426763510374355">Chromium OS इंस्टॉल करा</translation>
 <translation id="2583187216237139145">या प्रोफाइलच्या वापरादरम्यान जनरेट केला गेलेला कोणताही Chromium डेटा (जसे की बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्जची निर्मिती) कार्य प्रोफाइल अ‍ॅडमिनिस्ट्रेटरला हटवता येतो. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">अपडेट लागू करण्यासाठी Chromium OS रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="2648074677641340862">स्‍थापनेदरम्‍यान ऑपरेटिंग सिस्टीम एरर आली. कृपया Chromium पुन्‍हा डाउनलोड करा.</translation>
@@ -55,8 +54,6 @@
 <translation id="2847479871509788944">Chromium मधून काढून टाका...</translation>
 <translation id="2885378588091291677">टास्क मॅनेजर</translation>
 <translation id="2910007522516064972">&amp;Chromium बद्दल</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />एक शेवटचा रिमाइंडर: इंस्टॉलेशन <ph name="BEGIN_BOLD" />तुमची संपूर्ण हार्ड ड्राइव्ह मिटवेल<ph name="END_BOLD" />. कृपया तुमच्यासाठी महत्त्वाच्या असलेल्या डेटाचा तुम्ही बॅकअप घेतला असल्याची खात्री करा.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />इंस्टॉलेशन सुरू झाल्यावर ते रद्द करता येऊ शकत नाही.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium अद्ययावत आहे</translation>
 <translation id="2983934633046890458">Chromium पासवर्ड संपादित करण्याचा प्रयत्‍न करत आहे.</translation>
 <translation id="3032706164202344641">Chromium तुमचे पासवर्ड तपासू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>
@@ -80,7 +77,6 @@
 <translation id="3350761136195634146">हे खाते वापरून तयार केलेली Chromium प्रोफाइल आधीपासून अस्तित्वात आहे</translation>
 <translation id="3406848076815591792">सध्याच्या Chromium प्रोफाइलवर स्विच करायचे आहे का?</translation>
 <translation id="3430503420100763906">Chromium प्रोफाइल वापरून तुम्ही तुमच्या Chromium शी संबंधित सर्व गोष्टींची विभागणी करू शकता. मित्रमैत्रिणी आणि कुटुंबासाठी प्रोफाइल तयार करा किंवा त्यांची काम व मनोरंजन यामध्ये विभागणी करा.</translation>
-<translation id="3433271666494956603">Chromium OS चे इंस्टॉलेशन प्रगतीपथावर आहे</translation>
 <translation id="347328004046849135">तुम्ही धोक्यात असलेल्या पासवर्डने साइन इन केल्यावर Chromium तुम्हाला सूचित करेल</translation>
 <translation id="3474745554856756813">हे या डिव्‍हाइस मधून <ph name="ITEMS_COUNT" /> आयटम हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी, Chromium मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> Chromium प्रोफाइलदरम्यान स्विच करू शकतात</translation>
@@ -108,7 +104,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" /> ला तुम्ही हे डिव्हाइस वापरण्यापूर्वी खालील सेवा अटी वाचणे आणि स्वीकारणे आवश्यक आहे. या अटी Chromium OS अटींचा विस्तार करत नाहीत, त्यामध्ये सुधारणा करत नाहीत किंवा त्या मर्यादित करत नाहीत.</translation>
 <translation id="4271805377592243930">Chromium सह मदत मिळवा</translation>
 <translation id="4285930937574705105">नमूद न केलेल्या एररमुळे स्थापना अयशस्वी झाली. सध्‍या Chromium चालत असल्‍यास, कृपया त्‍यास बंद करा आणि पुन्‍हा प्रयत्‍न करा.</translation>
-<translation id="429583012151745428">इंस्टॉलेशन प्रगतीपथावर आहे. डिव्हाइस बंद करू नका. इंस्टॉल होण्यासाठी २० मिनिटांपेक्षा जास्त वेळ लागणार नाही. इंस्टॉल करणे पूर्ण झाल्यानंतर मशीन आपोआप बंद होईल.</translation>
 <translation id="4407044323746248786">तरीही Chromium बंद करायचे?</translation>
 <translation id="4415566066719264597">Chromium बॅकग्राउंडमध्ये सुरू द्या</translation>
 <translation id="4423735387467980091">Chromium कस्टमाइझ करा आणि नियंत्रित करा</translation>
@@ -202,7 +197,6 @@
 <translation id="6734291798041940871">तुमच्या कॉंप्युटरवर सर्व वापरकर्त्यांसाठी आधीच Chromium इंस्टॉल केले आहे.</translation>
 <translation id="673636774878526923">तुमचा Chromium आशय तुमच्या सर्व डिव्हाइसवर अ‍ॅक्सेस करण्यासाठी साइन इन करा, त्यानंतर सिंक सुरू करा.</translation>
 <translation id="6774082503108938489">तुमच्या पालकांनी Chromium साठी "साइट, अ‍ॅप्स आणि एक्स्टेंशनकरिता परवानग्या" सुरू केल्या आहेत. हे <ph name="EXTENSION_TYPE_PARAMETER" /> सुरू करण्यास अनुमती नाही.</translation>
-<translation id="6827182711503025204">Chromium OS इंस्टॉल केल्याने, तुमच्या डिव्हाइसवरील सर्व डेटा ओव्हरराइट केला जाईल.</translation>
 <translation id="6847869444787758381">तुमचे पासवर्ड कधीही धोक्यात असल्यास, Chromium तुम्हाला कळवते</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium वर कॉपी केले)</translation>

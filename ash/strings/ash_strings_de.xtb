@@ -317,6 +317,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3413817803639110246">Noch nichts zu sehen</translation>
 <translation id="3428447136709161042">Verbindung mit <ph name="NETWORK_NAME" /> trennen</translation>
 <translation id="3430396595145920809">Vom rechten Bildschirmrand aus wischen, um zurückzugehen</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="343571671045587506">Erinnerung bearbeiten</translation>
 <translation id="3435967511775410570">Fingerabdruck erkannt</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>

@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Perguntar quando um site pretende detetar dispositivos Bluetooth próximos (recomendado)</translation>
 <translation id="2315043854645842844">O sistema operativo não suporta a seleção do certificado do lado do cliente.</translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2379925928934107488">Aplique o tema escuro aos sites quando o Chrome utiliza o tema escuro, quando possível</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> permitidas.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> permitidas.}}</translation>
 <translation id="2434158240863470628">Transferência concluída: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">O acesso à localização também está desativado para este dispositivo. Ative-o nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Expandido. Clique para reduzir.</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
+<translation id="2597457036804169544">Não aplique o tema escuro aos sites</translation>
 <translation id="2621115761605608342">Permitir JavaScript num site específico.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2677748264148917807">Sair</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Desativar o som dos sites que reproduzem som</translation>
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
 <translation id="3763247130972274048">Toque duas vezes no vídeo à esquerda ou à direita para avançar 10 s.</translation>
+<translation id="3797520601150691162">Não aplique o tema escuro a um site específico</translation>
 <translation id="381841723434055211">Números de telefone</translation>
 <translation id="3835233591525155343">A utilização do dispositivo</translation>
 <translation id="385051799172605136">Anterior</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">Os sites não podem pedir para enviar notificações.</translation>
 <translation id="5516455585884385570">Abrir definições de notificação</translation>
 <translation id="5527111080432883924">Perguntar antes de autorizar os sites a ler texto e imagens da área de transferência (recomendado).</translation>
+<translation id="5553374991681107062">Mais recentes</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5649053991847567735">Transferências automáticas</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">Normalmente, bloqueia as notificações. Para permitir, toque em Detalhes.</translation>
 <translation id="7423098979219808738">Perguntar primeiro</translation>
 <translation id="7423538860840206698">Leitura da área de transferência bloqueada</translation>
+<translation id="7425915948813553151">Tema escuro para sites</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Um site está a utilizar o seu microfone.</translation>
 <translation id="7561196759112975576">Sempre</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">Tem a certeza de que pretende limpar todos os dados locais, incluindo cookies, e repor todas as autorizações para este Website?</translation>
 <translation id="8007176423574883786">Desativada para este dispositivo</translation>
 <translation id="802154636333426148">Falha ao transferir</translation>
+<translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8067883171444229417">Reproduzir vídeo</translation>
 <translation id="8068648041423924542">Não é possível selecionar o certificado.</translation>
 <translation id="8087000398470557479">Este conteúdo é proveniente de <ph name="DOMAIN_NAME" />, fornecido pela Google.</translation>

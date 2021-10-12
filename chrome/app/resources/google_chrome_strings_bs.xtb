@@ -88,8 +88,6 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2926676257163822632">Slabe lozinke je lako pogoditi. Dozvolite Chromeu da <ph name="BEGIN_LINK" />kreira i zapamti jake lozinke za vas<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chromeu je za ovu web lokaciju potrebno odobrenje za kameru</translation>
 <translation id="2929907241665500097">Ažuriranje Chromea nije uspjelo. Nešto nije uredu. <ph name="BEGIN_LINK" />Ispravite probleme s ažuriranjem Chromea i neuspjela ažuriranja.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Još jednom podsjećamo: prilikom instaliranja će se <ph name="BEGIN_BOLD" />potpuno izbrisati vaš cijeli tvrdi disk<ph name="END_BOLD" />. Provjerite jeste li napravili sigurnosnu kopiju podataka koji su vam bitni.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Kada instalacija započne, nije je moguće otkazati.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – prijava na mrežu – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome radi u pozadinskom načinu rada.</translation>
 <translation id="3059710691562604940">Sigurno pregledanje je isključeno. Chrome preporučuje da ga uključite.</translation>
@@ -137,7 +135,6 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="4251615635259297716">Povezati podatke iz Chromea s ovim računom?</translation>
 <translation id="4281844954008187215">Uslovi korištenja usluge</translation>
 <translation id="4293420128516039005">Prijavite se za sinhroniziranje i personaliziranje Chromea na svim svojim uređajima</translation>
-<translation id="429583012151745428">Instaliranje je u toku. Nemojte isključivati uređaj. Instaliranje ne bi trebalo trajati duže od dvadeset minuta. Uređaj će se automatski isključiti nakon instalacije.</translation>
 <translation id="4325083532956419387">Verzija Chrome OS-a</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -181,7 +178,6 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="5386244825306882791">Također kontrolira koja stranica će se prikazati kada pokrenete Chrome ili budete pretraživali iz višenamjenskog okvira.</translation>
 <translation id="5394833366792865639">Dijelite Chrome karticu</translation>
 <translation id="5430073640787465221">Datoteka vaših postavki oštećena je ili nevažeća. Google Chrome nema mogućnost oporavka vaših postavki.</translation>
-<translation id="5486618155264784386">Instaliraj Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome pokušava prikazati lozinke.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Ako se postavka ne prikazuje na ovoj stranici, pogledajte u <ph name="LINK_BEGIN" />
@@ -236,7 +232,6 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="7155997830309522122">Ako jeste, uredite sačuvanu lozinku u Chromeu da se podudara s novom lozinkom.</translation>
 <translation id="7161904924553537242">Dobro došli u Google Chrome</translation>
 <translation id="7242029209006116544">Prijavljujete se na upravljani račun i administratoru dajete kontrolu nad svojim Google Chrome profilom. Vaši podaci iz Chromea, kao što su vaše aplikacije, oznake, historija, lozinke i druge postavke, trajno će se vezati za račun <ph name="USER_NAME" />. Moći ćete izbrisati ove podatke na kontrolnoj tabli Google računa, ali nećete moći povezati ove podatke s drugim računom. Imate mogućnost kreiranja novog profila kako biste odvojili postojeće podatke iz Chromea. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Instaliranje Chrome OS-a je u toku</translation>
 <translation id="7295052994004373688">Ovaj jezik se koristi za prikaz korisničkog interfejsa u Google Chromeu</translation>
 <translation id="7296210096911315575">Važne informacije o korištenju i sigurnosti</translation>
 <translation id="7308322188646931570">Chrome treba pristup pohrani da preuzme fajlove</translation>

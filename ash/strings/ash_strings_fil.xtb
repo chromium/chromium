@@ -23,6 +23,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1104621072296271835">Gagana nang mas maayos ang iyong mga device kung magkakasama</translation>
 <translation id="1119348796022671382">Gumagamit ang themed color mode ng mga kulay na na-extract mula sa iyong wallpaper para kulayan nang kaunti ang interface.</translation>
 <translation id="112308213915226829">Awtomatikong itago ang shelf</translation>
+<translation id="1142002900084379065">Mga pinakabagong larawan</translation>
 <translation id="1148499908455722006">Buksan ang dialog ng impormasyon para sa <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendaryo</translation>
 <translation id="1153356358378277386">Mga nakapares na device</translation>
@@ -179,6 +180,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2298170939937364391">Na-enable ang Pang-magnify ng Full-screen. Pindutin ulit ang Ctrl+Search+M para i-off ito.</translation>
 <translation id="2302092602801625023">Pinapamahalaan ng Family Link ang account na ito</translation>
 <translation id="2303600792989757991">I-toggle ang window ng pangkalahatang-ideya</translation>
+<translation id="2318576281648121272">Ngayon <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Bumalik nang paisa-isang titik</translation>
 <translation id="2339073806695260576">I-tap ang button na stylus sa shelf para magsulat ng tala, mag-screenshot, gamitin ang laser pointer, o magnifying glass.</translation>
 <translation id="2341729377289034582">Naka-lock sa vertical</translation>
@@ -200,6 +202,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2435457462613246316">Ipakita ang password</translation>
 <translation id="24452542372838207">Palawakin ang notification</translation>
 <translation id="2450205753526923158">Screenshot mode</translation>
+<translation id="2456008742792828469">Kalendaryo, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Kumpirmahin ang Resolution</translation>
 <translation id="2475982808118771221">May isang naganap na error</translation>
 <translation id="2482878487686419369">Mga Abiso</translation>
@@ -278,6 +281,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3100274880412651815">I-dismiss ang capture mode</translation>
 <translation id="3105917916468784889">Kunin screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Alisin ang Suhestyon</translation>
 <translation id="3126069444801937830">I-restart upang mag-update</translation>
 <translation id="3139942575505304791">Desk 1</translation>
 <translation id="315116470104423982">Data sa mobile</translation>
@@ -317,6 +321,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3413817803639110246">Wala pang makikita</translation>
 <translation id="3428447136709161042">Idiskonekta sa <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Mag-swipe mula sa kanan para bumalik</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">I-edit ang paalala</translation>
 <translation id="3435967511775410570">Nakilala ang fingerprint</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4642092649622328492">Kumuha ng screenshot ng bahagi ng screen</translation>
 <translation id="4659419629803378708">Na-enable ang ChromeVox</translation>
 <translation id="4665114317261903604">I-toggle ang Huwag istorbohin. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Dina-download ang <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">I-unlock ang device gamit ang parent code</translation>
 <translation id="4702647871202761252">Naka-off ang privacy screen</translation>
 <translation id="4706121060329443414">Susubukan mamaya ang pag-download. Ipapadala ang speech sa Google para sa pagpoproseso sa ngayon.</translation>
@@ -640,6 +646,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5744083938413354016">Pag-tap upang mag-drag</translation>
 <translation id="5745612484876805746">Awtomatikong nag-o-on ang Night Light sa paglubog ng araw</translation>
 <translation id="5750765938512549687">Naka-off ang Bluetooth</translation>
+<translation id="576341972084747908">I-download ang mapanganib na <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Naka-on ang Night Light.</translation>
 <translation id="5769373120130404283">Screen sa privacy</translation>
 <translation id="5777841717266010279">Itigil ang screen sharing?</translation>
@@ -781,6 +788,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6852052252232534364">I-activate</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> seg</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Isang digit na lang ang natitira}one{# digit na lang ang natitira}other{# na digit na lang ang natitira}}</translation>
+<translation id="6867938213751067702">Na-pause ang pag-download ng <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Naka-off ang shortcut</translation>
 <translation id="6886172995547742638">Posibleng makaranas ang iyong <ph name="DEVICE_TYPE" /> ng hindi mahusay na performance. Gumamit ng certified na <ph name="PREFERRED_MINIMUM_POWER" />W o mas mataas na USB-C power adapter.</translation>
 <translation id="688631446150864480">Pindutin ang Pababang arrow key para lumipat ng mga window</translation>

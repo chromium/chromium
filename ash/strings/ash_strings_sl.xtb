@@ -23,6 +23,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1104621072296271835">Naprave delujejo še bolje skupaj</translation>
 <translation id="1119348796022671382">Barvni način na podlagi teme uporablja barve, pridobljene iz zaslonskega ozadja, za rahlo obarvanje vmesnika.</translation>
 <translation id="112308213915226829">Samodejno skrivanje police</translation>
+<translation id="1142002900084379065">Nedavne fotografije</translation>
 <translation id="1148499908455722006">Odpri pogovorno okno z informacijami o uporabniku <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Koledar</translation>
 <translation id="1153356358378277386">Seznanjene naprave</translation>
@@ -179,6 +180,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2298170939937364391">Celozaslonska lupa je omogočena. Če jo želite izklopiti, znova pritisnite Ctrl + tipko za iskanje + M.</translation>
 <translation id="2302092602801625023">Ta račun upravlja Family Link</translation>
 <translation id="2303600792989757991">Preklop pregleda okna</translation>
+<translation id="2318576281648121272">Danes ob <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Nazaj po črki</translation>
 <translation id="2339073806695260576">Dotaknite se gumba pisala na polici, če želite ustvariti zapisek, posneti posnetek zaslona ali uporabiti laserski kazalnik oziroma povečevalno steklo.</translation>
 <translation id="2341729377289034582">Zaklenjeno na pokončno</translation>
@@ -200,6 +202,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2435457462613246316">Pokaži geslo</translation>
 <translation id="24452542372838207">Razširi obvestilo</translation>
 <translation id="2450205753526923158">Način posnetka zaslona</translation>
+<translation id="2456008742792828469">Koledar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Potrdite ločljivost</translation>
 <translation id="2475982808118771221">Prišlo je do napake</translation>
 <translation id="2482878487686419369">Obvestila</translation>
@@ -278,6 +281,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3100274880412651815">Opusti način zajema</translation>
 <translation id="3105917916468784889">Izdelava posnetka zaslona</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Odstrani predlog</translation>
 <translation id="3126069444801937830">Znova zaženite za posodobitev</translation>
 <translation id="3139942575505304791">Namizje 1</translation>
 <translation id="315116470104423982">Prenos podatkov v mobilnih omrežjih</translation>
@@ -317,6 +321,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3413817803639110246">Zaenkrat ni še ničesar</translation>
 <translation id="3428447136709161042">Prekinitev povezave z omrežjem <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Povlecite z desne, če se želite vrniti</translation>
+<translation id="3434107140712555581">Akumulator: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="343571671045587506">Urejanje opomnika</translation>
 <translation id="3435967511775410570">Prstni odtis je prepoznan</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4642092649622328492">Ustvarjanje delnega posnetka zaslona</translation>
 <translation id="4659419629803378708">Omogočen je ChromeVox</translation>
 <translation id="4665114317261903604">Preklop načina »ne moti«. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Prenašanje datoteke <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Odklepanje naprave s kodo starša</translation>
 <translation id="4702647871202761252">Zaslon za zasebnost je izklopljen</translation>
 <translation id="4706121060329443414">Poskus prenosa bo izveden pozneje. Za zdaj bo govor poslan Googlu v obdelavo.</translation>
@@ -640,6 +646,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5744083938413354016">Vlečenje z dotikom</translation>
 <translation id="5745612484876805746">Nočna svetloba se samodejno vklopi ob sončnem zahodu</translation>
 <translation id="5750765938512549687">Bluetooth je izklopljen</translation>
+<translation id="576341972084747908">Nevaren prenos <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Nočna svetloba je vklopljena.</translation>
 <translation id="5769373120130404283">Zaslon za zasebnost</translation>
 <translation id="5777841717266010279">Želite ustaviti skupno rabo zaslona?</translation>
@@ -781,6 +788,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6852052252232534364">Klik. za akt.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Še ena števka}one{Še # števka}two{Še # števki}few{Še # števke}other{Še # števk}}</translation>
+<translation id="6867938213751067702">Prenos je začasno zaustavljen (<ph name="FILENAME" />)</translation>
 <translation id="6878400149835617132">Bližnjica je izklopljena</translation>
 <translation id="6886172995547742638">Naprava <ph name="DEVICE_TYPE" /> morda deluje slabše. Uporabite potrjen napajalnik USB-C z močjo <ph name="PREFERRED_MINIMUM_POWER" /> W ali več.</translation>
 <translation id="688631446150864480">Za preklapljanje med okni pritisnite tipko s puščico dol</translation>

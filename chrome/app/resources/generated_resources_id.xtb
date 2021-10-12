@@ -362,7 +362,6 @@
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1384849755549338773">Tawarkan Google Terjemahan untuk situs dalam bahasa lain</translation>
 <translation id="138784436342154190">Pulihkan halaman awal default?</translation>
-<translation id="1388047369870196878">Instal CloudReady 2.0</translation>
 <translation id="1388253969141979417">Diizinkan menggunakan mikrofon Anda</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> akan dimulai ulang saat update selesai.</translation>
 <translation id="139013308650923562">Diizinkan menggunakan font yang diinstal di perangkat Anda</translation>
@@ -1970,7 +1969,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> mengharuskan Anda terhubung ke Wi-Fi hari ini untuk mendownload update. Atau, Anda dapat mendownload dengan koneksi berbayar (dapat dikenai biaya).}other{<ph name="MANAGER" /> mengharuskan Anda terhubung ke Wi-Fi dan mendownload update sebelum batas waktu. Atau, Anda dapat mendownload dengan koneksi berbayar (dapat dikenai biaya).}}</translation>
 <translation id="3009300415590184725">Yakin ingin membatalkan proses penyiapan layanan data seluler?</translation>
 <translation id="3009779501245596802">Basis data yang diindeks</translation>
-<translation id="3009984992511490972">Ubah perangkat ini menjadi perangkat CloudReady 2.0.</translation>
 <translation id="3010279545267083280">Sandi dihapus</translation>
 <translation id="3011384993885886186">Abu-abu hangat</translation>
 <translation id="3011488081941333749">Cookie dari <ph name="DOMAIN" /> akan dihapus saat keluar</translation>
@@ -2395,7 +2393,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3476303763173086583">Kirim data penggunaan dan diagnostik. Bantu sempurnakan pengalaman Android Anak Anda dengan otomatis mengirim data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini tidak akan digunakan untuk mengidentifikasi anak Anda serta akan membantu sistem dan stabilitas aplikasi serta penyempurnaan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. <ph name="BEGIN_LINK1" />Setelan<ph name="END_LINK1" /> ini diterapkan oleh pemilik. Pemilik dapat memilih untuk mengirim data diagnostik dan penggunaan untuk perangkat ini ke Google. Jika setelan Aktivitas Web &amp; Aplikasi tambahan diaktifkan untuk anak Anda, data ini mungkin akan disimpan ke akun Google miliknya. <ph name="BEGIN_LINK2" />Pelajari Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Maaf!  Sistem gagal mengambil kebijakan untuk perangkat Anda.</translation>
 <translation id="347785443197175480">Terus izinkan <ph name="HOST" /> untuk mengakses kamera dan mikrofon Anda</translation>
-<translation id="3478813605045578676">Pendaftaran hanya didukung setelah penginstalan. Untuk mengelola perangkat ini, instal CloudReady terlebih dahulu.</translation>
 <translation id="3479552764303398839">Jangan sekarang</translation>
 <translation id="3479685872808224578">Tidak dapat mendeteksi server cetak. Periksa alamatnya, lalu coba lagi.</translation>
 <translation id="3480612136143976912">Sesuaikan ukuran dan gaya teks untuk Teks Otomatis. Beberapa aplikasi dan situs juga akan menggunakan setelan ini.</translation>
@@ -2597,7 +2594,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3694027410380121301">Pilih Tab Sebelumnya</translation>
 <translation id="369489984217678710">Sandi dan data login lainnya</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Pemeriksaan keamanan selesai. Data Anda akan diupload.}=1{Pemeriksaan keamanan selesai. File Anda akan diupload.}other{Pemeriksaan keamanan selesai. File Anda akan diupload.}}</translation>
-<translation id="3696576298374669274">Tampilkan log layanan</translation>
 <translation id="3699624789011381381">Alamat email</translation>
 <translation id="3699920817649120894">Nonaktifkan sinkronisasi dan personalisasi?</translation>
 <translation id="3700888195348409686">Menampilkan (<ph name="PAGE_ORIGIN" />)</translation>
@@ -4176,7 +4172,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5431318178759467895">Warna</translation>
 <translation id="543338862236136125">Edit sandi</translation>
 <translation id="5434065355175441495">PKCS #1 MD Dengan Enkripsi RSA</translation>
-<translation id="5434473680236142631">Selamat datang di CloudReady 2.0</translation>
 <translation id="5435779377906857208">Selalu izinkan <ph name="HOST" /> untuk mengakses lokasi Anda</translation>
 <translation id="5436492226391861498">Menunggu terowongan proxy...</translation>
 <translation id="5436510242972373446">Telusuri <ph name="SITE_NAME" />:</translation>
@@ -4693,7 +4688,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Untuk memastikan bahwa Anda tetap dapat mengakses web, minta administrator untuk menghapus aplikasi ini.}other{Untuk memastikan bahwa Anda tetap dapat mengakses web, minta administrator untuk menghapus aplikasi berikut.}}</translation>
 <translation id="5997337190805127100">Pelajari Akses Situs Lebih Lanjut</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> hasil untuk '<ph name="SEARCH_TEXT" />'</translation>
-<translation id="6001839398155993679">Ayo</translation>
 <translation id="6001999913519612328">Menjalankan pengujian diagnostik.</translation>
 <translation id="6002210667729577411">Pindahkan grup ke jendela baru</translation>
 <translation id="6002452033851752583">Sandi dihapus dari Akun Google Anda</translation>
@@ -4749,7 +4743,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6057312498756061228">File ini terlalu besar untuk pemeriksaan keamanan. Anda dapat membuka file hingga 50 MB.</translation>
 <translation id="6057381398996433816">Situs ini diblokir agar tidak menggunakan sensor gerakan dan sensor cahaya.</translation>
 <translation id="6059276912018042191">Tab Chrome terbaru</translation>
-<translation id="6059347142391822629">Untuk menutup panduan, tekan tombol akses saat fokus ada di tombol Selesai.</translation>
 <translation id="6059652578941944813">Hierarki Sertifikat</translation>
 <translation id="6061882183774845124">Kirim link ke perangkat Anda</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Catatan:<ph name="END_BOLD" /> Suara atau rekaman yang mirip mungkin juga dapat mengakses hasil personal <ph name="SUPERVISED_USER_NAME" />. Untuk menghemat baterai, Anda dapat memilih di setelan Asisten <ph name="SUPERVISED_USER_NAME" /> agar hanya mengaktifkan "Ok Google" saat perangkat ini dicolokkan ke sumber listrik.</translation>
@@ -5035,6 +5028,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6359706544163531585">Nonaktifkan tema terang</translation>
 <translation id="6361850914223837199">Detail kesalahan:</translation>
 <translation id="6362853299801475928">&amp;Melaporkan masalah...</translation>
+<translation id="6363786367719063276">Lihat log</translation>
 <translation id="6363990818884053551">Untuk memulai sinkronisasi, verifikasi diri Anda</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Tambahkan keluarga dan teman</translation>
@@ -5227,8 +5221,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6569911211938664415">Sandi disimpan di Akun Google Anda (<ph name="ACCOUNT" />) agar Anda dapat menggunakannya di perangkat mana pun</translation>
 <translation id="6573497332121198392">Tidak dapat menghapus pintasan</translation>
 <translation id="657402800789773160">&amp;Muat Ulang Halaman Ini</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />Untuk mendapatkan pengalaman terbaik, instal CloudReady 2.0 ke disk internal Anda. Anda juga dapat menginstalnya nanti dari layar login.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Jika belum siap menginstal, Anda dapat menjalankannya dari USB untuk mencobanya. Tindakan ini akan mempertahankan OS dan data yang ada, tetapi Anda dapat melihat batas penyimpanan dan performa.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">Download dibatalkan: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Ringkasan Kondisi Jaringan</translation>
 <translation id="6579369886355986318">Tampilkan semua &amp;kontrol</translation>
@@ -6088,7 +6080,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="7509246181739783082">Verifikasi identitas Anda</translation>
 <translation id="7509539379068593709">Uninstal Aplikasi</translation>
 <translation id="7511415964832680006">Jika aktif, situs dapat menggunakan teknik yang melindungi privasi seperti yang ditunjukkan di sini untuk menyediakan konten dan layanannya. Ini termasuk alternatif untuk pelacakan lintas situs. Uji coba lainnya dapat ditambahkan seiring waktu.</translation>
-<translation id="7514236770834963598">Tinjau setelan Anda saat ini untuk privasi yang paling penting dan kontrol keamanan</translation>
 <translation id="7514239104543605883">Salin ke perangkat Anda</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7514417110442087199">Tambahkan penetapan</translation>
@@ -6325,7 +6316,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus penetapan.</translation>
 <translation id="7750228210027921155">Picture-in-picture</translation>
 <translation id="7751260505918304024">Tampilkan semua</translation>
-<translation id="7751855202867682241">Jalankan CloudReady 2.0 dari USB, tanpa perlu meng-uninstal OS Anda.</translation>
 <translation id="7753735457098489144">Gagal menginstal karena ruang penyimpanan tidak cukup. Untuk mengosongkan ruang, hapus file dari penyimpanan perangkat.</translation>
 <translation id="7754347746598978109">Tidak diizinkan menggunakan JavaScript</translation>
 <translation id="7754704193130578113">Tanyakan lokasi penyimpanan setiap file sebelum mendownload</translation>
@@ -7374,7 +7364,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
 <translation id="8846132060409673887">Membaca produsen dan model komputer ini</translation>
 <translation id="8846163936679269230">Reset profil eSIM</translation>
-<translation id="8846746259444262774">Penginstalan gagal</translation>
 <translation id="8847523528195140327">Logout saat cover ditutup</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Tersembunyi</translation>

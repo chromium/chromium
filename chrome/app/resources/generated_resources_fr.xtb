@@ -361,7 +361,6 @@
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1384849755549338773">Proposer Google Traduction sur les sites Web dans d'autres langues</translation>
 <translation id="138784436342154190">Restaurer la page de démarrage par défaut ?</translation>
-<translation id="1388047369870196878">Installer CloudReady 2.0</translation>
 <translation id="1388253969141979417">Autorisé à utiliser votre micro</translation>
 <translation id="1388728792929436380">Ce <ph name="DEVICE_TYPE" /> va redémarrer lorsque les mises à jour seront installées.</translation>
 <translation id="139013308650923562">Autorisés à utiliser les polices installées sur votre appareil</translation>
@@ -1956,7 +1955,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi aujourd'hui afin de télécharger une mise à jour. Vous pouvez aussi la télécharger via une connexion facturée à l'usage (susceptible d'entraîner des frais).}one{<ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi pour télécharger une mise à jour avant la date limite. Vous pouvez aussi la télécharger via une connexion facturée à l'usage (susceptible d'entraîner des frais).}other{<ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi pour télécharger une mise à jour avant la date limite. Vous pouvez aussi la télécharger via une connexion facturée à l'usage (susceptible d'entraîner des frais).}}</translation>
 <translation id="3009300415590184725">Voulez-vous vraiment annuler la configuration du service Internet mobile ?</translation>
 <translation id="3009779501245596802">Bases de données indexées</translation>
-<translation id="3009984992511490972">Convertissez cet appareil en appareil CloudReady 2.0.</translation>
 <translation id="3010279545267083280">Mot de passe supprimé</translation>
 <translation id="3011384993885886186">Gris chaud</translation>
 <translation id="3011488081941333749">Les cookies de <ph name="DOMAIN" /> seront effacés lorsque vous quitterez votre session de navigation</translation>
@@ -2381,7 +2379,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3476303763173086583">Envoyer des données d'utilisation et de diagnostic. Contribuez à l'amélioration de l'expérience de votre enfant sur Android en envoyant automatiquement à Google des données relatives aux diagnostics et à l'utilisation de l'appareil et des applications. Ces informations ne seront pas utilisées pour identifier votre enfant, mais elles nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires, tels que les développeurs Android. Ce <ph name="BEGIN_LINK1" />paramètre<ph name="END_LINK1" /> est appliqué par le propriétaire. Le propriétaire de cet appareil peut choisir d'envoyer à Google des données de diagnostic et d'utilisation. Si vous activez le paramètre relatif à l'activité supplémentaire sur le Web et les applications pour votre enfant, ces données peuvent être enregistrées dans son compte Google. <ph name="BEGIN_LINK2" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Petit problème… Le système n'a pas réussi à récupérer les règles pour votre appareil.</translation>
 <translation id="347785443197175480">Continuer à autoriser <ph name="HOST" /> à accéder à votre caméra et à votre micro</translation>
-<translation id="3478813605045578676">L'enregistrement n'est possible qu'après l'installation. Pour gérer cet appareil, commencez par installer CloudReady.</translation>
 <translation id="3479552764303398839">Pas maintenant</translation>
 <translation id="3479685872808224578">Impossible de détecter le serveur d'impression. Veuillez vérifier l'adresse, puis réessayer.</translation>
 <translation id="3480612136143976912">Personnalisez la taille et le style des sous-titres instantanés. Certaines applications et certains sites appliqueront également ce paramètre.</translation>
@@ -2583,7 +2580,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3694027410380121301">Sélectionner l'onglet précédent</translation>
 <translation id="369489984217678710">Mots de passe et autres données de connexion</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Les contrôles de sécurité sont terminés. Vos données vont être importées.}=1{Les contrôles de sécurité sont terminés. Votre fichier va être importé.}one{Les contrôles de sécurité sont terminés. Votre fichier va être importé.}other{Les contrôles de sécurité sont terminés. Vos fichiers vont être importés.}}</translation>
-<translation id="3696576298374669274">Afficher les journaux de service</translation>
 <translation id="3699624789011381381">Adresse e-mail</translation>
 <translation id="3699920817649120894">Désactiver la synchronisation et la personnalisation ?</translation>
 <translation id="3700888195348409686">Présentation de <ph name="PAGE_ORIGIN" />…</translation>
@@ -4161,7 +4157,6 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5431318178759467895">Couleur</translation>
 <translation id="543338862236136125">Modifier le mot de passe</translation>
 <translation id="5434065355175441495">Chiffrement RSA PKCS #1</translation>
-<translation id="5434473680236142631">Bienvenue dans CloudReady 2.0</translation>
 <translation id="5435779377906857208">Toujours autoriser l'accès à votre position pour <ph name="HOST" /></translation>
 <translation id="5436492226391861498">En attente du tunnel proxy...</translation>
 <translation id="5436510242972373446">Rechercher sur <ph name="SITE_NAME" /> :</translation>
@@ -4679,7 +4674,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer cette application.}one{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer cette application.}other{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer ces applications.}}</translation>
 <translation id="5997337190805127100">En savoir plus sur l'accès aux sites</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> résultats pour "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="6001839398155993679">OK</translation>
 <translation id="6001999913519612328">Exécuter des tests de diagnostic.</translation>
 <translation id="6002210667729577411">Déplacer le groupe vers une nouvelle fenêtre</translation>
 <translation id="6002452033851752583">Mot de passe supprimé de votre compte Google</translation>
@@ -4735,7 +4729,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6057312498756061228">Impossible de vérifier si ce fichier est sûr, car il est trop volumineux. Vous ne pouvez pas ouvrir de fichiers de plus de 50 Mo.</translation>
 <translation id="6057381398996433816">L'utilisation des capteurs de mouvement ou de lumière a été bloquée pour ce site.</translation>
 <translation id="6059276912018042191">Onglets Chrome récents</translation>
-<translation id="6059347142391822629">Pour fermer le guide, appuyez sur le contacteur lorsque le curseur se trouve sur le bouton "Terminé".</translation>
 <translation id="6059652578941944813">Hiérarchie des certificats</translation>
 <translation id="6061882183774845124">Envoyer le lien vers vos appareils</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Il se peut qu'une voix similaire ou un enregistrement puissent accéder aux résultats personnels de <ph name="SUPERVISED_USER_NAME" />. Afin d'économiser la batterie, configurez les paramètres de l'Assistant de <ph name="SUPERVISED_USER_NAME" /> pour que "Hey Google" ne soit actif que quand l'appareil est branché à l'alimentation.</translation>
@@ -5021,6 +5014,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6359706544163531585">Désactiver le thème clair</translation>
 <translation id="6361850914223837199">Informations sur l'erreur :</translation>
 <translation id="6362853299801475928">Signale&amp;r un problème...</translation>
+<translation id="6363786367719063276">Afficher les journaux</translation>
 <translation id="6363990818884053551">Pour lancer la synchronisation, confirmez votre identité</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Ajouter des proches</translation>
@@ -5213,8 +5207,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6569911211938664415">Les mots de passe sont enregistrés dans votre compte Google (<ph name="ACCOUNT" />), afin que vous puissiez les utiliser sur tous vos appareils</translation>
 <translation id="6573497332121198392">Impossible de supprimer le raccourci</translation>
 <translation id="657402800789773160">&amp;Rafraîchir cette page</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />Pour une expérience optimale, installez CloudReady 2.0 sur votre disque interne. Vous pouvez aussi l'installer plus tard sur l'écran de connexion.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Si vous n'êtes pas prêt pour l'installation, vous pouvez l'exécuter via USB pour l'essayer. Cela vous permettra de conserver votre OS et vos données, mais vous serez peut-être limité en termes de stockage et de performances.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">Téléchargement annulé : <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Instantané de l'état du réseau</translation>
 <translation id="6579369886355986318">Afficher toutes les commandes</translation>
@@ -6074,7 +6066,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7509246181739783082">Valider votre identité</translation>
 <translation id="7509539379068593709">Désinstaller l'appli</translation>
 <translation id="7511415964832680006">Lorsque cette option est activée, les sites peuvent utiliser les techniques qui préservent la vie privée présentées ici pour fournir leurs contenus et leurs services. Ces techniques incluent des alternatives au suivi intersite. D'autres essais pourront être ajoutés par la suite.</translation>
-<translation id="7514236770834963598">Vérifiez vos paramètres de confidentialité et de sécurité les plus importants</translation>
 <translation id="7514239104543605883">Copier sur votre appareil</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7514417110442087199">Ajouter une attribution</translation>
@@ -6311,7 +6302,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association.</translation>
 <translation id="7750228210027921155">Mode PIP (Picture-in-Picture)</translation>
 <translation id="7751260505918304024">Tout afficher</translation>
-<translation id="7751855202867682241">Conservez votre OS et exécutez CloudReady 2.0 via USB.</translation>
 <translation id="7753735457098489144">Échec de l'installation en raison de l'espace de stockage insuffisant. Pour libérer de l'espace, supprimez des fichiers de l'espace de stockage de l'appareil.</translation>
 <translation id="7754347746598978109">Non autorisé à utiliser JavaScript</translation>
 <translation id="7754704193130578113">Toujours demander où enregistrer les fichiers</translation>
@@ -7361,7 +7351,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8846132060409673887">Lire le fabricant et le modèle de cet ordinateur</translation>
 <translation id="8846163936679269230">Réinitialiser les profils eSIM</translation>
-<translation id="8846746259444262774">Échec de l'installation</translation>
 <translation id="8847523528195140327">Se déconnecter lorsque l'appareil est refermé</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Masqué</translation>

@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">Chromium 需要获得存储空间使用权限，才能下载文件</translation>
 <translation id="2572494885440352020">Chromium 帮助程序</translation>
 <translation id="2577788541081224677">如需在您的所有设备上访问自己的 Chromium 信息，请登录您的帐号以便开启同步功能。</translation>
-<translation id="2580426763510374355">安装 Chromium 操作系统</translation>
 <translation id="2583187216237139145">在使用此工作资料（例如创建书签、历史记录、密码和其他设置）时生成的任何 Chromium 数据都可由工作资料管理员移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">需要重新启动 Chromium 操作系统以应用更新。</translation>
 <translation id="2648074677641340862">安装过程中出现操作系统错误。请重新下载 Chromium。</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">从Chromium中移除…</translation>
 <translation id="2885378588091291677">任务管理器</translation>
 <translation id="2910007522516064972">关于 Chromium(&amp;C)</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />最后请注意：安装流程<ph name="BEGIN_BOLD" />会清除您的整个硬盘中的数据<ph name="END_BOLD" />。请确保您已妥善地备份了所有重要数据。<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />安装流程一旦开始就无法取消。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
 <translation id="2983934633046890458">Chromium 正在尝试修改密码。</translation>
 <translation id="3032706164202344641">Chromium 无法检查您的密码。请稍后重试。</translation>
@@ -79,7 +76,6 @@
 <translation id="3350761136195634146">已有一份使用此帐号创建的 Chromium 个人资料</translation>
 <translation id="3406848076815591792">切换到现有的 Chromium 个人资料？</translation>
 <translation id="3430503420100763906">借助 Chromium 个人资料，您可将自己的所有 Chromium 内容分门别类。比如，您可为朋友和家人创建专属个人资料，或者将工作内容和娱乐内容分开。</translation>
-<translation id="3433271666494956603">正在安装 Chromium 操作系统</translation>
 <translation id="347328004046849135">当您使用已泄露的密码登录时，Chromium 会通知您</translation>
 <translation id="3474745554856756813">这会从这台设备上删除 <ph name="ITEMS_COUNT" /> 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> 可用于切换 Chromium 个人资料</translation>
@@ -107,7 +103,6 @@
 <translation id="4264410486868823224">根据 <ph name="MANAGER" /> 的要求，您必须先阅读并接受以下《服务条款》才能使用此设备。这些条款不会扩展、修改或限制 Chromium 操作系统条款。</translation>
 <translation id="4271805377592243930">获取有关 Chromium 的帮助</translation>
 <translation id="4285930937574705105">未知错误导致安装失败。如果 Chromium 正在运行，请将其关闭，然后重试。</translation>
-<translation id="429583012151745428">正在安装。请勿关闭设备。安装用时应该不会超过 20 分钟。待安装完毕后，计算机将会自动关机。</translation>
 <translation id="4407044323746248786">仍要退出 Chromium？</translation>
 <translation id="4415566066719264597">让 Chromium 在后台运行</translation>
 <translation id="4423735387467980091">自定义及控制 Chromium</translation>
@@ -201,7 +196,6 @@
 <translation id="6734291798041940871">已为您计算机上的所有用户都安装 Chromium。</translation>
 <translation id="673636774878526923">如需在您的所有设备上访问自己的 Chromium 信息，请登录您的帐号，然后开启同步功能。</translation>
 <translation id="6774082503108938489">您的家长已为 Chromium 停用“网站、应用和扩展程序的权限”。因此，您无法启用该<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
-<translation id="6827182711503025204">安装 Chromium 操作系统会覆盖您的设备上的所有数据。</translation>
 <translation id="6847869444787758381">Chromium 会让您知道您的密码是否曾被泄露</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay（已复制到 Chromium）</translation>

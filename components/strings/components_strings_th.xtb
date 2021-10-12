@@ -2127,6 +2127,7 @@
 <translation id="8041089156583427627">ส่งความคิดเห็น</translation>
 <translation id="8041940743680923270">ใช้ค่าเริ่มต้นสากล (ถาม)</translation>
 <translation id="8042918947222776840">เลือกวิธีรับสินค้า</translation>
+<translation id="8052898407431791827">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="8057711352706143257">กำหนดค่า "<ph name="SOFTWARE_NAME" />" ไม่ถูกต้อง การถอนการติดตั้ง "<ph name="SOFTWARE_NAME" />" มักแก้ไขปัญหานี้ได้ <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">ขออภัย มีบางอย่างผิดพลาด</translation>
 <translation id="8067872629359326442">คุณเพิ่งใส่รหัสผ่านในเว็บไซต์ที่มีการหลอกลวง Chromium ช่วยคุณได้ หากต้องการเปลี่ยนรหัสผ่านและแจ้งให้ Google ทราบว่าบัญชีของคุณอาจมีความเสี่ยง ให้คลิก "ปกป้องบัญชี"</translation>
@@ -2324,7 +2325,6 @@
 <translation id="8742371904523228557">รหัสสำหรับ <ph name="ORIGIN" /> คือ <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">บุ๊กมาร์กแท็บนี้</translation>
 <translation id="8751426954251315517">โปรดลองอีกครั้งในคราวหน้า</translation>
-<translation id="8757526089434340176">มีข้อเสนอจาก Google Pay</translation>
 <translation id="8759274551635299824">บัตรนี้หมดอายุแล้ว</translation>
 <translation id="87601671197631245">เว็บไซต์นี้ใช้การกำหนดค่าความปลอดภัยที่ล้าสมัย ซึ่งอาจเปิดเผยข้อมูลของคุณ (เช่น รหัสผ่าน ข้อความ หรือบัตรเครดิต) เมื่อมีการส่งไปยังเว็บไซต์นี้</translation>
 <translation id="8761567432415473239">Google Safe Browsing <ph name="BEGIN_LINK" />พบโปรแกรมที่เป็นอันตราย<ph name="END_LINK" />บน <ph name="SITE" /> เมื่อเร็วๆ นี้</translation>

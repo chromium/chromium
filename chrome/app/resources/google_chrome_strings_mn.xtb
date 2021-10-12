@@ -88,8 +88,6 @@
 <translation id="2926676257163822632">Сул нууц үгийг таахад хялбар байдаг. Chrome-д <ph name="BEGIN_LINK" />танд зориулан сайн нууц үг үүсгэж, санах<ph name="END_LINK" /> боломж олгоорой.</translation>
 <translation id="2926952073016206995">Chrome-д энэ сайтын камерын зөвшөөрөл шаардлагатай</translation>
 <translation id="2929907241665500097">Chrome-г шинэчлээгүй, ямар нэг алдаа гарлаа. <ph name="BEGIN_LINK" />Chrome-г шинэчлэхтэй холбоотой асуудлууд болон амжилтгүй болсон шинэчлэлтүүдийг засна уу.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Хамгийн сүүлийн нэг сануулагч: суулгаснаар <ph name="BEGIN_BOLD" />таны хатуу дискийг бүхэлд нь устгана<ph name="END_BOLD" />. Та аливаа чухал өгөгдлөө хуулбарласан эсэхээ шалгана уу.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Суулгаж эхэлмэгц үүнийг цуцлах боломжгүй.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Сүлжээнд нэвтрэх - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome нь суурь горимд байна.</translation>
 <translation id="3059710691562604940">Аюулгүй үзэх онцлог унтраалттай байна. Chrome түүнийг асаахыг зөвлөж байна.</translation>
@@ -137,7 +135,6 @@
 <translation id="4251615635259297716">Chrome өгөгдлөө энэ бүртгэл рүү холбох уу?</translation>
 <translation id="4281844954008187215">Үйлчилгээний нөхцөл</translation>
 <translation id="4293420128516039005">Төхөөрөмжүүддээ Chrome-г синк хийж, хувийн болгохын тулд нэвтрэх</translation>
-<translation id="429583012151745428">Суулгаж байна. Төхөөрөмжийг бүү унтраагаарай. Суулгахад хорин минутаас дээш хугацаа зарцуулахгүй. Суулгасны дараа машин автоматаар унтарна.</translation>
 <translation id="4325083532956419387">Chrome үйлдлийн системийн хувилбар</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -183,7 +180,6 @@
 <translation id="5430073640787465221">Та сонгосон файл хүчин төгөлдөр бус эсвэл гэмтсэн байна.
 
 Google Chrome таны тохируулгыг дахин сэргээх боломжгүй байна.</translation>
-<translation id="5486618155264784386">Chrome OS-г суулгах</translation>
 <translation id="556024056938947818">Google Chrome нууц харуулахыг хичээж байна.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Хэрэв энэ хуудсан дээр тохиргоог харуулахгүй байгаа бол <ph name="LINK_BEGIN" />
@@ -238,7 +234,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7155997830309522122">Хэрэв тийм бол Chrome-д хадгалсан нууц үгээ засаж, шинэ нууц үгтэйгээ тааруулна уу.</translation>
 <translation id="7161904924553537242">Google Chrome-д тавтай морил</translation>
 <translation id="7242029209006116544">Та удирдлагатай бүртгэлээр нэвтрэн орсноор үүний админд нь өөрийнхөө Google Chrome-ын мэдээллийг хянах эрхийг өгөх болно.  Жишээ нь, таны Chrome-ын мэдээлэл,  хадгалагдсан хуудсууд,  түүх, нууц үг болон бусад тохиргоонууд <ph name="USER_NAME" /> руу  тэр чигтээ нэгтгэгдэх болно.  Та Google-ийн Хяналтын Самбараар дамжуулан энэ мэдээллийг устгах боломжтой хэдий ч энэ мэдээллийг өөр бүртгэлтэй холбох боломжгүй болно. Харин та одоо байгаа Chrome-ын мэдээллийг тусад нь хадгалахын тулд шинэ хэрэглэгч үүсгэж болно. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Chrome үйлдлийн системийг суулгаж байна</translation>
 <translation id="7295052994004373688">Энэ хэлийг Google Chrome UI-г харуулахад ашигладаг</translation>
 <translation id="7296210096911315575">Ашиглалт болон аюулгүй байдлын чухал мэдээлэл</translation>
 <translation id="7308322188646931570">Файл татахын тулд Chrome-д санд хандах зөвшөөрөл шаардлагатай</translation>

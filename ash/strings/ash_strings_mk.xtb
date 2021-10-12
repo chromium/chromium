@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">Вашите уреди работат уште подобро заедно</translation>
 <translation id="1119348796022671382">Тематскиот режим во боја користи бои од тапетот за лесно обојување на интерфејсот.</translation>
 <translation id="112308213915226829">Автоматски сокриј полица</translation>
+<translation id="1142002900084379065">Неодамнешни фотографии</translation>
 <translation id="1148499908455722006">Отворете го дијалогот со податоци за <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Календар</translation>
 <translation id="1153356358378277386">Спарени уреди</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">Овозможена е лупата за цел екран. Притиснете Ctrl+Search+M повторно за да ја исклучите.</translation>
 <translation id="2302092602801625023">Оваа сметка е управувана од Family Link</translation>
 <translation id="2303600792989757991">Префрли преглед во прозорец</translation>
+<translation id="2318576281648121272">Денес <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Назад за една буква</translation>
 <translation id="2339073806695260576">Допрете го копчето за пенкало на полицата за да напишете белешка, да направите слика од екранот, да го користите ласерскиот покажувач или лупата.</translation>
 <translation id="2341729377289034582">Заклучен вертикално</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
 <translation id="24452542372838207">Прошири го известувањето</translation>
 <translation id="2450205753526923158">Режим на слика од екранот</translation>
+<translation id="2456008742792828469">Календар, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Потврдете ја резолуцијата</translation>
 <translation id="2475982808118771221">Настана грешка</translation>
 <translation id="2482878487686419369">Известувања</translation>
@@ -278,6 +281,7 @@
 <translation id="3100274880412651815">Отфрли го режимот на снимање</translation>
 <translation id="3105917916468784889">Сними слика од екранот</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Отстрани го предлогот</translation>
 <translation id="3126069444801937830">Рестартирај за да се ажурира</translation>
 <translation id="3139942575505304791">Биро 1</translation>
 <translation id="315116470104423982">Мобилен интернет</translation>
@@ -317,6 +321,7 @@
 <translation id="3413817803639110246">Сѐ уште нема што да се види</translation>
 <translation id="3428447136709161042">Прекини ја врската со <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Повлечете оддесно за да се вратите назад</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Изменете го потсетникот</translation>
 <translation id="3435967511775410570">Отпечатокот е препознаен</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -504,6 +509,7 @@
 <translation id="4642092649622328492">Снимете делумна слика од екранот</translation>
 <translation id="4659419629803378708">ChromeVox е овозможен</translation>
 <translation id="4665114317261903604">Вклучи/исклучи „Не вознемирувај“. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Се презема <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Отклучете го уредот со код на родител</translation>
 <translation id="4702647871202761252">Исклучен е екранот за приватност</translation>
 <translation id="4706121060329443414">Подоцна ќе се изврши обид за преземање. Говорот ќе биде испратен до Google за обработка засега.</translation>
@@ -641,6 +647,7 @@
 <translation id="5744083938413354016">Влечење со допир</translation>
 <translation id="5745612484876805746">„Ноќното светло“ се вклучува автоматски на зајдисонце</translation>
 <translation id="5750765938512549687">Bluetooth е исклучен</translation>
+<translation id="576341972084747908">Преземате опасна датотека <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">„Ноќното светло“ е вклучено.</translation>
 <translation id="5769373120130404283">Екран за приватност</translation>
 <translation id="5777841717266010279">Запри споделување екран?</translation>
@@ -782,6 +789,7 @@
 <translation id="6852052252232534364">Кликнете за активирање</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостанува уште една цифра}one{Преостанува уште # цифра}other{Преостануваат уште # цифри}}</translation>
+<translation id="6867938213751067702">Преземањето на <ph name="FILENAME" /> е паузирано</translation>
 <translation id="6878400149835617132">Кратенката е исклучена</translation>
 <translation id="6886172995547742638">Перформансите на вашиот <ph name="DEVICE_TYPE" /> може да бидат послаби. Користете сертифициран адаптер за напојување USB-C од <ph name="PREFERRED_MINIMUM_POWER" /> W или повеќе.</translation>
 <translation id="688631446150864480">Притискајте го копчето со стрелка надолу за да се префрлате меѓу прозорците</translation>

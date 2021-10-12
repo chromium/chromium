@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">‏Chromium זקוק לגישה לאחסון כדי להוריד קבצים</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">‏לקבלת גישה לפריטים שלך ב-Chromium בכל המכשירים שלך, יש להיכנס לחשבון כדי שניתן יהיה להפעיל את הסנכרון.</translation>
-<translation id="2580426763510374355">‏להתקנת Chromium OS</translation>
 <translation id="2583187216237139145">‏המנהל של פרופיל העבודה יכול להסיר נתוני Chromium שמופקים בזמן השימוש בפרופיל (כמו יצירת סימניות, היסטוריה, סיסמאות והגדרות נוספות). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">‏כדי להחיל עדכון זה, יש להפעיל מחדש את Chromium OS.</translation>
 <translation id="2648074677641340862">‏במהלך ההתקנה ארעה שגיאה של מערכת ההפעלה. יש להוריד שוב את Chromium.</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">‏הסרה מ-Chromium...</translation>
 <translation id="2885378588091291677">מנהל המשימות</translation>
 <translation id="2910007522516064972">‏מידע על &amp;Chromium‏</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />תזכורת אחרונה: ההתקנה <ph name="BEGIN_BOLD" />תגרום למחיקה של כל הכונן הקשיח<ph name="END_BOLD" />. חשוב לוודא שגיבית את הנתונים שחשובים לך.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />אין אפשרות לבטל את ההתקנה לאחר שהחלה.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">‏Chromium‏ מעודכן</translation>
 <translation id="2983934633046890458">‏Chromium מנסה לערוך את הסיסמאות.</translation>
 <translation id="3032706164202344641">‏Chromium לא יכול לבדוק את הסיסמאות שלך. כדאי לנסות שוב מאוחר יותר.</translation>
@@ -77,7 +74,6 @@
 <translation id="3350761136195634146">‏כבר קיים פרופיל Chromium עם החשבון הזה</translation>
 <translation id="3406848076815591792">‏לעבור לפרופיל קיים של Chromium?</translation>
 <translation id="3430503420100763906">‏באמצעות פרופילים ב-Chromium, מפרידים את כל הפריטים ב-Chromium. יוצרים פרופילים המיועדים לחברים ולבני משפחה או פרופילים נפרדים לעבודה ולבילויים בשעות הפנאי.</translation>
-<translation id="3433271666494956603">‏ההתקנה של מערכת ההפעלה Chromium מתבצעת</translation>
 <translation id="347328004046849135">‏אם מערכת Chromium תזהה שנכנסת עם סיסמה שנחשפה, היא תתריע לך על כך</translation>
 <translation id="3474745554856756813">‏פעולה זו תמחק <ph name="ITEMS_COUNT" /> פריטים מהמכשיר. כדי לשחזר את הנתונים מאוחר יותר, יש להיכנס אל Chromium עם <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">‏ניתן לעבור בין פרופילים של Chromium באמצעות <ph name="SHORTCUT" /></translation>
@@ -105,7 +101,6 @@
 <translation id="4264410486868823224">‏<ph name="MANAGER" /> דורש לקרוא את התנאים וההגבלות הבאים ולהסכים להם לפני השימוש במכשיר הזה. תנאים אלה לא מרחיבים, משנים או מגבילים את התנאים של מערכת ההפעלה של Chromium.</translation>
 <translation id="4271805377592243930">‏עזרה בנושא Chromium</translation>
 <translation id="4285930937574705105">‏ההתקנה נכשלה בשל שגיאה לא צפויה. אם Chromium פועל כעת, יש לסגור אותו ולנסות שוב.</translation>
-<translation id="429583012151745428">ההתקנה מתבצעת. אין לכבות את המכשיר. ההתקנה לא אמורה להימשך יותר מ-20 דקות. המחשב ייכבה באופן אוטומטי לאחר ההתקנה.</translation>
 <translation id="4407044323746248786">‏לסגור את Chromium בכל זאת?</translation>
 <translation id="4415566066719264597">‏Chromium יכול לפעול ברקע</translation>
 <translation id="4423735387467980091">‏התאמה אישית ושליטה ב-Chromium</translation>
@@ -199,7 +194,6 @@
 <translation id="6734291798041940871">‏Chromium כבר מותקן במחשב ונגיש לכל המשתמשים.</translation>
 <translation id="673636774878526923">‏כדי לקבל גישה אל הפריטים שלך ב-Chromium בכל המכשירים, יש להיכנס לחשבון ולהפעיל את הסנכרון.</translation>
 <translation id="6774082503108938489">‏אחד מההורים השבית ב-Chromium את ההגדרה "הרשאות לאתרים, אפליקציות ותוספים". לא ניתן להפעיל את <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="6827182711503025204">‏התקנת מערכת ההפעלה Chromium תוביל להחלפת כל הנתונים שבמכשיר.</translation>
 <translation id="6847869444787758381">‏Chromium מודיע לך אם הסיסמאות שלך נמצאות בסיכון</translation>
 <translation id="6857782730669500492">‏Chromium‏ - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">‏Google Pay (‏הועתק ל-Chromium)</translation>

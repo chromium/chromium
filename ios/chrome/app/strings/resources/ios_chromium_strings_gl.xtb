@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1257458525759135959">Se queres gardar imaxes, para que Chromium poida engadir as túas fotos, toca Configuración</translation>
 <translation id="1289216811211435351">Pásate a Chromium</translation>
+<translation id="1354592789402432496">O teu administrador require que inicies sesión cunha conta de organización. As contas que este restrinxe están ocultas.</translation>
 <translation id="1361748954329991663">Chromium está desactualizado. Se non hai dispoñible ningunha actualización na <ph name="BEGIN_LINK" />tenda de aplicacións<ph name="END_LINK" />, é posible que o teu dispositivo xa non sexa compatible coas novas versións de Chromium.</translation>
 <translation id="1370204544543370355">Para tirarlle o máximo partido a Chromium, inicia sesión coa túa Conta de Google en Chromium</translation>
 <translation id="1431818719585918472">Permite que Chromium bloquee as pestanas do modo de incógnito.</translation>
@@ -50,6 +51,7 @@
 <translation id="5171868502429358653">Inicia sesión en Chromium</translation>
 <translation id="5224391634244552924">Non hai contrasinais gardados. Chromium pode comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="5308226104666789935">Chromium non puido buscar actualizacións</translation>
+<translation id="5324242752415821224">A túa organización esixe que inicies para usar Chromium. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Queres definir Chromium como navegador predeterminado?</translation>
 <translation id="5521125884468363740">Para ver as túas pestanas desde calquera dispositivo no que utilices Chromium, inicia sesión e activa a sincronización</translation>
 <translation id="5573014823074921752">Consello sobre Chromium: Para ver máis opcións relacionadas coas pestanas, mantén premido o botón Mostrar pestanas. Atoparalo na barra de ferramentas, situada na parte inferior ou superior da pantalla.</translation>
@@ -63,6 +65,7 @@
 2. Toca Aplicación de navegador predeterminada
 3. Selecciona Chromium.</translation>
 <translation id="6155422572367400359">Inicia sesión neste sitio, na túa Conta de Google e en Chromium. Podes activar a sincronización máis tarde.</translation>
+<translation id="6183442264225539303">Inicia sesión neste sitio e en Chromium. Podes activar a sincronización máis tarde.</translation>
 <translation id="6268381023930128611">Pechar sesión en Chromium?</translation>
 <translation id="632825460376924298">Permitir inicio de sesión en Chromium</translation>
 <translation id="6337530241089703714">Indicar se queres borrar ou conservar os teus datos de Chromium neste dispositivo</translation>

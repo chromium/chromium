@@ -58,6 +58,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1881378885488531302">មិនអាច​ទាញយក​អាសយដ្ឋាន IP បានទេ</translation>
 <translation id="1887850431809612466">ការផ្លាស់ប្តូរផ្នែករឹង</translation>
+<translation id="1901646112321215184">មិនមានម៉ាស៊ីនមេ DNS ត្រូវបានកំណត់រចនាសម្ព័ន្ធទេ</translation>
 <translation id="1905710495812624430">បាន​លើស​ការ​ព្យាយាម​ចូូល​អតិបរមា​ដែល​បាន​អនុញ្ញាត​ហើយ​។​</translation>
 <translation id="1908234395526491708">សំណើ UDP មិនបានសម្រេច</translation>
 <translation id="1930797645656624981">សេវាកម្ម​វិធី​បញ្ចូល Chrome OS</translation>
@@ -74,6 +75,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">បានដាក់ជាជួរ</translation>
 <translation id="2161394479394250669">បោះបង់​ការងារ​បោះពុម្ព</translation>
+<translation id="2180197493692062006">មានអ្វីមួយខុសប្រក្រតី។ សូមសាកល្បង​បើកកម្មវិធី​ឡើងវិញ។</translation>
 <translation id="2209788852729124853">កំណត់មុខងាររាប់ចំនួនចរាចរណ៍ឡើងវិញ</translation>
 <translation id="2212733584906323460">កម្រិតច្បាស់​នៃឈ្មោះ</translation>
 <translation id="2217935453350629363">ល្បឿនបច្ចុប្បន្ន</translation>
@@ -89,6 +91,7 @@
 <translation id="2391082728065870591">ផ្ញើ​របាយការណ៍អំពីមតិកែលម្អ</translation>
 <translation id="2407209115954268704">ស្ថានភាពនៃការចាក់សោស៊ីម</translation>
 <translation id="2418150275289244458">បើក​នៅក្នុង​ការកំណត់</translation>
+<translation id="2421798028054665193">រូបភាព <ph name="CURRENT_PAGE" /> នៃ <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">ភាពត្រឹមត្រូវនៃ​ពិន្ទុអណ្ដែត</translation>
 <translation id="2448312741937722512">ប្រភេទ</translation>
 <translation id="2461822463642141190">បច្ចុប្បន្ន</translation>
@@ -107,11 +110,13 @@
 <translation id="2860473693272905224">ដាក់ទំព័រ​ផ្សេងទៀតនៅ​លើម៉ាស៊ីនស្កេន</translation>
 <translation id="2872961005593481000">បិទ</translation>
 <translation id="2878387241690264070">បានឈប់សាកថ្ម <ph name="RATE" /> ក្នុងរយៈពេល <ph name="NUM_SECONDS" /> វិនាទី។</translation>
+<translation id="2927511423571448384">មិនអាចភ្ជាប់ជាមួយគេហទំព័រ HTTP (ច្រក 80) តាមរយៈជញ្ជាំង​ភ្លើងពី Android បានទេ</translation>
 <translation id="3008341117444806826">ផ្ទុក​ឡើង​វិញ</translation>
 <translation id="3009958530611748826">ជ្រើសរើសថត ដើម្បីរក្សាទុកឯកសារស្កេន</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3069085583900247081">ការធ្វើតេស្ត​​មិនបានសម្រេចទេ</translation>
+<translation id="3076387335132326640">អ្នក​កំពុង​ប្រើបណ្ដាញបើក</translation>
 <translation id="3083667275341675831">ការវិភាគអំពីការតភ្ជាប់</translation>
 <translation id="3091839911843451378">មិនបានសម្រេច - ​​​ម៉ាស៊ីន​បោះពុម្ពបានឈប់</translation>
 <translation id="3102119246920354026">ឃ្លាំងបម្រុង</translation>
@@ -199,6 +204,7 @@
 <translation id="455835558791489930">ថ្ម <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="4561801978359312462">បានដោះសោ​ស៊ីម</translation>
 <translation id="4562494484721939086">គ្មានសេវាទេ</translation>
+<translation id="4567024731344774461">មិនអាចដោះស្រាយ DNS ពី Android បានទេ</translation>
 <translation id="458794348635939462">មិនអាចដោះស្រាយម៉ាស៊ីនទាំងអស់បានទេ</translation>
 <translation id="4593212453765072419">តម្រូវ​ឱ្យ​មាន​ការផ្ទៀងផ្ទាត់​ប្រូកស៊ី</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ក្នុង​ចំណោម <ph name="TOTAL_PAGE_NUMBER" />។ ចុច enter ដើម្បីបោះបង់​ការងារបោះពុម្ព។</translation>
@@ -223,6 +229,7 @@
 <translation id="484790837831576105">(Android) កម្រិតច្បាស់ DNS</translation>
 <translation id="4848429997038228357">កំពុងដំណើរការ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> អាចព្យាយាមបាន {0} ដងទៀត}other{<ph name="ERROR_MESSAGE" /> អាចព្យាយាមបាន {0} ដងទៀត}}</translation>
+<translation id="4871137769558798671">មិនអាចភ្ជាប់ជាមួយគេហទំព័រ HTTPS (ច្រក 443) តាមរយៈជញ្ជាំង​ភ្លើងបានទេ</translation>
 <translation id="4880328057631981605">ឈ្មោះចំណុចចូលប្រើ</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">សូមជ្រើសរើស​ពាក្យសម្ងាត់​ថ្មីភ្លាមៗ</translation>
@@ -257,6 +264,7 @@
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">កំណែ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">ផ្លាស់ទី​វិនដូទៅតុ</translation>
+<translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">អត្តសញ្ញាណ</translation>
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5318334351163689047">សំណើ TCP មិនបានសម្រេច</translation>
@@ -278,6 +286,8 @@
 <translation id="5502931783115429516">Android មិនដំណើរការ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5546352997259770619">កម្លាំងរលកសញ្ញាទាប សូមសាកល្បងរំកិលឱ្យ​ជិតដុំភ្ជាប់បណ្ដាញឥតខ្សែជាងនេះ</translation>
+<translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ស្កេន​ឡើងវិញ</translation>
 <translation id="5669267381087807207">កំពុងធ្វើសកម្មភាព</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -318,6 +328,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">កម្រិតថ្ម​ធ្លាក់ចុះ​តាមរយៈ​ការប្រើប្រាស់</translation>
 <translation id="6191293864534840972">DNS មានទម្រង់មិនត្រឹមត្រូវ</translation>
+<translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">មិនមាន​ម៉ាស៊ីនស្កេន​ទេ</translation>
 <translation id="6232017090690406397">ថ្ម</translation>
 <translation id="6243280677745499710">ឥឡូវនេះ​បានកំណត់​ហើយ</translation>
@@ -327,6 +338,7 @@
 <translation id="636850387210749493">ការចុះឈ្មោះសហគ្រាស</translation>
 <translation id="6379086450106841622">អេក្រង់ថាច់</translation>
 <translation id="6388847657025262518">ឧបករណ៍​បញ្ចូល​ឯកសារ​របស់ម៉ាស៊ីនស្កេន​ជាប់គាំង។ សូម​ពិនិត្យមើល​ឧបករណ៍​បញ្ចូល​ឯកសារនោះ រួចព្យាយាម​ម្ដងទៀត។</translation>
+<translation id="6395640744968320699">មិនអាចភ្ជាប់ជាមួយគេហទំព័រ HTTP (ច្រក 80) តាមរយៈជញ្ជាំង​ភ្លើងបានទេ</translation>
 <translation id="641081527798843608">ប្រធានបទ​ត្រូវគ្នា</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">ល្អ</translation>
@@ -334,6 +346,7 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">ស្ថិតក្រោមការគ្រប់គ្រងរបស់ <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">បានឈប់ - ជាប់​ក្រដាស</translation>
+<translation id="6498608540383876992">មិនអាចទាក់ទងច្រកបានទេ</translation>
 <translation id="6516990319416533844">ដើម្បី​ធ្វើតេស្ត​អត្រាសាកថ្ម សូមទុកឱ្យថ្ម​របស់អ្នក​នៅសល់តិចសិន</translation>
 <translation id="6517239166834772319">រុករក</translation>
 <translation id="6527081081771465939">មិនស្គាល់​ប្រូតូកូល​សុវត្ថិភាព WiFi</translation>
@@ -381,6 +394,7 @@
 <translation id="7271040990581020067">បច្ចុប្បន្ននេះ ម៉ាស៊ីនស្កេន​កំពុងស្ថិតក្នុង​ការប្រើប្រាស់។ សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ។</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">បណ្ដុំ​ផ្ទាំងរូបភាព</translation>
+<translation id="7292680402155138244">ការ​ពន្យារខ្ពស់ក្នុងការចូលទៅគេហទំព័រ HTTPS (ច្រក 443)</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -431,12 +445,15 @@
 <translation id="7994702968232966508">វិធីសាស្ត្រ EAP</translation>
 <translation id="8020238979854764615">មាន​បញ្ហា​បានកើតឡើង។ សូមព្យាយាម​ម្ដងទៀត ដោយជ្រើសរើស​រូបភាពផ្សេងទៀត។</translation>
 <translation id="802154636333426148">បានបរាជ័យក្នុងការទាញយក</translation>
+<translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">ផ្ញើមតិ</translation>
 <translation id="8075838845814659848">ការសាកថ្ម​ដែលនៅសល់</translation>
 <translation id="808894953321890993">ប្ដូរ​ពាក្យ​សម្ងាត់</translation>
 <translation id="811820734797650957">(Android) អាចធ្វើតេស្ដ​ភីងលើច្រកបាន</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ស្នើសុំមុខងាររាប់ចំនួនចរាចរណ៍</translation>
+<translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8177708084858970226">មិនអាចដោះស្រាយ DNS បានទេ</translation>
 <translation id="8206859287963243715">ប្រព័ន្ធទូរស័ព្ទ</translation>
 <translation id="8208861521865154048">អត្ថប្រយោជន៍</translation>
 <translation id="8230672074305416752">មិនអាចភីងច្រកបណ្ដាញលំនាំដើមបានទេ</translation>
@@ -448,6 +465,7 @@
 <translation id="8297006494302853456">ខ្សោយ</translation>
 <translation id="8302368968391049045">ជញ្ជាំងភ្លើង HTTPS</translation>
 <translation id="8318753676953949627">មិនមាន​រូបភាព​ទេ</translation>
+<translation id="8346875532700229909">មិនអាចទាក់ទងច្រកពី Android បានទេ</translation>
 <translation id="8347227221149377169">ការងារ​បោះពុម្ព</translation>
 <translation id="8352772353338965963">បន្ថែមគណនីមួយដើម្បីចូលពីគណនីច្រើន។ គណនីដែលចូលទាំងអស់អាចចូលប្រើដោយគ្មានពាក្យសម្ងាត់ ដូច្នេះលក្ខណពិសេសនេះគួរត្រូវបានប្រើជាមួយគណនីដែលគួរជឿជាក់តែប៉ុណ្ណោះ។</translation>
 <translation id="8364946094152050673">DNS នៅទទេ</translation>
@@ -479,6 +497,7 @@
 <translation id="8747900814994928677">បញ្ជាក់​ការ​ផ្លាស់ប្ដូរ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="879568662008399081">បណ្ដាញនេះអាចមានច្រកចូលប្រើបណ្ដាញ</translation>
 <translation id="8798099450830957504">លំនាំដើម</translation>
 <translation id="8798441408945964110">ឈ្មោះក្រុមហ៊ុនផ្តល់សេវា</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
@@ -502,6 +521,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ស្កេន}=1{ស្កេនទំព័រទី {NUMBER_OF_PAGES}}other{ស្កេនទំព័រទី {NUMBER_OF_PAGES}}}</translation>
 <translation id="9003704114456258138">ហ្វ្រេកង់</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9062831201344759865">ដំណោះស្រាយ DNS មានការ​ពន្យារខ្ពស់</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ប៊្លូធូស</translation>
 <translation id="9088306295921699330">ការប្រើប្រាស់​បច្ចុប្បន្ន</translation>

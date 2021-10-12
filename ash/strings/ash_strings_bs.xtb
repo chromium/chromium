@@ -23,6 +23,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1104621072296271835">Uređaji još bolje rade zajedno</translation>
 <translation id="1119348796022671382">Način rada tematske boje koristi boje izdvojene iz pozadinske slike da blago oboji interfejs.</translation>
 <translation id="112308213915226829">Automatski sakrij policu</translation>
+<translation id="1142002900084379065">Nedavne fotografije</translation>
 <translation id="1148499908455722006">Otvaranje informativnog dijaloškog okvira za korisnika <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendar</translation>
 <translation id="1153356358378277386">Upareni uređaji</translation>
@@ -179,6 +180,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2298170939937364391">Omogućeno je povećalo cijelog ekrana. Ponovo pritisnite Ctrl+Search+M da ga isključite.</translation>
 <translation id="2302092602801625023">Ovim računom upravlja Family Link</translation>
 <translation id="2303600792989757991">Uključivanje/isključivanje pregleda prozora</translation>
+<translation id="2318576281648121272">Danas, <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Slovo unazad</translation>
 <translation id="2339073806695260576">Dodirnite dugme sa olovkom na polici da napišete bilješku, napravite snimak ekrana, koristite laserski pokazivač ili lupu.</translation>
 <translation id="2341729377289034582">Zaključan vertikalni prikaz</translation>
@@ -200,6 +202,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
 <translation id="24452542372838207">Proširi obavještenje</translation>
 <translation id="2450205753526923158">Način rada za snimak ekrana</translation>
+<translation id="2456008742792828469">Kalendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Potvrdite rezoluciju</translation>
 <translation id="2475982808118771221">Došlo je do greške</translation>
 <translation id="2482878487686419369">Obavještenja</translation>
@@ -278,6 +281,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3100274880412651815">Odbacivanje načina rada snimanja</translation>
 <translation id="3105917916468784889">Napravi snimak ekrana</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Ukloni prijedlog</translation>
 <translation id="3126069444801937830">Ponovo pokrenite za ažuriranje</translation>
 <translation id="3139942575505304791">Radna površina 1</translation>
 <translation id="315116470104423982">Mobilni podaci</translation>
@@ -317,6 +321,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3413817803639110246">Još uvijek nema sadržaja za prikaz</translation>
 <translation id="3428447136709161042">Prekidanje veze s mrežom <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Prevucite prstom zdesna nalijevo da se vratite</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Uredi podsjetnik</translation>
 <translation id="3435967511775410570">Otisak prsta je prepoznat</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4642092649622328492">Napravite djelomičan snimak ekrana</translation>
 <translation id="4659419629803378708">ChromeVox je omogućen</translation>
 <translation id="4665114317261903604">Uključi/isključi način rada Ne ometaj. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Preuzima se <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Otključajte uređaj pomoću koda roditelja</translation>
 <translation id="4702647871202761252">Ekran za privatnost je isključen</translation>
 <translation id="4706121060329443414">Pokušaj preuzimanja će se izvršiti kasnije. Govor će se odmah poslati Googleu na obradu.</translation>
@@ -640,6 +646,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5744083938413354016">Dodirnite prevlačeći</translation>
 <translation id="5745612484876805746">Noćno svjetlo se uključuje automatski po zalasku sunca</translation>
 <translation id="5750765938512549687">Bluetooth je isključen</translation>
+<translation id="576341972084747908">Preuzimanje opasne datoteke <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Noćno svjetlo je uključeno.</translation>
 <translation id="5769373120130404283">Ekran za privatnost</translation>
 <translation id="5777841717266010279">Zaustaviti dijeljenje ekrana?</translation>
@@ -781,6 +788,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6852052252232534364">Kliknite da aktivirate</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Preostala je jedna cifra}one{Preostala je # cifra}few{Preostale su # cifre}other{Preostalo je # cifara}}</translation>
+<translation id="6867938213751067702">Pauzirano je preuzimanje datoteke <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Prečica je isključena</translation>
 <translation id="6886172995547742638">Vaš uređaj <ph name="DEVICE_TYPE" /> može funkcionirati uz slabije performanse. Koristite certificirani USB-C adapter za napajanje od <ph name="PREFERRED_MINIMUM_POWER" /> W ili jači.</translation>
 <translation id="688631446150864480">Pritisnite tipku strelice nadolje da se prebacite između prozora</translation>

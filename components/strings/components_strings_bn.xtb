@@ -2137,6 +2137,7 @@
 <translation id="8041089156583427627">প্রতিক্রিয়া পাঠান</translation>
 <translation id="8041940743680923270">বিশ্বব্যাপী ডিফল্ট ব্যবহার করুন (জানতে চান)</translation>
 <translation id="8042918947222776840">পিক-আপের পদ্ধতি বেছে নিন</translation>
+<translation id="8052898407431791827">ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" সঠিকভাবে কনফিগার হয়নি। সাধারণত "<ph name="SOFTWARE_NAME" />" আন-ইনস্টল করা হলে সমস্যার সমাধান হয়ে যায়। <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">কিছু সমস্যা হয়েছে।</translation>
 <translation id="8067872629359326442">আপনি এখনই প্রতারণামূলক একটি সাইটে আপনার পাসওয়ার্ড লিখেছেন। Chromium সাহায্য করবে। আপনার অ্যাকাউন্টের নিরাপত্তা লঙ্ঘনের সম্ভাবনা এড়ানোর জন্য পাসওয়ার্ড পরিবর্তন করতে এবং Google-কে বিজ্ঞপ্তি দিয়ে জানাতে 'অ্যাকাউন্ট সুরক্ষিত রাখুন' বিকল্পে ক্লিক করুন।</translation>
@@ -2333,7 +2334,6 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> হল আপনার <ph name="ORIGIN" />-এর কোড</translation>
 <translation id="874918643257405732">এই ট্যাব বুকমার্ক করুন</translation>
 <translation id="8751426954251315517">পরে আবার চেষ্টা করুন</translation>
-<translation id="8757526089434340176">Google Pay অফার উপলভ্য</translation>
 <translation id="8759274551635299824">এই কার্ডটির মেয়াদ শেষ হয়েছে</translation>
 <translation id="87601671197631245">এই সাইটটি পুরনো সিকিউরিটি কনফিগারেশন ব্যবহার করে তাই আপনার তথ্য (যেমন, পাসওয়ার্ড, মেসেজ বা ক্রেডিট কার্ডের নম্বর) এই সাইটে পাঠানোর সময় এইসব তথ্যের নিরাপত্তা বিঘ্নিত হতে পারে।</translation>
 <translation id="8761567432415473239">Google নিরাপদ ব্রাউজিং সম্প্রতি <ph name="SITE" /> এ <ph name="BEGIN_LINK" />ক্ষতিকারক প্রোগ্রামগুলি খুঁজে পেয়েছে<ph name="END_LINK" />৷</translation>

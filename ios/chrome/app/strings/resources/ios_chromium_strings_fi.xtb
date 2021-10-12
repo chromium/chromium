@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Tietoja Chromiumista</translation>
 <translation id="1257458525759135959">Anna Chromiumin lisätä uusia kuvia valitsemalla Asetukset, niin voit tallentaa kuvia.</translation>
 <translation id="1289216811211435351">Vaihda Chromiumiin</translation>
+<translation id="1354592789402432496">Järjestelmänvalvoja edellyttää sisäänkirjautumista organisaation tilillä. Järjestelmänvalvojan rajoittamat tilit on piilotettu.</translation>
 <translation id="1361748954329991663">Chromium on vanhentunut. Jos päivitystä ei ole saatavilla <ph name="BEGIN_LINK" />sovelluskaupasta<ph name="END_LINK" />, laitteesi ei välttämättä enää tue Chromiumin uusia versioita.</translation>
 <translation id="1370204544543370355">Kirjaudu sisään Chromiumiin Google-tililläsi, jotta saat parhaan hyödyn Chromiumista</translation>
 <translation id="1431818719585918472">Anna Chromiumin lukita incognito-välilehtesi.</translation>
@@ -50,6 +51,7 @@
 <translation id="5171868502429358653">Kirjaudu Chromiumiin</translation>
 <translation id="5224391634244552924">Ei tallennettuja salasanoja. Chromium voi tarkistaa salasanasi, kun tallennat niitä.</translation>
 <translation id="5308226104666789935">Chromium ei voi tarkistaa, onko päivityksiä saatavilla</translation>
+<translation id="5324242752415821224">Organisaatiosi edellyttää sisäänkirjautumista, jotta voit käyttää Chromiumia. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Valitaanko Chromium oletukseksi?</translation>
 <translation id="5521125884468363740">Kirjaudu sisään ja laita synkronointi päälle, jotta voit nähdä Chromium-välilehtesi missä tahansa</translation>
 <translation id="5573014823074921752">Chromium-vinkki: Voit avata välilehtien lisäasetukset painamalla pitkään ylä- tai alapalkissa olevaa Näytä välilehdet ‑painiketta.</translation>
@@ -63,6 +65,7 @@
 2. Valitse Oletusselain
 3. Valitse Chromium.</translation>
 <translation id="6155422572367400359">Kirjaudu tälle sivustolle, Google-tilillesi ja Chromiumiin. Voit laittaa synkronoinnin päälle myöhemmin.</translation>
+<translation id="6183442264225539303">Kirjaudu tälle sivustolle ja Chromiumiin. Voit laittaa synkronoinnin päälle myöhemmin.</translation>
 <translation id="6268381023930128611">Kirjaudutaanko ulos?</translation>
 <translation id="632825460376924298">Salli Chromium-kirjautuminen</translation>
 <translation id="6337530241089703714">Valitse, haluatko poistaa Chromium-datasi tältä laitteelta vai säilyttää sen</translation>

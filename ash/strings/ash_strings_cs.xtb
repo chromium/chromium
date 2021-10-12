@@ -23,6 +23,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1104621072296271835">Společně budou vaše zařízení fungovat ještě lépe</translation>
 <translation id="1119348796022671382">Režim barvy podle motivu používá barvy z tapety k lehkému zabarvení rozhraní.</translation>
 <translation id="112308213915226829">Automaticky skrývat poličku</translation>
+<translation id="1142002900084379065">Nejnovější fotky</translation>
 <translation id="1148499908455722006">Otevřít dialogové okno s informacemi o účtu <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendář</translation>
 <translation id="1153356358378277386">Spárovaná zařízení</translation>
@@ -179,6 +180,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2298170939937364391">Je zapnutá lupa celé obrazovky. Vypnete ji opětovným stisknutím kombinace kláves Ctrl+Hledat+M.</translation>
 <translation id="2302092602801625023">Tento účet spravuje služba Family Link</translation>
 <translation id="2303600792989757991">Přepnutí přehledu okna</translation>
+<translation id="2318576281648121272">Dnes <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Zpět o písmeno</translation>
 <translation id="2339073806695260576">Klepnutím na tlačítko dotykového pera na poličce můžete pořídit poznámku nebo snímek obrazovky, případně použít laserové ukazovátko nebo lupu.</translation>
 <translation id="2341729377289034582">Uzamknuto na výšku</translation>
@@ -200,6 +202,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2435457462613246316">Zobrazit heslo</translation>
 <translation id="24452542372838207">Rozbalit oznámení</translation>
 <translation id="2450205753526923158">Režim snímku obrazovky</translation>
+<translation id="2456008742792828469">Kalendář, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Potvrďte rozlišení</translation>
 <translation id="2475982808118771221">Došlo k chybě</translation>
 <translation id="2482878487686419369">Oznámení</translation>
@@ -278,6 +281,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3100274880412651815">Zavřít režim nahrávání</translation>
 <translation id="3105917916468784889">Pořídit snímek obrazovky</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Odstranit návrh</translation>
 <translation id="3126069444801937830">Restartovat a aktualizovat</translation>
 <translation id="3139942575505304791">Plocha 1</translation>
 <translation id="315116470104423982">Mobilní datové přenosy</translation>
@@ -317,6 +321,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3413817803639110246">Zatím tu není nic k vidění</translation>
 <translation id="3428447136709161042">Odpojit od sítě <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Chcete-li se vrátit, přejeďte prstem zprava</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="343571671045587506">Upravit připomenutí</translation>
 <translation id="3435967511775410570">Otisk rozpoznán</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4642092649622328492">Pořídit částečný snímek obrazovky</translation>
 <translation id="4659419629803378708">Funkce ChromeVox je zapnutá</translation>
 <translation id="4665114317261903604">Přepnout možnost Nerušit. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Stahování souboru <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Odemkněte zařízení rodičovským kódem</translation>
 <translation id="4702647871202761252">Obrazovka ochrany soukromí je vypnutá</translation>
 <translation id="4706121060329443414">Soubory zkusíme stáhnout později. Prozatím se řeč bude ke zpracování odesílat do Googlu.</translation>
@@ -640,6 +646,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5744083938413354016">Přetažení klepnutím</translation>
 <translation id="5745612484876805746">Noční režim se zapíná automaticky za soumraku</translation>
 <translation id="5750765938512549687">Rozhraní Bluetooth je vypnuté</translation>
+<translation id="576341972084747908">Stažení nebezpečného souboru <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Noční režim je zapnutý.</translation>
 <translation id="5769373120130404283">Obrazovka ochrany soukromí</translation>
 <translation id="5777841717266010279">Ukončit sdílení obrazovky?</translation>
@@ -781,6 +788,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6852052252232534364">Aktivujte kliknutím</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Zbývá jedna číslice}few{Zbývají # číslice}many{Zbývá # číslice}other{Zbývá # číslic}}</translation>
+<translation id="6867938213751067702">Bylo pozastaveno stahování souboru <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Zkratka je vypnutá</translation>
 <translation id="6886172995547742638">Výkon zařízení <ph name="DEVICE_TYPE" /> se může snížit. Použijte certifikovaný napájecí adaptér s výkonem <ph name="PREFERRED_MINIMUM_POWER" /> W nebo vyšším.</translation>
 <translation id="688631446150864480">Okna můžete přepnout pomocí šipky dolů</translation>

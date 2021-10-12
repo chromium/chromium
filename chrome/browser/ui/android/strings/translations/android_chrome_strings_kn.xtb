@@ -180,6 +180,7 @@
 <translation id="2139186145475833000">ಹೋಮ್ ಪರದೆಗೆ ಸೇರಿಸಿ</translation>
 <translation id="2141396931810938595">ನಿಮ್ಮ ಬಳಕೆಯನ್ನು ಆಧರಿಸಿ</translation>
 <translation id="214888715418183969">ನೀವು Chrome ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲು ಬಯಸುವುದನ್ನು ಆರಿಸಿ. ನೀವು ಹಂಚಿಕೊಳ್ಳುವ ಮೆಟ್ರಿಕ್‌ಗಳನ್ನು Chrome ನ ವೈಶಿಷ್ಟ್ಯಗಳು, ಕಾರ್ಯಕ್ಷಮತೆ ಮತ್ತು ಸ್ಥಿರತೆಯನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.</translation>
+<translation id="2149973817440762519">ಬುಕ್‌ಮಾರ್ಕ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2154484045852737596">ಕಾರ್ಡ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2154710561487035718">URL ನಕಲಿಸಿ</translation>
 <translation id="2156074688469523661">ಉಳಿದ ಸೈಟ್‌ಗಳು (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -496,7 +497,6 @@
 <translation id="4084682180776658562">ಬುಕ್‌ಮಾರ್ಕ್</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> ಅವರಿಂದ – <ph name="BEGIN_DEEMPHASIZED" />Google ನಿಂದ ವಿತರಿಸಲಾಗಿದೆ<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">ಆ್ಯಪ್ ಡೇಟಾ ಅಳಿಸಬೇಕೇ?</translation>
-<translation id="4095189195365058471">ನಂತರ ಓದಿ <ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Google ಗೆ ಬಳಕೆಯ ಅಂಕಿಅಂಶಗಳು ಮತ್ತು ಕ್ರ್ಯಾಶ್ ವರದಿಗಳನ್ನು ಕಳುಹಿಸುವ ಮೂಲಕ Chrome ಅನ್ನು ಉತ್ತಮಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಿ.</translation>
 <translation id="410351446219883937">ಆಟೋಪ್ಲೇ</translation>
 <translation id="4108314971463891922">ಫಾಲೋ ಮಾಡಿ</translation>
@@ -640,7 +640,6 @@
 <translation id="4943872375798546930">ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ</translation>
 <translation id="4957722034734105353">ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಿ...</translation>
 <translation id="4961107849584082341">ಈ ಪುಟವನ್ನು ಯಾವ ಭಾಷೆಗಾದರೂ ಅನುವಾದಿಸಿ</translation>
-<translation id="4970824347203572753">ನಿಮ್ಮ ಸ್ಥಳದಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="4971735654804503942">ಅಪಾಯಕಾರಿ ವೆಬ್‌ಸೈಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳ ವಿರುದ್ಧ ವೇಗವಾದ, ಪೂರ್ವಭಾವಿ ಸುರಕ್ಷತೆ. ಪಾಸ್‌ವರ್ಡ್ ಉಲ್ಲಂಘನೆಗಳ ಕುರಿತು ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ. Google ಗೆ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಕಳುಹಿಸುವ ಅಗತ್ಯವಿರುತ್ತದೆ.</translation>
 <translation id="497421865427891073">ಮುಂದಕ್ಕೆ ಹೋಗು</translation>
 <translation id="4988210275050210843">ಫೈಲ್ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ (<ph name="MEGABYTES" />).</translation>
@@ -724,7 +723,6 @@
 <translation id="5483197086164197190">Chrome ಅನ್ನು ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
 <translation id="5487521232677179737">ಡೇಟಾ ತೆರವುಗೊಳಿಸು</translation>
 <translation id="549025011754480756">ನಿಮ್ಮ ಧ್ವನಿ ಮೂಲಕ ಹುಡುಕಾಟ ಮಾಡುವುದು ಹೇಗೆ</translation>
-<translation id="5500777121964041360">ನಿಮ್ಮ ಸ್ಥಳದಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲದಿರಬಹುದು</translation>
 <translation id="5512137114520586844">ಈ ಖಾತೆಯನ್ನು <ph name="PARENT_NAME" /> ಅವರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ.</translation>
 <translation id="5514904542973294328">ಈ ಸಾಧನದ ನಿರ್ವಾಹಕರಿಂದ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="5515439363601853141">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ವೀಕ್ಷಿಸಲು ಅನ್‌ಲಾಕ್‌ ಮಾಡಲಾಗಿದೆ</translation>
@@ -878,7 +876,6 @@
 <translation id="6364438453358674297">ಇತಿಹಾಸದಿಂದ ಸಲಹೆಯನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?</translation>
 <translation id="6378173571450987352">ವಿವರಗಳು: ಡೇಟಾ ಬಳಕೆಯ ಪ್ರಮಾಣದ ಆಧಾರದಲ್ಲಿ ವಿಂಗಡಿಸಲಾಗಿದೆ</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" />, Chrome ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ. ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, ಹಾಗೂ <ph name="BEGIN_LINK2" />Google Chrome ಮತ್ತು Chrome OS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK2" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ.</translation>
-<translation id="6381421346744604172">ಡಾರ್ಕನ್ ವೆಬ್‌ಸೈಟ್‌ಗಳು</translation>
 <translation id="6395288395575013217">ಲಿಂಕ್</translation>
 <translation id="6397616442223433927">ಆನ್‌ಲೈನ್‌ಗೆ ಮರಳಿದ್ದೀರಿ</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> ನಲ್ಲಿ <ph name="ERROR_CODE" /></translation>
@@ -1209,7 +1206,6 @@
 <translation id="8218052821161047641">ವೇಗವಾಗಿ ಲೋಡ್ ಆಗುವ ಪುಟ</translation>
 <translation id="8218622182176210845">ನಿಮ್ಮ ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="8223642481677794647">ಫೀಡ್ ಕಾರ್ಡ್ ಮೆನು</translation>
-<translation id="8224471946457685718">ವೈ-ಫೈಯಲ್ಲಿ ನಿಮಗಾಗಿ ಲೇಖನಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="8250920743982581267">ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳು</translation>
 <translation id="825412236959742607">ಈ ಪುಟವು ತೀರಾ ಹೆಚ್ಚು ಮೆಮೊರಿಯನ್ನು ಬಳಸುತ್ತದೆ, ಆದ್ದರಿಂದ Chrome ಕೆಲವು ವಿಷಯಗಳನ್ನು ತೆಗೆದುಹಾಕಿದೆ.</translation>
 <translation id="8260126382462817229">ಮತ್ತೊಮ್ಮೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ</translation>

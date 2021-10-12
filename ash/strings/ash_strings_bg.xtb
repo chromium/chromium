@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">Устройствата ви работят още по-добре заедно</translation>
 <translation id="1119348796022671382">Тематичният цветови режим придава лек оттенък на интерфейса с помощта на цветове, извлечени от тапета ви.</translation>
 <translation id="112308213915226829">Автоматично скриване на лавицата</translation>
+<translation id="1142002900084379065">Скорошни снимки</translation>
 <translation id="1148499908455722006">Отваряне на диалогов прозорец с информация за <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Календар</translation>
 <translation id="1153356358378277386">Сдвоени устройства</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">Лупата за увеличаване на целия екран е активирана. За да я изключите, натиснете отново Ctrl + клавиша „Търсене“ + M.</translation>
 <translation id="2302092602801625023">Този профил се управлява от Family Link</translation>
 <translation id="2303600792989757991">Превключване на общия преглед на прозорците</translation>
+<translation id="2318576281648121272">Днес, <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Придвижване назад с една буква</translation>
 <translation id="2339073806695260576">Докоснете бутона с икона на писалка в лавицата, за да създадете бележка, да направите екранна снимка или да използвате лазерната показалка или лупата.</translation>
 <translation id="2341729377289034582">Заключено във вертикална ориентация</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">Показване на паролата</translation>
 <translation id="24452542372838207">Разгъване на известието</translation>
 <translation id="2450205753526923158">Режим за екранна снимка</translation>
+<translation id="2456008742792828469">Календар, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Потвърждаване на разделителната способност</translation>
 <translation id="2475982808118771221">Възникна грешка</translation>
 <translation id="2482878487686419369">Известия</translation>
@@ -278,6 +281,7 @@
 <translation id="3100274880412651815">Отхвърляне на режима на заснемане</translation>
 <translation id="3105917916468784889">Създаване на екранна снимка</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Премахване на предложението</translation>
 <translation id="3126069444801937830">Рестартирайте, за да актуализирате</translation>
 <translation id="3139942575505304791">Работен кът 1</translation>
 <translation id="315116470104423982">Мобилни данни</translation>
@@ -317,6 +321,7 @@
 <translation id="3413817803639110246">Тук още няма нищо</translation>
 <translation id="3428447136709161042">Прекратяване на връзката със: <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Прекарайте пръст отдясно, за да се върнете назад</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Редактиране на напомнянето</translation>
 <translation id="3435967511775410570">Отпечатъкът е разпознат</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@
 <translation id="4642092649622328492">Създаване на частична екранна снимка</translation>
 <translation id="4659419629803378708">Активирахте ChromeVox</translation>
 <translation id="4665114317261903604">Превключване на режима „Не безпокойте“. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081"><ph name="FILENAME" /> се изтегля</translation>
 <translation id="4696813013609194136">Отключване на устройството с код на родител</translation>
 <translation id="4702647871202761252">Екранът за поверителност е изключен</translation>
 <translation id="4706121060329443414">По-късно ще се направи опит за изтегляне. Засега говорът ще бъде изпратен до Google за обработка.</translation>
@@ -640,6 +646,7 @@
 <translation id="5744083938413354016">Преместване чрез докосване</translation>
 <translation id="5745612484876805746">Функцията за нощно осветление се включва автоматично при залез</translation>
 <translation id="5750765938512549687">Функцията за Bluetooth е изключена</translation>
+<translation id="576341972084747908">Изтегляне на опасен файл <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Функцията за нощно осветление е включена.</translation>
 <translation id="5769373120130404283">Екран за поверителност</translation>
 <translation id="5777841717266010279">Да се спре ли споделянето на екрана?</translation>
@@ -781,6 +788,7 @@
 <translation id="6852052252232534364">Кликнете за активиране</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Остава една цифра}other{Остават # цифри}}</translation>
+<translation id="6867938213751067702">Изтеглянето на <ph name="FILENAME" /> е на пауза</translation>
 <translation id="6878400149835617132">Прекият път е изключен</translation>
 <translation id="6886172995547742638">Възможно е вашият <ph name="DEVICE_TYPE" /> да работи с намалена производителност. Използвайте сертифициран захранващ адаптер с USB-C и мощност от <ph name="PREFERRED_MINIMUM_POWER" /> W или повече.</translation>
 <translation id="688631446150864480">Натиснете клавиша със стрелка за надолу, за да превключите прозорците</translation>

@@ -88,8 +88,6 @@
 <translation id="2926676257163822632">취약한 비밀번호는 추측하기 쉽습니다. Chrome에서 <ph name="BEGIN_LINK" />안전한 비밀번호를 생성하고 기억하도록 설정<ph name="END_LINK" />하세요.</translation>
 <translation id="2926952073016206995">Chrome에서 사이트에 대한 카메라 권한이 필요합니다.</translation>
 <translation id="2929907241665500097">문제가 발생하여 Chromium을 업데이트할 수 없습니다. <ph name="BEGIN_LINK" />Chrome 업데이트 문제 및 업데이트 실패 문제 해결하기<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />마지막 알림: 설치를 진행하면 <ph name="BEGIN_BOLD" />하드 드라이브에 있는 모든 데이터가 삭제됩니다.<ph name="END_BOLD" />. 중요한 데이터를 모두 백업했는지 확인해 주시기 바랍니다.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />설치가 시작되면 취소할 수 없습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 네트워크 로그인 - Chrome</translation>
 <translation id="3037838751736561277">Chrome이 백그라운드 모드로 실행 중입니다.</translation>
 <translation id="3059710691562604940">세이프 브라우징이 사용 중지되어 있습니다. 사용 설정하는 것이 좋습니다.</translation>
@@ -137,7 +135,6 @@
 <translation id="4251615635259297716">Chrome 데이터를 이 계정에 연결하시겠습니까?</translation>
 <translation id="4281844954008187215">서비스 약관</translation>
 <translation id="4293420128516039005">로그인하여 모든 기기에서 Chrome을 동기화하고 맞춤설정하세요.</translation>
-<translation id="429583012151745428">설치가 진행 중입니다. 기기를 끄지 마세요. 설치는 20분 이내에 완료됩니다. 설치가 끝나면 컴퓨터가 자동으로 종료됩니다.</translation>
 <translation id="4325083532956419387">Chrome OS 버전</translation>
 <translation id="4328355335528187361">Chrome 개발자(mDNS-In)</translation>
 <translation id="4331809312908958774">크롬 OS</translation>
@@ -183,7 +180,6 @@
 <translation id="5430073640787465221">환경설정 파일이 손상되었거나 잘못되었습니다.
 
 Chrome에서 설정을 복구할 수 없습니다.</translation>
-<translation id="5486618155264784386">Chrome OS 설치</translation>
 <translation id="556024056938947818">Chrome에서 비밀번호를 표시하려고 합니다.</translation>
 <translation id="5566025111015594046">Chrome(mDNS-In)</translation>
 <translation id="5657226924540934362">페이지에 표시되지 않는 설정이 있다면 <ph name="LINK_BEGIN" />
@@ -238,7 +234,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7155997830309522122">그렇다면 Chrome에 저장된 비밀번호가 새로운 비밀번호와 일치하도록 수정해 주세요.</translation>
 <translation id="7161904924553537242">신개념 브라우저 - Chrome</translation>
 <translation id="7242029209006116544">관리 계정으로 로그인하고 관리자에게 Chrome 프로필에 대한 제어권을 부여하려고 합니다. 앱, 북마크, 방문 기록, 비밀번호 및 기타 설정과 같은 Chrome 데이터가 <ph name="USER_NAME" /> 계정에 영구적으로 연결됩니다. 이후 이 데이터를 Google 계정 대시보드에서 삭제할 수는 있지만 다른 계정에 연결할 수는 없습니다. 기존 Chrome 데이터를 유지하려면 새 프로필을 만드는 방법이 있습니다. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Chrome OS 설치 진행 중</translation>
 <translation id="7295052994004373688">Chrome UI가 이 언어로 표시됩니다.</translation>
 <translation id="7296210096911315575">사용 및 안전 관련 주요 정보</translation>
 <translation id="7308322188646931570">파일을 다운로드하려면 Chrome에 저장소 액세스 권한이 있어야 합니다</translation>

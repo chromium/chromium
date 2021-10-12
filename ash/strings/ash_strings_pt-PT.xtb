@@ -23,6 +23,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1104621072296271835">Os seus dispositivos funcionam ainda melhor juntos</translation>
 <translation id="1119348796022671382">O modo de cores temáticas utiliza cores extraídas da sua imagem de fundo para colorir levemente a interface.</translation>
 <translation id="112308213915226829">Ocultar prateleira automaticamente</translation>
+<translation id="1142002900084379065">Fotos recentes</translation>
 <translation id="1148499908455722006">Abrir a caixa de diálogo de informações de <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendário</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
@@ -179,6 +180,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2298170939937364391">Lupa de ecrã inteiro ativada. Prima Ctrl + Pesquisa + M novamente para a desativar.</translation>
 <translation id="2302092602801625023">Esta conta é gerida pelo Family Link</translation>
 <translation id="2303600792989757991">Ativar/desativar vista geral das janelas</translation>
+<translation id="2318576281648121272">Hoje, <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Recuar por letra</translation>
 <translation id="2339073806695260576">Toque no botão da caneta stylus na prateleira para tirar uma nota, criar uma captura de ecrã, utilizar o ponteiro de laser ou a lupa.</translation>
 <translation id="2341729377289034582">Bloqueado na vertical</translation>
@@ -200,6 +202,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
 <translation id="24452542372838207">Expandir notificação</translation>
 <translation id="2450205753526923158">Modo de captura de ecrã</translation>
+<translation id="2456008742792828469">Calendário, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Confirme a resolução</translation>
 <translation id="2475982808118771221">Ocorreu um erro</translation>
 <translation id="2482878487686419369">Notificações</translation>
@@ -278,6 +281,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3100274880412651815">Ignorar modo de captura</translation>
 <translation id="3105917916468784889">Fazer captura de ecrã</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Remover sugestão</translation>
 <translation id="3126069444801937830">Reiniciar para atualizar</translation>
 <translation id="3139942575505304791">Secretária 1</translation>
 <translation id="315116470104423982">Dados móveis</translation>
@@ -317,6 +321,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3413817803639110246">Ainda não existe nada para ver</translation>
 <translation id="3428447136709161042">Desligar da rede <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Deslize rapidamente a partir da direita para retroceder.</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Editar lembrete</translation>
 <translation id="3435967511775410570">Impressão digital reconhecida</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4642092649622328492">Criar uma captura de ecrã parcial</translation>
 <translation id="4659419629803378708">ChromeVox ativado</translation>
 <translation id="4665114317261903604">Ative/desative o modo Não incomodar. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">A transferir <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Desbloquear o dispositivo com o código parental</translation>
 <translation id="4702647871202761252">O ecrã de privacidade está desligado</translation>
 <translation id="4706121060329443414">Tentar-se-á a transferência mais tarde. Por enquanto, a voz será enviada para a Google para processamento.</translation>
@@ -640,6 +646,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5744083938413354016">Arrastamento através do toque</translation>
 <translation id="5745612484876805746">A Luz noturna ativa-se automaticamente ao pôr do sol</translation>
 <translation id="5750765938512549687">Bluetooth desativado</translation>
+<translation id="576341972084747908">Transferir ficheiro <ph name="FILENAME" /> perigoso</translation>
 <translation id="576453121877257266">A Luz noturna está ativada.</translation>
 <translation id="5769373120130404283">Ecrã de privacidade</translation>
 <translation id="5777841717266010279">Parar a partilha do ecrã?</translation>
@@ -781,6 +788,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6852052252232534364">Clicar: ativar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Um dígito restante}other{# dígitos restantes}}</translation>
+<translation id="6867938213751067702">Transferência de <ph name="FILENAME" /> colocada em pausa</translation>
 <translation id="6878400149835617132">Atalho desativado</translation>
 <translation id="6886172995547742638">O dispositivo <ph name="DEVICE_TYPE" /> pode ter um desempenho inferior. Utilize um transformador USB-C certificado de <ph name="PREFERRED_MINIMUM_POWER" /> W ou superior.</translation>
 <translation id="688631446150864480">Prima a seta para baixo para alternar entre janelas.</translation>

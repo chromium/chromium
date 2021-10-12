@@ -88,8 +88,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2926676257163822632">Slabá hesla lze snadno uhodnout. Chrome vám může <ph name="BEGIN_LINK" />vytvářet a ukládat silná hesla<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome pro tento web potřebuje přístup k fotoaparátu</translation>
 <translation id="2929907241665500097">Prohlížeč Chrome se neaktualizoval, něco se pokazilo. <ph name="BEGIN_LINK" />Vyřešte problémy se stahováním aktualizací Chromu a neúspěšnými aktualizacemi.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Ještě poslední připomenutí: Při instalaci bude <ph name="BEGIN_BOLD" />zcela vymazán pevný disk.<ph name="END_BOLD" /> Zkontrolujte si, zda máte všechna důležitá data zálohovaná.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Po spuštění již instalaci nelze zrušit.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – přihlášení k síti – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome je v režimu na pozadí.</translation>
 <translation id="3059710691562604940">Bezpečné prohlížení je vypnuté. Chrome ho doporučuje zapnout.</translation>
@@ -137,7 +135,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4251615635259297716">Chcete propojit údaje prohlížeče Chrome s tímto účtem?</translation>
 <translation id="4281844954008187215">Smluvní podmínky</translation>
 <translation id="4293420128516039005">Po přihlášení si budete moci Chrome synchronizovat a upravit na různých zařízeních</translation>
-<translation id="429583012151745428">Probíhá instalace. Nevypínejte zařízení. Instalace by neměla trvat déle než dvacet minut. Po instalaci se zařízení automaticky vypne.</translation>
 <translation id="4325083532956419387">Verze systému Chrome OS</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -183,7 +180,6 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="5430073640787465221">Soubor nastavení je poškozený nebo neplatný.
 
 Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
-<translation id="5486618155264784386">Nainstalovat Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome se pokouší zobrazit hesla.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Pokud některé nastavení na této stránce není zobrazeno, podívejte se do <ph name="LINK_BEGIN" />nastavení systému Chrome OS<ph name="LINK_END" /></translation>
@@ -237,7 +233,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7155997830309522122">Pokud ano, upravte uložené heslo v prohlížeči Chrome tak, aby odpovídalo novému heslu.</translation>
 <translation id="7161904924553537242">Vítá vás Google Chrome</translation>
 <translation id="7242029209006116544">Přihlašujete se pomocí spravovaného účtu a poskytujete jeho správci kontrolu nad vaším profilem Google Chrome. Vaše údaje prohlížeče Chrome, například aplikace, záložky, historie, hesla a jiná nastavení, budou trvale přidružena k účtu <ph name="USER_NAME" />. Tyto údaje budete moci smazat pomocí Hlavního panelu v Účtech Google, ale nebudete je moci přidružit k jinému účtu. Pokud chcete uchovat existující údaje Chrome odděleně, můžete vytvořit nový profil. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Probíhá instalace systému Chrome OS</translation>
 <translation id="7295052994004373688">V tomto jazyce se zobrazuje uživatelské rozhraní prohlížeče Google Chrome</translation>
 <translation id="7296210096911315575">Důležité informace o použití a bezpečnosti</translation>
 <translation id="7308322188646931570">Aby bylo možné stahovat soubory, potřebuje Chrome přístup k úložišti</translation>

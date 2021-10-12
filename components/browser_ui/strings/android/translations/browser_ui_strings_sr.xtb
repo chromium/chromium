@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Питај када сајт жели да открије Bluetooth уређаје у близини (препоручено)</translation>
 <translation id="2315043854645842844">Оперативни систем не подржава избор сертификата за клијента.</translation>
 <translation id="2359808026110333948">Наставите</translation>
+<translation id="2379925928934107488">Када је то могуће, тамна тема се примењује за сајтове када је Chrome користи</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}one{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}few{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}other{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Преузимање је завршено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Приступ локацији је искључен и за овај уређај. Укључите га у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Проширено је – Кликните да бисте скупили.</translation>
 <translation id="2586657967955657006">Меморија</translation>
+<translation id="2597457036804169544">Тамна тема се не примењује за сајтове</translation>
 <translation id="2621115761605608342">Дозволите JavaScript за одређени сајт.</translation>
 <translation id="2653659639078652383">Пошаљи</translation>
 <translation id="2677748264148917807">Затвори</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Искључи звук сајтова који пуштају звук</translation>
 <translation id="3744111561329211289">Синхронизација у позадини</translation>
 <translation id="3763247130972274048">Двапут додирните видео лево или десно да бисте прескочили 10 сек</translation>
+<translation id="3797520601150691162">Не примењујте тамну тему за одређени сајт</translation>
 <translation id="381841723434055211">Бројеви телефона</translation>
 <translation id="3835233591525155343">Коришћење уређаја</translation>
 <translation id="385051799172605136">Назад</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">Сајтови не могу да траже да шаљу обавештења</translation>
 <translation id="5516455585884385570">Отворите подешавања обавештења</translation>
 <translation id="5527111080432883924">Питај пре него што дозволиш сајтовима да читају текст и слике из привремене меморије (препоручено)</translation>
+<translation id="5553374991681107062">Најновије</translation>
 <translation id="5556459405103347317">Учитај поново</translation>
 <translation id="5596627076506792578">Још опција</translation>
 <translation id="5649053991847567735">Аутоматска преузимања</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">Обично блокирате обавештења. Да бисте их дозволили, додирните Детаљи.</translation>
 <translation id="7423098979219808738">Прво питај</translation>
 <translation id="7423538860840206698">Читање привремене меморије је блокирано</translation>
+<translation id="7425915948813553151">Тамна тема за сајтове</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Сајт користи микрофон</translation>
 <translation id="7561196759112975576">Увек</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">Желите ли стварно да обришете све локалне податке, укључујући колачиће, и ресетујете све дозволе за овај веб-сајт?</translation>
 <translation id="8007176423574883786">Искључено је за овај уређај</translation>
 <translation id="802154636333426148">Преузимање није успело</translation>
+<translation id="8042586301629853791">Сортирај према:</translation>
 <translation id="8067883171444229417">Пусти видео</translation>
 <translation id="8068648041423924542">Није могуће изабрати сертификат.</translation>
 <translation id="8087000398470557479">Овај садржај је са <ph name="DOMAIN_NAME" />, приказује Google.</translation>

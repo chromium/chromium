@@ -317,6 +317,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3413817803639110246">Rien à voir pour le moment</translation>
 <translation id="3428447136709161042">Se déconnecter de <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Balayez l'écran de droite à gauche pour revenir en arrière</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="343571671045587506">Modifier le rappel</translation>
 <translation id="3435967511775410570">Empreinte digitale reconnue</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>

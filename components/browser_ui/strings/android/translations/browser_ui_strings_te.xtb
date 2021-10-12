@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">ఏదైనా ఒక సైట్ సమీపంలోని బ్లూటూత్ పరికరాలను కనుగొనాలనుకున్నప్పుడు అనుమతి అడుగుతుంది (సిఫార్సు చేయడమైనది)</translation>
 <translation id="2315043854645842844">క్లయింట్ తరపు స‌ర్టిఫికెట్‌ ఎంపికకు ఆపరేటింగ్ సిస్టమ్ మద్దతు లేదు.</translation>
 <translation id="2359808026110333948">కొనసాగించు</translation>
+<translation id="2379925928934107488">Chrome ముదురు రంగు రూపాన్ని ఉపయోగించినప్పుడు, వీలైతే, సైట్‌లకు ముదురు రంగు రూపాన్ని వర్తింపజేయండి</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> అనుమతించబడ్డాయి}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> అనుమతించబడ్డాయి}}</translation>
 <translation id="2434158240863470628">డౌన్‌లోడ్ పూర్తయింది <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">ఈ పరికరానికి స్థానం యాక్సెస్ కూడా ఆఫ్ చేయబడింది. దీనిని <ph name="BEGIN_LINK" />Android సెట్టింగ్‌లు<ph name="END_LINK" />లో తిరిగి ఆన్ చేయండి.</translation>
 <translation id="257931822824936280">విస్తరింపబడింది - కుదించడానికి క్లిక్ చేయండి.</translation>
 <translation id="2586657967955657006">క్లిప్‌బోర్డ్</translation>
+<translation id="2597457036804169544">సైట్‌లకు ముదురు రంగు రూపాన్ని వర్తింపజేయకండి</translation>
 <translation id="2621115761605608342">నిర్దిష్ట సైట్ కోసం జావా స్క్రిప్ట్‌ను అనుమతిస్తుంది.</translation>
 <translation id="2653659639078652383">సమర్పించు</translation>
 <translation id="2677748264148917807">నిష్క్రమించు</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">ధ్వనిని ప్లే చేసే సైట్‌లను మ్యూట్ చేస్తుంది</translation>
 <translation id="3744111561329211289">బ్యాక్‌గ్రౌండ్ సింక్</translation>
 <translation id="3763247130972274048">10సె దాటవేయడానికి వీడియోపై రెండుసార్లు ఎడమ లేదా కుడివైపు ట్యాప్ చేయండి</translation>
+<translation id="3797520601150691162">నిర్దిష్ట సైట్‌కు ముదురు రంగు రూపాన్ని వర్తింపజేయకండి</translation>
 <translation id="381841723434055211">ఫోన్ నంబర్‌లు</translation>
 <translation id="3835233591525155343">మీ పరికర వినియోగం</translation>
 <translation id="385051799172605136">వెనుకకు</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">నోటిఫికేషన్‌లను పంపడానికి సైట్‌లు అడగవు</translation>
 <translation id="5516455585884385570">నోటిఫికేషన్ సెట్టింగ్‌లను తెరువు</translation>
 <translation id="5527111080432883924">క్లిప్‌బోర్డ్ నుండి వచనం మరియు చిత్రాలను చదవడానికి అనుమతించే ముందు సమ్మతి అడగాలి (సిఫార్సు చేస్తున్నాము)</translation>
+<translation id="5553374991681107062">ఇటీవలివి</translation>
 <translation id="5556459405103347317">మళ్లీ లోడ్ చేయి</translation>
 <translation id="5596627076506792578">మరిన్ని ఎంపికలు</translation>
 <translation id="5649053991847567735">ఆటోమేటిక్ డౌన్‌లోడ్‌లు</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">మీరు సాధారణంగా నోటిఫికేషన్‌లను బ్లాక్ చేస్తుంటారు. అనుమతించడానికి, 'వివరాలు'ను నొక్కండి.</translation>
 <translation id="7423098979219808738">ముందుగా అడుగుతుంది</translation>
 <translation id="7423538860840206698">క్లిప్‌బోర్డ్‌ని చదవకుండా బ్లాక్ చేశారు</translation>
+<translation id="7425915948813553151">సైట్‌ల కోసం ముదురు రంగు రూపం</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">ఒక సైట్ మీ మైక్రోఫోన్‌ను ఉపయోగిస్తోంది</translation>
 <translation id="7561196759112975576">ఎల్లప్పుడూ</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">కుక్కీలతో సహా, మొత్తం స్థానిక డేటాను తీసివేసి, ఈ వెబ్‌సైట్‌కు ఇచ్చిన అన్ని అనుమతులను రీసెట్ చేయాలని మీరు ఖచ్చితంగా కోరుకుంటున్నారా?</translation>
 <translation id="8007176423574883786">ఈ పరికరం కోసం ఆఫ్ చేయబడింది</translation>
 <translation id="802154636333426148">డౌన్‌లోడ్ విఫలమైంది</translation>
+<translation id="8042586301629853791">దీని ఆధారంగా క్రమపద్ధతిలో అమర్చండి:</translation>
 <translation id="8067883171444229417">వీడియోను ప్లే చేయి</translation>
 <translation id="8068648041423924542">ప్రమాణపత్రం ఎంపిక చేయడం సాధ్యపడలేదు.</translation>
 <translation id="8087000398470557479">ఈ కంటెంట్ Google ద్వారా డెలివర్ చేయబడిన <ph name="DOMAIN_NAME" />లోనిది.</translation>

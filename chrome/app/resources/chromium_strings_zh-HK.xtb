@@ -43,7 +43,6 @@
 <translation id="2560420686485554789">Chromium 需要儲存空間的存取權才能下載檔案</translation>
 <translation id="2572494885440352020">Chromium 輔助工具</translation>
 <translation id="2577788541081224677">如要透過所有裝置存取 Chromium 資料，請登入以便開啟同步處理功能。</translation>
-<translation id="2580426763510374355">安裝 Chromium 作業系統</translation>
 <translation id="2583187216237139145">工作設定檔管理員可移除任何在使用此設定檔時產生的 Chromium 資料 (例如建立的書籤、記錄、密碼和其他設定)。<ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">必須重新啟動 Chromium OS，才能套用更新。</translation>
 <translation id="2648074677641340862">安裝期間發生作業系統錯誤，請再次下載 Chromium。</translation>
@@ -56,8 +55,6 @@
 <translation id="2847479871509788944">從 Chromium 中移除…</translation>
 <translation id="2885378588091291677">工作管理員</translation>
 <translation id="2910007522516064972">關於 Chromium(&amp;C)</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />最後請注意，安裝程序<ph name="BEGIN_BOLD" />會清除整個硬碟的資料<ph name="END_BOLD" />。請確認重要資料皆已完成備份。<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />安裝程序開始後就無法取消。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
 <translation id="2983934633046890458">Chromium 正在嘗試編輯密碼。</translation>
 <translation id="3032706164202344641">Chromium 無法檢查密碼，請稍後再試。</translation>
@@ -81,7 +78,6 @@
 <translation id="3350761136195634146">此帳戶已有 Chromium 設定檔</translation>
 <translation id="3406848076815591792">要切換至現有 Chromium 設定檔嗎？</translation>
 <translation id="3430503420100763906">透過 Chromium 設定檔，您可將所有 Chromium 內容分門別類，例如建立親朋好友專屬的設定檔，或劃分工作和娛樂內容。</translation>
-<translation id="3433271666494956603">正在安裝 Chromium 作業系統</translation>
 <translation id="347328004046849135">如果您使用被盜用的密碼登入帳戶，Chromium 會通知您</translation>
 <translation id="3474745554856756813">這會刪除此裝置上的 <ph name="ITEMS_COUNT" /> 個項目。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chromium。</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> 可以切換唔同嘅 Chromium 設定檔</translation>
@@ -109,7 +105,6 @@
 <translation id="4264410486868823224">在使用這部裝置前，<ph name="MANAGER" /> 要求您仔細閱讀並接受下列《服務條款》。這些條款不會擴展、修改或限制《Chromium 作業系統條款》。</translation>
 <translation id="4271805377592243930">取得 Chromium 相關說明</translation>
 <translation id="4285930937574705105">不明錯誤導致安裝失敗。如果目前 Chromium 正在執行，請關閉 Chromium，然後再試一次。</translation>
-<translation id="429583012151745428">正在進行安裝，請勿關閉裝置。安裝應在二十分鐘內完成。完成後，電腦會自動關機。</translation>
 <translation id="4407044323746248786">仍要結束 Chromium 嗎？</translation>
 <translation id="4415566066719264597">讓 Chromium 在背景執行</translation>
 <translation id="4423735387467980091">自訂及控制 Chromium</translation>
@@ -203,7 +198,6 @@
 <translation id="6734291798041940871">已為您電腦上的所有使用者安裝 Chromium。</translation>
 <translation id="673636774878526923">如要透過所有裝置存取 Chromium 資料，請登入並開啟同步處理功能。</translation>
 <translation id="6774082503108938489">您的家長已停用 Chromium 的「網站、應用程式和擴充程式權限」設定，因此您無法啟用此<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
-<translation id="6827182711503025204">安裝 Chromium 作業系統將會覆寫裝置上所有資料。</translation>
 <translation id="6847869444787758381">Chromium 會通知您密碼是否曾被盜用</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (已複製至 Chromium)</translation>

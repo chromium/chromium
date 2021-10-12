@@ -58,6 +58,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1881378885488531302">Kunne ikke hente IP-adresse</translation>
 <translation id="1887850431809612466">Maskinvareversjon</translation>
+<translation id="1901646112321215184">Ingen DNS-tjenere er konfigurert</translation>
 <translation id="1905710495812624430">Du har overskredet maksimumsgrensen for antall forsøk.</translation>
 <translation id="1908234395526491708">Mislykkede UDP-forespørsler</translation>
 <translation id="1930797645656624981">Tjeneste for Chrome OS-inndatametode</translation>
@@ -74,6 +75,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">I KØ</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobben</translation>
+<translation id="2180197493692062006">Noe gikk galt. Prøv å åpne appen på nytt.</translation>
 <translation id="2209788852729124853">Tilbakestill trafikktellere</translation>
 <translation id="2212733584906323460">Navneoppslag</translation>
 <translation id="2217935453350629363">Nåværende hastighet</translation>
@@ -89,6 +91,7 @@
 <translation id="2391082728065870591">Send tilbakemeldingsrapport</translation>
 <translation id="2407209115954268704">Status for SIM-låsing</translation>
 <translation id="2418150275289244458">Åpne i innstillingene</translation>
+<translation id="2421798028054665193">Bilde <ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Nøyaktighet av flytende desimalpunkt</translation>
 <translation id="2448312741937722512">Type</translation>
 <translation id="2461822463642141190">Nåværende</translation>
@@ -107,11 +110,13 @@
 <translation id="2860473693272905224">Legg en ny side på skanneren</translation>
 <translation id="2872961005593481000">Slå av</translation>
 <translation id="2878387241690264070">Ladet ut <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
+<translation id="2927511423571448384">Kan ikke koble til HTTP-nettsteder (port 80) fra Android gjennom brannmuren</translation>
 <translation id="3008341117444806826">OPPDATER</translation>
 <translation id="3009958530611748826">Velg mappen du vil lagre i</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Sluttpunkt</translation>
 <translation id="3069085583900247081">Testen mislyktes</translation>
+<translation id="3076387335132326640">Du bruker et åpent nettverk</translation>
 <translation id="3083667275341675831">Tilkoblingsdiagnostikk</translation>
 <translation id="3091839911843451378">Mislykket – stoppet</translation>
 <translation id="3102119246920354026">Buffer</translation>
@@ -199,6 +204,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-batteri</translation>
 <translation id="4561801978359312462">SIM-kortet er låst opp</translation>
 <translation id="4562494484721939086">Ingen tjeneste</translation>
+<translation id="4567024731344774461">Kan ikke gjøre DNS-oppslag fra Android</translation>
 <translation id="458794348635939462">Kunne ikke finne tilknytning til alle vertene</translation>
 <translation id="4593212453765072419">Godkjenning av mellomtjener kreves</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Trykk på Enter for å avbryte utskriftsjobben.</translation>
@@ -223,6 +229,7 @@
 <translation id="484790837831576105">(Android) DNS-oppslag</translation>
 <translation id="4848429997038228357">KJØRER</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} forsøk igjen}other{<ph name="ERROR_MESSAGE" /> {0} forsøk igjen}}</translation>
+<translation id="4871137769558798671">Kan ikke koble til HTTPS-nettsteder (port 443) gjennom brannmuren</translation>
 <translation id="4880328057631981605">Navn på tilgangspunkt</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Velg et nytt passord umiddelbart</translation>
@@ -258,6 +265,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">versjon <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Flytt vindu til skrivebord</translation>
+<translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identitet</translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5318334351163689047">Mislykkede TCP-forespørsler</translation>
@@ -279,6 +287,8 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5502931783115429516">Android kjører ikke</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5546352997259770619">Lav signalstyrke – prøv å flytte deg nærmere tilgangspunktet</translation>
+<translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skann på nytt</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -319,6 +329,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Batterikapasiteten avtar med bruken</translation>
 <translation id="6191293864534840972">Navnetjenerne inneholder feil</translation>
+<translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Ingen skannere er tilgjengelige</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6243280677745499710">Nåværende bakgrunn</translation>
@@ -328,6 +339,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="636850387210749493">Bedriftsregistrering</translation>
 <translation id="6379086450106841622">Berøringsskjerm</translation>
 <translation id="6388847657025262518">Skannerens dokumentmater er tilstoppet. Sjekk materen, og prøv på nytt.</translation>
+<translation id="6395640744968320699">Kan ikke koble til HTTP-nettsteder (port 80) gjennom brannmuren</translation>
 <translation id="641081527798843608">Emnetreff</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Grei</translation>
@@ -335,6 +347,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6472207088655375767">Engangspassord</translation>
 <translation id="6480327114083866287">Administreres av <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Stoppet – papirstopp</translation>
+<translation id="6498608540383876992">Får ikke kontakt med gatewayen</translation>
 <translation id="6516990319416533844">For å teste ladehastigheten til batteriet, la det tappes i en kort periode</translation>
 <translation id="6517239166834772319">Utforsk</translation>
 <translation id="6527081081771465939">Ukjent Wi-Fi-sikkerhetsprotokoll</translation>
@@ -382,6 +395,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7271040990581020067">Skanneren er i bruk for øyeblikket. Prøv igjen senere.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Samlinger av bakgrunnsbilder</translation>
+<translation id="7292680402155138244">Høy tidsforsinkelse til HTTPS-nettsteder (port 443)</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -432,12 +446,15 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7994702968232966508">EAP-metode</translation>
 <translation id="8020238979854764615">Det oppsto en feil. Prøv på nytt ved å velge andre bilder.</translation>
 <translation id="802154636333426148">Nedlastingen mislyktes</translation>
+<translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Send tilbakemelding</translation>
 <translation id="8075838845814659848">Gjenværende batteri</translation>
 <translation id="808894953321890993">Endre passord</translation>
 <translation id="811820734797650957">(Android) Gatewayen kan pinges</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Be om trafikktellere</translation>
+<translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8177708084858970226">Kan ikke gjøre DNS-oppslag</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordeler</translation>
 <translation id="8230672074305416752">Kunne ikke pinge gatewayen for standardnettverket</translation>
@@ -449,6 +466,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8297006494302853456">Svakt</translation>
 <translation id="8302368968391049045">HTTPS-brannmur</translation>
 <translation id="8318753676953949627">Ingen bilder</translation>
+<translation id="8346875532700229909">Kan ikke kontakte gatewayen fra Android</translation>
 <translation id="8347227221149377169">Utskriftsjobber</translation>
 <translation id="8352772353338965963">Legg til en konto for multipålogging. Alle påloggede kontoer kan brukes uten passord, så denne funksjonen burde bare brukes med pålitelige kontoer.</translation>
 <translation id="8364946094152050673">Tomme navnetjenere</translation>
@@ -480,6 +498,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8747900814994928677">Bekreft endringen</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="879568662008399081">Det kan hende dette nettverket har en obligatorisk side</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Leverandørnavn</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
@@ -503,6 +522,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skann}=1{Skann side {NUMBER_OF_PAGES}}other{Skann side {NUMBER_OF_PAGES}}}</translation>
 <translation id="9003704114456258138">Frekvens</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9062831201344759865">DNS-oppslag har høy tidsforsinkelse</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Nåværende bruk</translation>

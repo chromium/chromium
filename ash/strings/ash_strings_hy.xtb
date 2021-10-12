@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">Միասին ձեր սարքերն ավելի լավ կաշխատեն</translation>
 <translation id="1119348796022671382">Թեմատիկ գույների ռեժիմում միջերեսը թեթև գունավորվում է ձեր պաստառի գույներով։</translation>
 <translation id="112308213915226829">Ինքնաթաքցնել դարակը</translation>
+<translation id="1142002900084379065">Վերջին լուսանկարները</translation>
 <translation id="1148499908455722006">Բացել <ph name="USER_NAME" /> հաշվի տեղեկությունների երկխոսության պատուհանը</translation>
 <translation id="1150989369772528668">Օրացույց</translation>
 <translation id="1153356358378277386">Զուգակցված սարքեր</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">Լիաէկրան խոշորացույցը միացավ: Այն անջատելու համար նորից սեղմեք Ctrl+Search+M:</translation>
 <translation id="2302092602801625023">Այս հաշիվը կառավարվում է Family Link-ի կողմից</translation>
 <translation id="2303600792989757991">Փոխարկել պատուհանի համատեսքը</translation>
+<translation id="2318576281648121272">Այսօր՝ <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Մեկ տառով հետ</translation>
 <translation id="2339073806695260576">Հպեք դարակի վրայի ստիլուսի կոճակին՝ գրառում կատարելու կամ սքրինշոթ լուսանկարելու համար, ինչպես նաև լազերային ցուցիչը կամ խոշորացույցն օգտագործելու համար:</translation>
 <translation id="2341729377289034582">Միայն ուղղաձիգ</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
 <translation id="24452542372838207">Ընդարձակել</translation>
 <translation id="2450205753526923158">Սքրինշոթի ռեժիմ</translation>
+<translation id="2456008742792828469">Օրացույց, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Լուծաչափի հաստատում</translation>
 <translation id="2475982808118771221">Սխալ առաջացավ</translation>
 <translation id="2482878487686419369">Ծանուցումներ</translation>
@@ -278,6 +281,7 @@
 <translation id="3100274880412651815">Անջատել տեսագրման ռեժիմը</translation>
 <translation id="3105917916468784889">Ստանալ սքրինշոթը</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Հեռացնել հուշումը</translation>
 <translation id="3126069444801937830">Թարմացնելու համար վերագործարկեք</translation>
 <translation id="3139942575505304791">Աշխատասեղան 1</translation>
 <translation id="315116470104423982">Բջջային կապի տվյալներ</translation>
@@ -317,6 +321,7 @@
 <translation id="3413817803639110246">Դեռևս ոչինչ չկա</translation>
 <translation id="3428447136709161042">Անջատել «<ph name="NETWORK_NAME" />» ցանցից</translation>
 <translation id="3430396595145920809">Սահեցրեք մատը աջից՝ հետ գնալու համար</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Փոփոխել հիշեցումը</translation>
 <translation id="3435967511775410570">Մատնահետքը ճանաչվեց</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@
 <translation id="4642092649622328492">Ստանալ էկրանի մասնակի պատկեր</translation>
 <translation id="4659419629803378708">ChromeVox-ը միացված է</translation>
 <translation id="4665114317261903604">Միացնել/անջատել «Չանհանգստացնել» ռեժիմը։ <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Ներբեռնում՝ <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Մուտքագրեք ծնողի մուտքի կոդը</translation>
 <translation id="4702647871202761252">Գաղտնիության էկրանն անջատված է</translation>
 <translation id="4706121060329443414">Ավելի ուշ մենք կփորձենք նորից ներբեռնել ֆայլերը։ Իսկ հիմա խոսքի ձայնագրությունը կփոխանցվի Google-ին՝ մշակման համար։</translation>
@@ -640,6 +646,7 @@
 <translation id="5744083938413354016">Հպումով քաշում</translation>
 <translation id="5745612484876805746">Մութն ընկնելուն պես գիշերային ռեժիմը ավտոմատ կմիանա</translation>
 <translation id="5750765938512549687">Bluetooth-ն անջատված է</translation>
+<translation id="576341972084747908">Ներբեռնվում է վտանգավոր ֆայլ՝ <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Գիշերային ռեժիմը միացված է</translation>
 <translation id="5769373120130404283">Գաղտնիության էկրան</translation>
 <translation id="5777841717266010279">Դադարեցնե՞լ էկրանի համօգտագործումը:</translation>
@@ -781,6 +788,7 @@
 <translation id="6852052252232534364">Ակտիվացնել</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> վ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Մնաց 1 թվանշան}one{Մնաց # թվանշան}other{Մնաց # թվանշան}}</translation>
+<translation id="6867938213751067702"><ph name="FILENAME" /> ֆայլի ներբեռնումը դադարեցված է</translation>
 <translation id="6878400149835617132">Դյուրանցումն անջատված է</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> սարքի արդյունավետությունը կարող է նվազել։ Օգտագործեք հավաստագրված <ph name="PREFERRED_MINIMUM_POWER" />Վ կամ ավելի բարձր USB-C սնուցման ադապտեր։</translation>
 <translation id="688631446150864480">Մյուս պատուհան անցնելու համար սեղմեք վար սլաքը</translation>

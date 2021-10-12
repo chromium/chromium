@@ -23,6 +23,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1104621072296271835">Tækin þín virka enn betur saman</translation>
 <translation id="1119348796022671382">Litastilling með þema notar liti sem dregnir eru úr veggfóðrinu til að gefa viðmótinu léttan litablæ.</translation>
 <translation id="112308213915226829">Fela hillu sjálfkrafa</translation>
+<translation id="1142002900084379065">Nýlegar myndir</translation>
 <translation id="1148499908455722006">Opna upplýsingaglugga fyrir <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Dagatal</translation>
 <translation id="1153356358378277386">Pöruð tæki</translation>
@@ -179,6 +180,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2298170939937364391">Kveikt er á stækkunargleri á öllum skjánum. Ýttu aftur á Ctrl+leitarhnappinn+M til að loka því.</translation>
 <translation id="2302092602801625023">Þessum reikningi er stjórnað með Family Link</translation>
 <translation id="2303600792989757991">Víxla gluggayfirliti</translation>
+<translation id="2318576281648121272">Í dag <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Til baka um staf</translation>
 <translation id="2339073806695260576">Ýttu á pennahnappinn á hillunni til að skrifa niður glósu, taka skjámynd, nota leysigeislabendilinn eða stækkunarglerið.</translation>
 <translation id="2341729377289034582">Læst á lóðrétt</translation>
@@ -200,6 +202,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2435457462613246316">Sýna aðgangsorð</translation>
 <translation id="24452542372838207">Stækka tilkynningu</translation>
 <translation id="2450205753526923158">Skjámyndastilling</translation>
+<translation id="2456008742792828469">Dagatal, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Staðfesta upplausn</translation>
 <translation id="2475982808118771221">Villa kom upp</translation>
 <translation id="2482878487686419369">Tilkynningar</translation>
@@ -278,6 +281,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3100274880412651815">Loka tökustillingu</translation>
 <translation id="3105917916468784889">Taka skjámynd</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Fjarlægja tillögu</translation>
 <translation id="3126069444801937830">Endurræstu til að uppfæra</translation>
 <translation id="3139942575505304791">Skrifborð 1</translation>
 <translation id="315116470104423982">Farsímagögn</translation>
@@ -317,6 +321,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3413817803639110246">Ekkert að sjá enn</translation>
 <translation id="3428447136709161042">Viltu aftengjast <ph name="NETWORK_NAME" />?</translation>
 <translation id="3430396595145920809">Strjúktu frá hægri til að fara til baka</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Breyta áminningu</translation>
 <translation id="3435967511775410570">Þekkt fingrafar</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4642092649622328492">Taka mynd af hluta skjás</translation>
 <translation id="4659419629803378708">ChromeVox virkjað</translation>
 <translation id="4665114317261903604">Kveikja/slökkva á „Ónáðið ekki“. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Sækir <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Opna tæki með kóða foreldris</translation>
 <translation id="4702647871202761252">Slökkt er á persónuverndarskjá</translation>
 <translation id="4706121060329443414">Reynt verður að hlaða niður síðar. Tal verður sent til Google til úrvinnslu í millitíðinni.</translation>
@@ -640,6 +646,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5744083938413354016">Draga með snertingu</translation>
 <translation id="5745612484876805746">Sjálfkrafa kviknar á næturljósi við sólsetur</translation>
 <translation id="5750765938512549687">Slökkt er á Bluetooth</translation>
+<translation id="576341972084747908">Hættulegt niðurhal <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Kveikt er á næturljósi.</translation>
 <translation id="5769373120130404283">Persónuverndarskjár</translation>
 <translation id="5777841717266010279">Stöðva skjádeilingu?</translation>
@@ -781,6 +788,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6852052252232534364">Smelltu til að kveikja</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Ein tala eftir}one{# tala eftir}other{# tölur eftir}}</translation>
+<translation id="6867938213751067702">Hlé gert á niðurhali <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Slökkt á flýtileið</translation>
 <translation id="6886172995547742638">Afköst <ph name="DEVICE_TYPE" /> gætu minnkað. Notaðu vottaðan USB-C straumbreyti með <ph name="PREFERRED_MINIMUM_POWER" /> W eða meira.</translation>
 <translation id="688631446150864480">Ýttu á ör niður til að skipta á milli glugga</translation>

@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">თქვენი მოწყობილობები ერთად უკეთესად იმუშავებს</translation>
 <translation id="1119348796022671382">ფერთა თემატური რეჟიმი იყენებს ფონიდან ამოღებულ ფერებს, რომ ოდნავ შეაფერადოს ინტერფეისი.</translation>
 <translation id="112308213915226829">shelf თვითდამალვა</translation>
+<translation id="1142002900084379065">ბოლოდროინდელი ფოტოები</translation>
 <translation id="1148499908455722006">საინფორმაციო დიალოგის გახსნა <ph name="USER_NAME" />-ისთვის</translation>
 <translation id="1150989369772528668">კალენდარი</translation>
 <translation id="1153356358378277386">დაწყვილებული მოწყობილობები</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">სრულეკრანიანი ლუპა ჩართულია. გამოსართავად ხელახლა დააჭირეთ კლავიშთა კომბინაციას: Ctrl+Search+M.</translation>
 <translation id="2302092602801625023">ეს ანგარიში იმართება Family Link-ის მეშვეობით</translation>
 <translation id="2303600792989757991">ფანჯრის მიმოხილვის გადართვა</translation>
+<translation id="2318576281648121272">დღეს, <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">ერთი ასოთი უკან</translation>
 <translation id="2339073806695260576">რაიმეს ჩასანიშნად, ეკრანის ანაბეჭდის გადასაღებად, ასევე ლაზერული მიმთითებლის ან გამადიდებელი შუშის გამოსაყენებლად შეეხეთ სტილუსის ღილაკს თაროზე.</translation>
 <translation id="2341729377289034582">ჩაკეტილია ვერტიკალურზე</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">პაროლის ჩვენება</translation>
 <translation id="24452542372838207">შეტყობინების გაშლა</translation>
 <translation id="2450205753526923158">ეკრანის ანაბეჭდის რეჟიმი</translation>
+<translation id="2456008742792828469">კალენდარი, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">დაადასტურეთ გარჩევადობა</translation>
 <translation id="2475982808118771221">შეცდომა მოხდა</translation>
 <translation id="2482878487686419369">შეტყობინებები</translation>
@@ -278,6 +281,7 @@
 <translation id="3100274880412651815">აღბეჭდვის რეჟიმის დახურვა</translation>
 <translation id="3105917916468784889">ეკრანის ანაბეჭდის გადაღება</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">შემოთავაზების ამოშლა</translation>
 <translation id="3126069444801937830">გადატვირთეთ განახლებისთვის</translation>
 <translation id="3139942575505304791">დესკტოპი 1</translation>
 <translation id="315116470104423982">მობილური მონაცემები</translation>
@@ -317,6 +321,7 @@
 <translation id="3413817803639110246">ჯერჯერობით სანახავი არაფერია</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />-თან კავშირის გაწყვეტა</translation>
 <translation id="3430396595145920809">უკან დასაბრუნებლად გადაფურცლეთ მარჯვნიდან</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">შეხსენების რედაქტირება</translation>
 <translation id="3435967511775410570">თითის ანაბეჭდი ამოცნობილია</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@
 <translation id="4642092649622328492">ეკრანის ნაწილობრივი ანაბეჭდის გადაღება</translation>
 <translation id="4659419629803378708">ChromeVox ჩართულია</translation>
 <translation id="4665114317261903604">„არ შემაწუხოთ“ რეჟიმის გადართვა. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">მიმდინარეობს „<ph name="FILENAME" />“-ის ჩამოტვირთვა</translation>
 <translation id="4696813013609194136">განბლოკეთ მოწყობილობა მშობლის კოდით</translation>
 <translation id="4702647871202761252">კონფიდენციალურობის ეკრანი გამორთულია</translation>
 <translation id="4706121060329443414">ჩამოტვირთვას მოგვიანებთ შევეცდებით. ამჟამად მეტყველება გაეგზავნება Google-ს დასამუშავებლად.</translation>
@@ -640,6 +646,7 @@
 <translation id="5744083938413354016">შეხებით გადატანა</translation>
 <translation id="5745612484876805746">ღამის განათება ავტომატურად ირთვება მზის ჩასვლისას</translation>
 <translation id="5750765938512549687">Bluetooth გამორთულია</translation>
+<translation id="576341972084747908">ჩამოიტვირთოს სახიფათო <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">ღამის განათება ჩართულია.</translation>
 <translation id="5769373120130404283">კონფიდენციალური ეკრანი</translation>
 <translation id="5777841717266010279">შევწყვიტოთ ეკრანის გაზიარება?</translation>
@@ -781,6 +788,7 @@
 <translation id="6852052252232534364">დააწკაპუნეთ გასააქტიურებლად</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> წმ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{დარჩენილია 1 ციფრი}other{დარჩენილია # ციფრი}}</translation>
+<translation id="6867938213751067702">ჩამოტვირთვა დაპაუზებულია <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">მალსახმობი გამოირთო</translation>
 <translation id="6886172995547742638">თქვენმა <ph name="DEVICE_TYPE" />-მა შეიძლება უფრო დაბალი წარმადობით იმუშაოს. გამოიყენეთ სერტიფიცირებული <ph name="PREFERRED_MINIMUM_POWER" /> ვტ-იანი ან უფრო მაღალი სიმძლავრის USB-C ელკვების ადაპტერი.</translation>
 <translation id="688631446150864480">ფანჯრებს შორის გადასართავად დააჭირეთ კლავიშს ქვემოთ მიმართული ისრით</translation>

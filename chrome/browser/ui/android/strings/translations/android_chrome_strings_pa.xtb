@@ -57,6 +57,7 @@
 <translation id="1310482092992808703">ਟੈਬਾਂ ਦਾ ਗਰੁੱਪ ਬਣਾਓ</translation>
 <translation id="1311657260431405215">ਇਹ QR Code ਕੋਈ URL ਨਹੀਂ ਹੈ: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
+<translation id="1320912611264252795">ਬੁੱਕਮਾਰਕ ਰੱਖਿਅਤ ਕਰਨ ਸੰਬੰਧੀ ਪ੍ਰਵਾਹ ਵਾਲਾ ਫੋਲਡਰ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੋਲ੍ਹਿਆ ਗਿਆ ਹੈ</translation>
 <translation id="1327257854815634930">ਨੈਵੀਗੇਸ਼ਨ ਇਤਿਹਾਸ ਖੁੱਲ੍ਹਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="1331212799747679585">Chrome ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਹੋਰ ਵਿਕਲਪ</translation>
 <translation id="1332501820983677155">Google Chrome ਵਿਸ਼ੇਸ਼ਤਾ ਸ਼ਾਰਟਕੱਟ</translation>
@@ -83,6 +84,7 @@
 <translation id="1466383950273130737">Chrome ਦੀ ਭਾਸ਼ਾ ਚੁਣੋ</translation>
 <translation id="147113415845704694">“ਅੱਜ ਮੌਸਮ ਕਿਹੋ ਜਿਹਾ ਹੈ?” ਕਹਿ ਕੇ ਦੇਖੋ</translation>
 <translation id="1477626028522505441">ਸਰਵਰ ਸਮੱਸਿਆਵਾਂ ਦੇ ਕਾਰਨ <ph name="FILE_NAME" /> ਡਾਊਨਲੋਡ ਅਸਫ਼ਲ ਰਿਹਾ।</translation>
+<translation id="148482509007564431">ਬੁੱਕਮਾਰਕ ਰੱਖਿਅਤ ਕਰਨ ਸੰਬੰਧੀ ਪ੍ਰਵਾਹ</translation>
 <translation id="1492417797159476138">ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਇਸ ਸਾਈਟ ਲਈ ਇਹ ਵਰਤੋਂਕਾਰ ਨਾਮ ਰੱਖਿਅਤ ਕਰ ਚੁੱਕੇ ਹੋ</translation>
 <translation id="1493287004536771723">ਤੁਸੀਂ <ph name="SITE_NAME" /> ਦਾ ਅਨੁਸਰਣ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="1506061864768559482">ਖੋਜ ਇੰਜਣ</translation>
@@ -180,6 +182,7 @@
 <translation id="2139186145475833000">ਹੋਮ ਸਕ੍ਰੀਨ 'ਤੇ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="2141396931810938595">ਤੁਹਾਡੀ ਵਰਤੋਂ ਦੇ ਆਧਾਰ 'ਤੇ</translation>
 <translation id="214888715418183969">ਚੁਣੋ ਕਿ ਜਿਸ ਨਾਲ ਤੁਸੀਂ Chrome ਨਾਲ ਜਾਣਕਾਰੀ ਸਾਂਝੀ ਕਰਨ ਵਿੱਚ ਸਹਿਜ ਹੋ। ਤੁਹਾਡੇ ਦੁਆਰਾ ਸਾਂਝੀ ਕੀਤੀ ਗਈ ਮੈਟਰਿਕਸ Chrome ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ, ਪ੍ਰਦਰਸ਼ਨ ਅਤੇ ਸਥਿਰਤਾ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਸਹਾਇਤਾ ਲਈ ਵਰਤੀ ਜਾਵੇਗੀ।</translation>
+<translation id="2149973817440762519">ਬੁੱਕਮਾਰਕ ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="2154484045852737596">ਕਾਰਡ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="2154710561487035718">URL ਕਾਪੀ ਕਰੋ</translation>
 <translation id="2156074688469523661">ਬਾਕੀ ਸਾਈਟਾਂ (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -262,6 +265,7 @@
 <translation id="2631006050119455616">ਬਚਾਇਆ ਗਿਆ</translation>
 <translation id="2645657967708199252">ਤੁਹਾਡਾ <ph name="CONNECTION_TYPE" /> ਕਨੈਕਸ਼ਨ ਤੁਹਾਡੇ ਡਾਊਨਲੋਡ ਨੂੰ ਹੌਲੀ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="2647434099613338025">ਭਾਸ਼ਾ ਜੋੜੋ</translation>
+<translation id="2649068648233607930">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="2650751991977523696">ਕੀ ਫ਼ਾਈਲ ਦੁਬਾਰਾ ਡਾਊਨਲੋਡ ਕਰਨੀ ਹੈ?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ਆਡੀਓ ਫ਼ਾਈਲ}one{# ਆਡੀਓ ਫ਼ਾਈਲ}other{# ਆਡੀਓ ਫ਼ਾਈਲਾਂ}}</translation>
 <translation id="2656405586795711023">ਵੈੱਬ ਐਪਾਂ</translation>
@@ -427,6 +431,7 @@
 <translation id="3602290021589620013">ਪ੍ਰੀਵਿਊ</translation>
 <translation id="3616113530831147358">ਆਡੀਓ</translation>
 <translation id="3622349720008044802">ਵਿੰਡੋਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="3624977496395967031">ਕ੍ਰਮ-ਬੱਧ ਕਰਨ ਸੰਬੰਧੀ ਵਿਕਲਪਾਂ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3632295766818638029">ਪਾਸਵਰਡ ਜ਼ਾਹਰ ਕਰੋ</translation>
 <translation id="363596933471559332">ਸਟੋਰ ਕੀਤੇ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲਾਂ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਆਪਣੇ-ਆਪ ਸਾਈਟਾਂ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ। ਜਦੋਂ ਵਿਸ਼ੇਸ਼ਤਾ ਬੰਦ ਹੋਵੇ, ਤਾਂ ਤੁਹਾਨੂੰ ਇੱਕ ਵੈੱਬਸਾਈਟ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਹਰ ਵਾਰ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਕਿਹਾ ਜਾਵੇਗਾ।</translation>
@@ -496,7 +501,7 @@
 <translation id="4084682180776658562">ਬੁੱਕਮਾਰਕ</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> ਤੋਂ – <ph name="BEGIN_DEEMPHASIZED" />Google ਰਾਹੀਂ ਡਿਲੀਵਰ ਕੀਤਾ ਗਿਆ<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">ਕੀ ਐਪ ਡਾਟਾ ਮਿਟਾਉਣਾ ਹੈ?</translation>
-<translation id="4095189195365058471">ਬਾਅਦ ਵਿੱਚ ਪੜ੍ਹੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
+<translation id="4096227151372679484">ਬੁੱਕਮਾਰਕ ਰੱਖਿਅਤ ਕਰਨ ਸੰਬੰਧੀ ਪ੍ਰਵਾਹ ਵਾਲਾ ਫੋਲਡਰ ਅੱਧੀ ਉਚਾਈ ਤੱਕ ਖੋਲ੍ਹਿਆ ਗਿਆ ਹੈ</translation>
 <translation id="4099578267706723511">Google ਨੂੰ ਵਰਤੋਂ ਅੰਕੜੇ ਅਤੇ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਭੇਜ ਕੇ Chrome ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ।</translation>
 <translation id="410351446219883937">ਆਟੋਪਲੇ</translation>
 <translation id="4108314971463891922">ਅਨੁਸਰਣ ਕਰੋ</translation>
@@ -605,6 +610,7 @@
 <translation id="4766678251456904326">ਡੀਵਾਈਸ ਵਿੱਚ ਖਾਤਾ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 ਡਾਊਨਲੋਡ ਨੂੰ ਨਿਯਤ ਕੀਤਾ ਗਿਆ।}one{# ਡਾਊਨਲੋਡ ਨੂੰ ਨਿਯਤ ਕੀਤਾ ਗਿਆ।}other{# ਡਾਊਨਲੋਡਾਂ ਨੂੰ ਨਿਯਤ ਕੀਤਾ ਗਿਆ।}}</translation>
 <translation id="4791358705705538979">ਤੁਹਾਨੂੰ ਵੈੱਬ ਵਿੱਚ ਕਾਰਜ, ਜਿਵੇਂ ਕਿ ਚੈੱਕ-ਆਊਟ, ਪੂਰੇ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰਦਾ ਹੈ</translation>
+<translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">ਪਾਸਫਰੇਜ਼ ਇਨਕ੍ਰਿਪਸ਼ਨ ਵਿੱਚ Google Pay ਦੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤੇ ਸ਼ਾਮਲ ਨਹੀਂ ਹਨ।
 
 ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣ ਲਈ, <ph name="BEGIN_LINK" />ਸਮਕਾਲੀਕਰਨ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ<ph name="END_LINK" /></translation>
@@ -628,6 +634,7 @@
 <translation id="4885273946141277891">Chrome ਦੇ ਕਈ ਅਸਮਰਥਿਤ ਵਰਜਨ</translation>
 <translation id="4905823827770127520">ਪੰਨੇ ਵਿੱਚ ਕੋਈ ਲਿੰਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="4908869848243824489">Google ਵੱਲੋਂ Discover</translation>
+<translation id="4909709702739934280">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="4910889077668685004">ਭੁਗਤਾਨ ਐਪਾਂ</translation>
 <translation id="4912413785358399818">ਟੈਬ ਲਿਜਾਓ</translation>
 <translation id="4913161338056004800">ਅੰਕੜਿਆਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ</translation>
@@ -641,7 +648,6 @@
 <translation id="4943872375798546930">ਕੋਈ ਨਤੀਜੇ ਨਹੀਂ</translation>
 <translation id="4957722034734105353">ਹੋਰ ਜਾਣੋ...</translation>
 <translation id="4961107849584082341">ਇਸ ਪੰਨੇ ਦਾ ਕਿਸੇ ਵੀ ਭਾਸ਼ਾ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ</translation>
-<translation id="4970824347203572753">ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਵਿੱਚ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="4971735654804503942">ਖਤਰਨਾਕ ਵੈੱਬਸਾਈਟਾਂ, ਡਾਊਨਲੋਡਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੋਂ ਵਧੇਰੇ ਤੇਜ਼ ਅਤੇ ਚੁਸਤ ਸੁਰੱਖਿਆ। ਤੁਹਾਨੂੰ ਪਾਸਵਰਡ ਉਲੰਘਣਾਵਾਂ ਬਾਰੇ ਚਿਤਾਵਨੀ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ। ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ Google ਨੂੰ ਭੇਜਣ ਦੀ ਲੋੜ ਪੈਂਦੀ ਹੈ।</translation>
 <translation id="497421865427891073">ਅੱਗੇ ਵੱਲ ਜਾਓ</translation>
 <translation id="4988210275050210843">ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ (<ph name="MEGABYTES" />)।</translation>
@@ -725,7 +731,6 @@
 <translation id="5483197086164197190">Chrome 'ਤੇ ਜਾਓ</translation>
 <translation id="5487521232677179737">ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="549025011754480756">ਆਪਣੀ ਅਵਾਜ਼ ਨਾਲ ਖੋਜਣ ਦਾ ਤਰੀਕਾ</translation>
-<translation id="5500777121964041360">ਸ਼ਾਇਦ ਤੁਹਾਡੇ ਟਿਕਾਣੇ 'ਤੇ ਉਪਲਬਧ ਨਾ ਹੋਵੇ</translation>
 <translation id="5512137114520586844">ਇਹ ਖਾਤਾ <ph name="PARENT_NAME" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="5514904542973294328">ਇਸ ਡੀਵਾਈਸ ਦੇ ਪ੍ਰਬੰਧਕ ਵੱਲੋਂ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5515439363601853141">ਆਪਣਾ ਪਾਸਵਰਡ ਦੇਖਣ ਲਈ ਅਣਲਾਕ ਕਰੋ</translation>
@@ -879,7 +884,6 @@
 <translation id="6364438453358674297">ਕੀ ਇਤਿਹਾਸ ਵਿੱਚੋਂ ਸੁਝਾਅ ਹਟਾਉਣਾ ਹੈ?</translation>
 <translation id="6378173571450987352">ਵੇਰਵੇ: ਵਰਤੇ ਗਏ ਡਾਟੇ ਦੀ ਮਾਤਰਾ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> ਨੂੰ Chrome ਵਿੱਚ ਖੋਲ੍ਹਿਆ ਜਾਵੇਗਾ। ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_LINK1" />Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK1" /> ਅਤੇ <ph name="BEGIN_LINK2" />Google Chrome ਅਤੇ Chrome OS ਦੇ ਵਧੀਕ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK2" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ।</translation>
-<translation id="6381421346744604172">ਗੂੜ੍ਹੀਆਂ ਕੀਤੀਆਂ ਵੈੱਬਸਾਈਟਾਂ</translation>
 <translation id="6395288395575013217">ਲਿੰਕ</translation>
 <translation id="6397616442223433927">ਵਾਪਸ ਆਨਲਾਈਨ ਹੋ ਗਿਆ</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> 'ਤੇ <ph name="ERROR_CODE" /></translation>
@@ -1153,6 +1157,7 @@
 <translation id="7926975587469166629">ਕਾਰਡ ਦਾ ਉਪਨਾਮ</translation>
 <translation id="7929962904089429003">ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7930998711684428189">ਡਾਟਾ ਉਲੰਘਣਾ ਵਜੋਂ ਪਾਸਵਰਡਾਂ ਦਾ ਖੁਲਾਸਾ ਹੋਣ 'ਤੇ ਤੁਹਾਨੂੰ ਚਿਤਾਵਨੀ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ।</translation>
+<translation id="7939485076072265087">ਹਾਈਲਾਈਟ ਕੀਤੀ ਲਿਖਤ ਲਈ ਇੱਕ ਸਟਾਈਲਬੱਧ ਕਾਰਡ ਬਣਾਓ</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ਪੁਰਾਣਾ ਹੈ।</translation>
 <translation id="7944772052836377867">ਸਿੰਕ ਕਰਨ ਲਈ ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="7947953824732555851">ਸਵੀਕਾਰ ਕਰਕੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
@@ -1210,7 +1215,6 @@
 <translation id="8218052821161047641">ਤੇਜ਼ੀ ਨਾਲ ਲੋਡ ਹੋਣ ਵਾਲਾ ਪੰਨਾ</translation>
 <translation id="8218622182176210845">ਆਪਣੇ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8223642481677794647">ਫ਼ੀਡ ਕਾਰਡ ਮੀਨੂ</translation>
-<translation id="8224471946457685718">ਵਾਈ-ਫਾਈ ਵਰਤਣ ਵੇਲੇ ਆਪਣੇ ਲਈ ਲੇਖ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="8250920743982581267">ਦਸਤਾਵੇਜ਼</translation>
 <translation id="825412236959742607">ਇਹ ਪੰਨਾ ਬਹੁਤ ਜ਼ਿਆਦਾ ਮੈਮੋਰੀ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ, ਇਸ ਲਈ Chrome ਨੇ ਕੁਝ ਸਮੱਗਰੀ ਹਟਾ ਦਿੱਤੀ ਹੈ।</translation>
 <translation id="8260126382462817229">ਦੁਬਾਰਾ ਸਾਈਨ ਇਨ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
@@ -1272,6 +1276,7 @@
 <translation id="8562452229998620586">ਸੁਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਇੱਥੇ ਦਿਖਾਈ ਦੇਣਗੇ।</translation>
 <translation id="856481929701340285">ਬੇਨਤੀ ਡੈਸਕਟਾਪ ਸਾਈਟ</translation>
 <translation id="8569404424186215731"><ph name="DATE" /> ਤੋਂ</translation>
+<translation id="8570677896027847510">ਫ਼ਾਈਲ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="8571213806525832805">ਪਿਛਲੇ 4 ਹਫ਼ਤੇ</translation>
 <translation id="8572344201470131220">ਚਿੱਤਰ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8583805026567836021">ਖਾਤੇ ਦਾ ਡਾਟਾ ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -1324,6 +1329,7 @@
 <translation id="8912362522468806198">Google ਖਾਤਾ</translation>
 <translation id="8920114477895755567">ਮਾਪਿਆਂ ਦੇ ਵੇਰਵਿਆਂ ਦੀ ਉਡੀਕ ਕਰ ਰਿਹਾ ਹੈ।</translation>
 <translation id="8922289737868596582">ਪੰਨਿਆਂ ਨੂੰ ਆਫ਼ਲਾਈਨ ਵਰਤਣ ਲਈ ਉਹਨਾਂ ਨੂੰ 'ਹੋਰ ਵਿਕਲਪ' ਬਟਨ ਰਾਹੀਂ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
+<translation id="8924575305646776101"><ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ਤਿਆਰ ਹੈ</translation>
 <translation id="8928626432984354940">ਬੁੱਕਮਾਰਕ ਫੋਲਡਰਾਂ ਦੀ ਸੂਚੀ ਅੱਧੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੈ</translation>
 <translation id="8937267401510745927">ਕਾਰਜ ਪੂਰੇ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰਨ ਲਈ, Google ਨੂੰ ਉਹਨਾਂ ਸਾਈਟਾਂ ਦੇ URL ਅਤੇ ਸਮੱਗਰੀਆਂ ਮਿਲਣਗੀਆਂ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ Assistant ਨੂੰ ਵਰਤਦੇ ਹੋ, ਨਾਲ ਹੀ ਤੁਹਾਡੇ ਵੱਲੋਂ Assistant ਰਾਹੀਂ ਸਪੁਰਦ ਕੀਤੀ ਜਾਣਕਾਰੀ ਵੀ ਮਿਲੇਗੀ। ਇਹ ਜਾਣਕਾਰੀ ਸ਼ਾਇਦ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਸਟੋਰ ਕੀਤੀ ਜਾਵੇ। ਤੁਸੀਂ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ Assistant ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
@@ -1358,8 +1364,10 @@
 <translation id="9086455579313502267">ਨੈ$ਟਵਰਕ 'ਤੇ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ</translation>
 <translation id="9100505651305367705">ਜੇਕਰ ਸਮਰਥਿਤ ਹੋਵੇ, ਤਾਂ ਲੇਖਾਂ ਨੂੰ ਸਰਲੀਕਿਰਤ ਦ੍ਰਿਸ਼ ਵਿੱਚ ਦਿਖਾਉਣ ਲਈ ਪੇਸ਼ਕਸ਼ ਕਰੋ</translation>
 <translation id="9100610230175265781">ਪਾਸਫਰੇਜ਼ ਲੋੜੀਂਦਾ</translation>
+<translation id="9101137867221042551">ਪ੍ਰਬੰਧਨ</translation>
 <translation id="9102803872260866941">ਪੂਰਵ-ਝਲਕ ਟੈਬ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ</translation>
 <translation id="9104217018994036254">ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਵਾਲੇ ਡੀਵਾਈਸਾਂ ਦੀ ਸੂਚੀ।</translation>
+<translation id="9106148373857059373">ਬੁੱਕਮਾਰਕ ਰੱਖਿਅਤ ਕਰਨ ਸੰਬੰਧੀ ਪ੍ਰਵਾਹ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="9108312223223904744">ਫ਼ੋਨ ਇੱਕ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਸਹਾਇਤਾ ਦੇ ਰੂਪ ਵਿੱਚ</translation>
 <translation id="9108808586816295166">ਸੁਰੱਖਿਅਤ DNS ਸ਼ਾਇਦ ਹਰ ਵੇਲੇ ਉਪਲਬਧ ਨਾ ਹੋਵੇ</translation>
 <translation id="9133397713400217035">ਆਫ਼ਲਾਈਨ ਪੜਚੋਲ ਕਰੋ</translation>

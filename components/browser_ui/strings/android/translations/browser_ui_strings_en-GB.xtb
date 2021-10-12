@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Ask when a site wants to discover nearby Bluetooth devices (recommended)</translation>
 <translation id="2315043854645842844">Client side certificate selection is not supported by the operating system.</translation>
 <translation id="2359808026110333948">Continue</translation>
+<translation id="2379925928934107488">Apply Dark theme to sites when Chrome uses Dark theme, when possible</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}}</translation>
 <translation id="2434158240863470628">Download complete <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Location access is also off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Expanded – click to collapse.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
+<translation id="2597457036804169544">Don’t apply Dark theme to sites</translation>
 <translation id="2621115761605608342">Allow JavaScript for a specific site.</translation>
 <translation id="2653659639078652383">Submit</translation>
 <translation id="2677748264148917807">Leave</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Mute sites that play sound</translation>
 <translation id="3744111561329211289">Background sync</translation>
 <translation id="3763247130972274048">Double-tap video left or right to skip 10s</translation>
+<translation id="3797520601150691162">Don’t apply Dark theme for a specific site</translation>
 <translation id="381841723434055211">Phone numbers</translation>
 <translation id="3835233591525155343">Your device use</translation>
 <translation id="385051799172605136">Back</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">Sites can't ask to send notifications</translation>
 <translation id="5516455585884385570">Open notification settings</translation>
 <translation id="5527111080432883924">Ask before allowing sites to read text and images from the clipboard (recommended)</translation>
+<translation id="5553374991681107062">Latest</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5649053991847567735">Automatic downloads</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">You usually block notifications. To allow, tap Details.</translation>
 <translation id="7423098979219808738">Ask first</translation>
 <translation id="7423538860840206698">Blocked from reading clipboard</translation>
+<translation id="7425915948813553151">Dark theme for sites</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">A site is using your microphone</translation>
 <translation id="7561196759112975576">Always</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">Are you sure that you want to clear all local data, including cookies, and reset all permissions for this website?</translation>
 <translation id="8007176423574883786">Turned off for this device</translation>
 <translation id="802154636333426148">Download failed</translation>
+<translation id="8042586301629853791">Sort by:</translation>
 <translation id="8067883171444229417">Play video</translation>
 <translation id="8068648041423924542">Unable to select certificate.</translation>
 <translation id="8087000398470557479">This content is from <ph name="DOMAIN_NAME" />, delivered by Google.</translation>

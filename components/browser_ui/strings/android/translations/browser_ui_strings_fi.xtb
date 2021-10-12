@@ -167,6 +167,7 @@
 <translation id="5505264765875738116">Sivustot eivät saa pyytää lupaa ilmoitusten lähettämiseen</translation>
 <translation id="5516455585884385570">Avaa ilmoitusasetukset</translation>
 <translation id="5527111080432883924">Pyydä lupaa, kun sivustot yrittävät lukea tekstiä ja kuvia leikepöydältä (suositus)</translation>
+<translation id="5553374991681107062">Uusimmat</translation>
 <translation id="5556459405103347317">Lataa uudelleen</translation>
 <translation id="5596627076506792578">Lisäasetukset</translation>
 <translation id="5649053991847567735">Automaattiset lataukset</translation>
@@ -267,6 +268,7 @@
 <translation id="7999064672810608036">Haluatko varmasti tyhjentää kaikki paikalliset tiedot, mukaan lukien evästeet, ja nollata kaikki tämän verkkosivuston käyttöluvat?</translation>
 <translation id="8007176423574883786">Ei käytössä tällä laitteella</translation>
 <translation id="802154636333426148">Lataus epäonnistui.</translation>
+<translation id="8042586301629853791">Lajitteluperuste:</translation>
 <translation id="8067883171444229417">Toista video</translation>
 <translation id="8068648041423924542">Varmenteen valinta epäonnistui</translation>
 <translation id="8087000398470557479">Google on toimittanut tämän sisällön osoitteesta <ph name="DOMAIN_NAME" />.</translation>

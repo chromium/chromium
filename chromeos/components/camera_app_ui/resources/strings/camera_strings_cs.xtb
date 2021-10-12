@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="1113173431709655881">Režim fotoaparátu</translation>
 <translation id="1175958423215084756">Byl zjištěn odkaz. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Obrázky v galerii</translation>
 <translation id="1300209025925956156">Naskenujte dokument</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">Zahájit nahrávání</translation>
 <translation id="2599796128805996109">Zadní fotoaparát</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> s</translation>
+<translation id="2761536921376153655">Typ prohledávání</translation>
 <translation id="2879583609344924966">Kamera <ph name="CAMERA" /> je připojena.</translation>
 <translation id="2968794441791257519">Fotky a videa pořízená fotoaparátem se přesunou do složky stažených souborů. Najdete je v aplikaci Soubory.
 
@@ -99,9 +101,11 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="698156982839284926">3 sekundy</translation>
 <translation id="712848772518857951">Opravdu chcete tyto položky (<ph name="COUNT" />) odstranit?</translation>
 <translation id="7134221860976209830">10sekundový časovač</translation>
+<translation id="7191890674911603392">Typ záznamu</translation>
 <translation id="7243947652761655814">Rozlišení videa</translation>
 <translation id="7337660886763914220">Chyby systému souborů.</translation>
 <translation id="7450541714075000668">Text byl zkopírován</translation>
+<translation id="7476762461674917065">Zobrazit možnost záznamu obrázku GIF</translation>
 <translation id="7488619942230388918">Nahrát video GIF</translation>
 <translation id="7557677699350329807">Přepnout na další fotoaparát</translation>
 <translation id="7607002721634913082">Přerušeno</translation>

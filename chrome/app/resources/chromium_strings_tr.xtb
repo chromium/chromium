@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">Dosya indirmek için Chromium'un depolama alanına erişmesi gerekiyor</translation>
 <translation id="2572494885440352020">Chromium Yardımcısı</translation>
 <translation id="2577788541081224677">Chromium öğelerinize tüm cihazlarınızda erişmek için oturum açarak senkronizasyonu etkinleştirebilirsiniz.</translation>
-<translation id="2580426763510374355">Chromium OS'i yükle</translation>
 <translation id="2583187216237139145">Bu profil kullanılırken oluşturulan tüm Chromium verileri (yer işaretleri, geçmiş, şifreler ve diğer ayarlar gibi) iş profili yöneticisi tarafından kaldırılabilir. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Güncellemenin uygulanması için Chromium OS yeniden başlatılmalıdır.</translation>
 <translation id="2648074677641340862">Yükleme sırasında bir işletim sistemi hatası oluştu. Lütfen Chromium'u yeniden indirin.</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">Chromium'dan kaldır...</translation>
 <translation id="2885378588091291677">Görev Yöneticisi</translation>
 <translation id="2910007522516064972">&amp;Chromium hakkında</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Son bir hatırlatma: Yükleme işlemi, <ph name="BEGIN_BOLD" />sabit diskinizin tamamını silecek<ph name="END_BOLD" />. Lütfen sizin için önemli olan tüm verileri yedeklediğinizden emin olun.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Yükleme işlemi, başladıktan sonra iptal edilemez.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium güncel durumda</translation>
 <translation id="2983934633046890458">Chromium şifreleri düzenlemeye çalışıyor.</translation>
 <translation id="3032706164202344641">Chromium, şifrelerinizi kontrol edemiyor. Daha sonra tekrar deneyin.</translation>
@@ -77,7 +74,6 @@
 <translation id="3350761136195634146">Bu hesaba sahip bir Chromium profili zaten var</translation>
 <translation id="3406848076815591792">Mevcut Chromium profiline geçilsin mi?</translation>
 <translation id="3430503420100763906">Chromium profilleri ile tüm Chromium öğelerinizi ayırabilirsiniz. Arkadaşlar ve aile için profil oluşturun veya iş ile eğlenceyi ayırın.</translation>
-<translation id="3433271666494956603">Chromium OS yükleme işlemi devam ediyor</translation>
 <translation id="347328004046849135">Chromium, güvenliği ihlal edilmiş bir şifreyle oturum açtığınızda size haber verir</translation>
 <translation id="3474745554856756813">Bu işlem, <ph name="ITEMS_COUNT" /> öğeyi bu cihazdan silecektir. Verilerinizi daha sonra geri almak için Chromium'da <ph name="USER_EMAIL" /> hesabıyla oturum açın.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" />, Chromium profilleri arasında geçiş yapabilir</translation>
@@ -105,7 +101,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" />, bu cihazı kullanmadan önce aşağıdaki Hizmet Şartları'nı okuyup kabul etmenizi zorunlu tutmaktadır. Bu şartlar, Chromium OS Şartları'nın kapsamını genişletmez, değiştirmez veya sınırlamaz.</translation>
 <translation id="4271805377592243930">Chromium'la ilgili yardım alın</translation>
 <translation id="4285930937574705105">Belirlenemeyen bir hata nedeniyle yükleme başarısız oldu. Chromium şu anda çalışır durumdaysa kapatıp yeniden deneyin.</translation>
-<translation id="429583012151745428">Yükleme işlemi devam ediyor. Cihazı kapatmayın. Yükleme işlemi yirmi dakikadan fazla sürmez. Yükleme işleminden sonra makine otomatik olarak kapatılır.</translation>
 <translation id="4407044323746248786">Yine de Chromium'dan çıkılsın mı?</translation>
 <translation id="4415566066719264597">Chromium'un Arka Planda Çalışmasına İzin Ver</translation>
 <translation id="4423735387467980091">Chromium'u özelleştirin ve kontrol edin</translation>
@@ -199,7 +194,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6734291798041940871">Chromium zaten bilgisayarınızdaki tüm kullanıcılar için yüklendi.</translation>
 <translation id="673636774878526923">Chromium öğelerinize tüm cihazlarınızda erişmek için oturum açın ve senkronizasyonu etkinleştirin.</translation>
 <translation id="6774082503108938489">Ebeveyniniz, Chromium'a yönelik "Siteler, uygulamalar ve uzantılar için izinler"i kapattı. Bu <ph name="EXTENSION_TYPE_PARAMETER" /> uzantısının etkinleştirilmesine izin verilmiyor.</translation>
-<translation id="6827182711503025204">Chromium OS yüklenirken cihazınızdaki tüm verilerin üzerine yazılır.</translation>
 <translation id="6847869444787758381">Chromium, şifrelerinizin güvenliğinin ihlal edilip edilmediğini size bildirir</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium'a kopyalandı)</translation>

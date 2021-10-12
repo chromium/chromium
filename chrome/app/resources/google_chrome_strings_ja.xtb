@@ -83,8 +83,6 @@
 <translation id="2926676257163822632">脆弱なパスワードは簡単に推測されてしまいます。Chrome で<ph name="BEGIN_LINK" />安全性の高いパスワードを自動生成して保存する<ph name="END_LINK" />ことができます。</translation>
 <translation id="2926952073016206995">このサイトを利用するには、Chrome でカメラの使用を許可する必要があります</translation>
 <translation id="2929907241665500097">エラーが発生したため、Chrome が更新されませんでした。<ph name="BEGIN_LINK" />Chrome の更新に関する問題を解決してください。<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />重要: インストールすると、<ph name="BEGIN_BOLD" />ハードドライブのデータはすべて消去されます<ph name="END_BOLD" />。大切なデータがすべてバックアップされていることをご確認ください。<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />インストールを開始した後にキャンセルすることはできません。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ネットワークにログイン - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome はバックグラウンド モードです。</translation>
 <translation id="3059710691562604940">セーフ ブラウジングがオフになっています。Chrome はオンにすることをおすすめしています。</translation>
@@ -132,7 +130,6 @@
 <translation id="4251615635259297716">Chrome データをこのアカウントにリンクしますか？</translation>
 <translation id="4281844954008187215">利用規約</translation>
 <translation id="4293420128516039005">ログインすると、同期してカスタマイズした Chrome をどのデバイスでも使用できます</translation>
-<translation id="429583012151745428">インストール中です。デバイスの電源をオフにしないでください。インストールは 20 分以内に完了します。インストール後、マシンは自動的にシャットダウンされます。</translation>
 <translation id="4325083532956419387">Chrome OS のバージョン</translation>
 <translation id="4328355335528187361">Google Chrome Dev（mDNS-In）</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -174,7 +171,6 @@
 <translation id="5386244825306882791">この拡張機能では、Chrome の起動時、またはアドレスバーからの検索時に表示されるページも制御されます。</translation>
 <translation id="5394833366792865639">Chrome タブの共有</translation>
 <translation id="5430073640787465221">ユーザー設定ファイルが壊れているか無効です。設定を復元できません。</translation>
-<translation id="5486618155264784386">Chrome OS をインストール</translation>
 <translation id="556024056938947818">Google Chrome はパスワードを表示しようとしています。</translation>
 <translation id="5566025111015594046">Google Chrome（mDNS インバウンド）</translation>
 <translation id="5657226924540934362">このページに設定が表示されない場合は、<ph name="LINK_BEGIN" />
@@ -229,7 +225,6 @@
 <translation id="7155997830309522122">その場合は、Chrome に保存したパスワードを編集して、新しいパスワードと一致するようにしてください。</translation>
 <translation id="7161904924553537242">Google Chrome へようこそ</translation>
 <translation id="7242029209006116544">現在、管理対象アカウントでログインしており、あなたの Google Chrome プロファイルを管理者が制御できる状態になっています。あなたの Chrome データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。新しいプロファイルを作成して、既存の Chrome データを別に保管することができます。<ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Chrome OS をインストールしています</translation>
 <translation id="7295052994004373688">この言語が Google Chrome UI の表示に使用されます</translation>
 <translation id="7296210096911315575">使用と安全に関する重要事項</translation>
 <translation id="7308322188646931570">ファイルをダウンロードするには、Chrome でストレージへのアクセスを許可する必要があります</translation>

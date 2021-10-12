@@ -341,6 +341,7 @@
 <translation id="2025186561304664664">Прокси је подешен да буде аутоматски конфигурисан.</translation>
 <translation id="2025891858974379949">Небезбедан садржај</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />да проверите прокси и заштитни зид<ph name="END_LINK" /></translation>
+<translation id="2034971124472263449">Ипак сачувај</translation>
 <translation id="2036983605131262583">Алтернативни котур</translation>
 <translation id="2042213636306070719">7. фиока</translation>
 <translation id="204357726431741734">Пријавите се да бисте користили лозинке сачуване на Google налогу</translation>
@@ -382,6 +383,7 @@
 <translation id="2154054054215849342">Синхронизација није доступна за домен</translation>
 <translation id="2154484045852737596">Измените картицу</translation>
 <translation id="2161656808144014275">Текст</translation>
+<translation id="2162510787844374618">Контактира се са банком…</translation>
 <translation id="2164510882479075877">Уверите се да <ph name="HOST_NAME" /> не садржи словне грешке.</translation>
 <translation id="2166049586286450108">Потпуни администраторски приступ</translation>
 <translation id="2166378884831602661">Овај сајт не може да пружи безбедну везу</translation>
@@ -650,6 +652,7 @@
 <translation id="3145945101586104090">Декодирање одговора није успело</translation>
 <translation id="3150653042067488994">Привремена грешка на серверу</translation>
 <translation id="3154506275960390542">Ова страница садржи образац чије слање може да буде небезбедно. Податке које пошаљете могу да виде и други док су у пролазу и нападач може да их измени да би променио садржај који сервер прима.</translation>
+<translation id="3154987252551138431">Дошло је до грешке при коришћењу Дељења у близини</translation>
 <translation id="315504272643575312">Вашим налогом управља <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Поново отвори</translation>
 <translation id="3158539265159265653">Диск</translation>
@@ -909,6 +912,7 @@
 <translation id="3963721102035795474">Режим читаоца</translation>
 <translation id="3963837677003247395">Желите ли да наставите ручно?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{None}=1{Са 1 сајта }one{Са # сајта }few{Са # сајта }other{Са # сајтова }}</translation>
+<translation id="3969052498612555048">Не можете да пронађете кôд? <ph name="BEGIN_LINK" />Преузмите нов кôд<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Израчунавање...</translation>
 <translation id="3973234410852337861">Хост <ph name="HOST_NAME" /> је блокиран</translation>
 <translation id="3973357910713125165">Дугме Покрените Chrome безбедносну проверу, притисните Enter да бисте покренули безбедносну проверу у Chrome подешавањима</translation>
@@ -1048,6 +1052,7 @@
 <translation id="4348834659292907206">Веза са сајтом <ph name="SITE" /> није безбедна</translation>
 <translation id="4350629523305688469">Вишенаменска фиока</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> жели да тражи Bluetooth уређаје у близини. Пронађени су следећи уређаји:</translation>
+<translation id="4351175281479794167">Унесите верификациони кôд</translation>
 <translation id="4356973930735388585">Нападачи на овом сајту ће можда покушати да инсталирају опасне програме на рачунару који краду или бришу информације (на пример, слике, лозинке, поруке и бројеве кредитних картица).</translation>
 <translation id="4358059973562876591">Није могуће применити шаблоне које сте навели због грешке у DnsOverHttpsMode смерницама.</translation>
 <translation id="4358461427845829800">Управљајте начинима плаћања...</translation>
@@ -1204,6 +1209,7 @@
 <translation id="4853901935952445031">Овај сајт неће моћи да користи API U2F после фебруара 2022. Ако сте власник овог сајта, треба да га промените тако да користи API за потврду идентитета на вебу.</translation>
 <translation id="4854362297993841467">Овај начин испоруке није доступан. Испробајте неки други начин.</translation>
 <translation id="4854853140771946034">Брзо направите нову белешку у Google Keep-у</translation>
+<translation id="485902285759009870">Кôд се верификује...</translation>
 <translation id="4876188919622883022">Поједностављени приказ</translation>
 <translation id="4876305945144899064">Нема корисничког имена</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Ниједна}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
@@ -1234,6 +1240,7 @@
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Прошири листу</translation>
 <translation id="4968522289500246572">Ова апликација је дизајнирана за мобилне уређаје и можда неће променити величину на правилан начин. Можда ће имати проблеме или се рестартовати.</translation>
+<translation id="4969341057194253438">Избриши снимак</translation>
 <translation id="4973922308112707173">Двоструко бушење на врху</translation>
 <translation id="4984088539114770594">Дозволићете коришћење микрофона?</translation>
 <translation id="4984339528288761049">Prc5 (коверат)</translation>
@@ -1260,6 +1267,7 @@
 <translation id="5040262127954254034">Приватност</translation>
 <translation id="5043480802608081735">Линк који сте копирали</translation>
 <translation id="5045550434625856497">Неисправна лозинка</translation>
+<translation id="5056425809654826431">{NUM_FILES,plural, =1{Да бисте послали овај фајл помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}one{Да бисте послали ове фајлове помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}few{Да бисте послали ове фајлове помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}other{Да бисте послали ове фајлове помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}}</translation>
 <translation id="5056549851600133418">Чланци за вас</translation>
 <translation id="5061227663725596739">Да ли сте мислили <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Историја штампања</translation>
@@ -1778,6 +1786,7 @@
 <translation id="6895330447102777224">Картица је потврђена</translation>
 <translation id="6897140037006041989">Кориснички агент</translation>
 <translation id="6898699227549475383">Организација (O)</translation>
+<translation id="6899000063526916106">Унесите <ph name="NUMBER_OF_DIGITS" />-цифрени кôд</translation>
 <translation id="6907293445143367439">Дозволите да <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> жели да у потпуности контролише MIDI уређаје</translation>
 <translation id="691024665142758461">да преузме више датотека</translation>
@@ -1828,6 +1837,7 @@
 <translation id="7062635574500127092">Тиркизна</translation>
 <translation id="706295145388601875">Додајте адресе и управљајте њима у подешавањима Chrome-а</translation>
 <translation id="7064851114919012435">Контакт информације</translation>
+<translation id="7068733155164172741">Унесите <ph name="OTP_LENGTH" />-цифрени кôд</translation>
 <translation id="70705239631109039">Веза није потпуно безбедна</translation>
 <translation id="7075452647191940183">Захтев је превелик</translation>
 <translation id="7079718277001814089">Овај сајт садржи малвер</translation>
@@ -2023,6 +2033,7 @@
 <translation id="7667346355482952095">Враћени токен смерница је празан или се не подудара са актуелним токеном</translation>
 <translation id="7668654391829183341">Непознат уређај</translation>
 <translation id="7669271284792375604">Нападачи на овом сајту могу да покушају да вас преваре да бисте инсталирали програме који штете доживљају прегледања (на пример, тако што мењају почетну страницу или приказују додатне огласе на сајтовима које посећујете).</translation>
+<translation id="7669907849388166732">{COUNT,plural, =1{Радње предузете са подацима који су означени као поверљиви (1 радња од када сте се пријавили). <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" />}one{Радње предузете са подацима који су означени као поверљиви (# радња од када сте се пријавили). <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" />}few{Радње предузете са подацима који су означени као поверљиви (# радње од када сте се пријавили). <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" />}other{Радње предузете са подацима који су означени као поверљиви (# радњи од када сте се пријавили). <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">6. поштанско сандуче</translation>
 <translation id="7676643023259824263">Потражите текст у привременој меморији, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Прегледајте историју прегледања и управљајте њом у подешавањима Chrome-а</translation>
@@ -2136,6 +2147,7 @@
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>
 <translation id="8041940743680923270">Користи глобалну подразумевану вредност (Питај)</translation>
 <translation id="8042918947222776840">Одаберите начин преузимања</translation>
+<translation id="8052898407431791827">Копирано је у привремену меморију</translation>
 <translation id="8057711352706143257">Софтвер „<ph name="SOFTWARE_NAME" />“ није правилно конфигурисан. Деинсталирање софтвера „<ph name="SOFTWARE_NAME" />“ обично решава проблем. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Жао нам је, дошло је до грешке.</translation>
 <translation id="8067872629359326442">Управо сте унели лозинку на обмањујућем сајту. Chromium може да вам помогне. Да бисте променили лозинку и обавестили Google да је налог можда угрожен, кликните на Заштити налог.</translation>
@@ -2205,6 +2217,7 @@
 <translation id="8282947398454257691">зна јединствени идентификатор уређаја</translation>
 <translation id="8284769179630993263">Управљајте Безбедним прегледањем и другим садржајем у подешавањима Chrome-а</translation>
 <translation id="8286036467436129157">Пријави ме</translation>
+<translation id="8287501787477690853">Администратор не препоручује прављање снимака екрана или снимака јер се снима поверљиви садржај</translation>
 <translation id="8288807391153049143">Прикажи сертификат</translation>
 <translation id="8289355894181816810">Контактирајте администратора мреже ако нисте сигурни шта то значи.</translation>
 <translation id="8293206222192510085">Додавање обележивача</translation>
@@ -2237,6 +2250,7 @@
 <translation id="8364627913115013041">Није подешено.</translation>
 <translation id="8368027906805972958">Непознат или неподржан уређај (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play услуге</translation>
+<translation id="8369073279043109617">Преузмите нов кôд</translation>
 <translation id="8371889962595521444">Прилагођени сертификати основног нивоа</translation>
 <translation id="8374636051559112948">Разликује се</translation>
 <translation id="8380941800586852976">Опасно</translation>
@@ -2274,6 +2288,7 @@
 <translation id="8507227106804027148">Командна линија</translation>
 <translation id="8508648098325802031">Икона Претрага</translation>
 <translation id="8511402995811232419">Управљајте колачићима</translation>
+<translation id="8519478486928352883">Администратор не препоручује прављење снимака екрана или снимака због поверљивог садржаја на екрану.</translation>
 <translation id="8522552481199248698">Chrome може да вам помогне да заштитите Google налог и промените лозинку.</translation>
 <translation id="8530813470445476232">Обришите историју прегледања, колачиће, кеш и друго у подешавањима Chrome-а</translation>
 <translation id="8533619373899488139">Посетите &lt;strong&gt;chrome://policy&lt;/strong&gt; да бисте видели листу блокираних URL-ова и друге смернице које је одредио администратор система.</translation>
@@ -2282,6 +2297,7 @@
 <translation id="8542014550340843547">Троструко спајање на дну</translation>
 <translation id="8543181531796978784">Можете да <ph name="BEGIN_ERROR_LINK" />пријавите проблем са откривањем<ph name="END_ERROR_LINK" /> или, ако схватате безбедносне ризике, <ph name="BEGIN_LINK" />посетите овај небезбедан сајт<ph name="END_LINK" />.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Ресетуј дозволу}one{Ресетуј дозволе}few{Ресетуј дозволе}other{Ресетуј дозволе}}</translation>
+<translation id="8555010941760982128">Користите овај кôд при плаћању</translation>
 <translation id="8557066899867184262">CVC је на полеђини картице.</translation>
 <translation id="8558485628462305855">Да бисте видели садржај проширене реалности, ажурирајте ARCore</translation>
 <translation id="8559762987265718583">Није могуће успоставити приватну везу са доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> јер датум и време на уређају (<ph name="DATE_AND_TIME" />) нису тачни.</translation>
@@ -2322,6 +2338,7 @@
 <translation id="8718314106902482036">Плаћање није довршено</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, предлог за претрагу</translation>
 <translation id="8719528812645237045">Вишеструко бушење на врху</translation>
+<translation id="8723535127346307411">Унесите верификациони кôд</translation>
 <translation id="8725066075913043281">Пробајте поново</translation>
 <translation id="8726549941689275341">Величина странице:</translation>
 <translation id="8730621377337864115">Готово</translation>
@@ -2333,7 +2350,6 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> је ваш кôд за <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Обележите ову картицу</translation>
 <translation id="8751426954251315517">Пробајте поново следећи пут</translation>
-<translation id="8757526089434340176">Доступна је Google Pay понуда</translation>
 <translation id="8759274551635299824">Ова картица је истекла</translation>
 <translation id="87601671197631245">Овај сајт користи застарелу безбедносну конфигурацију која може да открије ваше информације (на пример, лозинке, поруке или кредитне картице) када се шаљу том сајту.</translation>
 <translation id="8761567432415473239">Google безбедно прегледање је недавно <ph name="BEGIN_LINK" />открило штетне програме<ph name="END_LINK" /> на <ph name="SITE" />.</translation>
@@ -2463,6 +2479,7 @@
 <translation id="9191834167571392248">Бушење у доњем левом углу</translation>
 <translation id="9199905725844810519">Штампање је блокирано</translation>
 <translation id="9205078245616868884">Подаци се шифрују помоћу приступне фразе за синхронизацију. Унесите је да бисте започели синхронизацију.</translation>
+<translation id="920511547311754821">Не можете да пронађете кôд? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Додавање чланка није успело.</translation>
 <translation id="9213433120051936369">Прилагодите изглед</translation>
 <translation id="9215416866750762878">Апликација онемогућава Chrome-у да се безбедно повеже са овим сајтом</translation>

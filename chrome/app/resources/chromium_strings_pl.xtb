@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">Chromium musi mieć dostęp do pamięci, by pobierać pliki</translation>
 <translation id="2572494885440352020">Pomoc Chromium</translation>
 <translation id="2577788541081224677">Aby mieć dostęp do danych z Chromium na wszystkich swoich urządzeniach, zaloguj się, co umożliwi włączenie synchronizacji.</translation>
-<translation id="2580426763510374355">Zainstaluj system operacyjny Chromium</translation>
 <translation id="2583187216237139145">Wszystkie dane Chromium wygenerowane podczas używania tego profilu (takie jak zakładki, historia, hasła i inne ustawienia) mogą zostać usunięte przez administratora profilu służbowego. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Zastosowanie aktualizacji wymaga ponownego uruchomienia systemu operacyjnego Chromium.</translation>
 <translation id="2648074677641340862">Podczas instalacji wystąpił błąd systemu operacyjnego. Pobierz Chromium ponownie.</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">Usuń z Chromium...</translation>
 <translation id="2885378588091291677">Menedżer zadań</translation>
 <translation id="2910007522516064972">&amp;Chromium – informacje</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Ostatnie przypomnienie: instalacja <ph name="BEGIN_BOLD" />wykasuje wszystkie dane z dysku twardego<ph name="END_BOLD" />. Upewnij się, że masz kopię zapasową wszystkich ważnych danych.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Rozpoczętej instalacji nie będzie można anulować.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Masz aktualną wersję Chromium</translation>
 <translation id="2983934633046890458">Chromium próbuje edytować hasła.</translation>
 <translation id="3032706164202344641">Chromium nie może sprawdzić Twoich haseł. Spróbuj później.</translation>
@@ -77,7 +74,6 @@
 <translation id="3350761136195634146">Już istnieje profil Chromium z tym kontem</translation>
 <translation id="3406848076815591792">Przełączyć na istniejący profil Chromium?</translation>
 <translation id="3430503420100763906">Dzięki profilom Chromium wszystkie swoje rzeczy z tej przeglądarki możesz przechowywać osobno. Utwórz profile dla znajomych i rodziny albo oddziel pracę od rozrywki.</translation>
-<translation id="3433271666494956603">Trwa instalowanie systemu operacyjnego Chromium</translation>
 <translation id="347328004046849135">Chromium powiadomi Cię w razie logowania za pomocą przejętego hasła</translation>
 <translation id="3474745554856756813">Spowoduje to usunięcie <ph name="ITEMS_COUNT" /> elementów z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Profile Chromium przełącza skrót <ph name="SHORTCUT" /></translation>
@@ -105,7 +101,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" /> wymaga, by przed korzystaniem z tego urządzenia przeczytać i zaakceptować Warunki korzystania z usługi. Nie rozszerzają, nie zmieniają ani nie ograniczają one Warunków korzystania z Chromium OS.</translation>
 <translation id="4271805377592243930">Pomoc do Chromium</translation>
 <translation id="4285930937574705105">Instalacja nie powiodła się z powodu nieokreślonego błędu. Jeśli Chromium jest aktualnie uruchomiony, zamknij go i spróbuj ponownie.</translation>
-<translation id="429583012151745428">Trwa instalacja. Nie wyłączaj urządzenia. Nie powinno to zająć więcej niż 20 minut. Po zakończeniu instalacji komputer automatycznie się wyłączy.</translation>
 <translation id="4407044323746248786">Zamknąć Chromium mimo to?</translation>
 <translation id="4415566066719264597">Zezwalaj Chromium na działanie w tle</translation>
 <translation id="4423735387467980091">Dostosowywanie i kontrolowanie Chromium</translation>
@@ -199,7 +194,6 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="6734291798041940871">Chromium jest już zainstalowany dla wszystkich użytkowników tego komputera.</translation>
 <translation id="673636774878526923">Aby mieć dostęp do danych z Chromium na wszystkich swoich urządzeniach, zaloguj się i włącz synchronizację.</translation>
 <translation id="6774082503108938489">Rodzic wyłączył „Uprawnienia stron, aplikacji i rozszerzeń” dla Chromium. Włączenie elementu <ph name="EXTENSION_TYPE_PARAMETER" /> jest niedozwolone.</translation>
-<translation id="6827182711503025204">Instalacja systemu operacyjnego Chromium spowoduje zastąpienie wszystkich danych na urządzeniu.</translation>
 <translation id="6847869444787758381">Chromium poinformuje Cię, jeśli Twoje hasła dostaną się w niepowołane ręce</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (skopiowana do Chromium)</translation>

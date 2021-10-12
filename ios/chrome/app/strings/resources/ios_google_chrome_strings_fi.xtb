@@ -3,6 +3,7 @@
 <translationbundle lang="fi">
 <translation id="1096883626080133124">Helppokäyttöisellä, turvallisella ja entistäkin nopeammalla Google Chromella saat enemmän aikaan</translation>
 <translation id="1282031177488366470">Auta parantamaan Chromen ominaisuuksia ja suorituskykyä</translation>
+<translation id="1354592789402432496">Järjestelmänvalvoja edellyttää sisäänkirjautumista organisaation tilillä. Järjestelmänvalvojan rajoittamat tilit on piilotettu.</translation>
 <translation id="1479202195792305274">Chrome voi tarkistaa salasanasi, kun kirjaudut sisään Google-tililläsi.</translation>
 <translation id="1493827051843127077">Aseta Chrome oletusselaimeksi, niin voit synkronoida välilehdet, salasanat ja maksutiedot kaikilla laitteillasi</translation>
 <translation id="1504372625950710826">Chrome ei voinut tarkistaa, onko päivityksiä saatavilla. Tarkista internetyhteytesi.</translation>
@@ -45,6 +46,7 @@
 <translation id="3988789688219830639">Google Chrome ei voi käyttää kuviasi tai videoitasi. Anna käyttöoikeus kohdassa iOS-asetukset &gt; Tietosuoja &gt; Kuvat.</translation>
 <translation id="4099578267706723511">Auta parantamaan Chromea lähettämällä käyttötilastoja ja virheraportteja Googlelle.</translation>
 <translation id="417201473131094001">Ei tueta Chrome Canaryssa</translation>
+<translation id="4214277427269650960">Kirjaudu tälle sivustolle ja Chromeen. Voit laittaa synkronoinnin päälle myöhemmin.</translation>
 <translation id="424864128008805179">Kirjaudutaanko ulos Chromesta?</translation>
 <translation id="4249068189593983585">Chrome-vinkki: Voit avata välilehtien lisäasetukset painamalla pitkään ylä- tai alapalkissa olevaa Näytä välilehdet ‑painiketta.</translation>
 <translation id="4523886039239821078">Jokin laajennus kaataa Chromen. Kokeile poistaa seuraavat:</translation>
@@ -59,6 +61,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Chrome ei voi tarkistaa, onko päivityksiä saatavilla</translation>
 <translation id="5716154293141027663">Avaa Chrome, kun napautat linkkejä muissa sovelluksissa</translation>
+<translation id="572883588166315317">Organisaatiosi edellyttää sisäänkirjautumista, jotta voit käyttää Chromea. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" />.</translation>
 <translation id="5854621639439811139">Chrome-vinkki: Takaisin, Seuraava, Haku ja jotkin muut painikkeet löytyvät nyt näytön alareunasta.</translation>
 <translation id="5876773482963502140">Jos Chrome saa nähdä sijaintisi, sijainti lähetetään sivustoille, jotka sallit. Sivustot voivat kysyä sijaintiasi, jos niillä on sinulle paikallisia tietoja, esim. uutisia tai lähistöllä olevia kauppoja.</translation>
 <translation id="6054613632208573261">Käytä oletuksena Chromea</translation>

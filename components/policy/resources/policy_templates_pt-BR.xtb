@@ -78,6 +78,18 @@
 <translation id="1069489575852947981">Definir a política como "Ativada" ou deixá-la sem definição faz com que uma conta local do dispositivo seja configurada para login automático sem atraso. O <ph name="PRODUCT_OS_NAME" /> aplica o atalho de teclado Ctrl+Alt+S para ignorar o login automático e mostrar a tela de login.
 
       Definir a política como "Desativada" faz com que os usuários não possam ignorar o login automático sem atraso (se configurado).</translation>
+<translation id="1070656322814001059">O Chrome bloqueará a navegação para protocolos externos no
+      iframe dentro do sandbox. Consulte https://chromestatus.com/features/5680742077038592.
+
+      Se esta política for definida como "True" (verdadeira), o Chrome bloqueará esse tipo de navegação.
+
+      Se esta política for definida como "False" (falsa), o Chrome não bloqueará esse tipo de navegação.
+
+      Por padrão, a política é definida como "True", com o recurso de segurança ativado.
+
+      Ela é usada para que empresas afetadas por essas restrições possam
+      as anular temporariamente.
+      </translation>
 <translation id="1073983258515362346">Envia informações sobre as luzes de fundo de um dispositivo.
 
       Se a política for definida como falsa ou se não for definida, as informações não serão enviadas.
@@ -1059,6 +1071,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="2246011554082893079">Controla a disponibilidade da <ph name="BOREALIS_NAME" /> neste dispositivo.
 
       Se a política for definida como falsa, a <ph name="BOREALIS_NAME" /> ficará indisponível para todos os usuários do dispositivo. Caso contrário, quando a política for definida como verdadeira ou deixada sem definição, a <ph name="BOREALIS_NAME" /> ficará disponível se, e apenas se, nenhuma outra política ou configuração a desativar.</translation>
+<translation id="2246621891161157804">Permitir que o Chrome bloqueie a navegação para protocolos externos no iframe dentro do sandbox</translation>
 <translation id="225340736558643885">Ativar alertas para formulários não seguros</translation>
 <translation id="2258126710006312594">Permitir que usuários de acesso remoto transfiram arquivos para/do host</translation>
 <translation id="2261648512244797294">Desativar a impressão com o protocolo Privet suspenso</translation>
@@ -5235,6 +5248,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7313672174502374994">A hash SHA-256 da imagem de plano de fundo.</translation>
 <translation id="7322825363493984512">A senha para autenticação de serviços do sistema para o proxy remoto da Web.</translation>
 <translation id="7323896582714668701">Parâmetros de linha de comando adicionais para o <ph name="PRODUCT_NAME" /></translation>
+<translation id="7325801934761922681">Impedir que o Chrome bloqueie a navegação para protocolos externos no iframe dentro do sandbox</translation>
 <translation id="7326394567531622570">Semelhante a Wipe (valor 2), mas tenta preservar os tokens de login para que o usuário não precise fazer login novamente.</translation>
 <translation id="7331962793961469250">Quando definidas como "True", promoções para aplicativos na Chrome Web Store não serão exibidas na página nova guia. Definir esta opção como "False" ou deixá-la sem definição fará com que as promoções para aplicativos na Chrome Web Store sejam exibidas na página nova guia</translation>
 <translation id="7332963785317884918">Esta política está obsoleta. O <ph name="PRODUCT_OS_NAME" /> sempre usará a estratégia de limpeza "RemoveLRU".
@@ -5373,6 +5387,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7544392541165889987">Se a política for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> poderá atuar como um proxy entre o <ph name="CLOUD_PRINT_NAME" /> e impressoras legadas conectadas à máquina. Os usuários podem ativar o proxy de impressão na nuvem por autenticação usando a Conta do Google deles.
 
       Se a política for desativada, os usuários não poderão ativar o proxy e a máquina não poderá compartilhar as impressoras com o <ph name="CLOUD_PRINT_NAME" />.</translation>
+<translation id="7546699946724795644">Permitir que o Chrome bloqueie a navegação para protocolos externos no iframe dentro do sandbox</translation>
 <translation id="7547549430720182663">Mesclar</translation>
 <translation id="7553535237300701827">Quando esta política está definida, o fluxo de autenticação de login acontece em uma das seguintes formas, dependendo do valor da configuração:
 

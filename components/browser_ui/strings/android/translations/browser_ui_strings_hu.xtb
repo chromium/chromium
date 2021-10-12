@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Kérdezzen rá, ha valamelyik webhely szeretné felfedezni a közeli Bluetooth-eszközöket (ajánlott)</translation>
 <translation id="2315043854645842844">Az ügyféloldali tanúsítványválasztást az operációs rendszer nem támogatja.</translation>
 <translation id="2359808026110333948">Tovább</translation>
+<translation id="2379925928934107488">A sötét téma alkalmazása a webhelyekre (amikor lehetséges), ha a Chrome-ban sötét téma van beállítva</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> engedélyezve}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> engedélyezve}}</translation>
 <translation id="2434158240863470628">Letöltés befejezve <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">A helyhozzáférés is ki van kapcsolva ennél az eszköznél. A funkciót az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" /> tudja bekapcsolni.</translation>
 <translation id="257931822824936280">Kibontva – kattintson az összecsukáshoz.</translation>
 <translation id="2586657967955657006">Vágólap</translation>
+<translation id="2597457036804169544">Ne használjon sötét témát a webhelyeknél</translation>
 <translation id="2621115761605608342">A JavaScript engedélyezése egy adott webhelyen.</translation>
 <translation id="2653659639078652383">Küldés</translation>
 <translation id="2677748264148917807">Lap elhagyása</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Elnémítja a hangot lejátszó webhelyeket</translation>
 <translation id="3744111561329211289">Szinkronizálás a háttérben</translation>
 <translation id="3763247130972274048">A videó jobb vagy bal oldalán duplán koppintva ugorhat előre vagy vissza 10 másodpercet</translation>
+<translation id="3797520601150691162">Ne használjon sötét témát bizonyos webhelyeknél</translation>
 <translation id="381841723434055211">Telefonszámok</translation>
 <translation id="3835233591525155343">Aktív eszközhasználat</translation>
 <translation id="385051799172605136">Vissza</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">A webhelyek nem kérdezhetnek rá, hogy küldjenek-e Önnek értesítéseket</translation>
 <translation id="5516455585884385570">Értesítési beállítások megnyitása</translation>
 <translation id="5527111080432883924">Kérdezzen rá, mielőtt engedélyezi a webhelyeknek, hogy megtekintsék a vágólapon található szövegeket és képeket (ajánlott)</translation>
+<translation id="5553374991681107062">Legutóbbi</translation>
 <translation id="5556459405103347317">Újratöltés</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
 <translation id="5649053991847567735">Automatikus letöltések</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">Ön általában letiltja az értesítéseket. Az engedélyezéshez koppintson a Részletek elemre.</translation>
 <translation id="7423098979219808738">Kérdezzen rá</translation>
 <translation id="7423538860840206698">Le van tiltva a vágólap megtekintése</translation>
+<translation id="7425915948813553151">Sötét téma a webhelyeknél</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Egy webhely használja az Ön mikrofonját</translation>
 <translation id="7561196759112975576">Mindig</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">Biztosan törli a webhellyel kapcsolatos összes helyi adatot (a cookie-kkal együtt), és visszaállítja az összes engedélyt?</translation>
 <translation id="8007176423574883786">Kikapcsolva ezen az eszközön</translation>
 <translation id="802154636333426148">Nem sikerült a letöltés</translation>
+<translation id="8042586301629853791">Rendezés:</translation>
 <translation id="8067883171444229417">Videó lejátszása</translation>
 <translation id="8068648041423924542">A tanúsítvány kiválasztása nem sikerült.</translation>
 <translation id="8087000398470557479">Ez a Google által megjelenített tartalom a(z) <ph name="DOMAIN_NAME" /> domainről származik.</translation>

@@ -58,6 +58,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1881378885488531302">Imeshindwa kupata anwani ya IP</translation>
 <translation id="1887850431809612466">Sahihisho la maunzi</translation>
+<translation id="1901646112321215184">Hakuna seva za DNS zilizowekwa mipangilio</translation>
 <translation id="1905710495812624430">Idadi ya juu ya majaribio yanayoruhusiwa.</translation>
 <translation id="1908234395526491708">Maombi ya UDP ambayo hayakufaulu</translation>
 <translation id="1930797645656624981">Huduma ya Mbinu ya Kuingiza Data kwenye Mfumo wa Uendeshaji wa Chrome</translation>
@@ -74,6 +75,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">IMEWEKWA KWENYE FOLENI</translation>
 <translation id="2161394479394250669">Ghairi kazi ya kuchapisha</translation>
+<translation id="2180197493692062006">Hitilafu fulani imetokea. Jaribu kufungua programu upya.</translation>
 <translation id="2209788852729124853">Badilisha Hesabu za Trafiki</translation>
 <translation id="2212733584906323460">Upe Usuluhishaji huu Jina</translation>
 <translation id="2217935453350629363">Kasi ya sasa</translation>
@@ -89,6 +91,7 @@
 <translation id="2391082728065870591">Tuma Ripoti ya Maoni</translation>
 <translation id="2407209115954268704">Hali ya Kufunga SIM</translation>
 <translation id="2418150275289244458">Fungua katika mipangilio</translation>
+<translation id="2421798028054665193">Picha ya <ph name="CURRENT_PAGE" /> kati ya <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Usahihi wa mfumo wa uhandisi wa kuonyesha nambari</translation>
 <translation id="2448312741937722512">Aina</translation>
 <translation id="2461822463642141190">Ya sasa</translation>
@@ -107,11 +110,13 @@
 <translation id="2860473693272905224">Weka ukurasa mwingine kwenye kichanganuzi</translation>
 <translation id="2872961005593481000">Zima</translation>
 <translation id="2878387241690264070">Imetumia <ph name="RATE" /> ya chaji ndani ya sekunde <ph name="NUM_SECONDS" />.</translation>
+<translation id="2927511423571448384">Imeshindwa kuunganisha kwenye tovuti za HTTP (mlango wa 80) kupitia kinga mtandao katika Android</translation>
 <translation id="3008341117444806826">ONYESHA UPYA</translation>
 <translation id="3009958530611748826">Chagua folda utakapohifadhi</translation>
 <translation id="3054177598518735801">mA <ph name="CURRENT_VALUE" /></translation>
 <translation id="3056720590588772262">Anwani halisi</translation>
 <translation id="3069085583900247081">Jaribio halijafaulu</translation>
+<translation id="3076387335132326640">Unatumia mtandao unaoweza kutumiwa na mtu yeyote</translation>
 <translation id="3083667275341675831">Uchunguzi wa Muunganisho</translation>
 <translation id="3091839911843451378">Haijakamilika - Imesimamisha</translation>
 <translation id="3102119246920354026">Akiba</translation>
@@ -199,6 +204,7 @@
 <translation id="455835558791489930">Betri ya mAh<ph name="CHARGE_VALUE" /></translation>
 <translation id="4561801978359312462">SIM Imefunguliwa</translation>
 <translation id="4562494484721939086">Hakuna huduma</translation>
+<translation id="4567024731344774461">Imeshindwa kusuluhisha DNS kwenye Android</translation>
 <translation id="458794348635939462">Imeshindwa kusuluhisha seva pangishi zote</translation>
 <translation id="4593212453765072419">Uthibitishaji wa proksi unahitajika</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> kati ya <ph name="TOTAL_PAGE_NUMBER" />. Bonyeza 'Enter' ili ughairi kazi ya kuchapisha.</translation>
@@ -223,6 +229,7 @@
 <translation id="484790837831576105">Usuluhishaji wa DNS (Android)</translation>
 <translation id="4848429997038228357">LINATEKELEZWA</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> umebakisha mara {0} ya kujaribu}other{<ph name="ERROR_MESSAGE" /> umebakisha mara {0} za kujaribu}}</translation>
+<translation id="4871137769558798671">Imeshindwa kuunganisha kwenye tovuti za HTTPS (mlango wa 443) kupitia kinga mtandao</translation>
 <translation id="4880328057631981605">Jina la lango la mtandao</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Chagua nenosiri jipya mara moja</translation>
@@ -257,6 +264,7 @@
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">toleo la <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Hamishia dirisha kwenye eneokazi</translation>
+<translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Kitambulisho</translation>
 <translation id="5317780077021120954">Hifadhi</translation>
 <translation id="5318334351163689047">Maombi ya TCP ambayo hayakufaulu</translation>
@@ -278,6 +286,8 @@
 <translation id="5502931783115429516">Android haifanyi kazi</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5546352997259770619">Muunganisho wa mtandao si thabiti, jaribu kusogea karibu na mlango wa mtandao</translation>
+<translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Changanua upya</translation>
 <translation id="5669267381087807207">Inawashwa</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -318,6 +328,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Nguvu za betri hupungua kadri inavyotumiwa</translation>
 <translation id="6191293864534840972">Seva za majina zilizo na hitilafu</translation>
+<translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Hakuna vichanganuzi vilivyopatikana</translation>
 <translation id="6232017090690406397">Betri</translation>
 <translation id="6243280677745499710">Mandhari yaliyopo</translation>
@@ -327,6 +338,7 @@
 <translation id="636850387210749493">Usajili wa biashara</translation>
 <translation id="6379086450106841622">Skrini ya kugusa</translation>
 <translation id="6388847657025262518">Mashine ya kichanganuzi ya kuingiza hati imekwama. Kagua mashine hiyo kisha ujaribu tena.</translation>
+<translation id="6395640744968320699">Imeshindwa kuunganisha kwenye tovuti za HTTP (mlango wa 80) kupitia kinga mtandao</translation>
 <translation id="641081527798843608">Mada inalingana</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Bora</translation>
@@ -334,6 +346,7 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Inadhibitiwa na <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Imesimama - Karatasi imekwama</translation>
+<translation id="6498608540383876992">Imeshindwa kuwasiliana na lango</translation>
 <translation id="6516990319416533844">Ili uweze kupima kasi ya kuchaji ya betri, ruhusu betri yako itumike kwa muda mfupi</translation>
 <translation id="6517239166834772319">Gundua</translation>
 <translation id="6527081081771465939">Itifaki isiyojulikana ya ulinzi wa WiFi</translation>
@@ -381,6 +394,7 @@
 <translation id="7271040990581020067">Kichanganuzi kinatumika kwa sasa. Jaribu tena baadaye.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Mikusanyiko ya Mandhari</translation>
+<translation id="7292680402155138244">Muda mrefu wa kusubiri maombi ya tovuti za HTTPS (mlango wa 443)</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -431,12 +445,15 @@
 <translation id="7994702968232966508">Mbinu ya EAP</translation>
 <translation id="8020238979854764615">Hitilafu fulani imetokea. Tafadhali jaribu tena kwa kuchagua picha zingine.</translation>
 <translation id="802154636333426148">Haikuweza kupakua</translation>
+<translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Tuma Maoni</translation>
 <translation id="8075838845814659848">Chaji iliyosalia</translation>
 <translation id="808894953321890993">Badilisha nenosiri</translation>
 <translation id="811820734797650957">Lango linaweza Kuitwa (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Omba Hesabu za Trafiki</translation>
+<translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8177708084858970226">Imeshindwa kusuluhisha DNS</translation>
 <translation id="8206859287963243715">Simu ya Mkononi</translation>
 <translation id="8208861521865154048">Manufaa</translation>
 <translation id="8230672074305416752">Imeshindwa kuita lango la mtandao chaguomsingi</translation>
@@ -448,6 +465,7 @@
 <translation id="8297006494302853456">Dhaifu</translation>
 <translation id="8302368968391049045">Kinga mtandao ya HTTPS</translation>
 <translation id="8318753676953949627">Hakuna Picha</translation>
+<translation id="8346875532700229909">Imeshindwa kuwasiliana na lango kwenye Android</translation>
 <translation id="8347227221149377169">Kazi za kuchapisha</translation>
 <translation id="8352772353338965963">Ongeza akaunti ya uwezo wa kuingia katika akaunti nyingi kwa wakati mmoja. Akaunti zote zilizoingiwa zinaweza kufikiwa bila nenosiri, hivyo kipengee hiki lazima kitumike kwenye akaunti zinazoaminika pekee.</translation>
 <translation id="8364946094152050673">Seva za majina hazina kitu</translation>
@@ -479,6 +497,7 @@
 <translation id="8747900814994928677">Thibitisha mabadiliko</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="879568662008399081">Huenda mtandao huu una ukurasa wa mwanzo</translation>
 <translation id="8798099450830957504">Chaguomsingi</translation>
 <translation id="8798441408945964110">Jina la mtoa huduma</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
@@ -502,6 +521,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Changanua}=1{Changanua ukurasa {NUMBER_OF_PAGES}}other{Changanua kurasa {NUMBER_OF_PAGES}}}</translation>
 <translation id="9003704114456258138">Masafa</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9062831201344759865">Usuluhishaji wa DNS una muda mrefu wa kusubiri</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Matumizi ya sasa</translation>

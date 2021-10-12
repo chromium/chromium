@@ -2126,6 +2126,7 @@ Weitere Details:
 <translation id="8041089156583427627">Feedback geben</translation>
 <translation id="8041940743680923270">Globalen Standard verwenden (Fragen)</translation>
 <translation id="8042918947222776840">Abholoption auswählen</translation>
+<translation id="8052898407431791827">In Zwischenablage kopiert</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" ist nicht ordnungsgemäß konfiguriert. Durch die Deinstallation von "<ph name="SOFTWARE_NAME" />" sollte das Problem behoben werden. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Ein Fehler ist aufgetreten.</translation>
 <translation id="8067872629359326442">Sie haben Ihr Passwort gerade auf einer verdächtigen Website eingegeben. Chromium kann Ihnen helfen. Wenn Sie Ihr Passwort ändern und Google darüber informieren möchten, dass Ihr Konto gefährdet sein könnte, klicken Sie auf "Konto schützen".</translation>
@@ -2323,7 +2324,6 @@ Weitere Details:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> ist Ihr Code für <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Lesezeichen für diesen Tab erstellen</translation>
 <translation id="8751426954251315517">Bitte versuchen Sie es später noch einmal</translation>
-<translation id="8757526089434340176">Google Pay-Angebot verfügbar</translation>
 <translation id="8759274551635299824">Diese Karte ist abgelaufen</translation>
 <translation id="87601671197631245">Diese Website nutzt eine veraltete Sicherheitskonfiguration. Hierdurch können Informationen wie etwa Passwörter, Nachrichten oder Kreditkartendaten, die an diese Website gesendet werden, in die Hände Unbefugter gelangen.</translation>
 <translation id="8761567432415473239">Google Safe Browsing hat vor Kurzem <ph name="BEGIN_LINK" />schädliche Programme<ph name="END_LINK" /> auf <ph name="SITE" /> gefunden.</translation>

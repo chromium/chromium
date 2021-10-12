@@ -360,7 +360,6 @@
 <translation id="1383876407941801731">検索</translation>
 <translation id="1384849755549338773">他の言語のウェブサイトで Google 翻訳を使用するか尋ねる</translation>
 <translation id="138784436342154190">デフォルトの起動ページに戻しますか？</translation>
-<translation id="1388047369870196878">CloudReady 2.0 をインストール</translation>
 <translation id="1388253969141979417">マイクの使用を許可するサイト</translation>
 <translation id="1388728792929436380">更新が完了すると、<ph name="DEVICE_TYPE" />が再起動されます。</translation>
 <translation id="139013308650923562">デバイスにインストールされたフォントの使用を許可する</translation>
@@ -1954,7 +1953,6 @@
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> が、Wi-Fi に接続して、今日中にアップデートをダウンロードするよう求めています。Wi-Fi に接続しない場合、従量制接続でダウンロードします（通信料が発生することがあります）。}other{<ph name="MANAGER" /> が、Wi-Fi に接続して、期限までにアップデートをダウンロードするよう求めています。Wi-Fi に接続しない場合、従量制接続でダウンロードします（通信料が発生することがあります）。}}</translation>
 <translation id="3009300415590184725">モバイル データ サービスの設定処理をキャンセルしてもよろしいですか？</translation>
 <translation id="3009779501245596802">Indexed Database</translation>
-<translation id="3009984992511490972">このデバイスを CloudReady 2.0 デバイスに変換します。</translation>
 <translation id="3010279545267083280">パスワードを削除しました</translation>
 <translation id="3011384993885886186">暖色グレー</translation>
 <translation id="3011488081941333749">終了時に <ph name="DOMAIN" /> からの Cookie が削除されます</translation>
@@ -2379,7 +2377,6 @@
 <translation id="3476303763173086583">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />は所有者によって管理されています。このデバイスの診断データや使用状況データを Google に送信するよう所有者が設定している可能性があります。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK2" />詳細<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">デバイスのポリシーを取得できませんでした。</translation>
 <translation id="347785443197175480"><ph name="HOST" /> によるカメラとマイクへのアクセスを引き続き許可する</translation>
-<translation id="3478813605045578676">登録はインストールした後に行うことができます。このデバイスを管理するには、CloudReady を先にインストールしてください。</translation>
 <translation id="3479552764303398839">後で</translation>
 <translation id="3479685872808224578">プリント サーバーを検出できませんでした。アドレスを確認してから、もう一度お試しください。</translation>
 <translation id="3480612136143976912">自動字幕起こしの字幕のサイズとスタイルをカスタマイズできます。一部のアプリとサイトでもこの設定が使用されます。</translation>
@@ -2581,7 +2578,6 @@
 <translation id="3694027410380121301">前のタブを選択</translation>
 <translation id="369489984217678710">パスワードとその他のログインデータ</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{セキュリティ チェックが完了しました。データをアップロードします。}=1{セキュリティ チェックが完了しました。ファイルをアップロードします。}other{セキュリティ チェックが完了しました。ファイルをアップロードします。}}</translation>
-<translation id="3696576298374669274">サービスログを表示</translation>
 <translation id="3699624789011381381">メール アドレス</translation>
 <translation id="3699920817649120894">同期とカスタマイズをオフにしますか？</translation>
 <translation id="3700888195348409686">表示中（<ph name="PAGE_ORIGIN" />）</translation>
@@ -4158,7 +4154,6 @@
 <translation id="5431318178759467895">カラー</translation>
 <translation id="543338862236136125">パスワードを編集</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 暗号化</translation>
-<translation id="5434473680236142631">CloudReady 2.0 へようこそ</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> による位置情報へのアクセスを常に許可する</translation>
 <translation id="5436492226391861498">プロキシ トンネルの待機中...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> を検索:</translation>
@@ -4675,7 +4670,6 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{今後もウェブ ブラウジングを続けられるように、管理者にこのアプリケーションの削除を依頼してください。}other{今後もウェブ ブラウジングを続けられるように、管理者にこれらのアプリケーションの削除を依頼してください。}}</translation>
 <translation id="5997337190805127100">サイトアクセスの詳細</translation>
 <translation id="6000758707621254961">「<ph name="SEARCH_TEXT" />」に対する <ph name="RESULT_COUNT" /> 件の検索結果</translation>
-<translation id="6001839398155993679">開始する</translation>
 <translation id="6001999913519612328">診断テストを実行します。</translation>
 <translation id="6002210667729577411">グループを新しいウィンドウに移動</translation>
 <translation id="6002452033851752583">Google アカウントからパスワードを削除しました</translation>
@@ -4731,7 +4725,6 @@
 <translation id="6057312498756061228">このファイルはセキュリティ チェックには大きすぎます。開けるファイルは 50 MB までです。</translation>
 <translation id="6057381398996433816">このサイトではモーション センサーと光センサーの使用がブロックされています。</translation>
 <translation id="6059276912018042191">最近使った Chrome タブ</translation>
-<translation id="6059347142391822629">ガイドを閉じるには、[完了] ボタンがフォーカスされたときにスイッチを押します。</translation>
 <translation id="6059652578941944813">証明書の階層</translation>
 <translation id="6061882183774845124">リンクをデバイスに送信</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> よく似た音声や録音した音声でも、<ph name="SUPERVISED_USER_NAME" /> さんのアカウントに基づく情報にアクセスできることがあります。バッテリー消費を抑えるには、<ph name="SUPERVISED_USER_NAME" /> さんの [アシスタントの設定] で、このデバイスが電源に接続されている場合のみ「OK Google」をオンにするよう選択できます。</translation>
@@ -5017,6 +5010,7 @@
 <translation id="6359706544163531585">ライトモードを無効にする</translation>
 <translation id="6361850914223837199">エラーの詳細:</translation>
 <translation id="6362853299801475928">問題の報告(&amp;R)...</translation>
+<translation id="6363786367719063276">ログを表示</translation>
 <translation id="6363990818884053551">同期を開始するには、本人確認を行ってください</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">家族や友だちを追加</translation>
@@ -5209,8 +5203,6 @@
 <translation id="6569911211938664415">パスワードは Google アカウント（<ph name="ACCOUNT" />）に保存されるため、どのデバイスからでも使用できます</translation>
 <translation id="6573497332121198392">ショートカットの削除はできません</translation>
 <translation id="657402800789773160">ページを再読み込み(&amp;R)</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />快適にご利用いただくには、CloudReady 2.0 を内部ディスクにインストールしてください。後でログイン画面からインストールすることもできます。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />インストールする準備ができていない場合は、USB から実行して試してみることもできます。この場合、既存の OS とデータは残りますが、保存容量やパフォーマンスが制限される可能性があります。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716"><ph name="FILE_NAME" /> のダウンロードがキャンセルされました</translation>
 <translation id="657866106756413002">ネットワーク健全性のスナップショット</translation>
 <translation id="6579369886355986318">すべてのコントロールを表示(&amp;C)</translation>
@@ -6070,7 +6062,6 @@
 <translation id="7509246181739783082">本人確認</translation>
 <translation id="7509539379068593709">アプリをアンインストール</translation>
 <translation id="7511415964832680006">オンにすると、サイトでコンテンツやサービスを提供する際に、ここで示されているプライバシー保護技術が使用される場合があります。これには、クロスサイト トラッキングの代わりとなる技術も含まれます。今後、試用版の技術がさらに追加される可能性があります。</translation>
-<translation id="7514236770834963598">プライバシーとセキュリティの最も重要な設定を確認しましょう</translation>
 <translation id="7514239104543605883">デバイスにコピー</translation>
 <translation id="7514365320538308">ダウンロード</translation>
 <translation id="7514417110442087199">割り当てを追加</translation>
@@ -6306,7 +6297,6 @@
 <translation id="7744649840067671761">新しいスイッチかキーボードのキーを押すと割り当てを開始できます。割り当て済みのスイッチかキーを押すと割り当てが解除されます。</translation>
 <translation id="7750228210027921155">ピクチャー イン ピクチャー</translation>
 <translation id="7751260505918304024">すべて表示</translation>
-<translation id="7751855202867682241">OS を変更せず、CloudReady 2.0 を USB から実行します。</translation>
 <translation id="7753735457098489144">ストレージの空き容量が不足しているため、インストールできませんでした。空き容量を確保するために、デバイスのストレージからファイルを削除してください。</translation>
 <translation id="7754347746598978109">JavaScript の使用を許可しないサイト</translation>
 <translation id="7754704193130578113">ダウンロード前に各ファイルの保存場所を確認する</translation>
@@ -7354,7 +7344,6 @@
 <translation id="8845001906332463065">ヘルプ</translation>
 <translation id="8846132060409673887">このパソコンのメーカーと機種の情報を取得する</translation>
 <translation id="8846163936679269230">eSIM プロファイルをリセット</translation>
-<translation id="8846746259444262774">インストールできませんでした</translation>
 <translation id="8847523528195140327">ディスプレイを閉じたときにログアウトする</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">非表示</translation>

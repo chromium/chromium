@@ -23,6 +23,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1104621072296271835">Kopā jūsu ierīces darbojas vēl labāk</translation>
 <translation id="1119348796022671382">Motīva krāsu režīmā vieglai saskarnes iekrāsošanai tiek izmantotas fona tapetes krāsas.</translation>
 <translation id="112308213915226829">Automātiski slēpt plauktu</translation>
+<translation id="1142002900084379065">Jaunākie fotoattēli</translation>
 <translation id="1148499908455722006">Atvērt lietotāja <ph name="USER_NAME" /> informācijas dialoglodziņu</translation>
 <translation id="1150989369772528668">Kalendārs</translation>
 <translation id="1153356358378277386">Pārī savienotās ierīces</translation>
@@ -179,6 +180,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2298170939937364391">Pilnekrāna lupa ir iespējota. Lai to izslēgtu, vēlreiz nospiediet taustiņu kombināciju Ctrl+Search+M.</translation>
 <translation id="2302092602801625023">Šo kontu pārvalda lietotne Family Link.</translation>
 <translation id="2303600792989757991">Pārslēgt loga kopsavilkumu</translation>
+<translation id="2318576281648121272">Šodien, <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Pāriet atpakaļ pa burtam</translation>
 <translation id="2339073806695260576">Pieskarieties skārienekrāna pildspalvas pogai plauktā, lai veiktu piezīmes, uzņemtu ekrānuzņēmumus, izmantotu lāzera rādītāju vai lupu.</translation>
 <translation id="2341729377289034582">Bloķēts vertikāli</translation>
@@ -200,6 +202,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2435457462613246316">Rādīt paroli</translation>
 <translation id="24452542372838207">Izvērst paziņojumu</translation>
 <translation id="2450205753526923158">Ekrānuzņēmumu režīms</translation>
+<translation id="2456008742792828469">Kalendārs, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Apstipriniet izšķirtspēju</translation>
 <translation id="2475982808118771221">Radās kļūda</translation>
 <translation id="2482878487686419369">Paziņojumi</translation>
@@ -278,6 +281,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3100274880412651815">Aizvērt uzņemšanas režīmu</translation>
 <translation id="3105917916468784889">Uzņemt ekrānuzņēmumu</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Noņemt ieteikumu</translation>
 <translation id="3126069444801937830">Restartēt, lai atjauninātu</translation>
 <translation id="3139942575505304791">1. galds</translation>
 <translation id="315116470104423982">Mobilie dati</translation>
@@ -317,6 +321,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3413817803639110246">Vēl nekas netiek rādīts</translation>
 <translation id="3428447136709161042">Pārtraukt savienojumu ar tīklu <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Lai atgrieztos, velciet no labās malas</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Rediģēt atgādinājumu</translation>
 <translation id="3435967511775410570">Pirksta nospiedums tika atpazīts.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4642092649622328492">Iegūt daļēju ekrānuzņēmumu</translation>
 <translation id="4659419629803378708">ChromeVox iespējots</translation>
 <translation id="4665114317261903604">Pārslēgt režīmu “Netraucēt”. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Notiek faila <ph name="FILENAME" /> lejupielāde</translation>
 <translation id="4696813013609194136">Ierīces atbloķēšana, ievadot vecāku kodu</translation>
 <translation id="4702647871202761252">Konfidencialitātes ekrāns ir izslēgts</translation>
 <translation id="4706121060329443414">Tiks mēģināts veikt lejupielādi vēlāk. Pagaidām uzņēmumam Google tiks nosūtīta runa apstrādei.</translation>
@@ -640,6 +646,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5744083938413354016">Vilkšana pieskaroties</translation>
 <translation id="5745612484876805746">Nakts režīms tiek automātiski ieslēgts saulrietā.</translation>
 <translation id="5750765938512549687">Bluetooth ir izslēgts</translation>
+<translation id="576341972084747908">Notiek bīstama faila <ph name="FILENAME" /> lejupielāde</translation>
 <translation id="576453121877257266">Nakts režīms ir ieslēgts.</translation>
 <translation id="5769373120130404283">Konfidencialitātes ekrāns</translation>
 <translation id="5777841717266010279">Vai apturēt ekrāna koplietošanu?</translation>
@@ -781,6 +788,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6852052252232534364">Noklikšķiniet</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Vēl viens cipars}zero{Vēl # ciparu}one{Vēl # cipars}other{Vēl # cipari}}</translation>
+<translation id="6867938213751067702">Faila <ph name="FILENAME" /> lejupielāde ir pārtraukta</translation>
 <translation id="6878400149835617132">Īsinājumtaustiņš izslēgts</translation>
 <translation id="6886172995547742638">Ierīces <ph name="DEVICE_TYPE" /> veiktspēja var pasliktināties. Izmantojiet sertificētu USB-C strāvas adapteri, kura jauda ir vismaz <ph name="PREFERRED_MINIMUM_POWER" /> vatu.</translation>
 <translation id="688631446150864480">Lai pārslēgtu logus, nospiediet lejupvērsto bulttaustiņu.</translation>

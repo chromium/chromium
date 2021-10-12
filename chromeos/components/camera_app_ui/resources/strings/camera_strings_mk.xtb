@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
+<translation id="1113173431709655881">Режим на камера</translation>
 <translation id="1175958423215084756">Препознаен е линк. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Слики од галеријата</translation>
 <translation id="1300209025925956156">Скенирајте го документот</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">Започни со снимање</translation>
 <translation id="2599796128805996109">Задна камера</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> сек.</translation>
+<translation id="2761536921376153655">Тип скенирање</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> е приклучена.</translation>
 <translation id="2968794441791257519">Фотографиите и видеата снимени со камерата ќе се преместат во папката „Преземања“. До нив може да пристапувате од „Датотеки“.
 
@@ -99,9 +101,11 @@
 <translation id="698156982839284926">3 секунди</translation>
 <translation id="712848772518857951">Дали навистина сакате да отстраните <ph name="COUNT" /> ставки?</translation>
 <translation id="7134221860976209830">Тајмер од 10 секунди</translation>
+<translation id="7191890674911603392">Тип снимка</translation>
 <translation id="7243947652761655814">Видеорезолуција</translation>
 <translation id="7337660886763914220">Грешки во системот со датотеки.</translation>
 <translation id="7450541714075000668">Текстот е копиран</translation>
+<translation id="7476762461674917065">Прикажи опција за снимање GIF</translation>
 <translation id="7488619942230388918">Снимете GIF-видео</translation>
 <translation id="7557677699350329807">Префрли на следната камера</translation>
 <translation id="7607002721634913082">Паузирано</translation>

@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Zeptat se, když chce web objevit zařízení Bluetooth v okolí (doporučeno)</translation>
 <translation id="2315043854645842844">Volbu certifikátu na straně klienta operační systém nepodporuje.</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
+<translation id="2379925928934107488">Když Chrome používá tmavý motiv, použít ho i pro Chrome (pokud je to možné)</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}few{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}many{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}other{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}}</translation>
 <translation id="2434158240863470628">Stažení bylo dokončeno <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Přístup k poloze je vypnut také v tomto zařízení. Zapnete jej v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Rozbaleno – kliknutím sbalíte</translation>
 <translation id="2586657967955657006">Schránka</translation>
+<translation id="2597457036804169544">Nepoužívat pro weby tmavý motiv</translation>
 <translation id="2621115761605608342">Povolit JavaScript pro konkrétní web.</translation>
 <translation id="2653659639078652383">Odeslat</translation>
 <translation id="2677748264148917807">Odejít</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Ztlumit weby, které přehrávají zvuky</translation>
 <translation id="3744111561329211289">Synchronizace na pozadí</translation>
 <translation id="3763247130972274048">Dvojitým klepnutím na šipku vlevo nebo vpravo přeskočíte video o 10 s</translation>
+<translation id="3797520601150691162">Nepoužívat tmavý motiv pro konkrétní web</translation>
 <translation id="381841723434055211">Telefonní čísla</translation>
 <translation id="3835233591525155343">Využití vašeho zařízení</translation>
 <translation id="385051799172605136">Zpět</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">Weby nemohou žádat o oprávnění zasílat vám oznámení</translation>
 <translation id="5516455585884385570">Otevřít nastavení oznámení</translation>
 <translation id="5527111080432883924">Zeptat se, než bude webům povolen přístup k textu a obrázkům zkopírovaným do schránky (doporučeno)</translation>
+<translation id="5553374991681107062">Nejnovější</translation>
 <translation id="5556459405103347317">Načíst znovu</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
 <translation id="5649053991847567735">Automatické stahování</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">Obvykle oznámení blokujete. Chcete-li je povolit, klepněte na Podrobnosti.</translation>
 <translation id="7423098979219808738">Nejprve se dotázat</translation>
 <translation id="7423538860840206698">Čtení schránky je blokováno</translation>
+<translation id="7425915948813553151">Tmavý motiv pro weby</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Webové stránky používají váš mikrofon</translation>
 <translation id="7561196759112975576">Vždy</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">Opravdu chcete vymazat všechna místní data tohoto webu, včetně souborů cookie, a resetovat všechna jeho oprávnění?</translation>
 <translation id="8007176423574883786">Vypnuto v tomto zařízení</translation>
 <translation id="802154636333426148">Stažení se nezdařilo</translation>
+<translation id="8042586301629853791">Řadit podle:</translation>
 <translation id="8067883171444229417">Přehrát video</translation>
 <translation id="8068648041423924542">Certifikát nelze vybrat.</translation>
 <translation id="8087000398470557479">Tento obsah pochází z domény <ph name="DOMAIN_NAME" />. Poskytováno společností Google.</translation>

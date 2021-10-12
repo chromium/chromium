@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Vprašaj, ko želi spletno mesto odkrivati naprave Bluetooth v bližini (priporočljivo)</translation>
 <translation id="2315043854645842844">Operacijski sistem ne podpira izbire potrdila pri odjemalcu.</translation>
 <translation id="2359808026110333948">Naprej</translation>
+<translation id="2379925928934107488">Uporaba temne teme (ko je to mogoče) na spletnih mestih, če Chrome uporablja temno temo.</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}one{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}two{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}few{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}other{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Prenos je končan <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Dostop do lokacije je tudi izklopljen za to napravo. Vklopite ga lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Razširjeno – kliknite, če želite strniti.</translation>
 <translation id="2586657967955657006">Odložišče</translation>
+<translation id="2597457036804169544">Brez uporabe temne teme na spletnih mestih.</translation>
 <translation id="2621115761605608342">Dovoli JavaScript za določeno spletno mesto.</translation>
 <translation id="2653659639078652383">Pošlji</translation>
 <translation id="2677748264148917807">Zapusti</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Izklop zvoka na spletnih mestih, ki predvajajo zvok</translation>
 <translation id="3744111561329211289">Sinhroniziranje v ozadju</translation>
 <translation id="3763247130972274048">Dvakrat se dotaknite videoposnetka levo ali desno, da preskočite 10 s</translation>
+<translation id="3797520601150691162">Brez uporabe temne teme za določeno spletno mesto</translation>
 <translation id="381841723434055211">Telefonske številke</translation>
 <translation id="3835233591525155343">Uporaba naprave</translation>
 <translation id="385051799172605136">Nazaj</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">Spletna mesta vas ne smejo vprašati, ali želite, da vam pošiljajo obvestila</translation>
 <translation id="5516455585884385570">Odpiranje nastavitev obvestil</translation>
 <translation id="5527111080432883924">Prikaži poziv, preden se spletnim mestom dovoli branje besedila in slik v odložišču (priporočeno)</translation>
+<translation id="5553374991681107062">Najnovejše</translation>
 <translation id="5556459405103347317">Znova naloži</translation>
 <translation id="5596627076506792578">Več možnosti</translation>
 <translation id="5649053991847567735">Samodejni prenosi</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">Obvestila običajno blokirate. Če želite to omogočiti, se dotaknite Podrobnosti.</translation>
 <translation id="7423098979219808738">Najprej vprašaj</translation>
 <translation id="7423538860840206698">Blokirano branje vsebine odložišča</translation>
+<translation id="7425915948813553151">Temna tema za spletna mesta</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Spletno mesto uporablja mikrofon</translation>
 <translation id="7561196759112975576">Vedno</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">Ali želite res izbrisati vse lokalne podatke, vključno s piškotki, in ponastaviti vsa dovoljenja za to spletno mesto?</translation>
 <translation id="8007176423574883786">Izklopljeno za to napravo</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
+<translation id="8042586301629853791">Razvrsti po:</translation>
 <translation id="8067883171444229417">Predvajanje videa</translation>
 <translation id="8068648041423924542">Izbira potrdila ni mogoča</translation>
 <translation id="8087000398470557479">Ta vsebina je iz domene <ph name="DOMAIN_NAME" /> in jo prikazuje Google.</translation>

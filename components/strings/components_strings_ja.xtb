@@ -2128,6 +2128,7 @@
 <translation id="8041089156583427627">フィードバックを送信</translation>
 <translation id="8041940743680923270">グローバルのデフォルト値（[確認]）を使用</translation>
 <translation id="8042918947222776840">受け取り方法を選択</translation>
+<translation id="8052898407431791827">クリップボードにコピーしました</translation>
 <translation id="8057711352706143257">「<ph name="SOFTWARE_NAME" />」が正しく設定されていません。通常、この問題は「<ph name="SOFTWARE_NAME" />」をアンインストールすることで解決します。<ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">エラーが発生しました。</translation>
 <translation id="8067872629359326442">偽のサイトでパスワードを入力しました。Chromium を使って不正利用への対策ができます。パスワードを変更し、Google にアカウントの状況を通知するには、[アカウントを保護] をクリックしてください。</translation>
@@ -2325,7 +2326,6 @@
 <translation id="8742371904523228557"><ph name="ORIGIN" /> のコードは「<ph name="ONE_TIME_CODE" />」です</translation>
 <translation id="874918643257405732">このタブをブックマークに追加します</translation>
 <translation id="8751426954251315517">後でもう一度お試しください。</translation>
-<translation id="8757526089434340176">Google Pay のクーポンをご利用いただけます</translation>
 <translation id="8759274551635299824">このカードは有効期限が切れています</translation>
 <translation id="87601671197631245">このサイトでは古いセキュリティ設定を使用しています。このサイトにパスワード、メッセージ、クレジット カードなどの情報を送信すると流出する恐れがあります。</translation>
 <translation id="8761567432415473239"><ph name="SITE" /> では最近、Google セーフ ブラウジングにより<ph name="BEGIN_LINK" />有害なプログラムが検出<ph name="END_LINK" />されました。</translation>

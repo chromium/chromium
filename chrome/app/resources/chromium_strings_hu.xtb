@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">A Chromiumnak tárhelyhozzáférésre van szüksége a fájlok letöltéséhez</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">Ha szeretne minden eszközén hozzáférni Chromium-anyagaihoz, jelentkezzen be, hogy bekapcsolhassa a szinkronizálást.</translation>
-<translation id="2580426763510374355">A Chromium OS telepítése</translation>
 <translation id="2583187216237139145">A profil használata során generált összes Chromium-adatot (pl. könyvjelzőket, előzményeket, jelszavakat és egyéb beállításokat) eltávolíthatja a munkaprofil rendszergazdája. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">A frissítés alkalmazásához újra kell indítani a Chromium OS-t.</translation>
 <translation id="2648074677641340862">Az operációs rendszer hibát jelzett a telepítés során. Kérjük, töltse le újra a Chromiumot.</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">Eltávolítás a Chromiumból…</translation>
 <translation id="2885378588091291677">Feladatkezelő</translation>
 <translation id="2910007522516064972">A &amp;Chromium névjegye</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Egy utolsó figyelmeztetés: a telepítéssel <ph name="BEGIN_BOLD" />a merevlemez teljes tartalma törlődik<ph name="END_BOLD" />. Győződjön meg róla, hogy minden fontos adatról van biztonsági másolata<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Miután kezdetét vette a telepítés, már nem lehet megszakítani.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">A Chromium naprakész</translation>
 <translation id="2983934633046890458">A Chromium szerkeszteni próbálja a jelszavakat.</translation>
 <translation id="3032706164202344641">A Chromium nem tudja ellenőrizni a jelszavait. Próbálkozzon később.</translation>
@@ -79,7 +76,6 @@
 <translation id="3350761136195634146">Már létezik Chromium-profil ezzel a fiókkal</translation>
 <translation id="3406848076815591792">Szeretne a meglévő Chromium-profilra váltani?</translation>
 <translation id="3430503420100763906">A Chromium-profilokkal különválaszthatja minden Chromium-anyagát. Létrehozhat profilokat ismerőseinek és családtagjainak, vagy elkülönítheti egymástól a munkát és a szórakozást.</translation>
-<translation id="3433271666494956603">A Chromium OS telepítése folyamatban van</translation>
 <translation id="347328004046849135">A Chromium figyelmezteti Önt, amikor olyan jelszóval jelentkezik be, amelyhez illetéktelenül hozzáfértek</translation>
 <translation id="3474745554856756813">Ezzel <ph name="ITEMS_COUNT" /> elemet töröl erről az eszközről. Az adatok későbbi lekéréséhez jelentkezzen be a Chromiumba a következő e-mail-címmel: <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">A(z) <ph name="SHORTCUT" /> billentyűkombinációval válthat a Chromium-profilok között</translation>
@@ -107,7 +103,6 @@
 <translation id="4264410486868823224">A(z) <ph name="MANAGER" /> megköveteli, hogy olvassa, majd fogadja el a következő Általános Szerződési Feltételeket, mielőtt használná ezt az eszközt. Ezek a feltételek nem bővítik, módosítják vagy korlátozzák a Chromium OS Általános Szerződési Feltételeit.</translation>
 <translation id="4271805377592243930">Segítség a Chromium használatával kapcsolatban</translation>
 <translation id="4285930937574705105">A telepítés váratlan hiba miatt nem sikerült. Ha a Chromium jelenleg fut, zárja be, majd próbálkozzon újra.</translation>
-<translation id="429583012151745428">A telepítés folyamatban van. Ne kapcsolja ki az eszközt. A telepítés várhatóan legfeljebb húsz percig tart. A telepítés befejezése után a számítógép automatikusan leáll.</translation>
 <translation id="4407044323746248786">Biztosan kilép a Chromiumból?</translation>
 <translation id="4415566066719264597">A Chromium futhat a háttérben</translation>
 <translation id="4423735387467980091">A Chromium személyre szabása és beállításai</translation>
@@ -199,7 +194,6 @@
 <translation id="6734291798041940871">A Chromium már telepítve van az összes felhasználó számára a számítógépen.</translation>
 <translation id="673636774878526923">Ha szeretne minden eszközén hozzáférni Chromium-anyagaihoz, jelentkezzen be, majd kapcsolja be a szinkronizálást.</translation>
 <translation id="6774082503108938489">Szülőd kikapcsolta a Chromium „Engedélyek webhelyek, alkalmazások és bővítmények számára” beállítását. A(z) <ph name="EXTENSION_TYPE_PARAMETER" /> nem engedélyezhető.</translation>
-<translation id="6827182711503025204">A Chromium OS telepítése az eszközön tárolt összes adatot felülírja.</translation>
 <translation id="6847869444787758381">A Chromium tájékoztatja arról, ha jelszavai illetéktelen kezekbe kerülnek</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (a Chromiumba másolva)</translation>

@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Pytaj, gdy strona chce wykryć urządzenia Bluetooth w pobliżu (zalecane)</translation>
 <translation id="2315043854645842844">Wybieranie certyfikatu klienta nie jest obsługiwane przez ten system operacyjny.</translation>
 <translation id="2359808026110333948">Dalej</translation>
+<translation id="2379925928934107488">Stosuj ciemny motyw witryn w przypadkach, w których stosuje go Chrome, tam, gdzie to możliwe</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}few{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}many{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}other{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Ukończono pobieranie <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Dostęp do lokalizacji jest wyłączony też na tym urządzeniu. Włącz go w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Rozwinięty – kliknij, by zwinąć.</translation>
 <translation id="2586657967955657006">Schowek</translation>
+<translation id="2597457036804169544">Nie stosuj ciemnego motywu witryn</translation>
 <translation id="2621115761605608342">Zezwól na użycie JavaScriptu w określonej witrynie.</translation>
 <translation id="2653659639078652383">Prześlij</translation>
 <translation id="2677748264148917807">Wyjdź</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Wycisz strony, które odtwarzają dźwięk</translation>
 <translation id="3744111561329211289">Synchronizacja w tle</translation>
 <translation id="3763247130972274048">Kliknij dwukrotnie z lewej lub prawej strony filmu, by przewinąć o 10 s</translation>
+<translation id="3797520601150691162">Nie stosuj ciemnego motywu konkretnej witryny</translation>
 <translation id="381841723434055211">Numery telefonów</translation>
 <translation id="3835233591525155343">Korzystanie z urządzenia</translation>
 <translation id="385051799172605136">Wstecz</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">Strony nie mogą prosić o zgodę na wysyłanie powiadomień</translation>
 <translation id="5516455585884385570">Otwórz ustawienia powiadomień</translation>
 <translation id="5527111080432883924">Pytaj, czy zezwolić stronom na odczytywanie tekstu i obrazów ze schowka (zalecane)</translation>
+<translation id="5553374991681107062">Najnowsze</translation>
 <translation id="5556459405103347317">Odśwież</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="5649053991847567735">Pobieranie automatyczne</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">Zazwyczaj blokujesz powiadomienia. Aby na nie zezwolić, kliknij Szczegóły.</translation>
 <translation id="7423098979219808738">Najpierw zapytaj</translation>
 <translation id="7423538860840206698">Zablokowano odczytywanie schowka</translation>
+<translation id="7425915948813553151">Ciemny motyw witryn</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Strona używa mikrofonu</translation>
 <translation id="7561196759112975576">Zawsze</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">Na pewno chcesz usunąć wszystkie dane lokalne (w tym pliki cookie) i zresetować uprawnienia tej witryny?</translation>
 <translation id="8007176423574883786">Wyłączona na tym urządzeniu</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
+<translation id="8042586301629853791">Sortuj według:</translation>
 <translation id="8067883171444229417">Odtwórz film</translation>
 <translation id="8068648041423924542">Nie można wybrać certyfikatu.</translation>
 <translation id="8087000398470557479">Treść z <ph name="DOMAIN_NAME" /> dostarczana przez Google.</translation>

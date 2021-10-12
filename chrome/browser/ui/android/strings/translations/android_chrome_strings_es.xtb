@@ -180,6 +180,7 @@ Toca cualquier palabra para buscarla. Para acotar la búsqueda, mantén pulsado 
 <translation id="2139186145475833000">Añadir a pantalla de inicio</translation>
 <translation id="2141396931810938595">Según tu uso</translation>
 <translation id="214888715418183969">Elige qué quieres compartir con Chrome. Las métricas que compartas nos ayudarán a mejorar las funciones, el rendimiento y la estabilidad de Chrome.</translation>
+<translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2154484045852737596">Editar tarjeta</translation>
 <translation id="2154710561487035718">Copiar URL</translation>
 <translation id="2156074688469523661">Sitios web restantes (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -496,7 +497,6 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="4084682180776658562">Añadir a marcadores</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" /> (<ph name="BEGIN_DEEMPHASIZED" />ofrecida por Google<ph name="END_DEEMPHASIZED" />)</translation>
 <translation id="4095146165863963773">¿Eliminar datos de la aplicación?</translation>
-<translation id="4095189195365058471">Leer más tarde <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Ayudar a mejorar Chrome enviando estadísticas de uso e informes sobre fallos.</translation>
 <translation id="410351446219883937">Reproducción automática</translation>
 <translation id="4108314971463891922">Seguir</translation>
@@ -641,7 +641,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="4943872375798546930">Sin resultados</translation>
 <translation id="4957722034734105353">Más información...</translation>
 <translation id="4961107849584082341">Traduce esta página a cualquier idioma</translation>
-<translation id="4970824347203572753">No está disponible en tu ubicación</translation>
 <translation id="4971735654804503942">Protección más rápida y proactiva frente a descargas, extensiones y sitios web peligrosos. Te advierte sobre quiebras de seguridad de contraseñas. Necesita enviar datos de navegación a Google.</translation>
 <translation id="497421865427891073">Avanzar</translation>
 <translation id="4988210275050210843">Descargando archivo (<ph name="MEGABYTES" />).</translation>
@@ -725,7 +724,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5483197086164197190">Desplazarte por Chrome</translation>
 <translation id="5487521232677179737">Borrar datos</translation>
 <translation id="549025011754480756">Cómo hacer búsquedas con la voz</translation>
-<translation id="5500777121964041360">Puede que no esté disponible en tu ubicación</translation>
 <translation id="5512137114520586844">Esta cuenta está administrada por <ph name="PARENT_NAME" />.</translation>
 <translation id="5514904542973294328">Inhabilitada por el administrador de este dispositivo</translation>
 <translation id="5515439363601853141">Desbloquea la pantalla para ver tu contraseña</translation>
@@ -879,7 +877,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6364438453358674297">¿Eliminar sugerencia del historial?</translation>
 <translation id="6378173571450987352">Detalles: ordenados por cantidad de datos usados</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> se abrirá en Chrome. Al continuar, aceptas los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Google Chrome y Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="6381421346744604172">Oscurecer sitios web</translation>
 <translation id="6395288395575013217">ENLACE</translation>
 <translation id="6397616442223433927">Vuelves a tener conexión</translation>
 <translation id="6402652558933147609">Error <ph name="ERROR_CODE" /> en <ph name="VIOLATED_URL" /></translation>
@@ -1210,7 +1207,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8218052821161047641">Página rápida</translation>
 <translation id="8218622182176210845">Gestionar tu cuenta</translation>
 <translation id="8223642481677794647">Menú de la tarjeta del feed</translation>
-<translation id="8224471946457685718">Descargar artículos recomendados para ti con Wi‑Fi</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="825412236959742607">Esta página utiliza demasiada memoria, por lo que Chrome ha eliminado parte del contenido.</translation>
 <translation id="8260126382462817229">Prueba a iniciar sesión de nuevo</translation>

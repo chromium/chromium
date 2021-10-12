@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">ביחד, המכשירים שלך יוכלו לעבוד עוד יותר טוב</translation>
 <translation id="1119348796022671382">במצב 'צבעים מעוצבים' נעשה שימוש בצבעים שנשלפים מהטפט שלך להוספת קצת צבע לממשק.</translation>
 <translation id="112308213915226829">הסתרה אוטומטית של המדף</translation>
+<translation id="1142002900084379065">תמונות אחרונות</translation>
 <translation id="1148499908455722006">פתיחת תיבת דו-שיח עם מידע על <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">יומן</translation>
 <translation id="1153356358378277386">מכשירים מותאמים</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">‏הגדלה של כל המסך הופעלה. כדי להשבית אותה יש להקיש שוב על Ctrl+Search+M.</translation>
 <translation id="2302092602801625023">‏החשבון הזה מנוהל באמצעות Family Link</translation>
 <translation id="2303600792989757991">החלפת סקירת חלון</translation>
+<translation id="2318576281648121272">היום <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">אות אחת אחורה</translation>
 <translation id="2339073806695260576">הקשה על לחצן הסטיילוס במדף מאפשרת לכתוב הערות, לצלם את המסך ולהשתמש בסמן הלייזר או בזכוכית המגדלת.</translation>
 <translation id="2341729377289034582">נעול במצב אנכי</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">הצגת סיסמה</translation>
 <translation id="24452542372838207">הרחבת ההודעה</translation>
 <translation id="2450205753526923158">מצב צילום מסך</translation>
+<translation id="2456008742792828469">יומן, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">אישור הרזולוציה</translation>
 <translation id="2475982808118771221">אירעה שגיאה</translation>
 <translation id="2482878487686419369">התראות</translation>
@@ -278,6 +281,7 @@
 <translation id="3100274880412651815">סגירת מצב צילום</translation>
 <translation id="3105917916468784889">צילום מסך</translation>
 <translation id="3105990244222795498">‏<ph name="DEVICE_NAME" />‏ (Bluetooth)</translation>
+<translation id="3113926042639749131">הסרת ההצעה</translation>
 <translation id="3126069444801937830">הפעלה מחדש כדי לעדכן</translation>
 <translation id="3139942575505304791">שולחן עבודה 1</translation>
 <translation id="315116470104423982">נתוני נייד</translation>
@@ -317,6 +321,7 @@
 <translation id="3413817803639110246">עדיין אין מה לראות</translation>
 <translation id="3428447136709161042">התנתקות מ-<ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">יש להחליק מצד ימין כדי לחזור אחורה</translation>
+<translation id="3434107140712555581">‎<ph name="BATTERY_PERCENTAGE" />%‎</translation>
 <translation id="343571671045587506">עריכת תזכורת</translation>
 <translation id="3435967511775410570">טביעת האצבע זוהתה</translation>
 <translation id="3441920967307853524"><ph name="TOTAL_BYTES" />/<ph name="RECEIVED_BYTES" /></translation>
@@ -503,6 +508,7 @@
 <translation id="4642092649622328492">צילום מסך חלקי</translation>
 <translation id="4659419629803378708">‏ChromeVox הופעל</translation>
 <translation id="4665114317261903604">החלפת מצב 'נא לא להפריע'. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081"><ph name="FILENAME" /> בהורדה</translation>
 <translation id="4696813013609194136">ביטול נעילת המכשיר באמצעות קוד הורה</translation>
 <translation id="4702647871202761252">מסך הפרטיות כבוי</translation>
 <translation id="4706121060329443414">‏יתבצע ניסיון הורדה מאוחר יותר. בינתיים, דיבור יישלח אל Google לעיבוד.</translation>
@@ -640,6 +646,7 @@
 <translation id="5744083938413354016">הקשה וגרירה</translation>
 <translation id="5745612484876805746">תאורת לילה נדלקת באופן אוטומטי בשעת השקיעה</translation>
 <translation id="5750765938512549687">‏Bluetooth כבוי</translation>
+<translation id="576341972084747908">הורדת קובץ (<ph name="FILENAME" />) מסוכן</translation>
 <translation id="576453121877257266">תאורת הלילה פועלת.</translation>
 <translation id="5769373120130404283">מסך פרטיות</translation>
 <translation id="5777841717266010279">להפסיק את שיתוף המסך?</translation>
@@ -781,6 +788,7 @@
 <translation id="6852052252232534364">תופעל בלחיצה</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> שניות</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{נשארה ספרה אחת}two{נשארו # ספרות}many{נשארו # ספרות}other{נשארו # ספרות}}</translation>
+<translation id="6867938213751067702">ההורדה של <ph name="FILENAME" /> הושהתה</translation>
 <translation id="6878400149835617132">קיצור הדרך מושבת</translation>
 <translation id="6886172995547742638">‏ייתכן שהביצועים של <ph name="DEVICE_TYPE" /> יהיו נמוכים יותר. יש להשתמש במתאם מתח מאושר בהספק של <ph name="PREFERRED_MINIMUM_POWER" /> ואט לפחות, או מסוג USB-C.</translation>
 <translation id="688631446150864480">יש להקיש על מקש החץ למטה כדי לעבור בין חלונות</translation>

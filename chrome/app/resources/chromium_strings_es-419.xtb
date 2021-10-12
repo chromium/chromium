@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">Chromium necesita acceder al almacenamiento para descargar archivos</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">A fin de ver tu contenido de Chromium en todos tus dispositivos, accede a tu cuenta para poder activar la sincronización.</translation>
-<translation id="2580426763510374355">Instalar Chromium OS</translation>
 <translation id="2583187216237139145">El administrador del perfil de trabajo puede quitar cualquier dato de Chromium que se genere durante el uso de este perfil (como la creación de favoritos, un historial, contraseñas y otras opciones de configuración). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">El Sistema operativo Chromium debe reiniciarse para que se aplique la actualización.</translation>
 <translation id="2648074677641340862">Se produjo un error del sistema operativo durante la instalación. Descarga Chromium nuevamente.</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">Eliminar de Chromium…</translation>
 <translation id="2885378588091291677">Administrador de tareas</translation>
 <translation id="2910007522516064972">Acerca de &amp;Chromium</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Un último recordatorio: la instalación <ph name="BEGIN_BOLD" />borrará todo el disco duro<ph name="END_BOLD" />. Asegúrate de haber creado una copia de seguridad de todos los datos que consideres importantes.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Una vez que comienza la instalación, no puede cancelarse.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium está actualizado.</translation>
 <translation id="2983934633046890458">Chromium está intentando editar contraseñas.</translation>
 <translation id="3032706164202344641">Chromium no puede revisar las contraseñas. Vuelve a intentarlo más tarde.</translation>
@@ -77,7 +74,6 @@
 <translation id="3350761136195634146">Ya existe un perfil de Chromium con esta cuenta.</translation>
 <translation id="3406848076815591792">¿Deseas cambiar a un perfil existente de Chromium?</translation>
 <translation id="3430503420100763906">Con los perfiles de Chromium, puedes separar todo lo que tienes en Chromium. Crea perfiles para amigos y familiares o diferencia el trabajo de la diversión.</translation>
-<translation id="3433271666494956603">Instalación de Chromium OS en curso</translation>
 <translation id="347328004046849135">Chromium te notificará cuando accedas con una contraseña hackeada</translation>
 <translation id="3474745554856756813">Esta acción borrará <ph name="ITEMS_COUNT" /> elementos de este dispositivo. Si más adelante deseas recuperar los datos, accede a tu cuenta en Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> permite alternar de un perfil de Chromium a otro</translation>
@@ -105,7 +101,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" /> requiere que leas y aceptes las siguientes Condiciones del Servicio antes de usar este dispositivo. Estas condiciones no amplían, modifican ni limitan las Condiciones de Chromium OS.</translation>
 <translation id="4271805377592243930">Obtener ayuda con Chromium</translation>
 <translation id="4285930937574705105">No se pudo completar la instalación debido a un error no identificado. Si Chromium se está ejecutando en este momento, ciérralo e intenta nuevamente.</translation>
-<translation id="429583012151745428">La instalación está en curso. No apagues el dispositivo. La instalación no debe tardar más de veinte minutos. La máquina se apagará automáticamente después de la instalación.</translation>
 <translation id="4407044323746248786">¿Deseas salir de Chromium de todos modos?</translation>
 <translation id="4415566066719264597">Permitir que Chromium se ejecute en segundo plano</translation>
 <translation id="4423735387467980091">Personaliza y controla Chromium</translation>
@@ -197,7 +192,6 @@
 <translation id="6734291798041940871">Chromium ya está instalado para todos los usuarios en tu computadora.</translation>
 <translation id="673636774878526923">A fin de ver tu contenido de Chromium en todos tus dispositivos, accede a tu cuenta y activa la sincronización.</translation>
 <translation id="6774082503108938489">Tu padre o madre desactivaron la opción "Permisos para sitios, apps y extensiones" para Chromium. No se permite habilitar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="6827182711503025204">Cuando instales Chromium OS, se reemplazarán todos los datos de tu dispositivo.</translation>
 <translation id="6847869444787758381">Chromium te informará si tus contraseñas se ven comprometidas</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiada en Chromium)</translation>

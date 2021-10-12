@@ -23,6 +23,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1104621072296271835">Vifaa vyako vitafanya kazi vizuri vikiwa pamoja</translation>
 <translation id="1119348796022671382">Hali ya rangi ya mandhari hutumia rangi zinazotolewa kwenye mandhari yako ili iweke rangi kiasi kwenye kiolesura.</translation>
 <translation id="112308213915226829">Ficha rafu kiotomatiki</translation>
+<translation id="1142002900084379065">Picha za hivi majuzi</translation>
 <translation id="1148499908455722006">Fungua kidirisha cha maelezo cha <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalenda</translation>
 <translation id="1153356358378277386">Vifaa vilivyooanishwa</translation>
@@ -179,6 +180,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2298170939937364391">Umewasha Kikuza Skrini Nzima. Bonyeza Ctrl+Search+M tena ili ukizime.</translation>
 <translation id="2302092602801625023">Akaunti hii inasimamiwa na Family Link</translation>
 <translation id="2303600792989757991">Geuza muhtasari wa dirisha</translation>
+<translation id="2318576281648121272">Leo <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Rudi nyuma kwa herufi moja</translation>
 <translation id="2339073806695260576">Gusa kitufe cha stylus kwenye rafu ili uandike kidokezo, upige picha ya skrini, utumie kielekezi cha leza au lenzi.</translation>
 <translation id="2341729377289034582">Inatumia skrini wima pekee</translation>
@@ -200,6 +202,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2435457462613246316">Onyesha nenosiri</translation>
 <translation id="24452542372838207">Panua arifa</translation>
 <translation id="2450205753526923158">Hali ya kupiga picha ya skrini</translation>
+<translation id="2456008742792828469">Kalenda, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Thibitisha Ubora</translation>
 <translation id="2475982808118771221">Hitilafu fulani imetokea</translation>
 <translation id="2482878487686419369">Arifa</translation>
@@ -278,6 +281,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3100274880412651815">Funga hali ya kupiga picha</translation>
 <translation id="3105917916468784889">Piga picha ya skrini</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Ondoa Pendekezo</translation>
 <translation id="3126069444801937830">Anzisha upya ili kusasisha</translation>
 <translation id="3139942575505304791">Eneokazi la 1</translation>
 <translation id="315116470104423982">Data ya mtandao wa simu</translation>
@@ -317,6 +321,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3413817803639110246">Bado hakuna chochote hapa</translation>
 <translation id="3428447136709161042">Ondoa kwenye <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Telezesha kidole kutoka kulia ili urudi nyuma</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Badilisha kikumbusho</translation>
 <translation id="3435967511775410570">Alama ya kidole imetambuliwa</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" /> kati ya <ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4642092649622328492">Piga picha ya sehemu ya skrini</translation>
 <translation id="4659419629803378708">ChromeVox imewashwa</translation>
 <translation id="4665114317261903604">Washa/zima 'Usinisumbue'. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Inapakua <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Fungua kifaa ukitumia msimbo wa mzazi</translation>
 <translation id="4702647871202761252">Skrini ya faragha imezimwa</translation>
 <translation id="4706121060329443414">Itajaribu kupakua baadaye. Kwa sasa, matamshi yatatumwa kwa Google ili yachakatwe.</translation>
@@ -640,6 +646,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5744083938413354016">Uburutaji wa kugonga</translation>
 <translation id="5745612484876805746">Kipengele cha Mwanga wa Usiku kitawaka kiotomatiki wakati wa machweo</translation>
 <translation id="5750765938512549687">Bluetooth imezimwa</translation>
+<translation id="576341972084747908">Pakua <ph name="FILENAME" /> hatari</translation>
 <translation id="576453121877257266">Umewasha Mwanga wa Usiku.</translation>
 <translation id="5769373120130404283">Skrini ya faragha</translation>
 <translation id="5777841717266010279">Je,ungependa kuacha kushiriki skrini?</translation>
@@ -781,6 +788,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="6852052252232534364">Bofya uwashe</translation>
 <translation id="6857725247182211756">sek <ph name="SECONDS" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Imesalia tarakimu moja}other{Zimesalia tarakimu #}}</translation>
+<translation id="6867938213751067702">Imesitisha kupakua <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Njia ya mkato imezimwa</translation>
 <translation id="6886172995547742638">Huenda <ph name="DEVICE_TYPE" /> yako ikafanya kazi polepole. Tumia adapta ya nishati ya USB-C ya Wati <ph name="PREFERRED_MINIMUM_POWER" /> au zaidi.</translation>
 <translation id="688631446150864480">Bonyeza kitufe cha kishale cha Chini ili ubadilishe madirisha</translation>

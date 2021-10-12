@@ -360,7 +360,6 @@
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1384849755549338773">Ofereix el Traductor de Google per als llocs web en altres idiomes</translation>
 <translation id="138784436342154190">Vols restaurar la pàgina d'arrencada predeterminada?</translation>
-<translation id="1388047369870196878">Instal·la CloudReady 2.0</translation>
 <translation id="1388253969141979417">Amb permís per utilitzar el micròfon</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> es reiniciarà quan les actualitzacions s'hagin completat.</translation>
 <translation id="139013308650923562">Amb permís per utilitzar els tipus de lletra instal·lats al teu dispositiu</translation>
@@ -1954,7 +1953,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requereix que et connectis a la Wi-Fi avui per baixar una actualització. També pots baixar-la amb una connexió d'ús mesurat, però és possible que s'apliquin càrrecs.}other{<ph name="MANAGER" /> requereix que et connectis a la Wi-Fi i que baixis una actualització abans del termini establert. També pots baixar-la amb una connexió d'ús mesurat, però és possible que s'apliquin càrrecs.}}</translation>
 <translation id="3009300415590184725">Confirmeu que voleu cancel·lar el procés de configuració del servei de dades mòbils?</translation>
 <translation id="3009779501245596802">Bases de dades indexades</translation>
-<translation id="3009984992511490972">Converteix aquest dispositiu en un dispositiu CloudReady 2.0.</translation>
 <translation id="3010279545267083280">La contrasenya s'ha suprimit.</translation>
 <translation id="3011384993885886186">Gris càlid</translation>
 <translation id="3011488081941333749">Les galetes del domini <ph name="DOMAIN" /> s'esborraran en sortir-ne</translation>
@@ -2379,7 +2377,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3476303763173086583">Envia dades d'ús i de diagnòstic. Ajuda a millorar l'experiència a Android del teu fill enviant automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades no es faran servir per identificar el teu fill i ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. El propietari ha aplicat aquesta <ph name="BEGIN_LINK1" />opció de configuració<ph name="END_LINK1" />. És possible que el propietari decideixi enviar a Google dades de diagnòstic i d'ús sobre aquest dispositiu. Si l'opció Activitat al web i en aplicacions addicional està activada per al teu fill, és possible que aquestes dades es desin al seu Compte de Google. <ph name="BEGIN_LINK2" />Més informació<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">El sistema no ha pogut obtenir la política per al dispositiu.</translation>
 <translation id="347785443197175480">Continua permetent que <ph name="HOST" /> accedeixi a la càmera i al micròfon</translation>
-<translation id="3478813605045578676">La inscripció només s'admet després de la instal·lació. Per gestionar aquest dispositiu, primer has d'instal·lar CloudReady.</translation>
 <translation id="3479552764303398839">Ara no</translation>
 <translation id="3479685872808224578">No s'ha pogut detectar el servidor d'impressió. Comprova l'adreça i torna-ho a provar.</translation>
 <translation id="3480612136143976912">Personalitza la mida i l'estil dels subtítols que s'utilitzen a Subtítols instantanis. Algunes aplicacions i llocs web també utilitzaran aquesta opció de configuració.</translation>
@@ -2581,7 +2578,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3694027410380121301">Selecciona la pestanya anterior</translation>
 <translation id="369489984217678710">Contrasenyes i altres dades d'inici de sessió</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Les comprovacions de seguretat han finalitzat. Les dades es penjaran.}=1{Les comprovacions de seguretat han finalitzat. El fitxer es penjarà.}other{Les comprovacions de seguretat han finalitzat. Els fitxers es penjaran.}}</translation>
-<translation id="3696576298374669274">Mostra els registres de servei</translation>
 <translation id="3699624789011381381">Adreça electrònica</translation>
 <translation id="3699920817649120894">Vols desactivar la sincronització i la personalització?</translation>
 <translation id="3700888195348409686">S'està presentant (<ph name="PAGE_ORIGIN" />)</translation>
@@ -4159,7 +4155,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5431318178759467895">Color</translation>
 <translation id="543338862236136125">Edita la contrasenya</translation>
 <translation id="5434065355175441495">PKCS #1 amb encriptació RSA</translation>
-<translation id="5434473680236142631">Et donem la benvinguda a CloudReady 2.0</translation>
 <translation id="5435779377906857208">Permet sempre que <ph name="HOST" /> accedeixi a la meva ubicació</translation>
 <translation id="5436492226391861498">S'està esperant un túnel de servidor intermediari...</translation>
 <translation id="5436510242972373446">Cerca <ph name="SITE_NAME" />:</translation>
@@ -4186,7 +4181,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5463625433003343978">S'estan cercant dispositius...</translation>
 <translation id="5463856536939868464">Menú amb adreces d'interès amagades</translation>
 <translation id="5464632865477611176">Executa aquesta vegada</translation>
-<translation id="5464660706533281090">Els usuaris menors d'edat no poden canviar aquesta opció de configuració.</translation>
+<translation id="5464660706533281090">Els usuaris infantils no poden canviar aquesta opció de configuració.</translation>
 <translation id="5466374726908360271">Engan&amp;xa i cerca "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5467207440419968613">Permisos bloquejats: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">S'estan cercant usos compartits de fitxers</translation>
@@ -4677,7 +4672,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Per assegurar-te que pots continuar navegant per Internet, demana a l'administrador que suprimeixi aquesta aplicació.}other{Per assegurar-te que pots continuar navegant per Internet, demana a l'administrador que suprimeixi aquestes aplicacions.}}</translation>
 <translation id="5997337190805127100">Més informació sobre l'accés als llocs web</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultats per a "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="6001839398155993679">Som-hi</translation>
 <translation id="6001999913519612328">Executar proves diagnòstiques.</translation>
 <translation id="6002210667729577411">Mou el grup a una finestra nova</translation>
 <translation id="6002452033851752583">S'ha suprimit la contrasenya del teu Compte de Google</translation>
@@ -4733,7 +4727,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6057312498756061228">Aquest fitxer és massa gran per fer-hi una comprovació de seguretat. Pots obrir fitxers de fins a 50 MB.</translation>
 <translation id="6057381398996433816">No es permet que aquest lloc web utilitzi els sensors de llum i moviment.</translation>
 <translation id="6059276912018042191">Pestanyes de Chrome recents</translation>
-<translation id="6059347142391822629">Prem l'interruptor quan el focus estigui sobre el botó Fet per tancar la guia.</translation>
 <translation id="6059652578941944813">Jerarquia del certificat</translation>
 <translation id="6061882183774845124">Envia l'enllaç als teus dispositius</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: És possible que una veu similar a la de <ph name="SUPERVISED_USER_NAME" /> o una gravació puguin accedir als seus resultats personals. Per estalviar bateria, pots seleccionar a la configuració de l'Assistent de <ph name="SUPERVISED_USER_NAME" /> que l'opció "Hey Google" només estigui activada quan aquest dispositiu estigui connectat a una font d'alimentació.</translation>
@@ -5019,6 +5012,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6359706544163531585">Desactiva el tema clar</translation>
 <translation id="6361850914223837199">Detalls de l'error:</translation>
 <translation id="6362853299801475928">&amp;Informa d'un problema...</translation>
+<translation id="6363786367719063276">Mostra els registres</translation>
 <translation id="6363990818884053551">Per iniciar la sincronització, verifica la teva identitat</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Afegiu familiars i amics</translation>
@@ -5211,8 +5205,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6569911211938664415">Les contrasenyes es desen al Compte de Google (<ph name="ACCOUNT" />) perquè les puguis utilitzar en tots els dispositius</translation>
 <translation id="6573497332121198392">No es pot suprimir la drecera</translation>
 <translation id="657402800789773160">&amp;Torna a carregar aquesta pàgina</translation>
-<translation id="6575988479073402532"><ph name="BEGIN_PARAGRAPH1" />Per a una millor experiència, instal·la CloudReady 2.0 al teu disc intern. També pots instalar-ho més tard des de la pantalla d'inici de sessió.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Si no estàs a punt per fer la instal·lació, pots executar-ho des de l'USB per provar-ho. Aquesta acció conservarà el teu SO i les teves dades actuals, però és possible que vegis límits d'emmagatzematge i rendiment.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6577284282025554716">Baixada cancel·lada: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Instantània de l'estat de la xarxa</translation>
 <translation id="6579369886355986318">Mostra tots els &amp;controls</translation>
@@ -6072,7 +6064,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7509246181739783082">Verifica la teva identitat</translation>
 <translation id="7509539379068593709">Desinstal·la l'aplicació</translation>
 <translation id="7511415964832680006">Quan està activada, els llocs web poden utilitzar les tècniques de protecció de la privadesa que es mostren aquí per oferir el seu contingut i els seus serveis. Per exemple, alternatives per fer seguiments entre llocs web. Pot ser que més endavant s'hi afegeixin més proves.</translation>
-<translation id="7514236770834963598">Revisa la configuració actual dels controls de privadesa i seguretat més importants</translation>
 <translation id="7514239104543605883">Copia-ho al dispositiu</translation>
 <translation id="7514365320538308">Baixa</translation>
 <translation id="7514417110442087199">Afegeix una assignació</translation>
@@ -6309,7 +6300,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 Prem un interruptor o una tecla assignats per suprimir una assignació.</translation>
 <translation id="7750228210027921155">Pantalla en pantalla</translation>
 <translation id="7751260505918304024">Mostra-ho tot</translation>
-<translation id="7751855202867682241">Conserva el teu SO i executa CloudReady 2.0 des de l'USB.</translation>
 <translation id="7753735457098489144">Ha fallat la instal·lació perquè falta espai d'emmagatzematge. Per alliberar espai, suprimeix fitxers de l'emmagatzematge del dispositiu.</translation>
 <translation id="7754347746598978109">Sense permís per utilitzar JavaScript</translation>
 <translation id="7754704193130578113">Pregunta on es desarà cada fitxer abans de baixar-lo</translation>
@@ -7359,7 +7349,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8845001906332463065">Obteniu ajuda</translation>
 <translation id="8846132060409673887">Consultar el fabricant i el model d'aquest ordinador</translation>
 <translation id="8846163936679269230">Restableix els perfils eSIM</translation>
-<translation id="8846746259444262774">Ha fallat la instal·lació</translation>
 <translation id="8847523528195140327">Tanca la sessió quan es tanqui la tapa</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Amagat</translation>

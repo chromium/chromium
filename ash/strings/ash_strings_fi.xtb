@@ -23,6 +23,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1104621072296271835">Laitteesi toimivat entistä paremmin yhdessä</translation>
 <translation id="1119348796022671382">Teemoihin jaettu väritila käyttää taustakuvasta poimittuja värejä käyttöliittymän kevyeen väritykseen.</translation>
 <translation id="112308213915226829">Piilota hylly automaattisesti</translation>
+<translation id="1142002900084379065">Viimeisimmät kuvat</translation>
 <translation id="1148499908455722006">Avaa tietoikkuna: <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalenteri</translation>
 <translation id="1153356358378277386">Laiteparit</translation>
@@ -179,6 +180,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2298170939937364391">Koko näytön suurennus on käytössä. Poista se käytöstä painamalla uudelleen Ctrl + haku + M.</translation>
 <translation id="2302092602801625023">Tiliä ylläpidetään Family Linkissä</translation>
 <translation id="2303600792989757991">Vaihda ikkunan yleiskatsausta</translation>
+<translation id="2318576281648121272">Tänään <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Yksi kirjain taaksepäin</translation>
 <translation id="2339073806695260576">Napauttamalla hyllyn näyttökynäpainiketta voit tehdä muistiinpanoja, tallentaa kuvakaappauksen ja käyttää laserosoitinta tai suurennuslasia.</translation>
 <translation id="2341729377289034582">Lukittu pystysuuntaiseksi</translation>
@@ -200,6 +202,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2435457462613246316">Näytä salasana</translation>
 <translation id="24452542372838207">Laajenna ilmoitus</translation>
 <translation id="2450205753526923158">Kuvakaappaustila</translation>
+<translation id="2456008742792828469">Kalenteri, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Vahvista resoluutio</translation>
 <translation id="2475982808118771221">Tapahtui virhe</translation>
 <translation id="2482878487686419369">Ilmoitukset</translation>
@@ -278,6 +281,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3100274880412651815">Hylkää tallennustila</translation>
 <translation id="3105917916468784889">Ota kuvakaappaus</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Poista ehdotus</translation>
 <translation id="3126069444801937830">Päivitä käynnistämällä uudelleen</translation>
 <translation id="3139942575505304791">Pöytä 1</translation>
 <translation id="315116470104423982">Mobiilitiedonsiirto</translation>
@@ -317,6 +321,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3413817803639110246">Ei mitään nähtävää vielä</translation>
 <translation id="3428447136709161042">Katkaistaanko yhteys (<ph name="NETWORK_NAME" />)?</translation>
 <translation id="3430396595145920809">Palaa takaisin pyyhkäisemällä oikeasta reunasta</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="343571671045587506">Muokkaa muistutusta</translation>
 <translation id="3435967511775410570">Sormenjälki tunnistettu</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4642092649622328492">Ota osittainen kuvakaappaus</translation>
 <translation id="4659419629803378708">ChromeVox käytössä</translation>
 <translation id="4665114317261903604">Älä häiritse ‑tila päälle tai pois. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Ladataan: <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Avaa lukitus vanhemman koodilla</translation>
 <translation id="4702647871202761252">Näytönsuoja on pois päältä</translation>
 <translation id="4706121060329443414">Lataamista yritetään myöhemmin. Puhe lähetetään toistaiseksi Googlelle käsittelyyn.</translation>
@@ -640,6 +646,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5744083938413354016">Napauttamalla vetäminen</translation>
 <translation id="5745612484876805746">Yövalo käynnistyy automaattisesti, kun aurinko laskee</translation>
 <translation id="5750765938512549687">Bluetooth on pois päältä</translation>
+<translation id="576341972084747908">Lataa vaarallinen <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Yövalo on päällä.</translation>
 <translation id="5769373120130404283">Näytönsuoja</translation>
 <translation id="5777841717266010279">Lopetetaanko näytön jakaminen?</translation>
@@ -781,6 +788,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6852052252232534364">Klikkaa: aktivoi</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Vielä yksi numero}other{Vielä # numeroa}}</translation>
+<translation id="6867938213751067702">Lataus keskeytetty: <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Pikanäppäin poistettu käytöstä</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> voi toimia huonommin. Käytä sertifioitua USB-C-virtalähdettä, jonka teho on vähintään <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Vaihda ikkunaa painamalla alanuolta</translation>

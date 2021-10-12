@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">Eszközei együtt még jobban működnek</translation>
 <translation id="1119348796022671382">A témán alapuló színmód a háttérképen alapuló színeket alkalmazva finoman kiszínezi a kezelőfelületet.</translation>
 <translation id="112308213915226829">Polc automatikus elrejtése</translation>
+<translation id="1142002900084379065">Nemrégiben feltöltött fotók</translation>
 <translation id="1148499908455722006">Információs párbeszédpanel, <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Naptár</translation>
 <translation id="1153356358378277386">Párosított eszközök</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">Teljes képernyős nagyító bekapcsolva. A kikapcsoláshoz nyomja le ismét a Ctrl + Keresés + M billentyűparancsot.</translation>
 <translation id="2302092602801625023">Ezt a fiókot a Family Linkkel kezelik</translation>
 <translation id="2303600792989757991">Ablakáttekintési mód váltása</translation>
+<translation id="2318576281648121272">Ma <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Visszalépés betűnként</translation>
 <translation id="2339073806695260576">Koppintson a polcon az érintőceruza gombra, ha jegyzetet vagy képernyőképet szeretne készíteni, illetve ha a lézermutatót vagy a nagyítót kívánja használni.</translation>
 <translation id="2341729377289034582">Függőleges helyzetben zárolva</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">Jelszó megjelenítése</translation>
 <translation id="24452542372838207">Értesítés kibontása</translation>
 <translation id="2450205753526923158">Képernyőkép mód</translation>
+<translation id="2456008742792828469">Naptár, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Felbontás megerősítése</translation>
 <translation id="2475982808118771221">Hiba történt</translation>
 <translation id="2482878487686419369">Értesítések</translation>
@@ -278,6 +281,7 @@
 <translation id="3100274880412651815">Rögzítés mód elvetése</translation>
 <translation id="3105917916468784889">Képernyőkép készítése</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Javaslat eltávolítása</translation>
 <translation id="3126069444801937830">Indítsa újra a frissítéshez</translation>
 <translation id="3139942575505304791">1. asztal</translation>
 <translation id="315116470104423982">Mobiladatok</translation>
@@ -317,6 +321,7 @@
 <translation id="3413817803639110246">Itt most nem látható semmi</translation>
 <translation id="3428447136709161042">Kapcsolat bontása: <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">A visszalépéshez csúsztasson jobbról balra</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Emlékeztető szerkesztése</translation>
 <translation id="3435967511775410570">Ujjlenyomat felismerve</translation>
 <translation id="3441920967307853524"><ph name="TOTAL_BYTES" />/<ph name="RECEIVED_BYTES" /></translation>
@@ -504,6 +509,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4642092649622328492">Részleges képernyőkép készítése</translation>
 <translation id="4659419629803378708">ChromeVox bekapcsolva</translation>
 <translation id="4665114317261903604">A Ne zavarjanak funkció ki- vagy bekapcsolása. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081"><ph name="FILENAME" /> letöltése</translation>
 <translation id="4696813013609194136">Zárolás feloldása szülői kóddal</translation>
 <translation id="4702647871202761252">Az adatvédelmi képernyő ki van kapcsolva</translation>
 <translation id="4706121060329443414">A letöltést később kísérli meg a rendszer. A beszédet a rendszer egyelőre elküldi a Google-nak feldolgozásra.</translation>
@@ -641,6 +647,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5744083938413354016">Érintéssel húzás</translation>
 <translation id="5745612484876805746">Az Éjszakai fény funkció automatikusan bekapcsol naplementekor</translation>
 <translation id="5750765938512549687">Kikapcsolt Bluetooth</translation>
+<translation id="576341972084747908">A veszélyes <ph name="FILENAME" /> fájl letöltése</translation>
 <translation id="576453121877257266">Az éjszakai fény be van kapcsolva.</translation>
 <translation id="5769373120130404283">Adatvédelmi képernyő</translation>
 <translation id="5777841717266010279">Leállítja a képernyőmegosztást?</translation>
@@ -782,6 +789,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6852052252232534364">Aktiválás</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> mp</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 számjegy maradt}other{# számjegy maradt}}</translation>
+<translation id="6867938213751067702">A következő letöltése szünetel: <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">A billentyűparancs ki van kapcsolva</translation>
 <translation id="6886172995547742638">A(z) <ph name="DEVICE_TYPE" /> eszközön a teljesítmény csökkenése észlelhető. Használjon tanúsítvánnyal rendelkező, <ph name="PREFERRED_MINIMUM_POWER" /> W-os vagy nagyobb teljesítményű USB-C tápcsatlakozót.</translation>
 <translation id="688631446150864480">Ablakváltáshoz nyomja le a lefelé mutató nyilat</translation>

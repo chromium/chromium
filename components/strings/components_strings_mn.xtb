@@ -2137,6 +2137,7 @@
 <translation id="8041089156583427627">Санал хүсэлт илгээх</translation>
 <translation id="8041940743680923270">Анхдагч хувилбарыг ашигла (Асуу)</translation>
 <translation id="8042918947222776840">Авах арга сонгох</translation>
+<translation id="8052898407431791827">Түр санах ойд хуулсан</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />"-г зөв тохируулаагүй байна. "<ph name="SOFTWARE_NAME" />"-г устгаснаар асуудлыг шийдвэрлэх боломжтой. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Уучлаарай, ямар нэг алдаа гарлаа.</translation>
 <translation id="8067872629359326442">Та дөнгөж сая сэжигтэй сайтад нууц үгээ орууллаа. Chromium туслах боломжтой. Нууц үгээ өөрчилж, таны бүртгэл эрсдэлд oрсон байж болзошгүй тухай Google-д мэдэгдэхийн тулд Бүртгэлийг хамгаалах гэснийг товшино уу.</translation>
@@ -2333,7 +2334,6 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> бол <ph name="ORIGIN" />-д зориулсан таны код</translation>
 <translation id="874918643257405732">Энэ табыг тэмдэглэх</translation>
 <translation id="8751426954251315517">Дараагийн удаа дахин оролдоно уу</translation>
-<translation id="8757526089434340176">Google Pay-н санал боломжтой</translation>
 <translation id="8759274551635299824">Энэ картны хугацаа дууссан байна</translation>
 <translation id="87601671197631245">Энэ сайт аюулгүй байдлын хуучирсан тохируулга ашиглаж байгаа тул таны мэдээллийг (жишээлбэл нууц үг, мессеж эсвэл кредит карт) энэ сайт руу илгээх үед задруулж болзошгүй.</translation>
 <translation id="8761567432415473239">Google-ийн Аюулгүй хайлт нь саяхан <ph name="SITE" /> дээр <ph name="BEGIN_LINK" />гэмтэл үүсгэж болох программ илрүүллээ<ph name="END_LINK" />.</translation>

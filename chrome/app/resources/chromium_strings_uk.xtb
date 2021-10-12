@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">Chromium потрібен доступ до пам’яті, щоб завантажувати файли</translation>
 <translation id="2572494885440352020">Помічник Chromium</translation>
 <translation id="2577788541081224677">Щоб мати доступ до своїх даних Chromium на всіх пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію.</translation>
-<translation id="2580426763510374355">Установити Chromium OS</translation>
 <translation id="2583187216237139145">Будь-які дані Chromium, створені під час використання цього робочого профілю (наприклад, закладки, історію, паролі й інші налаштування), може видалити його адміністратор. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Щоб застосувати це оновлення, потрібно перезапустити ОС Chromium.</translation>
 <translation id="2648074677641340862">Під час встановлення сталася помилка операційної системи. Завантажте Chromium ще раз.</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">Видалити з Chromium…</translation>
 <translation id="2885378588091291677">Диспетчер завдань</translation>
 <translation id="2910007522516064972">Про &amp;Chromium</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Останнє нагадування: під час встановлення <ph name="BEGIN_BOLD" />всі дані жорсткого диска буде видалено<ph name="END_BOLD" />. Переконайтеся, що ви маєте резервну копію всіх важливих даних.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Коли встановлення розпочнеться, його не можна буде скасувати.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">У вас остання версія Chromium</translation>
 <translation id="2983934633046890458">Chromium намагається змінити паролі.</translation>
 <translation id="3032706164202344641">Chromium не може перевірити паролі. Повторіть спробу пізніше.</translation>
@@ -79,7 +76,6 @@
 <translation id="3350761136195634146">Профіль Chromium із цим обліковим записом уже існує</translation>
 <translation id="3406848076815591792">Перейти в наявний профіль Chromium?</translation>
 <translation id="3430503420100763906">Створюйте різні профілі Chromium для різних цілей (наприклад, робочий і особистий) і для різних людей (як-от друзів і членів сім'ї).</translation>
-<translation id="3433271666494956603">Триває встановлення Chromium OS</translation>
 <translation id="347328004046849135">Chromium сповістить, коли ви ввійдете в обліковий запис, ввівши зламаний пароль</translation>
 <translation id="3474745554856756813">З цього пристрою буде видалено стільки елементів: <ph name="ITEMS_COUNT" />. Щоб відновити дані пізніше, увійдіть в обліковий запис Chromium як <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Комбінація клавіш <ph name="SHORTCUT" /> перемикає профілі Chromium</translation>
@@ -107,7 +103,6 @@
 <translation id="4264410486868823224">Перш ніж використовувати цей пристрій, потрібно прочитати й прийняти наведені нижче Умови використання домену <ph name="MANAGER" />. Вони не розширюють, не змінюють і не обмежують Умови використання ОС Chromium.</translation>
 <translation id="4271805377592243930">Отримати довідку щодо Chromium</translation>
 <translation id="4285930937574705105">Не вдалося встановити через невизначену помилку. Якщо Chromium зараз запущено, закрийте його та повторіть спробу.</translation>
-<translation id="429583012151745428">Триває встановлення. Не вимикайте пристрій. Процес має зайняти не більше ніж двадцять хвилин. Після нього пристрій автоматично завершить роботу.</translation>
 <translation id="4407044323746248786">Усе одно вийти з Chromium?</translation>
 <translation id="4415566066719264597">Дозволити Chromium працювати у фоновому режимі</translation>
 <translation id="4423735387467980091">Налаштування та керування Chromium</translation>
@@ -201,7 +196,6 @@
 <translation id="6734291798041940871">Chromium уже встановлено для всіх користувачів на вашому комп’ютері.</translation>
 <translation id="673636774878526923">Щоб мати доступ до своїх даних Chromium на всіх пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію.</translation>
 <translation id="6774082503108938489">Хтось із твоїх батьків вимкнув "Дозволи для сайтів, додатків і розширень" у Chromium. Вмикати це <ph name="EXTENSION_TYPE_PARAMETER" /> заборонено.</translation>
-<translation id="6827182711503025204">Під час встановлення Chromium OS буде перезаписано всі дані на пристрої.</translation>
 <translation id="6847869444787758381">Якщо ваші паролі колись викрадуть, Chromium повідомить вас про це</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (скопійовано в Chromium)</translation>

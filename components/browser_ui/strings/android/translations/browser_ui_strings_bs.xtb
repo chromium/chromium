@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Pitaj kada web lokacija želi otkriti Bluetooth uređaje u blizini (preporučeno)</translation>
 <translation id="2315043854645842844">Operativni sistem ne podržava odabir potvrde na strani klijenta.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
+<translation id="2379925928934107488">Tamna tema će se primjenjivati na web lokacije kada Chrome koristi tamnu temu, kada je to moguće</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Dozvoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{Dozvoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{Dozvoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{Dozvoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Preuzimanje je završeno <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Pristup lokaciji je također isključen za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Prošireno – kliknite da suzite.</translation>
 <translation id="2586657967955657006">Međumemorija</translation>
+<translation id="2597457036804169544">Tamna tema se neće primjenjivati na web lokacije</translation>
 <translation id="2621115761605608342">Dozvolite JavaScript za posebnu web lokaciju.</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2677748264148917807">Napusti</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Isključuje zvuk na web lokacijama koje ga reproduciraju</translation>
 <translation id="3744111561329211289">Sinhronizacija u pozadini</translation>
 <translation id="3763247130972274048">Dvaput dodirnite videozapis lijevo ili desno da preskočite 10 s</translation>
+<translation id="3797520601150691162">Tamna tema se neće primjenjivati za određenu web lokaciju</translation>
 <translation id="381841723434055211">Brojevi telefona</translation>
 <translation id="3835233591525155343">Korištenje vašeg uređaja</translation>
 <translation id="385051799172605136">Nazad</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">Web lokacije ne mogu tražiti da šalju obavještenja</translation>
 <translation id="5516455585884385570">Otvori postavke obavještenja</translation>
 <translation id="5527111080432883924">Web lokacije moraju tražiti dozvolu za čitanje teksta i pregled slika u međumemoriji (preporučeno)</translation>
+<translation id="5553374991681107062">Najnovije</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="5649053991847567735">Automatska preuzimanja</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">Obično blokirate obavještenja. Da dozvolite, dodirnite Detalji.</translation>
 <translation id="7423098979219808738">Prvo pitaj</translation>
 <translation id="7423538860840206698">Čitanje međumemorije je blokirano</translation>
+<translation id="7425915948813553151">Tamna tema za web lokacije</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Web lokacija koristi vaš mikrofon</translation>
 <translation id="7561196759112975576">Uvijek</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">Jeste li sigurni da želite obrisati sve lokalne podatke, uključujući kolačiće i poništiti sva odobrenja za ovu web lokaciju?</translation>
 <translation id="8007176423574883786">Isključeno za ovaj uređaj</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
+<translation id="8042586301629853791">Kriterij razvrstavanja:</translation>
 <translation id="8067883171444229417">Reproduciraj videozapis</translation>
 <translation id="8068648041423924542">Nije moguće odabrati potvrdu.</translation>
 <translation id="8087000398470557479">Ovaj sadržaj je iz domene <ph name="DOMAIN_NAME" />, a isporučio ga je Google.</translation>

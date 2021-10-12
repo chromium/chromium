@@ -3,6 +3,7 @@
 <translationbundle lang="tr">
 <translation id="1096883626080133124">Basit, güvenli ve her zamankinden daha hızlı Google Chrome ile daha fazlasını yapın</translation>
 <translation id="1282031177488366470">Chrome'un Özelliklerini ve Performansını İyileştirmeye Yardımcı Olun</translation>
+<translation id="1354592789402432496">Yöneticiniz kurumsal bir hesapla oturum açmanızı zorunlu tutuyor. Yöneticinizin kısıtladığı hesaplar gösterilmez.</translation>
 <translation id="1479202195792305274">Chrome, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir.</translation>
 <translation id="1493827051843127077">Tüm cihazlarınızdaki sekmelerinizi, parolalarınızı ve ödeme bilgilerinizi senkronize etmek için Chrome'u varsayılan olarak ayarlayın</translation>
 <translation id="1504372625950710826">Chrome, güncellemeleri denetleyemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
@@ -45,6 +46,7 @@
 <translation id="3988789688219830639">Google Chrome, fotoğraflarınıza veya videolarınıza erişemiyor. iOS Ayarlar &gt; Gizlilik &gt; Fotoğraflar'dan erişimi etkinleştirin.</translation>
 <translation id="4099578267706723511">Google'a kullanım istatistikleri ve kilitlenme raporları göndererek Chrome'u iyileştirmeye yardımcı olun.</translation>
 <translation id="417201473131094001">Chrome Canary'de desteklenmiyor</translation>
+<translation id="4214277427269650960">Bu sitede ve Chrome'da oturum açın. Senkronizasyonu daha sonra açabilirsiniz.</translation>
 <translation id="424864128008805179">Chrome oturumu kapatılsın mı?</translation>
 <translation id="4249068189593983585">Chrome için ipucu. Sekmelerle ilgili daha fazla seçenek görmek için ekranınızın altında veya üstünde görünen araç çubuğunda Sekmeleri Göster düğmesine dokunup basılı tutun.</translation>
 <translation id="4523886039239821078">Bazı eklentiler Chrome'un kilitlenmesine neden oluyor. Lütfen şunların yüklemelerini kaldırın:</translation>
@@ -59,6 +61,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Çevrimdışı, Chrome güncellemeleri denetleyemiyor</translation>
 <translation id="5716154293141027663">Diğer uygulamalarda bağlantılara dokunduğunuzda Chrome açılır</translation>
+<translation id="572883588166315317">Kuruluşunuz, Chrome'u kullanmak için oturum açmanızı zorunlu tutuyor. <ph name="BEGIN_LINK" />Daha Fazla Bilgi<ph name="END_LINK" />.</translation>
 <translation id="5854621639439811139">Chrome için ipucu: Geri, İleri ve Ara gibi bazı düğmeler artık ekranınızın alt bölümünde bulunuyor.</translation>
 <translation id="5876773482963502140">Konumunuzu bilmesine izin verirseniz Chrome, bu bilgiyi, izin verdiğiniz tüm sitelere gönderir. Yakındaki mağazalar veya haberler gibi size gösterecek yerel bilgileri olduğunda siteler konum bilginize erişmek isteyebilir.</translation>
 <translation id="6054613632208573261">Varsayılan olarak Chrome kullanın</translation>

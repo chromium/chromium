@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Vra wanneer 'n werf Bluetooth-toestelle in die omtrek wil ontdek (aanbeveel)</translation>
 <translation id="2315043854645842844">Bedryfstelsel steun nie die sertifikaat wat die kliënt gekies het nie.</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
+<translation id="2379925928934107488">Pas donkertema op werwe toe wanneer Chrome donkertema gebruik, indien moontlik</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> word toegelaat}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> word toegelaat}}</translation>
 <translation id="2434158240863470628">Aflaai is voltooi <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Liggingtoegang is ook af vir hierdie toestel. Skakel dit in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
 <translation id="257931822824936280">Uitgevou – klik om in te vou.</translation>
 <translation id="2586657967955657006">Knipbord</translation>
+<translation id="2597457036804169544">Moenie donkertema op werwe toepas nie</translation>
 <translation id="2621115761605608342">Laat JavaScript vir 'n spesifieke werf toe.</translation>
 <translation id="2653659639078652383">Dien in</translation>
 <translation id="2677748264148917807">Gaan uit</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Demp werwe wat klank speel</translation>
 <translation id="3744111561329211289">Agtergrondsinkronisering</translation>
 <translation id="3763247130972274048">Dubbeltik links of regs op video om 10 s. oor te slaan</translation>
+<translation id="3797520601150691162">Moenie donkertema vir 'n spesifieke werf toepas nie</translation>
 <translation id="381841723434055211">Foonnommers</translation>
 <translation id="3835233591525155343">Jou toestelgebruik</translation>
 <translation id="385051799172605136">Terug</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">Werwe kan nie vra om kennisgewings te stuur nie</translation>
 <translation id="5516455585884385570">Maak kennisgewinginstellings oop</translation>
 <translation id="5527111080432883924">Vra voordat werwe toegelaat word om teks en prente van die knipbord af te lees (aanbeveel)</translation>
+<translation id="5553374991681107062">Jongste</translation>
 <translation id="5556459405103347317">Herlaai</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
 <translation id="5649053991847567735">Outomatiese aflaaie</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">Jy blokkeer gewoonlik kennisgewings. Tik op Besonderhede om toe te laat.</translation>
 <translation id="7423098979219808738">Vra eers</translation>
 <translation id="7423538860840206698">Geblokkeer om knipbord te lees</translation>
+<translation id="7425915948813553151">Donkertema vir werwe</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">'n Werf gebruik tans jou mikrofoon</translation>
 <translation id="7561196759112975576">Altyd</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">Is jy seker dat jy alle plaaslike data, insluitend webkoekies, wil uitvee en alle toestemmings vir hierdie webwerf wil terugstel?</translation>
 <translation id="8007176423574883786">Afgeskakel vir hierdie toestel</translation>
 <translation id="802154636333426148">Kon nie aflaai nie</translation>
+<translation id="8042586301629853791">Rangskik volgens:</translation>
 <translation id="8067883171444229417">Speel video</translation>
 <translation id="8068648041423924542">Kan nie sertifikaat kies nie.</translation>
 <translation id="8087000398470557479">Hierdie inhoud kom van <ph name="DOMAIN_NAME" /> af, afgelewer deur Google.</translation>

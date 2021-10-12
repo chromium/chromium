@@ -2128,6 +2128,7 @@ Mais detalhes:
 <translation id="8041089156583427627">Enviar comentários</translation>
 <translation id="8041940743680923270">Usar padrão global (Perguntar)</translation>
 <translation id="8042918947222776840">Escolher método de retirada</translation>
+<translation id="8052898407431791827">Copiado para a área de transferência</translation>
 <translation id="8057711352706143257">O software "<ph name="SOFTWARE_NAME" />" não foi configurado corretamente. A desinstalação do "<ph name="SOFTWARE_NAME" />" costuma resolver o problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Algo deu errado.</translation>
 <translation id="8067872629359326442">Você acabou de digitar sua senha em um site suspeito. O Chromium pode ajudar. Para mudar a senha e notificar o Google de que sua conta pode estar em risco, clique em "Proteger conta".</translation>
@@ -2325,7 +2326,6 @@ Mais detalhes:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> é seu código para <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Adicionar esta guia aos favoritos</translation>
 <translation id="8751426954251315517">Tente novamente mais tarde</translation>
-<translation id="8757526089434340176">Oferta do Google Pay disponível</translation>
 <translation id="8759274551635299824">Este cartão expirou</translation>
 <translation id="87601671197631245">Este site usa uma configuração de segurança desatualizada que pode expor suas informações (como senhas, mensagens ou números de cartão de crédito) quando elas forem enviadas para o site.</translation>
 <translation id="8761567432415473239">Recentemente, a Navegação Segura do Google <ph name="BEGIN_LINK" />encontrou programas nocivos<ph name="END_LINK" /> no site <ph name="SITE" />.</translation>

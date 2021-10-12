@@ -87,8 +87,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2926676257163822632">Seguruak ez diren pasahitzak erraz asmatzen dira. Utzi Chrome-ri <ph name="BEGIN_LINK" />pasahitz seguruak sortzen eta gogoratzen<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome-k kamera atzitzeko baimena behar du webgune honetan</translation>
 <translation id="2929907241665500097">Chrome ez da eguneratu arazoren bat izan delako. <ph name="BEGIN_LINK" />Konpondu Chrome eguneratzeko arazoak eta huts egindako eguneratzeak.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Azken abisua: Chrome OS instalatuz gero, <ph name="BEGIN_BOLD" />ezabatu egingo da disko gogor osoko eduki guztia<ph name="END_BOLD" />. Ziurtatu gorde nahi dituzun datuen babeskopia egin duzula.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Instalazio-prozesua hasiz gero, ezin da bertan behera utzi.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Hasi saioa sarean - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome atzeko planoko moduan dago.</translation>
 <translation id="3059710691562604940">Arakatze segurua desaktibatuta dago. Aktibatzea gomendatzen du Chrome-k.</translation>
@@ -136,7 +134,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4251615635259297716">Chrome-n dituzun datuak kontu honi lotu nahi dizkiozu?</translation>
 <translation id="4281844954008187215">Zerbitzu-baldintzak</translation>
 <translation id="4293420128516039005">Hasi saioa Chrome gailu guztietan sinkronizatu eta pertsonalizatzeko</translation>
-<translation id="429583012151745428">Instalazioa abian da. Ez itzali gailua. Instalazioak 20 minutu iraungo ditu gehienez. Instalazioa amaitzen denean, makina automatikoki itzaliko da.</translation>
 <translation id="4325083532956419387">Chrome OS-en bertsioa</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -182,7 +179,6 @@ Agian eginbide batzuk ez dira erabilgarri egongo. Zehaztu profilaren beste direk
 <translation id="5430073640787465221">Hobespenen fitxategia hondatuta dago edo ez du balio.
 
 Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
-<translation id="5486618155264784386">Instalatu Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome pasahitzak erakusten saiatzen ari da.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">Ezarpenen bat orri honetan agertzen ez bada, bila ezazu <ph name="LINK_BEGIN" />
@@ -237,7 +233,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7155997830309522122">Hala bada, editatu Chrome-n gordetako pasahitza, berriarekin bat etor dadin.</translation>
 <translation id="7161904924553537242">Ongi etorri Google Chrome-ra</translation>
 <translation id="7242029209006116544">Kontu kudeatu batekin hasten ari zara saioa eta, beraz, Google Chrome-ko zure profilaren gaineko kontrola emango diozu kontuaren administratzaileari. <ph name="USER_NAME" /> erabiltzailearekin iraunkorki lotuko dira zure Chrome datuak, esaterako, aplikazioak, laster-markak eta beste ezarpen batzuk. Datu horiek ezabatzeko, Google-ko kontuen Panela erabili ahal izango duzu, baina ezin izango dituzu datuak lotu beste kontu batera. Zure Chrome datuak bereizita izan nahi badituzu, beste profil bat sor dezakezu. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Chrome OS instalatzen ari da</translation>
 <translation id="7295052994004373688">Hizkuntza honetan dago Google Chrome-ren erabiltzaile-interfazea</translation>
 <translation id="7296210096911315575">Erabilerari eta segurtasunari buruzko informazio garrantzitsua</translation>
 <translation id="7308322188646931570">Chrome-k fitxategiak deskargatzearren memorian sartzeko baimena behar du</translation>

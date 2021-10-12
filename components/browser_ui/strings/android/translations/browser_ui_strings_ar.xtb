@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">طلب الإذن عند محاولة موقع إلكتروني العثور على أجهزة البلوتوث المجاورة (إجراء موصَى به)</translation>
 <translation id="2315043854645842844">لا يدعم نظام التشغيل تحديد الشهادة من جانب العميل.</translation>
 <translation id="2359808026110333948">متابعة</translation>
+<translation id="2379925928934107488">‏يمكنك تطبيق "المظهر الداكن" على المواقع الإلكترونية عندما يستخدم Chrome "المظهر الداكن"، إن أمكن ذلك.</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> ميغابايت</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر.}zero{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}two{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنَين (<ph name="NUM_MORE" />) آخرَين.}few{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى.}many{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخر.}other{تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}}</translation>
 <translation id="2434158240863470628">اكتمل التنزيل <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">‏الوصول إلى الموقع الجغرافي متوقف لهذا الجهاز أيضًا. يمكنك تفعليه في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">تم التوسيع - انقر للتصغير.</translation>
 <translation id="2586657967955657006">الحافظة</translation>
+<translation id="2597457036804169544">عدم تطبيق "المظهر الداكن" على المواقع الإلكترونية</translation>
 <translation id="2621115761605608342">‏السماح لموقع إلكتروني معيّن بتشغيل JavaScript</translation>
 <translation id="2653659639078652383">إرسال</translation>
 <translation id="2677748264148917807">الخروج</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">كتم صوت المواقع الإلكترونية التي تشغّل الصوت</translation>
 <translation id="3744111561329211289">المزامنة في الخلفية</translation>
 <translation id="3763247130972274048">يُرجى النقر بشكل مزدوج على الفيديو يمينًا أو يسارًا لتخطّي 10 ثوانٍ.</translation>
+<translation id="3797520601150691162">عدم تطبيق "المظهر الداكن" على موقع إلكتروني معيَّن</translation>
 <translation id="381841723434055211">أرقام الهواتف</translation>
 <translation id="3835233591525155343">استخدامك للجهاز</translation>
 <translation id="385051799172605136">رجوع</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">منع المواقع الإلكترونية من طلب إرسال إشعارات</translation>
 <translation id="5516455585884385570">فتح إعدادات الإشعارات</translation>
 <translation id="5527111080432883924">السؤال أولاً قبل السماح للمواقع الإلكترونية بقراءة النصوص والصور من الحافظة (موصى به)</translation>
+<translation id="5553374991681107062">الأحدث</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5649053991847567735">عمليات التنزيل التلقائية</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">أنت تحظر الإشعارات عادةً. للسماح بها، يُرجى النقر على "التفاصيل".</translation>
 <translation id="7423098979219808738">السؤال أولاً</translation>
 <translation id="7423538860840206698">تم الحظر من قراءة الحافظة</translation>
+<translation id="7425915948813553151">المظهر الداكن للمواقع الإلكترونية</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">هناك موقع إلكتروني يستخدم الميكروفون.</translation>
 <translation id="7561196759112975576">دومًا</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">هل أنت متأكّد أنك تريد محو كل البيانات المحلية، بما في ذلك ملفات تعريف الارتباط، وإعادة ضبط كافة الأذونات لهذا الموقع الإلكتروني؟</translation>
 <translation id="8007176423574883786">تم إيقافه لهذا الجهاز</translation>
 <translation id="802154636333426148">تعذّر التنزيل</translation>
+<translation id="8042586301629853791">ترتيب حسب:</translation>
 <translation id="8067883171444229417">تشغيل الفيديو</translation>
 <translation id="8068648041423924542">يتعذر تحديد الشهادة.</translation>
 <translation id="8087000398470557479">‏هذا المحتوى من <ph name="DOMAIN_NAME" />، وتم عرضه من قبل Google.</translation>

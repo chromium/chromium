@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">دستگاه‌هایتان باهم به‌مراتب بهتر کار می‌کنند</translation>
 <translation id="1119348796022671382">حالت «رنگ‌مایه» بااستفاده از رنگ‌های استخراج‌شده از کاغذدیواری، به واسط اندکی رنگ اضافه می‌کند.</translation>
 <translation id="112308213915226829">پنهان کردن خودکار قفسه</translation>
+<translation id="1142002900084379065">عکس‌های اخیر</translation>
 <translation id="1148499908455722006">باز کردن کادر گفتگوی اطلاعات برای <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">تقویم</translation>
 <translation id="1153356358378277386">دستگاه‌های مرتبط‌شده</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">‏«ذره‌بین تمام‌صفحه» فعال شد. برای خاموش کردن آن، Ctrl+Search+M را دوباره فشار دهید.</translation>
 <translation id="2302092602801625023">‏این حساب با Family Link مدیریت می‌شود</translation>
 <translation id="2303600792989757991">مروری کلی بر پنجره تغییر حالت</translation>
+<translation id="2318576281648121272">امروز <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">عقب رفتن حرف‌به‌حرف</translation>
 <translation id="2339073806695260576">برای یادداشت‌برداری، گرفتن نماگرفت، استفاده از اشاره‌گر لیزری یا ذره‌بین روی دکمه قلم در قفسه ضربه بزنید.</translation>
 <translation id="2341729377289034582">قفل درحالت عمودی</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
 <translation id="24452542372838207">بزرگ کردن اعلان</translation>
 <translation id="2450205753526923158">حالت نماگرفت</translation>
+<translation id="2456008742792828469">تقویم، <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">تأیید وضوح</translation>
 <translation id="2475982808118771221">یک خطا روی داد</translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
@@ -278,6 +281,7 @@
 <translation id="3100274880412651815">رد شدن حالت ضبط</translation>
 <translation id="3105917916468784889">گرفتن نماگرفت</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوتوث)</translation>
+<translation id="3113926042639749131">حذف پیشنهاد</translation>
 <translation id="3126069444801937830">راه‌اندازی مجدد برای به‌روزرسانی</translation>
 <translation id="3139942575505304791">میز ۱</translation>
 <translation id="315116470104423982">داده‌های تلفن همراه</translation>
@@ -317,6 +321,7 @@
 <translation id="3413817803639110246">هنوز چیزی برای دیدن وجود ندارد</translation>
 <translation id="3428447136709161042">قطع ارتباط از <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">برای برگشتن به عقب از سمت چپ تند بکشید</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="343571671045587506">ویرایش یادآوری</translation>
 <translation id="3435967511775410570">اثر انگشت شناخته شد</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@
 <translation id="4642092649622328492">گرفتن عکس از قسمتی از صفحه‌نمایش</translation>
 <translation id="4659419629803378708">‏ChromeVox فعال شد</translation>
 <translation id="4665114317261903604">روشن/خاموش کردن «مزاحم نشوید». <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">درحال بارگیری <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">باز کردن قفل دستگاه با کد والدین</translation>
 <translation id="4702647871202761252">صفحه حریم‌خصوصی خاموش است</translation>
 <translation id="4706121060329443414">‏بارگیری بعداً انجام خواهد شد. اکنون گفتار برای پردازش به Google ارسال خواهد شد.</translation>
@@ -640,6 +646,7 @@
 <translation id="5744083938413354016">کشیدن با ضربه زدن</translation>
 <translation id="5745612484876805746">«نور شب» هنگام غروب آفتاب به‌طور خودکار روشن می‌شود</translation>
 <translation id="5750765938512549687">بلوتوث خاموش است</translation>
+<translation id="576341972084747908">بارگیری <ph name="FILENAME" /> خطرناک</translation>
 <translation id="576453121877257266">«نور شب» روشن است.</translation>
 <translation id="5769373120130404283">صفحه حریم‌خصوصی</translation>
 <translation id="5777841717266010279">هم‌رسانی صفحه‌نمایش متوقف شود؟</translation>
@@ -781,6 +788,7 @@
 <translation id="6852052252232534364">کلیک برای فعال‌سازی</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ثانیه</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{یک رقم باقی‌مانده است}one{# رقم باقی‌مانده است}other{# رقم باقی‌مانده است}}</translation>
+<translation id="6867938213751067702">بارگیری <ph name="FILENAME" /> موقتاً متوقف شد</translation>
 <translation id="6878400149835617132">میان‌بر خاموش شد</translation>
 <translation id="6886172995547742638">‏ممکن است <ph name="DEVICE_TYPE" /> شما عملکرد ضعیف‌تری را تجربه کند. از آداپتور برق USB-C بالاتر یا <ph name="PREFERRED_MINIMUM_POWER" /> وات تأییدشده‌ای استفاده کنید.</translation>
 <translation id="688631446150864480">برای جابه‌جایی بین پنجره‌ها، کلید جهت‌نمای پایین را فشار دهید</translation>

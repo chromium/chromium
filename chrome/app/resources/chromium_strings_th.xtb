@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">Chromium ต้องการสิทธิ์เข้าถึงพื้นที่เก็บข้อมูลเพื่อดาวน์โหลดไฟล์</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">หากต้องการเข้าถึงข้อมูล Chromium ในอุปกรณ์ทั้งหมด ให้ลงชื่อเข้าใช้เพื่อเปิดการซิงค์</translation>
-<translation id="2580426763510374355">ติดตั้ง Chromium OS</translation>
 <translation id="2583187216237139145">ผู้ดูแลโปรไฟล์งานนำข้อมูล Chromium ที่สร้างขึ้นในช่วงที่มีการใช้โปรไฟล์นี้ออกได้ (เช่น การสร้างบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ) <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">ต้องรีสตาร์ท Chromium OS เพื่อให้ระบบนำเวอร์ชันอัปเดตไปใช้</translation>
 <translation id="2648074677641340862">เกิดข้อผิดพลาดของระบบปฏิบัติในระหว่างการติดตั้ง โปรดดาวน์โหลด Chromium อีกครั้ง</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">นำออกจาก Chromium...</translation>
 <translation id="2885378588091291677">ตัวจัดการงาน</translation>
 <translation id="2910007522516064972">เกี่ยวกับ &amp;Chromium</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />การช่วยเตือนครั้งสุดท้าย: การติดตั้ง<ph name="BEGIN_BOLD" />จะลบฮาร์ดไดรฟ์ทั้งหมด<ph name="END_BOLD" /> โปรดตรวจสอบว่าคุณสำรองข้อมูลที่สำคัญแล้ว<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />เมื่อเริ่มการติดตั้งแล้วจะยกเลิกไม่ได้<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium อัปเดตแล้ว</translation>
 <translation id="2983934633046890458">Chromium กำลังพยายามแก้ไขรหัสผ่าน</translation>
 <translation id="3032706164202344641">Chromium ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
@@ -79,7 +76,6 @@
 <translation id="3350761136195634146">มีโปรไฟล์ Chromium ที่ใช้บัญชีนี้อยู่แล้ว</translation>
 <translation id="3406848076815591792">เปลี่ยนไปใช้โปรไฟล์ Chromium ที่มีอยู่ไหม</translation>
 <translation id="3430503420100763906">โปรไฟล์ Chromium ช่วยให้คุณแยกข้อมูลต่างๆ ใน Chromium ออกจากกัน สร้างโปรไฟล์สำหรับเพื่อนและครอบครัว หรือแยกการทำงานออกจากความบันเทิง</translation>
-<translation id="3433271666494956603">กำลังติดตั้ง Chromium OS</translation>
 <translation id="347328004046849135">Chromium จะแจ้งให้ทราบเมื่อคุณลงชื่อเข้าใช้ด้วยรหัสผ่านที่ไม่รัดกุม</translation>
 <translation id="3474745554856756813">การดำเนินการนี้จะลบ <ph name="ITEMS_COUNT" /> รายการออกจากอุปกรณ์นี้ หากต้องการดึงข้อมูลภายหลัง ให้ลงชื่อเข้าใช้ Chromium ด้วย <ph name="USER_EMAIL" /></translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> จะสลับไปมาระหว่างโปรไฟล์ Chromium ได้</translation>
@@ -107,7 +103,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" /> กำหนดว่าคุณต้องอ่านและยอมรับข้อกำหนดในการให้บริการต่อไปนี้ก่อนใช้อุปกรณ์นี้ ข้อกำหนดเหล่านี้ไม่ขยาย แก้ไข หรือจำกัดข้อกำหนดของ Chromium OS</translation>
 <translation id="4271805377592243930">รับความช่วยเหลือเกี่ยวกับ Chromium</translation>
 <translation id="4285930937574705105">การติดตั้งล้มเหลวเนื่องจากมีข้อผิดพลาดที่ไม่ได้ระบุ หาก Chromium ทำงานอยู่ในขณะนี้ โปรดปิดและลองอีกครั้ง</translation>
-<translation id="429583012151745428">อยู่ระหว่างการติดตั้ง โปรดอย่าปิดอุปกรณ์ การติดตั้งน่าจะใช้เวลาไม่เกิน 20 นาที อุปกรณ์จะปิดโดยอัตโนมัติหลังการติดตั้ง</translation>
 <translation id="4407044323746248786">ออกจาก Chromium ใช่ไหม</translation>
 <translation id="4415566066719264597">ให้ Chromium ทำงานในพื้นหลัง</translation>
 <translation id="4423735387467980091">กำหนดค่าและควบคุม Chromium</translation>
@@ -201,7 +196,6 @@
 <translation id="6734291798041940871">มีการติดตั้ง Chromium สำหรับผู้ใช้ทุกคนบนคอมพิวเตอร์ของคุณแล้ว</translation>
 <translation id="673636774878526923">หากต้องการเข้าถึงข้อมูล Chromium ในอุปกรณ์ทั้งหมด ให้ลงชื่อเข้าใช้แล้วเปิดการซิงค์</translation>
 <translation id="6774082503108938489">ผู้ปกครองได้ปิด "สิทธิ์สำหรับเว็บไซต์ แอป และส่วนขยาย" ใน Chromium ไม่อนุญาตให้เปิดใช้<ph name="EXTENSION_TYPE_PARAMETER" />นี้</translation>
-<translation id="6827182711503025204">การติดตั้ง Chromium OS จะเขียนทับข้อมูลทั้งหมดในอุปกรณ์</translation>
 <translation id="6847869444787758381">Chromium จะแจ้งให้ทราบหากมีคนล่วงรู้รหัสผ่านของคุณ</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (คัดลอกไปยัง Chromium)</translation>

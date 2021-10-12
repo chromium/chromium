@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">Chromium tarvitsee tallennustilan käyttöoikeuden tiedostojen lataamiseen.</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">Jos haluat pääsyn Chromium-sisältöösi kaikilla laitteilla, kirjaudu sisään voidaksesi laittaa synkronoinnin päälle.</translation>
-<translation id="2580426763510374355">Asenna Chromium-käyttöjärjestelmä</translation>
 <translation id="2583187216237139145">Työprofiilin järjestelmänvalvoja voi poistaa tämän profiilin käytön aikana luotua Chromium-dataa (esim. kirjanmerkit, historia, salasanat ja muut asetukset). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium-käyttöjärjestelmä täytyy käynnistää uudelleen, jotta päivitys voidaan ottaa käyttöön.</translation>
 <translation id="2648074677641340862">Asennuksessa ilmeni käyttöjärjestelmävirhe. Lataa Chromium uudelleen.</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">Poista Chromiumista…</translation>
 <translation id="2885378588091291677">Tehtävänhallinta</translation>
 <translation id="2910007522516064972">Tietoja &amp;Chromiumista</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Muista: asennus <ph name="BEGIN_BOLD" />tyhjentää koko kiintolevysi<ph name="END_BOLD" />. Varmista, että olet varmuuskopioinut tärkeän datan.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Kun asennus on alkanut, sitä ei voi perua.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium on ajan tasalla.</translation>
 <translation id="2983934633046890458">Chromium yrittää muuttaa salasanoja.</translation>
 <translation id="3032706164202344641">Chromium ei voi tarkistaa salasanojasi. Yritä myöhemmin uudelleen.</translation>
@@ -79,7 +76,6 @@
 <translation id="3350761136195634146">Tällä tilillä on jo Chromium-profiili</translation>
 <translation id="3406848076815591792">Vaihdetaanko nykyiseen Chromium-profiiliin?</translation>
 <translation id="3430503420100763906">Kun käytät Chromium-profiileja, voit pitää kaiken Chromium-sisällön erillään. Luo profiileja kavereita ja perhettä varten tai tee ero työn ja hauskanpidon välille.</translation>
-<translation id="3433271666494956603">Chromium-käyttöjärjestelmän asennus käynnissä</translation>
 <translation id="347328004046849135">Chromium ilmoittaa, kun kirjaudut sisään vaarantuneella salasanalla</translation>
 <translation id="3474745554856756813">Tämä poistaa <ph name="ITEMS_COUNT" /> kohdetta pysyvästi laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromiumiin käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Valitsemalla <ph name="SHORTCUT" /> voit vaihdella eri Chromium-profiilien välillä</translation>
@@ -107,7 +103,6 @@
 <translation id="4264410486868823224"><ph name="MANAGER" /> edellyttää, että luet ja hyväksyt seuraavat käyttöehdot ennen tämän laitteen käyttöä. Nämä ehdot eivät laajenna, muokkaa tai rajoita Chromium-käyttöjärjestelmän ehtoja.</translation>
 <translation id="4271805377592243930">Ohjeita Chromiumin käyttöön</translation>
 <translation id="4285930937574705105">Asennus epäonnistui tuntemattoman virheen takia. Jos Chromium on tällä hetkellä käynnissä, sulje se ja yritä uudelleen.</translation>
-<translation id="429583012151745428">Asennus on kesken. Älä sammuta laitetta. Asennuksen pitäisi kestää korkeintaan 20 minuuttia. Laite sammuu automaattisesti asennuksen jälkeen.</translation>
 <translation id="4407044323746248786">Suljetaanko Chromium silti?</translation>
 <translation id="4415566066719264597">Jätä Chromium käyntiin taustalle</translation>
 <translation id="4423735387467980091">Chromiumin muokkaus ja hallinta</translation>
@@ -201,7 +196,6 @@ Kaikki ominaisuudet eivät ehkä ole käytettävissä. Määritä jokin muu prof
 <translation id="6734291798041940871">Chromium on jo asennettuna kaikille tietokoneen käyttäjille.</translation>
 <translation id="673636774878526923">Jos haluat pääsyn Chromium-sisältöösi kaikilla laitteilla, kirjaudu sisään ja laita sitten synkronointi päälle.</translation>
 <translation id="6774082503108938489">Vanhempasi ovat laittaneet Chromiumin sivustojen, sovellusten ja laajennusten käyttöluvat pois päältä. Käyttöönottoa (<ph name="EXTENSION_TYPE_PARAMETER" />) ei sallita.</translation>
-<translation id="6827182711503025204">Chromium-käyttöjärjestelmän asentaminen korvaa kaiken laitteellasi olevan datan.</translation>
 <translation id="6847869444787758381">Chromium ilmoittaa sinulle, jos salasanasi ovat vaarantuneet</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopioitu Chromiumiin)</translation>

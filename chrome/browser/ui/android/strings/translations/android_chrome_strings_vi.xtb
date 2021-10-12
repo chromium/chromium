@@ -180,6 +180,7 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="2139186145475833000">Thêm vào Màn hình chính</translation>
 <translation id="2141396931810938595">Dựa trên tùy chọn sử dụng của bạn</translation>
 <translation id="214888715418183969">Chọn những thông tin mà bạn muốn chia sẻ với Chrome. Những thông tin bạn chia sẻ sẽ góp phần cải thiện các tính năng, hiệu suất và độ ổn định của Chrome.</translation>
+<translation id="2149973817440762519">Chỉnh sửa dấu trang</translation>
 <translation id="2154484045852737596">Chỉnh sửa thẻ</translation>
 <translation id="2154710561487035718">Sao chép URL</translation>
 <translation id="2156074688469523661">Số trang web còn lại (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -496,7 +497,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="4084682180776658562">Dấu trang</translation>
 <translation id="4084712963632273211">Từ <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Do Google phân phối<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Xóa dữ liệu ứng dụng?</translation>
-<translation id="4095189195365058471">Đọc sau <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Giúp cải thiện Chrome bằng cách gửi số liệu thống kê sử dụng và báo cáo sự cố cho Google.</translation>
 <translation id="410351446219883937">Tự động phát</translation>
 <translation id="4108314971463891922">Theo dõi</translation>
@@ -641,7 +641,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="4943872375798546930">Không tìm thấy kết quả nào</translation>
 <translation id="4957722034734105353">Tìm hiểu thêm...</translation>
 <translation id="4961107849584082341">Dịch trang này sang ngôn ngữ bất kỳ</translation>
-<translation id="4970824347203572753">Hiện chưa có ở vị trí của bạn</translation>
 <translation id="4971735654804503942">Chủ động và nhanh chóng bảo vệ bạn khỏi các trang web, tệp đã tải xuống và tiện ích nguy hiểm. Cảnh báo bạn những mật khẩu đã bị lộ. Yêu cầu gửi dữ liệu duyệt web cho Google.</translation>
 <translation id="497421865427891073">Đi về phía trước</translation>
 <translation id="4988210275050210843">Đang tải tệp xuống (<ph name="MEGABYTES" />).</translation>
@@ -725,7 +724,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5483197086164197190">Thao tác trong Chrome</translation>
 <translation id="5487521232677179737">Xóa dữ liệu</translation>
 <translation id="549025011754480756">Cách tìm kiếm bằng giọng nói</translation>
-<translation id="5500777121964041360">Có thể chưa dùng được tại vị trí của bạn</translation>
 <translation id="5512137114520586844">Tài khoản này do <ph name="PARENT_NAME" /> quản lý.</translation>
 <translation id="5514904542973294328">Bị quản trị viên của thiết bị này vô hiệu hóa</translation>
 <translation id="5515439363601853141">Mở khóa để xem mật khẩu của bạn</translation>
@@ -879,7 +877,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6364438453358674297">Xóa đề xuất khỏi lịch sử?</translation>
 <translation id="6378173571450987352">Thông tin chi tiết: Sắp xếp theo lượng dữ liệu đã dùng</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> sẽ mở trong Chrome. Bằng việc tiếp tục, bạn đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="6381421346744604172">Làm tối trang web</translation>
 <translation id="6395288395575013217">LIÊN KẾT</translation>
 <translation id="6397616442223433927">Đã có kết nối mạng trở lại</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> trên <ph name="VIOLATED_URL" /></translation>
@@ -1210,7 +1207,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8218052821161047641">Trang tải nhanh</translation>
 <translation id="8218622182176210845">Quản lý tài khoản của bạn</translation>
 <translation id="8223642481677794647">Trình đơn thẻ nguồn cấp dữ liệu</translation>
-<translation id="8224471946457685718">Tải tin bài cho bạn xuống qua Wi-Fi</translation>
 <translation id="8250920743982581267">Tài liệu</translation>
 <translation id="825412236959742607">Trang này sử dụng quá nhiều bộ nhớ, nên Chrome đã xóa bớt nội dung.</translation>
 <translation id="8260126382462817229">Thử đăng nhập lại</translation>

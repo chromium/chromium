@@ -88,8 +88,6 @@
 <translation id="2926676257163822632">નબળા પાસવર્ડનું અનુમાન કરવું સરળ હોય છે. Chromeને <ph name="BEGIN_LINK" />તમારા માટે સશક્ત પાસવર્ડ બનાવવા અને યાદ રાખવા<ph name="END_LINK" />ની મંજૂરી આપો.</translation>
 <translation id="2926952073016206995">આ સાઇટ માટે Chromeને કૅમેરાની પરવાનગીની જરૂર છે</translation>
 <translation id="2929907241665500097">કંઈક ખોટુ થયું હોવાને કારણે Chrome અપડેટ કરી શકાયું નથી. <ph name="BEGIN_LINK" />Chrome અપડેટ કરવામાં આવતી સમસ્યાઓ અને નિષ્ફળ થયેલા અપડેટ સુધારો.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />એક છેલ્લું રિમાઇન્ડર: ઇન્સ્ટૉલેશન કરવાથી, <ph name="BEGIN_BOLD" />તમારી હાર્ડ ડ્રાઇવનો બધો ડેટા કાઢી નાખવામાં આવશે<ph name="END_BOLD" />. કૃપા કરીને ખાતરી કરો કે તમે તમારા જરૂરી ડેટાનો બૅકઅપ લઈ લીધો છે.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />એકવાર ઇન્સ્ટૉલેશન શરૂ થયા પછી, તેને રદ કરી શકાશે નહીં.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - નેટવર્ક સાઇન ઇન - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome પૃષ્ઠભૂમિ મોડમાં છે.</translation>
 <translation id="3059710691562604940">Safe Browsingની સુવિધા બંધ છે. Chrome તેને ચાલુ રાખવાનો સુઝાવ આપે છે.</translation>
@@ -137,7 +135,6 @@
 <translation id="4251615635259297716">તમારા Chrome ડેટાને આ એકાઉન્ટ સાથે લિંક કરીએ?</translation>
 <translation id="4281844954008187215">સેવાની શરતો</translation>
 <translation id="4293420128516039005">તમારા બધા ડિવાઇસ પર Chromeને સિંક અને વ્યક્તિગત કરવા માટે સાઇન ઇન કરો</translation>
-<translation id="429583012151745428">ઇન્સ્ટૉલ કરવાની પ્રક્રિયા ચાલુ છે. ડિવાઇસને બંધ કરશો નહીં. ઇન્સ્ટૉલ કરવામાં વીસ મિનિટથી વધુ સમય લાગશે નહીં. ઇન્સ્ટૉલ કરવાની પ્રક્રિયા પૂર્ણ થયા બાદ, મશીન ઑટોમૅટિક રીતે શટ ડાઉન થઈ જશે.</translation>
 <translation id="4325083532956419387">Chrome OS વર્ઝન</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -183,7 +180,6 @@
 <translation id="5430073640787465221">તમારી પસંદગીઓ ફાઇલ દૂષિત અથવા અમાન્ય છે.
 
 Google Chrome તમારા સેટિંગને રિકવર કરી શકતું નથી.</translation>
-<translation id="5486618155264784386">Chrome OS ઇન્સ્ટૉલ કરો</translation>
 <translation id="556024056938947818">Google Chrome પાસવર્ડ્સ બતાવવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">જો આ પેજ પર સેટિંગ બતાવેલું ન હોય, તો તમારા <ph name="LINK_BEGIN" />
@@ -238,7 +234,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7155997830309522122">જો એવું હોય, તો કૃપા કરીને Chromeમાં તમારા સાચવેલા પાસવર્ડમાં ફેરફાર કરો જેથી તે તમારા નવા પાસવર્ડ સાથે મેળ ખાય.</translation>
 <translation id="7161904924553537242">Google Chrome માં સ્વાગત છે</translation>
 <translation id="7242029209006116544">તમે મેનેજ કરેલા એકાઉન્ટ સાથે સાઇન ઇન કરી રહ્યાં છો અને તમારી Google Chrome પ્રોફાઇલ પર એડમિનને એનું નિયંત્રણ આપી રહ્યાં છો. તમારો Chrome ડેટા, જેમ કે તમારી ઍપ, બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ, કાયમ માટે <ph name="USER_NAME" /> પર બંધાયેલ રહેશે. તમે Google એકાઉન્ટ ડૅશબોર્ડ દ્વારા આ ડેટાને કાઢી શકશો, પરંતુ તમે આ ડેટાને બીજા એકાઉન્ટ સાથે સાંકળી શકશો નહિ. તમારા અસ્તિત્વમાં છે તે Chrome ડેટાને અલગ રાખવા માટે, તમે વૈકલ્પિક રૂપે એક નવી પ્રોફાઇલ બનાવી શકો છો. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Chrome OSને ઇન્સ્ટૉલ કરવાની પ્રક્રિયા ચાલુ છે</translation>
 <translation id="7295052994004373688">આ ભાષાનો ઉપયોગ Google Chrome UI પ્રદર્શિત કરવા માટે થાય છે</translation>
 <translation id="7296210096911315575">મહત્વપૂર્ણ ઉપયોગ અને સુરક્ષા માહિતી</translation>
 <translation id="7308322188646931570">ફાઇલો ડાઉનલોડ કરવા માટે Chromeને સ્ટોરેજના ઍક્સેસની જરૂર પડે છે</translation>

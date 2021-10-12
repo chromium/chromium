@@ -87,8 +87,6 @@
 <translation id="2926676257163822632">कमकुवत पासवर्ड ओळखणे सोपे असते. Chrome ला <ph name="BEGIN_LINK" />तुमच्यासाठी क्लिष्ट पासवर्ड तयार करून लक्षात ठेवू द्या<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome ला या साइटसाठी कॅमेराची परवानगी आवश्यक आहे</translation>
 <translation id="2929907241665500097">Chrome अपडेट झाले नाही, काहीतरी चूक झाली. <ph name="BEGIN_LINK" />Chrome अपडेट समस्या आणि अयशस्वी झालेल्या अपडेटचे निराकरण करा.<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />एक शेवटचा रिमाइंडर: इंस्टॉलेशन <ph name="BEGIN_BOLD" />तुमची संपूर्ण हार्ड ड्राइव्ह मिटवेल<ph name="END_BOLD" />. कृपया तुमच्यासाठी महत्त्वाच्या असलेल्या डेटाचा तुम्ही बॅकअप घेतला असल्याची खात्री करा.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />इंस्टॉलेशन सुरू झाल्यावर ते रद्द करता येऊ शकत नाही.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome पार्श्वभूमी मोड मध्ये आहे.</translation>
 <translation id="3059710691562604940">सुरक्षित ब्राउझिंग बंद आहे. Chrome ते सुरू करण्याची शिफारस करते.</translation>
@@ -136,7 +134,6 @@
 <translation id="4251615635259297716">या खात्यावर तुमच्या Chrome डेटा लिंक करायचा?</translation>
 <translation id="4281844954008187215">सेवा अटी</translation>
 <translation id="4293420128516039005">तुमच्या डिव्हाइसवर Chrome सिंक आणि पर्सनलाइझ करण्यासाठी साइन इन करा</translation>
-<translation id="429583012151745428">इंस्टॉलेशन प्रगतीपथावर आहे. डिव्हाइस बंद करू नका. इंस्टॉल होण्यासाठी २० मिनिटांपेक्षा जास्त वेळ लागणार नाही. इंस्टॉल करणे पूर्ण झाल्यानंतर मशीन आपोआप बंद होईल.</translation>
 <translation id="4325083532956419387">Chrome OS आवृत्ती</translation>
 <translation id="4328355335528187361">Google Chrome डेव्हलपर (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -181,7 +178,6 @@
 <translation id="5430073640787465221">तुमची प्राधान्ये फाइल दूषित किंवा चुकीचे आहेत.
 
 Google Chrome तुमची सेटिंग्ज पुन्हा मिळवू शकत नाही.</translation>
-<translation id="5486618155264784386">Chrome OS इंस्टॉल करा</translation>
 <translation id="556024056938947818">Google Chrome पासवर्ड दर्शवण्याचा प्रयत्न करत आहे.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-मध्ये)</translation>
 <translation id="5657226924540934362">या पेजवर सेटिंग दिसत नसल्यास, तुमच्या <ph name="LINK_BEGIN" />
@@ -236,7 +232,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7155997830309522122">कृपया Chrome मध्ये सेव्ह केलेला तुमचा पासवर्ड संपादित करा जेणेकरून तो नवीन पासवर्डशी जुळेल.</translation>
 <translation id="7161904924553537242">Google Chromeमध्ये तुमचे स्वागत आहे</translation>
 <translation id="7242029209006116544">तुम्ही एका व्यवस्थापित खात्यासह साइन इन करत आहात आणि तुमच्या Google Chrome प्रोफाइलवर त्याच्या ॲडमिनिस्ट्रेटरला नियंत्रण देत आहात. तुमचा Chrome डेटा, जसे की तुमचे अ‍ॅप्स, बुकमार्क, इतिहास, पासवर्ड आणि अन्य सेटिंग्ज <ph name="USER_NAME" /> वर कायमच्या बद्ध होतील. तुम्ही Google खाती डॅशबोर्डद्वारे हा डेटा हटवण्यात सक्षम व्हाल, परंतु तुम्ही दुसर्‍या खात्यासह हा डेटा संबद्ध करण्यात सक्षम असणार नाही. तुम्ही तुमचा विद्यमान Chrome डेटा वेगळा ठेवण्यासाठी एक नवीन प्रोफाइल वैकल्पिकपणे तयार करू शकता. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Chrome OS चे इंस्टॉलेशन प्रगतीपथावर आहे</translation>
 <translation id="7295052994004373688">ही भाषा Google Chrome UI दाखवण्यासाठी वापरली जाते</translation>
 <translation id="7296210096911315575">महत्त्वाचा वापर आणि सुरक्षा माहिती</translation>
 <translation id="7308322188646931570">फाइल डाउनलोड करण्यासाठी Chrome ला स्टोरेजचा ॲक्सेस हवा आहे</translation>

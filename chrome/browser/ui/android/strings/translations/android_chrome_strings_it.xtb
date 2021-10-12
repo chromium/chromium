@@ -180,6 +180,7 @@ Tocca una parola per eseguire una ricerca. Per perfezionare la ricerca, tocca e 
 <translation id="2139186145475833000">Aggiungi a schermata Home</translation>
 <translation id="2141396931810938595">In base al tuo utilizzo</translation>
 <translation id="214888715418183969">Scegli quali dati condividere con Chrome. Le metriche che condividi verranno utilizzate per contribuire a migliorare le funzionalità, le prestazioni e la stabilità di Chrome.</translation>
+<translation id="2149973817440762519">Modifica Preferito</translation>
 <translation id="2154484045852737596">Modifica la carta</translation>
 <translation id="2154710561487035718">Copia URL</translation>
 <translation id="2156074688469523661">Siti rimanenti (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -496,7 +497,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="4084682180776658562">Aggiungi ai Preferiti</translation>
 <translation id="4084712963632273211">Di <ph name="PUBLISHER_ORIGIN" /> - <ph name="BEGIN_DEEMPHASIZED" />pubblicata da Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">Eliminare i dati delle app?</translation>
-<translation id="4095189195365058471">Leggi più tardi <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Aiutaci a migliorare Chrome inviando a Google statistiche sull'utilizzo e report sugli arresti anomali.</translation>
 <translation id="410351446219883937">Riproduzione automatica</translation>
 <translation id="4108314971463891922">Segui</translation>
@@ -641,7 +641,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4943872375798546930">Nessun risultato</translation>
 <translation id="4957722034734105353">Ulteriori informazioni...</translation>
 <translation id="4961107849584082341">Traduci questa pagina in qualsiasi lingua</translation>
-<translation id="4970824347203572753">Non disponibile nel tuo paese</translation>
 <translation id="4971735654804503942">Sistemi di protezione proattivi e più rapidi da estensioni, siti web e download pericolosi. Ricevi un avviso in caso di violazioni della password. Richiede l'invio dei dati di navigazione a Google.</translation>
 <translation id="497421865427891073">Avanti</translation>
 <translation id="4988210275050210843">Download del file (<ph name="MEGABYTES" />) in corso.</translation>
@@ -725,7 +724,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5483197086164197190">Esplorare Chrome</translation>
 <translation id="5487521232677179737">Cancella dati</translation>
 <translation id="549025011754480756">Come eseguire ricerche tramite comandi vocali</translation>
-<translation id="5500777121964041360">Potrebbe non essere disponibile nel tuo paese</translation>
 <translation id="5512137114520586844">Questo account è gestito da <ph name="PARENT_NAME" />.</translation>
 <translation id="5514904542973294328">Opzione disattivata dall'amministratore del dispositivo</translation>
 <translation id="5515439363601853141">Sblocca per visualizzare la password</translation>
@@ -879,7 +877,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6364438453358674297">Rimuovere il suggerimento dalla cronologia?</translation>
 <translation id="6378173571450987352">Dettagli: ordinati per quantità di dati utilizzati</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> si aprirà in Chrome. Se continui, accetti i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Google Chrome e Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="6381421346744604172">Scurisci siti web</translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Di nuovo online</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> su <ph name="VIOLATED_URL" /></translation>
@@ -1210,7 +1207,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8218052821161047641">Pagina veloce</translation>
 <translation id="8218622182176210845">Gestisci il tuo account</translation>
 <translation id="8223642481677794647">Menu scheda feed</translation>
-<translation id="8224471946457685718">Scarica articoli per te tramite Wi-Fi</translation>
 <translation id="8250920743982581267">Documenti</translation>
 <translation id="825412236959742607">Questa pagina utilizza troppa memoria, pertanto Chrome ha rimosso alcuni contenuti.</translation>
 <translation id="8260126382462817229">Prova ad accedere nuovamente</translation>

@@ -16,6 +16,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="1066060668811609597">Sinhronizācijas pārvaldība</translation>
 <translation id="1076421457278169141">Kods ir skenēts</translation>
 <translation id="1084365883616172403">Facebook ziņa izveidota.</translation>
+<translation id="1086486568852410168">Meklēt, izmantojot Google Lens</translation>
 <translation id="1103523840287552314">Vienmēr tulkot <ph name="LANGUAGE" /> valodas saturu</translation>
 <translation id="1104948393051856124">Pieņemt un turpināt</translation>
 <translation id="110724200315609752">Pārslēgties uz atvērto logu</translation>
@@ -57,6 +58,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="1400642268715879018">Pēdējās 4 nedēļas</translation>
 <translation id="1407135791313364759">Atvērt visas</translation>
 <translation id="1430915738399379752">Drukāt</translation>
+<translation id="1434356225517321998">Jūsu pārlūks tiek pārvaldīts. <ph name="BEGIN_LINK" />Informācija<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Slēpt paroli</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> vienumi</translation>
 <translation id="149095475893949513">Šī vietne mēģina lejupielādēt konfigurācijas profilu.</translation>
@@ -120,6 +122,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="209018056901015185">Pieprasīt datora vietni</translation>
 <translation id="2103075008456228677">Atvērt history.google.com</translation>
 <translation id="2116625576999540962">Pārvietoti vienumi: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="2122754583996902531">Jūsu pārlūks tiek pārvaldīts. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="212623074644302906">Vaicāt, vai pievienot lasīšanas sarakstam</translation>
 <translation id="2139867232736819575">Meklēt kopēto tekstu</translation>
 <translation id="214201757571129614">Pierakstīties…</translation>
@@ -128,6 +131,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="2218443599109088993">Tālināt</translation>
 <translation id="2230173723195178503">Tīmekļa lapa ielādēta</translation>
 <translation id="2239626343334228536">Notiek pārlūkošanas datu notīrīšana…</translation>
+<translation id="2256933947031277845">Jūsu organizācija ir atļāvusi pierakstīšanos tikai ar noteiktiem kontiem.</translation>
 <translation id="225943865679747347">Kļūdas kods: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Pievienot kontu</translation>
 <translation id="2268044343513325586">Uzlabot</translation>
@@ -220,7 +224,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3131206671572504478">Bloķēt visus</translation>
 <translation id="313283613037595347">Izveidot jaunu inkognito cilni</translation>
 <translation id="3153862085237805241">Saglabāt karti</translation>
-<translation id="315401415709252194">Jūsu organizācija pieprasa pierakstīšanos.</translation>
 <translation id="3157387275655328056">Pievienot lasīšanas sarakstam</translation>
 <translation id="3157684681743766797">Atzīmēt visus…</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -258,6 +261,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="345565170154308620">Pārvaldīt paroles…</translation>
 <translation id="3469166899695866866">Vai apturēt lejupielādi?</translation>
 <translation id="3470502288861289375">Notiek kopēšana...</translation>
+<translation id="3472993688462687965">Ja ieslēgsiet sinhronizāciju, tiks sinhronizēti tikai tie dati, kuru sinhronizāciju ir atļāvusi jūsu organizācija.</translation>
 <translation id="3474624961160222204">Turpināt kā: <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Der. term. mēn.</translation>
 <translation id="3482959374254649722">Notiek ciļņu sinhronizācija...</translation>
@@ -369,10 +373,12 @@ Veiciet tālāk norādītās darbības.</translation>
 
 Jūsu dati ir šifrēti, izmantojot jūsu sinhronizācijas ieejas frāzi. Lai sāktu sinhronizēšanu, ievadiet ieejas frāzi.</translation>
 <translation id="4689564913179979534">Pārvaldīt maksājumu veidus...</translation>
+<translation id="469022783543509074">Jūs tikāt izrakstīts</translation>
 <translation id="470966556546083668">Neieslēgt sinhronizāciju</translation>
 <translation id="473775607612524610">Atjaunināt</translation>
 <translation id="4747097190499141774">Ieejas frāzes šifrējumā nav iekļauti maksājumu veidi un adreses no pakalpojuma Google Pay. Jūsu šifrētos datus var lasīt tikai personas, kurām ir zināma jūsu ieejas frāze. Ieejas frāze netiek sūtīta Google serveriem un netiek tajos glabāta. Ja aizmirsīsiet ieejas frāzi vai vēlēsieties mainīt šo iestatījumu, jums būs jāatiestata sinhronizācija. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="4751645464639803239">Jauna inkognito cilne</translation>
+<translation id="4764612367328936189">Jūsu organizācija ir atļāvusi pierakstīšanos tikai ar noteiktiem kontiem. Konti, kas nav atļauti, ir paslēpti. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="4775879719735953715">Noklusējuma pārlūks</translation>
 <translation id="4778644898150334464">Izmantot citu paroli</translation>
 <translation id="4802417911091824046">Ieejas frāzes šifrējumā nav iekļauti maksājumu veidi un adreses no pakalpojuma Google Pay.
@@ -829,6 +835,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="9081058212938299310">Vai atjaunināt lietotājvārda <ph name="USERNAME" /> paroli?</translation>
 <translation id="9083392325882095631">1 vienums</translation>
 <translation id="9083838294503912307">Lai sinhronizētu un personalizētu saturu dažādās ierīcēs, ieslēdziet sinhronizāciju.</translation>
+<translation id="9084677839771512880">Jūsu organizācija ierobežo to, kādu saturu varat sinhronizēt. <ph name="BEGIN_LINK" />Informācija<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Chrome ieteiktā parole:</translation>
 <translation id="9094033019050270033">Atjaunināt paroli</translation>
 <translation id="9100610230175265781">Jāievada ieejas frāze.</translation>

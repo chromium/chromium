@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Прашај кога некој сајт сака да открива уреди со Bluetooth во близина (се препорачува)</translation>
 <translation id="2315043854645842844">Оперативниот систем не поддржува избор на сертификат од страна на клиентот.</translation>
 <translation id="2359808026110333948">Продолжи</translation>
+<translation id="2379925928934107488">Ако е можно, примени темна тема на сајтовите кога Chrome користи темна тема</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се одобрени}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се одобрени}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се одобрени}}</translation>
 <translation id="2434158240863470628">Преземањето е завршено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Пристапот до локацијата е исклучен и за уредов. Вклучете го во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Проширено - кликни да се сокрие.</translation>
 <translation id="2586657967955657006">Табла со исечоци</translation>
+<translation id="2597457036804169544">Не применувај темна тема за сајтови</translation>
 <translation id="2621115761605608342">Дозволи JavaScript за одреден сајт.</translation>
 <translation id="2653659639078652383">Испрати</translation>
 <translation id="2677748264148917807">Напушти</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Исклучи го звукот на сајтовите што пуштаат звук</translation>
 <translation id="3744111561329211289">Синхронизација во заднина</translation>
 <translation id="3763247130972274048">Допрете двапати на видеото лево или десно за да прескокнете 10 секунди</translation>
+<translation id="3797520601150691162">Не применувај темна тема за конкретен сајт</translation>
 <translation id="381841723434055211">Телефонски броеви</translation>
 <translation id="3835233591525155343">Користење на уредот</translation>
 <translation id="385051799172605136">Назад</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">Сајтовите не можат да прашуваат дали да испраќаат известувања</translation>
 <translation id="5516455585884385570">Отвори ги поставките за известувања</translation>
 <translation id="5527111080432883924">Прашај пред да им дозволиш на сајтовите да читаат текст и слики од привремената меморија (се препорачува)</translation>
+<translation id="5553374991681107062">Најнови</translation>
 <translation id="5556459405103347317">Повторно вчитај</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5649053991847567735">Автоматски преземања</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">Вообичаено ги блокирате известувањата. За да ги дозволите, допрете „Детали“.</translation>
 <translation id="7423098979219808738">Прво прашај</translation>
 <translation id="7423538860840206698">Блокирано читање на привремената меморија</translation>
+<translation id="7425915948813553151">Темна тема за сајтови</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Сајтот го користи микрофонот</translation>
 <translation id="7561196759112975576">Секогаш</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">Дали сте сигурни дека сакате да ги исчистите сите локални податоци, вклучувајќи ги колачињата, и да ги ресетирате сите дозволи за веб-локацијата?</translation>
 <translation id="8007176423574883786">Исклучена за овој уред</translation>
 <translation id="802154636333426148">Неуспешно преземање</translation>
+<translation id="8042586301629853791">Подреди по:</translation>
 <translation id="8067883171444229417">Пушти го видеото</translation>
 <translation id="8068648041423924542">Сертификатот не може да се избере.</translation>
 <translation id="8087000398470557479">Оваа содржина е од <ph name="DOMAIN_NAME" />, овозможена од Google.</translation>

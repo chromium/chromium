@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">જ્યારે કોઈ સાઇટ નજીકના બ્લૂટૂથ ડિવાઇસને શોધવા માગે ત્યારે પૂછો (સુઝાવ આપેલ)</translation>
 <translation id="2315043854645842844">ઓપરેટિંગ સિસ્ટમ દ્વારા ક્લાઇન્ટ તરફની પ્રમાણપત્ર પસંદગી સપોર્ટ કરતી નથી.</translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
+<translation id="2379925928934107488">શક્ય હોય ત્યારે, Chrome જ્યારે ઘેરી થીમનો ઉપયોગ કરે, ત્યારે સાઇટ પર ઘેરી થીમ લાગુ કરો</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />ની મંજૂરી આપી}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />ની મંજૂરી આપી}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />ની મંજૂરી આપી}}</translation>
 <translation id="2434158240863470628">ડાઉનલોડ પૂર્ણ <ph name="SEPARATOR" /><ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">આ ઉપકરણ માટે સ્થાન ઍક્સેસ પણ બંધ છે. તેને <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં ચાલુ કરો.</translation>
 <translation id="257931822824936280">વિસ્તૃત - સંકુચિત કરવા માટે ક્લિક કરો.</translation>
 <translation id="2586657967955657006">ક્લિપબોર્ડ</translation>
+<translation id="2597457036804169544">સાઇટ પર ઘેરી થીમ લાગુ કરશો નહીં</translation>
 <translation id="2621115761605608342">ચોક્કસ સાઇટ માટે JavaScript ની મંજૂરી આપો.</translation>
 <translation id="2653659639078652383">સબમિટ કરો</translation>
 <translation id="2677748264148917807">છોડો</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">જે સાઇટ અવાજ ચલાવતી હોય તેઓનો અવાજ બંધ કરો</translation>
 <translation id="3744111561329211289">પૃષ્ઠભૂમિ સમન્વયન</translation>
 <translation id="3763247130972274048">10 સેકન્ડ છોડવા માટે ડાબે અથવા જમણે બે વાર ટૅપ કરો</translation>
+<translation id="3797520601150691162">કોઈ ચોક્કસ સાઇટ માટે ઘેરી થીમ લાગુ કરશો નહીં</translation>
 <translation id="381841723434055211">ફોન નંબર</translation>
 <translation id="3835233591525155343">તમારા ડિવાઇસનો વપરાશ</translation>
 <translation id="385051799172605136">પાછળ</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">સાઇટ તમને નોટિફિકેશન મોકલવા માટે પૂછી શકશે નહીં</translation>
 <translation id="5516455585884385570">નોટિફિકેશનના સેટિંગ ખોલો</translation>
 <translation id="5527111080432883924">સાઇટને ક્લિપબોર્ડ પરની ટેક્સ્ટ અને છબીઓને વાંચવાની મંજૂરી આપતાં પહેલાં પૂછો (સુઝાવ આપેલ)</translation>
+<translation id="5553374991681107062">નવીનતમ</translation>
 <translation id="5556459405103347317">ફરીથી લોડ કરો</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="5649053991847567735">ઑટોમૅટિક રીતે ડાઉનલોડ</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">તમે સામાન્ય રીતે નોટિફિકેશનને બ્લૉક કરો છો. મંજૂરી આપવા માટે, વિગતો પર ટૅપ કરો.</translation>
 <translation id="7423098979219808738">પ્રથમ પૂછો</translation>
 <translation id="7423538860840206698">ક્લિપબોર્ડ વાંચવાનું બ્લૉક કરેલ છે</translation>
+<translation id="7425915948813553151">સાઇટ માટે ઘેરી થીમ</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">કોઈ સાઇટ તમારા માઇક્રોફોનનો ઉપયોગ કરી રહી છે</translation>
 <translation id="7561196759112975576">હંમેશાં</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">શું તમે ખરેખર કૂકીઝ સહિત આ વેબસાઇટ માટેનો બધો ડેટા સાફ કરી અને આ વેબસાઇટ માટેની બધી પરવાનગીઓ ફરીથી સેટ કરવા માગો છો?</translation>
 <translation id="8007176423574883786">આ ઉપકરણ માટે બંધ કર્યું</translation>
 <translation id="802154636333426148">ડાઉનલોડ નિષ્ફળ થયું</translation>
+<translation id="8042586301629853791">આ પ્રમાણે સૉર્ટ કરો:</translation>
 <translation id="8067883171444229417">વીડિયો ચલાવો</translation>
 <translation id="8068648041423924542">પ્રમાણપત્ર પસંદ કરવામાં અસમર્થ.</translation>
 <translation id="8087000398470557479">આ કન્ટેન્ટ <ph name="DOMAIN_NAME" /> માંથી, Google દ્વારા વિતરિત કરેલ છે.</translation>

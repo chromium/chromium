@@ -23,6 +23,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1104621072296271835">Cihazlarınız birlikte daha da iyi çalışır</translation>
 <translation id="1119348796022671382">Temalı renk modu, arayüzü hafifçe renklendirmek için duvar kağıdınızdan çıkarılan renkleri kullanır.</translation>
 <translation id="112308213915226829">Rafı otomatik gizle</translation>
+<translation id="1142002900084379065">Yeni eklenen fotoğraflar</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> için bilgi iletişim kutusunu aç</translation>
 <translation id="1150989369772528668">Takvim</translation>
 <translation id="1153356358378277386">Eşlenen cihazlar</translation>
@@ -179,6 +180,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2298170939937364391">Tam Ekran Büyüteci etkinleştirildi. Kapatmak için tekrar Ctrl+Arama+M tuşlarına basın.</translation>
 <translation id="2302092602801625023">Bu hesap Family Link tarafından yönetiliyor</translation>
 <translation id="2303600792989757991">Pencere genel bakışını değiştir</translation>
+<translation id="2318576281648121272">Bugün <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Harf bazında geri git</translation>
 <translation id="2339073806695260576">Not veya ekran görüntüsü almak, lazer işaretçi veya büyüteç işlevlerini kullanmak için raftaki ekran kalemi düğmesine dokunun.</translation>
 <translation id="2341729377289034582">Dikey olarak kilitlendi</translation>
@@ -200,6 +202,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2435457462613246316">Şifreyi göster</translation>
 <translation id="24452542372838207">Bildirimi genişlet</translation>
 <translation id="2450205753526923158">Ekran görüntüsü modu</translation>
+<translation id="2456008742792828469">Takvim, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Çözünürlüğü Onayla</translation>
 <translation id="2475982808118771221">Bir hata oluştu</translation>
 <translation id="2482878487686419369">Bildirimler</translation>
@@ -278,6 +281,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3100274880412651815">Ekran görüntüsü alma modunu kapat</translation>
 <translation id="3105917916468784889">Ekran görüntüsü al</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Öneriyi Kaldır</translation>
 <translation id="3126069444801937830">Güncellemek için yeniden başlat</translation>
 <translation id="3139942575505304791">Çalışma Masası 1</translation>
 <translation id="315116470104423982">Mobil veriler</translation>
@@ -317,6 +321,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3413817803639110246">Henüz görülecek bir şey yok</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> bağlantısını kes</translation>
 <translation id="3430396595145920809">Geri gitmek için sağdan kaydırın</translation>
+<translation id="3434107140712555581">%<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="343571671045587506">Hatırlatıcıyı düzenleyin</translation>
 <translation id="3435967511775410570">Parmak izi tanındı</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4642092649622328492">Kısmi ekran görüntüsü alır</translation>
 <translation id="4659419629803378708">ChromeVox etkinleştirildi</translation>
 <translation id="4665114317261903604">Rahatsız Etmeyin modunu aç/kapat. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081"><ph name="FILENAME" /> indiriliyor</translation>
 <translation id="4696813013609194136">Kilidi ebeveyn koduyla açın</translation>
 <translation id="4702647871202761252">Gizlilik ekranı kapalı</translation>
 <translation id="4706121060329443414">İndirme işlemi daha sonra tekrar denenecek. Konuşma şimdilik işlenmek üzere Google'a gönderilecek.</translation>
@@ -640,6 +646,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5744083938413354016">Dokunarak sürükleme</translation>
 <translation id="5745612484876805746">Gece Işığı güneş battığında otomatik olarak açılır</translation>
 <translation id="5750765938512549687">Bluetooth kapalı</translation>
+<translation id="576341972084747908">Tehlikeli <ph name="FILENAME" /> dosyasını indir</translation>
 <translation id="576453121877257266">Gece Işığı açık.</translation>
 <translation id="5769373120130404283">Gizlilik ekranı</translation>
 <translation id="5777841717266010279">Ekran paylaşma durdurulsun mu?</translation>
@@ -782,6 +789,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6852052252232534364">Etkinleştirmek için tıklayın</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sn.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bir rakam kaldı}other{# rakam kaldı}}</translation>
+<translation id="6867938213751067702"><ph name="FILENAME" /> dosyasını indirme işlemi duraklatıldı</translation>
 <translation id="6878400149835617132">Kısayol kapalı</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> cihazınız daha düşük performans gösterebilir. <ph name="PREFERRED_MINIMUM_POWER" /> W veya daha güçlü ve uyumlu bir USB-C güç adaptörü kullanın.</translation>
 <translation id="688631446150864480">Pencereler arasında geçiş yapmak için Aşağı ok tuşuna basın</translation>

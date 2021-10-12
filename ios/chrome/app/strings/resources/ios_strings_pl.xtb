@@ -16,6 +16,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="1066060668811609597">Zarządzanie synchronizacją</translation>
 <translation id="1076421457278169141">Kod został zeskanowany</translation>
 <translation id="1084365883616172403">Post na Facebooku dodany.</translation>
+<translation id="1086486568852410168">Szukaj za pomocą Obiektywu Google</translation>
 <translation id="1103523840287552314">Zawsze tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Zaakceptuj i kontynuuj</translation>
 <translation id="110724200315609752">Przełącz na otwarte okno</translation>
@@ -57,6 +58,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="1400642268715879018">Ostatnie cztery tygodnie</translation>
 <translation id="1407135791313364759">Otwórz wszystkie</translation>
 <translation id="1430915738399379752">Drukuj</translation>
+<translation id="1434356225517321998">Twoja przeglądarka jest zarządzana. <ph name="BEGIN_LINK" />Szczegóły<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Ukryj hasło</translation>
 <translation id="145015347812617860">Elementy: <ph name="COUNT" /></translation>
 <translation id="149095475893949513">Ta strona próbuje pobrać profil konfiguracji.</translation>
@@ -120,6 +122,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="209018056901015185">Wersja na komputer</translation>
 <translation id="2103075008456228677">Otwórz history.google.com</translation>
 <translation id="2116625576999540962">Przeniesione elementy: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="2122754583996902531">Twoja przeglądarka jest zarządzana. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="212623074644302906">Pytaj, czy dodać do listy Do przeczytania</translation>
 <translation id="2139867232736819575">Wyszukaj skopiowany tekst</translation>
 <translation id="214201757571129614">Zaloguj się…</translation>
@@ -128,6 +131,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2218443599109088993">Pomniejsz</translation>
 <translation id="2230173723195178503">Wczytano stronę internetową</translation>
 <translation id="2239626343334228536">Czyszczę dane przeglądania…</translation>
+<translation id="2256933947031277845">Twoja organizacja pozwala logować się tylko na określone konta.</translation>
 <translation id="225943865679747347">Kod błędu: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Dodaj konto</translation>
 <translation id="2268044343513325586">Zawęź</translation>
@@ -220,7 +224,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3131206671572504478">Blokuj wszystkie</translation>
 <translation id="313283613037595347">Utwórz nową kartę incognito.</translation>
 <translation id="3153862085237805241">Zapisz kartę</translation>
-<translation id="315401415709252194">Twoja organizacja wymaga zalogowania się.</translation>
 <translation id="3157387275655328056">Dodaj do listy Do przeczytania</translation>
 <translation id="3157684681743766797">Oznacz wszystko…</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -258,6 +261,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="345565170154308620">Zarządzaj hasłami…</translation>
 <translation id="3469166899695866866">Czy zatrzymać pobieranie?</translation>
 <translation id="3470502288861289375">Kopiuję...</translation>
+<translation id="3472993688462687965">Jeśli włączysz synchronizację, w przypadku danych mogą obowiązywać ograniczenia nałożone przez organizację.</translation>
 <translation id="3474624961160222204">Nadal używaj konta użytkownika <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Miesiąc utraty ważności</translation>
 <translation id="3482959374254649722">Synchronizuję karty...</translation>
@@ -367,10 +371,12 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 
 Dane zostały zaszyfrowane z użyciem Twojego hasła synchronizacji. Wpisz je, by rozpocząć synchronizację.</translation>
 <translation id="4689564913179979534">Zarządzaj formami płatności…</translation>
+<translation id="469022783543509074">Wylogowaliśmy Cię</translation>
 <translation id="470966556546083668">Nie włączaj synchronizacji</translation>
 <translation id="473775607612524610">Aktualizuj</translation>
 <translation id="4747097190499141774">Szyfrowanie hasłem nie obejmuje form płatności ani adresów w Google Pay. Twoje zaszyfrowane dane może odczytać tylko ktoś znający hasło. Google nie otrzyma Twojego hasła ani nie będzie go przechowywać. Jeśli je zapomnisz lub zechcesz zmienić to ustawienie, konieczne będzie zresetowanie synchronizacji. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nowa karta incognito</translation>
+<translation id="4764612367328936189">Twoja organizacja pozwala logować się tylko na określone konta. Niedozwolone konta zostały ukryte. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4775879719735953715">Domyślna przeglądarka</translation>
 <translation id="4778644898150334464">Użyj innego hasła</translation>
 <translation id="4802417911091824046">Szyfrowanie hasłem nie obejmuje form płatności ani adresów w Google Pay.
@@ -827,6 +833,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9081058212938299310">Zaktualizować hasło dla <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">Jeden element</translation>
 <translation id="9083838294503912307">Aby synchronizować i personalizować wszystkie swoje urządzenia, włącz synchronizację.</translation>
+<translation id="9084677839771512880">Twoja organizacja nie pozwala na synchronizację niektórych typów danych. <ph name="BEGIN_LINK" />Szczegóły<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Hasło proponowane przez Chrome:</translation>
 <translation id="9094033019050270033">Aktualizuj hasło</translation>
 <translation id="9100610230175265781">Wymagane jest hasło</translation>

@@ -2123,6 +2123,7 @@
 <translation id="8041089156583427627">发送反馈</translation>
 <translation id="8041940743680923270">使用全局默认设置（询问）</translation>
 <translation id="8042918947222776840">选择取货方式</translation>
+<translation id="8052898407431791827">已复制到剪贴板</translation>
 <translation id="8057711352706143257">“<ph name="SOFTWARE_NAME" />”的配置有误。卸载“<ph name="SOFTWARE_NAME" />”通常可解决此问题。<ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">抱歉，出了点问题。</translation>
 <translation id="8067872629359326442">您刚刚在一个诈骗网站中输入了密码。Chromium 可以为您提供帮助。若要更改密码并让 Google 知晓您的帐号可能处于危险状态，请点击“保护帐号”。</translation>
@@ -2320,7 +2321,6 @@
 <translation id="8742371904523228557">您的 <ph name="ORIGIN" /> 验证码是 <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">为此标签页添加书签</translation>
 <translation id="8751426954251315517">请稍后重试</translation>
-<translation id="8757526089434340176">有可用的 Google Pay 优惠</translation>
 <translation id="8759274551635299824">此信用卡已失效</translation>
 <translation id="87601671197631245">此网站使用的安全性配置已过时，这可能会导致您的信息（例如密码、消息或信用卡卡号）在发送至此网站的过程中遭到泄露。</translation>
 <translation id="8761567432415473239">Google安全浏览功能最近在<ph name="SITE" />上<ph name="BEGIN_LINK" />发现了有害程序<ph name="END_LINK" />。</translation>

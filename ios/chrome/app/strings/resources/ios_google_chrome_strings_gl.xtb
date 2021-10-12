@@ -3,6 +3,7 @@
 <translationbundle lang="gl">
 <translation id="1096883626080133124">Realiza máis tarefas cunha versión de Chrome máis sinxela, segura e rápida</translation>
 <translation id="1282031177488366470">Axudar a mellorar o rendemento e as funcións de Chrome</translation>
+<translation id="1354592789402432496">O teu administrador require que inicies sesión cunha conta de organización. As contas que este restrinxe están ocultas.</translation>
 <translation id="1479202195792305274">Chrome pode comprobar os teus contrasinais cando inicies sesión coa túa Conta de Google.</translation>
 <translation id="1493827051843127077">Define Chrome como predeterminado para sincronizar as pestanas, os contrasinais e a información de pago con todos os teus dispositivos</translation>
 <translation id="1504372625950710826">Chrome non puido buscar actualizacións. Verifica a conexión a Internet.</translation>
@@ -45,6 +46,7 @@
 <translation id="3988789688219830639">Google Chrome non ten acceso ás túas fotos nin aos teus vídeos. Activa o acceso en Configuración de iOS &gt; Privacidade &gt; Fotos.</translation>
 <translation id="4099578267706723511">Axúdanos a mellorar Chrome enviando estatísticas de uso e informes de erros a Google.</translation>
 <translation id="417201473131094001">Non compatible en Chrome Canary</translation>
+<translation id="4214277427269650960">Inicia sesión neste sitio e en Chrome. Podes activar a sincronización máis tarde.</translation>
 <translation id="424864128008805179">Queres pechar sesión en Chrome?</translation>
 <translation id="4249068189593983585">Consello sobre Chrome: Para ver máis opcións relacionadas coas pestanas, mantén premido o botón Mostrar pestanas. Atoparalo na barra de ferramentas, situada na parte inferior ou superior da pantalla.</translation>
 <translation id="4523886039239821078">Algúns complementos fan que Chrome falle. Desinstala:</translation>
@@ -59,6 +61,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Non tes conexión. Chrome non puido buscar actualizacións</translation>
 <translation id="5716154293141027663">Abre Chrome cada vez que toques ligazóns noutras aplicacións</translation>
+<translation id="572883588166315317">A túa organización esixe que inicies para usar Chrome. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" />.</translation>
 <translation id="5854621639439811139">Consello sobre Chrome: Agora algúns botóns, como Atrás, Adiante e Buscar, están na parte inferior da pantalla.</translation>
 <translation id="5876773482963502140">Se permites que Chrome saiba cal é a túa localización, este enviaralla aos sitios aos que lles concedas a autorización pertinente. Os sitios poderán preguntarche pola túa localización se teñen información local que mostrarche (por exemplo, noticias ou tendas próximas).</translation>
 <translation id="6054613632208573261">Utiliza Chrome de forma predeterminada</translation>

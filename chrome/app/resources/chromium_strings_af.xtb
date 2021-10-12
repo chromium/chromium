@@ -43,7 +43,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2560420686485554789">Chromium het bergingtoegang nodig om lêers af te laai</translation>
 <translation id="2572494885440352020">Chromium-helper</translation>
 <translation id="2577788541081224677">Meld aan sodat jy sinkronisering kan aanskakel om op al jou toestelle toegang tot jou Chromium-goed te kry.</translation>
-<translation id="2580426763510374355">Installeer Chromium-bedryfstelsel</translation>
 <translation id="2583187216237139145">Enige Chromium-data wat tydens die gebruik van hierdie profiel gegenereer word (soos die skepping van boekmerke, geskiedenis, wagwoorde, en ander instellings) kan deur die werkprofieladministrateur verwyder word. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium-bedryfstelsel moet herbegin word om die opdatering toe te pas.</translation>
 <translation id="2648074677641340862">'n Bedryfstelselfout het voorgekom met installering. Laai Chromium asseblief weer af.</translation>
@@ -56,8 +55,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2847479871509788944">Verwyder uit Chromium …</translation>
 <translation id="2885378588091291677">Taakbestuurder</translation>
 <translation id="2910007522516064972">Meer oor Chromium</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Een laaste herinnering: Installasie <ph name="BEGIN_BOLD" />sal jou hele hardeskyf uitvee<ph name="END_BOLD" />. Maak asseblief seker dat alle data wat vir jou belangrik is, gerugsteun is.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Installasie kan nie gekanselleer word nadat dit begin het nie.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium is op datum</translation>
 <translation id="2983934633046890458">Chromium probeer tans wagwoorde wysig.</translation>
 <translation id="3032706164202344641">Chromium kan nie jou wagwoorde nagaan nie. Probeer later weer.</translation>
@@ -81,7 +78,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3350761136195634146">'n Chromium-profiel met hierdie rekening bestaan reeds</translation>
 <translation id="3406848076815591792">Skakel oor na bestaande Chromium-profiel?</translation>
 <translation id="3430503420100763906">Met Chromium-profiele kan jy al jou Chromium-goed skei. Skep profiele vir vriende en familielede, of verdeel tussen werk en pret.</translation>
-<translation id="3433271666494956603">Tans besig om Chromium-bedryfstelsel te installeer</translation>
 <translation id="347328004046849135">Chromium sal jou in kennis stel wanneer jy met 'n gekompromitteerde wagwoord aanmeld</translation>
 <translation id="3474745554856756813">Dit sal <ph name="ITEMS_COUNT" /> items op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chromium aan om jou data later op te haal.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> kan tussen Chromium-profiele wissel</translation>
@@ -109,7 +105,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4264410486868823224"><ph name="MANAGER" /> vereis dat jy die volgende diensbepalings lees en aanvaar voor jy hierdie toestel gebruik. Hierdie bepalings verander, beperk of brei nie die Chromium-bedryfstelselbepalings uit nie.</translation>
 <translation id="4271805377592243930">Kry hulp met Chromium</translation>
 <translation id="4285930937574705105">Kon weens 'n ongespesifiseerde fout nie installeer nie. As Chromium tans loop, maak dit asseblief toe en probeer weer.</translation>
-<translation id="429583012151745428">Besig om te installeer. Moenie die toestel afskakel nie. Dit behoort nie langer as twintig minute te neem om te installeer nie. Die masjien sal outomaties ná installasie afskakel.</translation>
 <translation id="4407044323746248786">Verlaat Chromium in elk geval?</translation>
 <translation id="4415566066719264597">Laat Chromium in die agtergrond loop</translation>
 <translation id="4423735387467980091">Pasmaak en beheer Chromium</translation>
@@ -203,7 +198,6 @@ Sommige kenmerke sal dalk nie beskikbaar wees nie. Spesifiseer 'n ander profielg
 <translation id="6734291798041940871">Chromium is reeds vir alle gebruikers op jou rekenaar geïnstalleer.</translation>
 <translation id="673636774878526923">Meld aan en skakel dan sinkronisering aan om op al jou toestelle toegang tot jou Chromium-goed te kry.</translation>
 <translation id="6774082503108938489">Jou ouer het "Toestemmings vir werwe, programme en uitbreidings" vir Chromium afgeskakel. Hierdie <ph name="EXTENSION_TYPE_PARAMETER" /> mag nie geaktiveer word nie.</translation>
-<translation id="6827182711503025204">As jy Chromium-bedryfstelsel installeer, sal alle data op jou toestel vervang word.</translation>
 <translation id="6847869444787758381">Chromium sal jou laat weet as jou wagwoorde gekompromitteer is</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (na Chromium gekopieer)</translation>

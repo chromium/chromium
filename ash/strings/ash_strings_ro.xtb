@@ -23,6 +23,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1104621072296271835">Dispozitivele funcționează și mai bine împreună</translation>
 <translation id="1119348796022671382">Modul de culoare cu temă folosește culori extrase din imaginea de fundal pentru a colora ușor interfața.</translation>
 <translation id="112308213915226829">Ascundeți automat raftul</translation>
+<translation id="1142002900084379065">Fotografii recente</translation>
 <translation id="1148499908455722006">Deschide fereastra de dialog cu informații pentru <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1153356358378277386">Dispozitive asociate</translation>
@@ -179,6 +180,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2298170939937364391">Lupa de ecran complet este activată. Apasă din nou pe Ctrl + tasta de căutare + M pentru a o dezactiva.</translation>
 <translation id="2302092602801625023">Acest cont este gestionat de Family Link</translation>
 <translation id="2303600792989757991">Activați/Dezactivați prezentarea ferestrei</translation>
+<translation id="2318576281648121272">Astăzi, la <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Înapoi cu o literă</translation>
 <translation id="2339073806695260576">Atinge butonul creion de pe raft ca să creezi note și capturi de ecran, să folosești indicatorul laser sau lupa.</translation>
 <translation id="2341729377289034582">Blocată pe verticală</translation>
@@ -200,6 +202,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2435457462613246316">Afișați parola</translation>
 <translation id="24452542372838207">Extinde notificarea</translation>
 <translation id="2450205753526923158">Modul Captură de ecran</translation>
+<translation id="2456008742792828469">Calendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Confirmă rezoluția</translation>
 <translation id="2475982808118771221">A apărut o eroare</translation>
 <translation id="2482878487686419369">Notificări</translation>
@@ -278,6 +281,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3100274880412651815">Închide modul de capturare</translation>
 <translation id="3105917916468784889">Realizează o captură de ecran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Elimină sugestia</translation>
 <translation id="3126069444801937830">Reporniți pentru a actualiza</translation>
 <translation id="3139942575505304791">Desktop 1</translation>
 <translation id="315116470104423982">Date mobile</translation>
@@ -317,6 +321,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3413817803639110246">Încă nu este nimic de văzut</translation>
 <translation id="3428447136709161042">Deconectează-te de la <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Glisează dinspre dreapta pentru a reveni</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Editează mementoul</translation>
 <translation id="3435967511775410570">Amprentă recunoscută</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4642092649622328492">Realizează o captură de ecran parțială</translation>
 <translation id="4659419629803378708">ChromeVox este activat</translation>
 <translation id="4665114317261903604">Comută Nu deranja. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Se descarcă <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Deblochează dispozitivul cu codul părintelui</translation>
 <translation id="4702647871202761252">Ecranul de confidențialitate este dezactivat</translation>
 <translation id="4706121060329443414">Se va încerca descărcarea mai târziu. Momentan, fișierele de redare în scris a vorbirii vor fi trimise la Google pentru procesare.</translation>
@@ -640,6 +646,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5744083938413354016">Tragere prin atingere</translation>
 <translation id="5745612484876805746">Lumina de noapte se activează automat la apus</translation>
 <translation id="5750765938512549687">Bluetooth este dezactivat</translation>
+<translation id="576341972084747908">Se descarcă fișierul periculos <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Lumina de noapte este activată.</translation>
 <translation id="5769373120130404283">Ecran de confidențialitate</translation>
 <translation id="5777841717266010279">Oprești permiterea accesului la ecran?</translation>
@@ -781,6 +788,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6852052252232534364">Dă clic pentru activare</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Încă o cifră}few{Încă # cifre}other{Încă # de cifre}}</translation>
+<translation id="6867938213751067702">Descărcarea a fost întreruptă pentru <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Comanda rapidă a fost dezactivată</translation>
 <translation id="6886172995547742638">Dispozitivul <ph name="DEVICE_TYPE" /> poate avea o performanță mai slabă. Folosește un adaptor de curent USB-C certificat de minimum <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Apasă tasta săgeată în jos pentru a comuta între ferestre</translation>

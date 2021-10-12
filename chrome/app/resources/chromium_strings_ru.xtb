@@ -41,7 +41,6 @@
 <translation id="2560420686485554789">Для скачивания файлов браузеру Chromium требуется доступ к хранилищу.</translation>
 <translation id="2572494885440352020">Помощник по Chromium</translation>
 <translation id="2577788541081224677">Чтобы получить доступ к данным в Chromium на всех устройствах, войдите в аккаунт и включите синхронизацию.</translation>
-<translation id="2580426763510374355">Установить Chromium OS</translation>
 <translation id="2583187216237139145">Администратор рабочего профиля может удалять любые данные, сохраненные в браузере Chromium при использовании этого профиля (например, добавленные закладки, историю, пароли и настройки). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Перезагрузите Chromium OS, чтобы установить обновление.</translation>
 <translation id="2648074677641340862">В процессе установки произошла ошибка в операционной системе. Скачайте Chromium ещё раз.</translation>
@@ -54,8 +53,6 @@
 <translation id="2847479871509788944">Удалить из Chromium</translation>
 <translation id="2885378588091291677">Диспетчер задач</translation>
 <translation id="2910007522516064972">О &amp;Chromium</translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Ещё раз обращаем ваше внимание на то, что установка приведет к <ph name="BEGIN_BOLD" />удалению всей информации с жесткого диска<ph name="END_BOLD" />. Убедитесь, что вы сохранили резервные копии нужных данных.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Установку нельзя будет отменить.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Вы используете последнюю версию Chromium</translation>
 <translation id="2983934633046890458">Chromium пытается изменить пароли</translation>
 <translation id="3032706164202344641">Не удается запустить проверку паролей в Chromium. Повторите попытку позже.</translation>
@@ -77,7 +74,6 @@
 <translation id="3350761136195634146">Профиль Chromium для этого аккаунта уже существует.</translation>
 <translation id="3406848076815591792">Переключиться на существующий профиль Chromium?</translation>
 <translation id="3430503420100763906">Профили Chromium нужны для раздельного использования браузера, например разными людьми или в разных целях.</translation>
-<translation id="3433271666494956603">Выполняется установка Chromium OS</translation>
 <translation id="347328004046849135">Вы получите уведомление от Chromium, если войдете в аккаунт с паролем, который был раскрыт.</translation>
 <translation id="3474745554856756813">С устройства будут удалены объекты (<ph name="ITEMS_COUNT" />). Чтобы восстановить данные позже, войдите в Chromium как <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Переключиться на другой профиль Chromium можно с помощью сочетания клавиш <ph name="SHORTCUT" /></translation>
@@ -105,7 +101,6 @@
 <translation id="4264410486868823224">Согласно действующим правилам (источник правил: <ph name="MANAGER" />), до начала работы с устройством необходимо ознакомиться с приведенными ниже Условиями использования и принять их. Они не дополняют, не заменяют и не ограничивают Условия использования Chromium OS.</translation>
 <translation id="4271805377592243930">Справка Chromium</translation>
 <translation id="4285930937574705105">Установка не удалась из-за неизвестной ошибки. Если Chromium продолжает работать, закройте его и повторите попытку.</translation>
-<translation id="429583012151745428">Выполняется установка. Не отключайте устройство. Процедура закончится через двадцать минут или раньше. После завершения устройство автоматически выключится.</translation>
 <translation id="4407044323746248786">Закрыть Chromium?</translation>
 <translation id="4415566066719264597">Разрешить Chromium работать в фоновом режиме</translation>
 <translation id="4423735387467980091">Настройка и управление Chromium</translation>
@@ -199,7 +194,6 @@
 <translation id="6734291798041940871">Chromium уже установлен для всех пользователей вашего компьютера</translation>
 <translation id="673636774878526923">Чтобы получить доступ к данным в Chromium на всех своих устройствах, выполните вход и включите синхронизацию.</translation>
 <translation id="6774082503108938489">Родители отключили в Chromium параметр "Разрешения для сайтов, приложений и расширений". Включать это <ph name="EXTENSION_TYPE_PARAMETER" /> запрещено.</translation>
-<translation id="6827182711503025204">При установке Chromium OS все данные на устройстве будут перезаписаны.</translation>
 <translation id="6847869444787758381">Chromium сообщит вам, если возникнет проблема с безопасностью ваших паролей.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (скопирована в Chromium)</translation>

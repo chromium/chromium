@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Întreabă-mă când un site dorește să descopere dispozitive Bluetooth din apropiere (recomandat)</translation>
 <translation id="2315043854645842844">Selectarea certificatelor pe partea de client nu este acceptată de sistemul de operare.</translation>
 <translation id="2359808026110333948">Continuă</translation>
+<translation id="2379925928934107488">Aplică tema întunecată pe site-uri când Chrome folosește tema întunecată, dacă este posibil</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt permise}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt permise}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt permise}}</translation>
 <translation id="2434158240863470628">Descărcare finalizată <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Accesul la locație este dezactivat și pentru acest dispozitiv. Activează-l în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Afișare extinsă – dă clic pentru a restrânge.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
+<translation id="2597457036804169544">Nu aplica tema întunecată pe site-uri</translation>
 <translation id="2621115761605608342">Permite JavaScript pentru un anumit site.</translation>
 <translation id="2653659639078652383">Trimite</translation>
 <translation id="2677748264148917807">Ieși</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Dezactivează sunetul pentru site-urile care îl redau</translation>
 <translation id="3744111561329211289">Sincronizare în fundal</translation>
 <translation id="3763247130972274048">Atinge de două ori videoclipul spre stânga sau spre dreapta pentru a derula cu 10 secunde</translation>
+<translation id="3797520601150691162">Nu aplica tema întunecată pentru un anumit site</translation>
 <translation id="381841723434055211">Numere de telefon</translation>
 <translation id="3835233591525155343">Folosirea dispozitivului</translation>
 <translation id="385051799172605136">Înapoi</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">Site-urile nu îți pot solicita să îți trimită notificări</translation>
 <translation id="5516455585884385570">Deschide setările pentru notificări</translation>
 <translation id="5527111080432883924">Întreabă-mă înainte de a permite site-urilor să citească textul și imaginile din clipboard (recomandat)</translation>
+<translation id="5553374991681107062">Cele mai recente</translation>
 <translation id="5556459405103347317">Reîncarcă</translation>
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
 <translation id="5649053991847567735">Descărcări automate</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">De obicei blochezi notificările. Ca să le permiți, atinge Detalii.</translation>
 <translation id="7423098979219808738">Mai întâi întreabă</translation>
 <translation id="7423538860840206698">Citirea clipboardului este blocată</translation>
+<translation id="7425915948813553151">Tema întunecată pentru site-uri</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Un site folosește microfonul</translation>
 <translation id="7561196759112975576">Întotdeauna</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">Sigur dorești să ștergi toate datele locale, inclusiv cookie-urile pentru acest site și să îi resetezi permisiunile?</translation>
 <translation id="8007176423574883786">Dezactivată pentru acest dispozitiv</translation>
 <translation id="802154636333426148">Descărcarea nu a reușit</translation>
+<translation id="8042586301629853791">Sortează după:</translation>
 <translation id="8067883171444229417">Redă videoclipul</translation>
 <translation id="8068648041423924542">Certificatul nu poate fi selectat.</translation>
 <translation id="8087000398470557479">Acest conținut provine de pe <ph name="DOMAIN_NAME" />, oferit de Google.</translation>

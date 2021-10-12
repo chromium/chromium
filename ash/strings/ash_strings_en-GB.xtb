@@ -23,6 +23,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1104621072296271835">Your devices work even better together</translation>
 <translation id="1119348796022671382">The themed colour mode uses colours extracted from your wallpaper to lightly colourise the interface.</translation>
 <translation id="112308213915226829">Autohide shelf</translation>
+<translation id="1142002900084379065">Recent photos</translation>
 <translation id="1148499908455722006">Open info dialogue for <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1153356358378277386">Paired devices</translation>
@@ -179,6 +180,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2298170939937364391">Full-screen Magnifier enabled. Press Ctrl+Search+M again to toggle it off.</translation>
 <translation id="2302092602801625023">This account is managed by Family Link</translation>
 <translation id="2303600792989757991">Toggle window overview</translation>
+<translation id="2318576281648121272">Today <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Back by letter</translation>
 <translation id="2339073806695260576">Tap the stylus button on the shelf to take a note, screenshot, use the laser pointer or magnifying glass.</translation>
 <translation id="2341729377289034582">Locked to vertical</translation>
@@ -200,6 +202,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2435457462613246316">Show password</translation>
 <translation id="24452542372838207">Expand notification</translation>
 <translation id="2450205753526923158">Screenshot mode</translation>
+<translation id="2456008742792828469">Calendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Confirm resolution</translation>
 <translation id="2475982808118771221">An error occurred</translation>
 <translation id="2482878487686419369">Notifications</translation>
@@ -278,6 +281,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3100274880412651815">Dismiss capture mode</translation>
 <translation id="3105917916468784889">Take screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Remove suggestion</translation>
 <translation id="3126069444801937830">Restart to update</translation>
 <translation id="3139942575505304791">Desk 1</translation>
 <translation id="315116470104423982">Mobile data</translation>
@@ -317,6 +321,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3413817803639110246">Nothing to see just yet</translation>
 <translation id="3428447136709161042">Disconnect from <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Swipe from the right to go back</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Edit reminder</translation>
 <translation id="3435967511775410570">Fingerprint recognised</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4642092649622328492">Take partial screenshot</translation>
 <translation id="4659419629803378708">ChromeVox enabled</translation>
 <translation id="4665114317261903604">Toggle Do Not Disturb. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Downloading <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Unlock device with parent code</translation>
 <translation id="4702647871202761252">Privacy screen is off</translation>
 <translation id="4706121060329443414">Download will be attempted later. Speech will be sent to Google for processing for now.</translation>
@@ -640,6 +646,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5744083938413354016">Tap dragging</translation>
 <translation id="5745612484876805746">Night Light turns on automatically at sunset</translation>
 <translation id="5750765938512549687">Bluetooth is off</translation>
+<translation id="576341972084747908">Download dangerous <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Night Light is on.</translation>
 <translation id="5769373120130404283">Privacy screen</translation>
 <translation id="5777841717266010279">Stop screen sharing?</translation>
@@ -781,6 +788,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6852052252232534364">Click to activate</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{One digit remaining}other{# digits remaining}}</translation>
+<translation id="6867938213751067702">Download paused <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Shortcut turned off</translation>
 <translation id="6886172995547742638">Your <ph name="DEVICE_TYPE" /> may experience lower performance. Use a certified <ph name="PREFERRED_MINIMUM_POWER" />W or higher USB-C power adaptor.</translation>
 <translation id="688631446150864480">Press the Down arrow key to switch windows</translation>

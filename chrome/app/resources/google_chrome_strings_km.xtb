@@ -88,8 +88,6 @@
 <translation id="2926676257163822632">ពាក្យសម្ងាត់ខ្សោយ​មានភាពងាយស្រួលក្នុងការ​ទាយដឹង​។ អនុញ្ញាតឱ្យ Chrome <ph name="BEGIN_LINK" />បង្កើត និងចងចាំពាក្យសម្ងាត់ខ្លាំងសម្រាប់អ្នក<ph name="END_LINK" />។</translation>
 <translation id="2926952073016206995">Chrome ត្រូវការ​ការអនុញ្ញាត​កាមេរ៉ា​សម្រាប់​គេហទំព័រនេះ</translation>
 <translation id="2929907241665500097">Chrome មិន​បានដំឡើងកំណែទេ មានអ្វីមួយខុសប្រក្រតី។ <ph name="BEGIN_LINK" />សូមដោះស្រាយបញ្ហា​នៃការដំឡើងកំណែ Chrome និងការដំឡើងកំណែដែលមិនបានសម្រេចផ្សេងៗ។<ph name="END_LINK" /></translation>
-<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />ការរំលឹកចុងក្រោយ៖ ការដំឡើង<ph name="BEGIN_BOLD" />នឹងលុបថាស​រឹងរបស់អ្នកទាំងស្រុង<ph name="END_BOLD" />។ សូម​ប្រាកដថា អ្នកបានបម្រុងទុកទិន្នន័យដែលចាំបាច់សម្រាប់អ្នក។<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />នៅពេលការដំឡើងចាប់ផ្ដើម អ្នកមិនអាចបោះបង់បានទេ។<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ការចូលបណ្ដាញ - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome នៅក្នុងរបៀបផ្ទៃខាងក្រោយ។</translation>
 <translation id="3059710691562604940">បានបិទមុខងាររុករក​ដោយសុវត្ថិភាព​។ Chrome ណែនាំឱ្យបើក​មុខងារនេះ។</translation>
@@ -137,7 +135,6 @@
 <translation id="4251615635259297716">ភ្ជាប់ទិន្នន័យ Chrome របស់អ្នកទៅគណនីនេះទេ?</translation>
 <translation id="4281844954008187215">លក្ខខណ្ឌសេវាកម្ម</translation>
 <translation id="4293420128516039005">ចូលគណនីដើម្បីធ្វើ​សមកាលកម្ម និង​កំណត់ Chrome ​ឱ្យ​ស្រប​នឹង​អ្នកនៅលើ​ឧបករណ៍នានា​</translation>
-<translation id="429583012151745428">ការដំឡើង​កំពុងដំណើរការ។ សូមកុំបិទឧបករណ៍។ ការដំឡើងគួរតែ​ចំណាយពេលមិនលើសពី​ម្ភៃនាទីទេ។ ម៉ាស៊ីននឹង​បិទដោយស្វ័យប្រវត្តិ បន្ទាប់ពីដំឡើងរួច។</translation>
 <translation id="4325083532956419387">កំណែ Chrome OS</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -183,7 +180,6 @@
 <translation id="5430073640787465221">៝ឯកសារចំណូលចិត្តរបស់អ្នកមានបញ្ហា ឬគ្មានសុពលភាព។
 
 Google Chrome មិនអាចសង្គ្រោះការកំណត់របស់អ្នកទេ។</translation>
-<translation id="5486618155264784386">ដំឡើង Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome កំពុងព្យាយាមបង្ហាញពាក្យសម្ងាត់។</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">ប្រសិនបើ​ការកំណត់​មិនបង្ហាញនៅលើទំព័រនេះទេ សូមមើលនៅក្នុងការកំណត់កម្មវិធីរុករកតាមអ៊ីនធឺណិត <ph name="LINK_BEGIN" />
@@ -238,7 +234,6 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="7155997830309522122">ប្រសិនបើដូច្នេះមែន សូមកែ​ពាក្យសម្ងាត់​ដែលអ្នកបានរក្សាទុក​នៅក្នុង Chrome ដើម្បីឱ្យ​ពាក្យសម្ងាត់​នោះត្រូវគ្នា​ជាមួយពាក្យសម្ងាត់ថ្មី​របស់អ្នក។</translation>
 <translation id="7161904924553537242">ស្វាគមន៍មកកាន់ Chrome</translation>
 <translation id="7242029209006116544">អ្នកកំពុងចុះហត្ថលេខាជាមួយគណនីដែលបានគ្រប់គ្រង ហើយផ្តល់ឲ្យអ្នកគ្រប់គ្រងត្រួតត្រាលើទម្រង់ Google Chrome របស់អ្នក។ ទិន្នន័យ Chrome របស់អ្នក ដូចជាកម្មវិធី ចំណាំ ប្រវត្តិ ពាក្យសម្ងាត់ និងការកំណត់ផ្សេងទៀតជាប់ជាអចិន្ត្រៃយ៍ជាមួយ <ph name="USER_NAME" />។ អ្នកនិងអាចលុបទិន្នន័យនេះតាមរយៈ Google Account Dashboard ប៉ុន្តែអ្នកមិនអាចភ្ជាប់ទិន្នន័យនេះជាមួយគណនីដ៏ទៃទេ។ អ្នកអាចបង្កើតទម្រង់ថ្មីជាជម្រើសដើម្បីរក្សាទិន្នន័យ Chrome ដែលមានស្រាប់របស់អ្នកដាច់ដោយឡែក។ <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">ការដំឡើង Chrome OS កំពុងដំណើរការ</translation>
 <translation id="7295052994004373688">ភាសានេះ​ត្រូវបាន​ប្រើ ដើម្បី​បង្ហាញ Google Chrome UI</translation>
 <translation id="7296210096911315575">ព័ត៌មាន​សុវត្ថិភាព និងការប្រើប្រាស់សំខាន់</translation>
 <translation id="7308322188646931570">Chrome ត្រូវការ​សិទ្ធិចូលប្រើ​ទំហំផ្ទុក​ដើម្បី​ទាញយក​ឯកសារ</translation>

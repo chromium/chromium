@@ -23,6 +23,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1104621072296271835">Qurilmalaringiz birgalikda yaxshiroq ishlaydi</translation>
 <translation id="1119348796022671382">Mavzuli ranglar rejimida interfeys fonga mos ranglarda biroz bezatiladi.</translation>
 <translation id="112308213915226829">Javonni avtomatik yashirish</translation>
+<translation id="1142002900084379065">Yaqinda olingan suratlar</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> axborot oynasini ochish</translation>
 <translation id="1150989369772528668">Taqvim</translation>
 <translation id="1153356358378277386">Ulangan qurilmalar</translation>
@@ -179,6 +180,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2298170939937364391">Butun ekran rejimidagi lupa yoniq. Uni olib tashlash uchun Ctrl+Qidiruv+M tugmalarini bosing.</translation>
 <translation id="2302092602801625023">Ushbu hisob Family Link orqali boshqariladi</translation>
 <translation id="2303600792989757991">Ko‘rish rejimiga almashtirish</translation>
+<translation id="2318576281648121272">Bugun <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Bitta harf orqaga</translation>
 <translation id="2339073806695260576">Eslatma va skrinshotlar olish hamda assistent, lazerli kursor yoki lupadan foydalanish uchun javondagi stilus tugmasini bosing.</translation>
 <translation id="2341729377289034582">Vertikal holatda qulflangan</translation>
@@ -200,6 +202,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2435457462613246316">Parolni ko‘rsatish</translation>
 <translation id="24452542372838207">Bildirishnomani yoyish</translation>
 <translation id="2450205753526923158">Skrinshot rejimi</translation>
+<translation id="2456008742792828469">Taqvim, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Ekran hajmini tasdiqlash</translation>
 <translation id="2475982808118771221">Xatolik yuz berdi</translation>
 <translation id="2482878487686419369">Bildirishnomalar</translation>
@@ -278,6 +281,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3100274880412651815">Tasvirga olish rejimini yopish</translation>
 <translation id="3105917916468784889">Skrinshot olish</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Taklifni olib tashlash</translation>
 <translation id="3126069444801937830">Yangilash uchun qayta ishga tushiring</translation>
 <translation id="3139942575505304791">Desk 1</translation>
 <translation id="315116470104423982">Mobil internet</translation>
@@ -317,6 +321,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3413817803639110246">Hozircha hech narsa yo‘q</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> aloqasini uzish</translation>
 <translation id="3430396595145920809">Orqaga qaytish uchun oʻngdan chapga suring</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Eslatmani tahrirlash</translation>
 <translation id="3435967511775410570">Barmoq izi aniqlandi</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
@@ -503,6 +508,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4642092649622328492">Qisman skrinshot olish</translation>
 <translation id="4659419629803378708">ChromeVox yoqildi</translation>
 <translation id="4665114317261903604">“Bezovta qilinmasin” tugmasi. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081"><ph name="FILENAME" /> yuklab olinmoqda</translation>
 <translation id="4696813013609194136">Ota-ona kodi bilan qurilmani qulfdan chiqarish</translation>
 <translation id="4702647871202761252">Maxfiylik ekrani yoniq emas</translation>
 <translation id="4706121060329443414">Keyinroq yuklab olinadi. Hozir nutq qayta ishlanishi uchun Googlega yuboriladi.</translation>
@@ -640,6 +646,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5744083938413354016">Teginib tortish</translation>
 <translation id="5745612484876805746">Tungi rejim quyosh botishi bilan avtomatik yoqiladi</translation>
 <translation id="5750765938512549687">Bluetooth yoqilmagan</translation>
+<translation id="576341972084747908">Xavfli <ph name="FILENAME" /> faylini yuklab olish</translation>
 <translation id="576453121877257266">Tungi rejim yoniq.</translation>
 <translation id="5769373120130404283">Maxfiylik ekrani</translation>
 <translation id="5777841717266010279">Ekrandan foydalanish ruxsati to‘xtatilsinmi?</translation>
@@ -781,6 +788,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6852052252232534364">Faollashtirish</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> soniya</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bitta raqam kiritilmadi}other{# ta raqam kiritilmadi}}</translation>
+<translation id="6867938213751067702">Yuklab olish pauza qilindi: <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Yorliq yoqilmagan</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> ishlashi sekinlashishi mumkin. <ph name="PREFERRED_MINIMUM_POWER" />W sertifikatiga ega yoki kuchliroq USB-C quvvat adapteridan foydalaning.</translation>
 <translation id="688631446150864480">Oynalarni almashtirish uchun pastga strelkani bosing</translation>

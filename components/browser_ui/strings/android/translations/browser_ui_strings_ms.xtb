@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Tanya apabila tapak mahu mencari peranti Bluetooth berdekatan (disyorkan)</translation>
 <translation id="2315043854645842844">Pemilihan sijil pihak pelanggan tidak disokong oleh sistem pengendalian ini.</translation>
 <translation id="2359808026110333948">Teruskan</translation>
+<translation id="2379925928934107488">Gunakan tema gelap pada laman apabila Chrome menggunakan tema gelap, jika boleh</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi dibenarkan}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi dibenarkan}}</translation>
 <translation id="2434158240863470628">Muat turun selesai: <ph name="SEPARATOR" /><ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Akses lokasi turut dimatikan untuk peranti ini. Hidupkannya dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Dikembangkan - klik untuk meruntuhkan.</translation>
 <translation id="2586657967955657006">Papan Keratan</translation>
+<translation id="2597457036804169544">Jangan gunakan tema gelap pada laman</translation>
 <translation id="2621115761605608342">Benarkan JavaScript untuk tapak tertentu.</translation>
 <translation id="2653659639078652383">Serah</translation>
 <translation id="2677748264148917807">Tinggalkan</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Redam tapak yang memainkan bunyi</translation>
 <translation id="3744111561329211289">Penyegerakan latar belakang</translation>
 <translation id="3763247130972274048">Dwiketik video di sebelah kiri atau kanan untuk melangkau 10s</translation>
+<translation id="3797520601150691162">Jangan gunakan tema gelap untuk laman tertentu</translation>
 <translation id="381841723434055211">Nombor telefon</translation>
 <translation id="3835233591525155343">Penggunaan peranti anda</translation>
 <translation id="385051799172605136">Kembali</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">Tapak tidak boleh membuat permintaan untuk menghantar pemberitahuan</translation>
 <translation id="5516455585884385570">Buka tetapan pemberitahuan</translation>
 <translation id="5527111080432883924">Tanya sebelum membenarkan tapak membaca teks dan imej daripada papan keratan (disyorkan)</translation>
+<translation id="5553374991681107062">Terbaharu</translation>
 <translation id="5556459405103347317">Muat Semula</translation>
 <translation id="5596627076506792578">Lagi pilihan</translation>
 <translation id="5649053991847567735">Muat turun automatik</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">Anda biasanya menyekat pemberitahuan. Untuk membenarkan pemberitahuan, ketik Butiran.</translation>
 <translation id="7423098979219808738">Tanya dahulu</translation>
 <translation id="7423538860840206698">Disekat daripada membaca papan keratan</translation>
+<translation id="7425915948813553151">Tema gelap untuk laman</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Suatu tapak sedang menggunakan mikrofon anda</translation>
 <translation id="7561196759112975576">Sentiasa</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">Anda pasti ingin mengosongkan semua data setempat, termasuk kuki dan menetapkan semula semua kebenaran untuk tapak web ini?</translation>
 <translation id="8007176423574883786">Dimatikan untuk peranti ini</translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
+<translation id="8042586301629853791">Isih mengikut:</translation>
 <translation id="8067883171444229417">Mainkan video</translation>
 <translation id="8068648041423924542">Tidak dapat memilih sijil.</translation>
 <translation id="8087000398470557479">Kandungan ini adalah daripada <ph name="DOMAIN_NAME" />, disampaikan oleh Google.</translation>

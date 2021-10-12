@@ -180,6 +180,7 @@
 <translation id="2139186145475833000">ہوم اسکرین میں شامل کریں</translation>
 <translation id="2141396931810938595">آپ کے استعمال کی بنیاد پر</translation>
 <translation id="214888715418183969">‏منتخب کریں کہ Chrome کے ساتھ کون سی معلومات کا اشتراک کرنے کے لیے آپ مطمئن ہیں۔ آپ کی اشتراک کی جانے والی میٹرکس کا استعمال Chrome کی خصوصیات، کارکردگی اور استحکام کو بہتر بنانے کے لئے کیا جائے گا۔</translation>
+<translation id="2149973817440762519">بک مارک میں ترمیم کریں</translation>
 <translation id="2154484045852737596">کارڈ میں ترمیم کریں</translation>
 <translation id="2154710561487035718">‏URL کاپی کریں</translation>
 <translation id="2156074688469523661">باقی سائٹس (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -496,7 +497,6 @@
 <translation id="4084682180776658562">بُک مارک</translation>
 <translation id="4084712963632273211">‏بذریعہ <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Google کے ذریعے ڈیلیور کردہ<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">ایپ کا ڈیٹا حذف کریں؟</translation>
-<translation id="4095189195365058471">بعد میں پڑھیں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">‏Google کو استعمال کے اعداد و شمار اور کریش رپورٹس بھیج کر Chrome کو بہتر بنانے میں مدد کریں۔</translation>
 <translation id="410351446219883937">آٹوپلے</translation>
 <translation id="4108314971463891922">پیروی کریں</translation>
@@ -641,7 +641,6 @@
 <translation id="4943872375798546930">کوئی نتائج نہیں ہیں</translation>
 <translation id="4957722034734105353">مزید جانیں…</translation>
 <translation id="4961107849584082341">اس صفحہ کا کسی بھی زبان میں ترجمہ کریں</translation>
-<translation id="4970824347203572753">آپ کے مقام پر دستیاب نہیں ہے</translation>
 <translation id="4971735654804503942">‏ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے تیز، فعال حفاظت۔ پاس ورڈز کی خلاف ورزیوں کے بارے میں آپ کو متنبہ کرتا ہے۔ براؤزنگ ڈیٹا کو Google کے پاس بھیجے جانے کی ضرورت ہوتی ہے۔</translation>
 <translation id="497421865427891073">آگے جائیں</translation>
 <translation id="4988210275050210843">فائل (<ph name="MEGABYTES" />) ڈاؤن لوڈ ہو رہی ہے۔</translation>
@@ -725,7 +724,6 @@
 <translation id="5483197086164197190">‏Chrome پر نیویگیٹ کریں</translation>
 <translation id="5487521232677179737">ڈیٹا صاف کریں</translation>
 <translation id="549025011754480756">اپنی آواز کی مدد سے تلاش کرنے کا طریقہ</translation>
-<translation id="5500777121964041360">ممکن ہے کہ آپ کے مقام پر دستیاب نہ ہو</translation>
 <translation id="5512137114520586844">یہ اکاؤنٹ <ph name="PARENT_NAME" /> کے زیر انتظام ہے۔</translation>
 <translation id="5514904542973294328">اس آلہ کے منتظم نے غیر فعال کر دیا</translation>
 <translation id="5515439363601853141">اپنا پاس ورڈ دیکھنے کیلئے غیر مقفل کریں</translation>
@@ -879,7 +877,6 @@
 <translation id="6364438453358674297">سرگزشت سے تجویز ہٹائیں؟</translation>
 <translation id="6378173571450987352">تفصیلات: استعمال کردہ ڈیٹا کی مقدار کے لحاظ سے ترتیب دیا گیا</translation>
 <translation id="6379829913050047669">‏<ph name="APP_NAME" /> Chrome میں کھلے گی۔ جاری رکھ کر آپ، <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" />، اور <ph name="BEGIN_LINK2" />Google Chrome اور Chrome OS کی اضافی سروس کی شرائط سے اتفاق کرتے ہیں<ph name="END_LINK2" />۔</translation>
-<translation id="6381421346744604172">ویب سائٹس کو تاریک کریں</translation>
 <translation id="6395288395575013217">لنک</translation>
 <translation id="6397616442223433927">نیٹ ورک کنکشن بحال ہو گیا</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> پر <ph name="ERROR_CODE" /></translation>
@@ -1210,7 +1207,6 @@
 <translation id="8218052821161047641">تیز صفحہ</translation>
 <translation id="8218622182176210845">اپنے اکاؤنٹ کا نظم کریں</translation>
 <translation id="8223642481677794647">فیڈ کارڈ مینو</translation>
-<translation id="8224471946457685718">‏Wi-Fi پر اپنے لئے مضامین ڈاؤن لوڈ کریں</translation>
 <translation id="8250920743982581267">دستاویزات</translation>
 <translation id="825412236959742607">‏یہ صفحہ بہت زیادہ میموری استعمال کرتا ہے، لہذا Chrome نے بعض مواد حذف کر دیا۔</translation>
 <translation id="8260126382462817229">دوبارہ سائن ان کرنے کی کوشش کریں</translation>

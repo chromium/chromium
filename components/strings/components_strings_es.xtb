@@ -2137,6 +2137,7 @@ Más información:
 <translation id="8041089156583427627">Enviar</translation>
 <translation id="8041940743680923270">Utilizar valor predeterminado global (Preguntar)</translation>
 <translation id="8042918947222776840">Seleccionar método de recogida</translation>
+<translation id="8052898407431791827">Copiada en el portapapeles</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" no se ha configurado correctamente. Normalmente, el problema se soluciona al desinstalar "<ph name="SOFTWARE_NAME" />". <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Se ha producido un error.</translation>
 <translation id="8067872629359326442">Acabas de introducir tu contraseña en un sitio web engañoso. Chromium puede ayudarte. Para cambiar tu contraseña y notificar a Google de que tu cuenta podría estar en peligro, haz clic en Proteger cuenta.</translation>
@@ -2333,7 +2334,6 @@ Más información:
 <translation id="8742371904523228557">El código de <ph name="ORIGIN" /> es <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">Añadir esta pestaña a marcadores</translation>
 <translation id="8751426954251315517">Vuelve a intentarlo más adelante</translation>
-<translation id="8757526089434340176">Oferta de Google Play disponible</translation>
 <translation id="8759274551635299824">La tarjeta ha caducado</translation>
 <translation id="87601671197631245">Este sitio web usa una configuración de seguridad obsoleta y puede que exponga tu información (por ejemplo, las contraseñas, los mensajes o las tarjetas de crédito) cuando se envíe a este sitio web.</translation>
 <translation id="8761567432415473239">La función de Navegación segura de Google <ph name="BEGIN_LINK" />encontró programas dañinos<ph name="END_LINK" /> recientemente en el sitio <ph name="SITE" />.</translation>

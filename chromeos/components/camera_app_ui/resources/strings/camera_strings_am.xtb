@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
+<translation id="1113173431709655881">የካሜራ ሁነታ</translation>
 <translation id="1175958423215084756">አገናኝ ተገኝቷል። <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">የማዕከለ-ሥዕላት ምስሎች</translation>
 <translation id="1300209025925956156">ሰነድዎን ይቃኙ</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">መቅረጽ ጀምር</translation>
 <translation id="2599796128805996109">የኋላ ካሜራ</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />ሰ</translation>
+<translation id="2761536921376153655">የቅኝት ዓይነት</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ተሰክቷል።</translation>
 <translation id="2968794441791257519">በካሜራው የተነሱ ፎቶዎች ወይም የተቀረጹ ቪዲዮዎች ወደ የውርዶች አቃፊው ይወሰዳሉ። በፋይሎች ውስጥ ሊደርሱባቸው ይችላሉ።
 
@@ -99,9 +101,11 @@
 <translation id="698156982839284926">3 ሰከንዶች</translation>
 <translation id="712848772518857951">እውን <ph name="COUNT" /> ንጥሎችን ማስወገድ ይፈልጋሉ?</translation>
 <translation id="7134221860976209830">10 ሰከንዶች መቁጠሪያ</translation>
+<translation id="7191890674911603392">የቀረጻ ዓይነት</translation>
 <translation id="7243947652761655814">የቪዲዮ ምስል ጥራት</translation>
 <translation id="7337660886763914220">የፋይል ሥርዓት ስህተቶች።</translation>
 <translation id="7450541714075000668">ፅሁፍ ገልብጧል</translation>
+<translation id="7476762461674917065">የGIF ቀረጻ አማራጭን አሳይ</translation>
 <translation id="7488619942230388918">የጂአይኤፍ ቪዲዮን ይቅረጹ</translation>
 <translation id="7557677699350329807">ወደ ቀጣዩ ካሜራ ቀይር</translation>
 <translation id="7607002721634913082">ለአፍታ ቆሟል</translation>

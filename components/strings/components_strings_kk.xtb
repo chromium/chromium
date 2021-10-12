@@ -2136,6 +2136,7 @@
 <translation id="8041089156583427627">Пікір жіберу</translation>
 <translation id="8041940743680923270">Ғаламдық әдепкі мәнді (Сұрау) пайдалану</translation>
 <translation id="8042918947222776840">Алып кету әдісін таңдау</translation>
+<translation id="8052898407431791827">Буферге көшірілді.</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" дұрыс конфигурацияланған. Әдетте "<ph name="SOFTWARE_NAME" />" жойылғанда, мәселе шешіледі. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Кешіріңіз, бірдеңе дұрыс болмады.</translation>
 <translation id="8067872629359326442">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chromium көмектесе алады. Құпия сөзді өзгертіп, Google-ға аккаунтқа төніп тұрған қауіп туралы хабарлау үшін "Аккаунтты қорғау" түймесін басыңыз.</translation>
@@ -2332,7 +2333,6 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> – <ph name="ORIGIN" /> сайтына арналған код</translation>
 <translation id="874918643257405732">Осы қойындыға бетбелгі қойыңыз</translation>
 <translation id="8751426954251315517">Келесі жолы қайталап көріңіз.</translation>
-<translation id="8757526089434340176">Google Pay ұсынысы қолжетімді</translation>
 <translation id="8759274551635299824">Картаның мерзімі біткен</translation>
 <translation id="87601671197631245">Бұл сайттың қауіпсіздік конфигурациясы ескірген. Бұл сайтқа жіберілетін жеке ақпаратыңыз (мысалы, құпия сөздер, хабарлар не несиелік карта нөмірлері) жария етілуі мүмкін.</translation>
 <translation id="8761567432415473239">Жақында Google Safe Browsing <ph name="SITE" /> сайтынан <ph name="BEGIN_LINK" />зиянды бағдарламаларды тапты<ph name="END_LINK" />.</translation>

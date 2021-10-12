@@ -341,6 +341,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2025186561304664664">Proksi ditetapkan kepada auto konfigurasi.</translation>
 <translation id="2025891858974379949">Kandungan tidak selamat</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Menyemak proksi dan tembok api<ph name="END_LINK" /></translation>
+<translation id="2034971124472263449">Simpan juga</translation>
 <translation id="2036983605131262583">Gulungan Alternatif</translation>
 <translation id="2042213636306070719">Dulang 7</translation>
 <translation id="204357726431741734">Log masuk untuk menggunakan kata laluan yang disimpan dalam Akaun Google anda</translation>
@@ -382,6 +383,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2154054054215849342">Penyegerakan tidak tersedia untuk domain anda</translation>
 <translation id="2154484045852737596">Edit kad</translation>
 <translation id="2161656808144014275">Teks</translation>
+<translation id="2162510787844374618">Menghubungi bank anda...</translation>
 <translation id="2164510882479075877">Semak jika terdapat kesilapan ejaan dalam <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Akses Penuh Pentadbir</translation>
 <translation id="2166378884831602661">Tapak ini tidak dapat menyediakan sambungan yang selamat</translation>
@@ -650,6 +652,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3145945101586104090">Gagal menyahkod balasan</translation>
 <translation id="3150653042067488994">Ralat pelayan sementara</translation>
 <translation id="3154506275960390542">Halaman ini mengandungi borang yang mungkin tidak diserahkan secara selamat. Data yang dihantar boleh dilihat oleh orang lain semasa dihantar atau boleh diubah suai oleh penyerang untuk mengubah data yang diterima oleh pelayan.</translation>
+<translation id="3154987252551138431">Kesilapan telah berlaku semasa menggunakan Kongsi Berdekatan</translation>
 <translation id="315504272643575312">Akaun anda diurus oleh <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Pulihkan</translation>
 <translation id="3158539265159265653">Cakera</translation>
@@ -910,6 +913,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3963721102035795474">Mod Pembaca</translation>
 <translation id="3963837677003247395">Teruskan secara manual?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Tiada}=1{Daripada 1 tapak }other{Daripada # tapak }}</translation>
+<translation id="3969052498612555048">Tidak menemukan kod anda? <ph name="BEGIN_LINK" />Dapatkan kod baharu<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Mengira...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> disekat</translation>
 <translation id="3973357910713125165">Butang Jalankan Semakan Keselamatan Chrome, tekan Enter untuk menjalankan Semakan Keselamatan dalam tetapan Chrome</translation>
@@ -1049,6 +1053,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4348834659292907206">Sambungan kepada <ph name="SITE" /> tidak selamat</translation>
 <translation id="4350629523305688469">Dulang Berbilang Fungsi</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> mahu mengimbas untuk mengesan peranti Bluetooth berdekatan. Peranti berikut telah dijumpai:</translation>
+<translation id="4351175281479794167">Masukkan kod pengesahan</translation>
 <translation id="4356973930735388585">Penyerang pada tapak ini mungkin cuba memasang atur cara berbahaya pada komputer anda yang mencuri atau memadamkan maklumat anda (sebagai contoh, foto, kata laluan, mesej dan kad kredit).</translation>
 <translation id="4358059973562876591">Templat yang anda nyatakan tidak dapat digunakan kerana terdapat ralat pada dasar DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Urus kaedah pembayaran...</translation>
@@ -1205,6 +1210,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4853901935952445031">Laman ini tidak akan dapat menggunakan API U2F selepas bulan Februari 2022. Jika anda pemilik laman ini, anda harus mengubah laman anda untuk menggunakan API Pengesahan Web.</translation>
 <translation id="4854362297993841467">Kaedah penghantaran ini tidak tersedia. Cuba kaedah lain.</translation>
 <translation id="4854853140771946034">Buat nota baharu dalam Google Keep dengan pantas</translation>
+<translation id="485902285759009870">Mengesahkan kod...</translation>
 <translation id="4876188919622883022">Paparan ringkas</translation>
 <translation id="4876305945144899064">Tiada nama pengguna</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Tiada}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -1235,6 +1241,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4955242332710481440">A5-Ekstra</translation>
 <translation id="4958444002117714549">Kembangkan senarai</translation>
 <translation id="4968522289500246572">Apl ini direka bentuk untuk peranti mudah alih dan mungkin tidak dapat diubah saiz dengan betul. Apl ini mungkin mengalami isu atau dimulakan semula.</translation>
+<translation id="4969341057194253438">Padamkan rakaman</translation>
 <translation id="4973922308112707173">Dua tebukan atas</translation>
 <translation id="4984088539114770594">Gunakan mikrofon?</translation>
 <translation id="4984339528288761049">Prc5 (Sampul Surat)</translation>
@@ -1261,6 +1268,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5040262127954254034">Privasi</translation>
 <translation id="5043480802608081735">Pautan yang Anda Salin</translation>
 <translation id="5045550434625856497">Kata laluan tidak sah</translation>
+<translation id="5056425809654826431">{NUM_FILES,plural, =1{Untuk menghantar fail ini menggunakan Kongsi Berdekatan, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}other{Untuk menghantar fail ini menggunakan Kongsi Berdekatan, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}}</translation>
 <translation id="5056549851600133418">Artikel untuk anda</translation>
 <translation id="5061227663725596739">Adakah anda maksudkan <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Sejarah pencetakan</translation>
@@ -1780,6 +1788,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6895330447102777224">Kad anda telah disahkan</translation>
 <translation id="6897140037006041989">Ejen Pengguna</translation>
 <translation id="6898699227549475383">Organisasi (O)</translation>
+<translation id="6899000063526916106">Masukkan kod <ph name="NUMBER_OF_DIGITS" /> digit</translation>
 <translation id="6907293445143367439">Benarkan <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> mahu mendapatkan kawalan penuh terhadap peranti MIDI anda</translation>
 <translation id="691024665142758461">Muat turun berbilang fail</translation>
@@ -1830,6 +1839,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7062635574500127092">Hijau kebiruan</translation>
 <translation id="706295145388601875">Tambah dan urus alamat dalam tetapan Chrome</translation>
 <translation id="7064851114919012435">Maklumat hubungan</translation>
+<translation id="7068733155164172741">Masukkan kod <ph name="OTP_LENGTH" /> digit</translation>
 <translation id="70705239631109039">Sambungan anda tidak selamat sepenuhnya</translation>
 <translation id="7075452647191940183">Permintaan terlalu besar</translation>
 <translation id="7079718277001814089">Tapak ini mengandungi perisian hasad</translation>
@@ -2025,6 +2035,7 @@ Butiran tambahan:
 <translation id="7667346355482952095">Token dasar yang dikembalikan kosong atau tidak sepadan dengan token semasa</translation>
 <translation id="7668654391829183341">Peranti tidak diketahui</translation>
 <translation id="7669271284792375604">Penyerang pada tapak ini mungkin cuba menipu dengan meminta anda memasang atur cara yang membahayakan pengalaman penyemakan imbas anda (contohnya, dengan menukar halaman utama anda atau menunjukkan iklan tambahan pada laman yang anda lawati).</translation>
+<translation id="7669907849388166732">{COUNT,plural, =1{Tindakan yang diambil dengan data yang dibenderakan sebagai sulit (1 tindakan sejak log masuk). <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" />}other{Tindakan yang diambil dengan data yang dibenderakan sebagai sulit (# tindakan sejak log masuk). <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Peti mel 6</translation>
 <translation id="7676643023259824263">Cari teks papan keratan, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Lihat dan urus sejarah penyemakan imbas anda dalam tetapan Chrome</translation>
@@ -2138,6 +2149,7 @@ Butiran tambahan:
 <translation id="8041089156583427627">Hantar Maklum Balas</translation>
 <translation id="8041940743680923270">Gunakan lalai global (Tanya)</translation>
 <translation id="8042918947222776840">Pilih Kaedah Pengambilan</translation>
+<translation id="8052898407431791827">Disalin ke papan keratan</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" tidak dikonfigurasi dengan betul. Tindakan menyahpasang "<ph name="SOFTWARE_NAME" />" biasanya dapat menyelesaikan masalah ini. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">Maaf, kesilapan telah berlaku.</translation>
 <translation id="8067872629359326442">Anda baru sahaja memasukkan kata laluan anda pada tapak yang menipu. Chromium boleh membantu. Untuk menukar kata laluan anda dan memaklumi Google bahawa akaun anda mungkin berisiko, klik Lindungi Akaun.</translation>
@@ -2207,6 +2219,7 @@ Butiran tambahan:
 <translation id="8282947398454257691">Ketahui pengecam peranti unik anda</translation>
 <translation id="8284769179630993263">Urus Penyemakan Imbas Selamat anda dan pelbagai lagi dalam tetapan Chrome</translation>
 <translation id="8286036467436129157">Log Masuk</translation>
+<translation id="8287501787477690853">Pentadbir tidak mengesyorkan anda mengambil tangkapan skrin atau rakaman kerana kandungan sulit ditangkap.</translation>
 <translation id="8288807391153049143">Tunjukkan sijil</translation>
 <translation id="8289355894181816810">Hubungi pentadbir rangkaian anda jika anda tidak pasti apa yang dimaksudkan ini.</translation>
 <translation id="8293206222192510085">Tambah Penanda Halaman</translation>
@@ -2239,6 +2252,7 @@ Butiran tambahan:
 <translation id="8364627913115013041">Tidak ditetapkan.</translation>
 <translation id="8368027906805972958">Peranti tidak diketahui atau tidak disokong (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Perkhidmatan Google Play</translation>
+<translation id="8369073279043109617">Dapatkan kod baharu</translation>
 <translation id="8371889962595521444">Sijil akar tersuai</translation>
 <translation id="8374636051559112948">Berbeza-beza</translation>
 <translation id="8380941800586852976">Berbahaya</translation>
@@ -2276,6 +2290,7 @@ Butiran tambahan:
 <translation id="8507227106804027148">Baris perintah</translation>
 <translation id="8508648098325802031">Ikon Carian</translation>
 <translation id="8511402995811232419">Urus kuki</translation>
+<translation id="8519478486928352883">Pentadbir tidak mengesyorkan anda mengambil tangkapan skrin atau rakaman kerana terdapat kandungan sulit pada skrin.</translation>
 <translation id="8522552481199248698">Chrome boleh membantu anda melindungi Akaun Google anda dan menukar kata laluan anda.</translation>
 <translation id="8530813470445476232">Kosongkan sejarah penyemakan imbas, kuki, cache dan pelbagai lagi dalam tetapan Chrome</translation>
 <translation id="8533619373899488139">Lawati &lt;strong&gt;chrome://policy&lt;/strong&gt; untuk melihat senarai URL yang disekat dan dasar lain yang dikuatkuasakan oleh pentadbir sistem anda.</translation>
@@ -2284,6 +2299,7 @@ Butiran tambahan:
 <translation id="8542014550340843547">Tiga kokot bawah</translation>
 <translation id="8543181531796978784">Anda boleh <ph name="BEGIN_ERROR_LINK" />laporkan masalah pengesanan<ph name="END_ERROR_LINK" /> atau jika anda memahami risikonya kepada keselamatan anda, <ph name="BEGIN_LINK" />lawati tapak yang tidak selamat ini<ph name="END_LINK" />.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Tetapkan semula kebenaran}other{Tetapkan semula kebenaran}}</translation>
+<translation id="8555010941760982128">Gunakan kod ini semasa semak keluar</translation>
 <translation id="8557066899867184262">CVC terletak di belakang kad anda.</translation>
 <translation id="8558485628462305855">Untuk melihat kandungan realiti tambahan, kemas kini ARCore</translation>
 <translation id="8559762987265718583">Sambungan peribadi ke <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tidak boleh diwujudkan kerana tarikh dan masa peranti anda (<ph name="DATE_AND_TIME" />) tidak betul.</translation>
@@ -2324,6 +2340,7 @@ Butiran tambahan:
 <translation id="8718314106902482036">Pembayaran belum selesai</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, cadangan carian</translation>
 <translation id="8719528812645237045">Berbilang tebukan atas</translation>
+<translation id="8723535127346307411">Masukkan Kod Pengesahan</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>
 <translation id="8726549941689275341">Saiz halaman:</translation>
 <translation id="8730621377337864115">Selesai</translation>
@@ -2335,7 +2352,6 @@ Butiran tambahan:
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> ialah kod anda untuk <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Tanda tab ini</translation>
 <translation id="8751426954251315517">Sila cuba lagi nanti</translation>
-<translation id="8757526089434340176">Tawaran Google Pay tersedia</translation>
 <translation id="8759274551635299824">Kad ini telah tamat tempoh</translation>
 <translation id="87601671197631245">Tapak ini menggunakan konfigurasi keselamatan yang sudah lapuk, yang mungkin mendedahkan maklumat anda (contohnya, kata laluan, mesej atau nombor kad kredit) apabila dihantar kepada tapak ini.</translation>
 <translation id="8761567432415473239">Penyemakan Imbas Selamat Google baru-baru ini <ph name="BEGIN_LINK" />menemui atur cara berbahaya<ph name="END_LINK" /> pada <ph name="SITE" />.</translation>
@@ -2465,6 +2481,7 @@ Butiran tambahan:
 <translation id="9191834167571392248">Tebukan bawah sebelah kiri</translation>
 <translation id="9199905725844810519">Pencetakan disekat</translation>
 <translation id="9205078245616868884">Data anda disulitkan dengan ungkapan laluan segerak anda. Masukkannya untuk memulakan penyegerakan.</translation>
+<translation id="920511547311754821">Tidak menemukan kod anda? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Gagal menambahkan artikel.</translation>
 <translation id="9213433120051936369">Sesuaikan rupa</translation>
 <translation id="9215416866750762878">Satu aplikasi menghalang Chrome daripada menyambung ke tapak ini dengan selamat</translation>
