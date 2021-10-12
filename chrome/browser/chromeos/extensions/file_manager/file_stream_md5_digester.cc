@@ -42,8 +42,7 @@ void FileStreamMd5Digester::GetMd5Digest(
 void FileStreamMd5Digester::ReadNextChunk() {
   const int result =
       reader_->Read(buffer_.get(), kMd5DigestBufferSize,
-                    base::BindOnce(&FileStreamMd5Digester::OnChunkRead,
-                                   base::Unretained(this)));
+                    base::BindOnce(&FileStreamMd5Digester::OnChunkRead, this));
   if (result != net::ERR_IO_PENDING)
     OnChunkRead(result);
 }

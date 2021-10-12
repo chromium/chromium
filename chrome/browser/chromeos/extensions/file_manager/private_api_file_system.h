@@ -348,7 +348,7 @@ class FileManagerPrivateInternalComputeChecksumFunction
   ResponseAction Run() override;
 
  private:
-  std::unique_ptr<drive::util::FileStreamMd5Digester> digester_;
+  scoped_refptr<drive::util::FileStreamMd5Digester> digester_;
 
   void RespondWith(std::string hash);
 };

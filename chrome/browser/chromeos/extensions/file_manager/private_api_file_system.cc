@@ -1093,7 +1093,7 @@ void FileManagerPrivateInternalResolveIsolatedEntriesFunction::
 
 FileManagerPrivateInternalComputeChecksumFunction::
     FileManagerPrivateInternalComputeChecksumFunction()
-    : digester_(new drive::util::FileStreamMd5Digester()) {}
+    : digester_(base::MakeRefCounted<drive::util::FileStreamMd5Digester>()) {}
 
 FileManagerPrivateInternalComputeChecksumFunction::
     ~FileManagerPrivateInternalComputeChecksumFunction() = default;
@@ -1129,8 +1129,7 @@ FileManagerPrivateInternalComputeChecksumFunction::Run() {
           &FileManagerPrivateInternalComputeChecksumFunction::RespondWith,
           this));
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&FileStreamMd5Digester::GetMd5Digest,
-                                base::Unretained(digester_.get()),
+      FROM_HERE, base::BindOnce(&FileStreamMd5Digester::GetMd5Digest, digester_,
                                 std::move(reader), std::move(result_callback)));
 
   return RespondLater();
