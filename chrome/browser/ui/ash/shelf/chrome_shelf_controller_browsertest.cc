@@ -1244,7 +1244,8 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPinnedWebApp) {
 
 // Verifies that native browser window properties are properly set when showing
 // a PWA tab.
-IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPWA) {
+// DISABLED due to flakiness (http://crbug.com/1258995).
+IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, DISABLED_AppIDForPWA) {
   // Start server and open test page.
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
