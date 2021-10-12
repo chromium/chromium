@@ -204,6 +204,8 @@ void CookieStoreManager::AddSubscriptions(
   }
 
   for (const auto& mojo_subscription : mojo_subscriptions) {
+    // TODO(crbug.com/1246549): This validation step should consider the storage
+    // key.
     if (!blink::ServiceWorkerScopeMatches(service_worker_registration->scope(),
                                           mojo_subscription->url)) {
       // Blink should have validated subscription URLs against the service

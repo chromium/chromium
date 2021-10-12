@@ -480,6 +480,7 @@ void ServiceWorkerContainerHost::AddMatchingRegistration(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(blink::ServiceWorkerScopeMatches(registration->scope(),
                                           GetUrlForScopeMatch()));
+  DCHECK(registration->key() == key());
   if (!IsEligibleForServiceWorkerController())
     return;
   size_t key = registration->scope().spec().size();
@@ -1199,7 +1200,7 @@ void ServiceWorkerContainerHost::SyncMatchingRegistrations() {
   const auto& registrations = context_->GetLiveRegistrations();
   for (const auto& key_registration : registrations) {
     ServiceWorkerRegistration* registration = key_registration.second;
-    if (!registration->is_uninstalled() &&
+    if (!registration->is_uninstalled() && registration->key() == key() &&
         blink::ServiceWorkerScopeMatches(registration->scope(),
                                          GetUrlForScopeMatch())) {
       AddMatchingRegistration(registration);

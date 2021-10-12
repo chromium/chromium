@@ -680,8 +680,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   using ServiceWorkerRegistrationMap =
       std::map<size_t, scoped_refptr<ServiceWorkerRegistration>>;
   // Contains all living registrations whose scope this client's URL starts
-  // with, used for .ready and claim(). It is empty if
-  // IsEligibleForServiceWorkerController() is false. See also
+  // with and whose keys match this client's key, used for .ready and claim().
+  // It is empty if IsEligibleForServiceWorkerController() is false. See also
   // AddMatchingRegistration().
   ServiceWorkerRegistrationMap matching_registrations_;
 

@@ -722,7 +722,8 @@ void DedicatedWorkerHost::MaybeCountWebFeature(const GURL& script_url) {
     return;
 
   if (!blink::ServiceWorkerScopeMatches(container_host->controller()->scope(),
-                                        script_url)) {
+                                        script_url) ||
+      container_host->key() != storage_key_) {
     // Count the number of dedicated workers that 1) are controlled by a service
     // worker that is inherited from a controlled document, and 2) will not be
     // controlled by that service worker after PlzDedicatedWorker is enabled.
@@ -775,7 +776,8 @@ void DedicatedWorkerHost::ContinueOnMaybeCountWebFeature(
     // one of service workers registered for the origin. The scope matched
     // service worker may be different from the one that controls the ancestor
     // frame.
-    if (blink::ServiceWorkerScopeMatches(registration->scope(), script_url))
+    if (blink::ServiceWorkerScopeMatches(registration->scope(), script_url) &&
+        registration->key() == storage_key_)
       return;
   }
 
