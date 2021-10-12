@@ -50,10 +50,12 @@ aggregate_vector_icons("chromeos_ui_vector_icons") {
     "timer.icon",
     "translate.icon",
     "window_control_back.icon",
+    "window_control_bottom_snapped.icon",
     "window_control_dezoom.icon",
     "window_control_left_snapped.icon",
     "window_control_menu.icon",
     "window_control_right_snapped.icon",
+    "window_control_top_snapped.icon",
     "window_control_zoom.icon",
   ]
 }

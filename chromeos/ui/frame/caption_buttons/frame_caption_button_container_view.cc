@@ -115,8 +115,8 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
       case views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE:
         return frame_->widget_delegate()->CanMaximize();
       // Resizable widget can be snapped.
-      case views::CAPTION_BUTTON_ICON_LEFT_SNAPPED:
-      case views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED:
+      case views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED:
+      case views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED:
         return frame_->widget_delegate()->CanResize();
       case views::CAPTION_BUTTON_ICON_CLOSE:
         return frame_->widget_delegate()->ShouldShowCloseButton();
