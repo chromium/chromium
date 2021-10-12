@@ -93,7 +93,9 @@ void CategoryUsageRanker::Start(const std::u16string& query) {
   }
 }
 
-void CategoryUsageRanker::Rank(ResultsMap& results, ProviderType provider) {
+void CategoryUsageRanker::Rank(ResultsMap& results,
+                               CategoriesMap& categories,
+                               ProviderType provider) {
   // Update each result's score to be:
   //  kCategoryScoreFactor*(category rank) + (result relevance)
   const auto it = results.find(provider);

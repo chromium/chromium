@@ -30,7 +30,9 @@ class RankerDelegate : public Ranker {
 
   // Ranker:
   void Start(const std::u16string& query) override;
-  void Rank(ResultsMap& results, ProviderType provider) override;
+  void Rank(ResultsMap& results,
+            CategoriesMap& categories,
+            ProviderType provider) override;
   void Train(const LaunchData& launch) override;
 
  private:

@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
 #include "chrome/browser/ui/app_list/search/ranking/score_normalizing_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/top_match_ranker.h"
+#include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/search_metrics_observer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/chip_ranker.h"
@@ -92,6 +93,7 @@ void SearchControllerImplNew::Start(const std::u16string& query) {
 
   last_query_ = query;
   results_.clear();
+  categories_.clear();
   for (Observer& observer : observer_list_)
     observer.OnResultsCleared();
 
@@ -162,7 +164,7 @@ void SearchControllerImplNew::SetResults(
   results_[provider_type] = std::move(results);
 
   // Update ranking of all results.
-  ranker_->Rank(results_, provider_type);
+  ranker_->Rank(results_, categories_, provider_type);
 
   // Compile a single list of results and sort by their relevance.
   std::vector<ChromeSearchResult*> all_results;
@@ -194,6 +196,15 @@ void SearchControllerImplNew::SetResults(
               return a->display_score() > b->display_score();
             });
 
+  // Create a vector of categories in display order.
+  std::vector<std::pair<Category, double>> sorted_category_pairs(
+      categories_.begin(), categories_.end());
+  std::sort(sorted_category_pairs.begin(), sorted_category_pairs.end(),
+            [](const auto& a, const auto& b) { return a.second > b.second; });
+  std::vector<Category> sorted_categories;
+  for (const auto& pair : sorted_category_pairs)
+    sorted_categories.push_back(pair.first);
+
   if (!observer_list_.empty()) {
     std::vector<const ChromeSearchResult*> observer_results;
     for (auto* result : all_results)
@@ -202,8 +213,7 @@ void SearchControllerImplNew::SetResults(
       observer.OnResultsAdded(last_query_, observer_results);
   }
 
-  // TODO(crbug.com/1199206): Send category ranks.
-  model_updater_->PublishSearchResults(all_results, /*categories=*/{});
+  model_updater_->PublishSearchResults(all_results, sorted_categories);
 }
 
 ChromeSearchResult* SearchControllerImplNew::FindSearchResult(

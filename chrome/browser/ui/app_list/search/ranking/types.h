@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/ui/app_list/search/search_controller.h"
 
 namespace app_list {
 

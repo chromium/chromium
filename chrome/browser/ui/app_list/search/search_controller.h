@@ -14,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
@@ -41,6 +42,7 @@ using ProviderType = ash::AppListSearchResultType;
 
 using Results = std::vector<std::unique_ptr<ChromeSearchResult>>;
 using ResultsMap = base::flat_map<ProviderType, Results>;
+using CategoriesMap = base::flat_map<Category, double>;
 
 // Controller that collects query from given SearchBoxModel, dispatches it
 // to all search providers, then invokes the mixer to mix and to publish the

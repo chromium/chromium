@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
+#include "chrome/browser/ui/app_list/search/search_controller.h"
 
 class Profile;
 
@@ -21,8 +22,8 @@ base::FilePath RankerStateDirectory(Profile* profile);
 // Given a search result type, returns the category it should be placed in.
 Category ResultTypeToCategory(ResultType result_type);
 
-// TODO(crbug.com/1199206): Once the UI has support for categories this can be
-// removed.
+// TODO(crbug.com/1199206): Once the UI has support for categories the following
+// methods can be removed.
 
 // Given a category, returns a debug string of its name suitable for the interim
 // UI.

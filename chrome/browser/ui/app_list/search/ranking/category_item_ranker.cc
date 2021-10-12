@@ -22,7 +22,9 @@ void CategoryItemRanker::Start(const std::u16string& query) {
   category_scores_.clear();
 }
 
-void CategoryItemRanker::Rank(ResultsMap& results, ProviderType provider) {
+void CategoryItemRanker::Rank(ResultsMap& results,
+                              CategoriesMap& categories,
+                              ProviderType provider) {
   UpdateCategoryScore(results, provider);
   RescoreResults(results);
 }

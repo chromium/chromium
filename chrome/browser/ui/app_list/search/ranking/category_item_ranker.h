@@ -24,7 +24,9 @@ class CategoryItemRanker : public Ranker {
 
   // Ranker:
   void Start(const std::u16string& query) override;
-  void Rank(ResultsMap& results, ProviderType provider) override;
+  void Rank(ResultsMap& results,
+            CategoriesMap& categories,
+            ProviderType provider) override;
 
  private:
   // Updates the score of |provider|'s category in |category_scores_|.

@@ -59,7 +59,8 @@ ScoreNormalizingRanker::ScoreNormalizingRanker(Profile* profile) {
 
 ScoreNormalizingRanker::~ScoreNormalizingRanker() {}
 
-void ScoreNormalizingRanker::Rank(ResultsMap& results, ProviderType provider) {
-}
+void ScoreNormalizingRanker::Rank(ResultsMap& results,
+                                  CategoriesMap& categories,
+                                  ProviderType provider) {}
 
 }  // namespace app_list

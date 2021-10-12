@@ -39,7 +39,9 @@ class Ranker {
   //
   // The goal of a ranker should be to update scores in the Scoring structs
   // within |results|. Generally, one ranker should map to one score member.
-  virtual void Rank(ResultsMap& results, ProviderType provider) {}
+  virtual void Rank(ResultsMap& results,
+                    CategoriesMap& categories,
+                    ProviderType provider) {}
 
   // Called each time a user launches a result.
   virtual void Train(const LaunchData& launch) {}

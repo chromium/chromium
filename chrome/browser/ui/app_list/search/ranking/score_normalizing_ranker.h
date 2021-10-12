@@ -31,7 +31,9 @@ class ScoreNormalizingRanker : public Ranker {
   ScoreNormalizingRanker& operator=(const ScoreNormalizingRanker&) = delete;
 
   // Ranker:
-  void Rank(ResultsMap& results, ProviderType provider) override;
+  void Rank(ResultsMap& results,
+            CategoriesMap& categories,
+            ProviderType provider) override;
 
  private:
   // TODO(crbug.com/1247475): Score normalizers removed due to stability issues.

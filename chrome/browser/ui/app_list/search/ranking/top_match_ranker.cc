@@ -46,7 +46,9 @@ TopMatchRanker::TopMatchRanker() {}
 
 TopMatchRanker::~TopMatchRanker() {}
 
-void TopMatchRanker::Rank(ResultsMap& results, ProviderType provider) {
+void TopMatchRanker::Rank(ResultsMap& results,
+                          CategoriesMap& categories,
+                          ProviderType provider) {
   const auto it = results.find(provider);
   DCHECK(it != results.end());
 

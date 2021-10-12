@@ -16,9 +16,11 @@ void RankerDelegate::Start(const std::u16string& query) {
     ranker->Start(query);
 }
 
-void RankerDelegate::Rank(ResultsMap& results, ProviderType provider) {
+void RankerDelegate::Rank(ResultsMap& results,
+                          CategoriesMap& categories,
+                          ProviderType provider) {
   for (auto& ranker : rankers_)
-    ranker->Rank(results, provider);
+    ranker->Rank(results, categories, provider);
 }
 
 void RankerDelegate::Train(const LaunchData& launch) {

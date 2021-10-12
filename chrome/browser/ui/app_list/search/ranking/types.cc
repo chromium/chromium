@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
 
+#include <stddef.h>
+
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
