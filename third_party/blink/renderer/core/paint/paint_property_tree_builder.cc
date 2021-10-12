@@ -289,20 +289,13 @@ class FragmentPaintPropertyTreeBuilder {
     // Inside NG block fragmentation we have to perform an offset adjustment.
     // An OOF fragment that is contained by something inside a fragmentainer
     // will be a direct child of the fragmentainer, rather than a child of its
-    // actual containing block. We therefore need to adjust the offset to make
-    // us relative to the fragmentainer before applying the offset of the OOF.
-    PhysicalOffset delta =
-        oof_context.paint_offset - context_.fragmentainer_paint_offset;
-    // So, we did store |fragmentainer_paint_offset| when entering the
-    // fragmentainer, but the offset may have been reset by
-    // UpdateForPaintOffsetTranslation() since we entered it, which we'll need
-    // to compensate for now.
-    delta += context_.adjustment_for_oof_in_fragmentainer;
-    context_.current.paint_offset -= delta;
+    // actual containing block. Set the paint offset to the correct one.
+    context_.current.paint_offset =
+        context_.current.paint_offset_for_oof_in_fragmentainer;
   }
 
   void ResetPaintOffset(PhysicalOffset new_offset = PhysicalOffset()) {
-    context_.adjustment_for_oof_in_fragmentainer +=
+    context_.current.paint_offset_for_oof_in_fragmentainer -=
         context_.current.paint_offset - new_offset;
     context_.current.paint_offset = new_offset;
   }

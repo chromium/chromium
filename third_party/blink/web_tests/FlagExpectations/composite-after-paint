@@ -36,6 +36,7 @@ crbug.com/148499 external/wpt/svg/extensibility/foreignObject/will-change-in-for
 crbug.com/1183814 external/wpt/svg/extensibility/foreignObject/scroll-transform-nested-stacked-children.html [ Pass ]
 crbug.com/1167352 external/wpt/css/css-will-change/will-change-transform-add-content.html [ Pass ]
 crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-out-of-bounds-translate.html [ Pass ]
+virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolumn-075.html [ Pass ]
 
 # Outline paints incorrectly with columns. Needs LayoutNGBlockFragmentation.
 crbug.com/1047358 paint/pagination/composited-paginated-outlined-box.html [ Failure ]

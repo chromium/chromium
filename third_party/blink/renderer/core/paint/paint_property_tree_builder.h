@@ -120,6 +120,11 @@ struct PaintPropertyTreeBuilderFragmentContext {
     const ScrollPaintPropertyNode* scroll = nullptr;
 
     FloatSize pending_scroll_anchor_adjustment;
+
+    // Paint offset of the innermost fragmentainer minus accumulated offsets
+    // that are baked in PaintOffsetTranslations since we entered the
+    // fragmentainer.
+    PhysicalOffset paint_offset_for_oof_in_fragmentainer;
   };
 
   ContainingBlockContext current;
@@ -161,13 +166,6 @@ struct PaintPropertyTreeBuilderFragmentContext {
   PhysicalOffset repeating_paint_offset_adjustment;
 
   PhysicalOffset old_paint_offset;
-
-  // Paint offset at the current innermost fragmentainer.
-  PhysicalOffset fragmentainer_paint_offset;
-
-  // Amount of adjustment done by UpdateForPaintOffsetTranslation() since we
-  // entered the innermost fragmentainer.
-  PhysicalOffset adjustment_for_oof_in_fragmentainer;
 
   // An additional offset that applies to the current fragment, but is detected
   // *before* the ContainingBlockContext is updated for it. Once the

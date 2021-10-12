@@ -810,22 +810,17 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
       continue;
     }
 
-    PaintPropertyTreeBuilderContext& tree_builder_context =
-        *context.tree_builder_context;
-    PaintPropertyTreeBuilderFragmentContext& fragment_context =
-        tree_builder_context.fragments[0];
-    PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext*
-        containing_block_context = &fragment_context.current;
+    auto* containing_block_context =
+        &context.tree_builder_context->fragments[0].current;
     containing_block_context->paint_offset += child.offset;
 
     const PhysicalOffset paint_offset = containing_block_context->paint_offset;
-    // Keep track of the paint offset at the fragmentainer, and also reset the
-    // offset adjustment tracker. This is needed when entering OOF
-    // descendants. OOFs have the nearest fragmentainer as their containing
-    // block, so when entering them during LayoutObject tree traversal, we have
-    // to compensate for this.
-    fragment_context.fragmentainer_paint_offset = paint_offset;
-    fragment_context.adjustment_for_oof_in_fragmentainer = PhysicalOffset();
+    // Keep track of the paint offset at the fragmentainer. This is needed
+    // when entering OOF descendants. OOFs have the nearest fragmentainer as
+    // their containing block, so when entering them during LayoutObject tree
+    // traversal, we have to compensate for this.
+    containing_block_context->paint_offset_for_oof_in_fragmentainer =
+        paint_offset;
 
     // Create corresponding |FragmentData|. Hit-testing needs
     // |FragmentData.PaintOffset|.
