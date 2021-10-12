@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
@@ -250,8 +251,11 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 // Returns YES if the user cannot turn on sync for enterprise policy reasons.
 - (BOOL)isSyncDisabledByAdministrator {
   DCHECK(self.syncService);
-  return self.syncService->GetDisableReasons().Has(
+  bool syncDisabledPolicy = self.syncService->GetDisableReasons().Has(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+  bool syncTypesDisabledPolicy =
+      IsManagedSyncDataType(self.browserState, SyncSetupService::kSyncOpenTabs);
+  return syncDisabledPolicy || syncTypesDisabledPolicy;
 }
 
 #pragma mark - SyncObserverModelBridge
