@@ -206,6 +206,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/scrollbar_size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessibility/view_accessibility_utils.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -1728,6 +1729,13 @@ void BrowserView::UpdateWindowControlsOverlayEnabled() {
 
   if (frame_ && frame_->GetFrameView())
     frame_->GetFrameView()->WindowControlsOverlayEnabledChanged();
+
+  GetViewAccessibility().AnnounceText(
+      IsWindowControlsOverlayEnabled()
+          ? l10n_util::GetStringUTF16(
+                IDS_WEB_APP_WINDOW_CONTROLS_OVERLAY_ENABLED_ALERT)
+          : l10n_util::GetStringUTF16(
+                IDS_WEB_APP_WINDOW_CONTROLS_OVERLAY_DISABLED_ALERT));
 }
 
 void BrowserView::UpdateWindowControlsOverlayToggleVisible() {
