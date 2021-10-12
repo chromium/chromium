@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -74,7 +75,7 @@ class CORE_EXPORT WorkletGlobalScope
   WorkerThread* GetThread() const final;
   const base::UnguessableToken& GetDevToolsToken() const override;
   bool IsInitialized() const final { return true; }
-  blink::mojom::CodeCacheHost* GetCodeCacheHost() override;
+  CodeCacheHost* GetCodeCacheHost() override;
 
   virtual LocalFrame* GetFrame() const;
 
@@ -202,7 +203,7 @@ class CORE_EXPORT WorkletGlobalScope
   // This is the interface that handles generated code cache
   // requests both to fetch code cache when loading resources
   // and to store generated code cache to disk.
-  mojo::Remote<blink::mojom::CodeCacheHost> code_cache_host_;
+  std::unique_ptr<CodeCacheHost> code_cache_host_;
 };
 
 template <>

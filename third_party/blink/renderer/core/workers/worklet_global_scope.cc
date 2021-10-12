@@ -137,8 +137,9 @@ WorkletGlobalScope::WorkletGlobalScope(
   DCHECK_EQ(creation_params->ukm_source_id, ukm::kInvalidSourceId);
 
   if (creation_params->code_cache_host_interface.is_valid()) {
-    code_cache_host_.Bind(std::move(creation_params->code_cache_host_interface),
-                          GetTaskRunner(TaskType::kInternalDefault));
+    code_cache_host_ =
+        std::make_unique<CodeCacheHost>(mojo::Remote<mojom::CodeCacheHost>(
+            std::move(creation_params->code_cache_host_interface)));
   }
 }
 
@@ -229,7 +230,7 @@ const base::UnguessableToken& WorkletGlobalScope::GetDevToolsToken() const {
   return GetThread()->GetDevToolsWorkerToken();
 }
 
-blink::mojom::CodeCacheHost* WorkletGlobalScope::GetCodeCacheHost() {
+CodeCacheHost* WorkletGlobalScope::GetCodeCacheHost() {
   if (IsMainThreadWorkletGlobalScope())
     return frame_->Loader().GetDocumentLoader()->GetCodeCacheHost();
   if (!code_cache_host_)

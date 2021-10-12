@@ -4,10 +4,12 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
@@ -46,7 +48,7 @@ class CodeCacheHostMockImpl : public blink::mojom::CodeCacheHost {
   explicit CodeCacheHostMockImpl(MockGeneratedCodeCache* sim) : sim_(sim) {}
 
  private:
-  // blink::mojom::CodeCacheHost implementation.
+  // CodeCacheHost implementation.
   void DidGenerateCacheableMetadata(blink::mojom::CodeCacheType cache_type,
                                     const GURL& url,
                                     base::Time expected_response_time,
@@ -85,9 +87,18 @@ void SendDataFor(const ResourceResponse& response,
       response, mojom::CodeCacheType::kJavascript,
       SecurityOrigin::Create(response.CurrentRequestUrl()));
 
-  std::unique_ptr<blink::mojom::CodeCacheHost> code_cache_host =
-      std::make_unique<CodeCacheHostMockImpl>(CodeCacheHostMockImpl(disk));
-  sender->Send(code_cache_host.get(), kTestData, sizeof(kTestData));
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  std::unique_ptr<mojom::CodeCacheHost> mojo_code_cache_host =
+      std::make_unique<CodeCacheHostMockImpl>(disk);
+  mojo::Remote<mojom::CodeCacheHost> remote;
+  mojo::Receiver<mojom::CodeCacheHost> receiver(
+      mojo_code_cache_host.get(), remote.BindNewPipeAndPassReceiver());
+  CodeCacheHost code_cache_host(std::move(remote));
+  sender->Send(&code_cache_host, kTestData, sizeof(kTestData));
+
+  // Drain the task queue.
+  task_environment.RunUntilIdle();
 }
 
 TEST(CachedMetadataHandlerTest, SendsMetadataToPlatform) {

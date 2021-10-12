@@ -32,7 +32,7 @@ void ScriptCachedMetadataHandler::Trace(Visitor* visitor) const {
 }
 
 void ScriptCachedMetadataHandler::SetCachedMetadata(
-    blink::mojom::CodeCacheHost* code_cache_host,
+    CodeCacheHost* code_cache_host,
     uint32_t data_type_id,
     const uint8_t* data,
     size_t size) {
@@ -50,7 +50,7 @@ void ScriptCachedMetadataHandler::SetCachedMetadata(
 }
 
 void ScriptCachedMetadataHandler::ClearCachedMetadata(
-    blink::mojom::CodeCacheHost* code_cache_host,
+    CodeCacheHost* code_cache_host,
     ClearCacheType cache_type) {
   cached_metadata_ = nullptr;
   switch (cache_type) {
@@ -115,7 +115,7 @@ size_t ScriptCachedMetadataHandler::GetCodeCacheSize() const {
 }
 
 void ScriptCachedMetadataHandler::CommitToPersistentStorage(
-    blink::mojom::CodeCacheHost* code_cache_host) {
+    CodeCacheHost* code_cache_host) {
   if (cached_metadata_) {
     base::span<const uint8_t> serialized_data =
         cached_metadata_->SerializedData();
@@ -127,7 +127,7 @@ void ScriptCachedMetadataHandler::CommitToPersistentStorage(
 }
 
 void ScriptCachedMetadataHandlerWithHashing::Check(
-    blink::mojom::CodeCacheHost* code_cache_host,
+    CodeCacheHost* code_cache_host,
     const ParkableString& source_text) {
   // If we already attempted to Check once and couldn't compute the hash, just
   // give up.
@@ -221,7 +221,7 @@ ScriptCachedMetadataHandlerWithHashing::GetCachedMetadata(
 }
 
 void ScriptCachedMetadataHandlerWithHashing::CommitToPersistentStorage(
-    blink::mojom::CodeCacheHost* code_cache_host) {
+    CodeCacheHost* code_cache_host) {
   Vector<uint8_t> serialized_data = GetSerializedCachedMetadata();
   Sender()->Send(code_cache_host, serialized_data.data(),
                  serialized_data.size());
