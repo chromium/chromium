@@ -3846,6 +3846,17 @@ Unknown properties are collapsed to zero. -->
   </int>
 </enum>
 
+<enum name="ArcImageCopyPasteCompatOperationType">
+  <summary>
+    Defines the combinations of operation types (copy-paste and drag-drop) and
+    sources (from browser and Files app) for ARC image copy-paste app compat.
+  </summary>
+  <int value="0" label="An image pasted from FilesApp"/>
+  <int value="1" label="An image dragged from FilesApp"/>
+  <int value="2" label="An image pasted from browser"/>
+  <int value="3" label="An image dragged from browser"/>
+</enum>
+
 <enum name="ArcIntentHandlerAction">
   <summary>Defines Arc intent handler actions</summary>
   <int value="0" label="Error after showing picker"/>

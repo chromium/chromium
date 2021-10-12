@@ -374,6 +374,12 @@ void ArcMetricsService::ReportDnsQueryResult(mojom::ArcDnsQuery query,
   base::UmaHistogramBoolean(metric_name, success);
 }
 
+void ArcMetricsService::ReportImageCopyPasteCompatAction(
+    mojom::ArcImageCopyPasteCompatAction action_type) {
+  base::UmaHistogramEnumeration("Arc.ImageCopyPasteCompatOperationType",
+                                action_type);
+}
+
 void ArcMetricsService::NotifyLowMemoryKill() {
   for (auto& obs : app_kill_observers_)
     obs.OnArcLowMemoryKill();

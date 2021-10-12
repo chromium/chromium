@@ -913,6 +913,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Arc.ImageCopyPasteCompatOperationType"
+    enum="ArcImageCopyPasteCompatOperationType" expires_after="2022-04-01">
+  <owner>tetsui@chromium.org</owner>
+  <owner>yhanada@chromium.org</owner>
+  <summary>
+    The operation type (copy-paste or drag-drop) and the source of the image
+    (from browser or Files app), counted when image copy-paste app compat is
+    triggered. Image copy-paste app compat is a feature that allows insertion of
+    images to Android apps through commitContent IME API or Android intent, when
+    the app don't support images in the clipboard. For example, when a user
+    pastes an image from Files app to an Android app and the app compat logic
+    succeeds to insert the image, then that is one histogram count. If it fails
+    (for example the app does not implement commitContent API) or the app
+    already supports image pasting from the clipboard and the app compat logic
+    is not used, that will not be counted.
+  </summary>
+</histogram>
+
 <histogram name="Arc.ImeCount" units="units" expires_after="2022-04-01">
   <owner>yhanada@chromium.org</owner>
   <owner>tetsui@chromium.org</owner>

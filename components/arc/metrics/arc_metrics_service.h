@@ -130,6 +130,8 @@ class ArcMetricsService : public KeyedService,
                                 uint32_t number_of_directories) override;
   void ReportMainAccountHashMigrationMetrics(
       mojom::MainAccountHashMigrationStatus status) override;
+  void ReportImageCopyPasteCompatAction(
+      mojom::ArcImageCopyPasteCompatAction action_type) override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.

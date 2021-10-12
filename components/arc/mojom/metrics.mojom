@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 15
+// Next MinVersion: 16
 
 module arc.mojom;
 
@@ -205,6 +205,14 @@ enum ArcClipboardDragDropEvent {
   kImageDragDropFromArc = 7,
 };
 
+[Extensible]
+enum ArcImageCopyPasteCompatAction {
+  kPasteFromFiles = 0,
+  kDragFromFiles = 1,
+  kPasteFromBrowser = 2,
+  kDragFromBrowser = 3,
+};
+
 // Enumerates variations of Low Latency Stylus Library.
 [Extensible]
 enum LowLatencyStylusLibraryType {
@@ -266,7 +274,7 @@ enum MainAccountHashMigrationStatus {
   // tools/metrics/histograms/enums.xml.
 };
 
-// Next method ID: 18
+// Next method ID: 19
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -336,6 +344,15 @@ interface MetricsHost {
   // Reports main account hash migration status.
   [MinVersion=14] ReportMainAccountHashMigrationMetrics@17(
       MainAccountHashMigrationStatus status);
+
+  // Reports the operation type (copy & paste or drag & drop) and the source of
+  // the image (from browser or Files app) when image copy-paste app compat is
+  // triggered.
+  // Image copy-paste app compat is a feature that allows insertion of images to
+  // Android apps through commitContent IME API or Android intent, when the app
+  // don't support images in the clipboard.
+  [MinVersion=15] ReportImageCopyPasteCompatAction@18(
+      ArcImageCopyPasteCompatAction action_type);
 };
 
 // Next method ID: 3
