@@ -146,6 +146,11 @@ class WaylandSurface {
   // Sets the priority hint for the overlay that is committed via this surface.
   void SetOverlayPriority(gfx::OverlayPriorityHint priority_hint);
 
+  // Sets the rounded corners for this surface. Values are radius in dip.
+  // |rounded_corners| must either be empty or all the corners must be set in
+  // the following order - top left, top right, bottom right, bottom left.
+  void SetRoundedCorners(const std::vector<float> rounded_corners);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest,
                            DoesNotCreateSurfaceSyncOnCommitWithoutBuffers);
@@ -174,6 +179,7 @@ class WaylandSurface {
   // Creates (if not created) the synchronization surface and returns a pointer
   // to it.
   zwp_linux_surface_synchronization_v1* GetSurfaceSync();
+  augmented_surface* GetAugmentedSurface();
 
   WaylandConnection* const connection_;
   WaylandWindow* root_window_ = nullptr;
@@ -182,6 +188,7 @@ class WaylandSurface {
   wl::Object<zcr_blending_v1> blending_;
   wl::Object<zwp_linux_surface_synchronization_v1> surface_sync_;
   wl::Object<overlay_prioritized_surface> overlay_priority_surface_;
+  wl::Object<augmented_surface> augmented_surface_;
   base::flat_map<zwp_linux_buffer_release_v1*, ExplicitReleaseInfo>
       linux_buffer_releases_;
   ExplicitReleaseCallback explicit_release_callback_;

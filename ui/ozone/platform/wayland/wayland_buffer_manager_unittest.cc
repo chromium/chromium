@@ -2015,6 +2015,77 @@ TEST_P(WaylandBufferManagerTest, CanSubmitOverlayPriority) {
   }
 }
 
+TEST_P(WaylandBufferManagerTest, HasSurfaceAugmenter) {
+  EXPECT_TRUE(connection_->surface_augmenter());
+}
+
+TEST_P(WaylandBufferManagerTest, CanSetRoundedCorners) {
+  std::vector<uint32_t> kBufferIds = {1, 2, 3};
+
+  MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(),
+                                  window_->GetWidget());
+
+  auto* linux_dmabuf = server_.zwp_linux_dmabuf_v1();
+  EXPECT_CALL(*linux_dmabuf, CreateParams(_, _, _)).Times(3);
+  for (auto id : kBufferIds) {
+    CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, id);
+  }
+
+  Sync();
+
+  for (size_t i = 0; i < kBufferIds.size(); i++) {
+    zwp_linux_buffer_params_v1_send_created(
+        linux_dmabuf->buffer_params()[i]->resource(),
+        linux_dmabuf->buffer_params()[i]->buffer_resource());
+  }
+
+  Sync();
+
+  std::vector<std::vector<float>> rounded_corners_vec = {
+      {1, 1, 1, 1},  {0, 1, 0, 1}, {1, 0, 1, 0}, {5, 10, 0, 1},
+      {0, 2, 20, 3}, {2, 3, 4, 5}, {0, 0, 0, 0},
+  };
+
+  for (const auto& rounded_corners : rounded_corners_vec) {
+    std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
+    for (auto id : kBufferIds) {
+      overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+          id == 1 ? INT32_MIN : id,
+          gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, id, kDefaultScale,
+          window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false, 1.0f,
+          gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
+          rounded_corners));
+    }
+
+    buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
+                                        std::move(overlay_configs));
+
+    Sync();
+
+    for (auto& subsurface : window_->wayland_subsurfaces_) {
+      auto* mock_surface_of_subsurface = server_.GetObject<wl::MockSurface>(
+          subsurface->wayland_surface()->GetSurfaceId());
+      EXPECT_TRUE(mock_surface_of_subsurface);
+      EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()
+                    ->rounded_corners()
+                    .upper_left(),
+                rounded_corners.at(0));
+      EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()
+                    ->rounded_corners()
+                    .upper_right(),
+                rounded_corners.at(1));
+      EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()
+                    ->rounded_corners()
+                    .lower_right(),
+                rounded_corners.at(2));
+      EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()
+                    ->rounded_corners()
+                    .lower_left(),
+                rounded_corners.at(3));
+    }
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandBufferManagerTest,
                          Values(wl::ServerConfig{

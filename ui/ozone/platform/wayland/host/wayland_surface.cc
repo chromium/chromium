@@ -7,6 +7,7 @@
 #include <alpha-compositing-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <overlay-prioritizer-client-protocol.h>
+#include <surface-augmenter-client-protocol.h>
 #include <viewporter-client-protocol.h>
 #include <algorithm>
 
@@ -18,6 +19,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/overlay_prioritizer.h"
+#include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
@@ -122,6 +124,16 @@ bool WaylandSurface::Initialize() {
     }
   } else {
     LOG(WARNING) << "Server doesn't support overlay_prioritizer.";
+  }
+
+  if (auto* surface_augmenter = connection_->surface_augmenter()) {
+    augmented_surface_ = surface_augmenter->CreateAugmentedSurface(surface());
+    if (!augmented_surface_) {
+      LOG(ERROR) << "Failed to create augmented_surface.";
+      return false;
+    }
+  } else {
+    LOG(WARNING) << "Server doesn't support surface_augmenter.";
   }
 
   return true;
@@ -367,6 +379,10 @@ zwp_linux_surface_synchronization_v1* WaylandSurface::GetSurfaceSync() {
   return surface_sync_.get();
 }
 
+augmented_surface* WaylandSurface::GetAugmentedSurface() {
+  return augmented_surface_.get();
+}
+
 void WaylandSurface::SetViewportSource(const gfx::RectF& src_rect) {
   if (src_rect == crop_rect_)
     return;
@@ -500,6 +516,21 @@ void WaylandSurface::SetOverlayPriority(
 
 bool WaylandSurface::SurfaceSubmissionInPixelCoordinates() const {
   return connection_->surface_submission_in_pixel_coordinates();
+}
+
+void WaylandSurface::SetRoundedCorners(
+    const std::vector<float> rounded_corners) {
+  // WaylandOverlayConfig.rounded_corners are always created from gfx::RRectF
+  // and must always have size equal to 4. However, to be sure malformed
+  // requests do not get through, explicitly check if size is correct and ignore
+  // the request if it is not.
+  if (GetAugmentedSurface() && rounded_corners.size() == 4u) {
+    augmented_surface_set_rounded_corners(
+        GetAugmentedSurface(), wl_fixed_from_double(rounded_corners.at(0)),
+        wl_fixed_from_double(rounded_corners.at(1)),
+        wl_fixed_from_double(rounded_corners.at(2)),
+        wl_fixed_from_double(rounded_corners.at(3)));
+  }
 }
 
 // static

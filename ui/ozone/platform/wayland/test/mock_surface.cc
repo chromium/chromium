@@ -126,6 +126,8 @@ MockSurface::~MockSurface() {
     wl_resource_destroy(blending_->resource());
   if (prioritized_surface_ && prioritized_surface_->resource())
     wl_resource_destroy(prioritized_surface_->resource());
+  if (augmented_surface_ && augmented_surface_->resource())
+    wl_resource_destroy(augmented_surface_->resource());
 }
 
 MockSurface* MockSurface::FromResource(wl_resource* resource) {

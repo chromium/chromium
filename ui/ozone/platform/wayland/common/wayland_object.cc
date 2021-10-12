@@ -21,6 +21,7 @@
 #include <presentation-time-client-protocol.h>
 #include <primary-selection-unstable-v1-client-protocol.h>
 #include <relative-pointer-unstable-v1-client-protocol.h>
+#include <surface-augmenter-client-protocol.h>
 #include <text-input-extension-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
@@ -102,6 +103,7 @@ void (*ObjectTraits<wl_proxy>::deleter)(void*) = &wl_proxy_wrapper_destroy;
   IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(TYPE, TYPE##_destroy)
 
 // For convenience, keep aphabetical order in this list.
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(augmented_surface)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device_manager)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_offer)
@@ -112,6 +114,7 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(org_kde_kwin_idle)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(org_kde_kwin_idle_timeout)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(overlay_prioritizer)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(overlay_prioritized_surface)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(surface_augmenter)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wl_buffer)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wl_callback)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wl_compositor)

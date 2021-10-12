@@ -25,6 +25,7 @@
 #include "ui/ozone/platform/wayland/test/test_overlay_prioritizer.h"
 #include "ui/ozone/platform/wayland/test/test_seat.h"
 #include "ui/ozone/platform/wayland/test/test_subcompositor.h"
+#include "ui/ozone/platform/wayland/test/test_surface_augmenter.h"
 #include "ui/ozone/platform/wayland/test/test_viewporter.h"
 #include "ui/ozone/platform/wayland/test/test_zcr_text_input_extension.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_explicit_synchronization.h"
@@ -150,6 +151,7 @@ class TestWaylandServerThread : public base::Thread,
   TestDataDeviceManager data_device_manager_;
   TestOutput output_;
   TestOverlayPrioritizer overlay_prioritizer_;
+  TestSurfaceAugmenter surface_augmenter_;
   TestSeat seat_;
   MockXdgShell xdg_shell_;
   MockZxdgShellV6 zxdg_shell_v6_;

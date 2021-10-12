@@ -15,6 +15,7 @@
 #include "ui/ozone/platform/wayland/test/mock_xdg_surface.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_alpha_blending.h"
+#include "ui/ozone/platform/wayland/test/test_augmented_surface.h"
 #include "ui/ozone/platform/wayland/test/test_overlay_prioritized_surface.h"
 #include "ui/ozone/platform/wayland/test/test_subsurface.h"
 #include "ui/ozone/platform/wayland/test/test_viewport.h"
@@ -72,6 +73,11 @@ class MockSurface : public ServerObject {
     return prioritized_surface_;
   }
 
+  void set_augmented_surface(TestAugmentedSurface* augmented_surface) {
+    augmented_surface_ = augmented_surface;
+  }
+  TestAugmentedSurface* augmented_surface() { return augmented_surface_; }
+
   void set_blending(TestAlphaBlending* blending) { blending_ = blending; }
   TestAlphaBlending* blending() { return blending_; }
 
@@ -112,6 +118,7 @@ class MockSurface : public ServerObject {
   TestViewport* viewport_ = nullptr;
   TestAlphaBlending* blending_ = nullptr;
   TestOverlayPrioritizedSurface* prioritized_surface_ = nullptr;
+  TestAugmentedSurface* augmented_surface_ = nullptr;
   gfx::Rect opaque_region_ = {-1, -1, 0, 0};
   gfx::Rect input_region_ = {-1, -1, 0, 0};
 

@@ -820,6 +820,8 @@ bool WaylandWindow::CommitOverlays(
         std::vector<gfx::Rect> opaque_region{region_px};
         (*iter)->wayland_surface()->SetOpaqueRegion(&opaque_region);
         (*iter)->wayland_surface()->SetOpacity((*overlay_iter)->opacity);
+        (*iter)->wayland_surface()->SetRoundedCorners(
+            (*overlay_iter)->rounded_corners);
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id,
             (*overlay_iter)->damage_region,
@@ -869,6 +871,8 @@ bool WaylandWindow::CommitOverlays(
         std::vector<gfx::Rect> opaque_region{region_px};
         (*iter)->wayland_surface()->SetOpaqueRegion(&opaque_region);
         (*iter)->wayland_surface()->SetOpacity((*overlay_iter)->opacity);
+        (*iter)->wayland_surface()->SetRoundedCorners(
+            (*overlay_iter)->rounded_corners);
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id,
             (*overlay_iter)->damage_region,
@@ -928,6 +932,8 @@ bool WaylandWindow::CommitOverlays(
     std::vector<gfx::Rect> opaque_region{region_px};
     primary_subsurface_->wayland_surface()->SetOpaqueRegion(&opaque_region);
     primary_subsurface_->wayland_surface()->SetOpacity((*split)->opacity);
+    primary_subsurface_->wayland_surface()->SetRoundedCorners(
+        (*split)->rounded_corners);
     connection_->buffer_manager_host()->CommitBufferInternal(
         primary_subsurface_->wayland_surface(), (*split)->buffer_id,
         (*split)->damage_region,
