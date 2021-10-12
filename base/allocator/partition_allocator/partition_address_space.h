@@ -194,15 +194,28 @@ class BASE_EXPORT PartitionAddressSpace {
     // reserved address space. Therefore, set *_pool_base_address_ initially to
     // k*PoolOffsetMask, so that PartitionAddressSpace::IsIn*Pool() always
     // returns false.
-    uintptr_t non_brp_pool_base_address_ = kNonBRPPoolOffsetMask;
-    uintptr_t brp_pool_base_address_ = kBRPPoolOffsetMask;
-    uintptr_t configurable_pool_base_address_ = kConfigurablePoolOffsetMask;
+    constexpr GigaCageSetup()
+        : non_brp_pool_base_address_(kNonBRPPoolOffsetMask),
+          brp_pool_base_address_(kBRPPoolOffsetMask),
+          configurable_pool_base_address_(kConfigurablePoolOffsetMask),
+          non_brp_pool_(0),
+          brp_pool_(0),
+          configurable_pool_(0) {}
 
-    pool_handle non_brp_pool_ = 0;
-    pool_handle brp_pool_ = 0;
-    pool_handle configurable_pool_ = 0;
+    // Using a union to enforce padding.
+    union {
+      struct {
+        uintptr_t non_brp_pool_base_address_;
+        uintptr_t brp_pool_base_address_;
+        uintptr_t configurable_pool_base_address_;
 
-    char padding_[28] = {};
+        pool_handle non_brp_pool_;
+        pool_handle brp_pool_;
+        pool_handle configurable_pool_;
+      };
+
+      char one_cacheline_[kPartitionCachelineSize];
+    };
   };
   static_assert(sizeof(GigaCageSetup) % kPartitionCachelineSize == 0,
                 "GigaCageSetup has to fill a cacheline(s)");
