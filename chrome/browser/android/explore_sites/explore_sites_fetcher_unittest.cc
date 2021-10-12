@@ -366,9 +366,8 @@ TEST_F(ExploreSitesFetcherTest, TestFinchHeader) {
 
   net::HttpRequestHeaders headers = last_resource_request.headers;
   std::string header_text;
-  bool success;
 
-  success = headers.GetHeader("X-Goog-Chrome-Experiment-Tag", &header_text);
+  headers.GetHeader("X-Goog-Chrome-Experiment-Tag", &header_text);
   EXPECT_EQ(std::string(kExperimentData), header_text);
 }
 
