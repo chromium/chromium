@@ -63,9 +63,17 @@ const char kGoogleUserInfoEmail[] =
 const char kGoogleUserInfoProfile[] =
     "https://www.googleapis.com/auth/userinfo.profile";
 
+// OAuth2 scope for access to the parent approval widget.
+const char kParentApprovalOAuth2Scope[] =
+    "https://www.googleapis.com/auth/kids.parentapproval";
+
 // OAuth2 scope for access to the people API (read-only).
 const char kPeopleApiReadOnlyOAuth2Scope[] =
     "https://www.googleapis.com/auth/peopleapi.readonly";
+
+// OAuth2 scope for access to the programmatic challenge API (read-only).
+const char kProgrammaticChallengeOAuth2Scope[] =
+    "https://www.googleapis.com/auth/accounts.programmaticchallenge";
 
 // OAuth2 scope for access to the Reauth flow.
 const char kAccountsReauthOAuth2Scope[] =

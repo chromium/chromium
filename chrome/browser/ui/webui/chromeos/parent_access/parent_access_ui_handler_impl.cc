@@ -31,7 +31,8 @@ ParentAccessUIHandlerImpl::~ParentAccessUIHandlerImpl() = default;
 
 void ParentAccessUIHandlerImpl::GetOAuthToken(GetOAuthTokenCallback callback) {
   signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kKidsSupervisionSetupChildOAuth2Scope);
+  scopes.insert(GaiaConstants::kParentApprovalOAuth2Scope);
+  scopes.insert(GaiaConstants::kProgrammaticChallengeOAuth2Scope);
 
   if (oauth2_access_token_fetcher_) {
     // Only one GetOAuthToken call can happen at a time.
