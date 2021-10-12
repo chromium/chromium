@@ -9,6 +9,7 @@ config("minizip_compiler_flags") {
     cflags = [
       # mz_zip.c does |UINT_MAX == UINT16_MAX && ...|.
       "-Wno-unreachable-code",
+      "-Wno-unused-but-set-variable",
       "-Wno-unused-function",
       "-Wno-implicit-fallthrough",
     ]
