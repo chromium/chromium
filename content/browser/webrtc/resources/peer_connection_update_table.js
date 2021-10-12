@@ -4,6 +4,7 @@
 
 import {$} from 'chrome://resources/js/util.m.js';
 
+const MAX_NUMBER_OF_STATE_CHANGES_DISPLAYED = 10;
 /**
  * The data of a peer connection update.
  * @param {number} pid The id of the renderer.
@@ -101,42 +102,6 @@ export class PeerConnectionUpdateTable {
       return;
     }
 
-    if (update.type === 'onIceCandidate' || update.type === 'addIceCandidate') {
-      // extract ICE candidate type from the field following typ.
-      const candidateType = update.value.match(/(?: typ )(host|srflx|relay)/);
-      if (candidateType) {
-        type += ' (' + candidateType[1] + ')';
-      }
-    } else if (
-        update.type === 'createOfferOnSuccess' ||
-        update.type === 'createAnswerOnSuccess') {
-      this.setLastOfferAnswer_(tableElement, update);
-    } else if (update.type === 'setLocalDescription') {
-      if (update.value !== this.getLastOfferAnswer_(tableElement)) {
-        type += ' (munged)';
-      }
-    } else if (update.type === 'setConfiguration') {
-      // Update the configuration that is displayed at the top.
-      peerConnectionElement.firstChild.children[2].textContent = update.value;
-    }
-
-    const summaryItem = $('summary-template').content.cloneNode(true);
-    const summary = summaryItem.querySelector('summary');
-    summary.textContent = type;
-    row.appendChild(summaryItem);
-
-    const valueContainer = document.createElement('pre');
-    const details = row.cells[1].childNodes[0];
-    details.appendChild(valueContainer);
-
-    // Highlight ICE failures and failure callbacks.
-    if ((update.type === 'iceConnectionStateChange' &&
-         update.value === 'ICEConnectionStateFailed') ||
-        update.type.indexOf('OnFailure') !== -1 ||
-        update.type === 'addIceCandidateFailed') {
-      valueContainer.parentElement.classList.add('update-log-failure');
-    }
-
     let {value} = update;
     // map internal names and values to names and events from the
     // specification. This is a display change which shall not
@@ -170,6 +135,57 @@ export class PeerConnectionUpdateTable {
       }[value] ||
           value;
     }
+
+    if (update.type === 'onIceCandidate' || update.type === 'addIceCandidate') {
+      // extract ICE candidate type from the field following typ.
+      const candidateType = update.value.match(/(?: typ )(host|srflx|relay)/);
+      if (candidateType) {
+        type += ' (' + candidateType[1] + ')';
+      }
+    } else if (
+        update.type === 'createOfferOnSuccess' ||
+        update.type === 'createAnswerOnSuccess') {
+      this.setLastOfferAnswer_(tableElement, update);
+    } else if (update.type === 'setLocalDescription') {
+      if (update.value !== this.getLastOfferAnswer_(tableElement)) {
+        type += ' (munged)';
+      }
+    } else if (update.type === 'setConfiguration') {
+      // Update the configuration that is displayed at the top.
+      peerConnectionElement.firstChild.children[2].textContent = update.value;
+    } else if (['iceConnectionStateChange', 'connectionStateChange',
+        'signalingStateChange'].includes(update.type)) {
+      const fieldName = {
+        'iceConnectionStateChange' : 'iceconnectionstate',
+        'connectionStateChange' : 'connectionstate',
+        'signalingStateChange' : 'signalingstate',
+      }[update.type];
+      const el = peerConnectionElement.getElementsByClassName(fieldName)[0];
+      const numberOfEvents = el.textContent.split(' => ').length;
+      if (numberOfEvents < MAX_NUMBER_OF_STATE_CHANGES_DISPLAYED) {
+        el.textContent += ' => ' + value;
+      } else if (numberOfEvents === MAX_NUMBER_OF_STATE_CHANGES_DISPLAYED) {
+        el.textContent += ' ...';
+      }
+    }
+
+    const summaryItem = $('summary-template').content.cloneNode(true);
+    const summary = summaryItem.querySelector('summary');
+    summary.textContent = type;
+    row.appendChild(summaryItem);
+
+    const valueContainer = document.createElement('pre');
+    const details = row.cells[1].childNodes[0];
+    details.appendChild(valueContainer);
+
+    // Highlight ICE failures and failure callbacks.
+    if ((update.type === 'iceConnectionStateChange' &&
+         update.value === 'ICEConnectionStateFailed') ||
+        update.type.indexOf('OnFailure') !== -1 ||
+        update.type === 'addIceCandidateFailed') {
+      valueContainer.parentElement.classList.add('update-log-failure');
+    }
+
 
     // RTCSessionDescription is serialized as 'type: <type>, sdp:'
     if (update.value.indexOf(', sdp:') !== -1) {

@@ -374,6 +374,21 @@ function addPeerConnection(data) {
   }
   peerConnectionElement.appendChild(deprecationNotices);
 
+  const iceConnectionStates = document.createElement('div');
+  iceConnectionStates.textContent = 'ICE connection state: new';
+  iceConnectionStates.className = 'iceconnectionstate';
+  peerConnectionElement.appendChild(iceConnectionStates);
+
+  const connectionStates = document.createElement('div');
+  connectionStates.textContent = 'Connection state: new';
+  connectionStates.className = 'connectionstate';
+  peerConnectionElement.appendChild(connectionStates);
+
+  const signalingStates = document.createElement('div');
+  signalingStates.textContent = 'Signaling state: new';
+  signalingStates.className = 'signalingstate';
+  peerConnectionElement.appendChild(signalingStates);
+
   return peerConnectionElement;
 }
 
