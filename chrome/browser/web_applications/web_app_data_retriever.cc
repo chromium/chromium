@@ -207,9 +207,8 @@ void WebAppDataRetriever::OnIconsDownloaded(
   Observe(nullptr);
   icon_downloader_.reset();
 
-  // TODO(crbug.com/1238622): Report `IconsDownloadedResult`and
-  // `DownloadedIconsHttpResults` to the callback.
-  std::move(get_icons_callback_).Run(std::move(icons_map));
+  std::move(get_icons_callback_)
+      .Run(result, std::move(icons_map), std::move(icons_http_results));
 }
 
 void WebAppDataRetriever::CallCallbackOnError() {
@@ -227,7 +226,9 @@ void WebAppDataRetriever::CallCallbackOnError() {
              /*valid_manifest_for_web_app=*/false,
              /*is_installable=*/false);
   } else if (get_icons_callback_) {
-    std::move(get_icons_callback_).Run(IconsMap{});
+    std::move(get_icons_callback_)
+        .Run(IconsDownloadedResult::kCancelled, IconsMap{},
+             DownloadedIconsHttpResults{});
   }
 }
 

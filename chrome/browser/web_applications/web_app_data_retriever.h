@@ -51,8 +51,8 @@ class WebAppDataRetriever : content::WebContentsObserver {
                               const GURL& manifest_url,
                               bool valid_manifest_for_web_app,
                               bool is_installable)>;
-  // Returns empty map if error.
-  using GetIconsCallback = base::OnceCallback<void(IconsMap)>;
+
+  using GetIconsCallback = WebAppIconDownloader::WebAppIconDownloaderCallback;
 
   WebAppDataRetriever();
   WebAppDataRetriever(const WebAppDataRetriever&) = delete;

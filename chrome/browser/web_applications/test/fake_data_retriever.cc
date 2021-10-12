@@ -47,13 +47,17 @@ void FakeDataRetriever::GetIcons(content::WebContents* web_contents,
                                  bool skip_page_favicons,
                                  WebAppIconDownloader::Histogram histogram,
                                  GetIconsCallback callback) {
+  // TODO(crbug.com/907296): Add test API for `IconsDownloadedResult` and
+  // `DownloadedIconsHttpResults`. Use them in unit tests for UMA reporting.
+
   if (get_icons_delegate_) {
     icons_map_ =
         get_icons_delegate_.Run(web_contents, icon_urls, skip_page_favicons);
   }
 
   completion_callback_ =
-      base::BindOnce(std::move(callback), std::move(icons_map_));
+      base::BindOnce(std::move(callback), IconsDownloadedResult::kCompleted,
+                     std::move(icons_map_), DownloadedIconsHttpResults{});
   ScheduleCompletionCallback();
 
   icons_map_.clear();

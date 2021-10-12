@@ -332,10 +332,12 @@ TEST_F(WebAppDataRetrieverTest, GetIcons_WebContentsDestroyed) {
   WebAppDataRetriever retriever;
   retriever.GetIcons(web_contents(), icon_urls, skip_page_favicons,
                      WebAppIconDownloader::Histogram::kForCreate,
-                     base::BindLambdaForTesting([&](IconsMap icons_map) {
-                       EXPECT_TRUE(icons_map.empty());
-                       run_loop.Quit();
-                     }));
+                     base::BindLambdaForTesting(
+                         [&](IconsDownloadedResult result, IconsMap icons_map,
+                             DownloadedIconsHttpResults icons_http_results) {
+                           EXPECT_TRUE(icons_map.empty());
+                           run_loop.Quit();
+                         }));
   DeleteContents();
   run_loop.Run();
 }

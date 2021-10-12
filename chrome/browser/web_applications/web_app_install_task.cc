@@ -693,11 +693,16 @@ void WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons(
 void WebAppInstallTask::OnIconsRetrieved(
     std::unique_ptr<WebApplicationInfo> web_app_info,
     WebAppInstallFinalizer::FinalizeOptions finalize_options,
-    IconsMap icons_map) {
+    IconsDownloadedResult result,
+    IconsMap icons_map,
+    DownloadedIconsHttpResults icons_http_results) {
   DCHECK(background_installation_);
 
   if (ShouldStopInstall())
     return;
+
+  // TODO(crbug.com/1238622): Report `IconsDownloadedResult`and
+  // `DownloadedIconsHttpResults` in UMA and debug internals.
 
   DCHECK(web_app_info);
 
@@ -712,9 +717,14 @@ void WebAppInstallTask::OnIconsRetrieved(
 void WebAppInstallTask::OnIconsRetrievedShowDialog(
     std::unique_ptr<WebApplicationInfo> web_app_info,
     ForInstallableSite for_installable_site,
-    IconsMap icons_map) {
+    IconsDownloadedResult result,
+    IconsMap icons_map,
+    DownloadedIconsHttpResults icons_http_results) {
   if (ShouldStopInstall())
     return;
+
+  // TODO(crbug.com/1238622): Report `IconsDownloadedResult`and
+  // `DownloadedIconsHttpResults` in UMA and debug internals.
 
   DCHECK(web_app_info);
 
@@ -737,9 +747,14 @@ void WebAppInstallTask::OnIconsRetrievedShowDialog(
 void WebAppInstallTask::OnIconsRetrievedFinalizeUpdate(
     std::unique_ptr<WebApplicationInfo> web_app_info,
     bool update_product_icons,
-    IconsMap icons_map) {
+    IconsDownloadedResult result,
+    IconsMap icons_map,
+    DownloadedIconsHttpResults icons_http_results) {
   if (ShouldStopInstall())
     return;
+
+  // TODO(crbug.com/1238622): Report `IconsDownloadedResult`and
+  // `DownloadedIconsHttpResults` in UMA and debug internals.
 
   DCHECK(web_app_info);
 
