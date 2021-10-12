@@ -20,7 +20,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/desks_storage/core/desk_template.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace desks_storage {
