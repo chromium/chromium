@@ -160,7 +160,7 @@ class GenericExpectations(expectations.Expectations):
   def _GetExpectationFileTagHeader(self):
     return """\
 # tags: [ linux mac win ]
-# results: [ Failure RetryOnFailure Skip ]
+# results: [ Failure RetryOnFailure Skip Pass ]
 """
 
 

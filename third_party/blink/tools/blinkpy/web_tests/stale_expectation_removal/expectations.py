@@ -5,13 +5,12 @@
 
 import os
 
+from blinkpy.web_tests.stale_expectation_removal import constants
+
 from unexpected_passes_common import expectations
 
-WEB_TEST_ROOT_DIR = os.path.realpath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..', '..',
-                 'web_tests'))
-
-MAIN_EXPECTATION_FILE = os.path.join(WEB_TEST_ROOT_DIR, 'TestExpectations')
+MAIN_EXPECTATION_FILE = os.path.join(constants.WEB_TEST_ROOT_DIR,
+                                     'TestExpectations')
 
 TOP_LEVEL_EXPECTATION_FILES = {
     'ASANExpectations',
@@ -20,6 +19,7 @@ TOP_LEVEL_EXPECTATION_FILES = {
     # NeverFixTests omitted since they're never expected to be
     # unsuppressed.
     'SlowTests',
+    'TestExpectations',
     'W3CImportExpectations',
     'WPTOverrideExpectations',
     'WebDriverExpectations',
@@ -43,8 +43,8 @@ class WebTestExpectations(expectations.Expectations):
             self._expectation_filepaths = []
             for ef in self._GetTopLevelExpectationFiles():
                 self._expectation_filepaths.append(
-                    os.path.join(WEB_TEST_ROOT_DIR, ef))
-            flag_directory = os.path.join(WEB_TEST_ROOT_DIR,
+                    os.path.join(constants.WEB_TEST_ROOT_DIR, ef))
+            flag_directory = os.path.join(constants.WEB_TEST_ROOT_DIR,
                                           'FlagExpectations')
             for ef in self._GetFlagSpecificExpectationFiles():
                 self._expectation_filepaths.append(
@@ -58,7 +58,7 @@ class WebTestExpectations(expectations.Expectations):
     def _GetFlagSpecificExpectationFiles(self):
         if self._flag_specific_expectation_files is None:
             self._flag_specific_expectation_files = set()
-            flag_directory = os.path.join(WEB_TEST_ROOT_DIR,
+            flag_directory = os.path.join(constants.WEB_TEST_ROOT_DIR,
                                           'FlagExpectations')
             for ef in os.listdir(flag_directory):
                 if ef != 'README.txt':

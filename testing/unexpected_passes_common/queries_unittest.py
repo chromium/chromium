@@ -34,6 +34,10 @@ class HelperMethodUnittest(unittest.TestCase):
     with self.assertRaises(AssertionError):
       queries._StripPrefixFromBuildId('build-1-2')
 
+  def testConvertActualResultToExpectationFileFormatAbort(self):
+    self.assertEqual(
+        queries._ConvertActualResultToExpectationFileFormat('ABORT'), 'Timeout')
+
 
 class QueryGeneratorUnittest(unittest.TestCase):
   def testSplitQueryGeneratorInitialSplit(self):

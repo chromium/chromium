@@ -5,6 +5,7 @@
 
 from __future__ import print_function
 
+import collections
 import copy
 import fnmatch
 import logging
@@ -432,28 +433,31 @@ class TestExpectationMap(BaseTypedMap):
     empty dictionary, that test entry will also be removed.
 
     Returns:
-      A list containing any Expectations that were removed.
+      A dict from expectation file name (str) to set of unused expectations
+      (str) from that file.
     """
     logging.info('Filtering out unused expectations')
-    unused_expectations = []
-    for _, expectation, builder_map in self.IterBuilderStepMaps():
+    unused = collections.defaultdict(list)
+    unused_count = 0
+    for (expectation_file, expectation,
+         builder_map) in self.IterBuilderStepMaps():
       if not builder_map:
-        unused_expectations.append(expectation)
-    for unused in unused_expectations:
-      for _, expectation_map in self.items():
-        if unused in expectation_map:
-          del expectation_map[unused]
-    logging.debug('Found %d unused expectations', len(unused_expectations))
+        unused[expectation_file].append(expectation)
+        unused_count += 1
+    for expectation_file, expectations in unused.items():
+      for e in expectations:
+        del self[expectation_file][e]
+    logging.debug('Found %d unused expectations', unused_count)
 
-    empty_tests = []
-    for test_name, expectation_map in self.items():
+    empty_files = []
+    for expectation_file, expectation_map in self.items():
       if not expectation_map:
-        empty_tests.append(test_name)
-    for empty in empty_tests:
+        empty_files.append(expectation_file)
+    for empty in empty_files:
       del self[empty]
-    logging.debug('Found %d empty tests: %s', len(empty_tests), empty_tests)
+    logging.debug('Found %d empty files: %s', len(empty_files), empty_files)
 
-    return unused_expectations
+    return unused
 
 
 class ExpectationBuilderMap(BaseTypedMap):

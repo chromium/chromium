@@ -183,8 +183,8 @@ def OutputResults(stale_dict,
     ummatched_results: Any unmatched results found while filling
         |test_expectation_map|, as returned by
         queries.FillExpectationMapFor[Ci|Try]Builders().
-    unused_expectations: A list of any unmatched Expectations that were pulled
-        out of |test_expectation_map|.
+    unused_expectations: A dict from expectation file (str) to list of
+        unmatched Expectations that were pulled out of |test_expectation_map|
     output_format: A string denoting the format to output to. Valid values are
         "print" and "html".
     file_handle: An optional open file-like object to output to. If not
@@ -199,7 +199,7 @@ def OutputResults(stale_dict,
   active_str_dict = _ConvertTestExpectationMapToStringDict(active_dict)
   unmatched_results_str_dict = _ConvertUnmatchedResultsToStringDict(
       unmatched_results)
-  unused_expectations_str_list = _ConvertUnusedExpectationsToStringList(
+  unused_expectations_str_list = _ConvertUnusedExpectationsToStringDict(
       unused_expectations)
 
   if output_format == 'print':
@@ -225,7 +225,9 @@ def OutputResults(stale_dict,
     should_close_file = False
     if not file_handle:
       should_close_file = True
-      file_handle = tempfile.NamedTemporaryFile(delete=False, suffix='.html')
+      file_handle = tempfile.NamedTemporaryFile(delete=False,
+                                                suffix='.html',
+                                                mode='w')
 
     file_handle.write(HTML_HEADER)
     if stale_dict:
@@ -441,23 +443,34 @@ def _ConvertUnmatchedResultsToStringDict(unmatched_results):
   return output_dict
 
 
-def _ConvertUnusedExpectationsToStringList(unused_expectations):
-  """Converts |unused_expectations| to a list of strings for reporting.
+def _ConvertUnusedExpectationsToStringDict(unused_expectations):
+  """Converts |unused_expectations| to a dict of strings for reporting.
 
   Args:
-    unused_expectations: A list of data_types.Expectation that didn't have any
-        matching results.
+    unused_expectations: A dict mapping expectation file (str) to lists of
+        data_types.Expectation who did not have any matching results.
 
   Returns:
-    A list of strings, each one corresponding to an element in
-    |unused_expectations|. Strings are in a format similar to what would be
-    present as a line in an expectation file.
+    A string dictionary representation of |unused_expectations| in the following
+    format:
+    {
+      expectation_file: [
+        expectation1,
+        expectation2,
+      ],
+    }
+    The expectations are in a format similar to what would be present as a line
+    in an expectation file.
   """
-  output_list = []
-  for e in unused_expectations:
-    output_list.append('[ %s ] %s [ %s ]' %
-                       (' '.join(e.tags), e.test, ' '.join(e.expected_results)))
-  return output_list
+  output_dict = {}
+  for expectation_file, expectations in unused_expectations.items():
+    expectation_str_list = []
+    for e in expectations:
+      expectation_str_list.append(
+          '[ %s ] %s [ %s ]' %
+          (' '.join(e.tags), e.test, ' '.join(e.expected_results)))
+    output_dict[expectation_file] = expectation_str_list
+  return output_dict
 
 
 def _FormatExpectation(expectation):

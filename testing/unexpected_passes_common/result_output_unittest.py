@@ -11,6 +11,8 @@ import sys
 import tempfile
 import unittest
 
+import six
+
 from pyfakefs import fake_filesystem_unittest
 
 from unexpected_passes_common import data_types
@@ -140,7 +142,7 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
     })
     # TODO(crbug.com/1198237): Remove the Python 2 version once we are fully
     # switched to Python 3.
-    if sys.version_info[0] == 2:
+    if six.PY2:
       expected_output = {
           'expectation_file': {
               'foo/test': {
@@ -224,6 +226,54 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
     self.assertEqual(str_dict, expected_output)
 
 
+class ConvertUnusedExpectationsToStringDictUnittest(unittest.TestCase):
+  def testEmptyDict(self):
+    """Tests that nothing blows up when given an empty dict."""
+    self.assertEqual(result_output._ConvertUnusedExpectationsToStringDict({}),
+                     {})
+
+  def testBasic(self):
+    """Basic functionality test."""
+    unused = {
+        'foo_file': [
+            data_types.Expectation('foo/test', ['win', 'nvidia'],
+                                   ['Failure', 'Timeout']),
+        ],
+        'bar_file': [
+            data_types.Expectation('bar/test', ['win'], ['Failure']),
+            data_types.Expectation('bar/test2', ['win'], ['RetryOnFailure'])
+        ],
+    }
+    if six.PY2:
+      expected_output = {
+          'foo_file': [
+              '[ win nvidia ] foo/test [ Failure Timeout ]',
+          ],
+          'bar_file': [
+              '[ win ] bar/test [ Failure ]',
+              '[ win ] bar/test2 [ RetryOnFailure ]',
+          ],
+      }
+    else:
+      # Set ordering does not appear to be stable between test runs, as we can
+      # get either order of tags. So, generate them now instead of hard coding
+      # them.
+      tags = ' '.join(set(['win', 'nvidia']))
+      results = ' '.join(set(['Failure', 'Timeout']))
+      expected_output = {
+          'foo_file': [
+              '[ %s ] foo/test [ %s ]' % (tags, results),
+          ],
+          'bar_file': [
+              '[ win ] bar/test [ Failure ]',
+              '[ win ] bar/test2 [ RetryOnFailure ]',
+          ],
+      }
+    self.assertEqual(
+        result_output._ConvertUnusedExpectationsToStringDict(unused),
+        expected_output)
+
+
 class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
   def setUp(self):
     self.setUpPyfakefs()
@@ -268,7 +318,7 @@ class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
     # pylint: disable=line-too-long
     # TODO(crbug.com/1198237): Remove the Python 2 version once we've fully
     # switched to Python 3.
-    if sys.version_info[0] == 2:
+    if six.PY2:
       expected_output = """\
 <button type="button" class="collapsible_group">foo</button>
 <div class="content">
@@ -410,7 +460,7 @@ class PrintToFileUnittest(fake_filesystem_unittest.TestCase):
 
     # TODO(crbug.com/1198237): Keep the Python 3 version once we are fully
     # switched.
-    if sys.version_info[0] == 2:
+    if six.PY2:
       expected_output = """\
 foo
   "RetryOnFailure" expectation on "win intel"
@@ -491,7 +541,7 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
     with self.assertRaises(RuntimeError):
       result_output.OutputResults(data_types.TestExpectationMap(),
                                   data_types.TestExpectationMap(),
-                                  data_types.TestExpectationMap(), {}, [],
+                                  data_types.TestExpectationMap(), {}, {},
                                   'asdf')
 
   def testOutputResultsSmoketest(self):
@@ -535,16 +585,18 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
                               'build_id'),
         ],
     }
-    unmatched_expectations = [
-        data_types.Expectation('foo', ['linux'], 'RetryOnFailure')
-    ]
+    unmatched_expectations = {
+        'foo_file': [
+            data_types.Expectation('foo', ['linux'], 'RetryOnFailure'),
+        ],
+    }
 
     stale, semi_stale, active = expectation_map.SplitByStaleness()
 
-    result_output.OutputResults(stale, semi_stale, active, {}, [], 'print',
+    result_output.OutputResults(stale, semi_stale, active, {}, {}, 'print',
                                 self._file_handle)
     result_output.OutputResults(stale, semi_stale, active, unmatched_results,
-                                [], 'print', self._file_handle)
+                                {}, 'print', self._file_handle)
     result_output.OutputResults(stale, semi_stale, active, {},
                                 unmatched_expectations, 'print',
                                 self._file_handle)
@@ -552,10 +604,10 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
                                 unmatched_expectations, 'print',
                                 self._file_handle)
 
-    result_output.OutputResults(stale, semi_stale, active, {}, [], 'html',
+    result_output.OutputResults(stale, semi_stale, active, {}, {}, 'html',
                                 self._file_handle)
     result_output.OutputResults(stale, semi_stale, active, unmatched_results,
-                                [], 'html', self._file_handle)
+                                {}, 'html', self._file_handle)
     result_output.OutputResults(stale, semi_stale, active, {},
                                 unmatched_expectations, 'html',
                                 self._file_handle)

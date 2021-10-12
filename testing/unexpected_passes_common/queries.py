@@ -17,6 +17,7 @@ import time
 import six
 
 from typ import expectations_parser
+from typ import json_results
 from unexpected_passes_common import builders as builders_module
 from unexpected_passes_common import data_types
 from unexpected_passes_common import multiprocessing_utils
@@ -271,22 +272,24 @@ class BigQueryQuerier(object):
 
     def run_cmd_in_thread(inputs):
       cmd, query = inputs
+      query = query.encode('utf-8')
       with open(os.devnull, 'w') as devnull:
-        processes_lock.acquire()
-        # Starting many queries at once causes us to hit rate limits much more
-        # frequently, so stagger query starts to help avoid that.
-        time.sleep(QUERY_DELAY)
-        p = subprocess.Popen(cmd,
-                             stdout=subprocess.PIPE,
-                             stderr=devnull,
-                             stdin=subprocess.PIPE)
-        processes.add(p)
-        processes_lock.release()
+        with processes_lock:
+          # Starting many queries at once causes us to hit rate limits much more
+          # frequently, so stagger query starts to help avoid that.
+          time.sleep(QUERY_DELAY)
+          p = subprocess.Popen(cmd,
+                               stdout=subprocess.PIPE,
+                               stderr=devnull,
+                               stdin=subprocess.PIPE)
+          processes.add(p)
 
         # We pass in the query via stdin instead of including it on the
         # commandline because we can run into command length issues in large
         # query mode.
         stdout, _ = p.communicate(query)
+        if not isinstance(stdout, six.string_types):
+          stdout = stdout.decode('utf-8')
         if p.returncode:
           # When running many queries in parallel, it's possible to hit the
           # rate limit for the account if we're unlucky, so try again if we do.
@@ -509,6 +512,10 @@ def _StripPrefixFromBuildId(build_id):
 
 
 def _ConvertActualResultToExpectationFileFormat(actual_result):
+  # Web tests use ResultDB's ABORT value for both test timeouts and device
+  # failures, but Abort is not defined in typ. So, map it to timeout now.
+  if actual_result == 'ABORT':
+    actual_result = json_results.ResultType.Timeout
   # The result reported to ResultDB is in the format PASS/FAIL, while the
   # expected results in an expectation file are in the format Pass/Failure.
   return expectations_parser.RESULT_TAGS[actual_result]

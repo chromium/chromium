@@ -23,13 +23,14 @@ from unexpected_passes_common import unittest_utils as uu
 
 FAKE_EXPECTATION_FILE_CONTENTS = """\
 # tags: [ win linux ]
-# results: [ Failure RetryOnFailure Skip ]
+# results: [ Failure RetryOnFailure Skip Pass ]
 crbug.com/1234 [ win ] foo/test [ Failure ]
 
 [ linux ] foo/test [ Failure ]
 
 crbug.com/2345 [ linux ] bar/* [ RetryOnFailure ]
 crbug.com/3456 [ linux ] some/bad/test [ Skip ]
+crbug.com/4567 [ linux ] some/good/test [ Pass ]
 """
 
 SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS = """\
@@ -342,12 +343,13 @@ class ModifySemiStaleExpectationsUnittest(fake_filesystem_unittest.TestCase):
     self.assertEqual(modified_urls, set(['crbug.com/1234', 'crbug.com/4567']))
     expected_file_contents = """\
 # tags: [ win linux ]
-# results: [ Failure RetryOnFailure Skip ]
+# results: [ Failure RetryOnFailure Skip Pass ]
 
 [ linux ] foo/test [ Failure ]
 
 crbug.com/2345 [ linux ] bar/* [ RetryOnFailure ]
 crbug.com/3456 [ linux ] some/bad/test [ Skip ]
+crbug.com/4567 [ linux ] some/good/test [ Pass ]
 """
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_file_contents)

@@ -41,6 +41,11 @@ class Expectations(object):
       for e in list_parser.expectations:
         if 'Skip' in e.raw_results:
           continue
+        # Expectations that only have a Pass expectation (usually used to
+        # override a broader, failing expectation) are not handled by the
+        # unexpected pass finder, so ignore those.
+        if e.raw_results == ['Pass']:
+          continue
         expectation = data_types.Expectation(e.test, e.tags, e.raw_results,
                                              e.reason)
         assert expectation not in expectations_for_file

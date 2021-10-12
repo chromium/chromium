@@ -1141,10 +1141,12 @@ class TestExpectationMapFilterOutUnusedExpectationsUnittest(unittest.TestCase):
             }),
         }),
     })
+    expected_unused = {
+        'expectation_file':
+        [data_types.Expectation('foo/test', ['linux'], ['Failure'])]
+    }
     unused_expectations = expectation_map.FilterOutUnusedExpectations()
-    self.assertEqual(
-        unused_expectations,
-        [data_types.Expectation('foo/test', ['linux'], ['Failure'])])
+    self.assertEqual(unused_expectations, expected_unused)
     self.assertEqual(expectation_map, expected_expectation_map)
 
   def testUnusedAndEmpty(self):
@@ -1156,9 +1158,12 @@ class TestExpectationMapFilterOutUnusedExpectationsUnittest(unittest.TestCase):
             data_types.BuilderStepMap(),
         }),
     })
+    expected_unused = {
+        'expectation_file':
+        [data_types.Expectation('foo/test', ['win'], ['Failure'])]
+    }
     unused_expectations = expectation_map.FilterOutUnusedExpectations()
-    self.assertEqual(unused_expectations,
-                     [data_types.Expectation('foo/test', ['win'], ['Failure'])])
+    self.assertEqual(unused_expectations, expected_unused)
     self.assertEqual(expectation_map, {})
 
 
