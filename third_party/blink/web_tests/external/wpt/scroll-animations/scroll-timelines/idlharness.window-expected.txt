@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL idl_test setup promise_test: Unhandled rejection with value: object "CSSScrollTimelineRule inherits CSSRule, but CSSRule is undefined."
+PASS idl_test validation
+PASS Partial interface Element: member names are unique
+PASS Element includes Animatable: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slottable: member names are unique
+Harness: the test ran to completion.
+
