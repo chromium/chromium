@@ -1101,8 +1101,8 @@ void BrowserCommandController::InitCommandState() {
   // Hosted app browser commands.
   const bool enable_copy_url =
       is_web_app_or_custom_tab ||
-      base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopOmnibox) ||
-      base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopAppMenu);
+      sharing_hub::SharingHubOmniboxEnabled(browser_->profile()) ||
+      sharing_hub::SharingHubAppMenuEnabled(browser_->profile());
   command_updater_.UpdateCommandEnabled(IDC_COPY_URL, enable_copy_url);
   command_updater_.UpdateCommandEnabled(IDC_OPEN_IN_CHROME,
                                         is_web_app_or_custom_tab);

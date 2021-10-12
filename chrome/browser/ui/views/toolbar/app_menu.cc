@@ -984,11 +984,8 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
   if (command_id == IDC_MORE_TOOLS_MENU)
     return true;
 
-  if (command_id == IDC_SHARING_HUB_MENU) {
-    DCHECK(
-        base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopAppMenu));
+  if (command_id == IDC_SHARING_HUB_MENU)
     return true;
-  }
 
   // The items representing the cut menu (cut/copy/paste), zoom menu
   // (increment/decrement/reset) and extension toolbar view are always enabled.

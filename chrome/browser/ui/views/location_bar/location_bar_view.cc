@@ -344,8 +344,7 @@ void LocationBarView::Init() {
       params.types_enabled.push_back(PageActionIconType::kSharingHub);
     }
 #else
-    if (base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopOmnibox) &&
-        !is_popup_mode_)
+    if (sharing_hub::SharingHubOmniboxEnabled(profile_) && !is_popup_mode_)
       params.types_enabled.push_back(PageActionIconType::kSharingHub);
 #endif
   }

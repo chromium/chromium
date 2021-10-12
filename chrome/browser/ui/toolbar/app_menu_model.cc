@@ -854,7 +854,7 @@ void AppMenuModel::Build() {
 
   AddItemWithStringId(IDC_PRINT, IDS_PRINT);
 
-  if (!base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopAppMenu) ||
+  if (!sharing_hub::SharingHubAppMenuEnabled(browser()->profile()) ||
       browser_->profile()->IsIncognitoProfile() ||
       browser_->profile()->IsGuestSession()) {
     if (media_router::MediaRouterEnabled(browser()->profile()))
