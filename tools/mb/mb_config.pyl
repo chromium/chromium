@@ -450,8 +450,8 @@
       'Chromium Android ARM 32-bit Goma RBE ToT (ATS)': 'android_release_bot_minimal_symbols',
       'Chromium Android ARM 32-bit Goma RBE Staging': 'android_release_bot_minimal_symbols',
 
-      'chromeos-amd64-generic-rel-goma-rbe-tot': 'chromeos_amd64-generic',
-      'chromeos-amd64-generic-rel-goma-rbe-staging': 'chromeos_amd64-generic',
+      'chromeos-amd64-generic-rel-goma-rbe-tot': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized',
+      'chromeos-amd64-generic-rel-goma-rbe-staging': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized',
     },
 
     'chromium.gpu': {
@@ -1815,10 +1815,6 @@
 
     'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_goma': [
       'cfi_full', 'cfi_icall', 'cfi_diag', 'thin_lto', 'release', 'static', 'dcheck_always_on', 'goma',
-    ],
-
-    'chromeos_amd64-generic': [
-      'chromeos_amd64-generic',
     ],
 
     'chromeos_amd64-generic_asan': [
