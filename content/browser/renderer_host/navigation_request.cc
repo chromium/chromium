@@ -891,6 +891,32 @@ bool IsDocumentToCommitAnonymous(FrameTreeNode* frame,
   return parent_anonymous || frame->anonymous();
 }
 
+// Returns the "loading" URL in the renderer. This tries to replicate
+// RenderFrameImpl::GetLoadingUrl(). This might return a different URL from
+// what we get when calling GetLastCommittedURL() on `rfh`, in case the
+// document had changed its URL through document.open() before, or
+// when calling last_document_url_in_renderer(), in case of error pages and
+// loadDataWithBaseURL documents.
+// This function should only be used to preserve calculations that were
+// previously done in the renderer but got moved to the browser (e.g. URL
+// comparisons to determine if a navigation should do a replacement or not).
+const GURL& GetLastLoadingURLInRendererForNavigationReplacement(
+    RenderFrameHostImpl* rfh) {
+  // Handle some special cases:
+  // - The "loading URL" for an error page commit is the URL that it failed to
+  // load. This will be retained as long as the document stays the same.
+  // - For loadDataWithBaseURL() navigations the "loading URL" will be the
+  // last committed URL (the data: URL). This will also be retained as long as
+  // the document stays the same.
+  if (rfh->IsErrorDocument() ||
+      rfh->was_loaded_from_load_data_with_base_url()) {
+    return rfh->GetLastCommittedURL();
+  }
+
+  // Otherwise, return the last document URL.
+  return rfh->last_document_url_in_renderer();
+}
+
 }  // namespace
 
 NavigationRequest::PrerenderActivationNavigationState::
@@ -6867,15 +6893,15 @@ bool NavigationRequest::ShouldRenderFallbackContentForResponse(
 // https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents:hh-replace
 bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
   DCHECK_LE(state_, WILL_START_NAVIGATION);
-  // Not a same-url navigation. Note that this is comparing against the last
-  // history URL since this is what was used in the renderer check that was
+  // Not a same-url navigation. Note that this is comparing against the "last
+  // loading URL" since this is what was used in the renderer check that was
   // moved here. This means for error pages we should compare against the URL
   // that failed to load (the last committed URL), while for other navigations
   // we should compare against the last document URL, which might be different
-  // from the last committed URL due to document.open() changing the URL. To
-  // handle that, we compare against the "loading URL".
+  // from the last committed URL due to document.open() changing the URL.
   if (common_params_->url !=
-      frame_tree_node_->current_frame_host()->GetLastLoadingURLInRenderer()) {
+      GetLastLoadingURLInRendererForNavigationReplacement(
+          frame_tree_node_->current_frame_host())) {
     return false;
   }
 
@@ -6988,8 +7014,9 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForFailedNavigation() const {
   // TODO(https://crbug.com/1188956): Reconsider whether these two cases should
   // do replacement or not, since we're just preserving old behavior here.
   return is_reload_or_history ||
-         (common_params_->url == frame_tree_node_->current_frame_host()
-                                     ->GetLastLoadingURLInRenderer());
+         (common_params_->url ==
+          GetLastLoadingURLInRendererForNavigationReplacement(
+              frame_tree_node_->current_frame_host()));
 }
 
 void NavigationRequest::RenderFallbackContentForObjectTag() {

@@ -968,7 +968,7 @@ GURL GetLastDocumentURL(
     // failed (which is already accounted for in the error page case above).
     return request->common_params().base_url_for_data_url;
   }
-  if (renderer_url_info.is_loaded_from_load_data_with_base_url &&
+  if (renderer_url_info.was_loaded_from_load_data_with_base_url &&
       request->IsSameDocument()) {
     // If this is a same-document navigation on a document loaded from
     // loadDataWithBaseURL(), it is not currently possible to figure out the
@@ -2068,21 +2068,6 @@ const GURL& RenderFrameHostImpl::GetLastCommittedURL() {
 
 const url::Origin& RenderFrameHostImpl::GetLastCommittedOrigin() {
   return last_committed_origin_;
-}
-
-const GURL& RenderFrameHostImpl::GetLastLoadingURLInRenderer() const {
-  // Handle some special cases:
-  // - The "loading URL" for an error page commit is the URL that it failed to
-  // load. This will be retained as long as the document stays the same.
-  // - For loadDataWithBaseURL() navigations the "loading URL" will be the
-  // last committed URL (the data: URL). This will also be retained as long as
-  // the document stays the same.
-  if (is_error_page_ ||
-      renderer_url_info_.is_loaded_from_load_data_with_base_url) {
-    return last_committed_url_;
-  }
-  // Otherwise, return the last document URL.
-  return renderer_url_info_.last_document_url;
 }
 
 const net::NetworkIsolationKey& RenderFrameHostImpl::GetNetworkIsolationKey() {
@@ -10006,13 +9991,13 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   // checks. We should also allow same-document navigations within pages loaded
   // with loadDataWithBaseURL. Since renderer-initiated same-document
   // navigations won't have a NavigationRequest at this point, we need to check
-  // |renderer_url_info_.is_loaded_from_load_data_with_base_url|.
+  // |renderer_url_info_.was_loaded_from_load_data_with_base_url|.
   DCHECK(navigation_request || is_same_document_navigation ||
          !frame_tree_node_->has_committed_real_load());
   bool bypass_checks_for_webview = false;
   if ((navigation_request && navigation_request->IsLoadDataWithBaseURL()) ||
       (is_same_document_navigation &&
-       renderer_url_info_.is_loaded_from_load_data_with_base_url)) {
+       renderer_url_info_.was_loaded_from_load_data_with_base_url)) {
     // Allow bypass if the process isn't locked. Otherwise run normal checks.
     bypass_checks_for_webview = !ChildProcessSecurityPolicyImpl::GetInstance()
                                      ->GetProcessLock(process->GetID())
@@ -10568,10 +10553,10 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
       navigation_request->is_overriding_user_agent() && is_main_frame();
 
   // Mark whether then navigation was intended as a loadDataWithBaseURL or not.
-  // If |renderer_url_info_.is_loaded_from_load_data_with_base_url| is true, we
+  // If |renderer_url_info_.was_loaded_from_load_data_with_base_url| is true, we
   // will bypass checks in VerifyDidCommitParams for same-document navigations
   // in the loaded document.
-  renderer_url_info_.is_loaded_from_load_data_with_base_url =
+  renderer_url_info_.was_loaded_from_load_data_with_base_url =
       navigation_request->IsLoadDataWithBaseURL();
 
   // If we still have a PeakGpuMemoryTracker, then the loading it was observing
@@ -11421,9 +11406,7 @@ ui::PageTransition CalculateTransition(
 
 // Calculates the "loading" URL for a given navigation. This tries to replicate
 // RenderFrameImpl::GetLoadingUrl() and is used to predict the value of "url" in
-// DidCommitProvisionalLoadParams. Note that this is a bit different from
-// GetLastDocumentLoadingURL(), which predicts the loading URL of an
-// already-committed document for URL comparison purposes.
+// DidCommitProvisionalLoadParams.
 GURL CalculateLoadingURL(
     NavigationRequest* request,
     const mojom::DidCommitProvisionalLoadParams& params,
@@ -11449,7 +11432,7 @@ GURL CalculateLoadingURL(
 
   if (request->IsSameDocument() &&
       (last_document_is_error_page ||
-       last_renderer_url_info.is_loaded_from_load_data_with_base_url)) {
+       last_renderer_url_info.was_loaded_from_load_data_with_base_url)) {
     // Documents that have an "override" URL (loadDataWithBaseURL navigations,
     // error pages) will continue using that URL even after same-document
     // navigations.
@@ -11625,7 +11608,7 @@ void RenderFrameHostImpl::
 
   SCOPED_CRASH_KEY_BOOL(
       "VerifyDidCommit", "prev_ldwb",
-      renderer_url_info_.is_loaded_from_load_data_with_base_url);
+      renderer_url_info_.was_loaded_from_load_data_with_base_url);
   SCOPED_CRASH_KEY_STRING32(
       "VerifyDidCommit", "base_url_fdu_type",
       GetURLTypeForCrashKey(request->common_params().base_url_for_data_url));

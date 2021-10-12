@@ -2176,13 +2176,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, RendererURLs) {
   FrameTreeNode* root = contents()->GetFrameTree()->root();
   EXPECT_EQ(url1, root->current_frame_host()->GetLastCommittedURL());
   EXPECT_EQ(url1, root->current_frame_host()->last_document_url_in_renderer());
-  EXPECT_EQ(url1, root->current_frame_host()->GetLastLoadingURLInRenderer());
   FrameTreeNode* iframe = root->child_at(0);
   EXPECT_EQ(iframe_url, iframe->current_frame_host()->GetLastCommittedURL());
   EXPECT_EQ(iframe_url,
             iframe->current_frame_host()->last_document_url_in_renderer());
-  EXPECT_EQ(iframe_url,
-            iframe->current_frame_host()->GetLastLoadingURLInRenderer());
 
   // 2) Do a document.open() on the iframe from the main frame.
   EXPECT_TRUE(ExecJs(
@@ -2195,7 +2192,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, RendererURLs) {
   EXPECT_EQ(iframe_url, iframe->current_frame_host()->GetLastCommittedURL());
   EXPECT_EQ(url1,
             iframe->current_frame_host()->last_document_url_in_renderer());
-  EXPECT_EQ(url1, iframe->current_frame_host()->GetLastLoadingURLInRenderer());
 
   // 3) Do a same-document navigation to `url_1_fragment` on the iframe (Note
   // that this is a same-document navigation because the iframe's document URL
@@ -2214,8 +2210,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, RendererURLs) {
             iframe->current_frame_host()->GetLastCommittedURL());
   EXPECT_EQ(url_1_fragment,
             iframe->current_frame_host()->last_document_url_in_renderer());
-  EXPECT_EQ(url_1_fragment,
-            iframe->current_frame_host()->GetLastLoadingURLInRenderer());
 
   // 4) Do a navigation to `url404`, which wil result in an error page.
   // The document URL will be set to the kUnreachableWebDataURL.
@@ -2224,7 +2218,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, RendererURLs) {
   EXPECT_EQ(url404, root->current_frame_host()->GetLastCommittedURL());
   EXPECT_EQ(GURL(kUnreachableWebDataURL),
             root->current_frame_host()->last_document_url_in_renderer());
-  EXPECT_EQ(url404, root->current_frame_host()->GetLastLoadingURLInRenderer());
 
   // 5) Do a same-document pushState on an error page without changing the URL
   // (otherwise it will result in an origin mismatch error). The URLs will stay
@@ -2239,7 +2232,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, RendererURLs) {
   EXPECT_EQ(url404, root->current_frame_host()->GetLastCommittedURL());
   EXPECT_EQ(GURL(kUnreachableWebDataURL),
             root->current_frame_host()->last_document_url_in_renderer());
-  EXPECT_EQ(url404, root->current_frame_host()->GetLastLoadingURLInRenderer());
 }
 
 // Tests various cases of replacements caused by error pages.
