@@ -8,10 +8,10 @@ import './print_preview_vars_css.js';
 import './settings_section.js';
 
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {InputMixin, InputMixinInterface} from './input_mixin.js';
+import {InputMixin} from './input_mixin.js';
 
 export interface PrintPreviewNumberSettingsSectionElement {
   $: {
@@ -20,8 +20,7 @@ export interface PrintPreviewNumberSettingsSectionElement {
 }
 
 const PrintPreviewNumberSettingsSectionElementBase =
-    mixinBehaviors([WebUIListenerBehavior], InputMixin(PolymerElement)) as
-    {new (): PolymerElement & WebUIListenerBehavior & InputMixinInterface};
+    WebUIListenerMixin(InputMixin(PolymerElement));
 
 export class PrintPreviewNumberSettingsSectionElement extends
     PrintPreviewNumberSettingsSectionElementBase {

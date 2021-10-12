@@ -58,7 +58,7 @@ export const SelectMixin = dedupingMixin(
       return SelectMixin;
     });
 
-export interface SelectMixinInterface {
+interface SelectMixinInterface {
   selectedValue: string;
 
   /**

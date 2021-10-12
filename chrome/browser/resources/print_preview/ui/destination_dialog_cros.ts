@@ -28,7 +28,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {beforeNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, GooglePromotedDestinationId} from '../data/destination.js';
@@ -57,10 +57,9 @@ export interface PrintPreviewDestinationDialogCrosElement {
 
 const PrintPreviewDestinationDialogCrosElementBase =
     mixinBehaviors(
-        [ListPropertyUpdateBehavior, WebUIListenerBehavior], PolymerElement) as
-    {
-      new ():
-          PolymerElement & WebUIListenerBehavior & ListPropertyUpdateBehavior
+        [ListPropertyUpdateBehavior], WebUIListenerMixin(PolymerElement)) as {
+      new (): PolymerElement & WebUIListenerMixinInterface &
+      ListPropertyUpdateBehavior
     };
 
 export class PrintPreviewDestinationDialogCrosElement extends

@@ -11,10 +11,10 @@ import './print_preview_vars_css.js';
 import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, DestinationOrigin} from '../data/destination.js';
 // <if expr="chromeos or lacros">
@@ -31,9 +31,7 @@ enum DestinationConfigStatus {
 }
 // </if>
 
-const PrintPreviewDestinationListItemElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement) as
-    {new (): I18nBehavior & PolymerElement};
+const PrintPreviewDestinationListItemElementBase = I18nMixin(PolymerElement);
 
 export class PrintPreviewDestinationListItemElement extends
     PrintPreviewDestinationListItemElementBase {

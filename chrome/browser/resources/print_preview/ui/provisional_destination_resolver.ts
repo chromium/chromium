@@ -13,9 +13,9 @@ import './throbber_css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
 import {DestinationStore} from '../data/destination_store.js';
@@ -47,8 +47,7 @@ export interface PrintPreviewProvisionalDestinationResolverElement {
 }
 
 const PrintPreviewProvisionalDestinationResolverElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior};
+    I18nMixin(PolymerElement);
 
 export class PrintPreviewProvisionalDestinationResolverElement extends
     PrintPreviewProvisionalDestinationResolverElementBase {

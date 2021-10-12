@@ -15,17 +15,16 @@ import './throbber_css.js';
 import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloudOrigins, Destination, DestinationOrigin, GooglePromotedDestinationId, PDF_DESTINATION_KEY, RecentDestination, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
 
-import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
+import {SelectMixin} from './select_mixin.js';
 
 const PrintPreviewDestinationSelectCrosElementBase =
-    mixinBehaviors([I18nBehavior], SelectMixin(PolymerElement)) as
-    {new (): I18nBehavior & SelectMixinInterface & PolymerElement};
+    I18nMixin(SelectMixin(PolymerElement));
 
 export class PrintPreviewDestinationSelectCrosElement extends
     PrintPreviewDestinationSelectCrosElementBase {

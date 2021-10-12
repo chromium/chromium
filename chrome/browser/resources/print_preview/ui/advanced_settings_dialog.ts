@@ -12,15 +12,15 @@ import './print_preview_vars_css.js';
 import '../strings.m.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
 import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 
 import {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
-import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 export interface PrintPreviewAdvancedSettingsDialogElement {
   $: {
@@ -30,8 +30,7 @@ export interface PrintPreviewAdvancedSettingsDialogElement {
 }
 
 const PrintPreviewAdvancedSettingsDialogElementBase =
-    mixinBehaviors([I18nBehavior], SettingsMixin(PolymerElement)) as
-    {new (): PolymerElement & SettingsMixinInterface & I18nBehavior};
+    I18nMixin(SettingsMixin(PolymerElement));
 
 export class PrintPreviewAdvancedSettingsDialogElement extends
     PrintPreviewAdvancedSettingsDialogElementBase {

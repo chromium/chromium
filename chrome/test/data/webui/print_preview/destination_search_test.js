@@ -78,7 +78,8 @@ suite(destination_search_test.suiteName, function() {
     // Get print list and fire event.
     const list =
         dialog.shadowRoot.querySelector('print-preview-destination-list');
-    list.fire('destination-selected', item);
+    list.dispatchEvent(new CustomEvent(
+        'destination-selected', {bubbles: true, composed: true, detail: item}));
   }
 
   /**

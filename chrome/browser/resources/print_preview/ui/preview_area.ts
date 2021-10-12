@@ -9,12 +9,12 @@ import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DarkModeMixin, DarkModeMixinInterface} from '../dark_mode_mixin.js';
+import {DarkModeMixin} from '../dark_mode_mixin.js';
 import {Coordinate2d} from '../data/coordinate2d.js';
 import {Destination} from '../data/destination.js';
 import {getPrinterTypeForDestination} from '../data/destination_match.js';
@@ -31,7 +31,7 @@ import {areRangesEqual} from '../print_preview_utils.js';
 
 import {MARGIN_KEY_MAP, MarginObject, PrintPreviewMarginControlContainerElement} from './margin_control_container.js';
 import {PluginProxy, PluginProxyImpl} from './plugin_proxy.js';
-import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 type PreviewTicket = Ticket&{
   headerFooterEnabled: boolean;
@@ -54,12 +54,7 @@ export interface PrintPreviewPreviewAreaElement {
 }
 
 const PrintPreviewPreviewAreaElementBase =
-    mixinBehaviors(
-        [WebUIListenerBehavior, I18nBehavior],
-        SettingsMixin(DarkModeMixin(PolymerElement))) as {
-      new (): PolymerElement & WebUIListenerBehavior & I18nBehavior &
-      SettingsMixinInterface & DarkModeMixinInterface
-    };
+    WebUIListenerMixin(I18nMixin(SettingsMixin(DarkModeMixin(PolymerElement))));
 
 export class PrintPreviewPreviewAreaElement extends
     PrintPreviewPreviewAreaElementBase {

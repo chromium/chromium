@@ -4,8 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloudPrintInterface, CloudPrintInterfaceErrorEventDetail, CloudPrintInterfaceEventType} from '../cloud_print_interface.js';
 import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
@@ -18,11 +18,8 @@ type UpdateUsersPayload = {
   users?: string[],
 };
 
-const PrintPreviewUserManagerElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
-    {new (): PolymerElement & WebUIListenerBehavior};
+const PrintPreviewUserManagerElementBase = WebUIListenerMixin(PolymerElement);
 
-/** @polymer */
 class PrintPreviewUserManagerElement extends
     PrintPreviewUserManagerElementBase {
   static get is() {

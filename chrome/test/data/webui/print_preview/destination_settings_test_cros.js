@@ -174,7 +174,11 @@ suite(destination_settings_test_cros.suiteName, function() {
               // we don't try to fetch the license again.
               nativeLayer.resetResolver('getPrinterCapabilities');
               destinationSettings.shadowRoot.querySelector('#destinationSelect')
-                  .fire('selected-option-change', 'ID1/chrome_os/');
+                  .dispatchEvent(new CustomEvent('selected-option-change', {
+                    bubbles: true,
+                    composed: true,
+                    detail: 'ID1/chrome_os/',
+                  }));
             })
             .then(() => {
               assertEquals(

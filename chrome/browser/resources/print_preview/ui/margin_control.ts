@@ -7,9 +7,9 @@ import 'chrome://resources/cr_elements/cr_input/cr_input_style_css.m.js';
 import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Coordinate2d} from '../data/coordinate2d.js';
 import {CustomMarginsOrientation} from '../data/margins.js';
@@ -17,7 +17,7 @@ import {MeasurementSystem} from '../data/measurement_system.js';
 import {Size} from '../data/size.js';
 import {observerDepsDefined} from '../print_preview_utils.js';
 
-import {InputMixin, InputMixinInterface} from './input_mixin.js';
+import {InputMixin} from './input_mixin.js';
 
 /**
  * Radius of the margin control in pixels. Padding of control + 1 for border.
@@ -32,11 +32,7 @@ export interface PrintPreviewMarginControlElement {
 }
 
 const PrintPreviewMarginControlElementBase =
-    mixinBehaviors(
-        [I18nBehavior, WebUIListenerBehavior], InputMixin(PolymerElement)) as {
-      new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
-      InputMixinInterface
-    };
+    I18nMixin(WebUIListenerMixin(InputMixin(PolymerElement)));
 
 export class PrintPreviewMarginControlElement extends
     PrintPreviewMarginControlElementBase {

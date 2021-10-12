@@ -33,7 +33,7 @@ import './link_container.js';
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DarkModeMixin, DarkModeMixinInterface} from '../dark_mode_mixin.js';
@@ -59,11 +59,10 @@ const PrintPreviewSidebarElementBase =
     mixinBehaviors(
         [
           CrContainerShadowBehavior,
-          WebUIListenerBehavior,
         ],
-        SettingsMixin(DarkModeMixin(PolymerElement))) as {
-      new (): PolymerElement & WebUIListenerBehavior & DarkModeMixinInterface &
-      SettingsMixinInterface
+        WebUIListenerMixin(SettingsMixin(DarkModeMixin(PolymerElement)))) as {
+      new (): PolymerElement & WebUIListenerMixinInterface &
+      DarkModeMixinInterface & SettingsMixinInterface
     };
 
 export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {

@@ -14,8 +14,8 @@ import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloudPrintInterface, CloudPrintInterfaceErrorEventDetail, CloudPrintInterfaceEventType} from '../cloud_print_interface.js';
 import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
@@ -37,7 +37,7 @@ import {NativeLayerCros, NativeLayerCrosImpl} from '../native_layer_cros.js';
 
 import {DestinationState} from './destination_settings.js';
 import {PreviewAreaState, PrintPreviewPreviewAreaElement} from './preview_area.js';
-import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 import {PrintPreviewSidebarElement} from './sidebar.js';
 
 export interface PrintPreviewAppElement {
@@ -51,8 +51,7 @@ export interface PrintPreviewAppElement {
 }
 
 const PrintPreviewAppElementBase =
-    mixinBehaviors([WebUIListenerBehavior], SettingsMixin(PolymerElement)) as
-    {new (): PolymerElement & WebUIListenerBehavior & SettingsMixinInterface};
+    WebUIListenerMixin(SettingsMixin(PolymerElement));
 
 export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   static get is() {

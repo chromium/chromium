@@ -15,7 +15,7 @@ import {Size} from '../data/size.js';
 import {State} from '../data/state.js';
 
 import {PrintPreviewMarginControlElement} from './margin_control.js';
-import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 export const MARGIN_KEY_MAP: Map<CustomMarginsOrientation, string> = new Map([
   [CustomMarginsOrientation.TOP, 'marginTop'],

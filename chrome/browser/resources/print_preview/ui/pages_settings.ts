@@ -12,14 +12,14 @@ import '../strings.m.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {areRangesEqual, Range} from '../print_preview_utils.js';
 
-import {InputMixin, InputMixinInterface} from './input_mixin.js';
-import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
-import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
+import {InputMixin} from './input_mixin.js';
+import {SelectMixin} from './select_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 enum PagesInputErrorState {
   NO_ERROR = 0,
@@ -56,12 +56,7 @@ export interface PrintPreviewPagesSettingsElement {
 }
 
 const PrintPreviewPagesSettingsElementBase =
-    mixinBehaviors(
-        [WebUIListenerBehavior],
-        InputMixin(SettingsMixin(SelectMixin(PolymerElement)))) as {
-      new (): PolymerElement & WebUIListenerBehavior & InputMixinInterface &
-      SettingsMixinInterface & SelectMixinInterface
-    };
+    WebUIListenerMixin(InputMixin(SettingsMixin(SelectMixin(PolymerElement))));
 
 export class PrintPreviewPagesSettingsElement extends
     PrintPreviewPagesSettingsElementBase {

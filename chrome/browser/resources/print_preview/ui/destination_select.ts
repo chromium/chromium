@@ -19,19 +19,18 @@ import './print_preview_shared_css.js';
 import './throbber_css.js';
 import '../strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronMeta} from 'chrome://resources/polymer/v3_0/iron-meta/iron-meta.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, DestinationOrigin, GooglePromotedDestinationId, PDF_DESTINATION_KEY, RecentDestination} from '../data/destination.js';
 import {getSelectDropdownBackground} from '../print_preview_utils.js';
 
-import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
+import {SelectMixin} from './select_mixin.js';
 
 const PrintPreviewDestinationSelectElementBase =
-    mixinBehaviors([I18nBehavior], SelectMixin(PolymerElement)) as
-    {new (): PolymerElement & I18nBehavior & SelectMixinInterface};
+    I18nMixin(SelectMixin(PolymerElement));
 
 export class PrintPreviewDestinationSelectElement extends
     PrintPreviewDestinationSelectElementBase {

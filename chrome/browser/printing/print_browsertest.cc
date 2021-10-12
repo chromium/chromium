@@ -1394,7 +1394,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PDFPluginNotKeyboardFocusable) {
   const char kScript[] = R"(
     const button = document.getElementsByTagName('print-preview-app')[0]
                        .$['previewArea']
-                       .$$('iframe')
+                       .shadowRoot.querySelector('iframe')
                        .contentDocument.querySelector('pdf-viewer-pp')
                        .shadowRoot.querySelector('#zoom-toolbar')
                        .$['zoom-out-button'];
