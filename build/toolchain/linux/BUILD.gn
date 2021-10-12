@@ -15,7 +15,6 @@ clang_toolchain("clang_ppc64") {
 }
 
 clang_toolchain("clang_arm") {
-  toolprefix = "arm-linux-gnueabihf-"
   toolchain_args = {
     current_cpu = "arm"
     current_os = "linux"
@@ -23,7 +22,6 @@ clang_toolchain("clang_arm") {
 }
 
 clang_toolchain("clang_arm64") {
-  toolprefix = "aarch64-linux-gnu-"
   toolchain_args = {
     current_cpu = "arm64"
     current_os = "linux"

@@ -17,8 +17,6 @@ template("fuchsia_clang_toolchain") {
     strip = rebase_path("${clang_base_path}/bin/llvm-strip", root_build_dir)
     use_unstripped_as_runtime_outputs = true
 
-    readelf = rebase_path("${clang_base_path}/bin/llvm-readelf", root_build_dir)
-
     default_shlib_subdir = "/lib"
 
     toolchain_args = invoker.toolchain_args
