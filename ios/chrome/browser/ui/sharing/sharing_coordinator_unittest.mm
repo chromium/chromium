@@ -134,15 +134,11 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
                           params:params
                       originView:fake_origin_view_];
 
-  // Pointer to allow us to grab the VC instance in our validation callback.
-  __block UIActivityViewController* activityViewController;
-
   id vc_partial_mock = OCMPartialMock(base_view_controller_);
   [[vc_partial_mock expect]
       presentViewController:[OCMArg checkWithBlock:^BOOL(
                                         UIViewController* viewController) {
         if ([viewController isKindOfClass:[UIActivityViewController class]]) {
-          activityViewController = (UIActivityViewController*)viewController;
           return YES;
         }
         return NO;
@@ -208,15 +204,11 @@ TEST_F(SharingCoordinatorTest, Start_ShareURL) {
                           params:params
                       originView:fake_origin_view_];
 
-  // Pointer to allow us to grab the VC instance in our validation callback.
-  __block UIActivityViewController* activityViewController;
-
   id vc_partial_mock = OCMPartialMock(base_view_controller_);
   [[vc_partial_mock expect]
       presentViewController:[OCMArg checkWithBlock:^BOOL(
                                         UIViewController* viewController) {
         if ([viewController isKindOfClass:[UIActivityViewController class]]) {
-          activityViewController = (UIActivityViewController*)viewController;
           return YES;
         }
         return NO;
