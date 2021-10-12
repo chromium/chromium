@@ -17,10 +17,11 @@ import './command_manager.js';
 import './toolbar.js';
 
 import {CrSplitterElement} from 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
-import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
+import {FindShortcutMixin, FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {IronScrollTargetBehavior} from 'chrome://resources/polymer/v3_0/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {setSearchResults} from './actions.js';
@@ -33,14 +34,13 @@ import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
 import {BookmarksToolbarElement} from './toolbar.js';
 import {BookmarksPageState, FolderOpenState} from './types.js';
 import {createEmptyState, normalizeNodes} from './util.js';
-import {IronScrollTargetBehavior} from 'chrome://resources/polymer/v3_0/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
 
 const BookmarksAppElementBase =
     mixinBehaviors(
-        [StoreClient, FindShortcutBehavior, IronScrollTargetBehavior],
-        MouseFocusMixin(PolymerElement)) as {
+        [StoreClient, IronScrollTargetBehavior],
+        MouseFocusMixin(FindShortcutMixin(PolymerElement))) as {
       new (): PolymerElement & BookmarksStoreClientInterface &
-      StoreObserver<BookmarksPageState> & FindShortcutBehavior &
+      StoreObserver<BookmarksPageState>& FindShortcutMixinInterface &
       IronScrollTargetBehavior
     };
 
@@ -207,7 +207,7 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
         JSON.stringify(Array.from(this.folderOpenState_));
   }
 
-  // Override FindShortcutBehavior methods.
+  // Override FindShortcutMixin methods.
   handleFindShortcut(modalContextOpen: boolean): boolean {
     if (modalContextOpen) {
       return false;
@@ -217,7 +217,7 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
     return true;
   }
 
-  // Override FindShortcutBehavior methods.
+  // Override FindShortcutMixin methods.
   searchInputHasFocus(): boolean {
     return this.shadowRoot!.querySelector<BookmarksToolbarElement>(
         'bookmarks-toolbar')!.searchField.isSearchFocused();

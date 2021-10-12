@@ -111,6 +111,7 @@ TEST_F('CrElementsExpandButtonTest', 'All', function() {
   mocha.run();
 });
 
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 var CrElementsFindShortcutBehaviorTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -121,6 +122,7 @@ var CrElementsFindShortcutBehaviorTest = class extends CrElementsBrowserTest {
 TEST_F('CrElementsFindShortcutBehaviorTest', 'All', function() {
   mocha.run();
 });
+GEN('#endif');
 
 var CrElementsFindShortcutMixinTest = class extends CrElementsBrowserTest {
   /** @override */

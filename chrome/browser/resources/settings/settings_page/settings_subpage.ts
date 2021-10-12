@@ -16,7 +16,7 @@ import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared_css.js';
 
 import {CrSearchFieldElement} from '//resources/cr_elements/cr_search_field/cr_search_field.js';
-import {FindShortcutBehavior} from '//resources/cr_elements/find_shortcut_behavior.js';
+import {FindShortcutMixin, FindShortcutMixinInterface} from '//resources/cr_elements/find_shortcut_mixin.js';
 import {assert} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin, I18nMixinInterface} from '//resources/js/i18n_mixin.js';
@@ -37,9 +37,9 @@ export interface SettingsSubpageElement {
 
 const SettingsSubpageElementBase =
     mixinBehaviors(
-        [FindShortcutBehavior, IronResizableBehavior],
-        RouteObserverMixin(I18nMixin(PolymerElement))) as
-    {new (): PolymerElement & FindShortcutBehavior & I18nMixinInterface};
+        [IronResizableBehavior],
+        RouteObserverMixin(FindShortcutMixin(I18nMixin(PolymerElement)))) as
+    {new (): PolymerElement & FindShortcutMixinInterface & I18nMixinInterface};
 
 export class SettingsSubpageElement extends SettingsSubpageElementBase {
   static get is() {

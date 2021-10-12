@@ -27,11 +27,11 @@ import {CrContainerShadowMixin, CrContainerShadowMixinInterface} from 'chrome://
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
-import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
+import {FindShortcutMixin, FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
-import {Debouncer, DomIf, html, mixinBehaviors, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, DomIf, html, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {resetGlobalScrollTargetForTesting, setGlobalScrollTarget} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -66,13 +66,11 @@ export interface SettingsUiElement {
   };
 }
 
-const SettingsUiElementBase =
-    mixinBehaviors(
-        [FindShortcutBehavior],
-        RouteObserverMixin(CrContainerShadowMixin(PolymerElement))) as {
-      new (): PolymerElement & RouteObserverMixinInterface &
-      CrContainerShadowMixinInterface
-    };
+const SettingsUiElementBase = RouteObserverMixin(CrContainerShadowMixin(
+                                  FindShortcutMixin(PolymerElement))) as {
+  new (): PolymerElement & RouteObserverMixinInterface &
+  FindShortcutMixinInterface & CrContainerShadowMixinInterface
+};
 
 export class SettingsUiElement extends SettingsUiElementBase {
   static get is() {
@@ -278,7 +276,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
     this.$.main.searchContents(urlSearchQuery);
   }
 
-  // Override FindShortcutBehavior methods.
+  // Override FindShortcutMixin methods.
   handleFindShortcut(modalContextOpen: boolean) {
     if (modalContextOpen) {
       return false;
@@ -289,7 +287,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
     return true;
   }
 
-  // Override FindShortcutBehavior methods.
+  // Override FindShortcutMixin methods.
   searchInputHasFocus() {
     return this.shadowRoot!.querySelector<CrToolbarElement>('cr-toolbar')!
         .getSearchField()

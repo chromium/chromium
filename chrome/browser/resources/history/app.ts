@@ -18,7 +18,7 @@ import './strings.m.js';
 
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
+import {FindShortcutMixin, FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
@@ -129,10 +129,10 @@ export interface HistoryAppElement {
 
 const HistoryAppElementBase =
     mixinBehaviors(
-        [FindShortcutBehavior, IronScrollTargetBehavior],
-        WebUIListenerMixin(PolymerElement)) as {
-      new (): PolymerElement & FindShortcutBehavior & IronScrollTargetBehavior &
-      WebUIListenerMixinInterface
+        [IronScrollTargetBehavior],
+        FindShortcutMixin(WebUIListenerMixin(PolymerElement))) as {
+      new (): PolymerElement & FindShortcutMixinInterface &
+      IronScrollTargetBehavior & WebUIListenerMixinInterface
     };
 
 export class HistoryAppElement extends HistoryAppElementBase {
@@ -549,7 +549,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
         HistoryPageViewHistogram.END);
   }
 
-  // Override FindShortcutBehavior methods.
+  // Override FindShortcutMixin methods.
   handleFindShortcut(modalContextOpen: boolean): boolean {
     if (modalContextOpen) {
       return false;
@@ -558,7 +558,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     return true;
   }
 
-  // Override FindShortcutBehavior methods.
+  // Override FindShortcutMixin methods.
   searchInputHasFocus(): boolean {
     return this.$.toolbar.searchField.isSearchFocused();
   }

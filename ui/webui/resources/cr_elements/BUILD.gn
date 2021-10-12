@@ -52,7 +52,6 @@ preprocess_if_expr("preprocess_src") {
     "cr_container_shadow_mixin.js",
     "cr_search_field/cr_search_field_behavior.js",
     "cr_splitter/cr_splitter.js",
-    "find_shortcut_behavior.js",
     "find_shortcut_mixin.ts",
     "mouse_hoverable_mixin.js",
   ]
@@ -101,6 +100,7 @@ preprocess_if_expr("preprocess_polymer2") {
     "cr_scrollable_behavior.js",
     "cr_toggle/cr_toggle.html",
     "cr_toggle/cr_toggle.js",
+    "find_shortcut_behavior.js",
     "hidden_style_css.html",
     "icons.html",
     "md_select_css.html",
@@ -426,9 +426,12 @@ js_type_check("cr_elements_module_resources") {
     ":cr_container_shadow_behavior.m",
     ":cr_container_shadow_mixin",
     ":cr_scrollable_behavior.m",
-    ":find_shortcut_behavior",
     ":mouse_hoverable_mixin",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ ":find_shortcut_behavior" ]
+  }
 }
 
 js_library("cr_container_shadow_behavior.m") {
@@ -448,13 +451,15 @@ js_library("cr_scrollable_behavior.m") {
   extra_deps = [ ":modulize" ]
 }
 
-js_library("find_shortcut_behavior") {
-  deps = [
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr/ui:keyboard_shortcut_list.m",
-  ]
+if (is_chromeos_ash) {
+  js_library("find_shortcut_behavior") {
+    deps = [
+      "//ui/webui/resources/js:assert.m",
+      "//ui/webui/resources/js:cr.m",
+      "//ui/webui/resources/js:util.m",
+      "//ui/webui/resources/js/cr/ui:keyboard_shortcut_list.m",
+    ]
+  }
 }
 
 html_to_js("web_components") {
