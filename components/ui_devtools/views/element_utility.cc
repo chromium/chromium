@@ -31,6 +31,13 @@ void AppendLayerPropertiesMatchedStyle(
                     base::NumberToString(layer->layer_brightness()));
   ret->emplace_back("layer-grayscale",
                     base::NumberToString(layer->layer_grayscale()));
+  ret->emplace_back("layer-fills-bounds-opaquely",
+                    layer->fills_bounds_opaquely() ? "true" : "false");
+  if (layer->type() == ui::LAYER_SOLID_COLOR) {
+    ret->emplace_back("layer-color",
+                      base::StringPrintf("%X", layer->GetTargetColor()));
+  }
+
   const auto offset = layer->GetSubpixelOffset();
   if (!offset.IsZero())
     ret->emplace_back("layer-subpixel-offset", offset.ToString());
