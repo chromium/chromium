@@ -1974,7 +1974,7 @@ try_.chromium_win_builder(
     coverage_test_types = ["unit", "overall"],
     properties = {
         "$build/chromium_orchestrator": {
-            "compilator": "win10-rel-compilator",
+            "compilator": "win10_chromium_x64_rel_ng-compilator",
             "compilator_watcher_git_revision": compilator_watcher_git_revision,
         },
     },
@@ -1997,6 +1997,24 @@ try_.chromium_win_builder(
     properties = {
         "orchestrator": {
             "builder_name": "win10-rel-orchestrator",
+            "builder_group": "tryserver.chromium.win",
+        },
+    },
+)
+
+try_.chromium_win_builder(
+    name = "win10_chromium_x64_rel_ng-compilator",
+    builderless = None,
+    os = os.WINDOWS_10,
+    cores = 32,
+    ssd = True,
+    goma_jobs = goma.jobs.J300,
+    executable = "recipe:chromium/compilator",
+    use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
+    properties = {
+        "orchestrator": {
+            "builder_name": "win10_chromium_x64_rel_ng",
             "builder_group": "tryserver.chromium.win",
         },
     },
