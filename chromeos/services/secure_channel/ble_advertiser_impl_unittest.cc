@@ -498,7 +498,6 @@ TEST_F(SecureChannelBleAdvertiserImplTest,
   AddAdvertisementRequest(pair_1, ConnectionPriority::kLow);
   FakeErrorTolerantBleAdvertisement* advertisement_1 =
       GetLastCreatedAdvertisement(pair_1);
-  FakeOneShotTimer* timer_1 = GetLastCreatedTimer();
 
   AddAdvertisementRequest(pair_2, ConnectionPriority::kLow);
   FakeErrorTolerantBleAdvertisement* advertisement_2 =
@@ -525,7 +524,6 @@ TEST_F(SecureChannelBleAdvertiserImplTest,
   // stopping is asynchronous.
   EXPECT_EQ(2u, GetNumAdvertisementsCreated());
   EXPECT_EQ(3u, GetNumTimersCreated());
-  timer_1 = GetLastCreatedTimer();
   VerifyDelegateNotifiedOnAdvertisingSlotEnded(
       pair_1, true /* expected_replaced_by_higher_priority_advertisement */,
       0u /* expected_index */);
@@ -639,7 +637,6 @@ TEST_F(SecureChannelBleAdvertiserImplTest,
   EXPECT_EQ(7u, GetNumAdvertisementsCreated());
   EXPECT_EQ(8u, GetNumTimersCreated());
   EXPECT_EQ(4u, GetNumSlotEndedDelegateCallbacks());
-  timer_1 = GetLastCreatedTimer();
   advertisement_1->InvokeStopCallback();
   EXPECT_EQ(8u, GetNumAdvertisementsCreated());
   advertisement_1 = GetLastCreatedAdvertisement(pair_2);
