@@ -201,6 +201,8 @@ void WebAppControllerBrowserTest::SetUpOnMainThread() {
   cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
 
   os_hooks_suppress_ = OsIntegrationManager::ScopedSuppressOsHooksForTesting();
+  web_app::test::WaitUntilReady(
+      web_app::WebAppProvider::GetForTest(browser()->profile()));
 }
 
 }  // namespace web_app

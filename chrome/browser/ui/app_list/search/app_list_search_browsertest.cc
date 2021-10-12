@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -80,6 +81,13 @@ class AppListSearchBrowserTest : public InProcessBrowserTest {
 
   AppListSearchBrowserTest(const AppListSearchBrowserTest&) = delete;
   AppListSearchBrowserTest& operator=(const AppListSearchBrowserTest&) = delete;
+
+  // InProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    web_app::test::WaitUntilReady(
+        web_app::WebAppProvider::GetForTest(browser()->profile()));
+  }
 
   //---------------
   // Search helpers
