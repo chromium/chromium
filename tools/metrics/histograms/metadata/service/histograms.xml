@@ -251,9 +251,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ServiceWorker.Database.DestroyDatabaseResult"
-    enum="ServiceWorkerDatabaseStatus" expires_after="2021-11-21">
+    enum="ServiceWorkerDatabaseStatus" expires_after="2022-10-11">
   <owner>bashi@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
   <summary>
     Records result of destroy database operations in ServiceWorkerDatabase.
   </summary>
