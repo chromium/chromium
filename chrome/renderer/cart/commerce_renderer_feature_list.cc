@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
-#include "components/search/ntp_features.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace commerce_renderer_feature {
