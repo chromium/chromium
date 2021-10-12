@@ -42,6 +42,7 @@
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -325,6 +326,8 @@ void WebAppIntegrationBrowserTestBase::SetUpOnMainThread() {
   if (!delegate_->IsSyncTest()) {
     observation_.Observe(&GetProvider()->registrar());
   }
+  web_app::test::WaitUntilReady(
+      web_app::WebAppProvider::GetForTest(browser()->profile()));
 }
 
 void WebAppIntegrationBrowserTestBase::TearDownOnMainThread() {
