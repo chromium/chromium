@@ -29,7 +29,8 @@ class EcheMessageReceiver : public secure_channel::ConnectionManager::Observer {
         proto::SendAppsSetupResponse apps_setup_response) {}
   };
 
-  EcheMessageReceiver(secure_channel::ConnectionManager* connection_manager);
+  explicit EcheMessageReceiver(
+      secure_channel::ConnectionManager* connection_manager);
   ~EcheMessageReceiver() override;
 
   void AddObserver(Observer* observer);
@@ -50,4 +51,4 @@ class EcheMessageReceiver : public secure_channel::ConnectionManager::Observer {
 }  // namespace eche_app
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_ECHE_APP_UI_ECHE_MESSAGE_RECEIVER_H
+#endif  // CHROMEOS_COMPONENTS_ECHE_APP_UI_ECHE_MESSAGE_RECEIVER_H_

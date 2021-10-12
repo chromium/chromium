@@ -16,6 +16,8 @@ preprocess_folder = "preprocessed"
 
 static_library("eche_app_ui") {
   sources = [
+    "apps_access_setup_operation.cc",
+    "apps_access_setup_operation.h",
     "eche_app_manager.cc",
     "eche_app_manager.h",
     "eche_app_ui.cc",
@@ -89,6 +91,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "apps_access_setup_operation_unittest.cc",
     "eche_feature_status_provider_unittest.cc",
     "eche_message_receiver_unittest.cc",
     "eche_notification_click_handler_unittest.cc",

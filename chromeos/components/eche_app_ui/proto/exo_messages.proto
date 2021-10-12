@@ -38,14 +38,16 @@ message ProximityPing {
 }
 
 enum AppsAccessState {
-  ACCESS_NOT_GRANTED = 0;
-  ACCESS_GRANTED = 1;
+  ACCESS_UNKNOWN = 0;
+  ACCESS_NOT_GRANTED = 1;
+  ACCESS_GRANTED = 2;
 }
 
 enum Result {
-  RESULT_NO_ERROR = 0;
-  RESULT_ERROR_ACTION_FAILED = 1;
-  RESULT_ERROR_NOT_SUPPORTED = 2;
+  RESULT_UNKNOWN = 0;
+  RESULT_NO_ERROR = 1;
+  RESULT_ERROR_ACTION_FAILED = 2;
+  RESULT_ERROR_NOT_SUPPORTED = 3;
 }
 
 // Usesd to send apps setup requset to remote phone.
