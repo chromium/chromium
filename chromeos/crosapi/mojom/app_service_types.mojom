@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 8
+// Next MinVersion: 9
 
 module crosapi.mojom;
 
@@ -72,6 +72,14 @@ struct App {
   // For web apps, it contains the install URL.
   [MinVersion=7]
   string? policy_id@23;
+
+  // This vector must be treated atomically, if there is a permission
+  // change, the publisher must send through the entire list of permissions.
+  // Should contain no duplicate IDs.
+  // If null during updates, Subscriber can assume no changes.
+  // There is no guarantee that this is sorted by any criteria.
+  [MinVersion=8]
+  array<Permission>? permissions@24;
 };
 
 // The types of apps available in the registry.
@@ -353,4 +361,35 @@ struct LaunchParams {
   string app_id@0;               // The app id of the app.
   LaunchSource launch_source@1;  // The app launch source.
   Intent? intent@2;              // The intent the app will launch with.
+};
+
+[Stable]
+struct Permission {
+  PermissionType permission_type@0;
+  PermissionValue value@1;
+  // If the permission is managed by an enterprise policy.
+  bool is_managed@2;
+};
+
+// The types of permissions in App Service.
+[Stable, Extensible]
+enum PermissionType {
+  kUnknown         = 0,
+  kCamera          = 1,
+  kLocation        = 2,
+  kMicrophone      = 3,
+  kNotifications   = 4,
+};
+
+[Stable]
+enum TriState {
+  kAllow,
+  kBlock,
+  kAsk,
+};
+
+[Stable]
+union PermissionValue {
+  bool bool_value;
+  TriState tristate_value;
 };

@@ -129,6 +129,15 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr> {
     return r->window_mode;
   }
 
+  // TODO(crbug.com/1253250):
+  // Create empty permission vector because currently apps::mojom::App
+  // doesn't accept null. The permissions field should be null for
+  // no permission change after app service mojom removed.
+  static const std::vector<apps::mojom::PermissionPtr>& permissions(
+      const apps::mojom::AppPtr& r) {
+    return r->permissions;
+  }
+
   static bool Read(crosapi::mojom::AppDataView data, apps::mojom::AppPtr* out);
 };
 
@@ -325,6 +334,67 @@ struct EnumTraits<crosapi::mojom::LaunchSource, apps::mojom::LaunchSource> {
   static crosapi::mojom::LaunchSource ToMojom(apps::mojom::LaunchSource input);
   static bool FromMojom(crosapi::mojom::LaunchSource input,
                         apps::mojom::LaunchSource* output);
+};
+
+template <>
+struct StructTraits<crosapi::mojom::PermissionDataView,
+                    apps::mojom::PermissionPtr> {
+  static apps::mojom::PermissionType permission_type(
+      const apps::mojom::PermissionPtr& r) {
+    return r->permission_type;
+  }
+
+  static const apps::mojom::PermissionValuePtr& value(
+      const apps::mojom::PermissionPtr& r) {
+    return r->value;
+  }
+
+  static bool is_managed(const apps::mojom::PermissionPtr& r) {
+    return r->is_managed;
+  }
+
+  static bool Read(crosapi::mojom::PermissionDataView,
+                   apps::mojom::PermissionPtr* out);
+};
+
+template <>
+struct EnumTraits<crosapi::mojom::PermissionType, apps::mojom::PermissionType> {
+  static crosapi::mojom::PermissionType ToMojom(
+      apps::mojom::PermissionType input);
+  static bool FromMojom(crosapi::mojom::PermissionType input,
+                        apps::mojom::PermissionType* output);
+};
+
+template <>
+struct EnumTraits<crosapi::mojom::TriState, apps::mojom::TriState> {
+  static crosapi::mojom::TriState ToMojom(apps::mojom::TriState input);
+  static bool FromMojom(crosapi::mojom::TriState input,
+                        apps::mojom::TriState* output);
+};
+
+template <>
+struct UnionTraits<crosapi::mojom::PermissionValueDataView,
+                   apps::mojom::PermissionValuePtr> {
+  static crosapi::mojom::PermissionValueDataView::Tag GetTag(
+      const apps::mojom::PermissionValuePtr& r);
+
+  static bool IsNull(const apps::mojom::PermissionValuePtr& r) {
+    return !r->is_bool_value() && !r->is_tristate_value();
+  }
+
+  static void SetToNull(apps::mojom::PermissionValuePtr* out) {}
+
+  static bool bool_value(const apps::mojom::PermissionValuePtr& r) {
+    return r->get_bool_value();
+  }
+
+  static apps::mojom::TriState tristate_value(
+      const apps::mojom::PermissionValuePtr& r) {
+    return r->get_tristate_value();
+  }
+
+  static bool Read(crosapi::mojom::PermissionValueDataView data,
+                   apps::mojom::PermissionValuePtr* out);
 };
 
 }  // namespace mojo

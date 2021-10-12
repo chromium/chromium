@@ -139,6 +139,11 @@ mojom("mojom") {
           mojom = "crosapi.mojom.BrowserAppInstanceType"
           cpp = "::apps::BrowserAppInstanceUpdate::Type"
         },
+        {
+          mojom = "crosapi.mojom.Permission"
+          cpp = "::apps::mojom::PermissionPtr"
+          move_only = true
+        },
       ]
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",
