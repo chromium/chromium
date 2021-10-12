@@ -16,6 +16,11 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
+// This should be after all other #includes.
+#if defined(_WINDOWS_)  // Detect whether windows.h was included.
+#include "base/win/windows_h_disallowed.h"
+#endif  // defined(_WINDOWS_)
+
 namespace views {
 
 BoundsAnimator::BoundsAnimator(View* parent, bool use_transforms)
