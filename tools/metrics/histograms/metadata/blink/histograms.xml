@@ -961,9 +961,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.CSSPaintValue.PaintOffThread"
-    enum="BooleanCompositorCSSPaint" expires_after="2021-09-08">
+    enum="BooleanCompositorCSSPaint" expires_after="2022-03-08">
   <owner>xidachen@chromium.org</owner>
-  <owner>smcgruer@chromium.org</owner>
+  <owner>kevers@chromium.org</owner>
   <summary>
     Records if a CSS Paint is painted on the compositor thread or has fallen
     back to the main thread.
