@@ -606,6 +606,11 @@ SystemNotificationManager::MakeMountErrorNotification(
             // Give a format device button on the notification.
             notification_buttons.push_back(message_center::ButtonInfo(
                 l10n_util::GetStringUTF16(IDS_DEVICE_UNKNOWN_BUTTON_LABEL)));
+            RecordDeviceNotificationMetric(
+                DeviceNotificationUmaType::DEVICE_FAIL_UNKNOWN);
+          } else {
+            RecordDeviceNotificationMetric(
+                DeviceNotificationUmaType::DEVICE_FAIL_UNKNOWN_READONLY);
           }
         }
         break;

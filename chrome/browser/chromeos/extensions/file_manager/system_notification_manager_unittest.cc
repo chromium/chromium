@@ -729,6 +729,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedNamed) {
 // These notifications are similar to the device unsupported notifications,
 // the difference being an unknown vs. unsupported file system.
 TEST_F(SystemNotificationManagerTest, DeviceFailUnknownDefault) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
       VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
@@ -759,11 +760,15 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownDefault) {
             u"Sorry, your external storage device could not be recognized.");
   EXPECT_EQ(notification_strings.buttons.size(), 1);
   EXPECT_EQ(notification_strings.buttons[0], u"Format this device");
+  histogram_tester.ExpectUniqueSample(
+      kNotificationShowHistogramName,
+      DeviceNotificationUmaType::DEVICE_FAIL_UNKNOWN, 1);
 }
 
 // The named version of the device fail unknown notification is
 // generated when the device includes a device label.
 TEST_F(SystemNotificationManagerTest, DeviceFailUnknownNamed) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
       VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
@@ -794,6 +799,9 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownNamed) {
             u"Sorry, the device MyUSB could not be recognized.");
   EXPECT_EQ(notification_strings.buttons.size(), 1);
   EXPECT_EQ(notification_strings.buttons[0], u"Format this device");
+  histogram_tester.ExpectUniqueSample(
+      kNotificationShowHistogramName,
+      DeviceNotificationUmaType::DEVICE_FAIL_UNKNOWN, 1);
 }
 
 // Device fail unknown read only notifications are generated when
@@ -801,6 +809,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownNamed) {
 // The default notification message is generated when there is
 // no device label.
 TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyDefault) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
       VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
@@ -831,11 +840,15 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyDefault) {
             u"Sorry, your external storage device could not be recognized.");
   // Device is read-only, expect no buttons present.
   EXPECT_EQ(notification_strings.buttons.size(), 0);
+  histogram_tester.ExpectUniqueSample(
+      kNotificationShowHistogramName,
+      DeviceNotificationUmaType::DEVICE_FAIL_UNKNOWN_READONLY, 1);
 }
 
 // The named version of the read only device fail unknown notification is
 // generated when the device includes a device label.
 TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyNamed) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
       VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
@@ -864,6 +877,9 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyNamed) {
   EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
   EXPECT_EQ(notification_strings.message,
             u"Sorry, the device MyUSB could not be recognized.");
+  histogram_tester.ExpectUniqueSample(
+      kNotificationShowHistogramName,
+      DeviceNotificationUmaType::DEVICE_FAIL_UNKNOWN_READONLY, 1);
 }
 
 TEST_F(SystemNotificationManagerTest, TestCopyEvents) {
