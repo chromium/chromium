@@ -353,14 +353,12 @@ SystemNotificationManager::MakeDriveConfirmDialogNotification(
     base::Value::ListView& event_arguments) {
   std::unique_ptr<message_center::Notification> notification;
   file_manager_private::DriveConfirmDialogEvent dialog_event;
-  const char* id;
   std::u16string title =
       l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
   std::u16string message;
   if (file_manager_private::DriveConfirmDialogEvent::Populate(
           event_arguments[0], &dialog_event)) {
     std::vector<message_center::ButtonInfo> notification_buttons;
-    id = file_manager_private::ToString(dialog_event.type);
     scoped_refptr<message_center::NotificationDelegate> delegate =
         new message_center::HandleNotificationClickDelegate(base::BindRepeating(
             &SystemNotificationManager::HandleDriveDialogClick,
