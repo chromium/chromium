@@ -456,11 +456,11 @@ void OutputPresenterFuchsia::PresentNextFrame() {
     }
     pixmap->ScheduleOverlayPlane(
         dependency_->GetSurfaceHandle(),
-        gfx::OverlayPlaneData(overlay.plane_z_order, overlay.transform,
-                              gfx::ToRoundedRect(overlay.display_rect),
-                              overlay.uv_rect, !overlay.is_opaque,
-                              gfx::ToRoundedRect(overlay.damage_rect),
-                              overlay.opacity, overlay.priority_hint),
+        gfx::OverlayPlaneData(
+            overlay.plane_z_order, overlay.transform,
+            gfx::ToRoundedRect(overlay.display_rect), overlay.uv_rect,
+            !overlay.is_opaque, gfx::ToRoundedRect(overlay.damage_rect),
+            overlay.opacity, overlay.priority_hint, overlay.rounded_corners),
         ZxEventsToGpuFences(frame.acquire_fences),
         /*release_fences=*/{});
   }

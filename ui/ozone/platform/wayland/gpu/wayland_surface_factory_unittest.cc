@@ -270,7 +270,7 @@ TEST_P(WaylandSurfaceFactoryTest,
         gfx::OverlayPlaneData(0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
                               window_->GetBounds(), {}, false,
                               gfx::Rect(window_->GetBounds().size()), 1.0f,
-                              gfx::OverlayPriorityHint::kNone));
+                              gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
 
     std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
     gl_images.push_back(fake_gl_image[0]);
@@ -336,7 +336,7 @@ TEST_P(WaylandSurfaceFactoryTest,
         gfx::OverlayPlaneData(0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
                               window_->GetBounds(), {}, false,
                               gfx::Rect(window_->GetBounds().size()), 1.0f,
-                              gfx::OverlayPriorityHint::kNone));
+                              gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
 
     std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
     gl_images.push_back(fake_gl_image[1]);
@@ -390,7 +390,7 @@ TEST_P(WaylandSurfaceFactoryTest,
         gfx::OverlayPlaneData(-1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
                               window_->GetBounds(), {}, false,
                               gfx::Rect(window_->GetBounds().size()), 1.0f,
-                              gfx::OverlayPriorityHint::kNone));
+                              gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
 
     // Associate the image with the next swap id so that we can easily track if
     // it became free to reuse.
@@ -404,7 +404,7 @@ TEST_P(WaylandSurfaceFactoryTest,
         gfx::OverlayPlaneData(1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
                               window_->GetBounds(), {}, false,
                               gfx::Rect(window_->GetBounds().size()), 1.0f,
-                              gfx::OverlayPriorityHint::kNone));
+                              gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
 
     std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
     gl_images.push_back(fake_gl_image[2]);
@@ -532,7 +532,7 @@ TEST_P(WaylandSurfaceFactoryTest,
         gfx::OverlayPlaneData(0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
                               window_->GetBounds(), {}, false,
                               gfx::Rect(window_->GetBounds().size()), 1.0f,
-                              gfx::OverlayPriorityHint::kNone));
+                              gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
 
     // Associate the image with the next swap id so that we can easily track if
     // it became free to reuse.
@@ -546,7 +546,7 @@ TEST_P(WaylandSurfaceFactoryTest,
         gfx::OverlayPlaneData(1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
                               window_->GetBounds(), {}, false,
                               gfx::Rect(window_->GetBounds().size()), 1.0f,
-                              gfx::OverlayPriorityHint::kNone));
+                              gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
 
     std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
     gl_images.push_back(fake_gl_image[0]);
@@ -616,7 +616,7 @@ TEST_P(WaylandSurfaceFactoryTest,
         gfx::OverlayPlaneData(0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
                               window_->GetBounds(), {}, false,
                               gfx::Rect(window_->GetBounds().size()), 1.0f,
-                              gfx::OverlayPriorityHint::kNone));
+                              gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
 
     // Associate the image with the next swap id so that we can easily track if
     // it became free to reuse.
@@ -630,7 +630,7 @@ TEST_P(WaylandSurfaceFactoryTest,
         gfx::OverlayPlaneData(1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
                               window_->GetBounds(), {}, false,
                               gfx::Rect(window_->GetBounds().size()), 1.0f,
-                              gfx::OverlayPriorityHint::kNone));
+                              gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
 
     std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
     gl_images.push_back(fake_gl_image[2]);

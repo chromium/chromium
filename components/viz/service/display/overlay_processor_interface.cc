@@ -201,6 +201,7 @@ OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
   overlay_plane.opacity = opacity;
   overlay_plane.mailbox = mailbox;
   overlay_plane.priority_hint = gfx::OverlayPriorityHint::kNone;
+  overlay_plane.rounded_corners = gfx::RRectF();
 
   // Adjust transformation and display_rect based on display rotation.
   overlay_plane.display_rect =

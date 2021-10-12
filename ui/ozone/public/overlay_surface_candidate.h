@@ -12,11 +12,11 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
-
 namespace ui {
 
 enum OverlayStatus {
@@ -75,6 +75,8 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   bool requires_overlay = false;
   // Hints for overlay prioritization when delegated composition is used.
   gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
+  // Specifies the rounded corners of overlay in radii.
+  gfx::RRectF rounded_corners;
 };
 
 using OverlaySurfaceCandidateList = std::vector<OverlaySurfaceCandidate>;

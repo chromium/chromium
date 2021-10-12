@@ -7,6 +7,7 @@
 
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
@@ -22,7 +23,8 @@ struct GFX_EXPORT OverlayPlaneData {
                    bool enable_blend,
                    const Rect& damage_rect,
                    float opacity,
-                   OverlayPriorityHint priority_hint);
+                   OverlayPriorityHint priority_hint,
+                   const gfx::RRectF& rounded_corners);
   ~OverlayPlaneData();
 
   // Specifies the stacking order of the plane relative to the main framebuffer
@@ -50,6 +52,9 @@ struct GFX_EXPORT OverlayPlaneData {
 
   // Hints for overlay prioritization when delegated composition is used.
   OverlayPriorityHint priority_hint = OverlayPriorityHint::kNone;
+
+  // Specifies the rounded corners of overlay plane.
+  RRectF rounded_corners;
 };
 
 }  // namespace gfx

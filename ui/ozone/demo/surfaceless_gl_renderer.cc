@@ -272,7 +272,7 @@ void SurfacelessGlRenderer::RenderFrame() {
         gfx::OverlayPlaneData(0, gfx::OVERLAY_TRANSFORM_NONE,
                               primary_plane_rect_, unity_rect, false,
                               gfx::Rect(buffers_[back_buffer_]->size()), 1.0f,
-                              gfx::OverlayPriorityHint::kNone));
+                              gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
   }
 
   for (size_t i = 0; i < overlay_cnt_; ++i) {
@@ -282,7 +282,7 @@ void SurfacelessGlRenderer::RenderFrame() {
           gfx::OverlayPlaneData(
               1, gfx::OVERLAY_TRANSFORM_NONE, overlay_rect[i], unity_rect,
               false, gfx::Rect(overlay_buffers_[i][back_buffer_]->size()), 1.0f,
-              gfx::OverlayPriorityHint::kNone));
+              gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
     }
   }
 

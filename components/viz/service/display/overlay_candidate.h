@@ -175,6 +175,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // Hints for overlay prioritization when delegated composition is used.
   gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
 
+  // Specifies the rounded corners of overlay candidate.
+  gfx::RRectF rounded_corners;
+
  private:
   static bool FromDrawQuadResource(
       DisplayResourceProvider* resource_provider,

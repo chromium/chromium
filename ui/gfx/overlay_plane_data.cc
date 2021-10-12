@@ -15,7 +15,8 @@ OverlayPlaneData::OverlayPlaneData(int z_order,
                                    bool enable_blend,
                                    const Rect& damage_rect,
                                    float opacity,
-                                   OverlayPriorityHint priority_hint)
+                                   OverlayPriorityHint priority_hint,
+                                   const gfx::RRectF& rounded_corners)
     : z_order(z_order),
       plane_transform(plane_transform),
       display_bounds(display_bounds),
@@ -23,7 +24,8 @@ OverlayPlaneData::OverlayPlaneData(int z_order,
       enable_blend(enable_blend),
       damage_rect(damage_rect),
       opacity(opacity),
-      priority_hint(priority_hint) {}
+      priority_hint(priority_hint),
+      rounded_corners(rounded_corners) {}
 
 OverlayPlaneData::~OverlayPlaneData() = default;
 

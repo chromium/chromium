@@ -160,6 +160,7 @@ bool OverlayCandidate::FromDrawQuad(
     return false;
   }
   candidate->opacity = sqs->opacity;
+  candidate->rounded_corners = sqs->mask_filter_info.rounded_corner_bounds();
 
   // We support only kSrc (no blending) and kSrcOver (blending with premul).
   if (!(sqs->blend_mode == SkBlendMode::kSrc ||

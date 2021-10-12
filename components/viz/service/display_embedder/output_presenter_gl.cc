@@ -19,6 +19,7 @@
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gl/gl_fence.h"
@@ -385,7 +386,7 @@ void OutputPresenterGL::SchedulePrimaryPlane(
       gfx::OverlayPlaneData(
           kPlaneZOrder, plane.transform, ToNearestRect(plane.display_rect),
           plane.uv_rect, plane.enable_blending, gfx::Rect(plane.resource_size),
-          plane.opacity, plane.priority_hint));
+          plane.opacity, plane.priority_hint, plane.rounded_corners));
 }
 
 void OutputPresenterGL::ScheduleBackground(Image* image) {
@@ -404,7 +405,8 @@ void OutputPresenterGL::ScheduleBackground(Image* image) {
                             gfx::Rect(),
                             /*crop_rect=*/kUVRect,
                             /*enable_blend=*/false, /*damage_rect=*/gfx::Rect(),
-                            /*opacity=*/1.0f, gfx::OverlayPriorityHint::kNone));
+                            /*opacity=*/1.0f, gfx::OverlayPriorityHint::kNone,
+                            /*rounded_corners*/ gfx::RRectF()));
 }
 
 void OutputPresenterGL::CommitOverlayPlanes(
@@ -437,11 +439,11 @@ void OutputPresenterGL::ScheduleOverlays(
       DCHECK(!overlay.gpu_fence_id);
       gl_surface_->ScheduleOverlayPlane(
           gl_image, TakeGpuFence(accesses[i]->TakeAcquireFences()),
-          gfx::OverlayPlaneData(overlay.plane_z_order, overlay.transform,
-                                ToNearestRect(overlay.display_rect),
-                                overlay.uv_rect, !overlay.is_opaque,
-                                ToEnclosingRect(overlay.damage_rect),
-                                overlay.opacity, overlay.priority_hint));
+          gfx::OverlayPlaneData(
+              overlay.plane_z_order, overlay.transform,
+              ToNearestRect(overlay.display_rect), overlay.uv_rect,
+              !overlay.is_opaque, ToEnclosingRect(overlay.damage_rect),
+              overlay.opacity, overlay.priority_hint, overlay.rounded_corners));
     }
 #elif defined(OS_APPLE)
     // For RenderPassDrawQuad the ddl is not nullptr, and the opacity is applied

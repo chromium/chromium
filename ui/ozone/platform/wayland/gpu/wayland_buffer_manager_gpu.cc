@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/process/process.h"
 #include "base/task/current_thread.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
@@ -35,6 +36,19 @@ TypeConverter<ui::ozone::mojom::WaylandOverlayConfigPtr,
           : input.gpu_fence->GetGpuFenceHandle().Clone();
   wayland_overlay_config->priority_hint =
       input.overlay_plane_data.priority_hint;
+
+  const auto& rounded_corners = input.overlay_plane_data.rounded_corners;
+  wayland_overlay_config->rounded_corners.clear();
+  // Push the corners in the following order - top left, top right, bottom
+  // right, and bottom left.
+  wayland_overlay_config->rounded_corners.push_back(
+      rounded_corners.GetCornerRadii(gfx::RRectF::Corner::kUpperLeft).x());
+  wayland_overlay_config->rounded_corners.push_back(
+      rounded_corners.GetCornerRadii(gfx::RRectF::Corner::kUpperRight).x());
+  wayland_overlay_config->rounded_corners.push_back(
+      rounded_corners.GetCornerRadii(gfx::RRectF::Corner::kLowerRight).x());
+  wayland_overlay_config->rounded_corners.push_back(
+      rounded_corners.GetCornerRadii(gfx::RRectF::Corner::kLowerLeft).x());
 
   return wayland_overlay_config;
 }
@@ -201,7 +215,7 @@ void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
       INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, buffer_id,
       surface_scale_factor, bounds_rect, gfx::RectF(1.f, 1.f) /* no crop */,
       damage_region, false, 1.0f /*opacity*/, gfx::GpuFenceHandle(),
-      gfx::OverlayPriorityHint::kNone));
+      gfx::OverlayPriorityHint::kNone, std::vector<float>()));
 
   CommitOverlays(widget, std::move(overlay_configs));
 }

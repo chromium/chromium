@@ -22,6 +22,7 @@
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gl/gl_bindings.h"
@@ -254,7 +255,8 @@ void SurfacelessSkiaGlRenderer::RenderFrame() {
         gfx::OverlayPlaneData(
             0, gfx::OVERLAY_TRANSFORM_NONE, primary_plane_rect_, unity_rect,
             /* enable_blend */ true, gfx::Rect(buffers_[back_buffer_]->size()),
-            /* opacity */ 1.0f, gfx::OverlayPriorityHint::kNone));
+            /* opacity */ 1.0f, gfx::OverlayPriorityHint::kNone,
+            /* rounded_corners */ gfx::RRectF()));
   }
 
   if (overlay_buffer_[0] && overlay_list.back().overlay_handled) {
@@ -263,7 +265,8 @@ void SurfacelessSkiaGlRenderer::RenderFrame() {
         gfx::OverlayPlaneData(
             1, gfx::OVERLAY_TRANSFORM_NONE, overlay_rect, unity_rect,
             /* enable_blend */ true, gfx::Rect(buffers_[back_buffer_]->size()),
-            /* opacity */ 1.0f, gfx::OverlayPriorityHint::kNone));
+            /* opacity */ 1.0f, gfx::OverlayPriorityHint::kNone,
+            /* rounded_corners */ gfx::RRectF()));
   }
 
   back_buffer_ ^= 1;
