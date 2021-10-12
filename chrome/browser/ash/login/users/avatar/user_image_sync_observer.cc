@@ -89,12 +89,10 @@ void UserImageSyncObserver::OnProfileGained(Profile* profile) {
 
 void UserImageSyncObserver::OnInitialSync() {
   int synced_index;
-  bool local_image_updated = false;
   if (!GetSyncedImageIndex(&synced_index) || local_image_changed_) {
     UpdateSyncedImageFromLocal();
   } else if (IsIndexSupported(synced_index)) {
     UpdateLocalImageFromSynced();
-    local_image_updated = true;
   }
 }
 
