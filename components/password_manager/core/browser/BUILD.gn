@@ -316,6 +316,8 @@ static_library("browser") {
       "password_scripts_fetcher.h",
       "password_scripts_fetcher_impl.cc",
       "password_scripts_fetcher_impl.h",
+      "password_store_backend_migration_decorator.cc",
+      "password_store_backend_migration_decorator.h",
       "password_store_proxy_backend.cc",
       "password_store_proxy_backend.h",
     ]
@@ -698,6 +700,7 @@ source_set("unit_tests") {
   if (is_android) {
     sources += [
       "password_scripts_fetcher_impl_unittests.cc",
+      "password_store_backend_migration_decorator_unittest.cc",
       "password_store_proxy_backend_unittest.cc",
     ]
   }

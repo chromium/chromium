@@ -64,53 +64,37 @@ class PasswordStoreProxyBackendTest : public testing::Test {
  protected:
   PasswordStoreProxyBackendTest() {
     proxy_backend_ = std::make_unique<PasswordStoreProxyBackend>(
-        CreateMainBackend(), CreateShadowBackend());
+        &main_backend_, &shadow_backend_);
   }
 
   void TearDown() override {
-    EXPECT_CALL(*shadow_backend_, Shutdown(_));
-    EXPECT_CALL(*main_backend_, Shutdown(_));
-    shadow_backend_ = nullptr;
-    main_backend_ = nullptr;
+    EXPECT_CALL(shadow_backend_, Shutdown(_));
+    EXPECT_CALL(main_backend_, Shutdown(_));
     PasswordStoreBackend* backend = proxy_backend_.get();  // Will be destroyed.
     backend->Shutdown(base::DoNothing());
     proxy_backend_.reset();
   }
 
   PasswordStoreBackend& proxy_backend() { return *proxy_backend_; }
-  MockPasswordStoreBackend* main_backend() { return main_backend_; }
-  MockPasswordStoreBackend* shadow_backend() { return shadow_backend_; }
+  MockPasswordStoreBackend& main_backend() { return main_backend_; }
+  MockPasswordStoreBackend& shadow_backend() { return shadow_backend_; }
 
  private:
-  std::unique_ptr<PasswordStoreBackend> CreateMainBackend() {
-    auto unique_backend =
-        std::make_unique<StrictMock<MockPasswordStoreBackend>>();
-    main_backend_ = unique_backend.get();
-    return unique_backend;
-  }
-
-  std::unique_ptr<PasswordStoreBackend> CreateShadowBackend() {
-    auto unique_backend =
-        std::make_unique<StrictMock<MockPasswordStoreBackend>>();
-    shadow_backend_ = unique_backend.get();
-    return unique_backend;
-  }
-
   std::unique_ptr<PasswordStoreProxyBackend> proxy_backend_;
-  StrictMock<MockPasswordStoreBackend>* main_backend_;
-  StrictMock<MockPasswordStoreBackend>* shadow_backend_;
+  StrictMock<MockPasswordStoreBackend> main_backend_;
+  StrictMock<MockPasswordStoreBackend> shadow_backend_;
 };
 
 TEST_F(PasswordStoreProxyBackendTest, CallCompletionCallbackAfterInit) {
   base::MockCallback<base::OnceCallback<void(bool)>> completion_callback;
 
   // Both backends need to be invoked for a successful completion call.
-  EXPECT_CALL(*main_backend(), InitBackend)
+  EXPECT_CALL(main_backend(), InitBackend)
       .WillOnce(
           WithArg<2>(Invoke([](base::OnceCallback<void(bool)> reply) -> void {
             std::move(reply).Run(true);
           })));
-  EXPECT_CALL(*shadow_backend(), InitBackend)
+  EXPECT_CALL(shadow_backend(), InitBackend)
       .WillOnce(
           WithArg<2>(Invoke([](base::OnceCallback<void(bool)> reply) -> void {
             std::move(reply).Run(true);
@@ -124,12 +108,12 @@ TEST_F(PasswordStoreProxyBackendTest, CallCompletionWithFailureForAnyError) {
   base::MockCallback<base::OnceCallback<void(bool)>> completion_callback;
 
   // If one backend fails to initialize, the result of the second is irrelevant.
-  EXPECT_CALL(*main_backend(), InitBackend)
+  EXPECT_CALL(main_backend(), InitBackend)
       .WillOnce(
           WithArg<2>(Invoke([](base::OnceCallback<void(bool)> reply) -> void {
             std::move(reply).Run(false);
           })));
-  EXPECT_CALL(*shadow_backend(), InitBackend)
+  EXPECT_CALL(shadow_backend(), InitBackend)
       .Times(AtMost(1))
       .WillOnce(
           WithArg<2>(Invoke([](base::OnceCallback<void(bool)> reply) -> void {
@@ -146,7 +130,7 @@ TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToGetAllLoginsAsync) {
       CreateTestLogins();
   EXPECT_CALL(mock_reply,
               Run(UnorderedPasswordFormElementsAre(&expected_logins)));
-  EXPECT_CALL(*main_backend(), GetAllLoginsAsync)
+  EXPECT_CALL(main_backend(), GetAllLoginsAsync)
       .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
       })));
@@ -160,7 +144,7 @@ TEST_F(PasswordStoreProxyBackendTest,
       CreateTestLogins();
   EXPECT_CALL(mock_reply,
               Run(UnorderedPasswordFormElementsAre(&expected_logins)));
-  EXPECT_CALL(*main_backend(), GetAutofillableLoginsAsync)
+  EXPECT_CALL(main_backend(), GetAutofillableLoginsAsync)
       .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
       })));
@@ -173,7 +157,7 @@ TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToFillMatchingLoginsAsync) {
       CreateTestLogins();
   EXPECT_CALL(mock_reply,
               Run(UnorderedPasswordFormElementsAre(&expected_logins)));
-  EXPECT_CALL(*main_backend(), FillMatchingLoginsAsync)
+  EXPECT_CALL(main_backend(), FillMatchingLoginsAsync)
       .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
       })));
@@ -188,7 +172,7 @@ TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToAddLoginAsync) {
   PasswordStoreChangeList change_list;
   change_list.push_back(PasswordStoreChange(Type::ADD, form));
   EXPECT_CALL(mock_reply, Run(Eq(change_list)));
-  EXPECT_CALL(*main_backend(), AddLoginAsync(Eq(form), _))
+  EXPECT_CALL(main_backend(), AddLoginAsync(Eq(form), _))
       .WillOnce(WithArg<1>(
           Invoke([&change_list](PasswordStoreChangeListReply reply) -> void {
             std::move(reply).Run(change_list);
@@ -202,7 +186,7 @@ TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToUpdateLoginAsync) {
   PasswordStoreChangeList change_list;
   change_list.push_back(PasswordStoreChange(Type::UPDATE, form));
   EXPECT_CALL(mock_reply, Run(Eq(change_list)));
-  EXPECT_CALL(*main_backend(), UpdateLoginAsync(Eq(form), _))
+  EXPECT_CALL(main_backend(), UpdateLoginAsync(Eq(form), _))
       .WillOnce(WithArg<1>(
           Invoke([&change_list](PasswordStoreChangeListReply reply) -> void {
             std::move(reply).Run(change_list);
@@ -216,7 +200,7 @@ TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToRemoveLoginAsync) {
   PasswordStoreChangeList change_list;
   change_list.push_back(PasswordStoreChange(Type::REMOVE, form));
   EXPECT_CALL(mock_reply, Run(Eq(change_list)));
-  EXPECT_CALL(*main_backend(), RemoveLoginAsync(Eq(form), _))
+  EXPECT_CALL(main_backend(), RemoveLoginAsync(Eq(form), _))
       .WillOnce(WithArg<1>(
           Invoke([&change_list](PasswordStoreChangeListReply reply) -> void {
             std::move(reply).Run(change_list);
@@ -232,7 +216,7 @@ TEST_F(PasswordStoreProxyBackendTest,
   PasswordStoreChangeList change_list;
   change_list.push_back(PasswordStoreChange(Type::REMOVE, CreateTestForm()));
   EXPECT_CALL(mock_reply, Run(Eq(change_list)));
-  EXPECT_CALL(*main_backend(),
+  EXPECT_CALL(main_backend(),
               RemoveLoginsByURLAndTimeAsync(_, Eq(kStart), Eq(kEnd), _, _))
       .WillOnce(WithArg<4>(
           Invoke([&change_list](PasswordStoreChangeListReply reply) -> void {
@@ -251,7 +235,7 @@ TEST_F(PasswordStoreProxyBackendTest,
   PasswordStoreChangeList change_list;
   change_list.push_back(PasswordStoreChange(Type::REMOVE, CreateTestForm()));
   EXPECT_CALL(mock_reply, Run(Eq(change_list)));
-  EXPECT_CALL(*main_backend(),
+  EXPECT_CALL(main_backend(),
               RemoveLoginsCreatedBetweenAsync(Eq(kStart), Eq(kEnd), _))
       .WillOnce(WithArg<2>(
           Invoke([&change_list](PasswordStoreChangeListReply reply) -> void {
@@ -265,7 +249,7 @@ TEST_F(PasswordStoreProxyBackendTest,
        UseMainBackendToDisableAutoSignInForOriginsAsync) {
   base::MockCallback<base::OnceClosure> mock_reply;
   EXPECT_CALL(mock_reply, Run);
-  EXPECT_CALL(*main_backend(), DisableAutoSignInForOriginsAsync)
+  EXPECT_CALL(main_backend(), DisableAutoSignInForOriginsAsync)
       .WillOnce(WithArg<1>(
           Invoke([](base::OnceClosure reply) { std::move(reply).Run(); })));
   proxy_backend().DisableAutoSignInForOriginsAsync(
@@ -274,18 +258,18 @@ TEST_F(PasswordStoreProxyBackendTest,
 
 TEST_F(PasswordStoreProxyBackendTest,
        UseMainBackendToGetSmartBubbleStatsStore) {
-  EXPECT_CALL(*main_backend(), GetSmartBubbleStatsStore);
+  EXPECT_CALL(main_backend(), GetSmartBubbleStatsStore);
   proxy_backend().GetSmartBubbleStatsStore();
 }
 
 TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToGetFieldInfoStore) {
-  EXPECT_CALL(*main_backend(), GetFieldInfoStore);
+  EXPECT_CALL(main_backend(), GetFieldInfoStore);
   proxy_backend().GetFieldInfoStore();
 }
 
 TEST_F(PasswordStoreProxyBackendTest,
        UseMainBackendToCreateSyncControllerDelegateFactory) {
-  EXPECT_CALL(*main_backend(), CreateSyncControllerDelegateFactory);
+  EXPECT_CALL(main_backend(), CreateSyncControllerDelegateFactory);
   proxy_backend().CreateSyncControllerDelegateFactory();
 }
 

@@ -24,20 +24,12 @@ void InvokeCallbackWithCombinedStatus(base::OnceCallback<void(bool)> completion,
   std::move(completion).Run(base::ranges::all_of(statuses, base::identity()));
 }
 
-void DeleteBackendAndInvokeCallback(
-    std::unique_ptr<PasswordStoreBackend> backend_to_delete,
-    base::OnceClosure completion) {
-  backend_to_delete.reset();
-  std::move(completion).Run();
-}
-
 }  // namespace
 
 PasswordStoreProxyBackend::PasswordStoreProxyBackend(
-    std::unique_ptr<PasswordStoreBackend> main_backend,
-    std::unique_ptr<PasswordStoreBackend> shadow_backend)
-    : main_backend_(std::move(main_backend)),
-      shadow_backend_(std::move(shadow_backend)) {}
+    PasswordStoreBackend* main_backend,
+    PasswordStoreBackend* shadow_backend)
+    : main_backend_(main_backend), shadow_backend_(shadow_backend) {}
 
 PasswordStoreProxyBackend::~PasswordStoreProxyBackend() = default;
 
@@ -60,14 +52,8 @@ void PasswordStoreProxyBackend::InitBackend(
 void PasswordStoreProxyBackend::Shutdown(base::OnceClosure shutdown_completed) {
   base::RepeatingClosure pending_shutdown_calls = base::BarrierClosure(
       /*num_closures=*/2, std::move(shutdown_completed));
-  PasswordStoreBackend* backend = main_backend_.get();
-  backend->Shutdown(base::BindOnce(&DeleteBackendAndInvokeCallback,
-                                   std::move(main_backend_),
-                                   pending_shutdown_calls));
-  backend = shadow_backend_.get();
-  backend->Shutdown(base::BindOnce(&DeleteBackendAndInvokeCallback,
-                                   std::move(shadow_backend_),
-                                   pending_shutdown_calls));
+  main_backend_->Shutdown(pending_shutdown_calls);
+  shadow_backend_->Shutdown(pending_shutdown_calls);
 }
 
 void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsReply callback) {

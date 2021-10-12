@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PROXY_BACKEND_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PROXY_BACKEND_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_BACKEND_MIGRATION_DECORATOR_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_BACKEND_MIGRATION_DECORATOR_H_
 
 #include <memory>
 
@@ -12,21 +12,26 @@
 
 namespace password_manager {
 
-// This backend forwards requests to two backends in order to compare and record
-// their results and time differences. The main backend fulfills the  request
-// while the shadow backend is only queried to record shadow traffic.
-class PasswordStoreProxyBackend : public PasswordStoreBackend {
+// This is the backend that should be used on Android platform until the full
+// migration to the Android backend is launched. Internally, this backend
+// owns two backends: the built-in and the Android backend. In addition
+// to delegating all backend responsibilities, it is responsible for migrating
+// credentials between both backends as well as instantiating any proxy backends
+// that are used for shadowing the traffic.
+class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
  public:
-  // `main_backend` and `shadow_backend` must not be null and must outlive this
-  // object as long as Shutdown() is not called.
-  PasswordStoreProxyBackend(PasswordStoreBackend* main_backend,
-                            PasswordStoreBackend* shadow_backend);
-  PasswordStoreProxyBackend(const PasswordStoreProxyBackend&) = delete;
-  PasswordStoreProxyBackend(PasswordStoreProxyBackend&&) = delete;
-  PasswordStoreProxyBackend& operator=(const PasswordStoreProxyBackend&) =
-      delete;
-  PasswordStoreProxyBackend& operator=(PasswordStoreProxyBackend&&) = delete;
-  ~PasswordStoreProxyBackend() override;
+  PasswordStoreBackendMigrationDecorator(
+      std::unique_ptr<PasswordStoreBackend> built_in_backend,
+      std::unique_ptr<PasswordStoreBackend> android_backend);
+  PasswordStoreBackendMigrationDecorator(
+      const PasswordStoreBackendMigrationDecorator&) = delete;
+  PasswordStoreBackendMigrationDecorator(
+      PasswordStoreBackendMigrationDecorator&&) = delete;
+  PasswordStoreBackendMigrationDecorator& operator=(
+      const PasswordStoreBackendMigrationDecorator&) = delete;
+  PasswordStoreBackendMigrationDecorator& operator=(
+      PasswordStoreBackendMigrationDecorator&&) = delete;
+  ~PasswordStoreBackendMigrationDecorator() override;
 
  private:
   // Implements PasswordStoreBackend interface.
@@ -64,10 +69,13 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegateFactory() override;
 
-  PasswordStoreBackend* const main_backend_;
-  PasswordStoreBackend* const shadow_backend_;
+  std::unique_ptr<PasswordStoreBackend> built_in_backend_;
+  std::unique_ptr<PasswordStoreBackend> android_backend_;
+
+  // Proxy backend to which all responsibilities are being delegated.
+  std::unique_ptr<PasswordStoreBackend> active_backend_;
 };
 
 }  // namespace password_manager
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PROXY_BACKEND_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_BACKEND_MIGRATION_DECORATOR_H_
