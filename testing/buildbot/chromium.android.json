@@ -29069,8 +29069,7 @@
       {
         "args": [
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android-cronet-arm64-rel-marshmallow-tests.cronet_test_instrumentation_apk.filter"
+          "--recover-devices"
         ],
         "merge": {
           "args": [

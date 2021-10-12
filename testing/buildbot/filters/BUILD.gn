@@ -162,12 +162,6 @@ source_set("crashpad_tests_filters") {
       [ "//testing/buildbot/filters/android.emulator_11.crashpad_tests.filter" ]
 }
 
-source_set("cronet_test_instrumentation_apk_filters") {
-  testonly = true
-
-  data = [ "//testing/buildbot/filters/android-cronet-arm64-rel-marshmallow-tests.cronet_test_instrumentation_apk.filter" ]
-}
-
 source_set("sync_integration_tests_filters") {
   testonly = true
 

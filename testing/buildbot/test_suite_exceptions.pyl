@@ -1463,15 +1463,6 @@
       },
     },
   },
-  'cronet_test_instrumentation_apk': {
-    'modifications': {
-      'android-cronet-arm64-rel-marshmallow-tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android-cronet-arm64-rel-marshmallow-tests.cronet_test_instrumentation_apk.filter',
-        ],
-      },
-    },
-  },
   'depth_capture_tests': {
     'remove_from': [
       # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
