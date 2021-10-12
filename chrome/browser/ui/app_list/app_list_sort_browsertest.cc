@@ -7,6 +7,7 @@
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
+#include "base/feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
@@ -47,8 +48,15 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
     ash::AcceleratorController::Get()->PerformActionIfEnabled(
         ash::TOGGLE_APP_LIST_FULLSCREEN, {});
 
-    // Assume that there are two default apps.
-    ASSERT_EQ(2, app_list_test_api_.GetTopListItemCount());
+    const int default_app_count = app_list_test_api_.GetTopListItemCount();
+
+    if (base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport)) {
+      // Assume that there are three default apps, one being the Lacros browser.
+      ASSERT_EQ(3, app_list_test_api_.GetTopListItemCount());
+    } else {
+      // Assume that there are two default apps.
+      ASSERT_EQ(2, app_list_test_api_.GetTopListItemCount());
+    }
 
     app1_id_ = LoadExtension(test_data_dir_.AppendASCII("app1"))->id();
     ASSERT_FALSE(app1_id_.empty());
@@ -58,7 +66,7 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
     // app in this test.
     app3_id_ = LoadExtension(test_data_dir_.AppendASCII("app4"))->id();
     ASSERT_FALSE(app3_id_.empty());
-    EXPECT_EQ(5, app_list_test_api_.GetTopListItemCount());
+    EXPECT_EQ(default_app_count + 3, app_list_test_api_.GetTopListItemCount());
 
     event_generator_ = std::make_unique<ui::test::EventGenerator>(
         ash::Shell::GetPrimaryRootWindow());
