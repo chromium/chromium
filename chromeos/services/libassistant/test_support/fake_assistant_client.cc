@@ -58,7 +58,7 @@ void FakeAssistantClient::GetSpeakerIdEnrollmentInfo(
 
 void FakeAssistantClient::ResetAllDataAndShutdown() {}
 
-void FakeAssistantClient::OnDisplayRequest(
+void FakeAssistantClient::SendDisplayRequest(
     const OnDisplayRequestRequest& request) {}
 
 void FakeAssistantClient::AddDisplayEventObserver(

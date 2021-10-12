@@ -96,11 +96,9 @@ void DisplayConnection::SendDisplayRequest() {
   ::assistant::display::DisplayRequest display_request;
   FillDisplayRequest(display_request);
 
-  std::string s;
-  display_request.SerializeToString(&s);
   ::assistant::api::OnDisplayRequestRequest request;
-  request.set_display_request_bytes(s);
-  assistant_client_->OnDisplayRequest(request);
+  request.set_display_request_bytes(display_request.SerializeAsString());
+  assistant_client_->SendDisplayRequest(request);
 }
 
 void DisplayConnection::FillDisplayRequest(

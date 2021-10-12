@@ -53,7 +53,7 @@ class FakeAssistantClient : public AssistantClient {
       const GetSpeakerIdEnrollmentInfoRequest& request,
       base::OnceCallback<void(bool user_model_exists)> on_done) override;
   void ResetAllDataAndShutdown() override;
-  void OnDisplayRequest(const OnDisplayRequestRequest& request) override;
+  void SendDisplayRequest(const OnDisplayRequestRequest& request) override;
   void AddDisplayEventObserver(
       GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) override;
   void ResumeCurrentStream() override;

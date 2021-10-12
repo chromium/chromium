@@ -197,7 +197,7 @@ class AssistantClientV1::DisplayConnectionImpl
     observer_ = observer;
   }
 
-  void OnDisplayRequest(const std::string& display_request_bytes) {
+  void SendDisplayRequest(const std::string& display_request_bytes) {
     if (!delegate_) {
       LOG(ERROR) << "Can't send DisplayRequest before delegate is set.";
       return;
@@ -357,9 +357,9 @@ void AssistantClientV1::ResetAllDataAndShutdown() {
   assistant_manager()->ResetAllDataAndShutdown();
 }
 
-void AssistantClientV1::OnDisplayRequest(
+void AssistantClientV1::SendDisplayRequest(
     const OnDisplayRequestRequest& request) {
-  display_connection_->OnDisplayRequest(request.display_request_bytes());
+  display_connection_->SendDisplayRequest(request.display_request_bytes());
 }
 
 void AssistantClientV1::AddDisplayEventObserver(

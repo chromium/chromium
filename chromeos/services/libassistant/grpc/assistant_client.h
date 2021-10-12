@@ -127,7 +127,7 @@ class AssistantClient {
   virtual void ResetAllDataAndShutdown() = 0;
 
   // Display methods.
-  virtual void OnDisplayRequest(const OnDisplayRequestRequest& request) = 0;
+  virtual void SendDisplayRequest(const OnDisplayRequestRequest& request) = 0;
   virtual void AddDisplayEventObserver(
       GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) = 0;
 
