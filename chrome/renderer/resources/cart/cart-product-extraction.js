@@ -106,7 +106,8 @@ function multipleImagesSupported() {
   // workaround for this problem. In target we only get one image per product.
   return hostname.endsWith('craigslist.org') || hostname.endsWith('target.com')
       || hostname.endsWith('zazzle.com')
-      || hostname.endsWith("ashleyfurniture.com");
+      || hostname.endsWith("ashleyfurniture.com")
+      || hostname.endsWith("chewy.com");
 }
 
 function extractImage(item) {
@@ -128,7 +129,17 @@ function extractImage(item) {
       return null;
     }
   }
-  const image = images[0];
+  if (!document.URL.includes("chewy.com")) {
+    images = images.slice(0, 1);
+  }
+  for (const image of images) {
+    const currentUrl = extractImageUrl(image);
+    if (currentUrl !== null) return currentUrl;
+  }
+  return null;
+}
+
+function extractImageUrl(image) {
   const lazyUrl = getLazyLoadingURL(image);
   if (lazyUrl != null)
     return lazyUrl;
@@ -497,7 +508,7 @@ function extractPrice(item) {
   // Generic heuristic to search for price elements.
   let captured_prices = [];
   for (const price of item.querySelectorAll(
-    'span, b, p, div, h3, td, li, em')) {
+    'span, b, p, div, h3, td, li, em, strong')) {
     let candidate = price.innerText.trim();
     if (document.URL.includes("thecompanystore.com")) {
       candidate = candidate.split("\n")[0];
