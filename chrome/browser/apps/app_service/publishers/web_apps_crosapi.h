@@ -108,6 +108,11 @@ class WebAppsCrosapi : public KeyedService,
       GetMenuModelCallback callback,
       crosapi::mojom::MenuItemsPtr crosapi_menu_items);
 
+  void OnLoadIcon(uint32_t icon_effects,
+                  int size_hint_in_dip,
+                  LoadIconCallback callback,
+                  apps::mojom::IconValuePtr icon_value);
+
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   mojo::Receiver<crosapi::mojom::AppPublisher> receiver_{this};
   mojo::Remote<crosapi::mojom::AppController> controller_;
