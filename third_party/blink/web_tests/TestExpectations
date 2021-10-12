@@ -360,6 +360,7 @@ crbug.com/784956 fast/history/frameset-repeated-name.html [ Failure Pass ]
 crbug.com/624233 virtual/gpu-rasterization/images/color-profile-background-clip-text.html [ Failure Pass ]
 crbug.com/757605 virtual/gpu-rasterization/images/jpeg-yuv-progressive-image.html [ Failure Pass ]
 crbug.com/1223284 [ Win7 ] virtual/gpu-rasterization/images/color-profile-background-image-cross-fade.html [ Failure Pass ]
+crbug.com/1223284 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-background-image-cross-fade.html [ Failure Pass ]
 
 ########## Bugs to fix ##########
 # This is a missing event and increasing the timeout or using run-after-layout-and-paint doesn't
@@ -3214,10 +3215,12 @@ crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCSctpTransport-events.html [ 
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc/RTCSctpTransport-events.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/getstats.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/getstats.html [ Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/getstats.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCDataChannel-send.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCDataChannel-send.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCDataChannel-iceRestart.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCDataChannel-iceRestart.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc/RTCDataChannel-iceRestart.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCPeerConnection-createDataChannel.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCPeerConnection-createDataChannel.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-legacy.https.html [ Timeout ]
@@ -3278,6 +3281,7 @@ crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc-encoded-transform/RTCEncodedVid
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCPeerConnection-connectionState.https.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCDataChannel-close.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-worker.https.html [ Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-worker.https.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-connectionState.https.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/simulcast/vp8.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/protocol/handover-datachannel.html [ Timeout ]
@@ -3305,6 +3309,7 @@ crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc/RTCPeerConnection-iceConnec
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/promises-call.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-createDataChannel.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCPeerConnection-addIceCandidate-connectionSetup.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc/RTCPeerConnection-addIceCandidate-connectionSetup.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-getStats.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-getStats.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html [ Timeout ]
@@ -6546,8 +6551,10 @@ crbug.com/1210687 [ Win ] virtual/shared_array_buffer_on_desktop/http/tests/devt
 
 # Sheriff 2021-06-02
 crbug.com/1215575 [ Mac11.0 ] fast/peerconnection/RTCPeerConnection-applyConstraints-remoteVideoTrack.html [ Pass Timeout ]
+crbug.com/1215575 [ Mac11-arm64 ] fast/peerconnection/RTCPeerConnection-applyConstraints-remoteVideoTrack.html [ Pass Timeout ]
 crbug.com/1215575 [ Mac11.0 ] fast/peerconnection/RTCPeerConnection-createDTMFSender.html [ Failure Pass ]
 crbug.com/1215575 [ Mac11.0 ] fast/peerconnection/RTCPeerConnection-datachannel.html [ Pass Timeout ]
+crbug.com/1215575 [ Mac11-arm64 ] fast/peerconnection/RTCPeerConnection-datachannel.html [ Pass Timeout ]
 crbug.com/1215575 [ Mac11.0 ] fast/peerconnection/RTCPeerConnection-lifetime.html [ Pass Timeout ]
 crbug.com/1215575 [ Mac11-arm64 ] fast/peerconnection/RTCPeerConnection-lifetime.html [ Pass Timeout ]
 crbug.com/1215584 [ Mac11.0 ] inspector-protocol/layout-fonts/lang-fallback.js [ Failure Pass ]
@@ -6944,6 +6951,7 @@ crbug.com/1249176 [ Mac11-arm64 ] external/wpt/websockets/stream/tentative/backp
 crbug.com/1249176 [ Mac11-arm64 ] fast/forms/color/color-picker-escape-cancellation-revert.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/css/focus-display-block-inline.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/dom/geometry-interfaces-dom-matrix-rotate.html [ Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/timeline-paint/timeline-paint-image.js [ Failure ]
 
 # Following tests timeout on mac11-arm64
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/focus/focus-already-focused-iframe-deep-same-site.html [ Timeout ]
@@ -7036,6 +7044,9 @@ crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shap
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-003.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-014.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-image-filter-all.html [ Failure Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] virtual/scalefactor200withoutzoom/external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/split.https.html [ Timeout Pass ]
+
 # mac-arm CI 10-01-2021
 crbug.com/1249176 [ Mac11-arm64 ] editing/text-iterator/beforematch-async.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/event-timing/click-interactionid.html [ Timeout ]
