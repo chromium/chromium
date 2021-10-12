@@ -15,7 +15,7 @@
         android:id="@+id/reaction_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="24dp"
+        android:padding="@dimen/reaction_padding"
         android:background="@drawable/border_inset"/>
 
     <org.chromium.ui.widget.ChromeImageButton

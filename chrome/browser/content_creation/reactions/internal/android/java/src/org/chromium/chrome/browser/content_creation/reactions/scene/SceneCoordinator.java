@@ -28,6 +28,7 @@ public class SceneCoordinator implements SceneEditorDelegate {
     private final Activity mActivity;
     private final Set<ReactionLayout> mReactionLayouts;
 
+    private ReactionLayout mActiveReaction;
     private RelativeLayout mSceneBackground;
 
     /**
@@ -42,6 +43,8 @@ public class SceneCoordinator implements SceneEditorDelegate {
 
     public void setSceneBackground(RelativeLayout sceneBackground) {
         mSceneBackground = sceneBackground;
+        mSceneBackground.setOnClickListener(
+                (view) -> { markActiveStatus(mActiveReaction, false); });
     }
 
     public void addInitialReaction() {
@@ -65,8 +68,14 @@ public class SceneCoordinator implements SceneEditorDelegate {
                 - res.getDimensionPixelSize(R.dimen.toolbar_total_height);
         lp.setMargins(leftPx, topPx, 0, 0);
 
-        mSceneBackground.addView(reactionLayout, lp);
+        addReaction(reactionLayout, lp);
+    }
+
+    private void addReaction(
+            ReactionLayout reactionLayout, RelativeLayout.LayoutParams layoutParams) {
+        mSceneBackground.addView(reactionLayout, layoutParams);
         mReactionLayouts.add(reactionLayout);
+        markActiveStatus(reactionLayout, true);
     }
 
     // SceneEditorCallback implementation.
@@ -89,10 +98,8 @@ public class SceneCoordinator implements SceneEditorDelegate {
         int offsetPx = ViewUtils.dpToPx(mActivity, REACTION_OFFSET_DP);
         newLayoutParams.leftMargin = oldLayoutParams.leftMargin + offsetPx;
         newLayoutParams.topMargin = oldLayoutParams.topMargin + offsetPx;
-        newReactionLayout.setLayoutParams(newLayoutParams);
 
-        mSceneBackground.addView(newReactionLayout);
-        mReactionLayouts.add(newReactionLayout);
+        addReaction(newReactionLayout, newLayoutParams);
     }
 
     @Override
@@ -103,6 +110,15 @@ public class SceneCoordinator implements SceneEditorDelegate {
 
     @Override
     public void markActiveStatus(ReactionLayout reactionLayout, boolean isActive) {
-        // no-op for now
+        if (isActive) {
+            if (mActiveReaction != null) {
+                mActiveReaction.setActive(false);
+            }
+            reactionLayout.setActive(true);
+            mActiveReaction = reactionLayout;
+        } else if (mActiveReaction != null) {
+            mActiveReaction.setActive(false);
+            mActiveReaction = null;
+        }
     }
 }
