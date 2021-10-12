@@ -138,7 +138,8 @@ void StylusHandler::HandleSetPreferredNoteTakingApp(
 void StylusHandler::HandleSetPreferredNoteTakingAppEnabledOnLockScreen(
     const base::ListValue* args) {
   bool enabled = false;
-  CHECK(args->GetBoolean(0, &enabled));
+  CHECK(args->GetList()[0].is_bool());
+  enabled = args->GetList()[0].GetBool();
 
   NoteTakingHelper::Get()->SetPreferredAppEnabledOnLockScreen(
       Profile::FromWebUI(web_ui()), enabled);

@@ -1127,8 +1127,8 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
   CHECK(args->GetString(1, &secondary_pattern_string));
   std::string type;
   CHECK(args->GetString(2, &type));
-  bool incognito;
-  CHECK(args->GetBoolean(3, &incognito));
+  CHECK(args->GetList()[3].is_bool());
+  bool incognito = args->GetList()[3].GetBool();
 
   ContentSettingsType content_type =
       site_settings::ContentSettingsTypeFromGroupName(type);
@@ -1193,8 +1193,8 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
   CHECK(args->GetString(2, &type));
   std::string value;
   CHECK(args->GetString(3, &value));
-  bool incognito;
-  CHECK(args->GetBoolean(4, &incognito));
+  CHECK(args->GetList()[4].is_bool());
+  bool incognito = args->GetList()[4].GetBool();
 
   ContentSettingsType content_type =
       site_settings::ContentSettingsTypeFromGroupName(type);
@@ -1458,8 +1458,8 @@ void SiteSettingsHandler::HandleSetBlockAutoplayEnabled(
     return;
 
   CHECK_EQ(1U, args->GetList().size());
-  bool value;
-  CHECK(args->GetBoolean(0, &value));
+  CHECK(args->GetList()[0].is_bool());
+  bool value = args->GetList()[0].GetBool();
 
   profile_->GetPrefs()->SetBoolean(prefs::kBlockAutoplayEnabled, value);
 }

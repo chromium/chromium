@@ -98,16 +98,18 @@ void AccessibilityHandler::HandleShowSelectToSpeakSettings(
 void AccessibilityHandler::HandleSetStartupSoundEnabled(
     const base::ListValue* args) {
   DCHECK_EQ(1U, args->GetList().size());
-  bool enabled;
-  args->GetBoolean(0, &enabled);
+  bool enabled = false;
+  if (args->GetList()[0].is_bool())
+    enabled = args->GetList()[0].GetBool();
   AccessibilityManager::Get()->SetStartupSoundEnabled(enabled);
 }
 
 void AccessibilityHandler::HandleRecordSelectedShowShelfNavigationButtonsValue(
     const base::ListValue* args) {
   DCHECK_EQ(1U, args->GetList().size());
-  bool enabled;
-  args->GetBoolean(0, &enabled);
+  bool enabled = false;
+  if (args->GetList()[0].is_bool())
+    enabled = args->GetList()[0].GetBool();
 
   a11y_nav_buttons_toggle_metrics_reporter_timer_.Start(
       FROM_HERE, base::Seconds(10),

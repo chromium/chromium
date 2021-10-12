@@ -479,9 +479,10 @@ void AboutHandler::HandleSetChannel(const base::ListValue* args) {
   }
 
   std::u16string channel;
-  bool is_powerwash_allowed;
-  if (!args->GetString(0, &channel) ||
-      !args->GetBoolean(1, &is_powerwash_allowed)) {
+  bool is_powerwash_allowed = false;
+  if (args->GetString(0, &channel) && args->GetList()[1].is_bool()) {
+    is_powerwash_allowed = args->GetList()[1].GetBool();
+  } else {
     LOG(ERROR) << "Can't parse SetChannel() args";
     return;
   }

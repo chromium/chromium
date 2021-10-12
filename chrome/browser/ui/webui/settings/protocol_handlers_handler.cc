@@ -190,7 +190,8 @@ void ProtocolHandlersHandler::HandleRemoveHandler(const base::ListValue* args) {
 void ProtocolHandlersHandler::HandleSetHandlersEnabled(
     const base::ListValue* args) {
   bool enabled = true;
-  CHECK(args->GetBoolean(0, &enabled));
+  CHECK(args->GetList()[0].is_bool());
+  enabled = args->GetList()[0].GetBool();
   if (enabled)
     GetProtocolHandlerRegistry()->Enable();
   else

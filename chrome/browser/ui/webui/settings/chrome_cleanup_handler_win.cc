@@ -204,7 +204,8 @@ void ChromeCleanupHandler::HandleRegisterChromeCleanerObserver(
 void ChromeCleanupHandler::HandleStartScanning(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
   bool allow_logs_upload = false;
-  args->GetBoolean(0, &allow_logs_upload);
+  if (args->GetList()[0].is_bool())
+    allow_logs_upload = args->GetList()[0].GetBool();
 
   // If this operation is not allowed the UI should be disabled.
   CHECK(controller_->IsAllowedByPolicy());
@@ -230,7 +231,8 @@ void ChromeCleanupHandler::HandleRestartComputer(const base::ListValue* args) {
 void ChromeCleanupHandler::HandleStartCleanup(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
   bool allow_logs_upload = false;
-  args->GetBoolean(0, &allow_logs_upload);
+  if (args->GetList()[0].is_bool())
+    allow_logs_upload = args->GetList()[0].GetBool();
 
   // The state is propagated to all open tabs and should be consistent.
   DCHECK_EQ(controller_->logs_enabled(profile_), allow_logs_upload);
@@ -251,7 +253,8 @@ void ChromeCleanupHandler::HandleNotifyShowDetails(
     const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
   bool details_section_visible = false;
-  args->GetBoolean(0, &details_section_visible);
+  if (args->GetList()[0].is_bool())
+    details_section_visible = args->GetList()[0].GetBool();
 
   if (details_section_visible) {
     base::RecordAction(

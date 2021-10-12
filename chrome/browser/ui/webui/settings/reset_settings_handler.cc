@@ -138,7 +138,8 @@ void ResetSettingsHandler::HandleResetProfileSettings(
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
   bool send_settings = false;
-  CHECK(args->GetBoolean(1, &send_settings));
+  CHECK(args->GetList()[1].is_bool());
+  send_settings = args->GetList()[1].GetBool();
   std::string request_origin_string;
   CHECK(args->GetString(2, &request_origin_string));
   reset_report::ChromeResetReport::ResetRequestOrigin request_origin =

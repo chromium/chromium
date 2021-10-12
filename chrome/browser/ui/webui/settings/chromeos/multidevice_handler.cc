@@ -351,7 +351,8 @@ void MultideviceHandler::HandleGetSmartLockSignInEnabled(
 void MultideviceHandler::HandleSetSmartLockSignInEnabled(
     const base::ListValue* args) {
   bool enabled = false;
-  CHECK(args->GetBoolean(0, &enabled));
+  if (args->GetList()[0].is_bool())
+    enabled = args->GetList()[0].GetBool();
 
   std::string auth_token;
   bool auth_token_present = args->GetString(1, &auth_token);

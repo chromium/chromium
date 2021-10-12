@@ -613,7 +613,8 @@ void PeopleHandler::HandleStartSignin(const base::ListValue* args) {
 
 void PeopleHandler::HandleSignout(const base::ListValue* args) {
   bool delete_profile = false;
-  args->GetBoolean(0, &delete_profile);
+  if (args->GetList()[0].is_bool())
+    delete_profile = args->GetList()[0].GetBool();
   base::FilePath profile_path = profile_->GetPath();
 
   if (!signin_util::IsUserSignoutAllowedForProfile(profile_)) {
