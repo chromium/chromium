@@ -362,7 +362,6 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
   attempt_timeout_.Cancel();
 
   CaptivePortalStatus status = CAPTIVE_PORTAL_STATUS_UNKNOWN;
-  bool no_response_since_portal = false;
   switch (result) {
     case captive_portal::RESULT_NO_RESPONSE:
       if (response_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED) {
@@ -370,7 +369,6 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
       } else if (network && network->IsShillCaptivePortal()) {
         // Take into account shill's detection results.
         status = CAPTIVE_PORTAL_STATUS_PORTAL;
-        no_response_since_portal = true;
       } else {
         status = CAPTIVE_PORTAL_STATUS_OFFLINE;
       }
