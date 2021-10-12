@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -185,6 +186,8 @@ class PreinstalledAppsMigrationBrowserTest
   // We override this to also wait for the PreinstalledWebAppManager.
   void WaitForSystemReady() override {
     PreinstalledAppsBrowserTest::WaitForSystemReady();
+    web_app::test::WaitUntilReady(
+        web_app::WebAppProvider::GetForTest(browser()->profile()));
 
     // For web app migration tests, we want to set up extension app shortcut
     // locations to test that they are preserved.
