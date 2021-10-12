@@ -6235,6 +6235,65 @@ TEST_F(SSLClientSocketTest, CancelReadIfReady) {
       0);
 }
 
+// Test that the server_name extension (SNI) is sent on DNS names, and not IP
+// literals.
+TEST_F(SSLClientSocketTest, ServerName) {
+  absl::optional<std::string> got_server_name;
+  bool ran_callback = false;
+  auto reset_callback_state = [&] {
+    got_server_name = absl::nullopt;
+    ran_callback = false;
+  };
+
+  // Start a server which records the server name.
+  SSLServerConfig server_config;
+  server_config.client_hello_callback_for_testing =
+      base::BindLambdaForTesting([&](const SSL_CLIENT_HELLO* client_hello) {
+        const char* server_name =
+            SSL_get_servername(client_hello->ssl, TLSEXT_NAMETYPE_host_name);
+        if (server_name) {
+          got_server_name = server_name;
+        } else {
+          got_server_name = absl::nullopt;
+        }
+        ran_callback = true;
+      });
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  // The client should send the server_name extension for DNS names.
+  uint16_t port = host_port_pair().port();
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocketWithHost(
+      SSLConfig(), HostPortPair("example.com", port), &rv));
+  ASSERT_THAT(rv, IsOk());
+  EXPECT_TRUE(ran_callback);
+  EXPECT_EQ(got_server_name, "example.com");
+
+  // The client should not send the server_name extension for IPv4 and IPv6
+  // literals. See https://crbug.com/500981.
+  reset_callback_state();
+  ASSERT_TRUE(CreateAndConnectSSLClientSocketWithHost(
+      SSLConfig(), HostPortPair("1.2.3.4", port), &rv));
+  ASSERT_THAT(rv, IsOk());
+  EXPECT_TRUE(ran_callback);
+  EXPECT_EQ(got_server_name, absl::nullopt);
+
+  reset_callback_state();
+  ASSERT_TRUE(CreateAndConnectSSLClientSocketWithHost(
+      SSLConfig(), HostPortPair("::1", port), &rv));
+  ASSERT_THAT(rv, IsOk());
+  EXPECT_TRUE(ran_callback);
+  EXPECT_EQ(got_server_name, absl::nullopt);
+
+  reset_callback_state();
+  ASSERT_TRUE(CreateAndConnectSSLClientSocketWithHost(
+      SSLConfig(), HostPortPair("2001:db8::42", port), &rv));
+  ASSERT_THAT(rv, IsOk());
+  EXPECT_TRUE(ran_callback);
+  EXPECT_EQ(got_server_name, absl::nullopt);
+}
+
 class SSLClientSocketAlpsTest
     : public SSLClientSocketTest,
       public ::testing::WithParamInterface<std::tuple<bool, bool>> {
