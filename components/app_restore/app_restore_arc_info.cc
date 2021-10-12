@@ -43,6 +43,11 @@ void AppRestoreArcInfo::NotifyArcConnectionChanged(bool is_connection_ready) {
     observer.OnArcConnectionChanged(is_connection_ready);
 }
 
+void AppRestoreArcInfo::NotifyPlayStoreEnabledChanged(bool enabled) {
+  for (auto& observer : observers_)
+    observer.OnArcPlayStoreEnabledChanged(enabled);
+}
+
 void AppRestoreArcInfo::NotifyTaskThemeColorUpdated(int32_t task_id,
                                                     uint32_t primary_color,
                                                     uint32_t status_bar_color) {

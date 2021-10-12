@@ -36,6 +36,7 @@ struct WindowInfo;
 namespace ash {
 namespace full_restore {
 class FullRestoreServiceTestHavingFullRestoreFile;
+class FullRestoreAppLaunchHandlerArcAppBrowserTest;
 }
 }  // namespace ash
 
@@ -93,6 +94,7 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
                      int32_t session_id) override;
   void OnTaskDestroyed(int32_t task_id) override;
   void OnArcConnectionChanged(bool is_connection_ready) override;
+  void OnArcPlayStoreEnabledChanged(bool enabled) override;
   void OnTaskThemeColorUpdated(int32_t task_id,
                                uint32_t primary_color,
                                uint32_t status_bar_color) override;
@@ -178,6 +180,7 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
  private:
   friend class FullRestoreSaveHandlerTestApi;
   friend class ash::full_restore::FullRestoreServiceTestHavingFullRestoreFile;
+  friend class ash::full_restore::FullRestoreAppLaunchHandlerArcAppBrowserTest;
 
   // Map from a profile path to AppLaunchInfos.
   using AppLaunchInfos = std::map<base::FilePath, std::list<AppLaunchInfoPtr>>;

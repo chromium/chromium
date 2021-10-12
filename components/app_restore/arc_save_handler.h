@@ -20,6 +20,12 @@ struct AppLaunchInfo;
 struct WindowInfo;
 }  // namespace app_restore
 
+namespace ash {
+namespace full_restore {
+class FullRestoreAppLaunchHandlerArcAppBrowserTest;
+}
+}  // namespace ash
+
 namespace aura {
 class Window;
 }
@@ -60,6 +66,9 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcSaveHandler {
   // Invoked when the task is destroyed for an ARC app.
   void OnTaskDestroyed(int32_t task_id);
 
+  // Invoked when Google Play Store is enabled or disabled.
+  void OnArcPlayStoreEnabledChanged(bool enabled);
+
   // Invoked when the task theme color is updated for an ARC app.
   void OnTaskThemeColorUpdated(int32_t task_id,
                                uint32_t primary_color,
@@ -77,6 +86,7 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcSaveHandler {
 
  private:
   friend class FullRestoreSaveHandlerTestApi;
+  friend class ash::full_restore::FullRestoreAppLaunchHandlerArcAppBrowserTest;
 
   // Starts the timer to check whether a task is created for the app launching
   // (if timer isn't already running).

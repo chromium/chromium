@@ -217,6 +217,11 @@ void ArcSaveHandler::OnTaskDestroyed(int32_t task_id) {
   task_id_to_app_id_.erase(task_id);
 }
 
+void ArcSaveHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
+  if (!enabled)
+    task_id_to_app_id_.clear();
+}
+
 void ArcSaveHandler::OnTaskThemeColorUpdated(int32_t task_id,
                                              uint32_t primary_color,
                                              uint32_t status_bar_color) {

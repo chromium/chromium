@@ -35,6 +35,9 @@ class COMPONENT_EXPORT(APP_RESTORE) AppRestoreArcInfo {
                                          uint32_t primary_color,
                                          uint32_t status_bar_color) {}
 
+    // Invoked when Google Play Store is enabled or disabled.
+    virtual void OnArcPlayStoreEnabledChanged(bool enabled) {}
+
    protected:
     ~Observer() override = default;
   };
@@ -54,6 +57,7 @@ class COMPONENT_EXPORT(APP_RESTORE) AppRestoreArcInfo {
                          int32_t session_id);
   void NotifyTaskDestroyed(int32_t task_id);
   void NotifyArcConnectionChanged(bool is_connection_ready);
+  void NotifyPlayStoreEnabledChanged(bool enabled);
   void NotifyTaskThemeColorUpdated(int32_t task_id,
                                    uint32_t primary_color,
                                    uint32_t status_bar_color);

@@ -205,6 +205,45 @@ void FullRestoreSaveHandler::OnArcConnectionChanged(bool is_connection_ready) {
     arc_save_handler_->set_is_connection_ready(is_connection_ready);
 }
 
+void FullRestoreSaveHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
+  if (enabled)
+    return;
+
+  if (arc_save_handler_)
+    arc_save_handler_->OnArcPlayStoreEnabledChanged(enabled);
+
+  auto restore_data_it =
+      profile_path_to_restore_data_.find(active_profile_path_);
+  if (restore_data_it == profile_path_to_restore_data_.end())
+    return;
+
+  auto app_registry_cache_it =
+      profile_path_to_app_registry_cache_.find(active_profile_path_);
+  if (app_registry_cache_it == profile_path_to_app_registry_cache_.end())
+    return;
+
+  // Get the ARC app list saved in the restore data.
+  const auto& launch_list = restore_data_it->second.app_id_to_launch_list();
+  std::vector<std::string> arc_app_ids;
+  for (const auto& it : launch_list) {
+    if (app_registry_cache_it->second->GetAppType(it.first) ==
+        apps::mojom::AppType::kArc) {
+      arc_app_ids.push_back(it.first);
+    }
+  }
+
+  if (arc_app_ids.empty())
+    return;
+
+  // Remove all ARC app data from the restore data.
+  for (const auto& app_id : arc_app_ids)
+    restore_data_it->second.RemoveApp(app_id);
+
+  pending_save_profile_paths_.insert(active_profile_path_);
+
+  MaybeStartSaveTimer(active_profile_path_);
+}
+
 void FullRestoreSaveHandler::OnTaskThemeColorUpdated(
     int32_t task_id,
     uint32_t primary_color,

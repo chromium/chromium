@@ -1418,6 +1418,14 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
     return &test_full_restore_info_observer_;
   }
 
+  const std::map<int32_t, std::string>& task_id_to_app_id() {
+    auto* arc_save_handler =
+        ::full_restore::FullRestoreSaveHandler::GetInstance()
+            ->arc_save_handler_.get();
+    DCHECK(arc_save_handler);
+    return arc_save_handler->task_id_to_app_id_;
+  }
+
  protected:
   app_restore::ArcAppLaunchHandler* arc_app_launch_handler_ = nullptr;
 
@@ -1924,6 +1932,89 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
 
   ASSERT_FALSE(GetWindowInfo(kTaskId1));
   ASSERT_FALSE(GetWindowInfo(kTaskId2));
+
+  StopInstance();
+}
+
+// Test ARC apps restore data is removed, when Play Store is disabled.
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
+                       DisablePlayStore) {
+  SetProfile();
+  InstallTestApps(kTestAppPackage, true);
+
+  const std::string app_id1 = GetTestApp1Id(kTestAppPackage);
+  const std::string app_id2 = GetTestApp2Id(kTestAppPackage);
+  int32_t session_id1 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+  int32_t session_id2 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+  ::full_restore::FullRestoreInfo::GetInstance()->AddObserver(
+      test_full_restore_info_observer());
+
+  SaveAppLaunchInfo(app_id1, session_id1);
+  SaveAppLaunchInfo(app_id2, session_id2);
+
+  // Simulate creating kTaskId1.
+  int32_t kTaskId1 = 100;
+  CreateTask(app_id1, kTaskId1, session_id1);
+
+  // Create the window for the app1 and store its bounds.
+  views::Widget* widget1 = CreateExoWindow("org.chromium.arc.100");
+  aura::Window* window1 = widget1->GetNativeWindow();
+
+  // Create the window for the app2 and store its bounds.
+  int32_t kTaskId2 = 101;
+  views::Widget* widget2 = CreateExoWindow("org.chromium.arc.101");
+  aura::Window* window2 = widget2->GetNativeWindow();
+
+  // Simulate creating kTaskId2.
+  CreateTask(app_id2, kTaskId2, session_id2);
+  VerifyObserver(window1, /*launch_count=*/1, /*init_count=*/0);
+  VerifyObserver(window2, /*launch_count=*/1, /*init_count=*/0);
+
+  VerifyWindowProperty(window1, kTaskId1, /*restore_window_id*/ 0,
+                       /*hidden=*/false);
+  VerifyWindowProperty(window2, kTaskId2, /*restore_window_id*/ 0,
+                       /*hidden=*/false);
+
+  WaitForAppLaunchInfoSaved();
+
+  int32_t activation_index1 = 11;
+  int32_t activation_index2 = 12;
+  SaveWindowInfo(window1, activation_index1,
+                 chromeos::WindowStateType::kMaximized);
+  SaveWindowInfo(window2, activation_index2,
+                 chromeos::WindowStateType::kMinimized);
+
+  WaitForAppLaunchInfoSaved();
+
+  // Verify ARC app launch info is saved in `restore_data`.
+  const auto* restore_data =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetRestoreData(
+          profile()->GetPath());
+  ASSERT_TRUE(restore_data);
+  ASSERT_FALSE(restore_data->app_id_to_launch_list().empty());
+  ASSERT_FALSE(task_id_to_app_id().empty());
+
+  // Simulate Play Store is disabled.
+  app_restore::AppRestoreArcTaskHandler::GetForProfile(profile())
+      ->OnArcPlayStoreEnabledChanged(/*enabled=*/false);
+  widget1->CloseNow();
+
+  // Verify ARC app launch info is removed from `restore_data`.
+  ASSERT_TRUE(restore_data->app_id_to_launch_list().empty());
+  ASSERT_TRUE(task_id_to_app_id().empty());
+
+  widget2->CloseNow();
+
+  // Simulate Play Store is enabled and `app_id1` is launched.
+  int32_t session_id3 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+  int32_t kTaskId3 = 201;
+  SaveAppLaunchInfo(app_id1, session_id3);
+  CreateTask(app_id1, kTaskId3, session_id3);
+  ASSERT_FALSE(restore_data->app_id_to_launch_list().empty());
+  ASSERT_TRUE(base::Contains(restore_data->app_id_to_launch_list(), app_id1));
 
   StopInstance();
 }

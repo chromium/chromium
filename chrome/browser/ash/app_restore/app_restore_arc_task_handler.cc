@@ -115,6 +115,8 @@ void AppRestoreArcTaskHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
     if (handler)
       handler->OnArcPlayStoreEnabledChanged(enabled);
   }
+
+  GetAppRestoreArcInfo()->NotifyPlayStoreEnabledChanged(enabled);
 }
 
 void AppRestoreArcTaskHandler::OnShelfReady() {
