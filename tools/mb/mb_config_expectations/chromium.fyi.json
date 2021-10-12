@@ -419,6 +419,17 @@
       "use_remoteexec": true
     }
   },
+  "UBSan vptr Release (reclient shadow)": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_ubsan_no_recover": true,
+      "is_ubsan_vptr": true,
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
   "VR Linux": {
     "gn_args": {
       "dcheck_always_on": false,

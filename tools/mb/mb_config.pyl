@@ -311,6 +311,7 @@
       'TSAN Release (g-ip) (reclient)':  'tsan_disable_nacl_release_bot_reclient',
       'TSAN Release (reclient)':  'tsan_disable_nacl_release_bot_reclient',
       'UBSan Release (reclient)': 'ubsan_release_bot_reclient',
+      'UBSan vptr Release (reclient shadow)': 'ubsan_vptr_release_bot_reclient',
       'VR Linux': 'vr_release_bot',
       'VR Linux (reclient)': 'vr_release_bot_reclient',
       'Win 10 Fast Ring': 'release_trybot_minimal_symbols',
@@ -3000,6 +3001,14 @@
 
     'ubsan_vptr_release_bot': [
       'ubsan_vptr', 'ubsan_no_recover_hack', 'release_bot',
+    ],
+
+    'ubsan_vptr_release_bot_reclient': [
+      'ubsan_vptr', 'release_bot_reclient',
+    ],
+
+    'ubsan_vptr_release_bot_reclient': [
+      'ubsan_vptr', 'ubsan_no_recover_hack', 'release_bot_reclient',
     ],
 
     'v8_future_debug_bot': [

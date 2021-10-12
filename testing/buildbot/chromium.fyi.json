@@ -508,6 +508,11 @@
       "chromium_builder_asan"
     ]
   },
+  "UBSan vptr Release (reclient shadow)": {
+    "additional_compile_targets": [
+      "chromium_builder_asan"
+    ]
+  },
   "VR Linux": {
     "additional_compile_targets": [
       "vr_common_perftests"
