@@ -32290,6 +32290,7 @@
           "angle_unittests",
           "-v"
         ],
+        "ci_only": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -33536,6 +33537,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "ci_only": true,
         "merge": {
           "args": [
             "--bucket",
@@ -34839,6 +34841,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "ci_only": true,
         "merge": {
           "args": [
             "--bucket",

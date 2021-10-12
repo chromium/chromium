@@ -129,6 +129,12 @@
       'linux-lacros-tester-fyi-rel',
       'linux-lacros-dbg-tests-fyi',
     ],
+    'modifications': {
+      # https://crbug.com/1248257
+      'android-lollipop-arm-rel': {
+        'ci_only': True,
+      },
+    },
   },
   'angle_white_box_tests': {
     'modifications': {
@@ -1655,6 +1661,10 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.gl_tests.filter',
         ],
       },
+      # https://crbug.com/1248257
+      'android-lollipop-arm-rel': {
+        'ci_only': True,
+      },
       'android-marshmallow-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.gl_tests.filter',
@@ -3097,6 +3107,12 @@
     'remove_from': [
       'android-pie-x86-rel',
     ],
+    'modifications': {
+      # https://crbug.com/1248257
+      'android-lollipop-arm-rel': {
+        'ci_only': True,
+      },
+    },
   },
   'vr_pixeltests': {
     'remove_from': [
