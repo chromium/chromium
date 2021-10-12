@@ -41,7 +41,8 @@ void WebAppIconDownloader::FailAllIfAnyFail() {
 
 void WebAppIconDownloader::Start() {
   // Favicons are supported only in HTTP or HTTPS WebContents.
-  if (!web_contents()->GetLastCommittedURL().SchemeIsHTTPOrHTTPS())
+  const GURL& url = web_contents()->GetLastCommittedURL();
+  if (!url.is_empty() && !url.inner_url() && !url.SchemeIsHTTPOrHTTPS())
     SkipPageFavicons();
 
   // If the candidates aren't loaded, icons will be fetched when
