@@ -585,8 +585,9 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
       UsePrefetch() ? 2 : 1);
 }
 
-// https://crbug.com/966820. Fails pretty often on Android. Fails flakily
-// on all platforms with Synchronous HTML Parsing enabled.
+// TODO(crbug.com/966820): Fails pretty often on Android.
+// TODO(crbug.com/1258886): Fails flakily on all platforms with Synchronous HTML
+// Parsing enabled.
 IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
                        DISABLED_BadMICE) {
   InstallMockCertChainInterceptor();
