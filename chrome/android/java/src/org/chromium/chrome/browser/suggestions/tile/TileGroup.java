@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
-import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsOfflineModelObserver;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
@@ -598,8 +597,6 @@ public class TileGroup implements MostVisitedSites.Observer {
                 case ContextMenuItemId.REMOVE:
                     return mSuggestion.sectionType == TileSectionType.PERSONALIZED
                             && mSuggestion.source != TileSource.EXPLORE;
-                case ContextMenuItemId.LEARN_MORE:
-                    return SuggestionsConfig.scrollToLoad();
                 case ContextMenuItemId.OPEN_IN_INCOGNITO_TAB:
                     return mSuggestion.source != TileSource.EXPLORE;
                 default:
