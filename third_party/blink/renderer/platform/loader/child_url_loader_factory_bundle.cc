@@ -137,15 +137,11 @@ ChildPendingURLLoaderFactoryBundle::ChildPendingURLLoaderFactoryBundle(
           std::move(base_factories->pending_scheme_specific_factories()),
           std::move(base_factories->pending_isolated_world_factories()),
           base_factories->bypass_redirect_checks()) {
-  pending_appcache_factory_ =
-      std::move(base_factories->pending_appcache_factory());
 }
 
 ChildPendingURLLoaderFactoryBundle::ChildPendingURLLoaderFactoryBundle(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_default_factory,
-    mojo::PendingRemote<network::mojom::URLLoaderFactory>
-        pending_appcache_factory,
     SchemeMap pending_scheme_specific_factories,
     OriginMap pending_isolated_world_factories,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -157,9 +153,7 @@ ChildPendingURLLoaderFactoryBundle::ChildPendingURLLoaderFactoryBundle(
           std::move(pending_isolated_world_factories),
           bypass_redirect_checks),
       pending_prefetch_loader_factory_(
-          std::move(pending_prefetch_loader_factory)) {
-  pending_appcache_factory_ = std::move(pending_appcache_factory);
-}
+          std::move(pending_prefetch_loader_factory)) {}
 
 ChildPendingURLLoaderFactoryBundle::~ChildPendingURLLoaderFactoryBundle() =
     default;
@@ -168,7 +162,6 @@ scoped_refptr<network::SharedURLLoaderFactory>
 ChildPendingURLLoaderFactoryBundle::CreateFactory() {
   auto other = std::make_unique<ChildPendingURLLoaderFactoryBundle>();
   other->pending_default_factory_ = std::move(pending_default_factory_);
-  other->pending_appcache_factory_ = std::move(pending_appcache_factory_);
   other->pending_scheme_specific_factories_ =
       std::move(pending_scheme_specific_factories_);
   other->pending_isolated_world_factories_ =
@@ -238,12 +231,47 @@ void ChildURLLoaderFactoryBundle::CreateLoaderAndStart(
 
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 ChildURLLoaderFactoryBundle::Clone() {
-  return CloneInternal(true /* include_appcache */);
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+      default_factory_pending_remote;
+  if (default_factory_) {
+    default_factory_->Clone(
+        default_factory_pending_remote.InitWithNewPipeAndPassReceiver());
+  }
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+      pending_prefetch_loader_factory;
+  if (prefetch_loader_factory_) {
+    prefetch_loader_factory_->Clone(
+        pending_prefetch_loader_factory.InitWithNewPipeAndPassReceiver());
+  }
+
+  // Currently there is no need to override subresources from workers,
+  // therefore |subresource_overrides| are not shared with the clones.
+
+  return std::make_unique<ChildPendingURLLoaderFactoryBundle>(
+      std::move(default_factory_pending_remote),
+      CloneRemoteMapToPendingRemoteMap(scheme_specific_factories_),
+      CloneRemoteMapToPendingRemoteMap(isolated_world_factories_),
+      std::move(pending_prefetch_loader_factory), bypass_redirect_checks_);
 }
 
-std::unique_ptr<network::PendingSharedURLLoaderFactory>
-ChildURLLoaderFactoryBundle::CloneWithoutAppCacheFactory() {
-  return CloneInternal(false /* include_appcache */);
+std::unique_ptr<ChildPendingURLLoaderFactoryBundle>
+ChildURLLoaderFactoryBundle::PassInterface() {
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_default_factory;
+  if (default_factory_)
+    pending_default_factory = default_factory_.Unbind();
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+      pending_prefetch_loader_factory;
+  if (prefetch_loader_factory_) {
+    pending_prefetch_loader_factory = prefetch_loader_factory_.Unbind();
+  }
+
+  return std::make_unique<ChildPendingURLLoaderFactoryBundle>(
+      std::move(pending_default_factory),
+      BoundRemoteMapToPendingRemoteMap(std::move(scheme_specific_factories_)),
+      BoundRemoteMapToPendingRemoteMap(std::move(isolated_world_factories_)),
+      std::move(pending_prefetch_loader_factory), bypass_redirect_checks_);
 }
 
 void ChildURLLoaderFactoryBundle::Update(
@@ -270,64 +298,6 @@ void ChildURLLoaderFactoryBundle::SetPrefetchLoaderFactory(
 
 bool ChildURLLoaderFactoryBundle::IsHostChildURLLoaderFactoryBundle() const {
   return false;
-}
-
-std::unique_ptr<network::PendingSharedURLLoaderFactory>
-ChildURLLoaderFactoryBundle::CloneInternal(bool include_appcache) {
-  mojo::PendingRemote<network::mojom::URLLoaderFactory>
-      default_factory_pending_remote;
-  if (default_factory_) {
-    default_factory_->Clone(
-        default_factory_pending_remote.InitWithNewPipeAndPassReceiver());
-  }
-
-  mojo::PendingRemote<network::mojom::URLLoaderFactory>
-      appcache_factory_pending_remote;
-  if (appcache_factory_ && include_appcache) {
-    appcache_factory_->Clone(
-        appcache_factory_pending_remote.InitWithNewPipeAndPassReceiver());
-  }
-
-  mojo::PendingRemote<network::mojom::URLLoaderFactory>
-      pending_prefetch_loader_factory;
-  if (prefetch_loader_factory_) {
-    prefetch_loader_factory_->Clone(
-        pending_prefetch_loader_factory.InitWithNewPipeAndPassReceiver());
-  }
-
-  // Currently there is no need to override subresources from workers,
-  // therefore |subresource_overrides| are not shared with the clones.
-
-  return std::make_unique<ChildPendingURLLoaderFactoryBundle>(
-      std::move(default_factory_pending_remote),
-      std::move(appcache_factory_pending_remote),
-      CloneRemoteMapToPendingRemoteMap(scheme_specific_factories_),
-      CloneRemoteMapToPendingRemoteMap(isolated_world_factories_),
-      std::move(pending_prefetch_loader_factory), bypass_redirect_checks_);
-}
-
-std::unique_ptr<ChildPendingURLLoaderFactoryBundle>
-ChildURLLoaderFactoryBundle::PassInterface() {
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_default_factory;
-  if (default_factory_)
-    pending_default_factory = default_factory_.Unbind();
-
-  mojo::PendingRemote<network::mojom::URLLoaderFactory>
-      pending_appcache_factory;
-  if (appcache_factory_)
-    pending_appcache_factory = appcache_factory_.Unbind();
-
-  mojo::PendingRemote<network::mojom::URLLoaderFactory>
-      pending_prefetch_loader_factory;
-  if (prefetch_loader_factory_) {
-    pending_prefetch_loader_factory = prefetch_loader_factory_.Unbind();
-  }
-
-  return std::make_unique<ChildPendingURLLoaderFactoryBundle>(
-      std::move(pending_default_factory), std::move(pending_appcache_factory),
-      BoundRemoteMapToPendingRemoteMap(std::move(scheme_specific_factories_)),
-      BoundRemoteMapToPendingRemoteMap(std::move(isolated_world_factories_)),
-      std::move(pending_prefetch_loader_factory), bypass_redirect_checks_);
 }
 
 }  // namespace blink

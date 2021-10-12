@@ -641,7 +641,7 @@ void DedicatedOrSharedWorkerFetchContextImpl::UpdateSubresourceLoaderFactories(
   loader_factory_ = network::SharedURLLoaderFactory::Create(
       subresource_loader_factory_bundle->Clone());
   fallback_factory_ = network::SharedURLLoaderFactory::Create(
-      subresource_loader_factory_bundle->CloneWithoutAppCacheFactory());
+      subresource_loader_factory_bundle->Clone());
   web_loader_factory_ = std::make_unique<Factory>(
       loader_factory_, cors_exempt_header_list_, terminate_sync_load_event_);
   ResetServiceWorkerURLLoaderFactory();

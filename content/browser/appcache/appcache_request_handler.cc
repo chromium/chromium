@@ -645,18 +645,8 @@ bool AppCacheRequestHandler::MaybeCreateLoaderForResponse(
 
 absl::optional<SubresourceLoaderParams>
 AppCacheRequestHandler::MaybeCreateSubresourceLoaderParams() {
-  if (!should_create_subresource_loader_)
-    return absl::nullopt;
-
-  // The factory is destroyed when the renderer drops the connection.
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
-
-  AppCacheSubresourceURLFactory::CreateURLLoaderFactory(
-      appcache_host_, factory_remote.InitWithNewPipeAndPassReceiver());
-
-  SubresourceLoaderParams params;
-  params.pending_appcache_loader_factory = std::move(factory_remote);
-  return absl::optional<SubresourceLoaderParams>(std::move(params));
+  // TODO(enne): remove the rest of this file.
+  return absl::nullopt;
 }
 
 void AppCacheRequestHandler::MaybeCreateSubresourceLoader(

@@ -60,11 +60,6 @@ class BLINK_COMMON_EXPORT PendingURLLoaderFactoryBundle
     return pending_default_factory_;
   }
 
-  mojo::PendingRemote<network::mojom::URLLoaderFactory>&
-  pending_appcache_factory() {
-    return pending_appcache_factory_;
-  }
-
   SchemeMap& pending_scheme_specific_factories() {
     return pending_scheme_specific_factories_;
   }
@@ -85,8 +80,6 @@ class BLINK_COMMON_EXPORT PendingURLLoaderFactoryBundle
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       pending_default_factory_;
-  mojo::PendingRemote<network::mojom::URLLoaderFactory>
-      pending_appcache_factory_;
   SchemeMap pending_scheme_specific_factories_;
 
   // TODO(https://crbug.com/1098410): Remove the
@@ -155,11 +148,6 @@ class BLINK_COMMON_EXPORT URLLoaderFactoryBundle
   // goes to "network", but it's possible it was overriden in case when the
   // context should not be given access to the network.
   mojo::Remote<network::mojom::URLLoaderFactory> default_factory_;
-
-  // |appcache_factory_| is a special loader factory that intercepts
-  // requests when the context has AppCache. See also
-  // AppCacheSubresourceURLFactory.
-  mojo::Remote<network::mojom::URLLoaderFactory> appcache_factory_;
 
   // Map from URL scheme to Remote<URLLoaderFactory> for handling URL requests
   // for schemes not handled by the |default_factory_|.  See also

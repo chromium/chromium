@@ -83,8 +83,7 @@ DedicatedWorkerHostFactoryClient::CloneWorkerFetchContext(
             ->CloneForNestedWorker(
                 service_worker_provider_context_.get(),
                 subresource_loader_factory_bundle_->Clone(),
-                subresource_loader_factory_bundle_
-                    ->CloneWithoutAppCacheFactory(),
+                subresource_loader_factory_bundle_->Clone(),
                 std::move(pending_subresource_loader_updater_),
                 std::move(task_runner));
   } else {
@@ -119,7 +118,7 @@ DedicatedWorkerHostFactoryClient::CreateWorkerFetchContext(
               service_worker_provider_context_.get(), renderer_preference,
               std::move(watcher_receiver),
               subresource_loader_factory_bundle_->Clone(),
-              subresource_loader_factory_bundle_->CloneWithoutAppCacheFactory(),
+              subresource_loader_factory_bundle_->Clone(),
               std::move(pending_subresource_loader_updater_),
               web_cors_exempt_header_list,
               std::move(pending_resource_load_info_notifier));

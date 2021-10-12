@@ -114,13 +114,6 @@ void DidCreateScriptLoader(
     bool success) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // If a URLLoaderFactory for AppCache is supplied, use that.
-  if (subresource_loader_params &&
-      subresource_loader_params->pending_appcache_loader_factory) {
-    subresource_loader_factories->pending_appcache_factory() =
-        std::move(subresource_loader_params->pending_appcache_loader_factory);
-  }
-
   // Prepare the controller service worker info to pass to the renderer.
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
   base::WeakPtr<ServiceWorkerObjectHost> controller_service_worker_object_host;

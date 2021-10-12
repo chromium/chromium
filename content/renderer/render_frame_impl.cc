@@ -2887,7 +2887,7 @@ void RenderFrameImpl::CommitNavigationWithParams(
             this, std::move(container_info),
             std::move(controller_service_worker_info),
             network::SharedURLLoaderFactory::Create(
-                new_loader_factories->CloneWithoutAppCacheFactory()));
+                new_loader_factories->Clone()));
   }
 
   WebString subresource_filter = navigation_params->response.HttpHeaderField(
@@ -3363,7 +3363,7 @@ RenderFrameImpl::CreateWorkerFetchContext() {
           blink::WebDedicatedOrSharedWorkerFetchContext::Create(
               provider->context(), GetWebView()->GetRendererPreferences(),
               std::move(watcher_receiver), GetLoaderFactoryBundle()->Clone(),
-              GetLoaderFactoryBundle()->CloneWithoutAppCacheFactory(),
+              GetLoaderFactoryBundle()->Clone(),
               /*pending_subresource_loader_updater=*/mojo::NullReceiver(),
               web_cors_exempt_header_list,
               std::move(pending_resource_load_info_notifier));

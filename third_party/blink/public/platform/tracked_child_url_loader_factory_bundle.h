@@ -31,8 +31,6 @@ class BLINK_PLATFORM_EXPORT TrackedChildPendingURLLoaderFactoryBundle
   TrackedChildPendingURLLoaderFactoryBundle(
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_default_factory,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory>
-          pending_appcache_factory,
       SchemeMap pending_scheme_specific_factories,
       OriginMap pending_isolated_world_factories,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -135,8 +133,6 @@ class BLINK_PLATFORM_EXPORT HostChildURLLoaderFactoryBundle
   // ChildURLLoaderFactoryBundle overrides.
   // Returns |std::unique_ptr<TrackedChildPendingURLLoaderFactoryBundle>|.
   std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override;
-  std::unique_ptr<network::PendingSharedURLLoaderFactory>
-  CloneWithoutAppCacheFactory() override;
   bool IsHostChildURLLoaderFactoryBundle() const override;
 
   // Update this bundle with |info|, and post cloned |info| to tracked bundles.

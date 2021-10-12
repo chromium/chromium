@@ -150,10 +150,9 @@ EmbeddedSharedWorkerStub::CreateWorkerFetchContext(
     mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
         preference_watcher_receiver,
     const std::vector<std::string>& cors_exempt_header_list) {
-  // Make the factory used for service worker network fallback (that should
-  // skip AppCache if it is provided).
+  // Make the factory used for service worker network fallback.
   std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory =
-      subresource_loader_factory_bundle_->CloneWithoutAppCacheFactory();
+      subresource_loader_factory_bundle_->Clone();
 
   blink::WebVector<blink::WebString> web_cors_exempt_header_list(
       cors_exempt_header_list.size());

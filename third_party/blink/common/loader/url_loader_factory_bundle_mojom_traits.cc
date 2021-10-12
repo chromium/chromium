@@ -22,12 +22,6 @@ mojo::PendingRemote<network::mojom::URLLoaderFactory> Traits::default_factory(
 }
 
 // static
-mojo::PendingRemote<network::mojom::URLLoaderFactory> Traits::appcache_factory(
-    BundleInfoType& bundle) {
-  return std::move(bundle->pending_appcache_factory());
-}
-
-// static
 blink::PendingURLLoaderFactoryBundle::SchemeMap
 Traits::scheme_specific_factories(BundleInfoType& bundle) {
   return std::move(bundle->pending_scheme_specific_factories());
@@ -50,8 +44,6 @@ bool Traits::Read(blink::mojom::URLLoaderFactoryBundleDataView data,
   *out_bundle = std::make_unique<blink::PendingURLLoaderFactoryBundle>();
 
   (*out_bundle)->pending_default_factory() = data.TakeDefaultFactory<
-      mojo::PendingRemote<network::mojom::URLLoaderFactory>>();
-  (*out_bundle)->pending_appcache_factory() = data.TakeAppcacheFactory<
       mojo::PendingRemote<network::mojom::URLLoaderFactory>>();
   if (!data.ReadSchemeSpecificFactories(
           &(*out_bundle)->pending_scheme_specific_factories())) {

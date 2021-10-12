@@ -7783,40 +7783,6 @@ void RenderFrameHostImpl::CommitNavigation(
             .GetTupleOrPrecursorTupleIfOpaque()
             .scheme();
 
-    // NOTE: On Network Service navigations, we want to ensure that a frame is
-    // given everything it will need to load any accessible subresources. We
-    // however only do this for cross-document navigations, because the
-    // alternative would be redundant effort.
-    if (subresource_loader_params &&
-        subresource_loader_params->pending_appcache_loader_factory.is_valid()) {
-      // If the caller has supplied a factory for AppCache, use it.
-      mojo::Remote<network::mojom::URLLoaderFactory> appcache_remote(std::move(
-          subresource_loader_params->pending_appcache_loader_factory));
-
-      mojo::PendingRemote<network::mojom::URLLoaderFactory>
-          appcache_proxied_remote;
-      auto appcache_proxied_receiver =
-          appcache_proxied_remote.InitWithNewPipeAndPassReceiver();
-      bool use_proxy =
-          GetContentClient()->browser()->WillCreateURLLoaderFactory(
-              browser_context, this, GetProcess()->GetID(),
-              ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-              subresource_loader_factories_config.origin(),
-              /*navigation_id=*/absl::nullopt,
-              subresource_loader_factories_config.ukm_source_id(),
-              &appcache_proxied_receiver, /*header_client=*/nullptr,
-              /*bypass_redirect_checks=*/nullptr,
-              /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);
-      if (use_proxy) {
-        appcache_remote->Clone(std::move(appcache_proxied_receiver));
-        appcache_remote.reset();
-        appcache_remote.Bind(std::move(appcache_proxied_remote));
-      }
-
-      subresource_loader_factories->pending_appcache_factory() =
-          appcache_remote.Unbind();
-    }
-
     ContentBrowserClient::NonNetworkURLLoaderFactoryMap non_network_factories;
 
     // Set up the default factory.

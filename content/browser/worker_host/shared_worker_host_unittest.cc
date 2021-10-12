@@ -113,8 +113,6 @@ class SharedWorkerHostTest : public testing::Test {
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         loader_factory_remote =
             network::NotImplementedURLLoaderFactory::Create();
-    subresource_loader_params->pending_appcache_loader_factory =
-        std::move(loader_factory_remote);
 
     // Set up for service worker.
     auto service_worker_handle =
