@@ -597,20 +597,18 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
                   "Web Storage or Indexed Database", kM97, "5684870116278272")};
 
     case WebFeature::kRTCConstraintEnableDtlsSrtpTrue:
-      return {
-          "RTCConstraintEnableDtlsSrtpTrue", kM97,
-          "The constraint \"DtlsSrtpKeyAgreement\" will be removed. You have "
-          "specified a \"true\" value for this constraint, which has no "
-          "effect, but you can remove this constraint for tidiness."};
+      return {"RTCConstraintEnableDtlsSrtpTrue", kM97,
+              "The constraint \"DtlsSrtpKeyAgreement\" is removed. You have "
+              "specified a \"true\" value for this constraint, which had no "
+              "effect, but you can remove this constraint for tidiness."};
 
     case WebFeature::kRTCConstraintEnableDtlsSrtpFalse:
-      return {
-          "RTCConstraintEnableDtlsSrtpFalse", kM97,
-          "The constraint \"DtlsSrtpKeyAgreement\" will be removed. You have "
-          "specified a \"false\" value for this constraint, which is "
-          "interpreted as an attempt to use the deprecated \"SDES\" key "
-          "negotiation method. This functionality will be removed; use a "
-          "service that supports DTLS key negotiation instead."};
+      return {"RTCConstraintEnableDtlsSrtpFalse", kM97,
+              "The constraint \"DtlsSrtpKeyAgreement\" is removed. You have "
+              "specified a \"false\" value for this constraint, which is "
+              "interpreted as an attempt to use the removed \"SDES\" key "
+              "negotiation method. This functionality is removed; use a "
+              "service that supports DTLS key negotiation instead."};
     case WebFeature::kV8SharedArrayBufferConstructedInExtensionWithoutIsolation:
       return {"V8SharedArrayBufferConstructedInExtensionWithoutIsolation", kM96,
               "Extensions should opt into cross-origin isolation to continue "
