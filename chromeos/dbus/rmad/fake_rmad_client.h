@@ -69,7 +69,8 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
   std::vector<rmad::GetStateReply> state_replies_;
   size_t state_index_;
   rmad::AbortRmaReply abort_rma_reply_;
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer, /*check_empty=*/true, /*allow_reentrancy=*/false>
+      observers_;
 };
 
 }  // namespace chromeos

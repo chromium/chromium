@@ -6,6 +6,7 @@
 #define CHROMEOS_DBUS_RMAD_RMAD_CLIENT_H_
 
 #include "base/component_export.h"
+#include "base/observer_list_types.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/rmad/rmad.pb.h"
 
@@ -23,10 +24,8 @@ namespace chromeos {
 class COMPONENT_EXPORT(RMAD) RmadClient {
  public:
   // Interface for observing signals from rmad.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() {}
-
     // Called when an error occurs outside of state transitions.
     // e.g. while calibrating devices.
     virtual void Error(rmad::RmadErrorCode error) {}
