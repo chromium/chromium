@@ -18,10 +18,6 @@ public interface SurfaceActionsHandler {
      * @param actionSourceView The View from which the user tap originated. May be null.
      */
     default void navigateTab(String url, View actionSourceView) {}
-    @Deprecated
-    default void navigateTab(String url) {
-        navigateTab(url, null);
-    }
 
     /**
      * Navigates a new tab to a particular URL.
@@ -29,10 +25,6 @@ public interface SurfaceActionsHandler {
      * @param actionSourceView The View from which the user tap originated. May be null.
      */
     default void navigateNewTab(String url, View actionSourceView) {}
-    @Deprecated
-    default void navigateNewTab(String url) {
-        navigateNewTab(url, null);
-    }
 
     /**
      * Navigate a new incognito tab to a URL.
@@ -53,10 +45,6 @@ public interface SurfaceActionsHandler {
      * @param actionSourceView The View from which the user tap originated. May be null.
      */
     default void showBottomSheet(View view, View actionSourceView) {}
-    @Deprecated
-    default void showBottomSheet(View view) {
-        showBottomSheet(view, null);
-    }
 
     /**
      * Dismiss the open bottom sheet (or do nothing if there isn't one).

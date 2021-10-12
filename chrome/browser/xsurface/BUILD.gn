@@ -12,7 +12,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/xsurface/HybridListRenderer.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/ImageCacheHelper.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/ImageFetchClient.java",
-    "android/java/src/org/chromium/chrome/browser/xsurface/ImagePrefetcher.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/ListContentManager.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/ListContentManagerObserver.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/PersistentKeyValueCache.java",

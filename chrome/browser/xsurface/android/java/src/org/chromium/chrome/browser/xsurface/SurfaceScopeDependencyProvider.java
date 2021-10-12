@@ -48,31 +48,6 @@ public interface SurfaceScopeDependencyProvider {
         return AutoplayPreference.AUTOPLAY_DISABLED;
     }
 
-    /** Events that are triggered during the video auto-play. */
-    @Deprecated
-    public enum AutoplayEvent {
-        /**
-         * Auto-play is triggered, but not started yet. This occurs when the video card becomes
-         * fully visible.
-         */
-        AUTOPLAY_REQUESTED,
-        /** The player starts to auto-play the video. */
-        AUTOPLAY_STARTED,
-        /**
-         * Auto-play stops before reaching the end. This occurs when the video card becomes
-         * partially visible or invisible.
-         */
-        AUTOPLAY_STOPPED,
-        /** Auto-play reaches the end. */
-        AUTOPLAY_ENDED,
-        /** User clicks on the auto-play video. */
-        AUTOPLAY_CLICKED,
-    }
-
-    /** Reports the event related to video auto-play. */
-    @Deprecated
-    default void reportAutoplayEvent(AutoplayEvent event) {}
-
     /** Events that are triggered during the video playing. */
     public @interface VideoPlayEvent {
         // Events applying muted autoplay only.

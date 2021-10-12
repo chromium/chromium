@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.xsurface;
 
-import android.content.Context;
 import androidx.annotation.Nullable;
 
 /**
@@ -26,23 +25,12 @@ public interface ProcessScope {
      **/
     @Nullable
     default SurfaceScope obtainSurfaceScope(SurfaceScopeDependencyProvider dependencyProvider) {
-        return obtainSurfaceScope(dependencyProvider.getActivityContext());
-    }
-
-    @Nullable
-    @Deprecated
-    default SurfaceScope obtainSurfaceScope(Context activityContext) {
-        return null;
-    }
-
-    @Nullable
-    default ImagePrefetcher provideImagePrefetcher() {
         return null;
     }
 
     @Nullable
     default ImageCacheHelper provideImageCacheHelper() {
-        return provideImagePrefetcher();
+        return null;
     }
 
     @Nullable
