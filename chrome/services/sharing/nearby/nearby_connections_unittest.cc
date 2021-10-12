@@ -1000,8 +1000,7 @@ TEST_F(NearbyConnectionsTest, StartAdvertisingAccepted) {
         initiated_run_loop.Quit();
       });
 
-  ClientProxy* client_proxy =
-      StartAdvertising(fake_connection_life_cycle_listener, endpoint_data);
+  StartAdvertising(fake_connection_life_cycle_listener, endpoint_data);
   initiated_run_loop.Run();
 
   base::RunLoop accepted_run_loop;
@@ -1012,8 +1011,7 @@ TEST_F(NearbyConnectionsTest, StartAdvertisingAccepted) {
       });
 
   FakePayloadListener fake_payload_listener;
-  client_proxy =
-      AcceptConnection(fake_payload_listener, endpoint_data.remote_endpoint_id);
+  AcceptConnection(fake_payload_listener, endpoint_data.remote_endpoint_id);
   accepted_run_loop.Run();
 }
 
