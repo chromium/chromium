@@ -322,6 +322,72 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForFlexBasis(
   return space_builder.ToConstraintSpace();
 }
 
+NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForLayout(
+    const FlexItem& flex_item) const {
+  const ComputedStyle& child_style = flex_item.ng_input_node_.Style();
+  NGConstraintSpaceBuilder space_builder(ConstraintSpace(),
+                                         child_style.GetWritingDirection(),
+                                         /* is_new_fc */ true);
+  SetOrthogonalFallbackInlineSizeIfNeeded(Style(), flex_item.ng_input_node_,
+                                          &space_builder);
+  space_builder.SetIsPaintedAtomically(true);
+
+  LogicalSize available_size;
+  if (is_column_) {
+    available_size.inline_size = ChildAvailableSize().inline_size;
+    available_size.block_size =
+        flex_item.flexed_content_size_ + flex_item.main_axis_border_padding_;
+    space_builder.SetIsFixedBlockSize(true);
+    if (WillChildCrossSizeBeContainerCrossSize(flex_item.ng_input_node_))
+      space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchExplicit);
+    // https://drafts.csswg.org/css-flexbox/#definite-sizes
+    // If the flex container has a definite main size, a flex item's
+    // post-flexing main size is treated as definite, even though it can
+    // rely on the indefinite sizes of any flex items in the same line.
+    // TODO(crbug.com/1255340): This logic, and the similar below call to
+    // IsColumnContainerMainSizeDefinite need some refinement.
+    if (!IsColumnContainerMainSizeDefinite() &&
+        !IsItemFlexBasisDefinite(flex_item.ng_input_node_) &&
+        !IsItemMainSizeDefinite(flex_item.ng_input_node_)) {
+      space_builder.SetIsInitialBlockSizeIndefinite(true);
+    }
+  } else {
+    available_size.inline_size =
+        flex_item.flexed_content_size_ + flex_item.main_axis_border_padding_;
+    available_size.block_size = ChildAvailableSize().block_size;
+    space_builder.SetIsFixedInlineSize(true);
+    if (WillChildCrossSizeBeContainerCrossSize(flex_item.ng_input_node_))
+      space_builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
+  }
+  if (DoesItemStretch(flex_item.ng_input_node_)) {
+    // For stretched items, the goal of this layout is determine the
+    // post-flexed, pre-stretched cross-axis size. Stretched items will
+    // later get a final layout with a potentially different cross size so
+    // use the "measure" slot for this layout. We will use the "layout"
+    // cache slot for the item's final layout.
+    //
+    // Setting the "measure" cache slot on the space writes the result
+    // into both the "measure" and "layout" cache slots. So the stretch
+    // layout will reuse this "measure" result if it can.
+    space_builder.SetCacheSlot(NGCacheSlot::kMeasure);
+  }
+
+  space_builder.SetAvailableSize(available_size);
+  space_builder.SetPercentageResolutionSize(child_percentage_size_);
+  space_builder.SetReplacedPercentageResolutionSize(child_percentage_size_);
+
+  // For a button child, we need the baseline type same as the container's
+  // baseline type for UseCounter. For example, if the container's display
+  // property is 'inline-block', we need the last-line baseline of the
+  // child. See the bottom of GiveLinesAndItemsFinalPositionAndSize().
+  if (Node().IsButton()) {
+    space_builder.SetBaselineAlgorithmType(
+        ConstraintSpace().BaselineAlgorithmType());
+  }
+
+  return space_builder.ToConstraintSpace();
+}
+
 void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
   NGFlexChildIterator iterator(Node());
 
@@ -741,69 +807,8 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
     }
     for (wtf_size_t i = 0; i < line->line_items_.size(); ++i) {
       FlexItem& flex_item = line->line_items_[i];
+      NGConstraintSpace child_space = BuildSpaceForLayout(flex_item);
 
-      const ComputedStyle& child_style = flex_item.ng_input_node_.Style();
-      NGConstraintSpaceBuilder space_builder(ConstraintSpace(),
-                                             child_style.GetWritingDirection(),
-                                             /* is_new_fc */ true);
-      SetOrthogonalFallbackInlineSizeIfNeeded(Style(), flex_item.ng_input_node_,
-                                              &space_builder);
-      space_builder.SetIsPaintedAtomically(true);
-
-      LogicalSize available_size;
-      if (is_column_) {
-        available_size.inline_size = ChildAvailableSize().inline_size;
-        available_size.block_size = flex_item.flexed_content_size_ +
-                                    flex_item.main_axis_border_padding_;
-        space_builder.SetIsFixedBlockSize(true);
-        if (WillChildCrossSizeBeContainerCrossSize(flex_item.ng_input_node_))
-          space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchExplicit);
-        // https://drafts.csswg.org/css-flexbox/#definite-sizes
-        // If the flex container has a definite main size, a flex item's
-        // post-flexing main size is treated as definite, even though it can
-        // rely on the indefinite sizes of any flex items in the same line.
-        // TODO(crbug.com/1255340): This logic, and the similar below call to
-        // IsColumnContainerMainSizeDefinite need some refinement.
-        if (!IsColumnContainerMainSizeDefinite() &&
-            !IsItemFlexBasisDefinite(flex_item.ng_input_node_) &&
-            !IsItemMainSizeDefinite(flex_item.ng_input_node_)) {
-          space_builder.SetIsInitialBlockSizeIndefinite(true);
-        }
-      } else {
-        available_size.inline_size = flex_item.flexed_content_size_ +
-                                     flex_item.main_axis_border_padding_;
-        available_size.block_size = ChildAvailableSize().block_size;
-        space_builder.SetIsFixedInlineSize(true);
-        if (WillChildCrossSizeBeContainerCrossSize(flex_item.ng_input_node_))
-          space_builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
-      }
-      if (DoesItemStretch(flex_item.ng_input_node_)) {
-        // For stretched items, the goal of this layout is determine the
-        // post-flexed, pre-stretched cross-axis size. Stretched items will
-        // later get a final layout with a potentially different cross size so
-        // use the "measure" slot for this layout. We will use the "layout"
-        // cache slot for the item's final layout.
-        //
-        // Setting the "measure" cache slot on the space writes the result
-        // into both the "measure" and "layout" cache slots. So the stretch
-        // layout will reuse this "measure" result if it can.
-        space_builder.SetCacheSlot(NGCacheSlot::kMeasure);
-      }
-
-      space_builder.SetAvailableSize(available_size);
-      space_builder.SetPercentageResolutionSize(child_percentage_size_);
-      space_builder.SetReplacedPercentageResolutionSize(child_percentage_size_);
-
-      // For a button child, we need the baseline type same as the container's
-      // baseline type for UseCounter. For example, if the container's display
-      // property is 'inline-block', we need the last-line baseline of the
-      // child. See the bottom of GiveLinesAndItemsFinalPositionAndSize().
-      if (Node().IsButton()) {
-        space_builder.SetBaselineAlgorithmType(
-            ConstraintSpace().BaselineAlgorithmType());
-      }
-
-      NGConstraintSpace child_space = space_builder.ToConstraintSpace();
       // We need to get the item's cross axis size given its new main size. If
       // the new main size is the item's inline size, then we have to do a
       // layout to get its new block size. But if the new main size is the
@@ -819,7 +824,8 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
         DCHECK(!MainAxisIsInlineAxis(flex_item.ng_input_node_));
         NGBoxStrut border =
             ComputeBorders(child_space, flex_item.ng_input_node_);
-        NGBoxStrut padding = ComputePadding(child_space, child_style);
+        NGBoxStrut padding =
+            ComputePadding(child_space, flex_item.ng_input_node_.Style());
         if (flex_item.ng_input_node_.IsReplaced()) {
           LogicalSize logical_border_box_size = ComputeReplacedSize(
               flex_item.ng_input_node_, child_space, border + padding);
