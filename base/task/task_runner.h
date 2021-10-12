@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_TASK_RUNNER_H_
-#define BASE_TASK_RUNNER_H_
+#ifndef BASE_TASK_TASK_RUNNER_H_
+#define BASE_TASK_TASK_RUNNER_H_
 
 #include <stddef.h>
 
@@ -180,4 +180,4 @@ struct BASE_EXPORT TaskRunnerTraits {
 
 }  // namespace base
 
-#endif  // BASE_TASK_RUNNER_H_
+#endif  // BASE_TASK_TASK_RUNNER_H_

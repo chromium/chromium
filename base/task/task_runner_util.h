@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_TASK_RUNNER_UTIL_H_
-#define BASE_TASK_RUNNER_UTIL_H_
+#ifndef BASE_TASK_TASK_RUNNER_UTIL_H_
+#define BASE_TASK_TASK_RUNNER_UTIL_H_
 
 #include <memory>
 #include <utility>
@@ -53,4 +53,4 @@ bool PostTaskAndReplyWithResult(TaskRunner* task_runner,
 
 }  // namespace base
 
-#endif  // BASE_TASK_RUNNER_UTIL_H_
+#endif  // BASE_TASK_TASK_RUNNER_UTIL_H_
