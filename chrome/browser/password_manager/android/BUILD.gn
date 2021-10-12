@@ -93,11 +93,18 @@ junit_binary("password_manager_junit_tests") {
     "junit/src/org/chromium/chrome/browser/password_manager/settings/PasswordReauthenticationFragmentTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/settings/ReauthenticationManagerTest.java",
   ]
+  if (enable_chrome_android_internal) {
+    sources += [ "junit/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeTest.java" ]
+  }
 
   deps = [
     ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/test/android:chrome_java_test_support",
+    "//components/sync/protocol:protocol_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/junit",
   ]
