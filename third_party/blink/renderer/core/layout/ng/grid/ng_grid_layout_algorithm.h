@@ -335,6 +335,15 @@ struct GridItemIndices {
 
     enum class SizingConstraint { kLayout, kMinContent, kMaxContent };
 
+    GridGeometry ComputeGridGeometry(
+        const NGGridBlockTrackCollection& column_block_track_collection,
+        const NGGridBlockTrackCollection& row_block_track_collection,
+        GridItems* grid_items,
+        NGGridLayoutAlgorithmTrackCollection* column_track_collection,
+        NGGridLayoutAlgorithmTrackCollection* row_track_collection,
+        NGGridProperties* grid_properties,
+        LayoutUnit* intrinsic_block_size);
+
     LayoutUnit ComputeIntrinsicBlockSizeIgnoringChildren() const;
 
     // Returns the size that a grid item will distribute across the tracks with

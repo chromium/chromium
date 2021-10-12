@@ -151,8 +151,7 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
   ConstructAndAppendGridItems(&grid_items, &grid_properties,
                               &out_of_flow_items);
 
-  const auto& container_style = Style();
-  NGGridPlacement grid_placement(container_style,
+  NGGridPlacement grid_placement(Style(),
                                  ComputeAutomaticRepetitions(kForColumns),
                                  ComputeAutomaticRepetitions(kForRows));
 
@@ -162,185 +161,20 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
   BuildBlockTrackCollections(&grid_items, &column_block_track_collection,
                              &row_block_track_collection, &grid_placement);
 
-  GridGeometry grid_geometry;
   NGGridLayoutAlgorithmTrackCollection column_track_collection;
   NGGridLayoutAlgorithmTrackCollection row_track_collection;
-
-  auto ComputeGrid = [&]() {
-    // Build algorithm track collections from the block track collections.
-    column_track_collection = NGGridLayoutAlgorithmTrackCollection(
-        column_block_track_collection,
-        grid_available_size_.inline_size == kIndefiniteSize, &grid_properties);
-    row_track_collection = NGGridLayoutAlgorithmTrackCollection(
-        row_block_track_collection,
-        grid_available_size_.block_size == kIndefiniteSize, &grid_properties);
-
-    // Cache set indices for grid items.
-    for (auto& grid_item : grid_items.item_data) {
-      grid_item.ComputeSetIndices(column_track_collection);
-      grid_item.ComputeSetIndices(row_track_collection);
-    }
-
-    // Cache track span properties for grid items.
-    CacheGridItemsTrackSpanProperties(column_track_collection, &grid_items);
-    CacheGridItemsTrackSpanProperties(row_track_collection, &grid_items);
-
-    // We perform the track sizing algorithm using two methods. First
-    // |InitializeTrackSizes|, which we need to get an initial column and row
-    // set geometry. Then |ComputeUsedTrackSizes|, to finalize the sizing
-    // algorithm for both dimensions.
-    grid_geometry = GridGeometry(InitializeTrackSizes(&column_track_collection),
-                                 InitializeTrackSizes(&row_track_collection));
-
-    // Store column baselines, as these contributions can influence column
-    // sizing.
-    bool needs_additional_pass = false;
-    if (grid_properties.HasBaseline(kForColumns)) {
-      CalculateAlignmentBaselines(kForColumns, &grid_geometry, &grid_items,
-                                  &needs_additional_pass);
-    }
-
-    // Resolve inline size.
-    bool has_block_size_dependent_item = false;
-    grid_geometry.column_geometry = ComputeUsedTrackSizes(
-        SizingConstraint::kLayout, grid_geometry, grid_properties,
-        /* is_min_max_pass */ false, &column_track_collection, &grid_items,
-        &needs_additional_pass, &has_block_size_dependent_item);
-
-    if (grid_properties.HasBaseline(kForRows)) {
-      CalculateAlignmentBaselines(kForRows, &grid_geometry, &grid_items,
-                                  &needs_additional_pass);
-    }
-
-    absl::optional<SetGeometry> initial_row_geometry;
-    if (!needs_additional_pass && has_block_size_dependent_item)
-      initial_row_geometry = grid_geometry.row_geometry;
-
-    // Resolve block size.
-    bool unused_needs_additional_pass = false;
-    grid_geometry.row_geometry = ComputeUsedTrackSizes(
-        SizingConstraint::kLayout, grid_geometry, grid_properties,
-        /* is_min_max_pass */ false, &row_track_collection, &grid_items,
-        &unused_needs_additional_pass);
-
-    if (initial_row_geometry) {
-      DCHECK(!needs_additional_pass && has_block_size_dependent_item);
-      needs_additional_pass = MayChangeOrthogonalItemContributions(
-          *initial_row_geometry, grid_geometry.row_geometry, grid_items,
-          container_style.GetWritingMode());
-    }
-
-    // If we had an orthogonal item which may have depended on the resolved row
-    // tracks, re-run the track sizing algorithm for both dimensions.
-    if (needs_additional_pass) {
-      if (grid_properties.HasBaseline(kForColumns)) {
-        CalculateAlignmentBaselines(kForColumns, &grid_geometry, &grid_items,
-                                    &unused_needs_additional_pass);
-      }
-
-      grid_geometry.column_geometry =
-          InitializeTrackSizes(&column_track_collection);
-      grid_geometry.column_geometry = ComputeUsedTrackSizes(
-          SizingConstraint::kLayout, grid_geometry, grid_properties,
-          /* is_min_max_pass */ false, &column_track_collection, &grid_items,
-          &unused_needs_additional_pass);
-
-      if (grid_properties.HasBaseline(kForRows)) {
-        CalculateAlignmentBaselines(kForRows, &grid_geometry, &grid_items,
-                                    &unused_needs_additional_pass);
-      }
-
-      grid_geometry.row_geometry = InitializeTrackSizes(&row_track_collection);
-      grid_geometry.row_geometry = ComputeUsedTrackSizes(
-          SizingConstraint::kLayout, grid_geometry, grid_properties,
-          /* is_min_max_pass */ false, &row_track_collection, &grid_items,
-          &unused_needs_additional_pass);
-    }
-
-    if (grid_properties.HasBaseline(kForColumns)) {
-      CalculateAlignmentBaselines(kForColumns, &grid_geometry, &grid_items,
-                                  &unused_needs_additional_pass);
-    }
-    if (grid_properties.HasBaseline(kForRows)) {
-      CalculateAlignmentBaselines(kForRows, &grid_geometry, &grid_items,
-                                  &unused_needs_additional_pass);
-    }
-    DCHECK(!unused_needs_additional_pass);
-  };
-
-  ComputeGrid();
-
   LayoutUnit intrinsic_block_size;
-  if (contain_intrinsic_block_size_) {
-    intrinsic_block_size = *contain_intrinsic_block_size_;
-  } else {
-    // Intrinsic block size is based on the final row offset. Because gutters
-    // are included in row offsets, subtract out the final gutter (if present).
-    intrinsic_block_size = grid_geometry.row_geometry.sets.back().offset -
-                           grid_geometry.row_geometry.FinalGutterSize() +
-                           BorderScrollbarPadding().block_end;
 
-    // TODO(layout-dev): This isn't great but matches legacy. Ideally this
-    // would only apply when we have only flexible track(s).
-    if (grid_items.IsEmpty() && Node().HasLineIfEmpty()) {
-      intrinsic_block_size =
-          std::max(intrinsic_block_size, BorderScrollbarPadding().BlockSum() +
-                                             Node().EmptyLineBlockSize());
-    }
-
-    intrinsic_block_size =
-        ClampIntrinsicBlockSize(ConstraintSpace(), Node(),
-                                BorderScrollbarPadding(), intrinsic_block_size);
-  }
-
-  const LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), container_style, BorderPadding(), intrinsic_block_size,
-      border_box_size_.inline_size);
-
-  if (grid_available_size_.block_size == kIndefiniteSize) {
-    const LayoutUnit resolved_available_block_size =
-        (block_size - BorderScrollbarPadding().BlockSum())
-            .ClampNegativeToZero();
-
-    grid_available_size_.block_size = grid_min_available_size_.block_size =
-        grid_max_available_size_.block_size = resolved_available_block_size;
-
-    // Re-compute the row geometry now that we have the resolved available
-    // block-size. "align-content: space-evenly" etc, require the resolved size.
-    if (container_style.AlignContent() !=
-        ComputedStyleInitialValues::InitialAlignContent()) {
-      grid_geometry.row_geometry = ComputeSetGeometry(row_track_collection);
-    }
-
-    // If we have any rows, gaps which will resolve differently if we have a
-    // definite |grid_available_size_| re-compute the grid using the
-    // |block_size| calculated above.
-    bool should_recompute_grid =
-        (container_style.RowGap() &&
-         container_style.RowGap()->IsPercentOrCalc()) ||
-        row_track_collection.DependsOnAvailableSize();
-
-    // If we are a flex-item, we may have our initial block-size forced to be
-    // indefinite, however grid layout always re-computes the grid using the
-    // final "used" block-size.
-    // We can detect this case by checking if computing our block-size (with an
-    // indefinite intrinsic size) is definite.
-    //
-    // TODO(layout-dev): A small optimization here would be to do this only if
-    // we have 'auto' tracks which fill the remaining available space.
-    if (ConstraintSpace().IsInitialBlockSizeIndefinite()) {
-      should_recompute_grid |=
-          ComputeBlockSizeForFragment(
-              ConstraintSpace(), container_style, BorderPadding(),
-              /* intrinsic_block_size */ kIndefiniteSize,
-              border_box_size_.inline_size) != kIndefiniteSize;
-    }
-
-    if (should_recompute_grid)
-      ComputeGrid();
-  }
+  const GridGeometry grid_geometry = ComputeGridGeometry(
+      column_block_track_collection, row_block_track_collection, &grid_items,
+      &column_track_collection, &row_track_collection, &grid_properties,
+      &intrinsic_block_size);
 
   PlaceGridItems(grid_items, grid_geometry);
+
+  const LayoutUnit block_size = ComputeBlockSizeForFragment(
+      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
+      border_box_size_.inline_size);
 
   // Cache range placement data for out of flow items.
   for (auto& out_of_flow_item : out_of_flow_items) {
@@ -969,6 +803,196 @@ LayoutUnit NGGridLayoutAlgorithm::GridGeometry::Baseline(
                ? major_block_baselines[set_index]
                : minor_block_baselines[set_index];
   }
+}
+
+NGGridLayoutAlgorithm::GridGeometry NGGridLayoutAlgorithm::ComputeGridGeometry(
+    const NGGridBlockTrackCollection& column_block_track_collection,
+    const NGGridBlockTrackCollection& row_block_track_collection,
+    GridItems* grid_items,
+    NGGridLayoutAlgorithmTrackCollection* column_track_collection,
+    NGGridLayoutAlgorithmTrackCollection* row_track_collection,
+    NGGridProperties* grid_properties,
+    LayoutUnit* intrinsic_block_size) {
+  DCHECK(grid_items && column_track_collection && row_track_collection &&
+         grid_properties && intrinsic_block_size);
+
+  const auto& container_style = Style();
+  GridGeometry grid_geometry;
+
+  auto ComputeGrid = [&]() {
+    // Build algorithm track collections from the block track collections.
+    *column_track_collection = NGGridLayoutAlgorithmTrackCollection(
+        column_block_track_collection,
+        grid_available_size_.inline_size == kIndefiniteSize, grid_properties);
+    *row_track_collection = NGGridLayoutAlgorithmTrackCollection(
+        row_block_track_collection,
+        grid_available_size_.block_size == kIndefiniteSize, grid_properties);
+
+    // Cache set indices for grid items.
+    for (auto& grid_item : grid_items->item_data) {
+      grid_item.ComputeSetIndices(*column_track_collection);
+      grid_item.ComputeSetIndices(*row_track_collection);
+    }
+
+    // Cache track span properties for grid items.
+    CacheGridItemsTrackSpanProperties(*column_track_collection, grid_items);
+    CacheGridItemsTrackSpanProperties(*row_track_collection, grid_items);
+
+    // We perform the track sizing algorithm using two methods. First
+    // |InitializeTrackSizes|, which we need to get an initial column and row
+    // set geometry. Then |ComputeUsedTrackSizes|, to finalize the sizing
+    // algorithm for both dimensions.
+    grid_geometry = GridGeometry(InitializeTrackSizes(column_track_collection),
+                                 InitializeTrackSizes(row_track_collection));
+
+    // Store column baselines, as these contributions can influence column
+    // sizing.
+    bool needs_additional_pass = false;
+    if (grid_properties->HasBaseline(kForColumns)) {
+      CalculateAlignmentBaselines(kForColumns, &grid_geometry, grid_items,
+                                  &needs_additional_pass);
+    }
+
+    // Resolve inline size.
+    bool has_block_size_dependent_item = false;
+    grid_geometry.column_geometry = ComputeUsedTrackSizes(
+        SizingConstraint::kLayout, grid_geometry, *grid_properties,
+        /* is_min_max_pass */ false, column_track_collection, grid_items,
+        &needs_additional_pass, &has_block_size_dependent_item);
+
+    if (grid_properties->HasBaseline(kForRows)) {
+      CalculateAlignmentBaselines(kForRows, &grid_geometry, grid_items,
+                                  &needs_additional_pass);
+    }
+
+    absl::optional<SetGeometry> initial_row_geometry;
+    if (!needs_additional_pass && has_block_size_dependent_item)
+      initial_row_geometry = grid_geometry.row_geometry;
+
+    // Resolve block size.
+    bool unused_needs_additional_pass = false;
+    grid_geometry.row_geometry = ComputeUsedTrackSizes(
+        SizingConstraint::kLayout, grid_geometry, *grid_properties,
+        /* is_min_max_pass */ false, row_track_collection, grid_items,
+        &unused_needs_additional_pass);
+
+    if (initial_row_geometry) {
+      DCHECK(!needs_additional_pass && has_block_size_dependent_item);
+      needs_additional_pass = MayChangeOrthogonalItemContributions(
+          *initial_row_geometry, grid_geometry.row_geometry, *grid_items,
+          container_style.GetWritingMode());
+    }
+
+    // If we had an orthogonal item which may have depended on the resolved row
+    // tracks, re-run the track sizing algorithm for both dimensions.
+    if (needs_additional_pass) {
+      if (grid_properties->HasBaseline(kForColumns)) {
+        CalculateAlignmentBaselines(kForColumns, &grid_geometry, grid_items,
+                                    &unused_needs_additional_pass);
+      }
+
+      grid_geometry.column_geometry =
+          InitializeTrackSizes(column_track_collection);
+      grid_geometry.column_geometry = ComputeUsedTrackSizes(
+          SizingConstraint::kLayout, grid_geometry, *grid_properties,
+          /* is_min_max_pass */ false, column_track_collection, grid_items,
+          &unused_needs_additional_pass);
+
+      if (grid_properties->HasBaseline(kForRows)) {
+        CalculateAlignmentBaselines(kForRows, &grid_geometry, grid_items,
+                                    &unused_needs_additional_pass);
+      }
+
+      grid_geometry.row_geometry = InitializeTrackSizes(row_track_collection);
+      grid_geometry.row_geometry = ComputeUsedTrackSizes(
+          SizingConstraint::kLayout, grid_geometry, *grid_properties,
+          /* is_min_max_pass */ false, row_track_collection, grid_items,
+          &unused_needs_additional_pass);
+    }
+
+    if (grid_properties->HasBaseline(kForColumns)) {
+      CalculateAlignmentBaselines(kForColumns, &grid_geometry, grid_items,
+                                  &unused_needs_additional_pass);
+    }
+    if (grid_properties->HasBaseline(kForRows)) {
+      CalculateAlignmentBaselines(kForRows, &grid_geometry, grid_items,
+                                  &unused_needs_additional_pass);
+    }
+    DCHECK(!unused_needs_additional_pass);
+  };
+
+  ComputeGrid();
+
+  if (contain_intrinsic_block_size_) {
+    *intrinsic_block_size = *contain_intrinsic_block_size_;
+  } else {
+    // Intrinsic block size is based on the final row offset. Because gutters
+    // are included in row offsets, subtract out the final gutter (if present).
+    *intrinsic_block_size = grid_geometry.row_geometry.sets.back().offset -
+                            grid_geometry.row_geometry.FinalGutterSize() +
+                            BorderScrollbarPadding().block_end;
+
+    // TODO(layout-dev): This isn't great but matches legacy. Ideally this
+    // would only apply when we have only flexible track(s).
+    if (grid_items->IsEmpty() && Node().HasLineIfEmpty()) {
+      *intrinsic_block_size =
+          std::max(*intrinsic_block_size, BorderScrollbarPadding().BlockSum() +
+                                              Node().EmptyLineBlockSize());
+    }
+
+    *intrinsic_block_size = ClampIntrinsicBlockSize(ConstraintSpace(), Node(),
+                                                    BorderScrollbarPadding(),
+                                                    *intrinsic_block_size);
+  }
+
+  const LayoutUnit block_size = ComputeBlockSizeForFragment(
+      ConstraintSpace(), container_style, BorderPadding(),
+      *intrinsic_block_size, border_box_size_.inline_size);
+
+  if (grid_available_size_.block_size == kIndefiniteSize) {
+    const LayoutUnit resolved_available_block_size =
+        (block_size - BorderScrollbarPadding().BlockSum())
+            .ClampNegativeToZero();
+
+    grid_available_size_.block_size = grid_min_available_size_.block_size =
+        grid_max_available_size_.block_size = resolved_available_block_size;
+
+    // Re-compute the row geometry now that we have the resolved available
+    // block-size. "align-content: space-evenly" etc, require the resolved size.
+    if (container_style.AlignContent() !=
+        ComputedStyleInitialValues::InitialAlignContent()) {
+      grid_geometry.row_geometry = ComputeSetGeometry(*row_track_collection);
+    }
+
+    // If we have any rows, gaps which will resolve differently if we have a
+    // definite |grid_available_size_| re-compute the grid using the
+    // |block_size| calculated above.
+    bool should_recompute_grid =
+        (container_style.RowGap() &&
+         container_style.RowGap()->IsPercentOrCalc()) ||
+        row_track_collection->DependsOnAvailableSize();
+
+    // If we are a flex-item, we may have our initial block-size forced to be
+    // indefinite, however grid layout always re-computes the grid using the
+    // final "used" block-size.
+    // We can detect this case by checking if computing our block-size (with an
+    // indefinite intrinsic size) is definite.
+    //
+    // TODO(layout-dev): A small optimization here would be to do this only if
+    // we have 'auto' tracks which fill the remaining available space.
+    if (ConstraintSpace().IsInitialBlockSizeIndefinite()) {
+      should_recompute_grid |=
+          ComputeBlockSizeForFragment(
+              ConstraintSpace(), container_style, BorderPadding(),
+              /* intrinsic_block_size */ kIndefiniteSize,
+              border_box_size_.inline_size) != kIndefiniteSize;
+    }
+
+    if (should_recompute_grid)
+      ComputeGrid();
+  }
+
+  return grid_geometry;
 }
 
 LayoutUnit NGGridLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren()
