@@ -167,7 +167,7 @@ preprocess_if_expr("preprocess") {
   if (is_chromeos_ash) {
     in_files += [
       "autofill_page/blocking_request_manager.ts",
-      "people_page/account_manager_browser_proxy.js",
+      "people_page/account_manager_browser_proxy.ts",
       "site_settings/android_info_browser_proxy.ts",
     ]
   } else {
@@ -724,7 +724,7 @@ ts_library("build_ts") {
     in_files += [
       "autofill_page/blocking_request_manager.ts",
       "controls/password_prompt_dialog.ts",
-      "people_page/account_manager_browser_proxy.js",
+      "people_page/account_manager_browser_proxy.ts",
       "site_settings/android_info_browser_proxy.ts",
     ]
   } else {

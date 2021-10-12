@@ -11,13 +11,8 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = settings_closure_flags + mojom_js_args
   deps = [
-    ":account_manager_browser_proxy",
     ":profile_info_browser_proxy",
   ]
-}
-
-js_library("account_manager_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("profile_info_browser_proxy") {
