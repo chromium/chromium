@@ -6,14 +6,33 @@
  * @fileoverview Polymer element for lacros data migration screen.
  */
 
-Polymer({
-  is: 'lacros-data-migration-element',
+/* #js_imports_placeholder */
 
-  behaviors: [OobeDialogHostBehavior, LoginScreenBehavior],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ */
+const LacrosDataMigrationScreenElementBase = Polymer.mixinBehaviors(
+    [OobeDialogHostBehavior, LoginScreenBehavior], Polymer.Element);
+
+class LacrosDataMigrationScreen extends LacrosDataMigrationScreenElementBase {
+  static get is() {
+    return 'lacros-data-migration-element';
+  }
+
+  /* #html_template_placeholder */
+
+  constructor() {
+    super();
+  }
 
   ready() {
+    super.ready();
     this.initializeLoginScreen('LacrosDataMigrationScreen', {
       resetAllowed: false,
     });
-  },
-});
+  }
+}
+
+customElements.define(LacrosDataMigrationScreen.is, LacrosDataMigrationScreen);

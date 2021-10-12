@@ -11,6 +11,7 @@ group("polymer3_elements") {
   public_deps = [
     ":active_directory_password_change_module",
     ":gaia_password_changed_module",
+    ":lacros_data_migration_module",
     ":management_transition_module",
   ]
 }
@@ -23,7 +24,6 @@ js_type_check("closure_compile_local") {
   uses_legacy_modules = true
   deps = [
     ":encryption_migration",
-    ":lacros_data_migration",
     ":offline_login",
     ":update_required_card",
   ]
@@ -35,6 +35,7 @@ js_type_check("closure_compile_module") {
   deps = [
     ":active_directory_password_change.m",
     ":gaia_password_changed.m",
+    ":lacros_data_migration.m",
     ":management_transition.m",
   ]
 }
@@ -50,14 +51,6 @@ js_library("encryption_migration") {
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
-  ]
-}
-
-js_library("lacros_data_migration") {
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/dialogs:oobe_loading_dialog",
   ]
 }
 
@@ -111,6 +104,16 @@ js_library("gaia_password_changed.m") {
   extra_deps = [ ":gaia_password_changed_module" ]
 }
 
+js_library("lacros_data_migration.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/lacros_data_migration.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/dialogs:oobe_loading_dialog.m",
+  ]
+  extra_deps = [ ":lacros_data_migration_module" ]
+}
+
 js_library("management_transition.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/management_transition.m.js" ]
   deps = [
@@ -135,6 +138,14 @@ polymer_modulizer("active_directory_password_change") {
 polymer_modulizer("gaia_password_changed") {
   js_file = "gaia_password_changed.js"
   html_file = "gaia_password_changed.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("lacros_data_migration") {
+  js_file = "lacros_data_migration.js"
+  html_file = "lacros_data_migration.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
