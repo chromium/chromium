@@ -375,7 +375,7 @@ class SharedIsolateFactory {
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
         gin::V8Initializer::LoadV8Snapshot(
-            gin::V8Initializer::V8SnapshotFileType::kWithAdditionalContext);
+            gin::V8SnapshotFileType::kWithAdditionalContext);
 #else
         gin::V8Initializer::LoadV8Snapshot();
 #endif

@@ -81,6 +81,7 @@ component("gin") {
 
   if (v8_use_external_startup_data) {
     data = [ "$root_out_dir/snapshot_blob.bin" ]
+    sources += [ "public/v8_snapshot_file_type.h" ]
   }
 
   defines = [ "GIN_IMPLEMENTATION" ]
@@ -90,7 +91,10 @@ component("gin") {
     "//base/allocator:buildflags",
     "//v8",
   ]
-  deps = [ "//base/third_party/dynamic_annotations" ]
+  deps = [
+    "//base/third_party/dynamic_annotations",
+    "//third_party/abseil-cpp:absl",
+  ]
 
   if (is_mac) {
     frameworks = [ "CoreFoundation.framework" ]

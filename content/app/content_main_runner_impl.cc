@@ -202,13 +202,13 @@ namespace {
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 void LoadV8SnapshotFile() {
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
-  static constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
-      gin::V8Initializer::V8SnapshotFileType::kWithAdditionalContext;
+  static constexpr gin::V8SnapshotFileType kSnapshotType =
+      gin::V8SnapshotFileType::kWithAdditionalContext;
   static const char* snapshot_data_descriptor =
       kV8ContextSnapshotDataDescriptor;
 #else
-  static constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
-      gin::V8Initializer::V8SnapshotFileType::kDefault;
+  static constexpr gin::V8SnapshotFileType kSnapshotType =
+      gin::V8SnapshotFileType::kDefault;
   static const char* snapshot_data_descriptor = kV8SnapshotDataDescriptor;
 #endif  // USE_V8_CONTEXT_SNAPSHOT
   ALLOW_UNUSED_LOCAL(kSnapshotType);

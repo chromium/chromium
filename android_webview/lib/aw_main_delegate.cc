@@ -167,11 +167,10 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
       cl->AppendSwitch(switches::kWebViewDrawFunctorUsesVulkan);
 
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
-    gin::V8Initializer::V8SnapshotFileType file_type =
-        gin::V8Initializer::V8SnapshotFileType::kWithAdditionalContext;
+    gin::V8SnapshotFileType file_type =
+        gin::V8SnapshotFileType::kWithAdditionalContext;
 #else
-    gin::V8Initializer::V8SnapshotFileType file_type =
-        gin::V8Initializer::V8SnapshotFileType::kDefault;
+    gin::V8SnapshotFileType file_type = gin::V8SnapshotFileType::kDefault;
 #endif
     base::android::RegisterApkAssetWithFileDescriptorStore(
         content::kV8Snapshot32DataDescriptor,

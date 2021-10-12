@@ -88,6 +88,10 @@
 #include "v8/include/v8-profiler.h"
 #include "v8/include/v8.h"
 
+#if defined(V8_USE_EXTERNAL_STARTUP_DATA)
+#include "gin/public/v8_snapshot_file_type.h"
+#endif
+
 namespace blink {
 
 static void ReportFatalErrorInMainThread(const char* location,
@@ -732,6 +736,18 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
   size_t max_allocation_;
 };
 
+V8PerIsolateData::V8ContextSnapshotMode GetV8ContextSnapshotMode() {
+#if defined(USE_V8_CONTEXT_SNAPSHOT)
+  if (Platform::Current()->IsTakingV8ContextSnapshot())
+    return V8PerIsolateData::V8ContextSnapshotMode::kTakeSnapshot;
+  if (gin::GetLoadedSnapshotFileType() ==
+      gin::V8SnapshotFileType::kWithAdditionalContext) {
+    return V8PerIsolateData::V8ContextSnapshotMode::kUseSnapshot;
+  }
+#endif  // USE_V8_CONTEXT_SNAPSHOT
+  return V8PerIsolateData::V8ContextSnapshotMode::kDontUseSnapshot;
+}
+
 }  // namespace
 
 void V8Initializer::InitializeMainThread(const intptr_t* reference_table) {
@@ -743,18 +759,8 @@ void V8Initializer::InitializeMainThread(const intptr_t* reference_table) {
 
   ThreadScheduler* scheduler = ThreadScheduler::Current();
 
-#if defined(USE_V8_CONTEXT_SNAPSHOT)
-  V8PerIsolateData::V8ContextSnapshotMode v8_context_snapshot_mode =
-      Platform::Current()->IsTakingV8ContextSnapshot()
-          ? V8PerIsolateData::V8ContextSnapshotMode::kTakeSnapshot
-          : V8PerIsolateData::V8ContextSnapshotMode::kUseSnapshot;
-#else
-  V8PerIsolateData::V8ContextSnapshotMode v8_context_snapshot_mode =
-      V8PerIsolateData::V8ContextSnapshotMode::kDontUseSnapshot;
-#endif  // USE_V8_CONTEXT_SNAPSHOT
-
-  v8::Isolate* isolate = V8PerIsolateData::Initialize(scheduler->V8TaskRunner(),
-                                                      v8_context_snapshot_mode);
+  v8::Isolate* isolate = V8PerIsolateData::Initialize(
+      scheduler->V8TaskRunner(), GetV8ContextSnapshotMode());
   scheduler->SetV8Isolate(isolate);
 
   // ThreadState::isolate_ needs to be set before setting the EmbedderHeapTracer

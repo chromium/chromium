@@ -30,11 +30,11 @@
 namespace {
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
-constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
+constexpr gin::V8SnapshotFileType kSnapshotType =
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
-    gin::V8Initializer::V8SnapshotFileType::kWithAdditionalContext;
+    gin::V8SnapshotFileType::kWithAdditionalContext;
 #else
-    gin::V8Initializer::V8SnapshotFileType::kDefault;
+    gin::V8SnapshotFileType::kDefault;
 #endif  // defined(USE_V8_CONTEXT_SNAPSHOT)
 #endif  // defined(V8_USE_EXTERNAL_STARTUP_DATA)
 

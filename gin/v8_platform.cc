@@ -23,7 +23,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
-
 #include "gin/per_isolate_data.h"
 #include "v8_platform_page_allocator.h"
 

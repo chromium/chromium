@@ -31,6 +31,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gin/gin_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8-initialization.h"
 #include "v8/include/v8-snapshot.h"
 
@@ -48,6 +49,10 @@ namespace {
 
 // This global is never freed nor closed.
 base::MemoryMappedFile* g_mapped_snapshot = nullptr;
+
+#if defined(V8_USE_EXTERNAL_STARTUP_DATA)
+absl::optional<gin::V8SnapshotFileType> g_snapshot_file_type;
+#endif
 
 bool GenerateEntropy(unsigned char* buffer, size_t amount) {
   base::RandBytes(buffer, amount);
@@ -88,12 +93,11 @@ const char kV8ContextSnapshotFileName[] = V8_CONTEXT_SNAPSHOT_FILENAME;
 const char kSnapshotFileName[] = "snapshot_blob.bin";
 #endif  // defined(OS_ANDROID)
 
-const char* GetSnapshotFileName(
-    const V8Initializer::V8SnapshotFileType file_type) {
+const char* GetSnapshotFileName(const V8SnapshotFileType file_type) {
   switch (file_type) {
-    case V8Initializer::V8SnapshotFileType::kDefault:
+    case V8SnapshotFileType::kDefault:
       return kSnapshotFileName;
-    case V8Initializer::V8SnapshotFileType::kWithAdditionalContext:
+    case V8SnapshotFileType::kWithAdditionalContext:
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
       return kV8ContextSnapshotFileName;
 #else
@@ -413,6 +417,7 @@ void V8Initializer::LoadV8SnapshotFromFile(
     return;
   }
 
+  g_snapshot_file_type = snapshot_file_type;
   base::MemoryMappedFile::Region region =
       base::MemoryMappedFile::Region::kWholeFile;
   if (snapshot_file_region) {
@@ -433,10 +438,10 @@ base::FilePath V8Initializer::GetSnapshotFilePath(
   base::FilePath path;
   const char* filename = nullptr;
   switch (snapshot_file_type) {
-    case V8Initializer::V8SnapshotFileType::kDefault:
+    case V8SnapshotFileType::kDefault:
       filename = abi_32_bit ? kSnapshotFileName32 : kSnapshotFileName64;
       break;
-    case V8Initializer::V8SnapshotFileType::kWithAdditionalContext:
+    case V8SnapshotFileType::kWithAdditionalContext:
       filename = abi_32_bit ? kV8ContextSnapshotFileName32
                             : kV8ContextSnapshotFileName64;
       break;
@@ -447,6 +452,12 @@ base::FilePath V8Initializer::GetSnapshotFilePath(
   return path;
 }
 #endif  // defined(OS_ANDROID)
+
+V8SnapshotFileType GetLoadedSnapshotFileType() {
+  DCHECK(g_snapshot_file_type.has_value());
+  return *g_snapshot_file_type;
+}
+
 #endif  // defined(V8_USE_EXTERNAL_STARTUP_DATA)
 
 }  // namespace gin

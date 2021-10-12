@@ -250,7 +250,10 @@ component("core") {
 
   configs -= core_config_remove
   configs += core_config_add
-  configs += [ "//tools/v8_context_snapshot:use_v8_context_snapshot" ]
+  configs += [
+    "//tools/v8_context_snapshot:use_v8_context_snapshot",
+    "//v8:external_startup_data",
+  ]
 
   public_deps = [
     ":core_generated",
@@ -282,6 +285,7 @@ component("core") {
     "//components/performance_manager/public/mojom:mojom_blink",
     "//components/power_scheduler",
     "//components/shared_highlighting/core/common",
+    "//gin",
     "//gpu/config",
     "//mojo/public/cpp/bindings:bindings",
     "//mojo/public/cpp/system",

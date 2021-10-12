@@ -169,11 +169,11 @@ HeadlessBrowserTest::~HeadlessBrowserTest() = default;
 void HeadlessBrowserTest::PreRunTestOnMainThread() {
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
-  constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
-      gin::V8Initializer::V8SnapshotFileType::kWithAdditionalContext;
+  constexpr gin::V8SnapshotFileType kSnapshotType =
+      gin::V8SnapshotFileType::kWithAdditionalContext;
 #else
-  constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
-      gin::V8Initializer::V8SnapshotFileType::kDefault;
+  constexpr gin::V8SnapshotFileType kSnapshotType =
+      gin::V8SnapshotFileType::kDefault;
 #endif  // USE_V8_CONTEXT_SNAPSHOT
   gin::V8Initializer::LoadV8Snapshot(kSnapshotType);
 #endif

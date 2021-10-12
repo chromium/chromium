@@ -15,6 +15,10 @@
 #include "gin/public/isolate_holder.h"
 #include "gin/public/v8_platform.h"
 
+#if defined(V8_USE_EXTERNAL_STARTUP_DATA)
+#include "gin/public/v8_snapshot_file_type.h"
+#endif
+
 namespace v8 {
 class StartupData;
 }
@@ -34,15 +38,6 @@ class GIN_EXPORT V8Initializer {
                                         int* snapshot_size_out);
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
-  // Indicates which file to load as a snapshot blob image.
-  enum class V8SnapshotFileType {
-    kDefault,
-
-    // Snapshot augmented with customized contexts, which can be deserialized
-    // using v8::Context::FromSnapshot.
-    kWithAdditionalContext,
-  };
-
   // Load V8 snapshot from default resources, if they are available.
   static void LoadV8Snapshot(
       V8SnapshotFileType snapshot_file_type = V8SnapshotFileType::kDefault);
