@@ -25,7 +25,6 @@ class CalendarViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    controller_ = std::make_unique<CalendarViewController>();
     delegate_ =
         std::make_unique<DetailedViewDelegate>(/*tray_controller=*/nullptr);
     tray_model_ = std::make_unique<UnifiedSystemTrayModel>(/*shelf=*/nullptr);
@@ -35,7 +34,6 @@ class CalendarViewTest : public AshTestBase {
 
   void TearDown() override {
     calendar_view_.reset();
-    controller_.reset();
     delegate_.reset();
     tray_controller_.reset();
     tray_model_.reset();
@@ -43,11 +41,10 @@ class CalendarViewTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  void CreateCalendarView(base::Time date) {
+  void CreateCalendarView() {
     calendar_view_.reset();
-    controller_->UpdateMonth(date);
-    calendar_view_ = std::make_unique<CalendarView>(
-        delegate_.get(), tray_controller_.get(), controller_.get());
+    calendar_view_ =
+        std::make_unique<CalendarView>(delegate_.get(), tray_controller_.get());
     // TODO(https://crbug.com/1236276): remove calling `Layout()` once we can
     // pop up the view from the tray. (https://crbug.com/1254491) And add tests
     // for focusing behaviors.
@@ -121,7 +118,14 @@ base::Time CalendarViewTest::fake_time_;
 TEST_F(CalendarViewTest, Init) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("24 Aug 2021 10:00 GMT", &date));
-  CreateCalendarView(date);
+
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
 
   EXPECT_EQ(u"July", GetPreviousLabelText());
   EXPECT_EQ(u"August", GetCurrentLabelText());
@@ -138,11 +142,20 @@ TEST_F(CalendarViewTest, Init) {
   EXPECT_EQ(
       u"29",
       static_cast<views::LabelButton*>(next_month()->children()[0])->GetText());
+}
 
-  // Test corner cases of the `CalendarView`.
+// Test the init view of the `CalendarView` starting with December.
+TEST_F(CalendarViewTest, InitDec) {
   base::Time dec_date;
   ASSERT_TRUE(base::Time::FromString("24 Dec 2021 10:00 GMT", &dec_date));
-  CreateCalendarView(dec_date);
+
+  // Set time override.
+  SetFakeNow(dec_date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
 
   EXPECT_EQ(u"November", GetPreviousLabelText());
   EXPECT_EQ(u"December", GetCurrentLabelText());
@@ -165,7 +178,13 @@ TEST_F(CalendarViewTest, Scroll) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("24 Oct 2021 10:00 GMT", &date));
 
-  CreateCalendarView(date);
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
 
   EXPECT_EQ(u"September", GetPreviousLabelText());
   EXPECT_EQ(u"October", GetCurrentLabelText());
@@ -212,7 +231,7 @@ TEST_F(CalendarViewTest, ButtonFunctions) {
       &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
 
-  CreateCalendarView(date);
+  CreateCalendarView();
 
   EXPECT_EQ(u"September", GetPreviousLabelText());
   EXPECT_EQ(u"October", GetCurrentLabelText());

@@ -16,23 +16,24 @@ UnifiedCalendarViewController::UnifiedCalendarViewController(
     UnifiedSystemTrayController* tray_controller)
     : detailed_view_delegate_(
           std::make_unique<DetailedViewDelegate>(tray_controller)),
-      calendar_view_controller_(std::make_unique<CalendarViewController>()),
       tray_controller_(tray_controller) {}
 
-UnifiedCalendarViewController::~UnifiedCalendarViewController() {}
+UnifiedCalendarViewController::~UnifiedCalendarViewController() = default;
 
 views::View* UnifiedCalendarViewController::CreateView() {
   DCHECK(!view_);
-  view_ = new CalendarView(detailed_view_delegate_.get(), tray_controller_,
-                           calendar_view_controller_.get());
+  view_ = new CalendarView(detailed_view_delegate_.get(), tray_controller_);
   return view_;
 }
 
 std::u16string UnifiedCalendarViewController::GetAccessibleName() const {
+  // Shows `Now()` as the initial time if calendar view is not created yet.
+  base::Time current_time =
+      view_ ? view_->calendar_view_controller()->current_date()
+            : base::Time::Now();
   return l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_BUBBLE_ACCESSIBLE_DESCRIPTION,
-      base::TimeFormatWithPattern(calendar_view_controller_->current_date(),
-                                  "MMMM yyyy"));
+      base::TimeFormatWithPattern(current_time, "MMMM yyyy"));
 }
 
 }  // namespace ash

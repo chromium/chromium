@@ -73,7 +73,7 @@ class ASH_EXPORT CalendarMonthView : public views::View {
       int column_set_id,
       bool is_in_current_month);
 
-  // Owned by `UnifiedCalendarViewController`.
+  // Owned by `CalendarView`.
   CalendarViewController* const calendar_view_controller_;
 
   // If today's cell is in this view.

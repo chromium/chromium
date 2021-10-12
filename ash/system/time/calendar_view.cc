@@ -185,11 +185,10 @@ class CalendarView::MonthYearHeaderView : public views::View {
 };
 
 CalendarView::CalendarView(DetailedViewDelegate* delegate,
-                           UnifiedSystemTrayController* controller,
-                           CalendarViewController* calendar_view_controller)
+                           UnifiedSystemTrayController* controller)
     : TrayDetailedView(delegate),
       controller_(controller),
-      calendar_view_controller_(calendar_view_controller) {
+      calendar_view_controller_(std::make_unique<CalendarViewController>()) {
   CreateTitleRow(IDS_ASH_CALENDAR_TITLE);
 
   // Add the header.
@@ -259,7 +258,8 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   SetMonthViews();
 
   scoped_scroll_view_observer_.Observe(scroll_view_);
-  scoped_calendar_view_controller_observer_.Observe(calendar_view_controller_);
+  scoped_calendar_view_controller_observer_.Observe(
+      calendar_view_controller_.get());
   scoped_view_observer_.AddObservation(scroll_view_);
   scoped_view_observer_.AddObservation(content_view_);
 }
@@ -443,8 +443,8 @@ void CalendarView::OnViewFocused(View* observed_view) {
 }
 
 views::View* CalendarView::AddLabelWithId(LabelType type, bool add_at_front) {
-  auto label =
-      std::make_unique<MonthYearHeaderView>(type, calendar_view_controller_);
+  auto label = std::make_unique<MonthYearHeaderView>(
+      type, calendar_view_controller_.get());
   if (add_at_front)
     return content_view_->AddChildViewAt(std::move(label), 0);
   return content_view_->AddChildView(std::move(label));
@@ -452,8 +452,8 @@ views::View* CalendarView::AddLabelWithId(LabelType type, bool add_at_front) {
 
 CalendarMonthView* CalendarView::AddMonth(base::Time month_first_date,
                                           bool add_at_front) {
-  auto month = std::make_unique<CalendarMonthView>(month_first_date,
-                                                   calendar_view_controller_);
+  auto month = std::make_unique<CalendarMonthView>(
+      month_first_date, calendar_view_controller_.get());
   month->SetBorder(views::CreateEmptyBorder(kMonthVerticalPadding, 0,
                                             kMonthVerticalPadding, 0));
   if (add_at_front) {

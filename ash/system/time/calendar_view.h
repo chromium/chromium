@@ -33,8 +33,7 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   METADATA_HEADER(CalendarView);
 
   CalendarView(DetailedViewDelegate* delegate,
-               UnifiedSystemTrayController* controller,
-               CalendarViewController* calendar_view_controller);
+               UnifiedSystemTrayController* controller);
   CalendarView(const CalendarView& other) = delete;
   CalendarView& operator=(const CalendarView& other) = delete;
   ~CalendarView() override;
@@ -57,6 +56,10 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   void CreateExtraTitleRowButtons() override;
   views::Button* CreateInfoButton(views::Button::PressedCallback callback,
                                   int info_accessible_name_id) override;
+
+  CalendarViewController* calendar_view_controller() {
+    return calendar_view_controller_.get();
+  }
 
  private:
   // The header of each month view which shows the month's name. If the year of
@@ -117,8 +120,7 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   // Unowned.
   UnifiedSystemTrayController* controller_;
 
-  // Owned by `UnifiedCalendarViewController`.
-  CalendarViewController* const calendar_view_controller_;
+  std::unique_ptr<CalendarViewController> calendar_view_controller_;
 
   // The content of the `scroll_view_`, which carries months and month labels.
   // Owned by `CalendarView`.
