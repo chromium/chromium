@@ -452,7 +452,7 @@ StatusOr<scoped_refptr<StorageQueue::SingleFile>> StorageQueue::AssignLastFile(
   scoped_refptr<SingleFile> last_file = files_.rbegin()->second;
   if (last_file->size() > 0 &&  // Cannot have a file with no records.
       last_file->size() + size + sizeof(RecordHeader) + FRAME_SIZE >
-          options_.single_file_size()) {
+          options_.max_single_file_size()) {
     // The last file will become too large, asynchronously close it and add
     // new.
     last_file->Close();

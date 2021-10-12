@@ -462,8 +462,7 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
  protected:
   void SetUp() override {
     ASSERT_TRUE(location_.CreateUniqueTempDir());
-    options_.set_directory(base::FilePath(location_.GetPath()))
-        .set_single_file_size(GetParam());
+    options_.set_directory(base::FilePath(location_.GetPath()));
     EXPECT_CALL(set_mock_uploader_expectations_, Call(_, NotNull()))
         .WillRepeatedly(Invoke([](UploaderInterface::UploadReason reason,
                                   TestUploader* test_uploader) {
@@ -528,7 +527,8 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     return QueueOptions(options_)
         .set_subdirectory(FILE_PATH_LITERAL("D1"))
         .set_file_prefix(FILE_PATH_LITERAL("F0001"))
-        .set_upload_retry_delay(upload_retry_delay);
+        .set_upload_retry_delay(upload_retry_delay)
+        .set_max_single_file_size(GetParam());
   }
 
   QueueOptions BuildStorageQueueOptionsPeriodic(
@@ -860,7 +860,7 @@ TEST_P(StorageQueueTest,
   // Set uploader expectations. Previous data is all lost.
   // The expected results depend on the test configuration.
   test::TestCallbackAutoWaiter waiter;
-  switch (options.single_file_size()) {
+  switch (options.max_single_file_size()) {
     case 1:  // single record in file - deletion killed the first record
       EXPECT_CALL(set_mock_uploader_expectations_,
                   Call(Eq(UploaderInterface::PERIODIC), NotNull()))

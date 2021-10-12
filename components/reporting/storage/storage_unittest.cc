@@ -785,8 +785,7 @@ class StorageTest
 
   StorageOptions BuildTestStorageOptions() const {
     auto options = StorageOptions()
-                       .set_directory(base::FilePath(location_.GetPath()))
-                       .set_single_file_size(is_encryption_enabled());
+                       .set_directory(base::FilePath(location_.GetPath()));
     if (is_encryption_enabled()) {
       // Encryption enabled.
       options.set_signature_verification_public_key(std::string(

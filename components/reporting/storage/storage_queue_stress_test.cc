@@ -130,8 +130,7 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
         {CompressionModule::kCompressReportingFeature}, {});
 
     ASSERT_TRUE(location_.CreateUniqueTempDir());
-    options_.set_directory(base::FilePath(location_.GetPath()))
-        .set_single_file_size(GetParam());
+    options_.set_directory(base::FilePath(location_.GetPath()));
   }
 
   void TearDown() override {
@@ -180,7 +179,8 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
   QueueOptions BuildStorageQueueOptionsImmediate() const {
     return QueueOptions(options_)
         .set_subdirectory(FILE_PATH_LITERAL("D1"))
-        .set_file_prefix(FILE_PATH_LITERAL("F0001"));
+        .set_file_prefix(FILE_PATH_LITERAL("F0001"))
+        .set_max_single_file_size(GetParam());
   }
 
   QueueOptions BuildStorageQueueOptionsPeriodic(

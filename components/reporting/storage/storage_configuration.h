@@ -48,10 +48,6 @@ class StorageOptions {
     max_total_memory_size_ = max_total_memory_size;
     return *this;
   }
-  StorageOptions& set_single_file_size(uint64_t single_file_size) {
-    single_file_size_ = single_file_size;
-    return *this;
-  }
   const base::FilePath& directory() const { return directory_; }
   base::StringPiece signature_verification_public_key() const {
     return signature_verification_public_key_;
@@ -59,7 +55,6 @@ class StorageOptions {
   size_t max_record_size() const { return max_record_size_; }
   uint64_t max_total_files_size() const { return max_total_files_size_; }
   uint64_t max_total_memory_size() const { return max_total_memory_size_; }
-  uint64_t single_file_size() const { return single_file_size_; }
 
  private:
   // Subdirectory of the location assigned for this Storage.
@@ -77,12 +72,6 @@ class StorageOptions {
 
   // Maximum memory usage (reading buffers).
   uint64_t max_total_memory_size_ = 4 * 1024LL * 1024LL;  // 4 MiB
-
-  // Cut-off size of an individual file in all queues.
-  // When file exceeds this size, the new file is created
-  // for further records. Note that each file must have at least
-  // one record before it is closed, regardless of that record size.
-  uint64_t single_file_size_ = 1 * 1024LL * 1024LL;  // 1 MiB
 };
 
 // Single queue options class allowing to set parameters individually, e.g.:
@@ -93,9 +82,8 @@ class StorageOptions {
 // storage_options must outlive QueueOptions.
 class QueueOptions {
  public:
-  explicit QueueOptions(const StorageOptions& storage_options)
-      : storage_options_(storage_options) {}
-  QueueOptions(const QueueOptions& options) = default;
+  explicit QueueOptions(const StorageOptions& storage_options);
+  QueueOptions(const QueueOptions& options);
   //   QueueOptions& operator=(const QueueOptions& options) = default;
   QueueOptions& set_subdirectory(
       const base::FilePath::StringType& subdirectory) {
@@ -114,6 +102,10 @@ class QueueOptions {
     upload_retry_delay_ = upload_retry_delay;
     return *this;
   }
+  QueueOptions& set_max_single_file_size(uint64_t max_single_file_size) {
+    max_single_file_size_ = max_single_file_size;
+    return *this;
+  }
   const base::FilePath& directory() const { return directory_; }
   const base::FilePath::StringType& file_prefix() const { return file_prefix_; }
   size_t max_record_size() const { return storage_options_.max_record_size(); }
@@ -123,9 +115,7 @@ class QueueOptions {
   size_t max_total_memory_size() const {
     return storage_options_.max_total_memory_size();
   }
-  uint64_t single_file_size() const {
-    return storage_options_.single_file_size();
-  }
+  uint64_t max_single_file_size() const { return max_single_file_size_; }
   base::TimeDelta upload_period() const { return upload_period_; }
   base::TimeDelta upload_retry_delay() const { return upload_retry_delay_; }
 
@@ -146,6 +136,11 @@ class QueueOptions {
   // Retry delay for a failed upload. If 0, not retried at all
   // (should only be set to 0 in periodic queues).
   base::TimeDelta upload_retry_delay_;
+  // Cut-off file size of an individual queue
+  // When file exceeds this size, the new file is created
+  // for further records. Note that each file must have at least
+  // one record before it is closed, regardless of that record size.
+  uint64_t max_single_file_size_ = 1 * 1024LL * 1024LL; // 1 MiB
 };
 
 }  // namespace reporting
