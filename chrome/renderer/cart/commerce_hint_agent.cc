@@ -750,12 +750,6 @@ void CommerceHintAgent::JavaScriptRequest::WillExecute() {
 
 void CommerceHintAgent::JavaScriptRequest::Completed(
     const blink::WebVector<v8::Local<v8::Value>>& result) {
-  // Only record when the start time is correctly captured.
-  DCHECK(!start_time_.is_null());
-  if (!start_time_.is_null()) {
-    base::UmaHistogramTimes("Commerce.Carts.ExtractionExecutionTime",
-                            base::TimeTicks::Now() - start_time_);
-  }
   if (!agent_)
     return;
   blink::WebLocalFrame* main_frame = agent_->render_frame()->GetWebFrame();
@@ -789,6 +783,12 @@ void CommerceHintAgent::JavaScriptRequest::Completed(
 
 void CommerceHintAgent::JavaScriptRequest::HandlePromiseResults(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
+  // Only record when the start time is correctly captured.
+  DCHECK(!start_time_.is_null());
+  if (!start_time_.is_null()) {
+    base::UmaHistogramTimes("Commerce.Carts.ExtractionExecutionTime",
+                            base::TimeTicks::Now() - start_time_);
+  }
   if (!agent_)
     return;
   blink::WebLocalFrame* main_frame = agent_->render_frame()->GetWebFrame();
