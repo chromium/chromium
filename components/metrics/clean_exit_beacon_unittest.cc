@@ -51,23 +51,6 @@ std::string CreateWellFormedBeaconFileContents(bool exited_cleanly,
 
 }  // namespace
 
-class FakeTestingPrefStore : public TestingPrefStore {
- public:
-  void CommitPendingWriteSynchronously() override {
-    was_commit_pending_write_synchronously_called_ = true;
-  }
-
-  bool was_commit_pending_write_synchronously_called() {
-    return was_commit_pending_write_synchronously_called_;
-  }
-
- protected:
-  ~FakeTestingPrefStore() override = default;
-
- private:
-  bool was_commit_pending_write_synchronously_called_ = false;
-};
-
 class TestCleanExitBeacon : public CleanExitBeacon {
  public:
   explicit TestCleanExitBeacon(
@@ -363,20 +346,10 @@ TEST_F(CleanExitBeaconTest, WriteBeaconValue_SynchronousWriteDcheck) {
   ASSERT_EQ(variations::kControlGroup, base::FieldTrialList::FindFullName(
                                            variations::kExtendedSafeModeTrial));
 
-  PrefServiceFactory factory;
-  scoped_refptr<FakeTestingPrefStore> pref_store(new FakeTestingPrefStore);
-  factory.set_user_prefs(pref_store);
-  scoped_refptr<PrefRegistrySimple> registry(new PrefRegistrySimple);
-  std::unique_ptr<PrefService> prefs(factory.Create(registry.get()));
-  CleanExitBeacon::RegisterPrefs(registry.get());
-  TestCleanExitBeacon clean_exit_beacon(prefs.get(), user_data_dir_.GetPath());
+  TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_.GetPath());
   EXPECT_DCHECK_DEATH(
       clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/false,
                                          /*write_synchronously=*/true));
-
-  // Verify that CommitPendingWriteSynchronously() was not called and that
-  // the WritePrefsTime metric was not emitted.
-  EXPECT_FALSE(pref_store->was_commit_pending_write_synchronously_called());
   histogram_tester_.ExpectTotalCount(
       "Variations.ExtendedSafeMode.WritePrefsTime", 0);
 }

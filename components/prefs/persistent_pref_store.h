@@ -71,12 +71,6 @@ class COMPONENTS_PREFS_EXPORT PersistentPrefStore : public WriteablePrefStore {
       base::OnceClosure reply_callback = base::OnceClosure(),
       base::OnceClosure synchronous_done_callback = base::OnceClosure());
 
-  // Like CommitPendingWrite(), but writes to disk on this thread synchronously
-  // rather than scheduling a write. CommitPendingWriteSynchronously() is
-  // appropriate to call only in the exceptional situation in which you need to
-  // write to disk early on during startup before threads have been started.
-  virtual void CommitPendingWriteSynchronously() = 0;
-
   // Schedules a write if there is any lossy data pending. Unlike
   // CommitPendingWrite() this does not immediately sync to disk, instead it
   // triggers an eventual write if there is lossy data pending and if there

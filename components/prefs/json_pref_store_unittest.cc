@@ -24,12 +24,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner_forward.h"
-#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "components/prefs/persistent_pref_store_unittest.h"
 #include "components/prefs/pref_filter.h"
@@ -574,65 +572,6 @@ INSTANTIATE_TEST_SUITE_P(
     WithSynchronousCallback,
     JsonPrefStoreTest,
     ::testing::Values(CommitPendingWriteMode::WITH_SYNCHRONOUS_CALLBACK));
-
-class JsonPrefStoreWriteSynchronouslyTest : public testing::Test {
- public:
-  JsonPrefStoreWriteSynchronouslyTest() = default;
-  ~JsonPrefStoreWriteSynchronouslyTest() override = default;
-
- protected:
-  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
-
-  base::test::TaskEnvironment task_environment_;
-  base::ScopedTempDir temp_dir_;
-};
-
-TEST_F(JsonPrefStoreWriteSynchronouslyTest,
-       WriteFailsWhenBlockingIsDisallowed) {
-  const char kEmptyPrefContents[] = "{}";
-
-  base::FilePath pref_file = temp_dir_.GetPath().AppendASCII("write.json");
-  ASSERT_LT(0, base::WriteFile(pref_file, kEmptyPrefContents,
-                               base::size(kEmptyPrefContents) - 1));
-
-  auto pref_store = base::MakeRefCounted<JsonPrefStore>(pref_file);
-  ASSERT_EQ(PersistentPrefStore::PREF_READ_ERROR_NONE, pref_store->ReadPrefs());
-
-  const std::string test_pref = "test";
-  pref_store->SetValue(test_pref, std::make_unique<Value>(3),
-                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  {
-    base::ScopedDisallowBlocking scoped_disallow_blocking;
-    EXPECT_DCHECK_DEATH(pref_store->CommitPendingWriteSynchronously());
-  }
-}
-
-TEST_F(JsonPrefStoreWriteSynchronouslyTest, CommitPendingWriteSynchronously) {
-  const char kInputPrefContents[] =
-      "{\n"
-      "  \"homepage\": \"http://www.cnn.com\"\n"
-      "}";
-
-  const std::string kExpectedPrefContents =
-      "{\"homepage\":\"http://www.cnn.com\",\"test\":3}";
-
-  base::FilePath pref_file = temp_dir_.GetPath().AppendASCII("write.json");
-  ASSERT_LT(0, base::WriteFile(pref_file, kInputPrefContents,
-                               base::size(kInputPrefContents) - 1));
-
-  auto pref_store = base::MakeRefCounted<JsonPrefStore>(pref_file);
-  ASSERT_EQ(PersistentPrefStore::PREF_READ_ERROR_NONE, pref_store->ReadPrefs());
-
-  const std::string test_pref = "test";
-  pref_store->SetValue(test_pref, std::make_unique<Value>(3),
-                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  pref_store->CommitPendingWriteSynchronously();
-
-  std::string pref_file_contents;
-  ASSERT_TRUE(base::ReadFileToString(pref_file, &pref_file_contents));
-  EXPECT_EQ(kExpectedPrefContents, pref_file_contents);
-  ASSERT_TRUE(base::DeleteFile(pref_file));
-}
 
 class JsonPrefStoreLossyWriteTest : public JsonPrefStoreTest {
  public:

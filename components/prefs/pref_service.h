@@ -469,12 +469,6 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   const base::Value* GetPreferenceValue(const std::string& path) const;
   const base::Value* GetPreferenceValueChecked(const std::string& path) const;
 
-  // Like CommitPendingWrite(), but writes to disk on this thread synchronously
-  // rather than scheduling a write. CommitPendingWriteSynchronously() is
-  // appropriate to call only in the exceptional situation in which you need to
-  // write to disk early on during startup before threads have been started.
-  void CommitPendingWriteSynchronously();
-
   const scoped_refptr<PrefRegistry> pref_registry_;
 
   // Local cache of registered Preference objects. The pref_registry_

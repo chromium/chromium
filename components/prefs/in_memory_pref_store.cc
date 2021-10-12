@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/notreached.h"
 #include "base/values.h"
 
 InMemoryPrefStore::InMemoryPrefStore() {}
@@ -79,12 +78,6 @@ PersistentPrefStore::PrefReadError InMemoryPrefStore::GetReadError() const {
 
 PersistentPrefStore::PrefReadError InMemoryPrefStore::ReadPrefs() {
   return PersistentPrefStore::PREF_READ_ERROR_NONE;
-}
-
-void InMemoryPrefStore::CommitPendingWriteSynchronously() {
-  // This function was added for one very specific use case and is intentionally
-  // not implemented for other pref stores.
-  NOTREACHED();
 }
 
 void InMemoryPrefStore::ReportValueChanged(const std::string& key,
