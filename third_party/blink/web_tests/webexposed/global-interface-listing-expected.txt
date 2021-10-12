@@ -4529,6 +4529,7 @@ interface Highlight
     attribute @@toStringTag
     getter priority
     getter size
+    getter type
     method @@iterator
     method add
     method clear
@@ -4540,6 +4541,7 @@ interface Highlight
     method keys
     method values
     setter priority
+    setter type
 interface HighlightRegistry
     attribute @@toStringTag
     getter size
