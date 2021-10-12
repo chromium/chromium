@@ -902,6 +902,8 @@ component("ash") {
     "shutdown_reason.h",
     "style/ash_color_provider.cc",
     "style/ash_color_provider.h",
+    "style/button_style.cc",
+    "style/button_style.h",
     "style/default_color_constants.h",
     "style/default_colors.cc",
     "style/default_colors.h",
