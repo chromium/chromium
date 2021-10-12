@@ -22,15 +22,17 @@ class Browser;
 
 // Returns a configuration for a context menu, based on its associated
 // |webState|, |params| and |baseViewController|.
+// |params| is copied in order to be used in blocks.
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForWebState:(web::WebState*)webState
-                                 params:(const web::ContextMenuParams&)params
+                                 params:(web::ContextMenuParams)params
                      baseViewController:(UIViewController*)baseViewController;
 
 // DEPRECATED.
 // Displays a context menu using an action sheet on |baseViewController|.
+// |params| is copied in order to be used in blocks.
 - (void)showLegacyContextMenuForWebState:(web::WebState*)webState
-                                  params:(const web::ContextMenuParams&)params
+                                  params:(web::ContextMenuParams)params
                       baseViewController:(UIViewController*)baseViewController;
 
 // DEPRECATED.
