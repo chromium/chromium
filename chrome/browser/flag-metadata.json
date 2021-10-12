@@ -3263,7 +3263,7 @@
   {
     "name": "global-media-controls-modern-ui",
     "owners": [ "steimel", "media-dev" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "global-media-controls-picture-in-picture",
