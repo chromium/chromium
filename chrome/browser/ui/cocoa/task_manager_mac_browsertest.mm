@@ -168,7 +168,6 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, ColumnsSettingsAreRestored) {
   // be nice to fake a click with -performClick: but that doesn't work (see
   // http://www.cocoabuilder.com/archive/cocoa/177610-programmatically-click-column-header-in-nstableview.html).
   bool is_sorted = false;
-  int sorted_col_id = -1;
   for (NSTableColumn* column in tableColumns) {
     if ([column isHidden])
       continue;
@@ -178,7 +177,6 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, ColumnsSettingsAreRestored) {
           [[column sortDescriptorPrototype] reversedSortDescriptor];
       [table setSortDescriptors:@[ newSortDescriptor ]];
       is_sorted = true;
-      sorted_col_id = [[column identifier] intValue];
       break;
     }
   }
