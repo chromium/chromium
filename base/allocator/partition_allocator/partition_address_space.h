@@ -11,6 +11,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
+#include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -28,47 +29,6 @@ namespace internal {
 
 // The feature is not applicable to 32-bit address space.
 #if defined(PA_HAS_64_BITS_POINTERS)
-
-struct GigaCageProperties {
-  size_t size;
-  size_t alignment;
-  size_t alignment_offset;
-};
-
-template <size_t N>
-GigaCageProperties CalculateGigaCageProperties(
-    const std::array<size_t, N>& pool_sizes) {
-  size_t size_sum = 0;
-  size_t alignment = 0;
-  size_t alignment_offset;
-  // The goal is to find properties such that each pool's start address is
-  // aligned to its own size. To achieve that, the largest pool will serve
-  // as an anchor (the first one, if there are more) and it'll be used to
-  // determine the core alignment. The sizes of pools before the anchor will
-  // determine the offset within the core alignment at which the GigaCage will
-  // start.
-  // If this algorithm doesn't find the proper alignment, it means such an
-  // alignment doesn't exist.
-  for (size_t pool_size : pool_sizes) {
-    PA_CHECK(bits::IsPowerOfTwo(pool_size));
-    if (pool_size > alignment) {
-      alignment = pool_size;
-      // This may underflow, leading to a very high value, so use modulo
-      // |alignment| to bring it down.
-      alignment_offset = (alignment - size_sum) & (alignment - 1);
-    }
-    size_sum += pool_size;
-  }
-  // Use PA_CHECK because we can't correctly proceed if any pool's start address
-  // isn't aligned to its own size. Exact initial value of |sample_address|
-  // doesn't matter as long as |address % alignment == alignment_offset|.
-  uintptr_t sample_address = alignment_offset + 7 * alignment;
-  for (size_t pool_size : pool_sizes) {
-    PA_CHECK(!(sample_address & (pool_size - 1)));
-    sample_address += pool_size;
-  }
-  return GigaCageProperties{size_sum, alignment, alignment_offset};
-}
 
 // Reserves address space for PartitionAllocator.
 class BASE_EXPORT PartitionAddressSpace {
@@ -134,13 +94,13 @@ class BASE_EXPORT PartitionAddressSpace {
   static void UninitForTesting();
 
   static ALWAYS_INLINE bool IsInitialized() {
-    if (setup_.reserved_base_address_) {
-      PA_DCHECK(setup_.non_brp_pool_ != 0);
+    // Either neither or both non-BRP and BRP pool are initialized. The
+    // configurable pool is initialized separately.
+    if (setup_.non_brp_pool_) {
       PA_DCHECK(setup_.brp_pool_ != 0);
       return true;
     }
 
-    PA_DCHECK(setup_.non_brp_pool_ == 0);
     PA_DCHECK(setup_.brp_pool_ == 0);
     return false;
   }
@@ -187,15 +147,10 @@ class BASE_EXPORT PartitionAddressSpace {
   void* operator new(size_t, void*) = delete;
 
  private:
-  // On 64-bit systems, GigaCage is split into two pools, one with allocations
-  // that have a BRP ref-count, and one with allocations that don't.
-  //   +----------------+ reserved_base_address_ (8GiB aligned)
-  //   |    non-BRP     |     == non_brp_pool_base_address_
-  //   |      pool      |
-  //   +----------------+ reserved_base_address_ + 8GiB
-  //   |      BRP       |     == brp_pool_base_address_
-  //   |      pool      |
-  //   +----------------+ reserved_base_address_ + 16GiB
+  // On 64-bit systems, GigaCage is split into disjoint pools. The BRP pool, is
+  // where all allocations have a BRP ref-count, thus pointers pointing there
+  // can use a BRP protection against UaF. Allocations in the non-BRP pool don't
+  // have that.
   //
   // Pool sizes have to be the power of two. Each pool will be aligned at its
   // own size boundary.
@@ -203,17 +158,8 @@ class BASE_EXPORT PartitionAddressSpace {
   // NOTE! The BRP pool must be preceded by a reserved region, where allocations
   // are forbidden. This is to prevent a pointer immediately past a non-GigaCage
   // allocation from falling into the BRP pool, thus triggering BRP mechanism
-  // and likely crashing. One way to implement this is to place another
-  // PartitionAlloc pool right before, because trailing guard pages there will
-  // fulfill this guarantee. Alternatively, it could be any region that
-  // guarantess to not have allocations extending to its very end. But it's just
-  // easier to have non-BRP pool there.
-  //
-  // If more than 2 consecutive pools are ever needed, care will have to be
-  // taken when choosing sizes. For example, for sizes [8GiB,4GiB,8GiB], it'd be
-  // impossible to align each pool at its own size boundary while keeping them
-  // next to each other. CalculateGigaCageProperties() has non-debug, run-time
-  // checks to assert that.
+  // and likely crashing. This "forbidden zone" can be as small as 1B, but it's
+  // simpler to just reserve an allocation granularity unit.
   //
   // The ConfigurablePool is an optional Pool that can be created inside an
   // existing mapping by the embedder, and so will be outside of the GigaCage.
@@ -222,8 +168,6 @@ class BASE_EXPORT PartitionAddressSpace {
   // memory cage, which requires that ArrayBuffers be located inside of it.
   static constexpr size_t kNonBRPPoolSize = kPoolMaxSize;
   static constexpr size_t kBRPPoolSize = kPoolMaxSize;
-  static constexpr std::array<size_t, 2> kGigaCagePoolSizes = {kNonBRPPoolSize,
-                                                               kBRPPoolSize};
   static constexpr size_t kConfigurablePoolSize = 4 * kGiB;
   static_assert(
       kConfigurablePoolSize <= kPoolMaxSize,
@@ -246,8 +190,6 @@ class BASE_EXPORT PartitionAddressSpace {
       ~kConfigurablePoolOffsetMask;
 
   struct GigaCageSetup {
-    uintptr_t reserved_base_address_ = 0;
-
     // Before PartitionAddressSpace::Init(), no allocation are allocated from a
     // reserved address space. Therefore, set *_pool_base_address_ initially to
     // k*PoolOffsetMask, so that PartitionAddressSpace::IsIn*Pool() always
@@ -260,7 +202,7 @@ class BASE_EXPORT PartitionAddressSpace {
     pool_handle brp_pool_ = 0;
     pool_handle configurable_pool_ = 0;
 
-    char padding_[20] = {};
+    char padding_[28] = {};
   };
   static_assert(sizeof(GigaCageSetup) % 64 == 0,
                 "GigaCageSetup has to fill a cacheline(s)");

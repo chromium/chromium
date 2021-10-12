@@ -3546,7 +3546,6 @@ test("base_unittests") {
       "allocator/partition_allocator/hardening_unittest.cc",
       "allocator/partition_allocator/memory_reclaimer_unittest.cc",
       "allocator/partition_allocator/page_allocator_unittest.cc",
-      "allocator/partition_allocator/partition_address_space_unittest.cc",
       "allocator/partition_allocator/partition_alloc_unittest.cc",
       "allocator/partition_allocator/partition_lock_unittest.cc",
       "allocator/partition_allocator/starscan/pcscan_scheduling_unittest.cc",
