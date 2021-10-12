@@ -47,6 +47,9 @@ tast_disabled_tests_from_chrome_all = [
 
   # b/201197372
   "crostini.AppEmacs",
+
+  # crbug.com/1259127
+  "ui.TabletOperations",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
