@@ -4936,6 +4936,11 @@ const char kPerformantSplitViewResizingDescription[] =
     "If enabled, windows may be moved instead of scaled when resizing split "
     "view in tablet mode.";
 
+const char kPhoneHubCallNotificationName[] =
+    "Incoming call notification in Phone Hub";
+const char kPhoneHubCallNotificationDescription[] =
+    "Enables the incoming/ongoing call feature in Phone Hub.";
+
 const char kPhoneHubCameraRollName[] = "Camera Roll in Phone Hub";
 const char kPhoneHubCameraRollDescription[] =
     "Enables the Camera Roll feature in Phone Hub, which allows users to "

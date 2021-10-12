@@ -862,6 +862,10 @@ const base::Feature kPhoneHub{"PhoneHub", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kPhoneHubCameraRoll{"PhoneHubCameraRoll",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the incoming/ongoing call notification feature in Phone Hub.
+const base::Feature kPhoneHubCallNotification{
+    "PhoneHubCallNotification", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the Recent Apps feature in Phone Hub, which allows users to relaunch
 // the streamed app.
 const base::Feature kPhoneHubRecentApps{"PhoneHubRecentApps",
@@ -1573,6 +1577,10 @@ bool IsPerformantSplitViewResizingEnabled() {
 
 bool IsPhoneHubEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHub);
+}
+
+bool IsPhoneHubCallNotificationEnabled() {
+  return base::FeatureList::IsEnabled(kPhoneHubCallNotification);
 }
 
 bool IsPhoneHubRecentAppsEnabled() {

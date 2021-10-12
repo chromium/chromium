@@ -7461,6 +7461,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-phone-hub-call-notification",
+     flag_descriptions::kPhoneHubCallNotificationName,
+     flag_descriptions::kPhoneHubCallNotificationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPhoneHubCallNotification)},
+
     {"enable-phone-hub-camera-roll", flag_descriptions::kPhoneHubCameraRollName,
      flag_descriptions::kPhoneHubCameraRollDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPhoneHubCameraRoll)},
