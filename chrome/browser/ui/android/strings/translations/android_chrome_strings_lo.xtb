@@ -407,6 +407,7 @@
 <translation id="3429160811076349561">ຄຸນສົມບັດການທົດລອງໃຊ້ປິດຢູ່</translation>
 <translation id="3440975416244667276">ແຕະຄ້າງໄວ້ເພື່ອເບິ່ງຂໍ້ມູນເພີ່ມເຕີມ</translation>
 <translation id="3443221991560634068">ໂຫຼດໜ້າປັດຈຸບັນຄືນໃໝ່</translation>
+<translation id="3444179773590444986">ແບ່ງປັນຄຳຕິຊົມກ່ຽວກັບຮູບແບບສີສັນມືດສຳລັບເວັບໄຊບໍ?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{ກຳນົດເວລາດາວໂຫຼດ 1 ລາຍການແລ້ວ}other{ກຳນົດເວລາດາວໂຫຼດ # ລາຍການແລ້ວ}}</translation>
 <translation id="3478363558367712427">ທ່ານສາມາດເລືອກລະບົບການຊອກຫາຂອງທ່ານໄດ້</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /> ກ່ຽວກັບເນື້ອຫາທີ່ແນະນຳ</translation>
@@ -590,6 +591,7 @@
 <translation id="4663499661119906179">ເບິ່ງເວັບໄຊ ແລະ ຂ່າວເດັ່ນສຳລັບທ່ານ</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> ບຸກ​ມາກ​ຖືກ​ລຶບ​ໄປ​ແລ້ວ</translation>
 <translation id="4668347365065281350">ຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໂດຍເວັບໄຊ, ຮວມທັງຄຸກກີ້ ແລະ ຂໍ້ມູນອື່ນທີ່ເກັບໄວ້ໃນເຄື່ອງ</translation>
+<translation id="4678082183394354975">ຮູບແບບສີສັນມືດສຳລັບເວັບໄຊແມ່ນຖືກເປີດໃຊ້ໃນ Chrome ແລ້ວ</translation>
 <translation id="4684427112815847243">ຊິງຄ໌​ທຸກ​ຢ່າງ</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ທາງເລືອກການຈັດສົ່ງ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ທາງເລືອກການຈັດສົ່ງ}}</translation>
 <translation id="4696983787092045100">ສົ່ງຂໍ້ຄວາມຫາອຸປະກອນຂອງທ່ານ</translation>
@@ -773,6 +775,7 @@
 <translation id="5754350196967618083">ບໍ່ສາມາດໂຫຼດຂໍ້ມູນ Discover ຄືນໃໝ່ໄດ້</translation>
 <translation id="5763382633136178763">ແຖບບໍ່ເຜີຍຕົນຕົວ</translation>
 <translation id="5763514718066511291">ແຕະເພື່ອສຳເນົາ URL ສຳລັບແອັບນີ້</translation>
+<translation id="5765517223145864268">ບອກພວກເຮົາວ່າປະສົບການຂອງທ່ານເປັນແນວໃດ. ຫຼື <ph name="BEGIN_LINK" />ປ່ຽນການຕັ້ງຄ່າຂອງທ່ານ<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">ລາຍລະອຽດ</translation>
 <translation id="5767013862801005129">ກູ້ຄືນ <ph name="TAB_TITLE" />, ແຖບ</translation>
 <translation id="5776970333778123608">ຂໍ້ມູນທີ່ບໍ່ສຳຄັນ</translation>
@@ -960,6 +963,7 @@
 <translation id="6738516213925468394">ຂໍ້ມູນຂອງທ່ານຖືກເຂົ້າລະຫັດໄວ້ດ້ວຍ <ph name="BEGIN_LINK" />ລະຫັດຜ່ານການຊິ້ງຂໍ້ມູນ<ph name="END_LINK" /> ເມື່ອ <ph name="TIME" />. ກະລຸນາປ້ອນມັນເພື່ອເລີ່ມການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="6738867403308150051">ກໍາລັງດາວ​ໂຫຼດ...</translation>
 <translation id="6751521182688001123">ເປີດແຖບໃໝ່ແບບໄວໆ. ເພື່ອແກ້ໄຂທາງລັດນີ້, ໃຫ້ແຕະຄ້າງໄວ້.</translation>
+<translation id="6756507620369789050">ແບ່ງປັນຄຳຕິຊົມ</translation>
 <translation id="6767294960381293877">ລາຍການອຸປະກອນທີ່ຈະແບ່ງປັນແຖບນຳໂດຍເປີດຢູ່ທີ່ລະດັບລວງສູງເຄິ່ງຈໍ.</translation>
 <translation id="6783942555455976443">ບັນທຶກໜ້ານີ້ໄວ້ອ່ານພາຍຫຼັງ ແລະ ຮັບການແຈ້ງເຕືອນ</translation>
 <translation id="6795633245022906657">ເປີດແຖບໃໝ່ແບບໄວໆ. ເພື່ອແກ້ໄຂທາງລັດນີ້, ໃຫ້ເຂົ້າໄປການຕັ້ງຄ່າ.</translation>
@@ -1051,6 +1055,7 @@
 <translation id="7352651011704765696">ມີ​ບາງ​ອັນ​ຜິດ​ພາດ</translation>
 <translation id="7352939065658542140">ວິດີໂອ</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{ແບ່ງປັນ 1 ລາຍການທີ່ເລືອກ}other{ແບ່ງປັນ # ລາຍການທີ່ເລືອກ}}</translation>
+<translation id="7356631068872238169">ລຶບອອກຈາກລາຍຊື່ການຫຼິ້ນ</translation>
 <translation id="7359002509206457351">ເຂົ້າເຖິງວິທີການຈ່າຍເງິນ</translation>
 <translation id="7375125077091615385">ປະ​ເພດ​:</translation>
 <translation id="7376560087009844242">ໂດຍການຮວມຂໍ້ຄວາມຂອງໜ້າເພີ່ມເຕີມ, ທ່ານອາດເຫັນຜົນການຊອກຫາທີ່ດີຂຶ້ນໃນເວລາໃຊ້ການແຕະເພື່ອຊອກຫາ. ທ່ານສາມາດເຂົ້າເບິ່ງ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" /> ໄດ້ຕະຫຼອດເວລາເພື່ອປ່ຽນສິ່ງນີ້.</translation>
@@ -1222,6 +1227,7 @@
 <translation id="8266862848225348053">ບ່ອນບັນທຶກການດາວໂຫຼດ</translation>
 <translation id="8274165955039650276">ເບິ່ງການດາວໂຫຼດ</translation>
 <translation id="8281886186245836920">ຂ້າມ</translation>
+<translation id="8282297628636750033">ນຳໃຊ້ຮູບແບບສີສັນມືດໃສ່ເວັບໄຊ, ເມື່ອເປັນໄປໄດ້.</translation>
 <translation id="8284326494547611709">ຄໍາບັນຍາຍພາບ</translation>
 <translation id="829672787777123339">ກຳລັງເຊື່ອມຕໍ່ກັບອຸປະກອນຂອງທ່ານ…</translation>
 <translation id="8310344678080805313">ແຖບມາດ​ຕະ​ຖານ</translation>
@@ -1355,6 +1361,7 @@
 <translation id="9063523880881406963">ປິດ​ຂໍ​ເວັບ​ໄຊ​ທ໌​ເດັ​ສ​ທັອບ</translation>
 <translation id="9065203028668620118">ແກ້ໄຂ</translation>
 <translation id="9065383040763568503">ຂໍ້ມູນເກັບໄວ້ທີ່ Chrome ຄິດວ່າບໍ່ສຳຄັນ (ເຊັ່ນ ເວັບໄຊທີ່ບໍ່ມີການຕັ້ງຄ່າທີ່ບັນທຶກໄວ້ ຫຼື ທີ່ທ່ານບໍ່ຄ່ອຍເຂົ້າເບິ່ງ)</translation>
+<translation id="906781307897697745">ໃນ <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">ບໍ່ມີໜ້າທີ່ຍັງບໍ່ໄດ້ອ່ານ</translation>
 <translation id="9070377983101773829">ເລີ່ມ​ການຄົ້ນຫາ​ສຽງ</translation>
 <translation id="9074336505530349563">ເພື່ອຮັບເນື້ອຫາທີ່ປັບແຕ່ງເປັນແບບສ່ວນຕົວທີ່ແນະນຳໂດຍ Google, ກະລຸນາເຂົ້າສູ່ລະບົບ ແລະ ເປີດການຊິ້ງຂໍ້ມູນກ່ອນ</translation>

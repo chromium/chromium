@@ -586,6 +586,7 @@
 <translation id="1612019740169791082">คอนเทนเนอร์ไม่ได้กำหนดค่าไว้ให้รองรับการปรับขนาดดิสก์ หากต้องการปรับพื้นที่ว่างที่สำรองไว้สำหรับ Linux ให้สำรองข้อมูลแล้วคืนค่าในคอนเทนเนอร์ใหม่</translation>
 <translation id="1614511179807650956">คุณอาจใช้เน็ตมือถือตามปริมาณที่อนุญาตหมดแล้ว ไปที่พอร์ทัลการเปิดใช้งาน <ph name="NAME" /> เพื่อซื้อเน็ตมือถือเพิ่มเติม</translation>
 <translation id="161460670679785907">ไม่พบโทรศัพท์ของคุณ</translation>
+<translation id="1615337439947999338">บันทึกในบัญชี Google (<ph name="EMAIL" />)</translation>
 <translation id="1615402009686901181">นโยบายของผู้ดูแลระบบปิดใช้การจับภาพหน้าจอเมื่อมีเนื้อหาที่เป็นความลับแสดงอยู่</translation>
 <translation id="1616206807336925449">ส่วนขยายนี้ไม่จำเป็นต้องมีสิทธิ์พิเศษ</translation>
 <translation id="1616298854599875024">นำเข้าส่วนขยาย "<ph name="IMPORT_NAME" />" ไม่ได้เนื่องจากไม่ใช่โมดูลที่แชร์</translation>
@@ -915,6 +916,7 @@
 <translation id="1929546189971853037">อ่านประวัติการเข้าชมบนอุปกรณ์ที่คุณลงชื่อเข้าใช้ทุกเครื่อง</translation>
 <translation id="1930879306590754738">ลบรหัสผ่านจากอุปกรณ์นี้และบัญชี Google ของคุณแล้ว</translation>
 <translation id="1931152874660185993">ไม่มีคอมโพเนนต์ที่ได้รับการติดตั้ง</translation>
+<translation id="1931410639376954712">กำลังติดตั้ง <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">หลังจาก</translation>
 <translation id="1935303383381416800">ได้รับอนุญาตให้ดูตำแหน่งของคุณ</translation>
 <translation id="1936931585862840749">ใช้ตัวเลขเพื่อระบุจำนวนสำเนาที่ต้องการพิมพ์ (1 ถึง <ph name="MAX_COPIES" />)</translation>
@@ -1047,6 +1049,7 @@
 <translation id="208586643495776849">โปรดลองอีกครั้ง</translation>
 <translation id="208634871997892083">VPN แบบเปิดตลอดเวลา</translation>
 <translation id="2087822576218954668">พิมพ์: <ph name="PRINT_NAME" /></translation>
+<translation id="2088092308059522196">รองรับการลงทะเบียนหลังจากที่คุณติดตั้ง <ph name="DEVICE_OS" /> แล้วเท่านั้น</translation>
 <translation id="208928984520943006">เลื่อนขึ้นจากด้านล่างเพื่อไปยังหน้าจอหลักได้ทุกเมื่อ</translation>
 <translation id="2089566709556890888">ท่องเว็บอย่างปลอดภัยด้วย Google Chrome</translation>
 <translation id="2089795179672254991">ถามเมื่อเว็บไซต์ต้องการดูข้อความและรูปภาพที่คัดลอกไปที่คลิปบอร์ด (แนะนำ)</translation>
@@ -1170,6 +1173,7 @@
 <translation id="2203088913459920044">ชื่อมีตัวอักษร ตัวเลข และสัญลักษณ์พิเศษได้</translation>
 <translation id="2204034823255629767">อ่านและเปลี่ยนแปลงสิ่งที่คุณพิมพ์</translation>
 <translation id="220858061631308971">โปรดป้อนรหัส PIN นี้บน "<ph name="DEVICE_NAME" />":</translation>
+<translation id="2210462644007531147">ติดตั้งไม่สำเร็จ</translation>
 <translation id="2212565012507486665">อนุญาตคุกกี้</translation>
 <translation id="2214018885812055163">โฟลเดอร์ที่แชร์</translation>
 <translation id="2214884991347062907">รหัสผ่านไม่ถูกต้อง โปรดลองอีกครั้ง</translation>
@@ -1223,6 +1227,8 @@
 <translation id="22665427234727190">ถามเมื่อเว็บไซต์ต้องการเข้าถึงอุปกรณ์บลูทูธ (แนะนำ)</translation>
 <translation id="2266957463645820432">IPP ผ่าน USB (IPPUSB)</translation>
 <translation id="2270450558902169558">แลกเปลี่ยนข้อมูลกับอุปกรณ์ในโดเมน <ph name="DOMAIN" /></translation>
+<translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />การติดตั้ง<ph name="BEGIN_BOLD" />จะลบข้อมูลทั้งหมดในฮาร์ดไดรฟ์<ph name="END_BOLD" /> โปรดตรวจสอบว่าได้สำรองข้อมูลไว้แล้ว<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />เมื่อเริ่มการติดตั้งแล้วจะยกเลิกไม่ได้<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">แลกเปลี่ยนข้อมูลกับอุปกรณ์ในโดเมน <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">กำหนดสวิตช์ให้กับ "เลือก"</translation>
 <translation id="2271469253353559191">กำหนดเวลาโหมดมืด</translation>
@@ -1484,6 +1490,7 @@
 <translation id="2521854691574443804">กำลังตรวจสอบ <ph name="FILE_NAME" /> กับนโยบายความปลอดภัยขององค์กร...</translation>
 <translation id="252219247728877310">ไม่ได้อัปเดตคอมโพเนนต์</translation>
 <translation id="2523184218357549926">ส่ง URL ของหน้าที่คุณเข้าชมไปยัง Google</translation>
+<translation id="252418934079508528">ติดตั้ง <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome กำลังตรวจหาซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์...</translation>
 <translation id="2526590354069164005">เดสก์ท็อป</translation>
 <translation id="2526619973349913024">ตรวจหาอัปเดต</translation>
@@ -1688,6 +1695,7 @@
 <translation id="2740531572673183784">ตกลง</translation>
 <translation id="2741713322780029189">เปิดเทอร์มินัลการกู้คืน</translation>
 <translation id="2741912629735277980">แสดง UI ในหน้าจอการเข้าสู่ระบบ</translation>
+<translation id="2742448780373473567">การติดตั้ง <ph name="DEVICE_OS" /> จะเขียนทับข้อมูลทั้งหมดในอุปกรณ์</translation>
 <translation id="274290345632688601">กำลังคืนค่าแอปและไฟล์ Linux</translation>
 <translation id="274318651891194348">กำลังค้นหาแป้นพิมพ์</translation>
 <translation id="2743387203779672305">คัดลอกไว้ที่คลิปบอร์ด</translation>
@@ -2880,6 +2888,8 @@
 <translation id="3979748722126423326">เปิดการใช้งาน <ph name="NETWORKDEVICE" /></translation>
 <translation id="3981058120448670012">แสดงต่ออุปกรณ์ใกล้เคียงด้วยชื่อ <ph name="DEVICE_NAME" /> เป็นเวลา <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">ประเภทการบันทึกที่ป้อนไม่ถูกต้อง</translation>
+<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />เกิดข้อผิดพลาดขึ้นจึงติดตั้ง <ph name="DEVICE_OS" /> ไม่ได้<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ดูความช่วยเหลือเพิ่มเติมได้ที่ g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">ตั้งค่าเบราว์เซอร์ได้ง่ายๆ ในไม่กี่ขั้นตอน</translation>
 <translation id="3983400541576569538">ข้อมูลจากแอปบางแอปอาจสูญหายไป</translation>
 <translation id="3983586614702900908">อุปกรณ์จากผู้ขายที่ไม่รู้จัก</translation>
@@ -2967,6 +2977,7 @@
 <translation id="4084835346725913160">ปิด <ph name="TAB_NAME" /></translation>
 <translation id="4085270836953633510">ถามเมื่อเว็บไซต์ต้องการเข้าถึงพอร์ตอนุกรม</translation>
 <translation id="4085298594534903246">หน้าเว็บนี้บล็อกการเรียกใช้ JavaScript</translation>
+<translation id="4085947337119280756">ส่วนขยายเพิ่มเติม</translation>
 <translation id="4087089424473531098">สร้างส่วนขยายแล้ว:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -3270,6 +3281,7 @@
 <translation id="4449996769074858870">แท็บนี้กำลังเล่นเสียง</translation>
 <translation id="4450274068924249931">ระบบจะแสดงรูปภาพ เวลา สภาพอากาศ และข้อมูลสื่อเมื่อไม่มีการใช้งานหน้าจอ การเปิดใช้โปรแกรมรักษาหน้าจอจะเปิดจอแสดงผลไว้ขณะชาร์จ</translation>
 <translation id="4450974146388585462">วินิจฉัย</translation>
+<translation id="445099924538929605"><ph name="DEVICE_OS" /> ตรวจพบ TPM ที่มีการใช้งานอยู่ซึ่งจะจัดเก็บข้อมูลของคุณได้อย่างปลอดภัยยิ่งขึ้น</translation>
 <translation id="4451479197788154834">บันทึกรหัสผ่านในอุปกรณ์นี้และในบัญชี Google ของคุณแล้ว</translation>
 <translation id="4451757071857432900">บล็อกในเว็บไซต์ที่แสดงโฆษณาที่แทรกหรือทำให้เข้าใจผิด (แนะนำ)</translation>
 <translation id="4453946976636652378">ค้นหาใน <ph name="SEARCH_ENGINE_NAME" /> หรือพิมพ์ URL</translation>
@@ -3771,6 +3783,9 @@
 <translation id="4992473555164495036">ผู้ดูแลระบบจำกัดวิธีการป้อนข้อมูลที่ใช้ได้เอาไว้</translation>
 <translation id="4994474651455208930">อนุญาตให้ไซต์แจ้งขอเป็นตัวจัดการเริ่มต้นสำหรับโปรโตคอล</translation>
 <translation id="4994754230098574403">กำลังตั้งค่า</translation>
+<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />ก่อนลงทะเบียน คุณต้องล้างข้อมูลใน TPM เพื่อให้ <ph name="DEVICE_OS" /> เข้าเป็นเจ้าของอุปกรณ์ได้<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />คุณอาจปิดอุปกรณ์ TPM ไปเลยก็ได้เช่นกัน ระบบจะยังคงจัดเก็บข้อมูลของคุณไว้อย่างปลอดภัยด้วยการเข้ารหัสซอฟต์แวร์ แต่ฟีเจอร์ความปลอดภัยบางอย่าง เช่น ใบรับรองที่สนับสนุนด้วยฮาร์ดแวร์จะถูกปิดใช้<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />คุณเปลี่ยนการตั้งค่า TPM ได้ด้วยการรีบูตและเข้าสู่การตั้งค่า BIOS/UEFI ของระบบ โดยขั้นตอนจะแตกต่างกันไปในอุปกรณ์แต่ละรุ่น สำหรับข้อมูลเพิ่มเติม โปรดเปิดเอกสารประกอบเกี่ยวกับ <ph name="DEVICE_OS" /> ที่ลิงก์ [URL link] ในอุปกรณ์อีกเครื่องหนึ่งก่อนที่จะรีบูต<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{ไม่พบ VM <ph name="VM_TYPE" />}=1{พบ VM <ph name="VM_TYPE" /> 1 รายการ: <ph name="VM_NAME_LIST" />}other{พบ VM <ph name="VM_TYPE" /> {NUM_VMS} รายการ: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">ไม่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="4998430619171209993">เปิด</translation>
@@ -3886,6 +3901,7 @@
 <translation id="5127620150973591153">รหัสการเชื่อมต่อที่ปลอดภัย: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">การซิงค์ปิดอยู่</translation>
 <translation id="5127881134400491887">จัดการการเชื่อมต่อเครือข่าย</translation>
+<translation id="5128774403617662387">ตรวจสอบว่าคุณได้สำรองข้อมูลไว้แล้วก่อนที่จะเริ่ม การติดตั้ง <ph name="DEVICE_OS" /> จะเขียนทับข้อมูลในฮาร์ดไดรฟ์ ดูข้อมูลเพิ่มเติมที่ g.co/TBD</translation>
 <translation id="512903556749061217">ที่แนบมา</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">ดาวน์โหลดโปรไฟล์ไม่ได้ โปรดลองอีกครั้งภายหลังหรือติดต่อผู้ให้บริการเพื่อรับความช่วยเหลือ</translation>
@@ -4320,6 +4336,7 @@
 <translation id="5592595402373377407">ยังไม่มีข้อมูลเพียงพอ</translation>
 <translation id="5595485650161345191">แก้ไขที่อยู่</translation>
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
+<translation id="5600348067066185292">ติดตั้งได้ง่ายๆ ในไม่กี่ขั้นตอน คุณจะมีโอกาสยืนยันอีกครั้งก่อนที่ระบบจะทำการเปลี่ยนแปลงในคอมพิวเตอร์</translation>
 <translation id="5600706100022181951">ระบบจะดาวน์โหลดอัปเดตโดยใช้อินเทอร์เน็ตมือถือ <ph name="UPDATE_SIZE_MB" /> MB คุณต้องการดำเนินการต่อไหม</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">ไม่ได้รับอนุญาตให้เชื่อมต่ออุปกรณ์ MIDI</translation>
@@ -4379,6 +4396,7 @@
 <translation id="5659593005791499971">อีเมล</translation>
 <translation id="5659833766619490117">แปลหน้านี้ไม่ได้</translation>
 <translation id="5662513737565158057">เปลี่ยนลักษณะที่แอป Linux จะทำงาน</translation>
+<translation id="5667490069342183561">Google ไม่รับผิดชอบต่อการสูญเสียข้อมูลใดๆ และ <ph name="DEVICE_OS" /> อาจใช้ไม่ได้กับรุ่นที่ไม่ผ่านการรับรอง ดูข้อมูลเพิ่มเติมที่ g.co/TBD</translation>
 <translation id="5667546120811588575">กำลังตั้งค่า Google Play...</translation>
 <translation id="5668351004957198136">ไม่ผ่าน</translation>
 <translation id="56702779821643359">แชร์ไฟล์กับผู้คนรอบตัวคุณ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
@@ -4397,6 +4415,7 @@
 <translation id="5684181005476681636">รายละเอียด Wi-Fi</translation>
 <translation id="5684661240348539843">รหัสสินทรัพย์</translation>
 <translation id="5687326903064479980">เขตเวลา</translation>
+<translation id="5687935527303996204">ตรวจสอบว่าอุปกรณ์เสียบปลั๊กอยู่ และอย่าปิดเครื่อง การติดตั้งอาจใช้เวลานานถึง 20 นาที อุปกรณ์จะปิดโดยอัตโนมัติเมื่อติดตั้งเสร็จสิ้นแล้ว</translation>
 <translation id="5689516760719285838">ตำแหน่ง</translation>
 <translation id="5689531695336322499">ดูเหมือนว่า <ph name="SUPERVISED_USER_NAME" /> ได้ตั้งค่า Voice Match กับ Assistant ในอุปกรณ์อื่นไว้แล้ว ระบบใช้เสียงบันทึกที่มีอยู่ก่อนแล้วดังกล่าวในการสร้างรูปแบบเสียงในอุปกรณ์นี้</translation>
 <translation id="56907980372820799">ลิงก์ข้อมูล</translation>
@@ -5735,6 +5754,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> กำลังใช้ไมโครโฟน</translation>
 <translation id="7141105143012495934">การลงชื่อเข้าใช้ล้มเหลวเนื่องจากไม่สามารถเรียกคืนรายละเอียดบัญชีของคุณได้ โปรดติดต่อผู้ดูแลระบบของคุณหรือลองอีกครั้ง</translation>
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
+<translation id="7149839598364933473">เปลี่ยนอุปกรณ์นี้เป็นอุปกรณ์ <ph name="DEVICE_OS" /></translation>
 <translation id="7149893636342594995">24 ชั่วโมงที่แล้ว</translation>
 <translation id="7152478047064750137">ส่วนขยายนี้ไม่จำเป็นต้องมีสิทธิ์พิเศษ</translation>
 <translation id="7154130902455071009">เปลี่ยนหน้าเริ่มต้นของคุณเป็น: <ph name="START_PAGE" /></translation>
@@ -5829,6 +5849,16 @@
 <translation id="7257666756905341374">อ่านข้อมูลที่คุณคัดลอกและวาง</translation>
 <translation id="7258225044283673131">แอปพลิเคชันไม่ตอบสนอง เลือก "บังคับปิด" เพื่อปิดแอป</translation>
 <translation id="7262004276116528033">บริการลงชื่อเข้าใช้นี้โฮสต์โดย <ph name="SAML_DOMAIN" /></translation>
+<translation id="7264432249010320236">เว็บไซต์เพิ่มเติม</translation>
+<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />ลองทำตามขั้นตอนการแก้ปัญหาเหล่านี้
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />ตรวจสอบว่าอุปกรณ์มีที่จัดเก็บข้อมูลภายในที่ใช้งานได้ เช่น HDD, SSD หรือ eMMC
+    <ph name="LIST_ITEM" />ตรวจสอบว่าอุปกรณ์ที่ใช้เป็นที่จัดเก็บข้อมูลภายในมีขนาดใหญ่กว่า 16 GB
+    <ph name="LIST_ITEM" />ตรวจสอบการเชื่อมต่อกับที่จัดเก็บข้อมูลภายในด้วยสายตา หากทำได้
+    <ph name="LIST_ITEM" />ตรวจสอบว่าคุณใช้รุ่นที่ผ่านการรับรองและตรวจสอบบันทึกการติดตั้ง
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ดูความช่วยเหลือเพิ่มเติมได้ที่ g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">ติดตั้งเครื่องเสมือนไม่ได้ โปรดลองอีกครั้งหรือติดต่อผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="7267875682732693301">ยกนิ้วมือเรื่อยๆ เพื่อเพิ่มส่วนอื่นๆ ของลายนิ้วมือ</translation>
 <translation id="7268127947535186412">เจ้าของอุปกรณ์เป็นผู้จัดการการตั้งค่านี้</translation>
@@ -6553,6 +6583,7 @@
 <translation id="7986295104073916105">อ่านและเปลี่ยนการตั้งค่ารหัสผ่านที่บันทึกไว้</translation>
 <translation id="7987814697832569482">เชื่อมต่อผ่าน VPN นี้ทุกครั้ง</translation>
 <translation id="7988355189918024273">เปิดการใช้งานฟีเจอร์การเข้าถึง</translation>
+<translation id="7988805580376093356">ใช้ระบบปฏิบัติการของคุณต่อไปและเรียกใช้ <ph name="DEVICE_OS" /> จาก USB</translation>
 <translation id="7991296728590311172">การตั้งค่าการเข้าถึงด้วยสวิตช์</translation>
 <translation id="7997826902155442747">ลำดับความสำคัญของกระบวนการ</translation>
 <translation id="7999229196265990314">สร้างไฟล์ต่อไปนี้:
@@ -6661,6 +6692,7 @@
 <translation id="80974698889265265">PIN ไม่ตรงกัน</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> ใช้การตั้งค่าพร็อกซีจากส่วนขยายอยู่</translation>
 <translation id="8097959162767603171">ผู้ดูแลระบบของคุณต้องยอมรับข้อกำหนดในการให้บริการในรายการอุปกรณ์ Chrome ของคอนโซลผู้ดูแลระบบก่อน</translation>
+<translation id="8098156986344908134">ต้องการติดตั้ง <ph name="DEVICE_OS" /> และลบข้อมูลในฮาร์ดไดรฟ์ใช่ไหม</translation>
 <translation id="8098616321286360457">ต้องมีการเชื่อมต่อเครือข่าย</translation>
 <translation id="810068641062493918">เลือกภาษา<ph name="LANGUAGE" />อยู่ กดแป้นค้นหากับแป้นเว้นวรรคเพื่อยกเลิกการเลือก</translation>
 <translation id="810185532889603849">สีที่กำหนดเอง</translation>
@@ -6845,6 +6877,7 @@
 <translation id="8287902281644548111">ค้นหาตามการเรียก API/URL</translation>
 <translation id="8288032458496410887">ถอนการติดตั้ง <ph name="APP" />...</translation>
 <translation id="8289128870594824098">ขนาดดิสก์</translation>
+<translation id="8289509909262565712">ยินดีต้อนรับสู่ <ph name="DEVICE_OS" /></translation>
 <translation id="8293206222192510085">เพิ่มบุ๊กมาร์ก</translation>
 <translation id="8294431847097064396">แหล่งที่มา</translation>
 <translation id="8298429963694909221">ตอนนี้คุณรับการแจ้งเตือนจากโทรศัพท์ใน <ph name="DEVICE_TYPE" /> ได้แล้ว การปิดการแจ้งเตือนใน <ph name="DEVICE_TYPE" /> จะปิดการแจ้งเตือนในโทรศัพท์ด้วย ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ และเปิดบลูทูธกับ Wi-Fi ไว้</translation>
@@ -7168,6 +7201,7 @@
 <translation id="867085395664725367">เกิดข้อผิดพลาดของเซิร์ฟเวอร์ชั่วคราว</translation>
 <translation id="8673026256276578048">ค้นหาเว็บ...</translation>
 <translation id="8673383193459449849">ปัญหาของเซิร์ฟเวอร์</translation>
+<translation id="8675704450909805533">โปรแกรมติดตั้งไม่พบปลายทางที่ถูกต้องในการติดตั้ง <ph name="DEVICE_OS" /></translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{วิดีโอ}other{# วิดีโอ}}</translation>
 <translation id="8676313779986170923">ขอขอบคุณที่ส่งความคิดเห็น</translation>
 <translation id="8676374126336081632">ล้างข้อมูลที่ป้อน</translation>
@@ -7323,6 +7357,7 @@
 <translation id="8823559166155093873">บล็อกคุกกี้</translation>
 <translation id="8823704566850948458">แนะนำรหัสผ่าน...</translation>
 <translation id="8824701697284169214">เพิ่มหน้&amp;า...</translation>
+<translation id="8826773185686617320">นำ USB ออกและรีสตาร์ทอุปกรณ์เพื่อเริ่มใช้ <ph name="DEVICE_OS" /> หากไม่ทำ อุปกรณ์จะปิดใน <ph name="TIME_LEFT" /></translation>
 <translation id="8827125715368568315">บล็อก<ph name="PERMISSION" />และอีก <ph name="COUNT" /> รายการ</translation>
 <translation id="8827289157496676362">ตรึงส่วนขยาย</translation>
 <translation id="8827752199525959199">การดำเนินการอื่นๆ รหัสผ่านของ <ph name="USERNAME" /> ใน <ph name="DOMAIN" /></translation>
@@ -7457,6 +7492,7 @@
 <translation id="8962051932294470566">คุณแชร์ไฟล์ได้ทีละ 1 ไฟล์เท่านั้น ลองอีกครั้งเมื่อโอนไฟล์ปัจจุบันเสร็จเรียบร้อยแล้ว</translation>
 <translation id="8962083179518285172">ซ่อนรายละเอียด</translation>
 <translation id="8962918469425892674">เว็บไซต์นี้ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวหรือแสงอยู่</translation>
+<translation id="8964943308070692533">เว็บไซต์อื่นที่ไม่ได้ใช้งาน</translation>
 <translation id="8965037249707889821">ป้อนรหัสผ่านเก่า</translation>
 <translation id="89667524227025535">สแกนคิวอาร์โค้ดโดยใช้กล้องของอุปกรณ์หรือป้อนรหัสเปิดใช้งานที่ผู้ให้บริการระบุมา</translation>
 <translation id="8966809848145604011">โปรไฟล์อื่นๆ</translation>
@@ -7619,6 +7655,8 @@
 <translation id="9116465289595958864">แก้ไขล่าสุด</translation>
 <translation id="9116799625073598554">แอปสำหรับจดโน้ต</translation>
 <translation id="9117030152748022724">จัดการแอปของคุณ</translation>
+<translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />ติดตั้ง <ph name="DEVICE_OS" /> ในดิสก์ภายในเพื่อให้ได้รับประสบการณ์การใช้งานที่ดีที่สุด คุณอาจติดตั้งภายหลังจากหน้าจอการเข้าสู่ระบบก็ได้<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />หากยังไม่พร้อมติดตั้ง คุณจะลองเรียกใช้งานจาก USB ดูก่อนก็ได้ วิธีนี้จะเก็บระบบปฏิบัติการและข้อมูลที่มีอยู่เอาไว้ แต่คุณอาจเห็นว่ามีขีดจำกัดของพื้นที่เก็บข้อมูลและประสิทธิภาพในการทำงาน<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">เปิดเป็นแท็บที่ปักหมุดไว้</translation>
 <translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> หยุดชั่วคราว</translation>
 <translation id="9124003689441359348">รหัสผ่านที่บันทึกไว้จะแสดงที่นี่</translation>

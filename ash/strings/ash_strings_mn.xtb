@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">Таны төхөөрөмжүүд хамтдаа илүү сайн ажилладаг</translation>
 <translation id="1119348796022671382">Загвартай хоршсон өнгөний горим нь харагдах байдлыг бага зэрэг өнгөтэй болгохын тулд дэлгэцийн зургаас гаргаж авсан өнгийг ашигладаг.</translation>
 <translation id="112308213915226829">Autohide shelf</translation>
+<translation id="1142002900084379065">Саяхны зургууд</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" />-н мэдээллийн харилцах цонхыг нээх</translation>
 <translation id="1150989369772528668">Календарь</translation>
 <translation id="1153356358378277386">Хослуулсан төхөөрөмж</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">Бүтэн дэлгэц томруулагчийг идэвхжүүлсэн. Үүнийг унтраахын тулд Ctrl+Хайх+M-г дахин дарна уу.</translation>
 <translation id="2302092602801625023">Энэ бүртгэлийг Family Link-р удирддаг</translation>
 <translation id="2303600792989757991">Цонхыг тоймлож харах</translation>
+<translation id="2318576281648121272">Өнөөдөр <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Нэг үсгээр буцаах</translation>
 <translation id="2339073806695260576">Тэмдэглэл бичих, дэлгэцийн зураг авах, лазер чиглүүлэгч эсвэл томруулдаг шил ашиглахын тулд тавиур дээрх мэдрэгч үзэгний товчлуурыг товшино уу.</translation>
 <translation id="2341729377289034582">Босоо чиглэлээр түгжсэн</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">Нууц үг харуулах</translation>
 <translation id="24452542372838207">Мэдэгдлийг дэлгэх</translation>
 <translation id="2450205753526923158">Дэлгэцийн агшны горим</translation>
+<translation id="2456008742792828469">Календарь, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Нягтралыг баталгаажуулах</translation>
 <translation id="2475982808118771221">Алдаа гарлаа</translation>
 <translation id="2482878487686419369">Мэдэгдэл</translation>
@@ -278,6 +281,7 @@
 <translation id="3100274880412651815">Зураг авах горимыг хаах</translation>
 <translation id="3105917916468784889">Дэлгэцийн зураг авах</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Зөвлөмжийг хасах</translation>
 <translation id="3126069444801937830">Шинэчлэлт хийхээр дахин эхлүүлэх</translation>
 <translation id="3139942575505304791">Дэлгэц 1</translation>
 <translation id="315116470104423982">Гар утасны дата</translation>
@@ -505,6 +509,7 @@
 <translation id="4642092649622328492">Дэлгэцийн зургийг хэсэгчлэн дарах</translation>
 <translation id="4659419629803378708">ChromeVox-г идэвхжүүлсэн</translation>
 <translation id="4665114317261903604">Бүү саад бол горимыг асаах/унтраах. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081"><ph name="FILENAME" />-г татаж байна</translation>
 <translation id="4696813013609194136">Төхөөрөмжийн түгжээг эцэг эхийн кодоор тайлна уу</translation>
 <translation id="4702647871202761252">Нууцлалын дэлгэц унтраалттай байна</translation>
 <translation id="4706121060329443414">Таталтыг дараа оролдоно. Яриаг одоогоор Google-д боловсруулахаар илгээнэ.</translation>
@@ -642,6 +647,7 @@
 <translation id="5744083938413354016">Чирэлтийг товших</translation>
 <translation id="5745612484876805746">Шөнийн гэрэл нь нар жаргахад автоматаар асдаг</translation>
 <translation id="5750765938512549687">Bluetooth унтраалттай байна</translation>
+<translation id="576341972084747908">Аюултай <ph name="FILENAME" />-г татах</translation>
 <translation id="576453121877257266">Шөнийн гэрэл асаалттай байна.</translation>
 <translation id="5769373120130404283">Нууцлалын дэлгэц</translation>
 <translation id="5777841717266010279">Дэлгэц хуваалцахыг зогсоох уу?</translation>
@@ -783,6 +789,7 @@
 <translation id="6852052252232534364">Идэвхжүүлэхээр товш</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Нэг цифр үлдсэн}other{# цифр үлдсэн}}</translation>
+<translation id="6867938213751067702"><ph name="FILENAME" />-г татахыг түр зогсоолоо</translation>
 <translation id="6878400149835617132">Товчлол унтраалттай байна</translation>
 <translation id="6886172995547742638">Таны <ph name="DEVICE_TYPE" />-н гүйцэтгэл буурч болзошгүй. Баталгаажсан <ph name="PREFERRED_MINIMUM_POWER" />Вт эсвэл түүнээс дээш чадалтай USB-C тэжээлийн адаптерыг ашиглана уу.</translation>
 <translation id="688631446150864480">Цонхыг сэлгэхийн тулд Доош сум товчийг дарна уу</translation>

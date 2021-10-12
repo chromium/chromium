@@ -590,6 +590,7 @@
 <translation id="1612019740169791082">ກ່ອງບັນຈຸຂອງທ່ານບໍ່ໄດ້ຖືກຕັ້ງຄ່າໃຫ້ຮອງຮັບການປັບຂະໜາດດິສກ໌. ເພື່ອປັບປະລິມານພື້ນທີ່ທີ່ສະຫງວນໄວ້ໃຫ້ Linux, ກະລຸນາສຳຮອງຂໍ້ມູນໄວ້ ແລະ ຈາກນັ້ນກູ້ຄືນໃສ່ກ່ອງບັນຈຸໃໝ່.</translation>
 <translation id="1614511179807650956">ທ່ານອາດໃຊ້ແພັກເກດອິນເຕີເນັດມືຖືຂອງທ່ານໝົດແລ້ວ. ກະລຸນາເຂົ້າຫາໜ້າເວັບການເປີດນຳໃຊ້ <ph name="NAME" /> ເພື່ອຊື້ອິນເຕີເນັດເພີ່ມເຕີມ</translation>
 <translation id="161460670679785907">ບໍ່ສາມາດກວດພົບໂທລະສັບຂອງທ່ານໄດ້</translation>
+<translation id="1615337439947999338">ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ (<ph name="EMAIL" />)</translation>
 <translation id="1615402009686901181">ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບປິດການນຳໃຊ້ການຖ່າຍຮູບໜ້າຈໍໄວ້ເມື່ອສະແດງເນື້ອຫາທີ່ເປັນຄວາມລັບຢູ່</translation>
 <translation id="1616206807336925449">ສ່ວນ​ຂະ​ຫຍາຍ​ນີ້​ບໍ່​ຕ້ອງ​ການ​ໃຫ້​ມີ​ການ​ອະ​ນຸ​ຍາດ​ພິ​ເສດ​ອັນ​ໃດ.</translation>
 <translation id="1616298854599875024">ບໍ່ສາມາດນຳເຂົ້າສ່ວນຂະຫຍາຍ "<ph name="IMPORT_NAME" />" ໄດ້ ເພາະວ່າມັນບໍ່ແມ່ນໂມດູນທີ່ໃຊ້ຮ່ວມກັນ</translation>
@@ -930,6 +931,7 @@
 <translation id="1929546189971853037">ອ່ານປະຫວັດການທ່ອງເນັດຂອງທ່ານຢູ່ໃນອຸປະກອນທີ່ລົງຊື່ເຂົ້າໃຊ້ແລ້ວຂອງທ່ານ</translation>
 <translation id="1930879306590754738">ລຶບລະຫັດຜ່ານຈາກອຸປະກອນນີ້ ແລະ ບັນຊີ Google ຂອງທ່ານແລ້ວ</translation>
 <translation id="1931152874660185993">ບໍ່ມີອົງປະກອບ​ຕິດ​ຕັ້ງໄວ້</translation>
+<translation id="1931410639376954712">ກຳລັງຕິດຕັ້ງ <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">ບໍ່ແມ່ນກ່ອນ</translation>
 <translation id="1935303383381416800">ໄດ້ຮັບອະນຸຍາດໃຫ້ເຫັນສະຖານທີ່ຂອງທ່ານ</translation>
 <translation id="1936931585862840749">ໃຊ້ຕົວເລກເພື່ອຊີ້ບອກວ່າຈະພິມອອກຈັກສະບັບ (1 ຫາ <ph name="MAX_COPIES" />).</translation>
@@ -1062,6 +1064,7 @@
 <translation id="208586643495776849">ກະລຸນາລອງໃໝ່</translation>
 <translation id="208634871997892083">VPN ແບບເປີດຕະຫຼອດ</translation>
 <translation id="2087822576218954668">ພິມ​: <ph name="PRINT_NAME" /></translation>
+<translation id="2088092308059522196">ຮອງຮັບການລົງທະບຽນຫຼັງຈາກທີ່ທ່ານຕິດຕັ້ງ <ph name="DEVICE_OS" /> ເທົ່ານັ້ນ.</translation>
 <translation id="208928984520943006">ປັດຂຶ້ນຈາກລຸ່ມສຸດເພື່ອໄປຫາໜ້າຈໍຫຼັກໄດ້ທຸກເວລາ.</translation>
 <translation id="2089566709556890888">ທ່ອງເວັບຢ່າງປອດໄພດ້ວຍ Google Chrome</translation>
 <translation id="2089795179672254991">ຖາມເມື່ອເວັບໄຊຕ້ອງການເຫັນຂໍ້ຄວາມ ແລະ ຮູບພາບທີ່ສຳເນົາໄວ້ໃນຄລິບບອດ (ແນະນຳ)</translation>
@@ -1186,6 +1189,7 @@
 <translation id="2203088913459920044">ຊື່ສາມາດໃຊ້ຕົວອັກສອນ, ຕົວເລກ ແລະ ຕົວອັກສອນພິເສດໄດ້</translation>
 <translation id="2204034823255629767">ອ່ານ​ ແລະ​​ປ່ຽນອັນໃດໜຶ່ງທີ່​ທ່ານ​ພິມ</translation>
 <translation id="220858061631308971">ກະລຸນາໃສ່ PIN ນີ້ຢູ່ໃນ "<ph name="DEVICE_NAME" />":</translation>
+<translation id="2210462644007531147">ບໍ່ສາມາດຕິດຕັ້ງໃຫ້ສຳເລັດໄດ້</translation>
 <translation id="2212565012507486665">ອະນຸຍາດຄຸກກີ້</translation>
 <translation id="2214018885812055163">ໂຟນເດີທີ່ໃຊ້ຮ່ວມກັນ</translation>
 <translation id="2214884991347062907">ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ. ກະລຸນາລອງໃໝ່</translation>
@@ -1242,6 +1246,8 @@
 <translation id="22665427234727190">ຖາມເມື່ອເວັບໄຊໃດໜຶ່ງຕ້ອງການເຂົ້າເຖິງອຸປະກອນ Bluetooth (ແນະນຳ)</translation>
 <translation id="2266957463645820432">IPP ຜ່ານ USB (IPPUSB)</translation>
 <translation id="2270450558902169558">ແລກ​ປ່ຽນ​ຂໍ້​ມູນ​ກັບ​ອຸ​ປະ​ກອນ​ໃດ​ຫນຶ່ງ​ຢູ່​ໃນ​ໂດ​ເມນ <ph name="DOMAIN" /></translation>
+<translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />ການຕິດຕັ້ງ <ph name="BEGIN_BOLD" />ຈະລຶບຂໍ້ມູນທັງໝົດໃນຮາດໄດຣຟ໌ຂອງທ່ານອອກ<ph name="END_BOLD" />. ກະລຸນາກວດສອບວ່າທ່ານສຳຮອງຂໍ້ມູນຂອງທ່ານໄວ້ແລ້ວ.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ເມື່ອເລີ່ມການຕິດຕັ້ງໄປແລ້ວມັນຈະບໍ່ສາມາດຍົກເລີກໄດ້.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">ແລກ​ປ່ຽນ​ຂໍ້​ມູນ​ກັບ​ອຸ​ປະ​ກອນ​ໃດ​ຫນຶ່ງ​ຢູ່​ໃນ​ໂດ​ເມນ​: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">ມອບໝາຍສະວິດສຳລັບ “ເລືອກ”</translation>
 <translation id="2271469253353559191">ກຳນົດເວລາໂໝດມືດ</translation>
@@ -1505,6 +1511,7 @@
 <translation id="2521854691574443804">ກຳລັງກວດສອບ <ph name="FILE_NAME" /> ນຳນະໂຍບາຍຄວາມປອດໄພຂອງອົງການຂອງທ່ານ...</translation>
 <translation id="252219247728877310">ອົງ​ປະ​ກອບ​ບໍ່ໄດ້ຮັບການອັບເດດ</translation>
 <translation id="2523184218357549926">ສົ່ງ URL ຂອງໜ້າຕ່າງໆທີ່ທ່ານເຂົ້າເບິ່ງໃຫ້ Google</translation>
+<translation id="252418934079508528">ຕິດຕັ້ງ <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome ກຳລັງກວດຄອມພິວເຕີຂອງທ່ານສຳລັບຊອບແວອັນຕະລາຍ...</translation>
 <translation id="2526590354069164005">ເດັສທັອບ</translation>
 <translation id="2526619973349913024">ກວດຫາອັບເດດ</translation>
@@ -1709,6 +1716,7 @@
 <translation id="2740531572673183784">ຕົກລົງ</translation>
 <translation id="2741713322780029189">ເປີດປາຍທາງການກູ້ຄືນ</translation>
 <translation id="2741912629735277980">ສະແດງສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ໃນໜ້າຈໍເຂົ້າສູ່ລະບົບ</translation>
+<translation id="2742448780373473567">ການຕິດຕັ້ງ <ph name="DEVICE_OS" /> ຈະຂຽນທັບຂໍ້ມູນທັງໝົດຢູ່ອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="274290345632688601">ກຳລັງກູ້ຄືນແອັບ ແລະ ໄຟລ໌ Linux</translation>
 <translation id="274318651891194348">ກຳລັງຊອກຫາແປ້ນພິມ</translation>
 <translation id="2743387203779672305">ກັອບປີ້ໄປໃສ່ຄລິບບອດ</translation>
@@ -2908,6 +2916,8 @@
 <translation id="3979748722126423326">ເປີດໃຊ້ງານ <ph name="NETWORKDEVICE" /></translation>
 <translation id="3981058120448670012">ເບິ່ງເຫັນຕໍ່ກັບອຸປະກອນທີ່ຢູ່ໃກ້ຄຽງເປັນ <ph name="DEVICE_NAME" /> ສຳລັບ <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">ປະເພດບັນທຶກທີ່ໃຊ້ບໍ່ໄດ້ປ້ອນ​ເຂົ້າ​ແລ້ວ.</translation>
+<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ ແລະ ບໍ່ສາມາດຕິດຕັ້ງ <ph name="DEVICE_OS" /> ໄດ້.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ສຳລັບຄວາມຊ່ວຍເຫຼືອເພີ່ມເຕີມ, ກະລຸນາເຂົ້າໄປ: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">ຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບຂອງທ່ານໃນສອງສາມຂັ້ນຕອນ</translation>
 <translation id="3983400541576569538">ຂໍ້ມູນຈາກບາງແອັບອາດຈະສູນເສຍ</translation>
 <translation id="3983586614702900908">ອຸ​ປະ​ກອນ​ຈາກ​ຜູ້​ຂາຍ​ທີ່​ບໍ່​ຮູ້​ຈັກ</translation>
@@ -2997,6 +3007,7 @@
 <translation id="4084835346725913160">ປິດ <ph name="TAB_NAME" /></translation>
 <translation id="4085270836953633510">ຖາມເມື່ອເວັບໄຊຕ້ອງການເຂົ້າເຖິງຜອດອະນຸກຳ</translation>
 <translation id="4085298594534903246">JavaScript ຖືກບລັອກຢູ່ໃນໜ້ານີ້.</translation>
+<translation id="4085947337119280756">ສ່ວນຂະຫຍາຍເພີ່ມເຕີມ</translation>
 <translation id="4087089424473531098">ສ້າງສ່ວນຂະຫຍາຍ:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -3303,6 +3314,7 @@
 <translation id="4449996769074858870">ແຖບ​ນີ້ກໍາລັງ​ຫຼີ້ນ​ສຽງ​.</translation>
 <translation id="4450274068924249931">ເມື່ອໜ້າຈໍຂອງທ່ານບໍ່ໄດ້ເປີດນຳໃຊ້, ສະແດງຮູບພາບ, ເວລາ, ສະພາບອາກາດ ແລະ ຂໍ້ມູນມີເດຍ. ການເປີດການນຳໃຊ້ສະກຣີນເຊັບເວີຈະຮັກສາໃຫ້ໜ້າຈໍຂອງທ່ານເປີດຢູ່ໃນຂະນະທີ່ສາກ.</translation>
 <translation id="4450974146388585462">ກວດວິເຄາະ</translation>
+<translation id="445099924538929605"><ph name="DEVICE_OS" /> ກວດພົບ TPM ທີ່ເຮັດວຽກຢູ່ເຊິ່ງສາມາດຈັດເກັບຂໍ້ມູນຂອງທ່ານໄດ້ປອດໄພກວ່າ.</translation>
 <translation id="4451479197788154834">ລະຫັດຜ່ານຂອງທ່ານຖືກບັນທຶກໄວ້ໃນອຸປະກອນນີ້ ແລະ ໃນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="4451757071857432900">ບລັອກໃນເວັບໄຊທີ່ສະແດງໂຄສະນາທີ່ລົບກວນ ຫຼື ຫຼອກລວງ (ແນະນຳ)</translation>
 <translation id="4453946976636652378">ຊອກຫາ <ph name="SEARCH_ENGINE_NAME" /> ຫຼື ພິມ URL</translation>
@@ -3806,6 +3818,9 @@
 <translation id="4992473555164495036">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຈຳກັດວິທີການປ້ອນຂໍ້ມູນທີ່ສາມາດໃຊ້ໄດ້ແລ້ວ.</translation>
 <translation id="4994474651455208930">ອະນຸຍາດໃຫ້ເວັບໄຊຮ້ອງຂໍເປັນຕົວຈັດການເລີ່ມຕົ້ນສຳລັບໂປຣໂຕຄໍ</translation>
 <translation id="4994754230098574403">ກໍາລັງຕັ້ງຄ່າ</translation>
+<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />ກ່ອນການລົງທະບຽນທ່ານຈະຕ້ອງລຶບລ້າງ TPM ກ່ອນເພື່ອໃຫ້ <ph name="DEVICE_OS" /> ສາມາດຮັບຄວາມເປັນເຈົ້າຂອງອຸປະກອນໄດ້.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ທ່ານສາມາດປິດອຸປະກອນ TPM ທັງໝົດໄດ້ນຳ. ຂໍ້ມູນຂອງທ່ານຈະຖືກຈັດເກັບໄວ້ຢ່າງປອດໄພດ້ວຍການເຂົ້າລະຫັດຊອບແວ, ແຕ່ຄຸນສົມບັດຄວາມປອດໄພບາງຢ່າງ ເຊັ່ນ: ໃບຮັບຮອງທີ່ໃຊ້ຮາດແວຈະຖືກປິດການນຳໃຊ້ໄວ້.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />ທ່ານສາມາດປ່ຽນການຕັ້ງຄ່າ TPM ຂອງທ່ານໄດ້ໂດຍການປິດເປີດໃໝ່ແລ້ວເຂົ້າໄປການຕັ້ງຄ່າ BIOS/UEFI ຂອງລະບົບ. ຂັ້ນຕອນຕ່າງໆແມ່ນແຕກຕ່າງກັນໄປຂຶ້ນກັບໂມເດວຂອງອຸປະກອນ. ສຳລັບຂໍ້ມູນເພີ່ມເຕີມ, ໃຫ້ເປີດເອກະສານ <ph name="DEVICE_OS" /> ຢູ່ອຸປະກອນແຍກຕ່າງຫາກກ່ອນທີ່ທ່ານຈະປິດເປີດໃໝ່: [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{ບໍ່ພົບ VM <ph name="VM_TYPE" />}=1{ພົບ 1 VM <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{ພົບ {NUM_VMS} VM <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">ບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ.</translation>
 <translation id="4998430619171209993">ເປີດ</translation>
@@ -3921,6 +3936,7 @@
 <translation id="5127620150973591153">ໄອດີການເຊື່ອມຕໍ່ທີ່ປອດໄພ: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">ຊິງ​ຄ໌​ປິດ</translation>
 <translation id="5127881134400491887">ຈັດການເລື່ອງການ​ເຊື່ອມ​ຕໍ່​ເຄືອ​ຂ່າຍ</translation>
+<translation id="5128774403617662387">ກ່ອນການເລີ່ມຕົ້ນ, ໃຫ້ກວດສອບວ່າທ່ານໄດ້ສຳຮອງຂໍ້ມູນຂອງທ່ານໄວ້ແລ້ວ. ການຕິດຕັ້ງ <ph name="DEVICE_OS" /> ຈະຂຽນທັບຂໍ້ມູນໃນຮາດໄດຣຟ໌ຂອງທ່ານ. ສຶກສາເພີ່ມເຕີມຢູ່ g.co/TBD.</translation>
 <translation id="512903556749061217">ຄັດຕິດແລ້ວ</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">ບໍ່ສາມາດດາວໂຫຼດໂປຣໄຟລ໌ໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ ຫຼື ຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການເພື່ອຂໍຄວາມຊ່ວຍເຫຼືອ.</translation>
@@ -4356,6 +4372,7 @@
 <translation id="5592595402373377407">ບໍ່ມີຂໍ້​ມູນພຽງ​ພໍ​ເທື່ອ​.</translation>
 <translation id="5595485650161345191">ແກ້ໄຂທີ່ຢູ່</translation>
 <translation id="5596627076506792578">ໂຕ​ເລືອກ​ເພີ່ມ​ເຕີມ</translation>
+<translation id="5600348067066185292">ການຕິດຕັ້ງຈະມີຂັ້ນຕອນງ່າຍໆສອງສາມຂັ້ນຕອນ. ທ່ານຈະມີໂອກາດຢືນຢັນກ່ອນເກີດການປ່ຽນແປງຕໍ່ຄອມພິວເຕີຂອງທ່ານ.</translation>
 <translation id="5600706100022181951">ການອັບເດດຈະຖືກດາວໂຫຼດໂດຍໃຊ້ຂໍ້ມູນມືຖື <ph name="UPDATE_SIZE_MB" /> MB. ທ່ານຕ້ອງການສືບຕໍ່ບໍ?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຊື່ອມຕໍ່ກັບອຸປະກອນ MIDI</translation>
@@ -4416,6 +4433,7 @@
 <translation id="5659593005791499971">ອີເມວ</translation>
 <translation id="5659833766619490117">ບໍ່ສາມາດແປໜ້ານີ້ໄດ້</translation>
 <translation id="5662513737565158057">ປ່ຽນວ່າຈະໃຫ້ແອັບ Linux ເຮັດວຽກແນວໃດ.</translation>
+<translation id="5667490069342183561">Google ບໍ່ຮັບຜິດຊອບຕໍ່ການສູນເສຍຂໍ້ມູນໃດກໍຕາມ ແລະ <ph name="DEVICE_OS" /> ອາດບໍ່ເຮັດວຽກຢູ່ໂມເດວທີ່ບໍ່ໄດ້ຮັບການຮັບຮອງ. ສຶກສາເພີ່ມເຕີມຢູ່ g.co/TBD.</translation>
 <translation id="5667546120811588575">ກຳລັງຕັ້ງຄ່າ Google Play...</translation>
 <translation id="5668351004957198136">ບໍ່ສຳເລັດ</translation>
 <translation id="56702779821643359">ແບ່ງປັນໄຟລ໌ກັບຄົນອ້ອມຂ້າງທ່ານ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
@@ -4434,6 +4452,7 @@
 <translation id="5684181005476681636">ລາຍລະອຽດ Wi-Fi</translation>
 <translation id="5684661240348539843">ຕົວ​ລະ​ບຸ​ຊັບ​ສິນ</translation>
 <translation id="5687326903064479980">ເຂດເວລາ</translation>
+<translation id="5687935527303996204">ກະລຸນາກວດສອບວ່າທ່ານສຽບສາຍອຸປະກອນແລ້ວ ແລະ ຢ່າປິດມັນໄວ້. ການຕິດຕັ້ງອາດໃຊ້ເວລາສູງສຸດ 20 ນາທີ. ອຸປະກອນຂອງທ່ານຈະປິດເຄື່ອງອັດຕະໂນມັດເມື່ອການຕິດຕັ້ງສຳເລັດແລ້ວ.</translation>
 <translation id="5689516760719285838">ສະຖານທີ່</translation>
 <translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" /> ໄດ້ຕັ້ງຄ່າ Voice Match ກັບຜູ້ຊ່ວຍຢູ່ອຸປະກອນອື່ນໄປກ່ອນແລ້ວ. ບັນທຶກສຽງກ່ອນໜ້າເຫຼົ່ານີ້ຖືກໃຊ້ເພື່ອສ້າງຮູບແບບສຽງຢູ່ອຸປະກອນນີ້.</translation>
 <translation id="56907980372820799">ລິ້ງຂໍ້ມູນ</translation>
@@ -5779,6 +5798,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> ກຳລັງໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="7141105143012495934">ລົງຊື່ເຂົ້າໃຊ້​ບໍ່​ສຳ​ເລັດ ເພາະ​ວ່າ​ບໍ່​ສາ​ມາດ​ກູ້​ຄືນ​ລາຍ​ລະ​ອຽດ​ບັນ​ຊີ​ຂອງ​ທ່ານ​ໄດ້. ກະ​ລຸ​ນາ​ຕິດ​ຕໍ່​ຜູ້ຄວບຄຸມຂອງທ່ານ ຫຼື ລອງໃໝ່ອີກ.</translation>
 <translation id="7144878232160441200">ລອງໃໝ່ອີກ</translation>
+<translation id="7149839598364933473">ປ່ຽນແປງອຸປະກອນນີ້ເປັນອຸປະກອນ <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">24 ຊົ່ວໂມງຜ່ານມາ</translation>
 <translation id="7152478047064750137">ສ່ວນຂະຫຍາຍນີ້ບໍ່ຈຳເປັນຕ້ອງມີການອະນຸຍາດພິເສດໃດໆ</translation>
 <translation id="7154130902455071009">ປ່ຽນໜ້າເລີ່ມຕົ້ນຂອງທ່ານເປັນ​: <ph name="START_PAGE" /></translation>
@@ -5874,6 +5894,16 @@
 <translation id="7257666756905341374">ອ່ານຂໍ້ມູນທີ່ທ່ານກັອບປີ້ ແລະແປະໃສ່</translation>
 <translation id="7258225044283673131">ແອັບພລິເຄຊັນບໍ່ຕອບສະໜອງ. ເລືອກ "ບັງຄັບປິດ" ເພື່ອປິດແອັບ.</translation>
 <translation id="7262004276116528033">ບໍລິການເຂົ້າສູ່ລະບົບນີ້ຖືກຝາກໄວ້ໂດຍ <ph name="SAML_DOMAIN" /></translation>
+<translation id="7264432249010320236">ເວັບໄຊເພີ່ມເຕີມ</translation>
+<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />ລອງເຮັດຂັ້ນຕອນການແກ້ໄຂບັນຫາເຫຼົ່ານີ້:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />ກວດສອບວ່າອຸປະກອນຂອງທ່ານມີບ່ອນຈັດເກັບຂໍ້ມູນພາຍໃນທີ່ໃຊ້ໄດ້ ເຊັ່ນ: HDD, SSD ຫຼື eMMC
+    <ph name="LIST_ITEM" />ກວດສອບວ່າບ່ອນຈັດເກັບຂໍ້ມູນພາຍໃນຂອງທ່ານມີຂະໜາດເກີນ 16GB
+    <ph name="LIST_ITEM" />ກວດສອບການເຊື່ອມຕໍ່ຫາບ່ອນຈັດເກັບຂໍ້ມູນພາຍໃນ, ຫາກວ່າສາມາດເຂົ້າເຖິງໄດ້ທາງກາຍະພາບ
+    <ph name="LIST_ITEM" />ກວດສອບວ່າທ່ານກຳລັງໃຊ້ໂມເດວທີ່ໄດ້ຮັບການຮັບຮອງ ແລະ ກວດສອບບັນທຶກການຕິດຕັ້ງ
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ສຳລັບການຊ່ວຍເຫຼືອເພີ່ມເຕີມ, ກະລຸນາເຂົ້າໄປ: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">ບໍ່ສາມາດຕິດຕັ້ງເຄື່ອງສະເໝືອນໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">ຍົກນິ້ວຂອງທ່ານຂຶ້ນເພື່ອເພີ່ມສ່ວນຕ່າງໆຂອງລາຍນິ້ວມືທ່ານ</translation>
 <translation id="7268127947535186412">ການຕັ້ງຄ່ານີ້ຈັດການໂດຍເຈົ້າຂອງອຸປະກອນ.</translation>
@@ -6604,6 +6634,7 @@
 <translation id="7986295104073916105">ອ່ານ ແລະ​ປ່ຽນ​ແປງ​ການ​ຕັ້ງ​ຄ່າ​ລະ​ຫັດ​ຜ່ານ​ທີ່​ບັນ​ທຶກ​ໄວ້</translation>
 <translation id="7987814697832569482">ເຊື່ອມຕໍ່ຜ່ານ VPN ນີ້ທຸກເທື່ອ</translation>
 <translation id="7988355189918024273">ເປີດນຳໃຊ້ຄຸນສົມບັດການຊ່ວຍເຂົ້າເຖິງ</translation>
+<translation id="7988805580376093356">ເກັບລະບົບປະຕິບັດການຂອງທ່ານໄວ້ ແລະ ເປີດໃຊ້ <ph name="DEVICE_OS" /> ຈາກ USB.</translation>
 <translation id="7991296728590311172">ການຕັ້ງຄ່າການເຂົ້າເຖິງປຸ່ມ</translation>
 <translation id="7997826902155442747">ບຸລິມະສິດຂອງຂະບວນການ</translation>
 <translation id="7999229196265990314">ສ້າງໄຟລ໌ຕໍ່ໄປນີ້ແລ້ວ:
@@ -6711,6 +6742,7 @@
 <translation id="80974698889265265">PIN ບໍ່ກົງກັນ</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> ກຳລັງໃຊ້ການຕັ້ງຄ່າພຣັອກຊີຈາກສ່ວນຂະຫຍາຍ</translation>
 <translation id="8097959162767603171">ກ່ອນອື່ນຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຕ້ອງຍອມຮັບຂໍ້ກຳນົດການບໍລິການໃນລາຍຊື່ອຸປະກອນ Chrome ຂອງຄອນໂຊນຜູ້ເບິ່ງແຍງລະບົບ.</translation>
+<translation id="8098156986344908134">ຕິດຕັ້ງ <ph name="DEVICE_OS" /> ແລະ ລຶບຂໍ້ມູນໃນຮາດໄດຣຟ໌ອອກບໍ?</translation>
 <translation id="8098616321286360457">ຕ້ອງມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ</translation>
 <translation id="810068641062493918">ເລືອກ <ph name="LANGUAGE" /> ແລ້ວ ກົດປຸ່ມຊອກຫາພ້ອມກັບປຸ່ມຍະຫວ່າງເພື່ອຍົກເລີກການເລືອກ.</translation>
 <translation id="8100972288595615768">ລຶບລ້າງຂໍ້ມູນເວັບໄຊ ແລະ ການອະນຸຍາດສຳລັບ <ph name="SITE_NAME" /> ບໍ?</translation>
@@ -6897,6 +6929,7 @@
 <translation id="8287902281644548111">ຊອກຫາຕາມການເອີ້ນໃຊ້ API/URL</translation>
 <translation id="8288032458496410887">ຖອນຕິດຕັ້ງ <ph name="APP" />...</translation>
 <translation id="8289128870594824098">ຂະໜາດດິສ</translation>
+<translation id="8289509909262565712">ຍິນດີຕ້ອນຮັບສູ່ <ph name="DEVICE_OS" /></translation>
 <translation id="8293206222192510085">ເພີ່ມບຸກມາກຄ໌</translation>
 <translation id="8294431847097064396">ແຫຼ່ງທີ່ມາ</translation>
 <translation id="8298429963694909221">ຕອນນີ້ທ່ານສາມາດຮັບການແຈ້ງເຕືອນຈາກໂທລະສັບຂອງທ່ານໃນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານໄດ້ແລ້ວ. ການປິດການແຈ້ງເຕືອນນີ້ໄວ້ໃນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານຈະປິດພວກມັນໃນໂທລະສັບຂອງທ່ານໄວ້ນຳ. ກວດໃຫ້ແນ່ໃຈວ່າໂທລະສັບຂອງທ່ານຢູ່ໃກ້ ແລະ ເປີດ Bluetooth ແລະ Wi-Fi ແລ້ວ.</translation>
@@ -7224,6 +7257,7 @@
 <translation id="867085395664725367">ເກີດຄວາມຜິດພາດຊົ່ວຄາວກັບເຊີບເວີ.</translation>
 <translation id="8673026256276578048">ຄົ້ນ​ຫາ​ເວັບ​...</translation>
 <translation id="8673383193459449849">ບັນ​ຫາ​ເຊີບເວີ</translation>
+<translation id="8675704450909805533">ຕົວຕິດຕັ້ງນີ້ບໍ່ພົບປາຍທາງທີ່ຖືກຕ້ອງເພື່ອຕິດຕັ້ງ <ph name="DEVICE_OS" />.</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{ວິດີໂອ}other{# ວິດີໂອ}}</translation>
 <translation id="8676313779986170923">ຂອບ​ໃຈ​ທ່ານ​ສໍາ​ລັບ​ການ​ສົ່ງ​ຄຳຕິຊົມ.</translation>
 <translation id="8676374126336081632">ລຶບການປ້ອນເຂົ້າ</translation>
@@ -7380,6 +7414,7 @@
 <translation id="8823559166155093873">ບລັອກຄຸກກີ້</translation>
 <translation id="8823704566850948458">ແນະນຳລະຫັດຜ່ານ...</translation>
 <translation id="8824701697284169214">ເພີ່ມໜ້າ...</translation>
+<translation id="8826773185686617320">ຖອດ USB ອອກແລ້ວຣີສະຕາດອຸປະກອນຂອງທ່ານເພື່ອເລີ່ມການນຳໃຊ້ <ph name="DEVICE_OS" />. ບໍ່ດັ່ງນັ້ນອຸປະກອນຂອງທ່ານຈະປິດເຄື່ອງໃນອີກ <ph name="TIME_LEFT" />.</translation>
 <translation id="8827125715368568315">ບລັອກ <ph name="PERMISSION" /> ແລະ ອີກ <ph name="COUNT" /> ລາຍການແລ້ວ</translation>
 <translation id="8827289157496676362">ປັກໝຸດສ່ວນຂະຫຍາຍ</translation>
 <translation id="8827752199525959199">ການດຳເນີນການເພີ່ມເຕີມ, ລະຫັດຜ່ານສຳລັບ <ph name="USERNAME" /> ຢູ່ໃນ <ph name="DOMAIN" /></translation>
@@ -7515,6 +7550,7 @@
 <translation id="8962051932294470566">ທ່ານສາມາດແບ່ງປັນໄດ້ເທື່ອລະໄຟລ໌ເທົ່ານັ້ນ. ລອງອີກຄັ້ງເມື່ອການໂອນຍ້າຍໃນປັດຈຸບັນສຳເລັດແລ້ວ.</translation>
 <translation id="8962083179518285172">ເຊື່ອງ​ລາຍ​ລະ​ອຽດ</translation>
 <translation id="8962918469425892674">ເວັບໄຊນີ້ກຳລັງໃຊ້ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວ ຫຼື ແສງ.</translation>
+<translation id="8964943308070692533">ເວັບໄຊທີ່ບໍ່ເຄື່ອນໄຫວເພີ່ມເຕີມ</translation>
 <translation id="8965037249707889821">ປ້ອນລະ​ຫັດ​ຜ່ານ​ເກົ່າ</translation>
 <translation id="89667524227025535">ສະແກນລະຫັດ QR ໂດຍໃຊ້ກ້ອງຖ່າຍຮູບອຸປະກອນຂອງທ່ານ ຫຼື ໃສ່ລະຫັດການເປີດໃຊ້ທີ່ຜູ້ບໍລິການຂອງທ່ານສົ່ງໃຫ້</translation>
 <translation id="8966809848145604011">ໂປຣໄຟລ໌ອື່ນໆ</translation>
@@ -7679,6 +7715,8 @@
 <translation id="9116465289595958864">ແກ້ໄຂຫຼ້າສຸດ</translation>
 <translation id="9116799625073598554">ແອັບຈົດບັນທຶກ</translation>
 <translation id="9117030152748022724">ຈັດການແອັບຂອງທ່ານ</translation>
+<translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />ສຳລັບປະສົບການທີ່ດີທີ່ສຸດ, ກະລຸນາຕິດຕັ້ງ <ph name="DEVICE_OS" /> ໃສ່ດິສກ໌ພາຍໃນຂອງທ່ານ. ນອກຈາກນັ້ນ, ທ່ານສາມາດຕິດຕັ້ງມັນໃນພາຍຫຼັງຈາກໜ້າຈໍການເຂົ້າສູ່ລະບົບໄດ້ນຳ.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ຫາກທ່ານບໍ່ພ້ອມຕິດຕັ້ງເທື່ອ, ທ່ານສາມາດເອີ້ນໃຊ້ຈາກ USB ເພື່ອລອງໃຊ້ມັນເບິ່ງກ່ອນໄດ້. ນີ້ຈະເກັບຂໍ້ມູນ ແລະ ລະບົບປະຕິບັດການທີ່ມີຢູ່ກ່ອນແລ້ວຂອງທ່ານໄວ້, ແຕ່ທ່ານອາດເຫັນຂໍ້ຈຳກັດບ່ອນຈັດເກັບຂໍ້ມູນ ແລະ ປະສິດທິພາບ.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">ເປີດ​ເປັນ​ແຖບປັກໝຸດແລ້ວ</translation>
 <translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> ຖືກຢຸດໄວ້ຊົ່ວຄາວ</translation>
 <translation id="9124003689441359348">ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຈະປາກົດຢູ່ບ່ອນນີ້</translation>
