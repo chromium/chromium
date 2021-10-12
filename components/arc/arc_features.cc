@@ -106,7 +106,7 @@ const base::Feature kSaveRawFilesOnTracing{"ArcSaveRawFilesOnTracing",
 // Controls ARCVM real time vcpu feature on a device with 2 logical cores
 // online.
 const base::Feature kRtVcpuDualCore{"ArcRtVcpuDualCore",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls ARCVM real time vcpu feature on a device with 3+ logical cores
 // online.
