@@ -12,9 +12,13 @@
 
 // These headers must be included after base/win/atl.h.
 #include "./atlapp.h"
+#include "./atltypes.h"
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-but-set-variable"
 #include "./atlctrls.h"
 #include "./atlframe.h"
-#include "./atltypes.h"
+#pragma clang diagnostic pop
 
 namespace updater {
 namespace ui {
