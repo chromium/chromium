@@ -1043,7 +1043,6 @@ WorkspaceWindowResizer::WorkspaceWindowResizer(
   // TODO: figure out how to deal with window going off the edge.
 
   // Calculate sizes so that we can maintain the ratios if we need to resize.
-  int total_available = 0;
   for (size_t i = 0; i < attached_windows_.size(); ++i) {
     gfx::Size min(attached_windows_[i]->delegate()
                       ? attached_windows_[i]->delegate()->GetMinimumSize()
@@ -1056,7 +1055,6 @@ WorkspaceWindowResizer::WorkspaceWindowResizer(
                             std::max(PrimaryAxisSize(min), kMinOnscreenSize));
     total_min_ += min_size;
     total_initial_size_ += initial_size;
-    total_available += std::max(min_size, initial_size) - min_size;
   }
   instance = this;
 
