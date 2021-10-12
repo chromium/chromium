@@ -86,7 +86,7 @@ class WebAppIconDownloader : public content::WebContentsObserver {
                           const std::vector<SkBitmap>& bitmaps,
                           const std::vector<gfx::Size>& original_bitmap_sizes);
 
-  // content::WebContentsObserver overrides:
+  // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
   void DidUpdateFaviconURL(
       content::RenderFrameHost* rfh,

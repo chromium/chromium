@@ -109,7 +109,7 @@ void WebAppIconDownloader::DidDownloadFavicon(
     const GURL& image_url,
     const std::vector<SkBitmap>& bitmaps,
     const std::vector<gfx::Size>& original_bitmap_sizes) {
-  // Request may have been canceled by DidFinishNavigation().
+  // Request may have been canceled by PrimaryPageChanged().
   if (in_progress_requests_.erase(id) == 0)
     return;
 
@@ -144,7 +144,6 @@ void WebAppIconDownloader::DidDownloadFavicon(
     CompleteCallback();
 }
 
-// content::WebContentsObserver overrides:
 void WebAppIconDownloader::PrimaryPageChanged(content::Page& page) {
   CancelDownloads();
 }
