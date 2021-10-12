@@ -601,7 +601,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_SkiaGL) {
   dawn_native::DeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
-  device_descriptor.requiredExtensions.push_back("dawn-internal-usages");
+  device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
@@ -744,7 +744,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, GL_Dawn_Skia_UnclearTexture) {
   dawn_native::DeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
-  device_descriptor.requiredExtensions.push_back("dawn-internal-usages");
+  device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
@@ -834,7 +834,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, UnclearDawn_SkiaFails) {
   dawn_native::DeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
-  device_descriptor.requiredExtensions.push_back("dawn-internal-usages");
+  device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
@@ -1044,7 +1044,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_ReuseExternalImage) {
   dawn_native::DeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
-  device_descriptor.requiredExtensions.push_back("dawn-internal-usages");
+  device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
@@ -1172,7 +1172,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_HasLastRef) {
   dawn_native::DeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
-  device_descriptor.requiredExtensions.push_back("dawn-internal-usages");
+  device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));

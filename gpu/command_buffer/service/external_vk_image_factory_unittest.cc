@@ -106,7 +106,7 @@ class ExternalVkImageFactoryTest : public testing::Test {
     dawn_native::DeviceDescriptor device_descriptor;
     // We need to request internal usage to be able to do operations with
     // internal methods that would need specific usages.
-    device_descriptor.requiredExtensions.push_back("dawn-internal-usages");
+    device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
 
     dawn_device_ =
         wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
