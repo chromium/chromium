@@ -117,6 +117,10 @@ class MockSurfaceDelegate : public SurfaceDelegate {
               (override));
   MOCK_METHOD(void, Pin, (bool trusted), (override));
   MOCK_METHOD(void, Unpin, (), (override));
+  MOCK_METHOD(void,
+              SetClientSubmitsSurfacesInPixelCoordinates,
+              (bool),
+              (override));
 };
 
 }  // namespace

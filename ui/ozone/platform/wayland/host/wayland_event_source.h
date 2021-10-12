@@ -170,6 +170,7 @@ class WaylandEventSource : public PlatformEventSource,
   // Computes initial velocity of fling scroll based on recent frames.
   gfx::Vector2dF ComputeFlingVelocity();
 
+  bool SurfaceSubmissionInPixelCoordinates() const;
   WaylandWindowManager* const window_manager_;
 
   WaylandConnection* const connection_;

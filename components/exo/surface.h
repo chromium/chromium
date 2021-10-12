@@ -392,6 +392,8 @@ class Surface final : public ui::PropertyHandler {
   // Release the pinned mode and allows the user to do other things again.
   void Unpin();
 
+  void SetClientSubmitsSurfacesInPixelCoordinates(bool enabled);
+
  private:
   struct State {
     State();

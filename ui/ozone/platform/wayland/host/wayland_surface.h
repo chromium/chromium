@@ -170,6 +170,7 @@ class WaylandSurface {
   wl::Object<wl_region> CreateAndAddRegion(
       const std::vector<gfx::Rect>& region_px);
 
+  bool SurfaceSubmissionInPixelCoordinates() const;
   // Creates (if not created) the synchronization surface and returns a pointer
   // to it.
   zwp_linux_surface_synchronization_v1* GetSurfaceSync();

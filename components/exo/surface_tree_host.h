@@ -115,6 +115,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void SetInitialWorkspace(const char* initial_workspace) override {}
   void Pin(bool trusted) override {}
   void Unpin() override {}
+  void SetClientSubmitsSurfacesInPixelCoordinates(bool enabled) override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -137,6 +138,10 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // Update the host window's size to cover sufaces that must be visible and
   // not clipped.
   virtual void UpdateHostWindowBounds();
+
+  bool client_submits_surfaces_in_pixel_coordinates() const {
+    return client_submits_surfaces_in_pixel_coordinates_;
+  }
 
  private:
   viz::CompositorFrame PrepareToSubmitCompositorFrame();
@@ -171,6 +176,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
   display::ScopedDisplayObserver display_observer_{this};
 
   int64_t display_id_ = display::kInvalidDisplayId;
+
+  bool client_submits_surfaces_in_pixel_coordinates_ = false;
 
   base::WeakPtrFactory<SurfaceTreeHost> weak_ptr_factory_{this};
 };

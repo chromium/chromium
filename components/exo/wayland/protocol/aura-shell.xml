@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="25">
+  <interface name="zaura_shell" version="26">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -108,6 +108,7 @@
       </description>
       <arg name="active_desk_index" type="int" summary="index of the active desk"/>
     </event>
+
     <!-- Version 24 additions -->
     <event name="activated" since="24">
       <description summary="activated surface changed">
@@ -116,6 +117,16 @@
       <arg name="gained_active" type="object" interface="wl_surface" allow-null="true"/>
       <arg name="lost_active" type="object" interface="wl_surface" allow-null="true"/>
     </event>
+
+    <!-- Version 26 additions -->
+    <request name="surface_submission_in_pixel_coordinates" since="26">
+      <description summary="surfaces will be submitted in pixel coordinates">
+        Informs the server that when submitting surfaces, this client will not
+        use wl_surface_set_buffer_scale to report the scales, nor will it apply
+        scale via vp_viewporter. Instead the server should apply an appropriate
+        scale transform to have the submitted buffers composited correctly.
+      </description>
+    </request>
   </interface>
 
   <interface name="zaura_surface" version="25">

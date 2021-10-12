@@ -270,6 +270,9 @@ class WaylandConnection {
     return available_globals_;
   }
 
+  bool surface_submission_in_pixel_coordinates() const {
+    return surface_submission_in_pixel_coordinates_;
+  }
   wl::SerialTracker& serial_tracker() { return serial_tracker_; }
 
  private:
@@ -416,6 +419,12 @@ class WaylandConnection {
   WaylandCursorBufferListener* listener_ = nullptr;
 
   bool scheduled_flush_ = false;
+
+  // Surfaces are submitted in pixel coordinates. Their buffer scales are always
+  // advertised to server as 1, and the scale via vp_viewporter won't be
+  // applied. The server will be responsible to scale the buffers to the right
+  // sizes.
+  bool surface_submission_in_pixel_coordinates_ = false;
 
   wl::SerialTracker serial_tracker_;
 

@@ -1392,8 +1392,15 @@ void ShellSurfaceBase::UpdateFrameType() {
 gfx::Rect ShellSurfaceBase::GetVisibleBounds() const {
   // Use |geometry_| if set, otherwise use the visual bounds of the surface.
   if (geometry_.IsEmpty()) {
-    return root_surface() ? gfx::Rect(root_surface()->content_size())
-                          : gfx::Rect();
+    gfx::Size size;
+    if (root_surface()) {
+      size = root_surface()->content_size();
+      if (client_submits_surfaces_in_pixel_coordinates()) {
+        int dsf = std::ceil(host_window()->layer()->device_scale_factor());
+        size = gfx::ScaleToRoundedSize(size, 1.0f / dsf);
+      }
+    }
+    return gfx::Rect(size);
   }
 
   const auto* screen = display::Screen::GetScreen();

@@ -162,12 +162,15 @@ void WaylandEventSource::OnPointerFocusChanged(WaylandWindow* window,
   pointer_location_ = location;
 
   bool focused = !!window;
-  if (focused)
+  if (focused) {
+    if (SurfaceSubmissionInPixelCoordinates())
+      pointer_location_.Scale(1.0f / window->window_scale());
     window_manager_->SetPointerFocusedWindow(window);
+  }
 
   EventType type = focused ? ET_MOUSE_ENTERED : ET_MOUSE_EXITED;
-  MouseEvent event(type, location, location, EventTimeForNow(), pointer_flags_,
-                   0);
+  MouseEvent event(type, pointer_location_, pointer_location_,
+                   EventTimeForNow(), pointer_flags_, 0);
   DispatchEvent(&event);
 
   if (!focused)
@@ -201,6 +204,13 @@ void WaylandEventSource::OnPointerButtonEvent(EventType type,
 
 void WaylandEventSource::OnPointerMotionEvent(const gfx::PointF& location) {
   pointer_location_ = location;
+
+  if (SurfaceSubmissionInPixelCoordinates()) {
+    if (WaylandWindow* window =
+            window_manager_->GetCurrentPointerFocusedWindow())
+      pointer_location_.Scale(1.0f / window->window_scale());
+  }
+
   int flags = pointer_flags_ | keyboard_modifiers_;
   MouseEvent event(ET_MOUSE_MOVED, pointer_location_, pointer_location_,
                    EventTimeForNow(), flags, 0);
@@ -299,16 +309,20 @@ void WaylandEventSource::OnTouchPressEvent(WaylandWindow* window,
   DCHECK(window);
   HandleTouchFocusChange(window, true);
 
+  gfx::PointF loc =
+      SurfaceSubmissionInPixelCoordinates()
+          ? gfx::ScalePoint(location, 1.f / window->window_scale())
+          : location;
   // Make sure this touch point wasn't present before.
-  auto success = touch_points_.try_emplace(
-      id, std::make_unique<TouchPoint>(location, window));
+  auto success =
+      touch_points_.try_emplace(id, std::make_unique<TouchPoint>(loc, window));
   if (!success.second) {
     LOG(WARNING) << "Touch down fired with wrong id";
     return;
   }
 
   PointerDetails details(EventPointerType::kTouch, id);
-  TouchEvent event(ET_TOUCH_PRESSED, location, location, timestamp, details);
+  TouchEvent event(ET_TOUCH_PRESSED, loc, loc, timestamp, details);
   DispatchEvent(&event);
 }
 
@@ -341,9 +355,14 @@ void WaylandEventSource::OnTouchMotionEvent(const gfx::PointF& location,
     LOG(WARNING) << "Touch event fired with wrong id";
     return;
   }
-  it->second->last_known_location = location;
+
+  gfx::PointF loc =
+      SurfaceSubmissionInPixelCoordinates()
+          ? gfx::ScalePoint(location, 1.f / it->second->window->window_scale())
+          : location;
+  it->second->last_known_location = loc;
   PointerDetails details(EventPointerType::kTouch, id);
-  TouchEvent event(ET_TOUCH_MOVED, location, location, timestamp, details);
+  TouchEvent event(ET_TOUCH_MOVED, loc, loc, timestamp, details);
   DispatchEvent(&event);
 }
 
@@ -500,6 +519,10 @@ gfx::Vector2dF WaylandEventSource::ComputeFlingVelocity() {
   float dt_inv = 1.0f / dt.InSecondsF();
   return dt.is_zero() ? gfx::Vector2dF()
                       : gfx::Vector2dF(dx * dt_inv, dy * dt_inv);
+}
+
+bool WaylandEventSource::SurfaceSubmissionInPixelCoordinates() const {
+  return connection_->surface_submission_in_pixel_coordinates();
 }
 
 }  // namespace ui

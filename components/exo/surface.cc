@@ -1528,4 +1528,9 @@ void Surface::Unpin() {
     delegate_->Unpin();
 }
 
+void Surface::SetClientSubmitsSurfacesInPixelCoordinates(bool enabled) {
+  if (delegate_)
+    delegate_->SetClientSubmitsSurfacesInPixelCoordinates(enabled);
+}
+
 }  // namespace exo

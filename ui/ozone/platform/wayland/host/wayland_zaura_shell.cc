@@ -18,7 +18,7 @@
 namespace ui {
 
 namespace {
-constexpr uint32_t kMaxAuraShellVersion = 24;
+constexpr uint32_t kMaxAuraShellVersion = 26;
 }
 
 // static
@@ -46,11 +46,6 @@ void WaylandZAuraShell::Instantiate(WaylandConnection* connection,
   ReportShellUMA(UMALinuxWaylandShell::kZauraShell);
 }
 
-void OnActivated(void* data,
-                 struct zaura_shell* zaura_shell,
-                 wl_surface* x,
-                 wl_surface* y) {}
-
 WaylandZAuraShell::WaylandZAuraShell(zaura_shell* aura_shell,
                                      WaylandConnection* connection)
     : obj_(aura_shell), connection_(connection) {
@@ -62,6 +57,8 @@ WaylandZAuraShell::WaylandZAuraShell(zaura_shell* aura_shell,
       &OnActivated,
   };
   zaura_shell_add_listener(obj_.get(), &zaura_shell_listener, this);
+  if (connection->surface_submission_in_pixel_coordinates())
+    zaura_shell_surface_submission_in_pixel_coordinates(obj_.get());
 }
 
 WaylandZAuraShell::~WaylandZAuraShell() = default;
@@ -134,4 +131,9 @@ void WaylandZAuraShell::OnDeskActivationChanged(void* data,
   self->active_desk_index_ = active_desk_index;
 }
 
+// static
+void WaylandZAuraShell::OnActivated(void* data,
+                                    struct zaura_shell* zaura_shell,
+                                    wl_surface* gained_active,
+                                    wl_surface* lost_active) {}
 }  // namespace ui

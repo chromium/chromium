@@ -156,6 +156,9 @@ bool WaylandConnection::Initialize() {
   }
 #endif
 
+  surface_submission_in_pixel_coordinates_ =
+      IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled();
+
   // Register factories for classes that implement wl::GlobalObjectRegistrar<T>.
   // Keep alphabetical order for convenience.
   RegisterGlobalObjectFactory(GtkPrimarySelectionDeviceManager::kInterfaceName,

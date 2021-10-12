@@ -52,6 +52,10 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
   static void OnDeskActivationChanged(void* data,
                                       struct zaura_shell* zaura_shell,
                                       int active_desk_index);
+  static void OnActivated(void* data,
+                          struct zaura_shell* zaura_shell,
+                          struct wl_surface* gained_active,
+                          struct wl_surface* lost_active);
 
   wl::Object<zaura_shell> obj_;
   WaylandConnection* const connection_;

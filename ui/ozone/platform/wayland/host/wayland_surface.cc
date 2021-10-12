@@ -273,8 +273,10 @@ void WaylandSurface::SetBufferTransform(gfx::OverlayTransform transform) {
 
 void WaylandSurface::SetSurfaceBufferScale(int32_t scale) {
   DCHECK_GE(scale, 1);
-  wl_surface_set_buffer_scale(surface_.get(), scale);
-  buffer_scale_ = scale;
+  if (!SurfaceSubmissionInPixelCoordinates()) {
+    wl_surface_set_buffer_scale(surface_.get(), scale);
+    buffer_scale_ = scale;
+  }
   connection_->ScheduleFlush();
 }
 
@@ -315,6 +317,8 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
 
   auto window_shape_in_dips = root_window_->GetWindowShape();
 
+  bool surface_submission_in_pixel_coordinates =
+      SurfaceSubmissionInPixelCoordinates();
   // Only root_surface and primary_subsurface should use |window_shape_in_dips|.
   // Do not use non empty |window_shape_in_dips| if |region_px| is empty, i.e.
   // this surface is transluscent.
@@ -326,15 +330,23 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
       std::all_of(region_px.begin(), region_px.end(),
                   [](const gfx::Rect& rect) { return rect.IsEmpty(); });
   if (window_shape_in_dips.has_value() && !is_empty && is_primary_or_root) {
-    for (const auto& rect : window_shape_in_dips.value())
+    for (auto& rect : window_shape_in_dips.value()) {
+      if (surface_submission_in_pixel_coordinates)
+        rect = gfx::ScaleToEnclosingRect(rect, root_window_->window_scale());
       wl_region_add(region.get(), rect.x(), rect.y(), rect.width(),
                     rect.height());
+    }
   } else {
-    for (const auto& rect : region_px) {
-      gfx::Rect region_dip =
-          gfx::ScaleToEnclosingRect(rect, 1.f / root_window_->window_scale());
-      wl_region_add(region.get(), region_dip.x(), region_dip.y(),
-                    region_dip.width(), region_dip.height());
+    for (const auto& rect_px : region_px) {
+      if (surface_submission_in_pixel_coordinates) {
+        wl_region_add(region.get(), rect_px.x(), rect_px.y(), rect_px.width(),
+                      rect_px.height());
+      } else {
+        gfx::Rect rect = gfx::ScaleToEnclosingRect(
+            rect_px, 1.f / root_window_->window_scale());
+        wl_region_add(region.get(), rect.x(), rect.y(), rect.width(),
+                      rect.height());
+      }
     }
   }
   return region;
@@ -484,6 +496,10 @@ void WaylandSurface::SetOverlayPriority(
     overlay_prioritized_surface_set_overlay_priority(
         overlay_priority_surface(), TranslatePriority(priority_hint));
   }
+}
+
+bool WaylandSurface::SurfaceSubmissionInPixelCoordinates() const {
+  return connection_->surface_submission_in_pixel_coordinates();
 }
 
 // static

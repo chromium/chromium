@@ -766,6 +766,12 @@ class WaylandAuraShell : public ash::DesksController::Observer,
                          const std::u16string& new_name) override {
     OnDesksChanged();
   }
+  void set_client_submits_surfaces_in_pixel_coordinates(bool enabled) {
+    client_submits_surfaces_in_pixel_coordinates_ = enabled;
+  }
+  bool client_submits_surfaces_in_pixel_coordinates() const {
+    return client_submits_surfaces_in_pixel_coordinates_;
+  }
 
  private:
   void OnDesksChanged() {
@@ -826,6 +832,8 @@ class WaylandAuraShell : public ash::DesksController::Observer,
   // The aura shell resource associated with observer.
   wl_resource* const aura_shell_resource_;
 
+  bool client_submits_surfaces_in_pixel_coordinates_ = false;
+
   base::WeakPtrFactory<WaylandAuraShell> weak_ptr_factory_{this};
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH))
@@ -841,6 +849,14 @@ void aura_shell_get_aura_surface(wl_client* client,
         "an aura surface object for that surface already exists");
     return;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (WaylandAuraShell* aura_shell =
+          GetUserDataAs<WaylandAuraShell>(resource)) {
+    surface->SetClientSubmitsSurfacesInPixelCoordinates(
+        aura_shell->client_submits_surfaces_in_pixel_coordinates());
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH))
 
   wl_resource* aura_surface_resource = wl_resource_create(
       client, &zaura_surface_interface, wl_resource_get_version(resource), id);
@@ -866,11 +882,17 @@ void aura_shell_get_aura_output(wl_client* client,
   SetImplementation(aura_output_resource, nullptr, std::move(aura_output));
 }
 
-const struct zaura_shell_interface aura_shell_implementation = {
-    aura_shell_get_aura_surface,
-    aura_shell_get_aura_output,
-};
+void aura_shell_surface_submission_in_pixel_coordinates(wl_client* client,
+                                                        wl_resource* resource) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (WaylandAuraShell* aura_shell = GetUserDataAs<WaylandAuraShell>(resource))
+    aura_shell->set_client_submits_surfaces_in_pixel_coordinates(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH))
+}
 
+const struct zaura_shell_interface aura_shell_implementation = {
+    aura_shell_get_aura_surface, aura_shell_get_aura_output,
+    aura_shell_surface_submission_in_pixel_coordinates};
 }  // namespace
 
 void bind_aura_shell(wl_client* client,
