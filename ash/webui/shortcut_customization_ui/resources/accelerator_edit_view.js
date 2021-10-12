@@ -11,8 +11,10 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {ViewState} from './accelerator_view.js'
-import {AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, AcceleratorType} from './shortcut_types.js';
+import {getShortcutProvider} from './mojo_interface_provider.js'
+import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, AcceleratorType, ShortcutProviderInterface} from './shortcut_types.js';
 
 /**
  * @fileoverview
@@ -91,6 +93,17 @@ export class AcceleratorEditViewElement extends PolymerElement {
     }
   }
 
+  /** @override */
+  constructor() {
+    super();
+
+    /** @private {!ShortcutProviderInterface} */
+    this.shortcutProvider_ = getShortcutProvider();
+
+    /** @private {!AcceleratorLookupManager} */
+    this.lookupManager_ = AcceleratorLookupManager.getInstance();
+  }
+
   /** @protected */
   onStatusMessageChanged_() {
     if (this.statusMessage === '') {
@@ -107,7 +120,21 @@ export class AcceleratorEditViewElement extends PolymerElement {
 
   /** @protected */
   onDeleteButtonClicked_() {
-    // TODO(jimmyxgong): Implement this function
+    this.shortcutProvider_
+        .removeAccelerator(
+            this.source, this.action, this.acceleratorInfo.accelerator)
+        .then((result) => {
+          if (result === AcceleratorConfigResult.kSuccess) {
+            this.lookupManager_.removeAccelerator(
+                this.source, this.action, this.acceleratorInfo.accelerator);
+
+            this.dispatchEvent(new CustomEvent('request-update-accelerator', {
+              bubbles: true,
+              composed: true,
+              detail: {source: this.source, action: this.action}
+            }));
+          }
+        });
   }
 
   /** @protected  */

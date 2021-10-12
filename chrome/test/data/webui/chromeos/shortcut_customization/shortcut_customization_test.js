@@ -309,6 +309,33 @@ export function shortcutCustomizationAppTest() {
     assertEquals(']', actualAccelerator.key_display);
   });
 
+  test('RemoveAccelerator', async () => {
+    await flushTasks();
+
+    // Open dialog for first accelerator in View Desk subsection.
+    await openDialogForAcceleratorInSubsection_(/*View Desk*/ 1);
+    let editDialog = page.shadowRoot.querySelector('#editDialog');
+    assertTrue(!!editDialog);
+
+    // Grab the first accelerator from Virtual Desks subsection.
+    let acceleratorList = editDialog.shadowRoot.querySelector('cr-dialog')
+                              .querySelectorAll('accelerator-edit-view');
+    assertEquals(1, acceleratorList.length);
+    const editView = acceleratorList[0];
+
+    // Click on remove button.
+    editView.shadowRoot.querySelector('#deleteButton').click();
+
+    await flushTasks();
+
+    // Requery the accelerator elements.
+    acceleratorList = editDialog.shadowRoot.querySelector('cr-dialog')
+                          .querySelectorAll('accelerator-edit-view');
+
+    // Expect that the accelerator has now been removed.
+    assertEquals(0, acceleratorList.length);
+  });
+
   suite('FakeMojoProviderTest', () => {
     test('SettingGettingTestProvider', () => {
       // TODO(zentaro): Replace with fake when built.
