@@ -53,7 +53,7 @@ class ReactionLayout extends RelativeLayout {
         super.onFinishInflate();
         mReaction = findViewById(R.id.reaction_view);
         setUpCopyButton();
-        mDeleteButton = findViewById(R.id.delete_button);
+        setUpDeleteButton();
         mAdjustButton = findViewById(R.id.adjust_button);
     }
 
@@ -93,5 +93,10 @@ class ReactionLayout extends RelativeLayout {
                 mSceneEditorDelegate.duplicateReaction(ReactionLayout.this);
             }
         });
+    }
+
+    private void setUpDeleteButton() {
+        mDeleteButton = findViewById(R.id.delete_button);
+        mDeleteButton.setOnClickListener(view -> mSceneEditorDelegate.removeReaction(this));
     }
 }

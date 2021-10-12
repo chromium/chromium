@@ -104,6 +104,7 @@ public class SceneCoordinator implements SceneEditorDelegate {
 
     @Override
     public void removeReaction(ReactionLayout reactionLayout) {
+        markActiveStatus(reactionLayout, false);
         mSceneBackground.removeView(reactionLayout);
         mReactionLayouts.remove(reactionLayout);
     }
