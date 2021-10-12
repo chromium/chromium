@@ -833,8 +833,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 - (void)webView:(CWVWebView*)webView
     contextMenuConfigurationForElement:(CWVHTMLElement*)element
                      completionHandler:(void (^)(UIContextMenuConfiguration*))
-                                           completionHandler
-    API_AVAILABLE(ios(13.0)) {
+                                           completionHandler {
   void (^copyHandler)(UIAction*) = ^(UIAction* action) {
     NSDictionary* item = @{
       (NSString*)(kUTTypeURL) : element.hyperlink.absoluteString,
@@ -876,24 +875,9 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 }
 
 - (void)webView:(CWVWebView*)webView
-    contextMenuWillPresentForLinkWithURL:(NSURL*)linkURL
-    API_AVAILABLE(ios(13.0)) {
-  NSLog(@"webView:contextMenuWillPresentForLinkWithURL: %@",
-        linkURL.absoluteString);
-}
-
-- (void)webView:(CWVWebView*)webView
-    contextMenuForLinkWithURL:(NSURL*)linkURL
-       willCommitWithAnimator:
-           (id<UIContextMenuInteractionCommitAnimating>)animator
-    API_AVAILABLE(ios(13.0)) {
-  NSLog(@"webView:contextMenuForLinkWithURL:willCommitWithAnimator: %@",
-        linkURL.absoluteString);
-}
-
-- (void)webView:(CWVWebView*)webView
-    contextMenuDidEndForLinkWithURL:(NSURL*)linkURL API_AVAILABLE(ios(13.0)) {
-  NSLog(@"webView:contextMenuDidEndForLinkWithURL: %@", linkURL.absoluteString);
+    contextMenuWillCommitWithAnimator:
+        (id<UIContextMenuInteractionCommitAnimating>)animator {
+  NSLog(@"webView:contextMenuWillCommitWithAnimator:");
 }
 
 - (void)webView:(CWVWebView*)webView

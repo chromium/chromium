@@ -509,9 +509,8 @@ BOOL gChromeContextMenuEnabled = NO;
 
 - (void)webState:(web::WebState*)webState
     contextMenuConfigurationForParams:(const web::ContextMenuParams&)params
-                    completionHandler:
-                        (void (^)(UIContextMenuConfiguration*))completionHandler
-    API_AVAILABLE(ios(13.0)) {
+                    completionHandler:(void (^)(UIContextMenuConfiguration*))
+                                          completionHandler {
   SEL selector = @selector(webView:
       contextMenuConfigurationForElement:completionHandler:);
   if ([_UIDelegate respondsToSelector:selector]) {
@@ -531,36 +530,11 @@ BOOL gChromeContextMenuEnabled = NO;
 }
 
 - (void)webState:(web::WebState*)webState
-    contextMenuWillPresentForLinkWithURL:(const GURL&)linkURL
-    API_AVAILABLE(ios(13.0)) {
-  SEL selector = @selector(webView:contextMenuWillPresentForLinkWithURL:);
+    contextMenuWillCommitWithAnimator:
+        (id<UIContextMenuInteractionCommitAnimating>)animator {
+  SEL selector = @selector(webView:contextMenuWillCommitWithAnimator:);
   if ([_UIDelegate respondsToSelector:selector]) {
-    [_UIDelegate webView:self
-        contextMenuWillPresentForLinkWithURL:net::NSURLWithGURL(linkURL)];
-  }
-}
-
-- (void)webState:(web::WebState*)webState
-    contextMenuForLinkWithURL:(const GURL&)linkURL
-       willCommitWithAnimator:
-           (id<UIContextMenuInteractionCommitAnimating>)animator
-    API_AVAILABLE(ios(13.0)) {
-  SEL selector = @selector(webView:
-         contextMenuForLinkWithURL:willCommitWithAnimator:);
-  if ([_UIDelegate respondsToSelector:selector]) {
-    [_UIDelegate webView:self
-        contextMenuForLinkWithURL:net::NSURLWithGURL(linkURL)
-           willCommitWithAnimator:animator];
-  }
-}
-
-- (void)webState:(web::WebState*)webState
-    contextMenuDidEndForLinkWithURL:(const GURL&)linkURL
-    API_AVAILABLE(ios(13.0)) {
-  SEL selector = @selector(webView:contextMenuDidEndForLinkWithURL:);
-  if ([_UIDelegate respondsToSelector:selector]) {
-    [_UIDelegate webView:self
-        contextMenuDidEndForLinkWithURL:net::NSURLWithGURL(linkURL)];
+    [_UIDelegate webView:self contextMenuWillCommitWithAnimator:animator];
   }
 }
 

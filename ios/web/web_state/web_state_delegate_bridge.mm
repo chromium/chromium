@@ -111,8 +111,7 @@ UIView* WebStateDelegateBridge::GetWebViewContainer(WebState* source) {
 void WebStateDelegateBridge::ContextMenuConfiguration(
     WebState* source,
     const ContextMenuParams& params,
-    void (^completion_handler)(UIContextMenuConfiguration*))
-    API_AVAILABLE(ios(13.0)) {
+    void (^completion_handler)(UIContextMenuConfiguration*)) {
   if ([delegate_ respondsToSelector:@selector
                  (webState:
                      contextMenuConfigurationForParams:completionHandler:)]) {
@@ -124,35 +123,12 @@ void WebStateDelegateBridge::ContextMenuConfiguration(
   }
 }
 
-void WebStateDelegateBridge::ContextMenuDidEnd(WebState* source,
-                                               const GURL& link_url)
-    API_AVAILABLE(ios(13.0)) {
-  if ([delegate_ respondsToSelector:@selector(webState:
-                                        contextMenuDidEndForLinkWithURL:)]) {
-    [delegate_ webState:source contextMenuDidEndForLinkWithURL:link_url];
-  }
-}
-
 void WebStateDelegateBridge::ContextMenuWillCommitWithAnimator(
     WebState* source,
-    const GURL& link_url,
-    id<UIContextMenuInteractionCommitAnimating> animator)
-    API_AVAILABLE(ios(13.0)) {
-  if ([delegate_ respondsToSelector:@selector
-                 (webState:
-                     contextMenuForLinkWithURL:willCommitWithAnimator:)]) {
-    [delegate_ webState:source
-        contextMenuForLinkWithURL:link_url
-           willCommitWithAnimator:animator];
-  }
-}
-
-void WebStateDelegateBridge::ContextMenuWillPresent(WebState* source,
-                                                    const GURL& link_url)
-    API_AVAILABLE(ios(13.0)) {
-  if ([delegate_ respondsToSelector:@selector
-                 (webState:contextMenuWillPresentForLinkWithURL:)]) {
-    [delegate_ webState:source contextMenuWillPresentForLinkWithURL:link_url];
+    id<UIContextMenuInteractionCommitAnimating> animator) {
+  if ([delegate_ respondsToSelector:@selector(webState:
+                                        contextMenuWillCommitWithAnimator:)]) {
+    [delegate_ webState:source contextMenuWillCommitWithAnimator:animator];
   }
 }
 

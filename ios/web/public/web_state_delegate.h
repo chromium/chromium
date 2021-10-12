@@ -80,26 +80,17 @@ class WebStateDelegate {
   // nil.
   virtual UIView* GetWebViewContainer(WebState* source);
 
-  // Called when iOS13+ context menu is triggered and now it is required to
+  // Called when the context menu is triggered and now it is required to
   // provide a UIContextMenuConfiguration to |completion_handler| to generate
   // the context menu.
   virtual void ContextMenuConfiguration(
       WebState* source,
       const ContextMenuParams& params,
-      void (^completion_handler)(UIContextMenuConfiguration*))
-      API_AVAILABLE(ios(13.0));
-  // Called when iOS13+ context menu is ready to be showed.
-  virtual void ContextMenuDidEnd(WebState* source, const GURL& link_url)
-      API_AVAILABLE(ios(13.0));
-  // Called when iOS13+ context menu will commit with animator.
+      void (^completion_handler)(UIContextMenuConfiguration*));
+  // Called when the context menu will commit with animator.
   virtual void ContextMenuWillCommitWithAnimator(
       WebState* source,
-      const GURL& link_url,
-      id<UIContextMenuInteractionCommitAnimating> animator)
-      API_AVAILABLE(ios(13.0));
-  // Called when iOS13+ context menu will present.
-  virtual void ContextMenuWillPresent(WebState* source, const GURL& link_url)
-      API_AVAILABLE(ios(13.0));
+      id<UIContextMenuInteractionCommitAnimating> animator);
 
   // UIResponder Form Input APIs, consult Apple's UIResponder documentation for
   // more info.

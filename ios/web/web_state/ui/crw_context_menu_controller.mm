@@ -196,6 +196,15 @@ const CGFloat kJavaScriptTimeout = 1;
              : nil;
 }
 
+- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
+    willPerformPreviewActionForMenuWithConfiguration:
+        (UIContextMenuConfiguration*)configuration
+                                            animator:
+        (id<UIContextMenuInteractionCommitAnimating>)animator {
+  self.webState->GetDelegate()->ContextMenuWillCommitWithAnimator(self.webState,
+                                                                  animator);
+}
+
 #pragma mark - Private
 
 // Prevents the web view gesture recognizer to get the touch events.

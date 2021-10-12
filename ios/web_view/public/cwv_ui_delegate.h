@@ -70,26 +70,13 @@ CWV_EXPORT
     contextMenuConfigurationForElement:(CWVHTMLElement*)element
                      completionHandler:
                          (void (^)(UIContextMenuConfiguration* _Nullable))
-                             completionHandler API_AVAILABLE(ios(13.0));
-
-// Equivalent of -[WKUIDelegate
-// webView:contextMenuWillPresentForElement:].
-- (void)webView:(CWVWebView*)webView
-    contextMenuWillPresentForLinkWithURL:(NSURL*)linkURL
-    API_AVAILABLE(ios(13.0));
+                             completionHandler;
 
 // Equivalent of -[WKUIDelegate
 // webView:contextMenuForElement:willCommitWithAnimator:].
 - (void)webView:(CWVWebView*)webView
-    contextMenuForLinkWithURL:(NSURL*)linkURL
-       willCommitWithAnimator:
-           (id<UIContextMenuInteractionCommitAnimating>)animator
-    API_AVAILABLE(ios(13.0));
-
-// Equivalent of -[WKUIDelegate
-// webView:contextMenuDidEndForElement:].
-- (void)webView:(CWVWebView*)webView
-    contextMenuDidEndForLinkWithURL:(NSURL*)linkURL API_AVAILABLE(ios(13.0));
+    contextMenuWillCommitWithAnimator:
+           (id<UIContextMenuInteractionCommitAnimating>)animator;
 
 @end
 

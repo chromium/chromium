@@ -182,7 +182,7 @@
     contextMenuConfigurationForElement:(WKContextMenuElementInfo*)elementInfo
                      completionHandler:
                          (void (^)(UIContextMenuConfiguration* _Nullable))
-                             completionHandler API_AVAILABLE(ios(13.0)) {
+                             completionHandler {
   web::WebStateDelegate* delegate = self.webStateImpl->GetDelegate();
   if (!delegate) {
     completionHandler(nil);
@@ -197,41 +197,15 @@
 }
 
 - (void)webView:(WKWebView*)webView
-    contextMenuDidEndForElement:(WKContextMenuElementInfo*)elementInfo
-    API_AVAILABLE(ios(13.0)) {
-  web::WebStateDelegate* delegate = self.webStateImpl->GetDelegate();
-  if (!delegate) {
-    return;
-  }
-
-  delegate->ContextMenuDidEnd(self.webStateImpl,
-                              net::GURLWithNSURL(elementInfo.linkURL));
-}
-
-- (void)webView:(WKWebView*)webView
-     contextMenuForElement:(nonnull WKContextMenuElementInfo*)elementInfo
+     contextMenuForElement:(WKContextMenuElementInfo*)elementInfo
     willCommitWithAnimator:
-        (nonnull id<UIContextMenuInteractionCommitAnimating>)animator
-    API_AVAILABLE(ios(13.0)) {
+        (id<UIContextMenuInteractionCommitAnimating>)animator {
   web::WebStateDelegate* delegate = self.webStateImpl->GetDelegate();
   if (!delegate) {
     return;
   }
 
-  delegate->ContextMenuWillCommitWithAnimator(
-      self.webStateImpl, net::GURLWithNSURL(elementInfo.linkURL), animator);
-}
-
-- (void)webView:(WKWebView*)webView
-    contextMenuWillPresentForElement:(WKContextMenuElementInfo*)elementInfo
-    API_AVAILABLE(ios(13.0)) {
-  web::WebStateDelegate* delegate = self.webStateImpl->GetDelegate();
-  if (!delegate) {
-    return;
-  }
-
-  delegate->ContextMenuWillPresent(self.webStateImpl,
-                                   net::GURLWithNSURL(elementInfo.linkURL));
+  delegate->ContextMenuWillCommitWithAnimator(self.webStateImpl, animator);
 }
 
 #pragma mark - Helper
