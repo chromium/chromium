@@ -51,6 +51,12 @@ class KeepAliveRegistry {
   // Call when shutting down to ensure registering a new KeepAlive CHECKs.
   void SetIsShuttingDown(bool value = true);
 
+  // True if restarting is in progress.
+  bool IsRestarting() const;
+
+  // Called when restarting is triggered.
+  void SetRestarting();
+
  private:
   friend struct base::DefaultSingletonTraits<KeepAliveRegistry>;
   // Friend to be able to use Register/Unregister
@@ -99,6 +105,9 @@ class KeepAliveRegistry {
 
   // Used to guard against registering during shutdown.
   bool is_shutting_down_ = false;
+
+  // Used to handle KeepAliveRestartOption::ENABLED.
+  bool is_restarting_ = false;
 
   base::ObserverList<KeepAliveStateObserver>::Unchecked observers_;
 };

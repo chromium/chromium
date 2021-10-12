@@ -163,6 +163,7 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
 
   PrefService* pref_service = g_browser_process->local_state();
   pref_service->SetBoolean(prefs::kWasRestarted, true);
+  KeepAliveRegistry::GetInstance()->SetRestarting();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::BootTimesRecorder::Get()->set_restart_requested();

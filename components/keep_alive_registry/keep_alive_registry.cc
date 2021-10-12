@@ -23,7 +23,7 @@ KeepAliveRegistry* KeepAliveRegistry::GetInstance() {
 }
 
 bool KeepAliveRegistry::IsKeepingAlive() const {
-  return registered_count_ > 0;
+  return registered_count_ > 0 && !(IsRestartAllowed() && is_restarting_);
 }
 
 bool KeepAliveRegistry::IsKeepingAliveOnlyByBrowserOrigin() const {
@@ -86,6 +86,21 @@ bool KeepAliveRegistry::IsShuttingDown() const {
 
 void KeepAliveRegistry::SetIsShuttingDown(bool value) {
   is_shutting_down_ = value;
+}
+
+bool KeepAliveRegistry::IsRestarting() const {
+  return is_restarting_;
+}
+
+void KeepAliveRegistry::SetRestarting() {
+  bool old_keeping_alive = IsKeepingAlive();
+  is_restarting_ = true;
+  bool new_keeping_alive = IsKeepingAlive();
+
+  // keep alive state can be updated by |is_restarting_| change.
+  // If that happens, notify observers.
+  if (old_keeping_alive != new_keeping_alive)
+    OnKeepAliveStateChanged(new_keeping_alive);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
