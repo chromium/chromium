@@ -475,7 +475,6 @@ void NetworkHealthProvider::UpdateMatchingNetwork(
 
 void NetworkHealthProvider::OnDeviceStateListReceived(
     std::vector<network_mojom::DeviceStatePropertiesPtr> devices) {
-  bool list_changed = false;
   base::flat_set<std::string> networks_seen;
 
   // Iterate all devices. If the device is already known, then update it's
@@ -506,7 +505,6 @@ void NetworkHealthProvider::OnDeviceStateListReceived(
     if (!matched) {
       std::string observer_guid = AddNewNetwork(device);
       networks_seen.insert(std::move(observer_guid));
-      list_changed = true;
     }
   }
 
@@ -515,7 +513,6 @@ void NetworkHealthProvider::OnDeviceStateListReceived(
     const std::string& observer_guid = it->first;
     if (!base::Contains(networks_seen, observer_guid)) {
       it = networks_.erase(it);
-      list_changed = true;
       continue;
     }
 
