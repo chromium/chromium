@@ -20,6 +20,13 @@ namespace v4l2_test {
 // A Vp9Decoder decodes VP9-encoded IVF streams using v4l2 ioctl calls.
 class Vp9Decoder {
  public:
+  // Result of decoding the current frame.
+  enum Result {
+    kOk,
+    kError,
+    kEOStream,
+  };
+
   Vp9Decoder(const Vp9Decoder&) = delete;
   Vp9Decoder& operator=(const Vp9Decoder&) = delete;
   ~Vp9Decoder();
@@ -34,6 +41,9 @@ class Vp9Decoder {
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/dev-stateless-decoder.html#initialization
   bool Initialize();
 
+  // Parses next frame from IVF stream and decodes the frame.
+  Vp9Decoder::Result DecodeNextFrame();
+
  private:
   Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,
              std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
@@ -42,7 +52,7 @@ class Vp9Decoder {
 
   // Reads next frame from IVF stream and its size into |vp9_frame_header|
   // and |size| respectively.
-  Vp9Parser::Result ReadNextFrame(Vp9FrameHeader* vp9_frame_header,
+  Vp9Parser::Result ReadNextFrame(Vp9FrameHeader& vp9_frame_header,
                                   gfx::Size& size);
 
   // Parser for the IVF stream to decode.

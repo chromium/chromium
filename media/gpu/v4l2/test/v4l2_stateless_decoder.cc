@@ -128,5 +128,14 @@ int main(int argc, char** argv) {
   if (!dec->Initialize())
     LOG(FATAL) << "Initialization for decoding failed.";
 
+  for (int i = 0; i < n_frames || n_frames == 0; i++) {
+    LOG(INFO) << "Frame " << i << "...";
+    const Vp9Decoder::Result res = dec->DecodeNextFrame();
+    if (res == Vp9Decoder::kEOStream) {
+      LOG(INFO) << "End of stream.";
+      break;
+    }
+  }
+
   return EXIT_SUCCESS;
 }

@@ -125,15 +125,13 @@ bool Vp9Decoder::Initialize() {
   return true;
 }
 
-Vp9Parser::Result Vp9Decoder::ReadNextFrame(Vp9FrameHeader* vp9_frame_header,
+Vp9Parser::Result Vp9Decoder::ReadNextFrame(Vp9FrameHeader& vp9_frame_header,
                                             gfx::Size& size) {
-  DCHECK(vp9_frame_header);
-
   // TODO(jchinlee): reexamine this loop for cleanup.
   while (true) {
     std::unique_ptr<DecryptConfig> null_config;
     Vp9Parser::Result res =
-        vp9_parser_->ParseNextFrame(vp9_frame_header, &size, &null_config);
+        vp9_parser_->ParseNextFrame(&vp9_frame_header, &size, &null_config);
     if (res == Vp9Parser::kEOStream) {
       IvfFrameHeader ivf_frame_header{};
       const uint8_t* ivf_frame_data;
@@ -148,6 +146,27 @@ Vp9Parser::Result Vp9Decoder::ReadNextFrame(Vp9FrameHeader* vp9_frame_header,
 
     return res;
   }
+}
+
+Vp9Decoder::Result Vp9Decoder::DecodeNextFrame() {
+  gfx::Size size;
+  Vp9FrameHeader frame_hdr{};
+
+  const Vp9Parser::Result parser_res = ReadNextFrame(frame_hdr, size);
+  switch (parser_res) {
+    case Vp9Parser::kInvalidStream:
+      LOG_ASSERT(false) << "Failed to parse frame";
+      return Vp9Decoder::kError;
+    case Vp9Parser::kAwaitingRefresh:
+      LOG_ASSERT(false) << "Unsupported parser return value";
+      return Vp9Decoder::kError;
+    case Vp9Parser::kEOStream:
+      return Vp9Decoder::kEOStream;
+    case Vp9Parser::kOk:
+      return Vp9Decoder::kOk;
+  }
+  NOTREACHED();
+  return Vp9Decoder::kError;
 }
 
 }  // namespace v4l2_test
