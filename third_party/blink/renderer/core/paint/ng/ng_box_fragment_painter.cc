@@ -1939,7 +1939,8 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
   const LayoutObject* layout_object = fragment.GetLayoutObject();
   bool skip_children =
       layout_object &&
-      layout_object == hit_test.result->GetHitTestRequest().GetStopNode();
+      (layout_object == hit_test.result->GetHitTestRequest().GetStopNode() ||
+       layout_object->ChildPaintBlockedByDisplayLock());
   if (!skip_children && box_fragment_.ShouldClipOverflowAlongEitherAxis()) {
     // PaintLayer::HitTestContentsForFragments checked the fragments'
     // foreground rect for intersection if a layer is self painting,
