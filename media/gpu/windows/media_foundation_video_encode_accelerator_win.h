@@ -101,6 +101,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   void ProcessOutputAsync();
   void ProcessOutputSync();
 
+  // Drains pending output samples on |encoder_thread_|.
+  void DrainPendingOutputs();
+
   // Tries to deliver the input frame to the encoder.
   bool TryToDeliverInputFrame(scoped_refptr<VideoFrame> frame,
                               bool force_keyframe);
