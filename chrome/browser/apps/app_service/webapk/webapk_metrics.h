@@ -37,6 +37,7 @@ extern const char kWebApkInstallResultHistogram[];
 extern const char kWebApkUpdateResultHistogram[];
 extern const char kWebApkArcInstallResultHistogram[];
 extern const char kWebApkArcUpdateResultHistogram[];
+extern const char kWebApkMinterErrorCodeHistogram[];
 
 // Records the overall result of installing/updating a WebAPK to UMA.
 void RecordWebApkInstallResult(bool is_update, WebApkInstallStatus result);

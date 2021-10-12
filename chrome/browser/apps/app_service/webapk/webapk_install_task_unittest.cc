@@ -224,6 +224,8 @@ TEST_F(WebApkInstallTaskTest, SuccessfulInstall) {
                                apps::WebApkInstallStatus::kSuccess, 1);
   histograms.ExpectBucketCount(apps::kWebApkArcInstallResultHistogram,
                                arc::mojom::WebApkInstallResult::kSuccess, 1);
+  histograms.ExpectBucketCount(apps::kWebApkMinterErrorCodeHistogram,
+                               net::HTTP_OK, 1);
 }
 
 TEST_F(WebApkInstallTaskTest, ShareTarget) {
@@ -290,6 +292,8 @@ TEST_F(WebApkInstallTaskTest, FailedServerCall) {
   ASSERT_EQ(apps::webapk_prefs::GetWebApkAppIds(profile()).size(), 0);
   histograms.ExpectBucketCount(apps::kWebApkInstallResultHistogram,
                                apps::WebApkInstallStatus::kNetworkError, 1);
+  histograms.ExpectBucketCount(apps::kWebApkMinterErrorCodeHistogram,
+                               net::HTTP_BAD_REQUEST, 1);
 }
 
 TEST_F(WebApkInstallTaskTest, FailedArcInstall) {
