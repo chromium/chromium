@@ -601,9 +601,10 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
     user_policy_provider_->Init(schema_registry_service_->registry());
     policy_provider = user_policy_provider_.get();
     user_cloud_policy_manager = nullptr;
-  } else
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  } else {
+#else
   {
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     user_cloud_policy_manager_ = CreateUserCloudPolicyManager(
         GetPath(), GetPolicySchemaRegistryService()->registry(),
         force_immediate_policy_load, io_task_runner_);
@@ -876,13 +877,17 @@ ProfileImpl::~ProfileImpl() {
 
   // Destroy all OTR profiles and their profile services first.
   std::vector<Profile*> raw_otr_profiles;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   bool primary_otr_available = false;
+#endif
 
   // Get a list of existing OTR profiles since |off_the_record_profile_| might
   // be modified after the call to |DestroyProfileNow|.
   for (auto& otr_profile : otr_profiles_) {
     raw_otr_profiles.push_back(otr_profile.second.get());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     primary_otr_available |= (otr_profile.first == OTRProfileID::PrimaryID());
+#endif
   }
 
   for (Profile* otr_profile : raw_otr_profiles)
