@@ -822,7 +822,13 @@ class CommerceHintTimeoutTest : public CommerceHintAgentTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CommerceHintTimeoutTest, ExtractCart) {
+// Flaky on Linux: https://crbug.com/1257964.
+#if defined(OS_LINUX)
+#define MAYBE_ExtractCart DISABLED_ExtractCart
+#else
+#define MAYBE_ExtractCart ExtractCart
+#endif
+IN_PROC_BROWSER_TEST_F(CommerceHintTimeoutTest, MAYBE_ExtractCart) {
   base::HistogramTester histogram_tester;
 
   NavigateToURL("https://www.guitarcenter.com/cart.html");
@@ -847,7 +853,9 @@ class CommerceHintMaxCountTest : public CommerceHintAgentTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CommerceHintMaxCountTest, ExtractCart) {
+// Flaky on Linux: https://crbug.com/1257964.
+// See definition of MAYBE_ExtractCart above.
+IN_PROC_BROWSER_TEST_F(CommerceHintMaxCountTest, MAYBE_ExtractCart) {
   base::HistogramTester histogram_tester;
 
   NavigateToURL("https://www.guitarcenter.com/cart.html");
