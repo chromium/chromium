@@ -16,6 +16,7 @@ import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.BottomSheetOpenedSource;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
 import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -233,24 +234,37 @@ public class MerchantTrustSignalsCoordinator
     }
 
     @Override
-    public void onMessagePrimaryAction(MerchantTrustSignals trustSignals) {
+    public void onMessagePrimaryAction(
+            MerchantTrustSignals trustSignals, String messageAssociatedUrl) {
         mMetrics.recordMetricsForMessageTapped();
-        launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()));
+        launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()),
+                ()
+                        -> onBottomSheetDismissed(
+                                BottomSheetOpenedSource.FROM_MESSAGE, messageAssociatedUrl));
     }
 
     // PageInfoStoreInfoController.StoreInfoActionHandler implementation.
     @Override
     public void onStoreInfoClicked(MerchantTrustSignals trustSignals) {
-        launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()));
+        launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()),
+                () -> onBottomSheetDismissed(BottomSheetOpenedSource.FROM_PAGE_INFO, null));
         // If user has clicked the "Store info" row, send a signal to disable {@link
         // FeatureConstants.PAGE_INFO_STORE_INFO_FEATURE}.
         final Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
         tracker.notifyEvent(EventConstants.PAGE_INFO_STORE_INFO_ROW_CLICKED);
     }
 
-    private void launchDetailsPage(GURL url) {
+    private void launchDetailsPage(GURL url, Runnable onBottomSheetDismissed) {
         mDetailsTabCoordinator.requestOpenSheet(url,
-                mContext.getResources().getString(R.string.merchant_viewer_preview_sheet_title));
+                mContext.getResources().getString(R.string.merchant_viewer_preview_sheet_title),
+                onBottomSheetDismissed);
+    }
+
+    private void onBottomSheetDismissed(
+            @BottomSheetOpenedSource int openSource, @Nullable String messageAssociatedUrl) {
+        if (openSource == BottomSheetOpenedSource.FROM_MESSAGE && messageAssociatedUrl != null) {
+            maybeShowStoreIcon(messageAssociatedUrl);
+        }
     }
 
     /**

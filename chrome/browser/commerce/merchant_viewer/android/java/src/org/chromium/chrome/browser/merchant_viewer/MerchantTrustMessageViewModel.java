@@ -41,8 +41,9 @@ class MerchantTrustMessageViewModel {
         /**
          * Called when message primary action is tapped.
          * @param trustSignals The signal associated with this message.
+         * @param messageAssociatedUrl The url associated with this message context.
          */
-        void onMessagePrimaryAction(MerchantTrustSignals trustSignals);
+        void onMessagePrimaryAction(MerchantTrustSignals trustSignals, String messageAssociatedUrl);
     }
 
     public static PropertyModel create(Context context, MerchantTrustSignals trustSignals,
@@ -62,7 +63,9 @@ class MerchantTrustMessageViewModel {
                 .with(MessageBannerProperties.ON_DISMISSED,
                         (reason) -> actionsHandler.onMessageDismissed(reason, messageAssociatedUrl))
                 .with(MessageBannerProperties.ON_PRIMARY_ACTION,
-                        () -> actionsHandler.onMessagePrimaryAction(trustSignals))
+                        ()
+                                -> actionsHandler.onMessagePrimaryAction(
+                                        trustSignals, messageAssociatedUrl))
                 .build();
     }
 

@@ -56373,6 +56373,12 @@ Called by update_use_counter_css.py.-->
   <int value="7" label="Could not identify the source language"/>
 </enum>
 
+<enum name="MerchantTrustBottomSheetOpenedSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="From message"/>
+  <int value="2" label="From page info"/>
+</enum>
+
 <enum name="MerchantTrustMessageClearReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Navigate to same domain"/>

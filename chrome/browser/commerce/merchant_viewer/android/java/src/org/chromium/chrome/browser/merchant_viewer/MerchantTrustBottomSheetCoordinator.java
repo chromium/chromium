@@ -74,8 +74,8 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
     }
 
     /** Displays the details tab sheet. */
-    public void requestOpenSheet(GURL url, String title) {
-        setupSheet();
+    public void requestOpenSheet(GURL url, String title, Runnable onBottomSheetDismissed) {
+        setupSheet(onBottomSheetDismissed);
         mMediator.navigateToUrl(url, title);
         mBottomSheetController.requestShowContent(mSheetContent, true);
     }
@@ -85,7 +85,7 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
         mBottomSheetController.hideContent(mSheetContent, true);
     }
 
-    private void setupSheet() {
+    private void setupSheet(Runnable onBottomSheetDismissed) {
         if (mSheetContent != null) {
             return;
         }
@@ -106,6 +106,13 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
             public void onSheetContentChanged(BottomSheetContent newContent) {
                 if (newContent != mSheetContent) {
                     mMetrics.recordMetricsForBottomSheetClosed(mCloseReason);
+                    if (onBottomSheetDismissed != null
+                            && (mCloseReason == StateChangeReason.NONE
+                                    || mCloseReason == StateChangeReason.SWIPE
+                                    || mCloseReason == StateChangeReason.BACK_PRESS
+                                    || mCloseReason == StateChangeReason.TAP_SCRIM)) {
+                        onBottomSheetDismissed.run();
+                    }
                     destroySheet();
                 }
             }
