@@ -1727,9 +1727,35 @@ void ColorScheme::ApplyValue(StyleResolverState& state,
     }
     state.Style()->SetColorScheme(color_schemes);
     bool dark_scheme =
-        (has_dark && (prefers_dark || !has_light)) || (force_dark && !has_only);
+        // Dark scheme because the preferred scheme is dark and color-scheme
+        // contains dark.
+        (has_dark && prefers_dark) ||
+        // Dark scheme because the the only recognized color-scheme is dark.
+        (has_dark && !has_light) ||
+        // Dark scheme because we have a dark color-scheme override for forced
+        // darkening and no 'only' which opts out.
+        (force_dark && !has_only) ||
+        // Typically, forced darkening should be used with a dark preferred
+        // color-scheme. This is to support the FORCE_DARK_ONLY behavior from
+        // WebView where this combination is passed to the renderer.
+        (force_dark && !prefers_dark);
+
     state.Style()->SetDarkColorScheme(dark_scheme);
-    state.Style()->SetColorSchemeForced(!has_dark && dark_scheme);
+
+    bool forced_scheme =
+        // No dark in the color-scheme property, but we still forced it to dark.
+        (!has_dark && dark_scheme) ||
+        // Always use forced color-scheme for preferred light color-scheme with
+        // forced darkening. The combination of preferred color-scheme of light
+        // with a color-scheme property value of "light dark" chooses the light
+        // color-scheme. Typically, forced darkening should be used with a dark
+        // preferred color-scheme. This is to support the FORCE_DARK_ONLY
+        // behavior from WebView where this combination is passed to the
+        // renderer.
+        (force_dark && !prefers_dark);
+
+    state.Style()->SetColorSchemeForced(forced_scheme);
+
     if (has_dark) {
       // Record kColorSchemeDarkSupportedOnRoot if dark is present (though dark
       // may not be used). This metric is also recorded in
