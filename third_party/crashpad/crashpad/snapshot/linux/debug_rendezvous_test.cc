@@ -162,7 +162,9 @@ void TestAgainstTarget(PtraceConnection* connection) {
     ASSERT_GE(possible_mappings->Count(), 1u);
 
     std::unique_ptr<ElfImageReader> module_reader;
+#if !defined(OS_ANDROID)
     const MemoryMap::Mapping* module_mapping = nullptr;
+#endif
     const MemoryMap::Mapping* mapping = nullptr;
     while ((mapping = possible_mappings->Next())) {
       auto parsed_module = std::make_unique<ElfImageReader>();
@@ -172,7 +174,9 @@ void TestAgainstTarget(PtraceConnection* connection) {
           parsed_module->GetDynamicArrayAddress(&dynamic_address) &&
           dynamic_address == module.dynamic_array) {
         module_reader = std::move(parsed_module);
+#if !defined(OS_ANDROID)
         module_mapping = mapping;
+#endif
         break;
       }
     }
