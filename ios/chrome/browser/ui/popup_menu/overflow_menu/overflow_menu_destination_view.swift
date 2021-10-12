@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import SwiftUI
+import ios_chrome_common_ui_colors_swift
 
 /// A view displaying a single destination.
 struct OverflowMenuDestinationView: View {
@@ -25,7 +26,7 @@ struct OverflowMenuDestinationView: View {
     VStack {
       ZStack(alignment: .center) {
         Rectangle()
-          .foregroundColor(.white)
+          .foregroundColor(.cr_groupedSecondaryBackground)
           .frame(width: Dimensions.iconSize, height: Dimensions.iconSize)
           .cornerRadius(Dimensions.cornerRadius)
         destination.image
