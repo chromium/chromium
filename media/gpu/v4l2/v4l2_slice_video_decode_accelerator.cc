@@ -1160,11 +1160,19 @@ bool V4L2SliceVideoDecodeAccelerator::FinishSurfaceSetChange() {
 
   DCHECK_EQ(state_, kIdle);
   DCHECK(decoder_display_queue_.empty());
+
+#if DCHECK_IS_ON()
   // All output buffers should've been returned from decoder and device by now.
   // The only remaining owner of surfaces may be display (client), and we will
   // dismiss them when destroying output buffers below.
+  const size_t num_imported_buffers =
+      std::count_if(output_buffer_map_.begin(), output_buffer_map_.end(),
+                    [](const OutputRecord& output_record) {
+                      return output_record.output_frame != nullptr;
+                    });
   DCHECK_EQ(output_queue_->FreeBuffersCount() + surfaces_at_display_.size(),
-            output_buffer_map_.size());
+            num_imported_buffers);
+#endif  // DCHECK_IS_ON()
 
   if (!StopDevicePoll()) {
     LOG(ERROR) << "Failed StopDevicePoll()";
