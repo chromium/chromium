@@ -16,6 +16,7 @@
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -24,7 +25,7 @@
 #error "This file requires ARC support."
 #endif
 
-// Enum to describe all 4 cases for a user being signed-in. This enum is used
+// Enum to describe all 5 cases for a user being signed-in. This enum is used
 // internaly by SignoutActionSheetCoordinator().
 typedef NS_ENUM(NSUInteger, SignedInUserState) {
   // Sign-in with a managed account and sync is turned on.
@@ -34,7 +35,10 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   // Sign-in with a regular account and sync is turned on.
   SignedInUserStateWithNonManagedAccountAndSyncing,
   // Sign-in with a regular account and sync is turned off.
-  SignedInUserStateWithNoneManagedAccountAndNotSyncing
+  SignedInUserStateWithNoneManagedAccountAndNotSyncing,
+  // Sign-in with a requirement to give more contextual information when the
+  // forced sign-in policy is enabled.
+  SignedInUserStateWithForcedSigninInfoRequired
 };
 
 @interface SignoutActionSheetCoordinator () {
@@ -49,6 +53,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     AuthenticationService* authenticationService;
 // Action sheet to display sign-out actions.
 @property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
+// YES if the user has confirmed that they want to signout.
+@property(nonatomic, assign) BOOL confirmSignOut;
 
 @end
 
@@ -72,17 +78,136 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   DCHECK(self.completion);
   DCHECK(self.authenticationService->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
+  [self startActionSheetCoordinatorForSignout];
+}
 
+- (void)stop {
+  [self.actionSheetCoordinator stop];
+  self.actionSheetCoordinator = nil;
+}
+
+#pragma mark - ActionSheetCoordinator properties
+
+- (NSString*)title {
+  return self.actionSheetCoordinator.title;
+}
+
+- (NSString*)message {
+  return self.actionSheetCoordinator.message;
+}
+
+#pragma mark - Browser-based properties
+
+- (AuthenticationService*)authenticationService {
+  return AuthenticationServiceFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
+}
+
+// Returns the user's sign-in and syncing state.
+- (SignedInUserState)signedInUserState {
+  DCHECK(self.browser);
+  SyncSetupService* syncSetupService =
+      SyncSetupServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  BOOL syncEnabled = syncSetupService->IsFirstSetupComplete();
+
+  // Need a first step to show logout contextual information about the forced
+  // sign-in policy. Only return this state when sync is enabled because it is
+  // already shown for sync disabled.
+  if (IsForceSignInEnabled() && syncEnabled && !self.confirmSignOut) {
+    return SignedInUserStateWithForcedSigninInfoRequired;
+  }
+
+  if (self.authenticationService->HasPrimaryIdentityManaged(
+          signin::ConsentLevel::kSignin)) {
+    return syncEnabled ? SignedInUserStateWithManagedAccountAndSyncing
+                       : SignedInUserStateWithManagedAccountAndNotSyncing;
+  }
+  return syncEnabled ? SignedInUserStateWithNonManagedAccountAndSyncing
+                     : SignedInUserStateWithNoneManagedAccountAndNotSyncing;
+}
+
+// Returns the title associated to the given user sign-in state or nil if no
+// title is defined for the state.
+- (NSString*)actionSheetCoordinatorTitle {
+  DCHECK(self.browser);
+  NSString* title = nil;
+  switch (self.signedInUserState) {
+    case SignedInUserStateWithManagedAccountAndSyncing: {
+      std::u16string hostedDomain = HostedDomainForPrimaryAccount(self.browser);
+      title = l10n_util::GetNSStringF(
+          IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_MANAGED_ACCOUNT,
+          hostedDomain);
+      break;
+    }
+    case SignedInUserStateWithNonManagedAccountAndSyncing: {
+      title = l10n_util::GetNSString(
+          IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_ACCOUNT);
+      break;
+    }
+    case SignedInUserStateWithForcedSigninInfoRequired:
+    case SignedInUserStateWithManagedAccountAndNotSyncing:
+    case SignedInUserStateWithNoneManagedAccountAndNotSyncing: {
+      if (IsForceSignInEnabled()) {
+        title = l10n_util::GetNSString(
+            IDS_IOS_ENTERPRISE_FORCED_SIGNIN_SIGNOUT_DIALOG_TITLE);
+        break;
+      }
+    }
+  }
+
+  return title;
+}
+
+// Returns the message associated to the given user sign-in state or nil if no
+// message is defined for the state.
+- (NSString*)actionSheetCoordinatorMessage {
+  switch (self.signedInUserState) {
+    case SignedInUserStateWithForcedSigninInfoRequired:
+    case SignedInUserStateWithNoneManagedAccountAndNotSyncing:
+    case SignedInUserStateWithManagedAccountAndNotSyncing: {
+      if (IsForceSignInEnabled()) {
+        return l10n_util::GetNSString(IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE);
+      }
+      return nil;
+    }
+    case SignedInUserStateWithManagedAccountAndSyncing:
+    case SignedInUserStateWithNonManagedAccountAndSyncing: {
+      return nil;
+    }
+  }
+}
+
+#pragma mark - Private
+
+// Starts the signout action sheet for the current user state.
+- (void)startActionSheetCoordinatorForSignout {
   self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                            title:self.actionSheetCoordinatorTitle
-                         message:nil
+                         message:self.actionSheetCoordinatorMessage
                             rect:_rect
                             view:_view];
 
   __weak SignoutActionSheetCoordinator* weakSelf = self;
   switch (self.signedInUserState) {
+    case SignedInUserStateWithForcedSigninInfoRequired: {
+      NSString* const signOutButtonTitle =
+          l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON);
+      [self.actionSheetCoordinator
+          addItemWithTitle:signOutButtonTitle
+                    action:^{
+                      weakSelf.confirmSignOut = YES;
+                      // Stop the current action sheet coordinator and start a
+                      // new one for the next step.
+                      [weakSelf.actionSheetCoordinator stop];
+                      weakSelf.actionSheetCoordinator = nil;
+                      [weakSelf startActionSheetCoordinatorForSignout];
+                    }
+                     style:UIAlertActionStyleDestructive];
+      break;
+    }
     case SignedInUserStateWithManagedAccountAndSyncing: {
       NSString* const clearFromDeviceTitle =
           l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON);
@@ -145,74 +270,6 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
                  style:UIAlertActionStyleCancel];
   [self.actionSheetCoordinator start];
 }
-
-- (void)stop {
-  [self.actionSheetCoordinator stop];
-  self.actionSheetCoordinator = nil;
-}
-
-#pragma mark - ActionSheetCoordinator properties
-
-- (NSString*)title {
-  return self.actionSheetCoordinator.title;
-}
-
-#pragma mark - Browser-based properties
-
-- (AuthenticationService*)authenticationService {
-  return AuthenticationServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
-}
-
-// Returns the user's sign-in and syncing state.
-- (SignedInUserState)signedInUserState {
-  DCHECK(self.browser);
-  SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  BOOL syncEnabled = syncSetupService->IsFirstSetupComplete();
-  SignedInUserState signedInUserState;
-  if (self.authenticationService->HasPrimaryIdentityManaged(
-          signin::ConsentLevel::kSignin)) {
-    signedInUserState = syncEnabled
-                            ? SignedInUserStateWithManagedAccountAndSyncing
-                            : SignedInUserStateWithManagedAccountAndNotSyncing;
-  } else {
-    signedInUserState =
-        syncEnabled ? SignedInUserStateWithNonManagedAccountAndSyncing
-                    : SignedInUserStateWithNoneManagedAccountAndNotSyncing;
-  }
-  return signedInUserState;
-}
-
-// Returns the title associated to the given user sign-in state or nil if no
-// title is defined for the state.
-- (NSString*)actionSheetCoordinatorTitle {
-  DCHECK(self.browser);
-  NSString* title = nil;
-  switch (self.signedInUserState) {
-    case SignedInUserStateWithManagedAccountAndSyncing: {
-      std::u16string hostedDomain = HostedDomainForPrimaryAccount(self.browser);
-      title = l10n_util::GetNSStringF(
-          IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_MANAGED_ACCOUNT,
-          hostedDomain);
-      break;
-    }
-    case SignedInUserStateWithNonManagedAccountAndSyncing: {
-      title = l10n_util::GetNSString(
-          IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_ACCOUNT);
-      break;
-    }
-    case SignedInUserStateWithManagedAccountAndNotSyncing:
-    case SignedInUserStateWithNoneManagedAccountAndNotSyncing: {
-      // No title.
-      break;
-    }
-  }
-  return title;
-}
-
-#pragma mark - Private
 
 // Signs the user out of the primary account and clears the data from their
 // device if specified to do so.
