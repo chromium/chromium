@@ -89,7 +89,7 @@ public class PriceDropNotifier {
     }
 
     private final Context mContext;
-    private ImageFetcher mImageFetcher;
+    private final ImageFetcher mImageFetcher;
     private final NotificationWrapperBuilder mNotificationBuilder;
     private final NotificationManagerProxy mNotificationManagerProxy;
     private final PriceDropNotificationManager mPriceDropNotificationManager;
@@ -99,19 +99,24 @@ public class PriceDropNotifier {
      * @param context The Android context.
      */
     public static PriceDropNotifier create(Context context) {
+        ImageFetcher imageFetcher =
+                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.NETWORK_ONLY,
+                        Profile.getLastUsedRegularProfile().getProfileKey());
         NotificationWrapperBuilder notificationBuilder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                         ChannelId.PRICE_DROP,
                         new NotificationMetadata(SystemNotificationType.PRICE_DROP_ALERTS,
                                 NOTIFICATION_TAG, NOTIFICATION_ID));
-        return new PriceDropNotifier(
-                context, notificationBuilder, new NotificationManagerProxyImpl(context));
+        return new PriceDropNotifier(context, imageFetcher, notificationBuilder,
+                new NotificationManagerProxyImpl(context));
     }
 
     @VisibleForTesting
-    PriceDropNotifier(Context context, NotificationWrapperBuilder notificationBuilder,
+    PriceDropNotifier(Context context, ImageFetcher imageFetcher,
+            NotificationWrapperBuilder notificationBuilder,
             NotificationManagerProxy notificationManager) {
         mContext = context;
+        mImageFetcher = imageFetcher;
         mNotificationBuilder = notificationBuilder;
         mNotificationManagerProxy = notificationManager;
         mPriceDropNotificationManager =
@@ -126,15 +131,6 @@ public class PriceDropNotifier {
         maybeFetchIcon(notificationData, bitmap -> { showWithIcon(notificationData, bitmap); });
     }
 
-    @VisibleForTesting
-    protected ImageFetcher getImageFetcher() {
-        if (mImageFetcher == null) {
-            mImageFetcher = ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.NETWORK_ONLY,
-                    Profile.getLastUsedRegularProfile().getProfileKey());
-        }
-        return mImageFetcher;
-    }
-
     private void maybeFetchIcon(
             final NotificationData notificationData, Callback<Bitmap> callback) {
         if (notificationData.iconUrl == null) {
@@ -144,7 +140,7 @@ public class PriceDropNotifier {
 
         ImageFetcher.Params params = ImageFetcher.Params.create(
                 notificationData.iconUrl, ImageFetcher.PRICE_DROP_NOTIFICATION);
-        getImageFetcher().fetchImage(params, bitmap -> { callback.onResult(bitmap); });
+        mImageFetcher.fetchImage(params, bitmap -> { callback.onResult(bitmap); });
     }
 
     private void showWithIcon(NotificationData notificationData, @Nullable Bitmap icon) {

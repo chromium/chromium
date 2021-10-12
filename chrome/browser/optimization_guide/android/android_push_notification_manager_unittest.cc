@@ -112,8 +112,6 @@ class AndroidPushNotificationManagerJavaTest : public testing::Test {
     ASSERT_TRUE(profile_manager_.SetUp(temp_dir_.GetPath()));
     profile_ = profile_manager_.CreateTestingProfile(chrome::kInitialProfile);
 
-    Java_OptimizationGuidePushNotificationTestHelper_setUpMocks(env_, j_test_);
-
     service_ = static_cast<OptimizationGuideKeyedService*>(
         OptimizationGuideKeyedServiceFactory::GetInstance()
             ->SetTestingFactoryAndUse(
@@ -123,6 +121,8 @@ class AndroidPushNotificationManagerJavaTest : public testing::Test {
                                     base::Unretained(this))));
     service_->GetHintsManager()->push_notification_manager()->AddObserver(
         &observer_);
+
+    Java_OptimizationGuidePushNotificationTestHelper_setUpMocks(env_, j_test_);
 
     // It takes two session starts for experimental params and feature flags to
     // be picked up by Java, so override them manually.
