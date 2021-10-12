@@ -788,8 +788,6 @@ export class PrintPreviewPreviewAreaElement extends
       case Error.NO_DESTINATIONS:
         return this.i18n('noDestinationsMessage');
       // </if>
-      case Error.NO_PLUGIN:
-        return this.i18n('noPlugin');
       case Error.PREVIEW_FAILED:
         return this.i18n('previewFailed');
       default:

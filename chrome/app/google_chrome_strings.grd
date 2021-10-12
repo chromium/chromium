@@ -518,11 +518,6 @@ Google Chrome is unable to recover your settings.
         </message>
       </if>
 
-      <!-- Print Preview -->
-      <message name="IDS_PRINT_PREVIEW_NO_PLUGIN" desc="Message to display when the PDF viewer is missing.">
-        Google Chrome cannot show the print preview when the built-in PDF viewer is missing.
-      </message>
-
       <!-- Download Shelf Items -->
       <message name="IDS_DOWNLOAD_STATUS_CRX_INSTALL_RUNNING"
                desc="Message shown when a CRX has been downloaded and is being unpacked.">

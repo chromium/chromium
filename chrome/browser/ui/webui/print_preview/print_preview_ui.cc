@@ -234,7 +234,6 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"noLongerSupportedFragment",
      IDS_PRINT_PREVIEW_NO_LONGER_SUPPORTED_FRAGMENT},
     {"noMargins", IDS_PRINT_PREVIEW_NO_MARGINS},
-    {"noPlugin", IDS_PRINT_PREVIEW_NO_PLUGIN},
     {"nonIsotropicDpiItemLabel",
      IDS_PRINT_PREVIEW_NON_ISOTROPIC_DPI_ITEM_LABEL},
     {"offline", IDS_PRINT_PREVIEW_OFFLINE},
