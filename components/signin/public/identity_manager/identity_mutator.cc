@@ -30,9 +30,11 @@ bool JniIdentityMutator::SetPrimaryAccount(
       identity_mutator_->GetPrimaryAccountMutator();
   DCHECK(primary_account_mutator);
 
-  return primary_account_mutator->SetPrimaryAccount(
-      ConvertFromJavaCoreAccountId(env, primary_account_id),
-      static_cast<ConsentLevel>(j_consent_level));
+  PrimaryAccountMutator::PrimaryAccountError error =
+      primary_account_mutator->SetPrimaryAccount(
+          ConvertFromJavaCoreAccountId(env, primary_account_id),
+          static_cast<ConsentLevel>(j_consent_level));
+  return error == PrimaryAccountMutator::PrimaryAccountError::kNoError;
 }
 
 bool JniIdentityMutator::ClearPrimaryAccount(JNIEnv* env,
