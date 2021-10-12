@@ -4023,3 +4023,14 @@ EVENT_TYPE(CORS_PREFLIGHT_RESULT)
 // from preflight cache.
 // The parameters are the same as for CORS_PREFLIGHT_RESULT.
 EVENT_TYPE(CORS_PREFLIGHT_CACHED_RESULT)
+
+// ------------------------------------------------------------------------
+// Initiator
+// ------------------------------------------------------------------------
+
+// This event is logged to indicate the initiator of the network event.
+// The event contains the following parameters:
+//   {
+//     "source_dependency": <Source identifier for the attached event>
+//   }
+EVENT_TYPE(CREATED_BY)

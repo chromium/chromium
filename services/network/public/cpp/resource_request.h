@@ -18,6 +18,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/filter/source_stream.h"
 #include "net/http/http_request_headers.h"
+#include "net/log/net_log_source.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/optional_trust_token_params.h"
 #include "services/network/public/cpp/resource_request_body.h"
@@ -101,16 +102,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     int32_t render_process_id = -1;
   };
 
-  // Typemapped to network.mojom.NetLogParams, see comments there for
-  // details of each field.
-  struct COMPONENT_EXPORT(NETWORK_CPP_BASE) NetLogParams {
-    NetLogParams();
-    explicit NetLogParams(uint32_t id);
-    ~NetLogParams();
-
-    uint32_t source_id;
-  };
-
   ResourceRequest();
   ResourceRequest(const ResourceRequest& request);
   ~ResourceRequest();
@@ -186,7 +177,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // decoding any non-listed stream types.
   absl::optional<std::vector<net::SourceStream::SourceType>>
       devtools_accepted_stream_types;
-  absl::optional<NetLogParams> net_log_params;
+  absl::optional<net::NetLogSource> net_log_create_info;
+  absl::optional<net::NetLogSource> net_log_reference_info;
   mojom::IPAddressSpace target_ip_address_space =
       mojom::IPAddressSpace::kUnknown;
 };

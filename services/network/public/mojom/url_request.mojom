@@ -99,13 +99,12 @@ struct WebBundleTokenParams {
 };
 
 // Options that may be set when URLRequests need to take over NetLog related
-// parameters from CorsURLLoader. The URLRequest will reuse these parameters
-// on logging. If set, contains parameters to construct a NetLogWithSource for
-// the request. If not set, URLRequest constructs a NetLogWitSource with
-// default parameters.
-struct NetLogParams {
-  // The ID of NetLogSource.
+// parameters. The URLRequest will use these parameters on logging.
+// Typemapped to net::NetLogSource.
+struct NetLogSource {
+  uint32 source_type;
   uint32 source_id;
+  mojo_base.mojom.TimeTicks start_time;
 };
 
 // Typemapped to network::ResourceRequest.
@@ -431,15 +430,23 @@ struct URLRequest {
   // decoding any non-listed stream types.
   array<SourceType>? devtools_accepted_stream_types;
 
-  // This field is set within the network service, more concretely by
-  // CorsURLLoader, and solely used there unless the loader factory is
-  // overridden. Setting this field by the process outside the network service
-  // is currently not expected and is invalid.
-  // If set correctly, it contains NetLog related parameters. This value is
-  // filled and used when network service creates a new request for preflights
-  // (which happens in CorsURLLoader). See the comment of NetLogParams for
-  // details.
-  NetLogParams? net_log_params;
+  // This field is filled and used when network service creates a new request
+  // for preflights (which happens in CorsURLLoader). So this field is set
+  // within the network service, more concretely by CorsURLLoader, and solely
+  // used there unless the loader factory is overridden. Setting this field by
+  // the process outside the network service is currently not expected and is
+  // invalid.
+  // If set, it contains NetLog related parameters to construct a NetLogSource
+  // for the request. If not set, URLRequest constructs a NetLogSource with
+  // default parameters.
+  NetLogSource? net_log_create_info;
+
+  // This field is filled and used within network service. Setting this field
+  // by the process outside the network service is currently not expected and
+  // is invalid.
+  // If set, it contains NetLog related parameters to identify the initiator
+  // of the request in NetLog.
+  NetLogSource? net_log_reference_info;
 
   // The IP address space to which the target endpoint of this request should
   // belong, or `kUnknown` if there is no such requirement.

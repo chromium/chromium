@@ -8,6 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_flags.h"
+#include "net/log/net_log_source.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/url_request.mojom.h"
@@ -77,6 +78,13 @@ bool OptionalWebBundleTokenParamsEqualsForTesting(  // IN-TEST
     const absl::optional<ResourceRequest::WebBundleTokenParams>& rhs) {
   return (!lhs && !rhs) ||
          (lhs && rhs && lhs->EqualsForTesting(*rhs));  // IN-TEST
+}
+
+bool OptionalNetLogInfoEqualsForTesting(
+    const absl::optional<net::NetLogSource>& lhs,
+    const absl::optional<net::NetLogSource>& rhs) {
+  bool equal_members = lhs && rhs && lhs.value() == rhs.value();
+  return (!lhs && !rhs) || equal_members;
 }
 
 base::debug::CrashKeyString* GetRequestUrlCrashKey() {
@@ -188,10 +196,6 @@ ResourceRequest::WebBundleTokenParams::CloneHandle() const {
   return new_remote;
 }
 
-ResourceRequest::NetLogParams::NetLogParams() = default;
-ResourceRequest::NetLogParams::NetLogParams(uint32_t id) : source_id(id) {}
-ResourceRequest::NetLogParams::~NetLogParams() = default;
-
 ResourceRequest::ResourceRequest() = default;
 ResourceRequest::ResourceRequest(const ResourceRequest& request) = default;
 ResourceRequest::~ResourceRequest() = default;
@@ -254,6 +258,10 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          trust_token_params == request.trust_token_params &&
          OptionalWebBundleTokenParamsEqualsForTesting(  // IN-TEST
              web_bundle_token_params, request.web_bundle_token_params) &&
+         OptionalNetLogInfoEqualsForTesting(net_log_create_info,
+                                            request.net_log_create_info) &&
+         OptionalNetLogInfoEqualsForTesting(net_log_reference_info,
+                                            request.net_log_reference_info) &&
          target_ip_address_space == request.target_ip_address_space;
 }
 

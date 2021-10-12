@@ -255,8 +255,7 @@ CorsURLLoader::CorsURLLoader(
 
   receiver_.set_disconnect_handler(
       base::BindOnce(&CorsURLLoader::OnMojoDisconnect, base::Unretained(this)));
-  request_.net_log_params =
-      network::ResourceRequest::NetLogParams(net_log_.source().id);
+  request_.net_log_create_info = net_log_.source();
   DCHECK(network_loader_factory_);
   DCHECK(origin_access_list_);
   DCHECK(preflight_controller_);

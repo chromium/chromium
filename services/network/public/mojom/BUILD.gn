@@ -363,8 +363,8 @@ mojom("url_loader_base") {
           cpp = "::network::ResourceRequest::WebBundleTokenParams"
         },
         {
-          mojom = "network.mojom.NetLogParams"
-          cpp = "::network::ResourceRequest::NetLogParams"
+          mojom = "network.mojom.NetLogSource"
+          cpp = "::net::NetLogSource"
         },
         {
           mojom = "network.mojom.URLRequest"

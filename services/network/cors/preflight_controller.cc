@@ -15,6 +15,8 @@
 #include "net/base/load_flags.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_request_headers.h"
+#include "net/log/net_log.h"
+#include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
 #include "services/network/cors/cors_util.h"
 #include "services/network/network_service.h"
@@ -82,6 +84,7 @@ std::string CreateAccessControlRequestHeadersHeader(
 std::unique_ptr<ResourceRequest> CreatePreflightRequest(
     const ResourceRequest& request,
     bool tainted,
+    const net::NetLogSource& net_log_source,
     const absl::optional<base::UnguessableToken>& devtools_request_id) {
   DCHECK(!request.url.has_username());
   DCHECK(!request.url.has_password());
@@ -153,6 +156,7 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
   }
   preflight_request->is_fetch_like_api = request.is_fetch_like_api;
   preflight_request->is_favicon = request.is_favicon;
+  preflight_request->net_log_reference_info = net_log_source;
 
   return preflight_request;
 }
@@ -321,8 +325,8 @@ class PreflightController::PreflightLoader final {
         net_log_(net_log) {
     if (devtools_observer_)
       devtools_request_id_ = base::UnguessableToken::Create();
-    auto preflight_request =
-        CreatePreflightRequest(request, tainted, devtools_request_id_);
+    auto preflight_request = CreatePreflightRequest(
+        request, tainted, net_log.source(), devtools_request_id_);
 
     if (devtools_observer_) {
       DCHECK(devtools_request_id_);
@@ -468,7 +472,11 @@ std::unique_ptr<ResourceRequest>
 PreflightController::CreatePreflightRequestForTesting(
     const ResourceRequest& request,
     bool tainted) {
-  return CreatePreflightRequest(request, tainted, absl::nullopt);
+  return CreatePreflightRequest(
+      request, tainted,
+      net::NetLogSource(net::NetLogSourceType::URL_REQUEST,
+                        net::NetLog::Get()->NextID()),
+      /*devtools_request_id=*/absl::nullopt);
 }
 
 // static

@@ -26,6 +26,9 @@ struct NET_EXPORT NetLogSource {
   NetLogSource();
   NetLogSource(NetLogSourceType type, uint32_t id);
   NetLogSource(NetLogSourceType type, uint32_t id, base::TimeTicks start_time);
+
+  bool operator==(const NetLogSource& rhs) const;
+
   bool IsValid() const;
 
   // Adds the source to a dictionary containing event parameters,

@@ -21,6 +21,7 @@
 #include "build/chromeos_buildflags.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
+#include "net/log/net_log_source.h"
 #include "net/net_buildflags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
@@ -115,7 +116,8 @@ class NET_EXPORT URLRequestContext {
       URLRequest::Delegate* delegate,
       NetworkTrafficAnnotationTag traffic_annotation,
       bool is_for_websockets = false,
-      const absl::optional<uint32_t> net_log_source_id = absl::nullopt) const;
+      const absl::optional<net::NetLogSource> net_log_source =
+          absl::nullopt) const;
 
   NetLog* net_log() const { return net_log_; }
 

@@ -22,6 +22,7 @@
 #include "net/http/http_cache.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_transaction_factory.h"
+#include "net/log/net_log_source.h"
 #include "net/socket/ssl_client_socket_impl.h"
 #include "net/url_request/url_request.h"
 
@@ -102,10 +103,10 @@ std::unique_ptr<URLRequest> URLRequestContext::CreateRequest(
     URLRequest::Delegate* delegate,
     NetworkTrafficAnnotationTag traffic_annotation,
     bool is_for_websockets,
-    const absl::optional<uint32_t> net_log_source_id) const {
+    const absl::optional<net::NetLogSource> net_log_source) const {
   return base::WrapUnique(new URLRequest(url, priority, delegate, this,
                                          traffic_annotation, is_for_websockets,
-                                         net_log_source_id));
+                                         net_log_source));
 }
 
 void URLRequestContext::set_cookie_store(CookieStore* cookie_store) {

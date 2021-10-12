@@ -28,9 +28,9 @@ namespace {
 class PreflightCacheTest : public testing::Test {
  public:
   PreflightCacheTest()
-      : net_log_(net::NetLogWithSource::Make(
-            net::NetLog::Get(),
-            net::NetLogSourceType::CORS_URL_LOADER)) {}
+      : net_log_(
+            net::NetLogWithSource::Make(net::NetLog::Get(),
+                                        net::NetLogSourceType::URL_REQUEST)) {}
 
  protected:
   size_t CountEntries() const { return cache_.CountEntriesForTesting(); }
@@ -242,7 +242,7 @@ TEST_F(PreflightCacheTest, NetLogCheckCacheExist) {
   std::vector<net::NetLogEntry> entries = net_log_observer.GetEntries();
   ASSERT_EQ(entries.size(), 5u);
   for (const auto& entry : entries) {
-    EXPECT_EQ(entry.source.type, net::NetLogSourceType::CORS_URL_LOADER);
+    EXPECT_EQ(entry.source.type, net::NetLogSourceType::URL_REQUEST);
   }
   EXPECT_EQ(entries[0].type, net::NetLogEventType::CHECK_CORS_PREFLIGHT_CACHE);
   EXPECT_EQ(net::GetStringValueFromParams(entries[0], "status"),

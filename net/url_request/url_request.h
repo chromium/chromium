@@ -41,6 +41,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/log/net_log_event_type.h"
+#include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
 #include "net/net_buildflags.h"
 #include "net/socket/connection_attempts.h"
@@ -824,7 +825,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
              const URLRequestContext* context,
              NetworkTrafficAnnotationTag traffic_annotation,
              bool is_for_websockets,
-             absl::optional<uint32_t> net_log_source_id);
+             absl::optional<net::NetLogSource> net_log_source);
 
   // Resumes or blocks a request paused by the NetworkDelegate::OnBeforeRequest
   // handler. If |blocked| is true, the request is blocked and an error page is

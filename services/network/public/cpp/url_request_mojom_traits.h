@@ -141,15 +141,19 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
-    StructTraits<network::mojom::NetLogParamsDataView,
-                 network::ResourceRequest::NetLogParams> {
-  static uint32_t source_id(
-      const network::ResourceRequest::NetLogParams& params) {
-    return params.source_id;
+    StructTraits<network::mojom::NetLogSourceDataView, net::NetLogSource> {
+  static uint32_t source_id(const net::NetLogSource& params) {
+    return params.id;
+  }
+  static uint32_t source_type(const net::NetLogSource& params) {
+    return static_cast<uint32_t>(params.type);
+  }
+  static base::TimeTicks start_time(const net::NetLogSource& params) {
+    return params.start_time;
   }
 
-  static bool Read(network::mojom::NetLogParamsDataView data,
-                   network::ResourceRequest::NetLogParams* out);
+  static bool Read(network::mojom::NetLogSourceDataView data,
+                   net::NetLogSource* out);
 };
 
 template <>
@@ -333,9 +337,13 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   web_bundle_token_params(const network::ResourceRequest& request) {
     return request.web_bundle_token_params;
   }
-  static const absl::optional<network::ResourceRequest::NetLogParams>&
-  net_log_params(const network::ResourceRequest& request) {
-    return request.net_log_params;
+  static const absl::optional<net::NetLogSource>& net_log_create_info(
+      const network::ResourceRequest& request) {
+    return request.net_log_create_info;
+  }
+  static const absl::optional<net::NetLogSource>& net_log_reference_info(
+      const network::ResourceRequest& request) {
+    return request.net_log_reference_info;
   }
   static network::mojom::IPAddressSpace target_ip_address_space(
       const network::ResourceRequest& request) {
