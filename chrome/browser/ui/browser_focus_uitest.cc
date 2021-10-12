@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/find_bar/find_bar_host_unittest_util.h"
+#include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -125,6 +126,14 @@ class BrowserFocusTest : public InProcessBrowserTest {
                                                     reverse, false, false));
       }
 
+      // From the location icon we must traverse backwards one more time to
+      // traverse past the tab search caption button if present.
+      if (WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(browser()) &&
+          reverse) {
+        ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key, false, true,
+                                                    false, false));
+      }
+
       for (size_t j = 0; j < base::size(kExpectedIDs); ++j) {
         SCOPED_TRACE(base::StringPrintf("focus inner loop %" PRIuS, j));
         const size_t index = reverse ? base::size(kExpectedIDs) - 1 - j : j;
@@ -160,6 +169,13 @@ class BrowserFocusTest : public InProcessBrowserTest {
         }
       }
 #endif
+
+      // Traverse over the tab search frame caption button if present.
+      if (WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(browser()) &&
+          !reverse) {
+        ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key, false,
+                                                    false, false, false));
+      }
 
       ui_test_utils::WaitForViewFocus(
           browser(), reverse ? VIEW_ID_OMNIBOX : VIEW_ID_LOCATION_ICON, true);

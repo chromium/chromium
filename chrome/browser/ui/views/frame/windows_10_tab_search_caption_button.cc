@@ -4,18 +4,10 @@
 
 #include "chrome/browser/ui/views/frame/windows_10_tab_search_caption_button.h"
 
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-
-// static.
-bool Windows10TabSearchCaptionButton::IsTabSearchCaptionButtonEnabled(
-    BrowserNonClientFrameView* frame_view) {
-  return frame_view->browser_view()->GetIsNormalType() &&
-         base::FeatureList::IsEnabled(features::kWin10TabSearchCaptionButton);
-}
 
 Windows10TabSearchCaptionButton::Windows10TabSearchCaptionButton(
     GlassBrowserFrameView* frame_view,

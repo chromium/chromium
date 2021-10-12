@@ -8,17 +8,12 @@
 #include "chrome/browser/ui/views/frame/windows_10_caption_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
-class BrowserNonClientFrameView;
 class GlassBrowserFrameView;
 class TabSearchBubbleHost;
 
 class Windows10TabSearchCaptionButton : public Windows10CaptionButton {
  public:
   METADATA_HEADER(Windows10TabSearchCaptionButton);
-
-  static bool IsTabSearchCaptionButtonEnabled(
-      BrowserNonClientFrameView* frame_view);
-
   Windows10TabSearchCaptionButton(GlassBrowserFrameView* frame_view,
                                   ViewID button_type,
                                   const std::u16string& accessible_name);

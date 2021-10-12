@@ -7,8 +7,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/sad_tab.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -155,10 +157,19 @@ IN_PROC_BROWSER_TEST_F(SadTabViewInteractiveUITest,
   ASSERT_TRUE(IsFocusedViewInsideSadTab());
   ASSERT_FALSE(IsFocusedViewInsideBrowserToolbar());
 
-  // Pressing the Tab key should cycle focus back to the toolbar.
+  // Pressing the Tab key should cycle focus back to the toolbar or the browser
+  // frame if the tab search caption button is enabled.
   PressTab();
-  ASSERT_FALSE(IsFocusedViewInsideSadTab());
-  ASSERT_TRUE(IsFocusedViewInsideBrowserToolbar());
+  if (WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(browser())) {
+    const auto* frame_view = BrowserView::GetBrowserViewForBrowser(browser())
+                                 ->frame()
+                                 ->GetFrameView();
+    ASSERT_FALSE(IsFocusedViewInsideSadTab());
+    ASSERT_TRUE(frame_view->Contains(GetFocusedView()));
+  } else {
+    ASSERT_FALSE(IsFocusedViewInsideSadTab());
+    ASSERT_TRUE(IsFocusedViewInsideBrowserToolbar());
+  }
 
   // Keep pressing the Tab key and make sure we make it back to the sad tab.
   while (!IsFocusedViewInsideSadTab())

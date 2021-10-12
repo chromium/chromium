@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
-#include "chrome/browser/ui/views/frame/windows_10_tab_search_caption_button.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
@@ -147,8 +146,8 @@ int Windows10CaptionButton::GetBetweenButtonSpacing() const {
 int Windows10CaptionButton::GetButtonDisplayOrderIndex() const {
   int button_display_order = 0;
   const bool tab_search_enabled =
-      Windows10TabSearchCaptionButton::IsTabSearchCaptionButtonEnabled(
-          frame_view_);
+      WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(
+          frame_view_->browser_view()->browser());
   switch (button_type_) {
     case VIEW_ID_TAB_SEARCH_BUTTON:
       button_display_order = 0;

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/windows_10_caption_button.h"
@@ -64,8 +65,8 @@ GlassBrowserCaptionButtonContainer::GlassBrowserCaptionButtonContainer(
           frame_view_,
           VIEW_ID_CLOSE_BUTTON,
           IDS_APP_ACCNAME_CLOSE))) {
-  if (Windows10TabSearchCaptionButton::IsTabSearchCaptionButtonEnabled(
-          frame_view_)) {
+  if (WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(
+          frame_view_->browser_view()->browser())) {
     tab_search_button_ =
         AddChildViewAt(std::make_unique<Windows10TabSearchCaptionButton>(
                            frame_view_, VIEW_ID_TAB_SEARCH_BUTTON,
