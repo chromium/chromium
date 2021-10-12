@@ -4178,8 +4178,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::
          kExperimentalAccessibilitySwitchAccessSetupGuideDescription,
      kOsCrOS,
-     SINGLE_VALUE_TYPE(
-         ::switches::kEnableExperimentalAccessibilitySwitchAccessSetupGuide)},
+     FEATURE_VALUE_TYPE(
+         features::kExperimentalAccessibilitySwitchAccessSetupGuide)},
     {"enable-experimental-kernel-vm-support",
      flag_descriptions::kKernelnextVMsName,
      flag_descriptions::kKernelnextVMsDescription, kOsCrOS,

@@ -338,8 +338,7 @@ bool IsSwitchAccessTextAllowed() {
 }
 
 bool IsSwitchAccessSetupGuideAllowed() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kEnableExperimentalAccessibilitySwitchAccessSetupGuide);
+  return ::features::IsExperimentalAccessibilitySwitchAccessSetupGuideEnabled();
 }
 
 bool AreTabletNavigationButtonsAllowed() {

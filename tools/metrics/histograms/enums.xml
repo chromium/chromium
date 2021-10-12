@@ -47792,6 +47792,8 @@ from previous Chrome versions.
       label="AutofillSaveCreditCardUsesStrikeSystemV2:disabled"/>
   <int value="-2059771509" label="NTPTilesLowerResolutionFavicons:disabled"/>
   <int value="-2059331227" label="DiceWebSigninInterception:disabled"/>
+  <int value="-2058862330"
+      label="ExperimentalAccessibilitySwitchAccessSetupGuide:disabled"/>
   <int value="-2058762785"
       label="AllowDownloadResumptionWithoutStrongValidators:disabled"/>
   <int value="-2058656447" label="ContextualSearchUrlActions:enabled"/>
@@ -48405,6 +48407,8 @@ from previous Chrome versions.
       label="AutofillLocalCardMigrationUsesStrikeSystemV2:disabled"/>
   <int value="-1614912400" label="enable-link-disambiguation-popup"/>
   <int value="-1613583483" label="UseNewAcceptLanguageHeader:enabled"/>
+  <int value="-1612418793"
+      label="ExperimentalAccessibilitySwitchAccessSetupGuide:enabled"/>
   <int value="-1611758030" label="AndroidWebContentsDarkMode:disabled"/>
   <int value="-1611357520" label="MediaAppPdfInInk:enabled"/>
   <int value="-1611305202" label="KeepPrefetchedContentSuggestions:disabled"/>

@@ -41,10 +41,6 @@ const char kEnableExperimentalAccessibilitySwitchAccessText[] =
 // zooming in.
 const char kEnableMagnifierDebugDrawRect[] = "enable-magnifier-debug-draw-rect";
 
-// Enables the Switch Access setup guide that hasn't launched yet.
-const char kEnableExperimentalAccessibilitySwitchAccessSetupGuide[] =
-    "enable-experimental-accessibility-switch-access-setup-guide";
-
 bool IsExperimentalAccessibilityDictationExtensionEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableExperimentalAccessibilityDictationExtension);
