@@ -1156,4 +1156,7 @@ static_assert(offsetof(PartitionRoot<internal::ThreadSafe>, sentinel_bucket) ==
                           sizeof(PartitionRoot<internal::ThreadSafe>::Bucket),
               "sentinel_bucket must be just after the regular buckets.");
 
+static_assert(
+    offsetof(PartitionRoot<internal::ThreadSafe>, lock_) >= 64,
+    "The lock should not be on the same cacheline as the read-mostly flags");
 }  // namespace base

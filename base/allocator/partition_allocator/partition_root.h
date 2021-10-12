@@ -190,7 +190,7 @@ class ScopedSyscallTimer {
 // Never instantiate a PartitionRoot directly, instead use
 // PartitionAllocator.
 template <bool thread_safe>
-struct BASE_EXPORT PartitionRoot {
+struct alignas(64) BASE_EXPORT PartitionRoot {
   using SlotSpan = internal::SlotSpanMetadata<thread_safe>;
   using Page = internal::PartitionPage<thread_safe>;
   using Bucket = internal::PartitionBucket<thread_safe>;
@@ -259,17 +259,16 @@ struct BASE_EXPORT PartitionRoot {
   // read-only. They should not share a cacheline with the data below, which is
   // only touched when the lock is taken.
   //
-  // Adding a whole cacheline of padding is a bit heavy-handed, but with all the
-  // various configurations, it is cumbersome to compute the precise
-  // values. Besides, adding an entire cacheline worth of padding removes any
-  // constraint on the root alignment itself.
+  // We add too much padding for most configurations, since the size of the
+  // flags above is not fixed, and the computation below accounts for the
+  // minimum size.
   //
   // Note: with C++17, it will be possible to reduce the padding, but as of
   // C++14, static members are forbidden inside anonymous structs, so we cannot
   // use the union { struct { /* all flags */}; /* padding */} trick. Wasting an
   // entire cacheline per PartitionRoot is not a big issue, given that
   // the opbject is very large anyway.
-  uint8_t padding[64];  // Assume a cacheline size <= 64 bytes.
+  uint8_t padding[64 - 7];  // Assume a cacheline size <= 64 bytes.
 
   // Not used on the fastest path (thread cache allocations), but on the fast
   // path of the central allocator.
