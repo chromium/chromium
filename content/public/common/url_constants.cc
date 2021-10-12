@@ -26,10 +26,10 @@ const char kAndroidAppScheme[] = "android-app";
 const char kGoogleChromeScheme[] = "googlechrome";
 
 const char kChromeUIAppCacheInternalsHost[] = "appcache-internals";
+const char kChromeUIAttributionInternalsHost[] = "conversion-internals";
 const char kChromeUIIndexedDBInternalsHost[] = "indexeddb-internals";
 const char kChromeUIBlobInternalsHost[] = "blob-internals";
 const char kChromeUIBrowserCrashHost[] = "inducebrowsercrashforrealz";
-const char kChromeUIConversionInternalsHost[] = "conversion-internals";
 const char kChromeUIDinoHost[] = "dino";
 const char kChromeUIGpuHost[] = "gpu";
 const char kChromeUIHistogramHost[] = "histograms";

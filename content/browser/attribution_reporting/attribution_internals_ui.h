@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_INTERNALS_UI_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_INTERNALS_UI_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTERNALS_UI_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTERNALS_UI_H_
 
 #include <memory>
 
+#include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/conversion_internals.mojom.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -19,20 +19,21 @@ namespace content {
 class AttributionInternalsHandlerImpl;
 
 // WebUI which handles serving the chrome://conversion-internals page.
-class CONTENT_EXPORT ConversionInternalsUI : public WebUIController {
+class CONTENT_EXPORT AttributionInternalsUI : public WebUIController {
  public:
-  explicit ConversionInternalsUI(WebUI* web_ui);
-  ConversionInternalsUI(const ConversionInternalsUI& other) = delete;
-  ConversionInternalsUI& operator=(const ConversionInternalsUI& other) = delete;
-  ConversionInternalsUI(ConversionInternalsUI&& other) = delete;
-  ConversionInternalsUI& operator=(ConversionInternalsUI&& other) = delete;
-  ~ConversionInternalsUI() override;
+  explicit AttributionInternalsUI(WebUI* web_ui);
+  AttributionInternalsUI(const AttributionInternalsUI& other) = delete;
+  AttributionInternalsUI& operator=(const AttributionInternalsUI& other) =
+      delete;
+  AttributionInternalsUI(AttributionInternalsUI&& other) = delete;
+  AttributionInternalsUI& operator=(AttributionInternalsUI&& other) = delete;
+  ~AttributionInternalsUI() override;
 
   // WebUIController overrides:
   void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) override;
 
   void BindInterface(
-      mojo::PendingReceiver<mojom::ConversionInternalsHandler> receiver);
+      mojo::PendingReceiver<mojom::AttributionInternalsHandler> receiver);
 
   void SetAttributionManagerProviderForTesting(
       std::unique_ptr<AttributionManager::Provider> manager_provider);
@@ -45,4 +46,4 @@ class CONTENT_EXPORT ConversionInternalsUI : public WebUIController {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_INTERNALS_UI_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTERNALS_UI_H_

@@ -11,10 +11,10 @@ js_type_check("closure_compile") {
                             "$root_gen_dir/mojom-webui/content/browser/attribution_reporting",
                             root_build_dir),
                   ]
-  deps = [ ":conversion_internals" ]
+  deps = [ ":attribution_internals" ]
 }
 
-js_library("conversion_internals") {
+js_library("attribution_internals") {
   deps = [
     "//content/browser/attribution_reporting:mojo_bindings_webui_js",
     "//ui/webui/resources/js:assert.m",

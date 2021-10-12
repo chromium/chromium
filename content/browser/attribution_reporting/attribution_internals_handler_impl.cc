@@ -45,7 +45,7 @@ mojom::SourceType SourceTypeToMojoType(StorableSource::SourceType input) {
 }
 
 void ForwardImpressionsToWebUI(
-    mojom::ConversionInternalsHandler::GetActiveImpressionsCallback
+    mojom::AttributionInternalsHandler::GetActiveImpressionsCallback
         web_ui_callback,
     std::vector<StorableSource> stored_impressions) {
   std::vector<mojom::WebUIImpressionPtr> web_ui_impressions;
@@ -81,7 +81,7 @@ mojom::WebUIConversionReportPtr WebUIConversionReport(
 }
 
 void ForwardReportsToWebUI(
-    mojom::ConversionInternalsHandler::GetReportsCallback web_ui_callback,
+    mojom::AttributionInternalsHandler::GetReportsCallback web_ui_callback,
     std::vector<mojom::WebUIConversionReportPtr> web_ui_reports,
     std::vector<AttributionReport> pending_reports) {
   web_ui_reports.reserve(web_ui_reports.capacity() + pending_reports.size());
@@ -100,7 +100,7 @@ void ForwardReportsToWebUI(
 
 AttributionInternalsHandlerImpl::AttributionInternalsHandlerImpl(
     WebUI* web_ui,
-    mojo::PendingReceiver<mojom::ConversionInternalsHandler> receiver)
+    mojo::PendingReceiver<mojom::AttributionInternalsHandler> receiver)
     : web_ui_(web_ui),
       manager_provider_(std::make_unique<AttributionManagerProviderImpl>()),
       receiver_(this, std::move(receiver)) {}
@@ -108,7 +108,7 @@ AttributionInternalsHandlerImpl::AttributionInternalsHandlerImpl(
 AttributionInternalsHandlerImpl::~AttributionInternalsHandlerImpl() = default;
 
 void AttributionInternalsHandlerImpl::IsMeasurementEnabled(
-    mojom::ConversionInternalsHandler::IsMeasurementEnabledCallback callback) {
+    mojom::AttributionInternalsHandler::IsMeasurementEnabledCallback callback) {
   content::WebContents* contents = web_ui_->GetWebContents();
   bool measurement_enabled =
       manager_provider_->GetManager(contents) &&
@@ -123,7 +123,7 @@ void AttributionInternalsHandlerImpl::IsMeasurementEnabled(
 }
 
 void AttributionInternalsHandlerImpl::GetActiveImpressions(
-    mojom::ConversionInternalsHandler::GetActiveImpressionsCallback callback) {
+    mojom::AttributionInternalsHandler::GetActiveImpressionsCallback callback) {
   if (AttributionManager* manager =
           manager_provider_->GetManager(web_ui_->GetWebContents())) {
     manager->GetActiveImpressionsForWebUI(
@@ -134,7 +134,7 @@ void AttributionInternalsHandlerImpl::GetActiveImpressions(
 }
 
 void AttributionInternalsHandlerImpl::GetReports(
-    mojom::ConversionInternalsHandler::GetReportsCallback callback) {
+    mojom::AttributionInternalsHandler::GetReportsCallback callback) {
   if (AttributionManager* manager =
           manager_provider_->GetManager(web_ui_->GetWebContents())) {
     const AttributionSessionStorage& session_storage =
@@ -185,7 +185,7 @@ void AttributionInternalsHandlerImpl::GetReports(
 }
 
 void AttributionInternalsHandlerImpl::SendPendingReports(
-    mojom::ConversionInternalsHandler::SendPendingReportsCallback callback) {
+    mojom::AttributionInternalsHandler::SendPendingReportsCallback callback) {
   if (AttributionManager* manager =
           manager_provider_->GetManager(web_ui_->GetWebContents())) {
     manager->SendReportsForWebUI(std::move(callback));
@@ -195,7 +195,7 @@ void AttributionInternalsHandlerImpl::SendPendingReports(
 }
 
 void AttributionInternalsHandlerImpl::ClearStorage(
-    mojom::ConversionInternalsHandler::ClearStorageCallback callback) {
+    mojom::AttributionInternalsHandler::ClearStorageCallback callback) {
   if (AttributionManager* manager =
           manager_provider_->GetManager(web_ui_->GetWebContents())) {
     manager->ClearData(base::Time::Min(), base::Time::Max(),

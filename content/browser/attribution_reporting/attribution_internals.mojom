@@ -53,7 +53,7 @@ struct WebUIImpression {
 
 // Mojo interface for the conversion internals WebUI to communicate with the
 // storage layer.
-interface ConversionInternalsHandler {
+interface AttributionInternalsHandler {
   // Returns whether conversion measurement and the debug mode are enabled in
   // the browsing context the WebUI is in.
   IsMeasurementEnabled() => (bool enabled, bool debug_mode);

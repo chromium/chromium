@@ -560,8 +560,8 @@ const char* const kChromeHostURLs[] = {
     kChromeUIWebAppInternalsHost,
 #endif
     content::kChromeUIAppCacheInternalsHost,
+    content::kChromeUIAttributionInternalsHost,
     content::kChromeUIBlobInternalsHost,
-    content::kChromeUIConversionInternalsHost,
     content::kChromeUIDinoHost,
     content::kChromeUIGpuHost,
     content::kChromeUIHistogramHost,

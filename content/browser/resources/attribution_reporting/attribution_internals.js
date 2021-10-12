@@ -7,7 +7,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util.m.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {ConversionInternalsHandler, ConversionInternalsHandlerRemote, SourceType, WebUIConversionReport, WebUIConversionReport_Status, WebUIImpression,} from './conversion_internals.mojom-webui.js';
+import {AttributionInternalsHandler, AttributionInternalsHandlerRemote, SourceType, WebUIConversionReport, WebUIConversionReport_Status, WebUIImpression,} from './attribution_internals.mojom-webui.js';
 
 /**
  * @template T
@@ -396,7 +396,7 @@ class ReportTableModel extends TableModel {
 
 /**
  * Reference to the backend providing all the data.
- * @type {?ConversionInternalsHandlerRemote}
+ * @type {?AttributionInternalsHandlerRemote}
  */
 let pageHandler = null;
 
@@ -495,7 +495,7 @@ function sendReports() {
 
 document.addEventListener('DOMContentLoaded', function() {
   // Setup the mojo interface.
-  pageHandler = ConversionInternalsHandler.getRemote();
+  pageHandler = AttributionInternalsHandler.getRemote();
 
   $('refresh').addEventListener('click', updatePageData);
   $('clear-data').addEventListener('click', clearStorage);

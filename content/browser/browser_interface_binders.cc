@@ -13,8 +13,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
-#include "content/browser/attribution_reporting/conversion_internals.mojom.h"
-#include "content/browser/attribution_reporting/conversion_internals_ui.h"
+#include "content/browser/attribution_reporting/attribution_internals.mojom.h"
+#include "content/browser/attribution_reporting/attribution_internals_ui.h"
 #include "content/browser/background_fetch/background_fetch_service_impl.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_main_loop.h"
@@ -254,19 +254,19 @@ void BindColorChooserFactoryForFrame(
   web_contents->OnColorChooserFactoryReceiver(std::move(receiver));
 }
 
-void BindConversionInternalsHandler(
+void BindAttributionInternalsHandler(
     content::RenderFrameHost* host,
-    mojo::PendingReceiver<mojom::ConversionInternalsHandler> receiver) {
+    mojo::PendingReceiver<mojom::AttributionInternalsHandler> receiver) {
   content::WebUI* web_ui = host->GetWebUI();
 
-  // Performs a safe downcast to the concrete ConversionInternalsUI subclass.
-  ConversionInternalsUI* conversion_internals_ui =
-      web_ui ? web_ui->GetController()->GetAs<ConversionInternalsUI>()
+  // Performs a safe downcast to the concrete AttributionInternalsUI subclass.
+  AttributionInternalsUI* attribution_internals_ui =
+      web_ui ? web_ui->GetController()->GetAs<AttributionInternalsUI>()
              : nullptr;
 
   // This is expected to be called only for main frames and for the right WebUI
   // pages matching the same WebUI associated to the RenderFrameHost.
-  if (host->GetParent() || !conversion_internals_ui) {
+  if (host->GetParent() || !attribution_internals_ui) {
     ReceivedBadMessage(
         host->GetProcess(),
         bad_message::BadMessageReason::RFH_INVALID_WEB_UI_CONTROLLER);
@@ -274,10 +274,10 @@ void BindConversionInternalsHandler(
   }
 
   DCHECK_EQ(host->GetLastCommittedURL().host_piece(),
-            kChromeUIConversionInternalsHost);
+            kChromeUIAttributionInternalsHost);
   DCHECK(host->GetLastCommittedURL().SchemeIs(kChromeUIScheme));
 
-  conversion_internals_ui->BindInterface(std::move(receiver));
+  attribution_internals_ui->BindInterface(std::move(receiver));
 }
 
 void BindPrerenderInternalsHandler(
@@ -1032,8 +1032,8 @@ void PopulateBinderMapWithContext(
   map->Add<device::mojom::VRService>(
       base::BindRepeating(&EmptyBinderForFrame<device::mojom::VRService>));
 #endif
-  map->Add<mojom::ConversionInternalsHandler>(
-      base::BindRepeating(&BindConversionInternalsHandler));
+  map->Add<mojom::AttributionInternalsHandler>(
+      base::BindRepeating(&BindAttributionInternalsHandler));
   map->Add<mojom::PrerenderInternalsHandler>(
       base::BindRepeating(&BindPrerenderInternalsHandler));
   map->Add<::mojom::ProcessInternalsHandler>(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/conversion_internals_ui.h"
+#include "content/browser/attribution_reporting/attribution_internals_ui.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -29,7 +29,7 @@ namespace {
 using CreateReportStatus =
     ::content::AttributionStorage::CreateReportResult::Status;
 
-const char kConversionInternalsUrl[] = "chrome://conversion-internals/";
+const char kAttributionInternalsUrl[] = "chrome://conversion-internals/";
 
 const std::u16string kCompleteTitle = u"Complete";
 const std::u16string kCompleteTitle2 = u"Complete2";
@@ -40,9 +40,9 @@ const std::u16string kMaxUint64String = u"18446744073709551615";
 
 }  // namespace
 
-class ConversionInternalsWebUiBrowserTest : public ContentBrowserTest {
+class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
  public:
-  ConversionInternalsWebUiBrowserTest() = default;
+  AttributionInternalsWebUiBrowserTest() = default;
 
   void ClickRefreshButton() {
     EXPECT_TRUE(ExecJsInWebUI("document.getElementById('refresh').click();"));
@@ -59,12 +59,12 @@ class ConversionInternalsWebUiBrowserTest : public ContentBrowserTest {
   void OverrideWebUIAttributionManager(AttributionManager* manager) {
     content::WebUI* web_ui = shell()->web_contents()->GetWebUI();
 
-    // Performs a safe downcast to the concrete ConversionInternalsUI subclass.
-    ConversionInternalsUI* conversion_internals_ui =
-        web_ui ? web_ui->GetController()->GetAs<ConversionInternalsUI>()
+    // Performs a safe downcast to the concrete AttributionInternalsUI subclass.
+    AttributionInternalsUI* attribution_internals_ui =
+        web_ui ? web_ui->GetController()->GetAs<AttributionInternalsUI>()
                : nullptr;
-    EXPECT_TRUE(conversion_internals_ui);
-    conversion_internals_ui->SetAttributionManagerProviderForTesting(
+    EXPECT_TRUE(attribution_internals_ui);
+    attribution_internals_ui->SetAttributionManagerProviderForTesting(
         std::make_unique<TestManagerProvider>(manager));
   }
 
@@ -88,9 +88,9 @@ class ConversionInternalsWebUiBrowserTest : public ContentBrowserTest {
   ConversionDisallowingContentBrowserClient disallowed_browser_client_;
 };
 
-IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        NavigationUrl_ResolvedToWebUI) {
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   // Execute script to ensure the page has loaded correctly, executing similarly
   // to ExecJsInWebUI().
@@ -100,9 +100,9 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
                          EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1));
 }
 
-IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithManager_MeasurementConsideredEnabled) {
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   TestAttributionManager manager;
   OverrideWebUIAttributionManager(&manager);
@@ -125,11 +125,11 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        DisabledByEmbedder_MeasurementConsideredDisabled) {
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&disallowed_browser_client_);
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   TestAttributionManager manager;
   OverrideWebUIAttributionManager(&manager);
@@ -154,9 +154,9 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    ConversionInternalsWebUiBrowserTest,
+    AttributionInternalsWebUiBrowserTest,
     WebUIShownWithNoActiveImpression_NoImpressionsDisplayed) {
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   TestAttributionManager manager;
   OverrideWebUIAttributionManager(&manager);
@@ -178,9 +178,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithActiveImpression_ImpressionsDisplayed) {
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   // We use the max values of `uint64_t` and `int64_t` here to ensure that they
   // are properly handled as `bigint` values in JS and don't run into issues
@@ -224,9 +224,9 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithNoReports_NoReportsDisplayed) {
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   TestAttributionManager manager;
   OverrideWebUIAttributionManager(&manager);
@@ -237,9 +237,9 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithManager_DebugModeDisabled) {
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   TestAttributionManager manager;
   OverrideWebUIAttributionManager(&manager);
@@ -262,12 +262,12 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithManager_DebugModeEnabled) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kConversionsDebugMode);
 
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   TestAttributionManager manager;
   OverrideWebUIAttributionManager(&manager);
@@ -290,9 +290,9 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithPendingReports_ReportsDisplayed) {
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   const base::Time now = base::Time::Now();
 
@@ -425,9 +425,9 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIWithPendingReportsClearStorage_ReportsRemoved) {
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   const base::Time now = base::Time::Now();
 
@@ -473,9 +473,9 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
 
 // TODO(johnidel): Use a real AttributionManager here and verify that the
 // reports are actually sent.
-IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUISendReports_ReportsRemoved) {
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   TestAttributionManager manager;
   AttributionReport report(
@@ -512,9 +512,9 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   EXPECT_EQ(kSentTitle, sent_title_watcher.WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        MojoJsBindingsCorrectlyScoped) {
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   const std::u16string passed_title = u"passed";
 
