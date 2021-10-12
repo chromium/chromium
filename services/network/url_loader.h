@@ -24,7 +24,6 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/load_states.h"
 #include "net/base/network_delegate.h"
-#include "net/http/http_raw_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
 #include "services/network/keepalive_statistics_recorder.h"
@@ -342,6 +341,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   void SetRawResponseHeaders(scoped_refptr<const net::HttpResponseHeaders>);
   void NotifyEarlyResponse(scoped_refptr<const net::HttpResponseHeaders>);
   void SetRawRequestHeadersAndNotify(net::HttpRawRequestHeaders);
+  void DispatchOnRawRequest(
+      std::vector<network::mojom::HttpRawHeaderPairPtr> headers);
+  bool DispatchOnRawResponse();
   void SendUploadProgress(const net::UploadProgress& progress);
   void OnUploadProgressACK();
   void OnSSLCertificateErrorResponse(const net::SSLInfo& ssl_info,
@@ -473,7 +475,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       resource_scheduler_request_handle_;
 
   bool enable_reporting_raw_headers_ = false;
-  net::HttpRawRequestHeaders raw_request_headers_;
+  bool seen_raw_request_headers_ = false;
   scoped_refptr<const net::HttpResponseHeaders> raw_response_headers_;
 
   std::unique_ptr<UploadProgressTracker> upload_progress_tracker_;

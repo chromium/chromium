@@ -961,6 +961,10 @@ void URLLoader::FollowRedirect(
     return;
   }
 
+  // Set seen_raw_request_headers_ to false in order to make sure this redirect
+  // also calls the devtools observer.
+  seen_raw_request_headers_ = false;
+
   // Removing headers can't make the set of pre-existing headers unsafe, but
   // adding headers can.
   if (!AreRequestHeadersSafe(modified_headers) ||
@@ -1135,7 +1139,7 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   auto response = network::mojom::URLResponseHead::New();
   PopulateResourceResponse(url_request_.get(), is_load_timing_enabled_,
                            options_, response.get());
-
+  DispatchOnRawResponse();
   ReportFlaggedResponseCookies();
 
   const CrossOriginEmbedderPolicy kEmpty;
@@ -1279,6 +1283,7 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
   response_ = network::mojom::URLResponseHead::New();
   PopulateResourceResponse(url_request_.get(), is_load_timing_enabled_,
                            options_, response_.get());
+  DispatchOnRawResponse();
 
   // Parse and remove the Trust Tokens response headers, if any are expected,
   // potentially failing the request if an error occurs.
@@ -1945,7 +1950,10 @@ void URLLoader::NotifyEarlyResponse(
 void URLLoader::SetRawRequestHeadersAndNotify(
     net::HttpRawRequestHeaders headers) {
   auto* devtools_observer = GetDevToolsObserver();
-  if (devtools_observer && devtools_request_id()) {
+  // If we have seen_raw_request_headers_, then don't notify DevTools to prevent
+  // duplicate ExtraInfo events.
+  if (!seen_raw_request_headers_ && devtools_observer &&
+      devtools_request_id()) {
     std::vector<network::mojom::HttpRawHeaderPairPtr> header_array;
     header_array.reserve(headers.headers().size());
 
@@ -1956,21 +1964,7 @@ void URLLoader::SetRawRequestHeadersAndNotify(
       pair->value = header.second;
       header_array.push_back(std::move(pair));
     }
-
-    mojom::ClientSecurityStatePtr client_security_state;
-    if (factory_params_->client_security_state) {
-      client_security_state = factory_params_->client_security_state->Clone();
-    } else if (request_client_security_state_) {
-      client_security_state = request_client_security_state_->Clone();
-    }
-
-    net::LoadTimingInfo load_timing_info;
-    url_request_->GetLoadTimingInfo(&load_timing_info);
-
-    devtools_observer->OnRawRequest(
-        devtools_request_id().value(), url_request_->maybe_sent_cookies(),
-        std::move(header_array), load_timing_info.request_start,
-        std::move(client_security_state));
+    DispatchOnRawRequest(std::move(header_array));
   }
 
   if (auto* cookie_observer = GetCookieAccessObserver()) {
@@ -1992,9 +1986,89 @@ void URLLoader::SetRawRequestHeadersAndNotify(
           devtools_request_id()));
     }
   }
+}
 
-  if (devtools_request_id())
-    raw_request_headers_.Assign(std::move(headers));
+void URLLoader::DispatchOnRawRequest(
+    std::vector<network::mojom::HttpRawHeaderPairPtr> headers) {
+  auto* devtools_observer = GetDevToolsObserver();
+  DCHECK(devtools_observer && devtools_request_id());
+
+  seen_raw_request_headers_ = true;
+
+  mojom::ClientSecurityStatePtr client_security_state;
+  if (factory_params_->client_security_state) {
+    client_security_state = factory_params_->client_security_state->Clone();
+  } else if (request_client_security_state_) {
+    client_security_state = request_client_security_state_->Clone();
+  }
+
+  net::LoadTimingInfo load_timing_info;
+  url_request_->GetLoadTimingInfo(&load_timing_info);
+
+  devtools_observer->OnRawRequest(
+      devtools_request_id().value(), url_request_->maybe_sent_cookies(),
+      std::move(headers), load_timing_info.request_start,
+      std::move(client_security_state));
+}
+
+bool URLLoader::DispatchOnRawResponse() {
+  auto* devtools_observer = GetDevToolsObserver();
+  if (!devtools_observer || !devtools_request_id() ||
+      !url_request_->response_headers()) {
+    return false;
+  }
+
+  std::vector<network::mojom::HttpRawHeaderPairPtr> header_array;
+
+  // This is gated by enable_reporting_raw_headers_ to be backwards compatible
+  // with the old report_raw_headers behavior, where we wouldn't even send
+  // raw_response_headers_ to the trusted browser process based devtools
+  // instrumentation. This is observed in the case of HSTS redirects, where
+  // url_request_->response_headers has the HSTS redirect headers, like
+  // Non-Authoritative-Reason, but raw_response_headers_ has something else
+  // which doesn't include HSTS information. This is tested by
+  // DevToolsTest.TestRawHeadersWithRedirectAndHSTS.
+  // TODO(crbug.com/1234823): Remove enable_reporting_raw_headers_
+  const net::HttpResponseHeaders* response_headers =
+      raw_response_headers_ && enable_reporting_raw_headers_
+          ? raw_response_headers_.get()
+          : url_request_->response_headers();
+
+  size_t iterator = 0;
+  std::string name, value;
+  while (response_headers->EnumerateHeaderLines(&iterator, &name, &value)) {
+    network::mojom::HttpRawHeaderPairPtr pair =
+        network::mojom::HttpRawHeaderPair::New();
+    pair->key = name;
+    pair->value = value;
+    header_array.push_back(std::move(pair));
+  }
+
+  // Only send the "raw" header text when the headers were actually send in
+  // text form (i.e. not QUIC or SPDY)
+  absl::optional<std::string> raw_response_headers;
+
+  const net::HttpResponseInfo& response_info = url_request_->response_info();
+
+  if (!response_info.DidUseQuic() && !response_info.was_fetched_via_spdy) {
+    raw_response_headers =
+        absl::make_optional(net::HttpUtil::ConvertHeadersBackToHTTPResponse(
+            response_headers->raw_headers()));
+  }
+
+  if (!seen_raw_request_headers_) {
+    // If we send OnRawResponse(), make sure we send OnRawRequest() event if
+    // we haven't had the callback from net, to make the client life easier.
+    DispatchOnRawRequest({});
+  }
+
+  devtools_observer->OnRawResponse(
+      devtools_request_id().value(), url_request_->maybe_stored_cookies(),
+      std::move(header_array), raw_response_headers,
+      IPEndPointToIPAddressSpace(response_info.remote_endpoint),
+      response_headers->response_code());
+
+  return true;
 }
 
 void URLLoader::SendUploadProgress(const net::UploadProgress& progress) {
@@ -2159,54 +2233,6 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb(
 }
 
 void URLLoader::ReportFlaggedResponseCookies() {
-  auto* devtools_observer = GetDevToolsObserver();
-  if (devtools_observer && devtools_request_id() &&
-      url_request_->response_headers()) {
-    std::vector<network::mojom::HttpRawHeaderPairPtr> header_array;
-
-    // This is gated by enable_reporting_raw_headers_ to be backwards compatible
-    // with the old report_raw_headers behavior, where we wouldn't even send
-    // raw_response_headers_ to the trusted browser process based devtools
-    // instrumentation. This is observed in the case of HSTS redirects, where
-    // url_request_->response_headers has the HSTS redirect headers, like
-    // Non-Authoritative-Reason, but raw_response_headers_ has something else
-    // which doesn't include HSTS information. This is tested by
-    // DevToolsTest.TestRawHeadersWithRedirectAndHSTS.
-    // TODO(crbug.com/1234823): Remove enable_reporting_raw_headers_
-    const net::HttpResponseHeaders* response_headers =
-        raw_response_headers_ && enable_reporting_raw_headers_
-            ? raw_response_headers_.get()
-            : url_request_->response_headers();
-
-    size_t iterator = 0;
-    std::string name, value;
-    while (response_headers->EnumerateHeaderLines(&iterator, &name, &value)) {
-      network::mojom::HttpRawHeaderPairPtr pair =
-          network::mojom::HttpRawHeaderPair::New();
-      pair->key = name;
-      pair->value = value;
-      header_array.push_back(std::move(pair));
-    }
-
-    // Only send the "raw" header text when the headers were actually send in
-    // text form (i.e. not QUIC or SPDY)
-    absl::optional<std::string> raw_response_headers;
-
-    const net::HttpResponseInfo& response_info = url_request_->response_info();
-
-    if (!response_info.DidUseQuic() && !response_info.was_fetched_via_spdy) {
-      raw_response_headers =
-          absl::make_optional(net::HttpUtil::ConvertHeadersBackToHTTPResponse(
-              response_headers->raw_headers()));
-    }
-
-    devtools_observer->OnRawResponse(
-        devtools_request_id().value(), url_request_->maybe_stored_cookies(),
-        std::move(header_array), raw_response_headers,
-        IPEndPointToIPAddressSpace(response_info.remote_endpoint),
-        response_headers->response_code());
-  }
-
   if (auto* cookie_observer = GetCookieAccessObserver()) {
     std::vector<mojom::CookieOrLineWithAccessResultPtr> reported_cookies;
     for (const auto& cookie_line_and_access_result :
