@@ -993,8 +993,14 @@ class CommerceHintOptimizeRendererTest : public CommerceHintAgentTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Times out on multiple platforms. https://crbug.com/1258553
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#define MAYBE_CartExtractionSkipped DISABLED_CartExtractionSkipped
+#else
+#define MAYBE_CartExtractionSkipped CartExtractionSkipped
+#endif
 IN_PROC_BROWSER_TEST_F(CommerceHintOptimizeRendererTest,
-                       CartExtractionSkipped) {
+                       MAYBE_CartExtractionSkipped) {
   base::HistogramTester histogram_tester;
 
   // Without adding testing hints, all the URLs are considered non-shopping.
