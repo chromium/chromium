@@ -550,7 +550,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   aura::Window* dragged_window_ = nullptr;
 
   // The widget that contains the view for all the existing templates.
-  views::UniqueWidgetPtr desks_templates_grid_;
+  views::UniqueWidgetPtr desks_templates_grid_widget_;
 
   // A widget that contains a button which creates a new desk template when
   // pressed.

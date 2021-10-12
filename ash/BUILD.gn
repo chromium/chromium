@@ -1646,6 +1646,8 @@ component("ash") {
     "wm/desks/root_window_desk_switch_animator.h",
     "wm/desks/scroll_arrow_button.cc",
     "wm/desks/scroll_arrow_button.h",
+    "wm/desks/templates/desks_templates_delete_button.cc",
+    "wm/desks/templates/desks_templates_delete_button.h",
     "wm/desks/templates/desks_templates_dialog_controller.cc",
     "wm/desks/templates/desks_templates_dialog_controller.h",
     "wm/desks/templates/desks_templates_grid_view.cc",

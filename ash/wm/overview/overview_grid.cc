@@ -463,8 +463,8 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
 
   window_list_.clear();
 
-  if (desks_templates_grid_)
-    desks_templates_grid_->CloseNow();
+  if (desks_templates_grid_widget_)
+    desks_templates_grid_widget_->CloseNow();
 
   overview_session_ = nullptr;
 
@@ -857,17 +857,18 @@ void OverviewGrid::OnSelectorItemDragStarted(OverviewItem* item) {
 }
 
 void OverviewGrid::ShowDesksTemplatesGrid() {
-  if (!desks_templates_grid_) {
-    desks_templates_grid_ =
+  if (!desks_templates_grid_widget_) {
+    desks_templates_grid_widget_ =
         DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
             root_window_, GetGridEffectiveBounds());
   }
 
-  desks_templates_grid_->Show();
+  desks_templates_grid_widget_->Show();
 }
 
 bool OverviewGrid::IsShowingDesksTemplatesGrid() const {
-  return desks_templates_grid_ && desks_templates_grid_->IsVisible();
+  return desks_templates_grid_widget_ &&
+         desks_templates_grid_widget_->IsVisible();
 }
 
 void OverviewGrid::UpdateNoWindowsWidget(bool no_items) {
@@ -1060,8 +1061,8 @@ void OverviewGrid::OnDisplayMetricsChanged() {
 
   UpdateCannotSnapWarningVisibility();
 
-  if (desks_templates_grid_)
-    desks_templates_grid_->SetBounds(GetGridEffectiveBounds());
+  if (desks_templates_grid_widget_)
+    desks_templates_grid_widget_->SetBounds(GetGridEffectiveBounds());
 
   // In case of split view mode, the grid bounds and item positions will be
   // updated in |OnSplitViewDividerPositionChanged|.

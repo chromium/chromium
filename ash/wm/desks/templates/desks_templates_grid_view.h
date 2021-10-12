@@ -11,8 +11,10 @@
 
 namespace ash {
 
+class DesksTemplatesItemView;
+
 // A view that acts as the content view of the desks templates widget.
-// TODO(sammiequon): Add details and ASCII.
+// TODO(richui): Add details and ASCII.
 class DesksTemplatesGridView : public views::View {
  public:
   METADATA_HEADER(DesksTemplatesGridView);
@@ -29,6 +31,22 @@ class DesksTemplatesGridView : public views::View {
   static views::UniqueWidgetPtr CreateDesksTemplatesGridWidget(
       aura::Window* root,
       const gfx::Rect& grid_bounds);
+
+  // views::View:
+  void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
+
+ private:
+  // Helper to unify mouse/touch events.
+  void OnLocatedEvent(ui::LocatedEvent* event, bool is_touch);
+
+  // The views representing templates. They're owned by views hierarchy.
+  std::vector<DesksTemplatesItemView*> grid_items_;
+
+  // The underlying window of the templates grid widget.
+  aura::Window* widget_window_ = nullptr;
 };
 
 }  // namespace ash

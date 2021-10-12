@@ -58,9 +58,11 @@ DesksTemplatesGridView::DesksTemplatesGridView() {
       layout->StartRowWithPadding(fixed_size, kColumnSetId, fixed_size,
                                   kGridPaddingDp);
     }
-
-    for (int j = 0; j < kNumColumns; ++j)
-      layout->AddView(std::make_unique<DesksTemplatesItemView>());
+    for (int j = 0; j < kNumColumns; ++j) {
+      DesksTemplatesItemView* grid_item =
+          layout->AddView(std::make_unique<DesksTemplatesItemView>());
+      grid_items_.push_back(grid_item);
+    }
   }
 }
 
@@ -98,6 +100,45 @@ views::UniqueWidgetPtr DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
   widget->GetLayer()->SetFillsBoundsOpaquely(false);
 
   return widget;
+}
+
+void DesksTemplatesGridView::OnMouseEvent(ui::MouseEvent* event) {
+  OnLocatedEvent(event, /*is_touch=*/false);
+}
+
+void DesksTemplatesGridView::OnGestureEvent(ui::GestureEvent* event) {
+  OnLocatedEvent(event, /*is_touch=*/true);
+}
+
+void DesksTemplatesGridView::AddedToWidget() {
+  // Adding a pre-target handler to ensure that events are not accidentally
+  // captured by the child views. Also, `this` is added as the pre-target
+  // handler to the window as opposed to `Env` to ensure that we only get events
+  // that are on this window.
+  widget_window_ = GetWidget()->GetNativeWindow();
+  widget_window_->AddPreTargetHandler(this);
+}
+
+void DesksTemplatesGridView::RemovedFromWidget() {
+  DCHECK(widget_window_);
+  widget_window_->RemovePreTargetHandler(this);
+  widget_window_ = nullptr;
+}
+
+void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,
+                                            bool is_touch) {
+  switch (event->type()) {
+    case ui::ET_MOUSE_MOVED:
+    case ui::ET_MOUSE_ENTERED:
+    case ui::ET_MOUSE_EXITED:
+    case ui::ET_GESTURE_LONG_PRESS:
+    case ui::ET_GESTURE_LONG_TAP:
+      for (auto* grid_item : grid_items_)
+        grid_item->UpdateDeleteButtonVisibility();
+      return;
+    default:
+      return;
+  }
 }
 
 BEGIN_METADATA(DesksTemplatesGridView, views::View)
