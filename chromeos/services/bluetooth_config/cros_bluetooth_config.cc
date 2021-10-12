@@ -40,8 +40,8 @@ CrosBluetoothConfig::CrosBluetoothConfig(
 CrosBluetoothConfig::~CrosBluetoothConfig() = default;
 
 void CrosBluetoothConfig::SetPrefs(PrefService* logged_in_profile_prefs,
-                                   PrefService* device_prefs) {
-  device_name_manager_->SetPrefs(device_prefs);
+                                   PrefService* local_state) {
+  device_name_manager_->SetPrefs(local_state);
 }
 
 void CrosBluetoothConfig::BindPendingReceiver(

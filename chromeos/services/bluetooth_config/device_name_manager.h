@@ -41,7 +41,7 @@ class DeviceNameManager {
                                  const std::string& nickname) = 0;
 
   // Sets the PrefService used to store nicknames.
-  virtual void SetPrefs(PrefService* pref_service) = 0;
+  virtual void SetPrefs(PrefService* local_state) = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

@@ -58,7 +58,8 @@ class DeviceNameManagerImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    DeviceNameManagerImpl::RegisterPrefs(test_pref_service_.registry());
+    DeviceNameManagerImpl::RegisterLocalStatePrefs(
+        test_pref_service_.registry());
 
     mock_adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();

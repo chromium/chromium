@@ -993,6 +993,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   crosapi::browser_util::RegisterLocalStatePrefs(registry);
   chromeos::CupsPrintersManager::RegisterLocalStatePrefs(registry);
   ash::BrowserDataMigrator::RegisterLocalStatePrefs(registry);
+  chromeos::bluetooth_config::DeviceNameManagerImpl::RegisterLocalStatePrefs(
+      registry);
   ash::DemoModeDetector::RegisterPrefs(registry);
   ash::DemoModeResourcesRemover::RegisterLocalStatePrefs(registry);
   ash::DemoSession::RegisterLocalStatePrefs(registry);
@@ -1320,7 +1322,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::ClientAppMetadataProviderService::RegisterProfilePrefs(registry);
   chromeos::CupsPrintersManager::RegisterProfilePrefs(registry);
   chromeos::device_sync::RegisterProfilePrefs(registry);
-  chromeos::bluetooth_config::DeviceNameManagerImpl::RegisterPrefs(registry);
   ash::FamilyUserChromeActivityMetrics::RegisterProfilePrefs(registry);
   ash::FamilyUserMetricsService::RegisterProfilePrefs(registry);
   ash::FamilyUserSessionMetrics::RegisterProfilePrefs(registry);

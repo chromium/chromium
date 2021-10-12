@@ -24,7 +24,7 @@ class FakeDeviceNameManager : public DeviceNameManager {
       const std::string& device_id) override;
   void SetDeviceNickname(const std::string& device_id,
                          const std::string& nickname) override;
-  void SetPrefs(PrefService* pref_service) override {}
+  void SetPrefs(PrefService* local_state) override {}
 
  private:
   base::flat_map<std::string, std::string> device_id_to_nickname_map_;

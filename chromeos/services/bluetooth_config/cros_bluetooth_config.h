@@ -40,8 +40,7 @@ class CrosBluetoothConfig : public mojom::CrosBluetoothConfig {
   ~CrosBluetoothConfig() override;
 
   // Sets the PrefServices to be used by classes within CrosBluetoothConfig.
-  void SetPrefs(PrefService* logged_in_profile_prefs,
-                PrefService* device_prefs);
+  void SetPrefs(PrefService* logged_in_profile_prefs, PrefService* local_state);
 
   // Binds a PendingReceiver to this instance. Clients wishing to use the
   // CrosBluetoothConfig API should use this function as an entrypoint.

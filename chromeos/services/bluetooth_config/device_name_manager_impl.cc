@@ -27,7 +27,8 @@ bool IsNicknameValid(const std::string& nickname) {
 }  // namespace
 
 // static
-void DeviceNameManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
+void DeviceNameManagerImpl::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kDeviceIdToNicknameMapPrefName,
                                    base::Value(base::Value::Type::DICTIONARY));
 }
@@ -40,11 +41,11 @@ DeviceNameManagerImpl::~DeviceNameManagerImpl() = default;
 
 absl::optional<std::string> DeviceNameManagerImpl::GetDeviceNickname(
     const std::string& device_id) {
-  if (!pref_service_)
+  if (!local_state_)
     return absl::nullopt;
 
   const std::string* nickname =
-      pref_service_->GetDictionary(kDeviceIdToNicknameMapPrefName)
+      local_state_->GetDictionary(kDeviceIdToNicknameMapPrefName)
           ->FindStringKey(device_id);
   if (!nickname)
     return absl::nullopt;
@@ -68,14 +69,14 @@ void DeviceNameManagerImpl::SetDeviceNickname(const std::string& device_id,
     return;
   }
 
-  if (!pref_service_) {
+  if (!local_state_) {
     BLUETOOTH_LOG(ERROR) << "SetDeviceNickname for device failed because "
-                            "no pref_service_ was set.";
+                            "no local_state_ was set.";
     return;
   }
 
   base::DictionaryValue* device_id_to_nickname_map =
-      DictionaryPrefUpdate(pref_service_, kDeviceIdToNicknameMapPrefName).Get();
+      DictionaryPrefUpdate(local_state_, kDeviceIdToNicknameMapPrefName).Get();
   DCHECK(device_id_to_nickname_map)
       << "Device ID to nickname map pref is unregistered.";
   device_id_to_nickname_map->SetStringKey(device_id, nickname);
@@ -83,8 +84,8 @@ void DeviceNameManagerImpl::SetDeviceNickname(const std::string& device_id,
   NotifyDeviceNicknameChanged(device_id);
 }
 
-void DeviceNameManagerImpl::SetPrefs(PrefService* pref_service) {
-  pref_service_ = pref_service;
+void DeviceNameManagerImpl::SetPrefs(PrefService* local_state) {
+  local_state_ = local_state;
 }
 
 bool DeviceNameManagerImpl::DoesDeviceExist(
