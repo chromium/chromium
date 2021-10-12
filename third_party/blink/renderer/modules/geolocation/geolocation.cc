@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/timing/epoch_time_stamp.h"
 #include "third_party/blink/renderer/modules/geolocation/geolocation_coordinates.h"
 #include "third_party/blink/renderer/modules/geolocation/geolocation_error.h"
 
@@ -64,8 +65,7 @@ Geoposition* CreateGeoposition(
       position.heading >= 0. && position.heading <= 360., position.heading,
       position.speed >= 0., position.speed);
   return MakeGarbageCollected<Geoposition>(
-      coordinates,
-      ConvertSecondsToDOMTimeStamp(position.timestamp.ToDoubleT()));
+      coordinates, ConvertTimeToEpochTimeStamp(position.timestamp));
 }
 
 GeolocationPositionError* CreatePositionError(
@@ -307,8 +307,8 @@ bool Geolocation::HaveSuitableCachedPosition(const PositionOptions* options) {
     return false;
   if (!options->maximumAge())
     return false;
-  DOMTimeStamp current_time_millis =
-      ConvertSecondsToDOMTimeStamp(base::Time::Now().ToDoubleT());
+  EpochTimeStamp current_time_millis =
+      ConvertTimeToEpochTimeStamp(base::Time::Now());
   return last_position_->timestamp() >
          current_time_millis - options->maximumAge();
 }
