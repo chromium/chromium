@@ -22,7 +22,7 @@ specific_include_rules = {
   ],
 
   "content_script_apitest.cc": [
-    "+components/web_package/test_support",
+    "+components/web_package",
   ],
   "extension_protocols_unittest\.cc": [
     "+services/network/test",

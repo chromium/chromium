@@ -412,7 +412,7 @@ source_set("tests") {
     "//components/network_session_configurator/browser",
     "//components/prefs:test_support",
     "//components/variations:test_support",
-    "//components/web_package:test_support",
+    "//components/web_package",
     "//crypto",
     "//jingle:fake_ssl_socket",
     "//mojo/public/cpp/bindings",

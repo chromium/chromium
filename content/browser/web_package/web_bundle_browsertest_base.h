@@ -9,7 +9,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
-#include "components/web_package/test_support/web_bundle_builder.h"
+#include "components/web_package/web_bundle_builder.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -242,12 +242,12 @@ FrameTreeNode* GetFirstChild(WebContents* web_contents);
 
 std::string CreateSimpleWebBundle(const GURL& primary_url);
 
-void AddHtmlFile(web_package::test::WebBundleBuilder* builder,
+void AddHtmlFile(web_package::WebBundleBuilder* builder,
                  const GURL& base_url,
                  const std::string& path,
                  const std::string& content);
 
-void AddScriptFile(web_package::test::WebBundleBuilder* builder,
+void AddScriptFile(web_package::WebBundleBuilder* builder,
                    const GURL& base_url,
                    const std::string& path,
                    const std::string& content);
@@ -313,11 +313,10 @@ std::string CreateHtmlForNavigationTest(const std::string& page_info,
 
 std::string CreateScriptForNavigationTest(const std::string& script_info);
 
-void AddHtmlAndScriptForNavigationTest(
-    web_package::test::WebBundleBuilder* builder,
-    const GURL& base_url,
-    const std::string& path,
-    const std::string& additional_html);
+void AddHtmlAndScriptForNavigationTest(web_package::WebBundleBuilder* builder,
+                                       const GURL& base_url,
+                                       const std::string& path,
+                                       const std::string& additional_html);
 
 std::string GetLoadResultForNavigationTest(const ToRenderFrameHost& adapter);
 

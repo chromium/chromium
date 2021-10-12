@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_WEB_PACKAGE_TEST_SUPPORT_WEB_BUNDLE_BUILDER_H_
-#define COMPONENTS_WEB_PACKAGE_TEST_SUPPORT_WEB_BUNDLE_BUILDER_H_
+#ifndef COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_BUILDER_H_
+#define COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_BUILDER_H_
 
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,9 +20,7 @@ enum class BundleVersion {
   kB2,
 };
 
-namespace test {
-
-// This class can be used to create a Web Bundle binary in tests.
+// This class can be used to create a Web Bundle.
 class WebBundleBuilder {
  public:
   using Headers = std::vector<std::pair<std::string, std::string>>;
@@ -33,7 +32,8 @@ class WebBundleBuilder {
 
   WebBundleBuilder(const std::string& fallback_url,
                    const std::string& manifest_url,
-                   BundleVersion version = BundleVersion::kB1);
+                   BundleVersion version = BundleVersion::kB1,
+                   bool allow_invalid_utf8_strings_for_testing = false);
 
   ~WebBundleBuilder();
 
@@ -64,8 +64,9 @@ class WebBundleBuilder {
                                   base::StringPiece payload_integrity_header);
 
  private:
-  cbor::Value CreateTopLevel();
+  std::vector<uint8_t> CreateTopLevel();
   std::vector<uint8_t> Encode(const cbor::Value& value);
+  cbor::Value GetCborValueOfURL(base::StringPiece url);
 
   int64_t EncodedLength(const cbor::Value& value);
 
@@ -73,17 +74,15 @@ class WebBundleBuilder {
   std::string fallback_url_;
   cbor::Value::ArrayValue section_lengths_;
   cbor::Value::ArrayValue sections_;
-  cbor::Value::MapValue index_;
+  std::map<std::string, std::pair<std::string, std::vector<ResponseLocation>>>
+      delayed_index_;
   cbor::Value::ArrayValue responses_;
   cbor::Value::ArrayValue authorities_;
   cbor::Value::ArrayValue vouched_subsets_;
   BundleVersion version_;
-
-  // 1 for the CBOR header byte. See the comment at the top of AddResponse().
-  int64_t current_responses_offset_ = 1;
+  int64_t current_responses_offset_ = 0;
 };
 
-}  // namespace test
 }  // namespace web_package
 
-#endif  // COMPONENTS_WEB_PACKAGE_TEST_SUPPORT_WEB_BUNDLE_BUILDER_H_
+#endif  // COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_BUILDER_H_

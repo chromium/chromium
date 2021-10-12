@@ -39,6 +39,11 @@ gen-bundle \
   -o simple.wbn \
   -primaryURL https://test.example.org/ \
 
+gen-bundle \
+  -version b2 \
+  -har 24_responses.har
+  -o 24_responses.wbn
+
 sign-bundle \
   -i hello.wbn \
   -certificate $sxg_test_data_dir/test.example.org.public.pem.cbor \

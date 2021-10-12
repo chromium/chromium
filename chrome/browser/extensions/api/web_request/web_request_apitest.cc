@@ -70,7 +70,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
-#include "components/web_package/test_support/web_bundle_builder.h"
+#include "components/web_package/web_bundle_builder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -3574,7 +3574,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   // of a web bundle. So we use |script_url_str| for the fallback URL.
   // TODO(crbug.com/966753): Stop using |script_url_str| when
   // https://github.com/WICG/webpackage/issues/590 is resolved.
-  web_package::test::WebBundleBuilder builder(script_url_str, "");
+  web_package::WebBundleBuilder builder(script_url_str, "");
   auto script_location = builder.AddResponse(
       {{":status", "200"}, {"content-type", "application/javascript"}},
       "document.title = 'ScriptDone';");
@@ -3697,7 +3697,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
       embedded_test_server()->GetURL("/pass.js").spec();
   std::string cancel_js_url_str =
       embedded_test_server()->GetURL("/cancel.js").spec();
-  web_package::test::WebBundleBuilder builder(pass_js_url_str, "");
+  web_package::WebBundleBuilder builder(pass_js_url_str, "");
   auto pass_js_location = builder.AddResponse(
       {{":status", "200"}, {"content-type", "application/javascript"}},
       "document.title = 'script loaded';");
@@ -3821,7 +3821,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest, ChangeHeader) {
   // Create a web bundle.
   std::string target_txt_url_str =
       embedded_test_server()->GetURL("/target.txt").spec();
-  web_package::test::WebBundleBuilder builder(target_txt_url_str, "");
+  web_package::WebBundleBuilder builder(target_txt_url_str, "");
   auto target_txt_location = builder.AddResponse(
       {{":status", "200"}, {"content-type", "text/plain"}, {"foo", "bar"}},
       "Hello world");
@@ -3924,7 +3924,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Create a web bundle.
-  web_package::test::WebBundleBuilder builder(uun_uuid_url, "");
+  web_package::WebBundleBuilder builder(uun_uuid_url, "");
   auto uun_uuid_script = builder.AddResponse(
       {{":status", "200"}, {"content-type", "application/javascript"}},
       "document.title = 'loaded';");
@@ -4036,7 +4036,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
       embedded_test_server()->GetURL("/redirected_to_unlisted.js").spec();
   std::string redirect_to_server_js_url_str =
       embedded_test_server()->GetURL("/redirect_to_server.js").spec();
-  web_package::test::WebBundleBuilder builder(redirect_js_url_str, "");
+  web_package::WebBundleBuilder builder(redirect_js_url_str, "");
   auto redirect_js_location = builder.AddResponse(
       {{":status", "200"}, {"content-type", "application/javascript"}},
       "document.title = 'redirect';");
@@ -4132,7 +4132,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
 
   // Create a web bundle.
   std::string js_url_str = embedded_test_server()->GetURL("/script.js").spec();
-  web_package::test::WebBundleBuilder builder(js_url_str, "");
+  web_package::WebBundleBuilder builder(js_url_str, "");
   builder.AddExchange(
       js_url_str,
       {{":status", "200"}, {"content-type", "application/javascript"}},

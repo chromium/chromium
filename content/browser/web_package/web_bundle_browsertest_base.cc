@@ -362,7 +362,7 @@ FrameTreeNode* GetFirstChild(WebContents* web_contents) {
 }
 
 std::string CreateSimpleWebBundle(const GURL& primary_url) {
-  web_package::test::WebBundleBuilder builder(primary_url.spec(), "");
+  web_package::WebBundleBuilder builder(primary_url.spec(), "");
   builder.AddExchange(primary_url.spec(),
                       {{":status", "200"}, {"content-type", "text/html"}},
                       "<title>Ready</title>");
@@ -370,7 +370,7 @@ std::string CreateSimpleWebBundle(const GURL& primary_url) {
   return std::string(bundle.begin(), bundle.end());
 }
 
-void AddHtmlFile(web_package::test::WebBundleBuilder* builder,
+void AddHtmlFile(web_package::WebBundleBuilder* builder,
                  const GURL& base_url,
                  const std::string& path,
                  const std::string& content) {
@@ -379,7 +379,7 @@ void AddHtmlFile(web_package::test::WebBundleBuilder* builder,
                        content);
 }
 
-void AddScriptFile(web_package::test::WebBundleBuilder* builder,
+void AddScriptFile(web_package::WebBundleBuilder* builder,
                    const GURL& base_url,
                    const std::string& path,
                    const std::string& content) {
@@ -391,7 +391,7 @@ void AddScriptFile(web_package::test::WebBundleBuilder* builder,
 
 std::string CreatePathTestWebBundle(const GURL& base_url) {
   const std::string primary_url_path = "/web_bundle/path_test/in_scope/";
-  web_package::test::WebBundleBuilder builder(
+  web_package::WebBundleBuilder builder(
       base_url.Resolve(primary_url_path).spec(), "");
   AddHtmlFile(&builder, base_url, primary_url_path, "<title>Ready</title>");
   AddHtmlFile(
@@ -470,7 +470,7 @@ void SetUpSubPageTest(net::EmbeddedTestServer* primary_server,
   *primary_url_origin = primary_server->GetURL("/");
   *third_party_origin = third_party_server->GetURL("/");
 
-  web_package::test::WebBundleBuilder builder(
+  web_package::WebBundleBuilder builder(
       primary_url_origin->Resolve("/top").spec(), "");
   AddHtmlFile(&builder, *primary_url_origin, "/top", R"(
     <script>
@@ -588,11 +588,10 @@ std::string CreateScriptForNavigationTest(const std::string& script_info) {
                             script_info.c_str());
 }
 
-void AddHtmlAndScriptForNavigationTest(
-    web_package::test::WebBundleBuilder* builder,
-    const GURL& base_url,
-    const std::string& path,
-    const std::string& additional_html) {
+void AddHtmlAndScriptForNavigationTest(web_package::WebBundleBuilder* builder,
+                                       const GURL& base_url,
+                                       const std::string& path,
+                                       const std::string& additional_html) {
   AddHtmlFile(builder, base_url, path,
               CreateHtmlForNavigationTest(path + " from wbn", additional_html));
   AddScriptFile(builder, base_url, path + "script",
@@ -684,7 +683,7 @@ void SetUpSharedNavigationsTest(net::EmbeddedTestServer* server,
                                 GURL* url_origin,
                                 std::string* web_bundle_content) {
   SetUpNavigationTestServer(server, url_origin);
-  web_package::test::WebBundleBuilder builder(
+  web_package::WebBundleBuilder builder(
       url_origin->Resolve("/top-page/").spec(), "");
   for (const auto& path : pathes)
     AddHtmlAndScriptForNavigationTest(&builder, *url_origin, path, "");
@@ -1052,7 +1051,7 @@ void SetUpIframeNavigationTest(net::EmbeddedTestServer* server,
                                GURL* url_origin,
                                std::string* web_bundle_content) {
   SetUpNavigationTestServer(server, url_origin);
-  web_package::test::WebBundleBuilder builder(
+  web_package::WebBundleBuilder builder(
       url_origin->Resolve("/top-page/").spec(), "");
   const std::vector<std::string> pathes = {"/top-page/", "/1-page/",
                                            "/2-page/"};

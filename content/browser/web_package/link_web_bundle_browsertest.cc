@@ -10,7 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
-#include "components/web_package/test_support/web_bundle_builder.h"
+#include "components/web_package/web_bundle_builder.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/content_browser_client.h"
@@ -176,8 +176,8 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
           request.relative_url == "/web_bundle/huge2.wbn"))
       return nullptr;
     GURL primary_url(https_server_.GetURL("/web_bundle/huge.txt"));
-    web_package::test::WebBundleBuilder builder(primary_url.spec(),
-                                                "" /* manifest_url */);
+    web_package::WebBundleBuilder builder(primary_url.spec(),
+                                          "" /* manifest_url */);
     builder.AddExchange(
         primary_url.spec(),
         {{":status", "200"}, {"content-type", "text/plain"}},

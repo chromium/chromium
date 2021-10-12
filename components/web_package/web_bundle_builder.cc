@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/web_package/test_support/web_bundle_builder.h"
+#include "components/web_package/web_bundle_builder.h"
 
 #include <ostream>
 
+#include "base/big_endian.h"
+
 namespace web_package {
-namespace test {
 
 namespace {
 
@@ -22,23 +23,44 @@ cbor::Value CreateHeaderMap(const WebBundleBuilder::Headers& headers) {
   return cbor::Value(std::move(map));
 }
 
+// TODO(myrzakereyms): replace this method with cbor::writer::GetNumUintBytes.
+uint64_t GetNumUintBytes(uint64_t value) {
+  if (value < 24) {
+    return 0;
+  } else if (value <= 0xFF) {
+    return 1;
+  } else if (value <= 0xFFFF) {
+    return 2;
+  } else if (value <= 0xFFFFFFFF) {
+    return 4;
+  }
+  return 8;
+}
+
 }  // namespace
 
 WebBundleBuilder::WebBundleBuilder(const std::string& fallback_url,
                                    const std::string& manifest_url,
-                                   BundleVersion version)
+                                   BundleVersion version,
+                                   bool allow_invalid_utf8_strings_for_testing)
     : fallback_url_(fallback_url), version_(version) {
-  writer_config_.allow_invalid_utf8_for_testing = true;
+  writer_config_.allow_invalid_utf8_for_testing =
+      allow_invalid_utf8_strings_for_testing;
   if (!manifest_url.empty()) {
-    AddSection("manifest",
-               cbor::Value::InvalidUTF8StringValueForTesting(manifest_url));
+    AddSection("manifest", GetCborValueOfURL(manifest_url));
   }
   if (version == BundleVersion::kB2 && !fallback_url_.empty()) {
-    AddSection("primary",
-               cbor::Value::InvalidUTF8StringValueForTesting(fallback_url_));
+    AddSection("primary", GetCborValueOfURL(fallback_url_));
   }
 }
 WebBundleBuilder::~WebBundleBuilder() = default;
+
+cbor::Value WebBundleBuilder::GetCborValueOfURL(base::StringPiece url) {
+  if (writer_config_.allow_invalid_utf8_for_testing) {
+    return cbor::Value::InvalidUTF8StringValueForTesting(url);
+  }
+  return cbor::Value(url);
+}
 
 void WebBundleBuilder::AddExchange(base::StringPiece url,
                                    const Headers& response_headers,
@@ -49,11 +71,6 @@ void WebBundleBuilder::AddExchange(base::StringPiece url,
 WebBundleBuilder::ResponseLocation WebBundleBuilder::AddResponse(
     const Headers& headers,
     base::StringPiece payload) {
-  // We assume that the size of the CBOR header of the responses array is 1,
-  // which is true only if the responses array has no more than 23 elements.
-  DCHECK_LT(responses_.size(), 23u)
-      << "WebBundleBuilder cannot create bundles with more than 23 responses";
-
   cbor::Value::ArrayValue response_array;
   response_array.emplace_back(Encode(CreateHeaderMap(headers)));
   response_array.emplace_back(CreateByteString(payload));
@@ -69,19 +86,13 @@ void WebBundleBuilder::AddIndexEntry(
     base::StringPiece url,
     base::StringPiece variants_value,
     std::vector<ResponseLocation> response_locations) {
-  cbor::Value::ArrayValue index_value_array;
   // 'b2' version does not include |variants_value| in the response array.
-  if (version_ == BundleVersion::kB1) {
-    index_value_array.emplace_back(CreateByteString(variants_value));
-  } else {
+  if (version_ != BundleVersion::kB1) {
     DCHECK_EQ(response_locations.size(), 1u);
   }
-  for (const auto& location : response_locations) {
-    index_value_array.emplace_back(location.offset);
-    index_value_array.emplace_back(location.length);
-  }
-  index_.insert({cbor::Value::InvalidUTF8StringValueForTesting(url),
-                 cbor::Value(index_value_array)});
+  delayed_index_.insert(
+      {std::string(url), std::make_pair(std::string(variants_value),
+                                        std::move(response_locations))});
 }
 
 void WebBundleBuilder::AddSection(base::StringPiece name, cbor::Value section) {
@@ -99,7 +110,26 @@ void WebBundleBuilder::AddVouchedSubset(cbor::Value::MapValue vouched_subset) {
 }
 
 std::vector<uint8_t> WebBundleBuilder::CreateBundle() {
-  AddSection("index", cbor::Value(index_));
+  // Now that we know how many responses will be in the bundle,
+  // we want to shift all the offsets by the bytes required
+  // for the CBOR Array header and actually construct the index
+  // section.
+  int64_t initial_offset = 1 + GetNumUintBytes(responses_.size());
+  cbor::Value::MapValue index;
+  for (auto& entry : delayed_index_) {
+    auto& index_entry = entry.second;
+    cbor::Value::ArrayValue index_value_array;
+    if (version_ == BundleVersion::kB1) {
+      index_value_array.emplace_back(CreateByteString(index_entry.first));
+    }
+    for (auto& location : index_entry.second) {
+      index_value_array.emplace_back(location.offset + initial_offset);
+      index_value_array.emplace_back(location.length);
+    }
+    index.insert(
+        {GetCborValueOfURL(entry.first), cbor::Value(index_value_array)});
+  }
+  AddSection("index", cbor::Value(index));
   if (!authorities_.empty() || !vouched_subsets_.empty()) {
     cbor::Value::ArrayValue signatures_section;
     signatures_section.emplace_back(std::move(authorities_));
@@ -107,7 +137,7 @@ std::vector<uint8_t> WebBundleBuilder::CreateBundle() {
     AddSection("signatures", cbor::Value(std::move(signatures_section)));
   }
   AddSection("responses", cbor::Value(responses_));
-  return Encode(CreateTopLevel());
+  return CreateTopLevel();
 }
 
 cbor::Value WebBundleBuilder::CreateEncodedSigned(
@@ -124,7 +154,7 @@ cbor::Value WebBundleBuilder::CreateEncodedSigned(
   subset_hash_value.emplace_back(payload_integrity_header);
 
   cbor::Value::MapValue subset_hashes;
-  subset_hashes.emplace(url, std::move(subset_hash_value));
+  subset_hashes.emplace(GetCborValueOfURL(url), std::move(subset_hash_value));
 
   cbor::Value::MapValue signed_subset;
   signed_subset.emplace("validity-url", validity_url);
@@ -135,23 +165,29 @@ cbor::Value WebBundleBuilder::CreateEncodedSigned(
   return cbor::Value(Encode(cbor::Value(signed_subset)));
 }
 
-cbor::Value WebBundleBuilder::CreateTopLevel() {
+std::vector<uint8_t> WebBundleBuilder::CreateTopLevel() {
   cbor::Value::ArrayValue toplevel_array;
   toplevel_array.emplace_back(
       CreateByteString(u8"\U0001F310\U0001F4E6"));  // "🌐📦"
   if (version_ == BundleVersion::kB1) {
     toplevel_array.emplace_back(
         CreateByteString(base::StringPiece("b1\0\0", 4)));
-    toplevel_array.emplace_back(
-        cbor::Value::InvalidUTF8StringValueForTesting(fallback_url_));
+    toplevel_array.emplace_back(GetCborValueOfURL(fallback_url_));
   } else {
     toplevel_array.emplace_back(
         CreateByteString(base::StringPiece("b2\0\0", 4)));
   }
   toplevel_array.emplace_back(Encode(cbor::Value(section_lengths_)));
   toplevel_array.emplace_back(sections_);
-  toplevel_array.emplace_back(CreateByteString(""));  // length (ignored)
-  return cbor::Value(toplevel_array);
+  // Put a dummy 8-byte bytestring.
+  toplevel_array.emplace_back(cbor::Value::BinaryValue(8, 0));
+
+  std::vector<uint8_t> bundle = Encode(cbor::Value(toplevel_array));
+  char encoded[8];
+  base::WriteBigEndian(encoded, static_cast<uint64_t>(bundle.size()));
+  // Overwrite the dummy bytestring with the actual size.
+  memcpy(bundle.data() + bundle.size() - 8, encoded, 8);
+  return bundle;
 }
 
 std::vector<uint8_t> WebBundleBuilder::Encode(const cbor::Value& value) {
@@ -162,5 +198,4 @@ int64_t WebBundleBuilder::EncodedLength(const cbor::Value& value) {
   return Encode(value).size();
 }
 
-}  // namespace test
 }  // namespace web_package

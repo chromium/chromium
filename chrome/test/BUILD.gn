@@ -2736,7 +2736,7 @@ if (!is_android && !is_fuchsia) {
         "//components/keep_alive_registry",
         "//components/media_router/browser:test_support",
         "//components/media_router/common:test_support",
-        "//components/web_package:test_support",
+        "//components/web_package",
         "//google_apis/common:test_support",
         "//google_apis/drive",
 

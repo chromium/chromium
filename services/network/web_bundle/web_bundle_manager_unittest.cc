@@ -7,7 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
-#include "components/web_package/test_support/web_bundle_builder.h"
+#include "components/web_package/web_bundle_builder.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -35,8 +35,7 @@ const int32_t process_id1 = 100;
 const int32_t process_id2 = 200;
 
 std::string CreateSmallBundleString() {
-  web_package::test::WebBundleBuilder builder(kResourceUrl,
-                                              "" /* manifest_url */);
+  web_package::WebBundleBuilder builder(kResourceUrl, "" /* manifest_url */);
   builder.AddExchange(kResourceUrl,
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       "body");
@@ -398,8 +397,7 @@ TEST_F(WebBundleManagerTest, MemoryQuota_QuotaErrorWhileReadingBody) {
 
   // Create a not small size bundle to trigger the quota error while reading the
   // body of the subresource.
-  web_package::test::WebBundleBuilder builder(kResourceUrl,
-                                              "" /* manifest_url */);
+  web_package::WebBundleBuilder builder(kResourceUrl, "" /* manifest_url */);
   builder.AddExchange(kResourceUrl,
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       std::string(10000, 'X'));

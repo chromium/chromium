@@ -31,7 +31,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/web_package/test_support/web_bundle_builder.h"
+#include "components/web_package/web_bundle_builder.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -1953,7 +1953,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesContentScriptApiTest,
   // of a web bundle. So we use |urn_uuid_html_url| for the fallback URL.
   // TODO(crbug.com/966753): Stop using |urn_uuid_html_url| when
   // https://github.com/WICG/webpackage/issues/590 is resolved.
-  web_package::test::WebBundleBuilder builder(urn_uuid_html_url, "");
+  web_package::WebBundleBuilder builder(urn_uuid_html_url, "");
   auto html_location =
       builder.AddResponse({{":status", "200"}, {"content-type", "text/html"}},
                           "<script>console.error('hoge');</script>");
