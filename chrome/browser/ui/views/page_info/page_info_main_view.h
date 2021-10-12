@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/page_info/chosen_object_view_observer.h"
 #include "chrome/browser/ui/views/page_info/permission_selector_row_observer.h"
 #include "components/page_info/page_info_ui.h"
+#include "components/page_info/proto/about_this_site_metadata.pb.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "ui/views/view.h"
 
@@ -95,7 +96,7 @@ class PageInfoMainView : public views::View,
   // Creates 'About this site' section which contains a button that opens a
   // subpage and two separators.
   std::unique_ptr<views::View> CreateAboutThisSiteSection(
-      std::u16string description) WARN_UNUSED_RESULT;
+      const absl::optional<page_info::proto::SiteInfo> info) WARN_UNUSED_RESULT;
 
   PageInfo* presenter_;
 

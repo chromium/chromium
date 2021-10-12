@@ -1,0 +1,60 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.page_info.proto";
+
+package page_info.proto;
+
+// Represents a duration like “3 days” or “2 years”. It should always use the
+// lowest possible granularity. E.g. use “1 month” as soon as an event happened
+// at least 30 days ago. When precision is MORE_THAN, the event happened at
+// least the specified time ago, e.g. “more than 2 years ago”.
+message CoarseDuration {
+  optional int32 count = 1;
+  optional DurationUnit unit = 2;
+  optional DurationPrecision precision = 3;
+}
+
+enum DurationUnit {
+  DURATION_UNIT_UNSPECIFIED = 0;
+  DURATION_UNIT_DAYS = 1;
+  DURATION_UNIT_MONTHS = 2;
+  DURATION_UNIT_YEARS = 3;
+}
+
+enum DurationPrecision {
+  DURATION_PRECISION_UNSPECIFIED = 0;
+  DURATION_PRECISION_ABOUT = 1;
+  DURATION_PRECISION_LESS_THAN = 2;
+  DURATION_PRECISION_MORE_THAN = 3;
+}
+
+message SiteInfo {
+  // First-seen date information related to this host/domain.
+  // When Google first indexed this site.
+  optional CoarseDuration first_seen = 1;
+
+  // Name of the entity associated with the site.
+  optional string entity_name = 2;
+
+  // Description of the entity associated with the site.
+  optional string entity_description = 3;
+
+  // Source URL of this information.
+  optional string source_url = 4;
+
+  // Name of the source of this information.
+  optional string source_name = 5;
+}
+
+// Optimization metadata associated with SiteInfo.
+//
+// This is only populated for the ABOUT_THIS_SITE optimization type.
+message AboutThisSiteMetadata {
+  // A SiteInfo hint.
+  optional SiteInfo site_info = 1;
+}
