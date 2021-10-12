@@ -302,7 +302,6 @@ void FocusWindowSetOnCurrentSpace(const std::set<gfx::NativeWindow>& windows) {
   // TODO(davidben): To limit those cases, consider preferentially
   // deminiaturizing a window on the current space.
   NSWindow* frontmost_window = nil;
-  NSWindow* frontmost_window_all_spaces = nil;
   NSWindow* frontmost_miniaturized_window = nil;
   bool all_miniaturized = true;
   for (NSWindow* win in [[NSApp orderedWindows] reverseObjectEnumerator]) {
@@ -312,7 +311,6 @@ void FocusWindowSetOnCurrentSpace(const std::set<gfx::NativeWindow>& windows) {
       frontmost_miniaturized_window = win;
     } else if ([win isVisible]) {
       all_miniaturized = false;
-      frontmost_window_all_spaces = win;
       if ([win isOnActiveSpace]) {
         // Raise the old |frontmost_window| (if any). The topmost |win| will be
         // raised with makeKeyAndOrderFront: below.
