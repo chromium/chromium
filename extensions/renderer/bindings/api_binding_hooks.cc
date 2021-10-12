@@ -377,21 +377,6 @@ v8::Local<v8::Object> APIBindingHooks::GetJSHookInterface(
   return GetJSHookInterfaceObject(api_name_, context, true);
 }
 
-v8::Local<v8::Function> APIBindingHooks::GetCustomJSCallback(
-    const std::string& name,
-    v8::Local<v8::Context> context) {
-  v8::Local<v8::Object> hooks =
-      GetJSHookInterfaceObject(api_name_, context, false);
-  if (hooks.IsEmpty())
-    return v8::Local<v8::Function>();
-  JSHookInterface* hook_interface = nullptr;
-  gin::Converter<JSHookInterface*>::FromV8(context->GetIsolate(), hooks,
-                                           &hook_interface);
-  CHECK(hook_interface);
-
-  return hook_interface->GetCustomCallback(name, context->GetIsolate());
-}
-
 bool APIBindingHooks::CreateCustomEvent(v8::Local<v8::Context> context,
                                         const std::string& event_name,
                                         v8::Local<v8::Value>* event_out) {
