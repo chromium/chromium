@@ -352,6 +352,10 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   void OnUserAcceptedAuthenticationSelectionDialog(
       const CardUnmaskChallengeOption& selected_challenge_option);
 
+  // Callback function invoked when the user has cancelled the virtual card
+  // unmasking.
+  void OnVirtualCardUnmaskCancelled();
+
   // Reset all the member variables of |this| and restore initial states.
   void Reset();
 

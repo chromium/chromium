@@ -87,6 +87,18 @@ void AutofillClient::ShowVirtualCardErrorDialog(bool is_permanent_error) {
   // ChromeAutofillClient (Chrome Desktop & Android) implements this.
 }
 
+void AutofillClient::ShowAutofillProgressDialog(
+    base::OnceClosure cancel_callback) {
+  // This is overridden by platform subclasses. Currently only
+  // ChromeAutofillClient (Chrome Desktop & Android) implements this.
+}
+
+void AutofillClient::CloseAutofillProgressDialog(
+    bool show_confirmation_before_closing) {
+  // This is overridden by platform subclasses. Currently only
+  // ChromeAutofillClient (Chrome Desktop & Android) implements this.
+}
+
 bool AutofillClient::IsAutofillAssistantShowing() {
   return false;
 }

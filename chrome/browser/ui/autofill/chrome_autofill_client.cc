@@ -770,6 +770,19 @@ void ChromeAutofillClient::ShowVirtualCardErrorDialog(bool is_permanent_error) {
   autofill_error_dialog_controller_.Show(error_dialog_type);
 }
 
+void ChromeAutofillClient::ShowAutofillProgressDialog(
+    base::OnceClosure cancel_callback) {
+  DCHECK(autofill_progress_dialog_controller_);
+  autofill_progress_dialog_controller_->ShowDialog(std::move(cancel_callback));
+}
+
+void ChromeAutofillClient::CloseAutofillProgressDialog(
+    bool show_confirmation_before_closing) {
+  DCHECK(autofill_progress_dialog_controller_);
+  autofill_progress_dialog_controller_->DismissDialog(
+      show_confirmation_before_closing);
+}
+
 bool ChromeAutofillClient::IsAutofillAssistantShowing() {
   auto* assistant_runtime_manager =
       autofill_assistant::RuntimeManager::GetForWebContents(web_contents());
@@ -899,7 +912,10 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
           GetPersonalDataManager()->app_locale())),
       unmask_controller_(
           user_prefs::UserPrefs::Get(web_contents->GetBrowserContext())),
-      autofill_error_dialog_controller_(web_contents) {
+      autofill_error_dialog_controller_(web_contents),
+      autofill_progress_dialog_controller_(
+          std::make_unique<AutofillProgressDialogControllerImpl>(
+              web_contents)) {
   // TODO(crbug.com/928595): Replace the closure with a callback to the
   // renderer that indicates if log messages should be sent from the
   // renderer.

@@ -584,6 +584,12 @@ class AutofillClient : public RiskDataLoader {
   // error dialog with virtual card related messages.
   virtual void ShowVirtualCardErrorDialog(bool is_permanent_error);
 
+  // Show/dismiss the progress dialog which contains a throbber and a text
+  // message indicating that something is in progress.
+  virtual void ShowAutofillProgressDialog(base::OnceClosure cancel_callback);
+  virtual void CloseAutofillProgressDialog(
+      bool show_confirmation_before_closing);
+
   // Returns true if the Autofill Assistant UI is currently being shown.
   virtual bool IsAutofillAssistantShowing();
 

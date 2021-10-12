@@ -17,6 +17,12 @@
 
 namespace autofill {
 
+namespace {
+// The delay before dismissing the dialog after the progress throber shows the
+// checkmark. This delay is for users to identify the status change.
+constexpr int kDelayBeforeDismissingDialogInSeconds = 1;
+}  // namespace
+
 AutofillProgressDialogViews::AutofillProgressDialogViews(
     AutofillProgressDialogController* controller)
     : controller_(controller) {
@@ -61,22 +67,23 @@ AutofillProgressDialogView* AutofillProgressDialogView::CreateAndShow(
   return dialog_view;
 }
 
-void AutofillProgressDialogViews::Dismiss() {
-  if (controller_) {
-    controller_->OnDismissed();
-    controller_ = nullptr;
+void AutofillProgressDialogViews::Dismiss(
+    bool show_confirmation_before_closing) {
+  // If |show_confirmation_before_closing| is true, show the confirmation and
+  // close the widget with a delay.
+  if (show_confirmation_before_closing) {
+    label_->SetText(controller_->GetConfirmationMessage());
+    progress_throbber_->SetChecked(true);
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AutofillProgressDialogViews::CloseWidget,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::Seconds(kDelayBeforeDismissingDialogInSeconds));
+    return;
   }
-  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-}
 
-void AutofillProgressDialogViews::ShowConfirmation() {
-  label_->SetText(controller_->GetConfirmationMessage());
-  progress_throbber_->SetChecked(true);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&AutofillProgressDialogViews::Dismiss,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::Seconds(1));
+  // Otherwise close the widget directly.
+  CloseWidget();
 }
 
 void AutofillProgressDialogViews::AddedToWidget() {
@@ -96,6 +103,14 @@ void AutofillProgressDialogViews::OnThemeChanged() {
 
 std::u16string AutofillProgressDialogViews::GetWindowTitle() const {
   return controller_->GetTitle();
+}
+
+void AutofillProgressDialogViews::CloseWidget() {
+  if (controller_) {
+    controller_->OnDismissed();
+    controller_ = nullptr;
+  }
+  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }
 
 }  // namespace autofill

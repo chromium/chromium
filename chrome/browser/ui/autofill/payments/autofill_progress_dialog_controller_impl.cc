@@ -15,23 +15,45 @@ AutofillProgressDialogControllerImpl::AutofillProgressDialogControllerImpl(
     : web_contents_(web_contents) {}
 
 AutofillProgressDialogControllerImpl::~AutofillProgressDialogControllerImpl() {
-  Dismiss();
+  if (autofill_progress_dialog_view_) {
+    autofill_progress_dialog_view_->Dismiss(
+        /*show_confirmation_before_closing=*/false);
+    autofill_progress_dialog_view_ = nullptr;
+  }
 }
 
-void AutofillProgressDialogControllerImpl::ShowDialog() {
+void AutofillProgressDialogControllerImpl::ShowDialog(
+    base::OnceClosure cancel_callback) {
   DCHECK(!autofill_progress_dialog_view_);
 
+  cancel_callback_ = std::move(cancel_callback);
   autofill_progress_dialog_view_ =
       AutofillProgressDialogView::CreateAndShow(this);
 }
 
-void AutofillProgressDialogControllerImpl::ShowConfirmation() {
-  DCHECK(autofill_progress_dialog_view_);
-  autofill_progress_dialog_view_->ShowConfirmation();
+void AutofillProgressDialogControllerImpl::DismissDialog(
+    bool show_confirmation_before_closing) {
+  if (!autofill_progress_dialog_view_)
+    return;
+
+  autofill_progress_dialog_view_->Dismiss(show_confirmation_before_closing);
+  autofill_progress_dialog_view_ = nullptr;
 }
 
 void AutofillProgressDialogControllerImpl::OnDismissed() {
-  autofill_progress_dialog_view_ = nullptr;
+  // If the |autofill_progress_dialog_view_| is not a nullptr. It means the
+  // dismissal was triggered by the user cancelling the flow. Thus we should
+  // invoke the |cancel_callback_|.
+  if (autofill_progress_dialog_view_) {
+    autofill_progress_dialog_view_ = nullptr;
+    std::move(cancel_callback_).Run();
+    // TODO(crbug.com/1243475): Add metrics.
+    return;
+  }
+
+  // Otherwise it was triggered by the backend components. The
+  // |cancel_callback_| will not be invoked but be reset.
+  cancel_callback_.Reset();
 }
 
 const std::u16string AutofillProgressDialogControllerImpl::GetTitle() {
@@ -57,11 +79,6 @@ AutofillProgressDialogControllerImpl::GetConfirmationMessage() {
 
 content::WebContents* AutofillProgressDialogControllerImpl::GetWebContents() {
   return web_contents_;
-}
-
-void AutofillProgressDialogControllerImpl::Dismiss() {
-  if (autofill_progress_dialog_view_)
-    autofill_progress_dialog_view_->Dismiss();
 }
 
 }  // namespace autofill

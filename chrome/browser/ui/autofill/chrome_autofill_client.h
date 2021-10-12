@@ -18,6 +18,7 @@
 #include "chrome/browser/autofill/autofill_gstatic_reader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller_impl.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -161,6 +162,9 @@ class ChromeAutofillClient
       const std::u16string& cvc,
       const gfx::Image& card_image) override;
   void ShowVirtualCardErrorDialog(bool is_permanent_error) override;
+  void ShowAutofillProgressDialog(base::OnceClosure cancel_callback) override;
+  void CloseAutofillProgressDialog(
+      bool show_confirmation_before_closing) override;
   bool IsAutofillAssistantShowing() override;
   bool IsAutocompleteEnabled() override;
   void PropagateAutofillPredictions(
@@ -220,6 +224,8 @@ class ChromeAutofillClient
 #endif
   CardUnmaskPromptControllerImpl unmask_controller_;
   AutofillErrorDialogControllerImpl autofill_error_dialog_controller_;
+  std::unique_ptr<AutofillProgressDialogControllerImpl>
+      autofill_progress_dialog_controller_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
