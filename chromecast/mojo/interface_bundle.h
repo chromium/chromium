@@ -12,6 +12,7 @@
 #include "base/sequence_checker.h"
 #include "chromecast/mojo/binder_factory.h"
 #include "chromecast/mojo/mojom/remote_interfaces.mojom.h"
+#include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -122,6 +123,17 @@ class InterfaceBundle final : private mojom::RemoteInterfaces {
                      mojo::ScopedMessagePipeHandle handle) override;
   void AddClient(
       mojo::PendingReceiver<mojom::RemoteInterfaces> receiver) override;
+
+  // Attempt to bind a generic receiver. Succeeds if there is an available
+  // implementation or binder callback registered.
+  bool TryBindReceiver(mojo::GenericPendingReceiver& receiver) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (local_interfaces_.HasInterface(*receiver.interface_name())) {
+      local_interfaces_.Bind(*receiver.interface_name(), receiver.PassPipe());
+      return true;
+    }
+    return false;
+  }
 
  private:
   // For interfaces that are provided as a local pointer without any binding

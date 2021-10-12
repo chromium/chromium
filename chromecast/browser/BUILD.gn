@@ -584,6 +584,8 @@ cast_source_set("public") {
     "cast_web_contents.h",
     "cast_web_view.cc",
     "cast_web_view.h",
+    "gesture_router.cc",
+    "gesture_router.h",
   ]
 
   # Need to expose this so that internal public_configs are propagated.
@@ -592,6 +594,7 @@ cast_source_set("public") {
     ":client",
     "//chromecast/browser/mojom",
     "//chromecast/common/mojom",
+    "//chromecast/mojo",
     "//content/public/browser",
   ]
 
@@ -601,7 +604,9 @@ cast_source_set("public") {
     "//chromecast/graphics",
     "//chromecast/ui:back_gesture_router",
     "//chromecast/ui/mojom",
+    "//content/public/browser",
     "//content/public/common",
+    "//mojo/public/cpp/bindings",
     "//ui/events",
     "//url",
   ]

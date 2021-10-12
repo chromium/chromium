@@ -90,16 +90,6 @@ void CastServiceSimple::StopInternal() {
 
 void CastServiceSimple::OnWindowDestroyed() {}
 
-bool CastServiceSimple::CanHandleGesture(GestureType gesture_type) {
-  return false;
-}
-
-void CastServiceSimple::ConsumeGesture(
-    GestureType gesture_type,
-    GestureHandledCallback handled_callback) {
-  std::move(handled_callback).Run(false);
-}
-
 void CastServiceSimple::OnVisibilityChange(VisibilityType visibility_type) {}
 
 }  // namespace shell

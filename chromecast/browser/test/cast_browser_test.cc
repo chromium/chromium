@@ -90,14 +90,5 @@ void CastBrowserTest::OnWindowDestroyed() {}
 
 void CastBrowserTest::OnVisibilityChange(VisibilityType visibility_type) {}
 
-bool CastBrowserTest::CanHandleGesture(GestureType gesture_type) {
-  return false;
-}
-
-void CastBrowserTest::ConsumeGesture(GestureType gesture_type,
-                                     GestureHandledCallback handled_callback) {
-  std::move(handled_callback).Run(false);
-}
-
 }  // namespace shell
 }  // namespace chromecast

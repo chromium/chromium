@@ -86,6 +86,7 @@ class CastWebContentsImpl : public CastWebContents,
       const InterfaceSet& interface_set,
       service_manager::InterfaceProvider* interface_provider) override;
   bool TryBindReceiver(mojo::GenericPendingReceiver& receiver) override;
+  InterfaceBundle* local_interfaces() override;
   void BlockMediaLoading(bool blocked) override;
   void BlockMediaStarting(bool blocked) override;
   void EnableBackgroundVideoPlayback(bool enabled) override;
@@ -219,6 +220,7 @@ class CastWebContentsImpl : public CastWebContents,
 
   base::ObserverList<CastWebContentsObserver>::Unchecked observer_list_;
 
+  InterfaceBundle local_interfaces_;
   RemoteInterfaces remote_interfaces_;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

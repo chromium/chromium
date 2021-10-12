@@ -80,11 +80,6 @@ class RuntimeApplicationBase
   // Called following Launch() on |task_runner_|.
   void FinishLaunch(std::string core_application_service_endpoint);
 
-  // CastWebView::Delegate implementation:
-  bool CanHandleGesture(GestureType gesture_type) override;
-  void ConsumeGesture(GestureType gesture_type,
-                      GestureHandledCallback handled_callback) override;
-
   // RuntimeMessagePortApplicationServiceDelegate implementation:
   void PostMessage(const cast::web::Message& request,
                    cast::web::MessagePortStatus* response,

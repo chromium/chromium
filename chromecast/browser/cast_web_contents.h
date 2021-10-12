@@ -18,6 +18,7 @@
 #include "chromecast/browser/mojom/cast_web_contents.mojom.h"
 #include "chromecast/browser/web_types.h"
 #include "chromecast/common/mojom/feature_manager.mojom.h"
+#include "chromecast/mojo/interface_bundle.h"
 #include "content/public/common/media_playback_renderer_type.mojom.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -254,6 +255,9 @@ class CastWebContents : public mojom::CastWebContents {
   // Asks the CastWebContents to bind an interface receiver using either its
   // registry or any registered InterfaceProvider.
   virtual bool TryBindReceiver(mojo::GenericPendingReceiver& receiver) = 0;
+
+  // Locally-registered interfaces which are exposed to render frames.
+  virtual InterfaceBundle* local_interfaces() = 0;
 
   // Used for owner to pass its |InterfaceProvider| pointers to CastWebContents.
   // It is owner's responsibility to make sure each |InterfaceProvider| pointer

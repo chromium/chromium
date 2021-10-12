@@ -64,6 +64,7 @@ class MockCastWebContents : public CastWebContents {
               (override));
   MOCK_METHOD(void, SetEnabledForRemoteDebugging, (bool), (override));
   MOCK_METHOD(void, GetMainFramePid, (GetMainFramePidCallback), (override));
+  MOCK_METHOD(InterfaceBundle*, local_interfaces, (), (override));
   MOCK_METHOD(void,
               RegisterInterfaceProvider,
               (const InterfaceSet&, service_manager::InterfaceProvider*),

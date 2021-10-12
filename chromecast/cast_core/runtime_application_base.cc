@@ -158,10 +158,6 @@ CastWebView::Scoped RuntimeApplicationBase::CreateWebView(
   return web_service_->CreateWebViewInternal(create_params, std::move(params));
 }
 
-bool RuntimeApplicationBase::CanHandleGesture(GestureType gesture_type) {
-  return false;
-}
-
 void RuntimeApplicationBase::StopApplication() {
   is_application_stopped_ = true;
 
@@ -192,12 +188,6 @@ void RuntimeApplicationBase::StopApplication() {
 
   GrpcServer::Stop();
   set_cast_session_id(std::string());
-}
-
-void RuntimeApplicationBase::ConsumeGesture(
-    GestureType gesture_type,
-    GestureHandledCallback handled_callback) {
-  std::move(handled_callback).Run(false);
 }
 
 }  // namespace chromecast

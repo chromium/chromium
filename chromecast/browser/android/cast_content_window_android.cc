@@ -181,8 +181,8 @@ void CastContentWindowAndroid::ConsumeGesture(
     const base::android::JavaParamRef<jobject>& callback) {
   auto wrapper =
       std::make_unique<GestureConsumedCallbackWrapper>(env, callback);
-  if (delegate_) {
-    delegate_->ConsumeGesture(
+  if (gesture_router()) {
+    gesture_router()->ConsumeGesture(
         static_cast<GestureType>(gesture_type),
         base::BindOnce(&GestureConsumedCallbackWrapper::Invoke,
                        std::move(wrapper)));

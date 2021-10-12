@@ -93,7 +93,7 @@ CastContentWindowAura::CastContentWindowAura(base::WeakPtr<Delegate> delegate,
     : CastContentWindow(delegate, std::move(params)),
       window_manager_(window_manager),
       gesture_dispatcher_(
-          std::make_unique<CastContentGestureHandler>(delegate_)),
+          std::make_unique<CastContentGestureHandler>(gesture_router())),
       window_(nullptr),
       has_screen_access_(false),
       resize_window_when_navigation_starts_(true) {}

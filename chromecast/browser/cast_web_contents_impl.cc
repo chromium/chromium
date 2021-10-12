@@ -444,6 +444,11 @@ void CastWebContentsImpl::GetMainFramePid(GetMainFramePidCallback cb) {
 
 bool CastWebContentsImpl::TryBindReceiver(
     mojo::GenericPendingReceiver& receiver) {
+  // First try binding local interfaces.
+  if (local_interfaces_.TryBindReceiver(receiver)) {
+    return true;
+  }
+
   const std::string interface_name = *receiver.interface_name();
   mojo::ScopedMessagePipeHandle interface_pipe = receiver.PassPipe();
 
@@ -466,6 +471,10 @@ bool CastWebContentsImpl::TryBindReceiver(
   // Note that this doesn't guarantee that the interface will eventually be
   // connected.
   return true;
+}
+
+InterfaceBundle* CastWebContentsImpl::local_interfaces() {
+  return &local_interfaces_;
 }
 
 void CastWebContentsImpl::RegisterInterfaceProvider(
