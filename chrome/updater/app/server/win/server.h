@@ -7,8 +7,6 @@
 
 #include <windows.h>
 
-#include <vector>
-
 #include "base/callback_forward.h"
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
@@ -93,9 +91,6 @@ class ComServerApp : public AppServer {
 
   // Handles COM setup and registration.
   void Start(base::OnceCallback<HRESULT()> register_callback);
-
-  // Identifier of registered class objects used for unregistration.
-  std::vector<DWORD> cookies_;
 
   // While this object lives, COM can be used by all threads in the program.
   base::win::ScopedCOMInitializer com_initializer_;

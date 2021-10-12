@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <wrl/module.h>
+
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/update_service_internal_proxy.h"
 #include "chrome/updater/win/update_service_proxy.h"
-#include "chrome/updater/win/wrl_module.h"
 
 namespace updater {
 namespace {

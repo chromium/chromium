@@ -224,6 +224,7 @@ if (is_win || is_mac) {
         "//chrome/updater/win:app_install_controller",
         "//chrome/updater/win/ui",
       ]
+
       sources += [
         "activity_impl_win.cc",
         "app/app_install_win.cc",
@@ -235,6 +236,7 @@ if (is_win || is_mac) {
         "app/server/win/server.h",
         "app/server/win/service_main.cc",
         "app/server/win/service_main.h",
+        "app/server/win/wrl_classes.cc",
         "device_management/dm_storage_win.cc",
         "lib_util_win.cc",
         "policy/win/group_policy_manager.cc",
@@ -273,7 +275,6 @@ if (is_win || is_mac) {
         "win/win_constants.h",
         "win/win_util.cc",
         "win/win_util.h",
-        "win/wrl_module.h",
       ]
       deps += [
         "//chrome/installer/util:with_no_strings",

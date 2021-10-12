@@ -6,6 +6,7 @@
 
 #include <atlsecurity.h>
 #include <sddl.h>
+#include <wrl/module.h>
 
 #include <string>
 #include <type_traits>
@@ -21,7 +22,6 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
-#include "chrome/updater/win/wrl_module.h"
 
 namespace updater {
 
