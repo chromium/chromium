@@ -4269,7 +4269,8 @@ def ChecksCommon(input_api, output_api):
             input_api, output_api, full_path,
             files_to_check=[r'^PRESUBMIT_test\.py$'],
             run_on_python2=not use_python3,
-            run_on_python3=use_python3))
+            run_on_python3=use_python3,
+            skip_shebang_check=True))
   return results
 
 

@@ -533,7 +533,8 @@ class ReadableBinaryFileObject(object):
 
 class ReadableTextFileObject(ReadableBinaryFileObject):
     def __init__(self, fs, path, data):
-        super(ReadableTextFileObject, self).__init__(fs, path, StringIO(data))
+        super(ReadableTextFileObject,
+              self).__init__(fs, path, StringIO(data.decode(encoding='utf-8')))
 
     def close(self):
         self.data.close()

@@ -28,7 +28,12 @@ import os
 import struct
 import sys
 import time
-import urlparse
+
+try:
+  from urllib.parse import urlparse
+except ImportError:
+  # ToDo: Remove Exception case upon full migration to Python 3
+  from urlparse import urlparse
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, os.path.join(script_dir, 'third_party', 'ed25519'))
@@ -87,7 +92,7 @@ def OriginFromArg(arg):
   if hostname:
     return "https://" + hostname + ":443"
   # If not, try to construct an origin URL from the argument
-  origin = urlparse.urlparse(arg)
+  origin = urlparse(arg)
   if not origin or not origin.scheme or not origin.netloc:
     raise argparse.ArgumentTypeError("%s is not a hostname or a URL" % arg)
   # HTTPS or HTTP only
@@ -242,7 +247,7 @@ def main():
   # Verify that that the signature is correct before printing it.
   try:
     ed25519.checkvalid(signature, data_to_sign, private_key[32:])
-  except Exception, exc:
+  except Exception as exc:
     print("There was an error generating the signature.")
     print("(The original error was: %s)" % exc)
     sys.exit(1)
