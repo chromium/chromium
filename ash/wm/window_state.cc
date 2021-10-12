@@ -539,13 +539,18 @@ void WindowState::SetPreAddedToWorkspaceWindowBounds(const gfx::Rect& bounds) {
   pre_added_to_workspace_window_bounds_ = absl::make_optional(bounds);
 }
 
-void WindowState::SetPersistentWindowInfo(
-    const PersistentWindowInfo& persistent_window_info) {
-  persistent_window_info_ = absl::make_optional(persistent_window_info);
+void WindowState::SetPersistentWindowInfoOfDisplayRemoval(
+    const PersistentWindowInfo& info) {
+  persistent_window_info_of_display_removal_ = absl::make_optional(info);
 }
 
-void WindowState::ResetPersistentWindowInfo() {
-  persistent_window_info_.reset();
+void WindowState::ResetPersistentWindowInfoOfDisplayRemoval() {
+  persistent_window_info_of_display_removal_.reset();
+}
+
+void WindowState::SetPersistentWindowInfoOfScreenRotation(
+    const PersistentWindowInfo& info) {
+  persistent_window_info_of_screen_rotation_ = absl::make_optional(info);
 }
 
 void WindowState::AddObserver(WindowStateObserver* observer) {
@@ -590,7 +595,8 @@ void WindowState::set_bounds_changed_by_user(bool bounds_changed_by_user) {
   if (bounds_changed_by_user) {
     pre_auto_manage_window_bounds_.reset();
     pre_added_to_workspace_window_bounds_.reset();
-    persistent_window_info_.reset();
+    persistent_window_info_of_display_removal_.reset();
+    persistent_window_info_of_screen_rotation_.reset();
   }
 }
 
