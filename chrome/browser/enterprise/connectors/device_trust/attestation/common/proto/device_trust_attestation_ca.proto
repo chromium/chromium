@@ -124,9 +124,9 @@ message DeviceTrustSignals {
   // OS version (e.g. macOS 10.15.7)
   optional string os_version = 8;
   // IMEI
-  optional string imei = 9;
+  repeated string imei = 9;
   // MEID
-  optional string meid = 10;
+  repeated string meid = 10;
   // Hash of the EKPub certificate of the TPM on the device, if available.
   optional string tpm_hash = 11;
   // Is the disk encrypted
