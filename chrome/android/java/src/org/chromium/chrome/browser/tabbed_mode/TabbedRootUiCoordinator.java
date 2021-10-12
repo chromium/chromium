@@ -107,6 +107,7 @@ import org.chromium.chrome.browser.webapps.PwaBottomSheetController;
 import org.chromium.chrome.browser.webapps.PwaBottomSheetControllerFactory;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
+import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
@@ -455,7 +456,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     @Override
                     public @ActionType int getBackActionType(Tab tab) {
                         if (isShowingStartSurfaceHomepage()) return ActionType.EXIT_APP;
-                        if (tab.canGoBack()
+                        if (tab.canGoBack() || StartSurfaceUserData.isOpenedFromStart(tab)
                                 || tab.getLaunchType() == TabLaunchType.FROM_START_SURFACE) {
                             return ActionType.NAVIGATE_BACK;
                         }

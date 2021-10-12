@@ -2143,10 +2143,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
 
         // If we aren't in the overview mode, we handle the Tab with launchType
-        // TabLaunchType.FROM_START_SURFACE here.
+        // TabLaunchType.FROM_START_SURFACE or has "OpenedFromStart" property.
         if (!mOverviewModeController.overviewVisible()
-                && type == TabLaunchType.FROM_START_SURFACE) {
-            if (StartSurfaceUserData.getKeepTab(currentTab)) {
+                && (type == TabLaunchType.FROM_START_SURFACE
+                        || StartSurfaceUserData.isOpenedFromStart(currentTab))) {
+            if (StartSurfaceUserData.getKeepTab(currentTab)
+                    || StartSurfaceUserData.isOpenedFromStart(currentTab)) {
                 // If the current tab is created from the start surface with the keepTab property,
                 // shows the Start surface Homepage to prevent a loop between the current tab and
                 // previous overview mode. Once in the Start surface, it will close Chrome if back
