@@ -5352,6 +5352,24 @@
             ]
         }
     ],
+    "OmniboxPedalsBatch3": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Batch3_Enabled",
+                    "enable_features": [
+                        "OmniboxPedalsBatch3"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxUpdatedConnectionSecurityIndicatorsIPH": [
         {
             "platforms": [
