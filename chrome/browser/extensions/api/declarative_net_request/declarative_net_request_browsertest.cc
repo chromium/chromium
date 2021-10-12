@@ -730,11 +730,9 @@ class DeclarativeNetRequestBrowserTest
         current_ruleset_count + expected_extensions_with_rulesets_count_change);
 
     size_t expected_enabled_rulesets_count = has_dynamic_ruleset ? 1 : 0;
-    size_t expected_manifest_rules_count = 0;
     size_t expected_manifest_enabled_rules_count = 0;
     for (const TestRulesetInfo& info : rulesets) {
       size_t rules_count = info.rules_value.GetList().size();
-      expected_manifest_rules_count += rules_count;
 
       if (info.enabled) {
         expected_enabled_rulesets_count++;
