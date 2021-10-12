@@ -1806,6 +1806,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case MAGNIFIER_ZOOM_IN:
     case MAGNIFIER_ZOOM_OUT:
       return CanHandleActiveMagnifierZoom();
+    case MICROPHONE_MUTE_TOGGLE:
+      return true;
     case MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS:
       return display_move_window_util::
           CanHandleMoveActiveWindowBetweenDisplays();
@@ -2153,6 +2155,10 @@ void AcceleratorControllerImpl::PerformAction(
     case MEDIA_STOP:
       base::RecordAction(base::UserMetricsAction("Accel_Media_Stop"));
       accelerators::MediaStop();
+      break;
+    case MICROPHONE_MUTE_TOGGLE:
+      base::RecordAction(base::UserMetricsAction("Accel_Microphone_Mute"));
+      accelerators::MicrophoneMuteToggle();
       break;
     case MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS:
       display_move_window_util::HandleMoveActiveWindowBetweenDisplays();
