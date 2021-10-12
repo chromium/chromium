@@ -102,9 +102,8 @@ ChromeTranslateClient::ChromeTranslateClient(content::WebContents* web_contents)
         *web_contents, &web_contents->GetController(),
         UrlLanguageHistogramFactory::GetForBrowserContext(
             web_contents->GetBrowserContext()),
-        TranslateModelServiceFactory::GetOrBuildForKey(
-            Profile::FromBrowserContext(web_contents->GetBrowserContext())
-                ->GetProfileKey()));
+        TranslateModelServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(web_contents->GetBrowserContext())));
   }
   translate_manager_ = std::make_unique<translate::TranslateManager>(
       this,

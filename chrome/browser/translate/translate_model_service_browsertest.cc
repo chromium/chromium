@@ -101,8 +101,8 @@ class TranslateModelServiceDisabledBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceDisabledBrowserTest,
                        TranslateModelServiceDisabled) {
-  EXPECT_FALSE(TranslateModelServiceFactory::GetOrBuildForKey(
-      browser()->profile()->GetProfileKey()));
+  EXPECT_FALSE(
+      TranslateModelServiceFactory::GetForProfile(browser()->profile()));
 }
 
 class TranslateModelServiceWithoutOptimizationGuideBrowserTest
@@ -125,8 +125,8 @@ class TranslateModelServiceWithoutOptimizationGuideBrowserTest
 // the optimization guide does not exist.
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceWithoutOptimizationGuideBrowserTest,
                        TranslateModelServiceEnabled) {
-  EXPECT_FALSE(TranslateModelServiceFactory::GetOrBuildForKey(
-      browser()->profile()->GetProfileKey()));
+  EXPECT_FALSE(
+      TranslateModelServiceFactory::GetForProfile(browser()->profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceDisabledBrowserTest,
@@ -167,8 +167,7 @@ class TranslateModelServiceBrowserTest
   ~TranslateModelServiceBrowserTest() override = default;
 
   translate::TranslateModelService* translate_model_service() {
-    return TranslateModelServiceFactory::GetOrBuildForKey(
-        browser()->profile()->GetProfileKey());
+    return TranslateModelServiceFactory::GetForProfile(browser()->profile());
   }
 
   const GURL& english_url() const { return english_url_; }
@@ -215,11 +214,8 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
                        TranslateModelServiceEnabled_OffTheRecord) {
-  EXPECT_TRUE(TranslateModelServiceFactory::GetOrBuildForKey(
-      browser()
-          ->profile()
-          ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
-          ->GetProfileKey()));
+  EXPECT_TRUE(TranslateModelServiceFactory::GetForProfile(
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 }
 
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
@@ -300,17 +296,6 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
       "TranslateModelService.LanguageDetectionModel.WasLoaded", 1);
   histogram_tester.ExpectUniqueSample(
       "TranslateModelService.LanguageDetectionModel.WasLoaded", false, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
-                       LanguageDetectionModelCreated) {
-  base::HistogramTester histogram_tester;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), english_url()));
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", 1);
-  histogram_tester.ExpectUniqueSample(
-      "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
