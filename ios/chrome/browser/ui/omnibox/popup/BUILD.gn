@@ -19,7 +19,7 @@ source_set("popup") {
     ":popup_internal",
     ":popup_ui",
     "//base",
-    "//components/image_fetcher/ios",
+    "//components/image_fetcher/core",
     "//components/omnibox/browser",
     "//components/open_from_clipboard",
     "//components/search_engines",

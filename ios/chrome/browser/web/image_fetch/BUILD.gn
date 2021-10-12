@@ -15,7 +15,7 @@ source_set("image_fetch") {
   deps = [
     ":image_fetch_js",
     "//base",
-    "//components/image_fetcher/ios",
+    "//components/image_fetcher/core",
     "//ios/web",
     "//ios/web/common",
     "//ios/web/public/js_messaging",

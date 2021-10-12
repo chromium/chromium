@@ -12,7 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/values.h"
-#include "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
+#include "components/image_fetcher/core/image_data_fetcher.h"
 #include "ios/chrome/browser/web/image_fetch/image_fetch_java_script_feature.h"
 #include "ios/web/common/referrer_util.h"
 #include "ios/web/public/browser_state.h"
@@ -38,7 +38,7 @@ const int kGetImageDataByJsTimeout = 300;
 // attached to web::BrowserState instead of web::WebState, because if a user
 // closes the tab immediately after Copy/Save image, the web::WebState will be
 // destroyed thus fail the download.
-class ImageFetcher : public image_fetcher::IOSImageDataFetcherWrapper,
+class ImageFetcher : public image_fetcher::ImageDataFetcher,
                      public base::SupportsUserData::Data {
  public:
   ImageFetcher(const ImageFetcher&) = delete;
@@ -48,7 +48,7 @@ class ImageFetcher : public image_fetcher::IOSImageDataFetcherWrapper,
 
   ImageFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      : image_fetcher::IOSImageDataFetcherWrapper(url_loader_factory) {}
+      : image_fetcher::ImageDataFetcher(url_loader_factory) {}
 
   static ImageFetcher* FromBrowserState(web::BrowserState* browser_state) {
     if (!browser_state->GetUserData(&kImageFetcherKeyName)) {
@@ -109,13 +109,17 @@ void ImageFetchTabHelper::JsCallbackOfGetImageData(
     return;
   }
   ImageFetcher::FromBrowserState(web_state_->GetBrowserState())
-      ->FetchImageDataWebpDecoded(
+      ->FetchImageData(
           url,
-          ^(NSData* data, const image_fetcher::RequestMetadata& metadata) {
+          base::BindOnce(^(const std::string& image_data,
+                           const image_fetcher::RequestMetadata& metadata) {
+            NSData* data = [NSData dataWithBytes:image_data.data()
+                                          length:image_data.size()];
             callback(data);
-          },
+          }),
           web::ReferrerHeaderValueForNavigation(url, referrer),
-          web::PolicyForNavigation(url, referrer), /*send_cookies=*/true);
+          web::PolicyForNavigation(url, referrer), NO_TRAFFIC_ANNOTATION_YET,
+          /*send_cookies=*/true);
 }
 
 void ImageFetchTabHelper::GetImageDataByJs(const GURL& url,

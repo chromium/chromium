@@ -30,7 +30,7 @@ enum class ContextMenuGetImageDataByJsResult {
 };
 
 // Gets the image data by JavaScript or
-// image_fetcher::IOSImageDataFetcherWrapper. Always use this class by
+// image_fetcher::FetchImageData. Always use this class by
 // ImageFetchTabHelper::FromWebState on UI thread. All callbacks will also be
 // invoked on UI thread.
 class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
@@ -49,7 +49,7 @@ class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
   // Gets image data in binary format by following steps:
   //   1. Call injected JavaScript to get the image data from web page;
   //   2. If JavaScript fails or does not send a message back in 300ms, try
-  //   downloading the image by image_fetcher::IOSImageDataFetcherWrapper.
+  //   downloading the image by image_fetcher::FetchImageData.
   void GetImageData(const GURL& url,
                     const web::Referrer& referrer,
                     ImageDataCallback callback);

@@ -22,7 +22,7 @@ class FaviconLoader;
 class WebStateList;
 
 namespace image_fetcher {
-class IOSImageDataFetcherWrapper;
+class ImageDataFetcher;
 }  // namespace
 
 class OmniboxPopupMediatorDelegate {
@@ -77,7 +77,7 @@ class OmniboxPopupMediatorDelegate {
 
 // Designated initializer. Takes ownership of |imageFetcher|.
 - (instancetype)initWithFetcher:
-                    (std::unique_ptr<image_fetcher::IOSImageDataFetcherWrapper>)
+                    (std::unique_ptr<image_fetcher::ImageDataFetcher>)
                         imageFetcher
                   faviconLoader:(FaviconLoader*)faviconLoader
                        delegate:(OmniboxPopupMediatorDelegate*)delegate;
