@@ -171,8 +171,13 @@ class ContentAutofillDriverFactoryTest_WithOrWithoutBfCache
       public ::testing::WithParamInterface<bool> {
  public:
   ContentAutofillDriverFactoryTest_WithOrWithoutBfCache() {
-    scoped_feature_list_.InitWithFeatureState(::features::kBackForwardCache,
-                                              use_bfcache());
+    std::vector<base::Feature> enabled;
+    // Allow BackForwardCache for all devices regardless of their memory.
+    std::vector<base::Feature> disabled{
+        ::features::kBackForwardCacheMemoryControls};
+    (use_bfcache() ? enabled : disabled)
+        .push_back(::features::kBackForwardCache);
+    scoped_feature_list_.InitWithFeatures(enabled, disabled);
   }
 
   bool use_bfcache() { return GetParam(); }
@@ -260,9 +265,13 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCache,
 
   ASSERT_NE(orig_rfh_id, main_rfh()->GetGlobalId());
   // A new driver for main_rfh() has been created and the |orig_rfh| has now
-  // been removed in ContentAutofillDriverFactory::RenderFrameDeleted().
-  EXPECT_EQ(factory_test_api().GetDriver(orig_rfh),
-            use_bfcache() ? orig_driver : nullptr);
+  // been removed in ContentAutofillDriverFactory::RenderFrameDeleted(), unless
+  // BFcache is enabled (or main_rfh() happens to have the same address as
+  // |orig_rfh|).
+  if (use_bfcache())
+    EXPECT_EQ(factory_test_api().GetDriver(orig_rfh), orig_driver);
+  else if (main_rfh() != orig_rfh)
+    EXPECT_EQ(factory_test_api().GetDriver(orig_rfh), nullptr);
   EXPECT_NE(factory_test_api().GetDriver(main_rfh()), nullptr);
   EXPECT_EQ(factory_test_api().num_drivers(), use_bfcache() ? 2u : 1u);
 }
