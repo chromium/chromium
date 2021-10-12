@@ -1010,37 +1010,54 @@ bool X11Window::CanSetDecorationInsets() const {
   return ui::WmSupportsHint(x11::GetAtom("_GTK_FRAME_EXTENTS"));
 }
 
-void X11Window::SetDecorationInsets(gfx::Insets insets_px) {
-  std::vector<uint32_t> extents{static_cast<uint32_t>(insets_px.left()),
-                                static_cast<uint32_t>(insets_px.right()),
-                                static_cast<uint32_t>(insets_px.top()),
-                                static_cast<uint32_t>(insets_px.bottom())};
-  x11::SetArrayProperty(xwindow_, x11::GetAtom("_GTK_FRAME_EXTENTS"),
-                        x11::Atom::CARDINAL, extents);
+void X11Window::SetDecorationInsets(const gfx::Insets* insets_px) {
+  auto atom = x11::GetAtom("_GTK_FRAME_EXTENTS");
+  if (!insets_px) {
+    x11::DeleteProperty(xwindow_, atom);
+    return;
+  }
+  std::vector<uint32_t> extents{static_cast<uint32_t>(insets_px->left()),
+                                static_cast<uint32_t>(insets_px->right()),
+                                static_cast<uint32_t>(insets_px->top()),
+                                static_cast<uint32_t>(insets_px->bottom())};
+  x11::SetArrayProperty(xwindow_, atom, x11::Atom::CARDINAL, extents);
 }
 
-void X11Window::SetOpaqueRegion(std::vector<gfx::Rect> region_px) {
+void X11Window::SetOpaqueRegion(const std::vector<gfx::Rect>* region_px) {
+  auto atom = x11::GetAtom("_NET_WM_OPAQUE_REGION");
+  if (!region_px) {
+    x11::DeleteProperty(xwindow_, atom);
+    return;
+  }
   std::vector<uint32_t> value;
-  for (const auto& rect : region_px) {
+  for (const auto& rect : *region_px) {
     value.push_back(rect.x());
     value.push_back(rect.y());
     value.push_back(rect.width());
     value.push_back(rect.height());
   }
-  x11::SetArrayProperty(xwindow_, x11::GetAtom("_NET_WM_OPAQUE_REGION"),
-                        x11::Atom::CARDINAL, value);
+  x11::SetArrayProperty(xwindow_, atom, x11::Atom::CARDINAL, value);
 }
 
-void X11Window::SetInputRegion(gfx::Rect region_px) {
+void X11Window::SetInputRegion(const gfx::Rect* region_px) {
+  if (!region_px) {
+    // Reset the input region.
+    connection_->shape().Mask({
+        .operation = x11::Shape::So::Set,
+        .destination_kind = x11::Shape::Sk::Input,
+        .destination_window = xwindow_,
+    });
+    return;
+  }
   connection_->shape().Rectangles(x11::Shape::RectanglesRequest{
       .operation = x11::Shape::So::Set,
       .destination_kind = x11::Shape::Sk::Input,
       .ordering = x11::ClipOrdering::YXBanded,
       .destination_window = xwindow_,
-      .rectangles = {{static_cast<int16_t>(region_px.x()),
-                      static_cast<int16_t>(region_px.y()),
-                      static_cast<uint16_t>(region_px.width()),
-                      static_cast<uint16_t>(region_px.height())}},
+      .rectangles = {{static_cast<int16_t>(region_px->x()),
+                      static_cast<int16_t>(region_px->y()),
+                      static_cast<uint16_t>(region_px->width()),
+                      static_cast<uint16_t>(region_px->height())}},
   });
 }
 

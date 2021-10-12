@@ -263,12 +263,16 @@ bool WaylandToplevelWindow::CanSetDecorationInsets() const {
              ->SupportsSetWindowGeometry();
 }
 
-void WaylandToplevelWindow::SetOpaqueRegion(std::vector<gfx::Rect> region_px) {
+void WaylandToplevelWindow::SetOpaqueRegion(
+    const std::vector<gfx::Rect>* region_px) {
   root_surface()->SetOpaqueRegion(region_px);
 }
 
-void WaylandToplevelWindow::SetInputRegion(gfx::Rect region_px) {
-  input_region_px_ = region_px;
+void WaylandToplevelWindow::SetInputRegion(const gfx::Rect* region_px) {
+  if (region_px)
+    input_region_px_ = *region_px;
+  else
+    input_region_px_ = absl::nullopt;
   root_surface()->SetInputRegion(region_px);
 }
 
@@ -845,8 +849,9 @@ void WaylandToplevelWindow::UpdateWindowMask() {
   // TODO(http://crbug.com/1158733): When supporting PlatformWindow::SetShape,
   // update window region with the given |shape|.
   WaylandWindow::UpdateWindowMask();
-  root_surface()->SetInputRegion(
-      input_region_px_ ? *input_region_px_ : gfx::Rect(visual_size_px()));
+  gfx::Rect region(visual_size_px());
+  root_surface()->SetInputRegion(input_region_px_ ? &*input_region_px_
+                                                  : &region);
 }
 
 void WaylandToplevelWindow::UpdateWindowShape() {

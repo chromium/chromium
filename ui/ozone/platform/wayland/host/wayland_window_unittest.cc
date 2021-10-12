@@ -347,7 +347,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
               SetWindowGeometry(bounds_with_insets.x(), bounds_with_insets.y(),
                                 bounds_with_insets.width(),
                                 bounds_with_insets.height()));
-  window_->SetDecorationInsets(kDecorationInsets);
+  window_->SetDecorationInsets(&kDecorationInsets);
 
   Sync();
 
@@ -375,7 +375,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
               SetWindowGeometry(bounds_with_insets.x(), bounds_with_insets.y(),
                                 bounds_with_insets.width(),
                                 bounds_with_insets.height()));
-  window_->SetDecorationInsets(kDecorationInsets_2x);
+  window_->SetDecorationInsets(&kDecorationInsets_2x);
 
   Sync();
 

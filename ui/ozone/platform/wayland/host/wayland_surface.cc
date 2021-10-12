@@ -217,19 +217,20 @@ void WaylandSurface::SetSurfaceBufferScale(int32_t scale) {
   connection_->ScheduleFlush();
 }
 
-void WaylandSurface::SetOpaqueRegion(const std::vector<gfx::Rect>& region_px) {
+void WaylandSurface::SetOpaqueRegion(const std::vector<gfx::Rect>* region_px) {
   // It's important to set opaque region for opaque windows (provides
   // optimization hint for the Wayland compositor).
   if (!root_window_ || !root_window_->IsOpaqueWindow())
     return;
 
-  wl_surface_set_opaque_region(surface_.get(),
-                               CreateAndAddRegion(region_px).get());
+  wl_surface_set_opaque_region(
+      surface_.get(),
+      region_px ? CreateAndAddRegion(*region_px).get() : nullptr);
 
   connection_->ScheduleFlush();
 }
 
-void WaylandSurface::SetInputRegion(const gfx::Rect& region_px) {
+void WaylandSurface::SetInputRegion(const gfx::Rect* region_px) {
   // Don't set input region when use_native_frame is enabled.
   if (!root_window_ || root_window_->ShouldUseNativeFrame())
     return;
@@ -237,8 +238,9 @@ void WaylandSurface::SetInputRegion(const gfx::Rect& region_px) {
   // Sets input region for input events to allow go through and
   // for the compositor to ignore the parts of the input region that fall
   // outside of the surface.
-  wl_surface_set_input_region(surface_.get(),
-                              CreateAndAddRegion({region_px}).get());
+  wl_surface_set_input_region(
+      surface_.get(),
+      region_px ? CreateAndAddRegion({*region_px}).get() : nullptr);
 
   connection_->ScheduleFlush();
 }

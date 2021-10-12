@@ -175,7 +175,7 @@ class WaylandWindow : public PlatformWindow,
   bool ShouldWindowContentsBeTransparent() const override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
   bool IsTranslucentWindowOpacitySupported() const override;
-  void SetDecorationInsets(gfx::Insets insets_px) override;
+  void SetDecorationInsets(const gfx::Insets* insets_px) override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
   void SizeConstraintsChanged() override;
