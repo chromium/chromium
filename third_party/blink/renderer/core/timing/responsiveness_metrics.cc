@@ -7,6 +7,7 @@
 #include "base/rand_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 
@@ -60,7 +61,7 @@ ResponsivenessMetrics::~ResponsivenessMetrics() = default;
 void ResponsivenessMetrics::RecordUserInteractionUKM(
     LocalDOMWindow* window,
     UserInteractionType interaction_type,
-    WTF::Vector<ResponsivenessMetrics::EventTimestamps> timestamps) {
+    const WTF::Vector<ResponsivenessMetrics::EventTimestamps>& timestamps) {
   if (!window)
     return;
 
@@ -96,23 +97,6 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
 void ResponsivenessMetrics::NotifyPotentialDrag() {
   is_drag_ = pending_pointer_down_timestamps_.has_value() &&
              !pending_pointer_up_timestamps_.has_value();
-}
-
-void ResponsivenessMetrics::RecordPerInteractionLatency(
-    LocalDOMWindow* window,
-    const AtomicString& event_type,
-    absl::optional<int> key_code,
-    absl::optional<PointerId> pointer_id,
-    EventTimestamps event_timestamps) {
-  // Keyboard interactions.
-  if (key_code.has_value()) {
-    RecordKeyboardInteractions(window, event_type, key_code.value(),
-                               event_timestamps);
-  }
-  // Tap(Click) or Drag.
-  if (pointer_id.has_value()) {
-    RecordTapOrClickOrDrag(window, event_type, event_timestamps);
-  }
 }
 
 void ResponsivenessMetrics::FlushPendingInteraction(LocalDOMWindow* window) {
@@ -174,48 +158,9 @@ void ResponsivenessMetrics::RecordTapOrClickOrDrag(
 
 void ResponsivenessMetrics::RecordKeyboardInteractions(
     LocalDOMWindow* window,
-    const AtomicString& event_type,
-    int key_code,
-    EventTimestamps event_timestamps) {
-  if (event_type == event_type_names::kKeydown) {
-    if (key_down_timestamps_map_.find(key_code) !=
-        key_down_timestamps_map_.end()) {
-      // Found a previous key_down with the same keycode, which means a key is
-      // being held down. We regard the duration of the keydown as an
-      // interaction level latency.
-      EventTimestamps key_down_timestamps =
-          key_down_timestamps_map_.at(key_code);
-      WTF::Vector<EventTimestamps> timestamps;
-      timestamps.push_back(key_down_timestamps);
-      RecordUserInteractionUKM(window, UserInteractionType::kKeyboard,
-                               timestamps);
-    }
-    key_down_timestamps_map_[key_code] = event_timestamps;
-  } else if (event_type == event_type_names::kKeyup) {
-    if (key_down_timestamps_map_.find(key_code) !=
-        key_down_timestamps_map_.end()) {
-      // Found a previous key_down with the same keycode as keyup.
-      // We calculate the interaction latency based on the durations of keydown
-      // and keyup.
-      EventTimestamps key_down_timestamps =
-          key_down_timestamps_map_.at(key_code);
-      WTF::Vector<EventTimestamps> timestamps;
-      // Insertion order matters for latency computation.
-      timestamps.push_back(key_down_timestamps);
-      timestamps.push_back(event_timestamps);
-      RecordUserInteractionUKM(window, UserInteractionType::kKeyboard,
-                               timestamps);
-      // Remove the stale keydown.
-      key_down_timestamps_map_.erase(key_code);
-    } else {
-      // Can't find a corresponding keydown. We regard the duration of the keyup
-      // as an interaction latency.
-      WTF::Vector<EventTimestamps> timestamps;
-      timestamps.push_back(event_timestamps);
-      RecordUserInteractionUKM(window, UserInteractionType::kKeyboard,
-                               timestamps);
-    }
-  }
+    const WTF::Vector<EventTimestamps>& event_timestamps) {
+  RecordUserInteractionUKM(window, UserInteractionType::kKeyboard,
+                           event_timestamps);
 }
 
 }  // namespace blink

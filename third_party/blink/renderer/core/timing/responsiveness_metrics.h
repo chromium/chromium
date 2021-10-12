@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_RESPONSIVENESS_METRICS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_RESPONSIVENESS_METRICS_H_
 
-#include <unordered_map>
-
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
@@ -28,15 +26,6 @@ class ResponsivenessMetrics {
   ResponsivenessMetrics();
   ~ResponsivenessMetrics();
 
-  // Track ongoing user interactions and calculate the latency when an
-  // interaction is completed. The latency data for each interaction will be
-  // recored in UKM.
-  void RecordPerInteractionLatency(LocalDOMWindow* window,
-                                   const AtomicString& event_type,
-                                   absl::optional<int> key_code,
-                                   absl::optional<PointerId> pointer_id,
-                                   EventTimestamps event_timestamps);
-
   // Stop UKM sampling for testing.
   void StopUkmSamplingForTesting() { sampling_ = false; }
 
@@ -44,30 +33,27 @@ class ResponsivenessMetrics {
   // pointermove.
   void NotifyPotentialDrag();
 
- private:
-  // Record UKM for user interaction latencies.
-  void RecordUserInteractionUKM(
+  void RecordKeyboardInteractions(
       LocalDOMWindow* window,
-      UserInteractionType interaction_type,
-      WTF::Vector<ResponsivenessMetrics::EventTimestamps> timestamps);
-
-  void RecordKeyboardInteractions(LocalDOMWindow* window,
-                                  const AtomicString& event_type,
-                                  int key_code,
-                                  EventTimestamps event_timestamps);
+      const WTF::Vector<EventTimestamps>& event_timestamps);
 
   // Might not be accurate for multi-fingers touch.
   void RecordTapOrClickOrDrag(LocalDOMWindow* window,
                               const AtomicString& event_type,
                               EventTimestamps event_timestamps);
+
+ private:
+  // Record UKM for user interaction latencies.
+  void RecordUserInteractionUKM(
+      LocalDOMWindow* window,
+      UserInteractionType interaction_type,
+      const WTF::Vector<ResponsivenessMetrics::EventTimestamps>& timestamps);
+
   // Flush the latency data for pending tap or drag.
   void FlushPendingInteraction(LocalDOMWindow* window);
 
   // Reset the latency data for pointer events.
   void ResetPendingPointers();
-
-  // Variables for per-interaction latencies.
-  std::unordered_map<int, EventTimestamps> key_down_timestamps_map_;
 
   absl::optional<EventTimestamps> pending_pointer_up_timestamps_;
   absl::optional<EventTimestamps> pending_pointer_down_timestamps_;
