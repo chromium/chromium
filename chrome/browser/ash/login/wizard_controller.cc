@@ -26,7 +26,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner_forward.h"
@@ -331,13 +330,7 @@ void RecordUMAHistogramForOOBEStepCompletionTime(OobeScreenId screen,
   screen_name[0] = std::toupper(screen_name[0]);
   std::string histogram_name = "OOBE.StepCompletionTime." + screen_name;
 
-  // Equivalent to using UMA_HISTOGRAM_MEDIUM_TIMES. UMA_HISTOGRAM_MEDIUM_TIMES
-  // can not be used here, because `histogram_name` is calculated dynamically
-  // and changes from call to call.
-  base::HistogramBase* histogram = base::Histogram::FactoryTimeGet(
-      histogram_name, base::Milliseconds(10), base::Minutes(3), 50,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-  histogram->AddTime(step_time);
+  base::UmaHistogramMediumTimes(histogram_name, step_time);
 
   // Use for this Histogram real screen names.
   screen_name = screen.name;
@@ -803,7 +796,7 @@ void WizardController::ShowLoginScreen() {
 
   if (!time_eula_accepted_.is_null()) {
     base::TimeDelta delta = base::TimeTicks::Now() - time_eula_accepted_;
-    UMA_HISTOGRAM_MEDIUM_TIMES("OOBE.EULAToSignInTime", delta);
+    base::UmaHistogramMediumTimes("OOBE.EULAToSignInTime", delta);
   }
   VLOG(1) << "Showing login screen.";
   UpdateStatusAreaVisibilityForScreen(GaiaView::kScreenId);
@@ -1879,10 +1872,6 @@ void WizardController::PerformOOBECompletedActions() {
     return;
   }
 
-  UMA_HISTOGRAM_COUNTS_100(
-      "HIDDetection.TimesDialogShownPerOOBECompleted",
-      GetLocalState()->GetInteger(::prefs::kTimesHIDDialogShown));
-  GetLocalState()->ClearPref(::prefs::kTimesHIDDialogShown);
   StartupUtils::MarkOobeCompleted();
   oobe_marked_completed_ = true;
 }

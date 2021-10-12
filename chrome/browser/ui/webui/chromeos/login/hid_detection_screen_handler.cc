@@ -14,10 +14,8 @@
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
-#include "components/prefs/pref_service.h"
 #include "services/device/public/mojom/input_service.mojom.h"
 
 namespace chromeos {
@@ -40,12 +38,6 @@ void HIDDetectionScreenHandler::Show() {
     show_on_init_ = true;
     return;
   }
-
-  PrefService* local_state = g_browser_process->local_state();
-  int num_of_times_dialog_was_shown = local_state->GetInteger(
-      prefs::kTimesHIDDialogShown);
-  local_state->SetInteger(prefs::kTimesHIDDialogShown,
-                          num_of_times_dialog_was_shown + 1);
 
   ShowScreen(kScreenId);
 }
@@ -173,11 +165,6 @@ void HIDDetectionScreenHandler::Initialize() {
     Show();
     show_on_init_ = false;
   }
-}
-
-// static
-void HIDDetectionScreenHandler::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kTimesHIDDialogShown, 0);
 }
 
 }  // namespace chromeos

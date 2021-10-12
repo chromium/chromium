@@ -7907,7 +7907,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="HIDDetection.TimesDialogShownPerOOBECompleted" units="units"
-    expires_after="2022-04-17">
+    expires_after="M97">
+  <obsolete>
+    Removed in M97.
+  </obsolete>
   <owner>rsorokin@chromium.org</owner>
   <owner>alemate@chromium.org</owner>
   <owner>cros-oac@google.com</owner>

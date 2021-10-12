@@ -2363,9 +2363,6 @@ const char kDeviceEnrollmentCanExit[] = "enrollment.can_exit";
 // Directory devices only.
 const char kDeviceDMToken[] = "device_dm_token";
 
-// How many times HID detection OOBE dialog was shown.
-const char kTimesHIDDialogShown[] = "HIDDialog.shown_how_many_times";
-
 // Dictionary of per-user last input method (used at login screen). Note that
 // the pref name is UsersLRUInputMethods for compatibility with previous
 // versions.

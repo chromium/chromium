@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-#include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
 class HIDDetectionScreen;
@@ -77,9 +76,6 @@ class HIDDetectionScreenHandler
       ::login::LocalizedValuesBuilder* builder) override;
   void DeclareJSCallbacks() override;
   void Initialize() override;
-
-  // Registers the preference for derelict state.
-  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Emulate that a USB Mouse and a USB Keyboard are connected for testing.
   void HandleEmulateDevicesConnectedForTesting();

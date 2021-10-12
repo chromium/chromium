@@ -364,7 +364,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/webui/certificates_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/enable_debugging_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_ui.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector_chromeos.h"
@@ -476,6 +475,8 @@ const char kFirstRunTrialGroup[] = "help_app_first_run.trial_group";
 // Deprecated 10/2021
 const char kHasCameraAppMigratedToSWA[] = "camera.has_migrated_to_swa";
 
+// Deprecated 10/2021
+const char kTimesHIDDialogShown[] = "HIDDialog.shown_how_many_times";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
@@ -692,6 +693,8 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
                                 0);
 
   registry->RegisterInt64Pref(kFeatureUsageDailySampleESim, 0);
+
+  registry->RegisterIntegerPref(kTimesHIDDialogShown, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)
@@ -1003,7 +1006,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::device_activity::DeviceActivityController::RegisterPrefs(registry);
   chromeos::EnableDebuggingScreenHandler::RegisterPrefs(registry);
   chromeos::FastTransitionObserver::RegisterPrefs(registry);
-  chromeos::HIDDetectionScreenHandler::RegisterPrefs(registry);
   ash::KerberosCredentialsManager::RegisterLocalStatePrefs(registry);
   ash::KioskAppManager::RegisterPrefs(registry);
   ash::KioskCryptohomeRemover::RegisterPrefs(registry);
@@ -1467,6 +1469,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 5/2021
   local_state->ClearPref(kFeatureUsageDailySampleESim);
+
+  // Added 10/2021
+  local_state->ClearPref(kTimesHIDDialogShown);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)

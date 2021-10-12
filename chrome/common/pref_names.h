@@ -760,7 +760,6 @@ extern const char kDeviceEnrollmentSubOrganization[];
 extern const char kDeviceEnrollmentAutoStart[];
 extern const char kDeviceEnrollmentCanExit[];
 extern const char kDeviceDMToken[];
-extern const char kTimesHIDDialogShown[];
 extern const char kUsersLastInputMethod[];
 extern const char kEchoCheckedOffers[];
 extern const char kCachedMultiProfileUserBehavior[];
