@@ -267,8 +267,8 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   // C++14, static members are forbidden inside anonymous structs, so we cannot
   // use the union { struct { /* all flags */}; /* padding */} trick. Wasting an
   // entire cacheline per PartitionRoot is not a big issue, given that
-  // the opbject is very large anyway.
-  uint8_t padding[64 - 7];  // Assume a cacheline size <= 64 bytes.
+  // the object is very large anyway.
+  uint8_t padding[kPartitionCachelineSize - 7];
 
   // Not used on the fastest path (thread cache allocations), but on the fast
   // path of the central allocator.

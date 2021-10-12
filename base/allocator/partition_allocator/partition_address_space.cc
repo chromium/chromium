@@ -21,7 +21,8 @@ namespace internal {
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 
-alignas(64) PartitionAddressSpace::GigaCageSetup PartitionAddressSpace::setup_;
+alignas(kPartitionCachelineSize)
+    PartitionAddressSpace::GigaCageSetup PartitionAddressSpace::setup_;
 
 void PartitionAddressSpace::Init() {
   if (IsInitialized())

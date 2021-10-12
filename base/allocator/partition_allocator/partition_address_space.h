@@ -204,7 +204,7 @@ class BASE_EXPORT PartitionAddressSpace {
 
     char padding_[28] = {};
   };
-  static_assert(sizeof(GigaCageSetup) % 64 == 0,
+  static_assert(sizeof(GigaCageSetup) % kPartitionCachelineSize == 0,
                 "GigaCageSetup has to fill a cacheline(s)");
 
   // See the comment describing the address layout above.
@@ -212,7 +212,7 @@ class BASE_EXPORT PartitionAddressSpace {
   // These are write-once fields, frequently accessed thereafter. Make sure they
   // don't share a cacheline with other, potentially writeable data, through
   // alignment and padding.
-  alignas(64) static GigaCageSetup setup_;
+  alignas(kPartitionCachelineSize) static GigaCageSetup setup_;
 };
 
 ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(

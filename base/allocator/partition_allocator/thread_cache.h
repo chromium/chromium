@@ -551,12 +551,12 @@ ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket, void* slot_start) {
   uintptr_t address = reinterpret_cast<uintptr_t>(slot_start);
 #endif
 
-  // We assume that the cacheline size is 64 byte, which is true on all x86_64
-  // CPUs as of 2021.
-  //
   // The pointer is always 16 bytes aligned, so its start address is always == 0
   // % 16. Its distance to the next cacheline is 64 - ((address & 63) / 16) *
   // 16.
+  static_assert(
+      kPartitionCachelineSize == 64,
+      "The computation below assumes that cache lines are 64 bytes long.");
   int distance_to_next_cacheline_in_16_bytes = 4 - ((address >> 4) & 3);
   int slot_size_remaining_in_16_bytes =
       std::min(bucket.slot_size / 16, distance_to_next_cacheline_in_16_bytes);
