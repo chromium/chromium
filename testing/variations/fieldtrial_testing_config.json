@@ -3707,7 +3707,7 @@
             ]
         }
     ],
-    "GoogleLensDesktopContextMenuSearch": [
+    "GoogleLensDesktopAndRegionSearchContextMenuSearch": [
         {
             "platforms": [
                 "chromeos",
@@ -3719,8 +3719,18 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "availability": "any",
+                        "enable-ukm-logging": "true",
+                        "event_trigger": "name:side_panel_trigger;comparator:==0;window:360;storage:360",
+                        "event_used": "name:side_panel_shown;comparator:==0;window:360;storage:360",
+                        "session_rate": "any"
+                    },
                     "enable_features": [
-                        "LensStandalone"
+                        "IPH_ReadingListInSidePanel",
+                        "LensRegionSearch",
+                        "LensStandalone",
+                        "SidePanel"
                     ]
                 }
             ]
@@ -5797,32 +5807,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PdfUnseasoned"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PenetratingImageSelection": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled__20210810",
-                    "params": {
-                        "logUkm": "true"
-                    },
-                    "enable_features": [
-                        "EnablePenetratingImageSelection"
                     ]
                 }
             ]
