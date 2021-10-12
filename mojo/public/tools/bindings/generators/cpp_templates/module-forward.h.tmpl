@@ -43,7 +43,7 @@ namespace {{variant}} {
 #include <stdint.h>
 {%- endif %}
 
-{% if structs|length -%}
+{% if structs|length or unions|length -%}
 #include "mojo/public/cpp/bindings/struct_forward.h"
 {%- endif %}
 
@@ -167,9 +167,9 @@ using {{struct.name}}Ptr = mojo::StructPtr<{{struct.name}}>;
 {%  for union in unions %}
 class {{union.name}};
 {%    if union|should_inline_union %}
-typedef mojo::InlinedStructPtr<{{union.name}}> {{union.name}}Ptr;
+using {{union.name}}Ptr = mojo::InlinedStructPtr<{{union.name}}>;
 {%    else %}
-typedef mojo::StructPtr<{{union.name}}> {{union.name}}Ptr;
+using {{union.name}}Ptr = mojo::StructPtr<{{union.name}}>;
 {%    endif %}
 {%- endfor %}
 
