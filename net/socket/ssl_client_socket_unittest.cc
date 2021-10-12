@@ -866,8 +866,8 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
       const SSLConfig& ssl_config,
       const HostPortPair& host_port_pair,
       int* result) {
-    std::unique_ptr<StreamSocket> transport(
-        new TCPClientSocket(addr_, nullptr, nullptr, &log_, NetLogSource()));
+    std::unique_ptr<StreamSocket> transport(new TCPClientSocket(
+        addr_, nullptr, nullptr, NetLog::Get(), NetLogSource()));
     int rv = callback_.GetResult(transport->Connect(callback_.callback()));
     if (rv != OK) {
       LOG(ERROR) << "Could not connect to SpawnedTestServer";
@@ -916,7 +916,7 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
     return result;
   }
 
-  RecordingTestNetLog log_;
+  RecordingNetLogObserver log_observer_;
   ClientSocketFactory* socket_factory_;
   std::unique_ptr<TestSSLConfigService> ssl_config_service_;
   std::unique_ptr<MockCertVerifier> cert_verifier_;
@@ -1573,9 +1573,8 @@ TEST_P(SSLClientSocketVersionTest, Connect) {
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
   TestCompletionCallback callback;
-  RecordingTestNetLog log;
-  std::unique_ptr<StreamSocket> transport(
-      new TCPClientSocket(addr(), nullptr, nullptr, &log, NetLogSource()));
+  std::unique_ptr<StreamSocket> transport(new TCPClientSocket(
+      addr(), nullptr, nullptr, NetLog::Get(), NetLogSource()));
   int rv = callback.GetResult(transport->Connect(callback.callback()));
   EXPECT_THAT(rv, IsOk());
 
@@ -1586,13 +1585,13 @@ TEST_P(SSLClientSocketVersionTest, Connect) {
 
   rv = sock->Connect(callback.callback());
 
-  auto entries = log.GetEntries();
+  auto entries = log_observer_.GetEntries();
   EXPECT_TRUE(LogContainsBeginEvent(entries, 5, NetLogEventType::SSL_CONNECT));
   if (rv == ERR_IO_PENDING)
     rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(sock->IsConnected());
-  entries = log.GetEntries();
+  entries = log_observer_.GetEntries();
   EXPECT_TRUE(LogContainsEndEvent(entries, -1, NetLogEventType::SSL_CONNECT));
 
   sock->Disconnect();
@@ -1623,7 +1622,7 @@ TEST_P(SSLClientSocketVersionTest, ConnectExpired) {
   // test that the handshake has finished. This is because it may be
   // desirable to disconnect the socket before showing a user prompt, since
   // the user may take indefinitely long to respond.
-  auto entries = log_.GetEntries();
+  auto entries = log_observer_.GetEntries();
   EXPECT_TRUE(LogContainsEndEvent(entries, -1, NetLogEventType::SSL_CONNECT));
 }
 
@@ -1651,8 +1650,8 @@ TEST_P(SSLClientSocketVersionTest, SocketDestroyedDuringVerify) {
       ct_policy_enforcer_.get(), ssl_client_session_cache_.get(), nullptr);
 
   TestCompletionCallback callback;
-  auto transport = std::make_unique<TCPClientSocket>(addr(), nullptr, nullptr,
-                                                     &log_, NetLogSource());
+  auto transport = std::make_unique<TCPClientSocket>(
+      addr(), nullptr, nullptr, NetLog::Get(), NetLogSource());
   int rv = callback.GetResult(transport->Connect(callback.callback()));
   ASSERT_THAT(rv, IsOk());
 
@@ -1686,7 +1685,7 @@ TEST_P(SSLClientSocketVersionTest, ConnectMismatched) {
   // test that the handshake has finished. This is because it may be
   // desirable to disconnect the socket before showing a user prompt, since
   // the user may take indefinitely long to respond.
-  auto entries = log_.GetEntries();
+  auto entries = log_observer_.GetEntries();
   EXPECT_TRUE(LogContainsEndEvent(entries, -1, NetLogEventType::SSL_CONNECT));
 }
 
@@ -1731,7 +1730,7 @@ TEST_P(SSLClientSocketVersionTest, ConnectClientAuthCertRequested) {
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
   EXPECT_THAT(rv, IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED));
 
-  auto entries = log_.GetEntries();
+  auto entries = log_observer_.GetEntries();
   EXPECT_TRUE(LogContainsEndEvent(entries, -1, NetLogEventType::SSL_CONNECT));
   EXPECT_FALSE(sock_->IsConnected());
 }
@@ -2466,10 +2465,9 @@ TEST_P(SSLClientSocketReadTest, Read_FullLogging) {
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
   TestCompletionCallback callback;
-  RecordingTestNetLog log;
-  log.SetObserverCaptureMode(NetLogCaptureMode::kEverything);
-  std::unique_ptr<StreamSocket> transport(
-      new TCPClientSocket(addr(), nullptr, nullptr, &log, NetLogSource()));
+  log_observer_.SetObserverCaptureMode(NetLogCaptureMode::kEverything);
+  std::unique_ptr<StreamSocket> transport(new TCPClientSocket(
+      addr(), nullptr, nullptr, NetLog::Get(), NetLogSource()));
   int rv = callback.GetResult(transport->Connect(callback.callback()));
   EXPECT_THAT(rv, IsOk());
 
@@ -2490,7 +2488,7 @@ TEST_P(SSLClientSocketReadTest, Read_FullLogging) {
                   callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS));
   EXPECT_EQ(static_cast<int>(base::size(request_text) - 1), rv);
 
-  auto entries = log.GetEntries();
+  auto entries = log_observer_.GetEntries();
   size_t last_index = ExpectLogContainsSomewhereAfter(
       entries, 5, NetLogEventType::SSL_SOCKET_BYTES_SENT,
       NetLogEventPhase::NONE);
@@ -2502,7 +2500,7 @@ TEST_P(SSLClientSocketReadTest, Read_FullLogging) {
     if (rv <= 0)
       break;
 
-    entries = log.GetEntries();
+    entries = log_observer_.GetEntries();
     last_index = ExpectLogContainsSomewhereAfter(
         entries, last_index + 1, NetLogEventType::SSL_SOCKET_BYTES_RECEIVED,
         NetLogEventPhase::NONE);
@@ -2766,7 +2764,7 @@ TEST_P(SSLClientSocketVersionTest, VerifyReturnChainProperlyOrdered) {
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(sock_->IsConnected());
 
-  auto entries = log_.GetEntries();
+  auto entries = log_observer_.GetEntries();
   EXPECT_TRUE(LogContainsEndEvent(entries, -1, NetLogEventType::SSL_CONNECT));
 
   SSLInfo ssl_info;
@@ -3199,8 +3197,8 @@ TEST_P(SSLClientSocketVersionTest, SessionResumption) {
   sock_.reset();
 
   // Using a different HostPortPair uses a different session cache key.
-  std::unique_ptr<StreamSocket> transport(
-      new TCPClientSocket(addr(), nullptr, nullptr, &log_, NetLogSource()));
+  std::unique_ptr<StreamSocket> transport(new TCPClientSocket(
+      addr(), nullptr, nullptr, NetLog::Get(), NetLogSource()));
   TestCompletionCallback callback;
   ASSERT_THAT(callback.GetResult(transport->Connect(callback.callback())),
               IsOk());
@@ -3258,8 +3256,8 @@ TEST_F(SSLClientSocketTest, SessionResumption_RSA) {
     for (int i = 0; i < 3; i++) {
       SCOPED_TRACE(i);
 
-      std::unique_ptr<StreamSocket> transport(
-          new TCPClientSocket(addr(), nullptr, nullptr, &log_, NetLogSource()));
+      std::unique_ptr<StreamSocket> transport(new TCPClientSocket(
+          addr(), nullptr, nullptr, NetLog::Get(), NetLogSource()));
       TestCompletionCallback callback;
       ASSERT_THAT(callback.GetResult(transport->Connect(callback.callback())),
                   IsOk());
@@ -5522,9 +5520,8 @@ TEST_F(SSLClientSocketTest, Tag) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, SSLServerConfig()));
 
-  RecordingTestNetLog log;
-  std::unique_ptr<StreamSocket> transport(
-      new TCPClientSocket(addr(), nullptr, nullptr, &log, NetLogSource()));
+  std::unique_ptr<StreamSocket> transport(new TCPClientSocket(
+      addr(), nullptr, nullptr, NetLog::Get(), NetLogSource()));
 
   MockTaggingStreamSocket* tagging_sock =
       new MockTaggingStreamSocket(std::move(transport));

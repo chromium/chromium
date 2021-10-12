@@ -39,25 +39,25 @@ base::Value NetCaptureModeParams(NetLogCaptureMode capture_mode) {
 TEST(NetLogTest, BasicGlobalEvents) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  RecordingTestNetLog net_log;
-  auto entries = net_log.GetEntries();
+  RecordingNetLogObserver net_log_observer;
+  auto entries = net_log_observer.GetEntries();
   EXPECT_EQ(0u, entries.size());
 
   task_environment.FastForwardBy(base::Seconds(1234));
   base::TimeTicks ticks0 = base::TimeTicks::Now();
 
-  net_log.AddGlobalEntry(NetLogEventType::CANCELLED);
+  NetLog::Get()->AddGlobalEntry(NetLogEventType::CANCELLED);
 
   task_environment.FastForwardBy(base::Seconds(5678));
   base::TimeTicks ticks1 = base::TimeTicks::Now();
   EXPECT_LE(ticks0, ticks1);
 
-  net_log.AddGlobalEntry(NetLogEventType::FAILED);
+  NetLog::Get()->AddGlobalEntry(NetLogEventType::FAILED);
 
   task_environment.FastForwardBy(base::Seconds(91011));
   EXPECT_LE(ticks1, base::TimeTicks::Now());
 
-  entries = net_log.GetEntries();
+  entries = net_log_observer.GetEntries();
   ASSERT_EQ(2u, entries.size());
 
   EXPECT_EQ(NetLogEventType::CANCELLED, entries[0].type);
@@ -81,15 +81,15 @@ TEST(NetLogTest, BasicGlobalEvents) {
 TEST(NetLogTest, BasicEventsWithSource) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  RecordingTestNetLog net_log;
-  auto entries = net_log.GetEntries();
+  RecordingNetLogObserver net_log_observer;
+  auto entries = net_log_observer.GetEntries();
   EXPECT_EQ(0u, entries.size());
 
   task_environment.FastForwardBy(base::Seconds(9876));
   base::TimeTicks source0_start_ticks = base::TimeTicks::Now();
 
   NetLogWithSource source0 =
-      NetLogWithSource::Make(&net_log, NetLogSourceType::URL_REQUEST);
+      NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::URL_REQUEST);
   task_environment.FastForwardBy(base::Seconds(1));
   base::TimeTicks source0_event0_ticks = base::TimeTicks::Now();
   source0.BeginEvent(NetLogEventType::REQUEST_ALIVE);
@@ -98,7 +98,7 @@ TEST(NetLogTest, BasicEventsWithSource) {
   base::TimeTicks source1_start_ticks = base::TimeTicks::Now();
 
   NetLogWithSource source1 =
-      NetLogWithSource::Make(&net_log, NetLogSourceType::SOCKET);
+      NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::SOCKET);
   task_environment.FastForwardBy(base::Seconds(1));
   base::TimeTicks source1_event0_ticks = base::TimeTicks::Now();
   source1.BeginEvent(NetLogEventType::SOCKET_ALIVE);
@@ -112,7 +112,7 @@ TEST(NetLogTest, BasicEventsWithSource) {
 
   task_environment.FastForwardBy(base::Seconds(123));
 
-  entries = net_log.GetEntries();
+  entries = net_log_observer.GetEntries();
   ASSERT_EQ(4u, entries.size());
 
   EXPECT_EQ(NetLogEventType::REQUEST_ALIVE, entries[0].type);
@@ -157,18 +157,17 @@ TEST(NetLogTest, CaptureModes) {
       NetLogCaptureMode::kEverything,
   };
 
-  RecordingTestNetLog net_log;
+  RecordingNetLogObserver net_log_observer;
 
   for (NetLogCaptureMode mode : kModes) {
-    net_log.SetObserverCaptureMode(mode);
-    EXPECT_EQ(mode, net_log.GetObserver()->capture_mode());
+    net_log_observer.SetObserverCaptureMode(mode);
 
-    net_log.AddGlobalEntry(NetLogEventType::SOCKET_ALIVE,
-                           [&](NetLogCaptureMode capture_mode) {
-                             return NetCaptureModeParams(capture_mode);
-                           });
+    NetLog::Get()->AddGlobalEntry(NetLogEventType::SOCKET_ALIVE,
+                                  [&](NetLogCaptureMode capture_mode) {
+                                    return NetCaptureModeParams(capture_mode);
+                                  });
 
-    auto entries = net_log.GetEntries();
+    auto entries = net_log_observer.GetEntries();
 
     ASSERT_EQ(1u, entries.size());
     EXPECT_EQ(NetLogEventType::SOCKET_ALIVE, entries[0].type);
@@ -181,7 +180,7 @@ TEST(NetLogTest, CaptureModes) {
     ASSERT_EQ(CaptureModeToInt(mode),
               GetIntegerValueFromParams(entries[0], "capture_mode"));
 
-    net_log.Clear();
+    net_log_observer.Clear();
   }
 }
 
@@ -336,18 +335,15 @@ void RunTestThreads(NetLog* net_log) {
 
 // Makes sure that events on multiple threads are dispatched to all observers.
 TEST(NetLogTest, NetLogEventThreads) {
-  TestNetLog net_log;
-
-  // Attach some observers.  Since they're created after |net_log|, they'll
-  // safely detach themselves on destruction.
+  // Attach some observers.  They'll safely detach themselves on destruction.
   CountingObserver observers[3];
   for (size_t i = 0; i < base::size(observers); ++i) {
-    net_log.AddObserver(&observers[i], NetLogCaptureMode::kEverything);
+    NetLog::Get()->AddObserver(&observers[i], NetLogCaptureMode::kEverything);
   }
 
   // Run a bunch of threads to completion, each of which will emit events to
   // |net_log|.
-  RunTestThreads<AddEventsTestThread>(&net_log);
+  RunTestThreads<AddEventsTestThread>(NetLog::Get());
 
   // Check that each observer saw the emitted events.
   const int kTotalEvents = kThreads * kEvents;
@@ -357,70 +353,69 @@ TEST(NetLogTest, NetLogEventThreads) {
 
 // Test adding and removing a single observer.
 TEST(NetLogTest, NetLogAddRemoveObserver) {
-  TestNetLog net_log;
   CountingObserver observer;
 
-  AddEvent(&net_log);
+  AddEvent(NetLog::Get());
   EXPECT_EQ(0, observer.count());
   EXPECT_EQ(NULL, observer.net_log());
-  EXPECT_FALSE(net_log.IsCapturing());
+  EXPECT_FALSE(NetLog::Get()->IsCapturing());
 
   // Add the observer and add an event.
-  net_log.AddObserver(&observer, NetLogCaptureMode::kIncludeSensitive);
-  EXPECT_TRUE(net_log.IsCapturing());
-  EXPECT_EQ(&net_log, observer.net_log());
+  NetLog::Get()->AddObserver(&observer, NetLogCaptureMode::kIncludeSensitive);
+  EXPECT_TRUE(NetLog::Get()->IsCapturing());
+  EXPECT_EQ(NetLog::Get(), observer.net_log());
   EXPECT_EQ(NetLogCaptureMode::kIncludeSensitive, observer.capture_mode());
-  EXPECT_TRUE(net_log.IsCapturing());
+  EXPECT_TRUE(NetLog::Get()->IsCapturing());
 
-  AddEvent(&net_log);
+  AddEvent(NetLog::Get());
   EXPECT_EQ(1, observer.count());
 
-  AddEvent(&net_log);
+  AddEvent(NetLog::Get());
   EXPECT_EQ(2, observer.count());
 
   // Remove observer and add an event.
-  net_log.RemoveObserver(&observer);
+  NetLog::Get()->RemoveObserver(&observer);
   EXPECT_EQ(NULL, observer.net_log());
-  EXPECT_FALSE(net_log.IsCapturing());
+  EXPECT_FALSE(NetLog::Get()->IsCapturing());
 
-  AddEvent(&net_log);
+  AddEvent(NetLog::Get());
   EXPECT_EQ(2, observer.count());
 
   // Add the observer a final time, this time with a different capture mdoe, and
   // add an event.
-  net_log.AddObserver(&observer, NetLogCaptureMode::kEverything);
-  EXPECT_EQ(&net_log, observer.net_log());
+  NetLog::Get()->AddObserver(&observer, NetLogCaptureMode::kEverything);
+  EXPECT_EQ(NetLog::Get(), observer.net_log());
   EXPECT_EQ(NetLogCaptureMode::kEverything, observer.capture_mode());
-  EXPECT_TRUE(net_log.IsCapturing());
+  EXPECT_TRUE(NetLog::Get()->IsCapturing());
 
-  AddEvent(&net_log);
+  AddEvent(NetLog::Get());
   EXPECT_EQ(3, observer.count());
 }
 
 // Test adding and removing two observers at different log levels.
 TEST(NetLogTest, NetLogTwoObservers) {
-  TestNetLog net_log;
   LoggingObserver observer[2];
 
   // Add first observer.
-  net_log.AddObserver(&observer[0], NetLogCaptureMode::kIncludeSensitive);
-  EXPECT_EQ(&net_log, observer[0].net_log());
+  NetLog::Get()->AddObserver(&observer[0],
+                             NetLogCaptureMode::kIncludeSensitive);
+  EXPECT_EQ(NetLog::Get(), observer[0].net_log());
   EXPECT_EQ(NULL, observer[1].net_log());
   EXPECT_EQ(NetLogCaptureMode::kIncludeSensitive, observer[0].capture_mode());
-  EXPECT_TRUE(net_log.IsCapturing());
+  EXPECT_TRUE(NetLog::Get()->IsCapturing());
 
   // Add second observer observer.
-  net_log.AddObserver(&observer[1], NetLogCaptureMode::kEverything);
-  EXPECT_EQ(&net_log, observer[0].net_log());
-  EXPECT_EQ(&net_log, observer[1].net_log());
+  NetLog::Get()->AddObserver(&observer[1], NetLogCaptureMode::kEverything);
+  EXPECT_EQ(NetLog::Get(), observer[0].net_log());
+  EXPECT_EQ(NetLog::Get(), observer[1].net_log());
   EXPECT_EQ(NetLogCaptureMode::kIncludeSensitive, observer[0].capture_mode());
   EXPECT_EQ(NetLogCaptureMode::kEverything, observer[1].capture_mode());
-  EXPECT_TRUE(net_log.IsCapturing());
+  EXPECT_TRUE(NetLog::Get()->IsCapturing());
 
   // Add event and make sure both observers receive it at their respective log
   // levels.
   absl::optional<int> param;
-  AddEvent(&net_log);
+  AddEvent(NetLog::Get());
   ASSERT_EQ(1U, observer[0].GetNumValues());
   param = observer[0].GetValue(0)->FindIntKey("params");
   ASSERT_TRUE(param);
@@ -431,25 +426,25 @@ TEST(NetLogTest, NetLogTwoObservers) {
   EXPECT_EQ(CaptureModeToInt(observer[1].capture_mode()), param.value());
 
   // Remove second observer.
-  net_log.RemoveObserver(&observer[1]);
-  EXPECT_EQ(&net_log, observer[0].net_log());
+  NetLog::Get()->RemoveObserver(&observer[1]);
+  EXPECT_EQ(NetLog::Get(), observer[0].net_log());
   EXPECT_EQ(NULL, observer[1].net_log());
   EXPECT_EQ(NetLogCaptureMode::kIncludeSensitive, observer[0].capture_mode());
-  EXPECT_TRUE(net_log.IsCapturing());
+  EXPECT_TRUE(NetLog::Get()->IsCapturing());
 
   // Add event and make sure only second observer gets it.
-  AddEvent(&net_log);
+  AddEvent(NetLog::Get());
   EXPECT_EQ(2U, observer[0].GetNumValues());
   EXPECT_EQ(1U, observer[1].GetNumValues());
 
   // Remove first observer.
-  net_log.RemoveObserver(&observer[0]);
+  NetLog::Get()->RemoveObserver(&observer[0]);
   EXPECT_EQ(NULL, observer[0].net_log());
   EXPECT_EQ(NULL, observer[1].net_log());
-  EXPECT_FALSE(net_log.IsCapturing());
+  EXPECT_FALSE(NetLog::Get()->IsCapturing());
 
   // Add event and make sure neither observer gets it.
-  AddEvent(&net_log);
+  AddEvent(NetLog::Get());
   EXPECT_EQ(2U, observer[0].GetNumValues());
   EXPECT_EQ(1U, observer[1].GetNumValues());
 }
@@ -457,11 +452,9 @@ TEST(NetLogTest, NetLogTwoObservers) {
 // Makes sure that adding and removing observers simultaneously on different
 // threads works.
 TEST(NetLogTest, NetLogAddRemoveObserverThreads) {
-  TestNetLog net_log;
-
   // Run a bunch of threads to completion, each of which will repeatedly add
   // and remove an observer, and set its logging level.
-  RunTestThreads<AddRemoveObserverTestThread>(&net_log);
+  RunTestThreads<AddRemoveObserverTestThread>(NetLog::Get());
 }
 
 // Tests that serializing a NetLogEntry with empty parameters omits a value for

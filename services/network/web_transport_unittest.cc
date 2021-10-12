@@ -296,7 +296,7 @@ class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
 
     network_context_.url_request_context()->set_cert_verifier(&cert_verifier_);
     network_context_.url_request_context()->set_host_resolver(&host_resolver_);
-    network_context_.url_request_context()->set_net_log(&net_log_);
+    network_context_.url_request_context()->set_net_log(net::NetLog::Get());
     auto* quic_context = network_context_.url_request_context()->quic_context();
     quic_context->params()->supported_versions.push_back(version_);
     quic_context->params()->origins_to_force_quic_on.insert(
@@ -342,7 +342,7 @@ class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
   const url::Origin& origin() const { return origin_; }
   const NetworkContext& network_context() const { return network_context_; }
   NetworkContext& mutable_network_context() { return network_context_; }
-  net::RecordingTestNetLog& net_log() { return net_log_; }
+  net::RecordingNetLogObserver& net_log_observer() { return net_log_observer_; }
 
   void RunPendingTasks() {
     base::RunLoop run_loop;
@@ -361,7 +361,7 @@ class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
 
   net::MockCertVerifier cert_verifier_;
   net::MockHostResolver host_resolver_;
-  net::RecordingTestNetLog net_log_;
+  net::RecordingNetLogObserver net_log_observer_;
 
   NetworkContext network_context_;
 
@@ -574,8 +574,9 @@ TEST_F(WebTransportTest, EchoOnUnidirectionalStreams) {
   EXPECT_TRUE(client.has_received_fin_for(incoming_stream_id));
   EXPECT_FALSE(client.has_seen_mojo_connection_error());
 
-  std::vector<net::NetLogEntry> resets_sent = net_log().GetEntriesWithType(
-      net::NetLogEventType::QUIC_SESSION_RST_STREAM_FRAME_SENT);
+  std::vector<net::NetLogEntry> resets_sent =
+      net_log_observer().GetEntriesWithType(
+          net::NetLogEventType::QUIC_SESSION_RST_STREAM_FRAME_SENT);
   EXPECT_EQ(0u, resets_sent.size());
 }
 

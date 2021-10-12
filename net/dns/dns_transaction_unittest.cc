@@ -47,7 +47,6 @@
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_with_source.h"
-#include "net/log/test_net_log.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
 #include "net/socket/socket_test_util.h"
 #include "net/test/gtest_util.h"
@@ -338,8 +337,9 @@ class TransactionHelper {
                         ResolveContext* context) {
     std::unique_ptr<DnsTransaction> transaction = factory->CreateTransaction(
         hostname, qtype, CompletionCallback(),
-        NetLogWithSource::Make(&net_log_, net::NetLogSourceType::NONE), secure,
-        factory->GetSecureDnsModeForTest(), context, true /* fast_timeout */);
+        NetLogWithSource::Make(net::NetLog::Get(), net::NetLogSourceType::NONE),
+        secure, factory->GetSecureDnsModeForTest(), context,
+        true /* fast_timeout */);
     transaction->SetRequestPriority(DEFAULT_PRIORITY);
     EXPECT_EQ(qtype, transaction->GetType());
     StartTransaction(std::move(transaction));
@@ -401,7 +401,6 @@ class TransactionHelper {
 
   bool has_completed() const { return completed_; }
   const DnsResponse* response() const { return response_; }
-  NetLog* net_log() { return &net_log_; }
 
   // Runs until the completion callback is called. Transaction must have already
   // been started or this will never complete.
@@ -420,7 +419,6 @@ class TransactionHelper {
   bool cancel_in_callback_ = false;
   base::RunLoop transaction_complete_run_loop_;
   bool completed_ = false;
-  TestNetLog net_log_;
 };
 
 // Callback that allows a test to modify HttpResponseinfo
@@ -2590,7 +2588,7 @@ TEST_F(DnsTransactionTest, MAYBE_HttpsPostLookupWithLog) {
                       false /* enqueue_transaction_id */);
   TransactionHelper helper0(kT0RecordCount);
   CountingObserver observer;
-  helper0.net_log()->AddObserver(&observer, NetLogCaptureMode::kEverything);
+  NetLog::Get()->AddObserver(&observer, NetLogCaptureMode::kEverything);
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
                            true /* secure */, resolve_context_.get());
   helper0.RunUntilComplete();

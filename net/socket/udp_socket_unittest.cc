@@ -166,12 +166,11 @@ void ReadCompleteCallback(int* result_out,
 
 void UDPSocketTest::ConnectTest(bool use_nonblocking_io) {
   std::string simple_message("hello world!");
-
+  RecordingNetLogObserver net_log_observer;
   // Setup the server to listen.
   IPEndPoint server_address(IPAddress::IPv4Localhost(), 0 /* port */);
-  RecordingTestNetLog server_log;
   std::unique_ptr<UDPServerSocket> server(
-      new UDPServerSocket(&server_log, NetLogSource()));
+      new UDPServerSocket(NetLog::Get(), NetLogSource()));
   if (use_nonblocking_io)
     server->UseNonBlockingIO();
   server->AllowAddressReuse();
@@ -180,9 +179,8 @@ void UDPSocketTest::ConnectTest(bool use_nonblocking_io) {
   ASSERT_THAT(server->GetLocalAddress(&server_address), IsOk());
 
   // Setup the client.
-  RecordingTestNetLog client_log;
-  auto client = std::make_unique<UDPClientSocket>(DatagramSocket::DEFAULT_BIND,
-                                                  &client_log, NetLogSource());
+  auto client = std::make_unique<UDPClientSocket>(
+      DatagramSocket::DEFAULT_BIND, NetLog::Get(), NetLogSource());
   if (use_nonblocking_io)
     client->UseNonBlockingIO();
 
@@ -221,12 +219,16 @@ void UDPSocketTest::ConnectTest(bool use_nonblocking_io) {
   EXPECT_EQ(simple_message.length(), static_cast<size_t>(read_result));
   EXPECT_EQ(simple_message, std::string(buffer_->data(), read_result));
 
+  NetLogSource server_net_log_source = server->NetLog().source();
+  NetLogSource client_net_log_source = client->NetLog().source();
+
   // Delete sockets so they log their final events.
   server.reset();
   client.reset();
 
   // Check the server's log.
-  auto server_entries = server_log.GetEntries();
+  auto server_entries =
+      net_log_observer.GetEntriesForSource(server_net_log_source);
   ASSERT_EQ(6u, server_entries.size());
   EXPECT_TRUE(
       LogContainsBeginEvent(server_entries, 0, NetLogEventType::SOCKET_ALIVE));
@@ -246,7 +248,8 @@ void UDPSocketTest::ConnectTest(bool use_nonblocking_io) {
       LogContainsEndEvent(server_entries, 5, NetLogEventType::SOCKET_ALIVE));
 
   // Check the client's log.
-  auto client_entries = client_log.GetEntries();
+  auto client_entries =
+      net_log_observer.GetEntriesForSource(client_net_log_source);
   EXPECT_EQ(7u, client_entries.size());
   EXPECT_TRUE(
       LogContainsBeginEvent(client_entries, 0, NetLogEventType::SOCKET_ALIVE));
@@ -332,11 +335,10 @@ TEST_F(UDPSocketTest, MAYBE_LocalBroadcast) {
   IPEndPoint listen_address;
   ASSERT_TRUE(CreateUDPAddress("0.0.0.0", 0 /* port */, &listen_address));
 
-  RecordingTestNetLog server1_log, server2_log;
   std::unique_ptr<UDPServerSocket> server1(
-      new UDPServerSocket(&server1_log, NetLogSource()));
+      new UDPServerSocket(NetLog::Get(), NetLogSource()));
   std::unique_ptr<UDPServerSocket> server2(
-      new UDPServerSocket(&server2_log, NetLogSource()));
+      new UDPServerSocket(NetLog::Get(), NetLogSource()));
   server1->AllowAddressReuse();
   server1->AllowBroadcast();
   server2->AllowAddressReuse();

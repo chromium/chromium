@@ -24,7 +24,6 @@
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_response_headers.h"
 #include "net/log/net_log_source.h"
-#include "net/log/test_net_log.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/stream_socket.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
@@ -314,13 +313,12 @@ TEST_P(EmbeddedTestServerTest, DefaultNotFoundResponse) {
 TEST_P(EmbeddedTestServerTest, ConnectionListenerAccept) {
   ASSERT_TRUE(server_->Start());
 
-  RecordingTestNetLog net_log;
   net::AddressList address_list;
   EXPECT_TRUE(server_->GetAddressList(&address_list));
 
   std::unique_ptr<StreamSocket> socket =
       ClientSocketFactory::GetDefaultFactory()->CreateTransportClientSocket(
-          address_list, nullptr, nullptr, &net_log, NetLogSource());
+          address_list, nullptr, nullptr, NetLog::Get(), NetLogSource());
   TestCompletionCallback callback;
   ASSERT_THAT(callback.GetResult(socket->Connect(callback.callback())), IsOk());
 

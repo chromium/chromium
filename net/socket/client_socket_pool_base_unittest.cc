@@ -700,7 +700,7 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
   // It should be logged for the provided source and have the indicated reason.
   void ExpectSocketClosedWithReason(NetLogSource expected_source,
                                     const char* expected_reason) {
-    auto entries = net_log_.GetEntriesForSourceWithType(
+    auto entries = observer_.GetEntriesForSourceWithType(
         expected_source, NetLogEventType::SOCKET_POOL_CLOSING_SOCKET,
         NetLogEventPhase::NONE);
     ASSERT_EQ(1u, entries.size());
@@ -720,7 +720,6 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
   // synchronous completions are not registered by this count.
   size_t completion_count() const { return test_base_.completion_count(); }
 
-  RecordingTestNetLog net_log_;
   const CommonConnectJobParams common_connect_job_params_{
       nullptr /* client_socket_factory */,
       nullptr /* host_resolver */,
@@ -734,11 +733,12 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
       nullptr /* ssl_client_context */,
       nullptr /* socket_performance_watcher_factory */,
       nullptr /* network_quality_estimator */,
-      &net_log_,
+      NetLog::Get(),
       nullptr /* websocket_endpoint_lock_manager */};
   bool connect_backup_jobs_enabled_;
   MockClientSocketFactory client_socket_factory_;
   TestConnectJobFactory* connect_job_factory_;
+  RecordingNetLogObserver observer_;
   // These parameters are never actually used to create a TransportConnectJob.
   scoped_refptr<ClientSocketPool::SocketParams> params_;
   std::unique_ptr<TransportClientSocketPool> pool_;

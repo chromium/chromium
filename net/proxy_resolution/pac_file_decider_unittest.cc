@@ -21,6 +21,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
@@ -205,8 +206,8 @@ TEST(PacFileDeciderTest, CustomPacSucceeds) {
   Rules::Rule rule = rules.AddSuccessRule("http://custom/proxy.pac");
 
   TestCompletionCallback callback;
-  RecordingTestNetLog log;
-  PacFileDecider decider(&fetcher, &dhcp_fetcher, &log);
+  RecordingNetLogObserver observer;
+  PacFileDecider decider(&fetcher, &dhcp_fetcher, net::NetLog::Get());
   EXPECT_THAT(decider.Start(ProxyConfigWithAnnotation(
                                 config, TRAFFIC_ANNOTATION_FOR_TESTS),
                             base::TimeDelta(), true, callback.callback()),
@@ -215,7 +216,7 @@ TEST(PacFileDeciderTest, CustomPacSucceeds) {
   EXPECT_FALSE(decider.script_data().from_auto_detect);
 
   // Check the NetLog was filled correctly.
-  auto entries = log.GetEntries();
+  auto entries = observer.GetEntries();
 
   EXPECT_EQ(4u, entries.size());
   EXPECT_TRUE(
@@ -243,8 +244,8 @@ TEST(PacFileDeciderTest, CustomPacFails1) {
   rules.AddFailDownloadRule("http://custom/proxy.pac");
 
   TestCompletionCallback callback;
-  RecordingTestNetLog log;
-  PacFileDecider decider(&fetcher, &dhcp_fetcher, &log);
+  RecordingNetLogObserver observer;
+  PacFileDecider decider(&fetcher, &dhcp_fetcher, net::NetLog::Get());
   EXPECT_THAT(decider.Start(ProxyConfigWithAnnotation(
                                 config, TRAFFIC_ANNOTATION_FOR_TESTS),
                             base::TimeDelta(), true, callback.callback()),
@@ -252,7 +253,7 @@ TEST(PacFileDeciderTest, CustomPacFails1) {
   EXPECT_FALSE(decider.script_data().data);
 
   // Check the NetLog was filled correctly.
-  auto entries = log.GetEntries();
+  auto entries = observer.GetEntries();
 
   EXPECT_EQ(4u, entries.size());
   EXPECT_TRUE(
@@ -544,9 +545,9 @@ TEST(PacFileDeciderTest, AutodetectFailCustomSuccess2) {
   Rules::Rule rule = rules.AddSuccessRule("http://custom/proxy.pac");
 
   TestCompletionCallback callback;
-  RecordingTestNetLog log;
+  RecordingNetLogObserver observer;
 
-  PacFileDecider decider(&fetcher, &dhcp_fetcher, &log);
+  PacFileDecider decider(&fetcher, &dhcp_fetcher, net::NetLog::Get());
   EXPECT_THAT(decider.Start(ProxyConfigWithAnnotation(
                                 config, TRAFFIC_ANNOTATION_FOR_TESTS),
                             base::TimeDelta(), true, callback.callback()),
@@ -562,7 +563,7 @@ TEST(PacFileDeciderTest, AutodetectFailCustomSuccess2) {
   // Check the NetLog was filled correctly.
   // (Note that various states are repeated since both WPAD and custom
   // PAC scripts are tried).
-  auto entries = log.GetEntries();
+  auto entries = observer.GetEntries();
 
   EXPECT_EQ(10u, entries.size());
   EXPECT_TRUE(
@@ -655,8 +656,9 @@ TEST(PacFileDeciderTest, CustomPacFails1_WithPositiveDelay) {
   rules.AddFailDownloadRule("http://custom/proxy.pac");
 
   TestCompletionCallback callback;
-  RecordingTestNetLog log;
-  PacFileDecider decider(&fetcher, &dhcp_fetcher, &log);
+
+  RecordingNetLogObserver observer;
+  PacFileDecider decider(&fetcher, &dhcp_fetcher, net::NetLog::Get());
   EXPECT_THAT(decider.Start(ProxyConfigWithAnnotation(
                                 config, TRAFFIC_ANNOTATION_FOR_TESTS),
                             base::Milliseconds(1), true, callback.callback()),
@@ -666,7 +668,7 @@ TEST(PacFileDeciderTest, CustomPacFails1_WithPositiveDelay) {
   EXPECT_FALSE(decider.script_data().data);
 
   // Check the NetLog was filled correctly.
-  auto entries = log.GetEntries();
+  auto entries = observer.GetEntries();
 
   EXPECT_EQ(6u, entries.size());
   EXPECT_TRUE(
@@ -697,8 +699,8 @@ TEST(PacFileDeciderTest, CustomPacFails1_WithNegativeDelay) {
   rules.AddFailDownloadRule("http://custom/proxy.pac");
 
   TestCompletionCallback callback;
-  RecordingTestNetLog log;
-  PacFileDecider decider(&fetcher, &dhcp_fetcher, &log);
+  RecordingNetLogObserver observer;
+  PacFileDecider decider(&fetcher, &dhcp_fetcher, net::NetLog::Get());
   EXPECT_THAT(decider.Start(ProxyConfigWithAnnotation(
                                 config, TRAFFIC_ANNOTATION_FOR_TESTS),
                             base::Seconds(-5), true, callback.callback()),
@@ -706,7 +708,7 @@ TEST(PacFileDeciderTest, CustomPacFails1_WithNegativeDelay) {
   EXPECT_FALSE(decider.script_data().data);
 
   // Check the NetLog was filled correctly.
-  auto entries = log.GetEntries();
+  auto entries = observer.GetEntries();
 
   EXPECT_EQ(4u, entries.size());
   EXPECT_TRUE(

@@ -29,7 +29,7 @@
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
-#include "net/log/test_net_log.h"
+#include "net/log/net_log.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connect_job_test_util.h"
@@ -79,7 +79,7 @@ class WebSocketTransportClientSocketPoolTest : public TestWithTaskEnvironment {
                   SecureDnsPolicy::kAllow),
         params_(ClientSocketPool::SocketParams::CreateForHttpForTesting()),
         host_resolver_(new MockHostResolver),
-        client_socket_factory_(&net_log_),
+        client_socket_factory_(NetLog::Get()),
         common_connect_job_params_(
             &client_socket_factory_,
             host_resolver_.get(),
@@ -143,7 +143,6 @@ class WebSocketTransportClientSocketPoolTest : public TestWithTaskEnvironment {
   }
   size_t completion_count() const { return test_base_.completion_count(); }
 
-  RecordingTestNetLog net_log_;
   // |group_id_| and |params_| correspond to the same socket parameters.
   const ClientSocketPool::GroupId group_id_;
   scoped_refptr<ClientSocketPool::SocketParams> params_;

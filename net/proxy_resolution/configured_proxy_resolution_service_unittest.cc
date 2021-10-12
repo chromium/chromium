@@ -27,6 +27,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/test_completion_callback.h"
+#include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
@@ -3010,10 +3011,11 @@ TEST_F(ConfiguredProxyResolutionServiceTest, NetworkChangeTriggersPacRefetch) {
   MockAsyncProxyResolverFactory* factory =
       new MockAsyncProxyResolverFactory(true);
 
-  RecordingTestNetLog log;
+  RecordingNetLogObserver observer;
 
   ConfiguredProxyResolutionService service(base::WrapUnique(config_service),
-                                           base::WrapUnique(factory), &log,
+                                           base::WrapUnique(factory),
+                                           net::NetLog::Get(),
                                            /*quick_check_enabled=*/true);
 
   MockPacFileFetcher* fetcher = new MockPacFileFetcher;
@@ -3110,7 +3112,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, NetworkChangeTriggersPacRefetch) {
   // Check that the expected events were output to the log stream. In particular
   // PROXY_CONFIG_CHANGED should have only been emitted once (for the initial
   // setup), and NOT a second time when the IP address changed.
-  auto entries = log.GetEntries();
+  auto entries = observer.GetEntries();
 
   EXPECT_TRUE(LogContainsEntryWithType(entries, 0,
                                        NetLogEventType::PROXY_CONFIG_CHANGED));

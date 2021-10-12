@@ -25,7 +25,6 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/log/net_log_with_source.h"
-#include "net/log/test_net_log.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
 #include "net/spdy/spdy_http_utils.h"
@@ -139,7 +138,7 @@ class SpdyHttpStreamTest : public TestWithTaskEnvironment {
              NetworkIsolationKey(),
              SecureDnsPolicy::kAllow),
         ssl_(SYNCHRONOUS, OK) {
-    session_deps_.net_log = &net_log_;
+    session_deps_.net_log = NetLog::Get();
   }
 
   ~SpdyHttpStreamTest() override = default;
@@ -167,7 +166,6 @@ class SpdyHttpStreamTest : public TestWithTaskEnvironment {
   }
 
   SpdyTestUtil spdy_util_;
-  RecordingTestNetLog net_log_;
   SpdySessionDependencies session_deps_;
   const GURL url_;
   const HostPortPair host_port_pair_;

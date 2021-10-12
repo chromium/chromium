@@ -108,13 +108,13 @@ class ConnectJobTest : public testing::Test {
             nullptr /* ssl_client_context */,
             nullptr /* socket_performance_watcher_factory */,
             nullptr /* network_quality_estimator */,
-            &net_log_,
+            NetLog::Get(),
             nullptr /* websocket_endpoint_lock_manager */) {}
   ~ConnectJobTest() override = default;
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  RecordingTestNetLog net_log_;
+  RecordingNetLogObserver net_log_observer_;
   const CommonConnectJobParams common_connect_job_params_;
   TestConnectJobDelegate delegate_;
 };
@@ -185,7 +185,7 @@ TEST_F(ConnectJobTest, TimedOut) {
   // Have to delete the job for it to log the end event.
   job.reset();
 
-  auto entries = net_log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
 
   EXPECT_EQ(6u, entries.size());
   EXPECT_TRUE(LogContainsBeginEvent(entries, 0, NetLogEventType::CONNECT_JOB));

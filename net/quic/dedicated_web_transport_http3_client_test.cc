@@ -11,8 +11,6 @@
 #include "net/base/schemeful_site.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/log/test_net_log.h"
-#include "net/log/test_net_log_util.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/quic/crypto/proof_source_chromium.h"
 #include "net/test/test_data_directory.h"
@@ -124,7 +122,7 @@ class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
         HostPortPair("test.example.com", 0));
     builder.set_quic_context(std::move(quic_context));
 
-    builder.set_net_log(&net_log_);
+    builder.set_net_log(NetLog::Get());
     context_ = builder.Build();
 
     // By default, quit on error instead of waiting for RunLoop() to time out.
@@ -182,7 +180,6 @@ class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
   ::testing::NiceMock<MockVisitor> visitor_;
   std::unique_ptr<QuicSimpleServer> server_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  RecordingTestNetLog net_log_;
   quic::test::QuicTestBackend backend_;
 
   int port_ = 0;

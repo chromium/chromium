@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/log/net_log.h"
 #include "url/url_constants.h"
 
 #if defined(OS_WIN)
@@ -672,7 +673,7 @@ class URLRequestTest : public PlatformTest, public WithTaskEnvironment {
       : job_factory_(std::make_unique<URLRequestJobFactory>()),
         default_context_(std::make_unique<TestURLRequestContext>(true)) {
     default_context_->set_network_delegate(&default_network_delegate_);
-    default_context_->set_net_log(&net_log_);
+    default_context_->set_net_log(NetLog::Get());
   }
 
   ~URLRequestTest() override {
@@ -716,7 +717,7 @@ class URLRequestTest : public PlatformTest, public WithTaskEnvironment {
   }
 
  protected:
-  RecordingTestNetLog net_log_;
+  RecordingNetLogObserver net_log_observer_;
   TestNetworkDelegate default_network_delegate_;  // Must outlive URLRequest.
   std::unique_ptr<URLRequestJobFactory> job_factory_;
   std::unique_ptr<TestURLRequestContext> default_context_;
@@ -2092,7 +2093,7 @@ TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy) {
 
     EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
-    auto entries = net_log_.GetEntries();
+    auto entries = net_log_observer_.GetEntries();
     for (const auto& entry : entries) {
       EXPECT_NE(entry.type,
                 NetLogEventType::COOKIE_GET_BLOCKED_BY_NETWORK_DELEGATE);
@@ -2116,7 +2117,7 @@ TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy) {
 
     EXPECT_EQ(1, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
-    auto entries = net_log_.GetEntries();
+    auto entries = net_log_observer_.GetEntries();
     ExpectLogContainsSomewhereAfter(
         entries, 0, NetLogEventType::COOKIE_GET_BLOCKED_BY_NETWORK_DELEGATE,
         NetLogEventPhase::NONE);
@@ -2146,7 +2147,7 @@ TEST_F(URLRequestTest, MAYBE_DoNotSaveCookies_ViaPolicy) {
 
     EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
-    auto entries = net_log_.GetEntries();
+    auto entries = net_log_observer_.GetEntries();
     for (const auto& entry : entries) {
       EXPECT_NE(entry.type,
                 NetLogEventType::COOKIE_SET_BLOCKED_BY_NETWORK_DELEGATE);
@@ -2168,7 +2169,7 @@ TEST_F(URLRequestTest, MAYBE_DoNotSaveCookies_ViaPolicy) {
 
     EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
     EXPECT_EQ(2, network_delegate.blocked_set_cookie_count());
-    auto entries = net_log_.GetEntries();
+    auto entries = net_log_observer_.GetEntries();
     ExpectLogContainsSomewhereAfter(
         entries, 0, NetLogEventType::COOKIE_SET_BLOCKED_BY_NETWORK_DELEGATE,
         NetLogEventPhase::NONE);
@@ -5170,7 +5171,7 @@ TEST_F(URLRequestTestHTTP, DelegateInfoBeforeStart) {
   TestDelegate request_delegate;
   TestURLRequestContext context(true);
   context.set_network_delegate(nullptr);
-  context.set_net_log(&net_log_);
+  context.set_net_log(NetLog::Get());
   context.Init();
 
   {
@@ -5192,7 +5193,7 @@ TEST_F(URLRequestTestHTTP, DelegateInfoBeforeStart) {
     EXPECT_EQ(OK, request_delegate.request_status());
   }
 
-  auto entries = net_log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
   size_t log_position = ExpectLogContainsSomewhereAfter(
       entries, 0, NetLogEventType::DELEGATE_INFO, NetLogEventPhase::BEGIN);
 
@@ -5211,7 +5212,7 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfo) {
   AsyncLoggingNetworkDelegate network_delegate;
   TestURLRequestContext context(true);
   context.set_network_delegate(&network_delegate);
-  context.set_net_log(&net_log_);
+  context.set_net_log(NetLog::Get());
   context.Init();
 
   {
@@ -5233,7 +5234,7 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfo) {
   EXPECT_EQ(1, network_delegate.destroyed_requests());
 
   size_t log_position = 0;
-  auto entries = net_log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
   static const NetLogEventType kExpectedEvents[] = {
       NetLogEventType::NETWORK_DELEGATE_BEFORE_URL_REQUEST,
       NetLogEventType::NETWORK_DELEGATE_BEFORE_START_TRANSACTION,
@@ -5265,7 +5266,7 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfoRedirect) {
   AsyncLoggingNetworkDelegate network_delegate;
   TestURLRequestContext context(true);
   context.set_network_delegate(&network_delegate);
-  context.set_net_log(&net_log_);
+  context.set_net_log(NetLog::Get());
   context.Init();
 
   {
@@ -5287,7 +5288,7 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfoRedirect) {
   EXPECT_EQ(1, network_delegate.destroyed_requests());
 
   size_t log_position = 0;
-  auto entries = net_log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
   static const NetLogEventType kExpectedEvents[] = {
       NetLogEventType::NETWORK_DELEGATE_BEFORE_URL_REQUEST,
       NetLogEventType::NETWORK_DELEGATE_BEFORE_START_TRANSACTION,
@@ -5338,7 +5339,7 @@ TEST_F(URLRequestTestHTTP, URLRequestDelegateInfo) {
       AsyncLoggingUrlRequestDelegate::NO_CANCEL);
   TestURLRequestContext context(true);
   context.set_network_delegate(nullptr);
-  context.set_net_log(&net_log_);
+  context.set_net_log(NetLog::Get());
   context.Init();
 
   {
@@ -5358,7 +5359,7 @@ TEST_F(URLRequestTestHTTP, URLRequestDelegateInfo) {
     EXPECT_EQ(OK, request_delegate.request_status());
   }
 
-  auto entries = net_log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
 
   size_t log_position = 0;
 
@@ -5395,7 +5396,7 @@ TEST_F(URLRequestTestHTTP, URLRequestDelegateInfoOnRedirect) {
       AsyncLoggingUrlRequestDelegate::NO_CANCEL);
   TestURLRequestContext context(true);
   context.set_network_delegate(nullptr);
-  context.set_net_log(&net_log_);
+  context.set_net_log(NetLog::Get());
   context.Init();
 
   {
@@ -5410,7 +5411,7 @@ TEST_F(URLRequestTestHTTP, URLRequestDelegateInfoOnRedirect) {
     EXPECT_EQ(OK, request_delegate.request_status());
   }
 
-  auto entries = net_log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
 
   // Delegate info should only have been logged in OnReceivedRedirect and
   // OnResponseStarted.
@@ -5449,10 +5450,10 @@ TEST_F(URLRequestTestHTTP, URLRequestDelegateOnRedirectCancelled) {
 
   for (auto cancel_stage : kCancelStages) {
     AsyncLoggingUrlRequestDelegate request_delegate(cancel_stage);
-    RecordingTestNetLog net_log;
+    RecordingNetLogObserver net_log_observer;
     TestURLRequestContext context(true);
     context.set_network_delegate(nullptr);
-    context.set_net_log(&net_log);
+    context.set_net_log(NetLog::Get());
     context.Init();
 
     {
@@ -5469,7 +5470,7 @@ TEST_F(URLRequestTestHTTP, URLRequestDelegateOnRedirectCancelled) {
       base::RunLoop().RunUntilIdle();
     }
 
-    auto entries = net_log.GetEntries();
+    auto entries = net_log_observer.GetEntries();
 
     // Delegate info is always logged in both OnReceivedRedirect and
     // OnResponseStarted.  In the CANCEL_ON_RECEIVED_REDIRECT, the
@@ -7717,10 +7718,10 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
   FilteringTestNetworkDelegate network_delegate;
   network_delegate.SetCookieFilter("not_stored_cookie");
   network_delegate.set_block_annotate_cookies();
-  RecordingTestNetLog net_log;
+  RecordingNetLogObserver net_log_observer;
   TestURLRequestContext context(true);
   context.set_network_delegate(&network_delegate);
-  context.set_net_log(&net_log);
+  context.set_net_log(net::NetLog::Get());
   context.Init();
   // Make sure cookies blocked from being stored are caught, and those that are
   // accepted are reported as well.
@@ -7749,8 +7750,8 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
     EXPECT_TRUE(
         req->maybe_stored_cookies()[2].access_result.status.IsInclude());
     EXPECT_EQ("path_cookie", req->maybe_stored_cookies()[2].cookie->Name());
-    auto entries =
-        net_log.GetEntriesWithType(NetLogEventType::COOKIE_INCLUSION_STATUS);
+    auto entries = net_log_observer.GetEntriesWithType(
+        NetLogEventType::COOKIE_INCLUSION_STATUS);
     EXPECT_EQ(3u, entries.size());
     EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.host() +
                   "\",\"name\":\"not_stored_cookie\",\"operation\":\"store\","
@@ -7766,7 +7767,7 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
             "\",\"name\":\"path_cookie\",\"operation\":\"store\","
             "\"path\":\"/set-cookie\",\"status\":\"INCLUDE, DO_NOT_WARN\"}",
         SerializeNetLogValueToJson(entries[2].params));
-    net_log.Clear();
+    net_log_observer.Clear();
   }
   {
     TestDelegate d;
@@ -7792,8 +7793,8 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
         req->maybe_sent_cookies()[1]
             .access_result.status.HasExactlyExclusionReasonsForTesting(
                 {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}));
-    auto entries =
-        net_log.GetEntriesWithType(NetLogEventType::COOKIE_INCLUSION_STATUS);
+    auto entries = net_log_observer.GetEntriesWithType(
+        NetLogEventType::COOKIE_INCLUSION_STATUS);
     EXPECT_EQ(2u, entries.size());
     EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.host() +
                   "\",\"name\":\"path_cookie\",\"operation\":\"send\",\"path\":"
@@ -7805,13 +7806,13 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
             "\",\"name\":\"stored_cookie\",\"operation\":\"send\",\"path\":\"/"
             "\",\"status\":\"EXCLUDE_USER_PREFERENCES, DO_NOT_WARN\"}",
         SerializeNetLogValueToJson(entries[1].params));
-    net_log.Clear();
+    net_log_observer.Clear();
   }
   {
     TestDelegate d;
     // Ensure that the log does not contain cookie names when not set to collect
     // sensitive data.
-    net_log.SetObserverCaptureMode(NetLogCaptureMode::kDefault);
+    net_log_observer.SetObserverCaptureMode(NetLogCaptureMode::kDefault);
 
     GURL test_url = test_server.GetURL("/echoheader?Cookie");
     std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
@@ -7819,8 +7820,8 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
     req->Start();
     d.RunUntilComplete();
 
-    auto entries =
-        net_log.GetEntriesWithType(NetLogEventType::COOKIE_INCLUSION_STATUS);
+    auto entries = net_log_observer.GetEntriesWithType(
+        NetLogEventType::COOKIE_INCLUSION_STATUS);
     EXPECT_EQ(2u, entries.size());
 
     // Ensure that the potentially-sensitive |name|, |domain|, and |path| fields
@@ -7834,8 +7835,9 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
         "DO_NOT_WARN\"}",
         SerializeNetLogValueToJson(entries[1].params));
 
-    net_log.Clear();
-    net_log.SetObserverCaptureMode(NetLogCaptureMode::kIncludeSensitive);
+    net_log_observer.Clear();
+    net_log_observer.SetObserverCaptureMode(
+        NetLogCaptureMode::kIncludeSensitive);
   }
 
   network_delegate.unset_block_annotate_cookies();
@@ -7858,8 +7860,8 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
                         {net::CookieInclusionStatus::EXCLUDE_NOT_ON_PATH}));
     EXPECT_EQ("stored_cookie", req->maybe_sent_cookies()[1].cookie.Name());
     EXPECT_TRUE(req->maybe_sent_cookies()[1].access_result.status.IsInclude());
-    auto entries =
-        net_log.GetEntriesWithType(NetLogEventType::COOKIE_INCLUSION_STATUS);
+    auto entries = net_log_observer.GetEntriesWithType(
+        NetLogEventType::COOKIE_INCLUSION_STATUS);
     EXPECT_EQ(2u, entries.size());
     EXPECT_EQ(
         "{\"domain\":\"" + set_cookie_test_url.host() +
@@ -7870,7 +7872,7 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
                   "\",\"name\":\"stored_cookie\",\"operation\":\"send\","
                   "\"path\":\"/\",\"status\":\"INCLUDE, DO_NOT_WARN\"}",
               SerializeNetLogValueToJson(entries[1].params));
-    net_log.Clear();
+    net_log_observer.Clear();
   }
 }
 

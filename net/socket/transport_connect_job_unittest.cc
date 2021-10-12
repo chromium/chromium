@@ -20,7 +20,7 @@
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
-#include "net/log/test_net_log.h"
+#include "net/log/net_log.h"
 #include "net/socket/connect_job_test_util.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/stream_socket.h"
@@ -41,7 +41,7 @@ class TransportConnectJobTest : public WithTaskEnvironment,
  public:
   TransportConnectJobTest()
       : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        client_socket_factory_(&net_log_),
+        client_socket_factory_(NetLog::Get()),
         common_connect_job_params_(
             &client_socket_factory_,
             &host_resolver_,
@@ -55,7 +55,7 @@ class TransportConnectJobTest : public WithTaskEnvironment,
             nullptr /* ssl_client_context */,
             nullptr /* socket_performance_watcher_factory */,
             nullptr /* network_quality_estimator */,
-            &net_log_,
+            NetLog::Get(),
             nullptr /* websocket_endpoint_lock_manager */) {}
 
   ~TransportConnectJobTest() override {}
@@ -68,7 +68,6 @@ class TransportConnectJobTest : public WithTaskEnvironment,
   }
 
  protected:
-  RecordingTestNetLog net_log_;
   MockHostResolver host_resolver_;
   MockTransportClientSocketFactory client_socket_factory_;
   const CommonConnectJobParams common_connect_job_params_;

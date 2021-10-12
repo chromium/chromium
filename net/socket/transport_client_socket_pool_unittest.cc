@@ -35,8 +35,8 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_proxy_connect_job.h"
 #include "net/http/transport_security_state.h"
+#include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
-#include "net/log/test_net_log.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/connect_job.h"
@@ -118,7 +118,7 @@ class TransportClientSocketPoolTest : public ::testing::Test,
                   NetworkIsolationKey(),
                   SecureDnsPolicy::kAllow),
         params_(ClientSocketPool::SocketParams::CreateForHttpForTesting()),
-        client_socket_factory_(&net_log_) {
+        client_socket_factory_(NetLog::Get()) {
     std::unique_ptr<MockCertVerifier> cert_verifier =
         std::make_unique<MockCertVerifier>();
     cert_verifier->set_default_result(OK);
@@ -190,7 +190,6 @@ class TransportClientSocketPoolTest : public ::testing::Test,
   size_t completion_count() const { return test_base_.completion_count(); }
 
   bool connect_backup_jobs_enabled_;
-  RecordingTestNetLog net_log_;
 
   // |group_id_| and |params_| correspond to the same group.
   const ClientSocketPool::GroupId group_id_;

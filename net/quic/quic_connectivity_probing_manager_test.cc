@@ -120,7 +120,7 @@ class QuicConnectivityProbingManagerTest : public ::testing::Test {
     socket_factory_.AddSocketDataProvider(socket_data_.get());
     // Create a connected socket for probing.
     socket_ = socket_factory_.CreateDatagramClientSocket(
-        DatagramSocket::DEFAULT_BIND, &net_log_, NetLogSource());
+        DatagramSocket::DEFAULT_BIND, NetLog::Get(), NetLogSource());
     EXPECT_THAT(socket_->Connect(kIpEndPoint), IsOk());
     IPEndPoint self_address;
     socket_->GetLocalAddress(&self_address);
@@ -157,7 +157,6 @@ class QuicConnectivityProbingManagerTest : public ::testing::Test {
 
   quic::MockClock clock_;
   MockClientSocketFactory socket_factory_;
-  RecordingTestNetLog net_log_;
   RecordingBoundTestNetLog bound_test_net_log_;
 };
 

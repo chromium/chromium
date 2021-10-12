@@ -24,6 +24,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
@@ -517,7 +518,7 @@ class ProxyResolverFactoryMojoTest : public testing::Test {
             factory_remote.InitWithNewPipeAndPassReceiver());
     proxy_resolver_factory_mojo_ = std::make_unique<ProxyResolverFactoryMojo>(
         std::move(factory_remote), &host_resolver_, base::NullCallback(),
-        &net_log_);
+        net::NetLog::Get());
   }
 
   std::unique_ptr<Request> MakeRequest(
@@ -557,7 +558,7 @@ class ProxyResolverFactoryMojoTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   net::HangingHostResolver host_resolver_;
-  net::RecordingTestNetLog net_log_;
+  net::RecordingNetLogObserver net_log_observer_;
   std::unique_ptr<MockMojoProxyResolverFactory> mock_proxy_resolver_factory_;
   std::unique_ptr<net::ProxyResolverFactory> proxy_resolver_factory_mojo_;
 
@@ -567,7 +568,7 @@ class ProxyResolverFactoryMojoTest : public testing::Test {
 
 TEST_F(ProxyResolverFactoryMojoTest, CreateProxyResolver) {
   CreateProxyResolver();
-  CheckCapturedNetLogEntries(kScriptData, net_log_.GetEntries());
+  CheckCapturedNetLogEntries(kScriptData, net_log_observer_.GetEntries());
 }
 
 TEST_F(ProxyResolverFactoryMojoTest, CreateProxyResolver_Empty) {
@@ -775,7 +776,7 @@ TEST_F(ProxyResolverFactoryMojoTest, GetProxyForURL) {
   mock_proxy_resolver_.AddGetProxyAction(GetProxyForUrlAction::ReturnServers(
       url, ProxyServersFromPacString("DIRECT")));
   CreateProxyResolver();
-  net_log_.Clear();
+  net_log_observer_.Clear();
 
   std::unique_ptr<Request> request(MakeRequest(GURL(kExampleUrl)));
   EXPECT_THAT(request->Resolve(), IsError(net::ERR_IO_PENDING));
@@ -783,7 +784,7 @@ TEST_F(ProxyResolverFactoryMojoTest, GetProxyForURL) {
 
   EXPECT_EQ("DIRECT", request->results().ToPacString());
 
-  CheckCapturedNetLogEntries(url.spec(), net_log_.GetEntries());
+  CheckCapturedNetLogEntries(url.spec(), net_log_observer_.GetEntries());
   CheckCapturedNetLogEntries(url.spec(), request->net_log().GetEntries());
 }
 

@@ -17,6 +17,7 @@
 #include "net/dns/host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/log/net_log.h"
 #include "net/log/test_net_log.h"
 #include "net/socket/fuzzed_socket.h"
 #include "net/socket/socks_client_socket.h"
@@ -27,8 +28,9 @@
 // |data| is used to create a FuzzedSocket to fuzz reads and writes, see that
 // class for details.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  // Use a test NetLog, to exercise logging code.
-  net::RecordingTestNetLog test_net_log;
+  // Including an observer; even though the recorded results aren't currently
+  // used, it'll ensure the netlogging code is fuzzed as well.
+  net::RecordingNetLogObserver net_log_observer;
 
   FuzzedDataProvider data_provider(data, size);
 
@@ -53,7 +55,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   net::TestCompletionCallback callback;
   std::unique_ptr<net::FuzzedSocket> fuzzed_socket(
-      new net::FuzzedSocket(&data_provider, &test_net_log));
+      new net::FuzzedSocket(&data_provider, net::NetLog::Get()));
   CHECK_EQ(net::OK, fuzzed_socket->Connect(callback.callback()));
 
   net::SOCKSClientSocket socket(

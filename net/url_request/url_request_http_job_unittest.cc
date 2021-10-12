@@ -345,7 +345,7 @@ class URLRequestHttpJobTest : public TestWithTaskEnvironment {
  protected:
   URLRequestHttpJobTest() : context_(true) {
     context_.set_http_transaction_factory(&network_layer_);
-    context_.set_net_log(&net_log_);
+    context_.set_net_log(NetLog::Get());
     context_.Init();
 
     req_ =
@@ -357,7 +357,7 @@ class URLRequestHttpJobTest : public TestWithTaskEnvironment {
 
   TestURLRequestContext context_;
   TestDelegate delegate_;
-  RecordingTestNetLog net_log_;
+  RecordingNetLogObserver net_log_observer_;
   std::unique_ptr<URLRequest> req_;
 };
 
@@ -1280,12 +1280,12 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectTest) {
         url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
         is_for_websockets));
 
-    net_log_.Clear();
+    net_log_observer_.Clear();
     r->Start();
     d.RunUntilComplete();
 
     if (test.upgrade_expected) {
-      auto entries = net_log_.GetEntriesWithType(
+      auto entries = net_log_observer_.GetEntriesWithType(
           net::NetLogEventType::URL_REQUEST_REDIRECT_JOB);
       int redirects = entries.size();
       for (const auto& entry : entries) {

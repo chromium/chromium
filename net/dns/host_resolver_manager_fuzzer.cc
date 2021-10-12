@@ -25,6 +25,7 @@
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
+#include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
 #include "net/net_buildflags.h"
@@ -236,7 +237,9 @@ class DnsRequest {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   {
     FuzzedDataProvider data_provider(data, size);
-    net::RecordingTestNetLog net_log;
+    // Including an observer; even though the recorded results aren't currently
+    // used, it'll ensure the netlogging code is fuzzed as well.
+    net::RecordingNetLogObserver net_log_observer;
 
     net::HostResolver::ManagerOptions options;
     options.max_concurrent_resolves =
@@ -244,8 +247,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     options.insecure_dns_client_enabled = data_provider.ConsumeBool();
     bool enable_caching = data_provider.ConsumeBool();
     std::unique_ptr<net::ContextHostResolver> host_resolver =
-        net::CreateFuzzedContextHostResolver(options, &net_log, &data_provider,
-                                             enable_caching);
+        net::CreateFuzzedContextHostResolver(options, net::NetLog::Get(),
+                                             &data_provider, enable_caching);
 
     std::vector<std::unique_ptr<DnsRequest>> dns_requests;
     bool done = false;
