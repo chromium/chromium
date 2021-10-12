@@ -58,7 +58,6 @@ class DiagnosticsDialogUI : public ui::MojoWebDialogUI {
   // metrics.
   base::Time open_timestamp_;
 
-  std::unique_ptr<diagnostics::SessionLogHandler> session_log_handler_;
   std::unique_ptr<diagnostics::DiagnosticsManager> diagnostics_manager_;
 };
 

@@ -328,13 +328,7 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
     const diagnostics::SessionLogHandler::SelectFilePolicyCreator&
         select_file_policy_creator,
     HoldingSpaceClient* holding_space_client)
-    : ui::MojoWebDialogUI(web_ui),
-      session_log_handler_(std::make_unique<diagnostics::SessionLogHandler>(
-          select_file_policy_creator,
-          holding_space_client)) {
-  diagnostics_manager_ = std::make_unique<diagnostics::DiagnosticsManager>(
-      session_log_handler_.get());
-
+    : ui::MojoWebDialogUI(web_ui) {
   auto html_source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUIDiagnosticsAppHost));
   html_source->OverrideContentSecurityPolicy(
