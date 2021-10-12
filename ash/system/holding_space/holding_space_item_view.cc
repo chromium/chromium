@@ -133,6 +133,7 @@ HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
 
   // Accessibility.
   GetViewAccessibility().OverrideName(item->GetAccessibleName());
+  GetViewAccessibility().OverrideDescription(base::EmptyString16());
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
 
   // Layer.
