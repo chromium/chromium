@@ -60,25 +60,7 @@ public class OverviewAppMenuTest {
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.new_tab_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.new_incognito_tab_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.close_all_tabs_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.menu_group_tabs));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.preferences_id));
-
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.close_all_incognito_tabs_menu_id));
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.track_prices_row_menu_id));
-
-        ModelList menuItemsModelList =
-                AppMenuTestSupport.getMenuModelList(mActivityTestRule.getAppMenuCoordinator());
-        assertEquals(5, menuItemsModelList.size());
+        verifyTabSwitcherMenu();
     }
 
     @Test
@@ -92,25 +74,7 @@ public class OverviewAppMenuTest {
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.new_tab_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.new_incognito_tab_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.close_all_incognito_tabs_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.menu_group_tabs));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.preferences_id));
-
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.close_all_tabs_menu_id));
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.track_prices_row_menu_id));
-
-        ModelList menuItemsModelList =
-                AppMenuTestSupport.getMenuModelList(mActivityTestRule.getAppMenuCoordinator());
-        assertEquals(5, menuItemsModelList.size());
+        verifyTabSwitcherMenuIncognito();
     }
 
     @Test
@@ -123,37 +87,7 @@ public class OverviewAppMenuTest {
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.new_incognito_tab_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.open_history_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.downloads_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.all_bookmarks_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.recent_tabs_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.close_all_tabs_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.menu_group_tabs));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.preferences_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id));
-
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.new_tab_menu_id));
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.close_all_incognito_tabs_menu_id));
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.track_prices_row_menu_id));
-
-        ModelList menuItemsModelList =
-                AppMenuTestSupport.getMenuModelList(mActivityTestRule.getAppMenuCoordinator());
-        assertEquals(10, menuItemsModelList.size());
+        verifyTabSwitcherMenu();
     }
 
     @Test
@@ -167,37 +101,7 @@ public class OverviewAppMenuTest {
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.new_tab_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.new_incognito_tab_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.open_history_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.downloads_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.all_bookmarks_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.close_all_incognito_tabs_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.menu_group_tabs));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.preferences_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id));
-
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.recent_tabs_menu_id));
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.close_all_tabs_menu_id));
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.track_prices_row_menu_id));
-
-        ModelList menuItemsModelList =
-                AppMenuTestSupport.getMenuModelList(mActivityTestRule.getAppMenuCoordinator());
-        assertEquals(10, menuItemsModelList.size());
+        verifyTabSwitcherMenuIncognito();
     }
 
     @Test
@@ -399,5 +303,49 @@ public class OverviewAppMenuTest {
 
         assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
                 mActivityTestRule.getAppMenuCoordinator(), R.id.track_prices_row_menu_id));
+    }
+
+    private void verifyTabSwitcherMenu() {
+        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.new_tab_menu_id));
+        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.new_incognito_tab_menu_id));
+        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.close_all_tabs_menu_id));
+        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.menu_group_tabs));
+        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.preferences_id));
+
+        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.close_all_incognito_tabs_menu_id));
+        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.track_prices_row_menu_id));
+
+        ModelList menuItemsModelList =
+                AppMenuTestSupport.getMenuModelList(mActivityTestRule.getAppMenuCoordinator());
+        assertEquals(5, menuItemsModelList.size());
+    }
+
+    private void verifyTabSwitcherMenuIncognito() {
+        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.new_tab_menu_id));
+        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.new_incognito_tab_menu_id));
+        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.close_all_incognito_tabs_menu_id));
+        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.menu_group_tabs));
+        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.preferences_id));
+
+        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.close_all_tabs_menu_id));
+        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.track_prices_row_menu_id));
+
+        ModelList menuItemsModelList =
+                AppMenuTestSupport.getMenuModelList(mActivityTestRule.getAppMenuCoordinator());
+        assertEquals(5, menuItemsModelList.size());
     }
 }
