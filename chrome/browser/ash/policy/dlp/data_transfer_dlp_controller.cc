@@ -12,7 +12,7 @@
 #include "base/stl_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/dlp/dlp_histogram_helper.h"
-#include "chrome/browser/ash/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"

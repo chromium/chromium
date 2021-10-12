@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/dlp/dlp_reporting_manager_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
 
 #include <memory>
 
 #include "chrome/browser/ash/policy/dlp/dlp_policy_event.pb.h"
-#include "chrome/browser/ash/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "testing/gmock/include/gmock/gmock.h"
