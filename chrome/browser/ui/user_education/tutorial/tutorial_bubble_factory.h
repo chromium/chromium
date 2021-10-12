@@ -25,7 +25,8 @@ class TutorialBubbleFactory {
       absl::optional<std::u16string> title_text,
       absl::optional<std::u16string> body_text,
       TutorialDescription::Step::Arrow arrow,
-      absl::optional<std::pair<int, int>> progress);
+      absl::optional<std::pair<int, int>> progress,
+      bool is_last_step);
 
  private:
   // Called by the Tutorial to show the bubble.
@@ -34,7 +35,8 @@ class TutorialBubbleFactory {
       absl::optional<std::u16string> title_text,
       absl::optional<std::u16string> body_text,
       TutorialDescription::Step::Arrow arrow,
-      absl::optional<std::pair<int, int>> progress) = 0;
+      absl::optional<std::pair<int, int>> progress,
+      bool is_last_step) = 0;
 
   // Returns true iff the bubble owner can show a bubble for the TrackedElement.
   virtual bool CanBuildBubbleForTrackedElement(ui::TrackedElement* element) = 0;

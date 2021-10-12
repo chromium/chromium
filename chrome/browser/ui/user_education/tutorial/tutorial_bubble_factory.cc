@@ -15,8 +15,10 @@ TutorialBubbleFactory::CreateBubbleIfElementIsValid(
     absl::optional<std::u16string> title_text,
     absl::optional<std::u16string> body_text,
     TutorialDescription::Step::Arrow arrow,
-    absl::optional<std::pair<int, int>> progress) {
-  if (CanBuildBubbleForTrackedElement(element))
-    return CreateBubble(element, title_text, body_text, arrow, progress);
-  return nullptr;
+    absl::optional<std::pair<int, int>> progress,
+    bool is_last_step) {
+  if (!CanBuildBubbleForTrackedElement(element))
+    return nullptr;
+  return CreateBubble(element, title_text, body_text, arrow, progress,
+                      is_last_step);
 }

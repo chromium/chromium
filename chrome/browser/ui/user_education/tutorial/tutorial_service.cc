@@ -54,7 +54,7 @@ void TutorialService::SetCurrentBubble(std::unique_ptr<TutorialBubble> bubble) {
 
 void TutorialService::HideCurrentBubbleIfShowing() {
   if (currently_displayed_bubble_) {
-    currently_displayed_bubble_.release();
+    currently_displayed_bubble_.reset();
   }
 }
 

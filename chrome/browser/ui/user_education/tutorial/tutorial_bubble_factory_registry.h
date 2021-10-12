@@ -34,7 +34,8 @@ class TutorialBubbleFactoryRegistry {
       absl::optional<std::u16string> title_text,
       absl::optional<std::u16string> body_text,
       TutorialDescription::Step::Arrow arrow,
-      absl::optional<std::pair<int, int>> progress);
+      absl::optional<std::pair<int, int>> progress,
+      bool is_last_step);
 
  private:
   // the list of registered bubble factories

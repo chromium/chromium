@@ -24,11 +24,12 @@ TutorialBubbleFactoryRegistry::CreateBubbleForTrackedElement(
     absl::optional<std::u16string> title_text,
     absl::optional<std::u16string> body_text,
     TutorialDescription::Step::Arrow arrow,
-    absl::optional<std::pair<int, int>> progress) {
+    absl::optional<std::pair<int, int>> progress,
+    bool is_last_step) {
   for (const auto& bubble_factory : bubble_factories_) {
     std::unique_ptr<TutorialBubble> bubble =
         bubble_factory->CreateBubbleIfElementIsValid(
-            element, title_text, body_text, arrow, progress);
+            element, title_text, body_text, arrow, progress, is_last_step);
     if (bubble)
       return bubble;
   }
