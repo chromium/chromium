@@ -7009,6 +7009,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="LevelDBClients" separator=".">
+<!-- Obsolete. Use LevelDBClient variant in leveldb_proto/histograms.xml instead. -->
+
   <suffix name="BudgetManager"
       label="Database for storing budget information for origins."/>
   <suffix name="CachedImageFetcherDatabase"
@@ -7101,19 +7103,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Database for video tutorials (deprecated)."/>
   <suffix name="VideoTutorialsV2Database"
       label="Database for video tutorials."/>
+<!-- The following two histograms are obsolete. -->
+
   <affected-histogram name="LevelDB.ApproximateMemoryUse"/>
-  <affected-histogram name="LevelDB.ApproximateMemTableMemoryUse"/>
   <affected-histogram name="LevelDB.Open"/>
-  <affected-histogram name="ProtoDB.DestroySuccess"/>
-  <affected-histogram name="ProtoDB.GetErrorStatus"/>
-  <affected-histogram name="ProtoDB.GetFound"/>
-  <affected-histogram name="ProtoDB.GetSuccess"/>
-  <affected-histogram name="ProtoDB.InitStatus"/>
-  <affected-histogram name="ProtoDB.LoadEntriesSuccess"/>
-  <affected-histogram name="ProtoDB.LoadKeysAndEntriesSuccess"/>
-  <affected-histogram name="ProtoDB.LoadKeysSuccess"/>
-  <affected-histogram name="ProtoDB.UpdateErrorStatus"/>
-  <affected-histogram name="ProtoDB.UpdateSuccess"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="LevelDBEnvBackupRestore" separator="">
@@ -10800,16 +10793,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="OptimizationGuide_OptimizationTargets" separator=".">
-  <suffix name="SegmentationChromeStartAndroid" label="Chrome Start Android"/>
-  <suffix name="SegmentationDummyFeature" label="Dummy feature"/>
   <suffix name="LanguageDetection" label="Language detection"/>
   <suffix name="ModelValidation" label="Model validation triggered via CLI"/>
   <suffix name="NotificationPermissions" label="Notification permissions"/>
   <suffix name="PageEntities" label="Page entities"/>
   <suffix name="PageTopics" label="Page topics"/>
   <suffix name="PainfulPageLoad" label="Painful page load"/>
-  <suffix name="SegmentationQueryTiles" label="Query tiles"/>
+  <suffix name="SegmentationChromeStartAndroid" label="Chrome Start Android"/>
+  <suffix name="SegmentationDummyFeature" label="Dummy feature"/>
   <suffix name="SegmentationNewTab" label="Segmentation: New tab page user"/>
+  <suffix name="SegmentationQueryTiles" label="Query tiles"/>
   <suffix name="SegmentationShare" label="Segmentation: Share user"/>
   <suffix name="SegmentationVoice" label="Segmentation: Voice user"/>
   <affected-histogram name="OptimizationGuide.IsPredictionModelValid"/>

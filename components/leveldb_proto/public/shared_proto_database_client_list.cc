@@ -19,8 +19,9 @@ namespace leveldb_proto {
 // static
 std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
     ProtoDbType db_type) {
-  // Please update the suffix LevelDBClients in histograms.xml to match the
-  // strings returned here.
+  // Please update the variant LevelDBClient in
+  // //tools/metrics/histograms/metadata/leveldb_proto/histograms.xml
+  // to match the strings returned here.
   switch (db_type) {
     case ProtoDbType::TEST_DATABASE0:
       return "TestDatabase0";

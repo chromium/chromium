@@ -89,6 +89,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/installer/histograms.xml",
       "//tools/metrics/histograms/metadata/interstitial/histograms.xml",
       "//tools/metrics/histograms/metadata/ios/histograms.xml",
+      "//tools/metrics/histograms/metadata/leveldb_proto/histograms.xml",
       "//tools/metrics/histograms/metadata/local/histograms.xml",
       "//tools/metrics/histograms/metadata/login/histograms.xml",
       "//tools/metrics/histograms/metadata/media/histograms.xml",

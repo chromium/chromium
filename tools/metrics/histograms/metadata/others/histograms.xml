@@ -9453,17 +9453,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="LevelDB.ApproximateMemTableMemoryUse" units="bytes"
-    expires_after="2021-08-24">
-  <owner>nyquist@chromium.org</owner>
-  <owner>salg@google.com</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The approximate MemTable memory use of a LevelDB in bytes. Recorded right
-    after initializing an on-disk database.
-  </summary>
-</histogram>
-
 <histogram name="LevelDBEnv.DeleteTableBackupFile" enum="BooleanSuccess"
     expires_after="2022-08-01">
   <owner>cmumford@chromium.org</owner>
@@ -13573,95 +13562,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Errors returned while launching lowbox enabled sandboxed process on Windows.
     For decoding error code please refer to http://goo.gl/fJJiAv.
   </summary>
-</histogram>
-
-<histogram name="ProtoDB.DestroySuccess" enum="BooleanSuccess"
-    expires_after="2021-08-24">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>Whether a ProtoDB Destroy call was successful or not.</summary>
-</histogram>
-
-<histogram name="ProtoDB.GetErrorStatus" enum="LevelDBStatus"
-    expires_after="2021-08-24">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    The LevelDB Status returned from a failed ProtoDatabase Get call.
-  </summary>
-</histogram>
-
-<histogram name="ProtoDB.GetFound" enum="Boolean" expires_after="2021-08-24">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>Whether a ProtoDB Get call found what was requested.</summary>
-</histogram>
-
-<histogram name="ProtoDB.GetSuccess" enum="BooleanSuccess"
-    expires_after="2021-08-24">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>Whether a ProtoDB Get call was successful or not.</summary>
-</histogram>
-
-<histogram name="ProtoDB.InitStatus" enum="LevelDBStatus"
-    expires_after="2022-04-17">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>The LevelDB Status from a ProtoDatabase Init call.</summary>
-</histogram>
-
-<histogram name="ProtoDB.LoadEntriesSuccess" enum="BooleanSuccess"
-    expires_after="2021-08-24">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>Whether a ProtoDB LoadEntries call was successful or not.</summary>
-</histogram>
-
-<histogram name="ProtoDB.LoadKeysAndEntriesSuccess" enum="BooleanSuccess"
-    expires_after="2021-08-24">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    Whether a ProtoDB LoadKeysAndEntries call was successful or not.
-  </summary>
-</histogram>
-
-<histogram name="ProtoDB.LoadKeysSuccess" enum="BooleanSuccess"
-    expires_after="2021-08-24">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>Whether a ProtoDB LoadKeys call was successful or not.</summary>
-</histogram>
-
-<histogram name="ProtoDB.SharedDbInitStatus" enum="ProtoDatabaseInitState"
-    expires_after="2022-04-17">
-  <owner>ssid@chromium.org</owner>
-  <owner>salg@chromium.org</owner>
-  <summary>
-    Tracks the init state progress of a proto database. An enum value is
-    recorded for each state of progression through the initialization process.
-    Shows the number of users hitting each stage. The enum values starting with
-    success and failure indicate that the final output of initialization is a
-    success or failure. See
-    //components/leveldb_proto/internal/proto_init_state_description.md.
-  </summary>
-</histogram>
-
-<histogram name="ProtoDB.UpdateErrorStatus" enum="LevelDBStatus"
-    expires_after="2021-08-24">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    The LevelDB Status returned from a failed Protodatabase UpdateEntries call.
-  </summary>
-</histogram>
-
-<histogram name="ProtoDB.UpdateSuccess" enum="BooleanSuccess"
-    expires_after="2021-08-24">
-  <owner>nyquist@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>Whether a ProtoDB UpdateEntries call was successful or not.</summary>
 </histogram>
 
 <histogram name="ProxyOverriddenBubble.UserSelection"
