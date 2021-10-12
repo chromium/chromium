@@ -33,15 +33,14 @@ class BrowserReportGeneratorAndroid : public BrowserReportGenerator::Delegate {
   // BrowserReportGenerator::Delegate implementation
   std::string GetExecutablePath() override;
   version_info::Channel GetChannel() override;
-  std::vector<BrowserReportGenerator::ReportedProfileData> GetReportedProfiles(
-      ReportType report_type) override;
+  std::vector<BrowserReportGenerator::ReportedProfileData> GetReportedProfiles()
+      override;
   bool IsExtendedStableChannel() override;
   void GenerateBuildStateInfo(
       enterprise_management::BrowserReport* report) override;
   void GeneratePluginsIfNeeded(
       ReportCallback callback,
       std::unique_ptr<enterprise_management::BrowserReport> report) override;
-  void OnProfileInfoGenerated(ReportType report_type) override;
 };
 
 }  // namespace enterprise_reporting

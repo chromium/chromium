@@ -21,6 +21,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/enterprise/browser/reporting/report_request_definition.h"
+#include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_task_environment.h"
@@ -461,30 +462,6 @@ TEST_F(ReportGeneratorTest, GenerateWithoutProfiles) {
 
   VerifyProfileReport(/*active_profile_names*/ std::set<std::string>(),
                       profile_names, browser_report);
-}
-
-TEST_F(ReportGeneratorTest, ExtensionRequestOnly) {
-  auto profile_names = CreateProfiles(/*number*/ 2, kActive);
-  CreatePlugin();
-
-  auto requests = GenerateRequests(ReportType::kExtensionRequest);
-  EXPECT_EQ(1u, requests.size());
-
-  auto* basic_request = requests[0].get();
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_FALSE(basic_request->has_computer_name());
-  EXPECT_FALSE(basic_request->has_os_user_name());
-  EXPECT_FALSE(basic_request->has_os_report());
-  EXPECT_FALSE(basic_request->has_serial_number());
-#else
-  EXPECT_EQ(0, basic_request->android_app_infos_size());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_TRUE(basic_request->has_browser_report());
-
-  EXPECT_EQ(1, basic_request->partial_report_types_size());
-  EXPECT_EQ(em::PartialReportType::EXTENSION_REQUEST,
-            basic_request->partial_report_types(0));
 }
 
 #endif  // defined(OS_ANDROID)

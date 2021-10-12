@@ -119,7 +119,7 @@ class ProfileReportGeneratorTest : public ::testing::Test {
       const base::FilePath& path,
       const std::string& name) {
     std::unique_ptr<em::ChromeUserProfileInfo> report =
-        generator_.MaybeGenerate(path, name, ReportType::kFull);
+        generator_.MaybeGenerate(path, name);
     return report;
   }
 
@@ -190,7 +190,7 @@ TEST_F(ProfileReportGeneratorTest, ProfileNotActivated) {
   profile_manager()->profile_attributes_storage()->AddProfile(
       std::move(params));
   std::unique_ptr<em::ChromeUserProfileInfo> response =
-      generator_.MaybeGenerate(profile_path, kIdleProfile, ReportType::kFull);
+      generator_.MaybeGenerate(profile_path, kIdleProfile);
   ASSERT_FALSE(response.get());
 }
 
@@ -319,80 +319,6 @@ TEST_F(ProfileReportGeneratorTest, TooManyRequests) {
               report2->extension_requests(id).id());
 }
 
-TEST_F(ProfileReportGeneratorTest, ExtensionRequestOnlyReport) {
-  profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kCloudExtensionRequestEnabled,
-      std::make_unique<base::Value>(true));
-  std::vector<std::string> ids = {kExtensionId};
-  SetExtensionToPendingList(ids);
-
-  IdentityTestEnvironmentProfileAdaptor identity_test_env_adaptor(profile());
-  auto expected_info =
-      identity_test_env_adaptor.identity_test_env()->SetPrimaryAccount(
-          "test@mail.com", signin::ConsentLevel::kSync);
-
-  auto report = generator_.MaybeGenerate(profile()->GetPath(),
-                                         profile()->GetProfileUserName(),
-                                         ReportType::kExtensionRequest);
-
-  // Extension request and profile id are included. Profile name and sign in
-  // users info are included on CrOS only.
-  EXPECT_TRUE(report);
-  EXPECT_EQ(profile()->GetPath().AsUTF8Unsafe(), report->id());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(profile()->GetProfileUserName(), report->name());
-  EXPECT_TRUE(report->has_chrome_signed_in_user());
-#else
-  EXPECT_FALSE(report->has_name());
-  EXPECT_FALSE(report->has_chrome_signed_in_user());
-#endif
-  ASSERT_EQ(1, report->extension_requests_size());
-  EXPECT_EQ(kExtensionId, report->extension_requests(0).id());
-  EXPECT_EQ(kFakeTime, report->extension_requests(0).request_timestamp());
-
-  // Policies and extensions info should not be added.
-  EXPECT_EQ(0, report->chrome_policies_size());
-  EXPECT_EQ(0, report->extensions_size());
-  EXPECT_EQ(0, report->policy_fetched_timestamps_size());
-  EXPECT_TRUE(report->is_detail_available());
-}
-
-TEST_F(ProfileReportGeneratorTest, ExtensionRequestOnlyReportWithoutPolicy) {
-  profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kCloudExtensionRequestEnabled,
-      std::make_unique<base::Value>(false));
-  IdentityTestEnvironmentProfileAdaptor identity_test_env_adaptor(profile());
-  auto expected_info =
-      identity_test_env_adaptor.identity_test_env()->SetPrimaryAccount(
-          "test@mail.com", signin::ConsentLevel::kSync);
-
-  auto report = generator_.MaybeGenerate(profile()->GetPath(),
-                                         profile()->GetProfileUserName(),
-                                         ReportType::kExtensionRequest);
-  EXPECT_TRUE(report);
-  EXPECT_EQ(0, report->extension_requests_size());
-}
-
-TEST_F(ProfileReportGeneratorTest,
-       ExtensionRequestOnlyReportWithoutAnyRequest) {
-  profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kCloudExtensionRequestEnabled,
-      std::make_unique<base::Value>(true));
-  std::vector<std::string> ids;
-  SetExtensionToPendingList(ids);
-
-  IdentityTestEnvironmentProfileAdaptor identity_test_env_adaptor(profile());
-  auto expected_info =
-      identity_test_env_adaptor.identity_test_env()->SetPrimaryAccount(
-          "test@mail.com", signin::ConsentLevel::kSync);
-
-  auto report = generator_.MaybeGenerate(profile()->GetPath(),
-                                         profile()->GetProfileUserName(),
-                                         ReportType::kExtensionRequest);
-
-  EXPECT_TRUE(report);
-  EXPECT_EQ(0, report->extension_requests_size());
-}
 #endif  // !defined(OS_ANDROID)
 
 }  // namespace enterprise_reporting

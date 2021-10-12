@@ -23,17 +23,9 @@ BrowserReportGenerator::BrowserReportGenerator(
 
 BrowserReportGenerator::~BrowserReportGenerator() = default;
 
-void BrowserReportGenerator::Generate(ReportType report_type,
-                                      ReportCallback callback) {
+void BrowserReportGenerator::Generate(ReportCallback callback) {
   auto report = std::make_unique<em::BrowserReport>();
-  GenerateProfileInfo(report_type, report.get());
-  delegate_->OnProfileInfoGenerated(report_type);
-
-  if (report_type == ReportType::kExtensionRequest) {
-    report->set_executable_path(delegate_->GetExecutablePath());
-    std::move(callback).Run(std::move(report));
-    return;
-  }
+  GenerateProfileInfo(report.get());
   GenerateBasicInfo(report.get());
 
   // std::move is required here because the function completes the report
@@ -41,9 +33,8 @@ void BrowserReportGenerator::Generate(ReportType report_type,
   delegate_->GeneratePluginsIfNeeded(std::move(callback), std::move(report));
 }
 
-void BrowserReportGenerator::GenerateProfileInfo(ReportType report_type,
-                                                 em::BrowserReport* report) {
-  for (auto entry : delegate_->GetReportedProfiles(report_type)) {
+void BrowserReportGenerator::GenerateProfileInfo(em::BrowserReport* report) {
+  for (auto entry : delegate_->GetReportedProfiles()) {
     em::ChromeUserProfileInfo* profile =
         report->add_chrome_user_profile_infos();
     profile->set_id(entry.id);

@@ -48,7 +48,6 @@ class BrowserReportGeneratorIOSTest : public PlatformTest {
   void GenerateAndVerify() {
     base::RunLoop run_loop;
     generator_.Generate(
-        ReportType::kFull,
         base::BindLambdaForTesting(
             [&run_loop](std::unique_ptr<em::BrowserReport> report) {
               EXPECT_TRUE(report.get());

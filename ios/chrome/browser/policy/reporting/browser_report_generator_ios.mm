@@ -35,7 +35,7 @@ version_info::Channel BrowserReportGeneratorIOS::GetChannel() {
 }
 
 std::vector<BrowserReportGenerator::ReportedProfileData>
-BrowserReportGeneratorIOS::GetReportedProfiles(ReportType report_type) {
+BrowserReportGeneratorIOS::GetReportedProfiles() {
   std::vector<BrowserReportGenerator::ReportedProfileData> reportedProfileData;
   for (const auto* entry : GetApplicationContext()
                                ->GetChromeBrowserStateManager()
@@ -67,10 +67,6 @@ void BrowserReportGeneratorIOS::GeneratePluginsIfNeeded(
     std::unique_ptr<em::BrowserReport> report) {
   // There are no plugins on iOS.
   std::move(callback).Run(std::move(report));
-}
-
-void BrowserReportGeneratorIOS::OnProfileInfoGenerated(ReportType report_type) {
-  // Not used on iOS because there is no throttling profiles.
 }
 
 }  // namespace enterprise_reporting

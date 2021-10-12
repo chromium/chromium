@@ -36,7 +36,7 @@ version_info::Channel BrowserReportGeneratorAndroid::GetChannel() {
 }
 
 std::vector<BrowserReportGenerator::ReportedProfileData>
-BrowserReportGeneratorAndroid::GetReportedProfiles(ReportType report_type) {
+BrowserReportGeneratorAndroid::GetReportedProfiles() {
   std::vector<BrowserReportGenerator::ReportedProfileData> reportedProfileData;
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   for (const auto* entry : profile_manager->GetProfileAttributesStorage()
@@ -67,11 +67,6 @@ void BrowserReportGeneratorAndroid::GeneratePluginsIfNeeded(
     std::unique_ptr<em::BrowserReport> report) {
   // There are no plugins on Android
   std::move(callback).Run(std::move(report));
-}
-
-void BrowserReportGeneratorAndroid::OnProfileInfoGenerated(
-    ReportType report_type) {
-  // Not used on Android because there is no throttling profiles.
 }
 
 }  // namespace enterprise_reporting

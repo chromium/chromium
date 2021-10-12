@@ -131,7 +131,6 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
     base::RunLoop run_loop;
 
     browser_report_generator_.Generate(
-        ReportType::kFull,
         base::BindLambdaForTesting(
             [&run_loop, &request](std::unique_ptr<em::BrowserReport> report) {
               request->set_allocated_browser_report(report.release()),
@@ -146,7 +145,7 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
       const ReportRequest& request) {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     std::queue<std::unique_ptr<ReportRequest>> requests =
-        report_request_queue_generator_.Generate(ReportType::kFull, request);
+        report_request_queue_generator_.Generate(request);
     std::vector<std::unique_ptr<ReportRequest>> result;
     while (!requests.empty()) {
       result.push_back(std::move(requests.front()));

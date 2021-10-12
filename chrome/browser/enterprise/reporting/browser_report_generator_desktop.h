@@ -35,8 +35,8 @@ class BrowserReportGeneratorDesktop : public BrowserReportGenerator::Delegate {
 
   std::string GetExecutablePath() override;
   version_info::Channel GetChannel() override;
-  std::vector<BrowserReportGenerator::ReportedProfileData> GetReportedProfiles(
-      ReportType report_type) override;
+  std::vector<BrowserReportGenerator::ReportedProfileData> GetReportedProfiles()
+      override;
   bool IsExtendedStableChannel() override;
   // Adds the auto-updated version to the given report instance.
   void GenerateBuildStateInfo(
@@ -44,7 +44,6 @@ class BrowserReportGeneratorDesktop : public BrowserReportGenerator::Delegate {
   void GeneratePluginsIfNeeded(
       ReportCallback callback,
       std::unique_ptr<enterprise_management::BrowserReport> report) override;
-  void OnProfileInfoGenerated(ReportType report_type) override;
 
   void OnPluginsReady(
       ReportCallback callback,

@@ -106,8 +106,7 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
   std::unique_ptr<em::ChromeUserProfileInfo> GenerateReport() {
     std::unique_ptr<em::ChromeUserProfileInfo> report =
         generator_.MaybeGenerate(kProfilePath,
-                                 kProfilePath.BaseName().AsUTF8Unsafe(),
-                                 ReportType::kFull);
+                                 kProfilePath.BaseName().AsUTF8Unsafe());
 
     if (!report)
       return nullptr;

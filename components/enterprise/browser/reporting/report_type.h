@@ -10,7 +10,6 @@ namespace enterprise_reporting {
 enum ReportType : uint32_t {
   kFull = 0,
   kBrowserVersion = 1u << 0,
-  kExtensionRequest = 2u << 1,
 };
 
 }  // namespace enterprise_reporting

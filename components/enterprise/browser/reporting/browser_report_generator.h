@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "components/enterprise/browser/reporting/report_type.h"
 
 namespace enterprise_management {
 class BrowserReport;
@@ -44,15 +43,13 @@ class BrowserReportGenerator {
 
     virtual std::string GetExecutablePath() = 0;
     virtual version_info::Channel GetChannel() = 0;
-    virtual std::vector<ReportedProfileData> GetReportedProfiles(
-        ReportType report_type) = 0;
+    virtual std::vector<ReportedProfileData> GetReportedProfiles() = 0;
     virtual bool IsExtendedStableChannel() = 0;
     virtual void GenerateBuildStateInfo(
         enterprise_management::BrowserReport* report) = 0;
     virtual void GeneratePluginsIfNeeded(
         ReportCallback callback,
         std::unique_ptr<enterprise_management::BrowserReport> report) = 0;
-    virtual void OnProfileInfoGenerated(ReportType report_type) = 0;
   };
 
   explicit BrowserReportGenerator(ReportingDelegateFactory* delegate_factory);
@@ -64,11 +61,10 @@ class BrowserReportGenerator {
   // - browser_version, channel, executable_path
   // - user profiles: id, name, is_detail_available (always be false).
   // - plugins: name, version, filename, description.
-  void Generate(ReportType report_type, ReportCallback callback);
+  void Generate(ReportCallback callback);
 
   // Generates user profiles info in the given report instance.
-  void GenerateProfileInfo(ReportType report_type,
-                           enterprise_management::BrowserReport* report);
+  void GenerateProfileInfo(enterprise_management::BrowserReport* report);
 
  private:
   std::unique_ptr<Delegate> delegate_;
