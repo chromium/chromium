@@ -26,6 +26,7 @@
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
+#include "build/build_config.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
@@ -77,6 +78,11 @@ eAVEncH264VProfile GetH264VProfile(VideoCodecProfile profile,
 }
 
 bool IsSvcSupported(IMFActivate* activate) {
+#if defined(ARCH_CPU_X86)
+  // x86 systems sometimes crash in video drivers here.
+  // More info: https://crbug.com/1253748
+  return false;
+#else
   Microsoft::WRL::ComPtr<IMFTransform> encoder;
   Microsoft::WRL::ComPtr<ICodecAPI> codec_api;
   HRESULT hr = activate->ActivateObject(IID_PPV_ARGS(&encoder));
@@ -107,6 +113,7 @@ bool IsSvcSupported(IMFActivate* activate) {
 
   activate->ShutdownObject();
   return result;
+#endif  // defined(ARCH_CPU_X86)
 }
 
 }  // namespace
