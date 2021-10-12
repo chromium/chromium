@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_USER_EDUCATION_TUTORIAL_TUTORIAL_BUBBLE_FACTORY_H_
 #define CHROME_BROWSER_UI_USER_EDUCATION_TUTORIAL_TUTORIAL_BUBBLE_FACTORY_H_
 
+#include "base/callback_forward.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_bubble.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_description.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -26,7 +27,8 @@ class TutorialBubbleFactory {
       absl::optional<std::u16string> body_text,
       TutorialDescription::Step::Arrow arrow,
       absl::optional<std::pair<int, int>> progress,
-      bool is_last_step);
+      base::RepeatingClosure abort_callback,
+      bool is_last_step = false);
 
  private:
   // Called by the Tutorial to show the bubble.
@@ -36,7 +38,8 @@ class TutorialBubbleFactory {
       absl::optional<std::u16string> body_text,
       TutorialDescription::Step::Arrow arrow,
       absl::optional<std::pair<int, int>> progress,
-      bool is_last_step) = 0;
+      base::RepeatingClosure abort_callback,
+      bool is_last_step = false) = 0;
 
   // Returns true iff the bubble owner can show a bubble for the TrackedElement.
   virtual bool CanBuildBubbleForTrackedElement(ui::TrackedElement* element) = 0;

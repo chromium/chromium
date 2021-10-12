@@ -89,9 +89,11 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
     absl::optional<base::TimeDelta> timeout_after_interaction;
 
     // Used to call feature specific logic on dismiss.
+    // (TODO) dpenning: move to using a OnceClosure.
     absl::optional<base::RepeatingClosure> dismiss_callback;
 
     // Used to call feature specific logic on timeout.
+    // (TODO) dpenning: move to using a OnceClosure.
     base::RepeatingClosure timeout_callback;
   };
 
@@ -138,6 +140,8 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
   base::TimeDelta timeout_after_interaction_;
 
   base::OneShotTimer auto_close_timer_;
+
+  // (TODO) dpenning: move to using a OnceClosure.
   base::RepeatingClosure timeout_callback_;
 };
 

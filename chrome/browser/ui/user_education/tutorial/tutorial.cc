@@ -109,10 +109,16 @@ Tutorial::StepBuilder::BuildShowBubbleCallback(
 
         tutorial_service->HideCurrentBubbleIfShowing();
 
+        base::RepeatingClosure abort_callback = base::BindRepeating(
+            [](TutorialService* tutorial_service) {
+              tutorial_service->AbortTutorial();
+            },
+            base::Unretained(tutorial_service));
+
         std::unique_ptr<TutorialBubble> bubble =
             bubble_factory_registry->CreateBubbleForTrackedElement(
                 element, title_text_, body_text_, arrow_, progress_,
-                is_last_step_);
+                std::move(abort_callback), is_last_step_);
         tutorial_service->SetCurrentBubble(std::move(bubble));
       },
       base::Unretained(tutorial_service),
