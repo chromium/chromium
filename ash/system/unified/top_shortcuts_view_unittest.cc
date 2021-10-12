@@ -7,7 +7,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/system/unified/collapse_button.h"
-#include "ash/system/unified/sign_out_button.h"
 #include "ash/system/unified/top_shortcut_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"

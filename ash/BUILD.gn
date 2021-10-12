@@ -1503,8 +1503,6 @@ component("ash") {
     "system/unified/quiet_mode_feature_pod_controller.h",
     "system/unified/rounded_label_button.cc",
     "system/unified/rounded_label_button.h",
-    "system/unified/sign_out_button.cc",
-    "system/unified/sign_out_button.h",
     "system/unified/top_shortcut_button.cc",
     "system/unified/top_shortcut_button.h",
     "system/unified/top_shortcuts_view.cc",

@@ -18,11 +18,12 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/collapse_button.h"
-#include "ash/system/unified/sign_out_button.h"
+#include "ash/system/unified/rounded_label_button.h"
 #include "ash/system/unified/top_shortcut_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "ash/system/unified/user_chooser_view.h"
+#include "ash/system/user/login_status.h"
 #include "base/bind.h"
 #include "base/numerics/ranges.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -198,9 +199,12 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
         UserChooserDetailedViewController::IsUserChooserEnabled());
     container_->AddUserAvatarButton(user_avatar_button_);
 
-    sign_out_button_ = new SignOutButton(
+    sign_out_button_ = new RoundedLabelButton(
         base::BindRepeating(&UnifiedSystemTrayController::HandleSignOutAction,
-                            base::Unretained(controller)));
+                            base::Unretained(controller)),
+        user::GetLocalizedSignOutStringForStatus(
+            Shell::Get()->session_controller()->login_status(),
+            /*multiline=*/false));
     container_->AddSignOutButton(sign_out_button_);
   }
 
