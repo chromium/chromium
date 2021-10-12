@@ -36,6 +36,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 
@@ -225,10 +226,16 @@ absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
     return web_theme_color;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  absl::optional<SkColor> dark_mode_color =
-      registrar().GetAppDarkModeThemeColor(app_id());
-  if (ash::ColorProvider::Get()->IsDarkModeEnabled() && dark_mode_color) {
-    return dark_mode_color;
+  // ash::ColorProvider::Get()->IsDarkModeEnabled() flips semantics depending on
+  // the status of ash::Features::IsDarkLightModeEnabled(), so we have to check
+  // both.
+  if (ash::features::IsDarkLightModeEnabled()) {
+    absl::optional<SkColor> dark_mode_color =
+        registrar().GetAppDarkModeThemeColor(app_id());
+
+    if (ash::ColorProvider::Get()->IsDarkModeEnabled() && dark_mode_color) {
+      return dark_mode_color;
+    }
   }
 #endif
 
