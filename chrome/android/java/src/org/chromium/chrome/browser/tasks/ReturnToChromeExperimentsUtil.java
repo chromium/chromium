@@ -560,11 +560,22 @@ public final class ReturnToChromeExperimentsUtil {
 
         // Shows the start surface st startup for a period of time If the user has clicked the UI;
         // otherwise, hides it.
-        String key = getBehaviourType(StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.getValue());
-        int clicks = manager.readInt(key, 0);
-        boolean showStartOnStartup =
-                clicks >= StartSurfaceConfiguration.USER_CLICK_THRESHOLD.getValue();
-        resetTargetBehaviourAndNextDecisionTime(showStartOnStartup, key);
+        boolean showStartOnStartup = false;
+        int threshold = StartSurfaceConfiguration.USER_CLICK_THRESHOLD.getValue();
+        if (TextUtils.equals("all", StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.getValue())) {
+            showStartOnStartup =
+                    manager.readInt(ChromePreferenceKeys.TAP_MV_TILES_COUNT) >= threshold
+                    || manager.readInt(ChromePreferenceKeys.TAP_FEED_CARDS_COUNT) >= threshold
+                    || manager.readInt(ChromePreferenceKeys.OPEN_NEW_TAB_PAGE_COUNT) >= threshold
+                    || manager.readInt(ChromePreferenceKeys.OPEN_RECENT_TABS_COUNT) >= threshold
+                    || manager.readInt(ChromePreferenceKeys.OPEN_HISTORY_COUNT) >= threshold;
+            resetTargetBehaviourAndNextDecisionTimeForAllCounts(showStartOnStartup);
+        } else {
+            String key =
+                    getBehaviourType(StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.getValue());
+            showStartOnStartup = manager.readInt(key, 0) >= threshold;
+            resetTargetBehaviourAndNextDecisionTime(showStartOnStartup, key);
+        }
         return showStartOnStartup;
     }
 
@@ -591,6 +602,20 @@ public final class ReturnToChromeExperimentsUtil {
 
     private static void resetTargetBehaviourAndNextDecisionTime(
             boolean showStartOnStartup, @Nullable String behaviourTypeKey) {
+        resetTargetBehaviourAndNextDecisionTimeImpl(showStartOnStartup);
+
+        if (behaviourTypeKey != null) {
+            SharedPreferencesManager.getInstance().removeKey(behaviourTypeKey);
+        }
+    }
+
+    private static void resetTargetBehaviourAndNextDecisionTimeForAllCounts(
+            boolean showStartOnStartup) {
+        resetTargetBehaviourAndNextDecisionTimeImpl(showStartOnStartup);
+        resetAllCounts();
+    }
+
+    private static void resetTargetBehaviourAndNextDecisionTimeImpl(boolean showStartOnStartup) {
         long nextDecisionTime = System.currentTimeMillis();
 
         if (showStartOnStartup) {
@@ -604,10 +629,16 @@ public final class ReturnToChromeExperimentsUtil {
                 ChromePreferenceKeys.START_SHOW_ON_STARTUP, showStartOnStartup);
         SharedPreferencesManager.getInstance().writeLong(
                 ChromePreferenceKeys.START_NEXT_SHOW_ON_STARTUP_DECISION_MS, nextDecisionTime);
+    }
 
-        if (behaviourTypeKey != null) {
-            SharedPreferencesManager.getInstance().removeKey(behaviourTypeKey);
-        }
+    private static void resetAllCounts() {
+        SharedPreferencesManager.getInstance().removeKey(ChromePreferenceKeys.TAP_MV_TILES_COUNT);
+        SharedPreferencesManager.getInstance().removeKey(ChromePreferenceKeys.TAP_FEED_CARDS_COUNT);
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.OPEN_NEW_TAB_PAGE_COUNT);
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.OPEN_RECENT_TABS_COUNT);
+        SharedPreferencesManager.getInstance().removeKey(ChromePreferenceKeys.OPEN_HISTORY_COUNT);
     }
 
     /**
@@ -618,7 +649,8 @@ public final class ReturnToChromeExperimentsUtil {
     public static void onUIClicked(String chromePreferenceKey) {
         String type = StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.getValue();
         if (TextUtils.isEmpty(type)
-                || !TextUtils.equals(getBehaviourType(type), chromePreferenceKey)) {
+                || (!TextUtils.equals("all", type)
+                        && !TextUtils.equals(getBehaviourType(type), chromePreferenceKey))) {
             return;
         }
 

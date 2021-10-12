@@ -777,6 +777,10 @@ public class StartSurfaceTest {
                 RecordHistogram.getHistogramTotalCountForTesting(FEED_VISIBILITY_CONSISTENCY));
         Assert.assertEquals(expectedRecordCount,
                 RecordHistogram.getHistogramValueCountForTesting(FEED_VISIBILITY_CONSISTENCY, 1));
+        int showAtStartup = mImmediateReturn ? 1 : 0;
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        StartSurfaceCoordinator.START_SHOWN_AT_STARTUP_UMA, showAtStartup));
     }
 
     @Test
@@ -2088,6 +2092,32 @@ public class StartSurfaceTest {
         String key = ReturnToChromeExperimentsUtil.getBehaviourTypeKeyForTesting(type);
         ReturnToChromeExperimentsUtil.onUIClicked(key);
         Assert.assertEquals(0, manager.readInt(key, 0));
+
+        // Verifies the combination case that BEHAVIOURAL_TARGETING is set to "all".
+        StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.setForTesting("all");
+        String type1 = "open_history";
+        String type2 = "open_recent_tabs";
+        String key1 = ReturnToChromeExperimentsUtil.getBehaviourTypeKeyForTesting(type1);
+        String key2 = ReturnToChromeExperimentsUtil.getBehaviourTypeKeyForTesting(type2);
+        Assert.assertEquals(0, manager.readInt(key1, 0));
+        Assert.assertEquals(0, manager.readInt(key2, 0));
+        Assert.assertFalse(manager.readBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false));
+
+        // Increase the count of one key.
+        ReturnToChromeExperimentsUtil.onHistoryOpened();
+        Assert.assertEquals(1, manager.readInt(key1, 0));
+
+        // Verifies that userBehaviourSupported() return true due to the count of this key is higher
+        // or equal to the threshold.
+        manager.writeLong(ChromePreferenceKeys.START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
+                System.currentTimeMillis() - 1);
+        Assert.assertTrue(ReturnToChromeExperimentsUtil.userBehaviourSupported());
+        Assert.assertEquals(0, manager.readInt(key1, 0));
+        Assert.assertEquals(0, manager.readInt(key2, 0));
+        Assert.assertTrue(manager.readBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false));
+
+        // Resets the decision.
+        manager.writeBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false);
     }
 
     /**
