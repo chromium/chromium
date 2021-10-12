@@ -23,6 +23,7 @@ import org.chromium.base.Consumer;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController;
 import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController.StoreInfoActionHandler;
@@ -232,6 +233,14 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     public Collection<PageInfoSubpageController> createAdditionalRowViews(
             PageInfoMainController mainController, ViewGroup rowWrapper) {
         Collection<PageInfoSubpageController> controllers = new ArrayList<>();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE)) {
+            final PageInfoRowView aboutThisSiteRow =
+                    new PageInfoRowView(rowWrapper.getContext(), null);
+            aboutThisSiteRow.setId(PageInfoAboutThisSiteController.ROW_ID);
+            rowWrapper.addView(aboutThisSiteRow);
+            controllers.add(
+                    new PageInfoAboutThisSiteController(mainController, aboutThisSiteRow, this));
+        }
         if (PageInfoFeatures.PAGE_INFO_HISTORY.isEnabled()) {
             final Tab tab = TabUtils.fromWebContents(mWebContents);
             final PageInfoRowView historyRow = new PageInfoRowView(rowWrapper.getContext(), null);

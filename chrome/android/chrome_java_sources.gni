@@ -902,6 +902,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/omaha/metrics/UpdateSuccessMetrics.java",
   "java/src/org/chromium/chrome/browser/page_info/ChromePageInfo.java",
   "java/src/org/chromium/chrome/browser/page_info/ChromePageInfoControllerDelegate.java",
+  "java/src/org/chromium/chrome/browser/page_info/PageInfoAboutThisSiteController.java",
   "java/src/org/chromium/chrome/browser/page_info/PageInfoHistoryController.java",
   "java/src/org/chromium/chrome/browser/page_info/SiteSettingsHelper.java",
   "java/src/org/chromium/chrome/browser/paint_preview/StartupPaintPreviewHelper.java",
