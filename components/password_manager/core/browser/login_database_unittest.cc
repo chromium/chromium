@@ -1251,7 +1251,8 @@ TEST_F(LoginDatabaseTest, AddWrongForm) {
 }
 
 // Test that when adding a login with no password_value but with
-// encrypted_password, the encrypted_password is kept.
+// encrypted_password, the encrypted_password is kept and the password_value
+// is filled in with the decrypted password.
 TEST_F(LoginDatabaseTest, AddLoginWithEncryptedPassword) {
   PasswordForm form;
   form.url = GURL("http://accounts.google.com/LoginAuth");
@@ -1263,13 +1264,18 @@ TEST_F(LoginDatabaseTest, AddLoginWithEncryptedPassword) {
   form.encrypted_password = encrypted;
   form.blocked_by_user = false;
   form.scheme = PasswordForm::Scheme::kHtml;
-  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
+
+  // |AddLogin| will decrypt the encrypted password, so compare with that.
+  PasswordForm form_with_password = form;
+  form_with_password.password_value = u"my_encrypted_password";
+  EXPECT_EQ(AddChangeForForm(form_with_password), db().AddLogin(form));
 
   std::vector<std::unique_ptr<PasswordForm>> result;
   ASSERT_TRUE(db().GetLogins(PasswordFormDigest(form),
                              /*should_PSL_matching_apply=*/true, &result));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(form.encrypted_password, result[0].get()->encrypted_password);
+  EXPECT_EQ(u"my_encrypted_password", result[0].get()->password_value);
 
   std::u16string decrypted;
   EXPECT_EQ(

@@ -871,10 +871,22 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
   }
   // [iOS] Passwords created in Credential Provider Extension (CPE) are already
   // encrypted in the keychain and there is no need to do the process again.
+  // However, the password needs to be decryped instead so the actual password
+  // syncs correctly.
   bool has_encrypted_password =
       !form.encrypted_password.empty() && form.password_value.empty();
   PasswordForm form_with_encrypted_password = form;
-  if (!has_encrypted_password) {
+  if (has_encrypted_password) {
+    std::u16string decrypted_password;
+    if (DecryptedString(form.encrypted_password, &decrypted_password) !=
+        ENCRYPTION_RESULT_SUCCESS) {
+      if (error) {
+        *error = AddLoginError::kEncrytionServiceFailure;
+      }
+      return list;
+    }
+    form_with_encrypted_password.password_value = decrypted_password;
+  } else {
     std::string encrypted_password;
     if (EncryptedString(form.password_value, &encrypted_password) !=
         ENCRYPTION_RESULT_SUCCESS) {
