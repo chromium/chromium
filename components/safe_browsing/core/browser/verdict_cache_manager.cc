@@ -605,7 +605,6 @@ ChromeUserPopulation::PageLoadToken VerdictCacheManager::CreatePageLoadToken(
 ChromeUserPopulation::PageLoadToken VerdictCacheManager::GetPageLoadToken(
     const GURL& url) {
   std::string hostname = url.host();
-  // TODO(crbug.com/1240403): Log the proportion of tokens that are not found.
   return base::Contains(page_load_token_map_, hostname)
              ? page_load_token_map_[hostname]
              : ChromeUserPopulation::PageLoadToken();
@@ -711,7 +710,8 @@ void VerdictCacheManager::CleanUpExpiredPageLoadTokens() {
                base::Time::FromJavaTime(token.token_time_msec()) >
            base::Minutes(kPageLoadTokenExpireMinute);
   });
-  // TODO(crbug.com/1240403): Log the number of entries in page_load_token_map_;
+  base::UmaHistogramCounts10000("SafeBrowsing.PageLoadToken.TokenCount",
+                                page_load_token_map_.size());
 }
 
 // Overridden from history::HistoryServiceObserver.

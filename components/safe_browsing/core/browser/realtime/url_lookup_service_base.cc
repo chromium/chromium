@@ -532,6 +532,9 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
       // the current mainframe URL, because the mainframe URL has to be
       // committed before subframe navigation starts.
       token = cache_manager_->GetPageLoadToken(last_committed_url);
+      RecordBooleanWithAndWithoutSuffix(
+          "SafeBrowsing.PageLoadToken.RealTimeCheckHasToken", GetMetricSuffix(),
+          token.has_token_value());
       // It's possible that the token is not found because the last committed
       // URL is not checked by real time URL check. Create a new page load token
       // in this case.

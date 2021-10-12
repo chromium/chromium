@@ -1038,6 +1038,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.PageLoadToken.PasswordProtectionHasToken"
+    units="BooleanExists" expires_after="2022-10-08">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether a page load token is found before password protection
+    request is sent. Logged only when real time URL check is enabled.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.PageLoadToken.RealTimeCheckHasToken"
+    units="BooleanExists" expires_after="2022-10-08">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether a page load token is found before real time URL check
+    request is sent. Logged only when the check is on a subframe URL.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.PageLoadToken.TokenCount" units="entries"
+    expires_after="2022-10-08">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the number of page load tokens stored in verdict cache manager.
+    Logged each time after a periodic clean up on expired tokens is performed.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.PakIntegrity.{PakFile}" enum="BooleanSuccess"
     expires_after="2022-05-01">
   <owner>rsesek@chromium.org</owner>

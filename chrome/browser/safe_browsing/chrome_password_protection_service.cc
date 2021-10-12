@@ -57,6 +57,7 @@
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
@@ -1491,6 +1492,13 @@ void ChromePasswordProtectionService::FillUserPopulation(
   }
   ChromeUserPopulation::PageLoadToken token =
       cache_manager_->GetPageLoadToken(main_frame_url);
+  if (RealTimePolicyEngine::CanPerformFullURLLookup(
+          profile_->GetPrefs(), profile_->IsOffTheRecord(),
+          g_browser_process->variations_service())) {
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.PageLoadToken.PasswordProtectionHasToken",
+        token.has_token_value());
+  }
   // It's possible that the token is not found because real time URL check is
   // not performed for this navigation. Create a new page load token in this
   // case.
