@@ -50,17 +50,18 @@ void CategoryUsageRanker::InitializeCategoryScores() {
   // |category_ranker_| has a small recency component to its scores, so the
   // categories will appear in reverse order to the Record calls. This must
   // record every category except unknown and best match.
-  category_ranker_->Record(CategoryToString(Category::kAssistant));
+  category_ranker_->Record(CategoryToString(Category::kSearchAndAssistant));
   category_ranker_->Record(CategoryToString(Category::kPlayStore));
-  category_ranker_->Record(CategoryToString(Category::kWeb));
-  category_ranker_->Record(CategoryToString(Category::kFiles));
-  category_ranker_->Record(CategoryToString(Category::kHelp));
   category_ranker_->Record(CategoryToString(Category::kSettings));
-  category_ranker_->Record(CategoryToString(Category::kApp));
+  category_ranker_->Record(CategoryToString(Category::kFiles));
+  category_ranker_->Record(CategoryToString(Category::kWeb));
+  category_ranker_->Record(CategoryToString(Category::kAppShortcuts));
+  category_ranker_->Record(CategoryToString(Category::kApps));
+  category_ranker_->Record(CategoryToString(Category::kHelp));
 
-  // Check we've recorded every category except unknown and best match.
+  // Check we've recorded every category except unknown.
   DCHECK_EQ(category_ranker_->Rank().size(),
-            static_cast<size_t>(Category::kMaxValue) - 1);
+            static_cast<size_t>(Category::kMaxValue));
 }
 
 CategoryUsageRanker::~CategoryUsageRanker() {}

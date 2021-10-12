@@ -27,8 +27,9 @@ Category ResultTypeToCategory(ResultType result_type) {
     case ResultType::kInstalledApp:
     case ResultType::kInstantApp:
     case ResultType::kInternalApp:
+      return Category::kApps;
     case ResultType::kArcAppShortcut:
-      return Category::kApp;
+      return Category::kAppShortcuts;
     case ResultType::kOmnibox:
     case ResultType::kAnswerCard:
       return Category::kWeb;
@@ -39,9 +40,6 @@ Category ResultTypeToCategory(ResultType result_type) {
     case ResultType::kFileSearch:
     case ResultType::kDriveSearch:
       return Category::kFiles;
-    case ResultType::kAssistantChip:
-    case ResultType::kAssistantText:
-      return Category::kAssistant;
     case ResultType::kOsSettings:
       return Category::kSettings;
     case ResultType::kHelpApp:
@@ -49,6 +47,9 @@ Category ResultTypeToCategory(ResultType result_type) {
     case ResultType::kPlayStoreReinstallApp:
     case ResultType::kPlayStoreApp:
       return Category::kPlayStore;
+    case ResultType::kAssistantChip:
+    case ResultType::kAssistantText:
+      return Category::kSearchAndAssistant;
     // Never used in the search backend.
     case ResultType::kUnknown:
     // Suggested content toggle fake result type. Used only in ash, not in the
@@ -57,7 +58,7 @@ Category ResultTypeToCategory(ResultType result_type) {
     // Deprecated.
     case ResultType::kLauncher:
       NOTREACHED();
-      return Category::kApp;
+      return Category::kApps;
   }
 }
 
@@ -65,23 +66,22 @@ std::u16string CategoryDebugString(const Category category) {
   switch (category) {
     case Category::kUnknown:
       return u"(unknown) ";
-    case Category::kBestMatch:
-      // The debug string for best match is handled elsewhere.
-      return u"";
-    case Category::kApp:
+    case Category::kApps:
+      return u"(apps) ";
+    case Category::kAppShortcuts:
       return u"(apps) ";
     case Category::kWeb:
       return u"(web) ";
     case Category::kFiles:
       return u"(files) ";
-    case Category::kAssistant:
-      return u"(assistant) ";
     case Category::kSettings:
       return u"(settings) ";
     case Category::kHelp:
       return u"(help) ";
     case Category::kPlayStore:
       return u"(play store) ";
+    case Category::kSearchAndAssistant:
+      return u"(assistant) ";
   }
 }
 

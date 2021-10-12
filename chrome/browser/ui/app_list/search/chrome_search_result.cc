@@ -72,6 +72,11 @@ void ChromeSearchResult::SetCategory(Category category) {
   SetSearchResultMetadata();
 }
 
+void ChromeSearchResult::SetBestMatch(bool best_match) {
+  metadata_->best_match = best_match;
+  SetSearchResultMetadata();
+}
+
 void ChromeSearchResult::SetDisplayType(DisplayType display_type) {
   metadata_->display_type = display_type;
   SetSearchResultMetadata();

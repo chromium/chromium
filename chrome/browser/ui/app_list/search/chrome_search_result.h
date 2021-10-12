@@ -66,6 +66,7 @@ class ChromeSearchResult {
   }
   const std::string& id() const { return metadata_->id; }
   Category category() const { return metadata_->category; }
+  bool best_match() const { return metadata_->best_match; }
   DisplayType display_type() const { return metadata_->display_type; }
   ash::AppListSearchResultType result_type() const {
     return metadata_->result_type;
@@ -100,6 +101,7 @@ class ChromeSearchResult {
   void SetRating(float rating);
   void SetFormattedPrice(const std::u16string& formatted_price);
   void SetCategory(Category category);
+  void SetBestMatch(bool best_match);
   void SetDisplayType(DisplayType display_type);
   void SetResultType(ResultType result_type);
   void SetMetricsType(MetricsType metrics_type);

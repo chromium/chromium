@@ -110,6 +110,9 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   Category category() const { return metadata_->category; }
   void set_category(Category category) { metadata_->category = category; }
 
+  bool best_match() const { return metadata_->best_match; }
+  void set_best_match(bool best_match) { metadata_->best_match = best_match; }
+
   DisplayType display_type() const { return metadata_->display_type; }
   void set_display_type(DisplayType display_type) {
     metadata_->display_type = display_type;

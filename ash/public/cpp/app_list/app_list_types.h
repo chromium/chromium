@@ -188,19 +188,21 @@ enum class AppListSearchResultType {
 // to be displayed in the search box should be associated with one category. It
 // is an error for results displayed in the search box to have a kUnknown
 // category, but results displayed in other views - eg. the Continue section -
-// may use kUnknown. These values are not yet stable, and should not yet be used
-// for metrics.
+// may use kUnknown.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class AppListSearchResultCategory {
   kUnknown = 0,
-  kBestMatch = 1,
-  kApp = 2,
+  kApps = 1,
+  kAppShortcuts = 2,
   kWeb = 3,
   kFiles = 4,
-  kAssistant = 5,
-  kSettings = 6,
-  kHelp = 7,
-  kPlayStore = 8,
-  kMaxValue = kPlayStore,
+  kSettings = 5,
+  kHelp = 6,
+  kPlayStore = 7,
+  kSearchAndAssistant = 8,
+  kMaxValue = kSearchAndAssistant,
 };
 
 // Which UI container(s) the result should be displayed in.
@@ -368,6 +370,10 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // be kUnknown for results displayed in non-search-box views, eg. the Continue
   // section.
   AppListSearchResultCategory category = AppListSearchResultCategory::kUnknown;
+
+  // Whether this result is a top match and should be shown in the Top Matches
+  // section instead of its category.
+  bool best_match = false;
 
   // The type of this result.
   AppListSearchResultType result_type = AppListSearchResultType::kUnknown;
