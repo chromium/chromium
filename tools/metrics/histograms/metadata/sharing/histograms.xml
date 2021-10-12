@@ -667,7 +667,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.{DetailedContentType}.{ShareStatus}"
-    enum="LinkToggleState" expires_after="M98">
+    enum="LinkToggleState" expires_after="M101">
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
