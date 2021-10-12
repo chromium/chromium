@@ -53,7 +53,7 @@ ArcApplicationNotifierController::GetNotifierList(Profile* profile) {
           apps::mojom::PermissionType::kNotifications) {
         continue;
       }
-      DCHECK(permission->value_type == apps::mojom::PermissionValueType::kBool);
+      DCHECK(permission->value->is_bool_value());
       // Do not include notifier metadata for system apps.
       if (update.InstallReason() == apps::mojom::InstallReason::kSystem) {
         return;
@@ -93,7 +93,6 @@ void ArcApplicationNotifierController::SetNotifierEnabled(
   last_used_profile_ = profile;
   auto permission = apps::mojom::Permission::New();
   permission->permission_type = apps::mojom::PermissionType::kNotifications;
-  permission->value_type = apps::mojom::PermissionValueType::kBool;
   permission->value = apps::mojom::PermissionValue::New();
   permission->value->set_bool_value(enabled);
   permission->is_managed = false;

@@ -101,7 +101,6 @@ class AppUpdateTest : public testing::Test {
       apps::mojom::TriState value) {
     apps::mojom::PermissionPtr permission = apps::mojom::Permission::New();
     permission->permission_type = permission_type;
-    permission->value_type = apps::mojom::PermissionValueType::kTriState;
     permission->value = apps::mojom::PermissionValue::New();
     permission->value->set_tristate_value(value);
     return permission;

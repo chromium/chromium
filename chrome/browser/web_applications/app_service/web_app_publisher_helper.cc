@@ -320,7 +320,6 @@ void WebAppPublisherHelper::PopulateWebAppPermissions(
 
     auto permission = apps::mojom::Permission::New();
     permission->permission_type = GetPermissionType(type);
-    permission->value_type = apps::mojom::PermissionValueType::kTriState;
     permission->value = apps::mojom::PermissionValue::New();
     permission->value->set_tristate_value(setting_val);
     permission->is_managed =
@@ -705,8 +704,7 @@ void WebAppPublisherHelper::SetPermission(
     return;
   }
 
-  DCHECK_EQ(permission->value_type,
-            apps::mojom::PermissionValueType::kTriState);
+  DCHECK(permission->value->is_tristate_value());
   ContentSetting permission_value = CONTENT_SETTING_DEFAULT;
   switch (permission->value->get_tristate_value()) {
     case apps::mojom::TriState::kAllow:

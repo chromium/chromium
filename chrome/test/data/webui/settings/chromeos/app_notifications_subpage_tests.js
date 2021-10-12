@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {createBoolPermission, getBoolPermissionValue, setAppNotificationProviderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {createBoolPermission, getBoolPermissionValue, isBoolValue, setAppNotificationProviderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -276,7 +276,7 @@ suite('AppNotificationsSubpageTests', function() {
     assertEquals('1', mojoApi_.getLastUpdatedAppId());
     const lastUpdatedPermission = mojoApi_.getLastUpdatedPermission();
     assertEquals(1, lastUpdatedPermission.permissionType);
-    assertEquals(0, lastUpdatedPermission.valueType);
+    assertTrue(isBoolValue(lastUpdatedPermission.value));
     assertEquals(false, lastUpdatedPermission.isManaged);
     assertTrue(getBoolPermissionValue(lastUpdatedPermission.value));
   });

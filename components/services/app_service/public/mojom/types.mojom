@@ -89,8 +89,6 @@ struct App {
 
 struct Permission {
   PermissionType permission_type;
-  PermissionValueType value_type;
-  // The semantics of value depends on the value_type.
   PermissionValue value;
   // If the permission is managed by an enterprise policy.
   bool is_managed;
@@ -280,11 +278,6 @@ enum TriState {
   kAllow,
   kBlock,
   kAsk,
-};
-
-enum PermissionValueType {
-  kBool,                       // Permission.value is a Bool (either 0 or 1).
-  kTriState,                   // Permission.value is a TriState.
 };
 
 union PermissionValue {

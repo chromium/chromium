@@ -45,8 +45,7 @@ std::vector<ash::NotifierMetadata> PwaNotifierController::GetNotifierList(
               apps::mojom::PermissionType::kNotifications) {
             continue;
           }
-          DCHECK(permission->value_type ==
-                 apps::mojom::PermissionValueType::kTriState);
+          DCHECK(permission->value->is_tristate_value());
           // Do not include notifier metadata for system apps.
           if (update.InstallReason() == apps::mojom::InstallReason::kSystem) {
             return;
@@ -87,7 +86,6 @@ void PwaNotifierController::SetNotifierEnabled(
   DCHECK(observed_profile_->IsSameOrParent(profile));
   auto permission = apps::mojom::Permission::New();
   permission->permission_type = apps::mojom::PermissionType::kNotifications;
-  permission->value_type = apps::mojom::PermissionValueType::kTriState;
   permission->value = apps::mojom::PermissionValue::New();
   permission->value->set_tristate_value(
       enabled ? apps::mojom::TriState::kAllow : apps::mojom::TriState::kBlock);

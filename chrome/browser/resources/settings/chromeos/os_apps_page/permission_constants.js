@@ -12,5 +12,3 @@ export const TriState = apps.mojom.TriState;
 export const PermissionType = apps.mojom.PermissionType;
 
 export const PermissionValue = apps.mojom.PermissionValue;
-
-export const PermissionValueType = apps.mojom.PermissionValueType;

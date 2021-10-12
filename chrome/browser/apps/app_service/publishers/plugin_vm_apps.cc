@@ -80,7 +80,6 @@ void PopulatePermissions(apps::mojom::App* app, Profile* profile) {
   for (const PermissionInfo& info : permission_infos) {
     auto permission = apps::mojom::Permission::New();
     permission->permission_type = info.permission;
-    permission->value_type = apps::mojom::PermissionValueType::kBool;
     permission->value = apps::mojom::PermissionValue::New();
     permission->value->set_bool_value(
         profile->GetPrefs()->GetBoolean(info.pref_name));

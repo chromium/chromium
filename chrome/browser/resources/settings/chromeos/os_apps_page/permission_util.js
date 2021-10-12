@@ -2,21 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 
-import {PermissionType, PermissionValue, PermissionValueType, TriState} from './permission_constants.js';
+import {PermissionType, PermissionValue, TriState} from './permission_constants.js';
 
 /**
  * @param {PermissionType} permissionType
- * @param {PermissionValueType} valueType
  * @param {PermissionValue} value
  * @param {boolean} isManaged
  * @return {!apps.mojom.Permission}
  */
-export function createPermission(permissionType, valueType, value, isManaged) {
+export function createPermission(permissionType, value, isManaged) {
   return {
     permissionType,
-    valueType,
     value,
     isManaged,
   };
@@ -82,8 +80,7 @@ export function isBoolValue(permissionValue) {
  */
 export function createBoolPermission(permissionType, value, isManaged) {
   return createPermission(
-      permissionType, PermissionValueType.kBool,
-      createBoolPermissionValue(value), isManaged);
+      permissionType, createBoolPermissionValue(value), isManaged);
 }
 
 /**
@@ -94,6 +91,19 @@ export function createBoolPermission(permissionType, value, isManaged) {
  */
 export function createTriStatePermission(permissionType, value, isManaged) {
   return createPermission(
-      permissionType, PermissionValueType.kTriState,
-      createTriStatePermissionValue(value), isManaged);
+      permissionType, createTriStatePermissionValue(value), isManaged);
+}
+
+/**
+ * @param {PermissionValue} permissionValue
+ * @returns {boolean}
+ */
+export function isPermissionEnabled(permissionValue) {
+  if (isBoolValue(permissionValue)) {
+    return getBoolPermissionValue(permissionValue);
+  } else if (isTriStateValue(permissionValue)) {
+    return getTriStatePermissionValue(permissionValue) === TriState.kAllow;
+  } else {
+    assertNotReached();
+  }
 }

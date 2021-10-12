@@ -8,8 +8,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {Route, Router} from '../../../router.js';
 import {routes} from '../../os_route.m.js';
-import {PermissionType, PermissionValue, PermissionValueType, TriState} from '../permission_constants.js';
-import {getBoolPermissionValue, getTriStatePermissionValue} from '../permission_util.js';
+import {PermissionType, PermissionValue, TriState} from '../permission_constants.js';
+import {getBoolPermissionValue, getTriStatePermissionValue, isPermissionEnabled} from '../permission_util.js';
 
 import {AppManagementUserAction, AppType, OptionalBool, WindowMode} from './constants.js';
 
@@ -91,14 +91,7 @@ export function getPermissionValueBool(app, permissionType) {
   const permission = getPermission(app, permissionType);
   assert(permission);
 
-  switch (permission.valueType) {
-    case PermissionValueType.kBool:
-      return getBoolPermissionValue(permission.value);
-    case PermissionValueType.kTriState:
-      return getTriStatePermissionValue(permission.value) === TriState.kAllow;
-    default:
-      assertNotReached();
-  }
+  return isPermissionEnabled(permission.value);
 }
 
 /**
