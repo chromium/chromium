@@ -1056,7 +1056,7 @@ AccessibleNode* AXObject::GetAccessibleNode() const {
 
 void AXObject::Serialize(ui::AXNodeData* node_data,
                          ui::AXMode accessibility_mode) {
-  node_data->role = RoleValue();
+  node_data->role = ComputeFinalRoleForSerialization();
   node_data->id = AXObjectID();
 
   DCHECK(!IsDetached()) << "Do not serialize detached nodes: "
@@ -1725,6 +1725,22 @@ bool AXObject::IsValidationMessage() const {
 
 bool AXObject::IsVirtualObject() const {
   return false;
+}
+
+ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
+  // An SVG with no accessible children should be exposed as an image rather
+  // than a document. See https://github.com/w3c/svg-aam/issues/12.
+  // We do this check here for performance purposes: When
+  // AXLayoutObject::RoleFromLayoutObjectOrNode is called, that node's
+  // accessible children have not been calculated. Rather than force calculation
+  // there, wait until we have the full tree.
+  if (role_ == ax::mojom::blink::Role::kSvgRoot && !UnignoredChildCount())
+    return ax::mojom::blink::Role::kImage;
+
+  // TODO(accessibility): Consider moving the image vs. image map role logic
+  // here. Currently it is implemented in AXPlatformNode subclasses and thus
+  // not available to the InspectorAccessibilityAgent.
+  return role_;
 }
 
 ax::mojom::blink::Role AXObject::RoleValue() const {

@@ -671,8 +671,8 @@ Tests name sources in images and figures.
         }
     ]
     role : {
-        type : internalRole
-        value : SvgRoot
+        type : role
+        value : img
     }
 }
 

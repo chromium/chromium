@@ -211,7 +211,7 @@ bool RoleAllowsSort(ax::mojom::Role role) {
 
 void FillWidgetProperties(AXObject& ax_object,
                           protocol::Array<AXProperty>& properties) {
-  ax::mojom::Role role = ax_object.RoleValue();
+  ax::mojom::blink::Role role = ax_object.ComputeFinalRoleForSerialization();
   String autocomplete = ax_object.AutoComplete();
   if (!autocomplete.IsEmpty())
     properties.emplace_back(
@@ -303,7 +303,7 @@ void FillWidgetProperties(AXObject& ax_object,
 
 void FillWidgetStates(AXObject& ax_object,
                       protocol::Array<AXProperty>& properties) {
-  ax::mojom::Role role = ax_object.RoleValue();
+  ax::mojom::blink::Role role = ax_object.ComputeFinalRoleForSerialization();
   const char* checked_prop_val = nullptr;
   switch (ax_object.CheckedState()) {
     case ax::mojom::CheckedState::kTrue:
@@ -695,7 +695,7 @@ std::unique_ptr<AXNode> InspectorAccessibilityAgent::BuildProtocolAXObject(
     bool fetch_relatives,
     std::unique_ptr<protocol::Array<AXNode>>& nodes,
     AXObjectCacheImpl& cache) const {
-  ax::mojom::Role role = ax_object.RoleValue();
+  ax::mojom::blink::Role role = ax_object.ComputeFinalRoleForSerialization();
   std::unique_ptr<AXNode> node_object =
       AXNode::create()
           .setNodeId(String::Number(ax_object.AXObjectID()))
@@ -957,7 +957,7 @@ void InspectorAccessibilityAgent::AddChildren(
 namespace {
 
 void setNameAndRole(const AXObject& ax_object, std::unique_ptr<AXNode>& node) {
-  ax::mojom::blink::Role role = ax_object.RoleValue();
+  ax::mojom::blink::Role role = ax_object.ComputeFinalRoleForSerialization();
   node->setRole(CreateRoleNameValue(role));
   AXObject::NameSources name_sources;
   String computed_name = ax_object.GetName(&name_sources);
@@ -1021,7 +1021,8 @@ Response InspectorAccessibilityAgent::queryAXTree(
 
     // if querying by role: skip if role of current object does not match.
     if (role.isJust() &&
-        role.fromJust() != AXObject::RoleName(ax_object->RoleValue())) {
+        role.fromJust() !=
+            AXObject::RoleName(ax_object->ComputeFinalRoleForSerialization())) {
       continue;
     }
 

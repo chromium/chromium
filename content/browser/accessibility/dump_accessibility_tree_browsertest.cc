@@ -2777,14 +2777,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("svg-symbol-with-role.html"));
 }
 
-// On ChromeOS, SVG <g> elements are included.
-#if defined(OS_CHROMEOS)
-#define AccessibilitySvgG_TestFile FILE_PATH_LITERAL("svg-g-for-cros.html")
-#else
-#define AccessibilitySvgG_TestFile FILE_PATH_LITERAL("svg-g.html")
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySvgG) {
-  RunHtmlTest(AccessibilitySvgG_TestFile);
+  RunHtmlTest(FILE_PATH_LITERAL("svg-g.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

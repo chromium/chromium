@@ -16,11 +16,11 @@ AXWebArea AXRoleDescription='HTML content'
 ++++++++++++++AXGroup AXRoleDescription='group'
 ++++++++++++++++AXButton AXDescription='Show month selection panel' AXRoleDescription='button'
 ++++++++++++++++++AXStaticText AXRoleDescription='text' AXValue='September 2008'
-++++++++++++++++++AXGroup AXRoleDescription='group'
+++++++++++++++++++AXImage AXRoleDescription='image'
 ++++++++++++++AXButton AXDescription='Show previous month' AXRoleDescription='button'
-++++++++++++++++AXGroup
+++++++++++++++++AXImage
 ++++++++++++++AXButton AXDescription='Show next month' AXRoleDescription='button'
-++++++++++++++++AXGroup
+++++++++++++++++AXImage
 ++++++++++++++AXTable AXRoleDescription='table'
 ++++++++++++++++AXGroup AXRoleDescription='group'
 ++++++++++++++++++AXGroup AXRoleDescription='group'

@@ -16,7 +16,7 @@ RootWebArea
 
 RootWebArea
   img
-    *SvgRoot
+    *img
 {
     childIds : <object>
     domNode : svg
@@ -47,8 +47,8 @@ RootWebArea
     properties : [
     ]
     role : {
-        type : internalRole
-        value : SvgRoot
+        type : role
+        value : img
     }
 }
 

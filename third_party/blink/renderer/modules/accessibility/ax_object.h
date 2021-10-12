@@ -353,6 +353,14 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Check object role or purpose.
   ax::mojom::blink::Role RoleValue() const;
 
+  // This method is useful in cases where the final role exposed to ATs needs
+  // to change based on contextual information. For instance, an svgRoot should
+  // be exposed as an image if it lacks accessible children. Whether or not it
+  // has accessible children is not known at the time the role is assigned and
+  // may depend on whether or not a given platform includes children that other
+  // platforms ignore.
+  ax::mojom::blink::Role ComputeFinalRoleForSerialization() const;
+
   // Returns true if this object is an ARIA text field, i.e. it is neither an
   // <input> nor a <textarea>, but it has an ARIA role of textbox, searchbox or
   // (on certain platforms) combobox.
