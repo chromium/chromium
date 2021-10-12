@@ -442,8 +442,8 @@
     {
       name: "ConditionalFocus",
       origin_trial_feature_name: "ConditionalFocus",
-      depends_on: ["GetDisplayMedia"],
       status: {"Android": "", "default": "experimental"},
+      implied_by: ["RegionCapture"],
     },
     {
       name: "ConsolidatedMovementXY",
@@ -1847,7 +1847,7 @@
     },
     {
       name: "RegionCapture",
-      status: "experimental",
+      status: {"Android": "", "default": "experimental"},
     },
     {
       name: "RemotePlayback",

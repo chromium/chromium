@@ -42,25 +42,6 @@ FocusableMediaStreamTrack::FocusableMediaStreamTrack(
       descriptor_id_(descriptor_id) {
 }
 
-FocusableMediaStreamTrack* FocusableMediaStreamTrack::clone(
-    ScriptState* script_state) {
-  MediaStreamComponent* const cloned_component = Component()->Clone();
-  FocusableMediaStreamTrack* cloned_track =
-      MakeGarbageCollected<FocusableMediaStreamTrack>(
-          ExecutionContext::From(script_state), cloned_component,
-          GetReadyState(), base::DoNothing(), descriptor_id_,
-          /*is_clone=*/true);
-  MediaStreamTrack::DidCloneMediaStreamTrack(Component(), cloned_component);
-  cloned_track->CloneImageCaptureFrom(*this);
-
-#if !defined(OS_ANDROID)
-  // Copied for completeness, but should never be read on clones.
-  cloned_track->focus_called_ = focus_called_;
-#endif
-
-  return cloned_track;
-}
-
 #if !defined(OS_ANDROID)
 void FocusableMediaStreamTrack::CloseFocusWindowOfOpportunity() {
   promise_settled_ = true;
@@ -109,6 +90,34 @@ void FocusableMediaStreamTrack::focus(
       descriptor_id_,
       focus_behavior.AsEnum() ==
           V8CaptureStartFocusBehavior::Enum::kFocusCapturedSurface);
+#endif
+}
+
+FocusableMediaStreamTrack* FocusableMediaStreamTrack::clone(
+    ScriptState* script_state) {
+  // Instantiate the clone.
+  FocusableMediaStreamTrack* cloned_track =
+      MakeGarbageCollected<FocusableMediaStreamTrack>(
+          ExecutionContext::From(script_state), Component()->Clone(),
+          GetReadyState(), base::DoNothing(), descriptor_id_,
+          /*is_clone=*/true);
+
+  // Copy state.
+  FocusableMediaStreamTrack::CloneInternal(cloned_track);
+
+  return cloned_track;
+}
+
+void FocusableMediaStreamTrack::CloneInternal(
+    FocusableMediaStreamTrack* cloned_track) {
+  // Clone parent classes' state.
+  MediaStreamTrack::CloneInternal(cloned_track);
+
+  // Clone own state.
+#if !defined(OS_ANDROID)
+  // Copied for completeness, but should never be read on clones.
+  cloned_track->focus_called_ = focus_called_;
+  cloned_track->promise_settled_ = promise_settled_;
 #endif
 }
 

@@ -11,7 +11,7 @@
 
 namespace blink {
 
-class FocusableMediaStreamTrack final : public MediaStreamTrack {
+class FocusableMediaStreamTrack : public MediaStreamTrack {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -28,9 +28,6 @@ class FocusableMediaStreamTrack final : public MediaStreamTrack {
                             const String& descriptor_id,
                             bool is_clone = false);
 
-  // Clones raise an error if focus() is called.
-  FocusableMediaStreamTrack* clone(ScriptState*) override;
-
 #if !defined(OS_ANDROID)
   void CloseFocusWindowOfOpportunity() override;
 #endif
@@ -38,6 +35,18 @@ class FocusableMediaStreamTrack final : public MediaStreamTrack {
   void focus(ExecutionContext* execution_context,
              V8CaptureStartFocusBehavior focus_behavior,
              ExceptionState& exception_state);
+
+  // Clones raise an error if focus() is called.
+  FocusableMediaStreamTrack* clone(ScriptState*) override;
+
+ protected:
+  // Given a partially built FocusableMediaStreamTrack, finishes the job
+  // of making it into a clone of |this|.
+  // Useful for sub-classes, as they need to clone both state from
+  // this class as well as of their own class.
+  void CloneInternal(FocusableMediaStreamTrack*);
+
+  const String& descriptor_id() const { return descriptor_id_; }
 
  private:
 #if !defined(OS_ANDROID)

@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -40,6 +41,8 @@ static const char kMainHtmlPage[] = "/webrtc/webrtc_getdisplaymedia_test.html";
 static const char kMainHtmlFileName[] = "webrtc_getdisplaymedia_test.html";
 static const char kSameOriginRenamedTitle[] = "Renamed Same Origin Tab";
 
+enum class DisplaySurfaceType { kTab, kWindow, kScreen };
+
 enum class GetDisplayMediaVariant : int {
   kStandard = 0,
   kPreferCurrentTab = 1
@@ -60,6 +63,20 @@ struct TestConfigForFakeUI {
 };
 
 constexpr char kAppWindowTitle[] = "AppWindow Display Capture Test";
+
+std::string DisplaySurfaceTypeAsString(
+    DisplaySurfaceType display_surface_type) {
+  switch (display_surface_type) {
+    case DisplaySurfaceType::kTab:
+      return "browser";
+    case DisplaySurfaceType::kWindow:
+      return "window";
+    case DisplaySurfaceType::kScreen:
+      return "screen";
+  }
+  NOTREACHED();
+  return "error";
+}
 
 void RunGetDisplayMedia(content::WebContents* tab,
                         const std::string& constraints,
@@ -593,4 +610,170 @@ IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
       capturing_tab->GetMainFrame(), "returnToTest(video_track.readyState);",
       &result));
   EXPECT_EQ(result, "live");
+}
+
+class GetDisplayMediaVideoTrackBrowserTest
+    : public WebRtcTestBase,
+      public testing::WithParamInterface<
+          std::tuple<bool, bool, DisplaySurfaceType>> {
+ public:
+  GetDisplayMediaVideoTrackBrowserTest()
+      : conditional_focus_enabled_(std::get<0>(GetParam())),
+        region_capture_enabled_(std::get<1>(GetParam())),
+        display_surface_type_(std::get<2>(GetParam())) {}
+
+  ~GetDisplayMediaVideoTrackBrowserTest() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    DetectErrorsInJavaScript();
+  }
+
+  void SetUpOnMainThread() override {
+    WebRtcTestBase::SetUpOnMainThread();
+
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // The picker itself shows previews which are unsupported in Lacros tests.
+    base::Value matchlist(base::Value::Type::LIST);
+    matchlist.Append("*");
+    browser()->profile()->GetPrefs()->Set(prefs::kTabCaptureAllowedByOrigins,
+                                          matchlist);
+#endif
+  }
+
+  // Unlike SetUp(), this is called from the test body. This allows skipping
+  // this test for (platform, test-case) combinations which are not supported.
+  void SetupTest() {
+    // Fire up the page.
+    tab_ = OpenTestPageInNewTab(kMainHtmlPage);
+
+    // Initiate the capture.
+    std::string result;
+    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+        tab_->GetMainFrame(),
+        "runGetDisplayMedia({video: true, audio: true}, "
+        "\"top-level-document\");",
+        &result));
+    ASSERT_EQ(result, "capture-success");
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebRtcTestBase::SetUpCommandLine(command_line);
+
+    std::vector<std::string> enabled_blink_features;
+    if (conditional_focus_enabled_) {
+      enabled_blink_features.push_back("ConditionalFocus");
+    }
+    if (region_capture_enabled_) {
+      enabled_blink_features.push_back("RegionCapture");
+    }
+    if (!enabled_blink_features.empty()) {
+      command_line->AppendSwitchASCII(
+          switches::kEnableBlinkFeatures,
+          base::JoinString(enabled_blink_features, ","));
+    }
+
+    command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
+    command_line->AppendSwitchASCII(
+        switches::kUseFakeDeviceForMediaStream,
+        base::StrCat({"display-media-type=",
+                      DisplaySurfaceTypeAsString(display_surface_type_)}));
+  }
+
+  std::string GetVideoTrackType() {
+    std::string result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        tab_->GetMainFrame(), "getVideoTrackType();", &result));
+    return result;
+  }
+
+  std::string GetVideoCloneTrackType() {
+    std::string result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        tab_->GetMainFrame(), "getVideoCloneTrackType();", &result));
+    return result;
+  }
+
+  bool HasAudioTrack() {
+    std::string result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        tab_->GetMainFrame(), "hasAudioTrack();", &result));
+    EXPECT_TRUE(result == "true" || result == "false");
+    return result == "true";
+  }
+
+  std::string GetAudioTrackType() {
+    std::string result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        tab_->GetMainFrame(), "getAudioTrackType();", &result));
+    return result;
+  }
+
+  std::string ExpectedVideoTrackType() const {
+    switch (display_surface_type_) {
+      case DisplaySurfaceType::kTab:
+        return region_capture_enabled_
+                   ? "BrowserCaptureMediaStreamTrack"
+                   : conditional_focus_enabled_ ? "FocusableMediaStreamTrack"
+                                                : "MediaStreamTrack";
+      case DisplaySurfaceType::kWindow:
+        return conditional_focus_enabled_ || region_capture_enabled_
+                   ? "FocusableMediaStreamTrack"
+                   : "MediaStreamTrack";
+      case DisplaySurfaceType::kScreen:
+        return "MediaStreamTrack";
+    }
+    NOTREACHED();
+    return "Error";
+  }
+
+ protected:
+  const bool conditional_focus_enabled_;
+  const bool region_capture_enabled_;
+  const DisplaySurfaceType display_surface_type_;
+
+ private:
+  content::WebContents* tab_ = nullptr;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    _,
+    GetDisplayMediaVideoTrackBrowserTest,
+    testing::Combine(/*conditional_focus_enabled=*/testing::Bool(),
+                     /*region_capture_enabled=*/testing::Bool(),
+                     /*display_surface_type=*/
+                     testing::Values(DisplaySurfaceType::kTab,
+                                     DisplaySurfaceType::kWindow,
+                                     DisplaySurfaceType::kScreen)),
+    [](const testing::TestParamInfo<
+        GetDisplayMediaVideoTrackBrowserTest::ParamType>& info) {
+      return base::StrCat(
+          {std::get<0>(info.param) ? "ConditionalFocus" : "",
+           std::get<1>(info.param) ? "RegionCapture" : "",
+           std::get<2>(info.param) == DisplaySurfaceType::kTab
+               ? "Tab"
+               : std::get<2>(info.param) == DisplaySurfaceType::kWindow
+                     ? "Window"
+                     : "Screen"});
+    });
+
+// Normally, each of these these would have its own test, but the number of
+// combinations and the setup time for browser-tests make this undesirable,
+// especially given the simplicity of each of these tests.
+// After both (a) Conditional Focus and (b) Region Capture ship, this can
+// simpplified to three non-parameterized tests (tab/window/screen).
+IN_PROC_BROWSER_TEST_P(GetDisplayMediaVideoTrackBrowserTest, RunCombinedTest) {
+  SetupTest();
+
+  // Test #1: The video track is of the expected type.
+  EXPECT_EQ(GetVideoTrackType(), ExpectedVideoTrackType());
+
+  // Test #2: Video clones are of the same type as the original.
+  EXPECT_EQ(GetVideoTrackType(), GetVideoCloneTrackType());
+
+  // Test #3: Audio tracks are all simply MediaStreamTrack.
+  if (HasAudioTrack()) {
+    EXPECT_EQ(GetAudioTrackType(), "MediaStreamTrack");
+  }
 }

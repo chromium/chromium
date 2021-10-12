@@ -9,14 +9,17 @@
   'use strict';
   var settings;
   var video_track;
-  var has_audio_track = false;
+  var audio_track;
+  var stored_media_stream;
 
   function handleSuccess(stream) {
-    has_audio_track = stream.getAudioTracks().length == 1;
     settings = stream.getVideoTracks()[0].getSettings();
     var video = document.querySelector('video');
     video.srcObject = stream;
     video_track = stream.getVideoTracks()[0];
+    if (stream.getAudioTracks().length > 0) {
+      audio_track = stream.getAudioTracks()[0];
+    }
     video.play();
     returnToTest("capture-success");
   }
@@ -38,7 +41,28 @@
   }
 
   function hasAudioTrack() {
-    returnToTest(has_audio_track ? "true" : "false");
+    returnToTest(`${!!audio_track}`);
+  }
+
+  function getVideoTrackType() {
+    if (!video_track) {
+      returnToTest("error-no-video-track");
+    }
+    returnToTest(video_track.constructor.name);
+  }
+
+  function getVideoCloneTrackType() {
+    if (!video_track) {
+      returnToTest("error-no-video-track-to-clone");
+    }
+    returnToTest(video_track.clone().constructor.name);
+  }
+
+  function getAudioTrackType() {
+    if (!audio_track) {
+      returnToTest("error-no-audio-track");
+    }
+    returnToTest(audio_track.constructor.name);
   }
 
   function getDisplaySurfaceSetting() {
@@ -87,10 +111,6 @@
       returnToTest("ended");
     }
   }
-
-  // function readLastResultFromEmbedded() {
-  //   // Blocks until the result is reported by the embedded page.
-  // }
   </script>
 </head>
 <body>
