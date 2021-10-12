@@ -26,6 +26,11 @@ bool MockClientHintsControllerDelegate::IsJavaScriptAllowed(const GURL& url) {
   return true;
 }
 
+bool MockClientHintsControllerDelegate::AreThirdPartyCookiesBlocked(
+    const GURL& url) {
+  return false;
+}
+
 blink::UserAgentMetadata
 MockClientHintsControllerDelegate::GetUserAgentMetadata() {
   return metadata_;

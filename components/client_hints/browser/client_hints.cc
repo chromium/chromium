@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "components/client_hints/common/client_hints.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -23,14 +24,17 @@ ClientHints::ClientHints(
     content::BrowserContext* context,
     network::NetworkQualityTracker* network_quality_tracker,
     HostContentSettingsMap* settings_map,
+    scoped_refptr<content_settings::CookieSettings> cookie_settings,
     const blink::UserAgentMetadata& user_agent_metadata)
     : context_(context),
       network_quality_tracker_(network_quality_tracker),
       settings_map_(settings_map),
+      cookie_settings_(cookie_settings),
       user_agent_metadata_(user_agent_metadata) {
   DCHECK(context_);
   DCHECK(network_quality_tracker_);
   DCHECK(settings_map_);
+  DCHECK(cookie_settings_);
 }
 
 ClientHints::~ClientHints() = default;
@@ -55,6 +59,12 @@ bool ClientHints::IsJavaScriptAllowed(const GURL& url) {
   return settings_map_->GetContentSetting(url, url,
                                           ContentSettingsType::JAVASCRIPT) !=
          CONTENT_SETTING_BLOCK;
+}
+
+bool ClientHints::AreThirdPartyCookiesBlocked(const GURL& url) {
+  return settings_map_->GetContentSetting(
+             url, url, ContentSettingsType::COOKIES) == CONTENT_SETTING_BLOCK ||
+         cookie_settings_->ShouldBlockThirdPartyCookies();
 }
 
 blink::UserAgentMetadata ClientHints::GetUserAgentMetadata() {

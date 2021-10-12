@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -23,6 +25,7 @@ class ClientHints : public KeyedService,
   ClientHints(content::BrowserContext* context,
               network::NetworkQualityTracker* network_quality_tracker,
               HostContentSettingsMap* settings_map,
+              scoped_refptr<content_settings::CookieSettings> cookie_settings,
               const blink::UserAgentMetadata& user_agent_metadata);
 
   ClientHints(const ClientHints&) = delete;
@@ -38,6 +41,8 @@ class ClientHints : public KeyedService,
       blink::EnabledClientHints* client_hints) override;
 
   bool IsJavaScriptAllowed(const GURL& url) override;
+
+  bool AreThirdPartyCookiesBlocked(const GURL& url) override;
 
   blink::UserAgentMetadata GetUserAgentMetadata() override;
 
@@ -55,6 +60,7 @@ class ClientHints : public KeyedService,
   content::BrowserContext* context_ = nullptr;
   network::NetworkQualityTracker* network_quality_tracker_ = nullptr;
   HostContentSettingsMap* settings_map_ = nullptr;
+  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   blink::UserAgentMetadata user_agent_metadata_;
   std::vector<network::mojom::WebClientHintsType> additional_hints_;
 };

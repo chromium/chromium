@@ -62,7 +62,8 @@ void CriticalClientHintsThrottle::BeforeWillProcessResponse(
   blink::EnabledClientHints hints;
   for (const WebClientHintsType hint :
        response_head.parsed_headers->accept_ch.value())
-    hints.SetIsEnabled(response_url, response_head.headers.get(), hint, true);
+    hints.SetIsEnabled(response_url, /*third_party_url=*/nullptr,
+                       response_head.headers.get(), hint, true);
 
   std::vector<WebClientHintsType> critical_hints;
   for (const WebClientHintsType hint :

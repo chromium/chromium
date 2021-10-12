@@ -8,6 +8,7 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "weblayer/browser/browser_process.h"
+#include "weblayer/browser/cookie_settings_factory.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 
 namespace weblayer {
@@ -39,6 +40,7 @@ KeyedService* ClientHintsFactory::BuildServiceInstanceFor(
   return new client_hints::ClientHints(
       context, BrowserProcess::GetInstance()->GetNetworkQualityTracker(),
       HostContentSettingsMapFactory::GetForBrowserContext(context),
+      CookieSettingsFactory::GetForBrowserContext(context),
       embedder_support::GetUserAgentMetadata());
 }
 
