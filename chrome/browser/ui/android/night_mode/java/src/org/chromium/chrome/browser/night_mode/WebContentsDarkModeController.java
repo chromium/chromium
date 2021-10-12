@@ -206,7 +206,7 @@ public class WebContentsDarkModeController
      */
     private static void recordAutoDarkSettingsChangeSource(
             @AutoDarkSettingsChangeSource int source, boolean enabled) {
-        String histogram = "Android.DarkTheme.AutoDark.SettingsChangeSource."
+        String histogram = "Android.DarkTheme.AutoDarkMode.SettingsChangeSource."
                 + (enabled ? "Enabled" : "Disabled");
         RecordHistogram.recordEnumeratedHistogram(
                 histogram, source, AutoDarkSettingsChangeSource.NUM_ENTRIES);
