@@ -593,6 +593,8 @@ SystemNotificationManager::MakeMountErrorNotification(
                 IDS_DEVICE_UNSUPPORTED_MESSAGE,
                 base::UTF8ToUTF16(volume.drive_label()));
           }
+          RecordDeviceNotificationMetric(
+              DeviceNotificationUmaType::DEVICE_FAIL);
         } else {
           if (volume.drive_label().empty()) {
             message =
@@ -625,6 +627,7 @@ SystemNotificationManager::MakeMountErrorNotification(
               IDS_MULTIPART_DEVICE_UNSUPPORTED_MESSAGE,
               base::UTF8ToUTF16(volume.drive_label()));
         }
+        RecordDeviceNotificationMetric(DeviceNotificationUmaType::DEVICE_FAIL);
         break;
       default:
         DLOG(WARNING) << "Unhandled mount status for "
