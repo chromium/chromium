@@ -5,8 +5,6 @@
 import("//build/config/android/rules.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-proto_java_library("proto_java") {
-  proto_path = "//"
+proto_library("notifications_proto") {
   sources = [ "notifications.proto" ]
-  deps = [ "//components/commerce/core:proto_java" ]
 }
