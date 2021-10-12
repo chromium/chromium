@@ -54,12 +54,14 @@ class TestNotificationPlatformBridgeDelegator
     for (const message_center::ButtonInfo& button : notification.buttons())
       strings.buttons.push_back(button.title);
     notifications_[notification.id()] = strings;
+    delegates_[notification.id()] = notification.delegate();
   }
 
   void Close(NotificationHandler::Type notification_type,
              const std::string& notification_id) override {
     notification_ids_.erase(notification_id);
     notifications_.erase(notification_id);
+    delegates_.erase(notification_id);
   }
 
   void GetDisplayed(GetDisplayedNotificationsCallback callback) const override {
@@ -77,10 +79,24 @@ class TestNotificationPlatformBridgeDelegator
     return result;
   }
 
+  void ClickButtonIndexById(const std::string& notification_id,
+                            int button_index) {
+    absl::optional<int> index(button_index);
+    absl::optional<std::u16string> empty_reply(u"");
+
+    const auto& notification = delegates_.find(notification_id);
+    if (notification != delegates_.end()) {
+      notification->second->Click(index, empty_reply);
+    }
+  }
+
  private:
   std::set<std::string> notification_ids_;
   // Used to map a notification id to its displayed title and message.
   std::map<std::string, TestNotificationStrings> notifications_;
+  // Used to map a notification id to its delegate to verify click handlers.
+  std::map<std::string, scoped_refptr<message_center::NotificationDelegate>>
+      delegates_;
 };
 
 // DeviceEventRouter implementation for testing.
@@ -382,6 +398,8 @@ TEST_F(SystemNotificationManagerTest, DeviceHardUnplugged) {
       DeviceNotificationUmaType::DEVICE_HARD_UNPLUGGED, 1);
 }
 
+constexpr char kRemovableDeviceNotificationId[] = "swa-removable-device-id";
+
 TEST_F(SystemNotificationManagerTest, DeviceNavigation) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
@@ -406,7 +424,10 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigation) {
   TestNotificationStrings notification_strings;
   notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
-          "swa-removable-device-id");
+          kRemovableDeviceNotificationId);
+  notification_platform_bridge->ClickButtonIndexById(
+      kRemovableDeviceNotificationId,
+      /*button_index=*/0);
   // Check: the expected strings match.
   EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
   EXPECT_EQ(notification_strings.message,
@@ -415,6 +436,9 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigation) {
   histogram_tester.ExpectUniqueSample(
       kNotificationShowHistogramName,
       DeviceNotificationUmaType::DEVICE_NAVIGATION, 1);
+  histogram_tester.ExpectUniqueSample(
+      kNotificationUserActionHistogramName,
+      DeviceNotificationUserActionUmaType::OPEN_MEDIA_DEVICE_NAVIGATION, 1);
 }
 
 // Test for notification generated when enterprise read-only policy is set.
@@ -444,7 +468,10 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationReadOnlyPolicy) {
   TestNotificationStrings notification_strings;
   notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
-          "swa-removable-device-id");
+          kRemovableDeviceNotificationId);
+  notification_platform_bridge->ClickButtonIndexById(
+      kRemovableDeviceNotificationId,
+      /*button_index=*/0);
   // Check: the expected strings match.
   EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
   EXPECT_EQ(notification_strings.message,
@@ -454,6 +481,9 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationReadOnlyPolicy) {
   histogram_tester.ExpectUniqueSample(
       kNotificationShowHistogramName,
       DeviceNotificationUmaType::DEVICE_NAVIGATION_READONLY_POLICY, 1);
+  histogram_tester.ExpectUniqueSample(
+      kNotificationUserActionHistogramName,
+      DeviceNotificationUserActionUmaType::OPEN_MEDIA_DEVICE_NAVIGATION, 1);
 }
 
 // Test for notification generated when ARC++ is enabled on the device.
@@ -486,7 +516,10 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationAllowAppAccess) {
   TestNotificationStrings notification_strings;
   notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
-          "swa-removable-device-id");
+          kRemovableDeviceNotificationId);
+  notification_platform_bridge->ClickButtonIndexById(
+      kRemovableDeviceNotificationId,
+      /*button_index=*/0);
   // Check: the expected strings match.
   EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
   EXPECT_EQ(notification_strings.message,
@@ -496,6 +529,42 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationAllowAppAccess) {
   histogram_tester.ExpectUniqueSample(
       kNotificationShowHistogramName,
       DeviceNotificationUmaType::DEVICE_NAVIGATION_ALLOW_APP_ACCESS, 1);
+  histogram_tester.ExpectUniqueSample(
+      kNotificationUserActionHistogramName,
+      DeviceNotificationUserActionUmaType::OPEN_MEDIA_DEVICE_NAVIGATION_ARC, 1);
+}
+
+TEST_F(SystemNotificationManagerTest,
+       DeviceNavigationAllowAppAccessSecondButton) {
+  base::HistogramTester histogram_tester;
+  // Set the ARC++ enbled preference on the testing profile.
+  PrefService* const service = GetProfile()->GetPrefs();
+  service->SetBoolean(arc::prefs::kArcEnabled, true);
+  std::unique_ptr<Volume> volume(Volume::CreateForTesting(
+      base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
+      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
+      kDeviceLabel, "FAT32"));
+  file_manager_private::MountCompletedEvent event;
+  event.event_type = file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  event.should_notify = true;
+  event.status = file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS;
+  GetSystemNotificationManager()->HandleMountCompletedEvent(event,
+                                                            *volume.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have one notification.
+  ASSERT_EQ(1, notification_count);
+  notification_platform_bridge->ClickButtonIndexById(
+      kRemovableDeviceNotificationId,
+      /*button_index=*/1);
+  // Check that the correct UMA was emitted.
+  histogram_tester.ExpectUniqueSample(
+      kNotificationUserActionHistogramName,
+      DeviceNotificationUserActionUmaType::OPEN_SETTINGS_FOR_ARC_STORAGE, 1);
 }
 
 // Test for notification generated when ARC++ is enabled on the device.
@@ -529,7 +598,7 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationAppsHaveAccess) {
   TestNotificationStrings notification_strings;
   notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
-          "swa-removable-device-id");
+          kRemovableDeviceNotificationId);
   // Check: the expected strings match.
   EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
   EXPECT_EQ(notification_strings.message,
@@ -655,7 +724,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedDefault) {
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
-          "swa-removable-device-id");
+          kRemovableDeviceNotificationId);
   // Check: the expected strings match.
   EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
   EXPECT_EQ(notification_strings.message,
@@ -774,6 +843,8 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownDefault) {
   notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
           kDeviceFailNotificationId);
+  notification_platform_bridge->ClickButtonIndexById(kDeviceFailNotificationId,
+                                                     /*button_index=*/0);
   // Check: the expected strings match.
   EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
   EXPECT_EQ(notification_strings.message,
@@ -783,6 +854,9 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownDefault) {
   histogram_tester.ExpectUniqueSample(
       kNotificationShowHistogramName,
       DeviceNotificationUmaType::DEVICE_FAIL_UNKNOWN, 1);
+  histogram_tester.ExpectUniqueSample(
+      kNotificationUserActionHistogramName,
+      DeviceNotificationUserActionUmaType::OPEN_MEDIA_DEVICE_FAIL, 1);
 }
 
 // The named version of the device fail unknown notification is
@@ -813,6 +887,8 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownNamed) {
   notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
           kDeviceFailNotificationId);
+  notification_platform_bridge->ClickButtonIndexById(kDeviceFailNotificationId,
+                                                     /*button_index=*/0);
   // Check: the expected strings match.
   EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
   EXPECT_EQ(notification_strings.message,
@@ -822,6 +898,9 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownNamed) {
   histogram_tester.ExpectUniqueSample(
       kNotificationShowHistogramName,
       DeviceNotificationUmaType::DEVICE_FAIL_UNKNOWN, 1);
+  histogram_tester.ExpectUniqueSample(
+      kNotificationUserActionHistogramName,
+      DeviceNotificationUserActionUmaType::OPEN_MEDIA_DEVICE_FAIL, 1);
 }
 
 // Device fail unknown read only notifications are generated when

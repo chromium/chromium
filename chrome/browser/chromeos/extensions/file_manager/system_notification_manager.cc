@@ -57,6 +57,12 @@ void RecordDeviceNotificationMetric(
   UMA_HISTOGRAM_ENUMERATION(file_manager::kNotificationShowHistogramName, type);
 }
 
+void RecordDeviceNotificationUserActionMetric(
+    file_manager::DeviceNotificationUserActionUmaType type) {
+  UMA_HISTOGRAM_ENUMERATION(file_manager::kNotificationUserActionHistogramName,
+                            type);
+}
+
 }  // namespace
 
 namespace file_manager {
@@ -547,6 +553,8 @@ constexpr char kRemovableNotificationId[] = "swa-removable-device-id";
 
 void SystemNotificationManager::HandleRemovableNotificationClick(
     const std::string& path,
+    const std::vector<DeviceNotificationUserActionUmaType>&
+        uma_types_for_buttons,
     absl::optional<int> button_index) {
   if (button_index) {
     if (button_index.value() == 0) {
@@ -555,6 +563,10 @@ void SystemNotificationManager::HandleRemovableNotificationClick(
     } else {
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
           profile_, chromeos::settings::mojom::kExternalStorageSubpagePath);
+    }
+    if (button_index.value() < uma_types_for_buttons.size()) {
+      RecordDeviceNotificationUserActionMetric(
+          uma_types_for_buttons.at(button_index.value()));
     }
   }
 
@@ -568,10 +580,7 @@ SystemNotificationManager::MakeMountErrorNotification(
     const Volume& volume) {
   std::unique_ptr<message_center::Notification> notification;
   std::vector<message_center::ButtonInfo> notification_buttons;
-  scoped_refptr<message_center::NotificationDelegate> delegate =
-      new message_center::HandleNotificationClickDelegate(base::BindRepeating(
-          &SystemNotificationManager::HandleRemovableNotificationClick,
-          weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value()));
+  std::vector<DeviceNotificationUserActionUmaType> uma_types_for_buttons;
   auto device_mount_status =
       mount_status_.find(volume.storage_device_path().value());
   if (device_mount_status != mount_status_.end()) {
@@ -608,6 +617,8 @@ SystemNotificationManager::MakeMountErrorNotification(
             // Give a format device button on the notification.
             notification_buttons.push_back(message_center::ButtonInfo(
                 l10n_util::GetStringUTF16(IDS_DEVICE_UNKNOWN_BUTTON_LABEL)));
+            uma_types_for_buttons.push_back(
+                DeviceNotificationUserActionUmaType::OPEN_MEDIA_DEVICE_FAIL);
             RecordDeviceNotificationMetric(
                 DeviceNotificationUmaType::DEVICE_FAIL_UNKNOWN);
           } else {
@@ -634,8 +645,14 @@ SystemNotificationManager::MakeMountErrorNotification(
                       << device_mount_status->second;
         return notification;
     }
+    scoped_refptr<message_center::NotificationDelegate> delegate =
+        new message_center::HandleNotificationClickDelegate(base::BindRepeating(
+            &SystemNotificationManager::HandleRemovableNotificationClick,
+            weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value(),
+            uma_types_for_buttons));
     notification =
         CreateNotification(kDeviceFailNotificationId, title, message, delegate);
+    DCHECK_EQ(notification_buttons.size(), uma_types_for_buttons.size());
     notification->set_buttons(notification_buttons);
   }
   return notification;
@@ -701,11 +718,14 @@ SystemNotificationManager::MakeRemovableNotification(
     std::u16string title =
         l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_DETECTION_TITLE);
     std::u16string message;
+    std::vector<DeviceNotificationUserActionUmaType> uma_types_for_buttons;
     if (volume.is_read_only() && !volume.is_read_only_removable_device()) {
       message = l10n_util::GetStringUTF16(
           IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE_READONLY_POLICY);
       RecordDeviceNotificationMetric(
           DeviceNotificationUmaType::DEVICE_NAVIGATION_READONLY_POLICY);
+      uma_types_for_buttons.push_back(
+          DeviceNotificationUserActionUmaType::OPEN_MEDIA_DEVICE_NAVIGATION);
     } else {
       const PrefService* const service = profile_->GetPrefs();
       DCHECK(service);
@@ -717,6 +737,8 @@ SystemNotificationManager::MakeRemovableNotification(
             l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE);
         RecordDeviceNotificationMetric(
             DeviceNotificationUmaType::DEVICE_NAVIGATION);
+        uma_types_for_buttons.push_back(
+            DeviceNotificationUserActionUmaType::OPEN_MEDIA_DEVICE_NAVIGATION);
       } else if (arc_removable_media_access_enabled) {
         message = base::StrCat(
             {l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE),
@@ -726,6 +748,11 @@ SystemNotificationManager::MakeRemovableNotification(
         show_settings_button = true;
         RecordDeviceNotificationMetric(
             DeviceNotificationUmaType::DEVICE_NAVIGATION_APPS_HAVE_ACCESS);
+        uma_types_for_buttons.insert(uma_types_for_buttons.end(),
+                                     {DeviceNotificationUserActionUmaType::
+                                          OPEN_MEDIA_DEVICE_NAVIGATION_ARC,
+                                      DeviceNotificationUserActionUmaType::
+                                          OPEN_SETTINGS_FOR_ARC_STORAGE});
       } else {
         message = base::StrCat(
             {l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE),
@@ -735,15 +762,20 @@ SystemNotificationManager::MakeRemovableNotification(
         show_settings_button = true;
         RecordDeviceNotificationMetric(
             DeviceNotificationUmaType::DEVICE_NAVIGATION_ALLOW_APP_ACCESS);
+        uma_types_for_buttons.insert(uma_types_for_buttons.end(),
+                                     {DeviceNotificationUserActionUmaType::
+                                          OPEN_MEDIA_DEVICE_NAVIGATION_ARC,
+                                      DeviceNotificationUserActionUmaType::
+                                          OPEN_SETTINGS_FOR_ARC_STORAGE});
       }
     }
     scoped_refptr<message_center::NotificationDelegate> delegate =
         new message_center::HandleNotificationClickDelegate(base::BindRepeating(
             &SystemNotificationManager::HandleRemovableNotificationClick,
-            weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value()));
+            weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value(),
+            uma_types_for_buttons));
     notification =
         CreateNotification(kRemovableNotificationId, title, message, delegate);
-
     std::vector<message_center::ButtonInfo> notification_buttons;
     notification_buttons.push_back(
         message_center::ButtonInfo(l10n_util::GetStringUTF16(
@@ -753,6 +785,7 @@ SystemNotificationManager::MakeRemovableNotification(
           message_center::ButtonInfo(l10n_util::GetStringUTF16(
               IDS_REMOVABLE_DEVICE_OPEN_SETTTINGS_BUTTON_LABEL)));
     }
+    DCHECK_EQ(notification_buttons.size(), uma_types_for_buttons.size());
     notification->set_buttons(notification_buttons);
   }
   if (volume.device_type() != chromeos::DEVICE_TYPE_UNKNOWN &&

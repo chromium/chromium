@@ -62,8 +62,25 @@ enum class DeviceNotificationUmaType {
   kMaxValue = PARTITION_FAIL,
 };
 
+// Enum of possible UMA values for histogram Notification.UserAction.
+// Keep the order of this in sync with FileManagerNotificationUserAction in
+// tools/metrics/histograms/enums.xml.
+enum class DeviceNotificationUserActionUmaType {
+  OPEN_SETTINGS_FOR_ARC_STORAGE = 0,  // OPEN_EXTERNAL_STORAGE_PREFERENCES.
+  OPEN_MEDIA_DEVICE_NAVIGATION = 1,
+  OPEN_MEDIA_DEVICE_NAVIGATION_ARC = 2,
+  OPEN_MEDIA_DEVICE_FAIL = 3,
+  OPEN_MEDIA_DEVICE_IMPORT = 4,
+  kMaxValue = OPEN_MEDIA_DEVICE_IMPORT,
+};
+
 // Histogram name for Notification.Show.
-constexpr char kNotificationShowHistogramName[] = "Notification.Show";
+constexpr char kNotificationShowHistogramName[] =
+    "FileBrowser.Notification.Show";
+
+// Histogram name for Notification.UserAction.
+constexpr char kNotificationUserActionHistogramName[] =
+    "FileBrowser.Notification.UserAction";
 
 // Manages creation/deletion and update of system notifications on behalf
 // of the File Manager application.
@@ -212,8 +229,11 @@ class SystemNotificationManager {
   /**
    * Click handler for the removable device notification.
    */
-  void HandleRemovableNotificationClick(const std::string& path,
-                                        absl::optional<int> button_index);
+  void HandleRemovableNotificationClick(
+      const std::string& path,
+      const std::vector<DeviceNotificationUserActionUmaType>&
+          uma_types_for_buttons,
+      absl::optional<int> button_index);
 
   /**
    * Click handler for the progress notification.
