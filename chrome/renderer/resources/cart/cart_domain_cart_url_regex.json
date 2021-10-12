@@ -89,7 +89,7 @@
 "steampowered.com": "^https://store.steampowered.com/cart/?$",
 "sweetwater.com": "^https://www.sweetwater.com/store/cart.php/?$",
 "talbots.com": "^https://www.talbots.com/cart/?$",
-"target.com": "^https://www.target.com/co-cart/?$",
+"target.com": "^https://www.target.com/(co-)?cart/?$",
 "teacherspayteachers.com": "^https://www.teacherspayteachers.com/cart(/checkout)?/?$",
 "therealreal.com": "^https://www.therealreal.com/cart/?$",
 "tractorsupply.com": "^https://www.tractorsupply.com/tscshoppingcartview/?$",
