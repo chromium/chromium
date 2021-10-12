@@ -1016,14 +1016,12 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, AppInstall) {
 IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, ActivateTabInstance) {
   // Setup: a browser with 2 tabs (app A and a non-app tab).
   Browser* browser = nullptr;
-  aura::Window* window = nullptr;
 
   content::WebContents* web_contents_a;
   content::WebContents* web_contents_c;
 
   // Open app A in a tab.
   browser = CreateBrowser();
-  window = browser->window()->GetNativeWindow();
   web_contents_a = InsertForegroundTab(browser, "https://a.example.org");
 
   // Open a second tab with no app.
