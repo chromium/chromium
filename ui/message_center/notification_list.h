@@ -107,6 +107,9 @@ class MESSAGE_CENTER_EXPORT NotificationList {
   // Returns all notifications that have a matching |app_id|.
   Notifications GetNotificationsByAppId(const std::string& app_id) const;
 
+  // Returns all notifications that have a matching `origin_url`.
+  Notifications GetNotificationsByOriginUrl(const GURL& origin_url) const;
+
   // Returns true if the notification exists and was updated.
   bool SetNotificationIcon(const std::string& notification_id,
                            const gfx::Image& image);
