@@ -10,7 +10,7 @@
 #include "chrome/android/chrome_jni_headers/WebApkHandlerDelegate_jni.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/android/color_helpers.h"
+#include "ui/android/color_utils_android.h"
 
 using base::android::JavaParamRef;
 

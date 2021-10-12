@@ -59,6 +59,7 @@ import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.device.mojom.ScreenOrientationLockType;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.webapk.lib.common.WebApkConstants;
 import org.chromium.webapk.lib.common.splash.SplashLayout;
 import org.chromium.webapk.test.WebApkTestHelper;
@@ -1136,11 +1137,11 @@ public class WebApkUpdateManagerUnitTest {
         assertNotEquals(oldDefaultBackgroundColor, splashLayoutDefaultBackgroundColor);
 
         ManifestData androidManifestData = defaultManifestData();
-        androidManifestData.backgroundColor = WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING;
+        androidManifestData.backgroundColor = ColorUtils.INVALID_COLOR;
         androidManifestData.defaultBackgroundColor = oldDefaultBackgroundColor;
 
         ManifestData fetchedManifestData = defaultManifestData();
-        fetchedManifestData.backgroundColor = WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING;
+        fetchedManifestData.backgroundColor = ColorUtils.INVALID_COLOR;
         fetchedManifestData.defaultBackgroundColor = splashLayoutDefaultBackgroundColor;
 
         assertFalse(checkUpdateNeededForFetchedManifest(androidManifestData, fetchedManifestData));

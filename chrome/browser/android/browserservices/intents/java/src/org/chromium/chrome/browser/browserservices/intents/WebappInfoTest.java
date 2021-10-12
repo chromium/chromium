@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.webapps.WebappIntentDataProviderFactory;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.device.mojom.ScreenOrientationLockType;
+import org.chromium.ui.util.ColorUtils;
 
 /**
  * Tests the WebappInfo class's ability to parse various URLs.
@@ -166,9 +167,8 @@ public class WebappInfoTest {
         intent.putExtra(WebappConstants.EXTRA_NAME, name);
         intent.putExtra(WebappConstants.EXTRA_SHORT_NAME, shortName);
         WebappInfo info = createWebappInfo(intent);
-        Assert.assertEquals(WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING, info.toolbarColor());
-        Assert.assertEquals(
-                WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING, info.backgroundColor());
+        Assert.assertEquals(ColorUtils.INVALID_COLOR, info.toolbarColor());
+        Assert.assertEquals(ColorUtils.INVALID_COLOR, info.backgroundColor());
     }
 
     @Test

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.browserservices.intents;
 
 import org.chromium.content_public.common.ScreenOrientationConstants;
-import org.chromium.ui.util.ColorUtils;
 
 /**
  * This class contains constants related to adding shortcuts to the Android Home
@@ -45,9 +44,6 @@ public class WebappConstants {
     // When a new field is added to the intent, this version should be incremented so that it will
     // be correctly populated into the WebappRegistry/WebappDataStorage.
     public static final int WEBAPP_SHORTCUT_VERSION = 3;
-
-    // This value is equal to kInvalidOrMissingColor in the C++ blink::Manifest struct.
-    public static final long MANIFEST_COLOR_INVALID_OR_MISSING = ColorUtils.INVALID_COLOR;
 
     private WebappConstants() {}
 }

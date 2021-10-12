@@ -47,6 +47,7 @@ import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.device.mojom.ScreenOrientationLockType;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.webapk.lib.common.WebApkCommonUtils;
 import org.chromium.webapk.lib.common.WebApkMetaDataUtils;
 import org.chromium.webapk.lib.common.splash.SplashLayout;
@@ -262,11 +263,10 @@ public class WebApkIntentDataProviderFactory {
                 IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.DISPLAY_MODE));
         int orientation = orientationFromString(
                 IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.ORIENTATION));
-        long themeColor = WebApkMetaDataUtils.getLongFromMetaData(bundle,
-                WebApkMetaDataKeys.THEME_COLOR, WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING);
-        long backgroundColor =
-                WebApkMetaDataUtils.getLongFromMetaData(bundle, WebApkMetaDataKeys.BACKGROUND_COLOR,
-                        WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING);
+        long themeColor = WebApkMetaDataUtils.getLongFromMetaData(
+                bundle, WebApkMetaDataKeys.THEME_COLOR, ColorUtils.INVALID_COLOR);
+        long backgroundColor = WebApkMetaDataUtils.getLongFromMetaData(
+                bundle, WebApkMetaDataKeys.BACKGROUND_COLOR, ColorUtils.INVALID_COLOR);
 
         // Fetch the default background color from the WebAPK's resources. Fetching the default
         // background color from the WebAPK is important for consistency when:

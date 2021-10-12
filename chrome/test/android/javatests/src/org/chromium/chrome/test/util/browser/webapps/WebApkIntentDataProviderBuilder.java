@@ -9,11 +9,11 @@ import android.graphics.Color;
 
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.webapps.WebApkIntentDataProviderFactory;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.device.mojom.ScreenOrientationLockType;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,8 +54,7 @@ public class WebApkIntentDataProviderBuilder {
     public BrowserServicesIntentDataProvider build() {
         return WebApkIntentDataProviderFactory.create(new Intent(), mUrl, mScope, null, null, null,
                 null, mDisplayMode, ScreenOrientationLockType.DEFAULT, ShortcutSource.UNKNOWN,
-                WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING,
-                WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING, Color.WHITE,
+                ColorUtils.INVALID_COLOR, ColorUtils.INVALID_COLOR, Color.WHITE,
                 false /* isPrimaryIconMaskable */, false /* isSplashIconMaskable */,
                 mWebApkPackageName, /* shellApkVersion */ 1, mManifestUrl, mUrl,
                 WebApkDistributor.BROWSER,

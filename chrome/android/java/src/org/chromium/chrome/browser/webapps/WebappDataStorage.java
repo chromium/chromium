@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.components.webapk.lib.common.WebApkConstants;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.device.mojom.ScreenOrientationLockType;
+import org.chromium.ui.util.ColorUtils;
 
 import java.io.File;
 
@@ -226,10 +227,8 @@ public class WebappDataStorage {
                 mPreferences.getString(KEY_ICON, null), version,
                 mPreferences.getInt(KEY_DISPLAY_MODE, DisplayMode.STANDALONE),
                 mPreferences.getInt(KEY_ORIENTATION, ScreenOrientationLockType.DEFAULT),
-                mPreferences.getLong(
-                        KEY_THEME_COLOR, WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING),
-                mPreferences.getLong(
-                        KEY_BACKGROUND_COLOR, WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING),
+                mPreferences.getLong(KEY_THEME_COLOR, ColorUtils.INVALID_COLOR),
+                mPreferences.getLong(KEY_BACKGROUND_COLOR, ColorUtils.INVALID_COLOR),
                 mPreferences.getBoolean(KEY_IS_ICON_GENERATED, false),
                 mPreferences.getBoolean(KEY_IS_ICON_ADAPTIVE, false));
     }

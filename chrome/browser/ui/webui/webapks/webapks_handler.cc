@@ -11,7 +11,7 @@
 #include "chrome/browser/android/shortcut_helper.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
-#include "ui/android/color_helpers.h"
+#include "ui/android/color_utils_android.h"
 #include "ui/gfx/color_utils.h"
 
 WebApksHandler::WebApksHandler()

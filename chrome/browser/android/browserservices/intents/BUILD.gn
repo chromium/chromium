@@ -59,5 +59,6 @@ android_library("junit") {
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebApkExtras.Shortcut
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.device.mojom.ScreenOrientationLockType;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -95,11 +96,11 @@ public class WebappInfo {
 
     /**
      * Returns the toolbar color if it is valid, and
-     * WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING otherwise.
+     * ColorUtils.INVALID_COLOR otherwise.
      */
     public long toolbarColor() {
         return hasValidToolbarColor() ? mProvider.getColorProvider().getToolbarColor()
-                                      : WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING;
+                                      : ColorUtils.INVALID_COLOR;
     }
 
     /**
@@ -112,7 +113,7 @@ public class WebappInfo {
     /**
      * Background color is actually a 32 bit unsigned integer which encodes a color
      * in ARGB format. Return value is a long because we also need to encode the
-     * error state of WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING.
+     * error state of ColorUtils.INVALID_COLOR.
      */
     public long backgroundColor() {
         return WebappIntentUtils.colorFromIntegerColor(getWebappExtras().backgroundColor);

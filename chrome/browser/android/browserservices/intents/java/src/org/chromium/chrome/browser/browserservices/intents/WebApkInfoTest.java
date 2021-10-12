@@ -34,6 +34,7 @@ import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.device.mojom.ScreenOrientationLockType;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.webapk.lib.common.WebApkConstants;
 import org.chromium.webapk.lib.common.splash.SplashLayout;
 import org.chromium.webapk.test.WebApkTestHelper;
@@ -696,8 +697,7 @@ public class WebApkInfoTest {
     public void testBackgroundColorFallbackToDefaultNoCustomDefault() {
         Bundle bundle = new Bundle();
         bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
-        bundle.putString(WebApkMetaDataKeys.BACKGROUND_COLOR,
-                WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING + "L");
+        bundle.putString(WebApkMetaDataKeys.BACKGROUND_COLOR, ColorUtils.INVALID_COLOR + "L");
         WebApkTestHelper.registerWebApkWithMetaData(WEBAPK_PACKAGE_NAME, bundle, null);
 
         Intent intent = new Intent();
@@ -720,8 +720,7 @@ public class WebApkInfoTest {
 
         Bundle bundle = new Bundle();
         bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
-        bundle.putString(WebApkMetaDataKeys.BACKGROUND_COLOR,
-                WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING + "L");
+        bundle.putString(WebApkMetaDataKeys.BACKGROUND_COLOR, ColorUtils.INVALID_COLOR + "L");
         bundle.putInt(
                 WebApkMetaDataKeys.DEFAULT_BACKGROUND_COLOR_ID, defaultBackgroundColorResourceId);
         WebApkTestHelper.registerWebApkWithMetaData(WEBAPK_PACKAGE_NAME, bundle, null);

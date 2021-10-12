@@ -13,7 +13,6 @@ component("android") {
   output_name = "ui_android"
   sources = [
     "animation_utils.h",
-    "color_helpers.h",
     "color_utils_android.cc",
     "color_utils_android.h",
     "delegated_frame_host_android.cc",
@@ -519,7 +518,7 @@ test("ui_android_unittests") {
     # Clipboard unittests are run here for Android as gtests on Android are not
     # sharded. On other OSs these are run as part of interactive_ui_tests.
     "//ui/base/clipboard/clipboard_unittest.cc",
-    "color_helpers_unittest.cc",
+    "color_utils_android_unittest.cc",
     "overscroll_refresh_unittest.cc",
     "resources/resource_manager_impl_unittest.cc",
     "run_all_unittests.cc",
