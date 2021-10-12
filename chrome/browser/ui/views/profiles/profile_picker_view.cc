@@ -241,17 +241,6 @@ views::View* ProfilePicker::GetViewForTesting() {
 }
 
 // static
-views::View* ProfilePicker::GetToolbarForTesting() {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (!g_profile_picker_view)
-    return nullptr;
-  return g_profile_picker_view->toolbar_;
-#else
-  return nullptr;
-#endif
-}
-
-// static
 void ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
     base::OnceClosure callback) {
   DCHECK(!g_profile_picker_opened_callback_for_testing);
@@ -552,11 +541,6 @@ void ProfilePickerView::Init(Profile* system_profile) {
 #endif
 
   ShowScreenInSystemContents(CreateURLForEntryPoint(entry_point_));
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // It's important for tests that the toolbar container starts visible (but
-  // empty) and gets hidden later when setting up the layout.
-  toolbar_->SetVisible(false);
-#endif
   GetWidget()->Show();
   state_ = kReady;
 
@@ -785,9 +769,9 @@ void ProfilePickerView::BuildLayout() {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   auto toolbar = std::make_unique<ProfilePickerDiceSignInToolbar>();
-  // It is important for tests that the top container starts visible (being
-  // empty).
   toolbar_ = AddChildView(std::move(toolbar));
+  // Toolbar gets built and set visible once we it's needed for the Dice signin.
+  toolbar_->SetVisible(false);
 #endif
 
   auto web_view = std::make_unique<views::WebView>();

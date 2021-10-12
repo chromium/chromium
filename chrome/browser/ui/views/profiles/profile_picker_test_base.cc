@@ -19,15 +19,14 @@
 
 namespace {
 
-// Waits until a view's visibility has the expected value.
-class ViewVisibilityChangedWaiter : public views::ViewObserver {
+// Waits until a view gets attached to its widget.
+class WidgetAttachedWaiter : public views::ViewObserver {
  public:
-  ViewVisibilityChangedWaiter(views::View* view, bool expect_toolbar_visible)
-      : view_(view), expect_toolbar_visible_(expect_toolbar_visible) {}
-  ~ViewVisibilityChangedWaiter() override = default;
+  explicit WidgetAttachedWaiter(views::View* view) : view_(view) {}
+  ~WidgetAttachedWaiter() override = default;
 
   void Wait() {
-    if (view_->GetVisible() == expect_toolbar_visible_)
+    if (view_->GetWidget())
       return;
     observation_.Observe(view_);
     run_loop_.Run();
@@ -35,17 +34,13 @@ class ViewVisibilityChangedWaiter : public views::ViewObserver {
 
  private:
   // ViewObserver:
-  void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view) override {
-    if (observed_view == starting_view &&
-        starting_view->GetVisible() == expect_toolbar_visible_) {
+  void OnViewAddedToWidget(views::View* observed_view) override {
+    if (observed_view == view_)
       run_loop_.Quit();
-    }
   }
 
   base::RunLoop run_loop_;
   views::View* const view_;
-  bool expect_toolbar_visible_;
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
 };
 
@@ -91,28 +86,23 @@ views::WebView* ProfilePickerTestBase::web_view() {
   return ProfilePicker::GetWebViewForTesting();
 }
 
-void ProfilePickerTestBase::WaitForLayoutWithToolbar() {
-  ViewVisibilityChangedWaiter(ProfilePicker::GetToolbarForTesting(),
-                              /*expect_toolbar_visible=*/true)
-      .Wait();
+void ProfilePickerTestBase::WaitForPickerWidgetCreated() {
+  WidgetAttachedWaiter(view()).Wait();
 }
 
-void ProfilePickerTestBase::WaitForLayoutWithoutToolbar() {
-  ViewVisibilityChangedWaiter(ProfilePicker::GetToolbarForTesting(),
-                              /*expect_toolbar_visible=*/false)
-      .Wait();
-}
-
-void ProfilePickerTestBase::WaitForLoadStop(content::WebContents* contents,
-                                            const GURL& url) {
-  DCHECK(contents);
-  if (contents->GetLastCommittedURL() == url && !contents->IsLoading())
+void ProfilePickerTestBase::WaitForLoadStop(const GURL& url,
+                                            content::WebContents* target) {
+  content::WebContents* wc = target ? target : web_contents();
+  if (wc && wc->GetLastCommittedURL() == url && !wc->IsLoading())
     return;
 
   ui_test_utils::UrlLoadObserver url_observer(
       url, content::NotificationService::AllSources());
   url_observer.Wait();
-  EXPECT_EQ(contents->GetLastCommittedURL(), url);
+
+  // Update the pointer (as web_contents() could have changed in the mean-time).
+  wc = target ? target : web_contents();
+  EXPECT_EQ(wc->GetLastCommittedURL(), url);
 }
 
 void ProfilePickerTestBase::WaitForPickerClosed() {
