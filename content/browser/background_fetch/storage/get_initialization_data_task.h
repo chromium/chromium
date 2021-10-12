@@ -16,6 +16,8 @@
 #include "content/browser/service_worker/service_worker_info.h"
 #include "content/common/background_fetch/background_fetch_types.h"
 #include "content/common/content_export.h"
+#include "net/base/isolation_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -47,6 +49,8 @@ struct CONTENT_EXPORT BackgroundFetchInitializationData {
   // The error, if any, when getting the registration data.
   blink::mojom::BackgroundFetchError error =
       blink::mojom::BackgroundFetchError::NONE;
+
+  absl::optional<net::IsolationInfo> isolation_info;
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundFetchInitializationData);
 };

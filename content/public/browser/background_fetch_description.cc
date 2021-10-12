@@ -18,7 +18,8 @@ BackgroundFetchDescription::BackgroundFetchDescription(
     uint64_t download_total_bytes,
     uint64_t upload_total_bytes,
     std::vector<std::string> outstanding_guids,
-    bool start_paused)
+    bool start_paused,
+    absl::optional<net::IsolationInfo> isolation_info)
     : job_unique_id(job_unique_id),
       origin(origin),
       title(title),
@@ -30,7 +31,8 @@ BackgroundFetchDescription::BackgroundFetchDescription(
       download_total_bytes(download_total_bytes),
       upload_total_bytes(upload_total_bytes),
       outstanding_guids(std::move(outstanding_guids)),
-      start_paused(start_paused) {}
+      start_paused(start_paused),
+      isolation_info(std::move(isolation_info)) {}
 
 BackgroundFetchDescription::~BackgroundFetchDescription() = default;
 

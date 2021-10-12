@@ -114,6 +114,7 @@ class CONTENT_EXPORT BackgroundFetchDataManager
       blink::mojom::BackgroundFetchOptionsPtr options,
       const SkBitmap& icon,
       bool start_paused,
+      const net::IsolationInfo& isolation_info,
       CreateRegistrationCallback callback);
 
   // Get the BackgroundFetchRegistration.

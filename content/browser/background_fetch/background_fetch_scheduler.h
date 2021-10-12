@@ -69,7 +69,8 @@ class CONTENT_EXPORT BackgroundFetchScheduler
       blink::mojom::BackgroundFetchOptionsPtr options,
       const SkBitmap& icon,
       int num_requests,
-      bool start_paused) override;
+      bool start_paused,
+      net::IsolationInfo isolation_info) override;
   void OnRegistrationLoadedAtStartup(
       const BackgroundFetchRegistrationId& registration_id,
       const blink::mojom::BackgroundFetchRegistrationData& registration_data,
@@ -78,7 +79,8 @@ class CONTENT_EXPORT BackgroundFetchScheduler
       int num_completed_requests,
       int num_requests,
       std::vector<scoped_refptr<BackgroundFetchRequestInfo>>
-          active_fetch_requests) override;
+          active_fetch_requests,
+      absl::optional<net::IsolationInfo> isolation_info) override;
   void OnServiceWorkerDatabaseCorrupted(
       int64_t service_worker_registration_id) override;
   void OnRegistrationQueried(
@@ -124,7 +126,8 @@ class CONTENT_EXPORT BackgroundFetchScheduler
       int num_requests,
       std::vector<scoped_refptr<BackgroundFetchRequestInfo>>
           active_fetch_requests,
-      bool start_paused);
+      bool start_paused,
+      absl::optional<net::IsolationInfo> isolation_info);
 
   void DidStartRequest(const BackgroundFetchRegistrationId& registration_id,
                        const BackgroundFetchRequestInfo* request_info);

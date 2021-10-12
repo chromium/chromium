@@ -171,7 +171,8 @@ class BackgroundFetchJobControllerTest : public BackgroundFetchTestBase {
     controller->InitializeRequestStatus(/* completed_downloads= */ 0,
                                         total_downloads,
                                         /* outstanding_guids= */ {},
-                                        /* start_paused= */ false);
+                                        /* start_paused= */ false,
+                                        /* isolation_info= */ absl::nullopt);
 
     return controller;
   }

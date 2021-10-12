@@ -96,7 +96,8 @@ void BackgroundFetchJobController::InitializeRequestStatus(
     int total_downloads,
     std::vector<scoped_refptr<BackgroundFetchRequestInfo>>
         active_fetch_requests,
-    bool start_paused) {
+    bool start_paused,
+    absl::optional<net::IsolationInfo> isolation_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Don't allow double initialization.
@@ -119,7 +120,8 @@ void BackgroundFetchJobController::InitializeRequestStatus(
       options_->title, icon_, completed_downloads_, total_downloads_,
       complete_requests_downloaded_bytes_cache_,
       complete_requests_uploaded_bytes_cache_, options_->download_total,
-      upload_total_, std::move(active_guids), start_paused);
+      upload_total_, std::move(active_guids), start_paused,
+      std::move(isolation_info));
 
   for (auto& active_request : active_fetch_requests)
     active_request_map_[active_request->download_guid()] = active_request;

@@ -108,6 +108,7 @@ class BackgroundFetchServiceTest
               &test->service_,
               std::make_unique<BackgroundFetchServiceImpl>(test->context_,
                                                            storage_key,
+                                                           net::IsolationInfo(),
                                                            /*rfhi=*/nullptr)) {}
 
    private:
@@ -163,7 +164,7 @@ class BackgroundFetchServiceTest
     base::RunLoop run_loop;
     context_->data_manager_->CreateRegistration(
         registration_id, std::move(requests), std::move(options), icon,
-        /* start_paused= */ false,
+        /* start_paused= */ false, net::IsolationInfo(),
         base::BindOnce(&BackgroundFetchServiceTest::DidStartFetch,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -311,7 +312,7 @@ class BackgroundFetchServiceTest
 
     context_->Initialize();
     service_ = std::make_unique<BackgroundFetchServiceImpl>(
-        context_, storage_key(),
+        context_, storage_key(), net::IsolationInfo(),
         static_cast<RenderFrameHostImpl*>(web_contents_->GetMainFrame()));
   }
 
@@ -330,15 +331,16 @@ class BackgroundFetchServiceTest
   }
 
   // BackgroundFetchDataManagerObserver implementation & mocks:
-  MOCK_METHOD6(OnRegistrationCreated,
+  MOCK_METHOD7(OnRegistrationCreated,
                void(const BackgroundFetchRegistrationId& registration_id,
                     const blink::mojom::BackgroundFetchRegistrationData&
                         registration_data,
                     blink::mojom::BackgroundFetchOptionsPtr options,
                     const SkBitmap& icon,
                     int num_requests,
-                    bool start_paused));
-  MOCK_METHOD7(OnRegistrationLoadedAtStartup,
+                    bool start_paused,
+                    net::IsolationInfo isolation_info));
+  MOCK_METHOD8(OnRegistrationLoadedAtStartup,
                void(const BackgroundFetchRegistrationId& registration_id,
                     const blink::mojom::BackgroundFetchRegistrationData&
                         registration_data,
@@ -347,7 +349,8 @@ class BackgroundFetchServiceTest
                     int num_completed_requests,
                     int num_requests,
                     std::vector<scoped_refptr<BackgroundFetchRequestInfo>>
-                        active_fetch_requests));
+                        active_fetch_requests,
+                    absl::optional<net::IsolationInfo> isolation_info));
   MOCK_METHOD2(
       OnRegistrationQueried,
       void(const BackgroundFetchRegistrationId& registration_id,
@@ -1189,7 +1192,7 @@ TEST_F(BackgroundFetchServiceTest, JobsInitializedOnBrowserRestart) {
   // Start the fetch. The request is indefinitley pending so this will never
   // finish.
   {
-    EXPECT_CALL(*this, OnRegistrationCreated(_, _, _, _, _, _));
+    EXPECT_CALL(*this, OnRegistrationCreated(_, _, _, _, _, _, _));
     Fetch(service_worker_registration_id, kExampleDeveloperId,
           std::move(requests), std::move(options), SkBitmap(), &error,
           &registration);
@@ -1219,7 +1222,7 @@ TEST_F(BackgroundFetchServiceTest, JobsInitializedOnBrowserRestart) {
           .Build());
 
   {
-    EXPECT_CALL(*this, OnRegistrationLoadedAtStartup(_, _, _, _, _, _, _));
+    EXPECT_CALL(*this, OnRegistrationLoadedAtStartup(_, _, _, _, _, _, _, _));
     // Allow restart process to go through.
     task_environment_.RunUntilIdle();
   }

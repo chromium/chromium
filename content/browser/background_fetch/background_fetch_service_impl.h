@@ -15,8 +15,13 @@
 #include "base/sequence_checker.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/common/content_export.h"
+#include "net/base/isolation_info.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
+
+namespace net {
+class NetworkIsolationKey;
+}  // namespace net
 
 namespace content {
 
@@ -28,6 +33,7 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
   BackgroundFetchServiceImpl(
       scoped_refptr<BackgroundFetchContext> background_fetch_context,
       blink::StorageKey storage_key,
+      net::IsolationInfo isolation_info,
       RenderFrameHostImpl* rfh);
 
   BackgroundFetchServiceImpl(const BackgroundFetchServiceImpl&) = delete;
@@ -37,6 +43,7 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
   ~BackgroundFetchServiceImpl() override;
 
   static void CreateForWorker(
+      const net::NetworkIsolationKey& network_isolation_key,
       const ServiceWorkerVersionBaseInfo& info,
       mojo::PendingReceiver<blink::mojom::BackgroundFetchService> receiver);
 
@@ -72,6 +79,8 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
   scoped_refptr<BackgroundFetchContext> background_fetch_context_;
 
   const blink::StorageKey storage_key_;
+
+  net::IsolationInfo isolation_info_;
 
   // Identifies the RenderFrameHost that is using this service, if any. May not
   // resolve to a host if the frame has already been destroyed or a worker is

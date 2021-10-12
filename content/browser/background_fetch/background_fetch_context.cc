@@ -88,7 +88,7 @@ void BackgroundFetchContext::DidGetInitializationData(
       observer.OnRegistrationLoadedAtStartup(
           data.registration_id, *data.registration_data, data.options.Clone(),
           data.icon, data.num_completed_requests, data.num_requests,
-          data.active_fetch_requests);
+          data.active_fetch_requests, data.isolation_info);
     }
   }
 }
@@ -146,6 +146,7 @@ void BackgroundFetchContext::StartFetch(
     const SkBitmap& icon,
     blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
     RenderFrameHostImpl* rfh,
+    const net::IsolationInfo& isolation_info,
     blink::mojom::BackgroundFetchService::FetchCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -162,7 +163,7 @@ void BackgroundFetchContext::StartFetch(
       base::BindOnce(&BackgroundFetchContext::DidGetPermission,
                      weak_factory_.GetWeakPtr(), registration_id,
                      std::move(requests), std::move(options), icon,
-                     std::move(ukm_data), rfh_id));
+                     std::move(ukm_data), rfh_id, isolation_info));
 }
 
 void BackgroundFetchContext::DidGetPermission(
@@ -172,6 +173,7 @@ void BackgroundFetchContext::DidGetPermission(
     const SkBitmap& icon,
     blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
     const GlobalRenderFrameHostId& rfh_id,
+    const net::IsolationInfo& isolation_info,
     BackgroundFetchPermission permission) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -183,6 +185,7 @@ void BackgroundFetchContext::DidGetPermission(
     data_manager_->CreateRegistration(
         registration_id, std::move(requests), std::move(options), icon,
         /* start_paused= */ permission == BackgroundFetchPermission::ASK,
+        isolation_info,
         base::BindOnce(&BackgroundFetchContext::DidCreateRegistration,
                        weak_factory_.GetWeakPtr(), registration_id));
     return;

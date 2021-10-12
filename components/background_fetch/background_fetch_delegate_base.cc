@@ -111,6 +111,9 @@ void BackgroundFetchDelegateBase::DownloadUrl(
     job_details->MarkJobAsStarted();
   }
 
+  params.request_params.isolation_info =
+      job_details->fetch_description->isolation_info;
+
   if (job_details->job_state == JobDetails::State::kStartedButPaused) {
     job_details->on_resume = base::BindOnce(
         &BackgroundFetchDelegateBase::StartDownload, GetWeakPtr(), job_id,

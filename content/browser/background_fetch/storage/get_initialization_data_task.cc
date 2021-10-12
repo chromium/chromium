@@ -376,6 +376,8 @@ class FillFromMetadataTask : public InitializationSubTask {
         }
       }
     }
+    sub_task_init().initialization_data->isolation_info =
+        net::IsolationInfo::Deserialize(metadata.isolation_info());
 
     FinishWithError(blink::mojom::BackgroundFetchError::NONE);
   }

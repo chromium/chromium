@@ -82,7 +82,8 @@ class CONTENT_EXPORT BackgroundFetchJobController
       int total_downloads,
       std::vector<scoped_refptr<BackgroundFetchRequestInfo>>
           active_fetch_requests,
-      bool start_paused);
+      bool start_paused,
+      absl::optional<net::IsolationInfo> isolation_info);
 
   // Gets the number of bytes downloaded/uploaded for jobs that are currently
   // running.

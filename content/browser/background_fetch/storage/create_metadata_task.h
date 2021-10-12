@@ -32,6 +32,7 @@ class CreateMetadataTask : public DatabaseTask {
                      blink::mojom::BackgroundFetchOptionsPtr options,
                      const SkBitmap& icon,
                      bool start_paused,
+                     const net::IsolationInfo& isolation_info,
                      CreateMetadataCallback callback);
 
   CreateMetadataTask(const CreateMetadataTask&) = delete;
@@ -73,6 +74,7 @@ class CreateMetadataTask : public DatabaseTask {
   blink::mojom::BackgroundFetchOptionsPtr options_;
   SkBitmap icon_;
   bool start_paused_;
+  net::IsolationInfo isolation_info_;
   CreateMetadataCallback callback_;
 
   std::unique_ptr<proto::BackgroundFetchMetadata> metadata_proto_;

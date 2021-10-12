@@ -217,7 +217,7 @@ TEST_F(BackgroundFetchDelegateProxyTest, StartRequest) {
       /* downloaded_bytes= */ 0u, /* uploaded_bytes= */ 0u,
       /* download_total= */ 0u, /* upload_total= */ 0u,
       /* outstanding_guids= */ std::vector<std::string>(),
-      /* start_paused= */ false);
+      /* start_paused= */ false, /* isolation_info= */ absl::nullopt);
   delegate_proxy_->CreateDownloadJob(controller.weak_ptr_factory_.GetWeakPtr(),
                                      std::move(fetch_description));
 
@@ -244,7 +244,7 @@ TEST_F(BackgroundFetchDelegateProxyTest, StartRequest_NotCompleted) {
       /* downloaded_bytes= */ 0u, /* uploaded_bytes= */ 0u,
       /* download_total= */ 0u, /* upload_total= */ 0u,
       /* outstanding_guids= */ std::vector<std::string>(),
-      /* start_paused= */ false);
+      /* start_paused= */ false, /* isolation_info= */ absl::nullopt);
   delegate_proxy_->CreateDownloadJob(controller.weak_ptr_factory_.GetWeakPtr(),
                                      std::move(fetch_description));
 
@@ -276,7 +276,7 @@ TEST_F(BackgroundFetchDelegateProxyTest, Abort) {
       /* downloaded_bytes= */ 0u, /* uploaded_bytes= */ 0u,
       /* download_total= */ 0u, /* upload_total= */ 0u,
       /* outstanding_guids= */ std::vector<std::string>(),
-      /* start_paused= */ false);
+      /* start_paused= */ false, /* isolation_info= */ absl::nullopt);
   delegate_proxy_->CreateDownloadJob(controller.weak_ptr_factory_.GetWeakPtr(),
                                      std::move(fetch_description1));
 
@@ -286,7 +286,7 @@ TEST_F(BackgroundFetchDelegateProxyTest, Abort) {
       /* downloaded_bytes= */ 0u, /* uploaded_bytes= */ 0u,
       /* download_total= */ 0u, /* upload_total= */ 0u,
       /* outstanding_guids= */ std::vector<std::string>(),
-      /* start_paused= */ false);
+      /* start_paused= */ false, /* isolation_info= */ absl::nullopt);
   delegate_proxy_->CreateDownloadJob(controller2.weak_ptr_factory_.GetWeakPtr(),
                                      std::move(fetch_description2));
 
@@ -324,7 +324,8 @@ TEST_F(BackgroundFetchDelegateProxyTest, UpdateUI) {
       /* downloaded_bytes= */ 0u, /* uploaded_bytes= */ 0u,
       /* download_total= */ 0u, /* upload_total= */ 0u,
       /* outstanding_guids= */ std::vector<std::string>(),
-      /* start_paused= */ false);
+      /* start_paused= */ false,
+      /* isolation_info= */ absl::nullopt);
 
   delegate_proxy_->CreateDownloadJob(controller.weak_ptr_factory_.GetWeakPtr(),
                                      std::move(fetch_description));
@@ -359,14 +360,14 @@ TEST_F(BackgroundFetchDelegateProxyTest, MultipleClients) {
       /* downloaded_bytes= */ 0u, /* uploaded_bytes= */ 0u,
       /* download_total= */ 0u, /* upload_total= */ 0u,
       /* outstanding_guids= */ std::vector<std::string>(),
-      /* start_paused= */ false);
+      /* start_paused= */ false, /* isolation_info= */ absl::nullopt);
   auto fetch_description2 = std::make_unique<BackgroundFetchDescription>(
       kExampleUniqueId2, url::Origin(), /* title= */ "Job 2", SkBitmap(),
       /* completed_requests= */ 0, /* total_requests= */ 1,
       /* downloaded_bytes= */ 0u, /* uploaded_bytes= */ 0u,
       /* download_total= */ 0u, /* upload_total= */ 0u,
       /* outstanding_guids= */ std::vector<std::string>(),
-      /* start_paused= */ false);
+      /* start_paused= */ false, /* isolation_info= */ absl::nullopt);
 
   delegate_proxy1.CreateDownloadJob(controller1.weak_ptr_factory_.GetWeakPtr(),
                                     std::move(fetch_description1));

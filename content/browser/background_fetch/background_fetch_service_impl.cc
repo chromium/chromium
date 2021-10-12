@@ -37,6 +37,7 @@ constexpr size_t kMaxDeveloperIdLength = 1024 * 1024;
 
 // static
 void BackgroundFetchServiceImpl::CreateForWorker(
+    const net::NetworkIsolationKey& network_isolation_key,
     const ServiceWorkerVersionBaseInfo& info,
     mojo::PendingReceiver<blink::mojom::BackgroundFetchService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -52,7 +53,10 @@ void BackgroundFetchServiceImpl::CreateForWorker(
                          ->GetBackgroundFetchContext());
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<BackgroundFetchServiceImpl>(
-          std::move(context), info.storage_key, /*rfh=*/nullptr),
+          std::move(context), info.storage_key,
+          net::IsolationInfo::CreatePartial(
+              net::IsolationInfo::RequestType::kOther, network_isolation_key),
+          /*rfh=*/nullptr),
       std::move(receiver));
 }
 
@@ -62,6 +66,7 @@ void BackgroundFetchServiceImpl::CreateForFrame(
     mojo::PendingReceiver<blink::mojom::BackgroundFetchService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(render_frame_host);
+
   auto* rfhi = static_cast<RenderFrameHostImpl*>(render_frame_host);
   RenderProcessHost* render_process_host = rfhi->GetProcess();
   DCHECK(render_process_host);
@@ -71,17 +76,20 @@ void BackgroundFetchServiceImpl::CreateForFrame(
                          render_process_host->GetStoragePartition())
                          ->GetBackgroundFetchContext());
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<BackgroundFetchServiceImpl>(std::move(context),
-                                                   rfhi->storage_key(), rfhi),
+      std::make_unique<BackgroundFetchServiceImpl>(
+          std::move(context), rfhi->storage_key(),
+          rfhi->GetIsolationInfoForSubresources(), rfhi),
       std::move(receiver));
 }
 
 BackgroundFetchServiceImpl::BackgroundFetchServiceImpl(
     scoped_refptr<BackgroundFetchContext> background_fetch_context,
     blink::StorageKey storage_key,
+    net::IsolationInfo isolation_info,
     RenderFrameHostImpl* rfh)
     : background_fetch_context_(std::move(background_fetch_context)),
       storage_key_(std::move(storage_key)),
+      isolation_info_(std::move(isolation_info)),
       rfh_id_(rfh ? rfh->GetGlobalId() : GlobalRenderFrameHostId()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -118,7 +126,7 @@ void BackgroundFetchServiceImpl::Fetch(
   background_fetch_context_->StartFetch(
       registration_id, std::move(requests), std::move(options), icon,
       std::move(ukm_data), RenderFrameHostImpl::FromID(rfh_id_),
-      std::move(callback));
+      isolation_info_, std::move(callback));
 }
 
 void BackgroundFetchServiceImpl::GetIconDisplaySize(

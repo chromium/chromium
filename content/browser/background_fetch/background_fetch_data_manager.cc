@@ -184,12 +184,13 @@ void BackgroundFetchDataManager::CreateRegistration(
     blink::mojom::BackgroundFetchOptionsPtr options,
     const SkBitmap& icon,
     bool start_paused,
+    const net::IsolationInfo& isolation_info,
     CreateRegistrationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   AddDatabaseTask(std::make_unique<background_fetch::CreateMetadataTask>(
       this, registration_id, std::move(requests), std::move(options), icon,
-      start_paused, std::move(callback)));
+      start_paused, isolation_info, std::move(callback)));
 }
 
 void BackgroundFetchDataManager::GetRegistration(

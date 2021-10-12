@@ -1322,7 +1322,8 @@ void PopulateBinderMapWithContext(
   // Use a task runner if ServiceWorkerHost lives on the IO thread, as
   // CreateForWorker() needs to be called on the UI thread.
   map->Add<blink::mojom::BackgroundFetchService>(
-      base::BindRepeating(&BackgroundFetchServiceImpl::CreateForWorker));
+      base::BindRepeating(&BackgroundFetchServiceImpl::CreateForWorker,
+                          host->GetNetworkIsolationKey()));
   map->Add<blink::mojom::ContentIndexService>(
       base::BindRepeating(&ContentIndexServiceImpl::CreateForWorker));
   map->Add<blink::mojom::CookieStore>(

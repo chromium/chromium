@@ -89,6 +89,7 @@ class CONTENT_EXPORT BackgroundFetchContext
                   const SkBitmap& icon,
                   blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
                   RenderFrameHostImpl* rfh,
+                  const net::IsolationInfo& isolation_info,
                   blink::mojom::BackgroundFetchService::FetchCallback callback);
 
   // Gets display size for the icon for Background Fetch UI.
@@ -191,6 +192,7 @@ class CONTENT_EXPORT BackgroundFetchContext
                         const SkBitmap& icon,
                         blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
                         const GlobalRenderFrameHostId& rfh_id,
+                        const net::IsolationInfo& isolation_info,
                         BackgroundFetchPermission permission);
 
   std::unique_ptr<BackgroundFetchDataManager> data_manager_;
