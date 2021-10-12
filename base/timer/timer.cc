@@ -12,11 +12,9 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/tick_clock.h"
-#include "build/build_config.h"
 
 namespace base {
 namespace internal {
@@ -29,25 +27,6 @@ namespace {
 // the task queue.
 constexpr Feature kAlwaysAbandonScheduledTask{"AlwaysAbandonScheduledTask",
                                               FEATURE_DISABLED_BY_DEFAULT};
-
-// The reason for which the timer's scheduled task was invoked.
-enum ScheduledTaskInvokedReason {
-  kStopped,      // The timer fired for a stopped timer so nothing was done.
-  kRescheduled,  // The timer fired before the desired run time so the user task
-                 // was rescheduled for later. This can happens when the timer
-                 // is restarted while it is already running.
-  kReady,        // The timer fired at the desired run time so the task is ready
-                 // to be invoked.
-  kMaxValue
-};
-
-void RecordScheduledTaskInvokedReason(ScheduledTaskInvokedReason reason) {
-  // Recording this histogram breaks a fuchsia test.
-#if !defined(OS_FUCHSIA)
-  UMA_HISTOGRAM_ENUMERATION("Scheduler.TimerBase.ScheduledTaskInvokedReason",
-                            reason);
-#endif
-}
 
 }  // namespace
 
@@ -234,7 +213,6 @@ void TimerBase::OnScheduledTaskInvoked(
   // The timer may have been stopped.
   if (!is_running_) {
     DCHECK(!FeatureList::IsEnabled(kAlwaysAbandonScheduledTask));
-    RecordScheduledTaskInvokedReason(ScheduledTaskInvokedReason::kStopped);
     return;
   }
 
@@ -247,15 +225,12 @@ void TimerBase::OnScheduledTaskInvoked(
     // task if the |desired_run_time_| is in the future.
     if (desired_run_time_ > now) {
       DCHECK(!FeatureList::IsEnabled(kAlwaysAbandonScheduledTask));
-      RecordScheduledTaskInvokedReason(
-          ScheduledTaskInvokedReason::kRescheduled);
       // Post a new task to span the remaining time.
       ScheduleNewTask(desired_run_time_ - now);
       return;
     }
   }
 
-  RecordScheduledTaskInvokedReason(ScheduledTaskInvokedReason::kReady);
   RunUserTask();
   // No more member accesses here: |this| could be deleted at this point.
 }

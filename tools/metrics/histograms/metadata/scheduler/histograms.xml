@@ -139,6 +139,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Scheduler.TimerBase.ScheduledTaskInvokedReason"
     enum="ScheduledTaskInvokedReason" expires_after="M95">
+  <obsolete>
+    Deprecated in M97.
+  </obsolete>
   <owner>pmonette@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

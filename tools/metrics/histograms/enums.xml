@@ -74844,6 +74844,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="ScheduledTaskInvokedReason">
+  <obsolete>
+    Deprecated in M97.
+  </obsolete>
   <int value="0" label="Stopped"/>
   <int value="1" label="Rescheduled"/>
   <int value="2" label="Ready"/>
