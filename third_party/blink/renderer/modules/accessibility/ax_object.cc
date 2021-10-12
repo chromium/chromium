@@ -2556,16 +2556,21 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     if (IsA<HTMLMediaElement>(owner))
       return true;
 
-    // Do not include ignored descendants of an <input type="number"> because
-    // they interfere with AXPosition code that assumes a plain input field
-    // structure. Specifically, caret moved events will not be emitted for the
-    // final offset because the associated tree position for that offset is an
-    // ignored node. In some cases platform accessibility code will instead
-    // incorrectly emit a caret moved event for the AXPosition which follows the
-    // input.
+    // Do not include ignored descendants of an <input type="search"> or
+    // <input type="number"> because they interfere with AXPosition code that
+    // assumes a plain input field structure. Specifically, due to the ignored
+    // node at the end of textfield, end of editable text position will get
+    // adjusted to past text field or caret moved events will not be emitted for
+    // the final offset because the associated tree position. In some cases
+    // platform accessibility code will instead incorrectly emit a caret moved
+    // event for the AXPosition which follows the input.
     if (IsA<HTMLInputElement>(owner) &&
-        DynamicTo<HTMLInputElement>(owner)->type() == input_type_names::kNumber)
+        (DynamicTo<HTMLInputElement>(owner)->type() ==
+             input_type_names::kSearch ||
+         DynamicTo<HTMLInputElement>(owner)->type() ==
+             input_type_names::kNumber)) {
       return false;
+    }
   }
 
   Element* element = GetElement();

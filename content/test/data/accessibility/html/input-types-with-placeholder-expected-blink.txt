@@ -22,11 +22,7 @@ rootWebArea
 ++++++++staticText name='Search: '
 ++++++++++inlineTextBox name='Search: '
 ++++++++searchBox editable name='Search:' placeholder='search'
-++++++++++genericContainer ignored
-++++++++++genericContainer ignored
-++++++++++++genericContainer ignored
-++++++++++++++genericContainer editable
-++++++++++++genericContainer ignored
+++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Tel: '
 ++++++++++inlineTextBox name='Tel: '

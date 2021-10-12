@@ -30,12 +30,9 @@ rootWebArea
 ++++++++++inlineTextBox name='Search: '
 ++++++++searchBox editable name='Search:' placeholder='placeholder' value='search'
 ++++++++++genericContainer ignored invisible
-++++++++++genericContainer ignored
-++++++++++++genericContainer ignored
-++++++++++++++genericContainer editable
-++++++++++++++++staticText editable name='search'
-++++++++++++++++++inlineTextBox editable name='search'
-++++++++++++genericContainer ignored
+++++++++++genericContainer editable
+++++++++++++staticText editable name='search'
+++++++++++++++inlineTextBox editable name='search'
 ++++++labelText
 ++++++++staticText name='Tel: '
 ++++++++++inlineTextBox name='Tel: '
