@@ -14,6 +14,20 @@
 
 namespace safe_browsing {
 
+ChromeUserPopulation::UserPopulation GetUserPopulationPref(PrefService* prefs) {
+  if (prefs) {
+    if (IsEnhancedProtectionEnabled(*prefs)) {
+      return ChromeUserPopulation::ENHANCED_PROTECTION;
+    } else if (IsExtendedReportingEnabled(*prefs)) {
+      return ChromeUserPopulation::EXTENDED_REPORTING;
+    } else if (IsSafeBrowsingEnabled(*prefs)) {
+      return ChromeUserPopulation::SAFE_BROWSING;
+    }
+  }
+
+  return ChromeUserPopulation::UNKNOWN_USER_POPULATION;
+}
+
 ChromeUserPopulation GetUserPopulation(
     PrefService* prefs,
     bool is_incognito,
@@ -25,15 +39,9 @@ ChromeUserPopulation GetUserPopulation(
     absl::optional<size_t> num_open_profiles) {
   ChromeUserPopulation population;
 
-  if (prefs) {
-    if (IsEnhancedProtectionEnabled(*prefs)) {
-      population.set_user_population(ChromeUserPopulation::ENHANCED_PROTECTION);
-    } else if (IsExtendedReportingEnabled(*prefs)) {
-      population.set_user_population(ChromeUserPopulation::EXTENDED_REPORTING);
-    } else if (IsSafeBrowsingEnabled(*prefs)) {
-      population.set_user_population(ChromeUserPopulation::SAFE_BROWSING);
-    }
+  population.set_user_population(GetUserPopulationPref(prefs));
 
+  if (prefs) {
     population.set_is_mbb_enabled(prefs->GetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
   }

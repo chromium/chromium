@@ -134,6 +134,9 @@ class ChromePasswordProtectionService
 
   AccountInfo GetAccountInfo() const override;
 
+  safe_browsing::ChromeUserPopulation::UserPopulation GetUserPopulationPref()
+      const override;
+
   AccountInfo GetAccountInfoForUsername(
       const std::string& username) const override;
 

@@ -9,6 +9,10 @@
 
 class ChromeBrowserState;
 
+// Returns the UserPopulation enum for the given |browser_state|.
+safe_browsing::ChromeUserPopulation::UserPopulation GetUserPopulationPref(
+    ChromeBrowserState* browser_state);
+
 // Creates a ChromeUserPopulation proto for the given |browser_state|.
 safe_browsing::ChromeUserPopulation GetUserPopulation(
     ChromeBrowserState* browser_state);

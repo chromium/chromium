@@ -16,6 +16,9 @@ class BrowserPolicyConnector;
 
 namespace safe_browsing {
 
+// Returns the UserPopulation enum for the given prefs
+ChromeUserPopulation::UserPopulation GetUserPopulationPref(PrefService* prefs);
+
 // Creates a ChromeUserPopulation proto for the given state.
 ChromeUserPopulation GetUserPopulation(
     // The below may be null.

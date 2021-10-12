@@ -21,18 +21,27 @@
 
 using safe_browsing::ChromeUserPopulation;
 
-ChromeUserPopulation GetUserPopulation(ChromeBrowserState* browser_state) {
-  ChromeUserPopulation population;
+ChromeUserPopulation::UserPopulation GetUserPopulationPref(
+    ChromeBrowserState* browser_state) {
   if (browser_state->GetPrefs()) {
     const PrefService& prefs = *browser_state->GetPrefs();
     if (safe_browsing::IsEnhancedProtectionEnabled(prefs)) {
-      population.set_user_population(ChromeUserPopulation::ENHANCED_PROTECTION);
+      return ChromeUserPopulation::ENHANCED_PROTECTION;
     } else if (safe_browsing::IsExtendedReportingEnabled(prefs)) {
-      population.set_user_population(ChromeUserPopulation::EXTENDED_REPORTING);
+      return ChromeUserPopulation::EXTENDED_REPORTING;
     } else if (safe_browsing::IsSafeBrowsingEnabled(prefs)) {
-      population.set_user_population(ChromeUserPopulation::SAFE_BROWSING);
+      return ChromeUserPopulation::SAFE_BROWSING;
     }
+  }
 
+  return ChromeUserPopulation::UNKNOWN_USER_POPULATION;
+}
+
+ChromeUserPopulation GetUserPopulation(ChromeBrowserState* browser_state) {
+  ChromeUserPopulation population;
+  population.set_user_population(GetUserPopulationPref(browser_state));
+  if (browser_state->GetPrefs()) {
+    const PrefService& prefs = *browser_state->GetPrefs();
     population.set_is_mbb_enabled(prefs.GetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
   }

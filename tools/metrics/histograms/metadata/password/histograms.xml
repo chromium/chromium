@@ -2979,6 +2979,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PasswordProtection.{TriggerType}.UserPopulation{Moment}"
+    enum="SafeBrowsingUserPopulation" expires_after="M98">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-core@chromium.org</owner>
+  <summary>
+    Records the user population for the profile triggering a password protection
+    check, due to {TriggerType}, {Moment}.
+  </summary>
+  <token key="TriggerType">
+    <variant name="OnFocus" summary="focusing on an unfamiliar login page"/>
+    <variant name="PasswordEntry"
+        summary="entering a password on the wrong login page"/>
+  </token>
+  <token key="Moment">
+    <variant name="OnPing" summary="when we decide to contact Safe Browsing"/>
+    <variant name="Start" summary="when the check is triggered"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
