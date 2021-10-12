@@ -2147,9 +2147,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Page A is cacheable, while page B is not.
   GURL url_a(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(z)"));
-  GURL url_b(embedded_test_server()->GetURL(
-      "b.com", "/back_forward_cache/page_with_dedicated_worker.html"));
-  GURL test_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title2.html"));
 
   NavigationControllerImpl& controller = web_contents()->GetController();
 
@@ -2159,6 +2158,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 2. Navigate from a cacheable page to an uncacheable page (A->B).
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImpl* rfh_b = current_frame_host();
+  DisableBFCacheForRFHForTesting(rfh_b);
 
   // 3. Navigate from an uncacheable to a cached page page (B->A).
   // This restores the top frame's proxy in the z.com (iframe's) process.
@@ -2168,11 +2169,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 4. Verify that the main frame's z.com proxy is still functional.
   RenderFrameHostImpl* iframe =
       rfh_a->frame_tree_node()->child_at(0)->current_frame_host();
-  EXPECT_TRUE(ExecJs(iframe, "top.location.href = '" + test_url.spec() + "';"));
+  EXPECT_TRUE(ExecJs(iframe, "top.location.href = '" + url_c.spec() + "';"));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   // We expect to have navigated through the proxy.
-  EXPECT_EQ(test_url, controller.GetLastCommittedEntry()->GetURL());
+  EXPECT_EQ(url_c, controller.GetLastCommittedEntry()->GetURL());
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
