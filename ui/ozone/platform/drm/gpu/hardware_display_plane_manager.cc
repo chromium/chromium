@@ -357,7 +357,6 @@ bool HardwareDisplayPlaneManager::InitializeCrtcState() {
     return false;
   }
 
-  DisableConnectedConnectorsToCrtcs(resources);
   ResetConnectorsCache(resources);
 
   unsigned int num_crtcs_with_out_fence_ptr = 0;
@@ -412,29 +411,6 @@ bool HardwareDisplayPlaneManager::InitializeCrtcState() {
   }
 
   return true;
-}
-
-void HardwareDisplayPlaneManager::DisableConnectedConnectorsToCrtcs(
-    const ScopedDrmResourcesPtr& resources) {
-  // Should only be called when no CRTC state has been set yet because we
-  // hard-disable CRTCs.
-  DCHECK(crtc_state_.empty());
-
-  for (int i = 0; i < resources->count_connectors; ++i) {
-    ScopedDrmConnectorPtr connector =
-        drm_->GetConnector(resources->connectors[i]);
-    if (!connector)
-      continue;
-    // Disable Zombie connectors (disconnected connectors but holding to an
-    // encoder).
-    if (connector->encoder_id &&
-        connector->connection == DRM_MODE_DISCONNECTED) {
-      ScopedDrmEncoderPtr encoder(
-          drmModeGetEncoder(drm_->get_fd(), connector->encoder_id));
-      if (encoder)
-        drm_->DisableCrtc(encoder->crtc_id);
-    }
-  }
 }
 
 const HardwareDisplayPlaneManager::CrtcState&

@@ -60,10 +60,18 @@ class HardwareDisplayControllerInfo {
   uint8_t index_;
 };
 
+using HardwareDisplayControllerInfoList =
+    std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>;
+
 // Looks-up and parses the native display configurations returning all available
-// displays.
-std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>
-GetAvailableDisplayControllerInfos(int fd);
+// displays and CRTCs that weren't picked as best CRTC for each connector.
+// TODO(markyacoub): Create unit tests that tests the different bits and pieces
+// that this function goes through.
+std::pair<HardwareDisplayControllerInfoList, std::vector<uint32_t>>
+GetDisplayInfosAndInvalidCrtcs(int fd);
+
+// Returns the display infos parsed in |GetDisplayInfosAndInvalidCrtcs|
+HardwareDisplayControllerInfoList GetAvailableDisplayControllerInfos(int fd);
 
 bool SameMode(const drmModeModeInfo& lhs, const drmModeModeInfo& rhs);
 

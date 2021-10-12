@@ -209,16 +209,6 @@ class HardwareDisplayPlaneManager {
   void UpdateCrtcAndPlaneStatesAfterModeset(
       const CommitRequest& commit_request);
 
-  // As the CRTC is being initialized, all connectors connected to it should
-  // be disabled. This is a workaround for a bug on Hatch where Puff enables
-  // a connector in dev mode before Chrome even starts. The kernel maps the HW
-  // state at initial modeset (with a dangling connector attached to a CRTC).
-  // When an Atomic Modeset is performed, it fails to modeset as the CRTC is
-  // already attached to another dead connector. (Analysis: crbug/1067121#c5)
-  // TODO(b/168154314): Remove this call when the bug is fixed.
-  void DisableConnectedConnectorsToCrtcs(
-      const ScopedDrmResourcesPtr& resources);
-
   virtual bool InitializePlanes() = 0;
 
   virtual bool SetPlaneData(HardwareDisplayPlaneList* plane_list,

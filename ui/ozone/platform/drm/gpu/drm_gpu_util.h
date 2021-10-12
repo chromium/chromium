@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_DRM_GPU_DRM_GPU_UTIL_H_
 #define UI_OZONE_PLATFORM_DRM_GPU_DRM_GPU_UTIL_H_
 
+#include "ui/ozone/platform/drm/common//drm_util.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 
@@ -38,6 +39,11 @@ std::vector<display::GammaRampRGBEntry> ResampleLut(
 
 // Check DRM driver name match.
 bool IsDriverName(const char* device_file_name, const char* driver);
+
+// Returns the display infos parsed in
+// |GetDisplayInfosAndInvalidCrtcs| and disables the invalid CRTCs
+// that weren't picked as preferred CRTCs.
+HardwareDisplayControllerInfoList GetDisplayInfosAndUpdateCrtcs(int fd);
 
 }  // namespace ui
 
