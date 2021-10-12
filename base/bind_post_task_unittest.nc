@@ -5,7 +5,7 @@
 // This is a "No Compile Test" suite.
 // http://dev.chromium.org/developers/testing/no-compile-tests
 
-#include "base/task/bind_post_task.h"
+#include "base/bind_post_task.h"
 
 #include "base/bind.h"
 #include "base/callback.h"

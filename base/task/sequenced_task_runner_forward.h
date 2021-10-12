@@ -5,6 +5,6 @@
 #ifndef BASE_TASK_SEQUENCED_TASK_RUNNER_FORWARD_H_
 #define BASE_TASK_SEQUENCED_TASK_RUNNER_FORWARD_H_
 
-#include "base/task/sequenced_task_runner.h"
+#include "base/sequenced_task_runner.h"
 
 #endif  // BASE_TASK_SEQUENCED_TASK_RUNNER_FORWARD_H_

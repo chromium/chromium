@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_TASK_SINGLE_THREAD_TASK_RUNNER_H_
-#define BASE_TASK_SINGLE_THREAD_TASK_RUNNER_H_
+#ifndef BASE_SINGLE_THREAD_TASK_RUNNER_H_
+#define BASE_SINGLE_THREAD_TASK_RUNNER_H_
 
 #include "base/base_export.h"
 #include "base/task/sequenced_task_runner_forward.h"
@@ -33,4 +33,4 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
 
 }  // namespace base
 
-#endif  // BASE_TASK_SINGLE_THREAD_TASK_RUNNER_H_
+#endif  // BASE_SINGLE_THREAD_TASK_RUNNER_H_

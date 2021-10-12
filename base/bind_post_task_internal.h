@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_TASK_BIND_POST_TASK_INTERNAL_H_
-#define BASE_TASK_BIND_POST_TASK_INTERNAL_H_
+#ifndef BASE_BIND_POST_TASK_INTERNAL_H_
+#define BASE_BIND_POST_TASK_INTERNAL_H_
 
 #include <utility>
 
@@ -94,4 +94,4 @@ class BindPostTaskTrampoline {
 }  // namespace internal
 }  // namespace base
 
-#endif  // BASE_TASK_BIND_POST_TASK_INTERNAL_H_
+#endif  // BASE_BIND_POST_TASK_INTERNAL_H_

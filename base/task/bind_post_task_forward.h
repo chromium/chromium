@@ -5,6 +5,6 @@
 #ifndef BASE_TASK_BIND_POST_TASK_FORWARD_H_
 #define BASE_TASK_BIND_POST_TASK_FORWARD_H_
 
-#include "base/task/bind_post_task.h"
+#include "base/bind_post_task.h"
 
 #endif  // BASE_TASK_BIND_POST_TASK_FORWARD_H_

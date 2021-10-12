@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_TASK_UPDATEABLE_SEQUENCED_TASK_RUNNER_H_
-#define BASE_TASK_UPDATEABLE_SEQUENCED_TASK_RUNNER_H_
+#ifndef BASE_UPDATEABLE_SEQUENCED_TASK_RUNNER_H_
+#define BASE_UPDATEABLE_SEQUENCED_TASK_RUNNER_H_
 
 #include "base/task/sequenced_task_runner_forward.h"
 #include "base/task/task_traits.h"
@@ -27,4 +27,4 @@ class BASE_EXPORT UpdateableSequencedTaskRunner : public SequencedTaskRunner {
 
 }  // namespace base
 
-#endif  // BASE_TASK_UPDATEABLE_SEQUENCED_TASK_RUNNER_H_
+#endif  // BASE_UPDATEABLE_SEQUENCED_TASK_RUNNER_H_

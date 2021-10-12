@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_TASK_DEFERRED_SEQUENCED_TASK_RUNNER_H_
-#define BASE_TASK_DEFERRED_SEQUENCED_TASK_RUNNER_H_
+#ifndef BASE_DEFERRED_SEQUENCED_TASK_RUNNER_H_
+#define BASE_DEFERRED_SEQUENCED_TASK_RUNNER_H_
 
 #include <vector>
 
@@ -93,4 +93,4 @@ class BASE_EXPORT DeferredSequencedTaskRunner : public SequencedTaskRunner {
 
 }  // namespace base
 
-#endif  // BASE_TASK_DEFERRED_SEQUENCED_TASK_RUNNER_H_
+#endif  // BASE_DEFERRED_SEQUENCED_TASK_RUNNER_H_
