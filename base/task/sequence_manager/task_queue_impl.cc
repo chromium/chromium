@@ -957,12 +957,9 @@ void TaskQueueImpl::SetQueueEnabled(bool enabled) {
   // immediate tasks inside UpdateDelayedWakeUp().
   UpdateDelayedWakeUp(&lazy_now);
 
-  bool has_pending_immediate_work = false;
-
   {
     base::internal::CheckedAutoLock lock(any_thread_lock_);
     UpdateCrossThreadQueueStateLocked();
-    has_pending_immediate_work = HasTaskToRunImmediatelyLocked();
 
     // Copy over the task-reporting related state.
     any_thread_.tracing_only.is_enabled = enabled;
