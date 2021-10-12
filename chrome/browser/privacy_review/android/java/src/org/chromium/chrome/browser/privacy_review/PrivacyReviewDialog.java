@@ -4,18 +4,19 @@
 
 package org.chromium.chrome.browser.privacy_review;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
 /**
  * UI for the Privacy Review dialog in Privacy and security settings.
  */
-public class PrivacyReviewDialog extends AlertDialog {
+public class PrivacyReviewDialog extends Dialog {
     public PrivacyReviewDialog(Context context) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         View view = LayoutInflater.from(context).inflate(R.layout.privacy_review_dialog, null);
@@ -24,7 +25,10 @@ public class PrivacyReviewDialog extends AlertDialog {
         toolbar.inflateMenu(R.menu.privacy_review_toolbar_menu);
         toolbar.setOnMenuItemClickListener(this::onMenuItemClick);
 
-        setView(view);
+        FrameLayout content = view.findViewById(R.id.dialog_content);
+        LayoutInflater.from(context).inflate(R.layout.privacy_review_welcome, content);
+
+        setContentView(view);
     }
 
     private boolean onMenuItemClick(MenuItem menuItem) {

@@ -15,11 +15,15 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/privacy_review_illustration.xml",
     "java/res/layout/privacy_review_dialog.xml",
+    "java/res/layout/privacy_review_welcome.xml",
     "java/res/menu/privacy_review_toolbar_menu.xml",
+    "java/res/values/dimens.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
   ]
 }

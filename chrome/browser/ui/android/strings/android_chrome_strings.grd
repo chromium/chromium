@@ -1019,6 +1019,15 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_PREFS_PRIVACY_REVIEW_SUMMARY" desc="The summary of the privacy menu item.">
         Review privacy and security settings
       </message>
+      <message name="IDS_PRIVACY_REVIEW_WELCOME_TITLE" desc="Title on the welcome page of the privacy review.">
+        The most important privacy and security controls in one place
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_WELCOME_DESCRIPTION" desc="Description on the welcome page of the privacy review.">
+        Chrome provides reasonable defaults, but you can customize it to best fit your browsing habit
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_START_BUTTON" desc="Text on the privacy review start button on the welcome screen.">
+        Let’s go
+      </message>
 
       <!-- Safety check -->
       <message name="IDS_PREFS_SAFETY_CHECK" desc="Title of the Safety check element in settings, allowing the user to check multiple areas of browser safety. [CHAR_LIMIT=32]">
