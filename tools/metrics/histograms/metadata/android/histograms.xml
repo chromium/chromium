@@ -505,6 +505,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Measures time from {type} child process starts to right before main. Only
     recorded on Android N+. Zygote measurements are recorded on Q+.
+
+    Zygote measurements capture the CPU time (thread time) spent to create the
+    app zygote process, before the zygote preload starts. For other processes it
+    measures the time (uptimeMillis) to create the child process service.
   </summary>
   <token key="type">
     <variant name=".All" summary="all (excluding zygote)"/>
