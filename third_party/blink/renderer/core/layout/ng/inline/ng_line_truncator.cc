@@ -357,8 +357,8 @@ LayoutUnit NGLineTruncator::TruncateLineInTheMiddle(
       line[new_index].rect.offset.inline_offset +=
           line[index_right].inline_size - line[new_index].inline_size;
       PlaceEllipsisNextTo(line_box, &line[new_index]);
-      available_width_left +=
-          available_width_right - line[new_index].inline_size;
+      available_width_left += available_width_right -
+                              line[new_index].inline_size.ClampNegativeToZero();
     }
     LayoutUnit ellipsis_offset = line[line.size() - 1].InlineOffset();
 
