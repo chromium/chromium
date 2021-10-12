@@ -2974,25 +2974,23 @@ void MenuController::SelectByChar(char16_t character) {
 
 void MenuController::RepostEventAndCancel(SubmenuView* source,
                                           const ui::LocatedEvent* event) {
-  // Cancel can lead to the deletion |source| so we save the view and window to
-  // be used when reposting the event.
   gfx::Point screen_loc(event->location());
   View::ConvertPointToScreen(source->GetScrollViewContainer(), &screen_loc);
-
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
-  gfx::NativeView native_view = source->GetWidget()->GetNativeView();
-  gfx::NativeWindow window = nullptr;
-  if (native_view) {
-    display::Screen* screen = display::Screen::GetScreen();
-    window = screen->GetWindowAtScreenPoint(screen_loc);
-  }
-#endif
 
 #if defined(OS_WIN)
   if (event->IsMouseEvent() || event->IsTouchEvent()) {
     base::WeakPtr<MenuController> this_ref = AsWeakPtr();
     if (state_.item) {
+      // This must be done before we ReleaseCapture() below, which can lead to
+      // deleting the `source`.
+      gfx::NativeView native_view = source->GetWidget()->GetNativeView();
+      gfx::NativeWindow window =
+          native_view
+              ? display::Screen::GetScreen()->GetWindowAtScreenPoint(screen_loc)
+              : nullptr;
+
       state_.item->GetRootMenuItem()->GetSubmenu()->ReleaseCapture();
+
       // We're going to close and we own the event capture. We need to repost
       // the event, otherwise the window the user clicked on won't get the
       // event.
