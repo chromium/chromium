@@ -152,15 +152,13 @@ public class ScrollCaptureCallbackImplTest {
         observer.onCompositorReady(new Size(contentWidth, contentHeight), new Size(0, 0));
         Assert.assertEquals(new Rect(0, 0, contentWidth, contentHeight),
                 scrollCaptureCallback.getContentAreaForTesting());
-        Assert.assertEquals(new Rect(0, 0, viewportWidth, viewportHeight),
-                scrollCaptureCallback.getInitialRectForTesting());
+        Assert.assertEquals(0, scrollCaptureCallback.getInitialYOffsetForTesting());
 
         // Test non-zero Y offset
         int scrollY = 300;
         observer.onCompositorReady(new Size(contentWidth, contentHeight), new Size(0, scrollY));
         scrollCaptureCallback.onScrollCaptureStart(session, signal, onReady);
-        Assert.assertEquals(new Rect(0, scrollY, viewportWidth, scrollY + viewportHeight),
-                scrollCaptureCallback.getInitialRectForTesting());
+        Assert.assertEquals(scrollY, scrollCaptureCallback.getInitialYOffsetForTesting());
     }
 
     @Test
@@ -244,7 +242,6 @@ public class ScrollCaptureCallbackImplTest {
         scrollCaptureCallback.onScrollCaptureEnd(onReady);
         inOrder.verify(mEntryManager).destroy();
         Assert.assertNull(scrollCaptureCallback.getContentAreaForTesting());
-        Assert.assertNull(scrollCaptureCallback.getInitialRectForTesting());
         inOrder.verify(onReady).run();
     }
 }

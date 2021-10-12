@@ -189,6 +189,7 @@ public class RenderCoordinatesImpl implements RenderCoordinates {
     /**
      * @return Minimum page scale factor to be used with the content.
      */
+    @Override
     public float getMinPageScaleFactor() {
         return mMinPageScaleFactor;
     }
