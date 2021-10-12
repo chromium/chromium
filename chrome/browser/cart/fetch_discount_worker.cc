@@ -250,6 +250,7 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
     if (!discounts.count(cart_url)) {
       cart_discount_proto->clear_discount_text();
       cart_discount_proto->clear_rule_discount_info();
+      cart_discount_proto->clear_has_coupons();
       cart_service_delegate_->UpdateCart(cart_url, std::move(cart_proto),
                                          is_tester);
       continue;
