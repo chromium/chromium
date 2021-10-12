@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 
+#include "build/build_config.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
@@ -93,8 +94,12 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
   EXPECT_TRUE(provider->SupportsSingleBuffering());
   EXPECT_EQ(provider->ColorParams().ColorSpace(), kColorParams.ColorSpace());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
-  // will internally force it to kRGBA8
+  // will internally force it to RGBA8, or BGRA8 on MacOS
+#if defined(OS_MAC)
+  EXPECT_EQ(provider->ColorParams().GetSkColorType(), kBGRA_8888_SkColorType);
+#else
   EXPECT_EQ(provider->ColorParams().GetSkColorType(), kRGBA_8888_SkColorType);
+#endif
   EXPECT_EQ(provider->ColorParams().GetSkAlphaType(),
             kColorParams.GetSkAlphaType());
 
@@ -182,8 +187,12 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_FALSE(provider->SupportsSingleBuffering());
   EXPECT_EQ(provider->ColorParams().ColorSpace(), kColorParams.ColorSpace());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
-  // will internally force it to kRGBA8
+  // will internally force it to RGBA8, or BGRA8 on MacOS
+#if defined(OS_MAC)
+  EXPECT_EQ(provider->ColorParams().GetSkColorType(), kBGRA_8888_SkColorType);
+#else
   EXPECT_EQ(provider->ColorParams().GetSkColorType(), kRGBA_8888_SkColorType);
+#endif
   EXPECT_EQ(provider->ColorParams().GetSkAlphaType(),
             kColorParams.GetSkAlphaType());
 
@@ -364,8 +373,12 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_TRUE(provider->SupportsSingleBuffering());
   EXPECT_EQ(provider->ColorParams().ColorSpace(), kColorParams.ColorSpace());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
-  // will internally force it to kRGBA8
+  // will internally force it to RGBA8, or BGRA8 on MacOS
+#if defined(OS_MAC)
+  EXPECT_EQ(provider->ColorParams().GetSkColorType(), kBGRA_8888_SkColorType);
+#else
   EXPECT_EQ(provider->ColorParams().GetSkColorType(), kRGBA_8888_SkColorType);
+#endif
   EXPECT_EQ(provider->ColorParams().GetSkAlphaType(),
             kColorParams.GetSkAlphaType());
 

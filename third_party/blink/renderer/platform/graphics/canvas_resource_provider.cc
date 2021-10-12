@@ -1001,6 +1001,18 @@ CanvasResourceProvider::CreateSharedImageProvider(
     shared_image_usage_flags &= ~gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
+#if defined(OS_MAC)
+  if ((shared_image_usage_flags & gpu::SHARED_IMAGE_USAGE_SCANOUT) &&
+      is_accelerated &&
+      adjusted_params.GetSkColorType() == kRGBA_8888_SkColorType) {
+    // GPU-accelerated scannout usage on Mac uses IOSurface.  Must switch from
+    // RGBA_8888 to BGRA_8888 in that case.
+    adjusted_params = CanvasResourceParams(adjusted_params.ColorSpace(),
+                                           kBGRA_8888_SkColorType,
+                                           adjusted_params.GetSkAlphaType());
+  }
+#endif
+
   auto provider = std::make_unique<CanvasResourceProviderSharedImage>(
       size, filter_quality, adjusted_params, context_provider_wrapper,
       is_origin_top_left, is_accelerated, skia_use_dawn,
