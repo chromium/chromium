@@ -19,9 +19,7 @@ class CalendarDateCellView : public views::LabelButton {
  public:
   METADATA_HEADER(CalendarDateCellView);
 
-  CalendarDateCellView(CalendarViewController* calendar_view_controller,
-                       base::Time::Exploded& date,
-                       bool is_grayed_out_date);
+  CalendarDateCellView(base::Time::Exploded& date, bool is_grayed_out_date);
   CalendarDateCellView(const CalendarDateCellView& other) = delete;
   CalendarDateCellView& operator=(const CalendarDateCellView& other) = delete;
   ~CalendarDateCellView() override;
@@ -39,24 +37,11 @@ class CalendarDateCellView : public views::LabelButton {
   // Disables focus behavior of this cell.
   void DisableFocus();
 
- protected:
-  // views::Button:
-  void PaintButtonContents(gfx::Canvas* canvas) override;
-
  private:
-  // Computes the position of the indicator that our day has events.
-  gfx::Point GetEventsPresentIndicatorCenterPosition();
-
-  // Draw the indicator if our day has events.
-  void MaybeDrawEventsIndicator(gfx::Canvas* canvas);
-
   // The date used to render this cell view.
   const base::Time::Exploded date_;
 
   const bool grayed_out_;
-
-  // Owned by UnifiedCalendarViewController.
-  const CalendarViewController* const calendar_view_controller_;
 };
 
 //  Container for `CalendarDateCellView` for a single month.

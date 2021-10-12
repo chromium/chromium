@@ -41,10 +41,6 @@ constexpr gfx::Insets kContentInsets{kContentVerticalPadding};
 // bottom if there's this much pixel left.
 constexpr int kPrepareEndOfView = 30;
 
-// After the user is finished navigating to a different month, this is how long
-// we wait before fetchiung more events.
-constexpr base::TimeDelta kScrollingSettledTimeout = base::Milliseconds(100);
-
 // TODO(https://crbug.com/1236276): for some language it may start from "M".
 constexpr int kDefaultWeekTitles[] = {
     IDS_ASH_CALENDAR_SUN, IDS_ASH_CALENDAR_MON, IDS_ASH_CALENDAR_TUE,
@@ -125,7 +121,7 @@ class CalendarView::MonthYearHeaderView : public views::View {
       : month_label_(AddChildView(std::make_unique<views::Label>())) {
     switch (type) {
       case PREVIOUS:
-        date_ = calendar_view_controller->GetPreviousMonthFirstDay(1);
+        date_ = calendar_view_controller->GetPreviousMonthFirstDay();
         month_name_ = calendar_view_controller->GetPreviousMonthName();
         break;
       case CURRENT:
@@ -133,7 +129,7 @@ class CalendarView::MonthYearHeaderView : public views::View {
         month_name_ = calendar_view_controller->GetOnScreenMonthName();
         break;
       case NEXT:
-        date_ = calendar_view_controller->GetNextMonthFirstDay(1);
+        date_ = calendar_view_controller->GetNextMonthFirstDay();
         month_name_ = calendar_view_controller->GetNextMonthName();
         break;
     }
@@ -193,12 +189,7 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
                            CalendarViewController* calendar_view_controller)
     : TrayDetailedView(delegate),
       controller_(controller),
-      calendar_view_controller_(calendar_view_controller),
-      scrolling_settled_timer_(
-          FROM_HERE,
-          kScrollingSettledTimeout,
-          base::BindRepeating(&CalendarView::OnScrollingSettledTimerFired,
-                              base::Unretained(this))) {
+      calendar_view_controller_(calendar_view_controller) {
   CreateTitleRow(IDS_ASH_CALENDAR_TITLE);
 
   // Add the header.
@@ -275,10 +266,6 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
 
 CalendarView::~CalendarView() = default;
 
-void CalendarView::Init() {
-  calendar_view_controller_->FetchEvents();
-}
-
 void CalendarView::CreateExtraTitleRowButtons() {
   DCHECK(!reset_to_today_button_);
   tri_view()->SetContainerVisible(TriView::Container::END, /*visible=*/true);
@@ -312,14 +299,14 @@ views::Button* CalendarView::CreateInfoButton(
 void CalendarView::SetMonthViews() {
   previous_label_ = AddLabelWithId(LabelType::PREVIOUS);
   previous_month_ =
-      AddMonth(calendar_view_controller_->GetPreviousMonthFirstDay(1));
+      AddMonth(calendar_view_controller_->GetPreviousMonthFirstDay());
 
   current_label_ = AddLabelWithId(LabelType::CURRENT);
   current_month_ =
       AddMonth(calendar_view_controller_->GetOnScreenMonthFirstDay());
 
   next_label_ = AddLabelWithId(LabelType::NEXT);
-  next_month_ = AddMonth(calendar_view_controller_->GetNextMonthFirstDay(1));
+  next_month_ = AddMonth(calendar_view_controller_->GetNextMonthFirstDay());
 }
 
 int CalendarView::PositionOfCurrentMonth() {
@@ -501,20 +488,11 @@ void CalendarView::OnMonthChanged(const base::Time::Exploded current_month) {
 
   header_->SetText(calendar_view_controller_->GetOnScreenMonthName());
   header_year_->SetText(year_string);
-
-  scrolling_settled_timer_.Reset();
-}
-
-void CalendarView::OnEventsFetched(
-    const google_apis::calendar::EventList* events) {
-  // No need to store the events, but we need to notify the month views that
-  // something may have changed and they need to refresh.
-  SchedulePaint();
 }
 
 void CalendarView::ScrollUpOneMonth() {
   calendar_view_controller_->UpdateMonth(
-      calendar_view_controller_->GetPreviousMonthFirstDay(1));
+      calendar_view_controller_->GetPreviousMonthFirstDay());
   content_view_->RemoveChildViewT(next_label_);
   content_view_->RemoveChildViewT(next_month_);
 
@@ -524,7 +502,7 @@ void CalendarView::ScrollUpOneMonth() {
   current_month_ = previous_month_;
 
   previous_month_ =
-      AddMonth(calendar_view_controller_->GetPreviousMonthFirstDay(1),
+      AddMonth(calendar_view_controller_->GetPreviousMonthFirstDay(),
                /*add_at_front=*/true);
   if (IsDateCellViewFocused())
     previous_month_->EnableFocus();
@@ -553,7 +531,7 @@ void CalendarView::ScrollDownOneMonth() {
                        previous_label_->GetPreferredSize().height();
 
   calendar_view_controller_->UpdateMonth(
-      calendar_view_controller_->GetNextMonthFirstDay(1));
+      calendar_view_controller_->GetNextMonthFirstDay());
 
   content_view_->RemoveChildViewT(previous_label_);
   content_view_->RemoveChildViewT(previous_month_);
@@ -564,7 +542,7 @@ void CalendarView::ScrollDownOneMonth() {
   current_month_ = next_month_;
 
   next_label_ = AddLabelWithId(LabelType::NEXT);
-  next_month_ = AddMonth(calendar_view_controller_->GetNextMonthFirstDay(1));
+  next_month_ = AddMonth(calendar_view_controller_->GetNextMonthFirstDay());
   if (IsDateCellViewFocused())
     next_month_->EnableFocus();
 
@@ -697,10 +675,6 @@ void CalendarView::OnEvent(ui::Event* event) {
     default:
       NOTREACHED();
   }
-}
-
-void CalendarView::OnScrollingSettledTimerFired() {
-  calendar_view_controller_->FetchEvents();
 }
 
 BEGIN_METADATA(CalendarView, views::View)
