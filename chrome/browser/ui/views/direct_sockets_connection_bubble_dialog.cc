@@ -71,7 +71,7 @@ void ShowDirectSocketsConnectionDialog(Browser* browser,
       ui::DialogModel::Builder(std::move(bubble_delegate_unique))
           .SetTitle(l10n_util::GetStringUTF16(
               IDS_DIRECT_SOCKETS_CONNECTION_BUBBLE_TITLE_LABEL))
-          .SetWindowClosingCallback(
+          .SetDialogDestroyingCallback(
               base::BindOnce(&DirectSocketsConnectionBubbleDelegate::OnClose,
                              base::Unretained(bubble_delegate)))
           .AddOkButton(

@@ -126,7 +126,7 @@ class DialogModelDialogButtonTest : public testing::Test {
     switch (button_id) {
       case kCancelButton:
         button = model->cancel_button(TestDialogModelHost::GetPassKey());
-        model->OnDialogCancelled(TestDialogModelHost::GetPassKey());
+        model->OnDialogCancelAction(TestDialogModelHost::GetPassKey());
         break;
       case kExtraButton:
         button = model->extra_button(TestDialogModelHost::GetPassKey());
@@ -135,7 +135,7 @@ class DialogModelDialogButtonTest : public testing::Test {
         break;
       case kOkButton:
         button = model->ok_button(TestDialogModelHost::GetPassKey());
-        model->OnDialogAccepted(TestDialogModelHost::GetPassKey());
+        model->OnDialogAcceptAction(TestDialogModelHost::GetPassKey());
         break;
     }
     ASSERT_TRUE(button);

@@ -199,13 +199,13 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   // Dialog callbacks can safely refer to |model_|, they can't be called after
   // Widget::Close() calls WidgetWillClose() synchronously so there shouldn't
   // be any dangling references after model removal.
-  SetAcceptCallback(base::BindOnce(&ui::DialogModel::OnDialogAccepted,
+  SetAcceptCallback(base::BindOnce(&ui::DialogModel::OnDialogAcceptAction,
                                    base::Unretained(model_.get()),
                                    GetPassKey()));
-  SetCancelCallback(base::BindOnce(&ui::DialogModel::OnDialogCancelled,
+  SetCancelCallback(base::BindOnce(&ui::DialogModel::OnDialogCancelAction,
                                    base::Unretained(model_.get()),
                                    GetPassKey()));
-  SetCloseCallback(base::BindOnce(&ui::DialogModel::OnDialogClosed,
+  SetCloseCallback(base::BindOnce(&ui::DialogModel::OnDialogCloseAction,
                                   base::Unretained(model_.get()),
                                   GetPassKey()));
 
@@ -335,7 +335,7 @@ void BubbleDialogModelHost::Close() {
 
   // Notify the model of window closing before destroying it (as if
   // Widget::Close)
-  model_->OnWindowClosing(GetPassKey());
+  model_->OnDialogDestroying(GetPassKey());
 
   // TODO(pbos): Consider turning this into for-each-field remove field.
   // TODO(pbos): Move this into a better-named call inside contents_view_ to
@@ -428,7 +428,8 @@ void BubbleDialogModelHost::OnWindowClosing() {
   // ::Close() stack.
   if (!model_)
     return;
-  model_->OnWindowClosing(GetPassKey());
+  model_->OnDialogDestroying(GetPassKey());
+  // TODO(pbos): Do we need to reset `model_` and destroy contents? See Close().
 }
 
 void BubbleDialogModelHost::AddOrUpdateBodyText(

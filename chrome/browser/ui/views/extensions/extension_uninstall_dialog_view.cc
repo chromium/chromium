@@ -93,7 +93,7 @@ void ExtensionUninstallDialogViews::Show() {
           l10n_util::GetStringFUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_TITLE,
                                      base::UTF8ToUTF16(extension()->name())))
       .OverrideShowCloseButton(false)
-      .SetWindowClosingCallback(
+      .SetDialogDestroyingCallback(
           base::BindOnce(&ExtensionUninstallDialogViews::DialogClosing,
                          weak_ptr_factory_.GetWeakPtr()))
       .SetIcon(ui::ImageModel::FromImageSkia(

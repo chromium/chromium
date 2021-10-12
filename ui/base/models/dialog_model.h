@@ -151,17 +151,20 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
     // Called when the dialog is explicitly closed (Esc, close-x). Not called
     // during accept/cancel.
-    Builder& SetCloseCallback(base::OnceClosure callback) {
-      model_->close_callback_ = std::move(callback);
+    Builder& SetCloseActionCallback(base::OnceClosure callback) {
+      model_->close_action_callback_ = std::move(callback);
       return *this;
     }
 
     // TODO(pbos): Clarify and enforce (through tests) that this is called after
     // {accept,cancel,close} callbacks.
-    // Unconditionally called when the dialog closes. Called on top of
-    // {accept,cancel,close} callbacks.
-    Builder& SetWindowClosingCallback(base::OnceClosure callback) {
-      model_->window_closing_callback_ = std::move(callback);
+    // Unconditionally called when the dialog destroys. Happens after
+    // user-action callbacks (accept, cancel, close), or as a result of dialog
+    // destruction. The latter can happen without a user action, for instance as
+    // a result of the OS destroying a native Widget in which this dialog is
+    // hosted.
+    Builder& SetDialogDestroyingCallback(base::OnceClosure callback) {
+      model_->dialog_destroying_callback_ = std::move(callback);
       return *this;
     }
 
@@ -278,10 +281,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
   // Methods with base::PassKey<DialogModelHost> are only intended to be called
   // by the DialogModelHost implementation.
-  void OnDialogAccepted(base::PassKey<DialogModelHost>);
-  void OnDialogCancelled(base::PassKey<DialogModelHost>);
-  void OnDialogClosed(base::PassKey<DialogModelHost>);
-  void OnWindowClosing(base::PassKey<DialogModelHost>);
+  void OnDialogAcceptAction(base::PassKey<DialogModelHost>);
+  void OnDialogCancelAction(base::PassKey<DialogModelHost>);
+  void OnDialogCloseAction(base::PassKey<DialogModelHost>);
+
+  void OnDialogDestroying(base::PassKey<DialogModelHost>);
 
   // Called when added to a DialogModelHost.
   void set_host(base::PassKey<DialogModelHost>, DialogModelHost* host) {
@@ -360,11 +364,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   absl::optional<DialogModelButton> cancel_button_;
   absl::optional<DialogModelButton> extra_button_;
 
-  base::OnceClosure accept_callback_;
-  base::OnceClosure cancel_callback_;
-  base::OnceClosure close_callback_;
+  base::OnceClosure accept_action_callback_;
+  base::OnceClosure cancel_action_callback_;
+  base::OnceClosure close_action_callback_;
 
-  base::OnceClosure window_closing_callback_;
+  base::OnceClosure dialog_destroying_callback_;
 };
 
 }  // namespace ui

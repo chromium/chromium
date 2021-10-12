@@ -248,7 +248,7 @@ views::BubbleDialogDelegate* SessionCrashedBubbleView::ShowBubble(
       .SetTitle(l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_BUBBLE_TITLE))
       .DisableCloseOnDeactivate()
       .SetIsAlertDialog()
-      .SetWindowClosingCallback(
+      .SetDialogDestroyingCallback(
           base::BindOnce(&SessionCrashedBubbleDelegate::OnWindowClosing,
                          base::Unretained(bubble_delegate)))
       .AddBodyText(ui::DialogModelLabel(IDS_SESSION_CRASHED_VIEW_MESSAGE));
