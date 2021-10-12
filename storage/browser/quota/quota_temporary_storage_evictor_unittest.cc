@@ -17,7 +17,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
-#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "storage/browser/quota/quota_temporary_storage_evictor.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,7 +37,7 @@ class MockQuotaEvictionHandler : public QuotaEvictionHandler {
         error_on_evict_buckets_data_(false),
         error_on_get_usage_and_quota_(false) {}
 
-  void EvictBucketData(const BucketInfo& bucket,
+  void EvictBucketData(const BucketLocator& bucket,
                        StatusCallback callback) override {
     if (error_on_evict_buckets_data_) {
       std::move(callback).Run(
@@ -103,7 +103,7 @@ class MockQuotaEvictionHandler : public QuotaEvictionHandler {
 
   // Simulates an access to `bucket`. It reorders the internal LRU list.
   // It internally uses AddBucket().
-  void AccessBucket(const BucketInfo& bucket) {
+  void AccessBucket(const BucketLocator& bucket) {
     const auto& it = buckets_.find(bucket.id);
     EXPECT_TRUE(buckets_.end() != it);
     AddBucket(bucket, it->second);
@@ -112,14 +112,14 @@ class MockQuotaEvictionHandler : public QuotaEvictionHandler {
   // Simulates adding or overwriting the `bucket` to the internal bucket set
   // with the `usage`.  It also adds or moves the `bucket` to the
   // end of the LRU list.
-  void AddBucket(const BucketInfo& bucket, int64_t usage) {
+  void AddBucket(const BucketLocator& bucket, int64_t usage) {
     EnsureBucketRemoved(bucket);
     bucket_order_.push_back(bucket);
     buckets_[bucket.id] = usage;
   }
 
  private:
-  int64_t EnsureBucketRemoved(const BucketInfo& bucket) {
+  int64_t EnsureBucketRemoved(const BucketLocator& bucket) {
     int64_t bucket_usage;
     if (!base::Contains(buckets_, bucket.id))
       return -1;
@@ -133,7 +133,7 @@ class MockQuotaEvictionHandler : public QuotaEvictionHandler {
 
   QuotaSettings settings_;
   int64_t available_space_;
-  std::list<BucketInfo> bucket_order_;
+  std::list<BucketLocator> bucket_order_;
   std::map<BucketId, int64_t> buckets_;
   bool error_on_evict_buckets_data_;
   bool error_on_get_usage_and_quota_;
@@ -163,8 +163,9 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
   }
 
   void TaskForRepeatedEvictionTest(
-      const std::pair<absl::optional<BucketInfo>, int64_t>& bucket_to_be_added,
-      const absl::optional<BucketInfo> bucket_to_be_accessed,
+      const std::pair<absl::optional<BucketLocator>, int64_t>&
+          bucket_to_be_added,
+      const absl::optional<BucketLocator> bucket_to_be_accessed,
       int expected_usage_after_first,
       int expected_usage_after_second) {
     EXPECT_GE(4, num_get_usage_and_quota_for_eviction_);
@@ -187,11 +188,10 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
     ++num_get_usage_and_quota_for_eviction_;
   }
 
-  BucketInfo CreateBucket(const std::string& url, const std::string& name) {
-    return BucketInfo(bucket_id_generator_.GenerateNextId(),
-                      blink::StorageKey::CreateFromStringForTesting(url),
-                      blink::mojom::StorageType::kTemporary, name,
-                      /*expiration=*/base::Time::Max(), /*quota=*/0);
+  BucketLocator CreateBucket(const std::string& url, bool is_default) {
+    return BucketLocator(bucket_id_generator_.GenerateNextId(),
+                         blink::StorageKey::CreateFromStringForTesting(url),
+                         blink::mojom::StorageType::kTemporary, is_default);
   }
 
  protected:
@@ -226,12 +226,12 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
 };
 
 TEST_F(QuotaTemporaryStorageEvictorTest, SimpleEvictionTest) {
-  quota_eviction_handler()->AddBucket(CreateBucket("http://www.z.com", "test"),
-                                      3000);
-  quota_eviction_handler()->AddBucket(CreateBucket("http://www.y.com", "test"),
-                                      200);
-  quota_eviction_handler()->AddBucket(CreateBucket("http://www.x.com", "test"),
-                                      500);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.z.com", /*is_default=*/false), 3000);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.y.com", /*is_default=*/false), 200);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.x.com", /*is_default=*/false), 500);
   quota_eviction_handler()->SetPoolSize(4000);
   quota_eviction_handler()->set_available_space(1000000000);
   EXPECT_EQ(3000 + 200 + 500, quota_eviction_handler()->GetUsage());
@@ -248,13 +248,13 @@ TEST_F(QuotaTemporaryStorageEvictorTest, SimpleEvictionTest) {
 
 TEST_F(QuotaTemporaryStorageEvictorTest, MultipleEvictionTest) {
   quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.z.com", kDefaultBucketName), 20);
+      CreateBucket("http://www.z.com", /*is_default=*/true), 20);
   quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.y.com", kDefaultBucketName), 2900);
+      CreateBucket("http://www.y.com", /*is_default=*/true), 2900);
   quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.x.com", kDefaultBucketName), 450);
+      CreateBucket("http://www.x.com", /*is_default=*/true), 450);
   quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.w.com", kDefaultBucketName), 400);
+      CreateBucket("http://www.w.com", /*is_default=*/true), 400);
   quota_eviction_handler()->SetPoolSize(4000);
   quota_eviction_handler()->set_available_space(1000000000);
   EXPECT_EQ(20 + 2900 + 450 + 400, quota_eviction_handler()->GetUsage());
@@ -277,21 +277,22 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionTest) {
   const int64_t initial_total_size = a_size + b_size + c_size + d_size;
   const int64_t e_size = 275;
 
-  quota_eviction_handler()->AddBucket(CreateBucket("http://www.d.com", "test"),
-                                      d_size);
-  quota_eviction_handler()->AddBucket(CreateBucket("http://www.c.com", "test"),
-                                      c_size);
-  quota_eviction_handler()->AddBucket(CreateBucket("http://www.b.com", "test"),
-                                      b_size);
-  quota_eviction_handler()->AddBucket(CreateBucket("http://www.a.com", "test"),
-                                      a_size);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.d.com", /*is_default=*/false), d_size);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.c.com", /*is_default=*/false), c_size);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.b.com", /*is_default=*/false), b_size);
+  quota_eviction_handler()->AddBucket(
+      CreateBucket("http://www.a.com", /*is_default=*/false), a_size);
   quota_eviction_handler()->SetPoolSize(1000);
   quota_eviction_handler()->set_available_space(1000000000);
   quota_eviction_handler()->set_task_for_get_usage_and_quota(
       base::BindRepeating(
           &QuotaTemporaryStorageEvictorTest::TaskForRepeatedEvictionTest,
           weak_factory_.GetWeakPtr(),
-          std::make_pair(CreateBucket("http://www.e.com", "test"), e_size),
+          std::make_pair(CreateBucket("http://www.e.com", /*is_default=*/false),
+                         e_size),
           absl::nullopt, initial_total_size - d_size,
           initial_total_size - d_size + e_size - c_size));
   EXPECT_EQ(initial_total_size, quota_eviction_handler()->GetUsage());
@@ -315,13 +316,13 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionSkippedTest) {
   const int64_t initial_total_size = a_size + b_size + c_size + d_size;
 
   quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.d.com", kDefaultBucketName), d_size);
+      CreateBucket("http://www.d.com", /*is_default=*/true), d_size);
   quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.c.com", kDefaultBucketName), c_size);
+      CreateBucket("http://www.c.com", /*is_default=*/true), c_size);
   quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.b.com", kDefaultBucketName), b_size);
+      CreateBucket("http://www.b.com", /*is_default=*/true), b_size);
   quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.a.com", kDefaultBucketName), a_size);
+      CreateBucket("http://www.a.com", /*is_default=*/true), a_size);
   quota_eviction_handler()->SetPoolSize(1000);
   quota_eviction_handler()->set_available_space(1000000000);
   quota_eviction_handler()->set_task_for_get_usage_and_quota(
@@ -351,11 +352,16 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionWithAccessBucketTest) {
   const int64_t initial_total_size = a_size + b_size + c_size + d_size;
   const int64_t e_size = 275;
 
-  BucketInfo a_bucket = CreateBucket("http://www.a.com", kDefaultBucketName);
-  BucketInfo b_bucket = CreateBucket("http://www.b.com", kDefaultBucketName);
-  BucketInfo c_bucket = CreateBucket("http://www.c.com", kDefaultBucketName);
-  BucketInfo d_bucket = CreateBucket("http://www.d.com", kDefaultBucketName);
-  BucketInfo e_bucket = CreateBucket("http://www.e.com", kDefaultBucketName);
+  BucketLocator a_bucket =
+      CreateBucket("http://www.a.com", /*is_default=*/true);
+  BucketLocator b_bucket =
+      CreateBucket("http://www.b.com", /*is_default=*/true);
+  BucketLocator c_bucket =
+      CreateBucket("http://www.c.com", /*is_default=*/true);
+  BucketLocator d_bucket =
+      CreateBucket("http://www.d.com", /*is_default=*/true);
+  BucketLocator e_bucket =
+      CreateBucket("http://www.e.com", /*is_default=*/true);
 
   quota_eviction_handler()->AddBucket(d_bucket, d_size);
   quota_eviction_handler()->AddBucket(c_bucket, c_size);
@@ -386,9 +392,9 @@ TEST_F(QuotaTemporaryStorageEvictorTest, DiskSpaceNonEvictionTest) {
   // If we're using so little that evicting all of it wouldn't
   // do enough to alleviate a diskspace shortage, we don't evict.
   quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.z.com", kDefaultBucketName), 10);
+      CreateBucket("http://www.z.com", /*is_default=*/true), 10);
   quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.x.com", kDefaultBucketName), 20);
+      CreateBucket("http://www.x.com", /*is_default=*/true), 20);
   quota_eviction_handler()->SetPoolSize(10000);
   quota_eviction_handler()->set_available_space(
       quota_eviction_handler()->settings().should_remain_available - 350);
@@ -406,13 +412,13 @@ TEST_F(QuotaTemporaryStorageEvictorTest, DiskSpaceNonEvictionTest) {
 
 TEST_F(QuotaTemporaryStorageEvictorTest, DiskSpaceEvictionTest) {
   quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.z.com", kDefaultBucketName), 294);
+      CreateBucket("http://www.z.com", /*is_default=*/true), 294);
   quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.y.com", kDefaultBucketName), 120);
+      CreateBucket("http://www.y.com", /*is_default=*/true), 120);
   quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.x.com", kDefaultBucketName), 150);
+      CreateBucket("http://www.x.com", /*is_default=*/true), 150);
   quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.w.com", kDefaultBucketName), 300);
+      CreateBucket("http://www.w.com", /*is_default=*/true), 300);
   quota_eviction_handler()->SetPoolSize(10000);
   quota_eviction_handler()->set_available_space(
       quota_eviction_handler()->settings().should_remain_available - 350);

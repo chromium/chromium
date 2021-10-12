@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/dom_storage_context.h"
@@ -157,11 +157,11 @@ void SiteDataCountingHelper::GetCookiesCallback(
 }
 
 void SiteDataCountingHelper::GetQuotaBucketsCallback(
-    const std::set<storage::BucketInfo>& buckets,
+    const std::set<storage::BucketLocator>& buckets,
     blink::mojom::StorageType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   std::set<GURL> urls;
-  for (const storage::BucketInfo& bucket : buckets)
+  for (const storage::BucketLocator& bucket : buckets)
     urls.insert(bucket.storage_key.origin().GetURL());
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,

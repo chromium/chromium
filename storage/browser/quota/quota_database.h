@@ -188,10 +188,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   // Deletes the specified bucket.
   bool DeleteBucketInfo(BucketId bucket_id);
 
-  // Returns the BucketInfo for the least recently used bucket. Will exclude
+  // Returns the BucketLocator for the least recently used bucket. Will exclude
   // buckets with ids in `bucket_exceptions` and origins that have the special
   // unlimited storage policy. Returns a QuotaError if the operation has failed.
-  QuotaErrorOr<BucketInfo> GetLRUBucket(
+  QuotaErrorOr<BucketLocator> GetLRUBucket(
       blink::mojom::StorageType type,
       const std::set<BucketId>& bucket_exceptions,
       SpecialStoragePolicy* special_storage_policy);
@@ -202,7 +202,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   // Returns a set of buckets that have been modified since the `begin` and
   // until the `end`. Returns a QuotaError if the operations has failed.
-  QuotaErrorOr<std::set<BucketInfo>> GetBucketsModifiedBetween(
+  QuotaErrorOr<std::set<BucketLocator>> GetBucketsModifiedBetween(
       blink::mojom::StorageType type,
       base::Time begin,
       base::Time end);

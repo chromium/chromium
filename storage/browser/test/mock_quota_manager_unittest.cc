@@ -17,6 +17,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,6 +34,20 @@ constexpr StorageType kPersistent = StorageType::kPersistent;
 
 constexpr QuotaClientType kClientFile = QuotaClientType::kFileSystem;
 constexpr QuotaClientType kClientDB = QuotaClientType::kIndexedDatabase;
+
+bool ContainsBucket(const std::set<BucketLocator>& buckets,
+                    const BucketInfo& target_bucket) {
+  BucketLocator target_bucket_locator(
+      target_bucket.id, target_bucket.storage_key, target_bucket.type,
+      target_bucket.name == kDefaultBucketName);
+  auto it = buckets.find(target_bucket_locator);
+  return it != buckets.end();
+}
+
+BucketLocator ToBucketLocator(const BucketInfo& bucket) {
+  return BucketLocator(bucket.id, bucket.storage_key, bucket.type,
+                       bucket.name == kDefaultBucketName);
+}
 
 }  // namespace
 
@@ -94,14 +109,14 @@ class MockQuotaManagerTest : public testing::Test {
   }
 
   void GotModifiedBuckets(base::OnceClosure quit_closure,
-                          const std::set<BucketInfo>& buckets,
+                          const std::set<BucketLocator>& buckets,
                           StorageType type) {
     buckets_ = buckets;
     type_ = type;
     std::move(quit_closure).Run();
   }
 
-  void DeleteBucketData(const BucketInfo& bucket,
+  void DeleteBucketData(const BucketLocator& bucket,
                         QuotaClientTypes quota_client_types) {
     base::RunLoop run_loop;
     manager_->DeleteBucketData(
@@ -126,7 +141,7 @@ class MockQuotaManagerTest : public testing::Test {
     return manager_.get();
   }
 
-  const std::set<BucketInfo>& buckets() const { return buckets_; }
+  const std::set<BucketLocator>& buckets() const { return buckets_; }
 
   const StorageType& type() const {
     return type_;
@@ -140,7 +155,7 @@ class MockQuotaManagerTest : public testing::Test {
 
   int deletion_callback_count_;
 
-  std::set<BucketInfo> buckets_;
+  std::set<BucketLocator> buckets_;
   StorageType type_;
 
   base::WeakPtrFactory<MockQuotaManagerTest> weak_factory_{this};
@@ -292,7 +307,7 @@ TEST_F(MockQuotaManagerTest, BucketDeletion) {
   manager()->AddBucket(bucket2, {kClientFile, kClientDB}, base::Time::Now());
   manager()->AddBucket(bucket3, {kClientFile, kClientDB}, base::Time::Now());
 
-  DeleteBucketData(bucket2, {kClientFile});
+  DeleteBucketData(ToBucketLocator(bucket2), {kClientFile});
 
   EXPECT_EQ(1, deletion_callback_count());
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
@@ -302,7 +317,7 @@ TEST_F(MockQuotaManagerTest, BucketDeletion) {
   EXPECT_TRUE(manager()->BucketHasData(bucket3, kClientFile));
   EXPECT_TRUE(manager()->BucketHasData(bucket3, kClientDB));
 
-  DeleteBucketData(bucket3, {kClientFile, kClientDB});
+  DeleteBucketData(ToBucketLocator(bucket3), {kClientFile, kClientDB});
 
   EXPECT_EQ(2, deletion_callback_count());
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 1);
@@ -333,8 +348,8 @@ TEST_F(MockQuotaManagerTest, ModifiedBuckets) {
 
   EXPECT_EQ(kTemporary, type());
   EXPECT_EQ(1UL, buckets().size());
-  EXPECT_EQ(1UL, buckets().count(bucket1));
-  EXPECT_EQ(0UL, buckets().count(bucket2));
+  EXPECT_TRUE(ContainsBucket(buckets(), bucket1));
+  EXPECT_FALSE(ContainsBucket(buckets(), bucket2));
 
   manager()->AddBucket(bucket2, {kClientFile}, now);
 
@@ -342,21 +357,21 @@ TEST_F(MockQuotaManagerTest, ModifiedBuckets) {
 
   EXPECT_EQ(kTemporary, type());
   EXPECT_EQ(2UL, buckets().size());
-  EXPECT_EQ(1UL, buckets().count(bucket1));
-  EXPECT_EQ(1UL, buckets().count(bucket2));
+  EXPECT_TRUE(ContainsBucket(buckets(), bucket1));
+  EXPECT_TRUE(ContainsBucket(buckets(), bucket2));
 
   GetModifiedBuckets(kTemporary, then, now);
 
   EXPECT_EQ(kTemporary, type());
   EXPECT_EQ(1UL, buckets().size());
-  EXPECT_EQ(1UL, buckets().count(bucket1));
-  EXPECT_EQ(0UL, buckets().count(bucket2));
+  EXPECT_TRUE(ContainsBucket(buckets(), bucket1));
+  EXPECT_FALSE(ContainsBucket(buckets(), bucket2));
 
   GetModifiedBuckets(kTemporary, now - a_minute, now + a_minute);
 
   EXPECT_EQ(kTemporary, type());
   EXPECT_EQ(1UL, buckets().size());
-  EXPECT_EQ(0UL, buckets().count(bucket1));
-  EXPECT_EQ(1UL, buckets().count(bucket2));
+  EXPECT_FALSE(ContainsBucket(buckets(), bucket1));
+  EXPECT_TRUE(ContainsBucket(buckets(), bucket2));
 }
 }  // namespace storage

@@ -138,11 +138,13 @@ void MockQuotaManager::GetBucketsModifiedBetween(StorageType type,
                                                  base::Time begin,
                                                  base::Time end,
                                                  GetBucketsCallback callback) {
-  auto buckets_to_return = std::make_unique<std::set<BucketInfo>>();
+  auto buckets_to_return = std::make_unique<std::set<BucketLocator>>();
   for (const auto& info : buckets_) {
     if (info.bucket.type == type && info.modified >= begin &&
         info.modified < end)
-      buckets_to_return->insert(info.bucket);
+      buckets_to_return->insert(BucketLocator(
+          info.bucket.id, info.bucket.storage_key, info.bucket.type,
+          info.bucket.name == kDefaultBucketName));
   }
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -151,11 +153,11 @@ void MockQuotaManager::GetBucketsModifiedBetween(StorageType type,
                                 std::move(buckets_to_return), type));
 }
 
-void MockQuotaManager::DeleteBucketData(const BucketInfo& bucket,
+void MockQuotaManager::DeleteBucketData(const BucketLocator& bucket,
                                         QuotaClientTypes quota_client_types,
                                         StatusCallback callback) {
   for (auto current = buckets_.begin(); current != buckets_.end(); ++current) {
-    if (current->bucket == bucket) {
+    if (current->bucket.id == bucket.id) {
       // Modify the mask: if it's 0 after "deletion", remove the storage key.
       for (QuotaClientType type : quota_client_types)
         current->quota_client_types.erase(type);
@@ -211,7 +213,7 @@ void MockQuotaManager::DidGetBucket(
 
 void MockQuotaManager::DidGetModifiedInTimeRange(
     GetBucketsCallback callback,
-    std::unique_ptr<std::set<BucketInfo>> buckets,
+    std::unique_ptr<std::set<BucketLocator>> buckets,
     StorageType storage_type) {
   std::move(callback).Run(*buckets, storage_type);
 }

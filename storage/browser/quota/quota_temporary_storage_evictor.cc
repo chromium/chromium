@@ -216,7 +216,7 @@ void QuotaTemporaryStorageEvictor::OnGotEvictionRoundInfo(
 }
 
 void QuotaTemporaryStorageEvictor::OnGotEvictionBucket(
-    const absl::optional<BucketInfo>& bucket) {
+    const absl::optional<BucketLocator>& bucket) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!bucket.has_value()) {

@@ -77,7 +77,7 @@ class MockQuotaManager : public QuotaManager {
   // specifies the types of QuotaClients which should be removed from this
   // bucket. Setting the mask to AllQuotaClientTypes() will remove all
   // clients from the bucket, regardless of type.
-  void DeleteBucketData(const BucketInfo& bucket,
+  void DeleteBucketData(const BucketLocator& bucket,
                         QuotaClientTypes quota_client_types,
                         StatusCallback callback) override;
 
@@ -171,9 +171,10 @@ class MockQuotaManager : public QuotaManager {
 
   void DidGetBucket(base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
                     QuotaErrorOr<BucketInfo> result);
-  void DidGetModifiedInTimeRange(GetBucketsCallback callback,
-                                 std::unique_ptr<std::set<BucketInfo>> buckets,
-                                 blink::mojom::StorageType storage_type);
+  void DidGetModifiedInTimeRange(
+      GetBucketsCallback callback,
+      std::unique_ptr<std::set<BucketLocator>> buckets,
+      blink::mojom::StorageType storage_type);
   void DidDeleteStorageKeyData(StatusCallback callback,
                                blink::mojom::QuotaStatusCode status);
 

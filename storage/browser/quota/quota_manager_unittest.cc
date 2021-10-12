@@ -86,6 +86,11 @@ StorageKey ToStorageKey(const std::string& url) {
   return StorageKey::CreateFromStringForTesting(url);
 }
 
+BucketLocator ToBucketLocator(const BucketInfo& bucket) {
+  return BucketLocator(bucket.id, bucket.storage_key, bucket.type,
+                       bucket.name == kDefaultBucketName);
+}
+
 MATCHER_P3(MatchesBucketTableEntry, storage_key, type, use_count, "") {
   return testing::ExplainMatchResult(storage_key, arg.storage_key,
                                      result_listener) &&
@@ -374,14 +379,14 @@ class QuotaManagerImplTest : public testing::Test {
                        weak_factory_.GetWeakPtr()));
   }
 
-  void EvictBucketData(const BucketInfo& bucket) {
+  void EvictBucketData(const BucketLocator& bucket) {
     quota_status_ = QuotaStatusCode::kUnknown;
     quota_manager_impl_->EvictBucketData(
         bucket, base::BindOnce(&QuotaManagerImplTest::StatusCallback,
                                weak_factory_.GetWeakPtr()));
   }
 
-  void DeleteBucketData(const BucketInfo& bucket,
+  void DeleteBucketData(const BucketLocator& bucket,
                         QuotaClientTypes quota_client_types) {
     quota_status_ = QuotaStatusCode::kUnknown;
     quota_manager_impl_->DeleteBucketData(
@@ -582,14 +587,14 @@ class QuotaManagerImplTest : public testing::Test {
     usage_ = global_usage;
   }
 
-  void DidGetEvictionBucket(const absl::optional<BucketInfo>& bucket) {
+  void DidGetEvictionBucket(const absl::optional<BucketLocator>& bucket) {
     eviction_bucket_ = bucket;
     DCHECK(!bucket.has_value() ||
            !bucket->storage_key.origin().GetURL().is_empty());
   }
 
   void DidGetModifiedBuckets(base::OnceClosure quit_closure,
-                             const std::set<BucketInfo>& buckets,
+                             const std::set<BucketLocator>& buckets,
                              StorageType type) {
     modified_buckets_ = buckets;
     modified_buckets_type_ = type;
@@ -663,10 +668,10 @@ class QuotaManagerImplTest : public testing::Test {
   int64_t quota() const { return quota_; }
   int64_t total_space() const { return total_space_; }
   int64_t available_space() const { return available_space_; }
-  const absl::optional<BucketInfo>& eviction_bucket() const {
+  const absl::optional<BucketLocator>& eviction_bucket() const {
     return eviction_bucket_;
   }
-  const std::set<BucketInfo>& modified_buckets() const {
+  const std::set<BucketLocator>& modified_buckets() const {
     return modified_buckets_;
   }
   StorageType modified_buckets_type() const { return modified_buckets_type_; }
@@ -701,8 +706,8 @@ class QuotaManagerImplTest : public testing::Test {
   int64_t quota_;
   int64_t total_space_;
   int64_t available_space_;
-  absl::optional<BucketInfo> eviction_bucket_;
-  std::set<BucketInfo> modified_buckets_;
+  absl::optional<BucketLocator> eviction_bucket_;
+  std::set<BucketLocator> modified_buckets_;
   StorageType modified_buckets_type_;
   QuotaTableEntries quota_entries_;
   BucketTableEntries bucket_entries_;
@@ -1802,7 +1807,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketData) {
   GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
   ASSERT_TRUE(bucket_.ok());
 
-  EvictBucketData(bucket_.value());
+  EvictBucketData(ToBucketLocator(bucket_.value()));
   task_environment_.RunUntilIdle();
 
   DumpBucketTable();
@@ -1844,7 +1849,7 @@ TEST_F(QuotaManagerImplTest, EvictNonDefaultBucketData) {
   ASSERT_TRUE(bucket_.ok());
   BucketInfo created_bucket = bucket_.value();
 
-  EvictBucketData(created_bucket);
+  EvictBucketData(ToBucketLocator(created_bucket));
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(QuotaStatusCode::kOk, status());
@@ -1868,7 +1873,7 @@ TEST_F(QuotaManagerImplTest, EvictNonDefaultBucketData) {
   ASSERT_TRUE(bucket_.ok());
   BucketInfo default_bucket = bucket_.value();
 
-  EvictBucketData(default_bucket);
+  EvictBucketData(ToBucketLocator(default_bucket));
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(QuotaStatusCode::kOk, status());
@@ -1897,7 +1902,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataHistogram) {
   CreateBucketForTesting(kStorageKey, kDefaultBucketName, kTemp);
   ASSERT_TRUE(bucket_.ok());
 
-  EvictBucketData(bucket_.value());
+  EvictBucketData(ToBucketLocator(bucket_.value()));
   task_environment_.RunUntilIdle();
 
   // Ensure use count and time since access are recorded.
@@ -1917,7 +1922,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataHistogram) {
 
   GetGlobalUsage(kTemp);
 
-  EvictBucketData(bucket_.value());
+  EvictBucketData(ToBucketLocator(bucket_.value()));
   task_environment_.RunUntilIdle();
 
   // The new use count should be logged.
@@ -1962,7 +1967,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataWithDeletionError) {
 
   for (int i = 0; i < QuotaManagerImpl::kThresholdOfErrorsToBeDenylisted + 1;
        ++i) {
-    EvictBucketData(bucket_.value());
+    EvictBucketData(ToBucketLocator(bucket_.value()));
     task_environment_.RunUntilIdle();
     EXPECT_EQ(QuotaStatusCode::kErrorInvalidModification, status());
   }
@@ -2245,7 +2250,7 @@ TEST_F(QuotaManagerImplTest, DeleteBucketNoClients) {
                          kTemp);
   ASSERT_TRUE(bucket_.ok());
 
-  DeleteBucketData(bucket_.value(), AllQuotaClientTypes());
+  DeleteBucketData(ToBucketLocator(bucket_.value()), AllQuotaClientTypes());
   task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
 }
@@ -2305,9 +2310,9 @@ TEST_F(QuotaManagerImplTest, DeleteBucketDataMultiple) {
   task_environment_.RunUntilIdle();
 
   reset_status_callback_count();
-  DeleteBucketData(foo_temp_bucket, AllQuotaClientTypes());
-  DeleteBucketData(bar_temp_bucket, AllQuotaClientTypes());
-  DeleteBucketData(foo_temp_bucket, AllQuotaClientTypes());
+  DeleteBucketData(ToBucketLocator(foo_temp_bucket), AllQuotaClientTypes());
+  DeleteBucketData(ToBucketLocator(bar_temp_bucket), AllQuotaClientTypes());
+  DeleteBucketData(ToBucketLocator(foo_temp_bucket), AllQuotaClientTypes());
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(3, status_callback_count());
@@ -2399,8 +2404,8 @@ TEST_F(QuotaManagerImplTest, DeleteBucketDataMultipleClientsDifferentTypes) {
   task_environment_.RunUntilIdle();
 
   reset_status_callback_count();
-  DeleteBucketData(foo_perm_bucket, AllQuotaClientTypes());
-  DeleteBucketData(bar_perm_bucket, AllQuotaClientTypes());
+  DeleteBucketData(ToBucketLocator(foo_perm_bucket), AllQuotaClientTypes());
+  DeleteBucketData(ToBucketLocator(bar_perm_bucket), AllQuotaClientTypes());
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(2, status_callback_count());
@@ -2609,13 +2614,13 @@ TEST_F(QuotaManagerImplTest, GetLRUBucket) {
 
   GetEvictionBucket(kTemp);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(bucket_a, eviction_bucket());
+  EXPECT_EQ(ToBucketLocator(bucket_a), eviction_bucket());
 
   // Notify that the `bucket_a` is accessed.
   NotifyBucketAccessed(bucket_a.id);
   GetEvictionBucket(kTemp);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(bucket_b, eviction_bucket());
+  EXPECT_EQ(ToBucketLocator(bucket_b), eviction_bucket());
 
   // Notify that the `bucket_b` is accessed while GetEvictionBucket is running.
   GetEvictionBucket(kTemp);
@@ -2638,7 +2643,6 @@ TEST_F(QuotaManagerImplTest, GetBucketsModifiedBetween) {
                                blink::mojom::StorageType::kPersistent});
 
   GetBucketsModifiedBetween(kTemp, base::Time(), base::Time::Max());
-  task_environment_.RunUntilIdle();
   EXPECT_TRUE(modified_buckets().empty());
   EXPECT_EQ(modified_buckets_type(), kTemp);
 
@@ -2652,35 +2656,31 @@ TEST_F(QuotaManagerImplTest, GetBucketsModifiedBetween) {
   base::Time time3 = client->IncrementMockTime();
 
   GetBucketsModifiedBetween(kTemp, time1, base::Time::Max());
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(modified_buckets_type(), kTemp);
   EXPECT_THAT(modified_buckets(),
               testing::UnorderedElementsAre(
-                  testing::Field(&BucketInfo::storage_key,
+                  testing::Field(&BucketLocator::storage_key,
                                  ToStorageKey("http://a.com")),
-                  testing::Field(&BucketInfo::storage_key,
+                  testing::Field(&BucketLocator::storage_key,
                                  ToStorageKey("http://a.com:1")),
-                  testing::Field(&BucketInfo::storage_key,
+                  testing::Field(&BucketLocator::storage_key,
                                  ToStorageKey("https://a.com")),
-                  testing::Field(&BucketInfo::storage_key,
+                  testing::Field(&BucketLocator::storage_key,
                                  ToStorageKey("http://c.com"))));
 
   GetBucketsModifiedBetween(kTemp, time2, base::Time::Max());
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(2U, modified_buckets().size());
 
   GetBucketsModifiedBetween(kTemp, time3, base::Time::Max());
-  task_environment_.RunUntilIdle();
   EXPECT_TRUE(modified_buckets().empty());
   EXPECT_EQ(modified_buckets_type(), kTemp);
 
   client->ModifyStorageKeyAndNotify(ToStorageKey("http://a.com/"), kTemp, 10);
 
   GetBucketsModifiedBetween(kTemp, time3, base::Time::Max());
-  task_environment_.RunUntilIdle();
   EXPECT_THAT(modified_buckets(),
               testing::UnorderedElementsAre(testing::Field(
-                  &BucketInfo::storage_key, ToStorageKey("http://a.com/"))));
+                  &BucketLocator::storage_key, ToStorageKey("http://a.com/"))));
   EXPECT_EQ(modified_buckets_type(), kTemp);
 }
 
@@ -2691,7 +2691,6 @@ TEST_F(QuotaManagerImplTest, GetBucketsModifiedBetweenWithDatabaseError) {
   disable_quota_database(true);
 
   GetBucketsModifiedBetween(kTemp, base::Time(), base::Time::Max());
-  task_environment_.RunUntilIdle();
 
   // Return empty set when error is encountered.
   EXPECT_TRUE(modified_buckets().empty());
@@ -2777,22 +2776,24 @@ TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleBucket) {
   GetHostUsageWithBreakdown("foo.com", kTemp);
   const int64_t predelete_foo_tmp = usage();
 
-  DeleteBucketData(foo_bucket, {QuotaClientType::kFileSystem});
+  DeleteBucketData(ToBucketLocator(foo_bucket), {QuotaClientType::kFileSystem});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(predelete_foo_tmp - 1, usage());
 
-  DeleteBucketData(foo_bucket, {QuotaClientType::kServiceWorkerCache});
+  DeleteBucketData(ToBucketLocator(foo_bucket),
+                   {QuotaClientType::kServiceWorkerCache});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(predelete_foo_tmp - 2 - 1, usage());
 
-  DeleteBucketData(foo_bucket, {QuotaClientType::kDatabase});
+  DeleteBucketData(ToBucketLocator(foo_bucket), {QuotaClientType::kDatabase});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(predelete_foo_tmp - 4 - 2 - 1, usage());
 
-  DeleteBucketData(foo_bucket, {QuotaClientType::kIndexedDatabase});
+  DeleteBucketData(ToBucketLocator(foo_bucket),
+                   {QuotaClientType::kIndexedDatabase});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(predelete_foo_tmp - 8 - 4 - 2 - 1, usage());
@@ -2874,14 +2875,15 @@ TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleBucket) {
   GetHostUsageWithBreakdown("foo.com", kTemp);
   const int64_t predelete_foo_tmp = usage();
 
-  DeleteBucketData(foo_bucket,
+  DeleteBucketData(ToBucketLocator(foo_bucket),
                    {QuotaClientType::kFileSystem, QuotaClientType::kDatabase});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(predelete_foo_tmp - 4 - 1, usage());
 
-  DeleteBucketData(foo_bucket, {QuotaClientType::kServiceWorkerCache,
-                                QuotaClientType::kIndexedDatabase});
+  DeleteBucketData(ToBucketLocator(foo_bucket),
+                   {QuotaClientType::kServiceWorkerCache,
+                    QuotaClientType::kIndexedDatabase});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(predelete_foo_tmp - 8 - 4 - 2 - 1, usage());

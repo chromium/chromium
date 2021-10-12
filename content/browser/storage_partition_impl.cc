@@ -31,7 +31,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
-#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_impl.h"
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
@@ -257,7 +257,7 @@ void CheckQuotaManagedDataDeletionStatus(size_t* deletion_task_count,
   }
 }
 
-void OnQuotaManagedBucketDeleted(const storage::BucketInfo& bucket,
+void OnQuotaManagedBucketDeleted(const storage::BucketLocator& bucket,
                                  size_t* deletion_task_count,
                                  base::OnceClosure callback,
                                  blink::mojom::QuotaStatusCode status) {
@@ -265,9 +265,10 @@ void OnQuotaManagedBucketDeleted(const storage::BucketInfo& bucket,
   DCHECK_GT(*deletion_task_count, 0u);
   if (status != blink::mojom::QuotaStatusCode::kOk) {
     DLOG(ERROR) << "Couldn't remove data type " << static_cast<int>(bucket.type)
-                << " for bucket " << bucket.name << " with storage key "
-                << bucket.storage_key.GetDebugString() << " and bucket id "
-                << bucket.id << ". Status: " << static_cast<int>(status);
+                << " for bucket with storage key "
+                << bucket.storage_key.GetDebugString() << " is_default "
+                << bucket.is_default << " and bucket id " << bucket.id
+                << ". Status: " << static_cast<int>(status);
   }
 
   (*deletion_task_count)--;
@@ -893,7 +894,7 @@ class StoragePartitionImpl::QuotaManagedDataDeletionHelper {
       StoragePartition::OriginMatcherFunction origin_matcher,
       bool perform_storage_cleanup,
       base::OnceClosure callback,
-      const std::set<storage::BucketInfo>& buckets,
+      const std::set<storage::BucketLocator>& buckets,
       blink::mojom::StorageType quota_storage_type);
 
  private:
@@ -2208,7 +2209,7 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::
         StoragePartition::OriginMatcherFunction origin_matcher,
         bool perform_storage_cleanup,
         base::OnceClosure callback,
-        const std::set<storage::BucketInfo>& buckets,
+        const std::set<storage::BucketLocator>& buckets,
         blink::mojom::StorageType quota_storage_type) {
   // The QuotaManager manages all storage other than cookies, LocalStorage,
   // and SessionStorage. This loop wipes out most HTML5 storage for the given

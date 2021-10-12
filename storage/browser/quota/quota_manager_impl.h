@@ -85,7 +85,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaEvictionHandler {
                                  GetBucketCallback callback) = 0;
 
   // Called to evict a bucket.
-  virtual void EvictBucketData(const BucketInfo& bucket,
+  virtual void EvictBucketData(const BucketLocator& bucket,
                                StatusCallback callback) = 0;
 
  protected:
@@ -318,7 +318,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // the types of QuotaClients to delete from the storage key.
   // Pass in QuotaClientType::AllClients() to remove all clients from the
   // storage key, regardless of type.
-  virtual void DeleteBucketData(const BucketInfo& bucket,
+  virtual void DeleteBucketData(const BucketLocator& bucket,
                                 QuotaClientTypes quota_client_types,
                                 StatusCallback callback);
   void DeleteHostData(const std::string& host,
@@ -468,7 +468,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   struct EvictionContext {
     EvictionContext();
     ~EvictionContext();
-    BucketInfo evicted_bucket;
+    BucketLocator evicted_bucket;
     StatusCallback evict_bucket_data_callback;
   };
 
@@ -505,7 +505,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Runs BucketDataDeleter which calls QuotaClients to clear data for the
   // bucket. Once the task is complete, calls the QuotaDatabase to delete the
   // bucket from the bucket table.
-  void DeleteBucketDataInternal(const BucketInfo& bucket,
+  void DeleteBucketDataInternal(const BucketLocator& bucket,
                                 QuotaClientTypes quota_client_types,
                                 bool is_eviction,
                                 StatusCallback callback);
@@ -532,13 +532,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // consistent errors after multiple attempts.
   std::set<BucketId> GetEvictionBucketExceptions();
   void DidGetEvictionBucket(GetBucketCallback callback,
-                            const absl::optional<BucketInfo>& bucket);
+                            const absl::optional<BucketLocator>& bucket);
 
   // QuotaEvictionHandler.
   void GetEvictionBucket(blink::mojom::StorageType type,
                          int64_t global_quota,
                          GetBucketCallback callback) override;
-  void EvictBucketData(const BucketInfo& bucket,
+  void EvictBucketData(const BucketLocator& bucket,
                        StatusCallback callback) override;
   void GetEvictionRoundInfo(EvictionRoundInfoCallback callback) override;
 
@@ -553,7 +553,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                  QuotaCallback callback,
                                  const int64_t* new_quota,
                                  bool success);
-  void DidGetLRUBucket(QuotaErrorOr<BucketInfo> result);
+  void DidGetLRUBucket(QuotaErrorOr<BucketLocator> result);
   void GetQuotaSettings(QuotaSettingsCallback callback);
   void DidGetSettings(absl::optional<QuotaSettings> settings);
   void GetStorageCapacity(StorageCapacityCallback callback);
@@ -574,7 +574,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       QuotaErrorOr<std::set<BucketLocator>> result);
   void DidGetModifiedBetween(GetBucketsCallback callback,
                              blink::mojom::StorageType type,
-                             QuotaErrorOr<std::set<BucketInfo>> result);
+                             QuotaErrorOr<std::set<BucketLocator>> result);
 
   void DeleteOnCorrectThread() const;
 
