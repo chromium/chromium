@@ -20,11 +20,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/strings/string_util.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/updater/app/app.h"
+#include "chrome/updater/mac/keystone/ks_tickets.h"
+#include "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/mac/update_service_proxy.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
@@ -255,8 +258,29 @@ void KSAdminApp::PrintVersion() {
 }
 
 void KSAdminApp::PrintTickets() {
-  // TODO(crbug.com/1250524): Implement.
-  Shutdown(1);
+  const UpdaterScope scope = HasSwitch(kCommandSystemStore)
+                                 ? UpdaterScope::kSystem
+                                 : UpdaterScope::kUser;
+  // TODO(crbug.com/1250524): Print tickets owned by Chromium Updater. If there
+  // are any, suppress printing any legacy tickets.
+  @autoreleasepool {
+    const NSDictionary* store = [KSTicketStore
+        readStoreWithPath:base::SysUTF8ToNSString(
+                              GetKeystoneFolderPath(scope)
+                                  ->Append(FILE_PATH_LITERAL("TicketStore"))
+                                  .Append(
+                                      FILE_PATH_LITERAL("Keystone.ticketstore"))
+                                  .AsUTF8Unsafe())];
+    if (store && [store count] > 0) {
+      for (const id key in store) {
+        printf("%s\n",
+               base::SysNSStringToUTF8([store[key] description]).c_str());
+      }
+    } else {
+      printf("No tickets\n");
+    }
+  }
+  Shutdown(0);
 }
 
 void KSAdminApp::FirstTaskRun() {
