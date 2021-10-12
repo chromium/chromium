@@ -1023,46 +1023,46 @@ Try tapping the mic to ask me anything.
         Internet Connectivity
       </message>
       <message name="IDS_DIAGNOSTICS_LAN_CONNECTIVITY_FAILED_TEXT" desc="The text that displays when the `Lan Connectivity` test fails.">
-        Unable to contact gateway
+        Can't contact gateway
       </message>
       <message name="IDS_DIAGNOSTICS_GATEWAY_CAN_BE_PINGED_FAILED_TEXT" desc="The text that displays when the `Gateway can be pinged` test fails.">
-        Unable to contact gateway
+        Can't contact gateway
       </message>
       <message name="IDS_DIAGNOSTICS_DNS_RESOLVER_PRESENT_FAILED_TEXT" desc="The text that displays when the `DNS resolver present` test fails.">
-        No DNS servers are configured
+        No DNS servers are set up
       </message>
       <message name="IDS_DIAGNOSTICS_DNS_RESOLUTION_FAILED_TEXT" desc="The text that displays when the `DNS resolution` test fails.">
-        Unable to resolve DNS
+        Can't resolve DNS
       </message>
       <message name="IDS_DIAGNOSTICS_DNS_LATENCY_FAILED_TEXT" desc="The text that displays when the `DNS latency` test fails.">
         DNS resolution has high latency
       </message>
       <message name="IDS_DIAGNOSTICS_SIGNAL_STRENGTH_FAILED_TEXT" desc="The text that displays when the `Signal strength` test fails.">
-        Low signal strength, try to move closer to the access point
+        Weak signal strength. Try moving closer to the Wi-Fi signal source.
       </message>
       <message name="IDS_DIAGNOSTICS_CAPTIVE_PORTAL_FAILED_TEXT" desc="The text that displays when the `Captive portal` test fails.">
         This network may have a captive portal
       </message>
       <message name="IDS_DIAGNOSTICS_HAS_SECURE_WIFI_CONNECTION_FAILED_TEXT" desc="The text that displays when the `Has secure Wi-Fi connection` test fails.">
-        You are using an open network
+        You are using an open and unsecure network
       </message>
       <message name="IDS_DIAGNOSTICS_HTTPS_FIREWALL_FAILED_TEXT" desc="The text that displays when the `HTTPS firewall` test fails.">
-        Unable to connect through firewall to HTTPS (port 443) websites
+        Can't connect through firewall to HTTPS websites
       </message>
       <message name="IDS_DIAGNOSTICS_HTTP_FIREWALL_FAILED_TEXT" desc="The text that displays when the `HTTP firewall` test fails.">
-        Unable to connect through firewall to HTTP (port 80) websites
+        Can't connect through firewall to HTTP websites
       </message>
       <message name="IDS_DIAGNOSTICS_HTTPS_LATENCY_FAILED_TEXT" desc="The text that displays when the `HTTPS latency` test fails.">
-        High latency to HTTPS (port 443) websites
+        High latency to HTTPS websites
       </message>
       <message name="IDS_DIAGNOSTICS_ARC_PING_FAILED_TEXT" desc="The text that displays when the `ARC ping` test fails.">
-        Unable to contact the gateway from Android
+        Can't contact the gateway from Android apps
       </message>
       <message name="IDS_DIAGNOSTICS_ARC_HTTP_FAILED_TEXT" desc="The text that displays when the `ARC HTTP` test fails.">
-        Unable to connect through firewall to HTTP (port 80) websites from Android
+        Can't connect through firewall to HTTP websites from Android apps
       </message>
       <message name="IDS_DIAGNOSTICS_ARC_DNS_RESOLUTION_FAILED_TEXT" desc="The text that displays when the `ARC DNS resolution` test fails.">
-        Unable to resolve DNS from Android
+        Can't resolve DNS from Android apps
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_NO_IP_ADDRESS_TEXT" desc="The text shown when a network's IP Address is missing.">
         Unable to obtain IP address
