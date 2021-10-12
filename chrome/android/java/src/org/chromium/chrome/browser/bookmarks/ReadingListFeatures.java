@@ -24,16 +24,22 @@ import java.util.concurrent.TimeUnit;
  * discards the "last bookmark location". Default: {@link #DEFAULT_SESSION_LENGTH_SECONDS}</li>
  * <li>{@code use_root_bookmark_as_default}: boolean; use the root folder rather than "Mobile
  * bookmarks" as the default bookmark folder. Default: {@code false}</li>
+ * <li>{@code read_later_min_version}: boolean; see {@link BookmarkFeatures#VERSION}.</li>
  * </ul>
  */
 public class ReadingListFeatures {
+    /** @see BookmarkFeatures#VERSION */
+    static final int VERSION = BookmarkFeatures.VERSION;
     private static final int DEFAULT_SESSION_LENGTH_SECONDS = (int) TimeUnit.HOURS.toSeconds(1);
 
     private ReadingListFeatures() {}
 
     public static boolean isReadingListEnabled() {
         return FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER);
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                           ChromeFeatureList.READ_LATER, "read_later_min_version", 0)
+                <= VERSION;
     }
 
     /** Returns whether the root folder should be used as the default location. */
