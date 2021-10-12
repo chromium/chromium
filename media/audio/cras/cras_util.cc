@@ -41,7 +41,7 @@ constexpr char kAlsaLoopback[] = "ALSA_LOOPBACK";
 // One special case is ALSA loopback device, which will only exist under
 // testing. We want it visible to users for e2e tests.
 bool IsForSimpleUsage(std::string type) {
-  return type == kInternalMic || type == kHeadphone || type == kHDMI ||
+  return type == kInternalSpeaker || type == kHeadphone || type == kHDMI ||
          type == kLineout || type == kMic || type == kInternalMic ||
          type == kFrontMic || type == kRearMic || type == kBluetoothNBMic ||
          type == kUSB || type == kBluetooth || type == kAlsaLoopback;
