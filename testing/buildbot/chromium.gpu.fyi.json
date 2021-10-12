@@ -2051,46 +2051,6 @@
     "gtest_tests": [
       {
         "args": [
-          "angle_end2end_tests",
-          "--gtest_filter=-*Vulkan_SwiftShader*",
-          "--shard-timeout=180",
-          "-v"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_os": "MMB29Q",
-              "device_os_type": "userdebug",
-              "device_type": "bullhead",
-              "os": "Android"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
-        },
-        "test": "angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/",
-        "use_isolated_scripts_api": true
-      },
-      {
-        "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

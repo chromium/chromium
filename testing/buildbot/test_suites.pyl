@@ -6397,7 +6397,6 @@
     ],
 
     'gpu_fyi_android_gtests': [
-      'gpu_angle_end2end_gtests',
       'gpu_angle_unit_gtests',
       'gpu_common_gtests_validating',
       'gpu_fyi_and_optional_non_linux_gtests',
