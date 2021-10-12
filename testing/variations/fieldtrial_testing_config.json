@@ -8105,7 +8105,6 @@
         {
             "platforms": [
                 "android",
-                "chromeos_lacros",
                 "ios",
                 "linux",
                 "mac",
@@ -8135,7 +8134,8 @@
         },
         {
             "platforms": [
-                "chromeos"
+                "chromeos",
+                "chromeos_lacros"
             ],
             "experiments": [
                 {
