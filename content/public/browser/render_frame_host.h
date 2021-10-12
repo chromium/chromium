@@ -286,6 +286,17 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // the primary main frame.
   virtual bool IsInPrimaryMainFrame() = 0;
 
+  // Returns the topmost ancestor RenderFrameHost of this RenderFrameHost. This
+  // includes any parents (in the case of subframes) and any outer documents
+  // (e.g. fenced frame owners), but does not traverse out of GuestViews.
+  // This can be used instead of GetMainFrame in cases where we want to escape
+  // inner pages. See also GetParentOrOuterDocument for more details on the
+  // distinction of "parents" and "outer documents."
+  // Note that this may be different from getting the WebContents' primary main
+  // frame. For example, if `this` is in a bfcached or prerendered page, this
+  // will return the cached/prerendered page's main RenderFrameHost.
+  virtual RenderFrameHost* GetOutermostMainFrame() = 0;
+
   // Fenced frames (meta-bug https://crbug.com/1111084):
   // Returns true if this document is the root of a fenced frame tree.
   //

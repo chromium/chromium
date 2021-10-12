@@ -1840,6 +1840,14 @@ IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
       content::CollectAllRenderFrameHosts(embedder_main_frame),
       testing::UnorderedElementsAre(embedder_main_frame, other_guest_main_frame,
                                     unattached_guest_main_frame));
+
+  // In either case, GetParentOrOuterDocument does not escape GuestViews.
+  EXPECT_EQ(nullptr, other_guest_main_frame->GetParentOrOuterDocument());
+  EXPECT_EQ(nullptr, unattached_guest_main_frame->GetParentOrOuterDocument());
+  EXPECT_EQ(other_guest_main_frame,
+            other_guest_main_frame->GetOutermostMainFrame());
+  EXPECT_EQ(unattached_guest_main_frame,
+            unattached_guest_main_frame->GetOutermostMainFrame());
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestContentLoadEvent) {

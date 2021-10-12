@@ -1674,6 +1674,29 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ForEachRenderFrameHost) {
           return RenderFrameHost::FrameIterationAction::kStop;
         }));
   }
+
+  EXPECT_EQ(nullptr, rfh_a->GetParentOrOuterDocument());
+  EXPECT_EQ(rfh_a, rfh_b->GetParentOrOuterDocument());
+  EXPECT_EQ(rfh_b, rfh_c->GetParentOrOuterDocument());
+  EXPECT_EQ(rfh_a, rfh_d->GetParentOrOuterDocument());
+  EXPECT_EQ(nullptr, rfh_e->GetParentOrOuterDocument());
+  // The outermost document of a bfcached page is the bfcached main
+  // RenderFrameHost, not the primary main RenderFrameHost.
+  EXPECT_EQ(rfh_a, rfh_a->GetOutermostMainFrame());
+  EXPECT_EQ(rfh_a, rfh_b->GetOutermostMainFrame());
+  EXPECT_EQ(rfh_a, rfh_c->GetOutermostMainFrame());
+  EXPECT_EQ(rfh_a, rfh_d->GetOutermostMainFrame());
+  EXPECT_EQ(rfh_e, rfh_e->GetOutermostMainFrame());
+  EXPECT_EQ(nullptr, rfh_a->GetParentOrOuterDocumentOrEmbedder());
+  EXPECT_EQ(rfh_a, rfh_b->GetParentOrOuterDocumentOrEmbedder());
+  EXPECT_EQ(rfh_b, rfh_c->GetParentOrOuterDocumentOrEmbedder());
+  EXPECT_EQ(rfh_a, rfh_d->GetParentOrOuterDocumentOrEmbedder());
+  EXPECT_EQ(nullptr, rfh_e->GetParentOrOuterDocumentOrEmbedder());
+  EXPECT_EQ(rfh_a, rfh_a->GetOutermostMainFrameOrEmbedder());
+  EXPECT_EQ(rfh_a, rfh_b->GetOutermostMainFrameOrEmbedder());
+  EXPECT_EQ(rfh_a, rfh_c->GetOutermostMainFrameOrEmbedder());
+  EXPECT_EQ(rfh_a, rfh_d->GetOutermostMainFrameOrEmbedder());
+  EXPECT_EQ(rfh_e, rfh_e->GetOutermostMainFrameOrEmbedder());
 }
 
 // Tests that |RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculative|

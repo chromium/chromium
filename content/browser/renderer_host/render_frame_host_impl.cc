@@ -8685,6 +8685,17 @@ bool RenderFrameHostImpl::IsInPrimaryMainFrame() {
   return !GetParent() && GetPage().IsPrimary();
 }
 
+RenderFrameHostImpl* RenderFrameHostImpl::GetOutermostMainFrame() {
+  RenderFrameHostImpl* current = this;
+  while (true) {
+    RenderFrameHostImpl* parent_or_outer_doc =
+        current->GetParentOrOuterDocument();
+    if (!parent_or_outer_doc)
+      return current;
+    current = parent_or_outer_doc;
+  };
+}
+
 bool RenderFrameHostImpl::CanAccessFilesOfPageState(
     const blink::PageState& state) {
   return ChildProcessSecurityPolicyImpl::GetInstance()->CanReadAllFiles(
@@ -12055,7 +12066,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocumentHelper(
   return nullptr;
 }
 
-RenderFrameHostImpl* RenderFrameHostImpl::GetOutermostMainFrame() {
+RenderFrameHostImpl* RenderFrameHostImpl::GetOutermostMainFrameOrEmbedder() {
   RenderFrameHostImpl* current = this;
   while (true) {
     RenderFrameHostImpl* parent = current->GetParentOrOuterDocumentOrEmbedder();
@@ -12430,8 +12441,9 @@ void RenderFrameHostImpl::SetEmbeddingToken(
 
   // The accessibility tree for the outermost root frame contains references
   // to the focused frame via its AXTreeID, so ensure that we update that.
-  if (GetOutermostMainFrame() != this)
-    GetOutermostMainFrame()->UpdateAXTreeData();
+  RenderFrameHostImpl* outermost = GetOutermostMainFrameOrEmbedder();
+  if (outermost != this)
+    outermost->UpdateAXTreeData();
 }
 
 bool RenderFrameHostImpl::DocumentUsedWebOTP() {

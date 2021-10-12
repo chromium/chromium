@@ -329,6 +329,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   RenderFrameHostImpl* GetMainFrame() override;
   PageImpl& GetPage() override;
   bool IsInPrimaryMainFrame() override;
+  RenderFrameHostImpl* GetOutermostMainFrame() override;
   bool IsFencedFrameRoot() override;
   void ForEachRenderFrameHost(FrameIterationCallback on_frame) override;
   void ForEachRenderFrameHost(
@@ -1878,8 +1879,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return media_device_id_salt_base_;
   }
 
-  // Returns the global root RenderFrameHostImpl in the outermost WebContents.
-  RenderFrameHostImpl* GetOutermostMainFrame();
+  // Returns the topmost ancestor RenderFrameHost. This includes any parents (in
+  // the case of subframes), any outer documents (e.g. fenced frame owners), and
+  // any GuestViews. See also GetOutermostMainFrame which does not escape
+  // GuestViews and GetParentOrOuterDocumentOrEmbedder for more details.
+  // Note that this may be different from getting the WebContents' primary main
+  // frame. For example, if `this` is in a bfcached or prerendered page, this
+  // will return the cached/prerendered page's main RenderFrameHost.
+  RenderFrameHostImpl* GetOutermostMainFrameOrEmbedder();
 
   void set_inner_tree_main_frame_tree_node_id(int id) {
     inner_tree_main_frame_tree_node_id_ = id;

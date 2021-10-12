@@ -46,7 +46,7 @@ CrossProcessFrameConnector::CrossProcessFrameConnector(
   // be on the correct display. All subsequent updates to |screen_infos_|
   // ultimately come from the root, so it makes sense to do it here as well.
   screen_infos_ = current_child_frame_host()
-                      ->GetOutermostMainFrame()
+                      ->GetOutermostMainFrameOrEmbedder()
                       ->GetRenderWidgetHost()
                       ->GetScreenInfos();
 }
@@ -454,7 +454,7 @@ CrossProcessFrameConnector::GetRootRenderWidgetHostView() {
     return nullptr;
 
   RenderFrameHostImpl* root =
-      current_child_frame_host()->GetOutermostMainFrame();
+      current_child_frame_host()->GetOutermostMainFrameOrEmbedder();
   return static_cast<RenderWidgetHostViewBase*>(root->GetView());
 }
 

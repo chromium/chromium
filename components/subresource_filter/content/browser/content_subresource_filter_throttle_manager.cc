@@ -366,11 +366,12 @@ void ContentSubresourceFilterThrottleManager::
       navigation_handle->HasCommitted());
   blink::mojom::FilterListResult latest_filter_list_result =
       EnsureFrameAdEvidence(navigation_handle).latest_filter_list_result();
-  // TODO(1061899): Calculate this without using the WebContents.
   bool is_same_domain_to_main_frame =
       net::registry_controlled_domains::SameDomainOrHost(
           navigation_handle->GetURL(),
-          navigation_handle->GetWebContents()->GetLastCommittedURL(),
+          navigation_handle->GetRenderFrameHost()
+              ->GetOutermostMainFrame()
+              ->GetLastCommittedURL(),
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   bool is_restricted_navigation =
       latest_filter_list_result ==

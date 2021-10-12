@@ -78,6 +78,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, CreateFromScriptAndDestroy) {
   EXPECT_EQ(nullptr, inner_fenced_frame_rfh->GetParent());
   EXPECT_EQ(inner_fenced_frame_rfh->GetParentOrOuterDocument(),
             primary_rfh.get());
+  EXPECT_EQ(inner_fenced_frame_rfh->GetOutermostMainFrame(), primary_rfh.get());
+  EXPECT_EQ(inner_fenced_frame_rfh->GetParentOrOuterDocumentOrEmbedder(),
+            primary_rfh.get());
+  EXPECT_EQ(inner_fenced_frame_rfh->GetOutermostMainFrameOrEmbedder(),
+            primary_rfh.get());
 
   // Test `RenderFrameHostImpl::IsInPrimaryMainFrame`.
   EXPECT_TRUE(primary_rfh->IsInPrimaryMainFrame());

@@ -5549,6 +5549,19 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, ForEachRenderFrameHost) {
         }));
     EXPECT_THAT(visited_frames, testing::ElementsAre(rfh_a, rfh_b, rfh_d));
   }
+
+  EXPECT_EQ(nullptr, rfh_a->GetParentOrOuterDocument());
+  EXPECT_EQ(rfh_a, rfh_b->GetParentOrOuterDocument());
+  EXPECT_EQ(rfh_b, rfh_c->GetParentOrOuterDocument());
+  EXPECT_EQ(rfh_a, rfh_d->GetParentOrOuterDocument());
+  EXPECT_EQ(rfh_a, rfh_a->GetOutermostMainFrame());
+  EXPECT_EQ(rfh_a, rfh_b->GetOutermostMainFrame());
+  EXPECT_EQ(rfh_a, rfh_c->GetOutermostMainFrame());
+  EXPECT_EQ(rfh_a, rfh_d->GetOutermostMainFrame());
+  EXPECT_EQ(rfh_a, rfh_a->GetOutermostMainFrameOrEmbedder());
+  EXPECT_EQ(rfh_a, rfh_b->GetOutermostMainFrameOrEmbedder());
+  EXPECT_EQ(rfh_a, rfh_c->GetOutermostMainFrameOrEmbedder());
+  EXPECT_EQ(rfh_a, rfh_d->GetOutermostMainFrameOrEmbedder());
 }
 
 // Tests that RenderFrameHost::ForEachRenderFrameHost does not expose
@@ -5817,8 +5830,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_THAT(CollectAllRenderFrameHosts(rfh_a),
               testing::ElementsAre(rfh_a, rfh_b));
   EXPECT_EQ(nullptr, rfh_b->GetParent());
+  // Note that since this is a generic test inner WebContents, whether it's
+  // considered an outer document or embedder is just an implementation detail.
   EXPECT_EQ(nullptr, rfh_b->GetParentOrOuterDocument());
+  EXPECT_EQ(rfh_b, rfh_b->GetOutermostMainFrame());
   EXPECT_EQ(rfh_a, rfh_b->GetParentOrOuterDocumentOrEmbedder());
+  EXPECT_EQ(rfh_a, rfh_b->GetOutermostMainFrameOrEmbedder());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,

@@ -1603,6 +1603,34 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ForEachRenderFrameHost) {
               testing::UnorderedElementsAre(initiator_render_frame_host,
                                             prerendered_render_frame_host,
                                             rfh_sub_1, rfh_sub_2, rfh_sub_1_1));
+
+  EXPECT_EQ(nullptr, initiator_render_frame_host->GetParentOrOuterDocument());
+  EXPECT_EQ(nullptr, prerendered_render_frame_host->GetParentOrOuterDocument());
+  EXPECT_EQ(prerendered_render_frame_host,
+            rfh_sub_1->GetParentOrOuterDocument());
+  EXPECT_EQ(rfh_sub_1, rfh_sub_1_1->GetParentOrOuterDocument());
+  EXPECT_EQ(prerendered_render_frame_host,
+            rfh_sub_2->GetParentOrOuterDocument());
+  EXPECT_EQ(initiator_render_frame_host,
+            initiator_render_frame_host->GetOutermostMainFrame());
+  EXPECT_EQ(initiator_render_frame_host,
+            initiator_render_frame_host->GetOutermostMainFrameOrEmbedder());
+  // The outermost document of a prerendered page is the prerendered main
+  // RenderFrameHost, not the primary main RenderFrameHost.
+  EXPECT_EQ(prerendered_render_frame_host,
+            prerendered_render_frame_host->GetOutermostMainFrame());
+  EXPECT_EQ(prerendered_render_frame_host, rfh_sub_1->GetOutermostMainFrame());
+  EXPECT_EQ(prerendered_render_frame_host,
+            rfh_sub_1_1->GetOutermostMainFrame());
+  EXPECT_EQ(prerendered_render_frame_host, rfh_sub_2->GetOutermostMainFrame());
+  EXPECT_EQ(prerendered_render_frame_host,
+            prerendered_render_frame_host->GetOutermostMainFrameOrEmbedder());
+  EXPECT_EQ(prerendered_render_frame_host,
+            rfh_sub_1->GetOutermostMainFrameOrEmbedder());
+  EXPECT_EQ(prerendered_render_frame_host,
+            rfh_sub_1_1->GetOutermostMainFrameOrEmbedder());
+  EXPECT_EQ(prerendered_render_frame_host,
+            rfh_sub_2->GetOutermostMainFrameOrEmbedder());
 }
 
 // Tests that a prerendering page cannot change the visible URL of the
