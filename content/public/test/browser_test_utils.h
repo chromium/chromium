@@ -52,6 +52,7 @@
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/display/display_switches.h"
@@ -1626,6 +1627,9 @@ class TestNavigationManager : public WebContentsObserver {
   // Allows nestable tasks when running a message loop in the Wait* functions.
   // This is useful for utilizing this class from within another message loop.
   void AllowNestableTasks();
+
+  // Write a representation of this class into trace.
+  void WriteIntoTrace(perfetto::TracedValue ctx) const;
 
  protected:
   // Derived classes can override if they want to filter out navigations. This

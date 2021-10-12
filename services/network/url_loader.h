@@ -592,6 +592,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   mojo::Remote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer_;
 
+  // Globally-unique id identifying this URLLoader for tracing.
+  const uint64_t trace_id_;
+
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
 };
 

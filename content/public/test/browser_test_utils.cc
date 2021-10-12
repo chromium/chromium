@@ -3139,6 +3139,9 @@ bool TestNavigationManager::WaitForDesiredState() {
 }
 
 void TestNavigationManager::OnNavigationStateChanged() {
+  TRACE_EVENT("test", "TestNavigationManager::OnNavigationStateChanged", "this",
+              this);
+
   if (request_ && request_->IsPageActivation()) {
     DCHECK_NE(desired_state_, NavigationState::STARTED)
         << "Cannot use WaitForRequestStart() when managing an activating "
@@ -3158,6 +3161,8 @@ void TestNavigationManager::OnNavigationStateChanged() {
 }
 
 void TestNavigationManager::ResumeIfPaused() {
+  TRACE_EVENT("test", "TestNavigationManager::ResumeIfPaused", "this", this);
+
   if (!navigation_paused_)
     return;
 
@@ -3179,6 +3184,16 @@ bool TestNavigationManager::ShouldMonitorNavigation(NavigationHandle* handle) {
 
 void TestNavigationManager::AllowNestableTasks() {
   message_loop_type_ = base::RunLoop::Type::kNestableTasksAllowed;
+}
+
+void TestNavigationManager::WriteIntoTrace(
+    perfetto::TracedValue context) const {
+  perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
+  dict.Add("url", url_);
+  dict.Add("navigation_request", request_);
+  dict.Add("navigation_paused", navigation_paused_);
+  dict.Add("current_state", current_state_);
+  dict.Add("desired_state", desired_state_);
 }
 
 NavigationHandleCommitObserver::NavigationHandleCommitObserver(

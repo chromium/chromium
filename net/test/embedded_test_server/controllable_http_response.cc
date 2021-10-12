@@ -8,6 +8,7 @@
 #include "base/check_op.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/typed_macros.h"
 #include "net/test/embedded_test_server/http_response.h"
 
 namespace net {
@@ -58,6 +59,7 @@ ControllableHttpResponse::ControllableHttpResponse(
 ControllableHttpResponse::~ControllableHttpResponse() {}
 
 void ControllableHttpResponse::WaitForRequest() {
+  TRACE_EVENT("test", "ControllableHttpResponse::WaitForRequest");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(State::WAITING_FOR_REQUEST, state_)
       << "WaitForRequest() called twice.";
@@ -70,6 +72,9 @@ void ControllableHttpResponse::Send(net::HttpStatusCode http_status,
                                     const std::string& content_type,
                                     const std::string& content,
                                     const std::vector<std::string>& cookies) {
+  TRACE_EVENT("test", "ControllableHttpResponse::Send", "http_status",
+              http_status, "content_type", content_type, "content", content,
+              "cookies", cookies);
   std::string content_data(base::StringPrintf(
       "HTTP/1.1 %d %s\nContent-type: %s\n", static_cast<int>(http_status),
       net::GetHttpReasonPhrase(http_status), content_type.c_str()));
@@ -81,6 +86,7 @@ void ControllableHttpResponse::Send(net::HttpStatusCode http_status,
 }
 
 void ControllableHttpResponse::Send(const std::string& bytes) {
+  TRACE_EVENT("test", "ControllableHttpResponse::Send", "bytes", bytes);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(State::READY_TO_SEND_DATA, state_) << "Send() called without any "
                                                   "opened connection. Did you "
