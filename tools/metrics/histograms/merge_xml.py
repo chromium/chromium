@@ -160,9 +160,9 @@ def MergeTrees(trees, should_expand_owners):
   # doesn't build indexes for later lookup. And thus, we need to convert the
   # merged |doc| to a xml string and convert it back to force it to build
   # indexes for the merged |doc|.
-  doc = xml.dom.minidom.parseString(doc.toxml())
+  doc = xml.dom.minidom.parseString(doc.toxml().encode('utf-8'))
   # Only perform fancy operations after |doc| becomes stable. This helps improve
-  # the runtime perforamnce.
+  # the runtime performance.
   if should_expand_owners:
     for histograms in doc.getElementsByTagName('histograms'):
       expand_owners.ExpandHistogramsOWNERS(histograms)
