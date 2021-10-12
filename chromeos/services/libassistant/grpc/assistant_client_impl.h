@@ -40,6 +40,9 @@ class AssistantClientImpl : public AssistantClientV1,
   // ServicesStatusObserver overrides:
   void OnServicesStatusChanged(ServicesStatus status) override;
 
+  void AddDeviceStateEventObserver(
+      GrpcServicesObserver<OnDeviceStateEventRequest>* observer) override;
+
  private:
   chromeos::libassistant::GrpcServicesInitializer grpc_services_;
 

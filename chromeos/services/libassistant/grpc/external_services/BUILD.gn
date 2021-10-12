@@ -4,14 +4,18 @@
 
 source_set("grpc_services_initializer") {
   sources = [
+    "event_handler_driver.cc",
+    "event_handler_driver.h",
     "grpc_services_initializer.cc",
     "grpc_services_initializer.h",
   ]
 
   deps = [
     ":customer_registration_client",
+    ":grpc_services_observer",
     ":heartbeat_event_handler_driver",
     "//base",
+    "//chromeos/assistant/internal",
     "//chromeos/services/libassistant/grpc:grpc_client",
     "//chromeos/services/libassistant/grpc:grpc_service",
     "//chromeos/services/libassistant/grpc:grpc_util",

@@ -74,9 +74,25 @@ bool GrpcServicesInitializer::Start() {
 
   DVLOG(1) << "Started ChromeOS Assistant gRPC service";
 
+  RegisterEventHandlers();
   StartCQ();
   customer_registration_client_->Start();
   return true;
+}
+
+// AddObserver and RemoveObserver for each handler driver
+void GrpcServicesInitializer::AddObserver(
+    GrpcServicesObserver<::assistant::api::OnDeviceStateEventRequest>*
+        observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  device_state_event_handler_driver_->AddObserver(observer);
+}
+
+void GrpcServicesInitializer::RemoveObserver(
+    GrpcServicesObserver<::assistant::api::OnDeviceStateEventRequest>*
+        observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  device_state_event_handler_driver_->RemoveObserver(observer);
 }
 
 GrpcLibassistantClient& GrpcServicesInitializer::GrpcLibassistantClient() {
@@ -86,11 +102,16 @@ GrpcLibassistantClient& GrpcServicesInitializer::GrpcLibassistantClient() {
 
 void GrpcServicesInitializer::InitDrivers(grpc::ServerBuilder* server_builder) {
   // Inits heartbeat driver.
-  auto heartbeat_driver =
+  heartbeat_driver_ =
       std::make_unique<HeartbeatEventHandlerDriver>(&server_builder_);
-  heartbeat_event_observation_.Observe(heartbeat_driver.get());
+  heartbeat_event_observation_.Observe(heartbeat_driver_.get());
+  service_drivers_.emplace_back(heartbeat_driver_.get());
 
-  service_drivers_.emplace_back(std::move(heartbeat_driver));
+  // Inits other event handler drivers.
+  device_state_event_handler_driver_ = std::make_unique<
+      EventHandlerDriver<::assistant::api::DeviceStateEventHandlerInterface>>(
+      &server_builder_, libassistant_client_.get(), assistant_service_address_);
+  service_drivers_.emplace_back(device_state_event_handler_driver_.get());
 }
 
 void GrpcServicesInitializer::InitLibassistGrpcClient() {
@@ -118,6 +139,10 @@ void GrpcServicesInitializer::InitAssistantGrpcServer() {
       assistant_service_address_,
       ::grpc::experimental::LocalServerCredentials(connect_type));
   RegisterServicesAndInitCQ(&server_builder_);
+}
+
+void GrpcServicesInitializer::RegisterEventHandlers() {
+  device_state_event_handler_driver_->StartRegistration();
 }
 
 }  // namespace libassistant

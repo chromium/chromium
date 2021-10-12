@@ -36,7 +36,7 @@ void ServicesInitializerBase::RegisterServicesAndInitCQ(
 
 void ServicesInitializerBase::StartCQ() {
   // Initialize completion queues for each service.
-  for (auto& driver : service_drivers_) {
+  for (auto* const driver : service_drivers_) {
     driver->StartCQ(cq_.get());
   }
   cq_thread_.task_runner()->PostTask(

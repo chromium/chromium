@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chromeos/assistant/internal/proto/shared/proto/v2/customer_registration_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/event_notification_interface.pb.h"
 #include "chromeos/services/libassistant/grpc/grpc_client_thread.h"
 #include "chromeos/services/libassistant/grpc/grpc_state.h"
 #include "chromeos/services/libassistant/grpc/grpc_util.h"
@@ -42,6 +43,9 @@ class GrpcLibassistantClient {
   // Handles CustomerRegistrationRequest sent from libassistant customers to
   // register themselves before allowing to use libassistant services.
   LIBAS_GRPC_CLIENT_INTERFACE(RegisterCustomer)
+
+  // EventNotificationService:
+  LIBAS_GRPC_CLIENT_INTERFACE(RegisterEventHandler)
 
  private:
   // This channel will be shared between all stubs used to communicate with

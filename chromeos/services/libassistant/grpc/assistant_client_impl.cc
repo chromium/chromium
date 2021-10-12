@@ -72,6 +72,11 @@ void AssistantClientImpl::OnServicesStatusChanged(ServicesStatus status) {
   }
 }
 
+void AssistantClientImpl::AddDeviceStateEventObserver(
+    GrpcServicesObserver<OnDeviceStateEventRequest>* observer) {
+  grpc_services_.AddObserver(observer);
+}
+
 // static
 std::unique_ptr<AssistantClient> AssistantClient::Create(
     std::unique_ptr<assistant_client::AssistantManager> assistant_manager,

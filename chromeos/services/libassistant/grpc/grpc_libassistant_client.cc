@@ -45,6 +45,7 @@ GrpcLibassistantClient::GrpcLibassistantClient(
 GrpcLibassistantClient::~GrpcLibassistantClient() = default;
 
 LIBAS_GRPC_CLIENT_METHOD("CustomerRegistrationService", RegisterCustomer)
+LIBAS_GRPC_CLIENT_METHOD("EventNotificationService", RegisterEventHandler)
 
 }  // namespace libassistant
 }  // namespace chromeos
