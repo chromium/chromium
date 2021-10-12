@@ -4657,6 +4657,13 @@ const char kExperimentalAccessibilitySwitchAccessSetupGuideDescription[] =
     "Enable a setup guide to walk through the steps of initially configuring "
     "Switch Access.";
 
+const char kExperimentalAccessibilitySwitchAccessMultistepAutomationName[] =
+    "Enable multistep automation for Switch Access.";
+const char
+    kExperimentalAccessibilitySwitchAccessMultistepAutomationDescription[] =
+        "Enable multistep automation for Switch Access, which is a project for "
+        "the 2021 accessibility sprint.";
+
 const char kMagnifierContinuousMouseFollowingModeSettingName[] =
     "Enable ability to choose continuous mouse following mode in Magnifier "
     "settings";

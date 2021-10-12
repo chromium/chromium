@@ -2668,6 +2668,11 @@ extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
 extern const char kExperimentalAccessibilitySwitchAccessSetupGuideName[];
 extern const char kExperimentalAccessibilitySwitchAccessSetupGuideDescription[];
 
+extern const char
+    kExperimentalAccessibilitySwitchAccessMultistepAutomationName[];
+extern const char
+    kExperimentalAccessibilitySwitchAccessMultistepAutomationDescription[];
+
 extern const char kMagnifierContinuousMouseFollowingModeSettingName[];
 extern const char kMagnifierContinuousMouseFollowingModeSettingDescription[];
 

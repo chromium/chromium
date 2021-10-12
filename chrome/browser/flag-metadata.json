@@ -1889,6 +1889,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "enable-experimental-accessibility-switch-access-multistep-automation",
+    "owners": [ "akihiroota@google.com", "mschillaci@google.com" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "enable-experimental-accessibility-switch-access-setup-guide",
     "owners": ["ansatasi@google.com", "josiahk@google.com", "//ui/accessibility/OWNERS"],
     "expiry_milestone": 97
