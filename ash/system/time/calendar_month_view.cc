@@ -27,6 +27,10 @@ constexpr int kLineThickness = 2;
 // The radius used to draw rounded today's circle
 constexpr float kTodayRoundedRadius = 20.f;
 
+// Radius of the small dot we display on a CalendarDateCellView if events are
+// present for that day.
+constexpr float kEventsPresentRoundedRadius = 2.f;
+
 // The padding of the focus circle.
 constexpr int kFocusCirclePadding = 4;
 
@@ -46,8 +50,10 @@ using views::GridLayout;
 
 // TODO(https://crbug.com/1236276): Fix the ChromeVox window position on this
 // view.
-CalendarDateCellView::CalendarDateCellView(base::Time::Exploded& date,
-                                           bool is_grayed_out_date)
+CalendarDateCellView::CalendarDateCellView(
+    CalendarViewController* calendar_view_controller,
+    base::Time::Exploded& date,
+    bool is_grayed_out_date)
     : views::LabelButton(
           views::Button::PressedCallback(base::BindRepeating([]() {
             // TODO(https://crbug.com/1238927): Add a menthod in the
@@ -56,7 +62,8 @@ CalendarDateCellView::CalendarDateCellView(base::Time::Exploded& date,
           base::UTF8ToUTF16(base::NumberToString(date.day_of_month)),
           CONTEXT_CALENDAR_DATE),
       date_(date),
-      grayed_out_(is_grayed_out_date) {
+      grayed_out_(is_grayed_out_date),
+      calendar_view_controller_(calendar_view_controller) {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetBorder(views::CreateEmptyBorder(calendar_utils::kDateCellInsets));
   label()->SetElideBehavior(gfx::NO_ELIDE);
@@ -147,6 +154,35 @@ void CalendarDateCellView::DisableFocus() {
   SetFocusBehavior(FocusBehavior::NEVER);
 }
 
+gfx::Point CalendarDateCellView::GetEventsPresentIndicatorCenterPosition() {
+  const gfx::Rect content = GetContentsBounds();
+  return gfx::Point(
+      (content.width() + calendar_utils::kDateHorizontalPadding * 2) / 2,
+      (content.height() + calendar_utils::kDateVerticalPadding * 2) / 2 +
+          calendar_utils::kDateVerticalPadding);
+}
+
+void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
+  base::Time unexploded;
+  DCHECK(base::Time::FromUTCExploded(date_, &unexploded));
+
+  if (!calendar_view_controller_->IsDayWithEvents(unexploded,
+                                                  /*events =*/nullptr)) {
+    return;
+  }
+
+  cc::PaintFlags indicator_paint_flags;
+  indicator_paint_flags.setColor(calendar_utils::GetPrimaryTextColor());
+  indicator_paint_flags.setStyle(cc::PaintFlags::kFill_Style);
+  canvas->DrawCircle(GetEventsPresentIndicatorCenterPosition(),
+                     kEventsPresentRoundedRadius, indicator_paint_flags);
+}
+
+void CalendarDateCellView::PaintButtonContents(gfx::Canvas* canvas) {
+  views::LabelButton::PaintButtonContents(canvas);
+  MaybeDrawEventsIndicator(canvas);
+}
+
 CalendarMonthView::CalendarMonthView(
     const base::Time first_day_of_month,
     CalendarViewController* calendar_view_controller)
@@ -231,7 +267,7 @@ CalendarDateCellView* CalendarMonthView::AddDateCellToLayout(
   if (column_set_id == 0)
     layout_manager->StartRow(0, 0);
   return layout_manager->AddView(std::make_unique<CalendarDateCellView>(
-      current_date_exploded,
+      calendar_view_controller_, current_date_exploded,
       /*is_grayed_out_date=*/!is_in_current_month));
 }
 
