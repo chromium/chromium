@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/fuchsia/process_lifecycle.h"
 #include "base/macros.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "fuchsia/engine/browser/context_impl.h"
@@ -81,8 +82,14 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
   // Notified if the system timezone, language, settings change.
   void OnIntlProfileChanged(const fuchsia::intl::Profile& profile);
 
+  // Quits the main loop and gracefully shuts down the instance.
+  void BeginGracefulShutdown();
+
   content::ContentBrowserClient* const browser_client_;
   const content::MainFunctionParams& parameters_;
+
+  // Used to gracefully teardown in response to requests from the ELF runner.
+  std::unique_ptr<base::ProcessLifecycle> lifecycle_;
 
   std::unique_ptr<display::Screen> screen_;
 

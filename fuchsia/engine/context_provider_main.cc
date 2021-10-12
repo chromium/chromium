@@ -18,7 +18,6 @@
 #include "fuchsia/base/feedback_registration.h"
 #include "fuchsia/base/init_logging.h"
 #include "fuchsia/base/inspect.h"
-#include "fuchsia/base/lifecycle_impl.h"
 #include "fuchsia/engine/context_provider_impl.h"
 
 namespace {
@@ -58,15 +57,12 @@ int ContextProviderMain() {
   sys::ComponentInspector inspect(base::ComponentContextForProcess());
   cr_fuchsia::PublishVersionInfoToInspect(&inspect);
 
-  // Publish the Lifecycle service, used by the framework to request that the
-  // service terminate.
-  base::RunLoop run_loop;
-  cr_fuchsia::LifecycleImpl lifecycle(directory, run_loop.QuitClosure());
-
   // Serve outgoing directory only after publishing all services.
   directory->ServeFromStartupInfo();
 
-  run_loop.Run();
+  // Graceful shutdown of the service is not required, so simply run the main
+  // loop until the framework kills the process.
+  base::RunLoop().Run();
 
   return 0;
 }
