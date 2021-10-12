@@ -90,12 +90,36 @@ std::map<std::string, std::string> ParseCommandLine(int argc, char* argv[]) {
   return result;
 }
 
+bool HasSwitch(const std::string& arg,
+               const std::map<std::string, std::string>& switches) {
+  if (base::Contains(switches, arg))
+    return true;
+  const static std::map<std::string, std::vector<std::string>> aliases = {
+      {kCommandDelete, {"d"}},        {kCommandInstall, {"i"}},
+      {kCommandList, {"l"}},          {kCommandKsadminVersion, {"k"}},
+      {kCommandPrintTag, {"G"}},      {kCommandPrintTickets, {"print", "p"}},
+      {kCommandRegister, {"r"}},      {kCommandSystemStore, {"S"}},
+      {kCommandUserInitiated, {"F"}}, {kCommandUserStore, {"U"}},
+  };
+  if (!base::Contains(aliases, arg))
+    return false;
+  for (const auto& alias : aliases.at(arg)) {
+    if (base::Contains(switches, alias))
+      return true;
+  }
+  return false;
+}
+
+UpdaterScope Scope(const std::map<std::string, std::string>& switches) {
+  return HasSwitch(kCommandSystemStore, switches) ? UpdaterScope::kSystem
+                                                  : UpdaterScope::kUser;
+}
+
 class KSAdminApp : public App {
  public:
   explicit KSAdminApp(const std::map<std::string, std::string>& switches)
-      : service_proxy_(
-            base::MakeRefCounted<UpdateServiceProxy>(GetUpdaterScope())),
-        switches_(switches) {}
+      : switches_(switches),
+        service_proxy_(base::MakeRefCounted<UpdateServiceProxy>(Scope())) {}
 
  private:
   ~KSAdminApp() override = default;
@@ -110,11 +134,12 @@ class KSAdminApp : public App {
   void PrintVersion();
   void PrintTickets();
 
-  bool HasSwitch(const std::string& arg);
-  std::string SwitchValue(const std::string& arg);
+  UpdaterScope Scope() const;
+  bool HasSwitch(const std::string& arg) const;
+  std::string SwitchValue(const std::string& arg) const;
 
-  scoped_refptr<UpdateServiceProxy> service_proxy_;
   const std::map<std::string, std::string> switches_;
+  scoped_refptr<UpdateServiceProxy> service_proxy_;
 };
 
 void KSAdminApp::PrintUsage(const std::string& error_message) {
@@ -207,26 +232,11 @@ void KSAdminApp::CheckForUpdates() {
           base::BindOnce(&KSAdminApp::Shutdown, this)));
 }
 
-bool KSAdminApp::HasSwitch(const std::string& arg) {
-  if (base::Contains(switches_, arg))
-    return true;
-  const static std::map<std::string, std::vector<std::string>> aliases = {
-      {kCommandDelete, {"d"}},        {kCommandInstall, {"i"}},
-      {kCommandList, {"l"}},          {kCommandKsadminVersion, {"k"}},
-      {kCommandPrintTag, {"G"}},      {kCommandPrintTickets, {"print", "p"}},
-      {kCommandRegister, {"r"}},      {kCommandSystemStore, {"S"}},
-      {kCommandUserInitiated, {"F"}}, {kCommandUserStore, {"U"}},
-  };
-  if (!base::Contains(aliases, arg))
-    return false;
-  for (const auto& alias : aliases.at(arg)) {
-    if (base::Contains(switches_, alias))
-      return true;
-  }
-  return false;
+bool KSAdminApp::HasSwitch(const std::string& arg) const {
+  return updater::HasSwitch(arg, switches_);
 }
 
-std::string KSAdminApp::SwitchValue(const std::string& arg) {
+std::string KSAdminApp::SwitchValue(const std::string& arg) const {
   if (base::Contains(switches_, arg))
     return switches_.at(arg);
   const static std::map<std::string, std::string> aliases = {
@@ -240,6 +250,10 @@ std::string KSAdminApp::SwitchValue(const std::string& arg) {
     return "";
   const std::string& alias = aliases.at(arg);
   return base::Contains(switches_, alias) ? switches_.at(alias) : "";
+}
+
+UpdaterScope KSAdminApp::Scope() const {
+  return updater::Scope(switches_);
 }
 
 void KSAdminApp::Delete() {
@@ -258,20 +272,17 @@ void KSAdminApp::PrintVersion() {
 }
 
 void KSAdminApp::PrintTickets() {
-  const UpdaterScope scope = HasSwitch(kCommandSystemStore)
-                                 ? UpdaterScope::kSystem
-                                 : UpdaterScope::kUser;
   // TODO(crbug.com/1250524): Print tickets owned by Chromium Updater. If there
   // are any, suppress printing any legacy tickets.
   @autoreleasepool {
     const NSDictionary* store = [KSTicketStore
         readStoreWithPath:base::SysUTF8ToNSString(
-                              GetKeystoneFolderPath(scope)
+                              GetKeystoneFolderPath(Scope())
                                   ->Append(FILE_PATH_LITERAL("TicketStore"))
                                   .Append(
                                       FILE_PATH_LITERAL("Keystone.ticketstore"))
                                   .AsUTF8Unsafe())];
-    if (store && [store count] > 0) {
+    if (store.count > 0) {
       for (const id key in store) {
         printf("%s\n",
                base::SysNSStringToUTF8([store[key] description]).c_str());
@@ -313,12 +324,11 @@ void KSAdminApp::FirstTaskRun() {
 int KSAdminAppMain(int argc, char* argv[]) {
   base::AtExitManager exit_manager;
   base::CommandLine::Init(argc, argv);
-  // TODO(crbug.com/1250524): GetUpdaterScope() won't work: callers do not pass
-  // --system but rather --system-store. Check also other GetUpdaterScope calls
-  // in this code.
-  updater::InitLogging(GetUpdaterScope(), FILE_PATH_LITERAL("updater.log"));
+  std::map<std::string, std::string> command_line =
+      ParseCommandLine(argc, argv);
+  updater::InitLogging(Scope(command_line), FILE_PATH_LITERAL("updater.log"));
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
-  return base::MakeRefCounted<KSAdminApp>(ParseCommandLine(argc, argv))->Run();
+  return base::MakeRefCounted<KSAdminApp>(command_line)->Run();
 }
 
 }  // namespace updater
