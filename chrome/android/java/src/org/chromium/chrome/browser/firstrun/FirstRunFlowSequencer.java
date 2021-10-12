@@ -60,22 +60,22 @@ public abstract class FirstRunFlowSequencer  {
     public static class FirstRunFlowSequencerDelegate {
         /** @return true if the sync consent promo page should be shown. */
         boolean shouldShowSyncConsentPage(Activity activity, List<Account> accounts) {
-            // We show the sync consent page if sync is allowed, and not signed in, and
-            // - "skip the first use hints" is not set, or
-            // - "skip the first use hints" is set, but there is at least one account.
             final IdentityManager identityManager =
                     IdentityServicesProvider.get().getIdentityManager(
                             Profile.getLastUsedRegularProfile());
-            final boolean isSignedInWithSync = identityManager.hasPrimaryAccount(ConsentLevel.SYNC);
-            final boolean shouldShowSyncConsentPreMICe = isSyncAllowed() && !isSignedInWithSync
-                    && (!shouldSkipFirstUseHints(activity) || !accounts.isEmpty());
-
+            if (identityManager.hasPrimaryAccount(ConsentLevel.SYNC) || !isSyncAllowed()) {
+                // No need to show the sync consent page if users already consented to sync or
+                // if sync is not allowed.
+                return false;
+            }
             if (FREMobileIdentityConsistencyFieldTrial.isEnabled()) {
-                final boolean isSignedInWithoutSync =
-                        identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
-                return shouldShowSyncConsentPreMICe && isSignedInWithoutSync;
+                // Show the sync consent page only to the signed-in users.
+                return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
             } else {
-                return shouldShowSyncConsentPreMICe;
+                // We show the sync consent page if sync is allowed, and not signed in, and
+                // - "skip the first use hints" is not set, or
+                // - "skip the first use hints" is set, but there is at least one account.
+                return !shouldSkipFirstUseHints(activity) || !accounts.isEmpty();
             }
         }
 
