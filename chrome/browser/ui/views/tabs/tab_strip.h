@@ -658,6 +658,10 @@ class TabStrip : public views::View,
   void AnnounceTabAddedToGroup(tab_groups::TabGroupId group_id);
   void AnnounceTabRemovedFromGroup(tab_groups::TabGroupId group_id);
 
+  // For metrics on the best size for tab scrolling, log if the different
+  // sizes would trigger tab scrolling
+  void LogTabWidthsForTabScrolling();
+
   // -- Member Variables ------------------------------------------------------
 
   base::ObserverList<TabStripObserver>::Unchecked observers_;

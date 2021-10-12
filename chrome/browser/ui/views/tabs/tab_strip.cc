@@ -1355,6 +1355,8 @@ void TabStrip::AddTabAt(int model_index, TabRendererData data, bool is_active) {
         base::TimeTicks::Now() - new_tab_button_pressed_start_time_.value());
     new_tab_button_pressed_start_time_.reset();
   }
+
+  LogTabWidthsForTabScrolling();
 }
 
 void TabStrip::MoveTab(int from_model_index,
@@ -3365,6 +3367,19 @@ void TabStrip::ResizeLayoutTabs() {
   // have. This is particularly important if we've overflowed (all tabs are at
   // the min).
   StartResizeLayoutAnimation();
+}
+
+void TabStrip::LogTabWidthsForTabScrolling() {
+  int active_tab_width = GetActiveTabWidth();
+  int inactive_tab_width = GetInactiveTabWidth();
+
+  if (active_tab_width > 1) {
+    UMA_HISTOGRAM_EXACT_LINEAR("Tabs.ActiveTabWidth", active_tab_width, 257);
+  }
+  if (inactive_tab_width > 1) {
+    UMA_HISTOGRAM_EXACT_LINEAR("Tabs.InactiveTabWidth", inactive_tab_width,
+                               257);
+  }
 }
 
 void TabStrip::ResizeLayoutTabsFromTouch() {
