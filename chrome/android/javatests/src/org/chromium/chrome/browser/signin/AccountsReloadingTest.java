@@ -171,14 +171,14 @@ public class AccountsReloadingTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "http://crbug.com/1254405")
     public void testRefreshTokenUpdateWhenSignedInUserAddsNewAccount() {
         final CoreAccountInfo account1 = mAccountManagerTestRule.addTestAccountThenSignin();
         CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 1);
         Assert.assertEquals(new HashSet<>(Arrays.asList(account1)), mObserver.mAccountsUpdated);
         mObserver.mAccountsUpdated.clear();
 
-        final CoreAccountInfo account2 = mAccountManagerTestRule.addAccount(TEST_EMAIL2);
+        final CoreAccountInfo account2 =
+                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL2);
 
         CriteriaHelper.pollUiThread(()
                                             -> mObserver.mCallCount == 3,
