@@ -26,14 +26,18 @@ using CreateCallback =
     content::ContentBrowserClient::WillCreateWebTransportCallback;
 
 net::HttpRequestHeaders GetRequestHeaders() {
-  // We return the empty headers:
+  // We don't attach certain headers:
   //  1. We cannot store pseudo-headers to `request_headers_` and they can be
   //     accessed via other ways, e.g., "url" for :scheme, :authority and
   //     :path.
   //  2. We don't attach the "origin" header, to be aligned with the usual
   //     loading case. Extension authors can use the "initiator" property to
   //     observe it.
-  return net::HttpRequestHeaders();
+  auto headers = net::HttpRequestHeaders();
+  // TODO(1240935): Share the code with
+  // DedicatedWebTransportHttp3Client::DoSendRequest.
+  headers.SetHeader("sec-webtransport-http3-draft02", "1");
+  return headers;
 }
 
 class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
