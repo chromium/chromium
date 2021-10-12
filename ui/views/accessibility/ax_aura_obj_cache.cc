@@ -143,6 +143,9 @@ void AXAuraObjCache::Remove(aura::Window* window, aura::Window* parent) {
   RemoveInternal(window, &window_to_id_map_);
   if (parent && delegate_)
     delegate_->OnChildWindowRemoved(parent_window_obj);
+
+  if (focused_window_ == window)
+    focused_window_ = nullptr;
 }
 
 AXAuraObjWrapper* AXAuraObjCache::Get(int32_t id) {
