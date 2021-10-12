@@ -209,6 +209,20 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    public void testFragmentWhenDefaultAccountIsRemoved() {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, /*avatar=*/null);
+        mAccountManagerTestRule.addAccount(
+                TEST_EMAIL2, /*fullName=*/null, /*givenName=*/null, /*avatar=*/null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        launchActivityWithFragment();
+
+        mAccountManagerTestRule.removeAccount(TEST_EMAIL1);
+
+        checkFragmentWithSelectedAccount(TEST_EMAIL2, /*fullName=*/null, /*givenName=*/null);
+    }
+
+    @Test
+    @MediumTest
     public void testFragmentWithDefaultAccount() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
