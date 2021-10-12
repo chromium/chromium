@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/testing/scoped_fake_ukm_recorder.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -1218,6 +1219,32 @@ TEST_F(TextFragmentSelectorGeneratorTest, InputSubmitOneWordPrefix) {
   ASSERT_EQ(" paragraph", PlainText(EphemeralRange(start, end)));
 
   VerifySelector(start, end, "button-,paragraph,-text");
+}
+
+// Ensure generation works correctly when the range begins anchored to a shadow
+// host. The shadow root has more children than the shadow host so this ensures
+// we're using flat tree node traversals.
+TEST_F(TextFragmentSelectorGeneratorTest, RangeBeginsOnShadowHost) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+  <div id='host'></div>
+  the quick brown fox jumped over the lazy dog.
+  )HTML");
+
+  Element* host = GetDocument().getElementById("host");
+  ShadowRoot& root = host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  root.appendChild(MakeGarbageCollected<HTMLDivElement>(root.GetDocument()));
+  root.appendChild(MakeGarbageCollected<HTMLDivElement>(root.GetDocument()));
+
+  Compositor().BeginFrame();
+
+  const auto& start = Position(host, PositionAnchorType::kAfterChildren);
+  const auto& end = Position(host->nextSibling(), 12);
+  ASSERT_EQ("the quick", PlainText(EphemeralRange(start, end)));
+
+  VerifySelector(start, end, "the%20quick,-brown%20fox%20jumped");
 }
 
 // Basic test case for |GetNextTextBlock|.

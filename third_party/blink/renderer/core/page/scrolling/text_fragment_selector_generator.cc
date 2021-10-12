@@ -31,10 +31,10 @@ namespace {
 // Returns true if text from beginning of |node| until |pos_offset| can be
 // considered empty. Otherwise, return false.
 bool IsFirstVisiblePosition(Node* node, unsigned pos_offset) {
-  auto range_start = Position::FirstPositionInNode(*node);
-  auto range_end = Position(node, pos_offset);
+  auto range_start = PositionInFlatTree::FirstPositionInNode(*node);
+  auto range_end = PositionInFlatTree(node, pos_offset);
   return node->getNodeType() == Node::kElementNode || pos_offset == 0 ||
-         PlainText(EphemeralRange(range_start, range_end))
+         PlainText(EphemeralRangeInFlatTree(range_start, range_end))
              .StripWhiteSpace()
              .IsEmpty();
 }
@@ -42,11 +42,11 @@ bool IsFirstVisiblePosition(Node* node, unsigned pos_offset) {
 // Returns true if text from |pos_offset| until end of |node| can be considered
 // empty. Otherwise, return false.
 bool IsLastVisiblePosition(Node* node, unsigned pos_offset) {
-  auto range_start = Position(node, pos_offset);
-  auto range_end = Position::LastPositionInNode(*node);
+  auto range_start = PositionInFlatTree(node, pos_offset);
+  auto range_end = PositionInFlatTree::LastPositionInNode(*node);
   return node->getNodeType() == Node::kElementNode ||
          pos_offset == node->textContent().length() ||
-         PlainText(EphemeralRange(range_start, range_end))
+         PlainText(EphemeralRangeInFlatTree(range_start, range_end))
              .StripWhiteSpace()
              .IsEmpty();
 }
