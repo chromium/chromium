@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/sharing_hub/sharing_hub_sub_menu_model.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -22,6 +23,28 @@
 
 namespace sharing_hub {
 
+namespace {
+
+// The source from which the sharing hub was launched from.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with ShareSourceDesktop
+// in src/tools/metrics/histograms/enums.xml.
+enum class ShareSourceDesktop {
+  kUnknown = 0,
+  kOmniboxSharingHub = 1,
+  kWebContextMenu = 2,
+  kAppMenuSharingHub = 3,
+  kMaxValue = kAppMenuSharingHub,
+};
+
+const char kAnyShareStarted[] = "Sharing.AnyShareStartedDesktop";
+
+void LogShareSourceDesktop(ShareSourceDesktop source) {
+  UMA_HISTOGRAM_ENUMERATION(kAnyShareStarted, source);
+}
+
+}  // namespace
+
 SharingHubSubMenuModel::SharingHubSubMenuModel(Browser* browser)
     : SimpleMenuModel(this), browser_(browser) {
   Build(browser_->tab_strip_model()->GetActiveWebContents());
@@ -34,6 +57,8 @@ bool SharingHubSubMenuModel::IsCommandIdEnabled(int command_id) const {
 }
 
 void SharingHubSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
+  LogShareSourceDesktop(ShareSourceDesktop::kAppMenuSharingHub);
+
   if (IsThirdPartyAction(command_id)) {
     SharingHubModel* const model = GetSharingHubModel();
     if (!model)
