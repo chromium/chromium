@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<title>Input and change events for file inputs</title>
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://github.com/whatwg/html/issues/6853">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="resources/file-drag-common.js"></script>
+
+<body onload="setTimeout(runTest, 0)">
+  <input type=file oninput=onInputHandler() onchange=onChangeHandler()>
+  <input id="been-here" value="start">
+  <form action="../../../resources/back.html" method="POST"></form>
+</body>
+
+<script>
+var seenOnInput = false;
+var seenOnChange = false;
+var restorationEventTest = async_test('File input restoration: should not fire input and change events');
+
+function onInputHandler() {
+  var beenHere = document.getElementById("been-here");
+  if (beenHere.value)
+    seenOnInput = true;
+}
+
+function onChangeHandler() {
+  var beenHere = document.getElementById("been-here");
+  if (beenHere.value)
+    seenOnChange = true;
+}
+
+function runTest() {
+  var beenHere = document.getElementById('been-here');
+  var fileInput = document.querySelector('input[type=file]');
+
+  if (beenHere.value == 'start') {
+    if (window.eventSender)
+      dragFilesOntoElement(fileInput, ['foo.txt']);
+    assert_equals(fileInput.value, 'C:\\fakepath\\foo.txt');
+    beenHere.value = 'visited';
+    var form = document.querySelector('form');
+    // Submit form in a timeout to make sure that we create a new back/forward list item.
+    setTimeout(function() {form.submit();}, 0);
+  } else {
+    restorationEventTest.step(function() {
+      assert_false(seenOnInput);
+      assert_false(seenOnChange);
+    });
+    restorationEventTest.done();
+  }
+}
+</script>

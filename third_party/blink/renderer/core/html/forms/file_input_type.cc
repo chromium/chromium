@@ -126,7 +126,7 @@ void FileInputType::RestoreFormControlState(const FormControlState& state) {
   auto* file_list = MakeGarbageCollected<FileList>();
   for (const auto& file : file_vector)
     file_list->Append(file);
-  SetFilesAndDispatchEvents(file_list);
+  SetFiles(file_list);
 }
 
 void FileInputType::AppendToFormData(FormData& form_data) const {
