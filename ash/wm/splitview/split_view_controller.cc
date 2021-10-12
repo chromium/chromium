@@ -97,15 +97,6 @@ constexpr float kTwoThirdPositionRatio = 0.67f;
 constexpr float kBlackScrimFadeInRatio = 0.1f;
 constexpr float kBlackScrimOpacity = 0.4f;
 
-// In portrait mode split view, if the caret in the bottom window is less than
-// `kMinCaretKeyboardDist` dip above the upper bounds of the virtual keyboard,
-// then we push up the bottom window above the virtual keyboard to avoid the
-// input field being occluded by the virtual keyboard. The upper bounds of the
-// bottom window after being pushed up cannot exceeds 1 -
-// `kMinDividerPositionRatio` of screen height.
-constexpr int kMinCaretKeyboardDist = 16;
-constexpr float kMinDividerPositionRatio = 0.15f;
-
 // If performant split view resizing is enabled, the speed at which the divider
 // is moved controls whether windows are scaled or translated. If the divider is
 // moved more than this many pixels per second, the "fast" mode is enabled.

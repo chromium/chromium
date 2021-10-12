@@ -74,6 +74,15 @@ constexpr float kDarkLightHighlightCannotSnapOpacity = 0.2f;
 constexpr float kPreviewAreaHighlightOpacity = 0.18f;
 constexpr float kDarkLightPreviewAreaHighlightOpacity = 0.2f;
 
+// In portrait mode split view, if the caret in the bottom window is less than
+// `kMinCaretKeyboardDist` dip above the upper bounds of the virtual keyboard,
+// then we push up the bottom window above the virtual keyboard to avoid the
+// input field being occluded by the virtual keyboard. The upper bounds of the
+// bottom window after being pushed up cannot exceeds 1 -
+// `kMinDividerPositionRatio` of screen height.
+constexpr int kMinCaretKeyboardDist = 16;
+constexpr float kMinDividerPositionRatio = 0.15f;
+
 }  // namespace ash
 
 #endif  // ASH_WM_SPLITVIEW_SPLIT_VIEW_CONSTANTS_H_
