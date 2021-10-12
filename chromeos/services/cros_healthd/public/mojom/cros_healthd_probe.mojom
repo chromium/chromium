@@ -51,16 +51,19 @@ enum ProbeCategoryEnum {
 
 // An enumeration of the different categories of errors that can occur when
 // probing telemetry information.
+//
+// NextMinVersion: 1, NextIndex: 5
 [Extensible]
 enum ErrorType {
+  [Default] kUnknown = 4,
   // An error reading a system file.
-  kFileReadError,
+  kFileReadError = 0,
   // An error parsing data into a consumable form.
-  kParseError,
+  kParseError = 1,
   // An error using a system utility.
-  kSystemUtilityError,
+  kSystemUtilityError = 2,
   // The external service used to probe the information is not available.
-  kServiceUnavailable,
+  kServiceUnavailable = 3,
 };
 
 // Structure that contains error information for a telemetry probe.

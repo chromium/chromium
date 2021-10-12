@@ -88,6 +88,8 @@ enum ProbeCategoryEnum {
 // probing telemetry information.
 [Extensible]
 enum ErrorType {
+  // Default value.
+  kUnknown,
   // An error reading a system file.
   kFileReadError,
   // An error parsing data into a consumable form.

@@ -618,6 +618,7 @@ class TelemetryProxy {
      * @const
      */
     this.errorTypeToString_ = new Map([
+      [errorEnum.kUnknown, 'unknown-error'],
       [errorEnum.kFileReadError, 'file-read-error'],
       [errorEnum.kParseError, 'parse-error'],
       [errorEnum.kSystemUtilityError, 'system-utility-error'],

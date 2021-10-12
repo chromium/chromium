@@ -333,6 +333,8 @@ health::mojom::TelemetryInfoPtr UncheckedConvertPtr(
 
 health::mojom::ErrorType Convert(cros_healthd::mojom::ErrorType input) {
   switch (input) {
+    case cros_healthd::mojom::ErrorType::kUnknown:
+      return health::mojom::ErrorType::kUnknown;
     case cros_healthd::mojom::ErrorType::kFileReadError:
       return health::mojom::ErrorType::kFileReadError;
     case cros_healthd::mojom::ErrorType::kParseError:
