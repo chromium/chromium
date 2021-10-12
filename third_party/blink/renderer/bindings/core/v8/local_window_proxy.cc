@@ -61,6 +61,8 @@
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -225,8 +227,18 @@ void LocalWindowProxy::CreateContext() {
     Document* document = GetFrame()->GetDocument();
 
     v8::Local<v8::Object> global_proxy = global_proxy_.NewLocal(isolate);
-    context = V8ContextSnapshot::CreateContextFromSnapshot(
-        isolate, World(), &extension_configuration, global_proxy, document);
+    {
+      DEFINE_STATIC_LOCAL(
+          CustomCountHistogram, main_frame_hist,
+          ("Blink.Binding.CreateV8ContextForMainFrame", 0, 10000000, 50));
+      DEFINE_STATIC_LOCAL(
+          CustomCountHistogram, non_main_frame_hist,
+          ("Blink.Binding.CreateV8ContextForNonMainFrame", 0, 10000000, 50));
+      ScopedUsHistogramTimer timer(
+          GetFrame()->IsMainFrame() ? main_frame_hist : non_main_frame_hist);
+      context = V8ContextSnapshot::CreateContextFromSnapshot(
+          isolate, World(), &extension_configuration, global_proxy, document);
+    }
     context_was_created_from_snapshot_ = !context.IsEmpty();
 
     // Even if we enable V8 context snapshot feature, we may hit this branch
