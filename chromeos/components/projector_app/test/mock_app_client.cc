@@ -26,6 +26,10 @@ signin::IdentityManager* MockAppClient::GetIdentityManager() {
   return identity_test_environment_.identity_manager();
 }
 
+network::mojom::URLLoaderFactory* MockAppClient::GetUrlLoaderFactory() {
+  return &test_url_loader_factory_;
+}
+
 void MockAppClient::SetAutomaticIssueOfAccessTokens(bool success) {
   identity_test_environment_.SetAutomaticIssueOfAccessTokens(success);
 }

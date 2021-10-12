@@ -8,6 +8,12 @@
 #include "base/observer_list.h"
 #include "chromeos/components/projector_app/projector_app_client.h"
 
+namespace network {
+namespace mojom {
+class URLLoaderFactory;
+}
+}  // namespace network
+
 // Implements the interface for Projector App.
 class ProjectorAppClientImpl : public chromeos::ProjectorAppClient {
  public:
@@ -18,6 +24,7 @@ class ProjectorAppClientImpl : public chromeos::ProjectorAppClient {
 
   // chromeos::ProjectorAppClient:
   signin::IdentityManager* GetIdentityManager() override;
+  network::mojom::URLLoaderFactory* GetUrlLoaderFactory() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 

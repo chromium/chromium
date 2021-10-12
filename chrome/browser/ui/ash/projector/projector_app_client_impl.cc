@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/storage_partition.h"
 
 ProjectorAppClientImpl::ProjectorAppClientImpl() = default;
 ProjectorAppClientImpl::~ProjectorAppClientImpl() = default;
@@ -25,4 +26,13 @@ void ProjectorAppClientImpl::AddObserver(Observer* observer) {
 
 void ProjectorAppClientImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+network::mojom::URLLoaderFactory*
+ProjectorAppClientImpl::GetUrlLoaderFactory() {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  DCHECK(chromeos::ProfileHelper::IsPrimaryProfile(profile));
+  return profile->GetDefaultStoragePartition()
+      ->GetURLLoaderFactoryForBrowserProcess()
+      .get();
 }

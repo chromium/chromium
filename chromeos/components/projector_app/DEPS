@@ -6,6 +6,8 @@ include_rules = [
   "+content/public/browser",
   "+content/public/common",
   "+content/public/test",
+  "+services/network/public",
+  "+services/network/test",
   "+third_party/skia",
   "+ui/resources",
   "+ui/webui",

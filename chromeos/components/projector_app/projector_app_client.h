@@ -7,6 +7,12 @@
 
 #include "base/observer_list_types.h"
 
+namespace network {
+namespace mojom {
+class URLLoaderFactory;
+}  // namespace mojom
+}  // namespace network
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -34,6 +40,9 @@ class ProjectorAppClient {
   virtual signin::IdentityManager* GetIdentityManager() = 0;
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Returns the URLLoaderFactory for the primary user profile.
+  virtual network::mojom::URLLoaderFactory* GetUrlLoaderFactory() = 0;
 
  protected:
   ProjectorAppClient();

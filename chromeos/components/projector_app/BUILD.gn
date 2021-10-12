@@ -18,6 +18,8 @@ static_library("projector_app") {
     "projector_message_handler.h",
     "projector_oauth_token_fetcher.cc",
     "projector_oauth_token_fetcher.h",
+    "projector_xhr_sender.cc",
+    "projector_xhr_sender.h",
     "trusted_projector_ui.cc",
     "trusted_projector_ui.h",
     "untrusted_projector_ui_config.cc",
@@ -52,6 +54,7 @@ source_set("test_support") {
     "//base/test:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
+    "//services/network:test_support",
     "//testing/gmock",
   ]
 }
@@ -62,6 +65,7 @@ source_set("unit_tests") {
     "test/annotator_message_handler_unittest.cc",
     "test/projector_message_handler_unittest.cc",
     "test/projector_oauth_token_fetcher_unittest.cc",
+    "test/projector_xhr_sender_unittest.cc",
   ]
 
   deps = [

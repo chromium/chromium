@@ -10,7 +10,14 @@
 #include "base/time/time.h"
 #include "chromeos/components/projector_app/projector_app_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+namespace network {
+namespace mojom {
+class URLLoaderFactory;
+}  // namespace mojom
+}  // namespace network
 
 namespace signin {
 class IdentityManager;
@@ -25,8 +32,13 @@ class MockAppClient : public ProjectorAppClient {
   MockAppClient& operator=(const MockAppClient&) = delete;
   ~MockAppClient() override;
 
+  network::TestURLLoaderFactory& test_url_loader_factory() {
+    return test_url_loader_factory_;
+  }
+
   // ProjectorAppClient:
   signin::IdentityManager* GetIdentityManager() override;
+  network::mojom::URLLoaderFactory* GetUrlLoaderFactory() override;
   MOCK_METHOD1(AddObserver, void(Observer*));
   MOCK_METHOD1(RemoveObserver, void(Observer*));
 
@@ -38,6 +50,7 @@ class MockAppClient : public ProjectorAppClient {
 
  private:
   signin::IdentityTestEnvironment identity_test_environment_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
 }  // namespace chromeos
