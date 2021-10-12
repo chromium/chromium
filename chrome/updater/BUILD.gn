@@ -548,6 +548,9 @@ if (is_win || is_mac) {
 
     if (is_mac) {
       sources += [
+        "mac/keystone/ks_tickets.h",
+        "mac/keystone/ks_tickets.mm",
+        "mac/keystone/ks_tickets_unittest.mm",
         "mac/keystone/ksadmin_unittest.cc",
         "mac/net/network_unittest.cc",
         "mac/scoped_xpc_service_mock.h",
@@ -573,6 +576,7 @@ if (is_win || is_mac) {
       ]
 
       data = [
+        "//chrome/test/data/updater/Keystone.ticketstore",
         "//chrome/test/data/updater/updater_setup_test_dmg.dmg",
         "//chrome/test/data/updater/updater_qualification_app_dmg.crx",
       ]
