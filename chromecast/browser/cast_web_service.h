@@ -69,12 +69,6 @@ class CastWebService : public mojom::CastWebService,
     return overlay_renderer_cache_.get();
   }
 
-  void FlushDomLocalStorage();
-
-  // |callback| is called when data deletion is done or at least the deletion
-  // is scheduled.
-  void ClearLocalStorage(base::OnceClosure callback);
-
   // mojom::CastWebService implementation:
   void CreateWebView(
       mojom::CastWebViewParamsPtr params,
@@ -82,6 +76,8 @@ class CastWebService : public mojom::CastWebService,
       mojo::PendingReceiver<mojom::CastContentWindow> window) override;
   void RegisterWebUiClient(mojo::PendingRemote<mojom::WebUiClient> client,
                            const std::vector<std::string>& hosts) override;
+  void FlushDomLocalStorage() override;
+  void ClearLocalStorage(ClearLocalStorageCallback callback) override;
 
   // mojom::BrowserIdentificationSettingsManager implementation:
   void CreateSessionWithSubstitutions(

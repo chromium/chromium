@@ -89,7 +89,7 @@ void CastWebService::FlushDomLocalStorage() {
       }));
 }
 
-void CastWebService::ClearLocalStorage(base::OnceClosure callback) {
+void CastWebService::ClearLocalStorage(ClearLocalStorageCallback callback) {
   browser_context_->ForEachStoragePartition(
       base::BindRepeating(
           [](base::OnceClosure cb, content::StoragePartition* partition) {

@@ -163,5 +163,12 @@ interface CastWebService {
   // for details on how Web UIs are used in the Cast Browser.
   RegisterWebUiClient(pending_remote<WebUiClient> client,
                       array<string> hosts);
+
+  // Write all DOM localStorage to disk.
+  FlushDomLocalStorage();
+
+  // Clears all localStorage data from the device. The response callback is
+  // called when data deletion is done.
+  ClearLocalStorage() => ();
 };
 
