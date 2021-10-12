@@ -71,6 +71,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/device_settings_lacros.h"
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
@@ -124,6 +125,11 @@ void ChromeBrowserPolicyConnector::Init(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool ChromeBrowserPolicyConnector::IsMainUserManaged() const {
   return PolicyLoaderLacros::IsMainUserManaged();
+}
+
+crosapi::mojom::DeviceSettings*
+ChromeBrowserPolicyConnector::GetDeviceSettings() const {
+  return device_settings_->GetDeviceSettings();
 }
 #endif
 
@@ -225,6 +231,10 @@ ChromeBrowserPolicyConnector::CreatePolicyProviders() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   MaybeCreateCloudPolicyManager(&providers);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  device_settings_ = std::make_unique<DeviceSettingsLacros>();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::unique_ptr<CommandLinePolicyProvider> command_line_provider =
       CommandLinePolicyProvider::CreateIfAllowed(

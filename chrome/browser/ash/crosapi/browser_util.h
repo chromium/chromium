@@ -283,6 +283,9 @@ ComponentInfo GetLacrosComponentInfo();
 version_info::Channel GetLacrosSelectionUpdateChannel(
     LacrosSelection selection);
 
+// Returns the device settings needed for Lacros.
+mojom::DeviceSettingsPtr GetDeviceSettings();
+
 // Exposed for testing. Returns the lacros integration suggested by the policy
 // lacros-availability, modified by Finch flags and user flags as appropriate.
 LacrosLaunchSwitch GetLaunchSwitchForTesting();

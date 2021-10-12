@@ -21,6 +21,7 @@ mojom("mojom") {
     "content_protection.mojom",
     "crosapi.mojom",
     "device_attributes.mojom",
+    "device_settings_service.mojom",
     "download_controller.mojom",
     "drive_integration_service.mojom",
     "feedback.mojom",

@@ -16,6 +16,7 @@ import "chromeos/crosapi/mojom/clipboard.mojom";
 import "chromeos/crosapi/mojom/clipboard_history.mojom";
 import "chromeos/crosapi/mojom/content_protection.mojom";
 import "chromeos/crosapi/mojom/device_attributes.mojom";
+import "chromeos/crosapi/mojom/device_settings_service.mojom";
 import "chromeos/crosapi/mojom/download_controller.mojom";
 import "chromeos/crosapi/mojom/drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/feedback.mojom";
@@ -79,8 +80,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 55
-// Next method id: 59
+// Next version: 56
+// Next method id: 60
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -171,6 +172,12 @@ interface Crosapi {
   // Added in M89.
   [MinVersion=12] BindDeviceAttributes@17(
       pending_receiver<DeviceAttributes> receiver);
+
+  // Binds the DeviceSettingsService interface for initializing device settings
+  // in Lacros-Chrome.
+  // Added in 96.
+  [MinVersion=55] BindDeviceSettingsService@59(
+    pending_receiver<DeviceSettingsService> receiver);
 
   // Binds the DownloadController interface, which allows Lacros download
   // information to be passed into Ash Chrome.
@@ -469,44 +476,6 @@ struct DeviceProperties {
   [MinVersion=1] array<string>? device_affiliation_ids@1;
 };
 
-// Copy of UsbDetachableAllowlistProto from chrome_device_policy.proto.
-[Stable, Extensible]
-struct UsbDetachableAllowlist {
-  array<UsbDeviceId> usb_device_ids@0;
-};
-
-// Copy of UsbDeviceIdInclusiveProto from chrome_device_policy.proto.
-[Stable, Extensible]
-struct UsbDeviceId {
-  // USB Vendor Identifier (aka idVendor).
-  bool has_vendor_id@0;
-  int32 vendor_id@1;
-  // USB Product Identifier (aka idProduct).
-  bool has_product_id@2;
-  int32 product_id@3;
-};
-
-// All the device settings data that are needed in Lacros should be here.
-[Stable, Extensible]
-struct DeviceSettings {
-  // The value of AttestationForContentProtectionEnabled device setting.
-  OptionalBool attestation_for_content_protection_enabled@0;
-
-  // The value of DeviceSystemWideTracingEnabled device policy.
-  OptionalBool device_system_wide_tracing_enabled@1;
-
-  // The value of UsbDetachableAllowlist device policy.
-  UsbDetachableAllowlist? usb_detachable_allow_list@2;
-
-  [Stable]
-  enum OptionalBool {
-    kUnset,
-    kFalse,
-    kTrue,
-  };
-};
-
-
 [Stable, Extensible]
 enum ExoImeSupport {
   kUnsupported = 0,
@@ -757,7 +726,8 @@ struct BrowserInitParams {
   [MinVersion=24]
   array<url.mojom.Url>? startup_urls@24;
 
-  // The set of device settings Lacros needs to know about.
+  // The set of device settings for Lacros. Lacros should *NOT* use this data,
+  // but rely on DeviceSettingsLacros::GetDeviceSettings instead.
   [MinVersion=25]
   DeviceSettings? device_settings@25;
 

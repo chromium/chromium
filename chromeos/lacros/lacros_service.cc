@@ -25,6 +25,7 @@
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/crosapi/mojom/content_protection.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
@@ -226,6 +227,10 @@ LacrosService::LacrosService()
   ConstructRemote<
       crosapi::mojom::DeviceAttributes, &Crosapi::BindDeviceAttributes,
       Crosapi::MethodMinVersions::kBindDeviceAttributesMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::DeviceSettingsService,
+      &Crosapi::BindDeviceSettingsService,
+      Crosapi::MethodMinVersions::kBindDeviceSettingsServiceMinVersion>();
   ConstructRemote<
       crosapi::mojom::DownloadController, &Crosapi::BindDownloadController,
       Crosapi::MethodMinVersions::kBindDownloadControllerMinVersion>();

@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/crosapi/clipboard_history_ash.h"
 #include "chrome/browser/ash/crosapi/content_protection_ash.h"
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
+#include "chrome/browser/ash/crosapi/device_settings_ash.h"
 #include "chrome/browser/ash/crosapi/download_controller_ash.h"
 #include "chrome/browser/ash/crosapi/drive_integration_service_ash.h"
 #include "chrome/browser/ash/crosapi/feedback_ash.h"
@@ -124,6 +125,7 @@ CrosapiAsh::CrosapiAsh()
       clipboard_history_ash_(std::make_unique<ClipboardHistoryAsh>()),
       content_protection_ash_(std::make_unique<ContentProtectionAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
+      device_settings_ash_(std::make_unique<DeviceSettingsAsh>()),
       download_controller_ash_(std::make_unique<DownloadControllerAsh>()),
       drive_integration_service_ash_(
           std::make_unique<DriveIntegrationServiceAsh>()),
@@ -419,6 +421,11 @@ void CrosapiAsh::BindContentProtection(
 void CrosapiAsh::BindDeviceAttributes(
     mojo::PendingReceiver<mojom::DeviceAttributes> receiver) {
   device_attributes_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindDeviceSettingsService(
+    mojo::PendingReceiver<mojom::DeviceSettingsService> receiver) {
+  device_settings_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindDownloadController(

@@ -23,6 +23,10 @@
 #include "components/policy/core/browser/android/policy_cache_updater_android.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/device_settings_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 class PrefService;
 
 namespace policy {
@@ -110,6 +114,9 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   // Checks if the main / primary user is managed or not.
   // TODO(crbug/1245077): Remove once Lacros handles all profiles the same way.
   bool IsMainUserManaged() const;
+
+  // The device settings used in Lacros.
+  crosapi::mojom::DeviceSettings* GetDeviceSettings() const;
 #endif
 
  protected:
@@ -166,6 +173,10 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 
   // Owned by base class.
   ConfigurationPolicyProvider* command_line_provider_ = nullptr;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<DeviceSettingsLacros> device_settings_ = nullptr;
+#endif
 
   // Holds a callback to |ChromeBrowserCloudManagementController::Init| so that
   // its execution can be deferred until an enrollment token is available.
