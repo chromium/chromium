@@ -824,8 +824,8 @@ class CommerceHintTimeoutTest : public CommerceHintAgentTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Flaky on Linux: https://crbug.com/1257964.
-#if defined(OS_LINUX)
+// Flaky on Linux and ChromeOS: https://crbug.com/1257964.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_ExtractCart DISABLED_ExtractCart
 #else
 #define MAYBE_ExtractCart ExtractCart
