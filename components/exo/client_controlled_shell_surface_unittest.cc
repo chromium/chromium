@@ -2749,7 +2749,8 @@ TEST_F(ClientControlledShellSurfaceTest,
     scoped_feature_list.InitAndEnableFeature(ash::features::kArcResizeLock);
     EXPECT_TRUE(shell_surface->CanResize());
 
-    shell_surface->SetResizeLock(true);
+    shell_surface->SetResizeLockType(
+        ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
     surface->Commit();
     EXPECT_FALSE(shell_surface->CanResize());
 
@@ -2757,16 +2758,16 @@ TEST_F(ClientControlledShellSurfaceTest,
     // of the window.
     aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
     EXPECT_EQ(window->GetProperty(ash::kArcResizeLockTypeKey),
-              ash::ArcResizeLockType::RESIZE_LIMITED);
+              ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
     shell_surface->SetMinimumSize(gfx::Size(1, 1));
     shell_surface->SetMaximumSize(gfx::Size(1, 1));
     surface->Commit();
     EXPECT_EQ(window->GetProperty(ash::kArcResizeLockTypeKey),
-              ash::ArcResizeLockType::FULLY_LOCKED);
+              ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE);
     shell_surface->SetMinimumSize(gfx::Size(0, 0));
     shell_surface->SetMaximumSize(gfx::Size(0, 0));
 
-    shell_surface->SetResizeLock(false);
+    shell_surface->SetResizeLockType(ash::ArcResizeLockType::NONE);
     surface->Commit();
     EXPECT_TRUE(shell_surface->CanResize());
   }
@@ -2779,7 +2780,8 @@ TEST_F(ClientControlledShellSurfaceTest,
     scoped_feature_list.InitAndDisableFeature(ash::features::kArcResizeLock);
     EXPECT_TRUE(shell_surface->CanResize());
 
-    shell_surface->SetResizeLock(true);
+    shell_surface->SetResizeLockType(
+        ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
     surface->Commit();
     EXPECT_TRUE(shell_surface->CanResize());
   }

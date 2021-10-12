@@ -4,6 +4,7 @@
 
 #include "components/exo/wayland/zcr_remote_shell_impl.h"
 
+#include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/wm/window_resizer.h"
@@ -1400,12 +1401,14 @@ void remote_surface_set_system_gesture_exclusion(wl_client* client,
 }
 
 void remote_surface_set_resize_lock(wl_client* client, wl_resource* resource) {
-  GetUserDataAs<ClientControlledShellSurface>(resource)->SetResizeLock(true);
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetResizeLockType(
+      ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
 }
 
 void remote_surface_unset_resize_lock(wl_client* client,
                                       wl_resource* resource) {
-  GetUserDataAs<ClientControlledShellSurface>(resource)->SetResizeLock(false);
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetResizeLockType(
+      ash::ArcResizeLockType::NONE);
 }
 
 void remote_surface_set_bounds_in_output(wl_client* client,
@@ -1420,6 +1423,13 @@ void remote_surface_set_bounds_in_output(wl_client* client,
   // Bounds are set in pixels, and should not be scaled.
   GetUserDataAs<ClientControlledShellSurface>(resource)->SetBounds(
       display_handler->id(), gfx::Rect(x, y, width, height));
+}
+
+void remote_surface_set_resize_lock_type(wl_client* client,
+                                         wl_resource* resource,
+                                         uint32_t type) {
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetResizeLockType(
+      static_cast<ash::ArcResizeLockType>(type));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

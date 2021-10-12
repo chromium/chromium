@@ -334,6 +334,10 @@ void remote_surface_set_bounds_in_output(wl_client* client,
                                          int32_t width,
                                          int32_t height);
 
+void remote_surface_set_resize_lock_type(wl_client* client,
+                                         wl_resource* resource,
+                                         uint32_t mode);
+
 void remote_surface_block_ime(wl_client* client, wl_resource* resource);
 
 void remote_surface_unblock_ime(wl_client* client, wl_resource* resource);

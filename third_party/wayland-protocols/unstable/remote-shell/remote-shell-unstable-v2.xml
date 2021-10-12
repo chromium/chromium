@@ -38,7 +38,7 @@
     reset.
   </description>
 
-  <interface name="zcr_remote_shell_v2" version="1">
+  <interface name="zcr_remote_shell_v2" version="2">
     <description summary="remote_shell">
       The global interface that allows clients to turn a wl_surface into a
       "real window" which is remotely managed but can be stacked, activated
@@ -162,7 +162,7 @@
 
   </interface>
 
-  <interface name="zcr_remote_surface_v2" version="1">
+  <interface name="zcr_remote_surface_v2" version="2">
     <description summary="A desktop window">
       An interface that may be implemented by a wl_surface, for
       implementations that provide a desktop-style user interface
@@ -736,7 +736,7 @@
 
     <request name="set_resize_lock" since="1">
       <description summary="set resize lock state">
-          Enable the resize lock and put restrictions related to resizing on
+          [Deprecated] Enable the resize lock and put restrictions related to resizing on
           the shell surface.
 
           The resize lock state is double buffered, and will be applied at the
@@ -746,7 +746,7 @@
 
     <request name="unset_resize_lock" since="1">
       <description summary="unset resize lock state">
-          Disable the resize lock and allow the shell surface to be resized
+          [Deprecated] Disable the resize lock and allow the shell surface to be resized
           freely.
 
           The resize lock state is double buffered, and will be applied at the
@@ -805,6 +805,28 @@
       <arg name="y" type="int"/>
       <arg name="width" type="int"/>
       <arg name="height" type="int"/>
+    </request>
+
+    <!-- Version 2 additions -->
+
+    <enum name="resize_lock_type">
+      <description summary="resize lock type">
+  Resize lock type that can be used to put restrictions related to resizing.
+      </description>
+      <entry name="none" value="0" summary="follows normal resizeable policies"/>
+      <entry name="resize_enabled_togglable" value="1" summary="resizing is enabled and resize lock type is togglable" />
+      <entry name="resize_disabled_togglable" value="2" summary="resizing is disabled and resize lock type is togglable" />
+      <entry name="resize_disalbed_nontoggleable" value="3" summary="resizing is disabled and resize lock type is not togglable"/>
+    </enum>
+
+    <request name="set_resize_lock_type" since="2">
+      <description summary="set resize lock type">
+  Set resize lock type and put restrictions related to resizing on the shell surface.
+
+  The resize lock type is double buffered, and will be applied at the
+  time wl_surface.commit of the corresponding wl_surface is called.
+      </description>
+      <arg name="type" type="uint" enum="resize_lock_type" summary="resize lock type"/>
     </request>
   </interface>
 

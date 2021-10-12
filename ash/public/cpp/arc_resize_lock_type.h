@@ -8,17 +8,20 @@
 namespace ash {
 
 // Represents how strictly resize operations are limited for a window.
+// This class must strictly corresponds to the resize_lock_type enum in the
+// wayland remote surface protocol.
 enum class ArcResizeLockType {
-  // The resizability is not restricted by the resize lock feature.
-  RESIZABLE = 0,
+  // ResizeLock is disabled and the window follows normal resizability.
+  NONE = 0,
 
-  // The app is only allowed to be resized via limited operations such as via
-  // the compatibility mode dialog.
-  RESIZE_LIMITED = 1,
+  // Resizing is enabled and resize lock type is togglable.
+  RESIZE_ENABLED_TOGGLABLE = 1,
 
-  // No explicit resize operation is allowed. (The window can still be resized,
-  // e.g. when the display scale factor changes.)
-  FULLY_LOCKED = 2,
+  // Resizing is disabled and resize lock type is togglable.
+  RESIZE_DISABLED_TOGGLABLE = 2,
+
+  // Resizing is disabled and resize lock type is not togglable.
+  RESIZE_DISABLED_NONTOGGLABLE = 3,
 };
 
 }  // namespace ash

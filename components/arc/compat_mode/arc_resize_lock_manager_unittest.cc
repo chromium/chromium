@@ -74,9 +74,11 @@ class TestCompatModeButtonController : public CompatModeButtonController {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kNonInterestedPropKey, false)
 
-constexpr std::array<ash::ArcResizeLockType, 3> kArcResizeLockTypes{
-    ash::ArcResizeLockType::RESIZABLE, ash::ArcResizeLockType::RESIZE_LIMITED,
-    ash::ArcResizeLockType::FULLY_LOCKED};
+constexpr std::array<ash::ArcResizeLockType, 4> kArcResizeLockTypes{
+    ash::ArcResizeLockType::NONE,
+    ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE,
+    ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE,
+    ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE};
 
 }  // namespace
 
@@ -139,31 +141,31 @@ TEST_F(ArcResizeLockManagerTest, TestPropertyChange) {
 
   // Test EnableResizeLock will be called by the property change.
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZE_LIMITED);
+                          ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
   EXPECT_TRUE(IsResizeLockEnabled(arc_window.get()));
 
   // Test nothing will be called by the property overwrite with the same value.
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZE_LIMITED);
+                          ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
   EXPECT_TRUE(IsResizeLockEnabled(arc_window.get()));
 
   // Test DisableResizeLock will be called by the property change.
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZABLE);
+                          ash::ArcResizeLockType::NONE);
   EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
 
-  // Test if enabling/disabling |FULLY_LOCKED| toggles the resize lock state
-  // properly.
+  // Test if enabling/disabling |RESIZE_DISABLED_NONTOGGLABLE| toggles the
+  // resize lock state properly.
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::FULLY_LOCKED);
+                          ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE);
   EXPECT_TRUE(IsResizeLockEnabled(arc_window.get()));
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZABLE);
+                          ash::ArcResizeLockType::NONE);
   EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
 
   // Test nothing will be called by the property overwrite with the same value.
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZABLE);
+                          ash::ArcResizeLockType::NONE);
   EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
 
   // Test nothing will be called by the NON-interested property change.
@@ -178,7 +180,7 @@ TEST_F(ArcResizeLockManagerTest, TestPropertyChangeWithDelayedAppId) {
   EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
 
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZE_LIMITED);
+                          ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
   EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
   // Should ignore null.
   arc_window->ClearProperty(ash::kAppIDKey);
@@ -200,11 +202,11 @@ TEST_F(ArcResizeLockManagerTest, TestPropertyChangeWithDelayedAppIdCancel) {
   EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
 
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZE_LIMITED);
+                          ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
   EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
 
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZABLE);
+                          ash::ArcResizeLockType::NONE);
   EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
 
   arc_window->SetProperty(ash::kAppIDKey, app_id);
@@ -215,11 +217,12 @@ TEST_F(ArcResizeLockManagerTest, TestPropertyChangeWithDelayedAppIdCancel) {
 TEST_F(ArcResizeLockManagerTest, TestNonArcWindow) {
   auto non_arc_window = CreateFakeWindow(false);
   EXPECT_FALSE(IsResizeLockEnabled(non_arc_window.get()));
-  non_arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                              ash::ArcResizeLockType::RESIZE_LIMITED);
+  non_arc_window->SetProperty(
+      ash::kArcResizeLockTypeKey,
+      ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
   EXPECT_FALSE(IsResizeLockEnabled(non_arc_window.get()));
   non_arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                              ash::ArcResizeLockType::RESIZABLE);
+                              ash::ArcResizeLockType::NONE);
   EXPECT_FALSE(IsResizeLockEnabled(non_arc_window.get()));
 }
 
@@ -231,24 +234,24 @@ TEST_F(ArcResizeLockManagerTest, ResizeLockStateForFirstTimeLaunch) {
   arc_window->SetProperty(ash::kAppIDKey, app_id);
   EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
 
-  // Test for RESIZE_LIMITED.
+  // Test for RESIZE_DISABLED_TOGGLABLE.
   pref_delegate()->SetResizeLockState(app_id, mojom::ArcResizeLockState::READY);
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZE_LIMITED);
+                          ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
   EXPECT_EQ(pref_delegate()->GetResizeLockState(app_id),
             mojom::ArcResizeLockState::ON);
 
   // Test for RESIZABLE.
   pref_delegate()->SetResizeLockState(app_id, mojom::ArcResizeLockState::READY);
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZABLE);
+                          ash::ArcResizeLockType::NONE);
   EXPECT_EQ(pref_delegate()->GetResizeLockState(app_id),
             mojom::ArcResizeLockState::READY);
 
-  // Test for FULLY_LOCKED.
+  // Test for RESIZE_DISABLED_NONTOGGLABLE.
   pref_delegate()->SetResizeLockState(app_id, mojom::ArcResizeLockState::READY);
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::FULLY_LOCKED);
+                          ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE);
   EXPECT_EQ(pref_delegate()->GetResizeLockState(app_id),
             mojom::ArcResizeLockState::FULLY_LOCKED);
 }
@@ -312,31 +315,31 @@ TEST_F(ArcResizeLockManagerTest, TestShadowPropertyChange) {
   // Locked for resize locked windows.
   resize_shadow_updated = false;
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZE_LIMITED);
+                          ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
   EXPECT_EQ(arc_window->GetProperty(ash::kResizeShadowTypeKey),
             ash::ResizeShadowType::kLock);
   EXPECT_TRUE(resize_shadow_updated);
   // No redundant property update.
   resize_shadow_updated = false;
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZE_LIMITED);
+                          ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
   EXPECT_FALSE(resize_shadow_updated);
   resize_shadow_updated = false;
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::FULLY_LOCKED);
+                          ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE);
   EXPECT_FALSE(resize_shadow_updated);
 
   // Unlocked for non-resize locked windows.
   resize_shadow_updated = false;
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZABLE);
+                          ash::ArcResizeLockType::NONE);
   EXPECT_EQ(arc_window->GetProperty(ash::kResizeShadowTypeKey),
             ash::ResizeShadowType::kUnlock);
   EXPECT_TRUE(resize_shadow_updated);
   // No redundant property update.
   resize_shadow_updated = false;
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZABLE);
+                          ash::ArcResizeLockType::NONE);
   EXPECT_FALSE(resize_shadow_updated);
 }
 
@@ -354,7 +357,7 @@ TEST_F(ArcResizeLockManagerTest, TestWindowDestruction) {
     auto arc_window = CreateFakeWindow(true);
     EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
     arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                            ash::ArcResizeLockType::RESIZE_LIMITED);
+                            ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
     EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
   }
 
@@ -363,7 +366,7 @@ TEST_F(ArcResizeLockManagerTest, TestWindowDestruction) {
     auto arc_window = CreateFakeWindow(true);
     EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
     arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                            ash::ArcResizeLockType::RESIZE_LIMITED);
+                            ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
     arc_window->SetProperty(ash::kAppIDKey, std::string("app-id"));
     EXPECT_TRUE(IsResizeLockEnabled(arc_window.get()));
 

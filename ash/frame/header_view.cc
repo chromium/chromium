@@ -343,10 +343,12 @@ void HeaderView::UpdateCenterButton() {
   auto* center_button = frame_header_->GetCenterButton();
   if (!center_button)
     return;
-  if (is_center_button_visible && !center_button->parent()) {
-    AddChildView(center_button);
-  } else if (!is_center_button_visible && center_button->parent()) {
-    RemoveChildView(center_button);
+  if (is_center_button_visible) {
+    if (!center_button->parent())
+      AddChildView(center_button);
+    center_button->SetVisible(true);
+  } else {
+    center_button->SetVisible(false);
   }
 }
 

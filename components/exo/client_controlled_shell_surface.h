@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/display/screen_orientation_controller.h"
+#include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/wm/client_controlled_state.h"
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
@@ -241,10 +242,10 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Used to scale incoming coordinates from the client to DP.
   float GetClientToDpScale() const;
 
-  // Sets the resize lock state to the surface.
-  void SetResizeLock(bool resize_lock);
+  // Sets the resize lock type to the surface.
+  void SetResizeLockType(ash::ArcResizeLockType resize_lock_type);
 
-  // Update the resizability based on the resize lock state.
+  // Update the resizability based on the resize lock type.
   void UpdateResizability() override;
 
  protected:
@@ -374,7 +375,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Accessibility ID provided by client.
   absl::optional<int32_t> client_accessibility_id_;
 
-  bool pending_resize_lock_ = false;
+  ash::ArcResizeLockType pending_resize_lock_type_ =
+      ash::ArcResizeLockType::NONE;
 };
 
 }  // namespace exo

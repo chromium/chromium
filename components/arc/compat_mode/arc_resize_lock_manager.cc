@@ -161,7 +161,8 @@ class AppIdObserver : public aura::WindowObserver {
 };
 
 bool ShouldEnableResizeLock(ash::ArcResizeLockType type) {
-  return type != ash::ArcResizeLockType::RESIZABLE;
+  return type != ash::ArcResizeLockType::NONE &&
+         type != ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE;
 }
 
 }  // namespace
@@ -217,7 +218,7 @@ void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
 
   // We need to always trigger UpdateCompatModeButton regardless of value
   // change because it need to be called even when the property is set to
-  // ArcResizeLockType::RESIZABLE, which is the the default value of
+  // ArcResizeLockType::NONE, which is the the default value of
   // kArcResizeLockTypeKey, and the new value is the same as |old| in that case.
   AppIdObserver::RunOnReady(
       window, base::BindOnce(&CompatModeButtonController::Update,
@@ -230,24 +231,20 @@ void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
   if (new_value == old_value)
     return;
 
-  if (ShouldEnableResizeLock(new_value)) {
-    // Both the resize lock value and app id are needed to enable resize lock.
-    AppIdObserver::RunOnReady(
-        window, base::BindOnce(
-                    [](base::WeakPtr<ArcResizeLockManager> manager,
-                       aura::Window* window) {
-                      if (!manager)
-                        return;
-                      if (!ShouldEnableResizeLock(window->GetProperty(
-                              ash::kArcResizeLockTypeKey))) {
-                        return;
-                      }
+  AppIdObserver::RunOnReady(
+      window, base::BindOnce(
+                  [](base::WeakPtr<ArcResizeLockManager> manager,
+                     aura::Window* window) {
+                    if (!manager)
+                      return;
+                    if (ShouldEnableResizeLock(
+                            window->GetProperty(ash::kArcResizeLockTypeKey))) {
                       manager->EnableResizeLock(window);
-                    },
-                    weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    DisableResizeLock(window);
-  }
+                    } else {
+                      manager->DisableResizeLock(window);
+                    }
+                  },
+                  weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcResizeLockManager::OnWindowBoundsChanged(
@@ -278,15 +275,16 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
     const ash::ArcResizeLockType resize_lock_value =
         window->GetProperty(ash::kArcResizeLockTypeKey);
     switch (resize_lock_value) {
-      case ash::ArcResizeLockType::RESIZE_LIMITED:
+      case ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE:
         pref_delegate_->SetResizeLockState(*app_id,
                                            mojom::ArcResizeLockState::ON);
         break;
-      case ash::ArcResizeLockType::FULLY_LOCKED:
+      case ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE:
         pref_delegate_->SetResizeLockState(
             *app_id, mojom::ArcResizeLockState::FULLY_LOCKED);
         break;
-      case ash::ArcResizeLockType::RESIZABLE:
+      case ash::ArcResizeLockType::NONE:
+      case ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE:
         NOTREACHED();
     }
     // As we updated the resize lock state above, we need to update compat mode
@@ -296,7 +294,7 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
     if (ShouldShowSplashScreenDialog(pref_delegate_)) {
       const bool is_for_unresizable =
           window->GetProperty(ash::kArcResizeLockTypeKey) ==
-          ash::ArcResizeLockType::FULLY_LOCKED;
+          ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE;
       WindowActivationObserver::RunOnActivated(
           window, base::BindOnce(&ArcSplashScreenDialogView::Show, window,
                                  is_for_unresizable));
@@ -313,7 +311,12 @@ void ArcResizeLockManager::DisableResizeLock(aura::Window* window) {
   const bool erased = resize_lock_enabled_windows_.erase(window);
   if (!erased)
     return;
-
+  const auto app_id = GetAppId(window);
+  DCHECK(app_id);
+  if (window->GetProperty(ash::kArcResizeLockTypeKey) ==
+      ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE) {
+    pref_delegate_->SetResizeLockState(*app_id, mojom::ArcResizeLockState::OFF);
+  }
   window->SetProperty(ash::kResizeShadowTypeKey,
                       ash::ResizeShadowType::kUnlock);
   // Hide shadow effect on window. ash::Shell may not exist in tests.

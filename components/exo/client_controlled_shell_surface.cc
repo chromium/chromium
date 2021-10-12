@@ -736,29 +736,41 @@ float ClientControlledShellSurface::GetClientToDpScale() const {
   return 1.f / scale_;
 }
 
-void ClientControlledShellSurface::SetResizeLock(bool resize_lock) {
-  TRACE_EVENT1("exo", "ClientControlledShellSurface::SetResizeLock",
-               "resize_lock", resize_lock);
-  pending_resize_lock_ = resize_lock;
+void ClientControlledShellSurface::SetResizeLockType(
+    ash::ArcResizeLockType resize_lock_type) {
+  TRACE_EVENT1("exo", "ClientControlledShellSurface::SetResizeLockType",
+               "resize_lock_type", resize_lock_type);
+  pending_resize_lock_type_ = resize_lock_type;
 }
 
 void ClientControlledShellSurface::UpdateResizability() {
   TRACE_EVENT0("exo", "ClientControlledShellSurface::updateCanResize");
-  ash::ArcResizeLockType resizeLockType = ash::ArcResizeLockType::RESIZABLE;
-  if (pending_resize_lock_) {
-    // CalculateCanResize() returns the "raw" resizability of the window,
-    // in which the influence of the resize lock state is excluded.
-    if (CalculateCanResize()) {
-      resizeLockType = ash::ArcResizeLockType::RESIZE_LIMITED;
-    } else {
-      resizeLockType = ash::ArcResizeLockType::FULLY_LOCKED;
+  ash::ArcResizeLockType resize_lock_type = pending_resize_lock_type_;
+  // TODO(b/200230343): Remove this once the client's switched to the
+  // new protocol.
+  if (resize_lock_type == ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE &&
+      !CalculateCanResize()) {
+    resize_lock_type = ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE;
+  } else if (resize_lock_type == ash::ArcResizeLockType::NONE) {
+    const auto current_resize_lock_type =
+        widget_->GetNativeWindow()->GetProperty(ash::kArcResizeLockTypeKey);
+    if (current_resize_lock_type ==
+        ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE) {
+      resize_lock_type = ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE;
+    } else if (current_resize_lock_type ==
+               ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE) {
+      resize_lock_type = ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE;
     }
   }
   widget_->GetNativeWindow()->SetProperty(ash::kArcResizeLockTypeKey,
-                                          resizeLockType);
+                                          resize_lock_type);
   // If resize lock is enabled, the window is explicitly marded as unresizable.
   // Otherwise, the decision is deferred to the parent class.
-  if (ash::features::IsArcResizeLockEnabled() && pending_resize_lock_) {
+  if (ash::features::IsArcResizeLockEnabled() &&
+      (pending_resize_lock_type_ ==
+           ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE ||
+       pending_resize_lock_type_ ==
+           ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE)) {
     SetCanResize(false);
     return;
   }

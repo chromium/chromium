@@ -121,19 +121,23 @@ void CompatModeTestBase::SyncResizeLockPropertyWithMojoState(
   const auto app_id = GetAppId(window);
   switch (pref_delegate()->GetResizeLockState(*app_id)) {
     case mojom::ArcResizeLockState::UNDEFINED:
+      window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::NONE);
+      break;
     case mojom::ArcResizeLockState::OFF:
       window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZABLE);
+                          ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE);
       break;
     case mojom::ArcResizeLockState::ON:
     case mojom::ArcResizeLockState::READY:
     case mojom::ArcResizeLockState::FULLY_LOCKED:
       if (widget->widget_delegate()->CanResize()) {
         window->SetProperty(ash::kArcResizeLockTypeKey,
-                            ash::ArcResizeLockType::RESIZE_LIMITED);
+                            ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
       } else {
-        window->SetProperty(ash::kArcResizeLockTypeKey,
-                            ash::ArcResizeLockType::FULLY_LOCKED);
+        window->SetProperty(
+            ash::kArcResizeLockTypeKey,
+            ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE);
       }
       break;
   }

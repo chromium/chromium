@@ -66,10 +66,10 @@ void CompatModeButtonController::Update(
   if (!app_id)
     return;
   auto* const frame_header = GetFrameHeader(window);
+  // TODO(b/200230343): Replace it with resize lock type.
   const auto resize_lock_state = pref_delegate->GetResizeLockState(*app_id);
   if (resize_lock_state == mojom::ArcResizeLockState::UNDEFINED ||
       resize_lock_state == mojom::ArcResizeLockState::READY) {
-    frame_header->SetCenterButton(nullptr);
     return;
   }
   auto* compat_mode_button = frame_header->GetCenterButton();
@@ -101,15 +101,17 @@ void CompatModeButtonController::Update(
 
   const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
   switch (resize_lock_type) {
-    case ash::ArcResizeLockType::RESIZE_LIMITED:
-    case ash::ArcResizeLockType::RESIZABLE:
+    case ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE:
+    case ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE:
       compat_mode_button->SetEnabled(true);
       break;
-    case ash::ArcResizeLockType::FULLY_LOCKED:
+    case ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE:
       compat_mode_button->SetEnabled(false);
       compat_mode_button->SetTooltipText(l10n_util::GetStringUTF16(
           IDS_ASH_ARC_APP_COMPAT_DISABLED_COMPAT_MODE_BUTTON_TOOLTIP_PHONE));
       break;
+    case ash::ArcResizeLockType::NONE:
+      NOTREACHED();
   }
 
   UpdateAshAccelerator(pref_delegate, window);
@@ -136,13 +138,16 @@ void CompatModeButtonController::UpdateAshAccelerator(
 
   const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
   switch (resize_lock_type) {
-    case ash::ArcResizeLockType::RESIZE_LIMITED:
-    case ash::ArcResizeLockType::RESIZABLE:
+    case ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE:
+    // TODO(b/200230343): Call NOTREACHED() once the client has shifted to
+    // the new protocol.
+    case ash::ArcResizeLockType::NONE:
+    case ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE:
       frame_view->SetToggleResizeLockMenuCallback(base::BindRepeating(
           &CompatModeButtonController::ToggleResizeToggleMenu, GetWeakPtr(),
           window, pref_delegate));
       break;
-    case ash::ArcResizeLockType::FULLY_LOCKED:
+    case ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE:
       frame_view->ClearToggleResizeLockMenuCallback();
       break;
   }

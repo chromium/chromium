@@ -180,8 +180,9 @@ ResizeCompatMode PredictCurrentMode(const views::Widget* widget) {
 }
 
 ResizeCompatMode PredictCurrentMode(const aura::Window* window) {
-  if (window->GetProperty(ash::kArcResizeLockTypeKey) ==
-      ash::ArcResizeLockType::RESIZABLE) {
+  const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
+  if (resize_lock_type == ash::ArcResizeLockType::NONE ||
+      resize_lock_type == ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE) {
     return ResizeCompatMode::kResizable;
   }
 
