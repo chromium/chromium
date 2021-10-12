@@ -1207,7 +1207,7 @@
     },
     {
       name: "InteractionId",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "InterestCohortAPI",
@@ -2413,7 +2413,7 @@
       name: "WebAuth",
       status: "stable",
     },
-    // When enabled adds the authenticator attachment used for registration and 
+    // When enabled adds the authenticator attachment used for registration and
     // authentication to the public key credential response.
     {
       name: "WebAuthAuthenticatorAttachment",
