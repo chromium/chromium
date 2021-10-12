@@ -294,6 +294,40 @@ gl::GLImage* SharedImageRepresentationOverlayImpl::GetGLImage() {
 ///////////////////////////////////////////////////////////////////////////////
 // SharedImageBackingGLImage
 
+// static
+std::unique_ptr<SharedImageBackingGLImage>
+SharedImageBackingGLImage::CreateFromGLTexture(
+    scoped_refptr<gl::GLImage> image,
+    const Mailbox& mailbox,
+    viz::ResourceFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    GLenum texture_target,
+    scoped_refptr<gles2::TexturePassthrough> wrapped_gl_texture) {
+  DCHECK(!!wrapped_gl_texture);
+
+  // We don't expect the backing to allocate a new
+  // texture but it does need to know the texture target so we supply that
+  // one param.
+  InitializeGLTextureParams params;
+  params.target = texture_target;
+  UnpackStateAttribs attribs;
+
+  auto shared_image = std::make_unique<SharedImageBackingGLImage>(
+      std::move(image), mailbox, format, size, color_space, surface_origin,
+      alpha_type, usage, params, attribs, true);
+
+  shared_image->passthrough_texture_ = std::move(wrapped_gl_texture);
+  shared_image->gl_texture_retained_for_legacy_mailbox_ = true;
+  shared_image->gl_texture_retain_count_ = 1;
+  shared_image->image_bind_or_copy_needed_ = false;
+
+  return shared_image;
+}
+
 SharedImageBackingGLImage::SharedImageBackingGLImage(
     scoped_refptr<gl::GLImage> image,
     const Mailbox& mailbox,
