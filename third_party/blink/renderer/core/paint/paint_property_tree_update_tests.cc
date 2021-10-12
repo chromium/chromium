@@ -793,7 +793,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ScrollBoundsChange) {
                           ->ScrollTranslation()
                           ->ScrollNode();
   EXPECT_EQ(gfx::Rect(0, 0, 100, 100), scroll_node->ContainerRect());
-  EXPECT_EQ(gfx::Size(200, 200), scroll_node->ContentsSize());
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 200), scroll_node->ContentsRect());
 
   GetDocument().getElementById("content")->setAttribute(
       html_names::kStyleAttr, "width: 200px; height: 300px");
@@ -803,7 +803,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ScrollBoundsChange) {
                              ->ScrollTranslation()
                              ->ScrollNode());
   EXPECT_EQ(gfx::Rect(0, 0, 100, 100), scroll_node->ContainerRect());
-  EXPECT_EQ(gfx::Size(200, 300), scroll_node->ContentsSize());
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 300), scroll_node->ContentsRect());
 }
 
 // The scrollbars are attached to the visual viewport but created by (and have
@@ -825,8 +825,8 @@ TEST_P(PaintPropertyTreeUpdateTest,
 
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600),
             visual_viewport.GetScrollNode()->ContainerRect());
-  EXPECT_EQ(gfx::Size(800, 600),
-            visual_viewport.GetScrollNode()->ContentsSize());
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 600),
+            visual_viewport.GetScrollNode()->ContentsRect());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, ViewportAddRemoveDeviceEmulationNode) {

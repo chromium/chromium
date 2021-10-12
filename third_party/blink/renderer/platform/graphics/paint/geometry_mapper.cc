@@ -37,7 +37,7 @@ void ExpandFixedBoundsInScroller(const TransformPaintPropertyNode* local,
   // Calculate the max scroll offset and expand by that amount. The max scroll
   // offset is the contents size minus one viewport's worth of space (i.e. the
   // container rect size).
-  gfx::Size contents_size = node->ScrollNode()->ContentsSize();
+  gfx::Size contents_size = node->ScrollNode()->ContentsRect().size();
   gfx::Size container_size = node->ScrollNode()->ContainerRect().size();
   rect_to_map.Rect().Expand(FloatSize(contents_size - container_size));
 }

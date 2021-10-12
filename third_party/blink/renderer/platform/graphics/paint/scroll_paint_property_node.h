@@ -132,13 +132,17 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
   }
 
   // Rect of the container area that the contents scrolls in, in the space of
-  // the parent of the associated transform node (ScrollTranslation).
-  // It doesn't include non-overlay scrollbars. Overlay scrollbars do not affect
-  // the rect.
+  // the parent of the associated transform node, i.e. PaintOffsetTranslation
+  // which is the parent of ScrollTranslation. It doesn't include non-overlay
+  // scrollbars. Overlay scrollbars do not affect the rect.
   const gfx::Rect& ContainerRect() const { return state_.container_rect; }
 
-  // Size of the contents that is scrolled within the container rect.
-  const gfx::Size& ContentsSize() const { return state_.contents_size; }
+  // Rect of the contents that is scrolled within the container rect, in the
+  // space of the associated transform node (ScrollTranslation). It has the
+  // same origin as ContainerRect().
+  gfx::Rect ContentsRect() const {
+    return gfx::Rect(state_.container_rect.origin(), state_.contents_size);
+  }
 
   bool UserScrollableHorizontal() const {
     return state_.user_scrollable_horizontal;

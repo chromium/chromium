@@ -459,7 +459,7 @@ static void WritePaintProperties(WTF::TextStream& ts,
       ts << " state=(" << fragment->LocalBorderBoxProperties().ToString()
          << ")";
     }
-    if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
+    if (RuntimeEnabledFeatures::CullRectUpdateEnabled() && o.HasLayer()) {
       ts << " cull_rect=(" << fragment->GetCullRect().ToString()
          << ") contents_cull_rect=("
          << fragment->GetContentsCullRect().ToString() << ")";

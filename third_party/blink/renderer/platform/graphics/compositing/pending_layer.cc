@@ -32,10 +32,8 @@ const ClipPaintPropertyNode* HighestOutputClipBetween(
 absl::optional<gfx::RectF> VisibilityLimit(const PropertyTreeState& state) {
   if (&state.Clip().LocalTransformSpace() == &state.Transform())
     return ToGfxRectF(state.Clip().PaintClipRect().Rect());
-  if (const auto* scroll = state.Transform().ScrollNode()) {
-    return gfx::RectF(
-        gfx::Rect(scroll->ContainerRect().origin(), scroll->ContentsSize()));
-  }
+  if (const auto* scroll = state.Transform().ScrollNode())
+    return gfx::RectF(scroll->ContentsRect());
   return absl::nullopt;
 }
 

@@ -2051,8 +2051,8 @@ TEST_F(WebFrameTest, SetForceZeroLayoutHeightWorksWithWrapContentMode) {
   auto* scroll_node = visual_viewport.GetScrollTranslationNode()->ScrollNode();
   EXPECT_EQ(gfx::Rect(viewport_width, viewport_height),
             scroll_node->ContainerRect());
-  EXPECT_EQ(gfx::Size(viewport_width, viewport_height),
-            scroll_node->ContentsSize());
+  EXPECT_EQ(gfx::Rect(viewport_width, viewport_height),
+            scroll_node->ContentsRect());
 }
 
 TEST_F(WebFrameTest, SetForceZeroLayoutHeight) {

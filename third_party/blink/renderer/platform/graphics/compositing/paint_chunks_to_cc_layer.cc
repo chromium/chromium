@@ -861,7 +861,7 @@ static void UpdateTouchActionRegion(
        scroll_node; scroll_node = scroll_node->Parent()) {
     if (scroll_node->UserScrollableHorizontal() &&
         scroll_node->ContainerRect().width() <
-            scroll_node->ContentsSize().width()) {
+            scroll_node->ContentsRect().width()) {
       disable_cursor_control = TouchAction::kInternalPanXScrolls;
       break;
     }

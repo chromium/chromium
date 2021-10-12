@@ -221,7 +221,7 @@ TEST_P(PaintPropertyTreeBuilderTest, PositionAndScroll) {
   const auto* scroll = scroller_properties->ScrollTranslation()->ScrollNode();
   EXPECT_EQ(DocScroll(), scroll->Parent());
   EXPECT_EQ(gfx::Rect(0, 0, 413, 317), scroll->ContainerRect());
-  EXPECT_EQ(gfx::Size(660, 10200), scroll->ContentsSize());
+  EXPECT_EQ(gfx::Rect(0, 0, 660, 10200), scroll->ContentsRect());
   EXPECT_FALSE(scroll->UserScrollableHorizontal());
   EXPECT_TRUE(scroll->UserScrollableVertical());
   EXPECT_EQ(gfx::Vector2dF(120, 340),
@@ -397,7 +397,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollVerticalRL) {
   EXPECT_EQ(scroll, scroll_translation->ScrollNode());
   // 10: border width. 85: container client size (== 100 - scrollbar width).
   EXPECT_EQ(gfx::Rect(10, 10, 85, 85), scroll->ContainerRect());
-  EXPECT_EQ(gfx::Size(400, 400), scroll->ContentsSize());
+  EXPECT_EQ(gfx::Rect(10, 10, 400, 400), scroll->ContentsRect());
   EXPECT_EQ(PhysicalOffset(), scroller->FirstFragment().PaintOffset());
   EXPECT_EQ(IntPoint(315, 0), scroller->ScrollOrigin());
   EXPECT_EQ(PhysicalOffset(10, 10), content->FirstFragment().PaintOffset());
@@ -416,7 +416,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollVerticalRL) {
   // Other properties are the same as before.
   EXPECT_EQ(scroll, scroll_translation->ScrollNode());
   EXPECT_EQ(gfx::Rect(10, 10, 85, 85), scroll->ContainerRect());
-  EXPECT_EQ(gfx::Size(400, 400), scroll->ContentsSize());
+  EXPECT_EQ(gfx::Rect(10, 10, 400, 400), scroll->ContentsRect());
   EXPECT_EQ(PhysicalOffset(), scroller->FirstFragment().PaintOffset());
   EXPECT_EQ(IntPoint(315, 0), scroller->ScrollOrigin());
   EXPECT_EQ(PhysicalOffset(10, 10), content->FirstFragment().PaintOffset());
@@ -450,7 +450,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollRTL) {
   // 25: border width (10) + scrollbar (on the left) width (15).
   // 85: container client size (== 100 - scrollbar width).
   EXPECT_EQ(gfx::Rect(25, 10, 85, 85), scroll->ContainerRect());
-  EXPECT_EQ(gfx::Size(400, 400), scroll->ContentsSize());
+  EXPECT_EQ(gfx::Rect(25, 10, 400, 400), scroll->ContentsRect());
   EXPECT_EQ(PhysicalOffset(), scroller->FirstFragment().PaintOffset());
   EXPECT_EQ(IntPoint(315, 0), scroller->ScrollOrigin());
   EXPECT_EQ(PhysicalOffset(25, 10), content->FirstFragment().PaintOffset());
@@ -469,7 +469,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollRTL) {
   // Other properties are the same as before.
   EXPECT_EQ(scroll, scroll_translation->ScrollNode());
   EXPECT_EQ(gfx::Rect(25, 10, 85, 85), scroll->ContainerRect());
-  EXPECT_EQ(gfx::Size(400, 400), scroll->ContentsSize());
+  EXPECT_EQ(gfx::Rect(25, 10, 400, 400), scroll->ContentsRect());
   EXPECT_EQ(PhysicalOffset(), scroller->FirstFragment().PaintOffset());
   EXPECT_EQ(IntPoint(315, 0), scroller->ScrollOrigin());
   EXPECT_EQ(PhysicalOffset(25, 10), content->FirstFragment().PaintOffset());
@@ -3984,7 +3984,7 @@ TEST_P(PaintPropertyTreeBuilderTest, NestedScrollProperties) {
   EXPECT_EQ(gfx::Rect(0, 0, 5, 3), overflow_a_scroll_node->ContainerRect());
   // 107 is the forceScroll element plus the height of the overflow scroll child
   // (overflowB).
-  EXPECT_EQ(gfx::Size(9, 107), overflow_a_scroll_node->ContentsSize());
+  EXPECT_EQ(gfx::Rect(0, 0, 9, 107), overflow_a_scroll_node->ContentsRect());
   EXPECT_TRUE(overflow_a_scroll_node->UserScrollableHorizontal());
   EXPECT_TRUE(overflow_a_scroll_node->UserScrollableVertical());
 
@@ -3998,7 +3998,7 @@ TEST_P(PaintPropertyTreeBuilderTest, NestedScrollProperties) {
   EXPECT_EQ(overflow_a_scroll_node, overflow_b_scroll_node->Parent());
   EXPECT_EQ(gfx::Vector2dF(0, -41), scroll_b_translation->Translation2D());
   EXPECT_EQ(gfx::Rect(0, 0, 9, 7), overflow_b_scroll_node->ContainerRect());
-  EXPECT_EQ(gfx::Size(9, 100), overflow_b_scroll_node->ContentsSize());
+  EXPECT_EQ(gfx::Rect(0, 0, 9, 100), overflow_b_scroll_node->ContentsRect());
   EXPECT_TRUE(overflow_b_scroll_node->UserScrollableHorizontal());
   EXPECT_TRUE(overflow_b_scroll_node->UserScrollableVertical());
 }
@@ -4070,7 +4070,7 @@ TEST_P(PaintPropertyTreeBuilderTest, PositionedScrollerIsNotNested) {
   // The height should be 4000px because the (dom-order) overflow children are
   // positioned and do not contribute to the height. Only the 4000px
   // "forceScroll" height is present.
-  EXPECT_EQ(gfx::Size(5, 4000), overflow_scroll_node->ContentsSize());
+  EXPECT_EQ(gfx::Rect(0, 0, 5, 4000), overflow_scroll_node->ContentsRect());
 
   const ObjectPaintProperties* abspos_overflow_scroll_properties =
       abspos_overflow->GetLayoutObject()->FirstFragment().PaintProperties();
@@ -4083,7 +4083,8 @@ TEST_P(PaintPropertyTreeBuilderTest, PositionedScrollerIsNotNested) {
   EXPECT_EQ(gfx::Vector2dF(0, -41), abspos_scroll_translation->Translation2D());
   EXPECT_EQ(gfx::Rect(0, 0, 9, 7),
             abspos_overflow_scroll_node->ContainerRect());
-  EXPECT_EQ(gfx::Size(9, 4000), abspos_overflow_scroll_node->ContentsSize());
+  EXPECT_EQ(gfx::Rect(0, 0, 9, 4000),
+            abspos_overflow_scroll_node->ContentsRect());
 
   const ObjectPaintProperties* fixed_overflow_scroll_properties =
       fixed_overflow->GetLayoutObject()->FirstFragment().PaintProperties();
@@ -4096,7 +4097,8 @@ TEST_P(PaintPropertyTreeBuilderTest, PositionedScrollerIsNotNested) {
   EXPECT_EQ(gfx::Vector2dF(0, -43), fixed_scroll_translation->Translation2D());
   EXPECT_EQ(gfx::Rect(0, 0, 13, 11),
             fixed_overflow_scroll_node->ContainerRect());
-  EXPECT_EQ(gfx::Size(13, 4000), fixed_overflow_scroll_node->ContentsSize());
+  EXPECT_EQ(gfx::Rect(0, 0, 13, 4000),
+            fixed_overflow_scroll_node->ContentsRect());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, NestedPositionedScrollProperties) {
@@ -4152,7 +4154,7 @@ TEST_P(PaintPropertyTreeBuilderTest, NestedPositionedScrollProperties) {
   EXPECT_EQ(gfx::Rect(0, 0, 20, 20), overflow_a_scroll_node->ContainerRect());
   // 100 is the forceScroll element's height because the overflow child does not
   // contribute to the height.
-  EXPECT_EQ(gfx::Size(20, 100), overflow_a_scroll_node->ContentsSize());
+  EXPECT_EQ(gfx::Rect(0, 0, 20, 100), overflow_a_scroll_node->ContentsRect());
   EXPECT_TRUE(overflow_a_scroll_node->UserScrollableHorizontal());
   EXPECT_TRUE(overflow_a_scroll_node->UserScrollableVertical());
 
@@ -4166,7 +4168,7 @@ TEST_P(PaintPropertyTreeBuilderTest, NestedPositionedScrollProperties) {
   EXPECT_EQ(overflow_a_scroll_node, overflow_b_scroll_node->Parent());
   EXPECT_EQ(gfx::Vector2dF(0, -41), scroll_b_translation->Translation2D());
   EXPECT_EQ(gfx::Rect(0, 0, 5, 3), overflow_b_scroll_node->ContainerRect());
-  EXPECT_EQ(gfx::Size(5, 100), overflow_b_scroll_node->ContentsSize());
+  EXPECT_EQ(gfx::Rect(0, 0, 5, 100), overflow_b_scroll_node->ContentsRect());
   EXPECT_TRUE(overflow_b_scroll_node->UserScrollableHorizontal());
   EXPECT_TRUE(overflow_b_scroll_node->UserScrollableVertical());
 }
@@ -6147,7 +6149,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SubpixelPositionedScrollNode) {
   const auto* properties = PaintPropertiesForElement("scroller");
   const auto* scroll_node = properties->ScrollTranslation()->ScrollNode();
   EXPECT_EQ(gfx::Rect(0, 0, 200, 200), scroll_node->ContainerRect());
-  EXPECT_EQ(gfx::Size(1000, 200), scroll_node->ContentsSize());
+  EXPECT_EQ(gfx::Rect(0, 0, 1000, 200), scroll_node->ContentsRect());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest,

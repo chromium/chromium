@@ -191,7 +191,7 @@ TEST_P(ViewPainterTest, FrameScrollHitTestProperties) {
   const auto& contents_transform =
       ToUnaliased(contents_chunk.properties.Transform());
   const auto* contents_scroll = contents_transform.ScrollNode();
-  EXPECT_EQ(gfx::Size(800, 2000), contents_scroll->ContentsSize());
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 2000), contents_scroll->ContentsRect());
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600), contents_scroll->ContainerRect());
   const auto& contents_clip = ToUnaliased(contents_chunk.properties.Clip());
   EXPECT_EQ(FloatRect(0, 0, 800, 600), contents_clip.PaintClipRect().Rect());

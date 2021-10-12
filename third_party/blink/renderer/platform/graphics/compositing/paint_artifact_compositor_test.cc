@@ -1052,7 +1052,7 @@ static void CheckCcScrollNode(const ScrollPaintPropertyNode& blink_scroll,
                               const cc::ScrollNode& cc_scroll) {
   EXPECT_TRUE(cc_scroll.scrollable);
   EXPECT_EQ(blink_scroll.ContainerRect().size(), cc_scroll.container_bounds);
-  EXPECT_EQ(blink_scroll.ContentsSize(), cc_scroll.bounds);
+  EXPECT_EQ(blink_scroll.ContentsRect().size(), cc_scroll.bounds);
   EXPECT_EQ(blink_scroll.UserScrollableHorizontal(),
             cc_scroll.user_scrollable_horizontal);
   EXPECT_EQ(blink_scroll.UserScrollableVertical(),

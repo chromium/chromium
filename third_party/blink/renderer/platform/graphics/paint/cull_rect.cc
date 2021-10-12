@@ -96,14 +96,13 @@ CullRect::ApplyTransformResult CullRect::ApplyScrollTranslation(
 
   // We create scroll node for the root scroller even it's not scrollable.
   // Don't expand in the case.
-  if (scroll->ContainerRect().width() >= scroll->ContentsSize().width() &&
-      scroll->ContainerRect().height() >= scroll->ContentsSize().height())
+  gfx::Rect contents_rect = scroll->ContentsRect();
+  if (scroll->ContainerRect().width() >= contents_rect.width() &&
+      scroll->ContainerRect().height() >= contents_rect.height())
     return kNotExpanded;
 
   // Expand the cull rect for scrolling contents for composited scrolling.
   rect_.Outset(LocalPixelDistanceToExpand(root_transform, scroll_translation));
-  gfx::Rect contents_rect(scroll->ContainerRect().origin(),
-                          scroll->ContentsSize());
   rect_.Intersect(contents_rect);
   return rect_ == contents_rect ? kExpandedForWholeScrollingContents
                                 : kExpandedForPartialScrollingContents;
@@ -247,9 +246,7 @@ bool CullRect::ApplyPaintProperties(
   bool expanded = false;
   if (last_scroll_translation_result == kExpandedForPartialScrollingContents) {
     DCHECK(last_transform->ScrollNode());
-    expansion_bounds.emplace(
-        last_transform->ScrollNode()->ContainerRect().origin(),
-        last_transform->ScrollNode()->ContentsSize());
+    expansion_bounds = last_transform->ScrollNode()->ContentsRect();
     if (last_transform != &destination.Transform() ||
         last_clip != &destination.Clip()) {
       // Map expansion_bounds in the same way as we did for rect_ in the last

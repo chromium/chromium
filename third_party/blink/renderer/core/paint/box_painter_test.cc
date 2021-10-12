@@ -287,7 +287,7 @@ TEST_P(BoxPainterTest, ScrollHitTestProperties) {
   const auto& contents_transform =
       ToUnaliased(contents_chunk.properties.Transform());
   const auto* contents_scroll = contents_transform.ScrollNode();
-  EXPECT_EQ(gfx::Size(200, 300), contents_scroll->ContentsSize());
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 300), contents_scroll->ContentsRect());
   EXPECT_EQ(gfx::Rect(0, 0, 200, 200), contents_scroll->ContainerRect());
   const auto& contents_clip = ToUnaliased(contents_chunk.properties.Clip());
   EXPECT_EQ(FloatRect(0, 0, 200, 200), contents_clip.PaintClipRect().Rect());
