@@ -4,9 +4,12 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {AppType, Bool, OptionalBool, PermissionType, PermissionValueType, TriState} from './constants.js';
+
+import {PermissionType, PermissionValue, TriState} from '../permission_constants.js';
+import {createBoolPermission, createTriStatePermission, getTriStatePermissionValue} from '../permission_util.js';
+
+import {AppType, OptionalBool} from './constants.js';
 import {AppManagementStore} from './store.js';
-import {createPermission} from './util.js';
 
 /**
  * @implements {appManagement.mojom.PageHandlerInterface}
@@ -32,12 +35,12 @@ export class FakePageHandler {
 
       if (options && options[permissionType]) {
         const opts = options[permissionType];
-        permissionValue = opts.permissionValue || permissionValue;
+        permissionValue =
+            getTriStatePermissionValue(opts.value) || permissionValue;
         isManaged = opts.isManaged || isManaged;
       }
-      permissions[permissionType] = createPermission(
-          permissionType, PermissionValueType.kTriState, permissionValue,
-          isManaged);
+      permissions[permissionType] =
+          createTriStatePermission(permissionType, permissionValue, isManaged);
     }
 
     return permissions;
@@ -60,9 +63,8 @@ export class FakePageHandler {
     const permissions = {};
 
     for (const permissionType of permissionTypes) {
-      permissions[permissionType] = createPermission(
-          permissionType, PermissionValueType.kBool, Bool.kTrue,
-          false /*is_managed*/);
+      permissions[permissionType] =
+          createBoolPermission(permissionType, true, false /*is_managed*/);
     }
 
     return permissions;

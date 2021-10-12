@@ -5,7 +5,7 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {PermissionType, createPermission, PermissionValueType, Bool, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {PermissionType, createBoolPermission, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {setupFakeHandler, replaceStore, replaceBody, getPermissionCrToggleByType, getPermissionToggleByType} from './test_util.m.js';
 // #import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
 // #import {Router, routes, Route} from 'chrome://os-settings/chromeos/os_settings.js';
@@ -41,9 +41,8 @@ suite('<app-management-borealis-detail-view>', function() {
     const permissions = {};
     const permissionTypes = [PermissionType.kMicrophone];
     for (const permissionType of permissionTypes) {
-      permissions[permissionType] = app_management.util.createPermission(
-          permissionType, PermissionValueType.kBool, Bool.kTrue,
-          false /*is_managed*/);
+      permissions[permissionType] = createBoolPermission(
+          permissionType, true /*permission_value*/, false /*is_managed*/);
     }
 
     // Add main app, and make it the currently selected app.

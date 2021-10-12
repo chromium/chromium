@@ -28,30 +28,13 @@ export const PageType = {
   DETAIL: 1,
 };
 
-/**
- * A number representation of a Bool. Permission values should be of this type
- * for permissions with value type PermissionValueType.kBool.
- * @enum {number}
- * @const
- */
-export const Bool = {
-  kFalse: 0,
-  kTrue: 1,
-};
-
 export const AppType = apps.mojom.AppType;
-
-export const PermissionValueType = apps.mojom.PermissionValueType;
-
-export const TriState = apps.mojom.TriState;
 
 export const OptionalBool = apps.mojom.OptionalBool;
 
 export const InstallReason = apps.mojom.InstallReason;
 
 export const WindowMode = apps.mojom.WindowMode;
-
-export const PermissionType = apps.mojom.PermissionType;
 
 // This histogram is also declared and used at chrome/browser/ui/webui/settings/
 // chromeos/app_management/app_management_uma.h.

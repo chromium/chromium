@@ -308,6 +308,7 @@ js_library("uninstall_button") {
 
 js_library("util") {
   deps = [
+    "../:permission_constants",
     "../..:os_route.m",
     "../../..:router",
   ]

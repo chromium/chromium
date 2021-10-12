@@ -51,6 +51,7 @@
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -192,7 +193,8 @@ void UpdateAppPermissions(
     permission->permission_type =
         GetAppServicePermissionType(new_permission.first);
     permission->value_type = apps::mojom::PermissionValueType::kBool;
-    permission->value = static_cast<uint32_t>(new_permission.second->granted);
+    permission->value = apps::mojom::PermissionValue::New();
+    permission->value->set_bool_value(new_permission.second->granted);
     permission->is_managed = new_permission.second->managed;
 
     permissions->push_back(std::move(permission));
@@ -893,7 +895,7 @@ void ArcApps::SetPermission(const std::string& app_id,
     return;
   }
 
-  if (permission->value) {
+  if (apps_util::IsPermissionEnabled(permission->value)) {
     auto* permissions_instance = ARC_GET_INSTANCE_FOR_METHOD(
         arc_service_manager->arc_bridge_service()->app_permissions(),
         GrantPermission);

@@ -5,7 +5,7 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {PluginVmBrowserProxyImpl, PermissionType, createPermission, PermissionValueType, Bool, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {PluginVmBrowserProxyImpl, PermissionType, createBoolPermission, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {TestPluginVmBrowserProxy} from './test_plugin_vm_browser_proxy.m.js';
 // #import {setupFakeHandler, replaceStore, replaceBody, getPermissionCrToggleByType, getPermissionToggleByType} from './test_util.m.js';
 // clang-format on
@@ -123,9 +123,8 @@ suite('<app-management-plugin-vm-detail-view>', function() {
       PermissionType.kMicrophone,
     ];
     for (const permissionType of permissionTypes) {
-      permissions[permissionType] = app_management.util.createPermission(
-          permissionType, PermissionValueType.kBool, Bool.kTrue,
-          false /*is_managed*/);
+      permissions[permissionType] =
+          createBoolPermission(permissionType, true, false /*is_managed*/);
     }
 
     pluginVmBrowserProxy.pluginVmRunning = false;

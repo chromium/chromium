@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {setAppNotificationProviderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {createBoolPermission, getBoolPermissionValue, setAppNotificationProviderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -221,22 +221,6 @@ suite('AppNotificationsSubpageTests', function() {
   }
 
   /**
-   * @param {!apps.mojom.PermissionType} permissionType
-   * @param {!apps.mojom.PermissionValueType} value_type
-   * @param {number} value
-   * @param {boolean} is_managed
-   * @return {!apps.mojom.Permission}
-   */
-  function createPermission(permissionType, value_type, value, is_managed) {
-    return {
-      permissionType: permissionType,
-      valueType: value_type,
-      value: value,
-      isManaged: is_managed
-    };
-  }
-
-  /**
    * @param {string} id
    * @param {string} title
    * @param {!apps.mojom.Permission} permission
@@ -254,12 +238,12 @@ suite('AppNotificationsSubpageTests', function() {
   }
 
   test('loadAppListAndClickToggle', async () => {
-    const permission1 = createPermission(
-        /**permissionType=*/ 1, /**value_type=*/ 0,
-        /**value=*/ 0, /**is_managed=*/ false);
-    const permission2 = createPermission(
-        /**permissionType=*/ 2, /**value_type=*/ 0,
-        /**value=*/ 1, /**is_managed=*/ false);
+    const permission1 = createBoolPermission(
+        /**permissionType=*/ 1,
+        /**value=*/ false, /**is_managed=*/ false);
+    const permission2 = createBoolPermission(
+        /**permissionType=*/ 2,
+        /**value=*/ true, /**is_managed=*/ false);
     const app1 = createApp('1', 'App1', permission1);
     const app2 = createApp('2', 'App2', permission2);
 
@@ -294,16 +278,16 @@ suite('AppNotificationsSubpageTests', function() {
     assertEquals(1, lastUpdatedPermission.permissionType);
     assertEquals(0, lastUpdatedPermission.valueType);
     assertEquals(false, lastUpdatedPermission.isManaged);
-    assertEquals(1, lastUpdatedPermission.value);
+    assertTrue(getBoolPermissionValue(lastUpdatedPermission.value));
   });
 
   test('RemovedApp', async () => {
-    const permission1 = createPermission(
-        /**permissionType=*/ 1, /**value_type=*/ 0,
-        /**value=*/ 0, /**is_managed=*/ false);
-    const permission2 = createPermission(
-        /**permissionType=*/ 2, /**value_type=*/ 0,
-        /**value=*/ 1, /**is_managed=*/ false);
+    const permission1 = createBoolPermission(
+        /**permissionType=*/ 1,
+        /**value=*/ false, /**is_managed=*/ false);
+    const permission2 = createBoolPermission(
+        /**permissionType=*/ 2,
+        /**value=*/ true, /**is_managed=*/ false);
     const app1 = createApp('1', 'App1', permission1);
     const app2 = createApp('2', 'App2', permission2);
 
@@ -334,12 +318,12 @@ suite('AppNotificationsSubpageTests', function() {
   test('Each app-notification-row displays correctly', async () => {
     const appTitle1 = 'Files';
     const appTitle2 = 'Chrome';
-    const permission1 = createPermission(
-        /**permissionType=*/ 1, /**value_type=*/ 0,
-        /**value=*/ 0, /**is_managed=*/ true);
-    const permission2 = createPermission(
-        /**permissionType=*/ 2, /**value_type=*/ 0,
-        /**value=*/ 1, /**is_managed=*/ false);
+    const permission1 = createBoolPermission(
+        /**permissionType=*/ 1,
+        /**value=*/ false, /**is_managed=*/ true);
+    const permission2 = createBoolPermission(
+        /**permissionType=*/ 2,
+        /**value=*/ true, /**is_managed=*/ false);
     const app1 = createApp('file-id', appTitle1, permission1);
     const app2 = createApp('chrome-id', appTitle2, permission2);
 

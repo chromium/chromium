@@ -7,7 +7,7 @@
 
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-// #import {AndroidAppsBrowserProxyImpl, Router, routes, setAppNotificationProviderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {AndroidAppsBrowserProxyImpl, Router, routes, setAppNotificationProviderForTesting, createBoolPermission} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {TestAndroidAppsBrowserProxy} from './test_android_apps_browser_proxy.m.js';
 // #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {waitAfterNextRender, flushTasks} from 'chrome://test/test_util.js';
@@ -192,22 +192,6 @@ suite('AppsPageTests', function() {
   let mojoApi_;
 
   /**
-   * @param {number} id
-   * @param {!apps.mojom.PermissionValueType} value_type
-   * @param {number} value
-   * @param {boolean} is_managed
-   * @return {!apps.mojom.Permission}
-   */
-  function createPermission(id, value_type, value, is_managed) {
-    return {
-      permissionId: id,
-      valueType: value_type,
-      value: value,
-      isManaged: is_managed
-    };
-  }
-
-  /**
    * @param {string} id
    * @param {string} title
    * @param {!apps.mojom.Permission} permission
@@ -307,12 +291,12 @@ suite('AppsPageTests', function() {
       // Test default is to have 0 apps.
       assertEquals('0 apps', rowLink.subLabel);
 
-      const permission1 = createPermission(
-          /**id=*/ 1, /**value_type=*/ 0,
-          /**value=*/ 0, /**is_managed=*/ false);
-      const permission2 = createPermission(
-          /**id=*/ 2, /**value_type=*/ 0,
-          /**value=*/ 1, /**is_managed=*/ false);
+      const permission1 = createBoolPermission(
+          /**id=*/ 1,
+          /**value=*/ false, /**is_managed=*/ false);
+      const permission2 = createBoolPermission(
+          /**id=*/ 2,
+          /**value=*/ true, /**is_managed=*/ false);
       const app1 = createApp('1', 'App1', permission1);
       const app2 = createApp('2', 'App2', permission2);
 

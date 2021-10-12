@@ -341,8 +341,8 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ContentSettings) {
   ASSERT_TRUE(camera_permission != permissions.end());
   EXPECT_EQ((*camera_permission)->value_type,
             apps::mojom::PermissionValueType::kTriState);
-  EXPECT_EQ((*camera_permission)->value,
-            static_cast<uint32_t>(apps::mojom::TriState::kAllow));
+  EXPECT_EQ((*camera_permission)->value->get_tristate_value(),
+            apps::mojom::TriState::kAllow);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, MediaRequest) {

@@ -13,6 +13,7 @@
 #include "chrome/browser/notifications/notifier_dataset.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -60,7 +61,7 @@ ArcApplicationNotifierController::GetNotifierList(Profile* profile) {
       notifier_dataset.push_back(NotifierDataset{
           update.AppId() /*app_id*/, update.ShortName() /*app_name*/,
           update.PublisherId() /*publisher_id*/,
-          !!permission->value /*enabled*/});
+          permission->value->get_bool_value() /*enabled*/});
     }
   });
 
@@ -93,7 +94,8 @@ void ArcApplicationNotifierController::SetNotifierEnabled(
   auto permission = apps::mojom::Permission::New();
   permission->permission_type = apps::mojom::PermissionType::kNotifications;
   permission->value_type = apps::mojom::PermissionValueType::kBool;
-  permission->value = enabled;
+  permission->value = apps::mojom::PermissionValue::New();
+  permission->value->set_bool_value(enabled);
   permission->is_managed = false;
   apps::AppServiceProxy* service =
       apps::AppServiceProxyFactory::GetForProfile(profile);
@@ -147,7 +149,8 @@ void ArcApplicationNotifierController::OnAppUpdate(
           apps::mojom::PermissionType::kNotifications) {
         message_center::NotifierId notifier_id(
             message_center::NotifierType::ARC_APPLICATION, update.AppId());
-        observer_->OnNotifierEnabledChanged(notifier_id, permission->value);
+        observer_->OnNotifierEnabledChanged(
+            notifier_id, apps_util::IsPermissionEnabled(permission->value));
       }
     }
   }

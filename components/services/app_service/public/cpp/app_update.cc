@@ -629,7 +629,13 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   out << "Permissions:" << std::endl;
   for (const auto& permission : app.Permissions()) {
     out << "  ID: " << permission->permission_type;
-    out << " value: " << permission->value;
+    out << " value: " << std::endl;
+    if (permission->value->is_bool_value()) {
+      out << " bool_value: " << permission->value->get_bool_value();
+    }
+    if (permission->value->is_tristate_value()) {
+      out << " tristate_value: " << permission->value->get_tristate_value();
+    }
     out << " is_managed: " << permission->is_managed << std::endl;
   }
 

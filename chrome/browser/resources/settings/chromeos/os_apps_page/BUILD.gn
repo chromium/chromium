@@ -13,6 +13,8 @@ js_type_check("closure_compile_module") {
     ":android_apps_browser_proxy",
     ":android_apps_subpage",
     ":os_apps_page",
+    ":permission_constants",
+    ":permission_util",
   ]
 }
 
@@ -56,6 +58,17 @@ js_library("os_apps_page") {
     "$externs_path/metrics_private.js",
     "../settings_controls_types.js",
   ]
+}
+
+js_library("permission_util") {
+  deps = [
+    ":permission_constants",
+    "//ui/webui/resources/js:assert.m",
+  ]
+}
+
+js_library("permission_constants") {
+  deps = [ "//chrome/browser/ui/webui/app_management:mojo_bindings_js_library_for_compile" ]
 }
 
 html_to_js("web_components") {

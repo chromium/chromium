@@ -8,8 +8,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {Route, Router} from '../../../router.js';
 import {routes} from '../../os_route.m.js';
+import {PermissionType, PermissionValue, PermissionValueType, TriState} from '../permission_constants.js';
+import {getBoolPermissionValue, getTriStatePermissionValue} from '../permission_util.js';
 
-import {AppManagementUserAction, AppType, Bool, OptionalBool, PermissionType, PermissionValueType, TriState, WindowMode} from './constants.js';
+import {AppManagementUserAction, AppType, OptionalBool, WindowMode} from './constants.js';
+
 
 /**
  * @fileoverview Utility functions for the App Management page.
@@ -37,22 +40,6 @@ export function createInitialState(apps) {
   }
 
   return initialState;
-}
-
-/**
- * @param {PermissionType} permissionType
- * @param {!PermissionValueType} valueType
- * @param {number} value
- * @param {boolean} isManaged
- * @return {!Permission}
- */
-export function createPermission(permissionType, valueType, value, isManaged) {
-  return {
-    permissionType,
-    valueType,
-    value,
-    isManaged,
-  };
 }
 
 /**
@@ -106,9 +93,9 @@ export function getPermissionValueBool(app, permissionType) {
 
   switch (permission.valueType) {
     case PermissionValueType.kBool:
-      return permission.value === Bool.kTrue;
+      return getBoolPermissionValue(permission.value);
     case PermissionValueType.kTriState:
-      return permission.value === TriState.kAllow;
+      return getTriStatePermissionValue(permission.value) === TriState.kAllow;
     default:
       assertNotReached();
   }

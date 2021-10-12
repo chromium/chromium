@@ -18,6 +18,7 @@ js_type_check("closure_compile") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
+    ":app_notification_row",
     ":app_notifications_subpage",
     ":mojo_interface_provider",
   ]
@@ -39,6 +40,8 @@ js_library("app_notifications_subpage") {
 
 js_library("app_notification_row") {
   deps = [
+    "../:permission_constants",
+    "../:permission_util",
     "../..:metrics_recorder.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

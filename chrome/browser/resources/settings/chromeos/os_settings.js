@@ -129,14 +129,16 @@ export {DeviceNameState, SetDeviceNameResult} from './os_about_page/device_name_
 export {AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.js';
 export {addApp, changeApp, removeApp, updateSelectedAppId} from './os_apps_page/app_management_page/actions.js';
 export {BrowserProxy} from './os_apps_page/app_management_page/browser_proxy.js';
-export {Bool, PageType, PermissionType, PermissionValueType, TriState, WindowMode} from './os_apps_page/app_management_page/constants.js';
+export {PageType, WindowMode} from './os_apps_page/app_management_page/constants.js';
 export {FakePageHandler} from './os_apps_page/app_management_page/fake_page_handler.js';
 export {PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.js';
 export {AppState, reduceAction} from './os_apps_page/app_management_page/reducers.js';
 export {AppManagementStore} from './os_apps_page/app_management_page/store.js';
 export {AppManagementStoreClientImpl} from './os_apps_page/app_management_page/store_client.js';
-export {convertOptionalBoolToBool, createEmptyState, createInitialState, createPermission, getPermissionValueBool} from './os_apps_page/app_management_page/util.js';
+export {convertOptionalBoolToBool, createEmptyState, createInitialState, getPermissionValueBool} from './os_apps_page/app_management_page/util.js';
 export {setAppNotificationProviderForTesting} from './os_apps_page/app_notifications_page/mojo_interface_provider.js';
+export {PermissionType, PermissionValueType, TriState} from './os_apps_page/permission_constants.js';
+export {createBoolPermission, createTriStatePermission, getBoolPermissionValue} from './os_apps_page/permission_util.js';
 export {osPageVisibility} from './os_page_visibility.m.js';
 export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './os_people_page/account_manager_browser_proxy.js';
 export {FingerprintBrowserProxyImpl, FingerprintResultType} from './os_people_page/fingerprint_browser_proxy.m.js';

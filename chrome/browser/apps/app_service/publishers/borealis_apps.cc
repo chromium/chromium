@@ -22,6 +22,7 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -83,8 +84,9 @@ void PopulatePermissions(apps::mojom::App* app, Profile* profile) {
     auto permission = apps::mojom::Permission::New();
     permission->permission_type = info.permission;
     permission->value_type = apps::mojom::PermissionValueType::kBool;
-    permission->value =
-        static_cast<uint32_t>(profile->GetPrefs()->GetBoolean(info.pref_name));
+    permission->value = apps::mojom::PermissionValue::New();
+    permission->value->set_bool_value(
+        profile->GetPrefs()->GetBoolean(info.pref_name));
     permission->is_managed = false;
     app->permissions.push_back(std::move(permission));
   }
@@ -215,7 +217,8 @@ void BorealisApps::SetPermission(const std::string& app_id,
   if (!pref_name) {
     return;
   }
-  profile_->GetPrefs()->SetBoolean(pref_name, permission_ptr->value);
+  profile_->GetPrefs()->SetBoolean(
+      pref_name, apps_util::IsPermissionEnabled(permission_ptr->value));
 }
 
 void BorealisApps::Uninstall(const std::string& app_id,

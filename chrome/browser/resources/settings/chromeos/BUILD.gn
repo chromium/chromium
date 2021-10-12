@@ -258,6 +258,8 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/os_apps_page/app_management_page/types.js",
     "chromeos/os_apps_page/app_management_page/util.js",
     "chromeos/os_apps_page/app_notifications_page/mojo_interface_provider.js",
+    "chromeos/os_apps_page/permission_constants.js",
+    "chromeos/os_apps_page/permission_util.js",
     "chromeos/os_languages_page/input_method_settings.js",
     "chromeos/os_languages_page/languages_browser_proxy.js",
     "chromeos/os_languages_page/languages.js",

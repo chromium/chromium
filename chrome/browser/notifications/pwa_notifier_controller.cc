@@ -11,6 +11,7 @@
 #include "chrome/browser/notifications/notifier_dataset.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -53,10 +54,7 @@ std::vector<ash::NotifierMetadata> PwaNotifierController::GetNotifierList(
           notifier_dataset.push_back(NotifierDataset{
               update.AppId() /*app_id*/, update.ShortName() /*app_name*/,
               update.PublisherId() /*publisher_id*/,
-              static_cast<apps::mojom::TriState>(permission->value) ==
-                      apps::mojom::TriState::kAllow
-                  ? true
-                  : false /*enabled*/});
+              apps_util::IsPermissionEnabled(permission->value)});
         }
       });
   std::vector<ash::NotifierMetadata> notifiers;
@@ -90,7 +88,8 @@ void PwaNotifierController::SetNotifierEnabled(
   auto permission = apps::mojom::Permission::New();
   permission->permission_type = apps::mojom::PermissionType::kNotifications;
   permission->value_type = apps::mojom::PermissionValueType::kTriState;
-  permission->value = static_cast<uint32_t>(
+  permission->value = apps::mojom::PermissionValue::New();
+  permission->value->set_tristate_value(
       enabled ? apps::mojom::TriState::kAllow : apps::mojom::TriState::kBlock);
   permission->is_managed = false;
   apps::AppServiceProxy* service =
@@ -142,7 +141,8 @@ void PwaNotifierController::OnAppUpdate(const apps::AppUpdate& update) {
           apps::mojom::PermissionType::kNotifications) {
         message_center::NotifierId notifier_id(
             message_center::NotifierType::APPLICATION, update.AppId());
-        observer_->OnNotifierEnabledChanged(notifier_id, permission->value);
+        observer_->OnNotifierEnabledChanged(
+            notifier_id, apps_util::IsPermissionEnabled(permission->value));
       }
     }
   }

@@ -5,7 +5,7 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {PermissionType, TriState, FakePageHandler, AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {PermissionType, TriState, FakePageHandler, AppManagementStore, updateSelectedAppId, createTriStatePermission} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {flushTasks} from 'chrome://test/test_util.js';
 // #import {setupFakeHandler, replaceStore, replaceBody, getPermissionToggleByType } from './test_util.m.js';
 // clang-format on
@@ -23,14 +23,10 @@ suite('<app-management-managed-apps>', () => {
     // Create a Web app which is installed and pinned by policy
     // and has location set to on and camera set to off by policy.
     const permissionOptions = {};
-    permissionOptions[PermissionType.kLocation] = {
-      permissionValue: TriState.kAllow,
-      isManaged: true,
-    };
-    permissionOptions[PermissionType.kCamera] = {
-      permissionValue: TriState.kBlock,
-      isManaged: true
-    };
+    permissionOptions[PermissionType.kLocation] = createTriStatePermission(
+        PermissionType.kLocation, TriState.kAllow, /*isManaged*/ true);
+    permissionOptions[PermissionType.kCamera] = createTriStatePermission(
+        PermissionType.kCamera, TriState.kBlock, /*isManaged*/ true);
     const policyAppOptions = {
       type: apps.mojom.AppType.kWeb,
       isPinned: apps.mojom.OptionalBool.kTrue,

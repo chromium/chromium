@@ -14,7 +14,9 @@ import '/app-management/app_management.mojom-lite.js';
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {AppType, InstallReason, PermissionType, TriState} from './constants.js';
+import {PermissionType, TriState} from '../permission_constants.js';
+
+import {AppType, InstallReason} from './constants.js';
 import {FakePageHandler} from './fake_page_handler.js';
 
 export class BrowserProxy {
