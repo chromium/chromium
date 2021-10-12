@@ -132,11 +132,8 @@ OomInterventionConfig::OomInterventionConfig()
   use_components_callback_ = base::GetFieldTrialParamByFeatureAsBool(
       features::kOomIntervention, kUseComponentCallbacks, true);
 
-  OomInterventionBrowserMonitorStatus status =
-      OomInterventionBrowserMonitorStatus::kEnabledWithValidConfig;
   if (!GetSwapFreeThreshold(&swapfree_threshold_)) {
     is_swap_monitor_enabled_ = false;
-    status = OomInterventionBrowserMonitorStatus::kEnabledWithNoSwap;
   }
   // If no threshold is specified, set blink_workload_threshold to 10% of the
   // RAM size.
