@@ -208,9 +208,12 @@ class CacheStorageDispatcherHost::CacheImpl
                     content::CacheStorageCache::InitState::Initialized
               : false;
 
+    bool range_request =
+        request->headers.contains(std::string(net::HttpRequestHeaders::kRange));
+
     auto cb = base::BindOnce(
         [](base::WeakPtr<CacheImpl> self, base::TimeTicks start_time,
-           bool ignore_search, bool in_related_fetch_event,
+           bool ignore_search, bool in_related_fetch_event, bool range_request,
            bool cache_initialized, int64_t trace_id,
            blink::mojom::CacheStorageCache::MatchCallback callback,
            blink::mojom::CacheStorageError error,
@@ -270,7 +273,7 @@ class CacheStorageDispatcherHost::CacheImpl
               CacheStorageTracedValue(response));
 
           blink::mojom::MatchResultPtr result;
-          if (in_related_fetch_event) {
+          if (in_related_fetch_event && !range_request) {
             result = EagerlyReadResponseBody(std::move(response));
           } else {
             result =
@@ -279,8 +282,8 @@ class CacheStorageDispatcherHost::CacheImpl
           std::move(callback).Run(std::move(result));
         },
         weak_factory_.GetWeakPtr(), base::TimeTicks::Now(),
-        match_options->ignore_search, in_related_fetch_event, cache_initialized,
-        trace_id, std::move(callback));
+        match_options->ignore_search, in_related_fetch_event, range_request,
+        cache_initialized, trace_id, std::move(callback));
 
     if (!cache) {
       std::move(cb).Run(CacheStorageError::kErrorNotFound, nullptr);

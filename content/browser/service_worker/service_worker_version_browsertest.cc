@@ -393,11 +393,20 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
       const std::string& path,
       ServiceWorkerFetchDispatcher::FetchEventResult* result,
       blink::mojom::FetchAPIResponsePtr* response) {
+    FetchOnRegisteredWorker(path, "", result, response);
+  }
+
+  void FetchOnRegisteredWorker(
+      const std::string& path,
+      const std::string& range_header,
+      ServiceWorkerFetchDispatcher::FetchEventResult* result,
+      blink::mojom::FetchAPIResponsePtr* response) {
     bool prepare_result = false;
     FetchResult fetch_result;
     fetch_result.status = blink::ServiceWorkerStatusCode::kErrorFailed;
     base::RunLoop fetch_run_loop;
-    Fetch(fetch_run_loop.QuitClosure(), path, &prepare_result, &fetch_result);
+    Fetch(fetch_run_loop.QuitClosure(), path, range_header, &prepare_result,
+          &fetch_result);
     fetch_run_loop.Run();
     ASSERT_TRUE(prepare_result);
     *result = fetch_result.result;
@@ -622,6 +631,7 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
 
   void Fetch(base::OnceClosure done,
              const std::string& path,
+             const std::string& range_header,
              bool* prepare_result,
              FetchResult* result) {
     ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
@@ -635,6 +645,9 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
     auto request = blink::mojom::FetchAPIRequest::New();
     request->url = url;
     request->method = "GET";
+    if (!range_header.empty()) {
+      request->headers[net::HttpRequestHeaders::kRange] = range_header;
+    }
     fetch_dispatcher_ = std::make_unique<ServiceWorkerFetchDispatcher>(
         std::move(request), destination, std::string() /* client_id */,
         version_, std::move(prepare_callback), std::move(fetch_callback),
@@ -1497,7 +1510,14 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserV8FullCodeCacheTest,
 class CacheStorageEagerReadingTest : public ServiceWorkerVersionBrowserTest {
  public:
   void SetupServiceWorkerAndDoFetch(
-      std::string fetch_url,
+      const std::string& fetch_url,
+      blink::mojom::FetchAPIResponsePtr* response_out) {
+    SetupServiceWorkerAndDoFetch(fetch_url, "", response_out);
+  }
+
+  void SetupServiceWorkerAndDoFetch(
+      const std::string& fetch_url,
+      const std::string& range_header,
       blink::mojom::FetchAPIResponsePtr* response_out) {
     StartServerAndNavigateToSetup();
     ASSERT_EQ(Install("/service_worker/cached_fetch_event.js"),
@@ -1505,7 +1525,7 @@ class CacheStorageEagerReadingTest : public ServiceWorkerVersionBrowserTest {
     ASSERT_EQ(Activate(), blink::ServiceWorkerStatusCode::kOk);
 
     ServiceWorkerFetchDispatcher::FetchEventResult result;
-    FetchOnRegisteredWorker(fetch_url, &result, response_out);
+    FetchOnRegisteredWorker(fetch_url, range_header, &result, response_out);
   }
 
   void ExpectNormalCacheResponse(blink::mojom::FetchAPIResponsePtr response) {
@@ -1566,6 +1586,14 @@ IN_PROC_BROWSER_TEST_F(CacheStorageEagerReadingTest,
                        CacheMatchInUnrelatedFetchEvent) {
   blink::mojom::FetchAPIResponsePtr response;
   SetupServiceWorkerAndDoFetch(kOtherURL, &response);
+  ExpectNormalCacheResponse(std::move(response));
+}
+
+IN_PROC_BROWSER_TEST_F(CacheStorageEagerReadingTest,
+                       CacheMatchInRelatedFetchEventWithRangeRequest) {
+  blink::mojom::FetchAPIResponsePtr response;
+  SetupServiceWorkerAndDoFetch(kCacheMatchURL, "bytes=0-8", &response);
+  EXPECT_TRUE(response);
   ExpectNormalCacheResponse(std::move(response));
 }
 

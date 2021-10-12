@@ -15,6 +15,6 @@ self.addEventListener('install', evt => {
 self.addEventListener('fetch', evt => {
   evt.respondWith(async function() {
     const c = await caches.open(name);
-    return c.match(resource);
+    return c.match(new Request(resource, { headers: evt.request.headers }));
   }());
 });
