@@ -405,6 +405,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2241693394036365668">Descárgase un ficheiro</translation>
 <translation id="2248949050832152960">Usar autenticación web</translation>
 <translation id="2250931979407627383">Grampa no bordo esquerdo</translation>
+<translation id="2251943122176102076">O administrador non recomenda realizar capturas de pantalla nin gravacións porque se inclúe contido confidencial:</translation>
 <translation id="225207911366869382">Este valor está obsoleto para esta política.</translation>
 <translation id="2258928405015593961">Introduce unha data de vencemento futura e téntao de novo</translation>
 <translation id="225943865679747347">Código de erro: <ph name="ERROR_CODE" /></translation>
@@ -1199,6 +1200,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <ph name="LIST_ITEM" />Os fornecedores de servizos de Internet poden supervisar o tráfico web.<ph name="END_LIST_ITEM" />
 <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Activar advertencias</translation>
+<translation id="4834718916855725099">O administrador non recomenda realizar capturas de pantalla nin gravacións porque na pantalla se mostra contido confidencial:</translation>
 <translation id="4838327282952368871">Onírico</translation>
 <translation id="4840250757394056958">Ver historial de Chrome</translation>
 <translation id="484462545196658690">Automático</translation>

@@ -211,6 +211,7 @@
 <translation id="718435575166326686">Chromium'га бул сайтта камераны колдонууга уруксат бериңиз</translation>
 <translation id="7196312274710523067">Chromium иштетилбей койду. Кайталап көрүңүз.</translation>
 <translation id="7197677400338048821">Chromium сырсөздөрүңүздү текшере албай жатат. 24 сааттан кийин кайра аракет кылыңыз.</translation>
+<translation id="7218568399872925918">Сиз баш баккан сайттарда маалыматыңыз Chromium жабылганга чейин сакталат</translation>
 <translation id="7223968959479464213">Тапшырмаларды башкаргыч – Chromium</translation>
 <translation id="731795002583552498">Chromium жаңыртылууда</translation>
 <translation id="7318036098707714271">Өзгөчө шарттар файлыңыз бузулган же жараксыз.
@@ -264,6 +265,8 @@ Chromium жөндөөлөрүңүздү калыбына келтире алба
 <translation id="8621669128220841554">Белгиси катадан улам, орнотулбай калды. Chromium'ду кайра жүктөп алыңыз.</translation>
 <translation id="8697124171261953979">Chromium иштеп баштаганда же Omnibox'тон изделгенде, кайсы бет көрсөтүлө тургандыгын көзөмөлдөйт.</translation>
 <translation id="8704119203788522458">Бул сиздин Chromium</translation>
+<translation id="8713679423359107094">Chromium'дагы бардык терезелер жабылса, cookie файлдары менен сайттагы маалымат автоматтык түрдө тазаланат</translation>
+<translation id="8796443464227412154">Chromium жабылганда <ph name="BEGIN_BOLD" />көбүнчө сайттардан чыгып каласыз<ph name="END_BOLD" />. Эгер шайкештирүү өчүрүлсө, <ph name="BEGIN_BOLD" />Google кызматтары менен Chromium'дан чыгып каласыз<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Бул сайтта иштөө үчүн Chromium камераңызды жана микрофонуңузду колдонушу керек</translation>
 <translation id="8803635938069941624">Chromium OS шарттары</translation>
 <translation id="8821041990367117597">Аккаунтуңуздун кирүү чоо-жайлары эскирип калгандыктан, Chromium дайын-даректериңизди шайкештештире алган жок.</translation>

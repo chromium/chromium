@@ -308,6 +308,7 @@
 <translation id="1313660246522271310">Одјавићете се са свих сајтова, укључујући и инстанце на отвореним картицама</translation>
 <translation id="1313705515580255288">Обележивачи, историја и друга подешавања се синхронизују са Google налогом.</translation>
 <translation id="1316136264406804862">Претраживање...</translation>
+<translation id="1316248800168909509">Повезивање са уређајем <ph name="DEVICE" /> није успело. Пробајте поново.</translation>
 <translation id="1316495628809031177">Синхронизација је паузирана</translation>
 <translation id="1317637799698924700">Базна станица ће радити у режиму компатибилном са USB-ом типа C.</translation>
 <translation id="1319983966058170660">Дугме Назад за подстраницу <ph name="SUBPAGE_TITLE" /></translation>
@@ -1177,6 +1178,7 @@
 <translation id="2200356397587687044">Chrome тражи дозволу да настави</translation>
 <translation id="2202898655984161076">Дошло је до проблема приликом пописа штампача. Неки од штампача можда нису регистровани са <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Слова, бројеви и специјални знакови могу да се користе у називу</translation>
+<translation id="220321590587754225">Повезивање није успело. Пробајте поново.</translation>
 <translation id="2204034823255629767">Читање и мењање свега што уносите</translation>
 <translation id="220858061631308971">Унесите овај PIN кôд на уређају „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="2210462644007531147">Довршавање инсталирања није успело</translation>
@@ -4961,6 +4963,7 @@
 <translation id="6263284346895336537">Није од пресудне важности</translation>
 <translation id="6264365405983206840">Изабери &amp;све</translation>
 <translation id="6265687851677020761">Уклони порт</translation>
+<translation id="6266532094411434237">Повезује се са уређајем <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Изаберите сертификат да бисте потврдили идентитет хосту <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Отвори помоћу апликације <ph name="APP" /></translation>
 <translation id="6270391203985052864">Сајтови могу да траже да шаљу обавештења</translation>

@@ -303,6 +303,7 @@
 <translation id="1313660246522271310">Je wordt uitgelogd bij alle sites, ook in geopende tabbladen</translation>
 <translation id="1313705515580255288">Je bookmarks, geschiedenis en andere instellingen worden gesynchroniseerd met je Google-account</translation>
 <translation id="1316136264406804862">Zoeken...</translation>
+<translation id="1316248800168909509">Kan geen verbinding maken met <ph name="DEVICE" />. Probeer het opnieuw.</translation>
 <translation id="1316495628809031177">Synchronisatie is onderbroken</translation>
 <translation id="1317637799698924700">Je dockingstation werkt in de voor USB Type-C-geschikte modus.</translation>
 <translation id="1319983966058170660">Terugknop van subpagina <ph name="SUBPAGE_TITLE" /></translation>
@@ -1169,6 +1170,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2200356397587687044">Chrome heeft rechten nodig om verder te gaan</translation>
 <translation id="2202898655984161076">Er is een probleem opgetreden met het genereren van het printeroverzicht. Sommige van je printers zijn mogelijk niet geregistreerd voor <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">De naam mag letters, cijfers en speciale tekens bevatten</translation>
+<translation id="220321590587754225">Kan geen verbinding maken. Probeer het opnieuw.</translation>
 <translation id="2204034823255629767">Alles lezen en wijzigen wat je typt</translation>
 <translation id="220858061631308971">Voer deze pincode in op '<ph name="DEVICE_NAME" />':</translation>
 <translation id="2212565012507486665">Cookies toestaan</translation>
@@ -4914,6 +4916,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6263284346895336537">Niet kritiek</translation>
 <translation id="6264365405983206840">&amp;Alles selecteren</translation>
 <translation id="6265687851677020761">Poort verwijderen</translation>
+<translation id="6266532094411434237">Verbinding maken met <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Selecteer een certificaat om je identiteit te verifiëren voor <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Openen met <ph name="APP" /></translation>
 <translation id="6270391203985052864">Sites kunnen vragen of ze je meldingen mogen sturen</translation>

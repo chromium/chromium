@@ -306,6 +306,7 @@
 <translation id="1313660246522271310">Pecharase a túa sesión en todos os sitios, mesmo nas pestanas abertas</translation>
 <translation id="1313705515580255288">Os teus marcadores, historiais e demais configuracións sincronizaranse coa túa conta de Google.</translation>
 <translation id="1316136264406804862">Buscando...</translation>
+<translation id="1316248800168909509">Non se puido establecer conexión co dispositivo (<ph name="DEVICE" />). Téntao de novo.</translation>
 <translation id="1316495628809031177">A sincronización púxose en pausa</translation>
 <translation id="1317637799698924700">A túa base funcionará no modo de compatibilidade con USB tipo C.</translation>
 <translation id="1319983966058170660">Botón Atrás da subpáxina <ph name="SUBPAGE_TITLE" /></translation>
@@ -1174,6 +1175,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2200356397587687044">Chrome precisa que lle concedas permiso para poder continuar</translation>
 <translation id="2202898655984161076">Produciuse un problema ao enumerar as impresoras. É posible que algunhas das túas impresoras non se rexistrasen correctamente con <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">O nome pode conter letras, números e caracteres especiais</translation>
+<translation id="220321590587754225">Non se puido conectar. Téntao de novo.</translation>
 <translation id="2204034823255629767">Ler e modificar todo o que escribas</translation>
 <translation id="220858061631308971">Introduce este código PIN en "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">Permitir uso de cookies</translation>
@@ -4941,6 +4943,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6263284346895336537">Non crítica</translation>
 <translation id="6264365405983206840">Seleccionar &amp;todo</translation>
 <translation id="6265687851677020761">Quitar porto</translation>
+<translation id="6266532094411434237">Conectando co dispositivo (<ph name="DEVICE" />)</translation>
 <translation id="6267166720438879315">Selecciona un certificado para autenticarte en <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Abrir con <ph name="APP" /></translation>
 <translation id="6270391203985052864">Os sitios poden pedir permiso para enviar notificacións</translation>

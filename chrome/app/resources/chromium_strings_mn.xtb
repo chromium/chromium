@@ -209,6 +209,7 @@
 <translation id="718435575166326686">Chromium-д энэ сайтад зориулж камерын зөвшөөрөл шаардлагатай</translation>
 <translation id="7196312274710523067">Chromium-г эхлүүлж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="7197677400338048821">Chromium таны нууц үгсийг шалгах боломжгүй байна. 24 цагийн дараа дахин оролдоно уу.</translation>
+<translation id="7218568399872925918">Таны зочилсон сайтууд таныг Chromium-г хаах хүртэл мэдээллийг тань санадаг</translation>
 <translation id="7223968959479464213">Бодлогын менежер - Chromium</translation>
 <translation id="731795002583552498">Chromium-г шинэчилж байна</translation>
 <translation id="7318036098707714271">Таны тохиргоо файл алдаатай эсвэл хүчин төгөлдөр бус байна. Chromium таны тохиргоог сэргээх боломжгүй байна.</translation>
@@ -260,6 +261,8 @@
 <translation id="8621669128220841554">Гэнэтийн алдаанаас болж суулгах ажиллагаа амжилтгүй боллоо. Chromium-ыг дахин татаж авна уу.</translation>
 <translation id="8697124171261953979">Энэ нь мөн таныг Chromium-ыг эхлүүлж байх үед эсвэл Omnibox-аас хайлт хийж буй үед гарч ирдэг хуудсыг хянаж байдаг.</translation>
 <translation id="8704119203788522458">Энэ бол таны Chromium.</translation>
+<translation id="8713679423359107094">Таныг Chromium-н бүх цонхыг хаах үед күүки болон сайтын өгөгдлийг автоматаар арилгана</translation>
+<translation id="8796443464227412154">Таныг Chromium-г хаах үед <ph name="BEGIN_BOLD" />ихэнх сайтаас гаргана<ph name="END_BOLD" />. Хэрэв синк хийх унтраалттай бол таныг мөн <ph name="BEGIN_BOLD" />Google-н үйлчилгээнүүд болон Chromium<ph name="END_BOLD" />-с гаргана.</translation>
 <translation id="8796602469536043152">Энэ сайтыг ашиглахын тулд Chromium-д таны камер болон микрофонд хандах зөвшөөрөл шаардлагатай</translation>
 <translation id="8803635938069941624">Chromium OS-ын нөхцлүүд</translation>
 <translation id="8821041990367117597">Таны нэвтрэх мэдээлэл хуучирсан учир Chromium таны датаг синхрончилж чадсангүй.</translation>

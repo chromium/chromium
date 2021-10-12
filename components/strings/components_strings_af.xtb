@@ -406,6 +406,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2241693394036365668">Lêer is afgelaai</translation>
 <translation id="2248949050832152960">Gerbruik WebAuthn</translation>
 <translation id="2250931979407627383">Randhegting links</translation>
+<translation id="2251943122176102076">Administrateur beveel aan dat skermskote of opnames nie geneem word nie weens vertroulike inhoud wat vasgevang is:</translation>
 <translation id="225207911366869382">Hierdie waarde is vir hierdie beleid opgeskort.</translation>
 <translation id="2258928405015593961">Voer 'n vervaldatum in die toekoms in en probeer weer</translation>
 <translation id="225943865679747347">Foutkode: <ph name="ERROR_CODE" /></translation>
@@ -1200,6 +1201,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
           <ph name="LIST_ITEM" />Internetdiensverskaffers kan webverkeer monitor<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Skakel waarskuwings aan</translation>
+<translation id="4834718916855725099">Administrateur beveel aan dat skermskote of opnames nie geneem word nie weens vertroulike inhoud op skerm:</translation>
 <translation id="4838327282952368871">Dromerig</translation>
 <translation id="4840250757394056958">Bekyk jou Chrome-geskiedenis</translation>
 <translation id="484462545196658690">Outo</translation>

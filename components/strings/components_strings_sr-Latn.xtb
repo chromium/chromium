@@ -406,6 +406,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2241693394036365668">Datoteka je preuzeta</translation>
 <translation id="2248949050832152960">Koristi WebAuthn</translation>
 <translation id="2250931979407627383">Spajanje ivica šavom na levoj strani</translation>
+<translation id="2251943122176102076">Administrator ne preporučuje pravljenje snimaka ekrana ili snimaka jer se snima poverljivi sadržaj:</translation>
 <translation id="225207911366869382">Ova vrednost je zastarela za ove smernice.</translation>
 <translation id="2258928405015593961">Unesite datum isteka koji je u budućnosti i probajte ponovo</translation>
 <translation id="225943865679747347">Kôd greške: <ph name="ERROR_CODE" /></translation>
@@ -1200,6 +1201,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
           <ph name="LIST_ITEM" />internet provajderi mogu da prate saobraćaj na vebu<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Uključi upozorenja</translation>
+<translation id="4834718916855725099">Administrator ne preporučuje pravljenje snimaka ekrana ili snimaka zbog poverljivog sadržaja na ekranu:</translation>
 <translation id="4838327282952368871">Čarobno</translation>
 <translation id="4840250757394056958">Pregledajte istoriju Chrome-a</translation>
 <translation id="484462545196658690">Automatski</translation>

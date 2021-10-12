@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> управља овим <ph name="DEVICE_TYPE" /> уређајем.</translation>
+<translation id="1175951029573070619">Просечан (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Уклони</translation>
 <translation id="1195447618553298278">Непозната грешка.</translation>
 <translation id="1204296502688602597">Кашњење DNS-а</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422">Управљају <ph name="FIRST_MANAGER" /> и <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Сервери имена</translation>
 <translation id="1731082422893354635">Bluetooth тачпед</translation>
+<translation id="175763766237925754">Добар (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Отказује се скенирање</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">ПРЕСКОЧЕНО</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Укључите Bluetooth да бисте открили уређаје у близини</translation>
+<translation id="2346474577291266260">Одличан (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">Прошло</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Пошаљи извештај са повратним информацијама</translation>
@@ -342,6 +345,7 @@
 <translation id="6395640744968320699">Повезивање са HTTP веб-сајтовима (порт 80) преко заштитног зида није могуће</translation>
 <translation id="641081527798843608">Подударање наслова</translation>
 <translation id="6423239382391657905">Отворена VPN</translation>
+<translation id="6439505561246192797">Слаб (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">Добар</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Желите да поново скенирате страницу?}=1{Желите да поново скенирате {PAGE_NUMBER}. страницу?}one{Желите да поново скенирате {PAGE_NUMBER}. страницу?}few{Желите да поново скенирате {PAGE_NUMBER}. страницу?}other{Желите да поново скенирате {PAGE_NUMBER}. страницу?}}</translation>
 <translation id="6472207088655375767">OTP</translation>

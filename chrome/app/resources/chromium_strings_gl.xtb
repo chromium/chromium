@@ -210,6 +210,7 @@
 <translation id="718435575166326686">Chromium necesita permiso de acceso á cámara para este sitio</translation>
 <translation id="7196312274710523067">Non se puido iniciar Chromium. Téntao de novo.</translation>
 <translation id="7197677400338048821">Chromium non puido comprobar os teus contrasinais. Téntao de novo dentro de 24 horas.</translation>
+<translation id="7218568399872925918">Os sitios que visites lembran a túa información ata que pechas Chromium</translation>
 <translation id="7223968959479464213">Xestor de tarefas: Chromium</translation>
 <translation id="731795002583552498">Actualizando Chromium</translation>
 <translation id="7318036098707714271">O teu ficheiro de preferencias está danado ou non é válido.
@@ -263,6 +264,8 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8621669128220841554">Non se puido efectuar a instalación debido a un erro. Volve descargar Chromium.</translation>
 <translation id="8697124171261953979">Tamén controla a páxina que se mostra ao iniciar Chromium ou ao realizar unha busca desde Omnibox.</translation>
 <translation id="8704119203788522458">Este é o teu Chromium</translation>
+<translation id="8713679423359107094">Cando pechas todas as ventás de Chromium, as cookies e os datos dos sitios bórranse automaticamente</translation>
+<translation id="8796443464227412154"><ph name="BEGIN_BOLD" />Pecharase a túa sesión na maioría dos sitios<ph name="END_BOLD" /> cando cerres Chromium. Se a sincronización está desactivada, tamén se <ph name="BEGIN_BOLD" />pechará a túa sesión nos servizos de Google e en Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium necesita permiso para acceder á cámara e ao micrófono neste sitio</translation>
 <translation id="8803635938069941624">Condicións de Chromium OS</translation>
 <translation id="8821041990367117597">Chromium non puido sincronizar os teus datos porque os detalles de inicio de sesión da túa conta están desactualizados.</translation>

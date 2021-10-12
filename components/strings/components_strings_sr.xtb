@@ -406,6 +406,7 @@
 <translation id="2241693394036365668">Датотека је преузета</translation>
 <translation id="2248949050832152960">Користи WebAuthn</translation>
 <translation id="2250931979407627383">Спајање ивица шавом на левој страни</translation>
+<translation id="2251943122176102076">Администратор не препоручује прављење снимака екрана или снимака јер се снима поверљиви садржај:</translation>
 <translation id="225207911366869382">Ова вредност је застарела за ове смернице.</translation>
 <translation id="2258928405015593961">Унесите датум истека који је у будућности и пробајте поново</translation>
 <translation id="225943865679747347">Кôд грешке: <ph name="ERROR_CODE" /></translation>
@@ -1200,6 +1201,7 @@
           <ph name="LIST_ITEM" />интернет провајдери могу да прате саобраћај на вебу<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Укључи упозорења</translation>
+<translation id="4834718916855725099">Администратор не препоручује прављење снимака екрана или снимака због поверљивог садржаја на екрану:</translation>
 <translation id="4838327282952368871">Чаробно</translation>
 <translation id="4840250757394056958">Прегледајте историју Chrome-а</translation>
 <translation id="484462545196658690">Аутоматски</translation>

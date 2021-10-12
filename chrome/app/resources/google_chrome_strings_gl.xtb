@@ -90,6 +90,7 @@
 <translation id="3037838751736561277">Google Chrome está no modo de segundo plano.</translation>
 <translation id="3059710691562604940">A opción Navegación segura está desactivada. Chrome recomenda activala.</translation>
 <translation id="3065168410429928842">Pestana de Chrome</translation>
+<translation id="3069821012350118710">Os sitios que visites lembran a túa información ata que pechas Chrome</translation>
 <translation id="3080151273017101988">Continuar executando aplicacións en segundo plano cando se peche Google Chrome</translation>
 <translation id="3089968997497233615">Está dispoñible unha versión nova e máis segura de Google Chrome.</translation>
 <translation id="3100998948628680988">Asígnalle un nome ao teu perfil de Chrome</translation>
@@ -193,6 +194,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5804318322022881572">Non se puido iniciar Chrome. Téntao de novo.</translation>
 <translation id="5867197326698922595">Google Chrome está tentando editar os contrasinais.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="5901850848447342934"><ph name="BEGIN_BOLD" />Pecharase a túa sesión na maioría dos sitios<ph name="END_BOLD" /> cando cerres Chrome. Se a sincronización está desactivada, tamén se <ph name="BEGIN_BOLD" />pechará a túa sesión nos servizos de Google e en Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> (inicio de sesión de rede)</translation>
 <translation id="5940385492829620908">Aquí podes atopar as túas páxinas web, marcadores e outros contidos de Chrome.</translation>
 <translation id="5941830788786076944">Converter Google Chrome no navegador predeterminado</translation>
@@ -282,6 +284,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8614913330719544658">Google Chrome non responde. Queres volver inicialo agora?</translation>
 <translation id="861702415419836452">Chrome necesita permiso para acceder á cámara co fin de crear un mapa 3D do que te rodea</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome reiniciarase en 1 minuto}other{Chrome reiniciarase en # minutos}}</translation>
+<translation id="8629311577791198377">Cando pechas todas as ventás de Chrome, as cookies e os datos dos sitios bórranse automaticamente</translation>
 <translation id="8641606876632989680">Chrome enviarache unha notificación cando inicies sesión cun contrasinal vulnerado</translation>
 <translation id="8669527147644353129">Axudante de Google Chrome</translation>
 <translation id="8679801911857917785">Tamén controla a páxina que se mostra ao iniciar Chrome.</translation>

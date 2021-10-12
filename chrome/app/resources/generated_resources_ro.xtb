@@ -307,6 +307,7 @@
 <translation id="1313660246522271310">Te vei deconecta de la toate site-urile, inclusiv din filele deschise</translation>
 <translation id="1313705515580255288">Marcajele, istoricul și alte setări vor fi sincronizate cu Contul Google</translation>
 <translation id="1316136264406804862">Se caută...</translation>
+<translation id="1316248800168909509">Nu s-a putut conecta la <ph name="DEVICE" />. Încearcă din nou.</translation>
 <translation id="1316495628809031177">Sincronizarea este întreruptă</translation>
 <translation id="1317637799698924700">Stația de andocare va funcționa în modul compatibil cu USB Type-C.</translation>
 <translation id="1319983966058170660">Butonul Înapoi din pagina secundară <ph name="SUBPAGE_TITLE" /></translation>
@@ -1179,6 +1180,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2200356397587687044">Chrome are nevoie de permisiune pentru a continua</translation>
 <translation id="2202898655984161076">A apărut o problemă la listarea imprimantelor. Este posibil ca unele dintre imprimante să nu fi fost înregistrate la <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Numele poate să conțină litere, cifre și caractere speciale</translation>
+<translation id="220321590587754225">Nu s-a putut conecta. Încearcă din nou.</translation>
 <translation id="2204034823255629767">Citește și modifică orice date introduse</translation>
 <translation id="220858061631308971">Introduceți acest cod PIN pe „<ph name="DEVICE_NAME" />”:</translation>
 <translation id="2210462644007531147">Instalarea nu a putut fi finalizată</translation>
@@ -4963,6 +4965,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6263284346895336537">Non-critic</translation>
 <translation id="6264365405983206840">Select&amp;ează tot</translation>
 <translation id="6265687851677020761">Elimină portul</translation>
+<translation id="6266532094411434237">Se conectează la <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Selectează un certificat pentru a te autentifica pe <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Deschide cu <ph name="APP" /></translation>
 <translation id="6270391203985052864">Site-urile îți pot solicita să îți trimită notificări</translation>

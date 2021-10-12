@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por <ph name="MANAGER" />.</translation>
+<translation id="1175951029573070619">Intermedia (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1195447618553298278">Erro descoñecido.</translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422">Dispositivo xestionado por <ph name="FIRST_MANAGER" /> e por <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Servidores de nomes</translation>
 <translation id="1731082422893354635">Panel táctil con conexión por Bluetooth</translation>
+<translation id="175763766237925754">Boa (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Cancelando escaneo</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">PROBA OMITIDA</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activa o Bluetooth para detectar dispositivos situados nas proximidades</translation>
+<translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">Aprobou</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Enviar informe de comentarios</translation>
@@ -342,6 +345,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6395640744968320699">Non se puido establecer conexión mediante firewall a sitios web HTTP (porto 80)</translation>
 <translation id="641081527798843608">Coincidencia do asunto</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">Feble (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">Bo</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Queres volver escanear a páxina?}=1{Queres volver escanear a páxina {PAGE_NUMBER}?}other{Queres volver escanear a páxina {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
