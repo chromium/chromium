@@ -11,12 +11,15 @@ group("tests") {
   if (toolchain_has_rust) {
     deps = [
       "test_cpp_including_rust",
+      "test_mixed_source_set",
       "test_rust_source_set",
     ]
     if (build_rust_unit_tests) {
       deps += [
         "test_cpp_including_rust:test_cpp_including_rust_unittests",
+        "test_mixed_source_set:test_mixed_source_set_rs_unittests",
         "test_rust_source_set:test_rust_source_set_unittests",
+        "test_rust_unittests",
       ]
     }
     if (rustc_can_link) {

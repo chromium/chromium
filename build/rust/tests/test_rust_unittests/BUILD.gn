@@ -2,14 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-executable("test_rust_exe") {
+executable("test_rust_unittests") {
   crate_root = "main.rs"
-  deps = [
-    "//build/rust/tests/test_mixed_source_set:test_mixed_source_set_rs",
-    "//build/rust/tests/test_rust_source_set",
-  ]
+  deps = [ "//build/rust/tests/test_mixed_source_set:test_mixed_source_set_rs" ]
   rustflags = [
     "--edition",
     "2018",
+    "--cfg",
+    "test",
+    "--test",
   ]
 }

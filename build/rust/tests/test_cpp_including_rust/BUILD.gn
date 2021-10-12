@@ -8,6 +8,7 @@ import("//testing/test.gni")
 executable("test_cpp_including_rust") {
   sources = [ "main.cc" ]
   deps = [
+    "//build/rust/tests/test_mixed_source_set",
     "//build/rust/tests/test_rust_source_set:test_rust_source_set_cpp_bindings",
   ]
 }
@@ -18,6 +19,7 @@ test("test_cpp_including_rust_unittests") {
     "//base",
     "//base/allocator:buildflags",
     "//base/test:run_all_unittests",
+    "//build/rust/tests/test_mixed_source_set",
     "//build/rust/tests/test_rust_source_set:test_rust_source_set_cpp_bindings",
     "//testing/gmock",
     "//testing/gtest",

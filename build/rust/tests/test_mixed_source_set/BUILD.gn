@@ -1,0 +1,18 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_source_set.gni")
+
+rust_source_set("test_mixed_source_set_rs") {
+  sources = [ "src/lib.rs" ]
+  mutually_dependent_target = ":test_mixed_source_set"
+}
+
+source_set("test_mixed_source_set") {
+  sources = [
+    "test_mixed_source_set.cc",
+    "test_mixed_source_set.h",
+  ]
+  deps = [ ":test_mixed_source_set_rs_cpp_bindings" ]
+}

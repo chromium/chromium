@@ -149,7 +149,7 @@ template("rust_source_set") {
          "rustflags not supported by rust_source_set")
   _deps_for_rust_targets = []
   if (defined(invoker.mutually_dependent_target)) {
-    _deps_for_rust_targets += [ invoker.mutually_depependent_peer ]
+    _deps_for_rust_targets += [ invoker.mutually_dependent_target ]
   }
   _deps = []
   if (defined(invoker.deps)) {
@@ -191,7 +191,7 @@ template("rust_source_set") {
                            # binary by the C++ linker.
     ]
     if (defined(invoker.mutually_dependent_target)) {
-      visibility = invoker.mutually_dependent_target
+      visibility = [ invoker.mutually_dependent_target ]
     }
   }
 

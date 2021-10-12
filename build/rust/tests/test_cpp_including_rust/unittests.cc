@@ -28,3 +28,8 @@ TEST(RustTest, RustComponentUsesPartitionAlloc) {
             base::IsManagedByPartitionAlloc(cpp_allocated_int.get()));
   deallocate_via_rust(rust_allocated_ptr);
 }
+
+extern "C" int32_t add_two_ints_via_rust_then_cpp(int32_t x, int32_t y);
+TEST(RustTest, CppCallingIntoRustAndBack_BasicFFI) {
+  EXPECT_EQ(10, add_two_ints_via_rust_then_cpp(6, 4));
+}
