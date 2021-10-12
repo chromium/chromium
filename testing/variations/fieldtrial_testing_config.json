@@ -8528,6 +8528,20 @@
             ]
         }
     ],
+    "WebRTC-Aec3ConservativeTailFreqResponse": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled"
+                }
+            ]
+        }
+    ],
     "WebRTC-Aec3DelayEstimateSmoothingDelayFoundOverride": [
         {
             "platforms": [
