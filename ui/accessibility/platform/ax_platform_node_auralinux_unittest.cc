@@ -996,6 +996,8 @@ TEST_F(AXPlatformNodeAuraLinuxTest, AtkComponentScrollTo) {
 TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionGetNActions) {
   AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kSlider;
+  root.SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
   root.AddAction(ax::mojom::Action::kDecrement);
   root.AddAction(ax::mojom::Action::kIncrement);
   Init(root);
@@ -1012,9 +1014,28 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionGetNActions) {
   g_object_unref(root_obj);
 }
 
+TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionGetNActionsNoActions) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  Init(root);
+
+  AtkObject* root_obj(GetRootAtkObject());
+  ASSERT_TRUE(ATK_IS_OBJECT(root_obj));
+  ASSERT_TRUE(ATK_IS_ACTION(root_obj));
+  g_object_ref(root_obj);
+
+  gint number_of_actions = atk_action_get_n_actions(ATK_ACTION(root_obj));
+
+  EXPECT_EQ(0, number_of_actions);
+
+  g_object_unref(root_obj);
+}
+
 TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionGetName) {
   AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kSlider;
   root.SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
   root.AddAction(ax::mojom::Action::kDecrement);
   root.AddAction(ax::mojom::Action::kIncrement);
@@ -1041,6 +1062,8 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionGetName) {
 TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionDoAction) {
   AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kSlider;
+  root.SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
   root.AddAction(ax::mojom::Action::kDecrement);
   root.AddAction(ax::mojom::Action::kIncrement);
   Init(root);

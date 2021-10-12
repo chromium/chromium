@@ -609,8 +609,8 @@ gboolean DoAction(AtkAction* atk_action, gint index) {
   const std::vector<ax::mojom::Action> actions = obj->GetSupportedActions();
   g_return_val_if_fail(index < static_cast<gint>(actions.size()), FALSE);
 
-  if (index == 0) {
-    // The action at index 0 is always the default action.
+  if (index == 0 && obj->HasDefaultActionVerb()) {
+    // If there is a default action, it will always be at index 0.
     return obj->DoDefaultAction();
   }
   AXActionData data;
@@ -648,8 +648,8 @@ const gchar* GetName(AtkAction* atk_action, gint index) {
   const std::vector<ax::mojom::Action> actions = obj->GetSupportedActions();
   g_return_val_if_fail(index < static_cast<gint>(actions.size()), nullptr);
 
-  if (index == 0) {
-    // The action at index 0 is always the default action.
+  if (index == 0 && obj->HasDefaultActionVerb()) {
+    // If there is a default action, it will always be at index 0.
     return obj->GetDefaultActionName();
   }
   return ToString(actions[index]);
@@ -667,8 +667,9 @@ const gchar* GetKeybinding(AtkAction* atk_action, gint index) {
   const std::vector<ax::mojom::Action> actions = obj->GetSupportedActions();
   g_return_val_if_fail(index < static_cast<gint>(actions.size()), nullptr);
 
-  if (index == 0) {
-    // The action at index 0 is always the default action.
+  if (index == 0 && obj->HasDefaultActionVerb()) {
+    // If there is a default action, it will always be at index 0. Only the
+    // default action has a key binding.
     return obj->GetStringAttribute(ax::mojom::StringAttribute::kAccessKey)
         .c_str();
   }
@@ -5133,15 +5134,21 @@ std::pair<int, int> AXPlatformNodeAuraLinux::GetSelectionOffsetsForAtk() {
   return selection;
 }
 
+bool AXPlatformNodeAuraLinux::HasDefaultActionVerb() const {
+  return GetData().GetDefaultActionVerb() !=
+         ax::mojom::DefaultActionVerb::kNone;
+}
+
 std::vector<ax::mojom::Action> AXPlatformNodeAuraLinux::GetSupportedActions()
     const {
   static const base::NoDestructor<std::vector<ax::mojom::Action>>
       kActionsThatCanBeExposedViaAtkAction{
           {ax::mojom::Action::kDecrement, ax::mojom::Action::kIncrement}};
+  std::vector<ax::mojom::Action> supported_actions;
 
-  // The default action is always included and exposed at the first index.
-  std::vector<ax::mojom::Action> supported_actions = {
-      ax::mojom::Action::kDoDefault};
+  // The default action, if it exists, must be listed at index 0.
+  if (HasDefaultActionVerb())
+    supported_actions.push_back(ax::mojom::Action::kDoDefault);
 
   for (const auto& item : *kActionsThatCanBeExposedViaAtkAction) {
     if (HasAction(item))
