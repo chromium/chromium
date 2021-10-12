@@ -49,6 +49,7 @@ import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.build
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.buildValueExpression;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
+import android.os.Build;
 import android.widget.RadioButton;
 
 import androidx.test.espresso.Espresso;
@@ -63,6 +64,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
@@ -541,7 +543,10 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
-    public void testCreateAndEnterCard() throws Exception {
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M,
+            message = "Failing on Lollipop Phone Tester (https://crbug.com/1247243)")
+    public void
+    testCreateAndEnterCard() throws Exception {
         // Add a profile for easier address selection.
         mHelper.addDummyProfile("Adam West", "adamwest@google.com");
 
