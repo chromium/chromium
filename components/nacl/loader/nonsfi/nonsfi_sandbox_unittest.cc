@@ -35,6 +35,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/rand_util.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -596,6 +597,17 @@ BPF_DEATH_TEST_C(NaClNonSfiSandboxTest,
                  DEATH_SEGV_MESSAGE(sandbox::GetErrorMessageContentForTests()),
                  nacl::nonsfi::NaClNonSfiBPFSandboxPolicy) {
   sandbox::Syscall::InvalidCall();
+}
+
+BPF_TEST_C(NaClNonSfiSandboxTest,
+           random,
+           nacl::nonsfi::NaClNonSfiBPFSandboxPolicy) {
+  // Ensure that UrandomFD is valid.
+  int urandom_fd = base::GetUrandomFD();
+  BPF_ASSERT_NE(-1, urandom_fd);
+
+  // The test should pass if the base::Rand*() don't crash.
+  base::RandDouble();
 }
 
 // The following tests check for several restrictions in tgkill(). A delegate is
