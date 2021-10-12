@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
+#include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/text_suggester.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -33,6 +34,11 @@ class SuggestionsServiceClient : public AsyncSuggestionsSource {
   bool IsAvailable() override;
 
  private:
+  // Called once the text suggester model has been loaded and is (or is not)
+  // available for use.
+  void OnTextSuggesterLoaded(
+      chromeos::machine_learning::mojom::LoadModelResult result);
+
   // Called when results are returned from the suggestions service
   void OnSuggestionsReturned(
       base::TimeTicks time_request_was_made,
