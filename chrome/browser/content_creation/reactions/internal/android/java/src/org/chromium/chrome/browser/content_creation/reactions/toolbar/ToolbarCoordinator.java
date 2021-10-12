@@ -13,12 +13,19 @@ import org.chromium.chrome.browser.content_creation.reactions.internal.R;
  * Coordinator for the Lightweight Reactions toolbar.
  */
 public class ToolbarCoordinator {
-    public ToolbarCoordinator(View parentView, ToolbarControlsDelegate delegate) {
+    private final ToolbarControlsDelegate mControlsDelegate;
+    private final ToolbarReactionsDelegate mReactionsDelegate;
+
+    public ToolbarCoordinator(View parentView, ToolbarControlsDelegate controlsDelegate,
+            ToolbarReactionsDelegate reactionsDelegate) {
+        mControlsDelegate = controlsDelegate;
+        mReactionsDelegate = reactionsDelegate;
+
         RelativeLayout toolbarLayout = parentView.findViewById(R.id.lightweight_reactions_toolbar);
 
         View closeButton = toolbarLayout.findViewById(R.id.close_button);
-        closeButton.setOnClickListener(v -> delegate.cancelButtonTapped());
+        closeButton.setOnClickListener(v -> mControlsDelegate.cancelButtonTapped());
         View doneButton = toolbarLayout.findViewById(R.id.done_button);
-        doneButton.setOnClickListener(v -> delegate.doneButtonTapped());
+        doneButton.setOnClickListener(v -> mControlsDelegate.doneButtonTapped());
     }
 }

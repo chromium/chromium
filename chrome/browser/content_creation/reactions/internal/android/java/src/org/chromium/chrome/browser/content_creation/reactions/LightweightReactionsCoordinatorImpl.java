@@ -59,7 +59,7 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
      * @param view The root {@link View} of the dialog.
      */
     private void onViewCreated(View view) {
-        mToolbarCoordinator = new ToolbarCoordinator(view, this);
+        mToolbarCoordinator = new ToolbarCoordinator(view, this, mSceneCoordinator);
     }
 
     // LightweightReactionsCoordinator implementation.

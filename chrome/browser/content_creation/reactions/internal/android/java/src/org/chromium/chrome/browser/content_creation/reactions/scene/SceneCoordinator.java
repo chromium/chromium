@@ -11,6 +11,8 @@ import android.widget.RelativeLayout;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.content_creation.reactions.internal.R;
+import org.chromium.chrome.browser.content_creation.reactions.toolbar.ToolbarReactionsDelegate;
+import org.chromium.components.content_creation.reactions.ReactionMetadata;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.base.ViewUtils;
 
@@ -20,7 +22,7 @@ import java.util.Set;
 /**
  * Manages the scene UI and the reactions on the scene.
  */
-public class SceneCoordinator implements SceneEditorDelegate {
+public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDelegate {
     private static final int DEFAULT_REACTION_SIZE_DP = 100;
     private static final int REACTION_OFFSET_DP = 45;
     private static final int MAX_REACTION_COUNT = 10;
@@ -78,7 +80,7 @@ public class SceneCoordinator implements SceneEditorDelegate {
         markActiveStatus(reactionLayout, true);
     }
 
-    // SceneEditorCallback implementation.
+    // SceneEditorDelegate implementation.
     @Override
     public boolean canAddReaction() {
         return mReactionLayouts.size() < MAX_REACTION_COUNT;
@@ -121,5 +123,11 @@ public class SceneCoordinator implements SceneEditorDelegate {
             mActiveReaction.setActive(false);
             mActiveReaction = null;
         }
+    }
+
+    // ToolbarReactionsDelegate implementation.
+    @Override
+    public void onToolbarReactionTapped(ReactionMetadata reactionData) {
+        // No-op for now, will either add a new reaction or change the currently selected one.
     }
 }
