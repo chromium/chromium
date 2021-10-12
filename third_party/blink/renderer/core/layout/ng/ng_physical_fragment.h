@@ -589,6 +589,9 @@ class CORE_EXPORT NGPhysicalFragment
   bool ChildrenValid() const { return children_valid_; }
 
   struct OutOfFlowData {
+    USING_FAST_MALLOC(OutOfFlowData);
+
+   public:
     Vector<NGPhysicalOutOfFlowPositionedNode> oof_positioned_descendants;
   };
 

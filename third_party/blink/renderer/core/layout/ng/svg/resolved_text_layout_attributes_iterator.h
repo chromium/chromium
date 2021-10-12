@@ -30,6 +30,8 @@ namespace blink {
 // AdvanceTo(42) returns the NGSvgCharacterData at [2].
 // AdvanceTo(43 or greater) returns the default NGSvgCharacterData.
 class ResolvedTextLayoutAttributesIterator final {
+  USING_FAST_MALLOC(ResolvedTextLayoutAttributesIterator);
+
  public:
   explicit ResolvedTextLayoutAttributesIterator(
       const Vector<std::pair<unsigned, NGSvgCharacterData>>& resolved)

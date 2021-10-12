@@ -28,6 +28,9 @@ struct NGLogicalLineItem;
 
 // Data for SVG text in addition to NGFragmentItem.
 struct NGSvgFragmentData {
+  USING_FAST_MALLOC(NGSvgFragmentData);
+
+ public:
   scoped_refptr<const ShapeResultView> shape_result;
   NGTextOffset text_offset;
   FloatRect rect;

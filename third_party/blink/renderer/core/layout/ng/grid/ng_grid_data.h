@@ -20,6 +20,9 @@ namespace blink {
 // This means that although splitting the sets by their track count would not
 // give the correct result.
 struct NGGridData {
+  USING_FAST_MALLOC(NGGridData);
+
+ public:
   using RangeData = NGGridLayoutAlgorithmTrackCollection::Range;
 
   wtf_size_t row_start;

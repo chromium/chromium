@@ -24,6 +24,8 @@ typedef HeapVector<NGLayoutOpportunity, 8> LayoutOpportunityVector;
 // see NGExclusionSpace below. NGExclusionSpace was designed to be cheap
 // to construct and cheap to copy if empty.
 class CORE_EXPORT NGExclusionSpaceInternal final {
+  USING_FAST_MALLOC(NGExclusionSpaceInternal);
+
  public:
   NGExclusionSpaceInternal();
   NGExclusionSpaceInternal(const NGExclusionSpaceInternal&);
