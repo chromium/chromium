@@ -139,7 +139,7 @@ template("chrome_public_common_apk_or_module_tmpl") {
     } else if (_is_monochrome) {
       min_sdk_version = 24
     } else {
-      min_sdk_version = 21
+      min_sdk_version = default_min_sdk_version
     }
 
     resource_exclusion_regex = common_resource_exclusion_regex

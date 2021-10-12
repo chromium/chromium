@@ -181,7 +181,7 @@ template("weblayer_instrumentation") {
     forward_variables_from(invoker, "*")
 
     android_manifest = "AndroidManifest.xml"
-    min_sdk_version = 21
+    min_sdk_version = default_min_sdk_version
 
     if (!defined(additional_apks)) {
       additional_apks = []
