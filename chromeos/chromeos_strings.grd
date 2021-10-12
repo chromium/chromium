@@ -1071,7 +1071,7 @@ Try tapping the mic to ask me anything.
         To set up, go to Settings
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_MISSING_NAME_SERVERS_TEXT" desc="The text shown when no name servers are configured.">
-        No name servers are configured
+        DNS isn't set up
       </message>
       <message name="IDS_DIAGNOSTICS_NETWORK_SIGNAL_STRENGTH_WEAK" desc="Label used to describe the signal strength of a network connection when the signal is weak.">
         Weak (<ph name="SIGNAL_STRENGTH">$1<ex>(20)</ex></ph>)
