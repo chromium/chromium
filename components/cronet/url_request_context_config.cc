@@ -431,7 +431,6 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
           quic_args->FindBoolKey(kQuicEnableSocketRecvOptimization)
               .value_or(quic_params->enable_socket_recv_optimization);
 
-      bool quic_migrate_sessions_on_network_change_v2 = false;
       int quic_max_time_on_non_default_network_seconds = 0;
       int quic_max_migrations_to_non_default_network_on_write_error = 0;
       int quic_max_migrations_to_non_default_network_on_path_degrading = 0;
@@ -439,8 +438,6 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
       absl::optional<bool> quic_migrate_sessions_on_network_change_v2_in =
           quic_args->FindBoolKey(kQuicMigrateSessionsOnNetworkChangeV2);
       if (quic_migrate_sessions_on_network_change_v2_in.has_value()) {
-        quic_migrate_sessions_on_network_change_v2 =
-            quic_migrate_sessions_on_network_change_v2_in.value();
         quic_params->migrate_sessions_on_network_change_v2 =
             quic_migrate_sessions_on_network_change_v2_in.value();
         if (quic_args->GetInteger(
@@ -463,13 +460,11 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
         }
       }
 
-      bool quic_migrate_idle_sessions = false;
       int quic_idle_session_migration_period_seconds = 0;
 
       absl::optional<bool> quic_migrate_idle_sessions_in =
           quic_args->FindBoolKey(kQuicMigrateIdleSessions);
       if (quic_migrate_idle_sessions_in.has_value()) {
-        quic_migrate_idle_sessions = quic_migrate_idle_sessions_in.value();
         quic_params->migrate_idle_sessions =
             quic_migrate_idle_sessions_in.value();
         if (quic_args->GetInteger(
@@ -480,12 +475,9 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
         }
       }
 
-      bool quic_migrate_sessions_early_v2 = false;
       absl::optional<bool> quic_migrate_sessions_early_v2_in =
           quic_args->FindBoolKey(kQuicMigrateSessionsEarlyV2);
       if (quic_migrate_sessions_early_v2_in.has_value()) {
-        quic_migrate_sessions_early_v2 =
-            quic_migrate_sessions_early_v2_in.value();
         quic_params->migrate_sessions_early_v2 =
             quic_migrate_sessions_early_v2_in.value();
       }
