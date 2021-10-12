@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js'
 import {isNonEmptyArray} from '../common/utils.js';
-import {beginLoadImagesForCollectionsAction, beginLoadLocalImageDataAction, beginLoadLocalImagesAction, beginLoadSelectedImageAction, beginSelectImageAction, beginUpdateDailyRefreshImageAction, endSelectImageAction, setCollectionsAction, setDailyRefreshCollectionIdAction, setImagesForCollectionAction, setLocalImageDataAction, setLocalImagesAction, setSelectedImageAction, setUpdatedDailyRefreshImageAction} from './personalization_actions.js';
+import * as action from './personalization_actions.js';
 import {WallpaperLayout, WallpaperType} from './personalization_reducers.js';
 import {PersonalizationStore} from './personalization_store.js';
 
@@ -27,7 +27,7 @@ async function fetchCollections(provider, store) {
     console.warn('Failed to fetch wallpaper collections');
     collections = null;
   }
-  store.dispatch(setCollectionsAction(collections));
+  store.dispatch(action.setCollectionsAction(collections));
 }
 
 /**
@@ -43,14 +43,14 @@ async function fetchAllImagesForCollections(provider, store) {
         'Cannot fetch data for collections when it is not initialized');
     return;
   }
-  store.dispatch(beginLoadImagesForCollectionsAction(collections));
+  store.dispatch(action.beginLoadImagesForCollectionsAction(collections));
   for (const {id} of /** @type {!Array<{id: string}>} */ (collections)) {
     let {images} = await provider.fetchImagesForCollection(id);
     if (!isNonEmptyArray(images)) {
       console.warn('Failed to fetch images for collection id', id);
       images = null;
     }
-    store.dispatch(setImagesForCollectionAction(id, images));
+    store.dispatch(action.setImagesForCollectionAction(id, images));
   }
 }
 
@@ -61,12 +61,12 @@ async function fetchAllImagesForCollections(provider, store) {
  * @param {!PersonalizationStore} store
  */
 async function getLocalImages(provider, store) {
-  store.dispatch(beginLoadLocalImagesAction());
+  store.dispatch(action.beginLoadLocalImagesAction());
   const {images} = await provider.getLocalImages();
   if (images == null) {
     console.warn('Failed to fetch local images');
   }
-  store.dispatch(setLocalImagesAction(images));
+  store.dispatch(action.setLocalImagesAction(images));
 }
 
 /**
@@ -101,7 +101,7 @@ async function getMissingLocalImageThumbnails(provider, store) {
       continue;
     }
     imageThumbnailsToFetch.add(filePath.path);
-    store.dispatch(beginLoadLocalImageDataAction(filePath));
+    store.dispatch(action.beginLoadLocalImageDataAction(filePath));
   }
   store.endBatchUpdate();
 
@@ -113,7 +113,7 @@ async function getMissingLocalImageThumbnails(provider, store) {
     if (!data) {
       console.warn('Failed to fetch local image data', path);
     }
-    store.dispatch(setLocalImageDataAction({path}, data));
+    store.dispatch(action.setLocalImageDataAction({path}, data));
   }
 }
 
@@ -128,33 +128,33 @@ export async function selectWallpaper(image, provider, store) {
   // Batch these changes together to reduce polymer churn as multiple state
   // fields change quickly.
   store.beginBatchUpdate();
-  store.dispatch(beginSelectImageAction(image));
-  store.dispatch(beginLoadSelectedImageAction());
+  store.dispatch(action.beginSelectImageAction(image));
+  store.dispatch(action.beginLoadSelectedImageAction());
+  const {tabletMode} = await provider.isInTabletMode();
+  if (tabletMode) {
+    store.dispatch(action.setFullscreenEnabledAction(/*enabled=*/ true))
+  }
   store.endBatchUpdate();
   const {success} = await (() => {
     if (image.assetId) {
-      // TODO(b/198824419): Determine when to enable preview_mode.
-      return provider.selectWallpaper(image.assetId, /*preview_mode=*/ false);
+      return provider.selectWallpaper(
+          image.assetId, /*preview_mode=*/ tabletMode);
     } else if (image.path) {
-      // TODO(b/198824419): Determine when to enable preview_mode.
       return provider.selectLocalImage(
           /** @type {!mojoBase.mojom.FilePath} */ (image),
-          /*preview_mode=*/ false);
+          /*preview_mode=*/ tabletMode);
     } else {
       console.warn('Image must be a local image or a WallpaperImage');
       return {success: false};
     }
   })();
   store.beginBatchUpdate();
-  store.dispatch(endSelectImageAction(image, success));
+  store.dispatch(action.endSelectImageAction(image, success));
   if (!success) {
     console.warn('Error setting wallpaper');
-    store.dispatch(setSelectedImageAction(store.data.currentSelected));
+    store.dispatch(action.setSelectedImageAction(store.data.currentSelected));
   }
   store.endBatchUpdate();
-
-  // Cleared Daily Refresh state should be reflected in UI.
-  getDailyRefreshCollectionId(provider, store);
 }
 
 /**
@@ -173,7 +173,7 @@ export async function setCustomWallpaperLayout(layout, provider, store) {
   if (image.layout === layout)
     return;
 
-  store.dispatch(beginLoadSelectedImageAction());
+  store.dispatch(action.beginLoadSelectedImageAction());
   await provider.setCustomWallpaperLayout(layout);
 }
 
@@ -199,7 +199,7 @@ export async function setDailyRefreshCollectionId(
  */
 export async function getDailyRefreshCollectionId(provider, store) {
   const {collectionId} = await provider.getDailyRefreshCollectionId();
-  store.dispatch(setDailyRefreshCollectionIdAction(collectionId));
+  store.dispatch(action.setDailyRefreshCollectionIdAction(collectionId));
 }
 
 /**
@@ -209,12 +209,30 @@ export async function getDailyRefreshCollectionId(provider, store) {
  * @param {!PersonalizationStore} store
  */
 export async function updateDailyRefreshWallpaper(provider, store) {
-  store.dispatch(beginUpdateDailyRefreshImageAction());
-  store.dispatch(beginLoadSelectedImageAction());
+  store.dispatch(action.beginUpdateDailyRefreshImageAction());
+  store.dispatch(action.beginLoadSelectedImageAction());
   const {success} = await provider.updateDailyRefreshWallpaper();
   if (success) {
-    store.dispatch(setUpdatedDailyRefreshImageAction());
+    store.dispatch(action.setUpdatedDailyRefreshImageAction());
   }
+}
+
+/**
+ * Confirm and set preview wallpaper as actual wallpaper.
+ * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
+ *     provider
+ */
+export async function confirmPreviewWallpaper(provider) {
+  await provider.confirmPreviewWallpaper();
+}
+
+/**
+ * Cancel preview wallpaper and show the previous wallpaper.
+ * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
+ *     provider
+ */
+export async function cancelPreviewWallpaper(provider) {
+  await provider.cancelPreviewWallpaper();
 }
 
 /**

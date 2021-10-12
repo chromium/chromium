@@ -263,6 +263,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
       this.initialLoadTimeout_ = null;
     }
     this.dispatch(setSelectedImageAction(currentWallpaper));
+
+    // Daily Refresh state should also get updated when wallpaper changes.
+    getDailyRefreshCollectionId(this.wallpaperProvider_, this.getStore());
   }
 
   /**

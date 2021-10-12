@@ -8,6 +8,10 @@
 </style>
 <div id="container" hidden>
   <button on-click="onClickExit_" id="exit">[[i18n('exitFullscreen')]]</button>
+  <template is="dom-if" if="[[showConfirm_]]">
+    <button on-click="onClickConfirm_" id="confirm">[[i18n('setAsWallpaper')]]
+    </button>
+  </template>
   <template is="dom-if" if="[[showLayoutOptions_]]">
     <div id="layoutButtons">
       <button on-click="onClickLayout_"

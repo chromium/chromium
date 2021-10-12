@@ -91,6 +91,9 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate,
   // ash::WallpaperControllerObserver:
   void OnWallpaperChanged() override;
 
+  // ash::WallpaperControllerObserver:
+  void OnWallpaperPreviewEnded() override;
+
   // chromeos::personalization_app::mojom::WallpaperProvider:
   void SelectWallpaper(uint64_t image_asset_id,
                        bool preview_mode,

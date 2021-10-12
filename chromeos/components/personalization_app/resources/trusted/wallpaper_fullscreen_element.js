@@ -12,7 +12,7 @@ import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.
 import {getWallpaperLayoutEnum} from '../common/utils.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
 import {setFullscreenEnabledAction} from './personalization_actions.js';
-import {setCustomWallpaperLayout} from './personalization_controller.js';
+import {cancelPreviewWallpaper, confirmPreviewWallpaper, setCustomWallpaperLayout} from './personalization_controller.js';
 import {updateDailyRefreshWallpaper} from './personalization_controller.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
@@ -78,7 +78,8 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
         'showDailyRefresh_',
         state => state.currentSelected?.type ===
                 chromeos.personalizationApp.mojom.WallpaperType.kDaily &&
-            state.dailyRefresh.collectionId);
+            state.dailyRefresh.collectionId && !state.pendingSelected);
+    this.watch('showConfirm_', state => !!state.pendingSelected);
     this.watch('image_', state => state.currentSelected);
   }
 
@@ -116,12 +117,25 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
     const hidden = !this.getFullscreenElement();
     this.shadowRoot.getElementById('container').hidden = hidden;
     if (hidden) {
+      // SWA also supports exiting fullscreen when users press ESC. In this
+      // case, the preview mode may be still on so we have to call cancel
+      // preview.
+      // This call is no-op when the user clicks on exit button or set as
+      // wallpaper button.
+      cancelPreviewWallpaper(this.wallpaperProvider_);
       this.dispatch(setFullscreenEnabledAction(/*enabled=*/false));
     }
   }
 
   /** @private */
   onClickExit_() {
+    cancelPreviewWallpaper(this.wallpaperProvider_);
+    this.exitFullscreen();
+  }
+
+  /** @private */
+  onClickConfirm_() {
+    confirmPreviewWallpaper(this.wallpaperProvider_);
     this.exitFullscreen();
   }
 

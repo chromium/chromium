@@ -239,6 +239,10 @@ void ChromePersonalizationAppUiDelegate::OnWallpaperChanged() {
   }
 }
 
+void ChromePersonalizationAppUiDelegate::OnWallpaperPreviewEnded() {
+  ChromePersonalizationAppUiDelegate::OnWallpaperChanged();
+}
+
 void ChromePersonalizationAppUiDelegate::SelectWallpaper(
     uint64_t image_asset_id,
     bool preview_mode,

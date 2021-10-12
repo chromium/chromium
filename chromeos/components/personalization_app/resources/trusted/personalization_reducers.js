@@ -342,6 +342,12 @@ function pendingSelectedReducer(state, action) {
         return null;
       }
       return state;
+    case ActionName.SET_FULLSCREEN_ENABLED:
+      if (!(/** @type {{enabled: boolean}} */ (action)).enabled) {
+        // Clear the pending selected state after full screen is dismissed.
+        return null;
+      }
+      return state;
     default:
       return state;
   }

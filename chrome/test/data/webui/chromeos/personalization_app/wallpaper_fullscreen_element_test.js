@@ -230,4 +230,28 @@ export function WallpaperFullscreenTest() {
 
     await wallpaperProvider.whenCalled('updateDailyRefreshWallpaper');
   });
+
+  test('clicking set as wallpaper confirms wallpaper', async () => {
+    wallpaperFullscreenElement = initElement(WallpaperFullscreen.is);
+    const {requestFullscreenPromise} = mockFullscreenApis();
+    await waitAfterNextRender(wallpaperFullscreenElement);
+
+    personalizationStore.data.fullscreen = true;
+    personalizationStore.data.currentSelected = {
+      ...personalizationStore.data.currentSelected,
+      type: chromeos.personalizationApp.mojom.WallpaperType.kDaily,
+    };
+    personalizationStore.data.dailyRefresh.collectionId =
+        wallpaperProvider.collections[0].id;
+    personalizationStore.data.pendingSelected = wallpaperProvider.images[1];
+    personalizationStore.notifyObservers();
+
+    await waitAfterNextRender(wallpaperFullscreenElement);
+
+    const setAsWallpaperButton =
+        wallpaperFullscreenElement.shadowRoot.getElementById('confirm');
+    setAsWallpaperButton.click();
+
+    await wallpaperProvider.whenCalled('confirmPreviewWallpaper');
+  });
 }
