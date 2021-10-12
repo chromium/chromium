@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/browsing_data_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/clipboard_cleanup_handler.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/files_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/open_windows_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/print_jobs_cleanup_handler.h"
@@ -75,6 +76,7 @@ void CleanupManager::InitializeCleanupHandlers() {
   cleanup_handlers_.emplace_back(std::make_unique<FilesCleanupHandler>());
   cleanup_handlers_.emplace_back(std::make_unique<ClipboardCleanupHandler>());
   cleanup_handlers_.emplace_back(std::make_unique<PrintJobsCleanupHandler>());
+  cleanup_handlers_.emplace_back(std::make_unique<ExtensionCleanupHandler>());
 }
 
 void CleanupManager::OnCleanupHandlerDone(
