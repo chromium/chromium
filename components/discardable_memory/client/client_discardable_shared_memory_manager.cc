@@ -357,7 +357,7 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
             reinterpret_cast<size_t>(leftover->shared_memory()->memory()),
         leftover->length() * base::GetPageSize());
     leftover->set_is_locked(false);
-    heap_->MergeIntoFreeListsClean(std::move(leftover));
+    MergeIntoFreeListsClean(std::move(leftover));
   }
 
   if (pages >= allocation_pages) {
@@ -459,7 +459,7 @@ void ClientDiscardableSharedMemoryManager::PurgeUnlockedMemory(
       auto span = mem->Purge(now - min_age);
       if (span) {
         allocated_memory_.erase(prev);
-        ReleaseSpan(std::move(span));
+        ReleaseSpanLocked(std::move(span));
       }
     }
   }
@@ -540,10 +540,52 @@ void ClientDiscardableSharedMemoryManager::ReleaseSpan(
   if (!span->shared_memory())
     return;
 
-  heap_->MergeIntoFreeLists(std::move(span));
+  MergeIntoFreeLists(std::move(span));
 
   // Bytes of free memory changed.
   MemoryUsageChanged(heap_->GetSize(), heap_->GetFreelistSize());
+}
+
+void ClientDiscardableSharedMemoryManager::ReleaseSpanLocked(
+    std::unique_ptr<DiscardableSharedMemoryHeap::Span> span) {
+  DCHECK(span);
+
+  // Delete span instead of merging it into free lists if memory is gone.
+  if (!span->shared_memory())
+    return;
+
+  MergeIntoFreeListsLocked(std::move(span));
+
+  // Bytes of free memory changed.
+  MemoryUsageChanged(heap_->GetSize(), heap_->GetFreelistSize());
+}
+
+void ClientDiscardableSharedMemoryManager::MergeIntoFreeLists(
+    std::unique_ptr<DiscardableSharedMemoryHeap::Span> span) {
+  if (ReleaseDiscardableFreeListPages()) {
+    // We release the memory _without_ the lock held here to avoid performance
+    // issues on Windows, as releasing memory is a potentially expensive
+    // operation there.
+    lock_.Release();
+    DiscardableSharedMemoryHeap::ReleaseMemoryIfPossible(span.get());
+    lock_.Acquire();
+  }
+
+  heap_->MergeIntoFreeLists(std::move(span));
+}
+
+void ClientDiscardableSharedMemoryManager::MergeIntoFreeListsLocked(
+    std::unique_ptr<DiscardableSharedMemoryHeap::Span> span) {
+  if (ReleaseDiscardableFreeListPages()) {
+    DiscardableSharedMemoryHeap::ReleaseMemoryIfPossible(span.get());
+  }
+
+  heap_->MergeIntoFreeLists(std::move(span));
+}
+
+void ClientDiscardableSharedMemoryManager::MergeIntoFreeListsClean(
+    std::unique_ptr<DiscardableSharedMemoryHeap::Span> span) {
+  heap_->MergeIntoFreeListsClean(std::move(span));
 }
 
 base::trace_event::MemoryAllocatorDump*

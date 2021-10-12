@@ -185,6 +185,19 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void ReleaseSpan(std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void ReleaseSpanLocked(
+      std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  void MergeIntoFreeListsClean(
+      std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void MergeIntoFreeLists(
+      std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void MergeIntoFreeListsLocked(
+      std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   size_t GetBytesAllocatedLocked() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 

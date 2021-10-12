@@ -533,5 +533,41 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest,
   ASSERT_EQ(0u, client->GetDirtyFreedMemoryPageCount());
 }
 
+TEST_F(ClientDiscardableSharedMemoryManagerTest, PurgeMultipleTimes) {
+  base::test::ScopedFeatureList fl;
+  fl.InitAndEnableFeature(discardable_memory::kReleaseDiscardableFreeListPages);
+  auto client =
+      base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>();
+
+  auto mem1 =
+      client->AllocateLockedDiscardableMemory(base::GetPageSize() * 1.2);
+
+  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(60));
+
+  auto mem2 =
+      client->AllocateLockedDiscardableMemory(base::GetPageSize() * 2.2);
+
+  EXPECT_TRUE(client->IsPurgeScheduled());
+
+  client->ReleaseFreeMemory();
+  EXPECT_TRUE(client->IsPurgeScheduled());
+
+  task_env_.FastForwardBy(
+      ClientDiscardableSharedMemoryManager::kScheduledPurgeInterval);
+
+  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(60));
+
+  EXPECT_TRUE(client->IsPurgeScheduled());
+
+  client->ReleaseFreeMemory();
+
+  task_env_.FastForwardBy(
+      ClientDiscardableSharedMemoryManager::kScheduledPurgeInterval);
+
+  EXPECT_TRUE(client->IsPurgeScheduled());
+
+  client->ReleaseFreeMemory();
+}
+
 }  // namespace
 }  // namespace discardable_memory
