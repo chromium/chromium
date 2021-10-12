@@ -12,6 +12,7 @@
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_discount_metric_collector.h"
 #include "chrome/browser/cart/cart_features.h"
+#include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -47,6 +48,9 @@ constexpr base::FeatureParam<std::string> kSkipCartExtractionPattern{
 constexpr base::FeatureParam<bool> kRbdUtmParam{
     &ntp_features::kNtpChromeCartModule,
     ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam, false};
+
+constexpr base::FeatureParam<bool> kBypassDisocuntFetchingThreshold{
+    &commerce::kCommerceDeveloper, "bypass-discount-fetching-threshold", false};
 
 std::string eTLDPlusOne(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
@@ -844,7 +848,8 @@ void CartService::StartGettingDiscount() {
       profile_->GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime);
   base::TimeDelta fetch_delay = cart_features::kDiscountFetchDelayParam.Get() -
                                 (base::Time::Now() - last_fetched_time);
-  if (last_fetched_time == base::Time() || fetch_delay < base::TimeDelta()) {
+  if (last_fetched_time == base::Time() || fetch_delay < base::TimeDelta() ||
+      kBypassDisocuntFetchingThreshold.Get()) {
     fetch_delay = base::TimeDelta();
   }
 

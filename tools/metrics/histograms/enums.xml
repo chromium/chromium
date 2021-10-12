@@ -49698,6 +49698,7 @@ from previous Chrome versions.
   <int value="-135584175" label="EnableAggregatedMlAppRanking:enabled"/>
   <int value="-135223364" label="AutofillShowTypePredictions:disabled"/>
   <int value="-133098377" label="SyncPseudoUSSSearchEngines:disabled"/>
+  <int value="-132786900" label="CommerceDeveloper:disabled"/>
   <int value="-132082004" label="CacheOneGoogleBar:enabled"/>
   <int value="-131886819"
       label="AutofillEnableMerchantBoundVirtualCards:enabled"/>
@@ -51133,6 +51134,7 @@ from previous Chrome versions.
   <int value="1009437086" label="AutofillEnableOfferNotification:disabled"/>
   <int value="1009976778" label="SidePanel:disabled"/>
   <int value="1011550878" label="MessagesForAndroidPermissionUpdate:disabled"/>
+  <int value="1012643576" label="CommerceDeveloper:enabled"/>
   <int value="1012942422" label="HorizontalTabSwitcherAndroid:disabled"/>
   <int value="1015012662" label="ChromeOSDirectVideoDecoder:enabled"/>
   <int value="1015895665" label="drop-sync-credential:enabled"/>

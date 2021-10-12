@@ -15,6 +15,7 @@ extern const base::Feature kCommerceMerchantViewer;
 extern const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory;
 extern const base::Feature kShoppingList;
 extern const base::Feature kRetailCoupons;
+extern const base::Feature kCommerceDeveloper;
 
 // Check if a URL belongs to a partner merchant of coupon discount.
 bool IsCouponDiscountPartnerMerchant(const GURL& url);
