@@ -568,9 +568,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.SessionDuration.PerProfile" enum="Profile"
-    expires_after="2021-10-17">
+    expires_after="2022-05-17">
   <owner>msarda@chromium.org</owner>
-  <owner>tangltom@chromium.org</owner>
+  <owner>alexilin@chromium.org</owner>
   <summary>
     Browsing session duration in minutes, recorded per profile. Each profile on
     a client is assigned a unique bucket.
