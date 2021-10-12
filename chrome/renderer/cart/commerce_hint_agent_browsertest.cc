@@ -374,34 +374,16 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
 
   ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
 
-  void WaitForUmaCount(base::StringPiece name,
-                       base::HistogramBase::Count expected_count) {
-    while (true) {
-      metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-      base::HistogramBase::Count count = 0;
-      for (const auto& bucket : histogram_tester_.GetAllSamples(name))
-        count += bucket.count;
-      ASSERT_LE(count, expected_count) << "WaitForUmaCount(" << name
-                                       << ") has more counts than expectation.";
-      if (count == expected_count)
-        break;
-      LOG(INFO) << "WaitForUmaCount() is expecting " << expected_count
-                << " but found " << count;
-      base::PlatformThread::Sleep(TestTimeouts::tiny_timeout() * 10);
-    }
-  }
-
-  void WaitForUmaBucketCount(base::StringPiece name,
+  void WaitForUmaBucketCount(base::HistogramTester& tester,
+                             base::StringPiece name,
                              base::HistogramBase::Sample sample,
                              base::HistogramBase::Count expected_count) {
     while (true) {
       metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-      auto count = histogram_tester_.GetBucketCount(name, sample);
+      auto count = tester.GetBucketCount(name, sample);
       if (count == expected_count)
         break;
-      LOG(INFO) << "WaitForUmaBucketCount() is expecting " << expected_count
-                << " but found " << count;
-      base::PlatformThread::Sleep(TestTimeouts::tiny_timeout() * 10);
+      base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
     }
   }
 
@@ -410,7 +392,6 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   bool satisfied_;
-  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL) {
@@ -419,7 +400,6 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL) {
   NavigateToURL("https://www.guitarcenter.com/");
   NavigateToURL("https://www.guitarcenter.com/add-to-cart?product=1");
 
-  WaitForUmaCount("Commerce.Carts.AddToCartByURL", 1);
   WaitForCartCount(kExpectedExampleFallbackCart);
 }
 
@@ -427,7 +407,6 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm) {
   NavigateToURL("https://www.guitarcenter.com/");
   SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
 
-  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
   WaitForCartCount(kExpectedExampleFallbackCart);
   ExpectUKM(XHREntry::kEntryName, "IsAddToCart");
 }
@@ -436,7 +415,6 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm_WithLink) {
   NavigateToURL("https://www.guitarcenter.com/product.html");
   SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
 
-  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
   WaitForCartCount(kExpectedExampleLinkCart);
   ExpectUKM(XHREntry::kEntryName, "IsAddToCart");
 }
@@ -446,7 +424,6 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm_WithWrongLink) {
   NavigateToURL("https://amazon.com/product.html");
   SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
 
-  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
   WaitForCartCount(kExpectedAmazon);
   ExpectUKM(XHREntry::kEntryName, "IsAddToCart");
 }
@@ -455,7 +432,6 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL_XHR) {
   NavigateToURL("https://www.guitarcenter.com/");
   SendXHR("/add-to-cart", "product: 123");
 
-  WaitForUmaCount("Commerce.Carts.AddToCartByURL", 1);
   WaitForCartCount(kExpectedExampleFallbackCart);
   ExpectUKM(XHREntry::kEntryName, "IsAddToCart");
 }
@@ -464,30 +440,31 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCart) {
   // Cannot use dummy page with zero products, or the cart would be deleted.
   NavigateToURL("https://www.guitarcenter.com/cart.html");
 
-  WaitForUmaCount("Commerce.Carts.VisitCart", 1);
   WaitForCartCount(kExpectedExample);
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, ExtractCart) {
+  base::HistogramTester histogram_tester;
+
   // This page has three products.
   NavigateToURL("https://www.guitarcenter.com/cart.html");
 
   WaitForProductCount(kExpectedExampleWithProducts);
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histogram_tester_.ExpectTotalCount("Commerce.Carts.ExtractionExecutionTime",
-                                     1);
-  histogram_tester_.ExpectTotalCount("Commerce.Carts.ExtractionLongestTaskTime",
-                                     1);
-  histogram_tester_.ExpectTotalCount("Commerce.Carts.ExtractionTotalTasksTime",
-                                     1);
-  histogram_tester_.ExpectTotalCount("Commerce.Carts.ExtractionElapsedTime", 1);
-  histogram_tester_.ExpectBucketCount("Commerce.Carts.ExtractionTimedOut", 0,
-                                      1);
+  histogram_tester.ExpectTotalCount("Commerce.Carts.ExtractionExecutionTime",
+                                    1);
+  histogram_tester.ExpectTotalCount("Commerce.Carts.ExtractionLongestTaskTime",
+                                    1);
+  histogram_tester.ExpectTotalCount("Commerce.Carts.ExtractionTotalTasksTime",
+                                    1);
+  histogram_tester.ExpectTotalCount("Commerce.Carts.ExtractionElapsedTime", 1);
+  histogram_tester.ExpectBucketCount("Commerce.Carts.ExtractionTimedOut", 0, 1);
 
   SendXHR("/add-to-cart", "product: 123");
 
-  WaitForUmaBucketCount("Commerce.Carts.ExtractionTimedOut", 0, 2);
+  WaitForUmaBucketCount(histogram_tester, "Commerce.Carts.ExtractionTimedOut",
+                        0, 2);
 }
 
 class CommerceHintNoRateControlTest : public CommerceHintAgentTest {
@@ -524,8 +501,6 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCheckout) {
 
   NavigateToURL("https://www.guitarcenter.com/");
   NavigateToURL("https://www.guitarcenter.com/123/checkout/456");
-  // URL is checked against checkout twice.
-  WaitForUmaCount("Commerce.Carts.VisitCheckout", 2);
   WaitForCartCount(kEmptyExpected);
 }
 
@@ -536,7 +511,6 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByURL) {
   NavigateToURL("http://amazon.com/");
   NavigateToURL(
       "http://amazon.com/gp/buy/spc/handlers/static-submit-decoupled.html");
-  WaitForUmaCount("Commerce.Carts.PurchaseByURL", 1);
   WaitForCartCount(kEmptyExpected);
 }
 
@@ -550,7 +524,6 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByForm) {
   ASSERT_TRUE(ExecJs(web_contents(), script));
   content::TestNavigationObserver load_observer(web_contents());
   load_observer.WaitForNavigationFinished();
-  WaitForUmaCount("Commerce.Carts.PurchaseByPOST", 1);
   WaitForCartCount(kEmptyExpected);
   ExpectUKM(FormSubmittedEntry::kEntryName, "IsTransaction");
 }
@@ -558,9 +531,8 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByForm) {
 // TODO(crbug.com/1180268): CrOS multi-profiles implementation is different from
 // the rest and below tests don't work on CrOS yet. Re-enable them on CrOS after
 // figuring out the reason for failure.
-// Signing out on Lacros is not possible.
-#if !defined(OS_CHROMEOS)
-// TODO(crbug/1258803): Skip work on non-eligible profiles.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, NonSignInUser) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
@@ -584,7 +556,6 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, NonSignInUser) {
   WaitForCartCount(kExpectedExampleFallbackCart);
 }
 
-// TODO(crbug/1258803): Skip work on non-eligible profiles.
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, MultipleProfiles) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
@@ -616,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, MultipleProfiles) {
   SendXHR("/add-to-cart", "product: 123");
   WaitForCartCount(kExpectedExampleFallbackCart);
 }
-#endif  // !BUILDFLAG(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 class CommerceHintCacaoTest : public CommerceHintAgentTest {
  public:
@@ -655,7 +626,6 @@ IN_PROC_BROWSER_TEST_F(CommerceHintCacaoTest, Rejected) {
   SendXHR("/add-to-cart", "product: 123");
   base::PlatformThread::Sleep(TestTimeouts::tiny_timeout() * 30);
   WaitForCartCount(kEmptyExpected);
-  WaitForUmaCount("Commerce.Carts.AddToCartByURL", 1);
 }
 
 class CommerceHintProductInfoTest : public CommerceHintAgentTest {
@@ -859,9 +829,12 @@ class CommerceHintTimeoutTest : public CommerceHintAgentTest {
 #define MAYBE_ExtractCart ExtractCart
 #endif
 IN_PROC_BROWSER_TEST_F(CommerceHintTimeoutTest, MAYBE_ExtractCart) {
+  base::HistogramTester histogram_tester;
+
   NavigateToURL("https://www.guitarcenter.com/cart.html");
 
-  WaitForUmaBucketCount("Commerce.Carts.ExtractionTimedOut", 1, 1);
+  WaitForUmaBucketCount(histogram_tester, "Commerce.Carts.ExtractionTimedOut",
+                        1, 1);
   WaitForCartCount(kEmptyExpected);
 }
 
@@ -883,9 +856,12 @@ class CommerceHintMaxCountTest : public CommerceHintAgentTest {
 // Flaky on Linux: https://crbug.com/1257964.
 // See definition of MAYBE_ExtractCart above.
 IN_PROC_BROWSER_TEST_F(CommerceHintMaxCountTest, MAYBE_ExtractCart) {
+  base::HistogramTester histogram_tester;
+
   NavigateToURL("https://www.guitarcenter.com/cart.html");
 
-  WaitForUmaBucketCount("Commerce.Carts.ExtractionTimedOut", 0, 1);
+  WaitForUmaBucketCount(histogram_tester, "Commerce.Carts.ExtractionTimedOut",
+                        0, 1);
 
   // This would have triggered another extraction if not limited by max count
   // per navigation.
@@ -894,52 +870,10 @@ IN_PROC_BROWSER_TEST_F(CommerceHintMaxCountTest, MAYBE_ExtractCart) {
   // Navigation resets count, so can do another extraction.
   NavigateToURL("https://www.guitarcenter.com/cart.html");
 
-  WaitForUmaBucketCount("Commerce.Carts.ExtractionTimedOut", 0, 2);
+  WaitForUmaBucketCount(histogram_tester, "Commerce.Carts.ExtractionTimedOut",
+                        0, 2);
 }
 
-// Override add-to-cart pattern.
-class CommerceHintAddToCartPatternTest : public CommerceHintAgentTest {
- public:
-  void SetUpInProcessBrowserTestFixture() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{ntp_features::kNtpChromeCartModule,
-          {{"add-to-cart-pattern", "(special|text)"}}}},
-        {optimization_guide::features::kOptimizationHints});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(CommerceHintAddToCartPatternTest, AddToCartByURL) {
-  NavigateToURL("https://www.guitarcenter.com/Special?product=1");
-  WaitForUmaCount("Commerce.Carts.AddToCartByURL", 1);
-
-  NavigateToURL("https://www.guitarcenter.com/add-to-cart?product=1");
-  NavigateToURL("https://www.guitarcenter.com/add-to-cart?product=1");
-  NavigateToURL("https://www.guitarcenter.com/add-to-cart?product=1");
-  WaitForUmaCount("Commerce.Carts.AddToCartByURL", 1);
-
-  NavigateToURL("https://www.guitarcenter.com/Text?product=1");
-  WaitForUmaCount("Commerce.Carts.AddToCartByURL", 2);
-}
-
-IN_PROC_BROWSER_TEST_F(CommerceHintAddToCartPatternTest, AddToCartByForm) {
-  NavigateToURL("https://www.guitarcenter.com/");
-
-  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_Special");
-  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
-
-  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
-  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
-  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
-  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
-
-  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_Text");
-  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 2);
-}
-
-// Override per-domain add-to-cart pattern.
 class CommerceHintSkippAddToCartTest : public CommerceHintAgentTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
@@ -957,7 +891,6 @@ IN_PROC_BROWSER_TEST_F(CommerceHintSkippAddToCartTest, AddToCartByForm) {
   NavigateToURL("https://www.guitarcenter.com/");
   SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
 
-  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 0);
   WaitForCartCount(kEmptyExpected);
 
   // Test AddToCart that is supposed to be skipped based on resources is now
@@ -967,60 +900,16 @@ IN_PROC_BROWSER_TEST_F(CommerceHintSkippAddToCartTest, AddToCartByForm) {
   const ShoppingCarts result = {{"qvc.com", qvc_cart}};
   NavigateToURL("https://www.qvc.com/");
   SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
-  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
   WaitForCartCount(result);
 }
 
-// Override per-domain and generic cart pattern.
-class CommerceHintCartPatternTest : public CommerceHintAgentTest {
- public:
-  void SetUpInProcessBrowserTestFixture() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{ntp_features::kNtpChromeCartModule,
-          {{"cart-pattern", "chicken|egg"},
-           {"cart-pattern-mapping",
-            R"({"guitarcenter.com": "(special|text)lol"})"}}}},
-        {optimization_guide::features::kOptimizationHints});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(CommerceHintCartPatternTest, VisitCart) {
-  NavigateToURL("https://www.guitarcenter.com/SpecialLoL");
-  WaitForUmaCount("Commerce.Carts.VisitCart", 1);
-
-  NavigateToURL("https://www.guitarcenter.com/cart.html");
-  NavigateToURL("https://www.guitarcenter.com/chicken");
-  NavigateToURL("https://www.guitarcenter.com/cart.html");
-  WaitForUmaCount("Commerce.Carts.VisitCart", 1);
-
-  NavigateToURL("https://www.guitarcenter.com/TextLoL");
-  WaitForUmaCount("Commerce.Carts.VisitCart", 2);
-
-  // Unspecified domains fall back to generic pattern.
-  NavigateToURL("https://www.example.com/SpecialLoL");
-  NavigateToURL("https://www.example.com/cart.html");
-  NavigateToURL("https://www.example.com/TextLoL");
-  WaitForUmaCount("Commerce.Carts.VisitCart", 2);
-
-  NavigateToURL("https://www.example.com/Chicken");
-  WaitForUmaCount("Commerce.Carts.VisitCart", 3);
-
-  NavigateToURL("https://www.example.com/Egg");
-  WaitForUmaCount("Commerce.Carts.VisitCart", 4);
-}
-
-// Override per-domain and generic checkout pattern.
 class CommerceHintCheckoutPatternTest : public CommerceHintAgentTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{ntp_features::kNtpChromeCartModule,
-          {{"checkout-pattern", "meow|purr"},
-           {"checkout-pattern-mapping",
-            R"({"guitarcenter.com": "special|text"})"}}}},
+          {{"checkout-pattern-mapping",
+            R"({"guitarcenter.com": "special_checkout_text"})"}}}},
         {optimization_guide::features::kOptimizationHints});
   }
 
@@ -1029,40 +918,21 @@ class CommerceHintCheckoutPatternTest : public CommerceHintAgentTest {
 };
 
 IN_PROC_BROWSER_TEST_F(CommerceHintCheckoutPatternTest, VisitCheckout) {
-  NavigateToURL("https://www.guitarcenter.com/Special");
-  // URLs are checked against checkout twice.
-  WaitForUmaCount("Commerce.Carts.VisitCheckout", 2);
+  service_->AddCart(kMockExample, absl::nullopt, kMockExampleProto);
+  WaitForCartCount(kExpectedExampleFallbackCart);
 
-  NavigateToURL("https://www.guitarcenter.com/checkout/");
-  NavigateToURL("https://www.guitarcenter.com/meow/");
-  NavigateToURL("https://www.guitarcenter.com/purr/");
-  WaitForUmaCount("Commerce.Carts.VisitCheckout", 2);
-
-  NavigateToURL("https://www.guitarcenter.com/Text");
-  WaitForUmaCount("Commerce.Carts.VisitCheckout", 4);
-
-  // Unspecified domains fall back to generic pattern.
-  NavigateToURL("https://www.example.com/Special");
-  NavigateToURL("https://www.example.com/checkout/");
-  NavigateToURL("https://www.example.com/Text");
-  WaitForUmaCount("Commerce.Carts.VisitCheckout", 4);
-
-  NavigateToURL("https://www.example.com/Meow");
-  WaitForUmaCount("Commerce.Carts.VisitCheckout", 6);
-
-  NavigateToURL("https://www.example.com/Purr");
-  WaitForUmaCount("Commerce.Carts.VisitCheckout", 8);
+  NavigateToURL("https://www.guitarcenter.com/");
+  NavigateToURL("https://www.guitarcenter.com/special_checkout_text");
+  WaitForCartCount(kEmptyExpected);
 }
 
-// Override per-domain and generic purchase button pattern.
 class CommerceHintPurchaseButtonPatternTest : public CommerceHintAgentTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{ntp_features::kNtpChromeCartModule,
-          {{"purchase-button-pattern", "meow|purr"},
-           {"purchase-button-pattern-mapping",
-            R"({"guitarcenter.com": "woof|bark"})"}}}},
+          {{"purchase-button-pattern-mapping",
+            R"({"guitarcenter.com": "special text"})"}}}},
         {optimization_guide::features::kOptimizationHints});
   }
 
@@ -1071,46 +941,16 @@ class CommerceHintPurchaseButtonPatternTest : public CommerceHintAgentTest {
 };
 
 IN_PROC_BROWSER_TEST_F(CommerceHintPurchaseButtonPatternTest, PurchaseByForm) {
-  std::string url;
-  auto test_button = [&](const char* button_text) {
-    NavigateToURL(url);
-    const std::string& script = base::StringPrintf(
-        R"(
-      const btn = document.getElementById('submit');
-      btn.innerText = "%s";
-      btn.click();
-    )",
-        button_text);
-    ASSERT_TRUE(ExecJs(web_contents(), script));
-    content::TestNavigationObserver load_observer(web_contents());
-    load_observer.WaitForNavigationFinished();
-  };
-  url = "https://www.guitarcenter.com/purchase.html";
+  service_->AddCart(kMockExample, absl::nullopt, kMockExampleProto);
+  WaitForCartCount(kExpectedExampleFallbackCart);
 
-  test_button("Woof");
-  WaitForUmaCount("Commerce.Carts.PurchaseByPOST", 1);
+  NavigateToURL("https://www.guitarcenter.com/purchase.html");
 
-  test_button("Meow");
-  test_button("Pay now");
-  test_button("Purr");
-  WaitForUmaCount("Commerce.Carts.PurchaseByPOST", 1);
-
-  test_button("Bark");
-  WaitForUmaCount("Commerce.Carts.PurchaseByPOST", 2);
-
-  // Unspecified domains fall back to generic pattern.
-  url = "https://www.example.com/purchase.html";
-
-  test_button("Meow");
-  WaitForUmaCount("Commerce.Carts.PurchaseByPOST", 3);
-
-  test_button("Woof");
-  test_button("Pay now");
-  test_button("Bark");
-  WaitForUmaCount("Commerce.Carts.PurchaseByPOST", 3);
-
-  test_button("Purr");
-  WaitForUmaCount("Commerce.Carts.PurchaseByPOST", 4);
+  std::string script = "document.getElementById('special-submit').click()";
+  ASSERT_TRUE(ExecJs(web_contents(), script));
+  content::TestNavigationObserver load_observer(web_contents());
+  load_observer.WaitForNavigationFinished();
+  WaitForCartCount(kEmptyExpected);
 }
 
 class CommerceHintPurchaseURLPatternTest : public CommerceHintAgentTest {
@@ -1119,7 +959,7 @@ class CommerceHintPurchaseURLPatternTest : public CommerceHintAgentTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{ntp_features::kNtpChromeCartModule,
           {{"purchase-url-pattern-mapping",
-            R"({"guitarcenter.com": "special|text"})"}}}},
+            R"({"guitarcenter.com": "special_purchase_text"})"}}}},
         {optimization_guide::features::kOptimizationHints});
   }
 
@@ -1128,11 +968,12 @@ class CommerceHintPurchaseURLPatternTest : public CommerceHintAgentTest {
 };
 
 IN_PROC_BROWSER_TEST_F(CommerceHintPurchaseURLPatternTest, PurchaseByURL) {
-  NavigateToURL("https://www.guitarcenter.com/Special");
-  WaitForUmaCount("Commerce.Carts.PurchaseByURL", 1);
+  service_->AddCart(kMockExample, absl::nullopt, kMockExampleProto);
+  WaitForCartCount(kExpectedExampleFallbackCart);
 
-  NavigateToURL("https://www.guitarcenter.com/Text");
-  WaitForUmaCount("Commerce.Carts.PurchaseByURL", 2);
+  NavigateToURL("https://www.guitarcenter.com/");
+  NavigateToURL("https://www.guitarcenter.com/special_purchase_text");
+  WaitForCartCount(kEmptyExpected);
 }
 
 class CommerceHintOptimizeRendererTest : public CommerceHintAgentTest {
@@ -1158,12 +999,15 @@ class CommerceHintOptimizeRendererTest : public CommerceHintAgentTest {
 #endif
 IN_PROC_BROWSER_TEST_F(CommerceHintOptimizeRendererTest,
                        MAYBE_CartExtractionSkipped) {
+  base::HistogramTester histogram_tester;
+
   // Without adding testing hints, all the URLs are considered non-shopping.
   NavigateToURL("https://www.guitarcenter.com/cart.html");
   WaitForCartCount(kEmptyExpected);
   SendXHR("/add-to-cart", "product: 123");
 
-  WaitForUmaBucketCount("Commerce.Carts.ExtractionTimedOut", 0, 0);
+  WaitForUmaBucketCount(histogram_tester, "Commerce.Carts.ExtractionTimedOut",
+                        0, 0);
 
   auto* optimization_guide_decider =
       OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
@@ -1176,6 +1020,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintOptimizeRendererTest,
   WaitForCarts(kExpectedExample);
   SendXHR("/add-to-cart", "product: 123");
 
-  WaitForUmaBucketCount("Commerce.Carts.ExtractionTimedOut", 0, 2);
+  WaitForUmaBucketCount(histogram_tester, "Commerce.Carts.ExtractionTimedOut",
+                        0, 2);
 }
 }  // namespace
