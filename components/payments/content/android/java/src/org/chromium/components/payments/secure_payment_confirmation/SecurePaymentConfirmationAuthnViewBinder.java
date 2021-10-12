@@ -17,7 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel;
     /* package */ static void bind(
             PropertyModel model, SecurePaymentConfirmationAuthnView view, PropertyKey propertyKey) {
         if (SecurePaymentConfirmationAuthnProperties.STORE_ORIGIN == propertyKey) {
-            String origin = UrlFormatter.formatUrlForSecurityDisplay(
+            String origin = UrlFormatter.formatOriginForSecurityDisplay(
                     model.get(SecurePaymentConfirmationAuthnProperties.STORE_ORIGIN),
                     SchemeDisplay.OMIT_HTTP_AND_HTTPS);
             view.mStoreOrigin.setText(origin);

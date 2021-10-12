@@ -23,6 +23,7 @@ import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.url.Origin;
 
 import java.util.Locale;
 
@@ -140,9 +141,10 @@ public class SecurePaymentConfirmationAuthnController {
      * @param paymentInstrumentLabel The label to display for the payment instrument.
      * @param total The total amount of the transaction.
      * @param callback The function to call on sheet dismiss; false if it failed.
+     * @param payeeOrigin The origin of the payee.
      */
     public boolean show(Drawable paymentIcon, String paymentInstrumentLabel, PaymentItem total,
-            Callback<Boolean> callback) {
+            Callback<Boolean> callback, Origin payeeOrigin) {
         if (mHider != null) return false;
 
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
@@ -155,8 +157,7 @@ public class SecurePaymentConfirmationAuthnController {
 
         PropertyModel model =
                 new PropertyModel.Builder(SecurePaymentConfirmationAuthnProperties.ALL_KEYS)
-                        .with(SecurePaymentConfirmationAuthnProperties.STORE_ORIGIN,
-                                mWebContents.getVisibleUrl().getOrigin())
+                        .with(SecurePaymentConfirmationAuthnProperties.STORE_ORIGIN, payeeOrigin)
                         .with(SecurePaymentConfirmationAuthnProperties.PAYMENT_ICON, paymentIcon)
                         .with(SecurePaymentConfirmationAuthnProperties.PAYMENT_INSTRUMENT_LABEL,
                                 paymentInstrumentLabel)

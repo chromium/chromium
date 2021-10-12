@@ -23,6 +23,7 @@ import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequestClient;
+import org.chromium.payments.mojom.SecurePaymentConfirmationRequest;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.Origin;
@@ -53,6 +54,7 @@ public class PaymentRequestServiceBuilder implements Delegate {
     private boolean mIsOriginAllowedToUseWebPaymentApis = true;
     private boolean mIsPaymentDetailsValid = true;
     private PaymentRequestSpec mSpec;
+    private SecurePaymentConfirmationRequest mSecurePaymentConfirmationRequest;
 
     public static PaymentRequestServiceBuilder defaultBuilder(Runnable onClosedListener,
             PaymentRequestClient client, PaymentAppService appService,
@@ -92,6 +94,13 @@ public class PaymentRequestServiceBuilder implements Delegate {
         mOnClosedListener = onClosedListener;
         mClient = client;
         mPaymentAppService = appService;
+        mSecurePaymentConfirmationRequest = new SecurePaymentConfirmationRequest();
+        org.chromium.url.internal.mojom.Origin payeeOrigin =
+                new org.chromium.url.internal.mojom.Origin();
+        payeeOrigin.scheme = "https";
+        payeeOrigin.host = "chromium.org";
+        payeeOrigin.port = 443;
+        mSecurePaymentConfirmationRequest.payeeOrigin = payeeOrigin;
     }
 
     @Override
@@ -224,10 +233,18 @@ public class PaymentRequestServiceBuilder implements Delegate {
     }
 
     public PaymentRequestServiceBuilder setOnlySpcMethodWithoutPaymentOptions() {
+        mOptions = new PaymentOptions();
         mMethodData = new PaymentMethodData[1];
         mMethodData[0] = new PaymentMethodData();
         mMethodData[0].supportedMethod = MethodStrings.SECURE_PAYMENT_CONFIRMATION;
-        mOptions = new PaymentOptions();
+
+        mMethodData[0].securePaymentConfirmation = mSecurePaymentConfirmationRequest;
+        return this;
+    }
+
+    public PaymentRequestServiceBuilder setPayeeOrigin(
+            org.chromium.url.internal.mojom.Origin payeeOrigin) {
+        mSecurePaymentConfirmationRequest.payeeOrigin = payeeOrigin;
         return this;
     }
 

@@ -712,6 +712,37 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
                 PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
     }
 
+    @Test
+    @Feature({"Payments"})
+    public void testSpcCanOnlyBeRequestedAlone_failedForNullPayeeUrl() {
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
+        Assert.assertNull(defaultBuilder()
+                                  .setPayeeOrigin(null)
+                                  .setOnlySpcMethodWithoutPaymentOptions()
+                                  .build());
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testSpcCanOnlyBeRequestedAlone_failedForHttpPayeeUrl() {
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
+        org.chromium.url.internal.mojom.Origin payeeOrigin =
+                new org.chromium.url.internal.mojom.Origin();
+        payeeOrigin.scheme = "http";
+        payeeOrigin.host = "www.example.com";
+        payeeOrigin.port = 443;
+        Assert.assertNull(defaultBuilder()
+                                  .setPayeeOrigin(payeeOrigin)
+                                  .setOnlySpcMethodWithoutPaymentOptions()
+                                  .build());
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+    }
+
     // The restriction is imposed only when the SPC flag is enabled.
     @Test
     @Feature({"Payments"})

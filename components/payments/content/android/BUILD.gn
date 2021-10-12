@@ -212,6 +212,7 @@ android_library("full_java") {
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
     "//url:origin_java",
+    "//url/mojom:url_mojom_origin_java",
   ]
   srcjar_deps = [
     ":payments_journey_logger_enum_javagen",
@@ -318,6 +319,7 @@ java_library("junit_test_support") {
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
     "//url:origin_java",
+    "//url/mojom:url_mojom_origin_java",
   ]
 }
 
@@ -352,6 +354,7 @@ java_library("junit") {
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
     "//url:origin_java",
+    "//url/mojom:url_mojom_origin_java",
   ]
 }
 
