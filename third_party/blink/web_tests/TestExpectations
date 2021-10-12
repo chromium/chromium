@@ -7221,3 +7221,4 @@ crbug.com/1259133 [ Mac10.14 ] external/wpt/html/canvas/offscreen/manual/the-off
 crbug.com/1259133 [ Mac10.14 ] virtual/no-alloc-direct-call/external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.commit.html [ Failure Pass ]
 crbug.com/1259167 [ Mac ] virtual/threaded/external/wpt/scroll-animations/scroll-animation-inactive-timeline.html [ Failure Pass ]
 crbug.com/1259188 [ Mac10.14 ] virtual/gpu-rasterization/images/color-profile-animate.html [ Failure Pass ]
+crbug.com/1259255 [ Win7 ] virtual/scroll-unification/fast/events/mouse-cursor-no-mousemove.html [ Failure Pass ]
