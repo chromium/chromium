@@ -89,7 +89,7 @@ gfx::Rect TranslateWindowBoundsToParentDIP(ui::WaylandWindow* window,
 std::vector<gfx::Rect> CreateRectsFromSkPath(const SkPath& path);
 
 // Returns converted SkPath in DIPs from the one in pixels.
-SkPath ConvertPathToDIP(const SkPath& path_in_pixels, const int32_t scale);
+SkPath ConvertPathToDIP(const SkPath& path_in_pixels, float scale);
 
 }  // namespace wl
 

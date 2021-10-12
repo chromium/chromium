@@ -114,7 +114,7 @@ WaylandOutput* WaylandOutputManager::GetPrimaryOutput() const {
 
 void WaylandOutputManager::OnOutputHandleMetrics(uint32_t output_id,
                                                  const gfx::Rect& new_bounds,
-                                                 int32_t scale_factor,
+                                                 float scale_factor,
                                                  int32_t transform) {
   if (wayland_screen_) {
     wayland_screen_->OnOutputAddedOrUpdated(output_id, new_bounds,

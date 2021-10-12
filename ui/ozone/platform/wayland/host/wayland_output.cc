@@ -92,11 +92,11 @@ void WaylandOutput::TriggerDelegateNotifications() {
     const gfx::Size logical_size = xdg_output_->logical_size();
     if (!logical_size.IsEmpty()) {
       if (logical_size.width() >= logical_size.height()) {
-        scale_factor_ = ceil(rect_in_physical_pixels_.width() /
-                             static_cast<float>(logical_size.width()));
+        scale_factor_ = rect_in_physical_pixels_.width() /
+                        static_cast<float>(logical_size.width());
       } else {
-        scale_factor_ = ceil(rect_in_physical_pixels_.height() /
-                             static_cast<float>(logical_size.height()));
+        scale_factor_ = rect_in_physical_pixels_.height() /
+                        static_cast<float>(logical_size.height());
       }
     }
   }

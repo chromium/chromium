@@ -328,8 +328,8 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
   // synchronization.
   if (client_submits_surfaces_in_pixel_coordinates_) {
     gfx::Transform tr;
-    float s = ceil(host_window_->layer()->device_scale_factor());
-    tr.Scale(1.0f / s, 1.0f / s);
+    float scale = host_window_->layer()->device_scale_factor();
+    tr.Scale(1.0f / scale, 1.0f / scale);
     host_window_->SetTransform(tr);
   }
   const bool fills_bounds_opaquely =

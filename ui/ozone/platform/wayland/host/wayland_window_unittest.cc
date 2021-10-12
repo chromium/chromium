@@ -2992,7 +2992,7 @@ TEST_P(WaylandWindowTest, OneWaylandSubsurface) {
   EXPECT_TRUE(mock_surface_subsurface);
   wayland_subsurface->ConfigureAndShowSurface(
       subsurface_bounds, gfx::Rect(0, 0, 640, 480) /*parent_bounds_px*/,
-      1 /*buffer_scale*/, nullptr, nullptr);
+      1.f /*buffer_scale*/, nullptr, nullptr);
   connection_->ScheduleFlush();
 
   Sync();

@@ -38,7 +38,7 @@ class WaylandSubsurface {
   //     reference subsurface.
   void ConfigureAndShowSurface(const gfx::Rect& bounds_px,
                                const gfx::Rect& parent_bounds_px,
-                               int32_t buffer_scale,
+                               float buffer_scale,
                                const WaylandSurface* reference_below,
                                const WaylandSurface* reference_above);
 

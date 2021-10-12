@@ -17,11 +17,11 @@ namespace {
 // Returns DIP bounds of the subsurface relative to the parent surface.
 gfx::Rect AdjustSubsurfaceBounds(const gfx::Rect& bounds_px,
                                  const gfx::Rect& parent_bounds_px,
-                                 int32_t buffer_scale) {
+                                 float buffer_scale) {
   const auto bounds_dip =
-      gfx::ScaleToEnclosingRect(bounds_px, 1.0 / buffer_scale);
+      gfx::ScaleToEnclosingRect(bounds_px, 1.0f / buffer_scale);
   const auto parent_bounds_dip =
-      gfx::ScaleToEnclosingRect(parent_bounds_px, 1.0 / buffer_scale);
+      gfx::ScaleToEnclosingRect(parent_bounds_px, 1.0f / buffer_scale);
   return wl::TranslateBoundsToParentCoordinates(bounds_dip, parent_bounds_dip);
 }
 
@@ -90,7 +90,7 @@ void WaylandSubsurface::CreateSubsurface() {
 void WaylandSubsurface::ConfigureAndShowSurface(
     const gfx::Rect& bounds_px,
     const gfx::Rect& parent_bounds_px,
-    int32_t buffer_scale,
+    float buffer_scale,
     const WaylandSurface* reference_below,
     const WaylandSurface* reference_above) {
   Show();

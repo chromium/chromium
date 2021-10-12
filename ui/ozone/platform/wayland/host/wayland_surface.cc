@@ -283,10 +283,10 @@ void WaylandSurface::SetBufferTransform(gfx::OverlayTransform transform) {
   wl_surface_set_buffer_transform(surface_.get(), wl_transform);
 }
 
-void WaylandSurface::SetSurfaceBufferScale(int32_t scale) {
-  DCHECK_GE(scale, 1);
+void WaylandSurface::SetSurfaceBufferScale(float scale) {
+  DCHECK_GE(scale, 1.0f);
   if (!SurfaceSubmissionInPixelCoordinates()) {
-    wl_surface_set_buffer_scale(surface_.get(), scale);
+    wl_surface_set_buffer_scale(surface_.get(), static_cast<int>(scale));
     buffer_scale_ = scale;
   }
   connection_->ScheduleFlush();

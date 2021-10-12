@@ -32,7 +32,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
    public:
     virtual void OnOutputHandleMetrics(uint32_t output_id,
                                        const gfx::Rect& new_bounds,
-                                       int32_t scale_factor,
+                                       float scale_factor,
                                        int32_t transform) = 0;
 
    protected:
@@ -52,7 +52,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
 
   uint32_t output_id() const { return output_id_; }
   bool has_output(wl_output* output) const { return output_.get() == output; }
-  int32_t scale_factor() const { return scale_factor_; }
+  float scale_factor() const { return scale_factor_; }
   int32_t transform() const { return transform_; }
   gfx::Rect bounds() const { return rect_in_physical_pixels_; }
 
@@ -92,7 +92,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   const uint32_t output_id_ = 0;
   wl::Object<wl_output> output_;
   std::unique_ptr<XDGOutput> xdg_output_;
-  int32_t scale_factor_ = kDefaultScaleFactor;
+  float scale_factor_ = kDefaultScaleFactor;
   int32_t transform_ = WL_OUTPUT_TRANSFORM_NORMAL;
   gfx::Rect rect_in_physical_pixels_;
 

@@ -108,7 +108,7 @@ WaylandScreen::~WaylandScreen() = default;
 
 void WaylandScreen::OnOutputAddedOrUpdated(uint32_t output_id,
                                            const gfx::Rect& bounds,
-                                           int32_t scale,
+                                           float scale,
                                            int32_t transform) {
   AddOrUpdateDisplay(output_id, bounds, scale, transform);
 }
@@ -133,7 +133,7 @@ void WaylandScreen::OnOutputRemoved(uint32_t output_id) {
 
 void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
                                        const gfx::Rect& new_bounds,
-                                       int32_t scale_factor,
+                                       float scale_factor,
                                        int32_t transform) {
   display::Display changed_display(output_id);
   if (!display::Display::HasForceDeviceScaleFactor()) {

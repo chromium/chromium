@@ -10,6 +10,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -76,10 +77,11 @@ bool WaylandPopup::CreateShellPopup() {
     set_frame_insets_px(*parent_insets_px);
     // Popups should have the same offset for their geometry as their parents
     // have, otherwise Wayland draws them incorrectly.
-    shell_popup_->SetWindowGeometry({parent_insets_px->left() / window_scale(),
-                                     parent_insets_px->top() / window_scale(),
-                                     params.bounds.width(),
-                                     params.bounds.height()});
+    const gfx::Point p = gfx::ScaleToRoundedPoint(
+        {parent_insets_px->left(), parent_insets_px->top()},
+        1.f / window_scale());
+    shell_popup_->SetWindowGeometry(
+        {p.x(), p.y(), params.bounds.width(), params.bounds.height()});
   }
 
   parent_window()->set_child_window(this);

@@ -112,8 +112,8 @@ class WaylandWindow : public PlatformWindow,
   // Sets the window_scale for this window with respect to a display this window
   // is located at. This determines how events can be translated and how size of
   // the surface is treated (px to DIP conversion and vice versa.)
-  void SetWindowScale(int32_t new_scale);
-  int32_t window_scale() const { return window_scale_; }
+  void SetWindowScale(float new_scale);
+  float window_scale() const { return window_scale_; }
   float ui_scale() const { return ui_scale_; }
 
   // A preferred output is the one with the largest scale. This is needed to
@@ -363,7 +363,7 @@ class WaylandWindow : public PlatformWindow,
   // We need it to place and size the menus properly.
   float ui_scale_ = 1.0f;
   // Current scale factor of the output where the window is located at.
-  int32_t window_scale_ = 1;
+  float window_scale_ = 1.f;
 
   // Stores current opacity of the window. Set on ::Initialize call.
   ui::PlatformWindowOpacity opacity_;

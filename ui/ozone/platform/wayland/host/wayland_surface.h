@@ -97,7 +97,7 @@ class WaylandSurface {
   // process) for the next submitted buffer. This helps Wayland compositor to
   // determine buffer size in dip (GPU operates in pixels. So, when buffers are
   // created, their requested size is in pixels).
-  void SetSurfaceBufferScale(int32_t scale);
+  void SetSurfaceBufferScale(float scale);
 
   // Sets the region that is opaque on this surface in physical pixels. This is
   // expected to be called whenever the region that the surface span changes or

@@ -41,7 +41,7 @@ class WaylandScreen : public PlatformScreen {
 
   void OnOutputAddedOrUpdated(uint32_t output_id,
                               const gfx::Rect& bounds,
-                              int32_t output_scale,
+                              float output_scale,
                               int32_t output_transform);
   void OnOutputRemoved(uint32_t output_id);
 
@@ -75,7 +75,7 @@ class WaylandScreen : public PlatformScreen {
  private:
   void AddOrUpdateDisplay(uint32_t output_id,
                           const gfx::Rect& bounds,
-                          int32_t scale,
+                          float scale,
                           int32_t transform);
 
   WaylandConnection* connection_ = nullptr;

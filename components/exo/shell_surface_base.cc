@@ -1396,7 +1396,7 @@ gfx::Rect ShellSurfaceBase::GetVisibleBounds() const {
     if (root_surface()) {
       size = root_surface()->content_size();
       if (client_submits_surfaces_in_pixel_coordinates()) {
-        int dsf = std::ceil(host_window()->layer()->device_scale_factor());
+        float dsf = host_window()->layer()->device_scale_factor();
         size = gfx::ScaleToRoundedSize(size, 1.0f / dsf);
       }
     }
