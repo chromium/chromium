@@ -3074,6 +3074,32 @@
             ]
         }
     ],
+    "DnsHttpsSvcbSchemeUpgrade": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "linux",
+                "chromeos",
+                "chromeos_lacros",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "UseDnsHttpsSvcb",
+                    "params": {
+                        "UseDnsHttpsSvcbEnableInsecure": "true",
+                        "UseDnsHttpsSvcbExtraTimeAbsolute": "500ms",
+                        "UseDnsHttpsSvcbExtraTimePercent": "50",
+                        "UseDnsHttpsSvcbHttpUpgrade": "true"
+                    },
+                    "enable_features": [
+                        "UseDnsHttpsSvcb"
+                    ]
+                }
+            ]
+        }
+    ],
     "DnsHttpssvc": [
         {
             "platforms": [
