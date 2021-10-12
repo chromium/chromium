@@ -465,7 +465,6 @@ static_library("common") {
 
   if (is_linux && !is_chromeos_lacros) {
     sources += [
-      "desktop_resizer_linux.cc",
       "linux/audio_pipe_reader.cc",
       "linux/audio_pipe_reader.h",
       "linux/certificate_watcher.cc",
@@ -481,7 +480,7 @@ static_library("common") {
     }
   }
 
-  if (use_x11 && ((!is_chromeos_ash && !is_chromeos_lacros) || !use_ozone)) {
+  if (use_x11 && !is_chromeos_ash && !is_chromeos_lacros) {
     sources += [
       "desktop_display_info_loader_x11.cc",
       "desktop_resizer_x11.cc",
@@ -498,11 +497,11 @@ static_library("common") {
     }
   }
 
-  if (use_ozone && !is_chromeos_ash && !is_chromeos_lacros) {
-    sources += [
-      "desktop_resizer_ozone.cc",
-      "desktop_resizer_ozone.h",
-    ]
+  if (is_linux && (!use_x11 || is_chromeos_ash || is_chromeos_lacros)) {
+    # On Linux, exactly one of desktop_resizer_{linux,x11}.cc should be
+    # compiled in. The _linux version is a no-op and should be used on
+    # platforms without X11.
+    sources += [ "desktop_resizer_linux.cc" ]
   }
 
   if (is_linux && !is_chromeos_lacros) {
