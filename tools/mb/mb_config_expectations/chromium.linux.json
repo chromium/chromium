@@ -224,17 +224,6 @@
       "use_goma": false
     }
   },
-  "linux-ozone-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "ozone_platform": "headless",
-      "use_bundled_weston": true,
-      "use_goma": true,
-      "use_ozone": true
-    }
-  },
   "linux-trusty-rel": {
     "gn_args": {
       "dcheck_always_on": false,

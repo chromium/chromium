@@ -537,7 +537,6 @@
       'linux-bionic-rel': 'gpu_tests_release_bot',
       'linux-extended-tracing-rel': 'release_bot_extended_tracing',
       'linux-gcc-rel': 'release_bot_x86_minimal_symbols_no_clang_cxx11',
-      'linux-ozone-rel': 'ozone_linux_release_bot',
       'linux-trusty-rel': 'gpu_tests_release_bot',
       'linux-xenial-rel': 'gpu_tests_release_bot',
     },
@@ -1046,7 +1045,6 @@
       'linux-libfuzzer-asan-rel': 'libfuzzer_asan_release_trybot',
       'linux-mbi-mode-per-render-process-host-rel': 'gpu_tests_release_trybot_mbi_mode_per_render_process_host',
       'linux-mbi-mode-per-site-instance-rel': 'gpu_tests_release_trybot_mbi_mode_per_site_instance',
-      'linux-ozone-rel': 'ozone_linux_release_trybot_no_symbols',
       'linux-wayland-rel': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-perfetto-rel': 'perfetto_release_trybot',
       'linux-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
@@ -2766,14 +2764,6 @@
 
     'gpu_tests_ozone_linux_non_x11_release_trybot': [
       'gpu_tests', 'ozone_linux', 'ozone_linux_non_x11', 'release_trybot_minimal_symbols',
-    ],
-
-    'ozone_linux_release_bot': [
-      'ozone_linux', 'release_bot',
-    ],
-
-    'ozone_linux_release_trybot_no_symbols': [
-      'ozone_linux', 'release_trybot', 'no_symbols',
     ],
 
     'perfetto_release_bot': [

@@ -751,22 +751,6 @@
       },
     },
   },
-  'browser_tests_wayland': {
-    'modifications': {
-      # CQ tester.
-      'Linux Ozone Tester (Wayland)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter',
-        ],
-      },
-      # CI tester.
-      'Linux Tester (Ozone Wayland)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter',
-        ],
-      },
-    },
-  },
   'cc_unittests': {
     'modifications': {
       'Linux TSan Tests': {
@@ -1353,15 +1337,6 @@
       },
     },
   },
-  'content_browsertests_wayland': {
-    'modifications': {
-      'Linux Ozone Tester (Wayland)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_content_browsertests.filter',
-        ],
-      },
-    },
-  },
   'content_shell_crash_test': {
     'remove_from': [
       'Mac10.11 Tests',  # crbug.com/1138050
@@ -1907,22 +1882,6 @@
       # TODO(crbug.com/1204231): Re-enable.
       'lacros-amd64-generic-rel',
     ]
-  },
-  'interactive_ui_tests_wayland': {
-    'modifications': {
-      # CQ tester.
-      'Linux Ozone Tester (Wayland)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_wayland.filter',
-        ],
-      },
-      # CI Ozone/Wayland tester.
-      'Linux Tester (Ozone Wayland)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_wayland.filter',
-        ],
-      },
-    },
   },
   'ipc_tests': {
     'modifications': {
@@ -3060,16 +3019,6 @@
       },
     },
   },
-  'unit_tests_wayland': {
-    'modifications': {
-      # CI Ozone/Wayland tester.
-      'Linux Tester (Ozone Wayland)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter',
-        ],
-      },
-    }
-  },
   'video_decode_accelerator_gl_unittest': {
     'remove_from': [
       # Windows Intel doesn't have the GL extensions to support this test.
@@ -3120,22 +3069,6 @@
           'TextfieldTest*:'
           'TooltipControllerTest*:'
           'TooltipStateManagerTest*'
-        ],
-      },
-    },
-  },
-  'views_unittests_wayland': {
-    'modifications': {
-      # CQ tester.
-      'Linux Ozone Tester (Wayland)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_views_unittests.filter',
-        ],
-      },
-      # CI tester.
-      'Linux Tester (Ozone Wayland)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_views_unittests.filter',
         ],
       },
     },

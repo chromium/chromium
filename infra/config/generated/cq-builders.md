@@ -61,9 +61,9 @@ These builders must pass before a CL may land that affects files outside of
 
 * [linux-libfuzzer-asan-rel](https://ci.chromium.org/p/chromium/builders/try/linux-libfuzzer-asan-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-libfuzzer-asan-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-libfuzzer-asan-rel""))
 
-* [linux-ozone-rel](https://ci.chromium.org/p/chromium/builders/try/linux-ozone-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-ozone-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-ozone-rel""))
-
 * [linux-rel](https://ci.chromium.org/p/chromium/builders/try/linux-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-rel""))
+
+* [linux-wayland-rel](https://ci.chromium.org/p/chromium/builders/try/linux-wayland-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-wayland-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-wayland-rel""))
 
 * [linux_chromium_asan_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_asan_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux_chromium_asan_rel_ng"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux_chromium_asan_rel_ng""))
 
@@ -474,9 +474,6 @@ as required builders.
 
 * [linux-stable-filter-rel](https://ci.chromium.org/p/chromium/builders/try/linux-stable-filter-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-stable-filter-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-stable-filter-rel""))
   * Experiment percentage: 5.0
-
-* [linux-wayland-rel](https://ci.chromium.org/p/chromium/builders/try/linux-wayland-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-wayland-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-wayland-rel""))
-  * Experiment percentage: 1.0
 
 * [linux_chromium_asan_rel_ng_rts](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_asan_rel_ng_rts) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux_chromium_asan_rel_ng_rts"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux_chromium_asan_rel_ng_rts""))
   * Experiment percentage: 5.0

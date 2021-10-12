@@ -1294,14 +1294,6 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
-    name = "linux-ozone-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_main,
-    main_list_view = "try",
-    tryjob = try_.job(),
-)
-
-try_.chromium_linux_builder(
     name = "linux-perfetto-rel",
     tryjob = try_.job(
         experiment_percentage = 100,
@@ -1407,9 +1399,7 @@ try_.chromium_linux_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
     main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 1,
-    ),
+    tryjob = try_.job(),
 )
 
 try_.chromium_linux_builder(

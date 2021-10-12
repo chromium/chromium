@@ -5079,54 +5079,6 @@
           'sync_integration_tests'
         ]
       },
-      'Linux Ozone Tester (Headless)': {
-        'mixins': [
-          'linux-bionic',
-         ],
-        'test_suites': {
-         'gtest_tests': 'linux_ozone_headless_tests',
-        },
-      },
-      'Linux Ozone Tester (Wayland)': {
-        'mixins': [
-          'linux-bionic',
-         ],
-        'test_suites': {
-         'gtest_tests': 'linux_ozone_wayland_tests',
-        },
-      },
-      'Linux Ozone Tester (X11)': {
-        'mixins': [
-          'linux-bionic',
-        ],
-        'test_suites': {
-         'gtest_tests': 'linux_ozone_x11_tests',
-        },
-      },
-      'Linux Tester (Ozone Headless)': {
-        'mixins': [
-          'linux-bionic',
-         ],
-        'test_suites': {
-         'gtest_tests': 'linux_ozone_headless_tests',
-        },
-      },
-      'Linux Tester (Ozone Wayland)': {
-        'mixins': [
-          'linux-bionic',
-         ],
-        'test_suites': {
-         'gtest_tests': 'linux_ozone_wayland_ci_tests',
-        },
-      },
-      'Linux Tester (Ozone X11)': {
-        'mixins': [
-          'linux-bionic',
-        ],
-        'test_suites': {
-         'gtest_tests': 'linux_ozone_x11_ci_tests',
-        },
-      },
       'Linux Tests': {
         'mixins': [
           'isolate_profile_data',
@@ -5210,11 +5162,6 @@
       'linux-gcc-rel': {
         'additional_compile_targets': [
           'empty_main',
-        ],
-      },
-      'linux-ozone-rel': {
-        'additional_compile_targets': [
-          'chrome',
         ],
       },
       'linux-trusty-rel': {

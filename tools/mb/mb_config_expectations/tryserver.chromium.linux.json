@@ -687,19 +687,6 @@
       "use_goma": true
     }
   },
-  "linux-ozone-rel": {
-    "gn_args": {
-      "blink_enable_generated_code_formatting": false,
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "ozone_platform": "headless",
-      "symbol_level": 0,
-      "use_bundled_weston": true,
-      "use_goma": true,
-      "use_ozone": true
-    }
-  },
   "linux-perfetto-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
