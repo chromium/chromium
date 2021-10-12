@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -136,6 +137,12 @@ class PreinstalledWebAppManagerBrowserTest
     PreinstalledWebAppManager::SkipStartupForTesting();
   }
 
+  // InProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    web_app::test::WaitUntilReady(
+        web_app::WebAppProvider::GetForTest(browser()->profile()));
+  }
   void TearDownOnMainThread() override {
     ResetInterceptor();
     InProcessBrowserTest::TearDownOnMainThread();
@@ -418,6 +425,11 @@ class PreinstalledWebAppManagerExtensionBrowserTest
   PreinstalledWebAppManagerExtensionBrowserTest() = default;
   ~PreinstalledWebAppManagerExtensionBrowserTest() override = default;
 
+  void SetUpOnMainThread() override {
+    extensions::ExtensionBrowserTest::SetUpOnMainThread();
+    web_app::test::WaitUntilReady(
+        web_app::WebAppProvider::GetForTest(browser()->profile()));
+  }
   void TearDownOnMainThread() override {
     ResetInterceptor();
     extensions::ExtensionBrowserTest::TearDownOnMainThread();
