@@ -21,6 +21,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/screen_orientation_controller.h"
+#include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -632,6 +633,11 @@ void CaptureModeSession::Shutdown() {
         IDS_ASH_SCREEN_CAPTURE_ALERT_CLOSE);
   }
   UpdateAutoclickMenuBoundsIfNeeded();
+
+  // Stopping the session for any reason other than starting video recording
+  // means a cancellation to an ongoing projector session (if any).
+  if (is_in_projector_mode_ && !is_stopping_to_start_video_recording_)
+    ProjectorControllerImpl::Get()->OnRecordingStartAborted();
 }
 
 aura::Window* CaptureModeSession::GetSelectedWindow() const {

@@ -460,9 +460,9 @@ class CaptureModeTest : public AshTestBase {
 
   void WaitForCountDownToFinish() {
     auto* controller = CaptureModeController::Get();
-    DCHECK(controller->IsActive());
     DCHECK_EQ(controller->type(), CaptureModeType::kVideo);
-    while (!controller->is_recording_in_progress()) {
+    while (controller->IsActive() &&
+           controller->capture_mode_session()->IsInCountDownAnimation()) {
       base::RunLoop run_loop;
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
@@ -4503,6 +4503,8 @@ class ProjectorCaptureModeIntegrationTests
     window_ = CreateTestWindow(gfx::Rect(20, 30, 200, 200));
     CaptureModeController::Get()->SetUserCaptureRegion(kUserRegion,
                                                        /*by_user=*/true);
+    EXPECT_CALL(projector_client_, IsDriveFsMounted())
+        .WillRepeatedly(testing::Return(true));
   }
 
   void TearDown() override {
@@ -4514,8 +4516,6 @@ class ProjectorCaptureModeIntegrationTests
     auto* projector_session = ProjectorSession::Get();
     EXPECT_FALSE(projector_session->is_active());
     auto* projector_controller = ProjectorController::Get();
-    EXPECT_CALL(projector_client_, IsDriveFsMounted())
-        .WillRepeatedly(testing::Return(true));
     projector_controller->StartProjectorSession("projector_data");
     EXPECT_TRUE(projector_session->is_active());
   }
@@ -4654,6 +4654,111 @@ TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
 
   EXPECT_CALL(projector_client_, StopSpeechRecognition());
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+}
+
+TEST_F(ProjectorCaptureModeIntegrationTests,
+       ProjectorSessionNeverStartsWhenCaptureModeIsBlocked) {
+  auto* controller = CaptureModeController::Get();
+  controller->SetSource(CaptureModeSource::kFullscreen);
+
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  test_delegate->set_is_allowed_by_policy(false);
+  ProjectorController::Get()->StartProjectorSession("projector_data");
+
+  // Both sessions will never start.
+  EXPECT_FALSE(controller->IsActive());
+  EXPECT_FALSE(ProjectorSession::Get()->is_active());
+  EXPECT_FALSE(controller->is_recording_in_progress());
+}
+
+namespace {
+
+enum AbortReason {
+  kBlockedByDlp,
+  kBlockedByPolicy,
+  kUserPressedEsc,
+};
+
+struct {
+  const std::string scope_trace;
+  const AbortReason reason;
+} kTestCases[] = {
+    {"Blocked by DLP", kBlockedByDlp},
+    {"Blocked by policy", kBlockedByPolicy},
+    {"User Pressed Esc", kUserPressedEsc},
+};
+
+}  // namespace
+
+TEST_F(ProjectorCaptureModeIntegrationTests,
+       ProjectorSessionAbortedBeforeCountDownStarts) {
+  auto* controller = CaptureModeController::Get();
+  controller->SetSource(CaptureModeSource::kFullscreen);
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.scope_trace);
+    StartProjectorModeSession();
+    auto* test_delegate = static_cast<TestCaptureModeDelegate*>(
+        controller->delegate_for_testing());
+
+    switch (test_case.reason) {
+      case kBlockedByDlp:
+        test_delegate->set_is_allowed_by_dlp(false);
+        PressAndReleaseKey(ui::VKEY_RETURN);
+        break;
+      case kBlockedByPolicy:
+        test_delegate->set_is_allowed_by_policy(false);
+        PressAndReleaseKey(ui::VKEY_RETURN);
+        break;
+      case kUserPressedEsc:
+        PressAndReleaseKey(ui::VKEY_ESCAPE);
+        break;
+    }
+
+    // The session will end immediately without a count down.
+    EXPECT_FALSE(controller->IsActive());
+    EXPECT_FALSE(ProjectorSession::Get()->is_active());
+    EXPECT_FALSE(controller->is_recording_in_progress());
+
+    // Prepare for next iteration by resetting things back to default.
+    test_delegate->ResetAllowancesToDefault();
+  }
+}
+
+TEST_F(ProjectorCaptureModeIntegrationTests,
+       ProjectorSessionAbortedAfterCountDownStarts) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  auto* controller = CaptureModeController::Get();
+  controller->SetSource(CaptureModeSource::kFullscreen);
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.scope_trace);
+    StartProjectorModeSession();
+    PressAndReleaseKey(ui::VKEY_RETURN);
+    auto* test_delegate = static_cast<TestCaptureModeDelegate*>(
+        controller->delegate_for_testing());
+
+    switch (test_case.reason) {
+      case kBlockedByDlp:
+        test_delegate->set_is_allowed_by_dlp(false);
+        break;
+      case kBlockedByPolicy:
+        test_delegate->set_is_allowed_by_policy(false);
+        break;
+      case kUserPressedEsc:
+        PressAndReleaseKey(ui::VKEY_ESCAPE);
+        break;
+    }
+
+    WaitForCountDownToFinish();
+    EXPECT_FALSE(ProjectorSession::Get()->is_active());
+    EXPECT_FALSE(controller->is_recording_in_progress());
+
+    // Prepare for next iteration by resetting things back to default.
+    test_delegate->ResetAllowancesToDefault();
+  }
 }
 
 TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidget) {

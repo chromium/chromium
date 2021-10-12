@@ -76,6 +76,11 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   void OnRecordingStarted();
   void OnRecordingEnded();
 
+  // Called by Capture Mode to notify us that a Projector-initiated recording
+  // session was aborted (i.e. recording was never started) due to e.g. user
+  // cancellation, an error, or a DLP/HDCP restriction.
+  void OnRecordingStartAborted();
+
   // Invoked when laser pointer button is pressed.
   void OnLaserPointerPressed();
   // Invoked when marker button is pressed.

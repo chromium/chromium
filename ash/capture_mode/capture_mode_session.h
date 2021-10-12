@@ -84,6 +84,9 @@ class ASH_EXPORT CaptureModeSession
     a11y_alert_on_session_exit_ = value;
   }
   bool is_shutting_down() const { return is_shutting_down_; }
+  void set_is_stopping_to_start_video_recording(bool value) {
+    is_stopping_to_start_video_recording_ = value;
+  }
 
   // Initializes the capture mode session. This should be called right after the
   // object is created.
@@ -405,6 +408,11 @@ class ASH_EXPORT CaptureModeSession
 
   // True once Shutdown() is called.
   bool is_shutting_down_ = false;
+
+  // True when the session is being stopped to start video recording, at which
+  // point, it's guaranteed that recording will start and will not be blocked by
+  // any errors, DLP restrictions, or any user cancellation.
+  bool is_stopping_to_start_video_recording_ = false;
 
   // The object which handles tab focus while in a capture session.
   std::unique_ptr<CaptureModeSessionFocusCycler> focus_cycler_;

@@ -1263,6 +1263,22 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
     return;
   }
 
+  // During the 3-second count down, screen content might have changed such that
+  // admin-restricted or HDCP content became present. We must check again.
+  const CaptureAllowance allowance =
+      IsCaptureAllowedByEnterprisePolicies(*capture_params);
+  if (allowance != CaptureAllowance::kAllowed) {
+    Stop();
+    ShowDisabledNotification(allowance);
+    return;
+  }
+
+  if (ShouldBlockRecordingForContentProtection(capture_params->window)) {
+    Stop();
+    ShowDisabledNotification(CaptureAllowance::kDisallowedByHdcp);
+    return;
+  }
+
   // In Projector mode, the creation of the DriveFS folder that will host the
   // video is asynchronous. We don't want the user to be able to bail out of the
   // session at this point, since we don't want to create that folder in vain.
@@ -1315,23 +1331,13 @@ void CaptureModeController::BeginVideoRecording(
       capture_mode_session_->ReleaseLayer();
   session_layer->set_delegate(nullptr);
 
+  // At this point, recording is guaranteed to start, and cannot be prevented by
+  // DLP or user cancellation.
+  capture_mode_session_->set_is_stopping_to_start_video_recording(true);
+
   // Stop the capture session now, so the bar doesn't show up in the captured
   // video.
   Stop();
-
-  // During the 3-second count down, screen content might have changed such that
-  // admin-restricted or HDCP content became present. We must check again.
-  const CaptureAllowance allowance =
-      IsCaptureAllowedByEnterprisePolicies(capture_params);
-  if (allowance != CaptureAllowance::kAllowed) {
-    ShowDisabledNotification(allowance);
-    return;
-  }
-
-  if (ShouldBlockRecordingForContentProtection(capture_params.window)) {
-    ShowDisabledNotification(CaptureAllowance::kDisallowedByHdcp);
-    return;
-  }
 
   mojo::PendingRemote<viz::mojom::FrameSinkVideoCaptureOverlay>
       cursor_capture_overlay;

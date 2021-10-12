@@ -34,6 +34,11 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void set_on_recording_started_callback(base::OnceClosure callback) {
     on_recording_started_callback_ = std::move(callback);
   }
+  void set_is_allowed_by_dlp(bool value) { is_allowed_by_dlp_ = value; }
+  void set_is_allowed_by_policy(bool value) { is_allowed_by_policy_ = value; }
+
+  // Resets |is_allowed_by_policy_| and |is_allowed_by_dlp_| back to true.
+  void ResetAllowancesToDefault();
 
   // Gets the current frame sink id being captured by the service.
   viz::FrameSinkId GetCurrentFrameSinkId() const;
@@ -81,6 +86,8 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;
   base::FilePath fake_downloads_dir_;
   base::OnceClosure on_recording_started_callback_;
+  bool is_allowed_by_dlp_ = true;
+  bool is_allowed_by_policy_ = true;
 };
 
 }  // namespace ash

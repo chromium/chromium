@@ -36,6 +36,11 @@ TestCaptureModeDelegate::TestCaptureModeDelegate() {
 
 TestCaptureModeDelegate::~TestCaptureModeDelegate() = default;
 
+void TestCaptureModeDelegate::ResetAllowancesToDefault() {
+  is_allowed_by_dlp_ = true;
+  is_allowed_by_policy_ = true;
+}
+
 viz::FrameSinkId TestCaptureModeDelegate::GetCurrentFrameSinkId() const {
   return recording_service_ ? recording_service_->GetCurrentFrameSinkId()
                             : viz::FrameSinkId();
@@ -86,11 +91,11 @@ bool TestCaptureModeDelegate::IsCaptureModeInitRestrictedByDlp() const {
 bool TestCaptureModeDelegate::IsCaptureAllowedByDlp(const aura::Window* window,
                                                     const gfx::Rect& bounds,
                                                     bool for_video) const {
-  return true;
+  return is_allowed_by_dlp_;
 }
 
 bool TestCaptureModeDelegate::IsCaptureAllowedByPolicy() const {
-  return true;
+  return is_allowed_by_policy_;
 }
 
 void TestCaptureModeDelegate::StartObservingRestrictedContent(

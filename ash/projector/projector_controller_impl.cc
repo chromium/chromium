@@ -11,6 +11,7 @@
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/shell.h"
+#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
@@ -77,8 +78,12 @@ void ProjectorControllerImpl::StartProjectorSession(
 
   auto* controller = CaptureModeController::Get();
   if (!controller->is_recording_in_progress()) {
-    projector_session_->Start(storage_dir);
+    // A capture mode session can be blocked by many factors, such as policy,
+    // DLP, ... etc. We don't start a Projector session until we're sure a
+    // capture session started.
     controller->Start(CaptureModeEntryType::kProjector);
+    if (controller->IsActive())
+      projector_session_->Start(storage_dir);
   }
 }
 
@@ -201,6 +206,21 @@ void ProjectorControllerImpl::OnRecordingEnded() {
   // At this point, the screencast might not synced to Drive yet.  Open
   // Projector App which showing the Gallery view by default.
   client_->OpenProjectorApp();
+}
+
+void ProjectorControllerImpl::OnRecordingStartAborted() {
+  DCHECK(projector_session_->is_active());
+
+  // Delete the DriveFS path that might have been created for this aborted
+  // session if any.
+  if (projector_session_->screencast_container_path()) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(base::GetDeletePathRecursivelyCallback(),
+                       *projector_session_->screencast_container_path()));
+  }
+
+  projector_session_->Stop();
 }
 
 void ProjectorControllerImpl::OnLaserPointerPressed() {
