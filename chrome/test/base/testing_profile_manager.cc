@@ -204,6 +204,17 @@ void TestingProfileManager::DeleteTestingProfile(const std::string& name) {
 
 void TestingProfileManager::DeleteAllTestingProfiles() {
   DCHECK(called_set_up_);
+
+  ProfileAttributesStorage& storage =
+      profile_manager_->GetProfileAttributesStorage();
+  for (auto& name_profile_pair : testing_profiles_) {
+    TestingProfile* profile = name_profile_pair.second;
+    if (profile->IsGuestSession() || profile->IsSystemProfile()) {
+      // Guest and System profiles aren't added to Storage.
+      continue;
+    }
+    storage.RemoveProfile(profile->GetPath());
+  }
   profile_manager_->profiles_info_.clear();
 }
 
