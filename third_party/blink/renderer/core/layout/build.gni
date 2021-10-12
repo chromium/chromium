@@ -322,6 +322,7 @@ blink_core_sources_layout = [
   "ng/grid/layout_ng_grid.h",
   "ng/grid/layout_ng_grid_interface.h",
   "ng/grid/ng_grid_data.h",
+  "ng/grid/ng_grid_geometry.h",
   "ng/grid/ng_grid_layout_algorithm.cc",
   "ng/grid/ng_grid_layout_algorithm.h",
   "ng/grid/ng_grid_node.cc",

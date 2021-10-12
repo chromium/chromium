@@ -203,7 +203,7 @@ class NGGridLayoutAlgorithmTest
   NGGridLayoutAlgorithmTrackCollection column_track_collection_;
   NGGridLayoutAlgorithmTrackCollection row_track_collection_;
 
-  NGGridLayoutAlgorithm::GridGeometry grid_geometry_;
+  NGGridGeometry grid_geometry_;
 };
 
 TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmBaseSetSizes) {
