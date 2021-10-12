@@ -395,7 +395,7 @@ StoreMetricsReporter::StoreMetricsReporter(
   is_opted_in_ = features_util::IsOptedInForAccountStorage(prefs, sync_service);
 
   base::UmaHistogramBoolean(
-      "PasswordManager.Enabled",
+      "PasswordManager.Enabled2",
       prefs->GetBoolean(password_manager::prefs::kCredentialsEnableService));
 
   // May be null in tests.

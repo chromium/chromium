@@ -172,7 +172,7 @@ TEST_P(StoreMetricsReporterTestWithParams, StoreIndependentMetrics) {
       /*is_under_advanced_protection=*/false,
       /*done_callback*/ base::DoNothing());
 
-  histogram_tester.ExpectUniqueSample("PasswordManager.Enabled",
+  histogram_tester.ExpectUniqueSample("PasswordManager.Enabled2",
                                       password_manager_enabled, 1);
 }
 

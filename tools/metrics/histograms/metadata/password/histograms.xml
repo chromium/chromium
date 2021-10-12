@@ -1273,12 +1273,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.Enabled" enum="BooleanEnabled"
-    expires_after="2022-04-24">
+    expires_after="M96">
+  <obsolete>
+    Obsolete since M97. This histogram changed semantics in M95, but was only
+    replaced by PasswordManager.Enabled2 in M97.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     Indicates whether the password manager is enabled when a tab is opened. This
     includes prerendered tabs.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.Enabled2" enum="BooleanEnabled"
+    expires_after="2022-04-24">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Indicates whether the password manager is enabled. Recorded 30 seconds after
+    PasswordStore is created which happens once per profile.
   </summary>
 </histogram>
 
