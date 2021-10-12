@@ -45,6 +45,13 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
             base::Unretained(this))) {}
 
  protected:
+  // InProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    web_app::test::WaitUntilReady(
+        web_app::WebAppProvider::GetForTest(browser()->profile()));
+  }
+
   Profile* profile() { return browser()->profile(); }
 
   const AppId InstallWebApp(const GURL& start_url) {

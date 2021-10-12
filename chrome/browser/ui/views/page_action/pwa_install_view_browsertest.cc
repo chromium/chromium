@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
@@ -166,6 +167,8 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
     web_contents_ = GetCurrentTab();
     app_banner_manager_ =
         webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents_);
+    web_app::test::WaitUntilReady(
+        web_app::WebAppProvider::GetForTest(browser()->profile()));
   }
 
   std::unique_ptr<net::test_server::HttpResponse> RequestInterceptor(
