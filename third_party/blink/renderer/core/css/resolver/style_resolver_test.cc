@@ -1385,19 +1385,22 @@ TEST_F(StyleResolverTest, NoCascadeLayers) {
   const auto& properties = match_result.GetMatchedProperties();
   ASSERT_EQ(properties.size(), 3u);
 
+  const uint16_t kImplicitOuterLayerOrder =
+      CascadeLayerMap::kImplicitOuterLayerOrder;
+
   // div { display: block; }
   EXPECT_TRUE(properties[0].properties->HasProperty(CSSPropertyID::kDisplay));
-  EXPECT_EQ(0u, properties[0].types_.layer_order);
+  EXPECT_EQ(kImplicitOuterLayerOrder, properties[0].types_.layer_order);
   EXPECT_EQ(properties[0].types_.origin, CascadeOrigin::kUserAgent);
 
   // .b { font-size: 16px; }
   EXPECT_TRUE(properties[1].properties->HasProperty(CSSPropertyID::kFontSize));
-  EXPECT_EQ(0u, properties[1].types_.layer_order);
+  EXPECT_EQ(kImplicitOuterLayerOrder, properties[1].types_.layer_order);
   EXPECT_EQ(properties[1].types_.origin, CascadeOrigin::kAuthor);
 
   // #a { color: green; }
   EXPECT_TRUE(properties[2].properties->HasProperty(CSSPropertyID::kColor));
-  EXPECT_EQ(0u, properties[2].types_.layer_order);
+  EXPECT_EQ(kImplicitOuterLayerOrder, properties[2].types_.layer_order);
   EXPECT_EQ(properties[2].types_.origin, CascadeOrigin::kAuthor);
 }
 
@@ -1431,26 +1434,30 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentSheets) {
   const auto& properties = match_result.GetMatchedProperties();
   ASSERT_EQ(properties.size(), 4u);
 
+  const uint16_t kImplicitOuterLayerOrder =
+      CascadeLayerMap::kImplicitOuterLayerOrder;
+
   // div { display: block; }
   EXPECT_TRUE(properties[0].properties->HasProperty(CSSPropertyID::kDisplay));
-  EXPECT_EQ(0u, properties[0].types_.layer_order);
+  EXPECT_EQ(kImplicitOuterLayerOrder, properties[0].types_.layer_order);
   EXPECT_EQ(properties[0].types_.origin, CascadeOrigin::kUserAgent);
 
   // @layer foo { #a { font-size: 16px } }"
   EXPECT_TRUE(properties[1].properties->HasProperty(CSSPropertyID::kFontSize));
-  EXPECT_EQ(1u, properties[1].types_.layer_order);
+  EXPECT_EQ(0u, properties[1].types_.layer_order);
   EXPECT_EQ(properties[1].types_.origin, CascadeOrigin::kAuthor);
 
   // @layer bar { .b { color: green } }"
   EXPECT_TRUE(properties[2].properties->HasProperty(CSSPropertyID::kColor));
-  EXPECT_EQ(2u, properties[2].types_.layer_order);
+  EXPECT_EQ(1u, properties[2].types_.layer_order);
   EXPECT_EQ(properties[2].types_.origin, CascadeOrigin::kAuthor);
 
   // style="font-family: custom"
   EXPECT_TRUE(
       properties[3].properties->HasProperty(CSSPropertyID::kFontFamily));
-  EXPECT_EQ(0u, properties[3].types_.layer_order);
+  EXPECT_TRUE(properties[3].types_.is_inline_style);
   EXPECT_EQ(properties[3].types_.origin, CascadeOrigin::kAuthor);
+  // There's no layer order for inline style; it's always above all layers.
 }
 
 TEST_F(StyleResolverTest, CascadeLayersInDifferentTreeScopes) {
@@ -1488,21 +1495,24 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentTreeScopes) {
   const auto& properties = match_result.GetMatchedProperties();
   ASSERT_EQ(properties.size(), 3u);
 
+  const uint16_t kImplicitOuterLayerOrder =
+      CascadeLayerMap::kImplicitOuterLayerOrder;
+
   // div { display: block }
   EXPECT_TRUE(properties[0].properties->HasProperty(CSSPropertyID::kDisplay));
-  EXPECT_EQ(0u, properties[0].types_.layer_order);
+  EXPECT_EQ(kImplicitOuterLayerOrder, properties[0].types_.layer_order);
   EXPECT_EQ(properties[0].types_.origin, CascadeOrigin::kUserAgent);
 
   // @layer bar { :host { font-size: 16px } }
   EXPECT_TRUE(properties[1].properties->HasProperty(CSSPropertyID::kFontSize));
-  EXPECT_EQ(1u, properties[1].types_.layer_order);
+  EXPECT_EQ(0u, properties[1].types_.layer_order);
   EXPECT_EQ(properties[1].types_.origin, CascadeOrigin::kAuthor);
   EXPECT_EQ(match_result.ScopeFromTreeOrder(properties[1].types_.tree_order),
             GetDocument().getElementById("host")->GetShadowRoot());
 
   // @layer foo { #host { color: green } }
   EXPECT_TRUE(properties[2].properties->HasProperty(CSSPropertyID::kColor));
-  EXPECT_EQ(1u, properties[2].types_.layer_order);
+  EXPECT_EQ(0u, properties[2].types_.layer_order);
   EXPECT_EQ(match_result.ScopeFromTreeOrder(properties[2].types_.tree_order),
             &GetDocument());
 }
@@ -1514,10 +1524,10 @@ TEST_F(StyleResolverTest, CascadeLayersAndPageRules) {
 
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
+    @page { margin-top: 100px; }
     @layer {
-      @page { margin-top: 100px; }
+      @page { margin-top: 50px; }
     }
-    @page { margin-top: 50px; }
     </style>
   )HTML");
 

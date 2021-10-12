@@ -56,9 +56,9 @@ var testCases = [
         title: 'A5 Anonymous layers',
         style: `
             @layer {
-                target { color: red; }
+                target { color: green; }
                 @layer {
-                    target { color: green; }
+                    target { color: red; }
                 }
             }
         `,
@@ -68,9 +68,9 @@ var testCases = [
         style: `
             @layer {
                 @layer {
-                    target { color: green; }
+                    target { color: red; }
                 }
-                target { color: red; }
+                target { color: green; }
             }
         `,
     },
@@ -85,9 +85,9 @@ var testCases = [
             }
             @layer {
                 @layer {
-                    target { color: green; }
+                    target { color: red; }
                 }
-                target { color: red; }
+                target { color: green; }
             }
         `,
     },
@@ -104,9 +104,9 @@ var testCases = [
             }
             @layer {
                 @layer {
-                    target { color: green; }
+                    target { color: red; }
                 }
-                target { color: red; }
+                target { color: green; }
             }
         `,
     },
@@ -122,10 +122,10 @@ var testCases = [
             @layer {
                 @layer {
                     @layer {
-                        target { color: green; }
+                        target { color: red; }
                     }
                 }
-                target { color: red; }
+                target { color: green; }
             }
         `,
     },
@@ -175,9 +175,9 @@ var testCases = [
         title: 'B5 Named layers',
         style: `
             @layer A {
-                target { color: red; }
+                target { color: green; }
                 @layer A {
-                    target { color: green; }
+                    target { color: red; }
                 }
             }
         `,
@@ -362,11 +362,11 @@ var testCases = [
         style: `
             @layer A {
                 @layer {
-                    target { color: green; }
+                    target { color: red; }
                 }
             }
             @layer A {
-                target { color: red; }
+                target { color: green; }
             }
         `,
     },

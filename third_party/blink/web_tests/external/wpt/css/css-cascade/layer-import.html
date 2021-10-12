@@ -145,9 +145,9 @@ const testCases = [
     {
         title: 'C4 Named imports',
         style: `
-            @import url(layer-green.css) layer(A);
+            @import url(layer-red.css) layer(A);
             @layer A {
-                target { color: red; }
+                target { color: green; }
             }
         `
     },
@@ -192,8 +192,8 @@ const testCases = [
         title: 'C9 Named imports',
         style: `
             @import url(basic-red.css) layer(A);
-            @import url(basic-green.css) layer(B.A);
-            @import url(basic-red.css) layer(B);
+            @import url(basic-red.css) layer(B.A);
+            @import url(basic-green.css) layer(B);
         `
     },
     {

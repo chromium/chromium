@@ -29,14 +29,14 @@ const testCases = [
         animation: anim 1s paused;
       }
 
+      @keyframes anim {
+        from { background-color: green; }
+      }
+
       @layer {
         @keyframes anim {
           from { background-color: red; }
         }
-      }
-
-      @keyframes anim {
-        from { background-color: green; }
       }
     `
   },

@@ -24,16 +24,16 @@ const testCases = [
         font-family: custom-font;
       }
 
+      @font-face {
+        font-family: custom-font;
+        src: url('/fonts/Ahem.ttf');
+      }
+
       @layer {
         @font-face {
           font-family: custom-font;
           src: url('/fonts/noto/noto-sans-v8-latin-regular.woff') format('woff');
         }
-      }
-
-      @font-face {
-        font-family: custom-font;
-        src: url('/fonts/Ahem.ttf');
       }
     `
   },

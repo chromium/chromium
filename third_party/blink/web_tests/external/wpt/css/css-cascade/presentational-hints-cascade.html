@@ -12,10 +12,17 @@
 #target1 {
   width: 100px;
 }
+
+@layer {
+  #target3 {
+    width: 100px;
+  }
+}
 </style>
 
 <img class=test id=target1 width=200>
 <img class=test id=target2 width=200 style="width: 100px">
+<img class=test id=target3 width=200>
 
 <script>
 test(() => {
@@ -25,4 +32,8 @@ test(() => {
 test(() => {
   assert_equals(getComputedStyle(target2).width, '100px');
 }, 'Presentational hints have lower precedence than the style attribute');
+
+test(() => {
+  assert_equals(getComputedStyle(target3).width, '100px');
+}, 'Presentational hints have lower precedence than layered style');
 </script>

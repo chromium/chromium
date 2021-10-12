@@ -46,24 +46,24 @@
 
 const testCases = [
   {
-    title: '@scroll-timeline layered overrides unlayered',
+    title: '@scroll-timeline unlayered overrides layered',
     style: `
       #target {
         animation-timeline: timeline;
+      }
+
+      @scroll-timeline timeline {
+        source: selector(#scroller);
+        start: 0px;
+        end: 50px;
       }
 
       @layer {
         @scroll-timeline timeline {
           source: selector(#scroller);
           start: 0px;
-          end: 50px;
+          end: 100px;
         }
-      }
-
-      @scroll-timeline timeline {
-        source: selector(#scroller);
-        start: 0px;
-        end: 100px;
       }
     `
   },

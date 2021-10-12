@@ -8,7 +8,8 @@
 
 namespace blink {
 
-const unsigned CascadeLayerMap::kImplicitOuterLayerOrder = 0;
+const unsigned CascadeLayerMap::kImplicitOuterLayerOrder =
+    std::numeric_limits<unsigned>::max();
 
 namespace {
 
@@ -34,9 +35,9 @@ void AddLayers(CascadeLayer* canonical_layer,
 void ComputeLayerOrder(const CascadeLayer& layer,
                        unsigned& next,
                        LayerOrderMap& layer_order_map) {
-  layer_order_map.insert(&layer, next++);
   for (const auto& sub_layer : layer.GetDirectSubLayers())
     ComputeLayerOrder(*sub_layer, next, layer_order_map);
+  layer_order_map.insert(&layer, next++);
 }
 
 }  // namespace
@@ -53,15 +54,23 @@ CascadeLayerMap::CascadeLayerMap(const ActiveStyleSheetVector& sheets) {
     }
   }
 
-  unsigned next = kImplicitOuterLayerOrder;
+  unsigned next = 0;
   LayerOrderMap canonical_layer_order_map;
   ComputeLayerOrder(*canonical_root_layer, next, canonical_layer_order_map);
+
+  canonical_layer_order_map.Set(canonical_root_layer, kImplicitOuterLayerOrder);
 
   for (const auto& iter : canonical_layer_map) {
     const CascadeLayer* layer_from_sheet = iter.key;
     const CascadeLayer* canonical_layer = iter.value;
     unsigned layer_order = canonical_layer_order_map.at(canonical_layer);
     layer_order_map_.insert(layer_from_sheet, layer_order);
+
+#if DCHECK_IS_ON()
+    // The implicit outer layer is placed above all explicit layers.
+    if (canonical_layer != canonical_root_layer)
+      DCHECK_LT(layer_order, kImplicitOuterLayerOrder);
+#endif
   }
 }
 

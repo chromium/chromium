@@ -23,26 +23,26 @@
 
 const testCases = [
   {
-    title: '@property layered overrides unlayered',
+    title: '@property unlayered overrides layered',
     style: `
       #target {
         background-color: var(--foo);
+      }
+
+      @property --foo {
+        syntax: '<color>';
+        inherits: false;
+        initial-value: green;
       }
 
       @layer {
         @property --foo {
           syntax: '<color>';
           inherits: false;
-          initial-value: green;
+          initial-value: red;
         }
       }
-
-      @property --foo {
-        syntax: '<color>';
-        inherits: false;
-        initial-value: red;
-      }
-    `
+   `
   },
 
   {

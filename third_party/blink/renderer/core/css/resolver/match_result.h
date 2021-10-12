@@ -144,7 +144,7 @@ class AddMatchedPropertiesOptions {
  private:
   unsigned link_match_type_ = CSSSelector::kMatchAll;
   ValidPropertyFilter valid_property_filter_ = ValidPropertyFilter::kNoFilter;
-  unsigned layer_order_ = CascadeLayerMap::kImplicitOuterLayerOrder;
+  unsigned layer_order_ = 0;
   bool is_inline_style_ = false;
 
   friend class Builder;

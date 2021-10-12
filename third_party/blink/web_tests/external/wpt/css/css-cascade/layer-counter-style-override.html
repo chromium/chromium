@@ -35,20 +35,20 @@
 
 const testCases = [
   {
-    title: '@counter-style layered overrides unlayered',
+    title: '@counter-style unlayered overrides layered',
     style: `
       #target::before {
         content: counter(dont-care, custom-counter-style);
       }
 
-      @layer {
-        @counter-style custom-counter-style {
-          system: extends four;
-        }
+      @counter-style custom-counter-style {
+        system: extends four;
       }
 
-      @counter-style custom-counter-style {
-        system: extends three;
+      @layer {
+        @counter-style custom-counter-style {
+          system: extends three;
+        }
       }
     `
   },
