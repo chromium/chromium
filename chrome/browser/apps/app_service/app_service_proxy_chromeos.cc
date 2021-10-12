@@ -31,7 +31,7 @@
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
-#include "components/services/app_service/app_service_impl.h"
+#include "components/services/app_service/app_service_mojom_impl.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -254,7 +254,7 @@ void AppServiceProxyChromeOs::SetArcIsRegistered() {
 }
 
 void AppServiceProxyChromeOs::FlushMojoCallsForTesting() {
-  app_service_impl_->FlushMojoCallsForTesting();
+  app_service_mojom_impl_->FlushMojoCallsForTesting();
   if (built_in_chrome_os_apps_) {
     built_in_chrome_os_apps_->FlushMojoCallsForTesting();
   }

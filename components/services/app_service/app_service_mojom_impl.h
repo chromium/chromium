@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_APP_SERVICE_APP_SERVICE_IMPL_H_
-#define COMPONENTS_SERVICES_APP_SERVICE_APP_SERVICE_IMPL_H_
+#ifndef COMPONENTS_SERVICES_APP_SERVICE_APP_SERVICE_MOJOM_IMPL_H_
+#define COMPONENTS_SERVICES_APP_SERVICE_APP_SERVICE_MOJOM_IMPL_H_
 
 #include <map>
 
@@ -26,17 +26,17 @@ namespace apps {
 // The implementation of the apps::mojom::AppService Mojo interface.
 //
 // See components/services/app_service/README.md.
-class AppServiceImpl : public apps::mojom::AppService {
+class AppServiceMojomImpl : public apps::mojom::AppService {
  public:
-  AppServiceImpl(
+  AppServiceMojomImpl(
       const base::FilePath& profile_dir,
       base::OnceClosure read_completed_for_testing = base::OnceClosure(),
       base::OnceClosure write_completed_for_testing = base::OnceClosure());
 
-  AppServiceImpl(const AppServiceImpl&) = delete;
-  AppServiceImpl& operator=(const AppServiceImpl&) = delete;
+  AppServiceMojomImpl(const AppServiceMojomImpl&) = delete;
+  AppServiceMojomImpl& operator=(const AppServiceMojomImpl&) = delete;
 
-  ~AppServiceImpl() override;
+  ~AppServiceMojomImpl() override;
 
   void BindReceiver(mojo::PendingReceiver<apps::mojom::AppService> receiver);
 
@@ -172,9 +172,9 @@ class AppServiceImpl : public apps::mojom::AppService {
 
   base::OnceClosure write_completed_for_testing_;
 
-  base::WeakPtrFactory<AppServiceImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AppServiceMojomImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace apps
 
-#endif  // COMPONENTS_SERVICES_APP_SERVICE_APP_SERVICE_IMPL_H_
+#endif  // COMPONENTS_SERVICES_APP_SERVICE_APP_SERVICE_MOJOM_IMPL_H_

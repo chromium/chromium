@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/app_service/app_service_impl.h"
+#include "components/services/app_service/app_service_mojom_impl.h"
 
 #include <iterator>
 #include <utility>
@@ -106,9 +106,10 @@ std::string ReadDataBlocking(const base::FilePath& preferred_apps_file) {
 
 namespace apps {
 
-AppServiceImpl::AppServiceImpl(const base::FilePath& profile_dir,
-                               base::OnceClosure read_completed_for_testing,
-                               base::OnceClosure write_completed_for_testing)
+AppServiceMojomImpl::AppServiceMojomImpl(
+    const base::FilePath& profile_dir,
+    base::OnceClosure read_completed_for_testing,
+    base::OnceClosure write_completed_for_testing)
     : profile_dir_(profile_dir),
       should_write_preferred_apps_to_file_(false),
       writing_preferred_apps_(false),
@@ -120,19 +121,19 @@ AppServiceImpl::AppServiceImpl(const base::FilePath& profile_dir,
   InitializePreferredApps();
 }
 
-AppServiceImpl::~AppServiceImpl() = default;
+AppServiceMojomImpl::~AppServiceMojomImpl() = default;
 
-void AppServiceImpl::BindReceiver(
+void AppServiceMojomImpl::BindReceiver(
     mojo::PendingReceiver<apps::mojom::AppService> receiver) {
   receivers_.Add(this, std::move(receiver));
 }
 
-void AppServiceImpl::FlushMojoCallsForTesting() {
+void AppServiceMojomImpl::FlushMojoCallsForTesting() {
   subscribers_.FlushForTesting();
   receivers_.FlushForTesting();
 }
 
-void AppServiceImpl::RegisterPublisher(
+void AppServiceMojomImpl::RegisterPublisher(
     mojo::PendingRemote<apps::mojom::Publisher> publisher_remote,
     apps::mojom::AppType app_type) {
   mojo::Remote<apps::mojom::Publisher> publisher(std::move(publisher_remote));
@@ -146,13 +147,13 @@ void AppServiceImpl::RegisterPublisher(
 
   // Add the new publisher to the set.
   publisher.set_disconnect_handler(
-      base::BindOnce(&AppServiceImpl::OnPublisherDisconnected,
+      base::BindOnce(&AppServiceMojomImpl::OnPublisherDisconnected,
                      base::Unretained(this), app_type));
   auto result = publishers_.emplace(app_type, std::move(publisher));
   CHECK(result.second);
 }
 
-void AppServiceImpl::RegisterSubscriber(
+void AppServiceMojomImpl::RegisterSubscriber(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
   // Connect the new subscriber with every registered publisher.
@@ -173,13 +174,13 @@ void AppServiceImpl::RegisterSubscriber(
   subscribers_.Add(std::move(subscriber));
 }
 
-void AppServiceImpl::LoadIcon(apps::mojom::AppType app_type,
-                              const std::string& app_id,
-                              apps::mojom::IconKeyPtr icon_key,
-                              apps::mojom::IconType icon_type,
-                              int32_t size_hint_in_dip,
-                              bool allow_placeholder_icon,
-                              LoadIconCallback callback) {
+void AppServiceMojomImpl::LoadIcon(apps::mojom::AppType app_type,
+                                   const std::string& app_id,
+                                   apps::mojom::IconKeyPtr icon_key,
+                                   apps::mojom::IconType icon_type,
+                                   int32_t size_hint_in_dip,
+                                   bool allow_placeholder_icon,
+                                   LoadIconCallback callback) {
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {
     std::move(callback).Run(apps::mojom::IconValue::New());
@@ -190,11 +191,11 @@ void AppServiceImpl::LoadIcon(apps::mojom::AppType app_type,
                          std::move(callback));
 }
 
-void AppServiceImpl::Launch(apps::mojom::AppType app_type,
-                            const std::string& app_id,
-                            int32_t event_flags,
-                            apps::mojom::LaunchSource launch_source,
-                            apps::mojom::WindowInfoPtr window_info) {
+void AppServiceMojomImpl::Launch(apps::mojom::AppType app_type,
+                                 const std::string& app_id,
+                                 int32_t event_flags,
+                                 apps::mojom::LaunchSource launch_source,
+                                 apps::mojom::WindowInfoPtr window_info) {
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {
     return;
@@ -202,11 +203,12 @@ void AppServiceImpl::Launch(apps::mojom::AppType app_type,
   iter->second->Launch(app_id, event_flags, launch_source,
                        std::move(window_info));
 }
-void AppServiceImpl::LaunchAppWithFiles(apps::mojom::AppType app_type,
-                                        const std::string& app_id,
-                                        int32_t event_flags,
-                                        apps::mojom::LaunchSource launch_source,
-                                        apps::mojom::FilePathsPtr file_paths) {
+void AppServiceMojomImpl::LaunchAppWithFiles(
+    apps::mojom::AppType app_type,
+    const std::string& app_id,
+    int32_t event_flags,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::FilePathsPtr file_paths) {
   CHECK(file_paths);
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {
@@ -216,7 +218,7 @@ void AppServiceImpl::LaunchAppWithFiles(apps::mojom::AppType app_type,
                                    std::move(file_paths));
 }
 
-void AppServiceImpl::LaunchAppWithIntent(
+void AppServiceMojomImpl::LaunchAppWithIntent(
     apps::mojom::AppType app_type,
     const std::string& app_id,
     int32_t event_flags,
@@ -231,9 +233,9 @@ void AppServiceImpl::LaunchAppWithIntent(
                                     launch_source, std::move(window_info));
 }
 
-void AppServiceImpl::SetPermission(apps::mojom::AppType app_type,
-                                   const std::string& app_id,
-                                   apps::mojom::PermissionPtr permission) {
+void AppServiceMojomImpl::SetPermission(apps::mojom::AppType app_type,
+                                        const std::string& app_id,
+                                        apps::mojom::PermissionPtr permission) {
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {
     return;
@@ -241,11 +243,12 @@ void AppServiceImpl::SetPermission(apps::mojom::AppType app_type,
   iter->second->SetPermission(app_id, std::move(permission));
 }
 
-void AppServiceImpl::Uninstall(apps::mojom::AppType app_type,
-                               const std::string& app_id,
-                               apps::mojom::UninstallSource uninstall_source,
-                               bool clear_site_data,
-                               bool report_abuse) {
+void AppServiceMojomImpl::Uninstall(
+    apps::mojom::AppType app_type,
+    const std::string& app_id,
+    apps::mojom::UninstallSource uninstall_source,
+    bool clear_site_data,
+    bool report_abuse) {
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {
     return;
@@ -254,8 +257,8 @@ void AppServiceImpl::Uninstall(apps::mojom::AppType app_type,
                           report_abuse);
 }
 
-void AppServiceImpl::PauseApp(apps::mojom::AppType app_type,
-                              const std::string& app_id) {
+void AppServiceMojomImpl::PauseApp(apps::mojom::AppType app_type,
+                                   const std::string& app_id) {
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {
     return;
@@ -263,8 +266,8 @@ void AppServiceImpl::PauseApp(apps::mojom::AppType app_type,
   iter->second->PauseApp(app_id);
 }
 
-void AppServiceImpl::UnpauseApp(apps::mojom::AppType app_type,
-                                const std::string& app_id) {
+void AppServiceMojomImpl::UnpauseApp(apps::mojom::AppType app_type,
+                                     const std::string& app_id) {
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {
     return;
@@ -272,8 +275,8 @@ void AppServiceImpl::UnpauseApp(apps::mojom::AppType app_type,
   iter->second->UnpauseApp(app_id);
 }
 
-void AppServiceImpl::StopApp(apps::mojom::AppType app_type,
-                             const std::string& app_id) {
+void AppServiceMojomImpl::StopApp(apps::mojom::AppType app_type,
+                                  const std::string& app_id) {
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {
     return;
@@ -281,11 +284,11 @@ void AppServiceImpl::StopApp(apps::mojom::AppType app_type,
   iter->second->StopApp(app_id);
 }
 
-void AppServiceImpl::GetMenuModel(apps::mojom::AppType app_type,
-                                  const std::string& app_id,
-                                  apps::mojom::MenuType menu_type,
-                                  int64_t display_id,
-                                  GetMenuModelCallback callback) {
+void AppServiceMojomImpl::GetMenuModel(apps::mojom::AppType app_type,
+                                       const std::string& app_id,
+                                       apps::mojom::MenuType menu_type,
+                                       int64_t display_id,
+                                       GetMenuModelCallback callback) {
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {
     std::move(callback).Run(apps::mojom::MenuItems::New());
@@ -296,11 +299,12 @@ void AppServiceImpl::GetMenuModel(apps::mojom::AppType app_type,
                              std::move(callback));
 }
 
-void AppServiceImpl::ExecuteContextMenuCommand(apps::mojom::AppType app_type,
-                                               const std::string& app_id,
-                                               int command_id,
-                                               const std::string& shortcut_id,
-                                               int64_t display_id) {
+void AppServiceMojomImpl::ExecuteContextMenuCommand(
+    apps::mojom::AppType app_type,
+    const std::string& app_id,
+    int command_id,
+    const std::string& shortcut_id,
+    int64_t display_id) {
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {
     return;
@@ -310,8 +314,8 @@ void AppServiceImpl::ExecuteContextMenuCommand(apps::mojom::AppType app_type,
                                           display_id);
 }
 
-void AppServiceImpl::OpenNativeSettings(apps::mojom::AppType app_type,
-                                        const std::string& app_id) {
+void AppServiceMojomImpl::OpenNativeSettings(apps::mojom::AppType app_type,
+                                             const std::string& app_id) {
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {
     return;
@@ -319,11 +323,12 @@ void AppServiceImpl::OpenNativeSettings(apps::mojom::AppType app_type,
   iter->second->OpenNativeSettings(app_id);
 }
 
-void AppServiceImpl::AddPreferredApp(apps::mojom::AppType app_type,
-                                     const std::string& app_id,
-                                     apps::mojom::IntentFilterPtr intent_filter,
-                                     apps::mojom::IntentPtr intent,
-                                     bool from_publisher) {
+void AppServiceMojomImpl::AddPreferredApp(
+    apps::mojom::AppType app_type,
+    const std::string& app_id,
+    apps::mojom::IntentFilterPtr intent_filter,
+    apps::mojom::IntentPtr intent,
+    bool from_publisher) {
   // TODO(crbug.com/853604): Make sure the ARC preference init happens after
   // this. Might need to change the interface to call that after read completed.
   // Might also need to record the change before data read and make the update
@@ -368,8 +373,8 @@ void AppServiceImpl::AddPreferredApp(apps::mojom::AppType app_type,
   }
 }
 
-void AppServiceImpl::RemovePreferredApp(apps::mojom::AppType app_type,
-                                        const std::string& app_id) {
+void AppServiceMojomImpl::RemovePreferredApp(apps::mojom::AppType app_type,
+                                             const std::string& app_id) {
   // TODO(crbug.com/853604): Make sure the ARC preference init happens after
   // this. Might need to change the interface to call that after read completed.
   // Might also need to record the change before data read and make the update
@@ -394,7 +399,7 @@ void AppServiceImpl::RemovePreferredApp(apps::mojom::AppType app_type,
   LogPreferredAppUpdateAction(PreferredAppsUpdateAction::kDeleteForAppId);
 }
 
-void AppServiceImpl::RemovePreferredAppForFilter(
+void AppServiceMojomImpl::RemovePreferredAppForFilter(
     apps::mojom::AppType app_type,
     const std::string& app_id,
     apps::mojom::IntentFilterPtr intent_filter) {
@@ -418,7 +423,7 @@ void AppServiceImpl::RemovePreferredAppForFilter(
   LogPreferredAppUpdateAction(PreferredAppsUpdateAction::kDeleteForFilter);
 }
 
-void AppServiceImpl::SetSupportedLinksPreference(
+void AppServiceMojomImpl::SetSupportedLinksPreference(
     apps::mojom::AppType app_type,
     const std::string& app_id,
     std::vector<apps::mojom::IntentFilterPtr> all_link_filters) {
@@ -493,7 +498,7 @@ void AppServiceImpl::SetSupportedLinksPreference(
   }
 }
 
-void AppServiceImpl::RemoveSupportedLinksPreference(
+void AppServiceMojomImpl::RemoveSupportedLinksPreference(
     apps::mojom::AppType app_type,
     const std::string& app_id) {
   if (!preferred_apps_.IsInitialized()) {
@@ -524,9 +529,9 @@ void AppServiceImpl::RemoveSupportedLinksPreference(
                                                   /*open_in_app=*/false);
 }
 
-void AppServiceImpl::SetResizeLocked(apps::mojom::AppType app_type,
-                                     const std::string& app_id,
-                                     mojom::OptionalBool locked) {
+void AppServiceMojomImpl::SetResizeLocked(apps::mojom::AppType app_type,
+                                          const std::string& app_id,
+                                          mojom::OptionalBool locked) {
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {
     return;
@@ -534,9 +539,9 @@ void AppServiceImpl::SetResizeLocked(apps::mojom::AppType app_type,
   iter->second->SetResizeLocked(app_id, locked);
 }
 
-void AppServiceImpl::SetWindowMode(apps::mojom::AppType app_type,
-                                   const std::string& app_id,
-                                   apps::mojom::WindowMode window_mode) {
+void AppServiceMojomImpl::SetWindowMode(apps::mojom::AppType app_type,
+                                        const std::string& app_id,
+                                        apps::mojom::WindowMode window_mode) {
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {
     return;
@@ -544,19 +549,20 @@ void AppServiceImpl::SetWindowMode(apps::mojom::AppType app_type,
   iter->second->SetWindowMode(app_id, window_mode);
 }
 
-PreferredAppsList& AppServiceImpl::GetPreferredAppsForTesting() {
+PreferredAppsList& AppServiceMojomImpl::GetPreferredAppsForTesting() {
   return preferred_apps_;
 }
 
-void AppServiceImpl::OnPublisherDisconnected(apps::mojom::AppType app_type) {
+void AppServiceMojomImpl::OnPublisherDisconnected(
+    apps::mojom::AppType app_type) {
   publishers_.erase(app_type);
 }
 
-void AppServiceImpl::InitializePreferredApps() {
+void AppServiceMojomImpl::InitializePreferredApps() {
   ReadFromJSON(profile_dir_);
 }
 
-void AppServiceImpl::WriteToJSON(
+void AppServiceMojomImpl::WriteToJSON(
     const base::FilePath& profile_dir,
     const apps::PreferredAppsList& preferred_apps) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -580,11 +586,11 @@ void AppServiceImpl::WriteToJSON(
       FROM_HERE,
       base::BindOnce(&WriteDataBlocking,
                      profile_dir.Append(kPreferredAppsDirname), json_string),
-      base::BindOnce(&AppServiceImpl::WriteCompleted,
+      base::BindOnce(&AppServiceMojomImpl::WriteCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AppServiceImpl::WriteCompleted() {
+void AppServiceMojomImpl::WriteCompleted() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   writing_preferred_apps_ = false;
   if (!should_write_preferred_apps_to_file_) {
@@ -600,17 +606,17 @@ void AppServiceImpl::WriteCompleted() {
   WriteToJSON(profile_dir_, preferred_apps_);
 }
 
-void AppServiceImpl::ReadFromJSON(const base::FilePath& profile_dir) {
+void AppServiceMojomImpl::ReadFromJSON(const base::FilePath& profile_dir) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ReadDataBlocking,
                      profile_dir.Append(kPreferredAppsDirname)),
-      base::BindOnce(&AppServiceImpl::ReadCompleted,
+      base::BindOnce(&AppServiceMojomImpl::ReadCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AppServiceImpl::ReadCompleted(std::string preferred_apps_string) {
+void AppServiceMojomImpl::ReadCompleted(std::string preferred_apps_string) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   bool preferred_apps_upgraded = false;
   if (preferred_apps_string.empty()) {

@@ -4,8 +4,8 @@
 
 source_set("lib") {
   sources = [
-    "app_service_impl.cc",
-    "app_service_impl.h",
+    "app_service_mojom_impl.cc",
+    "app_service_mojom_impl.h",
   ]
 
   deps = [
@@ -24,7 +24,7 @@ source_set("lib") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "app_service_impl_unittest.cc" ]
+  sources = [ "app_service_mojom_impl_unittest.cc" ]
 
   deps = [
     ":lib",

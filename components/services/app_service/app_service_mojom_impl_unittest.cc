@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "components/services/app_service/app_service_impl.h"
+#include "components/services/app_service/app_service_mojom_impl.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
@@ -33,7 +33,7 @@ namespace apps {
 
 class FakePublisher : public apps::PublisherBase {
  public:
-  FakePublisher(AppServiceImpl* impl,
+  FakePublisher(AppServiceMojomImpl* impl,
                 apps::mojom::AppType app_type,
                 std::vector<std::string> initial_app_ids)
       : app_type_(app_type), known_app_ids_(std::move(initial_app_ids)) {
@@ -74,7 +74,8 @@ class FakePublisher : public apps::PublisherBase {
         subscribers_, app_id, accessing_camera, accessing_microphone);
   }
 
-  void UninstallApps(std::vector<std::string> app_ids, AppServiceImpl* impl) {
+  void UninstallApps(std::vector<std::string> app_ids,
+                     AppServiceMojomImpl* impl) {
     for (auto& subscriber : subscribers_) {
       CallOnApps(subscriber.get(), app_ids, /*uninstall=*/true);
     }
@@ -170,7 +171,7 @@ class FakePublisher : public apps::PublisherBase {
 
 class FakeSubscriber : public apps::mojom::Subscriber {
  public:
-  explicit FakeSubscriber(AppServiceImpl* impl) {
+  explicit FakeSubscriber(AppServiceMojomImpl* impl) {
     mojo::PendingRemote<apps::mojom::Subscriber> remote;
     receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
     impl->RegisterSubscriber(std::move(remote), nullptr);
@@ -250,17 +251,17 @@ class FakeSubscriber : public apps::mojom::Subscriber {
   apps::PreferredAppsList preferred_apps_;
 };
 
-class AppServiceImplTest : public testing::Test {
+class AppServiceMojomImplTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_F(AppServiceImplTest, PubSub) {
+TEST_F(AppServiceMojomImplTest, PubSub) {
   const int size_hint_in_dip = 64;
 
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  AppServiceImpl impl(temp_dir_.GetPath());
+  AppServiceMojomImpl impl(temp_dir_.GetPath());
 
   // Start with one subscriber.
   FakeSubscriber sub0(&impl);
@@ -388,10 +389,10 @@ TEST_F(AppServiceImplTest, PubSub) {
   }
 }
 
-TEST_F(AppServiceImplTest, PreferredApps) {
+TEST_F(AppServiceMojomImplTest, PreferredApps) {
   // Test Initialize.
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  AppServiceImpl impl(temp_dir_.GetPath());
+  AppServiceMojomImpl impl(temp_dir_.GetPath());
   impl.GetPreferredAppsForTesting().Init();
 
   const char kAppId1[] = "abcdefg";
@@ -491,7 +492,7 @@ TEST_F(AppServiceImplTest, PreferredApps) {
             sub1.PreferredApps().FindPreferredAppForUrl(another_filter_url));
 }
 
-TEST_F(AppServiceImplTest, PreferredAppsPersistency) {
+TEST_F(AppServiceMojomImplTest, PreferredAppsPersistency) {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
   const char kAppId1[] = "abcdefg";
@@ -500,9 +501,8 @@ TEST_F(AppServiceImplTest, PreferredAppsPersistency) {
   {
     base::RunLoop run_loop_read;
     base::RunLoop run_loop_write;
-    AppServiceImpl impl(temp_dir_.GetPath(),
-                        run_loop_read.QuitClosure(),
-                        run_loop_write.QuitClosure());
+    AppServiceMojomImpl impl(temp_dir_.GetPath(), run_loop_read.QuitClosure(),
+                             run_loop_write.QuitClosure());
     impl.FlushMojoCallsForTesting();
     run_loop_read.Run();
     impl.AddPreferredApp(apps::mojom::AppType::kUnknown, kAppId1,
@@ -515,8 +515,7 @@ TEST_F(AppServiceImplTest, PreferredAppsPersistency) {
   // Create a new impl to initialize preferred apps from the disk.
   {
     base::RunLoop run_loop_read;
-    AppServiceImpl impl(temp_dir_.GetPath(),
-                        run_loop_read.QuitClosure());
+    AppServiceMojomImpl impl(temp_dir_.GetPath(), run_loop_read.QuitClosure());
     impl.FlushMojoCallsForTesting();
     run_loop_read.Run();
     EXPECT_EQ(kAppId1, impl.GetPreferredAppsForTesting().FindPreferredAppForUrl(
@@ -524,10 +523,10 @@ TEST_F(AppServiceImplTest, PreferredAppsPersistency) {
   }
 }
 
-TEST_F(AppServiceImplTest, PreferredAppsSetSupportedLinks) {
+TEST_F(AppServiceMojomImplTest, PreferredAppsSetSupportedLinks) {
   // Test Initialize.
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  AppServiceImpl impl(temp_dir_.GetPath());
+  AppServiceMojomImpl impl(temp_dir_.GetPath());
   impl.GetPreferredAppsForTesting().Init();
 
   const char kAppId1[] = "abcdefg";
@@ -613,10 +612,10 @@ TEST_F(AppServiceImplTest, PreferredAppsSetSupportedLinks) {
 }
 
 // Test that app with overlapped supported links works properly.
-TEST_F(AppServiceImplTest, PreferredAppsOverlap) {
+TEST_F(AppServiceMojomImplTest, PreferredAppsOverlap) {
   // Test Initialize.
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  AppServiceImpl impl(temp_dir_.GetPath());
+  AppServiceMojomImpl impl(temp_dir_.GetPath());
   impl.GetPreferredAppsForTesting().Init();
 
   const char kAppId1[] = "abcdefg";
@@ -708,10 +707,10 @@ TEST_F(AppServiceImplTest, PreferredAppsOverlap) {
 }
 
 // Test that duplicated entry will not be added.
-TEST_F(AppServiceImplTest, PreferredAppsDuplicated) {
+TEST_F(AppServiceMojomImplTest, PreferredAppsDuplicated) {
   // Test Initialize.
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  AppServiceImpl impl(temp_dir_.GetPath());
+  AppServiceMojomImpl impl(temp_dir_.GetPath());
   impl.GetPreferredAppsForTesting().Init();
 
   const char kAppId1[] = "abcdefg";
@@ -746,10 +745,10 @@ TEST_F(AppServiceImplTest, PreferredAppsDuplicated) {
 }
 
 // Test that duplicated entry will not be added for supported links.
-TEST_F(AppServiceImplTest, PreferredAppsDuplicatedSupportedLink) {
+TEST_F(AppServiceMojomImplTest, PreferredAppsDuplicatedSupportedLink) {
   // Test Initialize.
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  AppServiceImpl impl(temp_dir_.GetPath());
+  AppServiceMojomImpl impl(temp_dir_.GetPath());
   impl.GetPreferredAppsForTesting().Init();
 
   const char kAppId1[] = "abcdefg";

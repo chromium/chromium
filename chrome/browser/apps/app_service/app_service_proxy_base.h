@@ -31,7 +31,7 @@ class Profile;
 
 namespace apps {
 
-class AppServiceImpl;
+class AppServiceMojomImpl;
 
 struct IntentLaunchInfo {
   IntentLaunchInfo();
@@ -337,7 +337,7 @@ class AppServiceProxyBase : public KeyedService,
 
   // This proxy privately owns its instance of the App Service. This should not
   // be exposed except through the Mojo interface connected to |app_service_|.
-  std::unique_ptr<apps::AppServiceImpl> app_service_impl_;
+  std::unique_ptr<apps::AppServiceMojomImpl> app_service_mojom_impl_;
 
   mojo::Remote<apps::mojom::AppService> app_service_;
   apps::AppRegistryCache app_registry_cache_;

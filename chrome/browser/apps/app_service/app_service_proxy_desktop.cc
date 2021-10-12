@@ -7,7 +7,7 @@
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 #include "chrome/browser/web_applications/app_service/web_apps.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "components/services/app_service/app_service_impl.h"
+#include "components/services/app_service/app_service_mojom_impl.h"
 
 namespace apps {
 
@@ -52,7 +52,7 @@ void AppServiceProxy::Uninstall(const std::string& app_id,
 }
 
 void AppServiceProxy::FlushMojoCallsForTesting() {
-  app_service_impl_->FlushMojoCallsForTesting();
+  app_service_mojom_impl_->FlushMojoCallsForTesting();
   receivers_.FlushForTesting();
 }
 

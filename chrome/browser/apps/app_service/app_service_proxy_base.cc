@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "components/services/app_service/app_service_impl.h"
+#include "components/services/app_service/app_service_mojom_impl.h"
 #include "components/services/app_service/public/cpp/intent_constants.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -130,9 +130,10 @@ void AppServiceProxyBase::Initialize() {
 
   browser_app_launcher_ = std::make_unique<apps::BrowserAppLauncher>(profile_);
 
-  app_service_impl_ =
-      std::make_unique<apps::AppServiceImpl>(profile_->GetPath());
-  app_service_impl_->BindReceiver(app_service_.BindNewPipeAndPassReceiver());
+  app_service_mojom_impl_ =
+      std::make_unique<apps::AppServiceMojomImpl>(profile_->GetPath());
+  app_service_mojom_impl_->BindReceiver(
+      app_service_.BindNewPipeAndPassReceiver());
 
   if (app_service_.is_connected()) {
     // The AppServiceProxy is a subscriber: something that wants to be able to
