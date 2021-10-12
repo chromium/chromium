@@ -690,6 +690,9 @@ virtual/layout_ng_block_frag/* [ Skip ]
 ### virtual/layout_ng_flex_frag/
 virtual/layout_ng_flex_frag/* [ Skip ]
 
+### virtual/layout_ng_grid_frag/
+virtual/layout_ng_grid_frag/* [ Skip ]
+
 ### virtual/layout_ng_printing/
 virtual/layout_ng_printing/* [ Skip ]
 

@@ -316,6 +316,11 @@
     "args": ["--enable-blink-features=LayoutNGFlexFragmentation"]
   },
   {
+    "prefix": "layout_ng_grid_frag",
+    "bases": ["external/wpt/css/css-break/grid"],
+    "args": ["--enable-blink-features=LayoutNGGridFragmentation"]
+  },
+  {
     "prefix": "layout_ng_printing",
     "bases": ["printing"],
     "args": ["--enable-blink-features=LayoutNGPrinting"]

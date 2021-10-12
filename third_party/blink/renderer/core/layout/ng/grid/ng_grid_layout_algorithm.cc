@@ -21,7 +21,6 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
-  DCHECK(!params.break_token);
 
   border_box_size_ = container_builder_.InitialBorderBoxSize();
 
@@ -380,8 +379,28 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
   // dependent on the block constraints.
   container_builder_.SetHasDescendantThatDependsOnPercentageBlockSize(false);
 
-  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
+  if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
+    // |FinishFragmentation| uses |NGBoxFragmentBuilder::IntrinsicBlockSize| to
+    // determine the final size of this fragment. We don't have an accurate
+    // "per-fragment" intrinsic block-size so just set it to the trailing
+    // border-padding.
+    container_builder_.SetIntrinsicBlockSize(BorderPadding().block_end);
+  } else {
+    container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
+  }
   container_builder_.SetFragmentsTotalBlockSize(block_size);
+
+  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+    FinishFragmentation(Node(), ConstraintSpace(), BorderPadding().block_end,
+                        FragmentainerSpaceAtBfcStart(ConstraintSpace()),
+                        &container_builder_);
+  } else {
+#if DCHECK_IS_ON()
+    // If we're not participating in a fragmentation context, no block
+    // fragmentation related fields should have been set.
+    container_builder_.CheckNoBlockFragmentation();
+#endif
+  }
 
   // Store layout data for use in computed style and devtools.
   auto grid_data = std::make_unique<NGGridData>();
