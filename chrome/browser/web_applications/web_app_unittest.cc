@@ -193,6 +193,7 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
    "manifest_update_time": "1601-01-01 00:00:00.000 UTC",
    "manifest_url": "",
    "note_taking_new_note_url": "",
+   "parent_app_id": "",
    "protocol_handlers": [  ],
    "run_on_os_login_mode": "not run",
    "scope": "",
@@ -385,6 +386,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
    "manifest_update_time": "1970-01-13 21:07:13.914 UTC",
    "manifest_url": "https://example.com/manifest1234.json",
    "note_taking_new_note_url": "",
+   "parent_app_id": "1996267043",
    "protocol_handlers": [ {
       "protocol": "web+test15459094040",
       "url": "https://example.com/15459094040"

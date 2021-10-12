@@ -231,6 +231,8 @@ class WebApp {
     return launch_handler_;
   }
 
+  const absl::optional<AppId>& parent_app_id() const { return parent_app_id_; }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(Source::Type source);
@@ -302,6 +304,7 @@ class WebApp {
   void SetWindowControlsOverlayEnabled(bool enabled);
   void SetStorageIsolated(bool is_storage_isolated);
   void SetLaunchHandler(absl::optional<LaunchHandler> launch_handler);
+  void SetParentAppId(const absl::optional<AppId>& parent_app_id);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
@@ -379,6 +382,7 @@ class WebApp {
   bool window_controls_overlay_enabled_ = false;
   bool is_storage_isolated_ = false;
   absl::optional<LaunchHandler> launch_handler_;
+  absl::optional<AppId> parent_app_id_;
   // New fields must be added to:
   //  - |operator==|
   //  - AsDebugValue()

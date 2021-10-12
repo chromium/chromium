@@ -247,4 +247,8 @@ message WebAppProto {
   }
 
   optional ApiApprovalState file_handler_approval_state = 42;
+
+  // For apps installed via the SubApp API, ID of the parent app that installed
+  // the Sub-app.
+  optional string parent_app_id = 43;
 }

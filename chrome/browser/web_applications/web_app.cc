@@ -361,6 +361,10 @@ void WebApp::SetLaunchHandler(absl::optional<LaunchHandler> launch_handler) {
   launch_handler_ = std::move(launch_handler);
 }
 
+void WebApp::SetParentAppId(const absl::optional<AppId>& parent_app_id) {
+  parent_app_id_ = parent_app_id;
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;
@@ -451,7 +455,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.file_handler_approval_state_,
         app.window_controls_overlay_enabled_,
         app.is_storage_isolated_,
-        app.launch_handler_
+        app.launch_handler_,
+        app.parent_app_id_
         // clang-format on
     );
   };
@@ -597,6 +602,9 @@ base::Value WebApp::AsDebugValue() const {
 
   root.SetStringKey("note_taking_new_note_url",
                     ConvertToString(note_taking_new_note_url_));
+
+  root.SetStringKey("parent_app_id",
+                    parent_app_id_ ? *parent_app_id_ : AppId());
 
   root.SetKey("protocol_handlers", ConvertDebugValueList(protocol_handlers_));
 

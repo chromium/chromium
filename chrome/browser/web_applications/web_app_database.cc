@@ -512,6 +512,10 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
             web_app.launch_handler()->navigate_existing_client));
   }
 
+  if (web_app.parent_app_id_) {
+    local_data->set_parent_app_id(*web_app.parent_app_id_);
+  }
+
   return local_data;
 }
 
@@ -998,6 +1002,10 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
               launch_handler_proto.navigate_existing_client());
     }
     web_app->SetLaunchHandler(std::move(launch_handler));
+  }
+
+  if (local_data.has_parent_app_id()) {
+    web_app->parent_app_id_ = local_data.parent_app_id();
   }
 
   return web_app;

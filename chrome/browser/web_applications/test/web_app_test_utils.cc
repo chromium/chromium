@@ -415,6 +415,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
       base::Time::UnixEpoch() + base::Milliseconds(random.next_uint());
   app->SetManifestUpdateTime(manifest_update_time);
 
+  if (random.next_bool())
+    app->SetParentAppId(base::NumberToString(random.next_uint()));
+
   // `random` should not be used after the chromeos block if the result
   // is expected to be deterministic across cros and non-cros builds.
   if (IsChromeOsDataMandatory()) {
