@@ -10,6 +10,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsCoordinatorFactory.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsCoordinatorImpl.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsDialog.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/ReactionGifDrawable.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/ReactionServiceFactory.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/scene/ReactionLayout.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/scene/SceneCoordinator.java",
@@ -33,6 +34,7 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/gif_player:gif_player_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 
