@@ -1362,31 +1362,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
-    name="PageLoad.Experimental.LayoutInstability.MaxCumulativeShiftScore.AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2"
-    units="scorex10000" expires_after="never">
-<!-- expires-never: used in server pipeline to derive additional metrics -->
-
-  <owner>sullivan@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that has
-    occurred in after back forward cache restore. The gap between two
-    consecutive shifts in a window is not bigger than 1000ms and the maximum
-    window size is 5000ms. This metric's integral value is 10x the fractional
-    cumulative layout shift score described in the explainer. If {Bfcache} is
-    triggered, we record the metric when the user navigates away or closes the
-    page after the page was restored from back-forward cache. Otherwise, we
-    record it at the end of the page lifetime, such as when the page is being
-    navigated away from or when a tab is being closed.
-
-    Replaces
-    PageLoad.LayoutInstability.MaxCumulativeShiftScore.AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms
-    and increases granularity in order to get more coverage for ~5% of values in
-    the 0-0.1 range.
-  </summary>
-</histogram>
-
-<histogram
     name="PageLoad.Experimental.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms.Bucketing50_GoodRange"
     units="scorex10000" expires_after="2021-10-01">
   <obsolete>
@@ -1410,31 +1385,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     back-forward cache. Otherwise, we record it at the end of the page lifetime,
     such as when the page is being navigated away from or when a tab is being
     closed.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Experimental.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2"
-    units="scorex10000" expires_after="never">
-<!-- expires-never: used in server pipeline to derive additional metrics -->
-
-  <owner>sullivan@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that has
-    occurred in a Window. The gap between two consecutive shifts in a window is
-    not bigger than 1000ms and the maximum window size is 5000ms. This metric's
-    integral value is 10x the fractional cumulative layout shift score described
-    in the explainer. If {Bfcache} is triggered, we record the metric when the
-    user navigates away or closes the page after the page was restored from
-    back-forward cache. Otherwise, we record it at the end of the page lifetime,
-    such as when the page is being navigated away from or when a tab is being
-    closed.
-
-    Replaces
-    PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms
-    and increases granularity to get coverage for ~25% of the values in the
-    0-0.1 range.
   </summary>
 </histogram>
 
@@ -2428,6 +2378,56 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     occurred in the main frame after the page is restored from the back-forward
     cache. Recorded when the user navigates away or closes the page after the
     page was restored from back-forward cache.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.LayoutInstability.MaxCumulativeShiftScore.AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2"
+    units="scorex10000" expires_after="never">
+<!-- expires-never: used in server pipeline to derive additional metrics -->
+
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that has
+    occurred in after back forward cache restore. The gap between two
+    consecutive shifts in a window is not bigger than 1000ms and the maximum
+    window size is 5000ms. This metric's integral value is 10x the fractional
+    cumulative layout shift score described in the explainer. If {Bfcache} is
+    triggered, we record the metric when the user navigates away or closes the
+    page after the page was restored from back-forward cache. Otherwise, we
+    record it at the end of the page lifetime, such as when the page is being
+    navigated away from or when a tab is being closed.
+
+    Replaces
+    PageLoad.LayoutInstability.MaxCumulativeShiftScore.AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms
+    and increases granularity in order to get more coverage for ~5% of values in
+    the 0-0.1 range.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2"
+    units="scorex10000" expires_after="never">
+<!-- expires-never: used in server pipeline to derive additional metrics -->
+
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that has
+    occurred in a Window. The gap between two consecutive shifts in a window is
+    not bigger than 1000ms and the maximum window size is 5000ms. This metric's
+    integral value is 10x the fractional cumulative layout shift score described
+    in the explainer. If {Bfcache} is triggered, we record the metric when the
+    user navigates away or closes the page after the page was restored from
+    back-forward cache. Otherwise, we record it at the end of the page lifetime,
+    such as when the page is being navigated away from or when a tab is being
+    closed.
+
+    Replaces
+    PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms
+    and increases granularity to get coverage for ~25% of the values in the
+    0-0.1 range.
   </summary>
 </histogram>
 
