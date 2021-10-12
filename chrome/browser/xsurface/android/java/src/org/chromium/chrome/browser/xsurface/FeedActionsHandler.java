@@ -117,4 +117,11 @@ public interface FeedActionsHandler {
      * Opens the settings to manager autoplay.
      */
     default void openAutoplaySettings() {}
+
+    /**
+     * Tracks the interaction, i.e. viewed/clicked, state of a card specific notice.
+     * @param key Key to identify the type of the notice.
+     * @param data A serialized ContentId protobuf message.
+     */
+    default void trackInteractionForNotice(String key, byte[] data) {}
 }
