@@ -166,7 +166,7 @@ void MergeData(power_bookmarks::PowerBookmarkMeta* meta,
       if (!product_data->has_title()) {
         product_data->set_title(it.second.GetString());
         base::UmaHistogramEnumeration(
-            "Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataUsed",
+            "Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataContent",
             ShoppingDataProviderFallback::kTitle,
             ShoppingDataProviderFallback::kMaxValue);
         data_was_merged = true;
@@ -179,13 +179,13 @@ void MergeData(power_bookmarks::PowerBookmarkMeta* meta,
       if (!meta->has_lead_image()) {
         meta->mutable_lead_image()->set_url(it.second.GetString());
         base::UmaHistogramEnumeration(
-            "Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataUsed",
+            "Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataContent",
             ShoppingDataProviderFallback::kLeadImage,
             ShoppingDataProviderFallback::kMaxValue);
       } else {
         meta->add_fallback_images()->set_url(it.second.GetString());
         base::UmaHistogramEnumeration(
-            "Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataUsed",
+            "Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataContent",
             ShoppingDataProviderFallback::kFallbackImage,
             ShoppingDataProviderFallback::kMaxValue);
       }
@@ -203,7 +203,8 @@ void MergeData(power_bookmarks::PowerBookmarkMeta* meta,
           price_proto->set_amount_micros(amount * kToMicroCurrency);
           price_proto->set_currency_code(it.second.GetString());
           base::UmaHistogramEnumeration(
-              "Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataUsed",
+              "Commerce.PowerBookmarks.ShoppingDataProvider."
+              "FallbackDataContent",
               ShoppingDataProviderFallback::kPrice,
               ShoppingDataProviderFallback::kMaxValue);
           data_was_merged = true;
