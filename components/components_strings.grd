@@ -301,6 +301,7 @@
       <part file="find_in_page_strings.grdp" />
       <part file="flags_strings.grdp" />
       <part file="fullscreen_control_strings.grdp" />
+      <part file="global_media_controls_strings.grdp" />
       <part file="heavy_ad_intervention_strings.grdp" />
       <part file="history_strings.grdp" />
       <part file="javascript_dialogs_strings.grdp" />

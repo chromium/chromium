@@ -14,10 +14,10 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
+#include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_producer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
-#include "media/audio/audio_device_description.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -34,8 +34,6 @@ namespace media_router {
 class CastDialogController;
 }  // namespace media_router
 
-class MediaSessionNotificationProducer;
-
 class MediaNotificationService : public KeyedService {
  public:
   MediaNotificationService(Profile* profile, bool show_from_all_profiles);
@@ -50,6 +48,10 @@ class MediaNotificationService : public KeyedService {
     return item_manager_.get();
   }
 
+  MediaItemUIDeviceSelectorDelegate* device_selector_delegate() {
+    return media_session_notification_producer_.get();
+  }
+
   void SetDialogDelegateForWebContents(
       global_media_controls::MediaDialogDelegate* delegate,
       content::WebContents* contents);
@@ -61,19 +63,6 @@ class MediaNotificationService : public KeyedService {
 
   // True if there are local cast notifications.
   bool HasLocalCastNotifications() const;
-
-  // Used by a |MediaNotificationDeviceSelectorView| to query the system
-  // for connected audio output devices.
-  base::CallbackListSubscription RegisterAudioOutputDeviceDescriptionsCallback(
-      MediaNotificationDeviceProvider::GetOutputDevicesCallback callback);
-
-  // Used by a |MediaNotificationAudioDeviceSelectorView| to become notified of
-  // audio device switching capabilities. The callback will be immediately run
-  // with the current availability.
-  base::CallbackListSubscription
-  RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
-      const std::string& id,
-      base::RepeatingCallback<void(bool)> callback);
 
   void OnStartPresentationContextCreated(
       std::unique_ptr<media_router::StartPresentationContext> context);

@@ -7,16 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-MockMediaNotificationItem::MockMediaNotificationItem() = default;
-MockMediaNotificationItem::~MockMediaNotificationItem() = default;
-
-base::WeakPtr<MockMediaNotificationItem>
-MockMediaNotificationItem::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
 
 MockWebContentsPresentationManager::MockWebContentsPresentationManager() =
     default;

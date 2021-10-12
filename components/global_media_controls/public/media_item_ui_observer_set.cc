@@ -53,9 +53,4 @@ void MediaItemUIObserverSet::OnMediaItemUIDestroyed(const std::string& id) {
   StopObserving(id);
 }
 
-void MediaItemUIObserverSet::OnAudioSinkChosen(const std::string& id,
-                                               const std::string& sink_id) {
-  owner_->OnAudioSinkChosen(id, sink_id);
-}
-
 }  // namespace global_media_controls

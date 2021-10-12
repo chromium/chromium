@@ -4,41 +4,10 @@
 
 #include "components/global_media_controls/public/test/mock_media_item_producer.h"
 
-#include "components/media_message_center/media_notification_item.h"
+#include "components/media_message_center/mock_media_notification_item.h"
 
 namespace global_media_controls {
 namespace test {
-
-namespace {
-
-class MockMediaNotificationItem
-    : public media_message_center::MediaNotificationItem {
- public:
-  MockMediaNotificationItem() = default;
-  MockMediaNotificationItem(const MockMediaNotificationItem&) = delete;
-  MockMediaNotificationItem& operator=(const MockMediaNotificationItem&) =
-      delete;
-  ~MockMediaNotificationItem() override = default;
-
-  MOCK_METHOD(void, SetView, (media_message_center::MediaNotificationView*));
-  MOCK_METHOD(void,
-              OnMediaSessionActionButtonPressed,
-              (media_session::mojom::MediaSessionAction));
-  MOCK_METHOD(void, SeekTo, (base::TimeDelta));
-  MOCK_METHOD(void, Dismiss, ());
-  MOCK_METHOD(void, SetVolume, (float));
-  MOCK_METHOD(void, SetMute, (bool));
-  MOCK_METHOD(media_message_center::SourceType, SourceType, ());
-
-  base::WeakPtr<MockMediaNotificationItem> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  base::WeakPtrFactory<MockMediaNotificationItem> weak_ptr_factory_{this};
-};
-
-}  // namespace
 
 struct MockMediaItemProducer::Item {
  public:
@@ -58,7 +27,7 @@ struct MockMediaItemProducer::Item {
   bool active;
   bool frozen;
   bool playing;
-  MockMediaNotificationItem item;
+  media_message_center::test::MockMediaNotificationItem item;
 };
 
 MockMediaItemProducer::MockMediaItemProducer() = default;

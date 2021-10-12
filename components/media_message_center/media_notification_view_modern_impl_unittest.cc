@@ -19,8 +19,8 @@
 #include "components/media_message_center/media_controls_progress_view.h"
 #include "components/media_message_center/media_notification_background_impl.h"
 #include "components/media_message_center/media_notification_container.h"
-#include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
+#include "components/media_message_center/mock_media_notification_item.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -51,32 +51,6 @@ const gfx::Size kWidgetSize(500, 500);
 
 constexpr int kViewWidth = 350;
 const gfx::Size kViewSize(kViewWidth, 400);
-
-class MockMediaNotificationItem : public MediaNotificationItem {
- public:
-  MockMediaNotificationItem() = default;
-  MockMediaNotificationItem(const MockMediaNotificationItem&) = delete;
-  MockMediaNotificationItem& operator=(const MockMediaNotificationItem&) =
-      delete;
-  ~MockMediaNotificationItem() override = default;
-
-  MOCK_METHOD(void, SetView, (MediaNotificationView*));
-  MOCK_METHOD(void,
-              OnMediaSessionActionButtonPressed,
-              (media_session::mojom::MediaSessionAction));
-  MOCK_METHOD(void, SeekTo, (base::TimeDelta));
-  MOCK_METHOD(void, Dismiss, ());
-  MOCK_METHOD(void, SetVolume, (float));
-  MOCK_METHOD(void, SetMute, (bool));
-  MOCK_METHOD(media_message_center::SourceType, SourceType, ());
-
-  base::WeakPtr<MockMediaNotificationItem> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  base::WeakPtrFactory<MockMediaNotificationItem> weak_ptr_factory_{this};
-};
 
 class MockMediaNotificationContainer : public MediaNotificationContainer {
  public:
@@ -172,7 +146,7 @@ class MediaNotificationViewModernImplTest : public views::ViewsTestBase {
     return view()->accessible_name_;
   }
 
-  MockMediaNotificationItem& item() { return item_; }
+  test::MockMediaNotificationItem& item() { return item_; }
 
   views::Label* title_label() const { return view()->title_label_; }
 
@@ -274,7 +248,7 @@ class MediaNotificationViewModernImplTest : public views::ViewsTestBase {
   base::flat_set<MediaSessionAction> actions_;
 
   MockMediaNotificationContainer container_;
-  MockMediaNotificationItem item_;
+  test::MockMediaNotificationItem item_;
   MediaNotificationViewModernImpl* view_;
   std::unique_ptr<views::Widget> widget_;
 };

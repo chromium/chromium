@@ -2,71 +2,60 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_CONTAINER_IMPL_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_CONTAINER_IMPL_VIEW_H_
+#ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_VIEW_H_
+#define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_VIEW_H_
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chrome/browser/ui/views/global_media_controls/global_media_controls_types.h"
-#include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
+#include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_item_ui.h"
+#include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
+#include "components/global_media_controls/public/views/media_item_ui_footer.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_view_impl.h"
-#include "media/audio/audio_device_description.h"
 #include "media/base/media_switches.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/widget/unique_widget_ptr.h"
-
-namespace global_media_controls {
-class MediaItemUIObserver;
-}  // namespace global_media_controls
 
 namespace media_message_center {
 class MediaNotificationItem;
 }  // namespace media_message_center
 
 namespace views {
-class LabelButton;
 class ImageButton;
 class SlideOutController;
 }  // namespace views
 
-class CastMediaNotificationItem;
-class MediaNotificationDeviceSelectorView;
-class MediaNotificationFooterView;
-class MediaNotificationService;
-class Profile;
+namespace global_media_controls {
 
-// MediaNotificationContainerImplView holds a media notification for display
+class MediaItemUIObserver;
+
+// MediaItemUIView holds a media notification for display
 // within the MediaDialogView. The media notification shows metadata for a media
 // session and can control playback.
-class MediaNotificationContainerImplView
+class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
     : public views::Button,
       public media_message_center::MediaNotificationContainer,
       public global_media_controls::MediaItemUI,
-      public MediaNotificationDeviceSelectorViewDelegate,
       public views::SlideOutControllerDelegate,
       public views::FocusChangeListener {
  public:
-  METADATA_HEADER(MediaNotificationContainerImplView);
+  METADATA_HEADER(MediaItemUIView);
 
-  MediaNotificationContainerImplView(
+  MediaItemUIView(
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
-      MediaNotificationService* service,
-      GlobalMediaControlsEntryPoint entry_point,
-      Profile* profile,
+      std::unique_ptr<MediaItemUIFooter> footer_view,
+      std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view,
       absl::optional<media_message_center::NotificationTheme> theme =
           absl::nullopt);
-  MediaNotificationContainerImplView(
-      const MediaNotificationContainerImplView&) = delete;
-  MediaNotificationContainerImplView& operator=(
-      const MediaNotificationContainerImplView&) = delete;
-  ~MediaNotificationContainerImplView() override;
+  MediaItemUIView(const MediaItemUIView&) = delete;
+  MediaItemUIView& operator=(const MediaItemUIView&) = delete;
+  ~MediaItemUIView() override;
 
   // views::Button:
   void AddedToWidget() override;
@@ -105,27 +94,17 @@ class MediaNotificationContainerImplView
   void RemoveObserver(
       global_media_controls::MediaItemUIObserver* observer) override;
 
-  // MediaNotificationDeviceSelectorViewDelegate
-  // Called when an audio device has been selected for output.
-  void OnAudioSinkChosen(const std::string& sink_id) override;
-  void OnDeviceSelectorViewSizeChanged() override;
-  base::CallbackListSubscription RegisterAudioOutputDeviceDescriptionsCallback(
-      MediaNotificationDeviceProvider::GetOutputDevicesCallbackList::
-          CallbackType callback) override;
-  base::CallbackListSubscription
-  RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
-      base::RepeatingCallback<void(bool)> callback) override;
+  void OnDeviceSelectorViewSizeChanged();
 
   const std::u16string& GetTitle() const;
 
   views::ImageButton* GetDismissButtonForTesting();
-  views::Button* GetStopCastingButtonForTesting();
 
   media_message_center::MediaNotificationViewImpl* view_for_testing() {
     DCHECK(!base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI));
     return static_cast<media_message_center::MediaNotificationViewImpl*>(view_);
   }
-  MediaNotificationDeviceSelectorView* device_selector_view_for_testing() {
+  MediaItemUIDeviceSelector* device_selector_view_for_testing() {
     return device_selector_view_;
   }
 
@@ -135,12 +114,6 @@ class MediaNotificationContainerImplView
  private:
   class DismissButton;
 
-  void AddStopCastButton(CastMediaNotificationItem* item);
-  void AddDeviceSelectorView(bool is_local_media_session,
-                             bool show_expand_button);
-  void StopCasting(CastMediaNotificationItem* item);
-  void UpdateStopCastButtonIcon();
-  void UpdateStopCastButtonBackground();
   void UpdateDismissButtonIcon();
   void UpdateDismissButtonBackground();
   void UpdateDismissButtonVisibility();
@@ -167,12 +140,10 @@ class MediaNotificationContainerImplView
 
   DismissButton* dismiss_button_ = nullptr;
   media_message_center::MediaNotificationView* view_ = nullptr;
-  MediaNotificationDeviceSelectorView* device_selector_view_ = nullptr;
-  MediaNotificationFooterView* footer_view_ = nullptr;
 
-  // Only shows up for cast notifications.
-  views::View* stop_button_strip_ = nullptr;
-  views::LabelButton* stop_cast_button_ = nullptr;
+  MediaItemUIFooter* const footer_view_;
+
+  MediaItemUIDeviceSelector* device_selector_view_ = nullptr;
 
   SkColor foreground_color_;
   SkColor background_color_;
@@ -184,18 +155,14 @@ class MediaNotificationContainerImplView
 
   bool is_expanded_ = false;
 
-  std::string audio_sink_id_ = media::AudioDeviceDescription::kDefaultDeviceId;
-
   base::ObserverList<global_media_controls::MediaItemUIObserver> observers_;
 
   // Handles gesture events for swiping to dismiss notifications.
   std::unique_ptr<views::SlideOutController> slide_out_controller_;
 
-  MediaNotificationService* const service_;
-
   const bool is_cros_;
-  const GlobalMediaControlsEntryPoint entry_point_;
-  Profile* const profile_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_CONTAINER_IMPL_VIEW_H_
+}  // namespace global_media_controls
+
+#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_VIEW_H_

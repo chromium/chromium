@@ -11,11 +11,11 @@
 #include "chrome/browser/ui/media_router/media_router_file_dialog.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
-#include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
-#include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view.h"
+#include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_view.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
 #include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
+#include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "ui/events/base_event_utils.h"
@@ -398,11 +398,11 @@ CastDialogSinkButton* MediaRouterUiForTest::GetSinkButtonFromCastDialog(
 
 CastDialogSinkButton* MediaRouterUiForTest::GetSinkButtonFromGMCDialog(
     const std::string& sink_name) const {
-  auto notifications =
-      MediaDialogView::GetDialogViewForTesting()->GetNotificationsForTesting();
-  MediaNotificationContainerImplView* view = notifications.begin()->second;
-  auto sink_buttons =
-      view->device_selector_view_for_testing()->GetCastSinkButtonsForTesting();
+  auto items = MediaDialogView::GetDialogViewForTesting()->GetItemsForTesting();
+  global_media_controls::MediaItemUIView* view = items.begin()->second;
+  auto* device_selector = static_cast<MediaItemUIDeviceSelectorView*>(
+      view->device_selector_view_for_testing());
+  auto sink_buttons = device_selector->GetCastSinkButtonsForTesting();
   return GetSinkButtonWithName(sink_buttons, sink_name);
 }
 

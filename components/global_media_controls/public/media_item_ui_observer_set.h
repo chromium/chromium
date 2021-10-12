@@ -32,8 +32,6 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIObserverSet
   void OnMediaItemUIClicked(const std::string& id) override;
   void OnMediaItemUIDismissed(const std::string& id) override;
   void OnMediaItemUIDestroyed(const std::string& id) override;
-  void OnAudioSinkChosen(const std::string& id,
-                         const std::string& sink_id) override;
 
  private:
   MediaItemUIObserver* const owner_;

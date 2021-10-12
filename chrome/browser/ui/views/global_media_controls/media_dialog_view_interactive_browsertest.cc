@@ -16,8 +16,6 @@
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view_observer.h"
-#include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
-#include "chrome/browser/ui/views/global_media_controls/media_notification_list_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/new_badge_label.h"
@@ -26,6 +24,8 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/global_media_controls/public/views/media_item_ui_list_view.h"
+#include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/media_router/browser/test/mock_media_router.h"
@@ -120,12 +120,12 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
     Wait();
   }
 
-  void WaitForNotificationCount(int count) {
-    if (GetNotificationCount() == count)
+  void WaitForItemCount(int count) {
+    if (GetItemCount() == count)
       return;
 
-    waiting_for_notification_count_ = true;
-    expected_notification_count_ = count;
+    waiting_for_item_count_ = true;
+    expected_item_count_ = count;
     observed_dialog_ = MediaDialogView::GetDialogViewForTesting();
     observed_dialog_->AddObserver(this);
     Wait();
@@ -154,14 +154,14 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
     MaybeStopWaiting();
   }
 
-  void CheckNotificationCount() {
-    if (!waiting_for_notification_count_)
+  void CheckItemCount() {
+    if (!waiting_for_item_count_)
       return;
 
-    if (GetNotificationCount() != expected_notification_count_)
+    if (GetItemCount() != expected_item_count_)
       return;
 
-    waiting_for_notification_count_ = false;
+    waiting_for_item_count_ = false;
     MaybeStopWaiting();
   }
 
@@ -181,8 +181,7 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
       return;
 
     if (!waiting_for_dialog_opened_ && !waiting_for_button_shown_ &&
-        !waiting_for_dialog_to_contain_text_ &&
-        !waiting_for_notification_count_ &&
+        !waiting_for_dialog_to_contain_text_ && !waiting_for_item_count_ &&
         !waiting_for_pip_visibility_changed_) {
       run_loop_->Quit();
     }
@@ -194,14 +193,13 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
     run_loop_->Run();
   }
 
-  // Checks the title and artist of each notification in the dialog to see if
+  // Checks the title and artist of each item in the dialog to see if
   // |text| is contained anywhere in the dialog.
   bool DialogContainsText(const std::u16string& text) {
-    for (const auto& notification_pair :
-         MediaDialogView::GetDialogViewForTesting()
-             ->GetNotificationsForTesting()) {
+    for (const auto& item_pair :
+         MediaDialogView::GetDialogViewForTesting()->GetItemsForTesting()) {
       const media_message_center::MediaNotificationViewImpl* view =
-          notification_pair.second->view_for_testing();
+          item_pair.second->view_for_testing();
       if (view->title_label_for_testing()->GetText().find(text) !=
               std::string::npos ||
           view->artist_label_for_testing()->GetText().find(text) !=
@@ -214,19 +212,19 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
   }
 
   bool CheckPictureInPictureButtonVisibility(bool visible) {
-    const auto notification_pair = MediaDialogView::GetDialogViewForTesting()
-                                       ->GetNotificationsForTesting()
-                                       .begin();
+    const auto item_pair = MediaDialogView::GetDialogViewForTesting()
+                               ->GetItemsForTesting()
+                               .begin();
     const media_message_center::MediaNotificationViewImpl* view =
-        notification_pair->second->view_for_testing();
+        item_pair->second->view_for_testing();
 
     return view->picture_in_picture_button_for_testing()->GetVisible() ==
            visible;
   }
 
-  int GetNotificationCount() {
+  int GetItemCount() {
     return MediaDialogView::GetDialogViewForTesting()
-        ->GetNotificationsForTesting()
+        ->GetItemsForTesting()
         .size();
   }
 
@@ -235,13 +233,13 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
 
   bool waiting_for_dialog_opened_ = false;
   bool waiting_for_button_shown_ = false;
-  bool waiting_for_notification_count_ = false;
+  bool waiting_for_item_count_ = false;
   bool waiting_for_pip_visibility_changed_ = false;
 
   MediaDialogView* observed_dialog_ = nullptr;
   bool waiting_for_dialog_to_contain_text_ = false;
   std::u16string expected_text_;
-  int expected_notification_count_ = 0;
+  int expected_item_count_ = 0;
   bool expected_pip_visibility_ = false;
 };
 
@@ -470,8 +468,8 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
         .WaitForDialogToContainText(text);
   }
 
-  void WaitForNotificationCount(int count) {
-    MediaToolbarButtonWatcher(GetToolbarIcon()).WaitForNotificationCount(count);
+  void WaitForItemCount(int count) {
+    MediaToolbarButtonWatcher(GetToolbarIcon()).WaitForItemCount(count);
   }
 
   void WaitForPictureInPictureButtonVisibility(bool visible) {
@@ -511,12 +509,11 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     ClickButton(live_caption_button);
   }
 
-  void ClickNotificationByTitle(const std::u16string& title) {
+  void ClickItemByTitle(const std::u16string& title) {
     ASSERT_TRUE(MediaDialogView::IsShowing());
-    MediaNotificationContainerImplView* notification =
-        GetNotificationByTitle(title);
-    ASSERT_NE(nullptr, notification);
-    ClickButton(notification);
+    global_media_controls::MediaItemUIView* item = GetItemByTitle(title);
+    ASSERT_NE(nullptr, item);
+    ClickButton(item);
   }
 
   content::WebContents* GetActiveWebContents() {
@@ -529,13 +526,13 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
                                  ->GetListViewForTesting()
                                  ->contents()
                                  ->children()) {
-      MediaNotificationContainerImplView* notification =
-          static_cast<MediaNotificationContainerImplView*>(view);
+      global_media_controls::MediaItemUIView* item =
+          static_cast<global_media_controls::MediaItemUIView*>(view);
 
-      if (seen_paused && notification->is_playing_for_testing())
+      if (seen_paused && item->is_playing_for_testing())
         return false;
 
-      if (!seen_paused && !notification->is_playing_for_testing())
+      if (!seen_paused && !item->is_playing_for_testing())
         seen_paused = true;
     }
 
@@ -612,16 +609,15 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     return nullptr;
   }
 
-  // Finds a MediaNotificationContainerImplView by title.
-  MediaNotificationContainerImplView* GetNotificationByTitle(
+  // Finds a global_media_controls::MediaItemUIView by title.
+  global_media_controls::MediaItemUIView* GetItemByTitle(
       const std::u16string& title) {
-    for (const auto& notification_pair :
-         MediaDialogView::GetDialogViewForTesting()
-             ->GetNotificationsForTesting()) {
+    for (const auto& item_pair :
+         MediaDialogView::GetDialogViewForTesting()->GetItemsForTesting()) {
       const media_message_center::MediaNotificationViewImpl* view =
-          notification_pair.second->view_for_testing();
+          item_pair.second->view_for_testing();
       if (view->title_label_for_testing()->GetText() == title)
-        return notification_pair.second;
+        return item_pair.second;
     }
     return nullptr;
   }
@@ -723,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 
   // The view containing playback controls should not be mirrored.
   EXPECT_FALSE(MediaDialogView::GetDialogViewForTesting()
-                   ->GetNotificationsForTesting()
+                   ->GetItemsForTesting()
                    .begin()
                    ->second->view_for_testing()
                    ->playback_button_container_for_testing()
@@ -788,7 +784,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsMultipleMediaSessions) {
 }
 
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
-                       ClickingOnNotificationGoesBackToTab) {
+                       ClickingOnItemGoesBackToTab) {
   // Open a tab and play media.
   OpenTestURL();
   StartPlayback();
@@ -818,8 +814,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   // The second tab should be the active tab.
   EXPECT_EQ(second_web_contents, GetActiveWebContents());
 
-  // Clicking the first notification should make the first tab active.
-  ClickNotificationByTitle(u"Big Buck Bunny");
+  // Clicking the first item should make the first tab active.
+  ClickItemByTitle(u"Big Buck Bunny");
 
   // Allow the MediaSessionNotificationItem to flush its message to the
   // MediaSessionImpl. There isn't currently a clean way for us to access the
@@ -850,7 +846,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsCastSession) {
   EXPECT_TRUE(WaitForDialogOpened());
   WaitForDialogToContainText(
       base::UTF8ToUTF16(route_description + " \xC2\xB7 " + sink_name));
-  WaitForNotificationCount(1);
+  WaitForItemCount(1);
 }
 
 #if defined(OS_MAC) && defined(ARCH_CPU_ARM64)

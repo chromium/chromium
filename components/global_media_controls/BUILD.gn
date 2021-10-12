@@ -4,6 +4,7 @@
 
 component("global_media_controls") {
   public = [
+    "public/constants.h",
     "public/media_dialog_delegate.h",
     "public/media_item_manager.h",
     "public/media_item_manager_observer.h",
@@ -11,24 +12,36 @@ component("global_media_controls") {
     "public/media_item_ui.h",
     "public/media_item_ui_observer.h",
     "public/media_item_ui_observer_set.h",
+    "public/views/media_item_ui_device_selector.h",
+    "public/views/media_item_ui_footer.h",
+    "public/views/media_item_ui_list_view.h",
+    "public/views/media_item_ui_view.h",
   ]
 
   defines = [ "IS_GLOBAL_MEDIA_CONTROLS_IMPL" ]
 
   deps = [
     "//base",
+    "//components/strings:components_strings_grit",
+    "//components/vector_icons",
+    "//media",
     "//skia",
+    "//ui/color",
+    "//ui/message_center/public/cpp",
   ]
 
   public_deps = [
     "//components/media_message_center",
     "//services/media_session/public/cpp",
+    "//ui/views",
   ]
 
   sources = [
     "media_item_manager_impl.cc",
     "media_item_manager_impl.h",
     "public/media_item_ui_observer_set.cc",
+    "public/views/media_item_ui_list_view.cc",
+    "public/views/media_item_ui_view.cc",
   ]
 
   friend = [ ":*" ]
@@ -37,15 +50,23 @@ component("global_media_controls") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "media_item_manager_impl_unittest.cc" ]
+  sources = [
+    "media_item_manager_impl_unittest.cc",
+    "public/views/media_item_ui_list_view_unittest.cc",
+    "public/views/media_item_ui_view_unittest.cc",
+  ]
 
   deps = [
     ":global_media_controls",
     ":test_support",
     "//base/test:test_support",
+    "//components/media_message_center:test_support",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/display:test_support",
+    "//ui/events:test_support",
+    "//ui/views:test_support",
   ]
 }
 
@@ -61,12 +82,17 @@ static_library("test_support") {
     "public/test/mock_media_item_manager_observer.h",
     "public/test/mock_media_item_producer.cc",
     "public/test/mock_media_item_producer.h",
+    "public/test/mock_media_item_ui_device_selector.cc",
+    "public/test/mock_media_item_ui_device_selector.h",
+    "public/test/mock_media_item_ui_footer.cc",
+    "public/test/mock_media_item_ui_footer.h",
     "public/test/mock_media_item_ui_observer.cc",
     "public/test/mock_media_item_ui_observer.h",
   ]
 
   deps = [
     ":global_media_controls",
+    "//components/media_message_center:test_support",
     "//skia",
     "//testing/gmock",
   ]

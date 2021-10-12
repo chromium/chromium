@@ -2,8 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_GLOBAL_MEDIA_CONTROLS_TYPES_H_
-#define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_GLOBAL_MEDIA_CONTROLS_TYPES_H_
+#ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_CONSTANTS_H_
+#define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_CONSTANTS_H_
+
+#include "third_party/skia/include/core/SkColor.h"
+
+namespace global_media_controls {
+
+constexpr SkColor kDefaultForegroundColor = SK_ColorBLACK;
+
+constexpr SkColor kDefaultBackgroundColor = SK_ColorTRANSPARENT;
 
 // The entry point through which the dialog was opened.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -31,4 +39,6 @@ enum class GlobalMediaControlsCastActionAndEntryPoint {
   kMaxValue = kStopViaSystemTray,
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_GLOBAL_MEDIA_CONTROLS_TYPES_H_
+}  // namespace global_media_controls
+
+#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_CONSTANTS_H_

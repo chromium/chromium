@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view.h"
+#include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_view.h"
 
 #include <memory>
 #include <string>
@@ -15,10 +15,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/global_media_controls/media_item_ui_device_selector_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
-#include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_switches.h"
@@ -34,10 +34,9 @@ using media_router::UIMediaSinkState;
 using testing::_;
 using testing::NiceMock;
 
-class MediaNotificationContainerObserver;
-
 namespace {
 
+constexpr char kItemId[] = "item_id";
 constexpr char kSinkId[] = "sink_id";
 constexpr char kSinkFriendlyName[] = "Nest Hub";
 constexpr char16_t kSinkFriendlyName16[] = u"Nest Hub";
@@ -90,18 +89,17 @@ class MockMediaNotificationDeviceProvider
   GetOutputDevicesCallback output_devices_callback_;
 };
 
-class MockMediaNotificationDeviceSelectorViewDelegate
-    : public MediaNotificationDeviceSelectorViewDelegate {
+class MockMediaItemUIDeviceSelectorDelegate
+    : public MediaItemUIDeviceSelectorDelegate {
  public:
-  MockMediaNotificationDeviceSelectorViewDelegate() {
+  MockMediaItemUIDeviceSelectorDelegate() {
     provider_ = std::make_unique<MockMediaNotificationDeviceProvider>();
   }
 
   MOCK_METHOD(void,
               OnAudioSinkChosen,
-              (const std::string& sink_id),
+              (const std::string& item_id, const std::string& sink_id),
               (override));
-  MOCK_METHOD(void, OnDeviceSelectorViewSizeChanged, (), (override));
 
   base::CallbackListSubscription RegisterAudioOutputDeviceDescriptionsCallback(
       MediaNotificationDeviceProvider::GetOutputDevicesCallbackList::
@@ -114,6 +112,7 @@ class MockMediaNotificationDeviceSelectorViewDelegate
 
   base::CallbackListSubscription
   RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
+      const std::string& item_id,
       base::RepeatingCallback<void(bool)> callback) override {
     callback.Run(supports_switching);
     supports_switching_callback_ = std::move(callback);
@@ -144,12 +143,13 @@ class MockCastDialogController : public CastDialogController {
       void(base::OnceCallback<void(const ui::SelectedFileInfo*)> callback));
   MOCK_METHOD1(ClearIssue, void(const media_router::Issue::Id& issue_id));
 };
+
 }  // anonymous namespace
 
-class MediaNotificationDeviceSelectorViewTest : public ChromeViewsTestBase {
+class MediaItemUIDeviceSelectorViewTest : public ChromeViewsTestBase {
  public:
-  MediaNotificationDeviceSelectorViewTest() = default;
-  ~MediaNotificationDeviceSelectorViewTest() override = default;
+  MediaItemUIDeviceSelectorViewTest() = default;
+  ~MediaItemUIDeviceSelectorViewTest() override = default;
 
   // ChromeViewsTestBase
   void SetUp() override {
@@ -163,8 +163,7 @@ class MediaNotificationDeviceSelectorViewTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  void AddAudioDevices(
-      MockMediaNotificationDeviceSelectorViewDelegate& delegate) {
+  void AddAudioDevices(MockMediaItemUIDeviceSelectorDelegate& delegate) {
     auto* provider = delegate.GetProvider();
     provider->AddDevice("Speaker", "1");
     provider->AddDevice("Headphones", "2");
@@ -189,27 +188,29 @@ class MediaNotificationDeviceSelectorViewTest : public ChromeViewsTestBase {
     return base::UTF16ToUTF8(static_cast<views::LabelButton*>(view)->GetText());
   }
 
-  std::unique_ptr<MediaNotificationDeviceSelectorView> CreateDeviceSelectorView(
-      MockMediaNotificationDeviceSelectorViewDelegate* delegate,
+  std::unique_ptr<MediaItemUIDeviceSelectorView> CreateDeviceSelectorView(
+      MockMediaItemUIDeviceSelectorDelegate* delegate,
       std::unique_ptr<MockCastDialogController> controller =
           std::make_unique<NiceMock<MockCastDialogController>>(),
-      const std::string& device_description = "1",
+      const std::string& current_device = "1",
       bool has_audio_output = true,
-      GlobalMediaControlsEntryPoint entry_point =
-          GlobalMediaControlsEntryPoint::kToolbarIcon) {
-    return std::make_unique<MediaNotificationDeviceSelectorView>(
-        delegate, std::move(controller), has_audio_output, device_description,
-        gfx::kPlaceholderColor, gfx::kPlaceholderColor, entry_point);
+      global_media_controls::GlobalMediaControlsEntryPoint entry_point =
+          global_media_controls::GlobalMediaControlsEntryPoint::kToolbarIcon) {
+    auto device_selector_view = std::make_unique<MediaItemUIDeviceSelectorView>(
+        kItemId, delegate, std::move(controller), has_audio_output,
+        entry_point);
+    device_selector_view->UpdateCurrentAudioDevice(current_device);
+    return device_selector_view;
   }
 
-  std::unique_ptr<MediaNotificationDeviceSelectorView> view_;
+  std::unique_ptr<MediaItemUIDeviceSelectorView> view_;
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceButtonsCreated) {
+TEST_F(MediaItemUIDeviceSelectorViewTest, DeviceButtonsCreated) {
   // Buttons should be created for every device reported by the provider.
-  NiceMock<MockMediaNotificationDeviceSelectorViewDelegate> delegate;
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
   AddAudioDevices(delegate);
   view_ = CreateDeviceSelectorView(&delegate);
   view_->OnModelUpdated(CreateModelWithSinks({CreateMediaSink()}));
@@ -225,9 +226,8 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceButtonsCreated) {
   EXPECT_EQ(EntryLabelText(container_children.at(3)), kSinkFriendlyName);
 }
 
-TEST_F(MediaNotificationDeviceSelectorViewTest,
-       ExpandButtonOpensEntryContainer) {
-  NiceMock<MockMediaNotificationDeviceSelectorViewDelegate> delegate;
+TEST_F(MediaItemUIDeviceSelectorViewTest, ExpandButtonOpensEntryContainer) {
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
   AddAudioDevices(delegate);
   view_ = CreateDeviceSelectorView(&delegate);
 
@@ -237,9 +237,8 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   EXPECT_TRUE(view_->device_entry_views_container_->GetVisible());
 }
 
-TEST_F(MediaNotificationDeviceSelectorViewTest,
-       DeviceEntryContainerVisibility) {
-  NiceMock<MockMediaNotificationDeviceSelectorViewDelegate> delegate;
+TEST_F(MediaItemUIDeviceSelectorViewTest, DeviceEntryContainerVisibility) {
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
   AddAudioDevices(delegate);
 
   // The device entry container should be collapsed if the media dialog is
@@ -252,30 +251,29 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   view_ = CreateDeviceSelectorView(
       &delegate, std::make_unique<NiceMock<MockCastDialogController>>(), "1",
       /* has_audio_output */ true,
-      GlobalMediaControlsEntryPoint::kPresentation);
+      global_media_controls::GlobalMediaControlsEntryPoint::kPresentation);
   EXPECT_TRUE(view_->device_entry_views_container_->GetVisible());
 }
 
-TEST_F(MediaNotificationDeviceSelectorViewTest,
+TEST_F(MediaItemUIDeviceSelectorViewTest,
        AudioDeviceButtonClickNotifiesContainer) {
   // When buttons are clicked the media notification delegate should be
   // informed.
-  NiceMock<MockMediaNotificationDeviceSelectorViewDelegate> delegate;
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
   AddAudioDevices(delegate);
   view_ = CreateDeviceSelectorView(&delegate);
 
-  EXPECT_CALL(delegate, OnAudioSinkChosen("1")).Times(1);
-  EXPECT_CALL(delegate, OnAudioSinkChosen("2")).Times(1);
-  EXPECT_CALL(delegate, OnAudioSinkChosen("3")).Times(1);
+  EXPECT_CALL(delegate, OnAudioSinkChosen(kItemId, "1")).Times(1);
+  EXPECT_CALL(delegate, OnAudioSinkChosen(kItemId, "2")).Times(1);
+  EXPECT_CALL(delegate, OnAudioSinkChosen(kItemId, "3")).Times(1);
 
   for (views::View* child : view_->device_entry_views_container_->children()) {
     SimulateButtonClick(child);
   }
 }
 
-TEST_F(MediaNotificationDeviceSelectorViewTest,
-       CastDeviceButtonClickStartsCasting) {
-  NiceMock<MockMediaNotificationDeviceSelectorViewDelegate> delegate;
+TEST_F(MediaItemUIDeviceSelectorViewTest, CastDeviceButtonClickStartsCasting) {
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
   auto cast_controller = std::make_unique<NiceMock<MockCastDialogController>>();
   auto* cast_controller_ptr = cast_controller.get();
   view_ = CreateDeviceSelectorView(&delegate, std::move(cast_controller));
@@ -318,10 +316,10 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   }
 }
 
-TEST_F(MediaNotificationDeviceSelectorViewTest, CurrentAudioDeviceHighlighted) {
+TEST_F(MediaItemUIDeviceSelectorViewTest, CurrentAudioDeviceHighlighted) {
   // The 'current' audio device should be highlighted in the UI and appear
   // before other devices.
-  NiceMock<MockMediaNotificationDeviceSelectorViewDelegate> delegate;
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
   AddAudioDevices(delegate);
   view_ = CreateDeviceSelectorView(
       &delegate, std::make_unique<NiceMock<MockCastDialogController>>(), "3");
@@ -331,10 +329,9 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, CurrentAudioDeviceHighlighted) {
   EXPECT_TRUE(IsHighlighted(first_entry));
 }
 
-TEST_F(MediaNotificationDeviceSelectorViewTest,
-       AudioDeviceHighlightedOnChange) {
+TEST_F(MediaItemUIDeviceSelectorViewTest, AudioDeviceHighlightedOnChange) {
   // When the audio output device changes, the UI should highlight that one.
-  NiceMock<MockMediaNotificationDeviceSelectorViewDelegate> delegate;
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
   AddAudioDevices(delegate);
   view_ = CreateDeviceSelectorView(&delegate);
 
@@ -358,10 +355,10 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   EXPECT_EQ(EntryLabelText(container_children.front()), "Earbuds");
 }
 
-TEST_F(MediaNotificationDeviceSelectorViewTest, AudioDeviceButtonsChange) {
+TEST_F(MediaItemUIDeviceSelectorViewTest, AudioDeviceButtonsChange) {
   // If the device provider reports a change in connect audio devices, the UI
   // should update accordingly.
-  NiceMock<MockMediaNotificationDeviceSelectorViewDelegate> delegate;
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
   AddAudioDevices(delegate);
   view_ = CreateDeviceSelectorView(&delegate);
 
@@ -400,16 +397,15 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, AudioDeviceButtonsChange) {
   }
 }
 
-TEST_F(MediaNotificationDeviceSelectorViewTest, VisibilityChanges) {
+TEST_F(MediaItemUIDeviceSelectorViewTest, VisibilityChanges) {
   // The device selector view should become hidden when there is only one
   // unique device, unless there exists a cast device.
-  NiceMock<MockMediaNotificationDeviceSelectorViewDelegate> delegate;
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
   auto* provider = delegate.GetProvider();
   provider->AddDevice("Speaker", "1");
   provider->AddDevice(media::AudioDeviceDescription::GetDefaultDeviceName(),
                       media::AudioDeviceDescription::kDefaultDeviceId);
 
-  EXPECT_CALL(delegate, OnDeviceSelectorViewSizeChanged).Times(2);
   view_ = CreateDeviceSelectorView(
       &delegate, std::make_unique<NiceMock<MockCastDialogController>>(),
       media::AudioDeviceDescription::kDefaultDeviceId);
@@ -417,7 +413,6 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, VisibilityChanges) {
 
   testing::Mock::VerifyAndClearExpectations(&delegate);
 
-  EXPECT_CALL(delegate, OnDeviceSelectorViewSizeChanged);
   view_->OnModelUpdated(CreateModelWithSinks({CreateMediaSink()}));
   EXPECT_TRUE(view_->GetVisible());
 
@@ -427,7 +422,6 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, VisibilityChanges) {
   provider->AddDevice("Speaker", "1");
   provider->AddDevice("Headphones",
                       media::AudioDeviceDescription::kDefaultDeviceId);
-  EXPECT_CALL(delegate, OnDeviceSelectorViewSizeChanged).Times(1);
   provider->RunUICallback();
   EXPECT_TRUE(view_->GetVisible());
   testing::Mock::VerifyAndClearExpectations(&delegate);
@@ -437,15 +431,13 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, VisibilityChanges) {
   provider->AddDevice("Headphones", "2");
   provider->AddDevice(media::AudioDeviceDescription::GetDefaultDeviceName(),
                       media::AudioDeviceDescription::kDefaultDeviceId);
-  EXPECT_CALL(delegate, OnDeviceSelectorViewSizeChanged).Times(1);
   provider->RunUICallback();
   EXPECT_TRUE(view_->GetVisible());
   testing::Mock::VerifyAndClearExpectations(&delegate);
 }
 
-TEST_F(MediaNotificationDeviceSelectorViewTest,
-       AudioDeviceChangeIsNotSupported) {
-  NiceMock<MockMediaNotificationDeviceSelectorViewDelegate> delegate;
+TEST_F(MediaItemUIDeviceSelectorViewTest, AudioDeviceChangeIsNotSupported) {
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
   AddAudioDevices(delegate);
   delegate.supports_switching = false;
 
@@ -459,9 +451,8 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   EXPECT_TRUE(view_->GetVisible());
 }
 
-TEST_F(MediaNotificationDeviceSelectorViewTest,
-       CastDeviceButtonClickClearsIssue) {
-  NiceMock<MockMediaNotificationDeviceSelectorViewDelegate> delegate;
+TEST_F(MediaItemUIDeviceSelectorViewTest, CastDeviceButtonClickClearsIssue) {
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
   auto cast_controller = std::make_unique<NiceMock<MockCastDialogController>>();
   auto* cast_controller_ptr = cast_controller.get();
   view_ = CreateDeviceSelectorView(&delegate, std::move(cast_controller));
@@ -483,9 +474,8 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   }
 }
 
-TEST_F(MediaNotificationDeviceSelectorViewTest,
-       AudioDevicesCountHistogramRecorded) {
-  NiceMock<MockMediaNotificationDeviceSelectorViewDelegate> delegate;
+TEST_F(MediaItemUIDeviceSelectorViewTest, AudioDevicesCountHistogramRecorded) {
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
   AddAudioDevices(delegate);
 
   histogram_tester_.ExpectTotalCount(kAudioDevicesCountHistogramName, 0);
@@ -505,9 +495,9 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   histogram_tester_.ExpectBucketCount(kAudioDevicesCountHistogramName, 3, 1);
 }
 
-TEST_F(MediaNotificationDeviceSelectorViewTest,
+TEST_F(MediaItemUIDeviceSelectorViewTest,
        DeviceSelectorAvailableHistogramRecorded) {
-  NiceMock<MockMediaNotificationDeviceSelectorViewDelegate> delegate;
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
   auto* provider = delegate.GetProvider();
   provider->AddDevice("Speaker",
                       media::AudioDeviceDescription::kDefaultDeviceId);
@@ -546,9 +536,9 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   histogram_tester_.ExpectTotalCount(kDeviceSelectorAvailableHistogramName, 2);
 }
 
-TEST_F(MediaNotificationDeviceSelectorViewTest,
+TEST_F(MediaItemUIDeviceSelectorViewTest,
        DeviceSelectorOpenedHistogramRecorded) {
-  NiceMock<MockMediaNotificationDeviceSelectorViewDelegate> delegate;
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
   auto* provider = delegate.GetProvider();
   provider->AddDevice("Speaker",
                       media::AudioDeviceDescription::kDefaultDeviceId);

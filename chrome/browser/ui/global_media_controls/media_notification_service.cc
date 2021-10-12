@@ -25,7 +25,6 @@
 #include "components/global_media_controls/public/media_item_ui.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
-#include "content/public/browser/audio_service.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
 #include "media/base/media_switches.h"
@@ -140,22 +139,6 @@ bool MediaNotificationService::HasLocalCastNotifications() const {
   return cast_notification_producer_
              ? cast_notification_producer_->HasLocalMediaRoute()
              : false;
-}
-
-base::CallbackListSubscription
-MediaNotificationService::RegisterAudioOutputDeviceDescriptionsCallback(
-    MediaNotificationDeviceProvider::GetOutputDevicesCallback callback) {
-  return media_session_notification_producer_
-      ->RegisterAudioOutputDeviceDescriptionsCallback(std::move(callback));
-}
-
-base::CallbackListSubscription
-MediaNotificationService::RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
-    const std::string& id,
-    base::RepeatingCallback<void(bool)> callback) {
-  return media_session_notification_producer_
-      ->RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
-          id, std::move(callback));
 }
 
 void MediaNotificationService::OnStartPresentationContextCreated(

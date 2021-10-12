@@ -1,4 +1,9 @@
 include_rules = [
   "+components/media_message_center",
+  "+components/strings",
+  "+components/vector_icons",
+  "+media",
   "+services/media_session/public",
+  "+third_party/skia/include/core",
+  "+ui",
 ]

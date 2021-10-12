@@ -60,6 +60,7 @@ source_set("unit_tests") {
 
   deps = [
     ":media_message_center",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//services/media_session/public/cpp/test:test_support",
@@ -79,6 +80,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "mock_media_notification_item.cc",
+    "mock_media_notification_item.h",
     "mock_media_notification_view.cc",
     "mock_media_notification_view.h",
   ]

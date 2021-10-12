@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_SELECTOR_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_SELECTOR_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_ITEM_UI_DEVICE_SELECTOR_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_ITEM_UI_DEVICE_SELECTOR_VIEW_H_
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
-#include "chrome/browser/ui/views/global_media_controls/global_media_controls_types.h"
+#include "chrome/browser/ui/views/global_media_controls/media_item_ui_footer_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
-#include "chrome/browser/ui/views/global_media_controls/media_notification_footer_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "components/global_media_controls/public/constants.h"
+#include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
 #include "components/media_router/common/media_sink.h"
 #include "media/audio/audio_device_description.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -29,37 +30,42 @@ const char kDeviceSelectorOpenedHistogramName[] =
     "Media.GlobalMediaControls.DeviceSelectorOpened";
 }  // anonymous namespace
 
+namespace global_media_controls {
+class MediaItemUIView;
+}  // namespace global_media_controls
+
 namespace media_router {
 class CastDialogSinkButton;
 }
-class MediaNotificationDeviceSelectorViewDelegate;
-class MediaNotificationDeviceSelectorObserver;
+class MediaItemUIDeviceSelectorDelegate;
+class MediaItemUIDeviceSelectorObserver;
 
-class MediaNotificationDeviceSelectorView
-    : public views::View,
+class MediaItemUIDeviceSelectorView
+    : public global_media_controls::MediaItemUIDeviceSelector,
       public IconLabelBubbleView::Delegate,
       public media_router::CastDialogController::Observer,
-      public MediaNotificationFooterView::Delegate {
+      public MediaItemUIFooterView::Delegate {
  public:
-  METADATA_HEADER(MediaNotificationDeviceSelectorView);
-  MediaNotificationDeviceSelectorView(
-      MediaNotificationDeviceSelectorViewDelegate* delegate,
+  METADATA_HEADER(MediaItemUIDeviceSelectorView);
+  MediaItemUIDeviceSelectorView(
+      const std::string& item_id,
+      MediaItemUIDeviceSelectorDelegate* delegate,
       std::unique_ptr<media_router::CastDialogController> cast_controller,
       bool has_audio_output,
-      const std::string& current_device_id,
-      const SkColor& foreground_color,
-      const SkColor& background_color,
-      GlobalMediaControlsEntryPoint entry_point,
+      global_media_controls::GlobalMediaControlsEntryPoint entry_point,
       bool show_expand_button = true);
-  ~MediaNotificationDeviceSelectorView() override;
+  ~MediaItemUIDeviceSelectorView() override;
 
   // Called when audio output devices are discovered.
   void UpdateAvailableAudioDevices(
       const media::AudioDeviceDescriptions& device_descriptions);
-  // Called when an audio device switch has occurred
-  void UpdateCurrentAudioDevice(const std::string& current_device_id);
-  void OnColorsChanged(const SkColor& foreground_color,
-                       const SkColor& background_color);
+
+  // global_media_controls::MediaItemUIDeviceSelector:
+  void SetMediaItemUIView(
+      global_media_controls::MediaItemUIView* view) override;
+  void OnColorsChanged(SkColor foreground_color,
+                       SkColor background_color) override;
+  void UpdateCurrentAudioDevice(const std::string& current_device_id) override;
 
   // Called when the audio device switching has become enabled or disabled.
   void UpdateIsAudioDeviceSwitchingEnabled(bool enabled);
@@ -72,12 +78,12 @@ class MediaNotificationDeviceSelectorView
   void OnModelUpdated(const media_router::CastDialogModel& model) override;
   void OnControllerInvalidated() override;
 
-  // MediaNotificationFooterview::Delegate
+  // MediaItemUIFooterView::Delegate
   void OnDeviceSelected(int tag) override;
   void OnDropdownButtonClicked() override;
   bool IsDeviceSelectorExpanded() override;
 
-  void AddObserver(MediaNotificationDeviceSelectorObserver* observer);
+  void AddObserver(MediaItemUIDeviceSelectorObserver* observer);
 
   views::Button* GetExpandButtonForTesting();
   std::string GetEntryLabelForTesting(views::View* entry_view);
@@ -86,27 +92,27 @@ class MediaNotificationDeviceSelectorView
   GetCastSinkButtonsForTesting();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            DeviceButtonsCreated);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            ExpandButtonOpensEntryContainer);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            DeviceEntryContainerVisibility);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            AudioDeviceButtonClickNotifiesContainer);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            CurrentAudioDeviceHighlighted);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            AudioDeviceHighlightedOnChange);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            AudioDeviceButtonsChange);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            AudioDevicesCountHistogramRecorded);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            DeviceSelectorOpenedHistogramRecorded);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            CastDeviceButtonClickStartsCasting);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            CastDeviceButtonClickClearsIssue);
 
   void UpdateVisibility();
@@ -132,10 +138,13 @@ class MediaNotificationDeviceSelectorView
   bool is_expanded_ = false;
   bool is_audio_device_switching_enabled_ = false;
   bool has_cast_device_ = false;
-  MediaNotificationDeviceSelectorViewDelegate* const delegate_;
-  std::string current_device_id_;
-  SkColor foreground_color_, background_color_;
-  GlobalMediaControlsEntryPoint const entry_point_;
+  const std::string item_id_;
+  MediaItemUIDeviceSelectorDelegate* const delegate_;
+  std::string current_device_id_ =
+      media::AudioDeviceDescription::kDefaultDeviceId;
+  SkColor foreground_color_ = global_media_controls::kDefaultForegroundColor;
+  SkColor background_color_ = global_media_controls::kDefaultBackgroundColor;
+  global_media_controls::GlobalMediaControlsEntryPoint const entry_point_;
 
   // Child views
   AudioDeviceEntryView* current_audio_device_entry_view_ = nullptr;
@@ -146,17 +155,18 @@ class MediaNotificationDeviceSelectorView
   base::CallbackListSubscription audio_device_subscription_;
   base::CallbackListSubscription is_device_switching_enabled_subscription_;
 
+  global_media_controls::MediaItemUIView* media_item_ui_ = nullptr;
+
   std::unique_ptr<media_router::CastDialogController> cast_controller_;
 
-  base::ObserverList<MediaNotificationDeviceSelectorObserver> observers_;
+  base::ObserverList<MediaItemUIDeviceSelectorObserver> observers_;
 
   // Each button has a unique tag, which is used to look up DeviceEntryUI* in
   // |device_entry_ui_map_|.
   int next_tag_ = 0;
   std::map<int, DeviceEntryUI*> device_entry_ui_map_;
 
-  base::WeakPtrFactory<MediaNotificationDeviceSelectorView> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<MediaItemUIDeviceSelectorView> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_SELECTOR_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_ITEM_UI_DEVICE_SELECTOR_VIEW_H_

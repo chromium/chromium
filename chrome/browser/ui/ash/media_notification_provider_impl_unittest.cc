@@ -12,9 +12,9 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
-#include "chrome/browser/ui/views/global_media_controls/media_notification_list_view.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/base/media_switches.h"
@@ -144,12 +144,12 @@ TEST_F(MediaNotificationProviderImplTest, NotificationListTest) {
       provider()->GetMediaNotificationListView(1);
 
   auto* notification_list_view =
-      static_cast<MediaNotificationListView*>(view.get());
-  EXPECT_EQ(notification_list_view->notifications_for_testing().size(), 2u);
+      static_cast<global_media_controls::MediaItemUIListView*>(view.get());
+  EXPECT_EQ(notification_list_view->items_for_testing().size(), 2u);
 
   EXPECT_CALL(*observer(), OnNotificationListViewSizeChanged);
   SimulateHideNotification(id_1);
-  EXPECT_EQ(notification_list_view->notifications_for_testing().size(), 1u);
+  EXPECT_EQ(notification_list_view->items_for_testing().size(), 1u);
 
   provider()->OnBubbleClosing();
 }

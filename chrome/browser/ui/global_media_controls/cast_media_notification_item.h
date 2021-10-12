@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_session_controller.h"
+#include "components/global_media_controls/public/constants.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/mojom/media_status.mojom.h"
@@ -61,6 +62,10 @@ class CastMediaNotificationItem
       media_router::mojom::MediaStatusPtr status) override;
 
   void OnRouteUpdated(const media_router::MediaRoute& route);
+
+  // Stops the cast session and logs UMA about the stop cast action.
+  void StopCasting(
+      global_media_controls::GlobalMediaControlsEntryPoint entry_point);
 
   // Returns a pending remote bound to |this|. This should not be called more
   // than once per instance.

@@ -18,11 +18,10 @@
 
 namespace global_media_controls {
 class MediaItemManager;
+class MediaItemUIListView;
 }  // namespace global_media_controls
 
 class MediaNotificationService;
-class MediaNotificationListView;
-class Profile;
 
 class MediaNotificationProviderImpl
     : public ash::MediaNotificationProvider,
@@ -72,9 +71,7 @@ class MediaNotificationProviderImpl
  private:
   base::ObserverList<ash::MediaNotificationProviderObserver> observers_;
 
-  MediaNotificationListView* active_session_view_ = nullptr;
-
-  Profile* profile_ = nullptr;
+  global_media_controls::MediaItemUIListView* active_session_view_ = nullptr;
 
   MediaNotificationService* service_ = nullptr;
 

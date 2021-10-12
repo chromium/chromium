@@ -11,15 +11,19 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view_observer.h"
-#include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
-#include "chrome/browser/ui/views/global_media_controls/media_notification_list_view.h"
+#include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_view.h"
+#include "chrome/browser/ui/views/global_media_controls/media_item_ui_footer_view.h"
+#include "chrome/browser/ui/views/global_media_controls/media_item_ui_legacy_cast_footer_view.h"
 #include "chrome/browser/ui/views/user_education/new_badge_label.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/global_media_controls/public/media_item_manager.h"
+#include "components/global_media_controls/public/views/media_item_ui_list_view.h"
+#include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/live_caption/pref_names.h"
 #include "components/soda/constants.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -61,7 +65,7 @@ views::Widget* MediaDialogView::ShowDialog(
     views::View* anchor_view,
     MediaNotificationService* service,
     Profile* profile,
-    GlobalMediaControlsEntryPoint entry_point) {
+    global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
   return ShowDialogForPresentationRequest(anchor_view, service, profile,
                                           nullptr, entry_point);
 }
@@ -72,7 +76,7 @@ views::Widget* MediaDialogView::ShowDialogForPresentationRequest(
     MediaNotificationService* service,
     Profile* profile,
     content::WebContents* contents,
-    GlobalMediaControlsEntryPoint entry_point) {
+    global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
   DCHECK(!instance_);
   DCHECK(service);
   instance_ =
@@ -113,23 +117,22 @@ bool MediaDialogView::IsShowing() {
 global_media_controls::MediaItemUI* MediaDialogView::ShowMediaItem(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
-  auto container = std::make_unique<MediaNotificationContainerImplView>(
-      id, item, service_, entry_point_, profile_);
-  MediaNotificationContainerImplView* container_ptr = container.get();
-  container_ptr->AddObserver(this);
-  observed_containers_[id] = container_ptr;
+  auto view = BuildMediaItemUIView(id, item);
+  auto* view_ptr = view.get();
+  view_ptr->AddObserver(this);
+  observed_items_[id] = view_ptr;
 
-  active_sessions_view_->ShowNotification(id, std::move(container));
+  active_sessions_view_->ShowItem(id, std::move(view));
   UpdateBubbleSize();
 
   for (auto& observer : observers_)
     observer.OnMediaSessionShown();
 
-  return container_ptr;
+  return view_ptr;
 }
 
 void MediaDialogView::HideMediaItem(const std::string& id) {
-  active_sessions_view_->HideNotification(id);
+  active_sessions_view_->HideItem(id);
 
   if (active_sessions_view_->empty())
     HideDialog();
@@ -155,7 +158,8 @@ void MediaDialogView::AddedToWidget() {
   if (frame) {
     frame->SetCornerRadius(corner_radius);
   }
-  if (entry_point_ == GlobalMediaControlsEntryPoint::kPresentation) {
+  if (entry_point_ ==
+      global_media_controls::GlobalMediaControlsEntryPoint::kPresentation) {
     service_->SetDialogDelegateForWebContents(
         this, web_contents_for_presentation_request_);
   } else {
@@ -200,11 +204,11 @@ void MediaDialogView::OnMediaItemUIActionsChanged() {
 }
 
 void MediaDialogView::OnMediaItemUIDestroyed(const std::string& id) {
-  auto iter = observed_containers_.find(id);
-  DCHECK(iter != observed_containers_.end());
+  auto iter = observed_items_.find(id);
+  DCHECK(iter != observed_items_.end());
 
   iter->second->RemoveObserver(this);
-  observed_containers_.erase(iter);
+  observed_items_.erase(iter);
 }
 
 void MediaDialogView::AddObserver(MediaDialogViewObserver* observer) {
@@ -215,26 +219,27 @@ void MediaDialogView::RemoveObserver(MediaDialogViewObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-const std::map<const std::string, MediaNotificationContainerImplView*>&
-MediaDialogView::GetNotificationsForTesting() const {
-  return active_sessions_view_->notifications_for_testing();
+const std::map<const std::string, global_media_controls::MediaItemUIView*>&
+MediaDialogView::GetItemsForTesting() const {
+  return active_sessions_view_->items_for_testing();  // IN-TEST
 }
 
-const MediaNotificationListView* MediaDialogView::GetListViewForTesting()
-    const {
+const global_media_controls::MediaItemUIListView*
+MediaDialogView::GetListViewForTesting() const {
   return active_sessions_view_;
 }
 
-MediaDialogView::MediaDialogView(views::View* anchor_view,
-                                 MediaNotificationService* service,
-                                 Profile* profile,
-                                 content::WebContents* contents,
-                                 GlobalMediaControlsEntryPoint entry_point)
+MediaDialogView::MediaDialogView(
+    views::View* anchor_view,
+    MediaNotificationService* service,
+    Profile* profile,
+    content::WebContents* contents,
+    global_media_controls::GlobalMediaControlsEntryPoint entry_point)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
       service_(service),
       profile_(profile->GetOriginalProfile()),
-      active_sessions_view_(
-          AddChildView(std::make_unique<MediaNotificationListView>())),
+      active_sessions_view_(AddChildView(
+          std::make_unique<global_media_controls::MediaItemUIListView>())),
       web_contents_for_presentation_request_(contents),
       entry_point_(entry_point) {
   // Enable layer based clipping to ensure children using layers are clipped
@@ -247,8 +252,8 @@ MediaDialogView::MediaDialogView(views::View* anchor_view,
 }
 
 MediaDialogView::~MediaDialogView() {
-  for (auto container_pair : observed_containers_)
-    container_pair.second->RemoveObserver(this);
+  for (auto item_pair : observed_items_)
+    item_pair.second->RemoveObserver(this);
 }
 
 void MediaDialogView::Init() {
@@ -372,6 +377,67 @@ void MediaDialogView::OnSodaProgress(int combined_progress) {
   live_caption_title_->SetText(l10n_util::GetStringFUTF16Int(
       IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_PROGRESS,
       combined_progress));
+}
+
+std::unique_ptr<global_media_controls::MediaItemUIView>
+MediaDialogView::BuildMediaItemUIView(
+    const std::string& id,
+    base::WeakPtr<media_message_center::MediaNotificationItem> item) {
+  const bool is_cast_item =
+      item->SourceType() == media_message_center::SourceType::kCast;
+  const bool is_local_media_session =
+      item->SourceType() ==
+      media_message_center::SourceType::kLocalMediaSession;
+  const bool gmc_cast_start_stop_enabled =
+      media_router::GlobalMediaControlsCastStartStopEnabled() &&
+      media_router::MediaRouterEnabled(profile_);
+
+  // Show a device selector view for media and supplemental notifications.
+  std::unique_ptr<MediaItemUIDeviceSelectorView> device_selector_view;
+  if (!is_cast_item && (gmc_cast_start_stop_enabled ||
+                        base::FeatureList::IsEnabled(
+                            media::kGlobalMediaControlsSeamlessTransfer))) {
+    const bool show_expand_button =
+        !base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI);
+    std::unique_ptr<media_router::CastDialogController> cast_controller;
+    if (media_router::GlobalMediaControlsCastStartStopEnabled() &&
+        media_router::MediaRouterEnabled(profile_)) {
+      cast_controller =
+          is_local_media_session
+              ? service_->CreateCastDialogControllerForSession(id)
+              : service_->CreateCastDialogControllerForPresentationRequest();
+    }
+    device_selector_view = std::make_unique<MediaItemUIDeviceSelectorView>(
+        id, service_->device_selector_delegate(), std::move(cast_controller),
+        /* has_audio_output */ is_local_media_session, entry_point_,
+        show_expand_button);
+  }
+
+  base::RepeatingClosure stop_casting_closure =
+      is_cast_item ? base::BindRepeating(
+                         &CastMediaNotificationItem::StopCasting,
+                         static_cast<CastMediaNotificationItem*>(item.get())
+                             ->GetWeakPtr(),
+                         entry_point_)
+                   : base::NullCallback();
+
+  std::unique_ptr<global_media_controls::MediaItemUIFooter> footer_view;
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
+    footer_view = std::make_unique<MediaItemUIFooterView>(stop_casting_closure);
+
+    if (device_selector_view) {
+      auto* modern_footer =
+          static_cast<MediaItemUIFooterView*>(footer_view.get());
+      modern_footer->SetDelegate(device_selector_view.get());
+      device_selector_view->AddObserver(modern_footer);
+    }
+  } else if (is_cast_item && gmc_cast_start_stop_enabled) {
+    footer_view =
+        std::make_unique<MediaItemUILegacyCastFooterView>(stop_casting_closure);
+  }
+
+  return std::make_unique<global_media_controls::MediaItemUIView>(
+      id, item, std::move(footer_view), std::move(device_selector_view));
 }
 
 BEGIN_METADATA(MediaDialogView, views::BubbleDialogDelegateView)

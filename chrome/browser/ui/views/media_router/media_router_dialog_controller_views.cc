@@ -81,7 +81,7 @@ bool MediaRouterDialogControllerViews::ShowMediaRouterDialogForPresentation(
   scoped_widget_observations_.AddObservation(
       MediaDialogView::ShowDialogForPresentationRequest(
           media_button, service, profile, initiator(),
-          GlobalMediaControlsEntryPoint::kPresentation));
+          global_media_controls::GlobalMediaControlsEntryPoint::kPresentation));
   return true;
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/global_media_controls/media_notification_footer_view.h"
+#include "chrome/browser/ui/views/global_media_controls/media_item_ui_footer_view.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -15,6 +15,8 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 
 namespace {
@@ -88,9 +90,8 @@ END_METADATA
 
 }  // anonymous namespace
 
-MediaNotificationFooterView::MediaNotificationFooterView(
-    bool is_cast_session,
-    views::Button::PressedCallback stop_casting_callback) {
+MediaItemUIFooterView::MediaItemUIFooterView(
+    base::RepeatingClosure stop_casting_callback) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetIgnoreDefaultMainAxisMargins(true)
@@ -102,16 +103,19 @@ MediaNotificationFooterView::MediaNotificationFooterView(
               /*horizontal=*/ChromeLayoutProvider::Get()->GetDistanceMetric(
                   views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
 
-  if (!is_cast_session)
+  if (stop_casting_callback.is_null())
     return;
 
+  // |this| owns the DeviceEntryButton, so base::Unretained is safe here.
   AddChildView(std::make_unique<DeviceEntryButton>(
       stop_casting_callback, nullptr,
       l10n_util::GetStringUTF16(
           IDS_GLOBAL_MEDIA_CONTROLS_STOP_CASTING_BUTTON_LABEL)));
 }
 
-void MediaNotificationFooterView::OnMediaNotificationDeviceSelectorUpdated(
+MediaItemUIFooterView::~MediaItemUIFooterView() = default;
+
+void MediaItemUIFooterView::OnMediaItemUIDeviceSelectorUpdated(
     const std::map<int, DeviceEntryUI*>& device_entries_map) {
   RemoveAllChildViews();
 
@@ -121,7 +125,7 @@ void MediaNotificationFooterView::OnMediaNotificationDeviceSelectorUpdated(
 
     auto* device_entry_button =
         AddChildView(std::make_unique<DeviceEntryButton>(
-            base::BindRepeating(&MediaNotificationFooterView::OnDeviceSelected,
+            base::BindRepeating(&MediaItemUIFooterView::OnDeviceSelected,
                                 base::Unretained(this), tag),
             device_entry->icon(),
             base::UTF8ToUTF16(device_entry->device_name())));
@@ -134,7 +138,7 @@ void MediaNotificationFooterView::OnMediaNotificationDeviceSelectorUpdated(
   }
 
   overflow_button_ = AddChildView(std::make_unique<DeviceEntryButton>(
-      base::BindRepeating(&MediaNotificationFooterView::OnOverflowButtonClicked,
+      base::BindRepeating(&MediaItemUIFooterView::OnOverflowButtonClicked,
                           base::Unretained(this))));
   overflow_button_->SetProperty(
       views::kFlexBehaviorKey,
@@ -149,7 +153,7 @@ void MediaNotificationFooterView::OnMediaNotificationDeviceSelectorUpdated(
   UpdateButtonsColor();
 }
 
-void MediaNotificationFooterView::Layout() {
+void MediaItemUIFooterView::Layout() {
   if (!overflow_button_) {
     views::View::Layout();
     return;
@@ -161,26 +165,27 @@ void MediaNotificationFooterView::Layout() {
   views::View::Layout();
 }
 
-void MediaNotificationFooterView::OnColorChanged(SkColor foreground) {
+void MediaItemUIFooterView::OnColorsChanged(SkColor foreground,
+                                            SkColor background) {
   foreground_color_ = foreground;
   UpdateButtonsColor();
 }
 
-void MediaNotificationFooterView::SetDelegate(Delegate* delegate) {
+void MediaItemUIFooterView::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }
 
-void MediaNotificationFooterView::UpdateButtonsColor() {
+void MediaItemUIFooterView::UpdateButtonsColor() {
   for (auto* view : children())
     static_cast<DeviceEntryButton*>(view)->UpdateColor(foreground_color_);
 }
 
-void MediaNotificationFooterView::OnDeviceSelected(int tag) {
+void MediaItemUIFooterView::OnDeviceSelected(int tag) {
   if (delegate_)
     delegate_->OnDeviceSelected(tag);
 }
 
-void MediaNotificationFooterView::OnOverflowButtonClicked() {
+void MediaItemUIFooterView::OnOverflowButtonClicked() {
   if (!delegate_)
     return;
 

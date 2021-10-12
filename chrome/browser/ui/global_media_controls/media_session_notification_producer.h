@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
 
+#include "chrome/browser/ui/global_media_controls/media_item_ui_device_selector_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
@@ -47,6 +48,7 @@ class MediaSessionNotificationProducer
     : public global_media_controls::MediaItemProducer,
       public MediaSessionNotificationItem::Delegate,
       public media_session::mojom::AudioFocusObserver,
+      public MediaItemUIDeviceSelectorDelegate,
       public global_media_controls::MediaItemUIObserver {
  public:
   MediaSessionNotificationProducer(
@@ -82,8 +84,6 @@ class MediaSessionNotificationProducer
   // global_media_controls::MediaItemUIObserver implementation.
   void OnMediaItemUIClicked(const std::string& id) override;
   void OnMediaItemUIDismissed(const std::string& id) override;
-  void OnAudioSinkChosen(const std::string& id,
-                         const std::string& sink_id) override;
 
   bool HasSession(const std::string& id) const;
   std::unique_ptr<media_router::CastDialogController>
@@ -95,18 +95,16 @@ class MediaSessionNotificationProducer
   std::string GetActiveControllableSessionForWebContents(
       content::WebContents* web_contents) const;
 
-  // Used by a |MediaNotificationDeviceSelectorView| to query the system
-  // for connected audio output devices.
+  // MediaItemUIDeviceSelectorDelegate:
+  void OnAudioSinkChosen(const std::string& id,
+                         const std::string& sink_id) override;
   base::CallbackListSubscription RegisterAudioOutputDeviceDescriptionsCallback(
-      MediaNotificationDeviceProvider::GetOutputDevicesCallback callback);
-
-  // Used by a |MediaNotificationAudioDeviceSelectorView| to become notified of
-  // audio device switching capabilities. The callback will be immediately run
-  // with the current availability.
+      MediaNotificationDeviceProvider::GetOutputDevicesCallback callback)
+      override;
   base::CallbackListSubscription
   RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
       const std::string& id,
-      base::RepeatingCallback<void(bool)> callback);
+      base::RepeatingCallback<void(bool)> callback) override;
 
   void OnStartPresentationContextCreated(
       std::unique_ptr<media_router::StartPresentationContext> context);

@@ -9,9 +9,9 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
-#include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
-#include "chrome/browser/ui/views/global_media_controls/media_notification_list_view.h"
 #include "components/global_media_controls/public/media_item_manager.h"
+#include "components/global_media_controls/public/views/media_item_ui_list_view.h"
+#include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/session_manager/core/session_manager.h"
 #include "ui/views/view.h"
 
@@ -57,13 +57,15 @@ MediaNotificationProviderImpl::GetMediaNotificationListView(
     int separator_thickness) {
   DCHECK(item_manager_);
   DCHECK(color_theme_);
-  auto notification_list_view = std::make_unique<MediaNotificationListView>(
-      MediaNotificationListView::SeparatorStyle(color_theme_->separator_color,
-                                                separator_thickness));
+  auto notification_list_view =
+      std::make_unique<global_media_controls::MediaItemUIListView>(
+          global_media_controls::MediaItemUIListView::SeparatorStyle(
+              color_theme_->separator_color, separator_thickness));
   active_session_view_ = notification_list_view.get();
   item_manager_->SetDialogDelegate(this);
-  base::UmaHistogramEnumeration("Media.GlobalMediaControls.EntryPoint",
-                                GlobalMediaControlsEntryPoint::kSystemTray);
+  base::UmaHistogramEnumeration(
+      "Media.GlobalMediaControls.EntryPoint",
+      global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray);
   return std::move(notification_list_view);
 }
 
@@ -88,14 +90,14 @@ MediaNotificationProviderImpl::ShowMediaItem(
   if (!active_session_view_)
     return nullptr;
 
-  auto container = std::make_unique<MediaNotificationContainerImplView>(
-      id, item, service_, GlobalMediaControlsEntryPoint::kSystemTray, profile_,
+  auto item_ui = std::make_unique<global_media_controls::MediaItemUIView>(
+      id, item, /*footer_view=*/nullptr, /*device_selector_view=*/nullptr,
       color_theme_);
-  auto* item_ui_ptr = container.get();
+  auto* item_ui_ptr = item_ui.get();
   item_ui_ptr->AddObserver(this);
   observed_item_uis_[id] = item_ui_ptr;
 
-  active_session_view_->ShowNotification(id, std::move(container));
+  active_session_view_->ShowItem(id, std::move(item_ui));
   for (auto& observer : observers_)
     observer.OnNotificationListViewSizeChanged();
 
@@ -106,7 +108,7 @@ void MediaNotificationProviderImpl::HideMediaItem(const std::string& id) {
   if (!active_session_view_)
     return;
 
-  active_session_view_->HideNotification(id);
+  active_session_view_->HideItem(id);
   for (auto& observer : observers_)
     observer.OnNotificationListViewSizeChanged();
 }
@@ -132,12 +134,13 @@ void MediaNotificationProviderImpl::OnMediaItemUIDestroyed(
 
 void MediaNotificationProviderImpl::OnUserProfileLoaded(
     const AccountId& account_id) {
-  profile_ = chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  auto* profile =
+      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
 
   if (user_manager::UserManager::Get()->GetPrimaryUser() == user) {
-    service_ = MediaNotificationServiceFactory::GetForProfile(profile_);
+    service_ = MediaNotificationServiceFactory::GetForProfile(profile);
     item_manager_ = service_->media_item_manager();
     item_manager_->AddObserver(this);
   }

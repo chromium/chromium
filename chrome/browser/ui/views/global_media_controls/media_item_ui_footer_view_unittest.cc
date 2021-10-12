@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/global_media_controls/media_notification_footer_view.h"
+#include "chrome/browser/ui/views/global_media_controls/media_item_ui_footer_view.h"
 
 #include <map>
 #include <memory>
@@ -29,7 +29,7 @@ class StopCastingHandler {
 };
 
 // A mock class for delegating media notification footer view.
-class MockFooterViewDelegate : public MediaNotificationFooterView::Delegate {
+class MockFooterViewDelegate : public MediaItemUIFooterView::Delegate {
  public:
   MockFooterViewDelegate() = default;
   ~MockFooterViewDelegate() override = default;
@@ -42,10 +42,10 @@ class MockFooterViewDelegate : public MediaNotificationFooterView::Delegate {
 
 }  // namespace
 
-class MediaNotificationFooterViewTest : public ChromeViewsTestBase {
+class MediaItemUIFooterViewTest : public ChromeViewsTestBase {
  public:
-  MediaNotificationFooterViewTest() = default;
-  ~MediaNotificationFooterViewTest() override = default;
+  MediaItemUIFooterViewTest() = default;
+  ~MediaItemUIFooterViewTest() override = default;
 
   // ChromeViewsTestBase
   void SetUp() override { ChromeViewsTestBase::SetUp(); }
@@ -62,11 +62,13 @@ class MediaNotificationFooterViewTest : public ChromeViewsTestBase {
     handler_ = std::make_unique<StopCastingHandler>();
     delegate_ = std::make_unique<NiceMock<MockFooterViewDelegate>>();
 
-    view_ =
-        widget_->SetContentsView(std::make_unique<MediaNotificationFooterView>(
-            is_cast_session,
-            base::BindRepeating(&StopCastingHandler::StopCasting,
-                                base::Unretained(handler_.get()))));
+    base::RepeatingClosure stop_casting_callback =
+        is_cast_session ? base::BindRepeating(&StopCastingHandler::StopCasting,
+                                              base::Unretained(handler_.get()))
+                        : base::NullCallback();
+
+    view_ = widget_->SetContentsView(
+        std::make_unique<MediaItemUIFooterView>(stop_casting_callback));
     view_->SetDelegate(delegate_.get());
 
     widget_->Show();
@@ -89,7 +91,7 @@ class MediaNotificationFooterViewTest : public ChromeViewsTestBase {
 
   views::Widget* get_widget() { return widget_.get(); }
 
-  MediaNotificationFooterView* get_view() { return view_; }
+  MediaItemUIFooterView* get_view() { return view_; }
 
   MockFooterViewDelegate* delegate() { return delegate_.get(); }
 
@@ -99,10 +101,10 @@ class MediaNotificationFooterViewTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<StopCastingHandler> handler_;
   std::unique_ptr<MockFooterViewDelegate> delegate_;
-  MediaNotificationFooterView* view_ = nullptr;
+  MediaItemUIFooterView* view_ = nullptr;
 };
 
-TEST_F(MediaNotificationFooterViewTest, ViewDuringCast) {
+TEST_F(MediaItemUIFooterViewTest, ViewDuringCast) {
   CreateView(true);
   EXPECT_EQ(get_view()->children().size(), 1u);
 
@@ -110,7 +112,7 @@ TEST_F(MediaNotificationFooterViewTest, ViewDuringCast) {
   SimulateButtonClicked(get_view()->children()[0]);
 }
 
-TEST_F(MediaNotificationFooterViewTest, DevicesCanFit) {
+TEST_F(MediaItemUIFooterViewTest, DevicesCanFit) {
   CreateView(false);
   get_widget()->SetBounds(gfx::Rect(200, 20));
   EXPECT_EQ(get_view()->children().size(), 0u);
@@ -129,7 +131,7 @@ TEST_F(MediaNotificationFooterViewTest, DevicesCanFit) {
   devices[0] = &device1;
   devices[1] = &device2;
 
-  get_view()->OnMediaNotificationDeviceSelectorUpdated(devices);
+  get_view()->OnMediaItemUIDeviceSelectorUpdated(devices);
   get_widget()->LayoutRootViewIfNecessary();
   auto visible_items = GetVisibleItems();
   EXPECT_EQ(visible_items.size(), 2u);
@@ -146,7 +148,7 @@ TEST_F(MediaNotificationFooterViewTest, DevicesCanFit) {
     SimulateButtonClicked(view);
 }
 
-TEST_F(MediaNotificationFooterViewTest, OverflowButton) {
+TEST_F(MediaItemUIFooterViewTest, OverflowButton) {
   CreateView(false);
   get_widget()->SetBounds(gfx::Rect(200, 20));
   EXPECT_EQ(get_view()->children().size(), 0u);
@@ -159,7 +161,7 @@ TEST_F(MediaNotificationFooterViewTest, OverflowButton) {
   devices[0] = &device;
   devices[1] = &device;
 
-  get_view()->OnMediaNotificationDeviceSelectorUpdated(devices);
+  get_view()->OnMediaItemUIDeviceSelectorUpdated(devices);
   get_widget()->LayoutRootViewIfNecessary();
   auto visible_items = GetVisibleItems();
   EXPECT_EQ(visible_items.size(), 2u);
@@ -174,7 +176,7 @@ TEST_F(MediaNotificationFooterViewTest, OverflowButton) {
   SimulateButtonClicked(visible_items[1]);
 }
 
-TEST_F(MediaNotificationFooterViewTest, OverflowButtonFallback) {
+TEST_F(MediaItemUIFooterViewTest, OverflowButtonFallback) {
   CreateView(false);
   get_widget()->SetBounds(gfx::Rect(310, 20));
   EXPECT_EQ(get_view()->children().size(), 0u);
@@ -188,7 +190,7 @@ TEST_F(MediaNotificationFooterViewTest, OverflowButtonFallback) {
   devices[1] = &device;
 
   // Two devices with 130px width should fit in the footer view (296px).
-  get_view()->OnMediaNotificationDeviceSelectorUpdated(devices);
+  get_view()->OnMediaItemUIDeviceSelectorUpdated(devices);
   get_widget()->LayoutRootViewIfNecessary();
   auto visible_items = GetVisibleItems();
   EXPECT_EQ(visible_items.size(), 2u);
@@ -203,7 +205,7 @@ TEST_F(MediaNotificationFooterViewTest, OverflowButtonFallback) {
   // (130px device button + 8px spacing + 130px device button + 8px spacing +
   // 30px overflow button > 296px maximum footer size)
   devices[2] = &device;
-  get_view()->OnMediaNotificationDeviceSelectorUpdated(devices);
+  get_view()->OnMediaItemUIDeviceSelectorUpdated(devices);
   get_widget()->LayoutRootViewIfNecessary();
   visible_items = GetVisibleItems();
   EXPECT_EQ(visible_items.size(), 2u);

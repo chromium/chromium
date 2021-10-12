@@ -5,35 +5,11 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_TEST_HELPER_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_TEST_HELPER_H_
 
-#include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "content/public/browser/presentation_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using media_message_center::MediaNotificationView;
 using media_router::WebContentsPresentationManager;
-
-class MockMediaNotificationItem
-    : public media_message_center::MediaNotificationItem {
- public:
-  MockMediaNotificationItem();
-  ~MockMediaNotificationItem() override;
-
-  base::WeakPtr<MockMediaNotificationItem> GetWeakPtr();
-
-  MOCK_METHOD(void, SetView, (MediaNotificationView*));
-  MOCK_METHOD(void,
-              OnMediaSessionActionButtonPressed,
-              (media_session::mojom::MediaSessionAction));
-  MOCK_METHOD(void, SeekTo, (base::TimeDelta));
-  MOCK_METHOD(void, Dismiss, ());
-  MOCK_METHOD(void, SetVolume, (float));
-  MOCK_METHOD(void, SetMute, (bool));
-  MOCK_METHOD(media_message_center::SourceType, SourceType, ());
-
- private:
-  base::WeakPtrFactory<MockMediaNotificationItem> weak_ptr_factory_{this};
-};
 
 class MockWebContentsPresentationManager
     : public WebContentsPresentationManager {

@@ -24,9 +24,6 @@ class MockMediaItemUIObserver : public MediaItemUIObserver {
   MOCK_METHOD(void, OnMediaItemUIClicked, (const std::string&));
   MOCK_METHOD(void, OnMediaItemUIDismissed, (const std::string&));
   MOCK_METHOD(void, OnMediaItemUIDestroyed, (const std::string&));
-  MOCK_METHOD(void,
-              OnAudioSinkChosen,
-              (const std::string&, const std::string&));
 };
 
 }  // namespace test

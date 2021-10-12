@@ -31,10 +31,6 @@ class MediaItemUIObserver : public base::CheckedObserver {
   // Called when the item UI is about to be deleted.
   virtual void OnMediaItemUIDestroyed(const std::string& id) {}
 
-  // Called when the audio output device for the item UI should change.
-  virtual void OnAudioSinkChosen(const std::string& id,
-                                 const std::string& sink_id) {}
-
  protected:
   ~MediaItemUIObserver() override = default;
 };

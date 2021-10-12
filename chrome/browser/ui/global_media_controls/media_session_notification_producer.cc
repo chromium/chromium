@@ -443,14 +443,6 @@ void MediaSessionNotificationProducer::OnMediaItemUIDismissed(
   session->item()->Dismiss();
 }
 
-void MediaSessionNotificationProducer::OnAudioSinkChosen(
-    const std::string& id,
-    const std::string& sink_id) {
-  auto it = sessions_.find(id);
-  DCHECK(it != sessions_.end());
-  it->second.SetAudioSinkId(sink_id);
-}
-
 void MediaSessionNotificationProducer::OnItemShown(
     const std::string& id,
     global_media_controls::MediaItemUI* item_ui) {
@@ -558,6 +550,14 @@ void MediaSessionNotificationProducer::LogMediaSessionActionButtonPressed(
   ukm::builders::Media_GlobalMediaControls_ActionButtonPressed(source_id)
       .SetMediaSessionAction(static_cast<int64_t>(action))
       .Record(recorder);
+}
+
+void MediaSessionNotificationProducer::OnAudioSinkChosen(
+    const std::string& id,
+    const std::string& sink_id) {
+  auto it = sessions_.find(id);
+  DCHECK(it != sessions_.end());
+  it->second.SetAudioSinkId(sink_id);
 }
 
 base::CallbackListSubscription
