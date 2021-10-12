@@ -133,6 +133,10 @@ class CommerceHintObserverImpl
     service_->OnWillSendRequest(binding_url_, is_addtocart);
   }
 
+  void OnNavigation(const GURL& url, OnNavigationCallback callback) override {
+    std::move(callback).Run(service_->ShouldSkip(url));
+  }
+
  private:
   GURL binding_url_;
   base::WeakPtr<CommerceHintService> service_;
