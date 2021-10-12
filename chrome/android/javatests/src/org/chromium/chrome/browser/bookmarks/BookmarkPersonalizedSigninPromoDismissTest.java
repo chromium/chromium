@@ -21,6 +21,7 @@ import android.support.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,6 +33,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.ui.SigninPromoController;
@@ -82,6 +84,8 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
                 SigninPromoController.getPromoShowCountPreferenceName(
                         SigninAccessPoint.BOOKMARK_MANAGER));
         SigninPromoController.setPrefSigninPromoDeclinedBookmarksForTests(false);
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
     }
 
     @Test
@@ -111,6 +115,9 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     @Test
     @MediumTest
     public void testPromoImpressionCountIncrementAfterDisplayingSigninPromo() {
+        Assert.assertEquals(0,
+                SharedPreferencesManager.getInstance().readInt(
+                        ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
         assertEquals(0,
                 SharedPreferencesManager.getInstance().readInt(
                         SigninPromoController.getPromoShowCountPreferenceName(
@@ -121,6 +128,9 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
                 SharedPreferencesManager.getInstance().readInt(
                         SigninPromoController.getPromoShowCountPreferenceName(
                                 SigninAccessPoint.BOOKMARK_MANAGER)));
+        Assert.assertEquals(1,
+                SharedPreferencesManager.getInstance().readInt(
+                        ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
     }
 
     private void closeBookmarkManager() {

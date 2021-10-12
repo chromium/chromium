@@ -862,9 +862,11 @@ public final class ChromePreferenceKeys {
     public static final String SIGNIN_ACCOUNT_RENAME_EVENT_INDEX =
             "prefs_sync_account_rename_event_index";
 
-    /** SigninPromo Show Count preference. */
-    public static final KeyPrefix SIGNIN_PROMO_SHOW_COUNT =
-            new KeyPrefix("Chrome.SigninPromo.ShowCount.*");
+    /** SyncPromo Show Count preference. */
+    public static final KeyPrefix SYNC_PROMO_SHOW_COUNT =
+            new KeyPrefix("Chrome.SyncPromo.ShowCount.*");
+    /** SyncPromo total shown count preference across all access points. */
+    public static final String SYNC_PROMO_TOTAL_SHOW_COUNT = "Chrome.SyncPromo.TotalShowCount";
 
     /**
      * Generic signin and sync promo preferences.
@@ -1127,9 +1129,10 @@ public final class ChromePreferenceKeys {
                 SHARING_LAST_SHARED_COMPONENT_NAME,
                 SHOW_START_SEGMENTATION_RESULT,
                 SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP,
-                SIGNIN_PROMO_SHOW_COUNT.pattern(),
+                SYNC_PROMO_SHOW_COUNT.pattern(),
                 SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME,
                 SIGNIN_PROMO_NTP_LAST_SHOWN_TIME,
+                SYNC_PROMO_TOTAL_SHOW_COUNT,
                 START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
                 START_SHOW_ON_STARTUP,
                 TAP_FEED_CARDS_COUNT,
