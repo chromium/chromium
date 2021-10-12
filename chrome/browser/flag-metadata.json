@@ -4994,12 +4994,12 @@
   {
     "name" : "side-panel",
     "owners": [ "chrome-desktop-ui-sea@google.com", "pbos" ],
-    "expiry_milestone" : 96
+    "expiry_milestone" : 101
   },
   {
     "name" : "side-panel-drag-and-drop",
     "owners": [ "chrome-desktop-ui-sea@google.com", "johntlee" ],
-    "expiry_milestone" : 96
+    "expiry_milestone" : 101
   },
   {
     "name" : "side-search",
