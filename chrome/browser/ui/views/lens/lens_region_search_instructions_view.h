@@ -17,7 +17,8 @@ class LensRegionSearchInstructionsView
     : public views::BubbleDialogDelegateView {
  public:
   LensRegionSearchInstructionsView(views::View* anchor_view,
-                                   base::RepeatingClosure close_callback);
+                                   base::OnceClosure close_callback,
+                                   base::OnceClosure escape_callback);
   LensRegionSearchInstructionsView(const LensRegionSearchInstructionsView&) =
       delete;
   LensRegionSearchInstructionsView& operator=(
