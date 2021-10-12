@@ -20,6 +20,7 @@ class SimpleURLLoader;
 }  // namespace network
 
 class GURL;
+class SideSearchConfig;
 
 // Side Search helper for the WebContents hosted in the browser's main tab area.
 class SideSearchTabContentsHelper
@@ -86,8 +87,6 @@ class SideSearchTabContentsHelper
   void SetSidePanelContentsForTesting(
       std::unique_ptr<content::WebContents> side_panel_contents);
 
-  void SetIsSidePanelSRPAvailableForTesting(bool is_side_panel_srp_available);
-
   content::WebContents* side_panel_contents_for_testing() const {
     return side_panel_contents_.get();
   }
@@ -115,6 +114,8 @@ class SideSearchTabContentsHelper
   // availability and sets `is_side_panel_srp_available_` accordingly.
   void TestSRPAvailability();
   void OnResponseLoaded(scoped_refptr<net::HttpResponseHeaders> headers);
+
+  SideSearchConfig* GetConfig();
 
   // Use a weak ptr for the delegate to avoid issues whereby the tab contents
   // could outlive the delegate.

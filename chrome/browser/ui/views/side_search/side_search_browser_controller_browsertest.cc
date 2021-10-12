@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -87,9 +88,8 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
   void SetIsSidePanelSRPAvailableAt(Browser* browser,
                                     int index,
                                     bool is_available) {
-    auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
-        browser->tab_strip_model()->GetWebContentsAt(index));
-    tab_contents_helper->SetIsSidePanelSRPAvailableForTesting(is_available);
+    SideSearchConfig::Get(browser->profile())
+        ->set_is_side_panel_srp_available(is_available);
   }
 
   BrowserView* BrowserViewFor(Browser* browser) {

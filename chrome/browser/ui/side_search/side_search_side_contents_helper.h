@@ -17,6 +17,7 @@ class WebContents;
 }  // namespace content
 
 class GURL;
+class SideSearchConfig;
 
 // Side Search helper for the WebContents hosted in the side panel.
 class SideSearchSideContentsHelper
@@ -90,6 +91,8 @@ class SideSearchSideContentsHelper
 
   // Emits metrics data for the previous user journey if present.
   void MaybeRecordMetricsPerJourney();
+
+  SideSearchConfig* GetConfig();
 
   // `delegate_` will outlive the SideContentsWrapper.
   Delegate* delegate_ = nullptr;

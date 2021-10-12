@@ -4,12 +4,13 @@
 
 #include "chrome/browser/ui/side_search/side_search_side_contents_helper.h"
 
+#include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/side_search/side_search_metrics.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
-#include "components/google/core/common/google_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "url/gurl.h"
@@ -47,7 +48,10 @@ class SideSearchContentsThrottle : public content::NavigationThrottle {
     const auto& url = navigation_handle()->GetURL();
 
     // Allow Google search navigations to proceed in the side panel.
-    if (google_util::IsGoogleSearchUrl(url)) {
+    auto* config = SideSearchConfig::Get(
+        navigation_handle()->GetWebContents()->GetBrowserContext());
+    DCHECK(config);
+    if (config->ShouldNavigateInSidePanel(url)) {
       return NavigationThrottle::PROCEED;
     }
 
@@ -106,7 +110,7 @@ void SideSearchSideContentsHelper::DidFinishNavigation(
   }
 
   const auto& url = navigation_handle->GetURL();
-  DCHECK(google_util::IsGoogleSearchUrl(url));
+  DCHECK(GetConfig()->ShouldNavigateInSidePanel(url));
   DCHECK(delegate_);
   delegate_->LastSearchURLUpdated(url);
 
@@ -151,7 +155,7 @@ void SideSearchSideContentsHelper::NavigateInTabContents(
 }
 
 void SideSearchSideContentsHelper::LoadURL(const GURL& url) {
-  DCHECK(google_util::IsGoogleSearchUrl(url));
+  DCHECK(GetConfig()->ShouldNavigateInSidePanel(url));
 
   // Do not reload the side contents if already navigated to `url`.
   if (web_contents()->GetLastCommittedURL() == url)
@@ -208,6 +212,10 @@ void SideSearchSideContentsHelper::MaybeRecordMetricsPerJourney() {
   RecordRedirectionToTabCountPerJourney(redirection_to_tab_count_);
   navigation_within_side_search_count_ = 0;
   redirection_to_tab_count_ = 0;
+}
+
+SideSearchConfig* SideSearchSideContentsHelper::GetConfig() {
+  return SideSearchConfig::Get(web_contents()->GetBrowserContext());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SideSearchSideContentsHelper);

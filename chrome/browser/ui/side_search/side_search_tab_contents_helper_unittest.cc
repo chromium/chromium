@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"
@@ -51,7 +52,7 @@ class SideSearchTabContentsHelperTest : public ::testing::Test {
     SideSearchTabContentsHelper::CreateForWebContents(web_contents_.get());
     helper()->SetSidePanelContentsForTesting(
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr));
-    helper()->SetIsSidePanelSRPAvailableForTesting(true);
+    SideSearchConfig::Get(&profile_)->set_is_side_panel_srp_available(true);
     Test::SetUp();
   }
 
