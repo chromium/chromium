@@ -8069,11 +8069,17 @@ be describing additional metrics about the same event.
 <event name="IOS.PageReadability">
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
-    Logged when the Distilibility score of the current page is returned.
-    Muliplied by 10X to get tenth digit granularity. 0.1 granularity will be
-    recorded for scores between 0.5 and 1.5. Otherwise, the granularity will be
-    0.5.
+    Logged when the Distilibility score of the current page is returned and the
+    Reading List Message is shown. Muliplied by 10X to get tenth digit
+    granularity. 0.1 granularity will be recorded for scores between 0.5 and
+    1.5. Otherwise, the granularity will be 0.5.
   </summary>
+  <metric name="DidAccept" enum="Boolean">
+    <summary>
+      True if the user tapped on the Messages prompt to save the current page to
+      Reading List.
+    </summary>
+  </metric>
   <metric name="DistilibilityLongScore">
     <summary>
       Distilibility score value indicating the &quot;long readability&quot; of

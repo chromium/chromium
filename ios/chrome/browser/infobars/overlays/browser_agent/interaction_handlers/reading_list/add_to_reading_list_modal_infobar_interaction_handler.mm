@@ -44,6 +44,14 @@ void ReadingListInfobarModalInteractionHandler::PerformMainAction(
       showReadingListIPH];
 }
 
+void ReadingListInfobarModalInteractionHandler::InfobarVisibilityChanged(
+    InfoBarIOS* infobar,
+    bool visible) {
+  if (!visible) {
+    GetDelegate(infobar)->InfoBarDismissed();
+  }
+}
+
 #pragma mark - Private
 
 std::unique_ptr<InfobarModalOverlayRequestCallbackInstaller>
