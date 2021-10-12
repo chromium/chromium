@@ -4318,6 +4318,30 @@
             ]
         }
     ],
+    "IgnoreSyncEncryptionKeysLongMissing": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "MinGuResponsesToIgnoreKey": "2"
+                    },
+                    "enable_features": [
+                        "IgnoreSyncEncryptionKeysLongMissing"
+                    ]
+                }
+            ]
+        }
+    ],
     "IncludeInitiallyInvisibleImagesInLCP": [
         {
             "platforms": [
