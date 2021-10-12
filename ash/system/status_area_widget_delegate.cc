@@ -178,6 +178,7 @@ StatusAreaWidgetDelegate::CreateScopedPauseCalculatingTargetBounds() {
 }
 
 void StatusAreaWidgetDelegate::CalculateTargetBounds() {
+  // Prevents creating new layout manager when adding the tray buttons.
   if (is_adding_tray_buttons_)
     return;
   // Use a grid layout so that the trays can be centered in each cell, and
@@ -239,6 +240,10 @@ void StatusAreaWidgetDelegate::UpdateLayout(bool animate) {
 }
 
 void StatusAreaWidgetDelegate::ChildPreferredSizeChanged(View* child) {
+  // Prevents resizing and layout row and column change when adding the tray
+  // buttons.
+  if (is_adding_tray_buttons_)
+    return;
   const gfx::Size current_size = size();
   const gfx::Size new_size = GetPreferredSize();
   if (new_size == current_size)
