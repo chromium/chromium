@@ -177,16 +177,15 @@ class LaunchProcess {
   const apps::ShareTarget* MaybeGetShareTarget() const;
   std::tuple<GURL, bool /*is_file_handling*/> GetLaunchUrl(
       const apps::ShareTarget* share_target) const;
-  WindowOpenDisposition GetNavigationDisposition() const;
+  WindowOpenDisposition GetNavigationDisposition(bool is_new_browser) const;
   content::WebContents* MaybeLaunchSystemWebApp(const GURL& launch_url);
-  std::tuple<Browser*, WindowOpenDisposition> EnsureBrowser();
+  std::tuple<Browser*, bool /*is_new_browser*/> EnsureBrowser();
   Browser* MaybeFindBrowserForLaunch() const;
   Browser* CreateBrowserForLaunch();
-  content::WebContents* NavigateBrowser(
-      Browser* browser,
-      const GURL& launch_url,
-      WindowOpenDisposition navigation_disposition,
-      const apps::ShareTarget* share_target);
+  content::WebContents* NavigateBrowser(Browser* browser,
+                                        bool is_new_browser,
+                                        const GURL& launch_url,
+                                        const apps::ShareTarget* share_target);
   void MaybeEnqueueWebLaunchParams(const GURL& launch_url,
                                    bool is_file_handling,
                                    content::WebContents* web_contents);
@@ -228,11 +227,11 @@ content::WebContents* LaunchProcess::Run() {
     return web_contents;
 
   Browser* browser = nullptr;
-  WindowOpenDisposition navigation_disposition;
-  std::tie(browser, navigation_disposition) = EnsureBrowser();
+  bool is_new_browser;
+  std::tie(browser, is_new_browser) = EnsureBrowser();
 
-  web_contents = NavigateBrowser(browser, launch_url, navigation_disposition,
-                                 share_target);
+  web_contents =
+      NavigateBrowser(browser, is_new_browser, launch_url, share_target);
   if (!web_contents)
     return nullptr;
 
@@ -295,7 +294,21 @@ std::tuple<GURL, bool /*is_file_handling*/> LaunchProcess::GetLaunchUrl(
   return {launch_url, is_file_handling};
 }
 
-WindowOpenDisposition LaunchProcess::GetNavigationDisposition() const {
+WindowOpenDisposition LaunchProcess::GetNavigationDisposition(
+    bool is_new_browser) const {
+  if (is_new_browser) {
+    // By opening a new window we've already performed part of a "disposition",
+    // the only remaining thing for Navigate() to do is navigate the new window.
+    return WindowOpenDisposition::CURRENT_TAB;
+    // TODO(crbug.com/1200944): Use NEW_FOREGROUND_TAB instead of CURRENT_TAB.
+    // The window has no tabs so it doesn't make sense to open the "current"
+    // tab. We use it anyway because it happens to work.
+    // If NEW_FOREGROUND_TAB is used the the WindowCanOpenTabs() check fails
+    // when `launch_url` is out of scope for web app windows causing it to
+    // open another separate browser window. It should be updated to check the
+    // extended scope.
+  }
+
   // Only CURRENT_TAB and NEW_FOREGROUND_TAB dispositions are supported for web
   // app launches.
   return params_.disposition == WindowOpenDisposition::CURRENT_TAB
@@ -315,26 +328,17 @@ content::WebContents* LaunchProcess::MaybeLaunchSystemWebApp(
   return browser->tab_strip_model()->GetActiveWebContents();
 }
 
-std::tuple<Browser*, WindowOpenDisposition> LaunchProcess::EnsureBrowser() {
+std::tuple<Browser*, bool /*is_new_browser*/> LaunchProcess::EnsureBrowser() {
   Browser* browser = MaybeFindBrowserForLaunch();
-  WindowOpenDisposition navigation_disposition = GetNavigationDisposition();
+  bool is_new_browser = false;
   if (browser) {
     browser->window()->Activate();
   } else {
     browser = CreateBrowserForLaunch();
-    // By opening a new window we've already performed part of a "disposition",
-    // the only remaining thing for Navigate() to do is navigate the new window.
-    navigation_disposition = WindowOpenDisposition::CURRENT_TAB;
-    // TODO(crbug.com/1200944): Use NEW_FOREGROUND_TAB instead of CURRENT_TAB.
-    // The window has no tabs so it doesn't make sense to open the "current"
-    // tab. We use it anyway because it happens to work.
-    // If NEW_FOREGROUND_TAB is used the the WindowCanOpenTabs() check fails
-    // when `launch_url` is out of scope for web app windows causing it to
-    // open another separate browser window. It should be updated to check the
-    // extended scope.
+    is_new_browser = true;
   }
   browser->window()->Show();
-  return {browser, navigation_disposition};
+  return {browser, is_new_browser};
 }
 
 Browser* LaunchProcess::MaybeFindBrowserForLaunch() const {
@@ -373,9 +377,12 @@ Browser* LaunchProcess::CreateBrowserForLaunch() {
 
 content::WebContents* LaunchProcess::NavigateBrowser(
     Browser* browser,
+    bool is_new_browser,
     const GURL& launch_url,
-    WindowOpenDisposition navigation_disposition,
     const apps::ShareTarget* share_target) {
+  WindowOpenDisposition navigation_disposition =
+      GetNavigationDisposition(is_new_browser);
+
   if (share_target) {
     NavigateParams nav_params =
         NavigateParamsForShareTarget(browser, *share_target, *params_.intent);
