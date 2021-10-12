@@ -709,6 +709,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cores": "8|12",
               "cpu": "x86-64",
               "os": "Mac-10.15"
             }

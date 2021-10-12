@@ -1340,6 +1340,17 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.content_browsertests.filter',
         ],
       },
+      # https://crbug.com/1255940
+      'mac-rel-swarming': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              # These test would time out when running on 4 cores instances.
+              'cores': '8|12',
+            }
+          ],
+        },
+      },
     },
   },
   'content_browsertests_wayland': {
