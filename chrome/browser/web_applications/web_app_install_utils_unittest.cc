@@ -58,10 +58,8 @@ IconPurpose IconInfoPurposeToManifestPurpose(
 }  // namespace
 
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {blink::features::kWebAppNoteTaking, blink::features::kFileHandlingIcons},
-      {});
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kFileHandlingIcons);
 
   WebApplicationInfo web_app_info;
   web_app_info.title = kAlternativeAppTitle;

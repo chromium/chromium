@@ -23,6 +23,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/unloaded_extension_reason.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;

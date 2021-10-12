@@ -5,15 +5,20 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_UTILS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_UTILS_H_
 
-#include <map>
-#include <set>
 #include <vector>
 
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
-#include "url/gurl.h"
+
+class GURL;
+
+namespace blink {
+namespace mojom {
+class Manifest;
+}  // namespace mojom
+}  // namespace blink
 
 namespace content {
 class WebContents;

@@ -3134,13 +3134,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
   EXPECT_TRUE(web_app->protocol_handlers().empty());
 }
 
-class ManifestUpdateManagerBrowserTestWithWebAppNoteTaking
-    : public ManifestUpdateManagerBrowserTest {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppNoteTaking};
-};
-
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithWebAppNoteTaking,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsAddedNewNoteUrl) {
   constexpr char kManifestTemplate[] = R"(
     {
@@ -3179,7 +3173,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithWebAppNoteTaking,
             web_app->note_taking_new_note_url().spec());
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithWebAppNoteTaking,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckIgnoresUnchangedNewNoteUrl) {
   constexpr char kNewNoteUrlManifestTemplate[] = R"(
     {
@@ -3209,7 +3203,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithWebAppNoteTaking,
             web_app->note_taking_new_note_url().spec());
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithWebAppNoteTaking,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsChangedNewNoteUrl) {
   constexpr char kNewNoteUrlManifestTemplate[] = R"(
     {
@@ -3242,7 +3236,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithWebAppNoteTaking,
             web_app->note_taking_new_note_url().spec());
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithWebAppNoteTaking,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsDeletedNewNoteUrl) {
   constexpr char kNewNoteUrlManifestTemplate[] = R"(
     {

@@ -24,10 +24,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -61,8 +59,7 @@
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "third_party/blink/public/common/features.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
 namespace app_runtime = extensions::api::app_runtime;
@@ -644,19 +641,17 @@ std::vector<std::string> NoteTakingHelper::GetNoteTakingAppIds(
     }
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppNoteTaking)) {
-    cache->ForEachApp([&app_ids](const apps::AppUpdate& update) {
-      if (!apps_util::IsInstalled(update.Readiness()))
-        return;
-      if (base::Contains(app_ids, update.AppId()))
-        return;
-      if (HasNoteTakingIntentFilter(update.IntentFilters())) {
-        // Currently only web apps are expected to have this intent set.
-        DCHECK(update.AppType() == apps::mojom::AppType::kWeb);
-        app_ids.push_back(update.AppId());
-      }
-    });
-  }
+  cache->ForEachApp([&app_ids](const apps::AppUpdate& update) {
+    if (!apps_util::IsInstalled(update.Readiness()))
+      return;
+    if (base::Contains(app_ids, update.AppId()))
+      return;
+    if (HasNoteTakingIntentFilter(update.IntentFilters())) {
+      // Currently only web apps are expected to have this intent set.
+      DCHECK(update.AppType() == apps::mojom::AppType::kWeb);
+      app_ids.push_back(update.AppId());
+    }
+  });
 
   return app_ids;
 }

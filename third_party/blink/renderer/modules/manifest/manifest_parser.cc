@@ -1326,9 +1326,6 @@ KURL ManifestParser::ParseNoteTakingNewNoteUrl(const JSONObject* note_taking) {
 
 mojom::blink::ManifestNoteTakingPtr ManifestParser::ParseNoteTaking(
     const JSONObject* manifest) {
-  if (!base::FeatureList::IsEnabled(blink::features::kWebAppNoteTaking)) {
-    return nullptr;
-  }
   if (!manifest->Get("note_taking")) {
     return nullptr;
   }

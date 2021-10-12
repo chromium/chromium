@@ -8,24 +8,38 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/extend.h"
-#include "base/feature_list.h"
+#include "base/containers/flat_map.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
-#include "third_party/blink/public/common/features.h"
+#include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "url/gurl.h"
+
+#if defined(OS_CHROMEOS)
+#include "chromeos/crosapi/mojom/app_service_types.mojom.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chromeos/components/projector_app/projector_app_constants.h"
 #include "components/arc/intent_helper/intent_constants.h"
+#include "components/arc/intent_helper/intent_filter.h"
+#include "components/arc/mojom/intent_common.mojom.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "storage/browser/file_system/file_system_url.h"
 #endif
@@ -170,11 +184,7 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppFileHandlerIntentFilters(
 }
 
 bool IsNoteTakingWebApp(const web_app::WebApp& web_app) {
-  if (!base::FeatureList::IsEnabled(blink::features::kWebAppNoteTaking))
-    return false;
-  if (!web_app.note_taking_new_note_url().is_valid())
-    return false;
-  return true;
+  return web_app.note_taking_new_note_url().is_valid();
 }
 
 apps::mojom::IntentFilterPtr CreateNoteTakingIntentFilter(
@@ -671,7 +681,7 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
 
   return intent_filter;
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_CHROMEOS)
 crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(

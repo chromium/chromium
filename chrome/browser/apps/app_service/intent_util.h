@@ -5,19 +5,21 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_INTENT_UTIL_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_INTENT_UTIL_H_
 
+#include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
-#include "extensions/common/extension.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_CHROMEOS)
-#include "chromeos/crosapi/mojom/app_service.mojom.h"
+#include "chromeos/crosapi/mojom/app_service_types.mojom-forward.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/arc/mojom/intent_common.mojom.h"
+#include "components/arc/mojom/intent_common.mojom-forward.h"
 #include "components/arc/mojom/intent_helper.mojom-forward.h"
 
 namespace arc {
@@ -25,11 +27,16 @@ class IntentFilter;
 }
 #endif
 
+class GURL;
 class Profile;
 
 namespace base {
 class FilePath;
 }  // namespace base
+
+namespace extensions {
+class Extension;
+}  // namespace extensions
 
 namespace web_app {
 class WebApp;

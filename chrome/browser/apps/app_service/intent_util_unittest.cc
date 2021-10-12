@@ -2,42 +2,51 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <initializer_list>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/intent_filter.h"
+#include "components/arc/mojom/intent_common.mojom.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/value_builder.h"
+#include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/strings/strcat.h"
-#include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
-#include "net/base/filename_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "storage/browser/file_system/file_system_url.h"
+#include "storage/common/file_system/file_system_mount_option.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
+#include "url/url_constants.h"
+
+class TestingProfile;
 #endif
 
 using apps::mojom::Condition;
@@ -290,7 +299,6 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_FileHandlers) {
 }
 
 TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_NoteTakingApp) {
-  base::test::ScopedFeatureList features{blink::features::kWebAppNoteTaking};
   auto web_app = web_app::test::CreateWebApp();
   DCHECK(web_app->start_url().is_valid());
   GURL scope = web_app->start_url().GetWithoutFilename();

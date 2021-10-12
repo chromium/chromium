@@ -836,14 +836,6 @@ const base::Feature kWebAppEnableUrlHandlers{"WebAppEnableUrlHandlers",
 const base::Feature kWebAppEnableProtocolHandlers{
     "WebAppEnableProtocolHandlers", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Whether web apps are able to be treated as note-taking apps. Controls parsing
-// of "note_taking" dictionary field and "new_note_url" entry in web app
-// manifests. Also controls whether the parsed field is used in browser. See
-// incubation spec:
-// https://wicg.github.io/manifest-incubations/#note_taking-member
-const base::Feature kWebAppNoteTaking{"WebAppNoteTaking",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Makes network loading tasks unfreezable so that they can be processed while
 // the page is frozen.
 const base::Feature kLoadingTasksUnfreezable{"LoadingTasksUnfreezable",

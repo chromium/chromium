@@ -3118,39 +3118,7 @@ TEST_F(ManifestParserTest, UrlHandlerParseRules) {
   }
 }
 
-TEST_F(ManifestParserTest, NoteTakingParseRulesWithFeatureDisabled) {
-  // With feature disabled, note taking field should never be parsed.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(blink::features::kWebAppNoteTaking);
-
-  KURL manifest_url = KURL("https://foo.com/manifest.json");
-  KURL document_url = KURL("https://foo.com/index.html");
-
-  {
-    // Manifest does not contain a 'note_taking' field.
-    auto& manifest = ParseManifest("{ }");
-    ASSERT_EQ(0u, GetErrorCount());
-    EXPECT_TRUE(manifest->note_taking.is_null());
-  }
-
-  {
-    // A valid note_taking entry.
-    auto& manifest = ParseManifestWithURLs(
-        R"({
-          "note_taking": {
-            "new_note_url": "https://foo.com"
-          }
-        })",
-        manifest_url, document_url);
-    ASSERT_EQ(0u, GetErrorCount());
-    EXPECT_TRUE(manifest->note_taking.is_null());
-  }
-}
-
 TEST_F(ManifestParserTest, NoteTakingParseRules) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(blink::features::kWebAppNoteTaking);
-
   KURL manifest_url = KURL("https://foo.com/manifest.json");
   KURL document_url = KURL("https://foo.com/index.html");
 
