@@ -62,7 +62,6 @@
 <translation id="2429317896000329049">Google Chrome-მა ვერ დაასინქრონა თქვენი მონაცემები, რადგან სინქრონიზაცია არ არის ხელმისაწვდომი თქვენი დომენისთვის.</translation>
 <translation id="2467438592969358367">Google Chrome ითხოვს თქვენი პაროლების ექსპორტირებას. აღნიშნულის დასაშვებად აკრიფეთ თქვენი Windows-ის პაროლი.</translation>
 <translation id="2485422356828889247">დეინსტალაცია</translation>
-<translation id="2518751521812750372">Chrome-ის დახურვისას ის ავტომატურად გაასუფთავებს თქვენ მიერ მონახულებულ გვერდებთან დაკავშირებულ ქუქი-ჩანაწერებსა და საიტების მონაცემებს</translation>
 <translation id="2534507159460261402">Google Pay (Chrome-ში კოპირებული)</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> უკვე შესულია ამ Chrome პროფილში. თქვენი დათვალიერების მონაცემები რომ განაცალკევოთ, Chrome-ს შეუძლია თქვენთვის პერსონალური პროფილის შექმნა.</translation>
 <translation id="2580411288591421699">შეუძლებელია იმავე Google Chrome-ის ვერსიის დაყენება, რომელიც ამჟამად გაშვებულია. დახურეთ Google Chrome და ხელახლა სცადეთ.</translation>
@@ -202,7 +201,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6145313976051292476">PDF-ების გახსნა Chrome-ში</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> — Google Chrome Beta</translation>
-<translation id="61852838583753520">Chrome OS-ის &amp;განახლება</translation>
 <translation id="6235018212288296708">Google Chrome-ის შემომავალი ტრაფიკის წესი mDNS ტრაფიკისთვის.</translation>
 <translation id="6291089322031436445">Chrome Dev აპები</translation>
 <translation id="6291549208091401781">Google Chrome უკვე დაინსტალირებულია თქვენი კომპიუტერის ყველა მომხმარებლისთვის.</translation>
@@ -287,7 +285,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8669527147644353129">Google Chrome-ის დახმარება</translation>
 <translation id="8679801911857917785">იგი, ასევე, აკონტროლებს, თუ რომელი გვერდი გამოჩნდება Chrome-ის გაშვებისას.</translation>
 <translation id="8686817260976772516">Chrome პროფილები Chrome-ში არსებული თქვენი კონტენტის განცალკევების საშუალებას გაძლევთ. შექმენით პროფილები ოჯახის წევრებისა და მეგობრებისთვის, ან განაცალკევეთ სამსახურებრივი და პირადი მონაცემები.</translation>
-<translation id="870251953148363156">&amp;Google Chrome-ის განახლება</translation>
 <translation id="873133009373065397">Google Chrome ნაგულისხმევ ბრაუზერს ვერ საზღვრავს, ან ვერ აყენებს</translation>
 <translation id="8823341990149967727">Chrome მოძველებულია</translation>
 <translation id="8834965163890861871">Google Chrome ცდილობს პაროლების რედაქტირებას. აღნიშნულის დასაშვებად აკრიფეთ თქვენი Windows-ის პაროლი ამის დასაშვებად.</translation>

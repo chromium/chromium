@@ -588,6 +588,7 @@
 <translation id="1612019740169791082">Контејнер није конфигурисан за промене величине диска. Да бисте прилагодили количину простора која се резервише за Linux, направите резервну копију и вратите је у нови контејнер.</translation>
 <translation id="1614511179807650956">Можда сте искористили дозвољену количину података за мобилне уређаје. Посетите портал за активацију <ph name="NAME" /> да бисте купили још података</translation>
 <translation id="161460670679785907">Нисмо успели да откријемо телефон</translation>
+<translation id="1615337439947999338">Сачувај на Google налогу (<ph name="EMAIL" />)</translation>
 <translation id="1615402009686901181">Смернице администратора онемогућавају снимање екрана када је видљив поверљив садржај</translation>
 <translation id="1616206807336925449">Овај додатак не захтева никакве специјалне дозволе.</translation>
 <translation id="1616298854599875024">Увоз додатка „<ph name="IMPORT_NAME" />“ није успео зато што није дељени модул</translation>
@@ -920,6 +921,7 @@
 <translation id="1929546189971853037">Читање ваше историје прегледања на свим уређајима на којима сте пријављени</translation>
 <translation id="1930879306590754738">Лозинка је избрисана са овог уређаја и вашег Google налога</translation>
 <translation id="1931152874660185993">Није инсталирана ниједна компонента.</translation>
+<translation id="1931410639376954712">Инсталира се <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Не пре</translation>
 <translation id="1935303383381416800">Дозвољено им је да виде вашу локацију</translation>
 <translation id="1936931585862840749">Наведите број примерака за штампање (1–<ph name="MAX_COPIES" />).</translation>
@@ -1052,6 +1054,7 @@
 <translation id="208586643495776849">Пробајте поново</translation>
 <translation id="208634871997892083">Стално укључен VPN</translation>
 <translation id="2087822576218954668">Штампање: <ph name="PRINT_NAME" /></translation>
+<translation id="2088092308059522196">Регистровање је подржано само када инсталирате <ph name="DEVICE_OS" />.</translation>
 <translation id="208928984520943006">Да бисте дошли на почетни екран у било ком тренутку, превуците нагоре од дна.</translation>
 <translation id="2089566709556890888">Прегледајте безбедно уз Google Chrome</translation>
 <translation id="2089795179672254991">Питај када сајт жели да види текст и слике који су копирани у привремену меморију (препоручено)</translation>
@@ -1176,6 +1179,7 @@
 <translation id="2203088913459920044">Слова, бројеви и специјални знакови могу да се користе у називу</translation>
 <translation id="2204034823255629767">Читање и мењање свега што уносите</translation>
 <translation id="220858061631308971">Унесите овај PIN кôд на уређају „<ph name="DEVICE_NAME" />“:</translation>
+<translation id="2210462644007531147">Довршавање инсталирања није успело</translation>
 <translation id="2212565012507486665">Дозволи колачиће</translation>
 <translation id="2214018885812055163">Дељени директоријуми</translation>
 <translation id="2214884991347062907">Нетачна лозинка. Пробајте поново</translation>
@@ -1229,6 +1233,8 @@
 <translation id="22665427234727190">Питај када сајт жели да приступа Bluetooth уређајима (препоручено)</translation>
 <translation id="2266957463645820432">IPP преко USB-а (IPPUSB)</translation>
 <translation id="2270450558902169558">Размена података са било којим уређајем на домену <ph name="DOMAIN" /></translation>
+<translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />Инсталација <ph name="BEGIN_BOLD" />ће обрисати комплетне податке са хард-диска<ph name="END_BOLD" />. Проверите да ли сте направили резервне копије података.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Када инсталација почне, не може да се откаже.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Размена података са било којим уређајем на доменима: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Доделите прекидач радњи Изабери</translation>
 <translation id="2271469253353559191">Распоред тамног режима</translation>
@@ -1492,6 +1498,7 @@
 <translation id="2521854691574443804">Проверава се да ли је <ph name="FILE_NAME" /> у складу са безбедносним смерницама организације...</translation>
 <translation id="252219247728877310">Компонента није ажурирана</translation>
 <translation id="2523184218357549926">URL-ови страница које посећујете се шаљу Google-у</translation>
+<translation id="252418934079508528">Инсталирајте <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome проверава да ли на рачунару има штетног софтвера...</translation>
 <translation id="2526590354069164005">Радна површина</translation>
 <translation id="2526619973349913024">Провери да ли постоји ажурирање</translation>
@@ -1696,6 +1703,7 @@
 <translation id="2740531572673183784">Потврди</translation>
 <translation id="2741713322780029189">Отвори терминал за опоравак</translation>
 <translation id="2741912629735277980">Прикажи кориснички интерфејс на екрану за пријављивање</translation>
+<translation id="2742448780373473567">Инсталирањем система <ph name="DEVICE_OS" /> замениће се сви подаци на хард-диску.</translation>
 <translation id="274290345632688601">Враћање Linux апликација и датотека</translation>
 <translation id="274318651891194348">Тражи се тастатура</translation>
 <translation id="2743387203779672305">Копирај у меморију</translation>
@@ -2223,7 +2231,6 @@
 <translation id="3305661444342691068">Отвори PDF у прегледу</translation>
 <translation id="3308116878371095290">Овој страници је забрањено да поставља колачиће.</translation>
 <translation id="3308134619352333507">Сакриј дугме</translation>
-<translation id="3308681281309926497">Сајтови које посећујете и даље могу да памте ваше податке док не затворите Chrome</translation>
 <translation id="3308852433423051161">Google помоћник се учитава...</translation>
 <translation id="3309330461362844500">ИД профила сертификата</translation>
 <translation id="3311445899360743395">Подаци повезани са овом апликацијом ће се можда уклонити са овог уређаја.</translation>
@@ -2895,6 +2902,8 @@
 <translation id="3979748722126423326">Омогући <ph name="NETWORKDEVICE" /></translation>
 <translation id="3981058120448670012">Видљиво уређајима у близини као <ph name="DEVICE_NAME" /> <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">Унет је неважећи тип за чување.</translation>
+<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />Дошло је до грешке и инсталирање система <ph name="DEVICE_OS" /> није успело.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Додату помоћ потражите на: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">Подесите прегледач у неколико једноставних корака</translation>
 <translation id="3983400541576569538">Подаци из неких апликација су можда изгубљени</translation>
 <translation id="3983586614702900908">уређаји непознатог продавца</translation>
@@ -2984,6 +2993,7 @@
 <translation id="4084835346725913160">Затвори <ph name="TAB_NAME" /></translation>
 <translation id="4085270836953633510">Питај када сајт жели да приступи серијским портовима</translation>
 <translation id="4085298594534903246">JavaScript је блокиран на овој страници.</translation>
+<translation id="4085947337119280756">Додатни додаци</translation>
 <translation id="4087089424473531098">Направљен је додатак:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -3290,6 +3300,7 @@
 <translation id="4449996769074858870">Ова картица репродукује звук.</translation>
 <translation id="4450274068924249931">Када је екран неактиван, приказују се слике, време, временска прогноза и информације о медијском садржају. Ако омогућите чувар екрана, екран ће остати укључен током пуњења.</translation>
 <translation id="4450974146388585462">Дијагностикуј</translation>
+<translation id="445099924538929605"><ph name="DEVICE_OS" /> је откривен на активном TPM-у који може безбедније да чува податке.</translation>
 <translation id="4451479197788154834">Лозинка је сачувана на овом уређају и на вашем Google налогу</translation>
 <translation id="4451757071857432900">Блокирано на сајтовима који приказују огласе који ометају активности или обмањујуће огласе (препоручено)</translation>
 <translation id="4453946976636652378">Претражите <ph name="SEARCH_ENGINE_NAME" /> или унесите URL</translation>
@@ -3792,6 +3803,9 @@
 <translation id="4992473555164495036">Администратор је ограничио доступне методе уноса.</translation>
 <translation id="4994474651455208930">Дозволи сајтовима да захтевају да постану подразумевани обрађивачи протокола</translation>
 <translation id="4994754230098574403">Подешава се</translation>
+<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />Пре него што се региструјете, треба да обришете TPM да би <ph name="DEVICE_OS" /> могао да преузме власништво на уређајем.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Можете и у потпуности да искључите TPM уређај. Ваши подаци ће се и даље безбедно чувати помоћу софтверског шифровања, али одређене безбедносне функције, попут хардверских сертификата, биће онемогућене.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Подешавања TPM-а можете да промените рестартовањем и уносом BIOS/UEFI подешавања. Кораци се разликују у зависности од модела уређаја. Да бисте пронашли више информација, отворите документацију за <ph name="DEVICE_OS" /> на посебном уређају пре рестартовања: [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Није пронађена ниједна виртуелна машина <ph name="VM_TYPE" />}=1{Пронађена је 1 виртуелна машина<ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}one{Пронађена је{NUM_VMS} виртуелна машина<ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}few{Пронађене су{NUM_VMS} виртуелне машине<ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Пронађено је{NUM_VMS} виртуелних машина<ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Нема интернет везе.</translation>
 <translation id="4998430619171209993">Укључено</translation>
@@ -3907,6 +3921,7 @@
 <translation id="5127620150973591153">ИД безбедне везе: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Синхронизација је искључена</translation>
 <translation id="5127881134400491887">Управљање мрежним везама</translation>
+<translation id="5128774403617662387">Пре него што почнете, уверите се да сте направили резервну копију података. Инсталирањем система <ph name="DEVICE_OS" /> замениће се подаци на хард-диску. Сазнајте више на g.co/TBD.</translation>
 <translation id="512903556749061217">прикључено</translation>
 <translation id="5130080518784460891">Етен</translation>
 <translation id="5130675701626084557">Преузимање профила није успело. Пробајте поново касније или затражите помоћ од мобилног оператера.</translation>
@@ -4342,6 +4357,7 @@
 <translation id="5592595402373377407">Још увек није доступна довољна количина података.</translation>
 <translation id="5595485650161345191">Измена адресе</translation>
 <translation id="5596627076506792578">Још опција</translation>
+<translation id="5600348067066185292">Инсталација се обавља у пар лаких корака. Имаћете још једну прилику за потврду пре него што се примене промене на рачунару.</translation>
 <translation id="5600706100022181951">Ажурирање ће се преузети уз употребу <ph name="UPDATE_SIZE_MB" /> MB мобилних података. Желите ли да наставите?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Није им дозвољено да се повезују са MIDI уређајима</translation>
@@ -4403,6 +4419,7 @@
 <translation id="5659593005791499971">Имејл</translation>
 <translation id="5659833766619490117">Превођење ове странице није успело</translation>
 <translation id="5662513737565158057">Промените начин на који Linux апликације раде.</translation>
+<translation id="5667490069342183561">Google није одговоран ни за какав губитак података и <ph name="DEVICE_OS" /> можда неће радити на моделима без сертификата. Сазнајте више на g.co/TBD.</translation>
 <translation id="5667546120811588575">Google Play се подешава…</translation>
 <translation id="5668351004957198136">Нисмо прошли</translation>
 <translation id="56702779821643359">Делите фајлове са људима у близини. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
@@ -4421,6 +4438,7 @@
 <translation id="5684181005476681636">Детаљи о WiFi мрежи</translation>
 <translation id="5684661240348539843">Идентификатор елемента</translation>
 <translation id="5687326903064479980">Временска зона</translation>
+<translation id="5687935527303996204">Уверите се да је уређај прикључен и не искључујте га. Инсталација може да траје до 20 минута. Уређај ће се аутоматски искључити када се инсталирање заврши.</translation>
 <translation id="5689516760719285838">Локација</translation>
 <translation id="5689531695336322499">Изгледа да је <ph name="SUPERVISED_USER_NAME" /> већ подесио/ла Voice Match са Помоћником на другом уређају. Ови претходни снимци су коришћени за прављење гласовног модела на овом уређају.</translation>
 <translation id="56907980372820799">Повежи податке</translation>
@@ -5766,6 +5784,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> користи микрофон</translation>
 <translation id="7141105143012495934">Пријављивање није успело јер нисмо успели да преузмемо детаље о налогу. Контактирајте администратора или покушајте поново.</translation>
 <translation id="7144878232160441200">Пробај поново</translation>
+<translation id="7149839598364933473">Претворите овај уређај у <ph name="DEVICE_OS" /> уређај.</translation>
 <translation id="7149893636342594995">Последња 24 сата</translation>
 <translation id="7152478047064750137">Овај додатак не захтева никакве специјалне дозволе</translation>
 <translation id="7154130902455071009">Промените почетну страницу у: <ph name="START_PAGE" /></translation>
@@ -5861,6 +5880,16 @@
 <translation id="7257666756905341374">Читање података које прекопирате</translation>
 <translation id="7258225044283673131">Апликација не реагује. Изаберите „Принудно затвори“ да бисте затворили апликацију.</translation>
 <translation id="7262004276116528033">Ову услугу пријављивања хостује <ph name="SAML_DOMAIN" />.</translation>
+<translation id="7264432249010320236">Додатни сајтови</translation>
+<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Испробајте ове кораке за решавање проблема:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Уверите се да уређај има исправну интерну меморију, као што је HDD, SSD или eMMC
+    <ph name="LIST_ITEM" />Проверите да ли је интерна меморија већа од 16GB
+    <ph name="LIST_ITEM" />Проверите везу са интерном меморијом ако је физички доступна
+    <ph name="LIST_ITEM" />Уверите се да користите сертификован модел и прегледајте напомене о инсталирању
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Помоћ потражите на: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">Инсталирање виртуелне машине није успело. Пробајте поново или се обратите администратору. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Наставите да подижете прст да бисте додали различите делове отиска прста</translation>
 <translation id="7268127947535186412">Овим подешавањем управља власник уређаја.</translation>
@@ -6591,6 +6620,7 @@
 <translation id="7986295104073916105">Читање и мењање сачуваних подешавања лозинке</translation>
 <translation id="7987814697832569482">Увек се повезуј преко овог VPN-а</translation>
 <translation id="7988355189918024273">Омогући функције приступачности</translation>
+<translation id="7988805580376093356">Задржите свој ОС и покрените <ph name="DEVICE_OS" /> са USB-а.</translation>
 <translation id="7991296728590311172">Подешавања приступа помоћу прекидача</translation>
 <translation id="7997826902155442747">Приоритет процеса</translation>
 <translation id="7999229196265990314">Направљене су следеће датотеке:
@@ -6699,6 +6729,7 @@
 <translation id="80974698889265265">PIN-ови се не подударају</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> користи подешавања проксија из додатка</translation>
 <translation id="8097959162767603171">Администратор мора прво да прихвати услове коришћења услуге на листи Chrome уређаја у администраторској конзоли.</translation>
+<translation id="8098156986344908134">Желите да инсталирате <ph name="DEVICE_OS" /> и обришете хард-диск?</translation>
 <translation id="8098616321286360457">Мрежна веза је обавезна</translation>
 <translation id="810068641062493918">Изабран је <ph name="LANGUAGE" />. Да бисте поништили избор, притисните тастер за претрагу и размак.</translation>
 <translation id="8100972288595615768">Желите да обришете податке о сајтовима и дозволе за <ph name="SITE_NAME" />?</translation>
@@ -6885,6 +6916,7 @@
 <translation id="8287902281644548111">Претражите према API позиву/URL-у</translation>
 <translation id="8288032458496410887">Деинсталирај: <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Величина диска</translation>
+<translation id="8289509909262565712">Добро дошли у <ph name="DEVICE_OS" /></translation>
 <translation id="8293206222192510085">Додавање обележивача</translation>
 <translation id="8294431847097064396">Извор</translation>
 <translation id="8298429963694909221">Сада можете да добијате обавештења са телефона на уређају <ph name="DEVICE_TYPE" />. Ако одбаците обавештења на уређају <ph name="DEVICE_TYPE" />, одбацићете их и на телефону. Уверите се да је телефон у близини и да су Bluetooth и WiFi укључени.</translation>
@@ -7212,6 +7244,7 @@
 <translation id="867085395664725367">Дошло је до привремене грешке сервера.</translation>
 <translation id="8673026256276578048">Претражи Веб...</translation>
 <translation id="8673383193459449849">Проблем са сервером</translation>
+<translation id="8675704450909805533">Програм за инсталацију није успео да пронађе исправно одредиште за инсталирање система <ph name="DEVICE_OS" />.</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{Видео}one{# видео}few{# видео снимка}other{# видео снимака}}</translation>
 <translation id="8676313779986170923">Хвала вам што сте послали повратне информације.</translation>
 <translation id="8676374126336081632">Обриши унос</translation>
@@ -7370,6 +7403,7 @@
 <translation id="8823559166155093873">Блокирај колачиће</translation>
 <translation id="8823704566850948458">Предложи лозинку...</translation>
 <translation id="8824701697284169214">Додај стра&amp;ницу...</translation>
+<translation id="8826773185686617320">Уклоните USB и рестартујте уређај да бисте почели да користите <ph name="DEVICE_OS" />. У супротном ће се уређај искључити за <ph name="TIME_LEFT" />.</translation>
 <translation id="8827125715368568315">Блокирано је: <ph name="PERMISSION" /> и још <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Закачите додатак</translation>
 <translation id="8827752199525959199">Још радњи, лозинка за <ph name="USERNAME" /> на <ph name="DOMAIN" /></translation>
@@ -7505,6 +7539,7 @@
 <translation id="8962051932294470566">Можете да делите фајлове само један по један. Пробајте поново када се заврши актуелни пренос.</translation>
 <translation id="8962083179518285172">Сакриј детаље</translation>
 <translation id="8962918469425892674">Овај сајт користи сензоре покрета или светла.</translation>
+<translation id="8964943308070692533">Додатни неактивни сајтови</translation>
 <translation id="8965037249707889821">Унесите стару лозинку</translation>
 <translation id="89667524227025535">Скенирајте QR кôд помоћу камере уређаја или унесите активациони кôд који сте добили од мобилног оператера</translation>
 <translation id="8966809848145604011">Други профили</translation>
@@ -7669,6 +7704,8 @@
 <translation id="9116465289595958864">Последња измена</translation>
 <translation id="9116799625073598554">Апликација за прављење белешки</translation>
 <translation id="9117030152748022724">Управљајте апликацијама</translation>
+<translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />За најбољи доживљај инсталирајте <ph name="DEVICE_OS" /> на интерни диск. Можете и да га инсталирате касније са екрана за пријављивање.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Ако нисте спремни за инсталацију, можете да га покренете са USB-а да бисте га испробали. Тиме ћете задржати постојећи ОС и податке, али можда ћете приметити ограничења у погледу меморијског простора и перформанси.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Отвори као закачену картицу</translation>
 <translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> – паузирано</translation>
 <translation id="9124003689441359348">Сачуване лозинке ће се појавити овде</translation>

@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Сайт жакын жердеги Bluetooth түзмөктөрүн колдонгону жатканда уруксат суралсын (сунушталат)</translation>
 <translation id="2315043854645842844">Кардар тандаган тастыктама операциялык тутумда колдоого алынбайт.</translation>
 <translation id="2359808026110333948">Улантуу</translation>
+<translation id="2379925928934107488">Chrome'до караңгы тема колдонулуп жатканда, сайттарга караңгы теманы колдонуу (мүмкүн болгондо)</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> Мб</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> үчүн уруксат берилди}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> үчүн уруксат берилди}}</translation>
 <translation id="2434158240863470628">Жүктөлүп алынды: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Жайгашкан жерди аныктоо жөндөөсү бул түзмөктө өчүрүлгөн. Аны <ph name="BEGIN_LINK" />Android жөндөөлөрүнө<ph name="END_LINK" /> өтүп, күйгүзүңүз.</translation>
 <translation id="257931822824936280">Жайылып көрсөтүлгөн – жыйнап коюу үчүн чыкылдатыңыз.</translation>
 <translation id="2586657967955657006">Алмашуу буфери</translation>
+<translation id="2597457036804169544">Сайттарга караңгы тема колдонулбасын</translation>
 <translation id="2621115761605608342">Белгилүү бир сайтта JavaScript иштешине уруксат берүү.</translation>
 <translation id="2653659639078652383">Тапшыруу</translation>
 <translation id="2677748264148917807">Чыгуу</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Добуш чыгарган сайттардын үнү өчүрүлөт</translation>
 <translation id="3744111561329211289">Фонду шайкештирүү</translation>
 <translation id="3763247130972274048">10 сек. өткөрүп жиберүү үчүн видеонун сол же оң жагын эки жолу таптаңыз</translation>
+<translation id="3797520601150691162">Белгилүү бир сайт үчүн караңгы тема колдонулбасын</translation>
 <translation id="381841723434055211">Телефон номерлери</translation>
 <translation id="3835233591525155343">Түзмөгүңүздүн колдонулушу</translation>
 <translation id="385051799172605136">Артка</translation>
@@ -245,6 +248,7 @@
 <translation id="7302486331832100261">Адатта билдирмелерди өчүрөсүз. Уруксат берүү үчүн "Чоо-жайын" таптап коюңуз.</translation>
 <translation id="7423098979219808738">Адегенде сура</translation>
 <translation id="7423538860840206698">Алмашуу буферин окуу бөгөттөлгөн</translation>
+<translation id="7425915948813553151">Сайттар үчүн караңгы тема</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Сайт микрофонуңузду колдонуп жатат</translation>
 <translation id="7561196759112975576">Ар дайым</translation>

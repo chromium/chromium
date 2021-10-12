@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
+<translation id="1113173431709655881">攝錄機模式</translation>
 <translation id="1175958423215084756">已偵測到連結。<ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">相片集嘅相</translation>
 <translation id="1300209025925956156">掃瞄文件</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">開始錄影</translation>
 <translation id="2599796128805996109">後置鏡頭</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> 秒</translation>
+<translation id="2761536921376153655">掃瞄類型</translation>
 <translation id="2879583609344924966">插入咗 <ph name="CAMERA" />。</translation>
 <translation id="2968794441791257519">使用相機拍攝的相片和影片將會移至「下載」資料夾，您可以在「檔案」中存取這些相片和影片。
 
@@ -99,9 +101,11 @@
 <translation id="698156982839284926">3 秒</translation>
 <translation id="712848772518857951">您確定要移除這 <ph name="COUNT" /> 個項目嗎？</translation>
 <translation id="7134221860976209830">10 秒計時器</translation>
+<translation id="7191890674911603392">錄製類型</translation>
 <translation id="7243947652761655814">影片解像度</translation>
 <translation id="7337660886763914220">檔案系統錯誤。</translation>
 <translation id="7450541714075000668">已複製文字</translation>
+<translation id="7476762461674917065">顯示 GIF 錄製選項</translation>
 <translation id="7488619942230388918">錄製 GIF 影片</translation>
 <translation id="7557677699350329807">切換至下一部相機</translation>
 <translation id="7607002721634913082">已暫停</translation>

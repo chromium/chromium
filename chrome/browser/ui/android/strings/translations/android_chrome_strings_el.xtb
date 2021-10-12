@@ -407,6 +407,7 @@
 <translation id="3429160811076349561">Οι δοκιμαστικές λειτουργίες είναι απενεργοποιημένες</translation>
 <translation id="3440975416244667276">Αγγίξτε παρατεταμένα για περισσότερες σχετικές πληροφορίες</translation>
 <translation id="3443221991560634068">Επαναφόρτωση της τρέχουσας σελίδας</translation>
+<translation id="3444179773590444986">Θέλετε να υποβάλετε σχόλια σχετικά με το σκούρο θέμα για ιστοτόπους;</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Προγραμματίστηκε 1 λήψη.}other{Προγραμματίστηκαν # λήψεις.}}</translation>
 <translation id="3478363558367712427">Μπορείτε να επιλέξετε τη μηχανή αναζήτησής σας</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /> σχετικά με το προτεινόμενο περιεχόμενο</translation>
@@ -590,6 +591,7 @@
 <translation id="4663499661119906179">Δείτε κορυφαίους ιστοτόπους και ειδήσεις για εσάς.</translation>
 <translation id="4663756553811254707">Διαγράφηκαν <ph name="NUMBER_OF_BOOKMARKS" /> σελιδοδείκτες</translation>
 <translation id="4668347365065281350">Όλα τα δεδομένα που αποθηκεύονται από ιστοτόπους, συμπεριλαμβανομένων των cookie και των άλλων τοπικά αποθηκευμένων δεδομένων</translation>
+<translation id="4678082183394354975">Το σκούρο θέμα για ιστοτόπους ενεργοποιήθηκε στο Chrome.</translation>
 <translation id="4684427112815847243">Συγχρονισμός όλων</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}}</translation>
 <translation id="4696983787092045100">Αποστολή μηνύματος κειμένου στις συσκευές σας</translation>
@@ -773,6 +775,7 @@
 <translation id="5754350196967618083">Δεν είναι δυνατή η ανανέωση του Discover</translation>
 <translation id="5763382633136178763">Καρτέλες ανώνυμης περιήγησης</translation>
 <translation id="5763514718066511291">Πατήστε για αντιγραφή του URL για αυτήν την εφαρμογή</translation>
+<translation id="5765517223145864268">Μιλήστε μας σχετικά με την εμπειρία σας. Εναλλακτικά, <ph name="BEGIN_LINK" />αλλάξτε τις ρυθμίσεις σας<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">Περιγραφή:</translation>
 <translation id="5767013862801005129">Έγινε επαναφορά της καρτέλας <ph name="TAB_TITLE" /></translation>
 <translation id="5776970333778123608">Μη σημαντικά δεδομένα</translation>
@@ -960,6 +963,7 @@
 <translation id="6738516213925468394">Τα δεδομένα σας κρυπτογραφήθηκαν με τη <ph name="BEGIN_LINK" />φράση πρόσβασης συγχρονισμού<ph name="END_LINK" /> στις <ph name="TIME" />. Καταχωρίστε την, για να ξεκινήσει ο συγχρονισμός.</translation>
 <translation id="6738867403308150051">Λήψη…</translation>
 <translation id="6751521182688001123">Ανοίξτε γρήγορα μια νέα καρτέλα. Για να επεξεργαστείτε αυτήν τη συντόμευση, αγγίξτε παρατεταμένα.</translation>
+<translation id="6756507620369789050">Υποβολή σχολίων</translation>
 <translation id="6767294960381293877">Άνοιγμα σε μισό ύψος της λίστας συσκευών στις οποίες θα κοινοποιηθεί μια καρτέλα.</translation>
 <translation id="6783942555455976443">Αποθηκεύστε αυτήν τη σελίδα για αργότερα και λάβετε σχετική υπενθύμιση.</translation>
 <translation id="6795633245022906657">Ανοίξτε γρήγορα μια νέα καρτέλα. Για να επεξεργαστείτε αυτήν τη συντόμευση, μεταβείτε στις Ρυθμίσεις.</translation>
@@ -1051,6 +1055,7 @@
 <translation id="7352651011704765696">Παρουσιάστηκε κάποιο πρόβλημα</translation>
 <translation id="7352939065658542140">ΒΙΝΤΕΟ</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Κοινοποίηση 1 επιλεγμένου στοιχείου}other{Κοινοποίηση # επιλεγμένων στοιχείων}}</translation>
+<translation id="7356631068872238169">Διαγρ. από λίστα ανάγνωσης</translation>
 <translation id="7359002509206457351">Πρόσβαση σε τρόπους πληρωμής</translation>
 <translation id="7375125077091615385">Τύπος:</translation>
 <translation id="7376560087009844242">Συμπεριλαμβάνοντας μεγαλύτερο μέρος από το κείμενο μιας σελίδας, ενδέχεται να βλέπετε καλύτερα αποτελέσματα όταν χρησιμοποιείτε τη λειτουργία Αγγίξτε για αναζήτηση. Μπορείτε να επισκεφτείτε ανά πάσα στιγμή τις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" /> για να αλλάξετε αυτήν την επιλογή.</translation>
@@ -1222,6 +1227,7 @@
 <translation id="8266862848225348053">Τοποθεσία λήψης</translation>
 <translation id="8274165955039650276">Εμφάνιση λήψεων</translation>
 <translation id="8281886186245836920">Παράβλεψη</translation>
+<translation id="8282297628636750033">Σκούρο θέμα σε ιστοτ., όταν είναι δυνατό</translation>
 <translation id="8284326494547611709">Υπότιτλοι</translation>
 <translation id="829672787777123339">Σύνδεση με τη συσκευή σας…</translation>
 <translation id="8310344678080805313">Τυπικές καρτέλες</translation>
@@ -1355,6 +1361,7 @@
 <translation id="9063523880881406963">Απενεργοποίηση αιτήματος ιστότοπου για υπολογιστές</translation>
 <translation id="9065203028668620118">Επεξεργασία</translation>
 <translation id="9065383040763568503">Αποθηκευμένα δεδομένα τα οποία το Chrome θεωρεί ότι δεν είναι σημαντικά (π.χ. ιστότοποι χωρίς αποθηκευμένες ρυθμίσεις ή που δεν επισκέπτεστε συχνά)</translation>
+<translation id="906781307897697745">σε <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Δεν υπάρχουν μη αναγνωσμένες σελίδες</translation>
 <translation id="9070377983101773829">Έναρξη φωνητικής αναζήτησης</translation>
 <translation id="9074336505530349563">Για λήψη εξατομικευμένου περιεχομένου που προτείνεται από την Google, συνδεθείτε και ενεργοποιήστε τον συγχρονισμό</translation>

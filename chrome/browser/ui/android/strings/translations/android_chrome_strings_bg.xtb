@@ -407,6 +407,7 @@
 <translation id="3429160811076349561">Функциите за изпробване са изключени</translation>
 <translation id="3440975416244667276">Докоснете и задръжте за по-подходяща информация</translation>
 <translation id="3443221991560634068">Презареждане на текущата страница</translation>
+<translation id="3444179773590444986">Искате ли да споделите отзиви за тъмната тема за сайтовете?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Насрочено е 1 изтегляне}other{Насрочени са # изтегляния}}</translation>
 <translation id="3478363558367712427">Можете да изберете търсещата си машина</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> за предложеното съдържание</translation>
@@ -590,6 +591,7 @@
 <translation id="4663499661119906179">Преглед на водещите сайтове и материали за вас</translation>
 <translation id="4663756553811254707">Изтрихте <ph name="NUMBER_OF_BOOKMARKS" /> отметки</translation>
 <translation id="4668347365065281350">Всички данни, съхранявани от сайтове, включително „бисквитки“ и друга локално съхранявана информация</translation>
+<translation id="4678082183394354975">Тъмната тема за сайтовете е включена в Chrome</translation>
 <translation id="4684427112815847243">Синхронизиране на всичко</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Изпращане на текст до устройствата ви</translation>
@@ -773,6 +775,7 @@
 <translation id="5754350196967618083">Не може да се опресни Discover</translation>
 <translation id="5763382633136178763">Раздели в режим „инкогнито“</translation>
 <translation id="5763514718066511291">Докоснете, за да копирате URL адреса за това приложение</translation>
+<translation id="5765517223145864268">Разкажете ни за впечатленията си. Или <ph name="BEGIN_LINK" />променете настройките си<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">Описание:</translation>
 <translation id="5767013862801005129">Бе възстановен раздел със заглавие <ph name="TAB_TITLE" /></translation>
 <translation id="5776970333778123608">Маловажни данни</translation>
@@ -960,6 +963,7 @@
 <translation id="6738516213925468394">На <ph name="TIME" /> данните ви бяха шифровани с <ph name="BEGIN_LINK" />пропуска ви за синхронизиране<ph name="END_LINK" />. Въведете го, за да стартирате синхронизирането.</translation>
 <translation id="6738867403308150051">Изтегля се…</translation>
 <translation id="6751521182688001123">Бързо отваряне на нов раздел. За да редактирате този пряк път, докоснете и задръжте.</translation>
+<translation id="6756507620369789050">Споделяне на отзиви</translation>
 <translation id="6767294960381293877">Списъкът с устройства, с които да се сподели даден раздел, е отворен на половин височина.</translation>
 <translation id="6783942555455976443">Запазване на тази страница за по-късно и получаване на напомняне</translation>
 <translation id="6795633245022906657">Бързо отваряне на нов раздел. За да редактирате този пряк път, отворете настройките.</translation>
@@ -1051,6 +1055,7 @@
 <translation id="7352651011704765696">Нещо се обърка</translation>
 <translation id="7352939065658542140">ВИДЕОКЛИП</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Споделяне на 1 избран елемент}other{Споделяне на # избрани елемента}}</translation>
+<translation id="7356631068872238169">Изтр. от списъка за четене</translation>
 <translation id="7359002509206457351">Достъп до начините на плащане</translation>
 <translation id="7375125077091615385">Тип:</translation>
 <translation id="7376560087009844242">С включването на повече текст от страницата може да виждате по-добри резултати, когато използвате функцията за търсене чрез докосване. Винаги можете да отворите <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />, за да промените това.</translation>
@@ -1222,6 +1227,7 @@
 <translation id="8266862848225348053">Местоположение за изтеглянията</translation>
 <translation id="8274165955039650276">Преглед на изтеглянията</translation>
 <translation id="8281886186245836920">Пропускане</translation>
+<translation id="8282297628636750033">Тъмна тема за сайтовете при възможност</translation>
 <translation id="8284326494547611709">Надписи</translation>
 <translation id="829672787777123339">Установява се връзка с устройството ви…</translation>
 <translation id="8310344678080805313">Стандартни раздели</translation>
@@ -1355,6 +1361,7 @@
 <translation id="9063523880881406963">Изключване на функцията за заявяване на настолни сайтове</translation>
 <translation id="9065203028668620118">Редактиране</translation>
 <translation id="9065383040763568503">Съхранявани данни, които Chrome не счита за важни (напр. рядко посещавани сайтове или такива без запазени настройки)</translation>
+<translation id="906781307897697745">в(ъв) <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Няма непрочетени страници</translation>
 <translation id="9070377983101773829">Стартиране на гласово търсене</translation>
 <translation id="9074336505530349563">Влезте в профила си и включете синхронизирането, за да получавате персонализирано съдържание, предлагано от Google</translation>

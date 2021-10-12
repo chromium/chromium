@@ -2215,7 +2215,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3305661444342691068">Apri PDF in anteprima</translation>
 <translation id="3308116878371095290">Impostazione dei cookie vietata per questa pagina.</translation>
 <translation id="3308134619352333507">Nascondi pulsante</translation>
-<translation id="3308681281309926497">I siti visitati possono continuare a memorizzare le tue informazioni fino alla chiusura di Chrome</translation>
 <translation id="3308852433423051161">Caricamento dell'Assistente Google...</translation>
 <translation id="3309330461362844500">ID profilo di certificato</translation>
 <translation id="3311445899360743395">I dati associati a questa app potrebbero essere rimossi dal dispositivo.</translation>
@@ -4311,7 +4310,7 @@ Puoi assegnare più sensori a questa azione.</translation>
     <ph name="BEGIN_PARAGRAPH2" />La disattivazione di questa funzione non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e sicurezza.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Il proprietario può controllare questa funzione da Impostazioni &gt; Avanzate &gt; Invia automaticamente a Google dati di diagnostica e utilizzo.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Se hai attivato l'impostazione aggiuntiva Attività web e app, questi dati potrebbero essere salvati nel tuo Account Google. Puoi controllare i tuoi dati, eliminarli e cambiare le impostazioni del tuo account all'indirizzo account.google.com.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5585019845078534178">Carte</translation>
+<translation id="5585019845078534178">Schede</translation>
 <translation id="5585118885427931890">Impossibile creare la cartella Preferiti.</translation>
 <translation id="558563010977877295">Apri una pagina o un insieme di pagine specifiche</translation>
 <translation id="5585898376467608182">Spazio di archiviazione sul dispositivo in esaurimento. Per usare <ph name="APP_NAME" />, ti servono almeno <ph name="MINIMUM_SPACE" /> di spazio libero. Per aumentare lo spazio disponibile, elimina file dal dispositivo.</translation>

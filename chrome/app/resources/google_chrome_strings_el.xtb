@@ -61,7 +61,6 @@
 <translation id="2429317896000329049">Το Google Chrome δεν κατάφερε να συγχρονίσει τα δεδομένα σας επειδή ο συγχρονισμός δεν είναι διαθέσιμος για τον τομέα σας.</translation>
 <translation id="2467438592969358367">Το Google Chrome θέλει να εξαγάγει τους κωδικούς πρόσβασής σας. Για να το επιτρέψετε αυτό, πληκτρολογήστε τον κωδικό πρόσβασης για τα Windows.</translation>
 <translation id="2485422356828889247">Απεγκατάσταση</translation>
-<translation id="2518751521812750372">Όταν κλείνετε το Chrome, διαγράφει αυτόματα τα cookie και τα δεδομένα ιστοτόπων από τις σελίδες που επισκεφτήκατε.</translation>
 <translation id="2534507159460261402">Google Pay (αντιγράφηκε στο Chrome)</translation>
 <translation id="2574930892358684005">Ο χρήστης <ph name="EXISTING_USER" /> είναι συνδεδεμένος ήδη με αυτό το προφίλ Chrome. Για να διατηρήσει ξεχωριστά την περιήγησή σας, το Chrome μπορεί να δημιουργήσει το προφίλ σας για εσάς.</translation>
 <translation id="2580411288591421699">Δεν είναι δυνατή η εγκατάσταση της ίδιας έκδοσης του Google Chrome που εκτελείται αυτήν τη στιγμή. Κλείστε το Google Chrome και προσπαθήστε ξανά.</translation>
@@ -200,7 +199,6 @@
 <translation id="6145313976051292476">Άνοιγμα αρχείων PDF στο Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
-<translation id="61852838583753520">&amp;Ενημέρωση του Chrome OS</translation>
 <translation id="6235018212288296708">Εισερχόμενος κανόνας για το Google Chrome για να επιτρέπεται η κυκλοφορία του mDNS.</translation>
 <translation id="6291089322031436445">Εφαρμογές Chrome Dev</translation>
 <translation id="6291549208091401781">Το Google Chrome είναι ήδη εγκατεστημένο για όλους τους χρήστες στον υπολογιστή σας.</translation>
@@ -285,7 +283,6 @@
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Επίσης, ελέγχει τη σελίδα που εμφανίζεται κατά την εκκίνηση του Chrome.</translation>
 <translation id="8686817260976772516">Με τα προφίλ του Chrome μπορείτε να διαχωρίσετε όλη τη δραστηριότητα και το περιεχόμενό σας στο Chrome. Δημιουργήστε προφίλ για φίλους και μέλη της οικογένειας ή διαχωρίστε την εργασία και τη διασκέδαση.</translation>
-<translation id="870251953148363156">Ενημέρωση &amp;του Google Chrome</translation>
 <translation id="873133009373065397">Το Google Chrome δεν μπορεί να καθορίσει ή να ορίσει το προεπιλεγμένο πρόγραμμα περιήγησης</translation>
 <translation id="8823341990149967727">Το Chrome δεν είναι ενημερωμένο</translation>
 <translation id="8834965163890861871">Το Google Chrome προσπαθεί να επεξεργαστεί κωδικούς πρόσβασης. Για να επιτρέψετε αυτήν την ενέργεια, πληκτρολογήστε τον κωδικό πρόσβασης των Windows.</translation>

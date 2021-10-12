@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">連結您的裝置，以獲得更佳的體驗</translation>
 <translation id="1119348796022671382">主題顏色模式會使用從您桌布擷取的顏色，為介面添上淡雅色彩。</translation>
 <translation id="112308213915226829">自動隱藏捷徑列</translation>
+<translation id="1142002900084379065">最近的相片</translation>
 <translation id="1148499908455722006">打開 <ph name="USER_NAME" /> 嘅資料對話框</translation>
 <translation id="1150989369772528668">日曆</translation>
 <translation id="1153356358378277386">已配對的裝置</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">已啟用全螢幕放大鏡。再次按下 Ctrl+Search+M 鍵即可停用。</translation>
 <translation id="2302092602801625023">此帳戶由 Family Link 管理</translation>
 <translation id="2303600792989757991">切換視窗總覽</translation>
+<translation id="2318576281648121272">今日 <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">往後一個字母</translation>
 <translation id="2339073806695260576">輕按捷徑列的觸控按鈕即可寫筆記、擷取螢幕畫面，並使用雷射筆或放大鏡。</translation>
 <translation id="2341729377289034582">已鎖定為垂直</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="24452542372838207">展開通知</translation>
 <translation id="2450205753526923158">螢幕截圖模式</translation>
+<translation id="2456008742792828469">日曆，<ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">確認解像度</translation>
 <translation id="2475982808118771221">發生錯誤</translation>
 <translation id="2482878487686419369">通知</translation>
@@ -277,6 +280,7 @@
 <translation id="3100274880412651815">閂擷取模式</translation>
 <translation id="3105917916468784889">擷取螢幕擷圖</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (藍牙)</translation>
+<translation id="3113926042639749131">移除建議</translation>
 <translation id="3126069444801937830">重新啟動即可更新</translation>
 <translation id="3139942575505304791">桌面 1</translation>
 <translation id="315116470104423982">流動數據</translation>
@@ -502,6 +506,7 @@
 <translation id="4642092649622328492">擷取部分螢幕畫面</translation>
 <translation id="4659419629803378708">已啟用 ChromeVox</translation>
 <translation id="4665114317261903604">切換「請勿騷擾」模式。<ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">下載緊 <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">使用家長存取碼解鎖裝置</translation>
 <translation id="4702647871202761252">已停用私隱保護畫面</translation>
 <translation id="4706121060329443414">系統稍後將再次嘗試下載，目前會暫時將語音傳送給 Google 處理。</translation>
@@ -638,6 +643,7 @@
 <translation id="5744083938413354016">按住拖曳</translation>
 <translation id="5745612484876805746">「夜燈模式」會在日落時自動開啟</translation>
 <translation id="5750765938512549687">藍牙已關閉</translation>
+<translation id="576341972084747908">下載危險檔案 <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">「夜燈模式」已開啟。</translation>
 <translation id="5769373120130404283">私隱保護畫面</translation>
 <translation id="5777841717266010279">停止共用畫面？</translation>
@@ -777,6 +783,7 @@
 <translation id="6852052252232534364">按一下即可啟動</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{淨返 1 個數字}other{淨返 # 個數字}}</translation>
+<translation id="6867938213751067702">暫停咗下載 <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">已關閉快速鍵功能</translation>
 <translation id="6886172995547742638">您的 <ph name="DEVICE_TYPE" /> 效能或會降低。請使用 <ph name="PREFERRED_MINIMUM_POWER" />W 或以上且符合標準的 USB-C 電源適配器。</translation>
 <translation id="688631446150864480">㩒向下箭咀掣就可以轉換視窗</translation>

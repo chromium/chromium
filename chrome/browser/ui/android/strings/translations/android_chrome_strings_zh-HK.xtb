@@ -57,6 +57,7 @@
 <translation id="1310482092992808703">將分頁加入群組</translation>
 <translation id="1311657260431405215">此二維條碼不是網址：<ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
+<translation id="1320912611264252795">書籤儲存流程宜家顯示喺成個畫面</translation>
 <translation id="1327257854815634930">導覽記錄開咗</translation>
 <translation id="1331212799747679585">無法更新 Chrome。其他選項</translation>
 <translation id="1332501820983677155">Google Chrome 功能快速鍵</translation>
@@ -83,6 +84,7 @@
 <translation id="1466383950273130737">選取 Chrome 的語言</translation>
 <translation id="147113415845704694">嘗試說「今日天氣點呀？」</translation>
 <translation id="1477626028522505441">伺服器發生問題，因此無法下載 <ph name="FILE_NAME" />。</translation>
+<translation id="148482509007564431">書籤儲存流程</translation>
 <translation id="1492417797159476138">您已為此網站儲存此使用者名稱</translation>
 <translation id="1493287004536771723">您正在追蹤「<ph name="SITE_NAME" />」</translation>
 <translation id="1506061864768559482">搜尋引擎</translation>
@@ -263,6 +265,7 @@
 <translation id="2631006050119455616">已節省</translation>
 <translation id="2645657967708199252"><ph name="CONNECTION_TYPE" /> 連線可能會減慢下載速度</translation>
 <translation id="2647434099613338025">新增語言</translation>
+<translation id="2649068648233607930">您的瀏覽器由 <ph name="DOMAIN" /> 管理</translation>
 <translation id="2650751991977523696">要重新下載檔案嗎？</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 個音訊檔案}other{# 個音訊檔案}}</translation>
 <translation id="2656405586795711023">網絡應用程式</translation>
@@ -428,6 +431,7 @@
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3616113530831147358">音效檔案</translation>
 <translation id="3622349720008044802">管理視窗</translation>
+<translation id="3624977496395967031">按一下即可開啟排序選項</translation>
 <translation id="3631987586758005671">正在分享至 <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">顯示密碼</translation>
 <translation id="363596933471559332">使用儲存的憑證自動登入網站。關閉功能時，每次登入網站之前都會要求您驗證。</translation>
@@ -497,6 +501,7 @@
 <translation id="4084682180776658562">書籤</translation>
 <translation id="4084712963632273211">發佈者：<ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />由 Google 提供<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">要刪除應用程式資料嗎？</translation>
+<translation id="4096227151372679484">書籤儲存流程宜家顯示喺畫面下半部</translation>
 <translation id="4099578267706723511">將使用統計資料及當機報告傳送給 Google，助我們一臂之力，讓 Chrome 更臻完美。</translation>
 <translation id="410351446219883937">自動播放</translation>
 <translation id="4108314971463891922">追蹤</translation>
@@ -605,6 +610,7 @@
 <translation id="4766678251456904326">將帳戶新增至裝置</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{已預定 1 項下載。}other{已預定 # 項下載。}}</translation>
 <translation id="4791358705705538979">協助您在網絡完成結帳等工作</translation>
+<translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">密碼短語加密的資料並不包括 Google Pay 上的付款方法和地址。
 
 如要變更此設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
@@ -628,6 +634,7 @@
 <translation id="4885273946141277891">Chrome 實例的數量已超出上限。</translation>
 <translation id="4905823827770127520">加入頁面的連結</translation>
 <translation id="4908869848243824489">Google 探索</translation>
+<translation id="4909709702739934280">您的瀏覽器由管理員管理</translation>
 <translation id="4910889077668685004">付款應用程式</translation>
 <translation id="4912413785358399818">移動分頁</translation>
 <translation id="4913161338056004800">重設統計資料</translation>
@@ -1150,6 +1157,7 @@
 <translation id="7926975587469166629">信用卡暱稱</translation>
 <translation id="7929962904089429003">開啟選單</translation>
 <translation id="7930998711684428189">密碼因資料外洩而被洩露時接收警告</translation>
+<translation id="7939485076072265087">建立精選內容嘅風格資訊卡</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> 版本過舊。</translation>
 <translation id="7944772052836377867">同步功能需要驗證您的身分</translation>
 <translation id="7947953824732555851">接受並登入</translation>
@@ -1268,6 +1276,7 @@
 <translation id="8562452229998620586">已儲存的密碼會顯示在這裡。</translation>
 <translation id="856481929701340285">切換至電腦版網站</translation>
 <translation id="8569404424186215731">自 <ph name="DATE" />起</translation>
+<translation id="8570677896027847510">無法安全下載檔案</translation>
 <translation id="8571213806525832805">過去 4 週</translation>
 <translation id="8572344201470131220">已複製圖片</translation>
 <translation id="8583805026567836021">正在清除帳戶數據</translation>
@@ -1320,6 +1329,7 @@
 <translation id="8912362522468806198">Google 帳戶</translation>
 <translation id="8920114477895755567">正在等候家長的詳細資訊。</translation>
 <translation id="8922289737868596582">透過「更多選項」按鈕下載網頁，方便喺離線嗰陣使用</translation>
+<translation id="8924575305646776101"><ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" />套件已下載完成</translation>
 <translation id="8928626432984354940">書籤資料夾清單宜家顯示喺畫面下半部</translation>
 <translation id="8937267401510745927">為協助您完成工作，系統會將您使用「Google 助理」的網站網址和內容，以及您透過「Google 助理」提交的資料傳送給 Google。此資料可能會儲存在您的 Google 帳戶中。您可在 Chrome 設定中關閉「Google 助理」。</translation>
@@ -1354,8 +1364,10 @@
 <translation id="9086455579313502267">無法存取網絡</translation>
 <translation id="9100505651305367705">允許以簡化檢視模式顯示文章(如支援)</translation>
 <translation id="9100610230175265781">請輸入複雜密碼</translation>
+<translation id="9101137867221042551">管理</translation>
 <translation id="9102803872260866941">預覽分頁開咗</translation>
 <translation id="9104217018994036254">要共用分頁嘅裝置清單。</translation>
+<translation id="9106148373857059373">閂咗書籤儲存流程</translation>
 <translation id="9108312223223904744">支援「讓手機作為安全密鑰」</translation>
 <translation id="9108808586816295166">可能無法隨時使用安全 DNS</translation>
 <translation id="9133397713400217035">離線探索</translation>

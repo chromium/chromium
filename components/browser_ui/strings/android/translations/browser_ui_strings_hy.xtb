@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Հարցնել, երբ որևէ կայք ուզում է հայտնաբերել մոտակա Bluetooth սարքերը (խորհուրդ է տրվում)</translation>
 <translation id="2315043854645842844">Տվյալ օպերացիոն համակարգը չի աջակցում սպասառուի կողմից վկայագրի ընտրությունը:</translation>
 <translation id="2359808026110333948">Շարունակել</translation>
+<translation id="2379925928934107488">Կայքերում հնարավորինս կիրառել մուգ թեման, երբ Chrome-ն օգտագործում է այն</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> ՄԲ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Թույլատրված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}one{Թույլատրված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}other{Թույլատրված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}}</translation>
 <translation id="2434158240863470628">Ներբեռնումն ավարտված է՝ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Այս սարքի տեղորոշումը նույնպես անջատված է: Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />:</translation>
 <translation id="257931822824936280">Ընդարձակված - կոծկելու համար սեղմեք:</translation>
 <translation id="2586657967955657006">Սեղմատախտակ</translation>
+<translation id="2597457036804169544">Կայքերում չկիրառել մուգ թեման</translation>
 <translation id="2621115761605608342">Թույլատրել JavaScript-ը նշված կայքի համար:</translation>
 <translation id="2653659639078652383">Ուղարկել</translation>
 <translation id="2677748264148917807">Դուրս գալ էջից</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Անջատել կայքերի ձայնը</translation>
 <translation id="3744111561329211289">Ֆոնային համաժամացում</translation>
 <translation id="3763247130972274048">10 վ առաջ/հետ անցնելու համար կրկնակի հպեք տեսանյութի աջ/ձախ մասում</translation>
+<translation id="3797520601150691162">Չկիրառել մուգ թեման որոշակի կայքում</translation>
 <translation id="381841723434055211">Հեռախոսահամարներ</translation>
 <translation id="3835233591525155343">Սարքի օգտագործում</translation>
 <translation id="385051799172605136">Հետ</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">Կայքերը չեն կարող խնդրել ծանուցումներ ուղարկել</translation>
 <translation id="5516455585884385570">Բացել ծանուցումների կարգավորումները</translation>
 <translation id="5527111080432883924">Հարցնել, նախքան կայքերին սեղմատախտակի տեքստերն ու պատկերները հասանելի դարձնելը (խորհուրդ է տրվում)</translation>
+<translation id="5553374991681107062">Վերջինները</translation>
 <translation id="5556459405103347317">Վերաբեռնել</translation>
 <translation id="5596627076506792578">Լրացուցիչ ընտրանքներ</translation>
 <translation id="5649053991847567735">Ավտոմատ ներբեռնումներ</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">Դուք սովորաբար արգելափակում եք ծանուցումները։ Թույլատրելու համար սեղմեք «Մանրամասներ»։</translation>
 <translation id="7423098979219808738">Նախ հարցնել</translation>
 <translation id="7423538860840206698">Սեղմատախտակի հասանելիությունն արգելափակված է</translation>
+<translation id="7425915948813553151">Կայքերի մուգ թեմա</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Կայքն օգտագործում է ձեր խոսափողը</translation>
 <translation id="7561196759112975576">Միշտ</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">Համոզվա՞ծ եք, որ ուզում եք մաքրել բոլոր տեղային տվյալները, այդ թվում նաև քուքիները, և զրոյացնել այս կայքի թույլտվությունները:</translation>
 <translation id="8007176423574883786">Անջատված է այս սարքի համար</translation>
 <translation id="802154636333426148">Ներբեռնումը ձախողվեց</translation>
+<translation id="8042586301629853791">Դասավորել ըստ՝</translation>
 <translation id="8067883171444229417">Նվագարկել տեսանյութը</translation>
 <translation id="8068648041423924542">Չի հաջողվում ընտրել վկայագիրը:</translation>
 <translation id="8087000398470557479">Այս բովանդակությունը <ph name="DOMAIN_NAME" />-ից է, մատուցվում է Google-ի կողմից:</translation>

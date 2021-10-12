@@ -404,6 +404,7 @@
 <translation id="3429160811076349561">ട്രയൽ ഫീച്ചറുകൾ ഓഫാണ്</translation>
 <translation id="3440975416244667276">കൂടുതൽ പ്രസക്തമായ വിവരങ്ങൾക്ക് സ്‌പർശിച്ച് പിടിക്കുക</translation>
 <translation id="3443221991560634068">നിലവിലെ പേജ് റീലോഡ് ചെയ്യുക</translation>
+<translation id="3444179773590444986">സൈറ്റുകൾക്കുള്ള ഡാർക്ക് തീമുകൾ സംബന്ധിച്ച് ഫീഡ്ബാക്ക് പങ്കിടണോ?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 ഡൗൺലോഡ് ഷെഡ്യൂൾ ചെയ്‌തു}other{# ഡൗൺലോഡുകൾ ഷെഡ്യൂൾ ചെയ്‌തു}}</translation>
 <translation id="3478363558367712427">നിങ്ങളുടെ തിരയല്‍ യന്ത്രം നിങ്ങൾക്ക് തിരഞ്ഞെടുക്കാം</translation>
 <translation id="3493531032208478708">നിർദ്ദേശിച്ച ഉള്ളടക്കത്തെക്കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
@@ -585,6 +586,7 @@
 <translation id="4663499661119906179">നിങ്ങൾക്കുള്ള പ്രധാന സൈറ്റുകളും സ്‌റ്റോറികളും കാണുക</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> ബുക്ക്‌മാർക്കുകൾ ഇല്ലാതാക്കി</translation>
 <translation id="4668347365065281350">കുക്കികളും പ്രാദേശികമായി സംഭരിച്ച മറ്റ് വിവരങ്ങളും ഉൾപ്പെടെ സൈറ്റുകൾ സംഭരിച്ച എല്ലാ ഡാറ്റയും</translation>
+<translation id="4678082183394354975">സൈറ്റുകൾക്കുള്ള ഡാർക്ക് തീം Chrome-ൽ ഓണാണ്</translation>
 <translation id="4684427112815847243">എല്ലാം സമന്വയിപ്പിക്കുക</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="4696983787092045100">ഉപകരണങ്ങളിലേക്ക് അയയ്ക്കൂ</translation>
@@ -766,6 +768,7 @@
 <translation id="5754350196967618083">Discover പുതുക്കിയെടുക്കാനാകുന്നില്ല</translation>
 <translation id="5763382633136178763">ആൾമാറാട്ട ടാബുകൾ</translation>
 <translation id="5763514718066511291">ഈ ആപ്പിനായുള്ള URL പകർത്താൻ ടാപ്പ് ചെയ്യുക</translation>
+<translation id="5765517223145864268">നിങ്ങളുടെ അനുഭവം ഞങ്ങളോട് പറയൂ. അല്ലെങ്കിൽ <ph name="BEGIN_LINK" />നിങ്ങളുടെ ക്രമീകരണം മാറ്റുക<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">വിവരണം:</translation>
 <translation id="5767013862801005129"><ph name="TAB_TITLE" /> ടാബ് പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="5776970333778123608">പ്രധാനമല്ലാത്ത ഡാറ്റ</translation>
@@ -953,6 +956,7 @@
 <translation id="6738516213925468394"><ph name="TIME" />-ന് നിങ്ങളുടെ <ph name="BEGIN_LINK" />സമന്വയ പാസ്‌ഫ്രെയ്‌സ്<ph name="END_LINK" /> ഉപയോഗിച്ച് ഡാറ്റ എൻക്രിപ്‌റ്റ് ചെയ്‌തു. സമന്വയം ആരംഭിക്കുന്നതിന് ഇത് നൽകുക.</translation>
 <translation id="6738867403308150051">ഡൗൺലോഡുചെയ്യുന്നു...</translation>
 <translation id="6751521182688001123">പുതിയ ടാബ് വേഗത്തിൽ തുറക്കുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ, സ്‌പർശിച്ചുപിടിക്കുക.</translation>
+<translation id="6756507620369789050">ഫീഡ്ബാക്ക് പങ്കിടുക</translation>
 <translation id="6767294960381293877">പകുതി ഉയരത്തിൽ ടാബ് പങ്കിടാനാകുന്ന ഉപകരണങ്ങളുടെ ലിസ്‌റ്റ്.</translation>
 <translation id="6783942555455976443">പിന്നീട് വായിക്കുന്നതിന് ഈ പേജ് സംരക്ഷിച്ച് റിമൈൻഡർ നേടുക</translation>
 <translation id="6795633245022906657">പുതിയ ടാബ് വേഗത്തിൽ തുറക്കുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ ക്രമീകരണത്തിലേക്ക് പോകുക.</translation>
@@ -1044,6 +1048,7 @@
 <translation id="7352651011704765696">എന്തോ കുഴപ്പം സംഭവിച്ചു</translation>
 <translation id="7352939065658542140">വീഡിയോ</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{തിരഞ്ഞെടുത്ത ഒരു ഇനം പങ്കിടുക}other{തിരഞ്ഞെടുത്ത # ഇനങ്ങൾ പങ്കിടുക}}</translation>
+<translation id="7356631068872238169">വായനാ ലിസ്റ്റിൽ നിന്ന് ഇല്ലാതാക്കൂ</translation>
 <translation id="7359002509206457351">പേയ്മെന്റ് രീതികൾ ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="7375125077091615385">തരം:</translation>
 <translation id="7376560087009844242">പേജിലുള്ള കൂടുതൽ ടെക്സ്റ്റ് ഉൾപ്പെടുത്തുന്നതിലൂടെ, 'തിരയാൻ സ്‌പർശിക്കുക' ഉപയോഗിക്കുമ്പോൾ നിങ്ങൾക്ക് മെച്ചപ്പെട്ട ഫലങ്ങൾ ലഭിച്ചേക്കാം. ഇത് മാറ്റാൻ നിങ്ങൾക്ക് എപ്പോൾ വേണമെങ്കിലും <ph name="BEGIN_LINK" />ക്രമീകരണം<ph name="END_LINK" /> സന്ദർശിക്കാം.</translation>
@@ -1214,6 +1219,7 @@
 <translation id="8266862848225348053">ഡൗൺലോഡ് ലൊക്കേഷൻ</translation>
 <translation id="8274165955039650276">ഡൗൺലോഡുകൾ കാണുക</translation>
 <translation id="8281886186245836920">ഉപേക്ഷിക്കുക</translation>
+<translation id="8282297628636750033">സാധ്യമാകുമ്പോൾ, സൈറ്റിന് ഡാർക്ക് തീം ബാധകമാക്കൂ</translation>
 <translation id="8284326494547611709">അടിക്കുറിപ്പുകൾ</translation>
 <translation id="829672787777123339">നിങ്ങളുടെ ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്യുന്നു…</translation>
 <translation id="8310344678080805313">സ്റ്റാൻഡേർഡ് ടാബുകൾ</translation>
@@ -1345,6 +1351,7 @@
 <translation id="9063523880881406963">'ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റ് അഭ്യർത്ഥിക്കുക' ഓഫാക്കുക</translation>
 <translation id="9065203028668620118">എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="9065383040763568503">Chrome അപ്രധാനമായി കാണുന്ന സംഭരിച്ച ഡാറ്റ (ഉദാ: ക്രമീകരണം സംരക്ഷിച്ചിട്ടില്ലാത്തതോ നിങ്ങൾ ഇടയ്‌ക്കിടെ സന്ദർശിക്കാത്തതോ ആയ സൈറ്റുകൾ)</translation>
+<translation id="906781307897697745"><ph name="PRODUCT_NAME" /> എന്നതിൽ</translation>
 <translation id="9069999660519089861">വായിക്കാത്ത പേജുകൾ ഇല്ല</translation>
 <translation id="9070377983101773829">ശബ്ദ തിരയൽ ആരംഭിക്കുക</translation>
 <translation id="9074336505530349563">Google നിർദേശിക്കുന്ന വ്യക്തിപരമാക്കിയ ഉള്ളടക്കം ലഭിക്കാൻ, സൈൻ ഇൻ ചെയ്‌ത് സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>

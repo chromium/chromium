@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Να γίνεται ερώτηση όταν ένας ιστότοπος επιθυμεί να εντοπίσει κοντινές συσκευες Bluetooth (συνιστάται)</translation>
 <translation id="2315043854645842844">Η επιλογή πιστοποιητικού από τον πελάτη δεν υποστηρίζεται από το λειτουργικό σύστημα.</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
+<translation id="2379925928934107488">Εφαρμογή σκούρου θέματος σε ιστοτόπους όταν το Chrome χρησιμοποιεί σκούρο θέμα, όταν υπάρχει αυτή η δυνατότητα</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη επιτράπηκαν.}other{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη επιτράπηκαν.}}</translation>
 <translation id="2434158240863470628">Η λήψη ολοκληρώθηκε <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Η πρόσβαση στην Τοποθεσία είναι απενεργοποιημένη επίσης γι' αυτήν τη συσκευή. Ενεργοποιήστε τη στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Αναπτυγμένη - Κάντε κλικ για σύμπτυξη</translation>
 <translation id="2586657967955657006">Πρόχειρο</translation>
+<translation id="2597457036804169544">Να μην εφαρμόζεται σκούρο θέμα σε ιστοτόπους</translation>
 <translation id="2621115761605608342">Να επιτρέπεται η JavaScript για έναν συγκεκριμένο ιστότοπο.</translation>
 <translation id="2653659639078652383">Υποβολή</translation>
 <translation id="2677748264148917807">Αποχώρηση</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Σίγαση ιστοτόπων που αναπαράγουν ήχο</translation>
 <translation id="3744111561329211289">Συγχρονισμός παρασκηνίου</translation>
 <translation id="3763247130972274048">Πατήστε δύο φορές στην αριστερή ή τη δεξιά πλευρά του βίντεο για παράβλεψη 10 δ.</translation>
+<translation id="3797520601150691162">Να μην εφαρμόζεται σκούρο θέμα για έναν συγκεκριμένο ιστότοπο</translation>
 <translation id="381841723434055211">Αριθμοί τηλεφώνου</translation>
 <translation id="3835233591525155343">Χρήση της συσκευής σας</translation>
 <translation id="385051799172605136">Πίσω</translation>
@@ -245,6 +248,7 @@
 <translation id="7302486331832100261">Συνήθως αποκλείετε τις ειδοποιήσεις. Για να τις επιτρέψετε, πατήστε Λεπτομέρειες.</translation>
 <translation id="7423098979219808738">Να γίνεται ερώτηση πρώτα</translation>
 <translation id="7423538860840206698">Αποκλεισμός από ανάγνωση πρόχειρου</translation>
+<translation id="7425915948813553151">Σκούρο θέμα για ιστοτόπους</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Ένας ιστότοπος χρησιμοποιεί το μικρόφωνό σας.</translation>
 <translation id="7561196759112975576">Πάντα</translation>

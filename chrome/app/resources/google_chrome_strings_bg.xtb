@@ -61,7 +61,6 @@
 <translation id="2429317896000329049">Google Chrome не можа да синхронизира данните ви, защото синхронизирането не е налице за домейна ви.</translation>
 <translation id="2467438592969358367">Google Chrome иска да експортира паролите ви. За да разрешите това, въведете паролата си за Windows.</translation>
 <translation id="2485422356828889247">Деинсталиране</translation>
-<translation id="2518751521812750372">Когато затворите Chrome, „бисквитките“ и данните за сайтовете от страниците, които сте посетили, се изчистват автоматично</translation>
 <translation id="2534507159460261402">Google Pay (копирано в Chrome)</translation>
 <translation id="2574930892358684005">Този потребителски профил в Chrome вече се използва от <ph name="EXISTING_USER" />. За да бъде сърфирането ви отделно, браузърът може да създаде ваш собствен потребителски профил.</translation>
 <translation id="2580411288591421699">Не може да се инсталира същата версия на Google Chrome, която се използва понастоящем. Моля, затворете браузъра и опитайте отново.</translation>
@@ -197,7 +196,6 @@
 <translation id="6145313976051292476">Отваряне на PDF файловете в Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome бета</translation>
-<translation id="61852838583753520">Актуализиране на &amp;Chrome OS</translation>
 <translation id="6235018212288296708">Правило за Google Chrome за допускане на входящия трафик за mDNS.</translation>
 <translation id="6291089322031436445">Приложения за Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome вече е инсталиран за всички потребители на компютъра ви.</translation>
@@ -282,7 +280,6 @@
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">То също контролира коя страница се показва при стартиране на Chrome.</translation>
 <translation id="8686817260976772516">С помощта на потребителските профили в Chromium можете да разделите данните си в браузъра. Създайте потребителски профили за близки и приятели или за разделяне на работата от забавленията.</translation>
-<translation id="870251953148363156">Актуализиране на &amp;Google Chrome</translation>
 <translation id="873133009373065397">Google Chrome не може да определи или зададе браузъра по подразбиране</translation>
 <translation id="8823341990149967727">Chrome не е актуален</translation>
 <translation id="8834965163890861871">Google Chrome опитва да редактира паролите. За да разрешите това, въведете паролата си за Windows.</translation>

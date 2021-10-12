@@ -59,7 +59,6 @@
 <translation id="2429317896000329049">Google Chrome не вдалося синхронізувати ваші дані, оскільки синхронізація для вашого домену недоступна.</translation>
 <translation id="2467438592969358367">Google Chrome хоче експортувати ваші паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="2485422356828889247">Видалити</translation>
-<translation id="2518751521812750372">Коли ви закриваєте Chrome, усі файли cookie та дані відвіданих сайтів автоматично видаляються</translation>
 <translation id="2534507159460261402">Google Pay (скопійовано в Chrome)</translation>
 <translation id="2574930892358684005">Цей профіль Chrome уже використовує <ph name="EXISTING_USER" />. Щоб переглядати веб-сторінки окремо, ви можете створити власний профіль Chrome.</translation>
 <translation id="2580411288591421699">Поки Google Chrome працює, неможливо встановити версію, аналогічну поточній. Закрийте Google Chrome і повторіть спробу.</translation>
@@ -196,7 +195,6 @@
 <translation id="6145313976051292476">Відкривати файли PDF у Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Бета-версія Google Chrome</translation>
-<translation id="61852838583753520">Оновити &amp;ОС Chrome</translation>
 <translation id="6235018212288296708">Вхідне правило для Google Chrome дозволяє трафік mDNS.</translation>
 <translation id="6291089322031436445">Версія Chrome для розробників додатків</translation>
 <translation id="6291549208091401781">Google Chrome уже встановлено для всіх користувачів на вашому комп’ютері.</translation>
@@ -281,7 +279,6 @@
 <translation id="8669527147644353129">Помічник Google Chrome</translation>
 <translation id="8679801911857917785">Розширення також змінило сторінку, яка відкривається під час запуску Chrome.</translation>
 <translation id="8686817260976772516">Створюйте різні профілі Chrome для різних цілей (наприклад, робочий і особистий) і для різних людей (як-от друзів і членів сім'ї).</translation>
-<translation id="870251953148363156">Оновити &amp;Google Chrome</translation>
 <translation id="873133009373065397">Google Chrome не може визначити чи встановити веб-переглядач за умовчанням</translation>
 <translation id="8823341990149967727">Версія Chrome застаріла</translation>
 <translation id="8834965163890861871">Google Chrome намагається змінити паролі. Щоб дозволити, введіть свій пароль Windows.</translation>

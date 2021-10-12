@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
+<translation id="1113173431709655881">ਕੈਮਰਾ ਮੋਡ</translation>
 <translation id="1175958423215084756">ਲਿੰਕ ਦਾ ਪਤਾ ਲੱਗਾ। <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">ਗੈਲਰੀ ਚਿੱਤਰ</translation>
 <translation id="1300209025925956156">ਆਪਣਾ ਦਸਤਾਵੇਜ਼ ਸਕੈਨ ਕਰੋ</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">ਰਿਕਾਰਡਿੰਗ ਸ਼ੁੁਰੂ ਕਰੋ</translation>
 <translation id="2599796128805996109">ਪਿਛਲਾ ਕੈਮਰਾ</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />ਸਕਿੰ.</translation>
+<translation id="2761536921376153655">ਸਕੈਨ ਦੀ ਕਿਸਮ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ਪਲੱਗ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
 <translation id="2968794441791257519">ਕੈਮਰੇ ਨਾਲ ਖਿੱਚੀਆਂ ਫ਼ੋਟੋਆਂ ਅਤੇ ਬਣਾਏ ਵੀਡੀਓ 'ਡਾਊਨਲੋਡ' ਫੋਲਡਰ ਵਿੱਚ ਲਿਜਾਏ ਜਾਣਗੇ। ਤੁਸੀਂ 'ਫ਼ਾਈਲਾਂ' ਵਿੱਚ ਉਹਨਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੇ ਹੋ।
 
@@ -99,9 +101,11 @@
 <translation id="698156982839284926">3 ਸਕਿੰਟ</translation>
 <translation id="712848772518857951">ਕੀ ਤੁਸੀਂ ਪੱਕਾ <ph name="COUNT" /> ਆਈਟਮਾਂ ਨੂੰ ਹਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="7134221860976209830">10 ਸਕਿੰਟਾਂ ਦਾ ਟਾਈਮਰ</translation>
+<translation id="7191890674911603392">ਰਿਕਾਰਡ ਦੀ ਕਿਸਮ</translation>
 <translation id="7243947652761655814">ਵੀਡੀਓ ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="7337660886763914220">ਫ਼ਾਈਲ ਸਿਸਟਮ ਗੜਬੜੀਆਂ।</translation>
 <translation id="7450541714075000668">ਲਿਖਤ ਕਾਪੀ ਕੀਤੀ ਗਈ</translation>
+<translation id="7476762461674917065">GIF ਰਿਕਾਰਡ ਕਰਨ ਵਾਲਾ ਵਿਕਲਪ ਦਿਖਾਓ</translation>
 <translation id="7488619942230388918">GIF ਵੀਡੀਓ ਰਿਕਾਰਡ ਕਰੋ</translation>
 <translation id="7557677699350329807">ਅਗਲੇ ਕੈਮਰੇ 'ਤੇ ਜਾਓ</translation>
 <translation id="7607002721634913082">ਰੋਕਿਆ ਗਿਆ</translation>
