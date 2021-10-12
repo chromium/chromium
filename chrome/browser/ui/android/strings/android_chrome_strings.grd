@@ -2648,6 +2648,17 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Close all Incognito tabs
       </message>
 
+     <!-- Incognito reauthentication page -->
+     <message name="IDS_INCOGNITO_REAUTH_PAGE_TITLE" desc="Title on the Incognito re-authentication page which is shown when a user revisits their Incognito session if they have turned on Incognito lock setting.">
+       Verify it's you to unlock Incognito
+     </message>
+     <message name="IDS_INCOGNITO_REAUTH_PAGE_UNLOCK_INCOGNITO_BUTTON_LABEL" desc="The label of button which upon click allows user to start the re-authentication process to view their existing Incognito tabs.">
+       Unlock Incognito
+     </message>
+     <message name="IDS_INCOGNITO_REAUTH_PAGE_SEE_OTHER_TABS_LABEL" desc="The label of the text which upon click allows user to switch to regular tabs. Users don't need to go through re-authentication when they click on this.">
+       See other tabs
+     </message>
+
       <!-- Autofill/Wallet integration prompt -->
       <message name="IDS_CARD_UNMASK_INPUT_HINT" desc="Hint text for an input field containing the user's credit card CVC (card verification code).">
         CVC
