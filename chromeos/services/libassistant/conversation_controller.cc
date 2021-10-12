@@ -11,9 +11,11 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/assistant/internal/internal_util.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/internal_options.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
+#include "chromeos/services/libassistant/util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "libassistant/shared/internal_api/assistant_manager_delegate.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
@@ -257,15 +259,13 @@ void ConversationController::OnAssistantClientCreated(
 void ConversationController::OnAssistantClientRunning(
     AssistantClient* assistant_client) {
   // Only when Libassistant is running we can start sending queries.
-  assistant_manager_ = assistant_client->assistant_manager();
-  assistant_manager_internal_ = assistant_client->assistant_manager_internal();
+  assistant_client_ = assistant_client;
   requests_are_allowed_ = true;
 }
 
 void ConversationController::OnDestroyingAssistantClient(
     AssistantClient* assistant_client) {
-  assistant_manager_ = nullptr;
-  assistant_manager_internal_ = nullptr;
+  assistant_client_ = nullptr;
 }
 
 void ConversationController::SendTextQuery(const std::string& query,
@@ -275,28 +275,27 @@ void ConversationController::SendTextQuery(const std::string& query,
 
   DCHECK(requests_are_allowed_)
       << "Should not receive requests before Libassistant is running";
-  if (!assistant_manager_internal_)
+  if (!assistant_client_)
     return;
 
   MaybeStopPreviousInteraction();
 
   // Configs |VoicelessOptions|.
-  assistant_client::VoicelessOptions options;
-  options.is_user_initiated = true;
+  ::assistant::api::VoicelessOptions options;
+  options.set_is_user_initiated(true);
   if (!allow_tts) {
-    options.modality =
-        assistant_client::VoicelessOptions::Modality::TYPING_MODALITY;
+    options.set_modality(::assistant::api::VoicelessOptions::TYPING_MODALITY);
   }
   // Remember the interaction metadata, and pass the generated conversation id
   // to LibAssistant.
-  options.conversation_turn_id =
-      assistant_manager_delegate_->AddPendingTextInteraction(query, source);
+  options.set_conversation_turn_id(
+      assistant_manager_delegate_->AddPendingTextInteraction(query, source));
 
   // Builds text interaction.
-  std::string interaction = assistant::CreateTextQueryInteraction(query);
+  auto interaction = CreateTextQueryInteraction(query);
 
-  assistant_manager_internal_->SendVoicelessInteraction(
-      interaction, /*description=*/"text_query", options, [](auto) {});
+  assistant_client_->SendVoicelessInteraction(
+      interaction, /*description=*/"text_query", options, base::DoNothing());
 }
 
 void ConversationController::StartVoiceInteraction() {
@@ -304,21 +303,21 @@ void ConversationController::StartVoiceInteraction() {
 
   DCHECK(requests_are_allowed_)
       << "Should not receive requests before Libassistant is running";
-  if (!assistant_manager_) {
+  if (!assistant_client_) {
     VLOG(1) << "Starting voice interaction without assistant manager.";
     return;
   }
 
   MaybeStopPreviousInteraction();
 
-  assistant_manager_->StartAssistantInteraction();
+  assistant_client_->StartVoiceInteraction();
 }
 
 void ConversationController::StartEditReminderInteraction(
     const std::string& client_id) {
   DCHECK(requests_are_allowed_)
       << "Should not receive requests before Libassistant is running";
-  if (!assistant_manager_internal_)
+  if (!assistant_client_)
     return;
 
   // Cancels any ongoing StopInteraction posted by StopActiveInteraction()
@@ -328,9 +327,12 @@ void ConversationController::StartEditReminderInteraction(
   // See b/182948180.
   MaybeStopPreviousInteraction();
 
-  SendVoicelessInteraction(assistant::CreateEditReminderInteraction(client_id),
-                           /*description=*/std::string(),
-                           /*is_user_initiated=*/true);
+  ::assistant::api::VoicelessOptions options;
+  options.set_is_user_initiated(true);
+
+  assistant_client_->SendVoicelessInteraction(
+      CreateEditReminderInteraction(client_id),
+      /*description=*/std::string(), options, base::DoNothing());
 }
 
 void ConversationController::StartScreenContextInteraction(
@@ -338,7 +340,7 @@ void ConversationController::StartScreenContextInteraction(
     const std::vector<uint8_t>& screenshot) {
   DCHECK(requests_are_allowed_)
       << "Should not receive requests before Libassistant is running";
-  if (!assistant_manager_internal_)
+  if (!assistant_client_)
     return;
 
   MaybeStopPreviousInteraction();
@@ -364,11 +366,11 @@ void ConversationController::StartScreenContextInteraction(
   context_protos.emplace_back(
       chromeos::assistant::CreateContextProto(screenshot,
                                               /*is_first_query=*/true));
-  assistant_manager_internal_->SendScreenContextRequest(context_protos);
+  assistant_client_->SendScreenContextRequest(context_protos);
 }
 
 void ConversationController::StopActiveInteraction(bool cancel_conversation) {
-  if (!assistant_manager_internal_) {
+  if (!assistant_client_) {
     VLOG(1) << "Stopping interaction without assistant manager.";
     return;
   }
@@ -378,12 +380,11 @@ void ConversationController::StopActiveInteraction(bool cancel_conversation) {
   // stability as Libassistant might misbehave when it's forcefully stopped.
   auto stop_callback = [](base::WeakPtr<ConversationController> weak_this,
                           bool cancel_conversation) {
-    if (!weak_this || !weak_this->assistant_manager_internal_) {
+    if (!weak_this || !weak_this->assistant_client_) {
       return;
     }
     VLOG(1) << "Stopping Assistant interaction.";
-    weak_this->assistant_manager_internal_->StopAssistantInteractionInternal(
-        cancel_conversation);
+    weak_this->assistant_client_->StopAssistantInteraction(cancel_conversation);
   };
 
   stop_interaction_closure_ =
@@ -400,55 +401,59 @@ void ConversationController::RetrieveNotification(
     int32_t action_index) {
   DCHECK(requests_are_allowed_)
       << "Should not receive requests before Libassistant is running";
-  if (!assistant_manager_internal_)
+  if (!assistant_client_)
     return;
 
-  const std::string request_interaction =
-      assistant::SerializeNotificationRequestInteraction(
-          notification.server_id, notification.consistency_token,
-          notification.opaque_token, action_index);
+  auto request_interaction = CreateNotificationRequestInteraction(
+      notification.server_id, notification.consistency_token,
+      notification.opaque_token, action_index);
 
-  SendVoicelessInteraction(request_interaction,
-                           /*description=*/"RequestNotification",
-                           /*is_user_initiated=*/true);
+  ::assistant::api::VoicelessOptions options;
+  options.set_is_user_initiated(true);
+
+  assistant_client_->SendVoicelessInteraction(
+      request_interaction,
+      /*description=*/"RequestNotification", options, base::DoNothing());
 }
 
 void ConversationController::DismissNotification(
     AssistantNotification notification) {
   DCHECK(requests_are_allowed_)
       << "Should not receive requests before Libassistant is running";
-  if (!assistant_manager_internal_)
+  if (!assistant_client_)
     return;
 
-  const std::string dismissed_interaction =
-      assistant::SerializeNotificationDismissedInteraction(
-          notification.server_id, notification.consistency_token,
-          notification.opaque_token, {notification.grouping_key});
+  auto dismissed_interaction = CreateNotificationDismissedInteraction(
+      notification.server_id, notification.consistency_token,
+      notification.opaque_token, {notification.grouping_key});
 
-  assistant_client::VoicelessOptions options;
-  options.obfuscated_gaia_id = notification.obfuscated_gaia_id;
+  ::assistant::api::VoicelessOptions options;
+  options.set_obfuscated_gaia_id(notification.obfuscated_gaia_id);
 
-  assistant_manager_internal_->SendVoicelessInteraction(
+  assistant_client_->SendVoicelessInteraction(
       dismissed_interaction, /*description=*/"DismissNotification", options,
-      [](auto) {});
+      base::DoNothing());
 }
 
 void ConversationController::SendAssistantFeedback(
     const AssistantFeedback& feedback) {
   DCHECK(requests_are_allowed_)
       << "Should not receive requests before Libassistant is running";
-  if (!assistant_manager_internal_)
+  if (!assistant_client_)
     return;
 
   std::string raw_image_data(feedback.screenshot_png.begin(),
                              feedback.screenshot_png.end());
-  const std::string interaction = assistant::CreateSendFeedbackInteraction(
-      feedback.assistant_debug_info_allowed, feedback.description,
-      raw_image_data);
+  auto interaction =
+      CreateSendFeedbackInteraction(feedback.assistant_debug_info_allowed,
+                                    feedback.description, raw_image_data);
 
-  SendVoicelessInteraction(interaction,
-                           /*description=*/"send feedback with details",
-                           /*is_user_initiated=*/false);
+  ::assistant::api::VoicelessOptions options;
+  options.set_is_user_initiated(false);
+
+  assistant_client_->SendVoicelessInteraction(
+      interaction, /*description=*/"send feedback with details", options,
+      base::DoNothing());
 }
 
 void ConversationController::AddRemoteObserver(
@@ -516,15 +521,14 @@ void ConversationController::OnOpenAndroidApp(
   // Note that we will always set |provider_found| to true since the preceding
   // OnVerifyAndroidApp() should already confirm that the requested provider is
   // available on the device.
-  std::string interaction_proto =
-      assistant::CreateOpenProviderResponseInteraction(
-          interaction.interaction_id, /*provider_found=*/true);
-  assistant_client::VoicelessOptions options;
-  options.obfuscated_gaia_id = interaction.user_id;
+  auto interaction_proto = CreateOpenProviderResponseInteraction(
+      interaction.interaction_id, /*provider_found=*/true);
+  ::assistant::api::VoicelessOptions options;
+  options.set_obfuscated_gaia_id(interaction.user_id);
 
-  assistant_manager_internal_->SendVoicelessInteraction(
+  assistant_client_->SendVoicelessInteraction(
       interaction_proto, /*description=*/"open_provider_response", options,
-      [](auto) {});
+      base::DoNothing());
 }
 
 // Called from Libassistant thread.
@@ -580,17 +584,6 @@ void ConversationController::MaybeStopPreviousInteraction() {
   }
 
   stop_interaction_closure_->callback().Run();
-}
-
-void ConversationController::SendVoicelessInteraction(
-    const std::string& interaction,
-    const std::string& description,
-    bool is_user_initiated) {
-  assistant_client::VoicelessOptions voiceless_options;
-  voiceless_options.is_user_initiated = is_user_initiated;
-
-  assistant_manager_internal_->SendVoicelessInteraction(
-      interaction, description, voiceless_options, [](auto) {});
 }
 
 }  // namespace libassistant

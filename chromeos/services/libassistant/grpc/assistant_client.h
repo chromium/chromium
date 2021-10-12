@@ -105,11 +105,6 @@ class AssistantClient {
 
   virtual void AddExperimentIds(const std::vector<std::string>& exp_ids) = 0;
 
-  virtual void SendVoicelessInteraction(
-      const ::assistant::api::Interaction& interaction,
-      const std::string& description,
-      const ::assistant::api::VoicelessOptions& options,
-      base::OnceCallback<void(bool)> on_done) = 0;
 
   // Speaker Id Enrollment methods.
   virtual void AddSpeakerIdEnrollmentEventObserver(
@@ -142,8 +137,17 @@ class AssistantClient {
       GrpcServicesObserver<OnDeviceStateEventRequest>* observer) = 0;
 
   // Conversation methods.
+  virtual void SendVoicelessInteraction(
+      const ::assistant::api::Interaction& interaction,
+      const std::string& description,
+      const ::assistant::api::VoicelessOptions& options,
+      base::OnceCallback<void(bool)> on_done) = 0;
   virtual void RegisterActionModule(
       assistant_client::ActionModule* action_module) = 0;
+  virtual void SendScreenContextRequest(
+      const std::vector<std::string>& context_protos) = 0;
+  virtual void StartVoiceInteraction() = 0;
+  virtual void StopAssistantInteraction(bool cancel_conversation) = 0;
 
   // Settings-related functionality during bootup:
   virtual void SetAuthenticationInfo(const AuthTokens& tokens) = 0;

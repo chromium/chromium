@@ -349,5 +349,76 @@ Interaction CreateGetDeviceSettingInteraction(
       .Proto();
 }
 
+Interaction CreateNotificationRequestInteraction(
+    const std::string& notification_id,
+    const std::string& consistent_token,
+    const std::string& opaque_token,
+    const int action_index) {
+  auto request_param = assistant::CreateNotificationRequestParam(
+      notification_id, consistent_token, opaque_token, action_index);
+
+  return V1InteractionBuilder()
+      .SetClientInputName(assistant::kClientInputRequestNotification)
+      .AddClientInputParams(assistant::kNotificationRequestParamsKey,
+                            request_param)
+      .Proto();
+}
+
+Interaction CreateNotificationDismissedInteraction(
+    const std::string& notification_id,
+    const std::string& consistent_token,
+    const std::string& opaque_token,
+    const std::vector<std::string>& grouping_keys) {
+  auto dismiss_param = assistant::CreateNotificationDismissedParam(
+      notification_id, consistent_token, opaque_token, grouping_keys);
+
+  return V1InteractionBuilder()
+      .SetClientInputName(assistant::kClientInputDismissNotification)
+      .AddClientInputParams(assistant::kNotificationDismissParamsKey,
+                            dismiss_param)
+      .Proto();
+}
+
+Interaction CreateEditReminderInteraction(const std::string& reminder_id) {
+  auto intent_input = assistant::CreateEditReminderParam(reminder_id);
+
+  return V1InteractionBuilder()
+      .SetClientInputName(assistant::kClientInputEditReminder)
+      .AddClientInputParams(assistant::kEditReminderParamsKey, intent_input)
+      .Proto();
+}
+
+Interaction CreateOpenProviderResponseInteraction(const int interaction_id,
+                                                  const bool provider_found) {
+  return V1InteractionBuilder()
+      .SetInResponseTo(interaction_id)
+      .SetStatusCodeFromEntityFound(provider_found)
+      .Proto();
+}
+
+Interaction CreateSendFeedbackInteraction(
+    bool assistant_debug_info_allowed,
+    const std::string& feedback_description,
+    const std::string& screenshot_png) {
+  auto feedback_arg = assistant::CreateFeedbackParam(
+      assistant_debug_info_allowed, feedback_description, screenshot_png);
+
+  return V1InteractionBuilder()
+      .SetClientInputName(assistant::kClientInputText)
+      .AddClientInputParams(
+          assistant::kTextParamsKey,
+          assistant::CreateTextParam(assistant::kFeedbackText))
+      .AddClientInputParams(assistant::kFeedbackParamsKey, feedback_arg)
+      .Proto();
+}
+
+Interaction CreateTextQueryInteraction(const std::string& query) {
+  return V1InteractionBuilder()
+      .SetClientInputName(assistant::kClientInputText)
+      .AddClientInputParams(assistant::kTextParamsKey,
+                            assistant::CreateTextParam(query))
+      .Proto();
+}
+
 }  // namespace libassistant
 }  // namespace chromeos

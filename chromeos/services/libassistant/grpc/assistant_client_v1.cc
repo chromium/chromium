@@ -266,7 +266,7 @@ AssistantClientV1::AssistantClientV1(
 }
 
 AssistantClientV1::~AssistantClientV1() {
-  // Some listeners (e.g. MediaManagerListener) require that they outlive 
+  // Some listeners (e.g. MediaManagerListener) require that they outlive
   // `assistant_manager_`. Reset `assistant_manager_` in the parent class first
   // before any listener in this class gets destructed.
   ResetAssistantManager();
@@ -293,20 +293,6 @@ bool AssistantClientV1::StartGrpcServices() {
 void AssistantClientV1::AddExperimentIds(
     const std::vector<std::string>& exp_ids) {
   assistant_manager_internal()->AddExtraExperimentIds(exp_ids);
-}
-
-void AssistantClientV1::SendVoicelessInteraction(
-    const ::assistant::api::Interaction& interaction,
-    const std::string& description,
-    const ::assistant::api::VoicelessOptions& options,
-    base::OnceCallback<void(bool)> on_done) {
-  assistant_client::VoicelessOptions voiceless_options;
-  PopulateVoicelessOptionsFromProto(options, &voiceless_options);
-  assistant_manager_internal()->SendVoicelessInteraction(
-      interaction.SerializeAsString(), description, voiceless_options,
-      [callback = std::move(on_done)](bool result) mutable {
-        std::move(callback).Run(result);
-      });
 }
 
 void AssistantClientV1::AddSpeakerIdEnrollmentEventObserver(
@@ -389,9 +375,37 @@ void AssistantClientV1::AddDeviceStateEventObserver(
   device_state_event_observer_list_.AddObserver(observer);
 }
 
+void AssistantClientV1::SendVoicelessInteraction(
+    const ::assistant::api::Interaction& interaction,
+    const std::string& description,
+    const ::assistant::api::VoicelessOptions& options,
+    base::OnceCallback<void(bool)> on_done) {
+  assistant_client::VoicelessOptions voiceless_options;
+  PopulateVoicelessOptionsFromProto(options, &voiceless_options);
+  assistant_manager_internal()->SendVoicelessInteraction(
+      interaction.SerializeAsString(), description, voiceless_options,
+      [callback = std::move(on_done)](bool result) mutable {
+        std::move(callback).Run(result);
+      });
+}
+
 void AssistantClientV1::RegisterActionModule(
     assistant_client::ActionModule* action_module) {
   assistant_manager_internal()->RegisterActionModule(action_module);
+}
+
+void AssistantClientV1::SendScreenContextRequest(
+    const std::vector<std::string>& context_protos) {
+  assistant_manager_internal()->SendScreenContextRequest(context_protos);
+}
+
+void AssistantClientV1::StartVoiceInteraction() {
+  assistant_manager()->StartAssistantInteraction();
+}
+
+void AssistantClientV1::StopAssistantInteraction(bool cancel_conversation) {
+  assistant_manager_internal()->StopAssistantInteractionInternal(
+      cancel_conversation);
 }
 
 void AssistantClientV1::SetAuthenticationInfo(const AuthTokens& tokens) {

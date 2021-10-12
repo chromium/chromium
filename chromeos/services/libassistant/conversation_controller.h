@@ -21,11 +21,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace assistant_client {
-class AssistantManager;
-class AssistantManagerInternal;
-}  // namespace assistant_client
-
 namespace chromeos {
 namespace assistant {
 namespace action {
@@ -34,6 +29,8 @@ class CrosActionModule;
 }  // namespace assistant
 
 namespace libassistant {
+
+class AssistantClient;
 
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
     : public mojom::ConversationController,
@@ -117,19 +114,17 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
 
   void MaybeStopPreviousInteraction();
 
-  void SendVoicelessInteraction(const std::string& interaction,
-                                const std::string& description,
-                                bool is_user_initiated);
-
   mojo::Receiver<mojom::ConversationController> receiver_;
   mojo::RemoteSet<mojom::ConversationObserver> observers_;
   mojo::RemoteSet<mojom::AuthenticationStateObserver>
       authentication_state_observers_;
   mojo::Remote<mojom::NotificationDelegate> notification_delegate_;
 
-  assistant_client::AssistantManager* assistant_manager_ = nullptr;
-  assistant_client::AssistantManagerInternal* assistant_manager_internal_ =
-      nullptr;
+  // Owned by ServiceController.
+  // Set in `OnAssistantClientCreated()` and unset in
+  // `OnDestroyingAssistantClient()`.
+  AssistantClient* assistant_client_ = nullptr;
+
   // False until libassistant is running for the first time.
   // Any request that comes in before that is an error and will be DCHECK'ed.
   bool requests_are_allowed_ = false;

@@ -34,12 +34,6 @@ bool FakeAssistantClient::StartGrpcServices() {
 void FakeAssistantClient::AddExperimentIds(
     const std::vector<std::string>& exp_ids) {}
 
-void FakeAssistantClient::SendVoicelessInteraction(
-    const ::assistant::api::Interaction& interaction,
-    const std::string& description,
-    const ::assistant::api::VoicelessOptions& options,
-    base::OnceCallback<void(bool)> on_done) {}
-
 void FakeAssistantClient::AddSpeakerIdEnrollmentEventObserver(
     GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer) {}
 
@@ -74,8 +68,21 @@ void FakeAssistantClient::SetExternalPlaybackState(
 void FakeAssistantClient::AddDeviceStateEventObserver(
     GrpcServicesObserver<OnDeviceStateEventRequest>* observer) {}
 
+void FakeAssistantClient::SendVoicelessInteraction(
+    const ::assistant::api::Interaction& interaction,
+    const std::string& description,
+    const ::assistant::api::VoicelessOptions& options,
+    base::OnceCallback<void(bool)> on_done) {}
+
 void FakeAssistantClient::RegisterActionModule(
     assistant_client::ActionModule* action_module) {}
+
+void FakeAssistantClient::SendScreenContextRequest(
+    const std::vector<std::string>& context_protos) {}
+
+void FakeAssistantClient::StartVoiceInteraction() {}
+
+void FakeAssistantClient::StopAssistantInteraction(bool cancel_conversation) {}
 
 void FakeAssistantClient::SetInternalOptions(const std::string& locale,
                                              bool spoken_feedback_enabled) {}

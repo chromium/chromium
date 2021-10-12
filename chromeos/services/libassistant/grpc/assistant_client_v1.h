@@ -33,11 +33,6 @@ class AssistantClientV1 : public AssistantClient {
       assistant_client::ChromeOSApiDelegate* delegate) override;
   bool StartGrpcServices() override;
   void AddExperimentIds(const std::vector<std::string>& exp_ids) override;
-  void SendVoicelessInteraction(
-      const ::assistant::api::Interaction& interaction,
-      const std::string& description,
-      const ::assistant::api::VoicelessOptions& options,
-      base::OnceCallback<void(bool)> on_done) override;
   void AddSpeakerIdEnrollmentEventObserver(
       GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer)
       override;
@@ -60,8 +55,17 @@ class AssistantClientV1 : public AssistantClient {
   void SetExternalPlaybackState(const MediaStatus& status_proto) override;
   void AddDeviceStateEventObserver(
       GrpcServicesObserver<OnDeviceStateEventRequest>* observer) override;
+  void SendVoicelessInteraction(
+      const ::assistant::api::Interaction& interaction,
+      const std::string& description,
+      const ::assistant::api::VoicelessOptions& options,
+      base::OnceCallback<void(bool)> on_done) override;
   void RegisterActionModule(
       assistant_client::ActionModule* action_module) override;
+  void SendScreenContextRequest(
+      const std::vector<std::string>& context_protos) override;
+  void StartVoiceInteraction() override;
+  void StopAssistantInteraction(bool cancel_conversation) override;
   void SetAuthenticationInfo(const AuthTokens& tokens) override;
   void SetInternalOptions(const std::string& locale,
                           bool spoken_feedback_enabled) override;
