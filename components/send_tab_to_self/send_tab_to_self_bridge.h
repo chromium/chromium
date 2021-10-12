@@ -20,9 +20,9 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync_device_info/device_info_tracker.h"
 
 namespace syncer {
-class DeviceInfoTracker;
 class ModelTypeChangeProcessor;
 }  // namespace syncer
 
@@ -38,6 +38,7 @@ struct TargetDeviceInfo;
 // All interface methods have to be called on main thread.
 class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
                             public SendTabToSelfModel,
+                            public syncer::DeviceInfoTracker::Observer,
                             public history::HistoryServiceObserver {
  public:
   // The caller should ensure that all raw pointers are not null and will
@@ -91,10 +92,12 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
 
+  // syncer::DeviceInfoTracker::Observer overrides.
+  void OnDeviceInfoChange() override;
+
   // For testing only.
   static std::unique_ptr<syncer::ModelTypeStore> DestroyAndStealStoreForTest(
       std::unique_ptr<SendTabToSelfBridge> bridge);
-  bool ShouldUpdateTargetDeviceInfoListForTest();
   void SetLocalDeviceNameForTest(const std::string& local_device_name);
 
  private:
@@ -139,11 +142,7 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   // Delete expired entries.
   void DoGarbageCollection();
 
-  // Returns whether the target device info list should be updated.
-  bool ShouldUpdateTargetDeviceInfoList() const;
-
-  // Sets the target device info list.
-  void SetTargetDeviceInfoList();
+  void ComputeTargetDeviceInfoSortedList();
 
   // Remove entry with |guid| from entries, but doesn't call Commit on provided
   // |batch|. This allows multiple for deletions without duplicate batch calls.
@@ -175,15 +174,14 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   const SendTabToSelfEntry* mru_entry_;
 
   // A list of target devices and their associated cache information.
+  // TODO(crbug.com/1257573): Rename. This used to be a map, hence the name.
   std::vector<TargetDeviceInfo> target_device_name_to_cache_info_;
-
-  // The following two variables are used to determine whether we should update
-  // the target device name to cache guid map.
-  base::Time oldest_non_expired_device_timestamp_;
-  size_t number_of_devices_ = 0;
 
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
+  base::ScopedObservation<syncer::DeviceInfoTracker,
+                          syncer::DeviceInfoTracker::Observer>
+      device_info_tracker_observation_{this};
 
   base::WeakPtrFactory<SendTabToSelfBridge> weak_ptr_factory_{this};
 };
