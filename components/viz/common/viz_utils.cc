@@ -4,6 +4,9 @@
 
 #include "components/viz/common/viz_utils.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "ui/gfx/geometry/rect.h"
@@ -14,6 +17,11 @@
 #include <string>
 
 #include "base/android/build_info.h"
+#endif
+
+#if defined(OS_POSIX)
+#include <poll.h>
+#include <sys/resource.h>
 #endif
 
 namespace viz {
@@ -101,6 +109,43 @@ bool GetScaledUVs(const gfx::Rect& rect, const gfx::QuadF* clip, float uvs[8]) {
   uvs[6] = ((clip->p4().x() - rect.x()) / rect.width());
   uvs[7] = ((clip->p4().y() - rect.y()) / rect.height());
   return true;
+}
+
+bool GatherFDStats(base::TimeDelta* delta_time_taken,
+                   int* fd_max,
+                   int* active_fd_count,
+                   int* rlim_cur) {
+#if !defined(OS_POSIX)
+  return false;
+#else   // defined(OS_POSIX)
+  // https://stackoverflow.com/questions/7976769/
+  // getting-count-of-current-used-file-descriptors-from-c-code
+  base::ElapsedTimer timer;
+  rlimit limit_data;
+  getrlimit(RLIMIT_NOFILE, &limit_data);
+  std::vector<pollfd> poll_data;
+  constexpr int kMaxNumFDTested = 1 << 16;
+  // |rlim_cur| is the soft max but is likely the value we can rely on instead
+  // of the real max.
+  *rlim_cur = static_cast<int>(limit_data.rlim_cur);
+  *fd_max = std::max(1, std::min(*rlim_cur, kMaxNumFDTested));
+  poll_data.resize(*fd_max);
+  for (size_t i = 0; i < poll_data.size(); i++) {
+    auto& each = poll_data[i];
+    each.fd = static_cast<int>(i);
+    each.events = 0;
+    each.revents = 0;
+  }
+
+  poll(poll_data.data(), poll_data.size(), 0);
+  *active_fd_count = 0;
+  for (auto&& each : poll_data) {
+    if (each.revents != POLLNVAL)
+      (*active_fd_count)++;
+  }
+  *delta_time_taken = timer.Elapsed();
+  return true;
+#endif  // defined(OS_POSIX)
 }
 
 }  // namespace viz

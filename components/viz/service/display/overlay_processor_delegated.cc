@@ -20,6 +20,8 @@
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/viz_utils.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/output_surface.h"
@@ -36,7 +38,47 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
-#include "components/viz/common/quads/texture_draw_quad.h"
+namespace {
+DBG_FLAG_FBOOL("delegated.fd.usage", usage_every_frame)
+
+void RecordFDUsageUMA() {
+  static uint64_t sReportUsageFrameCounter = 0;
+  sReportUsageFrameCounter++;
+  constexpr uint32_t kReportEveryNFrames = 60 * 60 * 5;
+  if (((sReportUsageFrameCounter % kReportEveryNFrames) != 0) &&
+      !usage_every_frame()) {
+    return;
+  }
+
+  base::TimeDelta delta_time_taken;
+  int fd_max;
+  int active_fd_count;
+  int rlim_cur;
+
+  if (!viz::GatherFDStats(&delta_time_taken, &fd_max, &active_fd_count,
+                          &rlim_cur))
+    return;
+
+  static constexpr base::TimeDelta kHistogramMinTime =
+      base::TimeDelta::FromMicroseconds(5);
+  static constexpr base::TimeDelta kHistogramMaxTime =
+      base::TimeDelta::FromMilliseconds(10);
+  static constexpr int kHistogramTimeBuckets = 50;
+  int percentage_usage_int = (active_fd_count * 100) / fd_max;
+  UMA_HISTOGRAM_PERCENTAGE("Viz.FileDescriptorTracking.PercentageUsed",
+                           percentage_usage_int);
+  UMA_HISTOGRAM_COUNTS_100000("Viz.FileDescriptorTracking.NumActive",
+                              active_fd_count);
+  UMA_HISTOGRAM_COUNTS_100000("Viz.FileDescriptorTracking.NumSoftMax",
+                              rlim_cur);
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Viz.FileDescriptorTracking.TimeToCompute", delta_time_taken,
+      kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
+
+  DBG_LOG("delegated.fd.usage", "FD usage: %d / %d - time us: %f",
+          active_fd_count, fd_max, delta_time_taken.InMicrosecondsF());
+}
+}  // namespace
 
 namespace viz {
 
@@ -189,6 +231,9 @@ void OverlayProcessorDelegated::ProcessForOverlays(
   DCHECK(candidates->empty());
   auto* render_pass = render_passes->back().get();
   bool success = false;
+#if !defined(OS_APPLE)
+  RecordFDUsageUMA();
+#endif
 
   DBG_DRAW_RECT("delegated.incoming.damage", (*damage_rect));
   for (auto&& each : surface_damage_rect_list) {

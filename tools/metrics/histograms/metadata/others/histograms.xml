@@ -19081,6 +19081,36 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="Viz.FileDescriptorTracking.TimeToCompute" units="microseconds"
+    expires_after="2022-01-09">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>rjkroege@chromium.org</owner>
+  <summary>
+    Time spent computing the number of active File Descriptors. This is logged
+    once every 5 minutes as the cost of this computation is estimated to be at
+    least 1ms. Currently only recorded for LaCros delegated compositing.
+
+    Warning: This metric does not include reports from clients with
+    low-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Viz.FileDescriptorTracking.{FdStat}" units="units"
+    expires_after="2022-01-09">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>rjkroege@chromium.org</owner>
+  <summary>
+    {FdStat} File Descriptors for the GPU process. This is logged once every 5
+    minutes as the cost of this computation is estimated to be at least 1ms.
+    Currently only recorded for LaCros delegated compositing.
+  </summary>
+  <token key="FdStat">
+    <variant name="NumActive" summary="Current number of active"/>
+    <variant name="NumSoftMax" summary="Maximum number of"/>
+    <variant name="PercentageUsed" summary="Percentage of in use"/>
+  </token>
+</histogram>
+
 <histogram name="Viz.FrameSinkVideoCapturer.I420.CaptureDuration" units="ms"
     expires_after="2021-03-07">
   <owner>samans@chromium.org</owner>
