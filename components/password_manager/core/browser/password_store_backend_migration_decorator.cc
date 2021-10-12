@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_store_backend_migration_decorator.h"
 
 #include "base/bind.h"
+#include "components/password_manager/core/browser/built_in_backend_to_android_backend_migrator.h"
 #include "components/password_manager/core/browser/field_info_table.h"
 #include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/password_manager/core/browser/password_store_proxy_backend.h"
@@ -33,6 +34,8 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
   active_backend_->InitBackend(std::move(remote_form_changes_received),
                                std::move(sync_enabled_or_disabled_cb),
                                std::move(completion));
+  // TODO:(crbug.com/1252443) If feature is enabled post delayed task to start
+  // migration.
 }
 
 void PasswordStoreBackendMigrationDecorator::Shutdown(
@@ -130,6 +133,11 @@ FieldInfoStore* PasswordStoreBackendMigrationDecorator::GetFieldInfoStore() {
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 PasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegateFactory() {
   return active_backend_->CreateSyncControllerDelegateFactory();
+}
+
+void PasswordStoreBackendMigrationDecorator::StartMigration() {
+  migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>();
+  migrator_->StartMigrationIfNecessary();
 }
 
 }  // namespace password_manager

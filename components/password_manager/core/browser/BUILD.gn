@@ -313,6 +313,8 @@ static_library("browser") {
 
   if (is_android) {
     sources += [
+      "built_in_backend_to_android_backend_migrator.cc",
+      "built_in_backend_to_android_backend_migrator.h",
       "password_scripts_fetcher.h",
       "password_scripts_fetcher_impl.cc",
       "password_scripts_fetcher_impl.h",

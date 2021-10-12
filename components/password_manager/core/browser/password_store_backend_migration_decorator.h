@@ -12,6 +12,8 @@
 
 namespace password_manager {
 
+class BuiltInBackendToAndroidBackendMigrator;
+
 // This is the backend that should be used on Android platform until the full
 // migration to the Android backend is launched. Internally, this backend
 // owns two backends: the built-in and the Android backend. In addition
@@ -69,11 +71,16 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegateFactory() override;
 
+  // Creates 'migrator_' and starts migration process.
+  void StartMigration();
+
   std::unique_ptr<PasswordStoreBackend> built_in_backend_;
   std::unique_ptr<PasswordStoreBackend> android_backend_;
 
   // Proxy backend to which all responsibilities are being delegated.
   std::unique_ptr<PasswordStoreBackend> active_backend_;
+
+  std::unique_ptr<BuiltInBackendToAndroidBackendMigrator> migrator_;
 };
 
 }  // namespace password_manager
