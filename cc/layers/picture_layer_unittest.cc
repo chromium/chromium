@@ -53,6 +53,7 @@ TEST(PictureLayerTest, NoTilesIfEmptyBounds) {
 
   EXPECT_EQ(0, host->SourceFrameNumber());
   host->WillCommit(nullptr);
+  EXPECT_EQ(1, host->SourceFrameNumber());
   host->CommitComplete();
   EXPECT_EQ(1, host->SourceFrameNumber());
 

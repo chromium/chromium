@@ -511,6 +511,7 @@ void LayerTreeHost::WillCommit(std::unique_ptr<CompletionEvent> completion) {
   commit_completion_event_ = std::move(completion);
   swap_promise_manager_.WillCommit();
   client_->WillCommit();
+  source_frame_number_++;
 }
 
 void LayerTreeHost::WaitForCommitCompletion() {
@@ -533,7 +534,6 @@ void LayerTreeHost::CommitComplete() {
   // This DCHECK ensures that WaitForCommitCompletion() will not block.
   DCHECK(!in_commit());
   WaitForCommitCompletion();
-  source_frame_number_++;
   client_->DidCommit(impl_commit_start_time_, impl_commit_finish_time_);
   impl_commit_start_time_ = impl_commit_finish_time_ = base::TimeTicks();
   if (did_complete_scale_animation_) {
