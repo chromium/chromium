@@ -29,6 +29,9 @@
 #include "chromeos/components/eche_app_ui/eche_uid_provider.h"
 #include "chromeos/components/eche_app_ui/system_info.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
+#include "chromeos/services/secure_channel/presence_monitor_impl.h"
+#include "chromeos/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
+#include "chromeos/services/secure_channel/public/cpp/shared/presence_monitor.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -197,9 +200,17 @@ KeyedService* EcheAppManagerFactory::BuildServiceInstanceFor(
   if (!secure_channel_client)
     return nullptr;
 
+  auto presence_monitor =
+      std::make_unique<secure_channel::PresenceMonitorImpl>();
+  std::unique_ptr<secure_channel::PresenceMonitorClient>
+      presence_monitor_client =
+          secure_channel::PresenceMonitorClientImpl::Factory::Create(
+              std::move(presence_monitor));
+
   return new EcheAppManager(
       profile->GetPrefs(), GetSystemInfo(profile), phone_hub_manager,
       device_sync_client, multidevice_setup_client, secure_channel_client,
+      std::move(presence_monitor_client),
       base::BindRepeating(&LaunchEcheApp, profile),
       base::BindRepeating(&CloseEcheApp, profile),
       base::BindRepeating(&EcheAppManagerFactory::ShowNotification,

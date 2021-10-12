@@ -8,6 +8,7 @@
 #include "base/system/sys_info.h"
 #include "chromeos/components/eche_app_ui/eche_message_receiver.h"
 #include "chromeos/components/eche_app_ui/eche_notification_generator.h"
+#include "chromeos/components/eche_app_ui/eche_presence_manager.h"
 #include "chromeos/components/eche_app_ui/eche_signaler.h"
 #include "chromeos/components/eche_app_ui/eche_uid_provider.h"
 #include "chromeos/components/eche_app_ui/launch_app_helper.h"
@@ -32,6 +33,8 @@ EcheAppManager::EcheAppManager(
     device_sync::DeviceSyncClient* device_sync_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     secure_channel::SecureChannelClient* secure_channel_client,
+    std::unique_ptr<secure_channel::PresenceMonitorClient>
+        presence_monitor_client,
     LaunchAppHelper::LaunchEcheAppFunction launch_eche_app_function,
     LaunchAppHelper::CloseEcheAppFunction close_eche_app_function,
     LaunchAppHelper::LaunchNotificationFunction launch_notification_function)
@@ -64,6 +67,12 @@ EcheAppManager::EcheAppManager(
                                           connection_manager_.get())),
       signaler_(std::make_unique<EcheSignaler>(eche_connector_.get(),
                                                connection_manager_.get())),
+      eche_presence_manager_(std::make_unique<EchePresenceManager>(
+          feature_status_provider_.get(),
+          device_sync_client,
+          multidevice_setup_client,
+          std::move(presence_monitor_client),
+          eche_connector_.get())),
       uid_(std::make_unique<EcheUidProvider>(pref_service)),
       eche_recent_app_click_handler_(
           std::make_unique<EcheRecentAppClickHandler>(
@@ -105,16 +114,17 @@ void EcheAppManager::BindNotificationGeneratorInterface(
 // NOTE: These should be destroyed in the opposite order of how these objects
 // are initialized in the constructor.
 void EcheAppManager::Shutdown() {
+  system_info_provider_.reset();
+  message_receiver_.reset();
   notification_generator_.reset();
   eche_recent_app_click_handler_.reset();
   uid_.reset();
-  system_info_provider_.reset();
+  eche_presence_manager_.reset();
   signaler_.reset();
   eche_connector_.reset();
   eche_notification_click_handler_.reset();
   launch_app_helper_.reset();
   feature_status_provider_.reset();
-  message_receiver_.reset();
   connection_manager_.reset();
 }
 

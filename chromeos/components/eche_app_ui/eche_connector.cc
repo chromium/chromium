@@ -10,7 +10,6 @@
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
-#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace chromeos {
@@ -84,12 +83,12 @@ void EcheConnector::OnFeatureStatusChanged() {
   const FeatureStatus feature_status =
       eche_feature_status_provider_->GetStatus();
   if (feature_status == FeatureStatus::kConnected && !queue_.empty()) {
+    PA_LOG(INFO) << "Flushing message queue";
     FlushQueue();
   }
 }
 
 void EcheConnector::FlushQueue() {
-  PA_LOG(INFO) << "Flushing message queue";
   const int size = queue_.size();
   for (int i = 0; i < size; i++) {
     connection_manager_->SendMessage(queue_.front());

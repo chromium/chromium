@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_ECHE_APP_UI_ECHE_APP_MANAGER_H_
 
 #include <stdint.h>
+#include <memory>
 
 #include "chromeos/components/eche_app_ui/eche_connector.h"
 #include "chromeos/components/eche_app_ui/eche_feature_status_provider.h"
@@ -15,6 +16,7 @@
 #include "chromeos/components/eche_app_ui/mojom/eche_app.mojom.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -37,12 +39,13 @@ class SecureChannelClient;
 
 namespace eche_app {
 
-class SystemInfo;
-class EcheSignaler;
-class SystemInfoProvider;
-class EcheUidProvider;
-class EcheNotificationGenerator;
 class EcheMessageReceiver;
+class EcheNotificationGenerator;
+class EchePresenceManager;
+class EcheSignaler;
+class EcheUidProvider;
+class SystemInfo;
+class SystemInfoProvider;
 
 // Implements the core logic of the EcheApp and exposes interfaces via its
 // public API. Implemented as a KeyedService since it depends on other
@@ -55,6 +58,8 @@ class EcheAppManager : public KeyedService {
                  device_sync::DeviceSyncClient*,
                  multidevice_setup::MultiDeviceSetupClient*,
                  secure_channel::SecureChannelClient*,
+                 std::unique_ptr<secure_channel::PresenceMonitorClient>
+                     presence_monitor_client,
                  LaunchAppHelper::LaunchEcheAppFunction,
                  LaunchAppHelper::CloseEcheAppFunction,
                  LaunchAppHelper::LaunchNotificationFunction);
@@ -86,6 +91,7 @@ class EcheAppManager : public KeyedService {
       eche_notification_click_handler_;
   std::unique_ptr<EcheConnector> eche_connector_;
   std::unique_ptr<EcheSignaler> signaler_;
+  std::unique_ptr<EchePresenceManager> eche_presence_manager_;
   std::unique_ptr<EcheUidProvider> uid_;
   std::unique_ptr<EcheRecentAppClickHandler> eche_recent_app_click_handler_;
   std::unique_ptr<EcheNotificationGenerator> notification_generator_;
