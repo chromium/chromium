@@ -6964,6 +6964,12 @@ others/histograms.xml -->
   <int value="3" label="[Deprecated] AUTO_LAUNCH_FOREGROUND_USELESS"/>
 </enum>
 
+<enum name="AutomaticLazyLoadFrameState">
+  <int value="0" label="Feature is not enabled"/>
+  <int value="1" label="Target frames not found"/>
+  <int value="2" label="Target frames found"/>
+</enum>
+
 <enum name="AutoplayBlockedReason">
   <int value="0" label="[Deprecated] Data Saver enabled"/>
   <int value="1" label="Disabled by setting"/>

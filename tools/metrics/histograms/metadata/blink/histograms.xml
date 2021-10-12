@@ -99,6 +99,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.AutomaticLazyLoadFrame"
+    enum="AutomaticLazyLoadFrameState" expires_after="2022-04-09">
+  <owner>sisidovski@google.com</owner>
+  <owner>kouhei@chromium.org</owner>
+  <summary>
+    Records if the automatic lazy-load for selected performance problematic
+    iframes is applied or not. This is recorded when each frame having a url in
+    the page is created. See HTMLFrameOwnerElement::LazyLoadIfPossible() for
+    more details.
+
+    Note: There are two groups that lazy-load isn't applied. One group is simply
+    the feature itself is disabled, another groupd is that feature is enabled,
+    but there are no targeted frames on the page.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Canvas.2DPrintingAsVector" enum="BooleanSuccess"
     expires_after="2022-01-31">
   <owner>fserb@chromium.org</owner>
