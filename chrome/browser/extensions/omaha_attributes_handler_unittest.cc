@@ -210,8 +210,9 @@ TEST_F(OmahaAttributesHandlerUnitTest, KeepDisabledWhenMalwareRemoved) {
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   EXPECT_TRUE(state_tester.ExpectBlocklisted(kTestExtensionId));
-  EXPECT_EQ(disable_reason::DISABLE_REMOTELY_FOR_MALWARE |
-                disable_reason::DISABLE_GREYLIST,
+  EXPECT_TRUE(blocklist_prefs::HasOmahaBlocklistState(
+      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs));
+  EXPECT_EQ(disable_reason::DISABLE_GREYLIST,
             prefs->GetDisableReasons(kTestExtensionId));
 
   // Remove malware.

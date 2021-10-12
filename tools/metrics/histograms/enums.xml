@@ -27317,7 +27317,7 @@ Called by update_document_policy_enum.py.-->
   <int value="32768" label="CUSTODIAN_APPROVAL_REQUIRED"/>
   <int value="65536" label="BLOCKED_BY_POLICY"/>
   <int value="131072" label="DEPRECATED_BLOCKED_MATURE"/>
-  <int value="262144" label="DISABLE_REMOTELY_FOR_MALWARE"/>
+  <int value="262144" label="DEPRECATED_DISABLE_REMOTELY_FOR_MALWARE"/>
   <int value="524288" label="DISABLE_REINSTALL"/>
   <int value="1048576" label="DISABLE_NOT_ALLOWLISTED"/>
 </enum>

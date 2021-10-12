@@ -875,8 +875,9 @@ void ExtensionService::HandleMalwareOmahaAttribute(
     return;
   }
 
-  if (extension_prefs_->HasDisableReason(
-          extension_id, disable_reason::DISABLE_REMOTELY_FOR_MALWARE)) {
+  if (blocklist_prefs::HasOmahaBlocklistState(
+          extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+          extension_prefs_)) {
     // The extension is already disabled. No work needs to be done.
     return;
   }
@@ -888,8 +889,9 @@ void ExtensionService::HandleMalwareOmahaAttribute(
   // Add the extension to the blocklisted extensions set.
   UpdateBlocklistedExtensions({extension_id},
                               registry_->blocklisted_extensions().GetIDs());
-  extension_prefs_->AddDisableReason(
-      extension_id, disable_reason::DISABLE_REMOTELY_FOR_MALWARE);
+  blocklist_prefs::AddOmahaBlocklistState(
+      extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      extension_prefs_);
   // Show an error for the newly blocklisted extension.
   error_controller_->ShowErrorIfNeeded();
 }
@@ -897,12 +899,15 @@ void ExtensionService::HandleMalwareOmahaAttribute(
 void ExtensionService::MaybeEnableRemotelyDisabledExtension(
     const std::string& extension_id) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  int disable_reasons = extension_prefs_->GetDisableReasons(extension_id);
-  if ((disable_reasons & disable_reason::DISABLE_REMOTELY_FOR_MALWARE) == 0)
+  if (!blocklist_prefs::HasOmahaBlocklistState(
+          extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+          extension_prefs_)) {
     return;
+  }
 
-  extension_prefs_->RemoveDisableReason(
-      extension_id, disable_reason::DISABLE_REMOTELY_FOR_MALWARE);
+  blocklist_prefs::RemoveOmahaBlocklistState(
+      extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      extension_prefs_);
 
   ExtensionIdSet unchanged = registry_->blocklisted_extensions().GetIDs();
   DCHECK(base::Contains(unchanged, extension_id));
@@ -2217,8 +2222,9 @@ void ExtensionService::ManageBlocklist(
   // to |unchanged| set.
   for (const auto& extension_id :
        registry_->blocklisted_extensions().GetIDs()) {
-    if (extension_prefs_->HasDisableReason(
-            extension_id, disable_reason::DISABLE_REMOTELY_FOR_MALWARE)) {
+    if (blocklist_prefs::HasOmahaBlocklistState(
+            extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+            extension_prefs_)) {
       unchanged.insert(extension_id);
     }
   }

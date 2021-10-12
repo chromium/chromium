@@ -319,17 +319,6 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
       EXPECT_EQ(ExtensionInstallProto::CORRUPTED,
                 install.disable_reasons().Get(1));
     }
-    // Adding additional disable reasons should result in all reasons being
-    // reported.
-    prefs()->AddDisableReason(
-        extension->id(),
-        extensions::disable_reason::DISABLE_REMOTELY_FOR_MALWARE);
-    {
-      ExtensionInstallProto install = ConstructProto(*extension);
-      ASSERT_EQ(3, install.disable_reasons_size());
-      EXPECT_EQ(ExtensionInstallProto::DISABLE_REMOTELY_FOR_MALWARE,
-                install.disable_reasons().Get(2));
-    }
   }
 
   {

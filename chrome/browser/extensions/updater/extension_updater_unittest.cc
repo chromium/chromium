@@ -2682,8 +2682,9 @@ TEST_F(ExtensionUpdaterTest, TestUpdatingRemotelyDisabledExtensions) {
   blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
       remotely_blocklisted_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
       service.extension_prefs());
-  service.extension_prefs()->AddDisableReason(
-      remotely_blocklisted_id, disable_reason::DISABLE_REMOTELY_FOR_MALWARE);
+  blocklist_prefs::AddOmahaBlocklistState(
+      remotely_blocklisted_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      service.extension_prefs());
 
   // We expect that both enabled and remotely blocklisted extensions are
   // auto-updated.

@@ -37,6 +37,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "crypto/sha2.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -448,9 +449,11 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
                     params.fetch_priority, &update_check_params);
     ExtensionSet remotely_disabled_extensions;
     for (auto extension : registry_->blocklisted_extensions()) {
-      if (extension_prefs_->HasDisableReason(
-              extension->id(), disable_reason::DISABLE_REMOTELY_FOR_MALWARE))
+      if (blocklist_prefs::HasOmahaBlocklistState(
+              extension->id(), BitMapBlocklistState::BLOCKLISTED_MALWARE,
+              extension_prefs_)) {
         remotely_disabled_extensions.Insert(extension);
+      }
     }
     AddToDownloader(&remotely_disabled_extensions, pending_ids, request_id,
                     params.fetch_priority, &update_check_params);

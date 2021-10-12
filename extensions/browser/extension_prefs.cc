@@ -2697,6 +2697,19 @@ void ExtensionPrefs::MigrateOldBlocklistPrefs() {
       legacy_pref_cleared = true;
     }
 
+    if (HasDisableReason(
+            extension_id,
+            disable_reason::DEPRECATED_DISABLE_REMOTELY_FOR_MALWARE)) {
+      // Migrate the old value.
+      blocklist_prefs::AddOmahaBlocklistState(
+          extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE, this);
+      // Clear the legacy pref.
+      RemoveDisableReason(
+          extension_id,
+          disable_reason::DEPRECATED_DISABLE_REMOTELY_FOR_MALWARE);
+      legacy_pref_cleared = true;
+    }
+
     if (legacy_pref_cleared)
       DeleteExtensionPrefsIfPrefEmpty(extension_id);
   }

@@ -9,6 +9,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
@@ -117,10 +118,9 @@ TEST(ExtensionErrorUIDefaultTest, BubbleMessageMentionsMalware) {
       extensions::ExtensionBuilder(
           "Bar", extensions::ExtensionBuilder::Type::PLATFORM_APP)
           .Build();
-  extensions::ExtensionPrefs::Get(delegate.GetContext())
-      ->AddDisableReason(
-          extension->id(),
-          extensions::disable_reason::DISABLE_REMOTELY_FOR_MALWARE);
+  extensions::blocklist_prefs::AddOmahaBlocklistState(
+      extension->id(), extensions::BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      extensions::ExtensionPrefs::Get(delegate.GetContext()));
   delegate.InsertForbidden(extension);
 
   extensions::ExtensionErrorUIDefault ui(&delegate);

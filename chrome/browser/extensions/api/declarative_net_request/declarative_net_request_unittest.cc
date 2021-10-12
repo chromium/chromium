@@ -2249,10 +2249,7 @@ TEST_P(MultipleRulesetsTest, ReclaimAllocationOnUnload) {
       disable_reason::DISABLE_BLOCKED_BY_POLICY, true);
 
   disable_extension_and_check_allocation(
-      disable_reason::DISABLE_REMOTELY_FOR_MALWARE, true);
-
-  disable_extension_and_check_allocation(
-      disable_reason::DISABLE_REMOTELY_FOR_MALWARE |
+      disable_reason::DISABLE_BLOCKED_BY_POLICY |
           disable_reason::DISABLE_USER_ACTION,
       true);
 

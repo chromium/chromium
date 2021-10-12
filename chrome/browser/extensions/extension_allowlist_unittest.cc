@@ -149,8 +149,10 @@ TEST_F(ExtensionAllowlistUnitTest, AllowlistEnforcement) {
   EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_MALWARE,
             blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
                 kExtensionId1, extension_prefs()));
-  EXPECT_EQ(disable_reason::DISABLE_REMOTELY_FOR_MALWARE |
-                disable_reason::DISABLE_NOT_ALLOWLISTED,
+  EXPECT_TRUE(blocklist_prefs::HasOmahaBlocklistState(
+      kExtensionId1, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      extension_prefs()));
+  EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
             extension_prefs()->GetDisableReasons(kExtensionId1));
   EXPECT_TRUE(IsBlocklisted(kExtensionId1));
 
@@ -164,7 +166,10 @@ TEST_F(ExtensionAllowlistUnitTest, AllowlistEnforcement) {
   EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_MALWARE,
             blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
                 kExtensionId1, extension_prefs()));
-  EXPECT_EQ(disable_reason::DISABLE_REMOTELY_FOR_MALWARE,
+  EXPECT_TRUE(blocklist_prefs::HasOmahaBlocklistState(
+      kExtensionId1, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      extension_prefs()));
+  EXPECT_EQ(disable_reason::DISABLE_NONE,
             extension_prefs()->GetDisableReasons(kExtensionId1));
   EXPECT_TRUE(IsBlocklisted(kExtensionId1));
 
