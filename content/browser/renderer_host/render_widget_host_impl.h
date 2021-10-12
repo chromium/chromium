@@ -839,10 +839,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
     return blink_widget_host_receiver_;
   }
 
-  // Returns the visual properties that were last sent to the renderer.
-  absl::optional<blink::VisualProperties>
-  GetLastVisualPropertiesSentToRendererForTesting();
-
   absl::optional<blink::VisualProperties> LastComputedVisualProperties() const;
 
   // Generates widget creation params that will be passed to the renderer to
