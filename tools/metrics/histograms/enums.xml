@@ -78436,8 +78436,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="42" label="UMA_WEB_FEED_UNFOLLOW_FAILURE"/>
   <int value="43" label="UMA_LANGUAGE_SPLIT_RESTART"/>
   <int value="44" label="UMA_AUTOFILL_VIRTUAL_CARD_FILLED"/>
-  <int value="45" label="UMA_WINDOW_ERROR"/>
-  <int value="46" label="UMA_MODULE_INSTALL_FAILURE"/>
 </enum>
 
 <enum name="SnapshotItemId">
