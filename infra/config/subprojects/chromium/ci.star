@@ -864,7 +864,7 @@ ci.android_builder(
     notifies = ["cronet"],
 )
 
-ci.android_fyi_builder(
+ci.android_builder(
     name = "android-cronet-x86-dbg-oreo-tests",
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
@@ -874,7 +874,7 @@ ci.android_fyi_builder(
     triggered_by = ["android-cronet-x86-dbg"],
 )
 
-ci.android_fyi_builder(
+ci.android_builder(
     name = "android-cronet-x86-dbg-pie-tests",
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
@@ -894,7 +894,7 @@ ci.android_builder(
     triggered_by = ["android-cronet-x86-dbg"],
 )
 
-ci.android_fyi_builder(
+ci.android_builder(
     name = "android-cronet-x86-dbg-11-tests",
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
