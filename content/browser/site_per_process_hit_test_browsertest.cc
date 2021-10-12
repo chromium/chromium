@@ -650,13 +650,12 @@ bool ConvertJSONToPoint(const std::string& str, gfx::PointF* point) {
   base::DictionaryValue* root;
   if (!value->GetAsDictionary(&root))
     return false;
-  double x, y;
-  if (!root->GetDouble("x", &x))
+  absl::optional<double> x = root->FindDoubleKey("x");
+  absl::optional<double> y = root->FindDoubleKey("y");
+  if (!x || !y)
     return false;
-  if (!root->GetDouble("y", &y))
-    return false;
-  point->set_x(x);
-  point->set_y(y);
+  point->set_x(*x);
+  point->set_y(*y);
   return true;
 }
 

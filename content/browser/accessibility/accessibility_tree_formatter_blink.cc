@@ -721,11 +721,12 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
        attr_index <= static_cast<int32_t>(ax::mojom::FloatAttribute::kMaxValue);
        ++attr_index) {
     auto attr = static_cast<ax::mojom::FloatAttribute>(attr_index);
-    double float_value;
-    if (!dict.GetDouble(ui::ToString(attr), &float_value))
+    absl::optional<double> float_value =
+        dict.FindDoublePath(ui::ToString(attr));
+    if (!float_value)
       continue;
     WriteAttribute(
-        false, base::StringPrintf("%s=%.2f", ui::ToString(attr), float_value),
+        false, base::StringPrintf("%s=%.2f", ui::ToString(attr), *float_value),
         &line);
   }
 
