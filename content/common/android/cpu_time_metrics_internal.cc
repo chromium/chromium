@@ -942,7 +942,7 @@ void ProcessCpuTimeMetrics::ReportAverageCpuLoad(
   if (power_mode_.has_value() && IsIdleMode(*power_mode_) &&
       timestamp_for_idle_cpu_ != base::TimeTicks()) {
     base::TimeDelta time_in_idle = now - timestamp_for_idle_cpu_;
-    if (time_since_report >= kIdleCpuLoadReportInterval) {
+    if (time_in_idle >= kIdleCpuLoadReportInterval) {
       base::TimeDelta cpu_time_in_idle =
           cumulative_cpu_time - cpu_time_for_idle_cpu_;
       int idle_load = 100LL * cpu_time_in_idle.InMilliseconds() /
