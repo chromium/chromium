@@ -130,6 +130,8 @@
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
+#include "chrome/browser/ui/webui/enterprise_casting/enterprise_casting.mojom.h"
+#include "chrome/browser/ui/webui/enterprise_casting/enterprise_casting_ui.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
@@ -204,8 +206,6 @@
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_ui.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_picker.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
-#include "chrome/browser/ui/webui/chromeos/enterprise_casting/enterprise_casting.mojom.h"
-#include "chrome/browser/ui/webui/chromeos/enterprise_casting/enterprise_casting_ui.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
@@ -785,6 +785,10 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       ::mojom::app_service_internals::AppServiceInternalsPageHandler,
       AppServiceInternalsUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      enterprise_casting::mojom::PageHandlerFactory,
+      EnterpriseCastingUI>(map);
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -948,10 +952,6 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       launcher_internals::mojom::PageHandlerFactory,
       chromeos::LauncherInternalsUI>(map);
-
-  RegisterWebUIControllerInterfaceBinder<
-      enterprise_casting::mojom::PageHandlerFactory,
-      chromeos::EnterpriseCastingUI>(map);
 
   if (ash::features::IsBluetoothRevampEnabled()) {
     RegisterWebUIControllerInterfaceBinder<

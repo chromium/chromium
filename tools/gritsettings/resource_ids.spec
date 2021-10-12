@@ -125,10 +125,6 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [1320],
   },
-    "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/enterprise_casting/resources.grd": {
-    "META": {"sizes": {"includes": [50]}},
-    "includes": [1340],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/emoji_picker/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [1360],
@@ -169,6 +165,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/downloads/downloads_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [1580],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/enterprise_casting/resources.grd": {
+    "META": {"sizes": {"includes": [50]}},
+    "includes": [1590],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/extensions/extensions_resources.grd": {
     "META": {"sizes": {"includes": [50],}},

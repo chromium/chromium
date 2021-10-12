@@ -7,7 +7,7 @@ import("//tools/polymer/html_to_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(is_chromeos, "enterprise_casting is Chrome OS only.")
+assert(!is_android, "enterprise_casting is not for android.")
 
 resources_grd_file = "$target_gen_dir/resources.grd"
 
@@ -21,8 +21,10 @@ copy("copy_browser_proxy") {
 }
 
 copy("copy_mojo") {
-  deps = [ "//chrome/browser/ui/webui/chromeos/enterprise_casting:mojo_bindings_webui_js" ]
-  mojom_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/chromeos/enterprise_casting/"
+  deps =
+      [ "//chrome/browser/ui/webui/enterprise_casting:mojo_bindings_webui_js" ]
+  mojom_folder =
+      "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/enterprise_casting/"
   sources = [ "$mojom_folder/enterprise_casting.mojom-webui.js" ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }

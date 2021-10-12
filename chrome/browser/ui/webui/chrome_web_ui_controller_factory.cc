@@ -127,6 +127,7 @@
 #include "chrome/browser/ui/webui/devtools_ui.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
+#include "chrome/browser/ui/webui/enterprise_casting/enterprise_casting_ui.h"
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/identity_internals_ui.h"
@@ -212,7 +213,6 @@
 #include "chrome/browser/ui/webui/chromeos/cryptohome_ui.h"
 #include "chrome/browser/ui/webui/chromeos/drive_internals_ui.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
-#include "chrome/browser/ui/webui/chromeos/enterprise_casting/enterprise_casting_ui.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_start_reauth_ui.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/password_change_ui.h"
@@ -744,6 +744,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   // Inline login UI is available on all platforms except Android.
   if (url.host_piece() == chrome::kChromeUIChromeSigninHost)
     return &NewWebUI<InlineLoginUI>;
+  if (base::FeatureList::IsEnabled(features::kEnterpriseCastingUI)) {
+      if (url.host_piece() == chrome::kChromeUIEnterpriseCastingHost)
+        return &NewWebUI<EnterpriseCastingUI>;
+  }
 #endif  // !defined(OS_ANDROID)
 #if defined(OS_WIN)
   if (url.host_piece() == chrome::kChromeUIConflictsHost)
@@ -829,9 +833,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::DriveInternalsUI>;
   if (url.host_piece() == chrome::kChromeUILauncherInternalsHost)
     return &NewWebUI<chromeos::LauncherInternalsUI>;
-  if (base::FeatureList::IsEnabled(features::kEnterpriseCastingUI) &&
-      url.host_piece() == chrome::kChromeUIEnterpriseCastingHost)
-    return &NewWebUI<chromeos::EnterpriseCastingUI>;
   if (url.host_piece() == ash::kChromeUIHelpAppHost)
     return &NewComponentUI<ash::HelpAppUI, ash::ChromeHelpAppUIDelegate>;
   if (url.host_piece() == chrome::kChromeUIMobileSetupHost)

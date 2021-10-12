@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/enterprise_casting/enterprise_casting_ui.h"
+#include "chrome/browser/ui/webui/enterprise_casting/enterprise_casting_ui.h"
 
 #include "base/containers/span.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -11,8 +11,6 @@
 #include "chrome/grit/enterprise_casting_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
-
-namespace chromeos {
 
 EnterpriseCastingUI::EnterpriseCastingUI(content::WebUI* web_ui)
     : MojoWebUIController(web_ui) {
@@ -47,5 +45,3 @@ void EnterpriseCastingUI::CreatePageHandler(
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(EnterpriseCastingUI)
-
-}  // namespace chromeos

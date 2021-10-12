@@ -4,7 +4,7 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos, "EnterpriseCasting is Chrome OS only.")
+assert(!is_android, "EnterpriseCasting is not for android.")
 
 mojom("mojo_bindings") {
   sources = [ "enterprise_casting.mojom" ]
