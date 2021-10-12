@@ -159,11 +159,11 @@ TEST_F(TabDragDropDelegateTest, DragToNewWindow) {
 
   const gfx::Point drag_start_location = source_window->bounds().CenterPoint();
   // Emulate a drag session ending in a drop to a new window.
-  auto delegate = std::make_unique<TabDragDropDelegate>(
-      Shell::GetPrimaryRootWindow(), source_window.get(), drag_start_location);
-  delegate->DragUpdate(drag_start_location);
-  delegate->DragUpdate(drag_start_location + gfx::Vector2d(1, 0));
-  delegate->DragUpdate(drag_start_location + gfx::Vector2d(2, 0));
+  TabDragDropDelegate delegate(Shell::GetPrimaryRootWindow(),
+                               source_window.get(), drag_start_location);
+  delegate.DragUpdate(drag_start_location);
+  delegate.DragUpdate(drag_start_location + gfx::Vector2d(1, 0));
+  delegate.DragUpdate(drag_start_location + gfx::Vector2d(2, 0));
 
   // Check that a new window is requested. Assume the correct drop data
   // is passed. Return the new window.
@@ -173,8 +173,8 @@ TEST_F(TabDragDropDelegateTest, DragToNewWindow) {
       .Times(1)
       .WillOnce(RunOnceCallback<2>(new_window.get()));
 
-  delegate.release()->DropAndDeleteSelf(
-      drag_start_location + gfx::Vector2d(2, 0), ui::OSExchangeData());
+  delegate.Drop(drag_start_location + gfx::Vector2d(2, 0),
+                ui::OSExchangeData());
 
   EXPECT_FALSE(
       SplitViewController::Get(source_window.get())->InTabletSplitViewMode());
@@ -197,10 +197,10 @@ TEST_F(TabDragDropDelegateTest, DropOnEdgeEntersSplitView) {
           source_window.get())
           .right_center();
 
-  auto delegate = std::make_unique<TabDragDropDelegate>(
-      Shell::GetPrimaryRootWindow(), source_window.get(), drag_start_location);
-  delegate->DragUpdate(drag_start_location);
-  delegate->DragUpdate(drag_end_location);
+  TabDragDropDelegate delegate(Shell::GetPrimaryRootWindow(),
+                               source_window.get(), drag_start_location);
+  delegate.DragUpdate(drag_start_location);
+  delegate.DragUpdate(drag_end_location);
 
   new_window = CreateToplevelTestWindow();
   EXPECT_CALL(*mock_new_window_delegate(),
@@ -208,8 +208,7 @@ TEST_F(TabDragDropDelegateTest, DropOnEdgeEntersSplitView) {
       .Times(1)
       .WillOnce(RunOnceCallback<2>(new_window.get()));
 
-  delegate.release()->DropAndDeleteSelf(drag_end_location,
-                                        ui::OSExchangeData());
+  delegate.Drop(drag_end_location, ui::OSExchangeData());
 
   SplitViewController* const split_view_controller =
       SplitViewController::Get(source_window.get());
@@ -237,17 +236,16 @@ TEST_F(TabDragDropDelegateTest, DropTabInSplitViewMode) {
   // Emulate a drag to the right side of the screen.
   // |new_window1| should snap to the right split view.
   gfx::Point drag_end_location_right(area.width() * 0.8, area.height() * 0.5);
-  auto delegate1 = std::make_unique<TabDragDropDelegate>(
-      Shell::GetPrimaryRootWindow(), source_window.get(), drag_start_location);
-  delegate1->DragUpdate(drag_start_location);
-  delegate1->DragUpdate(drag_end_location_right);
+  TabDragDropDelegate delegate1(Shell::GetPrimaryRootWindow(),
+                                source_window.get(), drag_start_location);
+  delegate1.DragUpdate(drag_start_location);
+  delegate1.DragUpdate(drag_end_location_right);
   std::unique_ptr<aura::Window> new_window1 = CreateToplevelTestWindow();
   EXPECT_CALL(*mock_new_window_delegate(),
               NewWindowForWebUITabDrop(source_window.get(), _, _))
       .Times(1)
       .WillOnce(RunOnceCallback<2>(new_window1.get()));
-  delegate1.release()->DropAndDeleteSelf(drag_end_location_right,
-                                         ui::OSExchangeData());
+  delegate1.Drop(drag_end_location_right, ui::OSExchangeData());
 
   EXPECT_TRUE(split_view_controller->InTabletSplitViewMode());
   EXPECT_EQ(new_window1.get(), split_view_controller->GetSnappedWindow(
@@ -260,17 +258,16 @@ TEST_F(TabDragDropDelegateTest, DropTabInSplitViewMode) {
   // |new_window2| should snap to the left split view.
   // |source_window| should go into overview mode.
   gfx::Point drag_end_location_left(area.width() * 0.2, area.height() * 0.5);
-  auto delegate2 = std::make_unique<TabDragDropDelegate>(
-      Shell::GetPrimaryRootWindow(), source_window.get(), drag_start_location);
-  delegate2->DragUpdate(drag_start_location);
-  delegate2->DragUpdate(drag_end_location_left);
+  TabDragDropDelegate delegate2(Shell::GetPrimaryRootWindow(),
+                                source_window.get(), drag_start_location);
+  delegate2.DragUpdate(drag_start_location);
+  delegate2.DragUpdate(drag_end_location_left);
   std::unique_ptr<aura::Window> new_window2 = CreateToplevelTestWindow();
   EXPECT_CALL(*mock_new_window_delegate(),
               NewWindowForWebUITabDrop(source_window.get(), _, _))
       .Times(1)
       .WillOnce(RunOnceCallback<2>(new_window2.get()));
-  delegate2.release()->DropAndDeleteSelf(drag_end_location_left,
-                                         ui::OSExchangeData());
+  delegate2.Drop(drag_end_location_left, ui::OSExchangeData());
 
   EXPECT_TRUE(split_view_controller->InTabletSplitViewMode());
   EXPECT_EQ(nullptr, split_view_controller->GetSnappedWindow(
@@ -378,9 +375,9 @@ TEST_F(TabDragDropDelegateTest, TabDraggingHistogram) {
 
   // Emulate a drag session ending in a drop to a new window. This should
   // generate a histogram.
-  auto delegate = std::make_unique<TabDragDropDelegate>(
-      Shell::GetPrimaryRootWindow(), source_window.get(), drag_start_location);
-  delegate->DragUpdate(drag_start_location + gfx::Vector2d(1, 0));
+  TabDragDropDelegate delegate(Shell::GetPrimaryRootWindow(),
+                               source_window.get(), drag_start_location);
+  delegate.DragUpdate(drag_start_location + gfx::Vector2d(1, 0));
   EXPECT_TRUE(ui::WaitForNextFrameToBePresented(
       source_window->layer()->GetCompositor()));
 
@@ -391,8 +388,8 @@ TEST_F(TabDragDropDelegateTest, TabDraggingHistogram) {
               NewWindowForWebUITabDrop(source_window.get(), _, _))
       .Times(1)
       .WillOnce(RunOnceCallback<2>(new_window.get()));
-  delegate.release()->DropAndDeleteSelf(
-      drag_start_location + gfx::Vector2d(1, 0), ui::OSExchangeData());
+  delegate.Drop(drag_start_location + gfx::Vector2d(1, 0),
+                ui::OSExchangeData());
   EXPECT_TRUE(ui::WaitForNextFrameToBePresented(
       source_window->layer()->GetCompositor()));
 

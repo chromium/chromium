@@ -720,9 +720,7 @@ void DragDropController::PerformDrop(
 
   if (operation_ == DragOperation::kNone && tab_drag_drop_delegate) {
     DCHECK(drag_image_widget_);
-    // Release the ownership of object so that it can delete itself.
-    tab_drag_drop_delegate.release()->DropAndDeleteSelf(drop_location_in_screen,
-                                                        copied_data);
+    tab_drag_drop_delegate->Drop(drop_location_in_screen, copied_data);
     // Override the drag event's drop effect as a move to inform the front-end
     // that the tab or group was moved. Otherwise, the WebUI tab strip does
     // not know that a drop resulted in a tab being moved and will temporarily
