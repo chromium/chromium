@@ -13,6 +13,7 @@ import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
@@ -150,6 +151,9 @@ struct LoggingSettings {
 //
 // This is a trusted interface that only the browser process should have access
 // to. It must not be sent to any untrusted process like a renderer process.
+// The network sandbox may be disabled (to kNoSandbox) by policy, and may not
+// be available on all platforms.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNetwork]
 interface NetworkService {
   // Sets the parameters and initializes the service.
   SetParams(NetworkServiceParams params);

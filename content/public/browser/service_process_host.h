@@ -30,17 +30,16 @@ namespace content {
 
 // Sandbox type for ServiceProcessHost::Launch<remote>() is found by
 // template matching on |remote|. Consult security-dev@chromium.org and
-// add a [ServiceSandbox=type] mojom attribute, or an appropriate
-// |service_sandbox_type.h|.
+// add a [ServiceSandbox=type] mojom attribute.
 template <typename Interface>
-inline sandbox::policy::SandboxType GetServiceSandboxType() {
+inline sandbox::mojom::Sandbox GetServiceSandboxType() {
   using ProvidedSandboxType = decltype(Interface::kServiceSandbox);
   static_assert(
       std::is_same<ProvidedSandboxType, const sandbox::mojom::Sandbox>::value,
       "This interface does not declare a proper ServiceSandbox attribute. See "
       "//docs/mojo_and_services.md (Specifying a sandbox).");
 
-  return sandbox::policy::MapToSandboxType(Interface::kServiceSandbox);
+  return Interface::kServiceSandbox;
 }
 
 // ServiceProcessHost is used to launch new service processes given basic
@@ -87,8 +86,6 @@ class CONTENT_EXPORT ServiceProcessHost {
     // to |Launch()|.
     Options Pass();
 
-    sandbox::policy::SandboxType sandbox_type =
-        sandbox::policy::SandboxType::kUtility;
     std::u16string display_name;
     absl::optional<int> child_flags;
     std::vector<std::string> extra_switches;
@@ -130,9 +127,8 @@ class CONTENT_EXPORT ServiceProcessHost {
   template <typename Interface>
   static void Launch(mojo::PendingReceiver<Interface> receiver,
                      Options options = {}) {
-    options.sandbox_type = content::GetServiceSandboxType<Interface>();
     Launch(mojo::GenericPendingReceiver(std::move(receiver)),
-           std::move(options));
+           std::move(options), content::GetServiceSandboxType<Interface>());
   }
 
   // Same as above but creates a new |Interface| pipe on the caller's behalf and
@@ -141,9 +137,9 @@ class CONTENT_EXPORT ServiceProcessHost {
   // May be called from any thread.
   template <typename Interface>
   static mojo::Remote<Interface> Launch(Options options = {}) {
-    options.sandbox_type = content::GetServiceSandboxType<Interface>();
     mojo::Remote<Interface> remote;
-    Launch(remote.BindNewPipeAndPassReceiver(), std::move(options));
+    Launch(remote.BindNewPipeAndPassReceiver(), std::move(options),
+           content::GetServiceSandboxType<Interface>());
     return remote;
   }
 
@@ -163,7 +159,9 @@ class CONTENT_EXPORT ServiceProcessHost {
   // Launches a new service process and asks it to bind a receiver for the
   // service interface endpoint carried by |receiver|, which should be connected
   // to a Remote of the same interface type.
-  static void Launch(mojo::GenericPendingReceiver receiver, Options options);
+  static void Launch(mojo::GenericPendingReceiver receiver,
+                     Options options,
+                     sandbox::mojom::Sandbox sandbox);
 };
 
 // DEPRECATED. DO NOT USE THIS. This is a helper for any remaining service

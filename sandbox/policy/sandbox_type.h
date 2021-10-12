@@ -125,10 +125,14 @@ enum class SandboxType {
 inline constexpr sandbox::policy::SandboxType MapToSandboxType(
     sandbox::mojom::Sandbox mojo_sandbox) {
   switch (mojo_sandbox) {
+    case sandbox::mojom::Sandbox::kAudio:
+      return sandbox::policy::SandboxType::kAudio;
     case sandbox::mojom::Sandbox::kCdm:
       return sandbox::policy::SandboxType::kCdm;
     case sandbox::mojom::Sandbox::kGpu:
       return sandbox::policy::SandboxType::kGpu;
+    case sandbox::mojom::Sandbox::kNetwork:
+      return sandbox::policy::SandboxType::kNetwork;
     case sandbox::mojom::Sandbox::kNoSandbox:
       return sandbox::policy::SandboxType::kNoSandbox;
     case sandbox::mojom::Sandbox::kPrintCompositor:

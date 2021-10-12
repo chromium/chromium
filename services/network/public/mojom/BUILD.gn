@@ -891,6 +891,7 @@ mojom("mojom") {
     ":url_loader_base",
     ":websocket_mojom",
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
     "//services/proxy_resolver/public/mojom",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",

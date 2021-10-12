@@ -444,14 +444,9 @@ Valid values are those in
 that the sandbox is only applied if the interface is launched
 out-of-process using `content::ServiceProcessHost::Launch()`.
 
-Dynamic or feature based mapping to an underlying platform sandbox can be
-achieved using `sandbox::policy::MapToSandboxType()`. As a last resort, specify
-a service's sandbox by specialization of `GetServiceSandboxType()` in an
-appropriate `service_sandbox_type.h` such as
-[`//chrome/browser/service_sandbox_type.h`](https://cs.chromium.org/chromium/src/chrome/browser/service_sandbox_type.h)
-or
-[`//content/browser/service_sandbox_type.h`](https://cs.chromium.org/chromium/src/content/browser/service_sandbox_type.h).
-This must be included where `ServiceProcessHost::Launch()` is called.
+As a last resort, dynamic or feature based mapping to an underlying platform
+sandbox can be achieved but requires plumbing through ContentBrowserClient
+(e.g. `ShouldEnableNetworkServiceSandbox()`).
 
 ## Content-Layer Services Overview
 

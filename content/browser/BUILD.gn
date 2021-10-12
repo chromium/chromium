@@ -1737,7 +1737,6 @@ source_set("browser") {
     "screenlock_monitor/screenlock_monitor_source.cc",
     "screenlock_monitor/screenlock_monitor_source.h",
     "service_process_host_impl.cc",
-    "service_sandbox_type.h",
     "service_worker/embedded_worker_instance.cc",
     "service_worker/embedded_worker_instance.h",
     "service_worker/embedded_worker_status.h",
