@@ -5,3 +5,5 @@ kristipark@chromium.org
 sebsg@chromium.org
 skare@chromium.org
 sophey@chromium.org
+
+per-file *.gni=file://components/paint_preview/OWNERS
