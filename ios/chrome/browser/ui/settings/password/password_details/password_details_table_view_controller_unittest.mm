@@ -101,20 +101,24 @@ constexpr char kPassword[] = "test";
 
 - (void)passwordDetailsViewController:
             (PasswordDetailsTableViewController*)viewController
-        didAddPasswordDetailsWithSite:(NSString*)website
-                             username:(NSString*)username
+                didAddPasswordDetails:(NSString*)username
                              password:(NSString*)password {
 }
 
-- (void)checkForDuplicatesWithSite:(NSString*)website
-                          username:(NSString*)username {
+- (void)checkForDuplicates:(NSString*)username {
 }
 
-- (void)showExistingCredentialWithSite:(NSString*)website
-                              username:(NSString*)username {
+- (void)showExistingCredential:(NSString*)username {
 }
 
 - (void)didCancelAddPasswordDetails {
+}
+
+- (void)setWebsiteURL:(NSString*)website {
+}
+
+- (BOOL)isURLValid {
+  return YES;
 }
 
 @end

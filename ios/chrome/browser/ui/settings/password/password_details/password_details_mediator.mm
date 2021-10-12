@@ -90,24 +90,29 @@ using InsecureCredentialsView =
 
 - (void)passwordDetailsViewController:
             (PasswordDetailsTableViewController*)viewController
-        didAddPasswordDetailsWithSite:(NSString*)website
-                             username:(NSString*)username
+                didAddPasswordDetails:(NSString*)username
                              password:(NSString*)password {
   NOTREACHED();
 }
 
-- (void)checkForDuplicatesWithSite:(NSString*)website
-                          username:(NSString*)username {
+- (void)checkForDuplicates:(NSString*)username {
   NOTREACHED();
 }
 
-- (void)showExistingCredentialWithSite:(NSString*)website
-                              username:(NSString*)username {
+- (void)showExistingCredential:(NSString*)username {
   NOTREACHED();
 }
 
 - (void)didCancelAddPasswordDetails {
   NOTREACHED();
+}
+
+- (void)setWebsiteURL:(NSString*)website {
+  NOTREACHED();
+}
+
+- (BOOL)isURLValid {
+  return YES;
 }
 
 - (BOOL)isUsernameReused:(NSString*)newUsername {

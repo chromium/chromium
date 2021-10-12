@@ -635,7 +635,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 - (void)onDuplicateCheckCompletion:(BOOL)duplicateFound {
   self.navigationItem.rightBarButtonItem.enabled =
-      !duplicateFound && self.shouldEnableSave;
+      !duplicateFound && self.shouldEnableSave && [self.delegate isURLValid];
   if (duplicateFound == self.isDuplicatedCredential) {
     return;
   }
@@ -691,18 +691,21 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
-  // TODO(crbug.com/1226006): Add validations for the site.
-  if (self.credentialType == CredentialTypeNew) {
-    [self.delegate
-        checkForDuplicatesWithSite:self.websiteTextItem.textFieldValue
-                          username:self.usernameTextItem.textFieldValue];
+  if (tableViewItem == self.websiteTextItem &&
+      self.credentialType == CredentialTypeNew) {
+    [self.delegate setWebsiteURL:self.websiteTextItem.textFieldValue];
   }
 
   self.shouldEnableSave = [self checkIfValidSite] &
                           [self checkIfValidUsername] &
                           [self checkIfValidPassword];
   self.navigationItem.rightBarButtonItem.enabled =
-      !self.isDuplicatedCredential && self.shouldEnableSave;
+      !self.isDuplicatedCredential && self.shouldEnableSave &&
+      [self.delegate isURLValid];
+
+  if (self.credentialType == CredentialTypeNew) {
+    [self.delegate checkForDuplicates:self.usernameTextItem.textFieldValue];
+  }
 }
 
 - (void)tableViewItemDidEndEditing:(TableViewTextEditItem*)tableViewItem {
@@ -728,8 +731,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (void)didTapSaveButton:(id)sender {
   [self.delegate
       passwordDetailsViewController:self
-      didAddPasswordDetailsWithSite:self.websiteTextItem.textFieldValue
-                           username:self.usernameTextItem.textFieldValue
+              didAddPasswordDetails:self.usernameTextItem.textFieldValue
                            password:self.passwordTextItem.textFieldValue];
 }
 
@@ -954,10 +956,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
           }
 
           [strongSelf.delegate
-              showExistingCredentialWithSite:strongSelf.websiteTextItem
-                                                 .textFieldValue
-                                    username:strongSelf.usernameTextItem
-                                                 .textFieldValue];
+              showExistingCredential:strongSelf.usernameTextItem
+                                         .textFieldValue];
         };
 
     // TODO(crbug.com/1226006): Use i18n string.
