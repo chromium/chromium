@@ -89,6 +89,9 @@ const base::FeatureParam<int> kUseDnsHttpsSvcbExtraTimePercent{
 const base::Feature kEnableTLS13EarlyData{"EnableTLS13EarlyData",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEncryptedClientHello{"EncryptedClientHello",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kNetworkQualityEstimator{"NetworkQualityEstimator",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 

@@ -34,9 +34,6 @@ NET_EXPORT extern const base::Feature kAvoidH2Reprioritization;
 // origin requests are restricted to contain at most the source origin.
 NET_EXPORT extern const base::Feature kCapReferrerToOriginOnCrossOrigin;
 
-// Enables TLS 1.3 early data.
-NET_EXPORT extern const base::Feature kEnableTLS13EarlyData;
-
 // Support for altering the parameters used for DNS transaction timeout. See
 // ResolveContext::SecureTransactionTimeout().
 NET_EXPORT extern const base::Feature kDnsTransactionDynamicTimeouts;
@@ -147,6 +144,16 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kUseDnsHttpsSvcbExtraTimeAbsolute;
 NET_EXPORT extern const base::FeatureParam<int>
     kUseDnsHttpsSvcbExtraTimePercent;
+
+// Enables TLS 1.3 early data.
+NET_EXPORT extern const base::Feature kEnableTLS13EarlyData;
+
+// Enables the TLS Encrypted ClientHello feature.
+// https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-13
+//
+// TODO(https://crbug.com/1091403): This flag does not currently do much yet.
+// ECH is still in development.
+NET_EXPORT extern const base::Feature kEncryptedClientHello;
 
 // Enables optimizing the network quality estimation algorithms in network
 // quality estimator (NQE).

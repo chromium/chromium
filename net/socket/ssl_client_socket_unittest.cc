@@ -5544,6 +5544,9 @@ TEST_F(SSLClientSocketTest, Tag) {
 }
 
 TEST_F(SSLClientSocketTest, ECH) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+
   SSLServerConfig server_config;
   SSLConfig client_config;
   server_config.ech_keys = MakeTestECHKeys(
@@ -5599,6 +5602,9 @@ TEST_F(SSLClientSocketTest, ECH) {
 }
 
 TEST_F(SSLClientSocketTest, ECHWrongKeys) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+
   std::vector<uint8_t> ech_config_list1, ech_config_list2;
   bssl::UniquePtr<SSL_ECH_KEYS> keys1 =
       MakeTestECHKeys("public.example", /*max_name_len=*/64, &ech_config_list1);
@@ -5625,6 +5631,9 @@ TEST_F(SSLClientSocketTest, ECHWrongKeys) {
 }
 
 TEST_F(SSLClientSocketTest, InvalidECHConfigList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, SSLServerConfig()));
 
@@ -5635,6 +5644,55 @@ TEST_F(SSLClientSocketTest, InvalidECHConfigList) {
   int rv;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
   EXPECT_THAT(rv, IsError(ERR_INVALID_ECH_CONFIG_LIST));
+}
+
+// Test that, if no ECHConfigList is available, the client sends ECH GREASE.
+TEST_F(SSLClientSocketTest, ECHGreaseEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+
+  // Configure the server to expect an ECH extension.
+  bool ran_callback = false;
+  SSLServerConfig server_config;
+  server_config.client_hello_callback_for_testing =
+      base::BindLambdaForTesting([&](const SSL_CLIENT_HELLO* client_hello) {
+        const uint8_t* data;
+        size_t len;
+        EXPECT_TRUE(SSL_early_callback_ctx_extension_get(
+            client_hello, TLSEXT_TYPE_encrypted_client_hello, &data, &len));
+        ran_callback = true;
+      });
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(ran_callback);
+}
+
+// Test that, if the feature flag is disabled, the client does not send ECH
+// GREASE.
+TEST_F(SSLClientSocketTest, ECHGreaseDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kEncryptedClientHello);
+
+  // Configure the server not to expect an ECH extension.
+  bool ran_callback = false;
+  SSLServerConfig server_config;
+  server_config.client_hello_callback_for_testing =
+      base::BindLambdaForTesting([&](const SSL_CLIENT_HELLO* client_hello) {
+        const uint8_t* data;
+        size_t len;
+        EXPECT_FALSE(SSL_early_callback_ctx_extension_get(
+            client_hello, TLSEXT_TYPE_encrypted_client_hello, &data, &len));
+        ran_callback = true;
+      });
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(ran_callback);
 }
 
 class TLS13DowngradeTest

@@ -912,9 +912,11 @@ int SSLClientSocketImpl::Init() {
         host_and_port_, &client_cert_, &client_private_key_);
   }
 
-  // TODO(https://crbug.com/1091403): Also enable ECH GREASE, gated on SSLConfig
-  // or a base::Feature, for when we don't have an ECHConfig.
+  if (base::FeatureList::IsEnabled(features::kEncryptedClientHello)) {
+    SSL_set_enable_ech_grease(ssl_.get(), 1);
+  }
   if (!ssl_config_.ech_config_list.empty()) {
+    DCHECK(base::FeatureList::IsEnabled(features::kEncryptedClientHello));
     net_log_.AddEvent(NetLogEventType::SSL_ECH_CONFIG_LIST, [&] {
       base::Value dict(base::Value::Type::DICTIONARY);
       dict.SetKey("bytes", NetLogBinaryValue(ssl_config_.ech_config_list));

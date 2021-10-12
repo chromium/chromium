@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "net/base/net_export.h"
 #include "net/socket/next_proto.h"
@@ -117,6 +118,10 @@ struct NET_EXPORT SSLServerConfig {
   // If non-empty, the serialized SignedCertificateTimestampList to send in the
   // handshake.
   std::vector<uint8_t> signed_cert_timestamp_list;
+
+  // If specified, called at the start of each connection with the ClientHello.
+  base::RepeatingCallback<void(const SSL_CLIENT_HELLO*)>
+      client_hello_callback_for_testing;
 
   // This is a workaround for BoringSSL's scopers not being copyable. See
   // https://crbug.com/boringssl/431.
