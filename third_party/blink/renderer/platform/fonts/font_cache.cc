@@ -388,12 +388,6 @@ void FontCache::PurgePlatformFontDataCache() {
 
 void FontCache::PurgeFallbackListShaperCache() {
   TRACE_EVENT0("fonts,ui", "FontCache::PurgeFallbackListShaperCache");
-  unsigned items = 0;
-  FallbackListShaperCache::iterator iter;
-  for (iter = fallback_list_shaper_cache_.begin();
-       iter != fallback_list_shaper_cache_.end(); ++iter) {
-    items += iter->value->size();
-  }
   fallback_list_shaper_cache_.clear();
 }
 
