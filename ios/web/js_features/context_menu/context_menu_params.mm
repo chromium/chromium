@@ -17,6 +17,14 @@ ContextMenuParams::ContextMenuParams()
 
 ContextMenuParams::ContextMenuParams(const ContextMenuParams& other) = default;
 
+ContextMenuParams& ContextMenuParams::operator=(
+    const ContextMenuParams& other) = default;
+
+ContextMenuParams::ContextMenuParams(ContextMenuParams&& other) = default;
+
+ContextMenuParams& ContextMenuParams::operator=(ContextMenuParams&& other) =
+    default;
+
 ContextMenuParams::~ContextMenuParams() {}
 
 }  // namespace web

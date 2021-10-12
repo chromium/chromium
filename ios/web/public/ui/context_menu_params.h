@@ -16,7 +16,13 @@ namespace web {
 struct ContextMenuParams {
  public:
   ContextMenuParams();
+
   ContextMenuParams(const ContextMenuParams& other);
+  ContextMenuParams& operator=(const ContextMenuParams& other);
+
+  ContextMenuParams(ContextMenuParams&& other);
+  ContextMenuParams& operator=(ContextMenuParams&& other);
+
   ~ContextMenuParams();
 
   // Whether or not the context menu was triggered from the main frame.

@@ -87,6 +87,9 @@ class WebState : public base::SupportsUserData {
                   ui::PageTransition transition,
                   bool is_renderer_initiated);
     OpenURLParams(const OpenURLParams& params);
+    OpenURLParams& operator=(const OpenURLParams& params);
+    OpenURLParams(OpenURLParams&& params);
+    OpenURLParams& operator=(OpenURLParams&& params);
     ~OpenURLParams();
 
     // The URL/virtualURL/referrer to be opened.
