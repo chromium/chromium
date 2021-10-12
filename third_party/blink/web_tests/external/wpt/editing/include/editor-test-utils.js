@@ -73,6 +73,27 @@ class EditorTestUtils {
     return this.sendKey(kEnd, modifier);
   }
 
+  sendSelectAllShortcutKey() {
+    return this.sendKey(
+      "a",
+      (() => {
+        // Gecko for Linux defines only Alt-A as a shortcut key for select all,
+        // although in most environment, Ctrl-A works as so too, but it depends
+        // on the OS settings.
+        if (
+          this.window.navigator.userAgent.includes("Linux") &&
+          this.window.navigator.userAgent.includes("Gecko") &&
+          !this.window.navigator.userAgent.includes("KHTML")
+        ) {
+          return this.kAlt;
+        }
+        return this.window.navigator.platform.includes("Mac")
+          ? this.kMeta
+          : this.kControl;
+      })()
+    );
+  }
+
   // Similar to `setupDiv` in editing/include/tests.js, this method sets
   // innerHTML value of this.editingHost, and sets multiple selection ranges
   // specified with the markers.
@@ -142,7 +163,7 @@ class EditorTestUtils {
           return {
             marker: scanResult[0],
             container: textNode,
-            offset: scanResult.index + offset
+            offset: scanResult.index + offset,
           };
         };
         if (startContainer.nodeType === Node.TEXT_NODE) {
@@ -181,7 +202,7 @@ class EditorTestUtils {
           return {
             marker: scanResult[0],
             container: textNode,
-            offset: scanResult.index + offset
+            offset: scanResult.index + offset,
           };
         };
         if (startContainer.nodeType === Node.TEXT_NODE) {

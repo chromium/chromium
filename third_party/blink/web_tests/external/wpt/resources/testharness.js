@@ -3414,7 +3414,12 @@
                                                 ["span", {"class":status_class(status)},
                                                  status
                                                 ],
-                                               ]
+                                               ],
+                                               ["button",
+                                                {"onclick": "let evt = new Event('__test_restart'); " +
+                                                 "let canceled = !window.dispatchEvent(evt);" +
+                                                 "if (!canceled) { location.reload() }"},
+                                                "Rerun"]
                                               ]];
 
                                     if (harness_status.status === harness_status.ERROR) {

@@ -639,6 +639,13 @@
      ]
     },
     "css-inline": {
+     "change-inline-change-abspos-crash.html": [
+      "7752cc6592da6b017788157372329a5cb591d63e",
+      [
+       null,
+       {}
+      ]
+     ],
      "inline-002-crash.html": [
       "a10eee9907f3ca27b3265452aeb19e2b9710b55d",
       [
@@ -78036,6 +78043,73 @@
        {}
       ]
      ],
+     "grid": {
+      "grid-container-fragmentation-001.html": [
+       "0b954f2814850a23cf77a4f0595c7a49235e33f6",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-container-fragmentation-002.html": [
+       "aec5085991c0b0f4df95b7bf6b1e354f15be92e5",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-container-fragmentation-003.html": [
+       "659d9eaac5fe52785356d0e80bf37e18c2dd1e4b",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-container-fragmentation-004.html": [
+       "3e276060711faeb56d6576e4748b67c2334ae0d7",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-container-fragmentation-005.html": [
+       "a110275ff87dff4300a57322e4a0bc01f5eae20a",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     },
      "ink-overflow-002.html": [
       "8af605efea87b618007641729bd3b579fcb654eb",
       [
@@ -79104,6 +79178,19 @@
      ],
      "out-of-flow-in-multicolumn-074.html": [
       "1c6882d4b6e80b2c9dbaee2202ca61ad31b616cc",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "out-of-flow-in-multicolumn-075.html": [
+      "34cf1ea74dda8a56c49a59ded805af83de84a75f",
       [
        null,
        [
@@ -229854,18 +229941,6 @@
       "ffac42763f9f7221b78b6d685e49ce7854537b20",
       []
      ],
-     "layer-basic-expected.txt": [
-      "0cc2db7f0a0591080afbd6c80738c0d9c780385f",
-      []
-     ],
-     "layer-import-expected.txt": [
-      "1fc7e1b2e9146c0291d5797f452844a6f2ac4a61",
-      []
-     ],
-     "layer-keyframes-override-expected.txt": [
-      "1d5989fa0aa52c39c6d888fd58118f07007bd03d",
-      []
-     ],
      "layer-stylesheet-sharing-ref.html": [
       "fe004e5bda989248b67aad3b5c20f8a280447914",
       []
@@ -263914,7 +263989,7 @@
      }
     },
     "historical-expected.txt": [
-     "4c0f1de272a71260bffdf9500383d81fafba50e2",
+     "4303f9b60573df10f4920ee4c83fea4795cb7433",
      []
     ],
     "idlharness.window_exclude=Node-expected.txt": [
@@ -264657,7 +264732,7 @@
     ],
     "include": {
      "editor-test-utils.js": [
-      "3ca014a472fa45991e38d565a10fe9dc9afa6ff8",
+      "9ce5ff12226783a4147c2b344962c5a6def26727",
       []
      ],
      "implementation.js": [
@@ -264700,6 +264775,10 @@
      ],
      "edit-in-textcontrol-immediately-after-hidden.tentative_editor=textarea_hide-target=parent-expected.txt": [
       "e8a01d24d6815990f64169aff48b2977567bb3be",
+      []
+     ],
+     "editable-state-and-focus-in-shadow-dom-in-designMode.tentative-expected.txt": [
+      "3b6b947a443781c22448f24ddb3ea7865b2e8d48",
       []
      ],
      "editing-around-select-element.tentative_delete-expected.txt": [
@@ -294850,7 +294929,7 @@
      []
     ],
     "testharness.js": [
-     "b4bed2b31fe327247cc505c456d3a7c38d2bd320",
+     "6fe5580ae7a1ab1a8439d8accfd74b8c92c3cf2b",
      []
     ],
     "testharness.js.headers": [
@@ -341539,49 +341618,49 @@
       ]
      ],
      "layer-basic.html": [
-      "f92e142f91759049bae0f996866aff3cfb94c7ca",
+      "e214bffc25f5fc3b56480ec9c8704a80bf109c17",
       [
        null,
        {}
       ]
      ],
      "layer-counter-style-override.html": [
-      "7ffd3583da8b2d3d6eaee2b9f8defc8570d32081",
+      "1720898457b52344b270b28f435ebbaff5600923",
       [
        null,
        {}
       ]
      ],
      "layer-font-face-override.html": [
-      "8275b0815a241fdfcaac57aca4aba06b144afe8d",
+      "d35caca0129d16585f483b70d0fc746de189f29e",
       [
        null,
        {}
       ]
      ],
      "layer-import.html": [
-      "935659ac1a3eb7d3d015138e86b2d81238d111c9",
+      "0406f02927a87654b7636e01469488eb32e13e84",
       [
        null,
        {}
       ]
      ],
      "layer-keyframes-override.html": [
-      "f8963031826564d474bca1fcb818835d41d280b2",
+      "d0f4044f1e7f4610b7cf9f08f9012d9483c6f2dc",
       [
        null,
        {}
       ]
      ],
      "layer-property-override.html": [
-      "f0f8d833ac2e32225baa256a9afd3db5562f7a1a",
+      "9d3f9cb926a22b7c78d29c5510ab1ab56294bd78",
       [
        null,
        {}
       ]
      ],
      "layer-scroll-timeline-override.html": [
-      "9a50914e74448739b37f0b24193451e6a90995ef",
+      "59b8590b5f19277acc719600c99136aef2e532ca",
       [
        null,
        {}
@@ -341618,7 +341697,7 @@
       ]
      },
      "presentational-hints-cascade.html": [
-      "729dc71666a903f9368f8cc24f4ad6836af24fdc",
+      "c3188fd0d7bcd7085094e285c62c3fd8f8e213d8",
       [
        null,
        {}
@@ -369443,7 +369522,7 @@
      ]
     },
     "historical.html": [
-     "8a71e364e5ef30a0f9d9621d3eb018a34d42ae4c",
+     "7ef7e8032c7f46d66cb24db053949c38392fe288",
      [
       null,
       {}
@@ -372090,6 +372169,15 @@
       ],
       [
        "editing/other/edit-in-textcontrol-immediately-after-hidden.tentative.html?editor=textarea&hide-target=parent",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "editable-state-and-focus-in-shadow-dom-in-designMode.tentative.html": [
+      "88e6d291299c2fec70b91d5459c88ac855381f75",
+      [
+       null,
        {
         "testdriver": true
        }

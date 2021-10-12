@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 76 tests; 72 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 77 tests; 72 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Historical DOM features must be removed: DOMConfiguration
 PASS Historical DOM features must be removed: DOMCursor
 FAIL Historical DOM features must be removed: DOMError assert_equals: expected (undefined) undefined but got (function) function "function DOMError() { [native code] }"
@@ -76,5 +76,6 @@ PASS Event should not have this constant: BLUR
 PASS Event should not have this constant: SELECT
 PASS Event should not have this constant: CHANGE
 PASS Event.prototype should not have this property: getPreventDefault
+FAIL Event.prototype should not have this property: path Illegal invocation
 Harness: the test ran to completion.
 

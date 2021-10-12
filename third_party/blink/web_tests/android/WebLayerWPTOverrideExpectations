@@ -807,6 +807,7 @@ crbug.com/1050754 external/wpt/eventsource/shared-worker/eventsource-url.htm [ F
 crbug.com/1050754 external/wpt/external/wpt/css/css-shapes/shape-outside/values/shape-margin-001.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/css/css-shapes/shape-outside/values/shape-outside-shape-arguments-000.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/css/cssom-view/scrollintoview.html [ Failure ]
+crbug.com/1050754 external/wpt/external/wpt/editing/other/editable-state-and-focus-in-shadow-dom-in-designMode.tentative.html [ Timeout ]
 crbug.com/1050754 external/wpt/external/wpt/fetch/api/basic/status.h2.any.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/fetch/api/basic/status.h2.any.worker.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/fetch/api/headers/headers-normalize.any.sharedworker.html [ Failure ]
