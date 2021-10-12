@@ -53,6 +53,59 @@ String PermissionStatusToString(mojom::blink::PermissionStatus status) {
   return "denied";
 }
 
+String PermissionNameToString(mojom::blink::PermissionName name) {
+  switch (name) {
+    case mojom::blink::PermissionName::GEOLOCATION:
+      return "geolocation";
+    case mojom::blink::PermissionName::NOTIFICATIONS:
+      return "notifications";
+    case mojom::blink::PermissionName::MIDI:
+      return "midi";
+    case mojom::blink::PermissionName::PROTECTED_MEDIA_IDENTIFIER:
+      return "protected_media_identifier";
+    case mojom::blink::PermissionName::DURABLE_STORAGE:
+      return "durable_storage";
+    case mojom::blink::PermissionName::AUDIO_CAPTURE:
+      return "audio_capture";
+    case mojom::blink::PermissionName::VIDEO_CAPTURE:
+      return "video_capture";
+    case mojom::blink::PermissionName::BACKGROUND_SYNC:
+      return "background_sync";
+    case mojom::blink::PermissionName::SENSORS:
+      return "sensors";
+    case mojom::blink::PermissionName::ACCESSIBILITY_EVENTS:
+      return "accessibility_events";
+    case mojom::blink::PermissionName::CLIPBOARD_READ:
+      return "clipboard_read";
+    case mojom::blink::PermissionName::CLIPBOARD_WRITE:
+      return "clipboard_write";
+    case mojom::blink::PermissionName::PAYMENT_HANDLER:
+      return "payment_handler";
+    case mojom::blink::PermissionName::BACKGROUND_FETCH:
+      return "background_fetch";
+    case mojom::blink::PermissionName::IDLE_DETECTION:
+      return "idle_detection";
+    case mojom::blink::PermissionName::PERIODIC_BACKGROUND_SYNC:
+      return "periodic_background_sync";
+    case mojom::blink::PermissionName::SCREEN_WAKE_LOCK:
+      return "screen_wake_lock";
+    case mojom::blink::PermissionName::SYSTEM_WAKE_LOCK:
+      return "system_wake_lock";
+    case mojom::blink::PermissionName::NFC:
+      return "nfc";
+    case mojom::blink::PermissionName::STORAGE_ACCESS:
+      return "storage_access";
+    case mojom::blink::PermissionName::WINDOW_PLACEMENT:
+      return "window_placement";
+    case mojom::blink::PermissionName::FONT_ACCESS:
+      return "font_access";
+    case mojom::blink::PermissionName::DISPLAY_CAPTURE:
+      return "display_capture";
+  }
+  NOTREACHED();
+  return "unknown";
+}
+
 PermissionDescriptorPtr CreatePermissionDescriptor(PermissionName name) {
   auto descriptor = MojoPermissionDescriptor::New();
   descriptor->name = name;

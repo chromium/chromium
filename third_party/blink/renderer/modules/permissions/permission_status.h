@@ -61,6 +61,8 @@ class PermissionStatus final : public EventTargetWithInlineData,
 
   String state() const;
 
+  String name() const;
+
   DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
 
   void Trace(Visitor*) const override;

@@ -23,6 +23,8 @@ void ConnectToPermissionService(
 
 String PermissionStatusToString(mojom::blink::PermissionStatus);
 
+String PermissionNameToString(mojom::blink::PermissionName);
+
 mojom::blink::PermissionDescriptorPtr CreatePermissionDescriptor(
     mojom::blink::PermissionName);
 

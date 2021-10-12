@@ -1096,6 +1096,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method unregister
 [Worker] interface PermissionStatus : EventTarget
 [Worker]     attribute @@toStringTag
+[Worker]     getter name
 [Worker]     getter onchange
 [Worker]     getter state
 [Worker]     method constructor
