@@ -1109,7 +1109,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   auto window_info = ::full_restore::GetWindowInfo(window1);
   ASSERT_TRUE(window_info);
   EXPECT_TRUE(window_info->activation_index.has_value());
-  EXPECT_EQ(INT32_MIN, window_info->activation_index.value());
+  EXPECT_EQ(INT32_MAX, window_info->activation_index.value());
 
   app_window2 = CreateAppWindow(browser()->profile(), extension);
   ASSERT_TRUE(app_window2);
@@ -1120,7 +1120,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   window_info = ::full_restore::GetWindowInfo(window2);
   ASSERT_TRUE(window_info);
   EXPECT_TRUE(window_info->activation_index.has_value());
-  EXPECT_EQ(INT32_MIN, window_info->activation_index.value());
+  EXPECT_EQ(INT32_MAX, window_info->activation_index.value());
 
   // Create a new window, verity the restore window id is 0.
   auto* app_window = CreateAppWindow(browser()->profile(), extension);

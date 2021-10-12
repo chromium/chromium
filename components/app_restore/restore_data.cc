@@ -173,7 +173,7 @@ void RestoreData::SetNextRestoreWindowIdForChromeApp(
   // When a chrome app has multiple windows, all windows will be sent to the
   // background.
   for (auto& data_it : it->second)
-    data_it.second->activation_index = INT32_MIN;
+    data_it.second->activation_index = INT32_MAX;
 }
 
 void RestoreData::RemoveAppRestoreData(const std::string& app_id,
@@ -186,10 +186,11 @@ void RestoreData::RemoveAppRestoreData(const std::string& app_id,
     app_id_to_launch_list_.erase(app_id);
 }
 
-void RestoreData::RemoveWindowInfo(const std::string& app_id, int window_id) {
+void RestoreData::SendWindowToBackground(const std::string& app_id,
+                                         int window_id) {
   auto* app_restore_data = GetAppRestoreDataMutable(app_id, window_id);
   if (app_restore_data)
-    app_restore_data->ClearWindowInfo();
+    app_restore_data->activation_index = INT32_MAX;
 }
 
 void RestoreData::RemoveApp(const std::string& app_id) {

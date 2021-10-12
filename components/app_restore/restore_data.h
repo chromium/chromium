@@ -126,8 +126,8 @@ class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
   // Removes a AppRestoreData with |window_id| for |app_id|.
   void RemoveAppRestoreData(const std::string& app_id, int window_id);
 
-  // Clears the window info for |app_id| and |window_id|.
-  void RemoveWindowInfo(const std::string& app_id, int window_id);
+  // Sends the window for |app_id| and |window_id| to background.
+  void SendWindowToBackground(const std::string& app_id, int window_id);
 
   // Removes the launch list for |app_id|.
   void RemoveApp(const std::string& app_id);

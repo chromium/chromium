@@ -481,22 +481,22 @@ TEST_F(RestoreDataTest, RemoveAppRestoreData) {
   EXPECT_EQ(0u, app_id_to_launch_list().size());
 }
 
-TEST_F(RestoreDataTest, RemoveWindowInfo) {
+TEST_F(RestoreDataTest, SendWindowToBackground) {
   AddAppLaunchInfos();
   ModifyWindowInfos();
   ModifyThemeColors();
   VerifyRestoreData(restore_data());
 
-  // Remove kAppId1.
-  restore_data().RemoveWindowInfo(kAppId1, kWindowId1);
+  restore_data().SendWindowToBackground(kAppId1, kWindowId1);
 
   auto window_info = restore_data().GetWindowInfo(kAppId1, kWindowId1);
   EXPECT_TRUE(window_info);
-  EXPECT_FALSE(window_info->activation_index.has_value());
-  EXPECT_FALSE(window_info->desk_id.has_value());
-  EXPECT_FALSE(window_info->current_bounds.has_value());
-  EXPECT_FALSE(window_info->window_state_type.has_value());
-  EXPECT_FALSE(window_info->arc_extra_info.has_value());
+  EXPECT_TRUE(window_info->activation_index.has_value());
+  EXPECT_EQ(INT32_MAX, window_info->activation_index.value());
+  EXPECT_TRUE(window_info->desk_id.has_value());
+  EXPECT_TRUE(window_info->current_bounds.has_value());
+  EXPECT_TRUE(window_info->window_state_type.has_value());
+  EXPECT_TRUE(window_info->arc_extra_info.has_value());
 }
 
 TEST_F(RestoreDataTest, RemoveApp) {
@@ -674,19 +674,19 @@ TEST_F(RestoreDataTest, FetchRestoreWindowId) {
 
   restore_data().SetNextRestoreWindowIdForChromeApp(kAppId1);
 
-  // Verify that the activation index is modified as INT32_MIN.
+  // Verify that the activation index is modified as INT32_MAX.
   EXPECT_EQ(kWindowId1, restore_data().FetchRestoreWindowId(kAppId1));
   window_info = restore_data().GetWindowInfo(kAppId1, kWindowId1);
   EXPECT_TRUE(window_info);
   EXPECT_TRUE(window_info->activation_index.has_value());
-  EXPECT_EQ(INT32_MIN, window_info->activation_index.value());
+  EXPECT_EQ(INT32_MAX, window_info->activation_index.value());
 
-  // Verify that the activation index is modified as INT32_MIN.
+  // Verify that the activation index is modified as INT32_MAX.
   EXPECT_EQ(kWindowId2, restore_data().FetchRestoreWindowId(kAppId1));
   window_info = restore_data().GetWindowInfo(kAppId1, kWindowId2);
   EXPECT_TRUE(window_info);
   EXPECT_TRUE(window_info->activation_index.has_value());
-  EXPECT_EQ(INT32_MIN, window_info->activation_index.value());
+  EXPECT_EQ(INT32_MAX, window_info->activation_index.value());
 
   EXPECT_EQ(0, restore_data().FetchRestoreWindowId(kAppId1));
 }
