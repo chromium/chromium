@@ -177,12 +177,20 @@
         "name": "openWindow",
         "type": "function",
         "description": "Open the Terminal tabbed window.",
-        "parameters": [],
-        "returns_async": {
-          "name": "callback",
-          "description": "Callback that will be called when complete.",
-          "parameters": []
-        }
+        "parameters": [
+          {
+            "name": "data",
+            "type": "object",
+	    "optional": true,
+            "properties": {
+              "url": {
+                "description": "The url for the new Terminal window.",
+                "optional": true,
+		"type": "string"
+              }
+	    }
+          }
+        ]
       },
       {
         "name": "openOptionsPage",

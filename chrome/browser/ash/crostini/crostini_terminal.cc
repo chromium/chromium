@@ -85,10 +85,21 @@ void LaunchTerminal(Profile* profile,
                     const ContainerId& container_id,
                     const std::string& cwd,
                     const std::vector<std::string>& terminal_args) {
-  crostini::RecordAppLaunchHistogram(
-      crostini::CrostiniAppLaunchAppType::kTerminal);
   GURL vsh_in_crosh_url =
       GenerateVshInCroshUrl(profile, container_id, cwd, terminal_args);
+  LaunchTerminalWithUrl(profile, display_id, vsh_in_crosh_url);
+}
+
+void LaunchTerminalWithUrl(Profile* profile,
+                           int64_t display_id,
+                           const GURL& url) {
+  if (url.GetOrigin() != chrome::kChromeUIUntrustedTerminalURL) {
+    LOG(ERROR) << "Trying to launch terminal with an invalid url: " << url;
+    return;
+  }
+
+  crostini::RecordAppLaunchHistogram(
+      crostini::CrostiniAppLaunchAppType::kTerminal);
   auto params = web_app::CreateSystemWebAppLaunchParams(
       profile, web_app::SystemAppType::TERMINAL, display_id);
   if (!params.has_value()) {
@@ -109,7 +120,7 @@ void LaunchTerminal(Profile* profile,
   // System Web Apps managed by Web App publisher should call
   // LaunchSystemWebAppAsync.
   web_app::LaunchSystemWebAppImpl(profile, web_app::SystemAppType::TERMINAL,
-                                  vsh_in_crosh_url, *params);
+                                  url, *params);
 }
 
 void LaunchTerminalSettings(Profile* profile, int64_t display_id) {

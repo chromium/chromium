@@ -103,6 +103,10 @@ void LaunchTerminal(Profile* profile,
                     const std::string& cwd = "",
                     const std::vector<std::string>& terminal_args = {});
 
+void LaunchTerminalWithUrl(Profile* profile,
+                           int64_t display_id,
+                           const GURL& url);
+
 // Launches the terminal settings popup window.
 void LaunchTerminalSettings(Profile* profile,
                             int64_t display_id = display::kInvalidDisplayId);

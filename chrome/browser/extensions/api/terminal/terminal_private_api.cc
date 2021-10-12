@@ -45,6 +45,7 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "ui/display/types/display_constants.h"
 
 namespace terminal_private = extensions::api::terminal_private;
 namespace OnTerminalResize =
@@ -58,6 +59,7 @@ namespace CloseTerminalProcess =
 namespace SendInput = extensions::api::terminal_private::SendInput;
 namespace AckOutput = extensions::api::terminal_private::AckOutput;
 namespace SetSettings = extensions::api::terminal_private::SetSettings;
+namespace OpenWindow = extensions::api::terminal_private::OpenWindow;
 
 using crostini::mojom::InstallerState;
 
@@ -604,7 +606,17 @@ TerminalPrivateOpenWindowFunction::~TerminalPrivateOpenWindowFunction() =
     default;
 
 ExtensionFunction::ResponseAction TerminalPrivateOpenWindowFunction::Run() {
-  crostini::LaunchTerminal(Profile::FromBrowserContext(browser_context()));
+  std::unique_ptr<OpenWindow::Params> params(
+      OpenWindow::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+
+  if (params->data && params->data->url) {
+    crostini::LaunchTerminalWithUrl(
+        Profile::FromBrowserContext(browser_context()),
+        display::kInvalidDisplayId, GURL(*params->data->url));
+  } else {
+    crostini::LaunchTerminal(Profile::FromBrowserContext(browser_context()));
+  }
   return RespondNow(NoArguments());
 }
 
