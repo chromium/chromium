@@ -183,6 +183,7 @@ void Prefetch(size_t start, size_t end) {
     // loop.
     dummy ^= *static_cast<volatile unsigned char*>(ptr);
   }
+  ALLOW_UNUSED_LOCAL(dummy);
 }
 
 // These values were used in the past for recording
