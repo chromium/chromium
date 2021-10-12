@@ -319,29 +319,33 @@ SkColor AshColorProvider::GetBaseLayerColorImpl(BaseLayerType type,
 
 SkColor AshColorProvider::GetControlsLayerColorImpl(ControlsLayerType type,
                                                     bool use_dark_color) const {
-  constexpr SkColor kLightColors[] = {SkColorSetA(SK_ColorBLACK, 0x24),
-                                      gfx::kGoogleBlue600,
-                                      SkColorSetA(SK_ColorBLACK, 0x0D),
-                                      gfx::kGoogleRed600,
-                                      gfx::kGoogleYellow600,
-                                      gfx::kGoogleGreen600,
-                                      SkColorSetA(gfx::kGoogleBlue600, 0x3D),
-                                      gfx::kGoogleBlue600};
-  constexpr SkColor kDarkColors[] = {SkColorSetA(SK_ColorWHITE, 0x24),
-                                     gfx::kGoogleBlue300,
-                                     SkColorSetA(SK_ColorWHITE, 0x1A),
-                                     gfx::kGoogleRed300,
-                                     gfx::kGoogleYellow300,
-                                     gfx::kGoogleGreen300,
-                                     SkColorSetA(gfx::kGoogleBlue300, 0x3D),
-                                     gfx::kGoogleBlue300};
-  DCHECK(base::size(kLightColors) == base::size(kDarkColors));
-  static_assert(
-      base::size(kLightColors) == base::size(kDarkColors),
-      "Size of kLightColors should equal to the size of kDarkColors.");
-  const size_t index = static_cast<size_t>(type);
-  DCHECK_LT(index, base::size(kLightColors));
-  return use_dark_color ? kDarkColors[index] : kLightColors[index];
+  switch (type) {
+    case ControlsLayerType::kHairlineBorderColor:
+      return use_dark_color ? SkColorSetA(SK_ColorWHITE, 0x24)
+                            : SkColorSetA(SK_ColorBLACK, 0x24);
+    case ControlsLayerType::kControlBackgroundColorActive:
+      return use_dark_color ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
+    case ControlsLayerType::kControlBackgroundColorInactive:
+      return use_dark_color ? SkColorSetA(SK_ColorWHITE, 0x1A)
+                            : SkColorSetA(SK_ColorBLACK, 0x0D);
+    case ControlsLayerType::kControlBackgroundColorAlert:
+      return use_dark_color ? gfx::kGoogleRed300 : gfx::kGoogleRed600;
+    case ControlsLayerType::kControlBackgroundColorWarning:
+      return use_dark_color ? gfx::kGoogleYellow300 : gfx::kGoogleYellow600;
+    case ControlsLayerType::kControlBackgroundColorPositive:
+      return use_dark_color ? gfx::kGoogleGreen300 : gfx::kGoogleGreen600;
+    case ControlsLayerType::kFocusAuraColor:
+      return use_dark_color ? SkColorSetA(gfx::kGoogleBlue300, 0x3D)
+                            : SkColorSetA(gfx::kGoogleBlue600, 0x3D);
+    case ControlsLayerType::kFocusRingColor:
+      return use_dark_color ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
+    case ControlsLayerType::kHighlightBorderHighlightColor:
+      return use_dark_color ? SkColorSetA(SK_ColorWHITE, 0x14)
+                            : SkColorSetA(SK_ColorWHITE, 0x4C);
+    case ControlsLayerType::kHighlightBorderBorderColor:
+      return use_dark_color ? GetBaseLayerColor(BaseLayerType::kTransparent80)
+                            : SkColorSetA(SK_ColorBLACK, 0x0F);
+  }
 }
 
 SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,

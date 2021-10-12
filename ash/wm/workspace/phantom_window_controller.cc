@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/root_window_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -18,9 +19,11 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
@@ -55,6 +58,8 @@ constexpr int kMaximizeCueBackgroundBlur = 80;
 constexpr int kPhantomWindowCornerRadius = 4;
 constexpr gfx::Insets kPhantomWindowInsets(8);
 
+constexpr int kHighlightBorderThickness = 1;
+
 // The move down factor of y-position for entrance animation of maximize cue.
 constexpr float kMaximizeCueEntraceAnimationYPositionMoveDownFactor = 1.5f;
 
@@ -67,6 +72,63 @@ constexpr base::TimeDelta kMaximizeCueExitAnimationDurationMs =
 // The delay of the maximize cue entrance and exit animation.
 constexpr base::TimeDelta kMaximizeCueAnimationDelayMs =
     base::Milliseconds(100);
+
+// A rounded rectangle border that has inner (highlight) and outer color.
+class HighlightBorder : public views::Border {
+ public:
+  explicit HighlightBorder(int corner_radius);
+
+  HighlightBorder(const HighlightBorder&) = delete;
+  HighlightBorder& operator=(const HighlightBorder&) = delete;
+
+  // views::Border:
+  void Paint(const views::View& view, gfx::Canvas* canvas) override;
+  gfx::Insets GetInsets() const override;
+  gfx::Size GetMinimumSize() const override;
+
+ private:
+  const int corner_radius_;
+  const SkColor inner_color_;
+  const SkColor outer_color_;
+};
+
+// TODO(crbug/1224694): Remove |inner_color_| and |outer_color| and call
+// `GetControlsLayerColor()` for colors directly in `Paint()` once we
+// officially launch Dark/Light mode and no longer use default mode.
+HighlightBorder::HighlightBorder(int corner_radius)
+    : corner_radius_(corner_radius),
+      inner_color_(AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kHighlightBorderHighlightColor)),
+      outer_color_(AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kHighlightBorderBorderColor)) {}
+
+void HighlightBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
+  cc::PaintFlags flags;
+  flags.setStrokeWidth(kHighlightBorderThickness);
+  flags.setColor(outer_color_);
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+  flags.setAntiAlias(true);
+
+  const float half_thickness = kHighlightBorderThickness / 2.0f;
+  gfx::RectF outer_border_bounds(view.GetLocalBounds());
+  outer_border_bounds.Inset(half_thickness, half_thickness);
+  canvas->DrawRoundRect(outer_border_bounds, corner_radius_, flags);
+
+  gfx::RectF inner_border_bounds(view.GetLocalBounds());
+  inner_border_bounds.Inset(gfx::Insets(kHighlightBorderThickness));
+  inner_border_bounds.Inset(half_thickness, half_thickness);
+  flags.setColor(inner_color_);
+  canvas->DrawRoundRect(inner_border_bounds, corner_radius_, flags);
+}
+
+gfx::Insets HighlightBorder::GetInsets() const {
+  return gfx::Insets(2 * kHighlightBorderThickness);
+}
+
+gfx::Size HighlightBorder::GetMinimumSize() const {
+  return gfx::Size(kHighlightBorderThickness * 4,
+                   kHighlightBorderThickness * 4);
+}
 
 }  // namespace
 
@@ -187,8 +249,9 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
           kSplitviewPhantomWindowColor),
       kPhantomWindowCornerRadius));
 
-  // TODO(crbug/1249666): Add border highlight that supports dark/light mode.
-
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  phantom_view->SetBorder(
+      std::make_unique<HighlightBorder>(kPhantomWindowCornerRadius));
   phantom_widget->Show();
 
   // Fade the window in.
@@ -241,8 +304,8 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
       static_cast<float>(kMaximizeCueBackgroundBlur));
   const gfx::RoundedCornersF radii(kMaximizeCueHeight / 2);
   maximize_cue->layer()->SetRoundedCornerRadius(radii);
-
-  // TODO(crbug/1249666): Add border highlight that supports dark/light mode.
+  maximize_cue->SetBorder(
+      std::make_unique<HighlightBorder>(kMaximizeCueHeight / 2));
 
   // Set layout of cue view and add a label to the view.
   maximize_cue->SetLayoutManager(std::make_unique<views::BoxLayout>(
