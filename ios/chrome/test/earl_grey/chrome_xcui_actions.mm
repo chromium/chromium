@@ -37,21 +37,56 @@ NSString* GetWindowAccessibilityIdentifier(int window_number) {
   return [NSString stringWithFormat:@"%d", window_number];
 }
 
-// Creates a query for the given |identifier| of given |type| in given
-// |window_number|.  If |identitifer| is nil, this will return a query for the
+// Finds the element with the given |identifier| of given |type| in given
+// |window_number|.  If |identitifer| is nil, this will return a element for the
 // window with |window_number| itself.
-XCUIElementQuery* GetQueryMatchingIdentifierInWindow(XCUIApplication* app,
-                                                     NSString* identifier,
-                                                     int window_number,
-                                                     XCUIElementType type) {
+XCUIElement* GetElementMatchingIdentifierInWindow(XCUIApplication* app,
+                                                  NSString* identifier,
+                                                  int window_number,
+                                                  XCUIElementType type) {
   NSString* window_id = GetWindowAccessibilityIdentifier(window_number);
+  XCUIElementQuery* query = nil;
   if (identifier) {
     // Check for matching descendants.
-    return [[[app.windows matchingIdentifier:window_id]
+    query = [[[app.windows matchingIdentifier:window_id]
         descendantsMatchingType:type] matchingIdentifier:identifier];
+  } else {
+    // Check for window itself.
+    query = [app.windows matchingIdentifier:window_id];
   }
-  // Check for window itself.
-  return [app.windows matchingIdentifier:window_id];
+
+  if (query.count == 0)
+    return nil;
+
+  return [query elementBoundByIndex:0];
+}
+
+// Long press at |start_point| and drag to |end_point|, with fixed press and
+// hold druations and drag velocity.
+void LongPressAndDragBetweenCoordinates(XCUICoordinate* start_point,
+                                        XCUICoordinate* end_point) {
+  [start_point pressForDuration:1.5
+           thenDragToCoordinate:end_point
+                   withVelocity:XCUIGestureVelocityDefault
+            thenHoldForDuration:1.0];
+}
+
+// Long press on |src_element|'s center then drag to the point in |dst_element|
+// defined by |dst_normalized_offset|. Returns NO if either element is nil, YES
+// otherwise.
+BOOL LongPressAndDragBetweenElements(XCUIElement* src_element,
+                                     XCUIElement* dst_element,
+                                     CGVector dst_normalized_offset) {
+  if (!src_element || !dst_element)
+    return NO;
+
+  XCUICoordinate* start_point =
+      [src_element coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
+  XCUICoordinate* end_point =
+      [dst_element coordinateWithNormalizedOffset:dst_normalized_offset];
+
+  LongPressAndDragBetweenCoordinates(start_point, end_point);
+  return YES;
 }
 
 }  // namespace
@@ -62,24 +97,12 @@ BOOL LongPressCellAndDragToEdge(NSString* accessibility_identifier,
                                 GREYContentEdge edge,
                                 int window_number) {
   XCUIApplication* app = [[XCUIApplication alloc] init];
-  XCUIElementQuery* query = GetQueryMatchingIdentifierInWindow(
+  XCUIElement* drag_element = GetElementMatchingIdentifierInWindow(
       app, accessibility_identifier, window_number, XCUIElementTypeCell);
 
-  if (query.count == 0)
-    return NO;
-  XCUIElement* drag_element = [query elementBoundByIndex:0];
-
-  XCUICoordinate* start_point =
-      [drag_element coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
-  XCUICoordinate* end_point =
-      [app coordinateWithNormalizedOffset:GetNormalizedEdgeVector(edge)];
-
-  [start_point pressForDuration:1.5
-           thenDragToCoordinate:end_point
-                   withVelocity:XCUIGestureVelocityDefault
-            thenHoldForDuration:1.0];
-
-  return YES;
+  // |app| is still an element, so it can just be passed in directly here.
+  return LongPressAndDragBetweenElements(drag_element, app,
+                                         GetNormalizedEdgeVector(edge));
 }
 
 BOOL LongPressCellAndDragToOffsetOf(NSString* src_accessibility_identifier,
@@ -88,30 +111,16 @@ BOOL LongPressCellAndDragToOffsetOf(NSString* src_accessibility_identifier,
                                     int dst_window_number,
                                     CGVector dst_normalized_offset) {
   XCUIApplication* app = [[XCUIApplication alloc] init];
-  XCUIElementQuery* src_query = GetQueryMatchingIdentifierInWindow(
+  XCUIElement* src_element = GetElementMatchingIdentifierInWindow(
       app, src_accessibility_identifier, src_window_number,
       XCUIElementTypeCell);
 
-  XCUIElementQuery* dst_query = GetQueryMatchingIdentifierInWindow(
+  XCUIElement* dst_element = GetElementMatchingIdentifierInWindow(
       app, dst_accessibility_identifier, dst_window_number,
       XCUIElementTypeCell);
 
-  if (src_query.count == 0 || dst_query.count == 0)
-    return NO;
-  XCUIElement* src_element = [src_query elementBoundByIndex:0];
-  XCUIElement* dst_element = [dst_query elementBoundByIndex:0];
-
-  XCUICoordinate* start_point =
-      [src_element coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
-  XCUICoordinate* end_point =
-      [dst_element coordinateWithNormalizedOffset:dst_normalized_offset];
-
-  [start_point pressForDuration:1.5
-           thenDragToCoordinate:end_point
-                   withVelocity:XCUIGestureVelocityDefault
-            thenHoldForDuration:1.0];
-
-  return YES;
+  return LongPressAndDragBetweenElements(src_element, dst_element,
+                                         dst_normalized_offset);
 }
 
 BOOL LongPressLinkAndDragToView(NSString* src_accessibility_identifier,
@@ -120,29 +129,15 @@ BOOL LongPressLinkAndDragToView(NSString* src_accessibility_identifier,
                                 int dst_window_number,
                                 CGVector dst_normalized_offset) {
   XCUIApplication* app = [[XCUIApplication alloc] init];
-  XCUIElementQuery* src_query = GetQueryMatchingIdentifierInWindow(
+  XCUIElement* src_element = GetElementMatchingIdentifierInWindow(
       app, src_accessibility_identifier, src_window_number,
       XCUIElementTypeLink);
 
-  XCUIElementQuery* dst_query = GetQueryMatchingIdentifierInWindow(
+  XCUIElement* dst_element = GetElementMatchingIdentifierInWindow(
       app, dst_accessibility_identifier, dst_window_number, XCUIElementTypeAny);
 
-  if (src_query.count == 0 || dst_query.count == 0)
-    return NO;
-  XCUIElement* src_element = [src_query elementBoundByIndex:0];
-  XCUIElement* dst_element = [dst_query elementBoundByIndex:0];
-
-  XCUICoordinate* start_point =
-      [src_element coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
-  XCUICoordinate* end_point =
-      [dst_element coordinateWithNormalizedOffset:dst_normalized_offset];
-
-  [start_point pressForDuration:1.5
-           thenDragToCoordinate:end_point
-                   withVelocity:XCUIGestureVelocityDefault
-            thenHoldForDuration:1.0];
-
-  return YES;
+  return LongPressAndDragBetweenElements(src_element, dst_element,
+                                         dst_normalized_offset);
 }
 
 BOOL LongPressLinkAndDragToView(NSString* src_accessibility_identifier,
@@ -243,13 +238,12 @@ BOOL TapAtOffsetOf(NSString* accessibility_identifier,
                    int window_number,
                    CGVector normalized_offset) {
   XCUIApplication* app = [[XCUIApplication alloc] init];
-  XCUIElementQuery* query = GetQueryMatchingIdentifierInWindow(
+  XCUIElement* element = GetElementMatchingIdentifierInWindow(
       app, accessibility_identifier, window_number, XCUIElementTypeAny);
 
-  if (query.count == 0)
+  if (!element)
     return NO;
 
-  XCUIElement* element = [query elementBoundByIndex:0];
   XCUICoordinate* tap_point =
       [element coordinateWithNormalizedOffset:normalized_offset];
   [tap_point tap];
@@ -262,11 +256,8 @@ BOOL TypeText(NSString* accessibility_identifier,
               NSString* text) {
   XCUIApplication* app = [[XCUIApplication alloc] init];
 
-  XCUIElement* element = nil;
-  XCUIElementQuery* query = GetQueryMatchingIdentifierInWindow(
+  XCUIElement* element = GetElementMatchingIdentifierInWindow(
       app, accessibility_identifier, window_number, XCUIElementTypeTextField);
-  if (query.count > 0)
-    element = [query elementBoundByIndex:0];
 
   if (!element)
     return NO;
