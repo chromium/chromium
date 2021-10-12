@@ -175,17 +175,14 @@ void AppInfoSummaryPanel::AddDetailsControl(views::View* vertical_stack) {
   details_list->AddChildView(
       CreateKeyValueField(std::move(size_title), std::move(size_value)));
 
-  // The version doesn't make sense for bookmark apps.
-  if (!app_->from_bookmark()) {
-    auto version_title = std::make_unique<AppInfoLabel>(
-        l10n_util::GetStringUTF16(IDS_APPLICATION_INFO_VERSION_LABEL));
+  auto version_title = std::make_unique<AppInfoLabel>(
+      l10n_util::GetStringUTF16(IDS_APPLICATION_INFO_VERSION_LABEL));
 
-    auto version_value = std::make_unique<AppInfoLabel>(
-        base::UTF8ToUTF16(app_->GetVersionForDisplay()));
+  auto version_value = std::make_unique<AppInfoLabel>(
+      base::UTF8ToUTF16(app_->GetVersionForDisplay()));
 
-    details_list->AddChildView(CreateKeyValueField(std::move(version_title),
-                                                   std::move(version_value)));
-  }
+  details_list->AddChildView(
+      CreateKeyValueField(std::move(version_title), std::move(version_value)));
 
   vertical_stack->AddChildView(std::move(details_list));
 }
