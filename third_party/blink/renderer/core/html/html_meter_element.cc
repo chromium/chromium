@@ -40,7 +40,7 @@ namespace blink {
 HTMLMeterElement::HTMLMeterElement(Document& document)
     : HTMLElement(html_names::kMeterTag, document) {
   UseCounter::Count(document, WebFeature::kMeterElement);
-  EnsureUserAgentShadowRoot();
+  EnsureUserAgentShadowRoot().EnableNameBasedSlotAssignment();
 }
 
 HTMLMeterElement::~HTMLMeterElement() = default;
@@ -191,8 +191,7 @@ void HTMLMeterElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   inner->AppendChild(bar);
 
   auto* fallback = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  fallback->AppendChild(
-      HTMLSlotElement::CreateUserAgentDefaultSlot(GetDocument()));
+  fallback->AppendChild(MakeGarbageCollected<HTMLSlotElement>(GetDocument()));
   fallback->SetShadowPseudoId(AtomicString("-internal-fallback"));
   root.AppendChild(fallback);
 }

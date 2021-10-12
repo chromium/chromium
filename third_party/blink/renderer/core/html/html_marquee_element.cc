@@ -56,7 +56,7 @@ namespace blink {
 HTMLMarqueeElement::HTMLMarqueeElement(Document& document)
     : HTMLElement(html_names::kMarqueeTag, document) {
   UseCounter::Count(document, WebFeature::kHTMLMarqueeElement);
-  EnsureUserAgentShadowRoot();
+  EnsureUserAgentShadowRoot().EnableNameBasedSlotAssignment();
 }
 
 void HTMLMarqueeElement::DidAddUserAgentShadowRoot(ShadowRoot& shadow_root) {
@@ -73,8 +73,7 @@ void HTMLMarqueeElement::DidAddUserAgentShadowRoot(ShadowRoot& shadow_root) {
   auto* mover = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   shadow_root.AppendChild(mover);
 
-  mover->AppendChild(
-      HTMLSlotElement::CreateUserAgentDefaultSlot(GetDocument()));
+  mover->AppendChild(MakeGarbageCollected<HTMLSlotElement>(GetDocument()));
   mover_ = mover;
 }
 
