@@ -490,6 +490,34 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   EXPECT_TRUE(signature_verifier.VerifyFinal());
 }
 
+// Generates a software-backed RSA key pair.
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
+                       GenerateRsaSoftwareBacked) {
+  const unsigned int kKeySize = 2048;
+
+  // Arrange: Configure the ChapsUtilFactory singleton instance to return fake
+  // ChapsUtil instances.
+  test_util::ScopedChapsUtilOverride scoped_chaps_util_override;
+
+  // Act: Generate the key pair.
+  const TokenId token_id = GetParam().token_id;
+  test_util::GenerateKeyExecutionWaiter generate_key_waiter;
+  platform_keys_service()->GenerateRSAKey(token_id, kKeySize,
+                                          /*sw_backed=*/true,
+                                          generate_key_waiter.GetCallback());
+  generate_key_waiter.Wait();
+  EXPECT_EQ(generate_key_waiter.status(), Status::kSuccess);
+
+  // Assert: Verify that the the returned public key SPKI has been generated
+  // through the fake ChapsUtil.
+  const std::string public_key_spki_der =
+      generate_key_waiter.public_key_spki_der();
+  EXPECT_FALSE(public_key_spki_der.empty());
+
+  EXPECT_THAT(scoped_chaps_util_override.generated_key_spkis(),
+              ::testing::ElementsAre(public_key_spki_der));
+}
+
 // Generates a Rsa key pair and tests expected limits of the input length of the
 // SignRSAPKCS1Raw function.
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,

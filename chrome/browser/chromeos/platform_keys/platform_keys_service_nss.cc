@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/chromeos/platform_keys/chaps_util.h"
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -722,12 +723,20 @@ void GenerateRSAKeyOnWorkerThread(std::unique_ptr<GenerateRSAKeyState> state) {
 
   crypto::ScopedSECKEYPublicKey public_key;
   crypto::ScopedSECKEYPrivateKey private_key;
-  // TODO(https://crbug.com/1252410): Generate a software-backed key if
-  // |state->sw_backed_| is true.
-  if (!crypto::GenerateRSAKeyPairNSS(
-          state->slot_.get(), state->modulus_length_bits_, true /* permanent */,
-          &public_key, &private_key)) {
-    LOG(ERROR) << "Couldn't create key.";
+
+  bool key_gen_success;
+  if (state->sw_backed_) {
+    auto chaps_util = ChapsUtil::Create();
+    key_gen_success = chaps_util->GenerateSoftwareBackedRSAKey(
+        state->slot_.get(), state->modulus_length_bits_, &public_key,
+        &private_key);
+  } else {
+    key_gen_success = crypto::GenerateRSAKeyPairNSS(
+        state->slot_.get(), state->modulus_length_bits_, true /* permanent */,
+        &public_key, &private_key);
+  }
+  if (!key_gen_success) {
+    LOG(ERROR) << "Couldn't create key, sw_backed=" << state->sw_backed_;
     state->OnError(FROM_HERE, Status::kErrorInternal);
     return;
   }
