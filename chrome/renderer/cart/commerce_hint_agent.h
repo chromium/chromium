@@ -51,8 +51,14 @@ class CommerceHintAgent
   void ExtractProducts();
   void ExtractCartFromCurrentFrame();
 
+  class JavaScriptRequest;
+
+  JavaScriptRequest* javascript_request_{nullptr};
   GURL starting_url_;
-  base::TimeTicks last_extraction_time_;
+  bool has_finished_loading_{false};
+  int extraction_count_{0};
+  bool is_extraction_pending_{false};
+  bool is_extraction_running_{false};
   base::WeakPtrFactory<CommerceHintAgent> weak_factory_{this};
 
   class JavaScriptRequest : public blink::WebScriptExecutionCallback {
@@ -63,6 +69,7 @@ class CommerceHintAgent
     void WillExecute() override;
     void Completed(
         const blink::WebVector<v8::Local<v8::Value>>& result) override;
+    void HandlePromiseResults(const v8::FunctionCallbackInfo<v8::Value>& info);
 
    private:
     ~JavaScriptRequest() override;

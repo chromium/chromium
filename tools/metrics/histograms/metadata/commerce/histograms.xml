@@ -33,15 +33,63 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
       summary="Tabs between 1 and 90 days since last usage."/>
 </variants>
 
+<histogram name="Commerce.Carts.ExtractionElapsedTime" units="ms"
+    expires_after="2022-06-30">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Logged when cart content extraction is executed for ChromeCart. This
+    histogram records the elapsed time within the JavaScript, so script
+    parsing/compilation time is excluded. Commerce.Carts.ExtractionExecutionTime
+    is measured in native, and is the end-to-end elapsed time.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.Carts.ExtractionExecutionTime" units="ms"
-    expires_after="2021-12-30">
+    expires_after="2022-06-30">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Logged when cart content extraction is executed for ChromeCart. This
     histogram records the elapsed time between the start and the end of the
-    extraction JavaScript request execution.
+    extraction JavaScript request execution. This includes script
+    parsing/compilation time and sleeping time.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Carts.ExtractionLongestTaskTime" units="ms"
+    expires_after="2022-06-30">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Logged when cart content extraction is executed for ChromeCart. This
+    histogram records the time span of the longest task blocking the main thread
+    of the renderer process.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Carts.ExtractionTimedOut" enum="BooleanTimedOut"
+    expires_after="2022-06-30">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Record whether the cart content extraction has timed out. Logged when cart
+    content extraction is executed for ChromeCart.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Carts.ExtractionTotalTasksTime" units="ms"
+    expires_after="2022-06-30">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Logged when cart content extraction is executed for ChromeCart. This
+    histogram records the time spent on execution, excluding sleeping time.
   </summary>
 </histogram>
 
