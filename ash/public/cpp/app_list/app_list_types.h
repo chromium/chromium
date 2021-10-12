@@ -155,6 +155,9 @@ enum class AppListLaunchType {
 // Type of the search result, which is set in Chrome. These values are persisted
 // to logs. Entries should not be renumbered and numeric values should never be
 // reused.
+//
+// TODO(crbug.com/1258415): kFileChip and kDriveChip can be deprecated once the
+// new launcher is launched.
 enum class AppListSearchResultType {
   kUnknown,       // Unknown type. Don't use over IPC
   kInstalledApp,  // Installed apps.
@@ -202,13 +205,16 @@ enum class AppListSearchResultCategory {
 
 // Which UI container(s) the result should be displayed in.
 // Do not change the order of these as they are used for metrics.
+//
+// TODO(1258415): kChip can be deprecated once the new launcher is launched.
 enum SearchResultDisplayType {
   kNone = 0,
   kList = 1,  // Displays in search list
   kTile = 2,  // Displays in search tiles
   // kRecommendation = 3  // No longer used, split between kTile and kChip
-  kCard = 4,  // Displays in answer cards
-  kChip = 5,  // Displays in suggestion chips
+  kCard = 4,      // Displays in answer cards
+  kChip = 5,      // Displays in suggestion chips
+  kContinue = 6,  // Displays in the Continue section
   // Add new values here
   kLast,  // Don't use over IPC
 };

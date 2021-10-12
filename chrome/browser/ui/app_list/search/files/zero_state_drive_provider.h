@@ -52,6 +52,8 @@ class ZeroStateDriveProvider : public SearchProvider,
 
   std::unique_ptr<FileResult> MakeListResult(const base::FilePath& filepath,
                                              const float relevance);
+  // TODO(crbug.com/1258415): Chip results don't exist in the new launcher.
+  // MakeChipResult can be removed after launch.
   std::unique_ptr<FileResult> MakeChipResult(const base::FilePath& filepath,
                                              const float relevance);
 

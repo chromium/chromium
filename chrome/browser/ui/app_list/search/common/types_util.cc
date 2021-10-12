@@ -168,6 +168,8 @@ std::string DisplayTypeToString(
       return "Card";
     case ash::SearchResultDisplayType::kChip:
       return "Chip";
+    case ash::SearchResultDisplayType::kContinue:
+      return "Continue";
   }
   NOTREACHED();
 }

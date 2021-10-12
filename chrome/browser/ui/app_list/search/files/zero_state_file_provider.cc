@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/bind.h"
@@ -30,6 +31,8 @@ using file_manager::file_tasks::FileTasksObserver;
 namespace app_list {
 namespace {
 
+// TODO(crbug.com/1258415): kFileChipSchema can be removed once the new
+// launcher is launched.
 constexpr char kFileChipSchema[] = "file_chip://";
 constexpr char kZeroStateFileSchema[] = "zero_state_file://";
 
@@ -58,6 +61,14 @@ internal::ValidAndInvalidResults ValidateFiles(
 bool IsSuggestedContentEnabled(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(
       chromeos::prefs::kSuggestedContentEnabled);
+}
+
+// TODO(crbug.com/1258415): This exists to reroute results depending on which
+// launcher is enabled, and should be removed after the new launcher launch.
+ash::SearchResultDisplayType GetDisplayType() {
+  return ash::features::IsProductivityLauncherEnabled()
+             ? ash::SearchResultDisplayType::kContinue
+             : ash::SearchResultDisplayType::kList;
 }
 
 }  // namespace
@@ -119,12 +130,14 @@ void ZeroStateFileProvider::SetSearchResults(
   for (const auto& filepath_score : results.first) {
     auto result = std::make_unique<FileResult>(
         kZeroStateFileSchema, filepath_score.first,
-        ash::AppListSearchResultType::kZeroStateFile,
-        ash::SearchResultDisplayType::kList, filepath_score.second, profile_);
+        ash::AppListSearchResultType::kZeroStateFile, GetDisplayType(),
+        filepath_score.second, profile_);
     result->RequestThumbnail(&thumbnail_loader_);
     new_results.push_back(std::move(result));
 
     // Add suggestion chip file results
+    // TODO(crbug.com/1258415): This can be removed once the new launcher is
+    // launched.
     if (app_list_features::IsSuggestedLocalFilesEnabled() &&
         IsSuggestedContentEnabled(profile_)) {
       new_results.emplace_back(

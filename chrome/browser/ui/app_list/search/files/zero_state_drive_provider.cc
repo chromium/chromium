@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -33,6 +34,8 @@ namespace app_list {
 namespace {
 
 // Schemas of result IDs for the results list and suggestion chips.
+// TODO(crbug.com/1258415): kChipSchema can be removed once the new launcher is
+// launched.
 constexpr char kListSchema[] = "zero_state_drive://";
 constexpr char kChipSchema[] = "drive_chip://";
 
@@ -75,6 +78,14 @@ base::FilePath ReparentToDriveMount(
     const drive::DriveIntegrationService* drive_service) {
   DCHECK(!path.IsAbsolute());
   return drive_service->GetMountPointPath().Append(path.value());
+}
+
+// TODO(crbug.com/1258415): This exists to reroute results depending on which
+// launcher is enabled, and should be removed after the new launcher launch.
+ash::SearchResultDisplayType GetDisplayType() {
+  return ash::features::IsProductivityLauncherEnabled()
+             ? ash::SearchResultDisplayType::kContinue
+             : ash::SearchResultDisplayType::kList;
 }
 
 }  // namespace
@@ -243,8 +254,8 @@ std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
     const float relevance) {
   return std::make_unique<FileResult>(
       kListSchema, ReparentToDriveMount(filepath, drive_service_),
-      ash::AppListSearchResultType::kZeroStateDrive,
-      ash::SearchResultDisplayType::kList, relevance, profile_);
+      ash::AppListSearchResultType::kZeroStateDrive, GetDisplayType(),
+      relevance, profile_);
 }
 
 std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeChipResult(

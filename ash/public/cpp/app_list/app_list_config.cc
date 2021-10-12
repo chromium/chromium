@@ -203,15 +203,16 @@ int SharedAppListConfig::GetMaxNumOfItemsPerPage() const {
 int SharedAppListConfig::GetPreferredIconDimension(
     SearchResultDisplayType display_type) const {
   switch (display_type) {
+    case SearchResultDisplayType::kList:
+      return search_list_icon_dimension_;
     case SearchResultDisplayType::kTile:
       return search_tile_icon_dimension_;
     case SearchResultDisplayType::kChip:
       return suggestion_chip_icon_dimension_;
-    case SearchResultDisplayType::kList:
-      return search_list_icon_dimension_;
+    case SearchResultDisplayType::kContinue:
+      return suggestion_chip_icon_dimension_;
     case SearchResultDisplayType::kNone:  // Falls through.
-    case SearchResultDisplayType::kCard:
-      return 0;
+    case SearchResultDisplayType::kCard:  // Falls through.
     case SearchResultDisplayType::kLast:
       return 0;
   }
