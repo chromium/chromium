@@ -128,6 +128,7 @@ class CartService : public history::HistoryServiceObserver,
   friend class CartServiceDiscountTest;
   friend class CartServiceBrowserDiscountTest;
   friend class CartServiceDiscountFetchTest;
+  friend class FetchDiscountWorkerBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(CartHandlerNtpModuleFakeDataTest,
                            TestEnableFakeData);
 
