@@ -183,7 +183,8 @@ class WebTestFinder(object):
                     line = self._strip_comments(line)
                     if not line:
                         continue
-                    is_glob = line[-1] == '*' and line[-2] != '\\'
+                    is_glob = line[-1] == '*' and (len(line) == 1
+                                                   or line[-2] != '\\')
                     if line[0] == '-':
                         if is_glob:
                             negative_globs.append(line)
