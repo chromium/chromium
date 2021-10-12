@@ -3430,6 +3430,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   completionHandler(configuration);
 }
 
+- (void)webState:(web::WebState*)webState
+    contextMenuWillCommitWithAnimator:
+        (id<UIContextMenuInteractionCommitAnimating>)animator {
+  [self.contextMenuProvider commitPreview];
+}
+
 - (id<CRWResponderInputView>)webStateInputViewProvider:
     (web::WebState*)webState {
   return self.inputViewProvider;

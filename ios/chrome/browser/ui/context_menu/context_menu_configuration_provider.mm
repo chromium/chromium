@@ -134,6 +134,7 @@ const CGFloat kFaviconWidthHeight = 24;
     contextMenuConfigurationForWebState:(web::WebState*)webState
                                  params:(web::ContextMenuParams)params
                      baseViewController:(UIViewController*)baseViewController {
+  self.linkPreview = nil;
   // Prevent context menu from displaying for a tab which is no longer the
   // current one.
   if (webState != self.currentWebState) {
@@ -415,6 +416,10 @@ const CGFloat kFaviconWidthHeight = 24;
       [UIContextMenuConfiguration configurationWithIdentifier:nil
                                               previewProvider:previewProvider
                                                actionProvider:actionProvider];
+}
+
+- (void)commitPreview {
+  [self.linkPreview handlePreviewAction];
 }
 
 - (void)showLegacyContextMenuForWebState:(web::WebState*)webState
