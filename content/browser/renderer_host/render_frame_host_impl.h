@@ -1954,7 +1954,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DocumentAvailableInMainFrame(bool uses_temporary_zoom_level) override;
   void SetNeedsOcclusionTracking(bool needs_tracking) override;
   void SetVirtualKeyboardOverlayPolicy(bool vk_overlays_content) override;
-  void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason) override;
   void VisibilityChanged(blink::mojom::FrameVisibility) override;
   void DidChangeThemeColor(absl::optional<SkColor> theme_color) override;
   void DidChangeBackgroundColor(SkColor background_color,
@@ -2070,6 +2069,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const absl::optional<std::u16string>& source_id,
       const absl::optional<std::u16string>& untrusted_stack_trace) override;
   void FrameSizeChanged(const gfx::Size& frame_size) override;
+
+  // blink::mojom::BackForwardCacheControllerHost:
+  void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason) override;
 
   // blink::LocalMainFrameHost overrides:
   void ScaleFactorChanged(float scale) override;
