@@ -406,10 +406,14 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     // Don't show the context menu when currently in editing mode.
     return nil;
   }
+  TableViewItem<ReadingListListItem>* item =
+      [self.tableViewModel itemAtIndexPath:indexPath];
+  if (item.type != ItemTypeItem) {
+    return nil;
+  }
 
   return [self.menuProvider
-      contextMenuConfigurationForItem:[self.tableViewModel
-                                          itemAtIndexPath:indexPath]
+      contextMenuConfigurationForItem:item
                              withView:[self.tableView
                                           cellForRowAtIndexPath:indexPath]];
 }
@@ -420,8 +424,11 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     URLInfoAtIndexPath:(NSIndexPath*)indexPath {
   if (self.tableView.editing)
     return nil;
-  id<ReadingListListItem> item =
+  TableViewItem<ReadingListListItem>* item =
       [self.tableViewModel itemAtIndexPath:indexPath];
+  if (item.type != ItemTypeItem) {
+    return nil;
+  }
   return [[URLInfo alloc] initWithURL:item.entryURL title:item.title];
 }
 
@@ -1155,8 +1162,9 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
   TableViewItem<ReadingListListItem>* item =
       [self.tableViewModel itemAtIndexPath:indexPath];
-  if (item.type != ItemTypeItem)
+  if (item.type != ItemTypeItem) {
     return;
+  }
 
   [self.delegate readingListListViewController:self
                      displayContextMenuForItem:item
