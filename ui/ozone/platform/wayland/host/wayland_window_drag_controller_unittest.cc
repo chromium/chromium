@@ -71,7 +71,8 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
     EXPECT_CALL(*delegate, DispatchEvent(_)).Times(1);
     WaylandDragDropTest::SendPointerEnter(window, delegate);
     Sync();
-    EXPECT_EQ(window, window_manager()->GetCurrentFocusedWindow());
+    EXPECT_EQ(window,
+              window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   }
 
   void SendPointerLeave(WaylandWindow* window,
@@ -79,7 +80,8 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
     EXPECT_CALL(*delegate, DispatchEvent(_)).Times(1);
     WaylandDragDropTest::SendPointerLeave(window, delegate);
     Sync();
-    EXPECT_EQ(nullptr, window_manager()->GetCurrentFocusedWindow());
+    EXPECT_EQ(nullptr,
+              window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   }
 
   void SendPointerPress(WaylandWindow* window,
@@ -90,7 +92,8 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
     EXPECT_CALL(*delegate, DispatchEvent(_)).Times(1);
     Sync();
 
-    EXPECT_EQ(window, window_manager()->GetCurrentFocusedWindow());
+    EXPECT_EQ(window,
+              window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   }
 
   void SendPointerMotion(WaylandWindow* window,
@@ -129,7 +132,8 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
     EXPECT_CALL(*delegate, DispatchEvent(_)).Times(1);
     Sync();
 
-    EXPECT_EQ(window, window_manager()->GetCurrentFocusedWindow());
+    EXPECT_EQ(window,
+              window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   }
   void SendTouchMotion(WaylandWindow* window,
                        MockPlatformWindowDelegate* delegate,
@@ -154,7 +158,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
 // 3. Run move loop, drag it within the window bounds and drop.
 TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
   // Ensure there is no window currently focused
-  EXPECT_FALSE(window_manager()->GetCurrentFocusedWindow());
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
             screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
 
@@ -230,7 +234,8 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
   Sync();
 
   EXPECT_EQ(State::kIdle, drag_controller()->state());
-  EXPECT_EQ(window_.get(), window_manager()->GetCurrentFocusedWindow());
+  EXPECT_EQ(window_.get(),
+            window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(window_->GetWidget(),
             screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 }
@@ -244,7 +249,7 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
   ASSERT_TRUE(GetWaylandExtension(*window_));
 
   // Ensure there is no window currently focused
-  EXPECT_FALSE(window_manager()->GetCurrentFocusedWindow());
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
             screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
 
@@ -310,7 +315,8 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
   Sync();
 
   EXPECT_EQ(State::kIdle, drag_controller()->state());
-  EXPECT_EQ(window_.get(), window_manager()->GetCurrentFocusedWindow());
+  EXPECT_EQ(window_.get(),
+            window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(window_->GetWidget(),
             screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 }
@@ -324,7 +330,7 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
 //    happens outside the bounds of any surface.
 TEST_P(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
   // Ensure there is no window currently focused
-  EXPECT_FALSE(window_manager()->GetCurrentFocusedWindow());
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
             screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
 
@@ -400,7 +406,8 @@ TEST_P(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
   Sync();
 
   EXPECT_EQ(State::kIdle, drag_controller()->state());
-  EXPECT_EQ(window_.get(), window_manager()->GetCurrentFocusedWindow());
+  EXPECT_EQ(window_.get(),
+            window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(window_->GetWidget(),
             screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 }
@@ -424,7 +431,7 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
   Sync();
 
   // Ensure there is no window currently focused
-  EXPECT_FALSE(window_manager()->GetCurrentFocusedWindow());
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
             screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
 
@@ -538,7 +545,8 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
       case kSnapped:
         EXPECT_EQ(ET_MOUSE_RELEASED, event->type());
         EXPECT_EQ(State::kDropped, drag_controller()->state());
-        EXPECT_EQ(target_window, window_manager()->GetCurrentFocusedWindow());
+        EXPECT_EQ(target_window,
+                  window_manager()->GetCurrentPointerOrTouchFocusedWindow());
         test_step = kDone;
         break;
       default:
@@ -550,7 +558,8 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
   Sync();
 
   SendPointerEnter(target_window, &delegate_);
-  EXPECT_EQ(target_window, window_manager()->GetCurrentFocusedWindow());
+  EXPECT_EQ(target_window,
+            window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(target_window->GetWidget(),
             screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 }
@@ -574,7 +583,7 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
   Sync();
 
   // Ensure there is no window currently focused
-  EXPECT_FALSE(window_manager()->GetCurrentFocusedWindow());
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
             screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
 
@@ -660,7 +669,8 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
         case kSnapped:
           EXPECT_EQ(ET_TOUCH_RELEASED, event->type());
           EXPECT_EQ(State::kDropped, drag_controller()->state());
-          EXPECT_EQ(target_window, window_manager()->GetCurrentFocusedWindow());
+          EXPECT_EQ(target_window,
+                    window_manager()->GetCurrentPointerOrTouchFocusedWindow());
           test_step = kDone;
           break;
         default:
@@ -689,14 +699,14 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
   ScheduleTestTask(task_2);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(window_manager()->GetCurrentFocusedWindow());
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
 }
 
 // Verifies wl_data_device::leave events are properly handled and propagated
 // while in window dragging "attached" mode.
 TEST_P(WaylandWindowDragControllerTest, DragExitAttached) {
   // Ensure there is no window currently focused
-  EXPECT_FALSE(window_manager()->GetCurrentFocusedWindow());
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
             screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
 
@@ -735,7 +745,8 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached) {
   SendPointerEnter(window_.get(), &delegate_);
   Sync();
 
-  EXPECT_EQ(window_.get(), window_manager()->GetCurrentFocusedWindow());
+  EXPECT_EQ(window_.get(),
+            window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(window_->GetWidget(),
             screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 }
@@ -785,7 +796,7 @@ TEST_P(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
 // https://crbug.com/1148021.
 TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
   // Ensure there is no window currently focused
-  EXPECT_FALSE(window_manager()->GetCurrentFocusedWindow());
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
             screen_->GetLocalProcessWidgetAtPoint({200, 200}, {}));
 
@@ -874,7 +885,8 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
   Sync();
 
   EXPECT_EQ(State::kIdle, drag_controller()->state());
-  EXPECT_EQ(window_.get(), window_manager()->GetCurrentFocusedWindow());
+  EXPECT_EQ(window_.get(),
+            window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(window_->GetWidget(),
             screen_->GetLocalProcessWidgetAtPoint({100, 100}, {}));
   EXPECT_EQ(gfx::kNullAcceleratedWidget,

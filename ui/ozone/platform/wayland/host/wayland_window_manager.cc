@@ -67,6 +67,17 @@ WaylandWindow* WaylandWindowManager::GetWindowWithLargestBounds() const {
 WaylandWindow* WaylandWindowManager::GetCurrentFocusedWindow() const {
   for (const auto& entry : window_map_) {
     WaylandWindow* window = entry.second;
+    if (window->has_pointer_focus() || window->has_touch_focus() ||
+        window->has_keyboard_focus())
+      return window;
+  }
+  return nullptr;
+}
+
+WaylandWindow* WaylandWindowManager::GetCurrentPointerOrTouchFocusedWindow()
+    const {
+  for (const auto& entry : window_map_) {
+    WaylandWindow* window = entry.second;
     if (window->has_pointer_focus() || window->has_touch_focus())
       return window;
   }

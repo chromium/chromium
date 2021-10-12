@@ -102,7 +102,7 @@ bool WaylandWindowDragController::StartDragSession() {
   if (state_ != State::kIdle)
     return true;
 
-  origin_window_ = window_manager_->GetCurrentFocusedWindow();
+  origin_window_ = window_manager_->GetCurrentPointerOrTouchFocusedWindow();
   if (!origin_window_) {
     LOG(ERROR) << "Failed to get origin window.";
     return false;
@@ -175,7 +175,8 @@ void WaylandWindowDragController::StopDragging() {
   // snapped into a tab strip. So switch to |kAttached| state, store the focused
   // window as the pointer grabber and ask to quit the nested loop.
   state_ = State::kAttaching;
-  pointer_grab_owner_ = window_manager_->GetCurrentFocusedWindow();
+  pointer_grab_owner_ =
+      window_manager_->GetCurrentPointerOrTouchFocusedWindow();
   DCHECK(pointer_grab_owner_);
   QuitLoop();
 }

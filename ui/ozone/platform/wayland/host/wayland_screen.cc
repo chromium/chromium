@@ -234,7 +234,8 @@ gfx::Point WaylandScreen::GetCursorScreenPoint() const {
   // the last known cursor position. Otherwise, return such a point, which is
   // not contained by any of the windows.
   auto* cursor_position = connection_->wayland_cursor_position();
-  if (connection_->wayland_window_manager()->GetCurrentFocusedWindow() &&
+  if (connection_->wayland_window_manager()
+          ->GetCurrentPointerOrTouchFocusedWindow() &&
       cursor_position)
     return cursor_position->GetCursorSurfacePoint();
 
@@ -249,8 +250,8 @@ gfx::AcceleratedWidget WaylandScreen::GetAcceleratedWidgetAtScreenPoint(
     const gfx::Point& point) const {
   // It is safe to check only for focused windows and test if they contain the
   // point or not.
-  auto* window =
-      connection_->wayland_window_manager()->GetCurrentFocusedWindow();
+  auto* window = connection_->wayland_window_manager()
+                     ->GetCurrentPointerOrTouchFocusedWindow();
   if (window && window->GetBoundsInDIP().Contains(point))
     return window->GetWidget();
   return gfx::kNullAcceleratedWidget;

@@ -51,8 +51,11 @@ class WaylandWindowManager {
   // Returns a window with largests bounds.
   WaylandWindow* GetWindowWithLargestBounds() const;
 
-  // Returns a current focused window by pointer or touch.
+  // Returns a current focused window by pointer, touch, or keyboard.
   WaylandWindow* GetCurrentFocusedWindow() const;
+
+  // Returns a current focused window by pointer or touch.
+  WaylandWindow* GetCurrentPointerOrTouchFocusedWindow() const;
 
   // Returns a current focused window by pointer.
   WaylandWindow* GetCurrentPointerFocusedWindow() const;
