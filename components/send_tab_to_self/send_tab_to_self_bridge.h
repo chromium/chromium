@@ -173,9 +173,8 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   // A pointer to the most recently used entry used for deduplication.
   const SendTabToSelfEntry* mru_entry_;
 
-  // A list of target devices and their associated cache information.
-  // TODO(crbug.com/1257573): Rename. This used to be a map, hence the name.
-  std::vector<TargetDeviceInfo> target_device_name_to_cache_info_;
+  // The list of target devices, deduplicated and sorted by most recently used.
+  std::vector<TargetDeviceInfo> target_device_info_sorted_list_;
 
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};

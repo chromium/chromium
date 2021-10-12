@@ -451,12 +451,12 @@ bool SendTabToSelfBridge::HasValidTargetDevice() {
 std::vector<TargetDeviceInfo>
 SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
   // Filter expired devices (some timestamps in the cached list may now be too
-  // old). |target_device_name_to_cache_info_| is copied here to avoid mutations
+  // old). |target_device_info_sorted_list_| is copied here to avoid mutations
   // inside a getter.
   // TODO(crbug.com/1257573): Consider having a timer that fires on the next
   // expiry and removes the corresponding device(s) then.
   std::vector<TargetDeviceInfo> non_expired_devices =
-      target_device_name_to_cache_info_;
+      target_device_info_sorted_list_;
   const base::Time now = clock_->Now();
   base::EraseIf(non_expired_devices, [now](const TargetDeviceInfo& device) {
     return now - device.last_updated_timestamp > kDeviceExpiration;
@@ -643,7 +643,7 @@ void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
                             device2->last_updated_timestamp();
                    });
 
-  target_device_name_to_cache_info_.clear();
+  target_device_info_sorted_list_.clear();
   std::set<std::string> unique_device_names;
   std::unordered_map<std::string, int> short_names_counter;
   for (const auto& device : all_devices) {
@@ -680,12 +680,12 @@ void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
       TargetDeviceInfo target_device_info(
           device_names.full_name, device_names.short_name, device->guid(),
           device->device_type(), device->last_updated_timestamp());
-      target_device_name_to_cache_info_.push_back(target_device_info);
+      target_device_info_sorted_list_.push_back(target_device_info);
 
       short_names_counter[device_names.short_name]++;
     }
   }
-  for (auto& device_info : target_device_name_to_cache_info_) {
+  for (auto& device_info : target_device_info_sorted_list_) {
     bool unique_short_name = short_names_counter[device_info.short_name] == 1;
     device_info.device_name =
         (unique_short_name ? device_info.short_name : device_info.full_name);
