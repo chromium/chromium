@@ -107,10 +107,22 @@ class BrowserUtilTest : public testing::Test {
   ScopedTestingLocalState local_state_;
 };
 
-TEST_F(BrowserUtilTest, LacrosEnabledByFlag) {
+class LacrosSupportBrowserUtilTest : public BrowserUtilTest {
+ public:
+  LacrosSupportBrowserUtilTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kLacrosSupport);
+  }
+  ~LacrosSupportBrowserUtilTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(LacrosSupportBrowserUtilTest, LacrosEnabledByFlag) {
   AddRegularUser("user@test.com");
 
-  // Lacros is disabled because the feature isn't enabled by default.
+  // Lacros is initially disabled.
   EXPECT_FALSE(browser_util::IsLacrosEnabled());
 
   // Enabling the flag enables Lacros.
@@ -202,7 +214,7 @@ TEST_F(BrowserUtilTest, BlockedForChildUser) {
   EXPECT_FALSE(browser_util::IsLacrosEnabled(Channel::UNKNOWN));
 }
 
-TEST_F(BrowserUtilTest, AshWebBrowserEnabled) {
+TEST_F(LacrosSupportBrowserUtilTest, AshWebBrowserEnabled) {
   base::test::ScopedFeatureList feature_list;
   AddRegularUser("user@managedchrome.com");
   testing_profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
@@ -278,7 +290,7 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserDisabled) {
   EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled(Channel::STABLE));
 }
 
-TEST_F(BrowserUtilTest, LacrosPrimaryBrowserByFlags) {
+TEST_F(LacrosSupportBrowserUtilTest, LacrosPrimaryBrowserByFlags) {
   AddRegularUser("user@test.com");
   { EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser()); }
 
