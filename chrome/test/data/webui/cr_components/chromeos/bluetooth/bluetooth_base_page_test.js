@@ -49,12 +49,19 @@ suite('CrComponentsBluetoothBasePageTest', function() {
     flush();
   }
 
-  test('Title is shown', function() {
+  test('Title and loading indicator are shown', function() {
     const title = bluetoothBasePage.shadowRoot.querySelector('#title');
     assertTrue(!!title);
     assertEquals(
         bluetoothBasePage.i18n('bluetoothPairNewDevice'),
         title.textContent.trim());
+
+    const getProgress = () =>
+        bluetoothBasePage.shadowRoot.querySelector('paper-progress');
+    assertFalse(!!getProgress());
+    bluetoothBasePage.showScanProgress = true;
+    flush();
+    assertTrue(!!getProgress());
   });
 
   test('Button states', function() {
