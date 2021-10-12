@@ -735,15 +735,6 @@ class ExtensionPrefsFlags : public ExtensionPrefsTest {
 
     {
       base::DictionaryValue dictionary;
-      dictionary.SetString(manifest_keys::kName, "from_bookmark");
-      dictionary.SetString(manifest_keys::kVersion, "0.1");
-      dictionary.SetInteger(manifest_keys::kManifestVersion, 2);
-      bookmark_extension_ = prefs_.AddExtensionWithManifestAndFlags(
-          dictionary, ManifestLocation::kInternal, Extension::FROM_BOOKMARK);
-    }
-
-    {
-      base::DictionaryValue dictionary;
       dictionary.SetString(manifest_keys::kName, "was_installed_by_default");
       dictionary.SetString(manifest_keys::kVersion, "0.1");
       dictionary.SetInteger(manifest_keys::kManifestVersion, 2);
@@ -765,18 +756,12 @@ class ExtensionPrefsFlags : public ExtensionPrefsTest {
 
   void Verify() override {
     EXPECT_TRUE(prefs()->IsFromWebStore(webstore_extension_->id()));
-    EXPECT_FALSE(prefs()->IsFromBookmark(webstore_extension_->id()));
-
-    EXPECT_TRUE(prefs()->IsFromBookmark(bookmark_extension_->id()));
-    EXPECT_FALSE(prefs()->IsFromWebStore(bookmark_extension_->id()));
-
     EXPECT_TRUE(prefs()->WasInstalledByDefault(default_extension_->id()));
     EXPECT_TRUE(prefs()->WasInstalledByOem(oem_extension_->id()));
   }
 
  private:
   scoped_refptr<Extension> webstore_extension_;
-  scoped_refptr<Extension> bookmark_extension_;
   scoped_refptr<Extension> default_extension_;
   scoped_refptr<Extension> oem_extension_;
 };

@@ -1261,8 +1261,6 @@ TEST_F(ExtensionServiceTest, InstallObserverNotified) {
 // Tests that flags passed to OnExternalExtensionFileFound() make it to the
 // extension object.
 TEST_F(ExtensionServiceTest, InstallingExternalExtensionWithFlags) {
-  const char kPrefFromBookmark[] = "from_bookmark";
-
   InitializeEmptyExtensionService();
 
   base::FilePath path = data_dir().AppendASCII("good.crx");
@@ -1281,12 +1279,10 @@ TEST_F(ExtensionServiceTest, InstallingExternalExtensionWithFlags) {
       registry()->enabled_extensions().GetByID(good_crx);
   ASSERT_TRUE(extension);
   ASSERT_TRUE(extension->from_bookmark());
-  ASSERT_TRUE(ValidateBooleanPref(good_crx, kPrefFromBookmark, true));
 
   // Upgrade to version 2.0, the flag should be preserved.
   path = data_dir().AppendASCII("good2.crx");
   UpdateExtension(good_crx, path, ENABLED);
-  ASSERT_TRUE(ValidateBooleanPref(good_crx, kPrefFromBookmark, true));
   extension = registry()->enabled_extensions().GetByID(good_crx);
   ASSERT_TRUE(extension);
   ASSERT_TRUE(extension->from_bookmark());
@@ -4680,8 +4676,6 @@ TEST_F(ExtensionServiceTest, PreinstalledAppsInstall) {
 
 TEST_F(ExtensionServiceTest, MAYBE_UpdatingPendingExternalExtensionWithFlags) {
   // Regression test for crbug.com/627522
-  const char kPrefFromBookmark[] = "from_bookmark";
-
   InitializeEmptyExtensionService();
 
   base::FilePath path = data_dir().AppendASCII("good.crx");
@@ -4701,7 +4695,6 @@ TEST_F(ExtensionServiceTest, MAYBE_UpdatingPendingExternalExtensionWithFlags) {
   // Upgrade to version 2.0, the flag should be preserved.
   path = data_dir().AppendASCII("good2.crx");
   UpdateExtension(good_crx, path, ENABLED);
-  ASSERT_TRUE(ValidateBooleanPref(good_crx, kPrefFromBookmark, true));
   const Extension* extension =
       registry()->enabled_extensions().GetByID(good_crx);
   ASSERT_TRUE(extension);

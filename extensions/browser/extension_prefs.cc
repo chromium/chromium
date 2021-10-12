@@ -174,10 +174,6 @@ constexpr const char kPrefCreationFlags[] = "creation_flags";
 // Chrome Web Store.
 constexpr const char kPrefFromWebStore[] = "from_webstore";
 
-// A preference that indicates whether the extension was installed from a
-// mock App created from a bookmark.
-constexpr const char kPrefFromBookmark[] = "from_bookmark";
-
 // A preference that indicates whether the extension was installed as a
 // default app.
 constexpr const char kPrefWasInstalledByDefault[] = "was_installed_by_default";
@@ -1686,21 +1682,11 @@ bool ExtensionPrefs::IsFromWebStore(
   return false;
 }
 
-bool ExtensionPrefs::IsFromBookmark(
-    const std::string& extension_id) const {
-  const base::DictionaryValue* dictionary = GetExtensionPref(extension_id);
-  if (dictionary)
-    return dictionary->FindBoolKey(kPrefFromBookmark).value_or(false);
-  return false;
-}
-
 int ExtensionPrefs::GetCreationFlags(const std::string& extension_id) const {
   int creation_flags = Extension::NO_FLAGS;
   if (!ReadPrefAsInteger(extension_id, kPrefCreationFlags, &creation_flags)) {
     // Since kPrefCreationFlags was added later, it will be missing for
     // previously installed extensions.
-    if (IsFromBookmark(extension_id))
-      creation_flags |= Extension::FROM_BOOKMARK;
     if (IsFromWebStore(extension_id))
       creation_flags |= Extension::FROM_WEBSTORE;
     if (WasInstalledByDefault(extension_id))
@@ -2331,7 +2317,6 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
                              static_cast<int>(extension->location()));
   extension_dict->SetInteger(kPrefCreationFlags, extension->creation_flags());
   extension_dict->SetBoolean(kPrefFromWebStore, extension->from_webstore());
-  extension_dict->SetBoolean(kPrefFromBookmark, extension->from_bookmark());
   extension_dict->SetBoolean(kPrefWasInstalledByDefault,
                              extension->was_installed_by_default());
   extension_dict->SetBoolean(kPrefWasInstalledByOem,
