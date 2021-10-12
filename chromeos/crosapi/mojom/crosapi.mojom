@@ -580,6 +580,8 @@ enum CreationResult {
   kUnsupported = 2,
   kBrowserNotRunning = 3,
   kServiceDisconnected = 4,
+  [MinVersion=1] kProfileNotExist = 5,
+  [MinVersion=1] kBrowserWindowUnavailable = 6,
 };
 
 // BrowserInitParams is a set of parameters for initialization of browsers

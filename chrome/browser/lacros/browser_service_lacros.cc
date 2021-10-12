@@ -86,9 +86,15 @@ void BrowserServiceLacros::NewWindow(bool incognito,
 void BrowserServiceLacros::NewFullscreenWindow(
     const GURL& url,
     NewFullscreenWindowCallback callback) {
-  // TODO(anqing): refactor the following window control logic and make it
-  // shared by both lacros and ash chrome.
+  // Get the current user profile. Report an error to ash if it doesn't exist.
   Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
+  if (!profile) {
+    std::move(callback).Run(crosapi::mojom::CreationResult::kProfileNotExist);
+    return;
+  }
+
+  // Launch a fullscreen window with the user profile, and navigate to the
+  // target URL.
   Browser::CreateParams params = Browser::CreateParams::CreateForApp(
       "app_name", true, gfx::Rect(), profile, false);
   params.initial_show_state = ui::SHOW_STATE_FULLSCREEN;
@@ -96,8 +102,14 @@ void BrowserServiceLacros::NewFullscreenWindow(
   NavigateParams nav_params(browser, url,
                             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
   Navigate(&nav_params);
-  CHECK(browser);
-  CHECK(browser->window());
+
+  // Verify the creation result of browser window.
+  if (!browser || !browser->window()) {
+    std::move(callback).Run(
+        crosapi::mojom::CreationResult::kBrowserWindowUnavailable);
+    return;
+  }
+
   browser->window()->Show();
 
   // TODO(crbug/1247638): we'd better figure out a better solution to move this
@@ -107,8 +119,9 @@ void BrowserServiceLacros::NewFullscreenWindow(
     KioskSessionServiceLacros::Get()->InitWebKioskSession(browser);
   }
 
-  // TODO(anqing): valicate current profile and window status, and return
-  // non-success result if anything is wrong.
+  // Report a success result to ash. Please note that showing Lacros window is
+  // asynchronous. Ash-chrome should use the `exo::WMHelper` class rather than
+  // this callback method call to track window creation status.
   std::move(callback).Run(crosapi::mojom::CreationResult::kSuccess);
 }
 
