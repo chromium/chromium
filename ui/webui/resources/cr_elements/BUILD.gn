@@ -53,6 +53,7 @@ preprocess_if_expr("preprocess_src") {
     "cr_search_field/cr_search_field_behavior.js",
     "cr_splitter/cr_splitter.js",
     "find_shortcut_behavior.js",
+    "find_shortcut_mixin.ts",
     "mouse_hoverable_mixin.js",
   ]
 }

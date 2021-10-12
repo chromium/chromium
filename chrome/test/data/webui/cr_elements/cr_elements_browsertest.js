@@ -122,6 +122,17 @@ TEST_F('CrElementsFindShortcutBehaviorTest', 'All', function() {
   mocha.run();
 });
 
+var CrElementsFindShortcutMixinTest = class extends CrElementsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=cr_elements/find_shortcut_mixin_test.js';
+  }
+};
+
+TEST_F('CrElementsFindShortcutMixinTest', 'All', function() {
+  mocha.run();
+});
+
 var CrElementsFingerprintProgressArcTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {

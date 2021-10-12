@@ -11,6 +11,8 @@ import {isTextInputElement} from '../js/util.m.js';
  * @fileoverview Listens for a find keyboard shortcut (i.e. Ctrl/Cmd+f or /)
  * and keeps track of an stack of potential listeners. Only the listener at the
  * top of the stack will be notified that a find shortcut has been invoked.
+ * NOTE: This file is deprecated in favor of find_shortcut_mixin.ts. Don't use
+ * it in new code.
  */
 
 export const FindShortcutManager = (() => {
