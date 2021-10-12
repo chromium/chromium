@@ -9,7 +9,7 @@
 
 #include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_queuing_strategy_init.h"
 #include "third_party/blink/renderer/core/streams/count_queuing_strategy.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"

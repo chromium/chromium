@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediasource/track_default.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/html/track/audio_track.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html/track/video_track.h"
