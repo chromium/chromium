@@ -107,7 +107,7 @@ class BASE_EXPORT PartitionAddressSpace {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     } else if (IsInBRPPool(address)) {
       pool = GetBRPPool();
-      base = brp_pool_base_address_;
+      base = setup_.brp_pool_base_address_;
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
     } else if (IsInConfigurablePool(address)) {
       pool = GetConfigurablePool();
