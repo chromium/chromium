@@ -6,18 +6,34 @@
 
 #include <utility>
 
+#include "ash/public/cpp/notification_utils.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/cellular_utils.h"
 #include "chromeos/network/network_handler.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace policy {
+
+namespace {
+
+constexpr char kNotifierESimPolicy[] = "policy.esim-policy";
+
+}  // namespace
+
+// static
+const char DeviceCommandResetEuiccJob::kResetEuiccNotificationId[] =
+    "cros_reset_euicc";
 
 DeviceCommandResetEuiccJob::DeviceCommandResetEuiccJob()
     : DeviceCommandResetEuiccJob(
@@ -50,8 +66,7 @@ void DeviceCommandResetEuiccJob::RunImpl(CallbackWithResult succeeded_callback,
     return;
   }
 
-  // TODO(crbug.com/1231305) Trigger a notification if an eSIM network is
-  // active.
+  ShowResetEuiccNotification();
   SYSLOG(INFO) << "Executing EUICC reset memory remote command";
   cellular_inhibitor_->InhibitCellularScanning(
       chromeos::CellularInhibitor::InhibitReason::kResettingEuiccMemory,
@@ -104,6 +119,26 @@ void DeviceCommandResetEuiccJob::RunResultCallback(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), /*result_payload=*/nullptr));
+}
+
+void DeviceCommandResetEuiccJob::ShowResetEuiccNotification() {
+  std::unique_ptr<message_center::Notification> notification =
+      ash::CreateSystemNotification(
+          message_center::NOTIFICATION_TYPE_SIMPLE, kResetEuiccNotificationId,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_NETWORK_RESET_EUICC_NOTIFICATION_TITLE),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_NETWORK_RESET_EUICC_NOTIFICATION_MESSAGE),
+          /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kNotifierESimPolicy),
+          message_center::RichNotificationData(),
+          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+              base::DoNothingAs<void()>()),
+          /*small_image=*/gfx::VectorIcon(),
+          message_center::SystemNotificationWarningLevel::NORMAL);
+  SystemNotificationHelper::GetInstance()->Display(*notification);
 }
 
 }  // namespace policy

@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/policy/remote_commands/device_command_reset_euicc_job.h"
 
+#include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
@@ -13,6 +16,7 @@
 #include "chromeos/network/network_state_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace policy {
 
@@ -109,6 +113,10 @@ class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
 
 TEST_F(DeviceCommandResetEuiccJobTest, ResetEuicc) {
   base::RunLoop run_loop;
+  TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
+      std::make_unique<SystemNotificationHelper>());
+  NotificationDisplayServiceTester tester(/*profile=*/nullptr);
+
   std::unique_ptr<RemoteCommandJob> job = CreateResetEuiccJob(test_start_time_);
   EXPECT_TRUE(
       job->Run(base::Time::Now(), base::TimeTicks::Now(),
@@ -117,10 +125,16 @@ TEST_F(DeviceCommandResetEuiccJobTest, ResetEuicc) {
                               RemoteCommandJob::Status::SUCCEEDED,
                               /*expected_profile_count=*/0)));
   run_loop.Run();
+  // Verify that the notification should be displayed.
+  EXPECT_TRUE(tester.GetNotification(
+      DeviceCommandResetEuiccJob::kResetEuiccNotificationId));
 }
 
 TEST_F(DeviceCommandResetEuiccJobTest, ResetEuiccInhibitFailure) {
   chromeos::ShillManagerClient::Get()->GetTestInterface()->ClearDevices();
+  TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
+      std::make_unique<SystemNotificationHelper>());
+  NotificationDisplayServiceTester tester(/*profile=*/nullptr);
   base::RunLoop run_loop;
   std::unique_ptr<RemoteCommandJob> job = CreateResetEuiccJob(test_start_time_);
   EXPECT_TRUE(
@@ -130,6 +144,9 @@ TEST_F(DeviceCommandResetEuiccJobTest, ResetEuiccInhibitFailure) {
                               RemoteCommandJob::Status::FAILED,
                               /*expected_profile_count=*/2)));
   run_loop.Run();
+  // Verify that the notification should be displayed.
+  EXPECT_TRUE(tester.GetNotification(
+      DeviceCommandResetEuiccJob::kResetEuiccNotificationId));
 }
 
 }  // namespace policy

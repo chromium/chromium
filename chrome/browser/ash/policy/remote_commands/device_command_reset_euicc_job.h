@@ -36,6 +36,8 @@ class DeviceCommandResetEuiccJob : public RemoteCommandJob {
   static std::unique_ptr<DeviceCommandResetEuiccJob> CreateForTesting(
       chromeos::CellularInhibitor* cellular_inhbitor);
 
+  static const char kResetEuiccNotificationId[];
+
   // RemoteCommandJob:
   enterprise_management::RemoteCommand_Type GetType() const override;
 
@@ -58,6 +60,7 @@ class DeviceCommandResetEuiccJob : public RemoteCommandJob {
       std::unique_ptr<chromeos::CellularInhibitor::InhibitLock> inhibit_lock,
       chromeos::HermesResponseStatus status);
   void RunResultCallback(CallbackWithResult callback);
+  void ShowResetEuiccNotification();
 
   chromeos::CellularInhibitor* const cellular_inhibitor_;
   base::WeakPtrFactory<DeviceCommandResetEuiccJob> weak_ptr_factory_{this};

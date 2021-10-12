@@ -1694,6 +1694,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_NETWORK_CELLULAR_SETUP_NOTIFICATION_MESSAGE" desc="Message displayed in the system notification shown post-OOBE if a user has no activated mobile networks.">
         Tap to complete set up
       </message>
+      <message name="IDS_ASH_NETWORK_RESET_EUICC_NOTIFICATION_TITLE" desc="Title used for the system notification shown when the reset euicc operation is initiated.">
+        eSIM connection unavailable
+      </message>
+      <message name="IDS_ASH_NETWORK_RESET_EUICC_NOTIFICATION_MESSAGE" desc="Message displayed in the system notification shown when the reset euicc operation is initiated.">
+        Your administrator has removed all eSIM profiles. Contact your administrator for more info.
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECTED_LABEL" desc="The label text used when network is not connected. [CHAR_LIMIT=14]">
         Not connected
       </message>
