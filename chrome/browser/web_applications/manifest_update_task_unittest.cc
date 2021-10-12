@@ -5,6 +5,8 @@
 #include "chrome/browser/web_applications/manifest_update_task.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
@@ -124,6 +126,361 @@ TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedExtension) {
       GetDefaultManifestFileHandlers(), GURL("http://foo.com"));
 
   EXPECT_NE(old_handlers, new_handlers);
+}
+
+std::vector<apps::IconInfo> GenerateIconInfosFrom(
+    const IconBitmaps& downloaded) {
+  std::vector<apps::IconInfo> result;
+  for (auto entry : downloaded.any) {
+    apps::IconInfo icon_info(GURL(), entry.first);
+    icon_info.purpose = apps::IconInfo::Purpose::kAny;
+    result.push_back(icon_info);
+  }
+  for (auto entry : downloaded.maskable) {
+    apps::IconInfo icon_info(GURL(), entry.first);
+    icon_info.purpose = apps::IconInfo::Purpose::kMaskable;
+    result.push_back(icon_info);
+  }
+  for (auto entry : downloaded.monochrome) {
+    apps::IconInfo icon_info(GURL(), entry.first);
+    icon_info.purpose = apps::IconInfo::Purpose::kMonochrome;
+    result.push_back(icon_info);
+  }
+  return result;
+}
+
+TEST_F(ManifestUpdateTaskTest, TestImageComparison) {
+  {
+    // Test case: Find first difference with two empty IconBitmaps as input
+    // should report no differences.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+    IconDiff diff = HaveIconBitmapsChanged(
+        on_disk, downloaded, GenerateIconInfosFrom(on_disk),
+        GenerateIconInfosFrom(downloaded),
+        /* end_when_mismatch_detected= */ true);
+    EXPECT_EQ(NO_CHANGE_DETECTED, diff.diff_results);
+    EXPECT_TRUE(diff.before.drawsNothing());
+    EXPECT_TRUE(diff.after.drawsNothing());
+  }
+  {
+    // Test case: Find all differences with two empty IconBitmaps as input
+    // should report no differences.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+
+    IconDiff diff = HaveIconBitmapsChanged(
+        on_disk, downloaded, GenerateIconInfosFrom(on_disk),
+        GenerateIconInfosFrom(downloaded),
+        /* end_when_mismatch_detected= */ false);
+    EXPECT_EQ(NO_CHANGE_DETECTED, diff.diff_results);
+    EXPECT_TRUE(diff.before.drawsNothing());
+    EXPECT_TRUE(diff.after.drawsNothing());
+  }
+
+  {
+    // Test case: Find first difference when one new image has been downloaded
+    // should report size mismatch.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+    AddGeneratedIcon(&downloaded.any, icon_size::k512, SK_ColorYELLOW);
+
+    IconDiff diff = HaveIconBitmapsChanged(
+        on_disk, downloaded, GenerateIconInfosFrom(on_disk),
+        GenerateIconInfosFrom(downloaded),
+        /* end_when_mismatch_detected= */ true);
+    EXPECT_EQ(MISMATCHED_IMAGE_SIZES, diff.diff_results);
+    EXPECT_TRUE(diff.before.drawsNothing());
+    EXPECT_TRUE(diff.after.drawsNothing());
+  }
+  {
+    // Test case: Find all differences when one new image has been downloaded
+    // should report size mismatch.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+    AddGeneratedIcon(&downloaded.any, icon_size::k512, SK_ColorYELLOW);
+
+    IconDiff diff = HaveIconBitmapsChanged(
+        on_disk, downloaded, GenerateIconInfosFrom(on_disk),
+        GenerateIconInfosFrom(downloaded),
+        /* end_when_mismatch_detected= */ false);
+    EXPECT_EQ(MISMATCHED_IMAGE_SIZES, diff.diff_results);
+    EXPECT_TRUE(diff.before.drawsNothing());
+    EXPECT_TRUE(diff.after.drawsNothing());
+  }
+
+  {
+    // Test case: Find first difference when one image has been removed
+    // should report size mismatch.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+    AddGeneratedIcon(&on_disk.any, icon_size::k512, SK_ColorYELLOW);
+
+    IconDiff diff = HaveIconBitmapsChanged(
+        on_disk, downloaded, GenerateIconInfosFrom(on_disk),
+        GenerateIconInfosFrom(downloaded),
+        /* end_when_mismatch_detected= */ true);
+    EXPECT_EQ(MISMATCHED_IMAGE_SIZES, diff.diff_results);
+    EXPECT_TRUE(diff.before.drawsNothing());
+    EXPECT_TRUE(diff.after.drawsNothing());
+  }
+  {
+    // Test case: Find all differences when one new image has been removed
+    // should report size mismatch.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+    AddGeneratedIcon(&on_disk.any, icon_size::k512, SK_ColorYELLOW);
+
+    IconDiff diff = HaveIconBitmapsChanged(
+        on_disk, downloaded, GenerateIconInfosFrom(on_disk),
+        GenerateIconInfosFrom(downloaded),
+        /* end_when_mismatch_detected= */ false);
+    EXPECT_EQ(MISMATCHED_IMAGE_SIZES, diff.diff_results);
+    EXPECT_TRUE(diff.before.drawsNothing());
+    EXPECT_TRUE(diff.after.drawsNothing());
+  }
+
+  {
+    // Test case: Find first difference, when one image has been removed and one
+    // added, should report size mismatch.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+    AddGeneratedIcon(&on_disk.any, icon_size::k256, SK_ColorRED);
+    AddGeneratedIcon(&downloaded.any, icon_size::k512, SK_ColorYELLOW);
+
+    IconDiff diff = HaveIconBitmapsChanged(on_disk, downloaded,
+                                           GenerateIconInfosFrom(on_disk),
+                                           GenerateIconInfosFrom(downloaded),
+                                           /* end_when_mismatch_detected= */
+                                           true);
+    // First mismatch found will be the added image, then it will stop.
+    EXPECT_EQ(MISMATCHED_IMAGE_SIZES, diff.diff_results);
+    EXPECT_TRUE(diff.before.drawsNothing());
+    EXPECT_TRUE(diff.after.drawsNothing());
+  }
+  {
+    // Test case: Find all differences, when one image has been removed and one
+    // added, should report size mismatch.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+    AddGeneratedIcon(&on_disk.any, icon_size::k256, SK_ColorRED);
+    AddGeneratedIcon(&downloaded.any, icon_size::k512, SK_ColorYELLOW);
+
+    IconDiff diff = HaveIconBitmapsChanged(on_disk, downloaded,
+                                           GenerateIconInfosFrom(on_disk),
+                                           GenerateIconInfosFrom(downloaded),
+                                           /* end_when_mismatch_detected=
+                                            */
+                                           false);
+    EXPECT_EQ(MISMATCHED_IMAGE_SIZES, diff.diff_results);
+    EXPECT_TRUE(diff.before.drawsNothing());
+    EXPECT_TRUE(diff.after.drawsNothing());
+  }
+
+  {
+    // Test case: Find first difference, when one image has been removed and one
+    // added (but across maps), should report size mismatch.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+    AddGeneratedIcon(&on_disk.maskable, icon_size::k256, SK_ColorRED);
+    AddGeneratedIcon(&downloaded.monochrome, icon_size::k512, SK_ColorYELLOW);
+
+    IconDiff diff = HaveIconBitmapsChanged(on_disk, downloaded,
+                                           GenerateIconInfosFrom(on_disk),
+                                           GenerateIconInfosFrom(downloaded),
+                                           /* end_when_mismatch_detected=
+                                            */
+                                           true);
+    // First mismatch found will be the fact that one of the maps has changed
+    // size.
+    EXPECT_EQ(MISMATCHED_IMAGE_SIZES, diff.diff_results);
+    EXPECT_TRUE(diff.before.drawsNothing());
+    EXPECT_TRUE(diff.after.drawsNothing());
+  }
+  {
+    // Test case: Find all differences, when one image has been removed and one
+    // added (but across maps), should report size mismatch.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+    AddGeneratedIcon(&on_disk.maskable, icon_size::k256, SK_ColorRED);
+    AddGeneratedIcon(&downloaded.monochrome, icon_size::k512, SK_ColorYELLOW);
+
+    IconDiff diff = HaveIconBitmapsChanged(on_disk, downloaded,
+                                           GenerateIconInfosFrom(on_disk),
+                                           GenerateIconInfosFrom(downloaded),
+                                           /* end_when_mismatch_detected= */
+                                           false);
+    EXPECT_EQ(MISMATCHED_IMAGE_SIZES, diff.diff_results);
+    EXPECT_TRUE(diff.before.drawsNothing());
+    EXPECT_TRUE(diff.after.drawsNothing());
+  }
+
+  {
+    // Test case: Find first difference, when one image has had its bits
+    // updated, should return ONE_OR_MORE_ICONS_CHANGED.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+    AddGeneratedIcon(&on_disk.any, icon_size::k256, SK_ColorRED);
+    AddGeneratedIcon(&downloaded.any, icon_size::k256, SK_ColorYELLOW);
+
+    IconDiff diff = HaveIconBitmapsChanged(on_disk, downloaded,
+                                           GenerateIconInfosFrom(on_disk),
+                                           GenerateIconInfosFrom(downloaded),
+                                           /* end_when_mismatch_detected= */
+                                           true);
+    EXPECT_EQ(ONE_OR_MORE_ICONS_CHANGED, diff.diff_results);
+    // The expectation here might, at a glance, seem unusual because there *has*
+    // been a change in only a single icon. However, this was detected via the
+    // short pass, which does not provide |before| and |after| images (only the
+    // longer pass will know whether more images changed).
+    EXPECT_TRUE(diff.before.drawsNothing());
+    EXPECT_TRUE(diff.after.drawsNothing());
+  }
+  {
+    // Test case: Find all differences, when one image has had its bits
+    // updated, should return SINGLE_ICON_CHANGED.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+    AddGeneratedIcon(&on_disk.any, icon_size::k256, SK_ColorRED);
+    AddGeneratedIcon(&downloaded.any, icon_size::k256, SK_ColorYELLOW);
+
+    IconDiff diff = HaveIconBitmapsChanged(
+        on_disk, downloaded, GenerateIconInfosFrom(on_disk),
+        GenerateIconInfosFrom(downloaded),
+        /* end_when_mismatch_detected= */ false);
+    EXPECT_EQ(SINGLE_ICON_CHANGED, diff.diff_results);
+    // The function has checked all possibilities and is able to provide before
+    // and after images, because it knows only a single image changed.
+    EXPECT_FALSE(diff.before.drawsNothing());
+    EXPECT_FALSE(diff.after.drawsNothing());
+  }
+
+  {
+    // Test case: Find first difference, when two images have had their bits
+    // updated, should return ONE_OR_MORE_ICONS_CHANGED.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+    AddGeneratedIcon(&on_disk.any, icon_size::k256, SK_ColorRED);
+    AddGeneratedIcon(&on_disk.any, icon_size::k512, SK_ColorRED);
+    AddGeneratedIcon(&downloaded.any, icon_size::k256, SK_ColorYELLOW);
+    AddGeneratedIcon(&downloaded.any, icon_size::k512, SK_ColorYELLOW);
+
+    IconDiff diff = HaveIconBitmapsChanged(on_disk, downloaded,
+                                           GenerateIconInfosFrom(on_disk),
+                                           GenerateIconInfosFrom(downloaded),
+                                           /* end_when_mismatch_detected= */
+                                           true);
+    EXPECT_EQ(ONE_OR_MORE_ICONS_CHANGED, diff.diff_results);
+    // Since more than two images changed, the |before| and |after| isn't
+    // provided.
+    EXPECT_TRUE(diff.before.drawsNothing());
+    EXPECT_TRUE(diff.after.drawsNothing());
+  }
+  {
+    // Test case: Find all differences, when two images have had their bits
+    // updated, should return MULTIPLE_ICONS_CHANGED.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+    AddGeneratedIcon(&on_disk.any, icon_size::k256, SK_ColorRED);
+    AddGeneratedIcon(&on_disk.any, icon_size::k512, SK_ColorRED);
+    AddGeneratedIcon(&downloaded.any, icon_size::k256, SK_ColorYELLOW);
+    AddGeneratedIcon(&downloaded.any, icon_size::k512, SK_ColorYELLOW);
+
+    IconDiff diff = HaveIconBitmapsChanged(on_disk, downloaded,
+                                           GenerateIconInfosFrom(on_disk),
+                                           GenerateIconInfosFrom(downloaded),
+                                           /* end_when_mismatch_detected= */
+                                           false);
+    EXPECT_EQ(MULTIPLE_ICONS_CHANGED, diff.diff_results);
+    EXPECT_TRUE(diff.before.drawsNothing());
+    EXPECT_TRUE(diff.after.drawsNothing());
+  }
+
+  {
+    // Test case: Find first difference, when two images have had their bits
+    // updated (across |any| and |maskable|), should return
+    // ONE_OR_MORE_ICONS_CHANGED.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+    AddGeneratedIcon(&on_disk.any, icon_size::k256, SK_ColorRED);
+    AddGeneratedIcon(&on_disk.maskable, icon_size::k512, SK_ColorRED);
+    AddGeneratedIcon(&downloaded.any, icon_size::k256, SK_ColorYELLOW);
+    AddGeneratedIcon(&downloaded.maskable, icon_size::k512, SK_ColorYELLOW);
+
+    IconDiff diff = HaveIconBitmapsChanged(on_disk, downloaded,
+                                           GenerateIconInfosFrom(on_disk),
+                                           GenerateIconInfosFrom(downloaded),
+                                           /* end_when_mismatch_detected= */
+                                           true);
+    EXPECT_EQ(ONE_OR_MORE_ICONS_CHANGED, diff.diff_results);
+    // Since more than two images changed, the |before| and |after| isn't
+    // provided.
+    EXPECT_TRUE(diff.before.drawsNothing());
+    EXPECT_TRUE(diff.after.drawsNothing());
+  }
+  {
+    // Test case: Find all differences, when two images have had their bits
+    // updated (across |any| and |maskable|), should return
+    // MULTIPLE_ICONS_CHANGED.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+    AddGeneratedIcon(&on_disk.any, icon_size::k256, SK_ColorRED);
+    AddGeneratedIcon(&on_disk.maskable, icon_size::k512, SK_ColorRED);
+    AddGeneratedIcon(&downloaded.any, icon_size::k256, SK_ColorYELLOW);
+    AddGeneratedIcon(&downloaded.maskable, icon_size::k512, SK_ColorYELLOW);
+
+    IconDiff diff = HaveIconBitmapsChanged(on_disk, downloaded,
+                                           GenerateIconInfosFrom(on_disk),
+                                           GenerateIconInfosFrom(downloaded),
+                                           /* end_when_mismatch_detected= */
+                                           false);
+    EXPECT_EQ(MULTIPLE_ICONS_CHANGED, diff.diff_results);
+    EXPECT_TRUE(diff.before.drawsNothing());
+    EXPECT_TRUE(diff.after.drawsNothing());
+  }
+
+  {
+    // Test case: Find first difference, when two images have had their bits
+    // updated (across |maskable| and |monochrome|), should return
+    // ONE_OR_MORE_ICON_CHANGED.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+    AddGeneratedIcon(&on_disk.maskable, icon_size::k256, SK_ColorRED);
+    AddGeneratedIcon(&on_disk.monochrome, icon_size::k512, SK_ColorRED);
+    AddGeneratedIcon(&downloaded.maskable, icon_size::k256, SK_ColorYELLOW);
+    AddGeneratedIcon(&downloaded.monochrome, icon_size::k512, SK_ColorYELLOW);
+
+    IconDiff diff = HaveIconBitmapsChanged(on_disk, downloaded,
+                                           GenerateIconInfosFrom(on_disk),
+                                           GenerateIconInfosFrom(downloaded),
+                                           /* end_when_mismatch_detected= */
+                                           true);
+    EXPECT_EQ(ONE_OR_MORE_ICONS_CHANGED, diff.diff_results);
+    // Since more than two images changed, the |before| and |after| isn't
+    // provided.
+    EXPECT_TRUE(diff.before.drawsNothing());
+    EXPECT_TRUE(diff.after.drawsNothing());
+  }
+  {
+    // Test case: Find all differences, when two images have had their bits
+    // updated (across |maskable| and |monochrome|), should return
+    // MULTIPLE_ICONS_CHANGED.
+    IconBitmaps on_disk;
+    IconBitmaps downloaded;
+    AddGeneratedIcon(&on_disk.maskable, icon_size::k256, SK_ColorRED);
+    AddGeneratedIcon(&on_disk.monochrome, icon_size::k512, SK_ColorRED);
+    AddGeneratedIcon(&downloaded.maskable, icon_size::k256, SK_ColorYELLOW);
+    AddGeneratedIcon(&downloaded.monochrome, icon_size::k512, SK_ColorYELLOW);
+
+    IconDiff diff = HaveIconBitmapsChanged(on_disk, downloaded,
+                                           GenerateIconInfosFrom(on_disk),
+                                           GenerateIconInfosFrom(downloaded),
+                                           /* end_when_mismatch_detected= */
+                                           false);
+    EXPECT_EQ(MULTIPLE_ICONS_CHANGED, diff.diff_results);
+    EXPECT_TRUE(diff.before.drawsNothing());
+    EXPECT_TRUE(diff.after.drawsNothing());
+  }
 }
 
 }  // namespace web_app

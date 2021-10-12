@@ -620,33 +620,6 @@ class ManifestUpdateManagerAppIdentityBrowserTest
       features::kPwaUpdateDialogForNameAndIcon};
 };
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
-                       VerifyAppIdentityUpdatesWithDlgForUserInstalledApps) {
-  chrome::SetAutoAcceptAppIdentityUpdateForTesting(true);
-
-  constexpr char kManifestTemplate[] = R"(
-    {
-      "name": "$1",
-      "start_url": ".",
-      "scope": "/",
-      "display": "standalone",
-      "icons": $2
-    }
-  )";
-  OverrideManifest(kManifestTemplate, {"Test app name", kInstallableIconList});
-  AppId app_id = InstallWebApp();
-
-  OverrideManifest(kManifestTemplate,
-                   {"Different app name", kAnotherInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
-            ManifestUpdateResult::kAppUpdated);
-  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
-                                      ManifestUpdateResult::kAppUpdated, 1);
-  EXPECT_EQ(GetProvider().registrar().GetAppShortName(app_id),
-            "Different app name");
-  CheckShortcutInfoUpdated(app_id, kAnotherInstallableIconTopLeftColor);
-}
-
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckIgnoresStartUrlChange) {
   constexpr char kManifestTemplate[] = R"(
@@ -2641,7 +2614,7 @@ class ManifestUpdateManagerIconUpdatingBrowserTest
       features::kWebAppManifestIconUpdating};
 };
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
+IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_UpdateDialog,
                        CheckFindsIconContentChange) {
   constexpr char kManifest[] = R"(
     {
@@ -2651,39 +2624,52 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
       "display": "standalone",
       "icons": [
         {
-          "src": "/web_apps/basic-192.png?ignore",
-          "sizes": "192x192",
+          "src": "/banners/256x256-green.png?ignore",
+          "sizes": "256x256",
           "type": "image/png"
         }
       ]
     }
   )";
+
+  if (IsUpdateDialogEnabled())
+    chrome::SetAutoAcceptAppIdentityUpdateForTesting(true);
+
   OverrideManifest(kManifest, {});
   AppId app_id = InstallWebApp();
 
-  // Replace the contents of basic-192.png with blue-192.png without changing
-  // the URL.
+  // Replace the green icon with a red icon without changing the URL.
   content::URLLoaderInterceptor url_interceptor(base::BindLambdaForTesting(
       [this](content::URLLoaderInterceptor::RequestParams* params)
           -> bool /*intercepted*/ {
         if (params->url_request.url ==
-            http_server_.GetURL("/web_apps/basic-192.png?ignore")) {
+            http_server_.GetURL("/banners/256x256-green.png?ignore")) {
           content::URLLoaderInterceptor::WriteResponse(
-              "chrome/test/data/web_apps/blue-192.png", params->client.get());
+              "chrome/test/data/banners/256x256-red.png", params->client.get());
           return true;
         }
         return false;
       }));
 
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
-            ManifestUpdateResult::kAppUpdated);
-  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
-                                      ManifestUpdateResult::kAppUpdated, 1);
-  // The icon should have changed, as the file has been updated (but the url is
-  // the same).
-  CheckShortcutInfoUpdated(app_id, SK_ColorBLUE);
+  if (IsUpdateDialogEnabled()) {
+    EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
+              ManifestUpdateResult::kAppUpdated);
+    histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                        ManifestUpdateResult::kAppUpdated, 1);
+    // The icon should have changed, as the file has been updated (but the url
+    // is the same).
+    CheckShortcutInfoUpdated(app_id, SK_ColorRED);
 
-  EXPECT_EQ(ReadAppIconPixel(app_id, /*size=*/192), SK_ColorBLUE);
+    EXPECT_EQ(ReadAppIconPixel(app_id, /*size=*/256), SK_ColorRED);
+  } else {
+    EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
+              ManifestUpdateResult::kAppUpToDate);
+    histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                        ManifestUpdateResult::kAppUpdated, 0);
+    CheckShortcutInfoUpdated(app_id, SK_ColorGREEN);
+
+    EXPECT_EQ(ReadAppIconPixel(app_id, /*size=*/256), SK_ColorGREEN);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
@@ -3443,5 +3429,329 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
 
   run_loop.Run();
 }
+
+enum AppIdTestParam {
+  kInvalid = 0,
+  kTypeWebApp = 1 << 1,
+  kTypeDefaultApp = 1 << 2,
+  kTypePolicyApp = 1 << 3,
+  kWithFlagNone = 1 << 4,
+  kWithFlagPolicyAppIdentity = 1 << 5,
+  kWithFlagAppIdDialog = 1 << 6,
+  kActionUpdateTitle = 1 << 7,
+  kActionUpdateSingleIcon = 1 << 8,
+  kActionUpdateTitleAndSingleIcon = 1 << 9,
+  kActionAddSingleIcon = 1 << 10,
+  kActionUpdateMultiIcons = 1 << 11,
+  kActionRemoveSingleIcon = 1 << 12,
+  kActionSwitchIconSize = 1 << 13,
+};
+
+class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
+    : public ManifestUpdateManagerBrowserTest,
+      public testing::WithParamInterface<
+          std::tuple<AppIdTestParam, AppIdTestParam, AppIdTestParam>> {
+ public:
+  ManifestUpdateManagerBrowserTest_AppIdentityParameterized() {
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+    if (IsAppIdentityUpdateDialogEnabled()) {
+      enabled_features.push_back(features::kPwaUpdateDialogForNameAndIcon);
+    } else {
+      disabled_features.push_back(features::kPwaUpdateDialogForNameAndIcon);
+    }
+    if (IsPolicyAppIdentityOverrideEnabled()) {
+      enabled_features.push_back(
+          features::kWebAppManifestPolicyAppIdentityUpdate);
+    } else {
+      disabled_features.push_back(
+          features::kWebAppManifestPolicyAppIdentityUpdate);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  bool IsWebApp() const {
+    return std::get<1>(GetParam()) & AppIdTestParam::kTypeWebApp;
+  }
+  bool IsDefaultApp() const {
+    return std::get<1>(GetParam()) & AppIdTestParam::kTypeDefaultApp;
+  }
+  bool IsPolicyApp() const {
+    return std::get<1>(GetParam()) & AppIdTestParam::kTypePolicyApp;
+  }
+
+  bool IsAppIdentityUpdateDialogEnabled() const {
+    return std::get<2>(GetParam()) & AppIdTestParam::kWithFlagAppIdDialog;
+  }
+  bool IsPolicyAppIdentityOverrideEnabled() const {
+    return std::get<2>(GetParam()) & AppIdTestParam::kWithFlagPolicyAppIdentity;
+  }
+
+  bool TitleUpdateRequested() const {
+    return std::get<0>(GetParam()) & AppIdTestParam::kActionUpdateTitle ||
+           std::get<0>(GetParam()) &
+               AppIdTestParam::kActionUpdateTitleAndSingleIcon;
+  }
+
+  bool AnyIconUpdateRequested() const {
+    return SingleIconAddRequested() || SingleIconRemoveRequested() ||
+           SingleIconUpdateRequested() || MultiIconUpdateRequested() ||
+           IconSwitchUpdateRequested();
+  }
+  bool SingleIconAddRequested() const {
+    return std::get<0>(GetParam()) & AppIdTestParam::kActionAddSingleIcon;
+  }
+  bool SingleIconRemoveRequested() const {
+    return std::get<0>(GetParam()) & AppIdTestParam::kActionRemoveSingleIcon;
+  }
+  bool SingleIconUpdateRequested() const {
+    return std::get<0>(GetParam()) & AppIdTestParam::kActionUpdateSingleIcon ||
+           std::get<0>(GetParam()) &
+               AppIdTestParam::kActionUpdateTitleAndSingleIcon;
+  }
+  bool MultiIconUpdateRequested() const {
+    return std::get<0>(GetParam()) & AppIdTestParam::kActionUpdateMultiIcons;
+  }
+  bool IconSwitchUpdateRequested() const {
+    return std::get<0>(GetParam()) & AppIdTestParam::kActionSwitchIconSize;
+  }
+
+  bool ExpectTitleUpdate() const {
+    if (!TitleUpdateRequested())
+      return false;
+
+    if (IsDefaultApp())
+      return true;
+    if (IsPolicyApp() && IsPolicyAppIdentityOverrideEnabled())
+      return true;
+    return IsAppIdentityUpdateDialogEnabled();
+  }
+
+  bool ExpectIconUpdate() const {
+    // Ideally, this should just check AnyIconUpdateRequested(), but adding and
+    // removing of icons results in kAppNotEligible when updating, even for
+    // Default apps. Therefore, only the supported upgrade paths must be
+    // enumerated here.
+    if (!SingleIconUpdateRequested() && !MultiIconUpdateRequested() &&
+        !IconSwitchUpdateRequested())
+      return false;
+
+    if (IsDefaultApp())
+      return true;
+    if (IsPolicyApp() && IsPolicyAppIdentityOverrideEnabled())
+      return true;
+    if (SingleIconUpdateRequested() && IsAppIdentityUpdateDialogEnabled())
+      return true;
+
+    return false;
+  }
+
+  ManifestUpdateResult ExpectedResultWhenNoUpdate() const {
+    if (SingleIconAddRequested() || SingleIconRemoveRequested())
+      return ManifestUpdateResult::kAppNotEligible;
+    return ManifestUpdateResult::kAppUpToDate;
+  }
+
+  static std::string ParamToString(
+      testing::TestParamInfo<
+          std::tuple<AppIdTestParam, AppIdTestParam, AppIdTestParam>>
+          param_info) {
+    std::string result = "";
+
+    AppIdTestParam action = std::get<0>(param_info.param);
+    if (action & AppIdTestParam::kActionUpdateTitle)
+      result += "UpdateTitle_";
+    if (action & AppIdTestParam::kActionUpdateSingleIcon)
+      result += "UpdateSingleIcon_";
+    if (action & AppIdTestParam::kActionUpdateTitleAndSingleIcon)
+      result += "UpdateTitleAndSingleIcon_";
+    if (action & AppIdTestParam::kActionRemoveSingleIcon)
+      result += "RemoveSingleIcon_";
+    if (action & AppIdTestParam::kActionAddSingleIcon)
+      result += "AddSingleIcon_";
+    if (action & AppIdTestParam::kActionUpdateMultiIcons)
+      result += "UpdateMultiIcons_";
+    if (action & AppIdTestParam::kActionSwitchIconSize)
+      result += "SwitchIcon_";
+
+    AppIdTestParam type = std::get<1>(param_info.param);
+    if (type & AppIdTestParam::kTypeWebApp)
+      result += "WebApp_";
+    if (type & AppIdTestParam::kTypeDefaultApp)
+      result += "DefaultApp_";
+    if (type & AppIdTestParam::kTypePolicyApp)
+      result += "PolicyApp_";
+
+    AppIdTestParam flags = std::get<2>(param_info.param);
+    result += "Flags_";
+    if (flags & AppIdTestParam::kWithFlagNone)
+      result += "None_";
+    if (flags & AppIdTestParam::kWithFlagPolicyAppIdentity)
+      result += "PolicyCanUpdate_";
+    if (flags & AppIdTestParam::kWithFlagAppIdDialog)
+      result += "WithAppIdDlg_";
+
+    return result;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    ManifestUpdateManagerBrowserTest_AppIdentityParameterized,
+    CheckCombinations) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "$1",
+      "start_url": "manifest_test_page.html",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $2
+    }
+  )";
+
+  // Starting icon set always uses solid green icons.
+  constexpr SkColor kOriginalIconTopLeftColor = SkColorSetRGB(0x00, 0xFF, 0x00);
+  // The icons that get updated are all solid red.
+  constexpr SkColor kUpdatedIconTopLeftColor = SkColorSetRGB(0xFF, 0x00, 0x00);
+
+  // This is always the starting set of icons. Please note that some sizes will
+  // be auto-generated (see SizesToGenerate()), so the starting state when
+  // debugging will also consist of sizes 32, 48, 64, 96, 128. Size 256 would be
+  // autogenerated also, if it were not provided.
+  constexpr char kIconList[] = R"(
+    [
+      { "src": "256x256-green.png", "sizes": "256x256", "type": "image/png" },
+      { "src": "512x512-green.png", "sizes": "512x512", "type": "image/png" }
+    ]
+  )";
+
+  // If we are supposed to remove one icon, this is the end state (512 removed),
+  // plus auto-generated sizes (see comment in kIconList).
+  constexpr char kRemovedSingleIconList[] = R"(
+    [
+      { "src": "256x256-green.png", "sizes": "256x256", "type": "image/png" },
+    ]
+  )";
+  // If we are supposed to add one icon, this is the end state (128 added),
+  // plus auto-generated sizes (see comment in kIconList).
+  constexpr char kAddedSingleIconList[] = R"(
+    [
+      { "src": "128x128-red.png", "sizes": "256x256", "type": "image/png" },
+      { "src": "256x256-green.png", "sizes": "256x256", "type": "image/png" },
+      { "src": "512x512-green.png", "sizes": "512x512", "type": "image/png" }
+    ]
+  )";
+  // Updating one icon only changes the bits of size 256 to red.
+  constexpr char kUpdatedSingleIconList[] = R"(
+    [
+      { "src": "256x256-red.png", "sizes": "256x256", "type": "image/png" },
+      { "src": "512x512-green.png", "sizes": "512x512", "type": "image/png" }
+    ]
+  )";
+  // Updating multiple icons changes size 256 and size 512 to red.
+  constexpr char kUpdatedMultiIconList[] = R"(
+    [
+      { "src": "256x256-red.png", "sizes": "256x256", "type": "image/png" },
+      { "src": "512x512-red.png", "sizes": "512x512", "type": "image/png" }
+    ]
+  )";
+  // Icon switch involves removing a size and replacing it with another. Here,
+  // size 256 has been removed and size 128 added. Note that size 256 will still
+  // be found in the end state because it gets auto-generated.
+  constexpr char kIconSwitchList[] = R"(
+    [
+      { "src": "128x128-red.png", "sizes": "128x128", "type": "image/png" },
+      { "src": "512x512-green.png", "sizes": "512x512", "type": "image/png" }
+    ]
+  )";
+
+  testing::TestParamInfo<
+      std::tuple<AppIdTestParam, AppIdTestParam, AppIdTestParam>>
+      param(GetParam(), 0);
+
+  if (IsAppIdentityUpdateDialogEnabled())
+    chrome::SetAutoAcceptAppIdentityUpdateForTesting(true);
+
+  std::string app_name = "Test app name";
+  OverrideManifest(kManifestTemplate, {app_name, kIconList});
+
+  AppId app_id;
+  if (IsDefaultApp()) {
+    app_id = InstallDefaultApp();
+  } else if (IsPolicyApp()) {
+    app_id = InstallPolicyApp();
+  } else if (IsWebApp()) {
+    app_id = InstallWebApp();
+  } else {
+    NOTREACHED();
+  }
+
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
+  ASSERT_TRUE(web_app);
+
+  if (TitleUpdateRequested())
+    app_name = "Different app name";
+
+  if (SingleIconUpdateRequested()) {
+    OverrideManifest(kManifestTemplate, {app_name, kUpdatedSingleIconList});
+  } else if (SingleIconAddRequested()) {
+    OverrideManifest(kManifestTemplate, {app_name, kAddedSingleIconList});
+  } else if (SingleIconRemoveRequested()) {
+    OverrideManifest(kManifestTemplate, {app_name, kRemovedSingleIconList});
+  } else if (MultiIconUpdateRequested()) {
+    OverrideManifest(kManifestTemplate, {app_name, kUpdatedMultiIconList});
+  } else if (IconSwitchUpdateRequested()) {
+    OverrideManifest(kManifestTemplate, {app_name, kIconSwitchList});
+  } else {
+    OverrideManifest(kManifestTemplate, {app_name, kIconList});
+  }
+
+  bool expectations_match = (TitleUpdateRequested() == ExpectTitleUpdate()) &&
+                            (AnyIconUpdateRequested() == ExpectIconUpdate());
+  if ((TitleUpdateRequested() || AnyIconUpdateRequested()) &&
+      expectations_match) {
+    ASSERT_EQ(ManifestUpdateResult::kAppUpdated,
+              GetResultAfterPageLoad(GetAppURL()));
+    histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                        ManifestUpdateResult::kAppUpdated, 1);
+  } else {
+    ASSERT_EQ(ExpectedResultWhenNoUpdate(),
+              GetResultAfterPageLoad(GetAppURL()));
+    histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                        ManifestUpdateResult::kAppUpdated, 0);
+  }
+
+  EXPECT_EQ(ExpectTitleUpdate() && expectations_match ? "Different app name"
+                                                      : "Test app name",
+            GetProvider().registrar().GetAppShortName(app_id));
+
+  CheckShortcutInfoUpdated(app_id, ExpectIconUpdate() && expectations_match
+                                       ? kUpdatedIconTopLeftColor
+                                       : kOriginalIconTopLeftColor);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ManifestUpdateManagerBrowserTest_AppIdentityParameterized,
+    testing::Combine(
+        testing::Values(AppIdTestParam::kActionUpdateTitle,
+                        AppIdTestParam::kActionUpdateSingleIcon,
+                        AppIdTestParam::kActionUpdateTitleAndSingleIcon,
+                        AppIdTestParam::kActionUpdateMultiIcons,
+                        AppIdTestParam::kActionAddSingleIcon,
+                        AppIdTestParam::kActionRemoveSingleIcon,
+                        AppIdTestParam::kActionSwitchIconSize),
+        testing::Values(AppIdTestParam::kTypeDefaultApp,
+                        AppIdTestParam::kTypePolicyApp,
+                        AppIdTestParam::kTypeWebApp),
+        testing::Values(AppIdTestParam::kWithFlagNone,
+                        AppIdTestParam::kWithFlagPolicyAppIdentity,
+                        AppIdTestParam::kWithFlagAppIdDialog,
+                        AppIdTestParam::kWithFlagPolicyAppIdentity |
+                            AppIdTestParam::kWithFlagAppIdDialog)),
+    ManifestUpdateManagerBrowserTest_AppIdentityParameterized::ParamToString);
 
 }  // namespace web_app

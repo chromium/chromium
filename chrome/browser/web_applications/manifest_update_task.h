@@ -58,6 +58,84 @@ enum ManifestUpdateResult {
   kMaxValue = kAppAssociationsUpdated,
 };
 
+enum IconDiffResult : uint32_t {
+  NO_CHANGE_DETECTED = 0,
+
+  // A mismatch was detected between what was downloaded and what is on disk.
+  // This might mean that a size has been removed or added, and it could mean
+  // both.
+  MISMATCHED_IMAGE_SIZES = 1 << 1,
+
+  // At least one icon was found to have changed. Note: Used only if the diff
+  // process stops when it encounters the first mismatch. If, instead, it is
+  // allowed to continue, a more detailed results will be returned (see flags
+  // below).
+  ONE_OR_MORE_ICONS_CHANGED = 1 << 2,
+
+  // Only one icon is changing. This flag is only set if the diff process is
+  // allowed to continue to the end (doesn't stop as soon as it finds a change).
+  SINGLE_ICON_CHANGED = 1 << 3,
+
+  // Two or more icons are changing. This flag is only set if the diff process
+  // is allowed to continue to the end (doesn't stop as soon as it finds a
+  // change).
+  MULTIPLE_ICONS_CHANGED = 1 << 4,
+
+  // And icon has changed, but it was a generated icon that changed. This flag
+  // is only set if the diff process is allowed to continue to the end (doesn't
+  // stop as soon as it finds a change).
+  GENERATED_ICON_CHANGED = 1 << 5,
+};
+
+// A structure to keep track of the differences found while comparing icons
+// on disk to what has been downloaded.
+struct IconDiff {
+ public:
+  IconDiff() = default;
+  explicit IconDiff(uint32_t results) { diff_results = results; }
+  IconDiff(const SkBitmap& before_icon,
+           const SkBitmap& after_icon,
+           uint32_t results) {
+    before = before_icon;
+    after = after_icon;
+    diff_results = results;
+  }
+
+  // Returns true iff an icon change was detected (not matter how
+  // insignificant).
+  bool mismatch() { return diff_results != NO_CHANGE_DETECTED; }
+
+  // Returns true iff the mismatch should result in app identity dlg being
+  // shown.
+  bool supported_for_app_identity_check() {
+    return diff_results == SINGLE_ICON_CHANGED ||
+           diff_results == (SINGLE_ICON_CHANGED | GENERATED_ICON_CHANGED);
+  }
+
+  // Keeps track of all the differences discovered in the icon set.
+  uint32_t diff_results = NO_CHANGE_DETECTED;
+
+  // The original image. Only valid if a single icon is changing.
+  SkBitmap before;
+
+  // The changed image. Only valid if a single icon is changing.
+  SkBitmap after;
+};
+
+// Returns whether any differences were found in the images on disk and what has
+// been downloaded. The |disk_icon_bitmaps| and |disk_icon_info| parameters
+// represent the bits on disk and the associated size info (respectively). Same
+// with |downloaded_icon_bitmaps| and |downloaded_icon_info|, which covers the
+// downloaded icon set. If |end_when_mismatch_detected| is true, the diff
+// process will stop when it encounters the first mismatch. Otherwise, it the
+// IconDiff returned will cover all the differences found.
+IconDiff HaveIconBitmapsChanged(
+    const IconBitmaps& disk_icon_bitmaps,
+    const IconBitmaps& downloaded_icon_bitmaps,
+    const std::vector<apps::IconInfo>& disk_icon_info,
+    const std::vector<apps::IconInfo>& downloaded_icon_info,
+    bool end_when_mismatch_detected);
+
 // Checks whether the installed web app associated with a given WebContents has
 // out of date manifest data and triggers an update if so.
 // Owned and managed by |ManifestUpdateManager|.
