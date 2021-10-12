@@ -2274,9 +2274,13 @@ public class StartSurfaceTest {
         assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
                 mActivityTestRule.getAppMenuCoordinator(), R.id.close_all_tabs_menu_id));
 
+        boolean hasUpdateMenuItem =
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id)
+                != null;
         ModelList menuItemsModelList =
                 AppMenuTestSupport.getMenuModelList(mActivityTestRule.getAppMenuCoordinator());
-        assertEquals(11, menuItemsModelList.size());
+        assertEquals(hasUpdateMenuItem ? 12 : 11, menuItemsModelList.size());
     }
 
     /**
