@@ -28,6 +28,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/download_manager.h"
@@ -380,6 +381,14 @@ void DevToolsFileHelper::FailedToAddFileSystem(const std::string& error) {
   delegate_->FileSystemAdded(error, nullptr);
 }
 
+namespace {
+
+void RunOnUIThread(base::OnceClosure callback) {
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(callback));
+}
+
+}  // namespace
+
 std::vector<DevToolsFileHelper::FileSystem>
 DevToolsFileHelper::GetFileSystems() {
   file_system_paths_ = GetAddedFileSystemPaths(profile_);
@@ -389,10 +398,12 @@ DevToolsFileHelper::GetFileSystems() {
         base::BindRepeating(&DevToolsFileHelper::FilePathsChanged,
                             weak_factory_.GetWeakPtr()),
         base::SequencedTaskRunnerHandle::Get()));
+    auto change_handler_on_ui = base::BindRepeating(
+        &DevToolsFileHelper::FileSystemPathsSettingChangedOnUI,
+        weak_factory_.GetWeakPtr());
     pref_change_registrar_.Add(
         prefs::kDevToolsFileSystemPaths,
-        base::BindRepeating(&DevToolsFileHelper::FileSystemPathsSettingChanged,
-                            base::Unretained(this)));
+        base::BindRepeating(RunOnUIThread, change_handler_on_ui));
   }
   for (auto file_system_path : file_system_paths_) {
     base::FilePath path =
@@ -446,7 +457,8 @@ void DevToolsFileHelper::ShowItemInFolder(const std::string& file_system_path) {
                      weak_factory_.GetWeakPtr(), path));
 }
 
-void DevToolsFileHelper::FileSystemPathsSettingChanged() {
+void DevToolsFileHelper::FileSystemPathsSettingChangedOnUI() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PathToType remaining;
   remaining.swap(file_system_paths_);
   DCHECK(file_watcher_.get());
