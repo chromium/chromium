@@ -122,8 +122,6 @@
 #include "services/network/public/mojom/net_log.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
-#include "services/network/public/mojom/p2p.mojom.h"
-#include "services/network/public/mojom/p2p_trusted.mojom.h"
 #include "services/network/public/mojom/proxy_config.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
@@ -158,6 +156,11 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/network/mock_mojo_dhcp_wpad_url_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_P2P_ENABLED)
+#include "services/network/public/mojom/p2p.mojom.h"
+#include "services/network/public/mojom/p2p_trusted.mojom.h"
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 
 namespace network {
 
@@ -373,6 +376,7 @@ class TestProxyLookupClient : public mojom::ProxyLookupClient {
   base::RunLoop run_loop_;
 };
 
+#if BUILDFLAG(IS_P2P_ENABLED)
 class MockP2PTrustedSocketManagerClient
     : public mojom::P2PTrustedSocketManagerClient {
  public:
@@ -385,6 +389,7 @@ class MockP2PTrustedSocketManagerClient
                   uint64_t packet_length,
                   bool incoming) override {}
 };
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 
 class NetworkContextTest : public testing::Test {
  public:
@@ -1347,6 +1352,7 @@ TEST_F(NetworkContextTest, HostResolutionFailure) {
             client.completion_status().resolve_error_info.error);
 }
 
+#if BUILDFLAG(IS_P2P_ENABLED)
 // Test the P2PSocketManager::GetHostAddress() works and uses the correct
 // NetworkIsolationKey.
 TEST_F(NetworkContextTest, P2PHostResolution) {
@@ -1425,6 +1431,7 @@ TEST_F(NetworkContextTest, P2PHostResolution) {
     EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, callback2.GetResult(result));
   }
 }
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 
 // Test that valid referrers are allowed, while invalid ones result in errors.
 TEST_F(NetworkContextTest, Referrers) {

@@ -9,7 +9,10 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 buildflag_header("buildflags") {
   header = "network_service_buildflags.h"
-  flags = [ "IS_CT_SUPPORTED=$is_ct_supported" ]
+  flags = [
+    "IS_CT_SUPPORTED=$is_ct_supported",
+    "IS_P2P_ENABLED=$is_p2p_enabled",
+  ]
 }
 
 component("crash_keys") {
@@ -289,9 +292,6 @@ component("cpp_base") {
     "optional_trust_token_params.h",
     "origin_policy.cc",
     "origin_policy.h",
-    "p2p_param_traits.cc",
-    "p2p_param_traits.h",
-    "p2p_socket_type.h",
     "proxy_config_mojom_traits.cc",
     "proxy_config_mojom_traits.h",
     "proxy_config_with_annotation_mojom_traits.cc",
@@ -323,7 +323,6 @@ component("cpp_base") {
     ":network_param_mojom_support",
     ":schemeful_site_mojom_support",
     "//services/network/public/mojom:url_loader_base",
-    "//third_party/webrtc_overrides:webrtc_component",
     "//url/ipc:url_ipc",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
@@ -337,6 +336,16 @@ component("cpp_base") {
     "//services/network/public/mojom:url_loader_base",
   ]
   defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
+
+  if (is_p2p_enabled) {
+    sources += [
+      "p2p_param_traits.cc",
+      "p2p_param_traits.h",
+      "p2p_socket_type.h",
+    ]
+
+    public_deps += [ "//third_party/webrtc_overrides:webrtc_component" ]
+  }
 
   # Since URLLoader is typedmapped in mojo and the class also uses the mojo
   # interfaces a circular dependency exists. Allow this and ignore windows

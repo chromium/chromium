@@ -33,8 +33,6 @@ import "services/network/public/mojom/isolation_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/origin_policy_manager.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
-import "services/network/public/mojom/p2p.mojom";
-import "services/network/public/mojom/p2p_trusted.mojom";
 import "services/network/public/mojom/proxy_config.mojom";
 import "services/network/public/mojom/proxy_config_with_annotation.mojom";
 import "services/network/public/mojom/proxy_lookup_client.mojom";
@@ -58,6 +56,12 @@ import "url/mojom/url.mojom";
 
 [EnableIf=is_chromeos_ash]
 import "services/network/public/mojom/dhcp_wpad_url_client.mojom";
+
+[EnableIf=is_p2p_enabled]
+import "services/network/public/mojom/p2p.mojom";
+
+[EnableIf=is_p2p_enabled]
+import "services/network/public/mojom/p2p_trusted.mojom";
 
 const uint32 kWebSocketOptionNone = 0;
 // Disallow the request from sending cookies. Disallow the response from writing
@@ -1232,6 +1236,7 @@ interface NetworkContext {
   // |network_isolation_key| is the network cache shard to associate with the
   // P2PSocketManager instance, and affects DNS cache shard used and proxy
   // connection sharing.
+  [EnableIf=is_p2p_enabled]
   CreateP2PSocketManager(
       NetworkIsolationKey network_isolation_key,
       pending_remote<P2PTrustedSocketManagerClient> client,

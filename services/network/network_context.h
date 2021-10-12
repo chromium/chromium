@@ -402,6 +402,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const GURL& url,
       bool allow_credentials,
       const net::NetworkIsolationKey& network_isolation_key) override;
+#if BUILDFLAG(IS_P2P_ENABLED)
   void CreateP2PSocketManager(
       const net::NetworkIsolationKey& network_isolation_key,
       mojo::PendingRemote<mojom::P2PTrustedSocketManagerClient> client,
@@ -409,6 +410,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
           trusted_socket_manager,
       mojo::PendingReceiver<mojom::P2PSocketManager> socket_manager_receiver)
       override;
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
   void CreateMdnsResponder(
       mojo::PendingReceiver<mojom::MdnsResponder> responder_receiver) override;
   void SetDocumentReportingEndpoints(
@@ -605,7 +607,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   GURL GetHSTSRedirect(const GURL& original_url);
 
+#if BUILDFLAG(IS_P2P_ENABLED)
   void DestroySocketManager(P2PSocketManager* socket_manager);
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 
   void CanUploadDomainReliability(const GURL& origin,
                                   base::OnceCallback<void(bool)> callback);
@@ -703,8 +707,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   static constexpr uint32_t kMaxOutstandingRequestsPerProcess = 2700;
   uint32_t max_loaders_per_process_ = kMaxOutstandingRequestsPerProcess;
 
+#if BUILDFLAG(IS_P2P_ENABLED)
   base::flat_map<P2PSocketManager*, std::unique_ptr<P2PSocketManager>>
       socket_managers_;
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 
 #if BUILDFLAG(ENABLE_MDNS)
   std::unique_ptr<MdnsResponderManager> mdns_responder_manager_;

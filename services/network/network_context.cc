@@ -84,7 +84,6 @@
 #include "services/network/network_service.h"
 #include "services/network/network_service_network_delegate.h"
 #include "services/network/network_service_proxy_delegate.h"
-#include "services/network/p2p/socket_manager.h"
 #include "services/network/proxy_config_service_mojo.h"
 #include "services/network/proxy_lookup_request.h"
 #include "services/network/proxy_resolving_socket_factory_mojo.h"
@@ -151,6 +150,10 @@
 #if BUILDFLAG(ENABLE_MDNS)
 #include "services/network/mdns_responder.h"
 #endif  // BUILDFLAG(ENABLE_MDNS)
+
+#if BUILDFLAG(IS_P2P_ENABLED)
+#include "services/network/p2p/socket_manager.h"
+#endif
 
 #if defined(OS_ANDROID)
 #include "base/android/application_status_listener.h"
@@ -1833,6 +1836,7 @@ void NetworkContext::PreconnectSockets(
       base::saturated_cast<int32_t>(num_streams), request_info);
 }
 
+#if BUILDFLAG(IS_P2P_ENABLED)
 void NetworkContext::CreateP2PSocketManager(
     const net::NetworkIsolationKey& network_isolation_key,
     mojo::PendingRemote<mojom::P2PTrustedSocketManagerClient> client,
@@ -1848,6 +1852,7 @@ void NetworkContext::CreateP2PSocketManager(
           url_request_context_);
   socket_managers_[socket_manager.get()] = std::move(socket_manager);
 }
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 
 void NetworkContext::CreateMdnsResponder(
     mojo::PendingReceiver<mojom::MdnsResponder> responder_receiver) {
@@ -2556,11 +2561,13 @@ GURL NetworkContext::GetHSTSRedirect(const GURL& original_url) {
   return original_url.ReplaceComponents(replacements);
 }
 
+#if BUILDFLAG(IS_P2P_ENABLED)
 void NetworkContext::DestroySocketManager(P2PSocketManager* socket_manager) {
   auto iter = socket_managers_.find(socket_manager);
   DCHECK(iter != socket_managers_.end());
   socket_managers_.erase(iter);
 }
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 
 void NetworkContext::CanUploadDomainReliability(
     const GURL& origin,

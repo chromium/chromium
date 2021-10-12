@@ -85,18 +85,6 @@ component("network_service") {
     "origin_policy/origin_policy_parsed_header.h",
     "origin_policy/origin_policy_parser.cc",
     "origin_policy/origin_policy_parser.h",
-    "p2p/socket.cc",
-    "p2p/socket.h",
-    "p2p/socket_manager.cc",
-    "p2p/socket_manager.h",
-    "p2p/socket_tcp.cc",
-    "p2p/socket_tcp.h",
-    "p2p/socket_tcp_server.cc",
-    "p2p/socket_tcp_server.h",
-    "p2p/socket_throttler.cc",
-    "p2p/socket_throttler.h",
-    "p2p/socket_udp.cc",
-    "p2p/socket_udp.h",
     "pending_callback_chain.cc",
     "pending_callback_chain.h",
     "private_network_access_check.cc",
@@ -190,6 +178,23 @@ component("network_service") {
     "web_transport.h",
   ]
 
+  if (is_p2p_enabled) {
+    sources += [
+      "p2p/socket.cc",
+      "p2p/socket.h",
+      "p2p/socket_manager.cc",
+      "p2p/socket_manager.h",
+      "p2p/socket_tcp.cc",
+      "p2p/socket_tcp.h",
+      "p2p/socket_tcp_server.cc",
+      "p2p/socket_tcp_server.h",
+      "p2p/socket_throttler.cc",
+      "p2p/socket_throttler.h",
+      "p2p/socket_udp.cc",
+      "p2p/socket_udp.h",
+    ]
+  }
+
   if (enable_mdns) {
     sources += [
       "mdns_responder.cc",
@@ -235,7 +240,7 @@ component("network_service") {
     "//components/os_crypt",
     "//components/prefs",
     "//components/web_package",
-    "//jingle:fake_ssl_socket",
+    "//jingle/glue:fake_ssl_socket",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",
@@ -249,7 +254,6 @@ component("network_service") {
     "//services/network/trust_tokens",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
-    "//third_party/webrtc_overrides:webrtc_component",
     "//url",
   ]
 
@@ -272,6 +276,10 @@ component("network_service") {
       "//components/certificate_transparency",
       "//components/version_info",
     ]
+  }
+
+  if (is_p2p_enabled) {
+    deps += [ "//third_party/webrtc_overrides:webrtc_component" ]
   }
 
   if (is_android) {
@@ -338,11 +346,6 @@ source_set("tests") {
     "origin_policy/origin_policy_manager_unittest.cc",
     "origin_policy/origin_policy_parsed_header_unittest.cc",
     "origin_policy/origin_policy_parser_unittest.cc",
-    "p2p/socket_tcp_server_unittest.cc",
-    "p2p/socket_tcp_unittest.cc",
-    "p2p/socket_test_utils.cc",
-    "p2p/socket_test_utils.h",
-    "p2p/socket_udp_unittest.cc",
     "pending_callback_chain_unittest.cc",
     "private_network_access_check_unittest.cc",
     "proxy_auto_config_library_unittest.cc",
@@ -372,6 +375,16 @@ source_set("tests") {
     "web_bundle/web_bundle_url_loader_factory_unittest.cc",
     "web_transport_unittest.cc",
   ]
+
+  if (is_p2p_enabled) {
+    sources += [
+      "p2p/socket_tcp_server_unittest.cc",
+      "p2p/socket_tcp_unittest.cc",
+      "p2p/socket_test_utils.cc",
+      "p2p/socket_test_utils.h",
+      "p2p/socket_udp_unittest.cc",
+    ]
+  }
 
   if (enable_mdns) {
     sources += [ "mdns_responder_unittest.cc" ]
@@ -414,7 +427,7 @@ source_set("tests") {
     "//components/variations:test_support",
     "//components/web_package",
     "//crypto",
-    "//jingle:fake_ssl_socket",
+    "//jingle/glue:fake_ssl_socket",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",

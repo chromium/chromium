@@ -60,24 +60,6 @@ static_library("jingle_glue") {
   }
 }
 
-# These files are separated into their own target to avoid a circular dependency
-# since services/network depends on this.
-source_set("fake_ssl_socket") {
-  visibility = [
-    ":*",
-    "//services/network:*",
-  ]
-  sources = [
-    "glue/fake_ssl_client_socket.cc",
-    "glue/fake_ssl_client_socket.h",
-  ]
-  public_deps = [
-    "//base",
-    "//net",
-    "//net/traffic_annotation",
-  ]
-}
-
 # A library for sending and receiving peer-issued notifications.
 static_library("notifier") {
   visibility = [
@@ -208,13 +190,13 @@ test("jingle_unittests") {
   }
 
   deps = [
-    ":fake_ssl_socket",
     ":jingle_glue",
     ":notifier",
     ":notifier_test_util",
     ":webrtc_glue",
     "//base",
     "//base/test:test_support",
+    "//jingle/glue:fake_ssl_socket",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",

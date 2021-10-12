@@ -455,37 +455,43 @@ mojom("url_loader_base") {
           [ "//services/network/public/cpp/network_interface_mojom_traits.h" ]
       traits_public_deps = [ "//net" ]
     },
-    {
-      types = [
-        {
-          mojom = "network.mojom.P2PPacketInfo"
-          cpp = "::network::P2PPacketInfo"
-        },
-        {
-          mojom = "network.mojom.P2PSendPacketMetrics"
-          cpp = "::network::P2PSendPacketMetrics"
-        },
-        {
-          mojom = "network.mojom.P2PPortRange"
-          cpp = "::network::P2PPortRange"
-        },
-        {
-          mojom = "network.mojom.P2PHostAndIPEndPoint"
-          cpp = "::network::P2PHostAndIPEndPoint"
-        },
-        {
-          mojom = "network.mojom.P2PSocketOption"
-          cpp = "::network::P2PSocketOption"
-        },
-        {
-          mojom = "network.mojom.P2PSocketType"
-          cpp = "::network::P2PSocketType"
-        },
-      ]
-      traits_headers = [ "//services/network/public/cpp/p2p_param_traits.h" ]
-      traits_public_deps = [ "//third_party/webrtc_overrides:webrtc_component" ]
-    },
   ]
+
+  if (is_p2p_enabled) {
+    shared_typemaps += [
+      {
+        types = [
+          {
+            mojom = "network.mojom.P2PPacketInfo"
+            cpp = "::network::P2PPacketInfo"
+          },
+          {
+            mojom = "network.mojom.P2PSendPacketMetrics"
+            cpp = "::network::P2PSendPacketMetrics"
+          },
+          {
+            mojom = "network.mojom.P2PPortRange"
+            cpp = "::network::P2PPortRange"
+          },
+          {
+            mojom = "network.mojom.P2PHostAndIPEndPoint"
+            cpp = "::network::P2PHostAndIPEndPoint"
+          },
+          {
+            mojom = "network.mojom.P2PSocketOption"
+            cpp = "::network::P2PSocketOption"
+          },
+          {
+            mojom = "network.mojom.P2PSocketType"
+            cpp = "::network::P2PSocketType"
+          },
+        ]
+        traits_headers = [ "//services/network/public/cpp/p2p_param_traits.h" ]
+        traits_public_deps =
+            [ "//third_party/webrtc_overrides:webrtc_component" ]
+      },
+    ]
+  }
 
   cpp_typemaps = [
     {
@@ -868,8 +874,6 @@ mojom("mojom") {
     "network_quality_estimator_manager.mojom",
     "network_service.mojom",
     "network_service_test.mojom",
-    "p2p.mojom",
-    "p2p_trusted.mojom",
     "proxy_lookup_client.mojom",
     "proxy_resolving_socket.mojom",
     "reporting_report.mojom",
@@ -906,6 +910,14 @@ mojom("mojom") {
   if (is_ct_supported) {
     enabled_features += [ "is_ct_supported" ]
     sources += [ "ct_log_info.mojom" ]
+  }
+
+  if (is_p2p_enabled) {
+    enabled_features += [ "is_p2p_enabled" ]
+    sources += [
+      "p2p.mojom",
+      "p2p_trusted.mojom",
+    ]
   }
 
   has_dchecks = is_debug || dcheck_always_on
