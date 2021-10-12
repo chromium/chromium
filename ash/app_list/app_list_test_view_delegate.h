@@ -110,6 +110,9 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   void OnStateTransitionAnimationCompleted(
       AppListViewState state,
       bool was_animation_interrupted) override;
+  AppListState GetCurrentAppListPage() const override;
+  void OnAppListPageChanged(AppListState page) override;
+  AppListViewState GetAppListViewState() const override;
   void OnViewStateChanged(AppListViewState state) override;
   void GetAppLaunchedMetricParams(
       AppLaunchedMetricParams* metric_params) override;
@@ -142,6 +145,8 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   int open_assistant_ui_count_ = 0;
   int next_profile_app_count_ = 0;
   int show_wallpaper_context_menu_count_ = 0;
+  AppListState app_list_page_ = AppListState::kInvalidState;
+  AppListViewState app_list_view_state_ = AppListViewState::kClosed;
   bool is_tablet_mode_ = false;
   bool should_show_suggested_content_info_ = false;
   std::map<size_t, int> open_search_result_counts_;

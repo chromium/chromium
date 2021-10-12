@@ -11,8 +11,6 @@
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
-#include "ash/app_list/model/app_list_model.h"
-#include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
@@ -137,15 +135,14 @@ void RecordPageSwitcherSource(AppListPageSwitcherSource source,
 }
 
 void RecordSearchResultOpenSource(const SearchResult* result,
-                                  const AppListModel* model,
-                                  const SearchModel* search_model) {
+                                  AppListViewState state,
+                                  bool is_tablet_mode) {
   // Record the search metric if the SearchResult is not a suggested app.
   if (result->is_recommendation())
     return;
 
   ApplistSearchResultOpenedSource source;
-  AppListViewState state = model->state_fullscreen();
-  if (search_model->tablet_mode()) {
+  if (is_tablet_mode) {
     source = ApplistSearchResultOpenedSource::kFullscreenTablet;
   } else {
     source = state == AppListViewState::kHalf

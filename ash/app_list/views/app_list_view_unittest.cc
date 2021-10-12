@@ -251,7 +251,7 @@ class AppListViewTest : public views::ViewsTestBase,
       }
     }
 
-    if (state != delegate_->GetModel()->state()) {
+    if (state != delegate_->GetCurrentAppListPage()) {
       ADD_FAILURE() << "Model state does not match state "
                     << static_cast<int>(state);
       success = false;
@@ -2262,7 +2262,7 @@ TEST_F(AppListViewTest, DisplayTest) {
 
   ash::AppListState expected = ash::AppListState::kStateApps;
   EXPECT_TRUE(main_view->contents_view()->IsStateActive(expected));
-  EXPECT_EQ(expected, delegate_->GetModel()->state());
+  EXPECT_EQ(expected, delegate_->GetCurrentAppListPage());
 }
 
 // Tests switching rapidly between multiple pages of the launcher.
@@ -2820,12 +2820,12 @@ TEST_F(AppListViewTest, SearchBoxViewNotVisibleInEmbeddedAssistantUI) {
   Initialize(false /*is_tablet_mode*/);
   Show();
 
-  EXPECT_TRUE(search_box_view()->GetVisible());
+  EXPECT_TRUE(search_box_view()->GetWidget()->IsVisible());
 
   contents_view()->ShowEmbeddedAssistantUI(true);
 
   EXPECT_TRUE(contents_view()->IsShowingEmbeddedAssistantUI());
-  EXPECT_FALSE(search_box_view()->GetVisible());
+  EXPECT_FALSE(search_box_view()->GetWidget()->IsVisible());
 }
 
 // Tests that the expand arrow cannot be seen when opening the app list with

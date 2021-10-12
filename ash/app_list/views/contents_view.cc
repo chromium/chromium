@@ -117,15 +117,12 @@ int ContentsView::GetPeekingSearchBoxTopMarginOnPage(AppListState page) {
              : kDefaultSearchBoxTopMarginInPeekingState;
 }
 
-void ContentsView::Init(AppListModel* model) {
-  DCHECK(model);
-  model_ = model;
-
+void ContentsView::Init() {
   AppListViewDelegate* view_delegate = GetAppListMainView()->view_delegate();
 
-  apps_container_view_ =
-      AddLauncherPage(std::make_unique<AppsContainerView>(this, model),
-                      AppListState::kStateApps);
+  apps_container_view_ = AddLauncherPage(
+      std::make_unique<AppsContainerView>(this, view_delegate->GetModel()),
+      AppListState::kStateApps);
 
   // Search results UI.
   auto search_result_page_view =
@@ -335,7 +332,7 @@ void ContentsView::ActivePageChanged() {
 
   app_list_pages_[GetActivePageIndex()]->OnWillBeShown();
 
-  GetAppListMainView()->model()->SetState(state);
+  GetAppListMainView()->view_delegate()->OnAppListPageChanged(state);
   UpdateSearchBoxVisibility(state);
   app_list_view_->UpdateWindowTitle();
 }

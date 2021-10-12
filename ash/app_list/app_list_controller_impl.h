@@ -147,8 +147,6 @@ class ASH_EXPORT AppListControllerImpl
   void OnAppListItemAdded(AppListItem* item) override;
   void OnAppListItemWillBeDeleted(AppListItem* item) override;
   void OnAppListItemUpdated(AppListItem* item) override;
-  void OnAppListStateChanged(AppListState new_state,
-                             AppListState old_state) override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
@@ -179,7 +177,7 @@ class ASH_EXPORT AppListControllerImpl
   ShelfAction ToggleAppList(int64_t display_id,
                             AppListShowSource show_source,
                             base::TimeTicks event_time_stamp);
-  AppListViewState GetAppListViewState();
+
   // Returns whether the home launcher should be visible.
   bool ShouldHomeLauncherBeVisible() const;
 
@@ -235,13 +233,16 @@ class ASH_EXPORT AppListControllerImpl
   void OnStateTransitionAnimationCompleted(
       AppListViewState state,
       bool was_animation_interrupted) override;
-  void OnViewStateChanged(AppListViewState state) override;
   int AdjustAppListViewScrollOffset(int offset, ui::EventType type) override;
   void LoadIcon(const std::string& app_id) override;
 
   void GetAppLaunchedMetricParams(
       AppLaunchedMetricParams* metric_params) override;
   gfx::Rect SnapBoundsToDisplayEdge(const gfx::Rect& bounds) override;
+  AppListState GetCurrentAppListPage() const override;
+  void OnAppListPageChanged(AppListState page) override;
+  AppListViewState GetAppListViewState() const override;
+  void OnViewStateChanged(AppListViewState state) override;
   int GetShelfSize() override;
   bool IsInTabletMode() override;
   AppListColorProviderImpl* GetColorProvider();
@@ -504,6 +505,14 @@ class ASH_EXPORT AppListControllerImpl
   // Manages the clamshell launcher bubble. Null when the feature AppListBubble
   // is disabled.
   std::unique_ptr<AppListBubblePresenter> bubble_presenter_;
+
+  // Tracks the current page shown in the app list view (tracked for the
+  // fullscreen presenter).
+  AppListState app_list_page_ = AppListState::kInvalidState;
+
+  // Tracks the current state of `AppListView` (tracked for the fullscreen
+  // presenter)
+  AppListViewState app_list_view_state_ = AppListViewState::kClosed;
 
   // True if the on-screen keyboard is shown.
   bool onscreen_keyboard_shown_ = false;

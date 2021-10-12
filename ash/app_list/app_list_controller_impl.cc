@@ -705,22 +705,6 @@ void AppListControllerImpl::OnAppListItemUpdated(AppListItem* item) {
     client_->OnItemUpdated(profile_id_, item->CloneMetadata());
 }
 
-void AppListControllerImpl::OnAppListStateChanged(AppListState new_state,
-                                                  AppListState old_state) {
-  UpdateLauncherContainer();
-
-  if (new_state == AppListState::kStateEmbeddedAssistant) {
-    // ShowUi() will be no-op if the Assistant UI is already visible.
-    AssistantUiController::Get()->ShowUi(AssistantEntryPoint::kUnspecified);
-    return;
-  }
-
-  if (old_state == AppListState::kStateEmbeddedAssistant) {
-    // CloseUi() will be no-op if the Assistant UI is already closed.
-    AssistantUiController::Get()->CloseUi(AssistantExitPoint::kBackInLauncher);
-  }
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // Methods used in Ash
 
@@ -917,10 +901,6 @@ bool AppListControllerImpl::GoHome(int64_t display_id) {
   }
 
   return true;
-}
-
-AppListViewState AppListControllerImpl::GetAppListViewState() {
-  return model_->state_fullscreen();
 }
 
 bool AppListControllerImpl::ShouldHomeLauncherBeVisible() const {
@@ -1681,7 +1661,13 @@ void AppListControllerImpl::OnStateTransitionAnimationCompleted(
     close_assistant_ui_runner_.RunAndReset();
 }
 
+AppListViewState AppListControllerImpl::GetAppListViewState() const {
+  return app_list_view_state_;
+}
+
 void AppListControllerImpl::OnViewStateChanged(AppListViewState state) {
+  app_list_view_state_ = state;
+
   auto* notifier = GetNotifier();
   if (notifier)
     notifier->NotifyUIStateChanged(state);
@@ -1749,6 +1735,34 @@ gfx::Rect AppListControllerImpl::SnapBoundsToDisplayEdge(
   DCHECK(app_list_view && app_list_view->GetWidget());
   aura::Window* window = app_list_view->GetWidget()->GetNativeView();
   return screen_util::SnapBoundsToDisplayEdge(bounds, window);
+}
+
+AppListState AppListControllerImpl::GetCurrentAppListPage() const {
+  return app_list_page_;
+}
+
+void AppListControllerImpl::OnAppListPageChanged(AppListState page) {
+  const AppListState old_page = app_list_page_;
+  if (old_page == page)
+    return;
+
+  app_list_page_ = page;
+
+  if (!fullscreen_presenter_)
+    return;
+
+  UpdateLauncherContainer();
+
+  if (page == AppListState::kStateEmbeddedAssistant) {
+    // ShowUi() will be no-op if the Assistant UI is already visible.
+    AssistantUiController::Get()->ShowUi(AssistantEntryPoint::kUnspecified);
+    return;
+  }
+
+  if (old_page == AppListState::kStateEmbeddedAssistant) {
+    // CloseUi() will be no-op if the Assistant UI is already closed.
+    AssistantUiController::Get()->CloseUi(AssistantExitPoint::kBackInLauncher);
+  }
 }
 
 int AppListControllerImpl::GetShelfSize() {
@@ -2142,7 +2156,7 @@ aura::Window* AppListControllerImpl::GetContainerForDisplayId(
 
 bool AppListControllerImpl::ShouldLauncherShowBehindApps() const {
   return IsTabletMode() &&
-         model_->state() != AppListState::kStateEmbeddedAssistant;
+         app_list_page_ != AppListState::kStateEmbeddedAssistant;
 }
 
 int AppListControllerImpl::GetLastQueryLength() {

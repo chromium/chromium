@@ -34,10 +34,6 @@ class APP_LIST_MODEL_EXPORT SearchModel {
 
   ~SearchModel();
 
-  // Whether tablet mode is active. Controlled by AppListView.
-  void SetTabletMode(bool is_tablet_mode);
-  bool tablet_mode() const { return search_box_->is_tablet_mode(); }
-
   void SetSearchEngineIsGoogle(bool is_google);
   bool search_engine_is_google() const {
     return search_box_->search_engine_is_google();

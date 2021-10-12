@@ -84,7 +84,7 @@ class ASH_EXPORT ContentsView : public views::View,
 
   // Initialize the pages of the launcher. Should be called after
   // set_contents_switcher_view().
-  void Init(AppListModel* model);
+  void Init();
 
   // Resets the state of the view so it is ready to be shown.
   void ResetForShow();
@@ -266,9 +266,6 @@ class ASH_EXPORT ContentsView : public views::View,
   // bounds.
   int GetSearchBoxTopForViewState(AppListState state,
                                   AppListViewState view_state) const;
-
-  // Unowned pointer to application list model.
-  AppListModel* model_ = nullptr;
 
   // Sub-views of the ContentsView. All owned by the views hierarchy.
   AssistantPageView* assistant_page_view_ = nullptr;

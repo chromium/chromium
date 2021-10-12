@@ -44,12 +44,10 @@ class AppsContainerView;
 class ApplicationDragAndDropHost;
 class AppListBackgroundShieldView;
 class AppListMainView;
-class AppListModel;
 class AppsGridView;
 class PagedAppsGridView;
 class PaginationModel;
 class SearchBoxView;
-class SearchModel;
 class StateTransitionNotifier;
 
 FORWARD_DECLARE_TEST(AppListControllerImplTest,
@@ -553,8 +551,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   void ResetSubpixelPositionOffset(ui::Layer* layer);
 
   AppListViewDelegate* const delegate_;
-  AppListModel* const model_;        // Not Owned.
-  SearchModel* const search_model_;  // Not Owned.
 
   // Keeps track of the number of locks that prevent the app list view
   // from creating app list transition accessibility events. This is used to

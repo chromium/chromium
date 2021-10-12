@@ -14,7 +14,6 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
-#include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_view.h"
@@ -52,20 +51,15 @@ namespace ash {
 AppListMainView::AppListMainView(AppListViewDelegate* delegate,
                                  AppListView* app_list_view)
     : delegate_(delegate),
-      model_(delegate->GetModel()),
       search_model_(delegate->GetSearchModel()),
       app_list_view_(app_list_view) {
   // We need a layer to apply transform to in small display so that the apps
   // grid fits in the display.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-
-  model_->AddObserver(this);
 }
 
-AppListMainView::~AppListMainView() {
-  model_->RemoveObserver(this);
-}
+AppListMainView::~AppListMainView() = default;
 
 void AppListMainView::Init(int initial_apps_page,
                            SearchBoxView* search_box_view) {
@@ -81,7 +75,7 @@ void AppListMainView::Init(int initial_apps_page,
 void AppListMainView::AddContentsViews() {
   DCHECK(search_box_view_);
   auto contents_view = std::make_unique<ContentsView>(app_list_view_);
-  contents_view->Init(model_);
+  contents_view->Init();
   contents_view->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   contents_view->layer()->SetMasksToBounds(true);
   contents_view_ = AddChildView(std::move(contents_view));
@@ -105,9 +99,6 @@ void AppListMainView::ShowAppListWhenReady() {
 }
 
 void AppListMainView::ModelChanged() {
-  model_->RemoveObserver(this);
-  model_ = delegate_->GetModel();
-  model_->AddObserver(this);
   search_model_ = delegate_->GetSearchModel();
   search_box_view_->ModelChanged();
   delete contents_view_;
@@ -143,16 +134,6 @@ void AppListMainView::Layout() {
   gfx::Rect rect = GetContentsBounds();
   if (!rect.IsEmpty())
     contents_view_->SetBoundsRect(rect);
-}
-
-// AppListModelObserver overrides:
-void AppListMainView::OnAppListStateChanged(AppListState new_state,
-                                            AppListState old_state) {
-  if (new_state == AppListState::kStateEmbeddedAssistant) {
-    search_box_view_->SetVisible(false);
-  } else {
-    search_box_view_->SetVisible(true);
-  }
 }
 
 void AppListMainView::QueryChanged(SearchBoxViewBase* sender) {

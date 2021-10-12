@@ -233,8 +233,8 @@ void SearchResultListView::SearchResultActivated(SearchResultView* view,
 
   auto* result = view->result();
 
-  RecordSearchResultOpenSource(result, view_delegate_->GetModel(),
-                               view_delegate_->GetSearchModel());
+  RecordSearchResultOpenSource(result, view_delegate_->GetAppListViewState(),
+                               view_delegate_->IsInTabletMode());
   view_delegate_->NotifySearchResultsForLogging(
       view_delegate_->GetSearchModel()->search_box()->text(),
       GetSearchResultsForLogging(search_result_views_),

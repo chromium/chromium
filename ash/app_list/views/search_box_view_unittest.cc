@@ -112,7 +112,7 @@ class SearchBoxViewTest : public views::test::WidgetTest,
         std::make_unique<KeyPressCounterView>(app_list_view_));
 
     widget_->Show();
-    counter_view_->Init(view_delegate_.GetModel());
+    counter_view_->Init();
     SetContentsView(counter_view_);
   }
 
@@ -655,7 +655,7 @@ TEST_F(SearchBoxViewTest, NavigateSuggestedContentInfo) {
   view_delegate()->SetShouldShowSuggestedContentInfo(true);
   auto* contents_view = widget()->GetContentsView()->AddChildView(
       std::make_unique<KeyPressCounterView>(app_list_view()));
-  contents_view->Init(view_delegate()->GetModel());
+  contents_view->Init();
   SetContentsView(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
@@ -710,7 +710,7 @@ TEST_F(SearchBoxViewTest, KeyboardEventClosesSuggestedContentInfo) {
   view_delegate()->SetShouldShowSuggestedContentInfo(true);
   auto* contents_view = widget()->GetContentsView()->AddChildView(
       std::make_unique<KeyPressCounterView>(app_list_view()));
-  contents_view->Init(view_delegate()->GetModel());
+  contents_view->Init();
   SetContentsView(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
@@ -741,7 +741,7 @@ TEST_F(SearchBoxViewTest, SuggestedContentActionNotOverriddenByNewResults) {
   view_delegate()->SetShouldShowSuggestedContentInfo(true);
   auto* contents_view = widget()->GetContentsView()->AddChildView(
       std::make_unique<KeyPressCounterView>(app_list_view()));
-  contents_view->Init(view_delegate()->GetModel());
+  contents_view->Init();
   SetContentsView(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
@@ -784,7 +784,7 @@ TEST_F(SearchBoxViewTest, SuggestedContentSelectionDoesNotChangeSearchBoxText) {
   view_delegate()->SetShouldShowSuggestedContentInfo(true);
   auto* contents_view = widget()->GetContentsView()->AddChildView(
       std::make_unique<KeyPressCounterView>(app_list_view()));
-  contents_view->Init(view_delegate()->GetModel());
+  contents_view->Init();
   SetContentsView(contents_view);
 
   PrivacyContainerView* const privacy_container_view =

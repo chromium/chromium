@@ -196,7 +196,21 @@ void AppListTestViewDelegate::OnStateTransitionAnimationCompleted(
     AppListViewState state,
     bool was_animation_interrupted) {}
 
-void AppListTestViewDelegate::OnViewStateChanged(AppListViewState state) {}
+AppListState AppListTestViewDelegate::GetCurrentAppListPage() const {
+  return app_list_page_;
+}
+
+void AppListTestViewDelegate::OnAppListPageChanged(AppListState page) {
+  app_list_page_ = page;
+}
+
+AppListViewState AppListTestViewDelegate::GetAppListViewState() const {
+  return app_list_view_state_;
+}
+
+void AppListTestViewDelegate::OnViewStateChanged(AppListViewState state) {
+  app_list_view_state_ = state;
+}
 
 void AppListTestViewDelegate::GetAppLaunchedMetricParams(
     AppLaunchedMetricParams* metric_params) {}
@@ -226,7 +240,7 @@ AppListNotifier* AppListTestViewDelegate::GetNotifier() {
 
 void AppListTestViewDelegate::RecordAppLaunched(
     ash::AppListLaunchedFrom launched_from) {
-  RecordAppListAppLaunched(launched_from, model_->state_fullscreen(),
+  RecordAppListAppLaunched(launched_from, app_list_view_state_,
                            false /*tablet mode*/,
                            false /*home launcher shown*/);
 }

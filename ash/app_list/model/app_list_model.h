@@ -46,13 +46,6 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
 
   void SetStatus(AppListModelStatus status);
 
-  void SetState(AppListState state);
-  AppListState state() const { return state_; }
-
-  // The current state of the AppListView. Controlled by AppListView.
-  void SetStateFullscreen(AppListViewState state);
-  AppListViewState state_fullscreen() const { return state_fullscreen_; }
-
   // Finds the item matching |id|.
   AppListItem* FindItem(const std::string& id);
 
@@ -178,9 +171,7 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   std::unique_ptr<AppListItemList> top_level_item_list_;
 
   AppListModelStatus status_ = AppListModelStatus::kStatusNormal;
-  AppListState state_ = AppListState::kInvalidState;
-  // The AppListView state. Controlled by the AppListView.
-  AppListViewState state_fullscreen_ = AppListViewState::kClosed;
+
   base::ObserverList<AppListModelObserver, true> observers_;
   base::ScopedMultiSourceObservation<AppListItemList, AppListItemListObserver>
       item_list_scoped_observations_{this};

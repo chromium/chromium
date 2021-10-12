@@ -12,7 +12,6 @@
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_util.h"
-#include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
@@ -635,8 +634,6 @@ PagedAppsGridView* AppListView::TestApi::GetRootAppsGridView() {
 
 AppListView::AppListView(AppListViewDelegate* delegate)
     : delegate_(delegate),
-      model_(delegate->GetModel()),
-      search_model_(delegate->GetSearchModel()),
       is_background_blur_enabled_(features::IsBackgroundBlurEnabled()),
       state_transition_notifier_(
           std::make_unique<StateTransitionNotifier>(this)),
@@ -1044,7 +1041,8 @@ void AppListView::HandleClickOrTap(ui::LocatedEvent* event) {
   }
 
   if (!search_box_view_->is_search_box_active() &&
-      model_->state() != AppListState::kStateEmbeddedAssistant) {
+      delegate_->GetCurrentAppListPage() !=
+          AppListState::kStateEmbeddedAssistant) {
     if (!delegate_->IsInTabletMode())
       Dismiss();
     return;
@@ -1546,7 +1544,6 @@ void AppListView::OnKeyEvent(ui::KeyEvent* event) {
 
 void AppListView::OnTabletModeChanged(bool started) {
   search_box_view_->OnTabletModeChanged(started);
-  search_model_->SetTabletMode(started);
   app_list_main_view_->contents_view()->OnTabletModeChanged(started);
 
   if (is_in_drag_) {
@@ -1728,7 +1725,6 @@ void AppListView::SetState(AppListViewState new_state) {
   StartAnimationForState(new_state_override);
   MaybeIncreasePrivacyInfoRowShownCounts(new_state_override);
   RecordStateTransitionForUma(new_state_override);
-  model_->SetStateFullscreen(new_state_override);
   app_list_state_ = new_state_override;
   if (delegate_)
     delegate_->OnViewStateChanged(new_state_override);
@@ -1762,7 +1758,7 @@ void AppListView::UpdateWindowTitle() {
   if (!GetWidget())
     return;
   gfx::NativeView window = GetWidget()->GetNativeView();
-  AppListState contents_view_state = app_list_main_view_->model()->state();
+  AppListState contents_view_state = delegate_->GetCurrentAppListPage();
   if (window) {
     if (contents_view_state == AppListState::kStateSearchResults ||
         contents_view_state == AppListState::kStateEmbeddedAssistant) {
@@ -2415,8 +2411,7 @@ void AppListView::RecordFolderMetrics() {
   int number_of_apps_in_folders = 0;
   int number_of_folders = 0;
   int non_system_folders = 0;
-  AppListItemList* item_list =
-      app_list_main_view_->model()->top_level_item_list();
+  AppListItemList* item_list = delegate_->GetModel()->top_level_item_list();
   for (size_t i = 0; i < item_list->item_count(); ++i) {
     AppListItem* item = item_list->item_at(i);
     if (item->GetItemType() != AppListFolderItem::kItemType)

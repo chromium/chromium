@@ -176,6 +176,17 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // pressed to indicate not to show the view any more.
   virtual void MarkSuggestedContentInfoDismissed() = 0;
 
+  // Gets the app list page currently shown in the fullscreen app list, as
+  // reported from the app list view using `OnAppListPageChanged()`.
+  virtual AppListState GetCurrentAppListPage() const = 0;
+
+  // Called when the page shown in the app list contents view is updated.
+  virtual void OnAppListPageChanged(AppListState page) = 0;
+
+  // Gets the current app list view state, as reported by app list view using
+  // `OnViewStateChanged()`. Tracked for fullscreen app list view only.
+  virtual AppListViewState GetAppListViewState() const = 0;
+
   // Called when the app list view state is updated.
   virtual void OnViewStateChanged(AppListViewState state) = 0;
 

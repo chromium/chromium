@@ -5,7 +5,6 @@
 #ifndef ASH_APP_LIST_VIEWS_APP_LIST_MAIN_VIEW_H_
 #define ASH_APP_LIST_VIEWS_APP_LIST_MAIN_VIEW_H_
 
-#include "ash/app_list/model/app_list_model_observer.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/ash_export.h"
 #include "ash/search_box/search_box_view_delegate.h"
@@ -16,7 +15,6 @@
 
 namespace ash {
 
-class AppListModel;
 class AppListView;
 class AppListViewDelegate;
 class ApplicationDragAndDropHost;
@@ -28,7 +26,6 @@ class SearchBoxViewBase;
 // AppListMainView contains the normal view of the app list, which is shown
 // when the user is signed in.
 class ASH_EXPORT AppListMainView : public views::View,
-                                   public AppListModelObserver,
                                    public SearchBoxViewDelegate {
  public:
   AppListMainView(AppListViewDelegate* delegate, AppListView* app_list_view);
@@ -52,7 +49,6 @@ class ASH_EXPORT AppListMainView : public views::View,
       ApplicationDragAndDropHost* drag_and_drop_host);
 
   ContentsView* contents_view() const { return contents_view_; }
-  AppListModel* model() { return model_; }
   SearchModel* search_model() { return search_model_; }
   AppListViewDelegate* view_delegate() { return delegate_; }
 
@@ -62,10 +58,6 @@ class ASH_EXPORT AppListMainView : public views::View,
   // Overridden from views::View:
   const char* GetClassName() const override;
   void Layout() override;
-
-  // AppListModelObserver overrides:
-  void OnAppListStateChanged(AppListState new_state,
-                             AppListState old_state) override;
 
  private:
   // Adds the ContentsView.
@@ -84,7 +76,6 @@ class ASH_EXPORT AppListMainView : public views::View,
   bool CanSelectSearchResults() override;
 
   AppListViewDelegate* delegate_;  // Owned by parent view (AppListView).
-  AppListModel* model_;        // Unowned; ownership is handled by |delegate_|.
   SearchModel* search_model_;  // Unowned; ownership is handled by |delegate_|.
 
   // Created by AppListView. Owned by views hierarchy.

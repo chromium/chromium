@@ -667,7 +667,7 @@ void SearchResultView::OnGetContextMenu(
       metric_params, AppListMenuModelAdapter::SEARCH_RESULT,
       base::BindOnce(&SearchResultView::OnMenuClosed,
                      weak_ptr_factory_.GetWeakPtr()),
-      view_delegate_->GetSearchModel()->tablet_mode());
+      view_delegate_->IsInTabletMode());
   context_menu_->Run(gfx::Rect(point, gfx::Size()),
                      views::MenuAnchorPosition::kTopLeft,
                      views::MenuRunner::HAS_MNEMONICS);

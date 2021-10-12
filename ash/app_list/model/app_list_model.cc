@@ -42,20 +42,6 @@ void AppListModel::SetStatus(AppListModelStatus status) {
     observer.OnAppListModelStatusChanged();
 }
 
-void AppListModel::SetState(AppListState state) {
-  if (state_ == state)
-    return;
-
-  auto old_state = state_;
-  state_ = state;
-  for (auto& observer : observers_)
-    observer.OnAppListStateChanged(state_, old_state);
-}
-
-void AppListModel::SetStateFullscreen(AppListViewState state) {
-  state_fullscreen_ = state;
-}
-
 AppListItem* AppListModel::FindItem(const std::string& id) {
   AppListItem* item = top_level_item_list_->FindItem(id);
   if (item)
