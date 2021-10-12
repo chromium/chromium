@@ -4170,7 +4170,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="5463625433003343978">Buscando dispositivos…</translation>
 <translation id="5463856536939868464">Menú con marcadores ocultos</translation>
 <translation id="5464632865477611176">Executar esta vez</translation>
-<translation id="5464660706533281090">Os nenos non poden cambiar esta opción de configuración.</translation>
+<translation id="5464660706533281090">Os usuarios menores de idade non poden cambiar esta opción de configuración.</translation>
 <translation id="5466374726908360271">Pegar e bu&amp;scar "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5467207440419968613">Bloqueáronse os seguintes permisos: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">Buscando ficheiros compartidos</translation>
