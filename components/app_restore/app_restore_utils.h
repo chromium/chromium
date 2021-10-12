@@ -11,6 +11,19 @@
 namespace app_restore {
 struct WindowInfo;
 
+// For ARC session id, 1 ~ 1000000000 is used as the window id for all new app
+// launching. 1000000001 - INT_MAX is used as the session id for all restored
+// app launching read from the full restore file.
+//
+// Assuming each day the new windows launched account is 1M, the above scope is
+// enough for 3 years (1000 days). So there should be enough number to be
+// assigned for ARC session ids.
+constexpr int32_t kArcSessionIdOffsetForRestoredLaunching = 1000000000;
+
+// If the ARC task is not created when the window is initialized, set the
+// restore window id as -1, to add the ARC app window to the hidden container.
+constexpr int32_t kParentToHiddenContainer = -1;
+
 // Applies properties from `window_info` to the given `property_handler`.
 // This is called from `GetWindowInfo()` when window is
 // created, or from the ArcReadHandler when a task is ready for a full

@@ -382,6 +382,12 @@ class FullRestoreAppLaunchHandlerBrowserTest
         restore_window_id);
   }
 
+  std::unique_ptr<::app_restore::WindowInfo> GetWindowInfo(
+      aura::Window* window) {
+    return ::full_restore::FullRestoreReadHandler::GetInstance()->GetWindowInfo(
+        window);
+  }
+
   bool HasNotificationFor(const std::string& notification_id) {
     absl::optional<message_center::Notification> message_center_notification =
         display_service()->GetNotification(notification_id);
@@ -876,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   auto window = std::make_unique<aura::Window>(nullptr);
   window->Init(ui::LAYER_NOT_DRAWN);
   window->SetProperty(::app_restore::kRestoreWindowIdKey, kWindowId1);
-  auto stored_window_info = ::full_restore::GetWindowInfo(window.get());
+  auto stored_window_info = GetWindowInfo(window.get());
   EXPECT_EQ(kDeskId, *stored_window_info->desk_id);
   EXPECT_EQ(kCurrentBounds, *stored_window_info->current_bounds);
   EXPECT_EQ(kWindowStateType, *stored_window_info->window_state_type);
@@ -1106,7 +1112,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   ASSERT_TRUE(window1);
   EXPECT_NE(0, window1->GetProperty(::app_restore::kRestoreWindowIdKey));
 
-  auto window_info = ::full_restore::GetWindowInfo(window1);
+  auto window_info = GetWindowInfo(window1);
   ASSERT_TRUE(window_info);
   EXPECT_TRUE(window_info->activation_index.has_value());
   EXPECT_EQ(INT32_MAX, window_info->activation_index.value());
@@ -1117,7 +1123,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   ASSERT_TRUE(window2);
   EXPECT_NE(0, window2->GetProperty(::app_restore::kRestoreWindowIdKey));
 
-  window_info = ::full_restore::GetWindowInfo(window2);
+  window_info = GetWindowInfo(window2);
   ASSERT_TRUE(window_info);
   EXPECT_TRUE(window_info->activation_index.has_value());
   EXPECT_EQ(INT32_MAX, window_info->activation_index.value());
@@ -1316,7 +1322,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
                         int32_t activation_index,
                         chromeos::WindowStateType window_state_type =
                             chromeos::WindowStateType::kDefault) {
-    auto window_info = ::full_restore::GetWindowInfo(window);
+    auto window_info = GetWindowInfo(window);
     ASSERT_TRUE(window_info);
     EXPECT_TRUE(window_info->activation_index.has_value());
     EXPECT_EQ(activation_index, window_info->activation_index.value());

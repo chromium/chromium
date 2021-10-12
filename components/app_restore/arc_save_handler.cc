@@ -6,9 +6,9 @@
 
 #include "base/containers/contains.h"
 #include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
-#include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/window.h"

@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
-#include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/app_restore_utils.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 
 ArcShelfSpinnerItemController::ArcShelfSpinnerItemController(

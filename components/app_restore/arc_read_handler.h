@@ -11,7 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/app_restore_utils.h"
 
 namespace aura {
 class Window;

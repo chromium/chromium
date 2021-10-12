@@ -173,8 +173,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
       delete;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        full_restore::features::kFullRestore);
+    scoped_feature_list_.InitAndEnableFeature(features::kFullRestore);
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
   }
 
@@ -215,15 +214,14 @@ class FullRestoreReadAndSaveTest : public testing::Test {
   }
 
   void AddAppLaunchInfo(const base::FilePath& file_path, int32_t id) {
-    full_restore::SaveAppLaunchInfo(
-        file_path, std::make_unique<app_restore::AppLaunchInfo>(kAppId, id));
+    SaveAppLaunchInfo(file_path,
+                      std::make_unique<app_restore::AppLaunchInfo>(kAppId, id));
   }
 
   void AddArcAppLaunchInfo(const base::FilePath& file_path) {
-    full_restore::SaveAppLaunchInfo(
-        file_path,
-        std::make_unique<app_restore::AppLaunchInfo>(
-            kAppId, /*event_flags=*/0, kArcSessionId1, /*display_id*/ 0));
+    SaveAppLaunchInfo(file_path, std::make_unique<app_restore::AppLaunchInfo>(
+                                     kAppId, /*event_flags=*/0, kArcSessionId1,
+                                     /*display_id*/ 0));
   }
 
   void AddBrowserLaunchInfo(const base::FilePath& file_path,
@@ -234,7 +232,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
         extension_misc::kChromeAppId, id);
     launch_info->urls = urls;
     launch_info->active_tab_index = active_tab_index;
-    full_restore::SaveAppLaunchInfo(file_path, std::move(launch_info));
+    SaveAppLaunchInfo(file_path, std::move(launch_info));
   }
 
   void AddChromeAppLaunchInfo(const base::FilePath& file_path) {
@@ -243,7 +241,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
         std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                     base::FilePath(kFilePath2)});
     app_launch_info->window_id = kId1;
-    full_restore::SaveAppLaunchInfo(file_path, std::move(app_launch_info));
+    SaveAppLaunchInfo(file_path, std::move(app_launch_info));
   }
 
   std::unique_ptr<aura::Window> CreateWindowInfo(
@@ -257,7 +255,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
     window->SetProperty(aura::client::kAppType, static_cast<int>(app_type));
     window->SetProperty(app_restore::kWindowIdKey, id);
     window_info.activation_index = index;
-    full_restore::SaveWindowInfo(window_info);
+    SaveWindowInfo(window_info);
     return window;
   }
 
@@ -268,7 +266,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
     window->SetProperty(aura::client::kAppType,
                         static_cast<int>(ash::AppType::ARC_APP));
     window->SetProperty(app_restore::kRestoreWindowIdKey, restore_window_id);
-    return full_restore::GetWindowInfo(window.get());
+    return FullRestoreReadHandler::GetInstance()->GetWindowInfo(window.get());
   }
 
   void VerifyRestoreData(const base::FilePath& file_path,
@@ -775,8 +773,7 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
   // map can be cleared. And verify that we can get the restore window id
   // |kArcTaskId1| with the new |kArcTaskId2|.
   EXPECT_TRUE(read_test_api.GetArcSessionIdMap().empty());
-  EXPECT_EQ(kArcTaskId1,
-            full_restore::GetArcRestoreWindowIdForTaskId(kArcTaskId2));
+  EXPECT_EQ(kArcTaskId1, GetArcRestoreWindowIdForTaskId(kArcTaskId2));
 
   // Verify |window_info| for |kArcTaskId1|.
   auto window_info = GetArcWindowInfo(kArcTaskId1);
@@ -787,7 +784,7 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
   // for |kArcTaskId2|, and verify the task id map is now empty and a invalid
   // value is returned when trying to get the restore window id.
   read_handler->OnTaskDestroyed(kArcTaskId2);
-  EXPECT_EQ(0, full_restore::GetArcRestoreWindowIdForTaskId(kArcTaskId2));
+  EXPECT_EQ(0, GetArcRestoreWindowIdForTaskId(kArcTaskId2));
   EXPECT_TRUE(read_test_api.GetArcTaskIdMap().empty());
   EXPECT_TRUE(read_test_api.GetArcWindowIdMap().empty());
 }

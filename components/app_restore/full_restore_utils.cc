@@ -32,13 +32,6 @@ void SaveWindowInfo(const app_restore::WindowInfo& window_info) {
   FullRestoreSaveHandler::GetInstance()->SaveWindowInfo(window_info);
 }
 
-std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(aura::Window* window) {
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return nullptr;
-
-  return FullRestoreReadHandler::GetInstance()->GetWindowInfo(window);
-}
-
 int32_t FetchRestoreWindowId(const std::string& app_id) {
   if (!full_restore::features::IsFullRestoreEnabled())
     return 0;

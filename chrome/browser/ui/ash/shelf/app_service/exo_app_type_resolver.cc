@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "components/arc/arc_util.h"
