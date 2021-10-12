@@ -42,7 +42,6 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -76,7 +75,6 @@
 
 using extensions::Extension;
 using extensions::api::file_manager_private::Verb;
-using extensions::app_file_handler_util::FindFileHandlerMatchesForEntries;
 using storage::FileSystemURL;
 
 namespace file_manager {
@@ -96,8 +94,6 @@ const char kArcAppTaskType[] = "arc";
 const char kCrostiniAppTaskType[] = "crostini";
 const char kPluginVmAppTaskType[] = "pluginvm";
 const char kWebAppTaskType[] = "web";
-const char kImportCrostiniImageHandlerId[] = "import-crostini-image";
-const char kInstallLinuxPackageHandlerId[] = "install-linux-package";
 
 // Returns true if path_mime_set contains a Google document.
 bool ContainsGoogleDocument(const std::vector<extensions::EntryInfo>& entries) {
@@ -625,42 +621,6 @@ bool ExecuteFileTask(Profile* profile,
   return false;
 }
 
-bool IsFileHandlerEnabled(Profile* profile,
-                          const apps::FileHandlerInfo& file_handler_info) {
-  // Crostini deb files and backup files can be disabled by policy.
-  if (file_handler_info.id == kInstallLinuxPackageHandlerId) {
-    return crostini::CrostiniFeatures::Get()->IsRootAccessAllowed(profile);
-  }
-  if (file_handler_info.id == kImportCrostiniImageHandlerId) {
-    return crostini::CrostiniFeatures::Get()->IsExportImportUIAllowed(profile);
-  }
-  return true;
-}
-
-bool IsGoodMatchFileHandler(const apps::FileHandlerInfo& file_handler_info,
-                            const std::vector<extensions::EntryInfo>& entries) {
-  if (file_handler_info.extensions.count("*") > 0 ||
-      file_handler_info.types.count("*") > 0 ||
-      file_handler_info.types.count("*/*") > 0)
-    return false;
-
-  // If text/* file handler matches with unsupported text mime type, we don't
-  // regard it as good match.
-  if (file_handler_info.types.count("text/*")) {
-    for (const auto& entry : entries) {
-      if (blink::IsUnsupportedTextMimeType(entry.mime_type))
-        return false;
-    }
-  }
-
-  // We consider it a good match if no directories are selected.
-  for (const auto& entry : entries) {
-    if (entry.is_directory)
-      return false;
-  }
-  return true;
-}
-
 bool IsGoodMatchAppsFileHandler(
     const apps::FileHandler& file_handler,
     const std::vector<extensions::EntryInfo>& entries) {
@@ -687,95 +647,6 @@ bool IsGoodMatchAppsFileHandler(
       return false;
   }
   return true;
-}
-
-void FindFileHandlerTasks(Profile* profile,
-                          const std::vector<extensions::EntryInfo>& entries,
-                          std::vector<FullTaskDescriptor>* result_list) {
-  DCHECK(!entries.empty());
-  DCHECK(result_list);
-
-  const extensions::ExtensionSet& enabled_extensions =
-      extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
-
-  for (const scoped_refptr<const extensions::Extension> extension :
-       enabled_extensions) {
-    // Check that the extension can be launched with files. This includes all
-    // platform apps and allowlisted extensions.
-    if (!CanLaunchViaEvent(extension.get())) {
-      continue;
-    }
-
-    if (profile->IsOffTheRecord() &&
-        !extensions::util::IsIncognitoEnabled(extension->id(), profile))
-      continue;
-
-    typedef std::vector<extensions::FileHandlerMatch> FileHandlerMatchList;
-    FileHandlerMatchList file_handlers =
-        FindFileHandlerMatchesForEntries(*extension, entries);
-    if (file_handlers.empty())
-      continue;
-
-    // A map which has as key a handler verb, and as value a pair of the
-    // handler with which to open the given entries and a boolean marking
-    // if the handler is a good match.
-    std::map<std::string, std::pair<const extensions::FileHandlerMatch*, bool>>
-        handlers_for_entries;
-    // Show the first good matching handler of each verb supporting the given
-    // entries that corresponds to the app. If there doesn't exist such handler,
-    // show the first matching handler of the verb.
-    for (const auto& handler_match : file_handlers) {
-      const apps::FileHandlerInfo* handler = handler_match.handler;
-      if (!IsFileHandlerEnabled(profile, *handler)) {
-        continue;
-      }
-      bool good_match = IsGoodMatchFileHandler(*handler, entries);
-      auto it = handlers_for_entries.find(handler->verb);
-      if (it == handlers_for_entries.end() ||
-          (!it->second.second /* existing handler not a good match */ &&
-           good_match)) {
-        handlers_for_entries[handler->verb] =
-            std::make_pair(&handler_match, good_match);
-      }
-    }
-
-    for (const auto& entry : handlers_for_entries) {
-      const extensions::FileHandlerMatch* match = entry.second.first;
-      const apps::FileHandlerInfo* handler = match->handler;
-      std::string task_id = file_tasks::MakeTaskID(
-          extension->id(), file_tasks::TASK_TYPE_FILE_HANDLER, handler->id);
-
-      const GURL best_icon = GetIconURL(profile, *extension);
-
-      // If file handler doesn't match as good match, regards it as generic file
-      // handler.
-      const bool is_generic_file_handler =
-          !IsGoodMatchFileHandler(*handler, entries);
-      Verb verb;
-      if (handler->verb == apps::file_handler_verbs::kAddTo) {
-        verb = Verb::VERB_ADD_TO;
-      } else if (handler->verb == apps::file_handler_verbs::kPackWith) {
-        verb = Verb::VERB_PACK_WITH;
-      } else if (handler->verb == apps::file_handler_verbs::kShareWith) {
-        verb = Verb::VERB_SHARE_WITH;
-      } else {
-        // Only kOpenWith is a valid remaining verb. Invalid verbs should fall
-        // back to it.
-        DCHECK(handler->verb == apps::file_handler_verbs::kOpenWith);
-        verb = Verb::VERB_OPEN_WITH;
-      }
-      // If the handler was matched purely on the file name extension then
-      // the manifest declared its 'file_handler' to match. Used for fallback
-      // selection of the handler when we don't have a default handler set
-      const bool is_file_extension_match = match->matched_file_extension;
-
-      result_list->push_back(FullTaskDescriptor(
-          TaskDescriptor(extension->id(), file_tasks::TASK_TYPE_FILE_HANDLER,
-                         handler->id),
-          extension->name(), verb, best_icon, false /* is_default */,
-          is_generic_file_handler, is_file_extension_match));
-    }
-  }
 }
 
 void FindFileBrowserHandlerTasks(
