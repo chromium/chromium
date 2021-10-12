@@ -2604,6 +2604,8 @@ if (enable_java_templates) {
           resources_config_paths += invoker.resources_config_paths
         }
       }
+    } else {
+      not_needed(invoker, [ "resources_config_paths" ])
     }
 
     if (!_is_bundle_module) {

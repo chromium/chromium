@@ -185,7 +185,7 @@ template("chrome_public_common_apk_or_module_tmpl") {
       strip_resource_names = !is_java_debug
 
       # Shortens resource file names in apk eg: res/drawable/button.xml -> res/a.xml
-      short_resource_paths = true
+      short_resource_paths = !is_java_debug
 
       # Removes unused resources from the apk. Only enabled on official builds
       # since it adds a slow step and serializes the build graph causing fewer
