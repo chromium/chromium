@@ -468,6 +468,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="OOBE.WebUIToViewsSwitch.Duration" units="ms"
     expires_after="2021-11-21">
+  <obsolete>
+    Removed in M97.
+  </obsolete>
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>

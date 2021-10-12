@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/test/gtest_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
@@ -1022,37 +1021,31 @@ IN_PROC_BROWSER_TEST_P(OobeGuestButtonPolicy, VisibilityAfterEnrollment) {
 INSTANTIATE_TEST_SUITE_P(All, OobeGuestButtonPolicy, ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(EnrollmentLocalPolicyServerBase, SwitchToViews) {
-  base::HistogramTester histogram_tester;
   TriggerEnrollmentAndSignInSuccessfully();
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
   ConfirmAndWaitLoginScreen();
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
-  histogram_tester.ExpectTotalCount("OOBE.WebUIToViewsSwitch.Duration", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentLocalPolicyServerBase,
                        SwitchToViewsLocalUsers) {
   AddPublicUser("test_user");
-  base::HistogramTester histogram_tester;
   TriggerEnrollmentAndSignInSuccessfully();
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
   ConfirmAndWaitLoginScreen();
   EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 1);
-  histogram_tester.ExpectTotalCount("OOBE.WebUIToViewsSwitch.Duration", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentLocalPolicyServerBase, SwitchToViewsLocales) {
   auto initial_label = LoginScreenTestApi::GetShutDownButtonLabel();
 
   SetLoginScreenLocale("ru-RU");
-  base::HistogramTester histogram_tester;
   TriggerEnrollmentAndSignInSuccessfully();
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
   ConfirmAndWaitLoginScreen();
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   EXPECT_NE(LoginScreenTestApi::GetShutDownButtonLabel(), initial_label);
-  histogram_tester.ExpectTotalCount("OOBE.WebUIToViewsSwitch.Duration", 1);
 }
 
 class KioskEnrollmentTest : public EnrollmentLocalPolicyServerBase {

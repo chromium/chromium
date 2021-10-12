@@ -26,9 +26,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner_forward.h"
-#include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
@@ -1286,37 +1283,9 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   TriggerShowLoginWizardFinish(locale, std::move(data));
 }
 
-class WebUIToViewsSwitchMetricsReporter
-    : public session_manager::SessionManagerObserver {
- public:
-  WebUIToViewsSwitchMetricsReporter() {
-    session_observation_.Observe(session_manager::SessionManager::Get());
-  }
-
-  // session_manager::SessionManagerObserver:
-  void OnLoginOrLockScreenVisible() override {
-    if (LoginDisplayHost::default_host()->GetOobeUI()) {
-      DCHECK_EQ(OobeUI::kGaiaSigninDisplay,
-                LoginDisplayHost::default_host()->GetOobeUI()->display_type());
-    }
-    base::UmaHistogramTimes("OOBE.WebUIToViewsSwitch.Duration",
-                            timer_.Elapsed());
-    base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
-  }
-
- private:
-  base::ScopedObservation<session_manager::SessionManager,
-                          session_manager::SessionManagerObserver>
-      session_observation_{this};
-  base::ElapsedTimer timer_;
-};
-
 void SwitchWebUItoMojo() {
   DCHECK_EQ(LoginDisplayHost::default_host()->GetOobeUI()->display_type(),
             OobeUI::kOobeDisplay);
-
-  // The object deletes itself.
-  new WebUIToViewsSwitchMetricsReporter();
 
   // This replaces WebUI host with the Mojo (views) host.
   ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
