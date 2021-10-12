@@ -30,9 +30,11 @@ namespace {
 
 int g_last_timer_id = 0;
 
+#if defined(PDF_ENABLE_V8)
 std::string WideStringToString(FPDF_WIDESTRING wide_string) {
   return base::UTF16ToUTF8(reinterpret_cast<const char16_t*>(wide_string));
 }
+#endif
 
 }  // namespace
 
