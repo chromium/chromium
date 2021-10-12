@@ -191,7 +191,8 @@ void Mixer::MixAndPublish(size_t num_max_results, const std::u16string& query) {
     new_results.push_back(sort_data.result);
   }
   search_controller_->NotifyResultsAdded(new_results);
-  model_updater_->PublishSearchResults(new_results);
+  // Categories are unused in old search.
+  model_updater_->PublishSearchResults(new_results, /*categories=*/{});
 }
 
 void Mixer::FetchResults(const std::u16string& query) {

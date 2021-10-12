@@ -202,7 +202,8 @@ void SearchControllerImplNew::SetResults(
       observer.OnResultsAdded(last_query_, observer_results);
   }
 
-  model_updater_->PublishSearchResults(all_results);
+  // TODO(crbug.com/1199206): Send category ranks.
+  model_updater_->PublishSearchResults(all_results, /*categories=*/{});
 }
 
 ChromeSearchResult* SearchControllerImplNew::FindSearchResult(

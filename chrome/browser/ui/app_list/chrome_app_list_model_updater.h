@@ -41,7 +41,8 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   void UpdateSearchBox(const std::u16string& text,
                        bool initiated_by_user) override;
   void PublishSearchResults(
-      const std::vector<ChromeSearchResult*>& results) override;
+      const std::vector<ChromeSearchResult*>& results,
+      const std::vector<ash::AppListSearchResultCategory>& categories) override;
   std::vector<ChromeSearchResult*> GetPublishedSearchResultsForTest() override;
 
   // Methods only used by ChromeAppListItem that talk to ash directly.

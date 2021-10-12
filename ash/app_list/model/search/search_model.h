@@ -62,7 +62,9 @@ class APP_LIST_MODEL_EXPORT SearchModel {
   SearchBoxModel* search_box() { return search_box_.get(); }
   SearchResults* results() { return results_.get(); }
 
-  void PublishResults(std::vector<std::unique_ptr<SearchResult>> new_results);
+  void PublishResults(
+      std::vector<std::unique_ptr<SearchResult>> new_results,
+      const std::vector<ash::AppListSearchResultCategory>& categories);
 
   SearchResult* FindSearchResult(const std::string& id);
 

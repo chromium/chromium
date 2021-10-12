@@ -393,14 +393,15 @@ void AppListControllerImpl::UpdateSearchBox(const std::u16string& text,
 }
 
 void AppListControllerImpl::PublishSearchResults(
-    std::vector<std::unique_ptr<SearchResultMetadata>> results) {
+    std::vector<std::unique_ptr<SearchResultMetadata>> results,
+    const std::vector<ash::AppListSearchResultCategory>& categories) {
   std::vector<std::unique_ptr<SearchResult>> new_results;
   for (auto& result_metadata : results) {
     std::unique_ptr<SearchResult> result = std::make_unique<SearchResult>();
     result->SetMetadata(std::move(result_metadata));
     new_results.push_back(std::move(result));
   }
-  search_model_.PublishResults(std::move(new_results));
+  search_model_.PublishResults(std::move(new_results), categories);
 }
 
 void AppListControllerImpl::SetItemMetadata(

@@ -137,7 +137,8 @@ void ChromeAppListModelUpdater::UpdateSearchBox(const std::u16string& text,
 }
 
 void ChromeAppListModelUpdater::PublishSearchResults(
-    const std::vector<ChromeSearchResult*>& results) {
+    const std::vector<ChromeSearchResult*>& results,
+    const std::vector<ash::AppListSearchResultCategory>& categories) {
   published_results_ = results;
   for (auto* const result : results)
     result->set_model_updater(this);
@@ -146,7 +147,8 @@ void ChromeAppListModelUpdater::PublishSearchResults(
   std::vector<std::unique_ptr<ash::SearchResultMetadata>> result_data;
   for (auto* result : results)
     result_data.push_back(result->CloneMetadata());
-  app_list_controller_->PublishSearchResults(std::move(result_data));
+  app_list_controller_->PublishSearchResults(std::move(result_data),
+                                             categories);
 }
 
 std::vector<ChromeSearchResult*>

@@ -47,7 +47,8 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   // For SearchModel:
   void SetSearchEngineIsGoogle(bool is_google) override;
   void PublishSearchResults(
-      const std::vector<ChromeSearchResult*>& results) override;
+      const std::vector<ChromeSearchResult*>& results,
+      const std::vector<ash::AppListSearchResultCategory>& categories) override;
 
   void ActivateChromeItem(const std::string& id, int event_flags) override;
   void LoadAppIcon(const std::string& id) override;

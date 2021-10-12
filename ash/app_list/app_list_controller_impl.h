@@ -112,7 +112,8 @@ class ASH_EXPORT AppListControllerImpl
   void UpdateSearchBox(const std::u16string& text,
                        bool initiated_by_user) override;
   void PublishSearchResults(
-      std::vector<std::unique_ptr<SearchResultMetadata>> results) override;
+      std::vector<std::unique_ptr<SearchResultMetadata>> results,
+      const std::vector<ash::AppListSearchResultCategory>& categories) override;
   void SetItemMetadata(const std::string& id,
                        std::unique_ptr<AppListItemMetadata> data) override;
   void SetItemIconVersion(const std::string& id, int icon_version) override;

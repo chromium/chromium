@@ -67,9 +67,14 @@ class ASH_PUBLIC_EXPORT AppListController {
   virtual void UpdateSearchBox(const std::u16string& text,
                                bool initiated_by_user) = 0;
 
-  // Publishes search results to Ash to render them.
+  // Publishes search results to Ash to render them. The order of the
+  // |categories| vector is the order cateogories should be displayed in. Each
+  // result in |results| contains a category as a member, which is guaranteed
+  // to exist in |categories|. However, some values in |categories| may have
+  // no results associated with them.
   virtual void PublishSearchResults(
-      std::vector<std::unique_ptr<SearchResultMetadata>> results) = 0;
+      std::vector<std::unique_ptr<SearchResultMetadata>> results,
+      const std::vector<ash::AppListSearchResultCategory>& categories) = 0;
 
   // Updates an item's metadata (e.g. name, position, etc).
   virtual void SetItemMetadata(const std::string& id,

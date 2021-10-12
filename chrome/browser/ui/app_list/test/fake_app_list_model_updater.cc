@@ -169,7 +169,8 @@ bool FakeAppListModelUpdater::SearchEngineIsGoogle() {
 }
 
 void FakeAppListModelUpdater::PublishSearchResults(
-    const std::vector<ChromeSearchResult*>& results) {
+    const std::vector<ChromeSearchResult*>& results,
+    const std::vector<ash::AppListSearchResultCategory>& categories) {
   search_results_ = results;
 }
 
