@@ -72,7 +72,9 @@ RootCompositorFrameSinkImpl::Create(
   std::unique_ptr<SyntheticBeginFrameSource> synthetic_begin_frame_source;
   ExternalBeginFrameSourceMojo* external_begin_frame_source_mojo = nullptr;
   bool hw_support_for_multiple_refresh_rates = false;
+#if !defined(OS_APPLE)
   bool wants_vsync_updates = false;
+#endif
 
   if (params->external_begin_frame_controller) {
     auto owned_external_begin_frame_source_mojo =
@@ -103,7 +105,9 @@ RootCompositorFrameSinkImpl::Create(
 #endif
       // Vsync updates are required to update the FrameRateDecider with
       // supported refresh rates.
+#if !defined(OS_APPLE)
       wants_vsync_updates = params->use_preferred_interval_for_video;
+#endif
       external_begin_frame_source = std::make_unique<GpuVSyncBeginFrameSource>(
           restart_id, output_surface.get());
     } else {
