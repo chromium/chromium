@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/common/child_process_host.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
@@ -367,7 +368,8 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, ConnectNative) {
     constexpr char kAddPortTemplate[] =
         "(function() { return chrome.runtime.connectNative(%s); })";
     PortId expected_port_id(script_context()->context_id(),
-                            next_context_port_id++, true);
+                            next_context_port_id++, true,
+                            SerializationFormat::kJson);
     MessageTarget expected_target(
         MessageTarget::ForNativeApp(expected_app_name));
     EXPECT_CALL(*ipc_message_sender(),
@@ -415,13 +417,14 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, SendNativeMessage) {
         "(function() { chrome.runtime.sendNativeMessage(%s); })";
 
     PortId expected_port_id(script_context()->context_id(),
-                            next_context_port_id++, true);
+                            next_context_port_id++, true,
+                            SerializationFormat::kJson);
     MessageTarget expected_target(
         MessageTarget::ForNativeApp(expected_application_name));
     EXPECT_CALL(*ipc_message_sender(),
                 SendOpenMessageChannel(script_context(), expected_port_id,
                                        expected_target, kEmptyExpectedChannel));
-    Message message(expected_message, false);
+    Message message(expected_message, SerializationFormat::kJson, false);
     EXPECT_CALL(*ipc_message_sender(),
                 SendPostMessageToPort(expected_port_id, message));
     // Note: we don't close native message ports immediately. See comment in

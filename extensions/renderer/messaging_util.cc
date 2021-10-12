@@ -12,7 +12,9 @@
 #include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/api/messaging/message.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/renderer/get_script_context.h"
@@ -79,7 +81,8 @@ std::unique_ptr<Message> MessageFromJSONString(v8::Isolate* isolate,
   bool has_unrestricted_user_activation =
       web_frame && web_frame->HasTransientUserActivation() &&
       !web_frame->LastActivationWasRestricted();
-  return std::make_unique<Message>(message, has_unrestricted_user_activation,
+  return std::make_unique<Message>(message, SerializationFormat::kJson,
+                                   has_unrestricted_user_activation,
                                    privileged_context);
 }
 
@@ -100,7 +103,9 @@ const int kNoFrameId = -1;
 
 std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
                                        v8::Local<v8::Value> value,
+                                       SerializationFormat format,
                                        std::string* error_out) {
+  // TODO(crbug.com/248548): Incorporate `format` while serializing the message.
   DCHECK(!value.IsEmpty());
   v8::Isolate* isolate = context->GetIsolate();
   v8::Context::Scope context_scope(context);
@@ -141,6 +146,9 @@ std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
 
 v8::Local<v8::Value> MessageToV8(v8::Local<v8::Context> context,
                                  const Message& message) {
+  // TODO(crbug.com/248548): Incorporate `message.format` while deserializing
+  // the message.
+
   v8::Isolate* isolate = context->GetIsolate();
   v8::Context::Scope context_scope(context);
 
@@ -162,6 +170,19 @@ int ExtractIntegerId(v8::Local<v8::Value> value) {
   // Account for -0, which is a valid integer, but is stored as a number in v8.
   DCHECK(value->IsNumber() && value.As<v8::Number>()->Value() == 0.0);
   return 0;
+}
+
+SerializationFormat GetSerializationFormat(
+    const ScriptContext& script_context) {
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kStructuredCloningForMV3Messaging)) {
+    return SerializationFormat::kJson;
+  }
+
+  const Extension* extension = script_context.extension();
+  return extension && extension->manifest_version() >= 3
+             ? SerializationFormat::kStructuredCloned
+             : SerializationFormat::kJson;
 }
 
 MessageOptions ParseMessageOptions(v8::Local<v8::Context> context,

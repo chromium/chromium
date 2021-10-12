@@ -25,6 +25,7 @@
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_context.h"
 #include "extensions/common/api/messaging/port_id.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/common_param_traits.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/draggable_region.h"
@@ -65,6 +66,9 @@ IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::RunLocation,
 
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::MessagingEndpoint::Type,
                           extensions::MessagingEndpoint::Type::kLast)
+
+IPC_ENUM_TRAITS_MAX_VALUE(extensions::SerializationFormat,
+                          extensions::SerializationFormat::kLast)
 
 // Parameters structure for ExtensionHostMsg_AddAPIActionToActivityLog and
 // ExtensionHostMsg_AddEventToActivityLog.
@@ -255,6 +259,7 @@ IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(extensions::Message)
   IPC_STRUCT_TRAITS_MEMBER(data)
+  IPC_STRUCT_TRAITS_MEMBER(format)
   IPC_STRUCT_TRAITS_MEMBER(user_gesture)
 IPC_STRUCT_TRAITS_END()
 
@@ -262,6 +267,7 @@ IPC_STRUCT_TRAITS_BEGIN(extensions::PortId)
   IPC_STRUCT_TRAITS_MEMBER(context_id)
   IPC_STRUCT_TRAITS_MEMBER(port_number)
   IPC_STRUCT_TRAITS_MEMBER(is_opener)
+  IPC_STRUCT_TRAITS_MEMBER(serialization_format)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(extensions::EventFilteringInfo)

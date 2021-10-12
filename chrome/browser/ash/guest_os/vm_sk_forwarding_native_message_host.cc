@@ -24,6 +24,7 @@
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
 #include "url/gurl.h"
 
@@ -118,7 +119,8 @@ void VmSKForwardingNativeMessageHost::DeliverMessageToExtensionByID(
     const std::string& json_message,
     base::OnceCallback<void(const std::string& response)> response_callback) {
   const extensions::PortId port_id(base::UnguessableToken::Create(),
-                                   1 /* port_number */, true /* is_opener */);
+                                   1 /* port_number */, true /* is_opener */,
+                                   extensions::SerializationFormat::kJson);
 
   extensions::MessageService* const message_service =
       extensions::MessageService::Get(profile);

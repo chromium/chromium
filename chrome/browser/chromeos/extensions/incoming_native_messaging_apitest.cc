@@ -21,6 +21,7 @@
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/test/result_catcher.h"
 #include "ipc/ipc_message.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -75,7 +76,8 @@ class ExtensionIncomingNativeMessagingTest
       std::unique_ptr<extensions::NativeMessageHost> native_message_host) {
     auto* const message_service = extensions::MessageService::Get(profile());
     const extensions::PortId port_id(base::UnguessableToken::Create(),
-                                     1 /* port_number */, true /* is_opener */);
+                                     1 /* port_number */, true /* is_opener */,
+                                     extensions::SerializationFormat::kJson);
     auto native_message_port = std::make_unique<extensions::NativeMessagePort>(
         message_service->GetChannelDelegate(), port_id,
         std::move(native_message_host));

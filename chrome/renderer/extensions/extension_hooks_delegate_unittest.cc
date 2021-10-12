@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "content/public/common/child_process_host.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/value_builder.h"
@@ -178,7 +179,7 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestChannelLeftOpenToReplyAsync) {
 
   const std::string kChannel = "chrome.extension.sendRequest";
   base::UnguessableToken other_context_id = base::UnguessableToken::Create();
-  const PortId port_id(other_context_id, 0, false);
+  const PortId port_id(other_context_id, 0, false, SerializationFormat::kJson);
 
   ExtensionMsg_TabConnectionInfo tab_connection_info;
   tab_connection_info.frame_id = 0;
@@ -207,8 +208,9 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestChannelLeftOpenToReplyAsync) {
 
   // Post the message to the receiver. Since the receiver doesn't respond, the
   // channel should remain open.
-  messaging_service()->DeliverMessage(script_context_set(), port_id,
-                                      Message("\"message\"", false), nullptr);
+  messaging_service()->DeliverMessage(
+      script_context_set(), port_id,
+      Message("\"message\"", SerializationFormat::kJson, false), nullptr);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   EXPECT_TRUE(
       messaging_service()->HasPortForTesting(script_context(), port_id));

@@ -84,8 +84,10 @@ RequestResult TabsHooksDelegate::HandleSendRequest(
   int tab_id = messaging_util::ExtractIntegerId(arguments[0]);
   v8::Local<v8::Value> v8_message = arguments[1];
   std::string error;
+
   std::unique_ptr<Message> message = messaging_util::MessageFromV8(
-      script_context->v8_context(), v8_message, &error);
+      script_context->v8_context(), v8_message,
+      messaging_util::GetSerializationFormat(*script_context), &error);
   if (!message) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
     result.error = std::move(error);
@@ -119,8 +121,10 @@ RequestResult TabsHooksDelegate::HandleSendMessage(
   v8::Local<v8::Value> v8_message = arguments[1];
   DCHECK(!v8_message.IsEmpty());
   std::string error;
+
   std::unique_ptr<Message> message = messaging_util::MessageFromV8(
-      script_context->v8_context(), v8_message, &error);
+      script_context->v8_context(), v8_message,
+      messaging_util::GetSerializationFormat(*script_context), &error);
   if (!message) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
     result.error = std::move(error);
@@ -154,7 +158,8 @@ RequestResult TabsHooksDelegate::HandleConnect(
 
   gin::Handle<GinPort> port = messaging_service_->Connect(
       script_context, MessageTarget::ForTab(tab_id, options.frame_id),
-      options.channel_name);
+      options.channel_name,
+      messaging_util::GetSerializationFormat(*script_context));
   DCHECK(!port.IsEmpty());
 
   RequestResult result(RequestResult::HANDLED);

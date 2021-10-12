@@ -228,8 +228,10 @@ RequestResult ExtensionHooksDelegate::HandleSendRequest(
   }
 
   v8::Local<v8::Value> v8_message = arguments[1];
+
   std::unique_ptr<Message> message = messaging_util::MessageFromV8(
-      script_context->v8_context(), v8_message, &error);
+      script_context->v8_context(), v8_message,
+      messaging_util::GetSerializationFormat(*script_context), &error);
   if (!message) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
     result.error = std::move(error);

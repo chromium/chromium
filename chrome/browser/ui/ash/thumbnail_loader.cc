@@ -24,6 +24,7 @@
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -286,7 +287,8 @@ void ThumbnailLoader::LoadForFileWithMetadata(
       base::BindOnce(&ThumbnailLoader::OnThumbnailLoaded,
                      weak_factory_.GetWeakPtr(), request_id, request.size));
   const extensions::PortId port_id(base::UnguessableToken::Create(),
-                                   1 /* port_number */, true /* is_opener */);
+                                   1 /* port_number */, true /* is_opener */,
+                                   extensions::SerializationFormat::kJson);
   auto native_message_port = std::make_unique<extensions::NativeMessagePort>(
       message_service->GetChannelDelegate(), port_id,
       std::move(native_message_host));

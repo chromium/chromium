@@ -29,6 +29,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 
@@ -228,7 +229,8 @@ void LaunchNativeMessageHostFromNativeApp(const std::string& extension_id,
     return;
   }
   const extensions::PortId port_id(base::UnguessableToken::Create(),
-                                   1 /* port_number */, true /* is_opener */);
+                                   1 /* port_number */, true /* is_opener */,
+                                   extensions::SerializationFormat::kJson);
   extensions::MessageService* const message_service =
       extensions::MessageService::Get(profile);
   // TODO(crbug.com/967262): Apply policy for allow_user_level.

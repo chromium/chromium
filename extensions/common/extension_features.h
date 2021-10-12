@@ -32,6 +32,8 @@ extern const base::Feature kU2FSecurityKeyAPI;
 
 extern const base::Feature kAllowWasmInMV3;
 
+extern const base::Feature kStructuredCloningForMV3Messaging;
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

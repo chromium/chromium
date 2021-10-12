@@ -9,6 +9,7 @@
 #include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/common/api/messaging/message.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
@@ -31,8 +32,8 @@ TEST_F(MessagingUtilTest, TestMaximumMessageSize) {
   v8::Local<v8::Value> long_message =
       V8ValueFromScriptSource(context, "'a'.repeat(1024 *1024 * 65)");
   std::string error;
-  std::unique_ptr<Message> message =
-      messaging_util::MessageFromV8(context, long_message, &error);
+  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
+      context, long_message, SerializationFormat::kJson, &error);
   EXPECT_FALSE(message);
   EXPECT_EQ(kMessageTooLongError, error);
 }

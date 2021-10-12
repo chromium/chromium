@@ -132,14 +132,14 @@ class GinPort final : public gin::Wrappable<GinPort> {
   State state_ = kActive;
 
   // The associated port id.
-  PortId port_id_;
+  const PortId port_id_;
 
   // The routing id associated with the port's context's render frame.
   // TODO(devlin/lazyboy): This won't work with service workers.
-  int routing_id_;
+  const int routing_id_;
 
   // The port's name.
-  std::string name_;
+  const std::string name_;
 
   // The associated APIEventHandler. Guaranteed to outlive this object.
   APIEventHandler* const event_handler_;

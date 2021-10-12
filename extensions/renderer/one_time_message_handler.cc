@@ -283,11 +283,12 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
   OneTimeReceiver& port = iter->second;
 
   // This port is a receiver, so we invoke the onMessage event and provide a
-  // callback through which the port can respond. The port stays open until
-  // we receive a response.
+  // callback through which the port can respond. The port stays open until we
+  // receive a response.
   // TODO(devlin): With chrome.runtime.sendMessage, we actually require that a
   // listener return `true` if they intend to respond asynchronously; otherwise
   // we close the port.
+
   auto callback = std::make_unique<OneTimeMessageCallback>(
       base::BindOnce(&OneTimeMessageHandler::OnOneTimeMessageResponse,
                      weak_factory_.GetWeakPtr(), target_port_id));
@@ -471,8 +472,8 @@ void OneTimeMessageHandler::OnOneTimeMessageResponse(
     value = v8::Undefined(isolate);
 
   std::string error;
-  std::unique_ptr<Message> message =
-      messaging_util::MessageFromV8(context, value, &error);
+  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
+      context, value, port_id.serialization_format, &error);
   if (!message) {
     arguments->ThrowTypeError(error);
     return;

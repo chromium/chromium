@@ -11,6 +11,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/api/messaging/message.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
@@ -223,8 +224,9 @@ RequestResult RuntimeHooksDelegate::HandleSendMessage(
   v8::Local<v8::Context> v8_context = script_context->v8_context();
 
   v8::Local<v8::Value> v8_message = arguments[1];
-  std::unique_ptr<Message> message =
-      messaging_util::MessageFromV8(v8_context, v8_message, &error);
+  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
+      v8_context, v8_message,
+      messaging_util::GetSerializationFormat(*script_context), &error);
   if (!message) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
     result.error = std::move(error);
@@ -258,8 +260,12 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
   v8::Local<v8::Value> v8_message = arguments[1];
   DCHECK(!v8_message.IsEmpty());
   std::string error;
-  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
-      script_context->v8_context(), v8_message, &error);
+
+  // Native messaging always uses JSON since a native host doesn't understand
+  // structured cloning serialization.
+  std::unique_ptr<Message> message =
+      messaging_util::MessageFromV8(script_context->v8_context(), v8_message,
+                                    SerializationFormat::kJson, &error);
   if (!message) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
     result.error = std::move(error);
@@ -301,7 +307,8 @@ RequestResult RuntimeHooksDelegate::HandleConnect(
 
   gin::Handle<GinPort> port = messaging_service_->Connect(
       script_context, MessageTarget::ForExtension(target_id),
-      options.channel_name);
+      options.channel_name,
+      messaging_util::GetSerializationFormat(*script_context));
   DCHECK(!port.IsEmpty());
 
   RequestResult result(RequestResult::HANDLED);
@@ -317,9 +324,13 @@ RequestResult RuntimeHooksDelegate::HandleConnectNative(
 
   std::string application_name =
       gin::V8ToString(script_context->isolate(), arguments[0]);
+
+  // Native messaging always uses JSON since a native host doesn't understand
+  // structured cloning serialization.
+  auto format = SerializationFormat::kJson;
   gin::Handle<GinPort> port = messaging_service_->Connect(
       script_context, MessageTarget::ForNativeApp(application_name),
-      std::string());
+      std::string(), format);
 
   RequestResult result(RequestResult::HANDLED);
   result.return_value = port.ToV8();

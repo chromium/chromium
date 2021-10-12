@@ -82,4 +82,11 @@ const base::Feature kU2FSecurityKeyAPI{"U2FSecurityKeyAPI",
 // crbug.com/1173354.
 const base::Feature kAllowWasmInMV3{"AllowWasmInMV3",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When enabled, causes Manifest V3 (and greater) extensions to use structured
+// cloning (instead of JSON serialization) for extension messaging, except when
+// communicating with native messaging hosts.
+const base::Feature kStructuredCloningForMV3Messaging{
+    "StructuredCloningForMV3Messaging", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace extensions_features
