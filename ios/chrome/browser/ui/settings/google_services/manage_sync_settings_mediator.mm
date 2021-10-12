@@ -359,7 +359,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
         [[TableViewLinkHeaderFooterItem alloc]
             initWithType:SignOutItemFooterType];
     footerItem.text = l10n_util::GetNSString(
-        IDS_IOS_ENTERPRISE_FORCED_SIGNIN_SYNC_SETTINGS_SIGNOUT_FOOTER);
+        IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE_WITH_LEARN_MORE);
     footerItem.urls = std::vector<GURL>{GURL("chrome://management/")};
     [model setFooter:footerItem
         forSectionWithIdentifier:SignOutSectionIdentifier];
