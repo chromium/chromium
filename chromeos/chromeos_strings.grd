@@ -1065,10 +1065,10 @@ Try tapping the mic to ask me anything.
         Can't resolve DNS from Android apps
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_NO_IP_ADDRESS_TEXT" desc="The text shown when a network's IP Address is missing.">
-        Unable to obtain IP address
+        IP address is unavailable
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_VISIT_SETTINGS_TO_CONFIGURE_LINK_TEXT" desc="Help text that directs users to settings to configure their network.">
-        Visit settings to configure
+        To set up, go to Settings
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_MISSING_NAME_SERVERS_TEXT" desc="The text shown when no name servers are configured.">
         No name servers are configured
