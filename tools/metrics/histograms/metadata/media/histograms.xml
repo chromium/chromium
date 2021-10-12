@@ -514,7 +514,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.{AudioProcessingMode}EffectType"
-    enum="AudioEffectType" expires_after="2021-10-22">
+    enum="AudioEffectType" expires_after="2022-10-22">
   <owner>henrika@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
