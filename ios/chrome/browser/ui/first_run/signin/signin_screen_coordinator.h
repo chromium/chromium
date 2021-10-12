@@ -5,12 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_SIGNIN_SIGNIN_SCREEN_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_FIRST_RUN_SIGNIN_SIGNIN_SCREEN_COORDINATOR_H_
 
-#import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/interruptible_chrome_coordinator.h"
 
 @protocol FirstRunScreenDelegate;
 
 // Coordinator to present sign-in screen.
-@interface SigninScreenCoordinator : ChromeCoordinator
+@interface SigninScreenCoordinator : InterruptibleChromeCoordinator
 
 // Initiates a SigninScreenCoordinator with |navigationController|,
 // |browser| and |delegate|.

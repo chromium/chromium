@@ -27,7 +27,7 @@
 @interface ForcedSigninCoordinator () <FirstRunScreenDelegate>
 
 @property(nonatomic, strong) ScreenProvider* screenProvider;
-@property(nonatomic, strong) ChromeCoordinator* childCoordinator;
+@property(nonatomic, strong) InterruptibleChromeCoordinator* childCoordinator;
 
 // The view controller used by ForcedSigninCoordinator.
 @property(nonatomic, strong) UINavigationController* navigationController;
@@ -107,7 +107,8 @@
 }
 
 // Creates a screen coordinator according to |type|.
-- (ChromeCoordinator*)createChildCoordinatorWithScreenType:(ScreenType)type {
+- (InterruptibleChromeCoordinator*)createChildCoordinatorWithScreenType:
+    (ScreenType)type {
   switch (type) {
     case kSignIn:
       return [[SigninScreenCoordinator alloc]
@@ -158,7 +159,6 @@
 
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
                  completion:(ProceduralBlock)completion {
-  BOOL animated;
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock finishCompletion = ^() {
     [weakSelf finishWithResult:SigninCoordinatorResultInterrupted identity:nil];
@@ -166,20 +166,36 @@
       completion();
     }
   };
+  BOOL animated = NO;
   switch (action) {
-    case SigninCoordinatorInterruptActionNoDismiss:
-      finishCompletion();
+    case SigninCoordinatorInterruptActionNoDismiss: {
+      [self.childCoordinator
+          interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
+                   completion:^{
+                     finishCompletion();
+                   }];
       return;
-    case SigninCoordinatorInterruptActionDismissWithoutAnimation:
+    }
+    case SigninCoordinatorInterruptActionDismissWithoutAnimation: {
       animated = NO;
       break;
-    case SigninCoordinatorInterruptActionDismissWithAnimation:
+    }
+    case SigninCoordinatorInterruptActionDismissWithAnimation: {
       animated = YES;
       break;
+    }
   }
-  [self.navigationController.presentingViewController
-      dismissViewControllerAnimated:animated
-                         completion:finishCompletion];
+
+  // Interrupt the child coordinator UI first before dismissing the forced
+  // sign-in navigation controller.
+  [self.childCoordinator
+      interruptWithAction:
+          SigninCoordinatorInterruptActionDismissWithoutAnimation
+               completion:^{
+                 [weakSelf.navigationController.presentingViewController
+                     dismissViewControllerAnimated:animated
+                                        completion:finishCompletion];
+               }];
 }
 
 @end

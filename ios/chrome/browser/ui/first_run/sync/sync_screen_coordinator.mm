@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/user_policy_signout/user_policy_signout_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -60,6 +61,10 @@
 
 // Whether the user requested the advanced settings when starting the sync.
 @property(nonatomic, assign) BOOL advancedSettingsRequested;
+
+// Coordinator that handles the advanced settings sign-in UI.
+@property(nonatomic, strong)
+    SigninCoordinator* advancedSettingsSigninCoordinator;
 
 @end
 
@@ -153,6 +158,14 @@
   self.mediator = nil;
   [self.policySignoutPromptCoordinator stop];
   self.policySignoutPromptCoordinator = nil;
+  // If advancedSettingsSigninCoordinator wasn't dismissed yet (which can
+  // happen when closing the scene), try to call -interruptWithAction: to
+  // properly cleanup the coordinator.
+  [self.advancedSettingsSigninCoordinator
+      interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
+               completion:nil];
+  [self.advancedSettingsSigninCoordinator stop];
+  self.advancedSettingsSigninCoordinator = nil;
 }
 
 #pragma mark - SyncScreenViewControllerDelegate
@@ -186,12 +199,9 @@
 - (void)syncScreenMediatorDidSuccessfulyFinishSignin:
     (SyncScreenMediator*)mediator {
   if (self.advancedSettingsRequested) {
-    base::UmaHistogramEnumeration(
-        "FirstRun.Stage", first_run::kSyncScreenCompletionWithSyncSettings);
-    id<ApplicationCommands> handler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
-    [handler showAdvancedSigninSettingsFromViewController:
-                 self.baseNavigationController];
+    // TODO(crbug.com/1256784): Log a UserActions histogram to track the touch
+    // interactions on the advanced settings button.
+    [self showAdvancedSettings];
   } else {
     base::UmaHistogramEnumeration("FirstRun.Stage",
                                   first_run::kSyncScreenCompletionWithSync);
@@ -222,6 +232,20 @@
 
 - (void)userPolicySignoutDidDismiss {
   [self dismissSignedOutModalAndSkipScreens:NO];
+}
+
+#pragma mark - InterruptibleChromeCoordinator
+
+- (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
+                 completion:(ProceduralBlock)completion {
+  if (self.advancedSettingsSigninCoordinator) {
+    [self.advancedSettingsSigninCoordinator interruptWithAction:action
+                                                     completion:completion];
+  } else {
+    if (completion) {
+      completion();
+    }
+  }
 }
 
 #pragma mark - Private
@@ -262,6 +286,34 @@
                                   consentIDs:self.consentStringIDs
                           authenticationFlow:authenticationFlow
            advancedSyncSettingsLinkWasTapped:advancedSettings];
+}
+
+// Shows the advanced sync settings.
+- (void)showAdvancedSettings {
+  DCHECK(!self.advancedSettingsSigninCoordinator);
+
+  const IdentitySigninState signinState =
+      IdentitySigninStateSignedInWithSyncDisabled;
+
+  self.advancedSettingsSigninCoordinator = [SigninCoordinator
+      advancedSettingsSigninCoordinatorWithBaseViewController:
+          self.viewController
+                                                      browser:self.browser
+                                                  signinState:signinState];
+  __weak __typeof(self) weakSelf = self;
+  self.advancedSettingsSigninCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult advancedSigninResult,
+        SigninCompletionInfo* signinCompletionInfo) {
+        [weakSelf onAdvancedSettingsFinished];
+      };
+  [self.advancedSettingsSigninCoordinator start];
+}
+
+- (void)onAdvancedSettingsFinished {
+  DCHECK(self.advancedSettingsSigninCoordinator);
+
+  [self.advancedSettingsSigninCoordinator stop];
+  self.advancedSettingsSigninCoordinator = nil;
 }
 
 @end
