@@ -152,12 +152,15 @@ class WebAppBrowserTest : public WebAppControllerBrowserTest {
   }
 
   AppId InstallPwaForCurrentUrl() {
+    // Depending on the installability criteria, different dialogs can be used.
+    chrome::SetAutoAcceptWebAppDialogForTesting(true, true);
     chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
     WebAppTestInstallObserver observer(profile());
     observer.BeginListening();
     CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
     AppId app_id = observer.Wait();
     chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
+    chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
     return app_id;
   }
 
