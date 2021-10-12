@@ -75,12 +75,14 @@ void FakePersonalizationAppUiDelegate::SetWallpaperObserver(
 
 void FakePersonalizationAppUiDelegate::SelectWallpaper(
     uint64_t image_asset_id,
+    bool preview_mode,
     SelectWallpaperCallback callback) {
   std::move(callback).Run(/*success=*/true);
 }
 
 void FakePersonalizationAppUiDelegate::SelectLocalImage(
     const base::FilePath& path,
+    bool preview_mode,
     SelectLocalImageCallback callback) {
   std::move(callback).Run(/*success=*/true);
 }
@@ -103,4 +105,17 @@ void FakePersonalizationAppUiDelegate::GetDailyRefreshCollectionId(
 void FakePersonalizationAppUiDelegate::UpdateDailyRefreshWallpaper(
     UpdateDailyRefreshWallpaperCallback callback) {
   std::move(callback).Run(/*success=*/true);
+}
+
+void FakePersonalizationAppUiDelegate::IsInTabletMode(
+    IsInTabletModeCallback callback) {
+  std::move(callback).Run(/*tablet_mode=*/false);
+}
+
+void FakePersonalizationAppUiDelegate::ConfirmPreviewWallpaper() {
+  return;
+}
+
+void FakePersonalizationAppUiDelegate::CancelPreviewWallpaper() {
+  return;
 }

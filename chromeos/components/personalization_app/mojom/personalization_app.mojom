@@ -121,11 +121,13 @@ interface WallpaperProvider {
     SetWallpaperObserver(pending_remote<WallpaperObserver> observer);
 
     // Sets the given backdrop wallpaper as the user's background.
-    SelectWallpaper(uint64 image_asset_id) => (bool success);
+    SelectWallpaper(uint64 image_asset_id, bool preview_mode) =>
+        (bool success);
 
     // Sets the given local wallpaper as the user's background. Validated
     // against list of file paths returned by |GetLocalImages|.
-    SelectLocalImage(mojo_base.mojom.FilePath path) => (bool success);
+    SelectLocalImage(mojo_base.mojom.FilePath path, bool preview_mode) =>
+        (bool success);
 
     // Sets the custom layout for current wallpaper
     SetCustomWallpaperLayout(WallpaperLayout layout);
@@ -139,4 +141,15 @@ interface WallpaperProvider {
 
     // Refresh the wallpaper. Noop if daily refresh is not enabled.
     UpdateDailyRefreshWallpaper() => (bool success);
+
+    // Indicates whether the device is in tablet mode.
+    IsInTabletMode() => (bool tablet_mode);
+
+    // Confirms the wallpaper being previewed to be set as the actual user
+    // wallpaper. Must be called in preview mode.
+    ConfirmPreviewWallpaper();
+
+    // Cancels the wallpaper preview and reverts to the user wallpaper. Must be
+    // called in preview mode.
+    CancelPreviewWallpaper();
 };

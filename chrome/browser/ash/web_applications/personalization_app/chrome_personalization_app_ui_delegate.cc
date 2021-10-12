@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
@@ -240,6 +241,7 @@ void ChromePersonalizationAppUiDelegate::OnWallpaperChanged() {
 
 void ChromePersonalizationAppUiDelegate::SelectWallpaper(
     uint64_t image_asset_id,
+    bool preview_mode,
     SelectWallpaperCallback callback) {
   const auto& it = image_asset_id_map_.find(image_asset_id);
 
@@ -259,8 +261,8 @@ void ChromePersonalizationAppUiDelegate::SelectWallpaper(
       ash::OnlineWallpaperParams(
           GetAccountId(), absl::make_optional(image_asset_id),
           GURL(it->second.image_url.spec()), it->second.collection_id,
-          ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-          /*preview_mode=*/false, /*from_user=*/true,
+          ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED, preview_mode,
+          /*from_user=*/true,
           /*daily_refresh_enabled=*/false),
       base::BindOnce(
           &ChromePersonalizationAppUiDelegate::OnOnlineWallpaperSelected,
@@ -269,6 +271,7 @@ void ChromePersonalizationAppUiDelegate::SelectWallpaper(
 
 void ChromePersonalizationAppUiDelegate::SelectLocalImage(
     const base::FilePath& path,
+    bool preview_mode,
     SelectLocalImageCallback callback) {
   if (local_images_.count(path) == 0) {
     mojo::ReportBadMessage("Invalid local image path selected");
@@ -280,8 +283,7 @@ void ChromePersonalizationAppUiDelegate::SelectLocalImage(
 
   WallpaperController::Get()->SetCustomWallpaper(
       GetAccountId(), path,
-      ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-      /*preview_mode=*/false,
+      ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED, preview_mode,
       base::BindOnce(&ChromePersonalizationAppUiDelegate::OnLocalImageSelected,
                      backend_weak_ptr_factory_.GetWeakPtr()));
 }
@@ -315,6 +317,19 @@ void ChromePersonalizationAppUiDelegate::UpdateDailyRefreshWallpaper(
   WallpaperController::Get()->UpdateDailyRefreshWallpaper(base::BindOnce(
       &ChromePersonalizationAppUiDelegate::OnDailyRefreshWallpaperUpdated,
       backend_weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ChromePersonalizationAppUiDelegate::IsInTabletMode(
+    IsInTabletModeCallback callback) {
+  std::move(callback).Run(ash::TabletMode::IsInTabletMode());
+}
+
+void ChromePersonalizationAppUiDelegate::ConfirmPreviewWallpaper() {
+  WallpaperController::Get()->ConfirmPreviewWallpaper();
+}
+
+void ChromePersonalizationAppUiDelegate::CancelPreviewWallpaper() {
+  WallpaperController::Get()->CancelPreviewWallpaper();
 }
 
 void ChromePersonalizationAppUiDelegate::OnFetchCollections(

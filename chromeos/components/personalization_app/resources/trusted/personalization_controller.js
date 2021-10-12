@@ -133,10 +133,13 @@ export async function selectWallpaper(image, provider, store) {
   store.endBatchUpdate();
   const {success} = await (() => {
     if (image.assetId) {
-      return provider.selectWallpaper(image.assetId);
+      // TODO(b/198824419): Determine when to enable preview_mode.
+      return provider.selectWallpaper(image.assetId, /*preview_mode=*/ false);
     } else if (image.path) {
+      // TODO(b/198824419): Determine when to enable preview_mode.
       return provider.selectLocalImage(
-          /** @type {!mojoBase.mojom.FilePath} */ (image));
+          /** @type {!mojoBase.mojom.FilePath} */ (image),
+          /*preview_mode=*/ false);
     } else {
       console.warn('Image must be a local image or a WallpaperImage');
       return {success: false};

@@ -210,7 +210,7 @@ TEST_F(ChromePersonalizationAppUiDelegateTest, SelectWallpaper) {
 
   base::RunLoop loop;
   wallpaper_provider_remote()->get()->SelectWallpaper(
-      asset_id,
+      asset_id, /*preview_mode=*/false,
       base::BindLambdaForTesting([quit = loop.QuitClosure()](bool success) {
         EXPECT_TRUE(success);
         std::move(quit).Run();
@@ -225,6 +225,37 @@ TEST_F(ChromePersonalizationAppUiDelegateTest, SelectWallpaper) {
            absl::make_optional(asset_id), GURL("test_url"), "collection_id",
            ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
            /*preview_mode=*/false, /*from_user=*/true,
+           /*daily_refresh_enabled=*/false}),
+      test_wallpaper_controller()->wallpaper_info().value());
+}
+
+TEST_F(ChromePersonalizationAppUiDelegateTest, PreviewWallpaper) {
+  test_wallpaper_controller()->ClearCounts();
+
+  const uint64_t asset_id = 1;
+
+  AddWallpaperImage(asset_id, /*image_info=*/{
+                        GURL("test_url"),
+                        "collection_id",
+                    });
+
+  base::RunLoop loop;
+  wallpaper_provider_remote()->get()->SelectWallpaper(
+      asset_id, /*preview_mode=*/true,
+      base::BindLambdaForTesting([quit = loop.QuitClosure()](bool success) {
+        EXPECT_TRUE(success);
+        std::move(quit).Run();
+      }));
+  wallpaper_provider_remote()->FlushForTesting();
+  loop.Run();
+
+  EXPECT_EQ(1, test_wallpaper_controller()->set_online_wallpaper_count());
+  EXPECT_EQ(
+      ash::WallpaperInfo(
+          {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
+           absl::make_optional(asset_id), GURL("test_url"), "collection_id",
+           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+           /*preview_mode=*/true, /*from_user=*/true,
            /*daily_refresh_enabled=*/false}),
       test_wallpaper_controller()->wallpaper_info().value());
 }

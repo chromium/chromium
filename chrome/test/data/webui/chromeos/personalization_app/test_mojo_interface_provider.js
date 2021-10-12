@@ -22,6 +22,9 @@ export class TestWallpaperProvider extends TestBrowserProxy {
       'setDailyRefreshCollectionId',
       'getDailyRefreshCollectionId',
       'updateDailyRefreshWallpaper',
+      'isInTabletMode',
+      'confirmPreviewWallpaper',
+      'cancelPreviewWallpaper',
     ]);
 
     /**
@@ -89,6 +92,9 @@ export class TestWallpaperProvider extends TestBrowserProxy {
 
     /** @public */
     this.updateDailyRefreshWallpaperResponse = true;
+
+    /** @public */
+    this.isInTabletModeResponse = true;
 
     /** @public */
     this.wallpaperObserverUpdateTimeout = 0;
@@ -183,6 +189,21 @@ export class TestWallpaperProvider extends TestBrowserProxy {
   updateDailyRefreshWallpaper() {
     this.methodCalled('updateDailyRefreshWallpaper');
     return Promise.resolve({success: this.updateDailyRefreshWallpaperResponse});
+  }
+
+  isInTabletMode() {
+    this.methodCalled('isInTabletMode');
+    return Promise.resolve({tabletMode: this.isInTabletModeResponse});
+  }
+
+  /** @override */
+  confirmPreviewWallpaper() {
+    this.methodCalled('confirmPreviewWallpaper');
+  }
+
+  /** @override */
+  cancelPreviewWallpaper() {
+    this.methodCalled('cancelPreviewWallpaper');
   }
 
   /**
