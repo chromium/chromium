@@ -1,8 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/protocol/webrtc_dummy_video_encoder.h"
+#include "remoting/protocol/webrtc_video_encoder_factory.h"
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -15,7 +15,7 @@
 namespace remoting {
 namespace protocol {
 
-WebrtcDummyVideoEncoderFactory::WebrtcDummyVideoEncoderFactory()
+WebrtcVideoEncoderFactory::WebrtcVideoEncoderFactory()
     : main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   formats_.push_back(webrtc::SdpVideoFormat("VP8"));
   formats_.push_back(webrtc::SdpVideoFormat("VP9"));
@@ -26,10 +26,10 @@ WebrtcDummyVideoEncoderFactory::WebrtcDummyVideoEncoderFactory()
 #endif
 }
 
-WebrtcDummyVideoEncoderFactory::~WebrtcDummyVideoEncoderFactory() = default;
+WebrtcVideoEncoderFactory::~WebrtcVideoEncoderFactory() = default;
 
 std::unique_ptr<webrtc::VideoEncoder>
-WebrtcDummyVideoEncoderFactory::CreateVideoEncoder(
+WebrtcVideoEncoderFactory::CreateVideoEncoder(
     const webrtc::SdpVideoFormat& format) {
   webrtc::VideoCodecType type = webrtc::PayloadStringToCodecType(format.name);
   auto encoder = std::make_unique<WebrtcVideoEncoderWrapper>(
@@ -44,18 +44,18 @@ WebrtcDummyVideoEncoderFactory::CreateVideoEncoder(
 }
 
 std::vector<webrtc::SdpVideoFormat>
-WebrtcDummyVideoEncoderFactory::GetSupportedFormats() const {
+WebrtcVideoEncoderFactory::GetSupportedFormats() const {
   return formats_;
 }
 
-void WebrtcDummyVideoEncoderFactory::RegisterEncoderSelectedCallback(
+void WebrtcVideoEncoderFactory::RegisterEncoderSelectedCallback(
     const base::RepeatingCallback<
         void(webrtc::VideoCodecType,
              const webrtc::SdpVideoFormat::Parameters&)>& callback) {
   encoder_created_callback_ = callback;
 }
 
-void WebrtcDummyVideoEncoderFactory::SetVideoChannelStateObserver(
+void WebrtcVideoEncoderFactory::SetVideoChannelStateObserver(
     base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   base::AutoLock lock(lock_);

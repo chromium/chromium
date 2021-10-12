@@ -15,9 +15,9 @@
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 #include "remoting/protocol/frame_stats.h"
 #include "remoting/protocol/host_video_stats_dispatcher.h"
-#include "remoting/protocol/webrtc_dummy_video_encoder.h"
 #include "remoting/protocol/webrtc_frame_scheduler_simple.h"
 #include "remoting/protocol/webrtc_transport.h"
+#include "remoting/protocol/webrtc_video_encoder_factory.h"
 #include "remoting/protocol/webrtc_video_frame_adapter.h"
 #include "remoting/protocol/webrtc_video_track_source.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
@@ -88,7 +88,7 @@ WebrtcVideoStream::~WebrtcVideoStream() {
 void WebrtcVideoStream::Start(
     std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer,
     WebrtcTransport* webrtc_transport,
-    WebrtcDummyVideoEncoderFactory* video_encoder_factory,
+    WebrtcVideoEncoderFactory* video_encoder_factory,
     scoped_refptr<base::SequencedTaskRunner> encode_task_runner) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(desktop_capturer);
@@ -104,7 +104,6 @@ void WebrtcVideoStream::Start(
 
   encode_task_runner_ = std::move(encode_task_runner);
   capturer_ = std::move(desktop_capturer);
-  video_encoder_factory_ = video_encoder_factory;
 
   video_encoder_factory->RegisterEncoderSelectedCallback(base::BindRepeating(
       &WebrtcVideoStream::OnEncoderCreated, weak_factory_.GetWeakPtr()));
@@ -339,7 +338,7 @@ void WebrtcVideoStream::OnEncoderCreated(
   // removed.
 
   // This method is called when SDP has been negotiated and WebRTC has
-  // created a preferred encoder via the WebrtcDummyVideoEncoderFactory
+  // created a preferred encoder via the WebrtcVideoEncoderFactory
   // implementation.
   // Trigger recreating the encoder in case a previous one was being used and
   // SDP renegotiation selected a different one. The proper encoder will be

@@ -1,9 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_PROTOCOL_WEBRTC_DUMMY_VIDEO_ENCODER_H_
-#define REMOTING_PROTOCOL_WEBRTC_DUMMY_VIDEO_ENCODER_H_
+#ifndef REMOTING_PROTOCOL_WEBRTC_VIDEO_ENCODER_FACTORY_H_
+#define REMOTING_PROTOCOL_WEBRTC_VIDEO_ENCODER_FACTORY_H_
 
 #include <memory>
 #include <vector>
@@ -24,10 +24,10 @@ class VideoChannelStateObserver;
 // This is the encoder factory that is passed to WebRTC when the peer connection
 // is created. This factory creates the video encoder, which is an instance of
 // WebrtcVideoEncoderWrapper which wraps a video codec from remoting/codec.
-class WebrtcDummyVideoEncoderFactory : public webrtc::VideoEncoderFactory {
+class WebrtcVideoEncoderFactory : public webrtc::VideoEncoderFactory {
  public:
-  WebrtcDummyVideoEncoderFactory();
-  ~WebrtcDummyVideoEncoderFactory() override;
+  WebrtcVideoEncoderFactory();
+  ~WebrtcVideoEncoderFactory() override;
 
   // webrtc::VideoEncoderFactory interface.
   std::unique_ptr<webrtc::VideoEncoder> CreateVideoEncoder(
@@ -60,4 +60,4 @@ class WebrtcDummyVideoEncoderFactory : public webrtc::VideoEncoderFactory {
 }  // namespace protocol
 }  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_WEBRTC_DUMMY_VIDEO_ENCODER_H_
+#endif  // REMOTING_PROTOCOL_WEBRTC_VIDEO_ENCODER_FACTORY_H_

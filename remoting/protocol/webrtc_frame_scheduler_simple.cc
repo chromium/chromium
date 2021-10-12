@@ -12,7 +12,6 @@
 #include "remoting/base/constants.h"
 #include "remoting/protocol/frame_stats.h"
 #include "remoting/protocol/webrtc_bandwidth_estimator.h"
-#include "remoting/protocol/webrtc_dummy_video_encoder.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
 namespace remoting {

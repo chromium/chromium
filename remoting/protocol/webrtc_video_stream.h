@@ -35,7 +35,7 @@ namespace remoting {
 namespace protocol {
 
 class HostVideoStatsDispatcher;
-class WebrtcDummyVideoEncoderFactory;
+class WebrtcVideoEncoderFactory;
 class WebrtcFrameScheduler;
 class WebrtcTransport;
 
@@ -53,7 +53,7 @@ class WebrtcVideoStream : public VideoStream,
 
   void Start(std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer,
              WebrtcTransport* webrtc_transport,
-             WebrtcDummyVideoEncoderFactory* video_encoder_factory,
+             WebrtcVideoEncoderFactory* video_encoder_factory,
              scoped_refptr<base::SequencedTaskRunner> encode_task_runner);
 
   // VideoStream interface.
@@ -108,8 +108,6 @@ class WebrtcVideoStream : public VideoStream,
 
   // Capturer used to capture the screen.
   std::unique_ptr<webrtc::DesktopCapturer> capturer_;
-  // Used to send across encoded frames.
-  WebrtcDummyVideoEncoderFactory* video_encoder_factory_;
 
   // Task runner used by software encoders.
   scoped_refptr<base::SequencedTaskRunner> encode_task_runner_;

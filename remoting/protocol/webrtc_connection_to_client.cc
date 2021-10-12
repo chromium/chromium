@@ -23,8 +23,8 @@
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/webrtc_audio_stream.h"
-#include "remoting/protocol/webrtc_dummy_video_encoder.h"
 #include "remoting/protocol/webrtc_transport.h"
+#include "remoting/protocol/webrtc_video_encoder_factory.h"
 #include "remoting/protocol/webrtc_video_stream.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
@@ -47,8 +47,7 @@ WebrtcConnectionToClient::WebrtcConnectionToClient(
       audio_task_runner_(audio_task_runner),
       control_dispatcher_(new HostControlDispatcher()),
       event_dispatcher_(new HostEventDispatcher()) {
-  auto video_encoder_factory =
-      std::make_unique<WebrtcDummyVideoEncoderFactory>();
+  auto video_encoder_factory = std::make_unique<WebrtcVideoEncoderFactory>();
   video_encoder_factory_ = video_encoder_factory.get();
   transport_ = std::make_unique<WebrtcTransport>(
       jingle_glue::JingleThreadWrapper::current(), transport_context,

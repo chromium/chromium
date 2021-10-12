@@ -28,7 +28,7 @@
 #include "remoting/protocol/message_serialization.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/transport_context.h"
-#include "remoting/protocol/webrtc_dummy_video_encoder.h"
+#include "remoting/protocol/webrtc_video_encoder_factory.h"
 #include "remoting/signaling/fake_signal_strategy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
@@ -216,8 +216,7 @@ class WebrtcTransportTest : public testing::Test {
     host_transport_ = std::make_unique<WebrtcTransport>(
         jingle_glue::JingleThreadWrapper::current(),
         TransportContext::ForTests(TransportRole::SERVER),
-        std::make_unique<WebrtcDummyVideoEncoderFactory>(),
-        &host_event_handler_);
+        std::make_unique<WebrtcVideoEncoderFactory>(), &host_event_handler_);
 
     host_transport_->SetThreadJoinWatchdogForTests(
         std::make_unique<FakeThreadJoinWatchdog>(
