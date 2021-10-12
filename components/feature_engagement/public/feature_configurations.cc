@@ -478,6 +478,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->event_configs.insert(
         EventConfig("auto_dark_user_education_message_trigger",
                     Comparator(LESS_THAN, 6), 360, 360));
+    return config;
   }
 
   if (kIPHInstanceSwitcherFeature.name == feature->name) {
