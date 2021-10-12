@@ -34,6 +34,10 @@ class FakeMessageSender : public MessageSender {
   void SendRingDeviceRequest(bool device_ringing_enabled) override;
   void SendFetchCameraRollItemsRequest(
       const proto::FetchCameraRollItemsRequest& request) override;
+  void SendFetchCameraRollItemDataRequest(
+      const proto::FetchCameraRollItemDataRequest& request) override;
+  void SendInitiateCameraRollItemTransferRequest(
+      const proto::InitiateCameraRollItemTransferRequest& request) override;
 
   std::pair<bool, bool> GetRecentCrosState() const;
   bool GetRecentUpdateNotificationModeRequest() const;

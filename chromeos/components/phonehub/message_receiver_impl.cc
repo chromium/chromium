@@ -37,6 +37,8 @@ std::string GetMessageTypeName(proto::MessageType message_type) {
       return "SHOW_NOTIFICATION_ACCESS_SETUP_RESPONSE";
     case proto::MessageType::FETCH_CAMERA_ROLL_ITEMS_RESPONSE:
       return "FETCH_CAMERA_ROLL_ITEMS_RESPONSE";
+    case proto::MessageType::FETCH_CAMERA_ROLL_ITEM_DATA_RESPONSE:
+      return "FETCH_CAMERA_ROLL_ITEM_DATA_RESPONSE";
     default:
       return "UNKOWN_MESSAGE";
   }
@@ -105,6 +107,20 @@ void MessageReceiverImpl::OnMessageReceived(const std::string& payload) {
       return;
     }
     NotifyFetchCameraRollItemsResponseReceived(response);
+    return;
+  }
+
+  if (features::IsPhoneHubCameraRollEnabled() &&
+      message_type ==
+          proto::MessageType::FETCH_CAMERA_ROLL_ITEM_DATA_RESPONSE) {
+    proto::FetchCameraRollItemDataResponse response;
+    // Serialized proto is after the first two bytes of |payload|.
+    if (!response.ParseFromString(payload.substr(2))) {
+      PA_LOG(ERROR) << "OnMessageReceived() could not deserialize the "
+                    << "FetchCameraRollItemDataResponse proto message.";
+      return;
+    }
+    NotifyFetchCameraRollItemDataResponseReceived(response);
     return;
   }
 }

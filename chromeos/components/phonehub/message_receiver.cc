@@ -36,5 +36,11 @@ void MessageReceiver::NotifyFetchCameraRollItemsResponseReceived(
     observer.OnFetchCameraRollItemsResponseReceived(response);
 }
 
+void MessageReceiver::NotifyFetchCameraRollItemDataResponseReceived(
+    const proto::FetchCameraRollItemDataResponse& response) {
+  for (auto& observer : observer_list_)
+    observer.OnFetchCameraRollItemDataResponseReceived(response);
+}
+
 }  // namespace phonehub
 }  // namespace chromeos

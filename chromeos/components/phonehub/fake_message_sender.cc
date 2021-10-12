@@ -51,6 +51,12 @@ void FakeMessageSender::SendFetchCameraRollItemsRequest(
   fetch_camera_roll_items_requests_.push_back(request);
 }
 
+void FakeMessageSender::SendFetchCameraRollItemDataRequest(
+    const proto::FetchCameraRollItemDataRequest& request) {}
+
+void FakeMessageSender::SendInitiateCameraRollItemTransferRequest(
+    const proto::InitiateCameraRollItemTransferRequest& request) {}
+
 size_t FakeMessageSender::GetCrosStateCallCount() const {
   return cros_states_.size();
 }

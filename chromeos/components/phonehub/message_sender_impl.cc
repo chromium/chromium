@@ -116,6 +116,18 @@ void MessageSenderImpl::SendFetchCameraRollItemsRequest(
   SendMessage(proto::MessageType::FETCH_CAMERA_ROLL_ITEMS_REQUEST, &request);
 }
 
+void MessageSenderImpl::SendFetchCameraRollItemDataRequest(
+    const proto::FetchCameraRollItemDataRequest& request) {
+  SendMessage(proto::MessageType::FETCH_CAMERA_ROLL_ITEM_DATA_REQUEST,
+              &request);
+}
+
+void MessageSenderImpl::SendInitiateCameraRollItemTransferRequest(
+    const proto::InitiateCameraRollItemTransferRequest& request) {
+  SendMessage(proto::MessageType::INITIATE_CAMERA_ROLL_ITEM_TRANSFER_REQUEST,
+              &request);
+}
+
 void MessageSenderImpl::SendMessage(
     proto::MessageType message_type,
     const google::protobuf::MessageLite* request) {

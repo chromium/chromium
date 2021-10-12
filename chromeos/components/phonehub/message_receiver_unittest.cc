@@ -35,6 +35,10 @@ class FakeObserver : public MessageReceiver::Observer {
     return fetch_camera_roll_items_response_calls_;
   }
 
+  size_t fetch_camera_roll_item_data_response_calls() const {
+    return fetch_camera_roll_item_data_response_calls_;
+  }
+
   proto::PhoneStatusSnapshot last_snapshot() const { return last_snapshot_; }
 
   proto::PhoneStatusUpdate last_status_update() const {
@@ -44,6 +48,11 @@ class FakeObserver : public MessageReceiver::Observer {
   proto::FetchCameraRollItemsResponse last_fetch_camera_roll_items_response()
       const {
     return last_fetch_camera_roll_items_response_;
+  }
+
+  proto::FetchCameraRollItemDataResponse
+  last_fetch_camera_roll_item_data_response() const {
+    return last_fetch_camera_roll_item_data_response_;
   }
 
   // MessageReceiver::Observer:
@@ -65,13 +74,22 @@ class FakeObserver : public MessageReceiver::Observer {
     ++fetch_camera_roll_items_response_calls_;
   }
 
+  void OnFetchCameraRollItemDataResponseReceived(
+      const proto::FetchCameraRollItemDataResponse& response) override {
+    last_fetch_camera_roll_item_data_response_ = response;
+    ++fetch_camera_roll_item_data_response_calls_;
+  }
+
  private:
   size_t phone_status_snapshot_updated_num_calls_ = 0;
   size_t phone_status_updated_num_calls_ = 0;
   size_t fetch_camera_roll_items_response_calls_ = 0;
+  size_t fetch_camera_roll_item_data_response_calls_ = 0;
   proto::PhoneStatusSnapshot last_snapshot_;
   proto::PhoneStatusUpdate last_status_update_;
   proto::FetchCameraRollItemsResponse last_fetch_camera_roll_items_response_;
+  proto::FetchCameraRollItemDataResponse
+      last_fetch_camera_roll_item_data_response_;
 };
 
 std::string SerializeMessage(proto::MessageType message_type,
@@ -119,6 +137,10 @@ class MessageReceiverImplTest : public testing::Test {
     return fake_observer_.fetch_camera_roll_items_response_calls();
   }
 
+  size_t GetNumFetchCameraRollItemDataResponseCalls() const {
+    return fake_observer_.fetch_camera_roll_item_data_response_calls();
+  }
+
   proto::PhoneStatusSnapshot GetLastSnapshot() const {
     return fake_observer_.last_snapshot();
   }
@@ -130,6 +152,11 @@ class MessageReceiverImplTest : public testing::Test {
   proto::FetchCameraRollItemsResponse GetLastFetchCameraRollItemsResponse()
       const {
     return fake_observer_.last_fetch_camera_roll_items_response();
+  }
+
+  proto::FetchCameraRollItemDataResponse
+  GetLastFetchCameraRollItemDataResponse() const {
+    return fake_observer_.last_fetch_camera_roll_item_data_response();
   }
 
   FakeObserver fake_observer_;
@@ -242,6 +269,57 @@ TEST_F(MessageReceiverImplTest,
   EXPECT_EQ(0u, GetNumPhoneStatusSnapshotCalls());
   EXPECT_EQ(0u, GetNumPhoneStatusUpdatedCalls());
   EXPECT_EQ(0u, GetNumFetchCameraRollItemsResponseCalls());
+}
+
+TEST_F(MessageReceiverImplTest,
+       OnFetchCameraRollItemDataResponseReceivedWthFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPhoneHubCameraRoll);
+
+  proto::FetchCameraRollItemDataResponse expected_response;
+  expected_response.mutable_metadata()->set_key("key");
+  expected_response.set_file_availability(
+      proto::FetchCameraRollItemDataResponse::AVAILABLE);
+  expected_response.set_payload_id(1234);
+
+  // Simulate receiving a message.
+  const std::string expected_message = SerializeMessage(
+      proto::FETCH_CAMERA_ROLL_ITEM_DATA_RESPONSE, &expected_response);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  proto::FetchCameraRollItemDataResponse actual_response =
+      GetLastFetchCameraRollItemDataResponse();
+
+  EXPECT_EQ(0u, GetNumPhoneStatusSnapshotCalls());
+  EXPECT_EQ(0u, GetNumPhoneStatusUpdatedCalls());
+  EXPECT_EQ(0u, GetNumFetchCameraRollItemsResponseCalls());
+  EXPECT_EQ(1u, GetNumFetchCameraRollItemDataResponseCalls());
+  EXPECT_EQ("key", actual_response.metadata().key());
+  EXPECT_EQ(proto::FetchCameraRollItemDataResponse::AVAILABLE,
+            actual_response.file_availability());
+  EXPECT_EQ(1234, actual_response.payload_id());
+}
+
+TEST_F(MessageReceiverImplTest,
+       OnFetchCameraRollItemDataResponseReceivedWithFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kPhoneHubCameraRoll);
+
+  proto::FetchCameraRollItemDataResponse expected_response;
+  expected_response.mutable_metadata()->set_key("key");
+  expected_response.set_file_availability(
+      proto::FetchCameraRollItemDataResponse::AVAILABLE);
+  expected_response.set_payload_id(1234);
+
+  // Simulate receiving a message.
+  const std::string expected_message = SerializeMessage(
+      proto::FETCH_CAMERA_ROLL_ITEM_DATA_RESPONSE, &expected_response);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  EXPECT_EQ(0u, GetNumPhoneStatusSnapshotCalls());
+  EXPECT_EQ(0u, GetNumPhoneStatusUpdatedCalls());
+  EXPECT_EQ(0u, GetNumFetchCameraRollItemsResponseCalls());
+  EXPECT_EQ(0u, GetNumFetchCameraRollItemDataResponseCalls());
 }
 
 }  // namespace phonehub

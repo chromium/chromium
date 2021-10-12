@@ -147,5 +147,26 @@ TEST_F(MessageSenderImplTest, SendFetchCameraRollItemsRequest) {
                 fake_connection_manager_->sent_messages().back());
 }
 
+TEST_F(MessageSenderImplTest, SendFetchCameraRollItemDataRequest) {
+  proto::FetchCameraRollItemDataRequest request;
+  request.mutable_metadata()->set_key("key0");
+
+  message_sender_->SendFetchCameraRollItemDataRequest(request);
+
+  VerifyMessage(proto::MessageType::FETCH_CAMERA_ROLL_ITEM_DATA_REQUEST,
+                &request, fake_connection_manager_->sent_messages().back());
+}
+
+TEST_F(MessageSenderImplTest, SendInitiateCameraRollItemTransferRequest) {
+  proto::InitiateCameraRollItemTransferRequest request;
+  request.mutable_metadata()->set_key("key0");
+  request.set_payload_id(1234);
+
+  message_sender_->SendInitiateCameraRollItemTransferRequest(request);
+
+  VerifyMessage(proto::MessageType::INITIATE_CAMERA_ROLL_ITEM_TRANSFER_REQUEST,
+                &request, fake_connection_manager_->sent_messages().back());
+}
+
 }  // namespace phonehub
 }  // namespace chromeos

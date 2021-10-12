@@ -39,6 +39,10 @@ class MessageSenderImpl : public MessageSender {
   void SendRingDeviceRequest(bool device_ringing_enabled) override;
   void SendFetchCameraRollItemsRequest(
       const proto::FetchCameraRollItemsRequest& request) override;
+  void SendFetchCameraRollItemDataRequest(
+      const proto::FetchCameraRollItemDataRequest& request) override;
+  void SendInitiateCameraRollItemTransferRequest(
+      const proto::InitiateCameraRollItemTransferRequest& request) override;
 
  private:
   void SendMessage(proto::MessageType message_type,

@@ -54,6 +54,16 @@ class MessageSender {
   virtual void SendFetchCameraRollItemsRequest(
       const proto::FetchCameraRollItemsRequest& request) = 0;
 
+  // Sends a request to let the connected Android phone prepare for a
+  // full-quality file transfer of a photo or video item from camera roll.
+  virtual void SendFetchCameraRollItemDataRequest(
+      const proto::FetchCameraRollItemDataRequest& request) = 0;
+
+  // Sends a request to let the connected Android phone start the file transfer
+  // of the requested camera roll item.
+  virtual void SendInitiateCameraRollItemTransferRequest(
+      const proto::InitiateCameraRollItemTransferRequest& request) = 0;
+
  protected:
   MessageSender() = default;
 };
