@@ -478,9 +478,7 @@ void HttpProtocolHandlerCore::OnReadCompleted(URLRequest* request,
   DCHECK_EQ(net_request_, request);
 
   // Read data from the socket until no bytes left to read.
-  uint64_t total_bytes_read = 0;
   while (bytes_read > 0) {
-    total_bytes_read += bytes_read;
     // The NSData will take the ownership of |read_buffer_|.
     NSData* data =
         [NSData dataWithBytesNoCopy:read_buffer_.release() length:bytes_read];
