@@ -43,13 +43,6 @@ void FidoChromeOSDiscovery::OnU2FServiceAvailable(bool u2f_service_available) {
     return;
   }
 
-  if (require_power_button_mode_) {
-    ChromeOSAuthenticator::IsPowerButtonModeEnabled(
-        base::BindOnce(&FidoChromeOSDiscovery::MaybeAddAuthenticator,
-                       weak_factory_.GetWeakPtr()));
-    return;
-  }
-
   if (get_assertion_request_) {
     ChromeOSAuthenticator::HasLegacyU2fCredentialForGetAssertionRequest(
         *get_assertion_request_,
@@ -58,31 +51,45 @@ void FidoChromeOSDiscovery::OnU2FServiceAvailable(bool u2f_service_available) {
     return;
   }
 
-  ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable(
-      base::BindOnce(&FidoChromeOSDiscovery::MaybeAddAuthenticator,
-                     weak_factory_.GetWeakPtr()));
+  CheckAuthenticators();
 }
 
-void FidoChromeOSDiscovery::MaybeAddAuthenticator(bool is_available) {
-  if (!is_available) {
+void FidoChromeOSDiscovery::CheckAuthenticators() {
+  ChromeOSAuthenticator::IsPowerButtonModeEnabled(base::BindOnce(
+      &FidoChromeOSDiscovery::CheckUVPlatformAuthenticatorAvailable,
+      weak_factory_.GetWeakPtr()));
+}
+
+void FidoChromeOSDiscovery::CheckUVPlatformAuthenticatorAvailable(
+    bool is_enabled) {
+  ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable(base::BindOnce(
+      &FidoChromeOSDiscovery::MaybeAddAuthenticator, weak_factory_.GetWeakPtr(),
+      /*power_button_enabled=*/is_enabled));
+}
+
+void FidoChromeOSDiscovery::MaybeAddAuthenticator(bool power_button_enabled,
+                                                  bool uv_available) {
+  if (require_power_button_mode_) {
+    uv_available = false;
+  }
+
+  if (!uv_available && !power_button_enabled) {
     observer()->DiscoveryStarted(this, /*success=*/false);
     return;
   }
-  authenticator_ =
-      std::make_unique<ChromeOSAuthenticator>(generate_request_id_callback_);
+  authenticator_ = std::make_unique<ChromeOSAuthenticator>(
+      generate_request_id_callback_,
+      ChromeOSAuthenticator::Config{
+          .uv_available = uv_available,
+          .power_button_enabled = power_button_enabled});
   observer()->DiscoveryStarted(this, /*success=*/true, {authenticator_.get()});
 }
 
 void FidoChromeOSDiscovery::OnHasLegacyU2fCredential(bool has_credential) {
   DCHECK(!authenticator_);
-  if (!has_credential) {
-    ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable(
-        base::BindOnce(&FidoChromeOSDiscovery::MaybeAddAuthenticator,
-                       weak_factory_.GetWeakPtr()));
-    return;
-  }
-
-  MaybeAddAuthenticator(/*is_available=*/true);
+  ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable(base::BindOnce(
+      &FidoChromeOSDiscovery::MaybeAddAuthenticator, weak_factory_.GetWeakPtr(),
+      /*power_button_enabled=*/has_credential));
 }
 
 }  // namespace device
