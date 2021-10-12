@@ -242,8 +242,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     @Override
     protected void addCustomActionButton(
             Drawable drawable, String description, OnClickListener listener) {
-        ImageButton button = (ImageButton) LayoutInflater.from(getContext())
-                                     .inflate(R.layout.custom_tabs_toolbar_button, null);
+        ImageButton button =
+                (ImageButton) LayoutInflater.from(getContext())
+                        .inflate(R.layout.custom_tabs_toolbar_button, mCustomActionButtons, false);
         button.setOnLongClickListener(this);
         button.setOnClickListener(listener);
         button.setVisibility(VISIBLE);
