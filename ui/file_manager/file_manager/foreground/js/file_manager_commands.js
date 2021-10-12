@@ -2715,8 +2715,10 @@ CommandHandler.COMMANDS_['inspect-element'] = new class extends FilesCommand {
 CommandHandler.COMMANDS_['inspect-background'] =
     new class extends FilesCommand {
   execute(event, fileManager) {
-    chrome.fileManagerPrivate.openInspector(
-        chrome.fileManagerPrivate.InspectionType.BACKGROUND);
+    if (!window.isSWA) {
+      chrome.fileManagerPrivate.openInspector(
+          chrome.fileManagerPrivate.InspectionType.BACKGROUND);
+    }
   }
 };
 

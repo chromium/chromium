@@ -595,9 +595,17 @@ FileManagerPrivateOpenInspectorFunction::Run() {
                                          DevToolsToggleAction::Inspect());
       break;
     case extensions::api::file_manager_private::INSPECTION_TYPE_BACKGROUND:
-      // Open inspector for background page.
-      extensions::devtools_util::InspectBackgroundPage(
-          extension(), Profile::FromBrowserContext(browser_context()));
+      // Open inspector for background page if extension pointer is not null.
+      // Files app SWA is not an extension and thus has no associated background
+      // page.
+      if (extension()) {
+        extensions::devtools_util::InspectBackgroundPage(
+            extension(), Profile::FromBrowserContext(browser_context()));
+      } else {
+        return RespondNow(
+            Error(base::StringPrintf("Inspection type(%d) not supported.",
+                                     static_cast<int>(params->type))));
+      }
       break;
     default:
       NOTREACHED();
