@@ -323,6 +323,15 @@ const char kIOSSharedHighlightingColorChangeDescription[] =
     "Changes the Shared Highlighting color of the text fragment"
     "away from the default yellow in iOS. Works with #scroll-to-text-ios flag.";
 
+const char kIOSSharedHighlightingAmpName[] = "Shared Highlighting on AMP pages";
+const char kIOSSharedHighlightingAmpDescription[] =
+    "Enables the Create Link option on AMP pages.";
+
+const char kIOSSharedHighlightingV2Name[] = "Text Fragments UI improvements";
+const char kIOSSharedHighlightingV2Description[] =
+    "Enables improvements to text fragments UI, including a menu for removing "
+    "or resharing a highlight.";
+
 const char kSharedHighlightingUseBlocklistIOSName[] =
     "Shared Highlighting blocklist";
 const char kSharedHighlightingUseBlocklistIOSDescription[] =

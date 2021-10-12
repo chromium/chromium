@@ -787,6 +787,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableDiscoverFeedShorterCacheName,
      flag_descriptions::kEnableDiscoverFeedShorterCacheDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableDiscoverFeedShorterCache)},
+    {"shared-highlighting-v2", flag_descriptions::kIOSSharedHighlightingV2Name,
+     flag_descriptions::kIOSSharedHighlightingV2Description, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(shared_highlighting::kSharedHighlightingV2)},
+    {"shared-highlighting-amp",
+     flag_descriptions::kIOSSharedHighlightingAmpName,
+     flag_descriptions::kIOSSharedHighlightingAmpDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(shared_highlighting::kSharedHighlightingAmp)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

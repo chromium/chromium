@@ -280,6 +280,16 @@ extern const char kIOSPersistCrashRestoreDescription[];
 extern const char kIOSSharedHighlightingColorChangeName[];
 extern const char kIOSSharedHighlightingColorChangeDescription[];
 
+// Title and description for the flag to enable Shared Highlighting on AMP pages
+// in iOS.
+extern const char kIOSSharedHighlightingAmpName[];
+extern const char kIOSSharedHighlightingAmpDescription[];
+
+// Title and description for the flag to enable browser-layer improvements to
+// the text fragments UI.
+extern const char kIOSSharedHighlightingV2Name[];
+extern const char kIOSSharedHighlightingV2Description[];
+
 // Title and description for the flag to lock the bottom toolbar into place.
 extern const char kLockBottomToolbarName[];
 extern const char kLockBottomToolbarDescription[];
