@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flag_descriptions.h"
@@ -51,7 +52,8 @@ enum class ChromeLabsSelectedLab {
   kTabScrollingSelected = 3,
   kSidePanelSelected = 4,
   kLensRegionSearchSelected = 5,
-  kMaxValue = kLensRegionSearchSelected,
+  kWebUITabStripSelected = 6,
+  kMaxValue = kWebUITabStripSelected,
 };
 
 void EmitToHistogram(const std::u16string& selected_lab_state,
@@ -81,6 +83,10 @@ void EmitToHistogram(const std::u16string& selected_lab_state,
     } else if (internal_name ==
                flag_descriptions::kEnableLensRegionSearchFlagId) {
       return ChromeLabsSelectedLab::kLensRegionSearchSelected;
+#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && defined(OS_WIN)
+    } else if (internal_name == flag_descriptions::kWebUITabStripFlagId) {
+      return ChromeLabsSelectedLab::kWebUITabStripSelected;
+#endif
     } else {
       return ChromeLabsSelectedLab::kUnspecifiedSelected;
     }

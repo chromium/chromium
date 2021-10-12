@@ -3004,7 +3004,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTopChromeTouchUiDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kTopChromeTouchUiChoices)},
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-    {"webui-tab-strip", flag_descriptions::kWebUITabStripName,
+    {flag_descriptions::kWebUITabStripFlagId,
+     flag_descriptions::kWebUITabStripName,
      flag_descriptions::kWebUITabStripDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kWebUITabStrip)},
 

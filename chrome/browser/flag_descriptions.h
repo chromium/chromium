@@ -3142,6 +3142,7 @@ extern const char kSideSearchStatePerTabDescription[];
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+extern const char kWebUITabStripFlagId[];
 extern const char kWebUITabStripName[];
 extern const char kWebUITabStripDescription[];
 
