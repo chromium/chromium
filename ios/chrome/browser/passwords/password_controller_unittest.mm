@@ -2227,12 +2227,10 @@ TEST_F(PasswordControllerTest, PasswordMetricsAutomatic) {
                           "password", 3, "pw", nullptr, nullptr, false,
                           &form_data);
   __block BOOL block_was_called = NO;
-  __block BOOL return_value = NO;
   [passwordController_.sharedPasswordController
        fillPasswordForm:form_data
       completionHandler:^(BOOL success) {
         block_was_called = YES;
-        return_value = success;
       }];
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
     return block_was_called;
