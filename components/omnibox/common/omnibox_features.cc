@@ -196,7 +196,7 @@ const base::Feature kShortBookmarkSuggestions{
     "OmniboxShortBookmarkSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kShortBookmarkSuggestionsByTotalInputLength{
     "OmniboxShortBookmarkSuggestionsByTotalInputLength",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If disabled, updating shortcuts truncates their text to the user input. If
 // enabled, they preserve up to 3 additional chars. See `GetShortcutText()` in
@@ -209,7 +209,7 @@ const base::Feature kPreserveLongerShortcutsText{
 // 'Jupiter' with URL 'en.wikipedia.org/wiki/Jupiter' located in a path
 // containing 'planet.'
 const base::Feature kBookmarkPaths{"OmniboxBookmarkPaths",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Feature used to fetch document suggestions.
 const base::Feature kDocumentProvider{"OmniboxDocumentProvider",
