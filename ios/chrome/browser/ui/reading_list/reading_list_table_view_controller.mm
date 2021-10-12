@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/ui/list_model/list_item.h"
-#import "ios/chrome/browser/ui/reading_list/empty_reading_list_message_util.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_data_sink.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_data_source.h"

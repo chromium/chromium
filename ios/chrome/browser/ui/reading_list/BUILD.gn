@@ -150,8 +150,6 @@ js_compile_bundle("distiller_js") {
 source_set("reading_list_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "empty_reading_list_message_util.h",
-    "empty_reading_list_message_util.mm",
     "number_badge_view.h",
     "number_badge_view.mm",
     "reading_list_data_sink.h",
@@ -176,7 +174,6 @@ source_set("reading_list_ui") {
     ":reading_list_constants",
     "resources:reading_list_empty",
     "resources:reading_list_empty_state",
-    "resources:reading_list_tools_icon",
     "//base",
     "//base:i18n",
     "//components/prefs",

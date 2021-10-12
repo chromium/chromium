@@ -30,12 +30,3 @@ imageset("reading_list_empty_state") {
     "reading_list_empty_state.imageset/reading_list_empty_state@3x.png",
   ]
 }
-
-imageset("reading_list_tools_icon") {
-  sources = [
-    "reading_list_tools_icon.imageset/Contents.json",
-    "reading_list_tools_icon.imageset/reading_list_tools_icon.png",
-    "reading_list_tools_icon.imageset/reading_list_tools_icon@2x.png",
-    "reading_list_tools_icon.imageset/reading_list_tools_icon@3x.png",
-  ]
-}

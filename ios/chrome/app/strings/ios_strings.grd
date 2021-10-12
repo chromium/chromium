@@ -1766,9 +1766,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_READING_LIST_EDIT_BUTTON" desc="Label of the button to edit the reading list entries (delete, mark as read/unread) [Length: 20em]" meaning="Start editing the reading list entries. [Length: 20em]">
         Edit
       </message>
-      <message name="IDS_IOS_READING_LIST_EMPTY_MESSAGE" desc="Message to explain to the user how to add entries to the reading list" meaning="[Length: unlimited]">
-        Your reading list is available offline. To add a page to your reading list, tap  <ph name="SHARE_OPENING_ICON">SHARE_OPENING_ICON<ex>(menu icon)</ex></ph>  then <ph name="ADD_TO_READING_LIST_TEXT">ADD_TO_READING_LIST_TEXT<ex>Add to Reading List</ex></ph>.
-      </message>
       <message name="IDS_IOS_READING_LIST_JUST_NOW" desc="String indicating that an event (adding item, distillation) happened less than one minute ago. [Length: 25em]">
         Just now
       </message>
