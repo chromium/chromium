@@ -242,7 +242,7 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
       run_loop.Run();
       if (satisfied_)
         break;
-      base::PlatformThread::Sleep(TestTimeouts::tiny_timeout() * 10);
+      base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
     }
   }
 
@@ -263,8 +263,8 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
                   expected[i].second.merchant_cart_url());
       }
     } else {
-      LOG(INFO) << "WaitForCartCount() is expecting " << expected.size()
-                << " but found " << found.size();
+      VLOG(3) << "Found " << found.size() << " but expecting "
+              << expected.size();
     }
     std::move(closure).Run();
   }
@@ -280,7 +280,7 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
       run_loop.Run();
       if (satisfied_)
         break;
-      base::PlatformThread::Sleep(TestTimeouts::tiny_timeout() * 10);
+      base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
     }
   }
 
@@ -299,9 +299,6 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
                           .ReplaceComponents(remove_port)
                           .spec() == expected[i].second.merchant_cart_url();
       }
-    } else {
-      LOG(INFO) << "WaitForCarts() is expecting " << expected.size()
-                << " but found " << found.size();
     }
     std::move(closure).Run();
   }
@@ -317,7 +314,7 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
       run_loop.Run();
       if (satisfied_)
         break;
-      base::PlatformThread::Sleep(TestTimeouts::tiny_timeout() * 10);
+      base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
     }
   }
 
@@ -327,11 +324,8 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
                              ShoppingCarts found) {
     bool fail = false;
     bool same_size = found.size() == expected.size();
-    if (!same_size) {
+    if (!same_size)
       fail = true;
-      LOG(INFO) << "WaitForProductCount() is expecting " << expected.size()
-                << " but found " << found.size();
-    }
     for (size_t i = 0; i < std::min(found.size(), expected.size()); i++) {
       EXPECT_EQ(found[i].first, expected[i].first);
       GURL::Replacements remove_port;
@@ -852,8 +846,7 @@ class CommerceHintTimeoutTest : public CommerceHintAgentTest {
   void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{ntp_features::kNtpChromeCartModule,
-          {{"cart-extraction-max-count", "1"},
-           {"cart-extraction-timeout", "0"}}}},
+          {{"cart-extraction-timeout", "0"}}}},
         {optimization_guide::features::kOptimizationHints});
   }
 
@@ -889,7 +882,9 @@ class CommerceHintMaxCountTest : public CommerceHintAgentTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CommerceHintMaxCountTest, ExtractCart) {
+// Flaky on Linux: https://crbug.com/1257964.
+// See definition of MAYBE_ExtractCart above.
+IN_PROC_BROWSER_TEST_F(CommerceHintMaxCountTest, MAYBE_ExtractCart) {
   NavigateToURL("https://www.guitarcenter.com/cart.html");
 
   WaitForUmaBucketCount("Commerce.Carts.ExtractionTimedOut", 0, 1);

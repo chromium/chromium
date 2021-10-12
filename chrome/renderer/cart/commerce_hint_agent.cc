@@ -730,7 +730,6 @@ void CommerceHintAgent::MaybeExtractProducts() {
     return;
   }
   is_extraction_pending_ = true;
-  extraction_count_++;
   DVLOG(1) << "Scheduled extraction";
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -740,16 +739,16 @@ void CommerceHintAgent::MaybeExtractProducts() {
 }
 
 void CommerceHintAgent::ExtractProducts() {
+  is_extraction_pending_ = false;
   if (is_extraction_running_) {
     DVLOG(1) << "Extraction is running. Try again later.";
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&CommerceHintAgent::ExtractProducts,
+        base::BindOnce(&CommerceHintAgent::MaybeExtractProducts,
                        weak_factory_.GetWeakPtr()),
         kCartExtractionGapTime.Get());
     return;
   }
-  is_extraction_pending_ = false;
   is_extraction_running_ = true;
   DVLOG(2) << "is_extraction_running_ = " << is_extraction_running_;
 
@@ -899,6 +898,7 @@ void CommerceHintAgent::OnProductsExtracted(
   OnCartProductUpdated(render_frame(), std::move(products));
 
   is_extraction_running_ = false;
+  extraction_count_++;
   DVLOG(2) << "is_extraction_running_ = " << is_extraction_running_;
 }
 
