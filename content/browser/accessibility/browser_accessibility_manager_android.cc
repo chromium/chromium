@@ -535,6 +535,15 @@ void BrowserAccessibilityManagerAndroid::OnNodeWillBeDeleted(ui::AXTree* tree,
 
   ClearNodeInfoCacheForGivenId(android_node->unique_id());
 
+  // When a node will be deleted, clear its parent from the cache as well, or
+  // the parent could erroneously report the cleared node as a child later on.
+  BrowserAccessibilityAndroid* parent_node =
+      static_cast<BrowserAccessibilityAndroid*>(
+          android_node->PlatformGetParent());
+  if (parent_node != nullptr) {
+    ClearNodeInfoCacheForGivenId(parent_node->unique_id());
+  }
+
   BrowserAccessibilityManager::OnNodeWillBeDeleted(tree, node);
 }
 
