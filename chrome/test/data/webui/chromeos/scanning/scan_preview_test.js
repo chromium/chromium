@@ -319,7 +319,7 @@ export function scanPreviewTest() {
         .then(() => {
           imageHeight = scanPreview.$$('#scannedImages')
                             .getElementsByClassName('scanned-image')[0]
-                            .height;
+                            .offsetHeight;
 
           // With two scanned images the viewport should be scrolled so the
           // second image is at the top.

@@ -584,7 +584,7 @@ Polymer({
     }
 
     assert(pageIndex >= 0 && pageIndex < scannedImages.length);
-    const imageHeight = scannedImages[0].height;
+    const imageHeight = scannedImages[0].offsetHeight;
 
     // Use |pageIndex| to calculate the number of pages needed to scroll by to
     // get to our desired page. Ex: If we want to scroll to the page with
