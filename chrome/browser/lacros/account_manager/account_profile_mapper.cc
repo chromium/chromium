@@ -6,8 +6,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -46,6 +48,17 @@ bool TryAddAccountToProfile(
     return false;  // The account already exists in the profile.
   entry->SetGaiaIds(profile_accounts);
   return true;
+}
+
+void DeleteProfile(const base::FilePath& profile_path) {
+  // Pass an empty callback because this should never delete the last profile.
+  // TODO(https://crbug.com/1257610): ensure that the user cannot cancel the
+  // profile deletion.
+  g_browser_process->profile_manager()->MaybeScheduleProfileForDeletion(
+      profile_path, base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_PRIMARY_ACCOUNT_REMOVED);
+  // TODO(https://crbug.com/1257610): observe profile deletion and remove all
+  // accounts from deleted profiles.
 }
 
 }  // namespace
@@ -196,6 +209,8 @@ AccountProfileMapper::RemoveStaleAccounts() {
     }
     if (entry_needs_update)
       entry->SetGaiaIds(entry_ids);
+    if (ShouldDeleteProfile(entry))
+      DeleteProfile(entry->GetPath());
   }
   return removed_ids;
 }
@@ -335,4 +350,26 @@ ProfileAttributesEntry* AccountProfileMapper::MaybeGetProfileForNewAccounts()
   // Otherwise auto-assign new accounts to the main profile.
   DCHECK(Profile::IsMainProfilePath(entries[0]->GetPath()));
   return entries[0];
+}
+
+bool AccountProfileMapper::ShouldDeleteProfile(
+    ProfileAttributesEntry* entry) const {
+  // Delete profile if its primary account has been removed.
+  const std::string& primary_gaia_id = entry->GetGAIAId();
+  bool primary_account_deleted =
+      !primary_gaia_id.empty() && !account_cache_.contains(primary_gaia_id);
+
+  if (Profile::IsMainProfilePath(entry->GetPath())) {
+    // Never delete the main profile.
+    if (primary_account_deleted) {
+      // Primary account of the main profile must never be deleted. A CHECK
+      // here can possibly put a device in a crash loop, so upload a crash
+      // report silently instead.
+      DLOG(ERROR) << "Primary account has been removed from the main profile";
+      base::debug::DumpWithoutCrashing();
+    }
+    return false;
+  }
+
+  return primary_account_deleted;
 }

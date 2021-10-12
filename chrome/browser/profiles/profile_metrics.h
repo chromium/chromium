@@ -73,23 +73,26 @@ class ProfileMetrics {
     kMaxValue = kAbortedOnEnterpriseWelcome,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum ProfileDelete {
     // Delete profile from settings page.
     DELETE_PROFILE_SETTINGS = 0,
     // Delete profile from User Manager.
-    DELETE_PROFILE_USER_MANAGER,
+    DELETE_PROFILE_USER_MANAGER = 1,
     // Show the delete profile warning in the User Manager.
-    DELETE_PROFILE_USER_MANAGER_SHOW_WARNING,
+    DELETE_PROFILE_USER_MANAGER_SHOW_WARNING = 2,
     // Show the delete profile warning in the Settings page.
-    DELETE_PROFILE_SETTINGS_SHOW_WARNING,
+    DELETE_PROFILE_SETTINGS_SHOW_WARNING = 3,
     // Aborts profile deletion in an OnBeforeUnload event in any browser tab.
-    DELETE_PROFILE_ABORTED,
-    // Commented out as it is not used anymore (kept in the enum as it was used
-    // as a bucket in a histogram).
-    // DELETE_PROFILE_DICE_WEB_SIGNOUT
+    DELETE_PROFILE_ABORTED = 4,
+    // DELETE_PROFILE_DICE_WEB_SIGNOUT = 5,  // No longer used.
     // Delete profile internally when Chrome signout is prohibited and the
     // username is no longer allowed.
-    DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED = DELETE_PROFILE_ABORTED + 2,
+    DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED = 6,
+    // Delete profile internally when a profile cannot exist without a primary
+    // account and this account gets removed.
+    DELETE_PROFILE_PRIMARY_ACCOUNT_REMOVED = 7,
     NUM_DELETE_PROFILE_METRICS
   };
 

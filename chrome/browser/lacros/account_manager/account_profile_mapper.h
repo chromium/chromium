@@ -100,7 +100,8 @@ class AccountProfileMapper
 
  private:
   // Computes the stale accounts (accounts that are in Lacros but no longer in
-  // the system) and removes them from the `ProfileAttributesStorage`.
+  // the system) and removes them from the `ProfileAttributesStorage`. Might
+  // also remove profiles that no longer have an associated primary account.
   std::vector<std::pair<base::FilePath, std::string>> RemoveStaleAccounts();
 
   // Computes the new accounts (accounts that are in the system but not in
@@ -128,6 +129,10 @@ class AccountProfileMapper
   // by default and this returns the corresponding entry. Otherwise, new
   // accounts are not assigned and this returns nullptr.
   ProfileAttributesEntry* MaybeGetProfileForNewAccounts() const;
+
+  // Returns whether the profile corresponding to `entry` should be deleted
+  // after a system accounts update.
+  bool ShouldDeleteProfile(ProfileAttributesEntry* entry) const;
 
   // All requests are delayed until the first `GetAccounts()` call completes.
   bool initialized_ = false;
