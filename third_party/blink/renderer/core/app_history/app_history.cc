@@ -197,11 +197,30 @@ void AppHistory::PopulateKeySet() {
     keys_to_indices_.insert(entries_[i]->key(), i);
 }
 
-void AppHistory::InitializeForNavigation(
+void AppHistory::InitializeForNewWindow(
     HistoryItem& current,
+    WebFrameLoadType load_type,
+    CommitReason commit_reason,
+    AppHistory& previous,
     const WebVector<WebHistoryItem>& back_entries,
     const WebVector<WebHistoryItem>& forward_entries) {
   DCHECK(entries_.IsEmpty());
+
+  // Under most circumstances, the browser process provides the information
+  // need to initialize appHistory's entries array from
+  // |app_history_back_entries_| and |app_history_forward_entries_|.
+  // However, these are not available when the renderer handles the
+  // navigation entirely, so in those cases (javascript: urls, XSLT commits,
+  // and non-back/forward about:blank), copy the array from the previous
+  // window and use the same update algorithm as same-document navigations.
+  if (commit_reason != CommitReason::kRegular ||
+      (current.Url() == BlankURL() && !IsBackForwardLoadType(load_type)) ||
+      (current.Url().IsAboutSrcdocURL() && !previous.entries_.IsEmpty() &&
+       !IsBackForwardLoadType(load_type))) {
+    CloneFromPrevious(previous);
+    UpdateForNavigation(current, load_type);
+    return;
+  }
 
   // Construct |entries_|. Any back entries are inserted, then the current
   // entry, then any forward entries.

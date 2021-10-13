@@ -2301,23 +2301,10 @@ void DocumentLoader::CommitNavigation() {
   // appHistory is not set on the initial about:blank document.
   if (commit_reason_ != CommitReason::kInitialization) {
     if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
-      // Under most circumstances, the browser process provides the information
-      // need to initialize appHistory's entries array from
-      // |app_history_back_entries_| and |app_history_forward_entries_|.
-      // However, these are not available when the renderer handles the
-      // navigation entirely, so in those cases (javascript: urls, XSLT commits,
-      // and non-back/forward about:blank), copy the array from the previous
-      // window and use the same update algorithm as same-document navigations.
-      if (commit_reason_ != CommitReason::kRegular ||
-          (url_.ProtocolIsAbout() && !IsBackForwardLoadType(load_type_))) {
-        app_history->CloneFromPrevious(
-            *AppHistory::appHistory(*previous_window));
-        app_history->UpdateForNavigation(*history_item_, load_type_);
-      } else {
-        app_history->InitializeForNavigation(*history_item_,
-                                             app_history_back_entries_,
-                                             app_history_forward_entries_);
-      }
+      app_history->InitializeForNewWindow(
+          *history_item_, load_type_, commit_reason_,
+          *AppHistory::appHistory(*previous_window), app_history_back_entries_,
+          app_history_forward_entries_);
     }
     // Now that appHistory's entries array is initialized, we don't need to
     // retain the state from which it was initialized.
