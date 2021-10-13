@@ -201,6 +201,25 @@ TEST_F(TextFragmentAnchorTest, BasicSmokeTest) {
       << LayoutViewport()->GetScrollOffset().ToString();
 }
 
+// Make sure an anchor isn't created (and we don't crash) if text= is empty.
+TEST_F(TextFragmentAnchorTest, EmptyText) {
+  SimRequest request("https://example.com/test.html#:~:text=", "text/html");
+  LoadURL("https://example.com/test.html#:~:text=");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p id="text">This is a test page</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  BeginEmptyFrame();
+
+  EXPECT_EQ(nullptr, GetDocument().CssTarget());
+  EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
+  EXPECT_TRUE(GetDocument().Markers().Markers().IsEmpty());
+}
+
 // Make sure a non-matching string doesn't cause scroll and the fragment is
 // removed when completed.
 TEST_F(TextFragmentAnchorTest, NonMatchingString) {

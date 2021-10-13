@@ -6,90 +6,129 @@
 
 #include <gtest/gtest.h>
 
+#define EXPECT_SELECTORS_EQ(a, b)    \
+  EXPECT_EQ(a.Type(), b.Type());     \
+  EXPECT_EQ(a.Start(), b.Start());   \
+  EXPECT_EQ(a.End(), b.End());       \
+  EXPECT_EQ(a.Prefix(), b.Prefix()); \
+  EXPECT_EQ(a.Suffix(), b.Suffix());
+
 namespace blink {
 
-class TextFragmentSelectorTest : public testing::Test {
- protected:
-  bool Equals(TextFragmentSelector a, TextFragmentSelector b) {
-    return a.Type() == b.Type() && a.Start() == b.Start() &&
-           a.End() == b.End() && a.Prefix() == b.Prefix() &&
-           a.Suffix() == b.Suffix();
-  }
-};
+static const TextFragmentSelector kInvalidSelector(
+    TextFragmentSelector::kInvalid);
 
-TEST_F(TextFragmentSelectorTest, ExactText) {
+TEST(TextFragmentSelectorTest, ExactText) {
   TextFragmentSelector selector = TextFragmentSelector::Create("test");
   TextFragmentSelector expected(TextFragmentSelector::kExact, "test", "", "",
                                 "");
-  EXPECT_TRUE(Equals(selector, expected));
+  EXPECT_SELECTORS_EQ(selector, expected);
 }
 
-TEST_F(TextFragmentSelectorTest, ExactTextWithPrefix) {
+TEST(TextFragmentSelectorTest, ExactTextWithPrefix) {
   TextFragmentSelector selector = TextFragmentSelector::Create("prefix-,test");
   TextFragmentSelector expected(TextFragmentSelector::kExact, "test", "",
                                 "prefix", "");
-  EXPECT_TRUE(Equals(selector, expected));
+  EXPECT_SELECTORS_EQ(selector, expected);
 }
 
-TEST_F(TextFragmentSelectorTest, ExactTextWithSuffix) {
+TEST(TextFragmentSelectorTest, ExactTextWithSuffix) {
   TextFragmentSelector selector = TextFragmentSelector::Create("test,-suffix");
   TextFragmentSelector expected(TextFragmentSelector::kExact, "test", "", "",
                                 "suffix");
-  EXPECT_TRUE(Equals(selector, expected));
+  EXPECT_SELECTORS_EQ(selector, expected);
 }
 
-TEST_F(TextFragmentSelectorTest, ExactTextWithContext) {
+TEST(TextFragmentSelectorTest, ExactTextWithContext) {
   TextFragmentSelector selector =
       TextFragmentSelector::Create("prefix-,test,-suffix");
   TextFragmentSelector expected(TextFragmentSelector::kExact, "test", "",
                                 "prefix", "suffix");
-  EXPECT_TRUE(Equals(selector, expected));
+  EXPECT_SELECTORS_EQ(selector, expected);
 }
 
-TEST_F(TextFragmentSelectorTest, TextRange) {
+TEST(TextFragmentSelectorTest, TextRange) {
   TextFragmentSelector selector = TextFragmentSelector::Create("test,page");
   TextFragmentSelector expected(TextFragmentSelector::kRange, "test", "page",
                                 "", "");
-  EXPECT_TRUE(Equals(selector, expected));
+  EXPECT_SELECTORS_EQ(selector, expected);
 }
 
-TEST_F(TextFragmentSelectorTest, TextRangeWithPrefix) {
+TEST(TextFragmentSelectorTest, TextRangeWithPrefix) {
   TextFragmentSelector selector =
       TextFragmentSelector::Create("prefix-,test,page");
   TextFragmentSelector expected(TextFragmentSelector::kRange, "test", "page",
                                 "prefix", "");
-  EXPECT_TRUE(Equals(selector, expected));
+  EXPECT_SELECTORS_EQ(selector, expected);
 }
 
-TEST_F(TextFragmentSelectorTest, TextRangeWithSuffix) {
+TEST(TextFragmentSelectorTest, TextRangeWithSuffix) {
   TextFragmentSelector selector =
       TextFragmentSelector::Create("test,page,-suffix");
   TextFragmentSelector expected(TextFragmentSelector::kRange, "test", "page",
                                 "", "suffix");
-  EXPECT_TRUE(Equals(selector, expected));
+  EXPECT_SELECTORS_EQ(selector, expected);
 }
 
-TEST_F(TextFragmentSelectorTest, TextRangeWithContext) {
+TEST(TextFragmentSelectorTest, TextRangeWithContext) {
   TextFragmentSelector selector =
       TextFragmentSelector::Create("prefix-,test,page,-suffix");
   TextFragmentSelector expected(TextFragmentSelector::kRange, "test", "page",
                                 "prefix", "suffix");
-  EXPECT_TRUE(Equals(selector, expected));
+  EXPECT_SELECTORS_EQ(selector, expected);
 }
 
-TEST_F(TextFragmentSelectorTest, InvalidContext) {
+TEST(TextFragmentSelectorTest, InvalidContext) {
   TextFragmentSelector selector =
       TextFragmentSelector::Create("prefix,test,page,suffix");
-  TextFragmentSelector expected(TextFragmentSelector::kInvalid);
-  EXPECT_TRUE(Equals(selector, expected));
+  EXPECT_SELECTORS_EQ(selector, kInvalidSelector);
 }
 
-TEST_F(TextFragmentSelectorTest, TooManyParameters) {
+TEST(TextFragmentSelectorTest, TooManyParameters) {
   TextFragmentSelector selector = TextFragmentSelector::Create(
       "prefix-,exact text, that has commas, which are not percent "
       "encoded,-suffix");
-  TextFragmentSelector expected(TextFragmentSelector::kInvalid);
-  EXPECT_TRUE(Equals(selector, expected));
+  EXPECT_SELECTORS_EQ(selector, kInvalidSelector);
+}
+
+TEST(TextFragmentSelectorTest, Empty) {
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create(""), kInvalidSelector);
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create("-"), kInvalidSelector);
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create("-,"), kInvalidSelector);
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create(",-"), kInvalidSelector);
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create("-,-"), kInvalidSelector);
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create(","), kInvalidSelector);
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create(",,"), kInvalidSelector);
+}
+
+TEST(TextFragmentSelectorTest, NoMatchTextWithPrefix) {
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create("prefix-"),
+                      kInvalidSelector);
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create("prefix-,"),
+                      kInvalidSelector);
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create("text,prefix-"),
+                      kInvalidSelector);
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create("text,prefix-,text"),
+                      kInvalidSelector);
+}
+
+TEST(TextFragmentSelectorTest, NoMatchTextWithSuffix) {
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create("text,-"), kInvalidSelector);
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create("-suffix"),
+                      kInvalidSelector);
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create(",-suffix"),
+                      kInvalidSelector);
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create("-suffix,"),
+                      kInvalidSelector);
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create("text,-suffix,"),
+                      kInvalidSelector);
+}
+
+TEST(TextFragmentSelectorTest, NoMatchTextWithPrefixAndSuffix) {
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create("prefix-,-suffix"),
+                      kInvalidSelector);
+  EXPECT_SELECTORS_EQ(TextFragmentSelector::Create("prefix-,-suffix,invalid"),
+                      kInvalidSelector);
 }
 
 }  // namespace blink
