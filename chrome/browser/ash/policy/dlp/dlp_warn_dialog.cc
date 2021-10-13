@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/dlp/dlp_warn_dialog.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/style/color_provider.h"
@@ -87,6 +88,9 @@ const std::u16string GetDialogButtonOkLabel(
     case DlpWarnDialog::Restriction::kPrinting:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_PRINTING_WARN_CONTINUE_BUTTON);
+    case DlpWarnDialog::Restriction::kScreenShare:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_SCREEN_SHARE_WARN_CONTINUE_BUTTON);
   }
 }
 
@@ -103,6 +107,9 @@ const std::u16string GetDialogButtonCancelLabel(
     case DlpWarnDialog::Restriction::kPrinting:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_PRINTING_WARN_CANCEL_BUTTON);
+    case DlpWarnDialog::Restriction::kScreenShare:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_SCREEN_SHARE_WARN_CANCEL_BUTTON);
   }
 }
 
@@ -116,12 +123,14 @@ const std::u16string GetTitle(DlpWarnDialog::Restriction restriction) {
       return l10n_util::GetStringUTF16(IDS_POLICY_DLP_VIDEO_CAPTURE_WARN_TITLE);
     case DlpWarnDialog::Restriction::kPrinting:
       return l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_WARN_TITLE);
+    case DlpWarnDialog::Restriction::kScreenShare:
+      return l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_SHARE_WARN_TITLE);
   }
 }
 
 // Returns the message for |restriction|.
-const std::u16string GetMessage(DlpWarnDialog::Restriction restriction) {
-  switch (restriction) {
+const std::u16string GetMessage(DlpWarnDialog::DlpWarnDialogOptions options) {
+  switch (options.restriction) {
     case DlpWarnDialog::Restriction::kScreenCapture:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_MESSAGE);
@@ -130,6 +139,11 @@ const std::u16string GetMessage(DlpWarnDialog::Restriction restriction) {
           IDS_POLICY_DLP_VIDEO_CAPTURE_WARN_MESSAGE);
     case DlpWarnDialog::Restriction::kPrinting:
       return l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_WARN_MESSAGE);
+    case DlpWarnDialog::Restriction::kScreenShare:
+      DCHECK(options.application_title.has_value());
+      return l10n_util::GetStringFUTF16(
+          IDS_POLICY_DLP_SCREEN_SHARE_WARN_MESSAGE,
+          options.application_title.value());
   }
 }
 
@@ -229,13 +243,12 @@ void MaybeAddConfidentialContent(
 // message determined by |restriction| and optionally a scrollable list of
 // confidential content.
 void AddBody(views::GridLayout* layout,
-             DlpWarnDialog::Restriction restriction,
-             const DlpConfidentialContents& confidential_contents) {
+             DlpWarnDialog::DlpWarnDialogOptions options) {
   ash::ColorProvider* color_provider = ash::ColorProvider::Get();
   // Add the message
   layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
   views::Label* message =
-      layout->AddView(std::make_unique<views::Label>(GetMessage(restriction)));
+      layout->AddView(std::make_unique<views::Label>(GetMessage(options)));
   message->SetMultiLine(true);
   message->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   message->SetAllowCharacterBreak(true);
@@ -246,52 +259,86 @@ void AddBody(views::GridLayout* layout,
   message->SetLineHeight(kBodyLineHeight);
   message->SizeToFit(kDialogWidth);
   // Add the confidential content list, if applicable
-  MaybeAddConfidentialContent(layout, confidential_contents);
+  MaybeAddConfidentialContent(layout, options.confidential_contents);
   // Add padding after the entire dialog body
   layout->AddPaddingRow(views::GridLayout::kFixedSize, kAfterBodySpacing);
 }
 
 }  // namespace
 
+DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
+    Restriction restriction)
+    : restriction(restriction) {}
+
+DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
+    Restriction restriction,
+    DlpConfidentialContents confidential_contents)
+    : restriction(restriction), confidential_contents(confidential_contents) {}
+
+DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
+    Restriction restriction,
+    DlpConfidentialContents confidential_contents,
+    const std::u16string& application_title_)
+    : restriction(restriction), confidential_contents(confidential_contents) {
+  application_title.emplace(application_title_);
+}
+
+DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
+    const DlpWarnDialogOptions& other) = default;
+
+DlpWarnDialog::DlpWarnDialogOptions&
+DlpWarnDialog::DlpWarnDialogOptions::operator=(
+    const DlpWarnDialogOptions& other) = default;
+
+DlpWarnDialog::DlpWarnDialogOptions::~DlpWarnDialogOptions() = default;
+
 // static
 void DlpWarnDialog::ShowDlpPrintWarningDialog(
     OnDlpRestrictionChecked callback) {
-  ShowDlpWarningDialog(std::move(callback), Restriction::kPrinting,
-                       /*confidential_contents=*/{});
+  ShowDlpWarningDialog(std::move(callback),
+                       DlpWarnDialogOptions(Restriction::kPrinting));
 }
 
 // static
 void DlpWarnDialog::ShowDlpScreenCaptureWarningDialog(
     OnDlpRestrictionChecked callback,
     const DlpConfidentialContents& confidential_contents) {
-  ShowDlpWarningDialog(std::move(callback), Restriction::kScreenCapture,
-                       confidential_contents);
+  ShowDlpWarningDialog(
+      std::move(callback),
+      DlpWarnDialogOptions(Restriction::kScreenCapture, confidential_contents));
 }
 
 // static
 void DlpWarnDialog::ShowDlpVideoCaptureWarningDialog(
     OnDlpRestrictionChecked callback,
     const DlpConfidentialContents& confidential_contents) {
-  ShowDlpWarningDialog(std::move(callback), Restriction::kVideoCapture,
-                       confidential_contents);
+  ShowDlpWarningDialog(
+      std::move(callback),
+      DlpWarnDialogOptions(Restriction::kVideoCapture, confidential_contents));
 }
 
 // static
-void DlpWarnDialog::ShowDlpWarningDialog(
+void DlpWarnDialog::ShowDlpScreenShareWarningDialog(
     OnDlpRestrictionChecked callback,
-    Restriction restriction,
-    const DlpConfidentialContents& confidential_contents) {
+    const DlpConfidentialContents& confidential_contents,
+    const std::u16string& application_title) {
+  ShowDlpWarningDialog(
+      std::move(callback),
+      DlpWarnDialogOptions(Restriction::kScreenShare, confidential_contents,
+                           application_title));
+}
+
+// static
+void DlpWarnDialog::ShowDlpWarningDialog(OnDlpRestrictionChecked callback,
+                                         DlpWarnDialogOptions options) {
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-      new DlpWarnDialog(std::move(callback), restriction,
-                        confidential_contents),
+      new DlpWarnDialog(std::move(callback), options),
       /*context=*/nullptr, /*parent=*/nullptr);
   widget->Show();
 }
 
-DlpWarnDialog::DlpWarnDialog(
-    OnDlpRestrictionChecked callback,
-    Restriction restriction,
-    const DlpConfidentialContents& confidential_contents) {
+DlpWarnDialog::DlpWarnDialog(OnDlpRestrictionChecked callback,
+                             DlpWarnDialogOptions options) {
   auto split = base::SplitOnceCallback(std::move(callback));
   SetAcceptCallback(base::BindOnce(std::move(split.first), true));
   SetCancelCallback(base::BindOnce(std::move(split.second), false));
@@ -299,9 +346,10 @@ DlpWarnDialog::DlpWarnDialog(
   SetModalType(ui::MODAL_TYPE_SYSTEM);
 
   SetShowCloseButton(false);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, GetDialogButtonOkLabel(restriction));
+  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                 GetDialogButtonOkLabel(options.restriction));
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                 GetDialogButtonCancelLabel(restriction));
+                 GetDialogButtonCancelLabel(options.restriction));
 
   set_fixed_width(kDialogWidth);
   set_corner_radius(kDialogCornerRadius);
@@ -315,8 +363,8 @@ DlpWarnDialog::DlpWarnDialog(
                 views::GridLayout::ColumnSize::kUsePreferred, kDialogWidth, 0);
 
   AddManagedIcon(layout_manager);
-  AddTitle(layout_manager, restriction);
-  AddBody(layout_manager, restriction, confidential_contents);
+  AddTitle(layout_manager, options.restriction);
+  AddBody(layout_manager, options);
 }
 
 BEGIN_METADATA(DlpWarnDialog, views::DialogDelegateView)
