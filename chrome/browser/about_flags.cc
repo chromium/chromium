@@ -7729,6 +7729,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ui::kLibinputHandleTouchpad)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-sharesheet-copy-to-clipboard",
+     flag_descriptions::kSharesheetCopyToClipboardName,
+     flag_descriptions::kSharesheetCopyToClipboardDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kSharesheetCopyToClipboard)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

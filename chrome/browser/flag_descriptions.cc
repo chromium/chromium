@@ -5017,6 +5017,12 @@ const char kScanAppStickySettingsDescription[] =
     "Enables sticky settings in Scan app for automatically saving scan"
     " settings in Chrome OS.";
 
+extern const char kSharesheetCopyToClipboardName[] =
+    "Enable copy to clipboard in the Chrome OS Sharesheet.";
+extern const char kSharesheetCopyToClipboardDescription[] =
+    "Enables a share action in the sharesheet that copies the selected data to "
+    "the clipboard.";
+
 const char kShimlessRMAFlowName[] = "Enable shimless RMA flow";
 const char kShimlessRMAFlowDescription[] = "Enable shimless RMA flow";
 

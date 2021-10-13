@@ -50470,6 +50470,7 @@ from previous Chrome versions.
   <int value="-68225452" label="enable-translate-new-ux"/>
   <int value="-67616014" label="PDFAnnotations:enabled"/>
   <int value="-67297229" label="OfflinePagesDescriptivePendingStatus:disabled"/>
+  <int value="-66834375" label="SharesheetCopyToClipboard:enabled"/>
   <int value="-66535194" label="DesktopMinimalUI:enabled"/>
   <int value="-64839201" label="SyncUSSAutofillWalletData:disabled"/>
   <int value="-64824628" label="VizHitTestSurfaceLayer:disabled"/>
@@ -51014,6 +51015,7 @@ from previous Chrome versions.
   <int value="352937987" label="OverflowIconsForMediaControls:disabled"/>
   <int value="353898777" label="ClipboardHistoryScreenshotNudge:disabled"/>
   <int value="354631905" label="RecoverFromNeverSaveAndroid:disabled"/>
+  <int value="355367368" label="SharesheetCopyToClipboard:disabled"/>
   <int value="357138275" label="enable-floating-virtual-keyboard:disabled"/>
   <int value="358399482" label="enable-high-dpi-fixed-position-compositing"/>
   <int value="358493847" label="BackgroundLoader:disabled"/>
