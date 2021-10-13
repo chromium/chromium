@@ -492,9 +492,15 @@ WebUIController* NewWebUI<ash::DiagnosticsDialogUI>(WebUI* web_ui,
   ash::HoldingSpaceKeyedService* holding_space_keyed_service =
       ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
           web_ui->GetWebContents()->GetBrowserContext());
+  // This directory stores routine and network event logs for a given
+  // |profile|.
+  static constexpr base::FilePath::CharType kDiagnosticsLogDirectoryName[] =
+      FILE_PATH_LITERAL("diagnostics");
   return new ash::DiagnosticsDialogUI(
       web_ui, base::BindRepeating(&CreateChromeSelectFilePolicy),
-      holding_space_keyed_service->client());
+      holding_space_keyed_service->client(),
+      Profile::FromWebUI(web_ui)->GetPath().Append(
+          kDiagnosticsLogDirectoryName));
 }
 
 void BindMultiDeviceSetup(

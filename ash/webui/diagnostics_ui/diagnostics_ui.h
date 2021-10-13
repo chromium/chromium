@@ -16,6 +16,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace ash {
 
 class HoldingSpaceClient;
@@ -31,7 +35,8 @@ class DiagnosticsDialogUI : public ui::MojoWebDialogUI {
       content::WebUI* web_ui,
       const diagnostics::SessionLogHandler::SelectFilePolicyCreator&
           select_file_policy_creator,
-      HoldingSpaceClient* holding_space_client);
+      HoldingSpaceClient* holding_space_client,
+      const base::FilePath& log_directory_path);
   ~DiagnosticsDialogUI() override;
 
   DiagnosticsDialogUI(const DiagnosticsDialogUI&) = delete;

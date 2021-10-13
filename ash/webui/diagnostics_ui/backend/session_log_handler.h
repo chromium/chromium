@@ -41,7 +41,8 @@ class SessionLogHandler : public content::WebUIMessageHandler,
       base::RepeatingCallback<std::unique_ptr<ui::SelectFilePolicy>(
           content::WebContents*)>;
   SessionLogHandler(const SelectFilePolicyCreator& select_file_policy_creator,
-                    ash::HoldingSpaceClient* holding_space_client);
+                    ash::HoldingSpaceClient* holding_space_client,
+                    const base::FilePath& log_directory_path);
 
   // Constructor for testing. Should not be called outside of tests.
   SessionLogHandler(const SelectFilePolicyCreator& select_file_policy_creator,

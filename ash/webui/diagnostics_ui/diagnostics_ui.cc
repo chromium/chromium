@@ -22,6 +22,7 @@
 #include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -328,7 +329,8 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
     content::WebUI* web_ui,
     const diagnostics::SessionLogHandler::SelectFilePolicyCreator&
         select_file_policy_creator,
-    HoldingSpaceClient* holding_space_client)
+    HoldingSpaceClient* holding_space_client,
+    const base::FilePath& log_directory_path)
     : ui::MojoWebDialogUI(web_ui) {
   auto html_source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUIDiagnosticsAppHost));
@@ -345,7 +347,7 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
   SetUpPluralStringHandler(web_ui);
 
   auto session_log_handler = std::make_unique<diagnostics::SessionLogHandler>(
-      select_file_policy_creator, holding_space_client);
+      select_file_policy_creator, holding_space_client, log_directory_path);
   diagnostics_manager_ = std::make_unique<diagnostics::DiagnosticsManager>(
       session_log_handler.get());
   web_ui->AddMessageHandler(std::move(session_log_handler));
