@@ -318,14 +318,6 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   // can be decommitted at any time.
   size_t empty_slot_spans_dirty_bytes GUARDED_BY(lock_) = 0;
 
-  // Only tolerate up to |total_size_of_committed_pages >>
-  // max_empty_slot_spans_dirty_bytes_shift| dirty bytes in empty slot
-  // spans. That is, the default value of 3 tolerates up to 1/8. Since
-  // |empty_slot_spans_dirty_bytes| is never strictly larger than
-  // total_size_of_committed_pages, setting this to 0 removes the cap. This is
-  // useful to make tests deterministic and easier to reason about.
-  int max_empty_slot_spans_dirty_bytes_shift = 3;
-
   char* next_super_page = nullptr;
   char* next_partition_page = nullptr;
   char* next_partition_page_end = nullptr;
@@ -459,10 +451,6 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   // Frees memory from this partition, if possible, by decommitting pages or
   // even etnire slot spans. |flags| is an OR of base::PartitionPurgeFlags.
   void PurgeMemory(int flags);
-
-  // Reduces the size of the empty slot spans ring, until the dirty size is <=
-  // |limit|.
-  void ShrinkEmptySlotSpansRing(size_t limit) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   void DumpStats(const char* partition_name,
                  bool is_light_dump,
@@ -624,14 +612,6 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
 #else
     return false;
 #endif
-  }
-
-  // To make tests deterministic, it is necessary to uncap the amount of memory
-  // waste incurred by empty slot spans. Otherwise, the size of various
-  // freelists, and committed memory becomes harder to reason about (and
-  // brittle) with a single thread, and non-deterministic with several.
-  void UncapEmptySlotSpanMemoryForTesting() {
-    max_empty_slot_spans_dirty_bytes_shift = 0;
   }
 
  private:
