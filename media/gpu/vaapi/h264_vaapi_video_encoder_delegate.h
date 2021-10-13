@@ -72,7 +72,7 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   size_t GetMaxNumOfRefFrames() const override;
   std::vector<gfx::Size> GetSVCLayerResolutions() override;
   bool PrepareEncodeJob(EncodeJob& encode_job) override;
-  BitstreamBufferMetadata GetMetadata(EncodeJob* encode_job,
+  BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
                                       size_t payload_size) override;
 
  private:

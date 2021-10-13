@@ -223,7 +223,7 @@ class VaapiVideoEncoderDelegate {
   // BitrateControl::kConstantQuantizationParameter.
   virtual void BitrateControlUpdate(uint64_t encoded_chunk_size_bytes);
 
-  virtual BitstreamBufferMetadata GetMetadata(EncodeJob* encode_job,
+  virtual BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
                                               size_t payload_size);
 
   // Gets the active spatial layer resolutions for K-SVC encoding, VaapiVEA

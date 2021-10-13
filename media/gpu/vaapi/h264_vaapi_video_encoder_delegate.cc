@@ -376,13 +376,13 @@ std::vector<gfx::Size> H264VaapiVideoEncoderDelegate::GetSVCLayerResolutions() {
 }
 
 BitstreamBufferMetadata H264VaapiVideoEncoderDelegate::GetMetadata(
-    EncodeJob* encode_job,
+    const EncodeJob& encode_job,
     size_t payload_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto metadata =
       VaapiVideoEncoderDelegate::GetMetadata(encode_job, payload_size);
-  auto picture = GetH264Picture(*encode_job);
+  auto picture = GetH264Picture(encode_job);
   DCHECK(picture);
 
   metadata.h264 = picture->metadata_for_encoding;

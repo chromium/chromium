@@ -896,7 +896,7 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
         job->Execute();
       }
 
-      auto metadata = encoder_->GetMetadata(job.get(), 0u);
+      auto metadata = encoder_->GetMetadata(*job, 0u);
       pending_encode_results_.push(
           std::make_unique<EncodeResult>(std::move(job), metadata));
       TryToReturnBitstreamBuffer();

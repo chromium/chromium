@@ -209,7 +209,7 @@ class MockVP9VaapiVideoEncoderDelegate : public VP9VaapiVideoEncoderDelegate {
   MOCK_CONST_METHOD0(GetCodedSize, gfx::Size());
   MOCK_CONST_METHOD0(GetBitstreamBufferSize, size_t());
   MOCK_CONST_METHOD0(GetMaxNumOfRefFrames, size_t());
-  MOCK_METHOD2(GetMetadata, BitstreamBufferMetadata(EncodeJob*, size_t));
+  MOCK_METHOD2(GetMetadata, BitstreamBufferMetadata(const EncodeJob&, size_t));
   MOCK_METHOD1(PrepareEncodeJob, bool(EncodeJob&));
   MOCK_METHOD1(BitrateControlUpdate, void(uint64_t));
   MOCK_METHOD0(GetSVCLayerResolutions, std::vector<gfx::Size>());
@@ -396,12 +396,13 @@ class VaapiVideoEncodeAcceleratorTest
     EXPECT_CALL(*mock_encoder_, BitrateControlUpdate(kEncodedChunkSize))
         .WillOnce(Return());
     EXPECT_CALL(*mock_encoder_, GetMetadata(_, _))
-        .WillOnce(WithArgs<0, 1>(
-            [](VaapiVideoEncoderDelegate::EncodeJob* job, size_t payload_size) {
+        .WillOnce(
+            WithArgs<0, 1>([](const VaapiVideoEncoderDelegate::EncodeJob& job,
+                              size_t payload_size) {
               // Same implementation in VP9VaapiVideoEncoderDelegate.
               BitstreamBufferMetadata metadata(
-                  payload_size, job->IsKeyframeRequested(), job->timestamp());
-              CodecPicture* picture = job->picture().get();
+                  payload_size, job.IsKeyframeRequested(), job.timestamp());
+              CodecPicture* picture = job.picture().get();
               metadata.vp9 =
                   reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding;
               return metadata;
@@ -601,16 +602,17 @@ class VaapiVideoEncodeAcceleratorTest
       EXPECT_CALL(*mock_encoder_, BitrateControlUpdate(kEncodedChunkSize))
           .WillOnce(Return());
       EXPECT_CALL(*mock_encoder_, GetMetadata(_, _))
-          .WillOnce(WithArgs<0, 1>([](VaapiVideoEncoderDelegate::EncodeJob* job,
-                                      size_t payload_size) {
-            // Same implementation in VP9VaapiVideoEncoderDelegate.
-            BitstreamBufferMetadata metadata(
-                payload_size, job->IsKeyframeRequested(), job->timestamp());
-            CodecPicture* picture = job->picture().get();
-            metadata.vp9 =
-                reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding;
-            return metadata;
-          }));
+          .WillOnce(
+              WithArgs<0, 1>([](const VaapiVideoEncoderDelegate::EncodeJob& job,
+                                size_t payload_size) {
+                // Same implementation in VP9VaapiVideoEncoderDelegate.
+                BitstreamBufferMetadata metadata(
+                    payload_size, job.IsKeyframeRequested(), job.timestamp());
+                CodecPicture* picture = job.picture().get();
+                metadata.vp9 = reinterpret_cast<VP9Picture*>(picture)
+                                   ->metadata_for_encoding;
+                return metadata;
+              }));
       EXPECT_CALL(
           *mock_vaapi_wrapper_,
           DownloadFromVABuffer(kCodedBufferId, _, _, output_buffer_size_, _))

@@ -354,13 +354,13 @@ bool VP9VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
 }
 
 BitstreamBufferMetadata VP9VaapiVideoEncoderDelegate::GetMetadata(
-    EncodeJob* encode_job,
+    const EncodeJob& encode_job,
     size_t payload_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto metadata =
       VaapiVideoEncoderDelegate::GetMetadata(encode_job, payload_size);
-  auto picture = GetVP9Picture(*encode_job);
+  auto picture = GetVP9Picture(encode_job);
   DCHECK(picture);
   metadata.vp9 = picture->metadata_for_encoding;
   return metadata;

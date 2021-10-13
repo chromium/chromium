@@ -69,7 +69,7 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   size_t GetMaxNumOfRefFrames() const override;
   bool PrepareEncodeJob(EncodeJob& encode_job) override;
   void BitrateControlUpdate(uint64_t encoded_chunk_size_bytes) override;
-  BitstreamBufferMetadata GetMetadata(EncodeJob* encode_job,
+  BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
                                       size_t payload_size) override;
   std::vector<gfx::Size> GetSVCLayerResolutions() override;
 

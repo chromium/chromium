@@ -142,12 +142,12 @@ void VaapiVideoEncoderDelegate::BitrateControlUpdate(
 }
 
 BitstreamBufferMetadata VaapiVideoEncoderDelegate::GetMetadata(
-    EncodeJob* encode_job,
+    const EncodeJob& encode_job,
     size_t payload_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return BitstreamBufferMetadata(
-      payload_size, encode_job->IsKeyframeRequested(), encode_job->timestamp());
+  return BitstreamBufferMetadata(payload_size, encode_job.IsKeyframeRequested(),
+                                 encode_job.timestamp());
 }
 
 void VaapiVideoEncoderDelegate::SubmitBuffer(

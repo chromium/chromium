@@ -184,7 +184,7 @@ void H264VaapiVideoEncoderDelegateTest::EncodeFrame(bool force_keyframe) {
   const int frame_num = pic.frame_num;
   constexpr size_t kDummyPayloadSize = 12345;
   const BitstreamBufferMetadata metadata =
-      encoder_->GetMetadata(encode_job.get(), kDummyPayloadSize);
+      encoder_->GetMetadata(*encode_job.get(), kDummyPayloadSize);
   ASSERT_TRUE(metadata.h264.has_value());
 
   const uint8_t temporal_idx = metadata.h264->temporal_idx;
