@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/gfx/geometry/skia_conversions.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace gfx {
 
-TEST(RectTest, SkiaRectConversions) {
+TEST(SkiaConversionsTest, SkiaRectConversions) {
   Rect isrc(10, 20, 30, 40);
   RectF fsrc(10.5f, 20.5f, 30.5f, 40.5f);
 
@@ -22,7 +23,7 @@ TEST(RectTest, SkiaRectConversions) {
   EXPECT_EQ(fsrc.ToString(), SkRectToRectF(skrect).ToString());
 }
 
-TEST(RectTest, SkIRectToRectClamping) {
+TEST(SkiaConversionsTest, SkIRectToRectClamping) {
   // This clamping only makes sense if SkIRect and gfx::Rect have the same size.
   // Otherwise, either other overflows can occur that we don't handle, or no
   // overflows can ocur.

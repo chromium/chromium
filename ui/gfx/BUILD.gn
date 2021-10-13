@@ -784,11 +784,13 @@ test("gfx_unittests") {
       "geometry/point_unittest.cc",
       "geometry/quad_unittest.cc",
       "geometry/quaternion_unittest.cc",
+      "geometry/rect_conversions_unittest.cc",
       "geometry/rect_f_unittest.cc",
       "geometry/rect_unittest.cc",
       "geometry/resize_utils_unittest.cc",
       "geometry/rounded_corners_f_unittest.cc",
       "geometry/size_unittest.cc",
+      "geometry/skia_conversions_unittest.cc",
       "geometry/transform_util_unittest.cc",
       "geometry/vector2d_unittest.cc",
       "geometry/vector3d_unittest.cc",
@@ -807,7 +809,6 @@ test("gfx_unittests") {
       "shadow_value_unittest.cc",
       "skbitmap_operations_unittest.cc",
       "skia_util_unittest.cc",
-      "skrect_conversion_unittest.cc",
       "utf16_indexing_unittest.cc",
     ]
   }

@@ -20,33 +20,7 @@
 #include "build/build_config.h"
 #include "ui/gfx/geometry/insets.h"
 
-namespace gfx {
-
-#if defined(OS_WIN)
-Rect::Rect(const RECT& r)
-    : origin_(r.left, r.top),
-      size_(std::abs(r.right - r.left), std::abs(r.bottom - r.top)) {
-}
-#elif defined(OS_APPLE)
-Rect::Rect(const CGRect& r)
-    : origin_(r.origin.x, r.origin.y), size_(r.size.width, r.size.height) {
-}
-#endif
-
-#if defined(OS_WIN)
-RECT Rect::ToRECT() const {
-  RECT r;
-  r.left = x();
-  r.right = right();
-  r.top = y();
-  r.bottom = bottom();
-  return r;
-}
-#elif defined(OS_APPLE)
-CGRect Rect::ToCGRect() const {
-  return CGRectMake(x(), y(), width(), height());
-}
-#endif
+namespace {
 
 void AdjustAlongAxis(int dst_origin, int dst_size, int* origin, int* size) {
   *size = std::min(dst_size, *size);
@@ -56,13 +30,9 @@ void AdjustAlongAxis(int dst_origin, int dst_size, int* origin, int* size) {
     *origin = std::min(dst_origin + dst_size, *origin + *size) - *size;
 }
 
-}  // namespace
-
-namespace gfx {
-
 // This is the per-axis heuristic for picking the most useful origin and
 // width/height to represent the input range.
-static void SaturatedClampRange(int min, int max, int* origin, int* span) {
+void SaturatedClampRange(int min, int max, int* origin, int* span) {
   if (max < min) {
     *span = 0;
     *origin = min;
@@ -99,6 +69,36 @@ static void SaturatedClampRange(int min, int max, int* origin, int* span) {
   }
 }
 
+}  // namespace
+
+namespace gfx {
+
+#if defined(OS_WIN)
+
+Rect::Rect(const RECT& r)
+    : origin_(r.left, r.top),
+      size_(std::abs(r.right - r.left), std::abs(r.bottom - r.top)) {}
+
+RECT Rect::ToRECT() const {
+  RECT r;
+  r.left = x();
+  r.right = right();
+  r.top = y();
+  r.bottom = bottom();
+  return r;
+}
+
+#elif defined(OS_APPLE)
+
+Rect::Rect(const CGRect& r)
+    : origin_(r.origin.x, r.origin.y), size_(r.size.width, r.size.height) {}
+
+CGRect Rect::ToCGRect() const {
+  return CGRectMake(x(), y(), width(), height());
+}
+
+#endif
+
 void Rect::SetByBounds(int left, int top, int right, int bottom) {
   int x, y;
   int width, height;
@@ -125,17 +125,6 @@ void Rect::Offset(const Vector2d& distance) {
   // Ensure that width and height remain valid.
   set_width(width());
   set_height(height());
-}
-
-void Rect::operator+=(const Vector2d& offset) {
-  origin_ += offset;
-  // Ensure that width and height remain valid.
-  set_width(width());
-  set_height(height());
-}
-
-void Rect::operator-=(const Vector2d& offset) {
-  origin_ -= offset;
 }
 
 Insets Rect::InsetsFrom(const Rect& inner) const {

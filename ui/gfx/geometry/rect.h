@@ -151,8 +151,8 @@ class GEOMETRY_EXPORT Rect {
     Offset(Vector2d(horizontal, vertical));
   }
   void Offset(const Vector2d& distance);
-  void operator+=(const Vector2d& offset);
-  void operator-=(const Vector2d& offset);
+  void operator+=(const Vector2d& offset) { Offset(offset); }
+  void operator-=(const Vector2d& offset) { Offset(-offset); }
 
   Insets InsetsFrom(const Rect& inner) const;
 
@@ -234,9 +234,6 @@ class GEOMETRY_EXPORT Rect {
   bool ApproximatelyEqual(const Rect& rect, int tolerance) const;
 
  private:
-  gfx::Point origin_;
-  gfx::Size size_;
-
   // Returns true iff a+b would overflow max int.
   static constexpr bool AddWouldOverflow(int a, int b) {
     // In this function, GCC tries to make optimizations that would only work if
@@ -259,6 +256,9 @@ class GEOMETRY_EXPORT Rect {
                ? std::numeric_limits<int>::max() - origin
                : size;
   }
+
+  gfx::Point origin_;
+  gfx::Size size_;
 };
 
 inline bool operator==(const Rect& lhs, const Rect& rhs) {
