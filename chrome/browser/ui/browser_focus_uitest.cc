@@ -406,14 +406,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, LocationBarLockFocus) {
 }
 
 // Test forward and reverse focus traversal on a typical page.
-// Disabled for Mac because it is flaky on "Mac10.9 Tests (dbg)",
-// see https://crbug.com/60973.
-#if defined(OS_MAC)
-#define MAYBE_FocusTraversal DISABLED_FocusTraversal
-#else
-#define MAYBE_FocusTraversal FocusTraversal
-#endif
-IN_PROC_BROWSER_TEST_F(BrowserFocusTest, MAYBE_FocusTraversal) {
+// Flaky everywhere: https://crbug.com/1259721
+IN_PROC_BROWSER_TEST_F(BrowserFocusTest, DISABLED_FocusTraversal) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   const GURL url = embedded_test_server()->GetURL(kTypicalPage);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
