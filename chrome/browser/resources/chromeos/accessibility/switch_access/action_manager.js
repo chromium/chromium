@@ -122,6 +122,30 @@ export class ActionManager {
           ActionManager.openMenu(SAConstants.MenuType.QUICK_COMMANDS_MENU);
         }
         break;
+      case SwitchAccessMenuAction.STATUS_BAR:
+        if (SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
+          FocusRingManager.clearAll();
+          ActionManager.exitCurrentMenu();
+          EventGenerator.sendKeyPress(KeyCode.S, {alt: true, shift: true});
+        }
+        break;
+      case SwitchAccessMenuAction.SCREENSHOT:
+        if (SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
+          FocusRingManager.clearAll();
+          ActionManager.exitCurrentMenu();
+          EventGenerator.sendKeyPress(KeyCode.MEDIA_LAUNCH_APP1, {ctrl: true});
+        }
+        break;
+      case SwitchAccessMenuAction.VOLUME_UP:
+        if (SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
+          EventGenerator.sendKeyPress(KeyCode.VOLUME_UP);
+        }
+        break;
+      case SwitchAccessMenuAction.VOLUME_DOWN:
+        if (SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
+          EventGenerator.sendKeyPress(KeyCode.VOLUME_DOWN);
+        }
+        break;
       // Item scan actions:
       default:
         ActionManager.instance.performActionOnCurrentNode_(action);
@@ -198,8 +222,9 @@ export class ActionManager {
         if (SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
           // TODO(crbug.com/1258921): Replace this with quick commands.
           return [
-            SwitchAccessMenuAction.PASTE,
-            SwitchAccessMenuAction.DICTATION,
+            SwitchAccessMenuAction.STATUS_BAR, SwitchAccessMenuAction.VOLUME_UP,
+            SwitchAccessMenuAction.VOLUME_DOWN,
+            SwitchAccessMenuAction.SCREENSHOT
           ];
         }
 
@@ -243,10 +268,7 @@ export class ActionManager {
       return actions;
     } else if (
         this.currentMenuType_ === SAConstants.MenuType.QUICK_COMMANDS_MENU) {
-      let actions =
-          this.actionsForType_(SAConstants.MenuType.QUICK_COMMANDS_MENU);
-      actions = this.addGlobalActions_(actions);
-      return actions;
+      return this.actionsForType_(SAConstants.MenuType.QUICK_COMMANDS_MENU);
     }
 
     if (!this.actionNode_ || !this.actionNode_.isValidAndVisible()) {

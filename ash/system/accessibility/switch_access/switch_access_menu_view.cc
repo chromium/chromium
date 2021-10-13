@@ -105,6 +105,18 @@ const base::flat_map<std::string, ButtonInfo>& GetMenuButtonDetails() {
       base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
           "quickCommands", {&kSwitchAccessQuickCommandsIcon,
                             IDS_ASH_SWITCH_ACCESS_QUICK_COMMANDS}));
+      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
+          "statusBar",
+          {&kSwitchAccessStatusBarIcon, IDS_ASH_SWITCH_ACCESS_STATUS_BAR}));
+      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
+          "screenshot",
+          {&kSwitchAccessScreenshotIcon, IDS_ASH_SWITCH_ACCESS_SCREENSHOT}));
+      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
+          "volumeUp",
+          {&kSwitchAccessVolumeUpIcon, IDS_ASH_SWITCH_ACCESS_VOLUME_UP}));
+      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
+          "volumeDown",
+          {&kSwitchAccessVolumeDownIcon, IDS_ASH_SWITCH_ACCESS_VOLUME_DOWN}));
     }
 
     menu_button_details->swap(base_menu_button_details);

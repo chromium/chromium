@@ -957,9 +957,24 @@ This file contains the strings for ash.
       <message name="IDS_ASH_SWITCH_ACCESS_START_TEXT_SELECTION" desc="The label for the Switch Access menu option to start selecting text.">
         Start selecting
       </message>
+
+      <!-- This block of strings is for an experimental Switch Access feature hidden behind a flag -->
       <message name="IDS_ASH_SWITCH_ACCESS_QUICK_COMMANDS" desc="The label for the Switch Access menu option to open the quick commands menu." translateable="false">
         Quick commands
       </message>
+      <message name="IDS_ASH_SWITCH_ACCESS_STATUS_BAR" desc="The label for the Switch Access menu option to open the status bar." translateable="false">
+        Status bar
+      </message>
+      <message name="IDS_ASH_SWITCH_ACCESS_SCREENSHOT" desc="The label for the Switch Access menu option to take a screenshot." translateable="false">
+        Take screenshot
+      </message>
+      <message name="IDS_ASH_SWITCH_ACCESS_VOLUME_UP" desc="The label for the Switch Access menu option to increase volume." translateable="false">
+        Volume up
+      </message>
+      <message name="IDS_ASH_SWITCH_ACCESS_VOLUME_DOWN" desc="The label for the Switch Access menu option to decrease volume." translateable="false">
+        Volume down
+      </message>
+
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD" desc="The label used in the accessibility menu of the system tray to toggle on/off the onscreen keyboard.">
         On-screen keyboard
       </message>
