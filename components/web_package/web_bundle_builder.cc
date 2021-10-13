@@ -4,6 +4,8 @@
 
 #include "components/web_package/web_bundle_builder.h"
 
+#include <string.h>
+
 #include <ostream>
 
 #include "base/big_endian.h"
