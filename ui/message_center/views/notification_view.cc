@@ -199,8 +199,12 @@ void NotificationView::UpdateViewForExpandedState(bool expanded) {
       GetInsets().width();
   if (title_view_)
     title_view_->SizeToFit(message_view_width);
-  if (message_view())
+  if (message_view()) {
+    message_view()->SetMultiLine(true);
+    message_view()->SetMaxLines(expanded ? kMaxLinesForExpandedMessageView
+                                         : kMaxLinesForMessageView);
     message_view()->SizeToFit(message_view_width);
+  }
   NotificationViewBase::UpdateViewForExpandedState(expanded);
 }
 

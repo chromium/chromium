@@ -59,8 +59,24 @@ const int kTitleLineHeight = 20;      // In DIPs.
 const int kMessageFontSize = 12;      // For everything but title.
 const int kMessageLineHeight = 18;    // In DIPs.
 
+// Line limits.
+const int kMaxTitleLines = 2;
+const int kMessageCollapsedLineLimit = 2;
+const int kMessageExpandedLineLimit = 5;
+const int kContextMessageLineLimit = 1;
+
 // Title.
 constexpr int kMinPixelsPerTitleCharacter = 4;
+
+// Message.
+
+// Max number of lines for message_view_.
+constexpr int kMaxLinesForMessageView = 1;
+constexpr int kMaxLinesForExpandedMessageView = 4;
+
+// Character limit = pixels per line * line limit / min. pixels per character.
+constexpr size_t kMessageCharacterLimit =
+    kNotificationWidth * kMessageExpandedLineLimit / 3;
 
 // For list notifications.
 // Not used when --enabled-new-style-notification is set.
@@ -88,12 +104,6 @@ const int kProgressBarTopPadding = 16;
 const int kProgressBarThickness = 5;
 const int kProgressBarCornerRadius = 3;
 #endif
-
-// Line limits.
-const int kMaxTitleLines = 2;
-const int kMessageCollapsedLineLimit = 2;
-const int kMessageExpandedLineLimit = 5;
-const int kContextMessageLineLimit = 1;
 
 // Around notifications ////////////////////////////////////////////////////////
 

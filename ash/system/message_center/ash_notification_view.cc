@@ -33,7 +33,7 @@
 #include "ui/message_center/views/notification_background_painter.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
-#include "ui/message_center/views/notification_view.h"
+#include "ui/message_center/views/notification_view_base.h"
 #include "ui/message_center/views/relative_time_formatter.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
@@ -47,8 +47,12 @@ namespace {
 
 constexpr gfx::Insets kNotificationViewPadding(6, 16, 22, 6);
 constexpr gfx::Insets kMainRightViewPadding(0, 0, 0, 10);
-constexpr int kMainRightViewVerticalSpacing = 16;
-constexpr gfx::Insets kContentRowPadding(0, 14, 0, 0);
+constexpr int kMainRightViewVerticalSpacing = 4;
+
+// This padding is applied to all the children of `main_right_view_` except the
+// action buttons.
+constexpr gfx::Insets kMainRightViewChildPadding(0, 14, 0, 0);
+
 constexpr int kContentRowHorizontalSpacing = 16;
 constexpr int kLeftContentVerticalSpacing = 4;
 constexpr int kTitleRowSpacing = 6;
@@ -306,7 +310,7 @@ AshNotificationView::AshNotificationView(
   auto content_row = CreateContentRow();
   auto* content_row_layout =
       static_cast<views::BoxLayout*>(content_row->GetLayoutManager());
-  content_row_layout->set_inside_border_insets(kContentRowPadding);
+  content_row_layout->set_inside_border_insets(kMainRightViewChildPadding);
   content_row_layout->set_between_child_spacing(kContentRowHorizontalSpacing);
 
   content_row->AddChildView(std::move(header_left_content));
@@ -329,6 +333,23 @@ AshNotificationView::AshNotificationView(
   main_right_view_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
   main_right_view->AddChildView(std::move(content_row));
+
+  // We add `message_view_in_expanded_state_` to the view hierarchy in the
+  // constructor rather than dynamically like `message_view()` to prevent
+  // messing up the views structure in the case of removing and adding back.
+  auto message_view_in_expanded_state = std::make_unique<views::Label>();
+  ConfigureLabelStyle(message_view_in_expanded_state.get(), kMessageLabelSize,
+                      false);
+  message_view_in_expanded_state->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+  message_view_in_expanded_state->SetMultiLine(true);
+  message_view_in_expanded_state->SetMaxLines(
+      message_center::kMaxLinesForExpandedMessageView);
+  message_view_in_expanded_state->SetAllowCharacterBreak(true);
+  message_view_in_expanded_state->SetBorder(
+      views::CreateEmptyBorder(kMainRightViewChildPadding));
+  message_view_in_expanded_state_ =
+      main_right_view->AddChildView(std::move(message_view_in_expanded_state));
+
   main_right_view->AddChildView(CreateInlineSettingsView());
   main_right_view->AddChildView(CreateImageContainerView());
   main_right_view->AddChildView(CreateActionsRow());
@@ -489,14 +510,13 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
   }
 
   if (message_view()) {
-    ConfigureLabelStyle(message_view(), kMessageLabelSize, false);
-
-    // TODO(crbug/682266): This is a workaround to that bug by explicitly
-    // setting the width. Ideally, we should fix the original bug, but it seems
-    // there's no obvious solution for the bug according to
-    // https://crbug.com/678337#c7. We will consider making changes to this code
-    // when the bug is fixed.
-    message_view()->SizeToFit(GetLeftContentWidth());
+    // `message_view()` is shown only in collapsed mode.
+    if (!expanded) {
+      ConfigureLabelStyle(message_view(), kMessageLabelSize, false);
+      message_view()->SetMaximumWidthSingleLine(GetLeftContentWidth());
+    }
+    message_view()->SetVisible(!expanded);
+    message_view_in_expanded_state_->SetVisible(expanded);
   }
 
   expand_button_->SetVisible(IsExpandable());
@@ -529,7 +549,7 @@ void AshNotificationView::UpdateWithNotification(
 
   grouped_notifications_container_->SetVisible(is_grouped_parent_view_);
   header_row()->SetVisible(!is_grouped_child_view_);
-
+  UpdateMessageViewInExpandedState(notification);
   NotificationViewBase::UpdateWithNotification(notification);
 }
 
@@ -637,6 +657,26 @@ void AshNotificationView::ToggleInlineSettings(const ui::Event& event) {
   NotificationViewBase::ToggleInlineSettings(event);
 }
 
+void AshNotificationView::UpdateMessageViewInExpandedState(
+    const message_center::Notification& notification) {
+  if (notification.message().empty()) {
+    message_view_in_expanded_state_->SetVisible(false);
+    return;
+  }
+  message_view_in_expanded_state_->SetText(gfx::TruncateString(
+      notification.message(), message_center::kMessageCharacterLimit,
+      gfx::WORD_BREAK));
+
+  // TODO(crbug/682266): This is a workaround to that bug by explicitly
+  // setting the width. Ideally, we should fix the original bug, but it seems
+  // there's no obvious solution for the bug according to
+  // https://crbug.com/678337#c7. We will consider making changes to this code
+  // when the bug is fixed.
+  message_view_in_expanded_state_->SizeToFit(GetContentRowWidth());
+
+  message_view_in_expanded_state_->SetVisible(true);
+}
+
 void AshNotificationView::UpdateBackground(int top_radius, int bottom_radius) {
   SkColor background_color;
   if (shown_in_popup_) {
@@ -662,13 +702,17 @@ void AshNotificationView::UpdateBackground(int top_radius, int bottom_radius) {
           top_radius_, bottom_radius_, background_color_)));
 }
 
-int AshNotificationView::GetLeftContentWidth() {
+int AshNotificationView::GetContentRowWidth() {
   int notification_width = shown_in_popup_ ? message_center::kNotificationWidth
                                            : kNotificationInMessageCenterWidth;
 
-  int left_content_width =
-      notification_width - kNotificationViewPadding.width() - kAppIconViewSize -
-      kMainRightViewPadding.width() - kContentRowPadding.width();
+  return notification_width - kNotificationViewPadding.width() -
+         kAppIconViewSize - kMainRightViewPadding.width() -
+         kMainRightViewChildPadding.width();
+}
+
+int AshNotificationView::GetLeftContentWidth() {
+  int left_content_width = GetContentRowWidth();
 
   if (expand_button_->GetVisible())
     left_content_width -= kExpandButtonSize + kContentRowHorizontalSpacing;

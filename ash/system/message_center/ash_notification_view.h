@@ -162,16 +162,22 @@ class ASH_EXPORT AshNotificationView
     bool expanded_ = false;
   };
 
+  // Update `message_in_expanded_view_` according to the given notification.
+  void UpdateMessageViewInExpandedState(
+      const message_center::Notification& notification);
+
   // Update the background color with rounded corner.
   void UpdateBackground(int top_radius, int bottom_radius);
 
-  // Get the available space for `left_content_` width.
+  // Get the available space for `content_row()` and `left_content_` width.
+  int GetContentRowWidth();
   int GetLeftContentWidth();
 
   // Owned by views hierarchy.
   RoundedImageView* app_icon_view_ = nullptr;
   ExpandButton* expand_button_ = nullptr;
   views::View* left_content_ = nullptr;
+  views::Label* message_view_in_expanded_state_ = nullptr;
   views::View* grouped_notifications_container_ = nullptr;
   views::View* collapsed_summary_view_ = nullptr;
   views::View* control_buttons_view_ = nullptr;

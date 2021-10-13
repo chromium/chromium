@@ -84,17 +84,9 @@ constexpr gfx::Insets kSettingsRowPadding(8, 0, 0, 0);
 constexpr gfx::Insets kSettingsRadioButtonPadding(14, 18, 14, 18);
 constexpr gfx::Insets kSettingsButtonRowPadding(8);
 
-// Max number of lines for message_view_.
-constexpr int kMaxLinesForMessageView = 1;
-constexpr int kMaxLinesForExpandedMessageView = 4;
-
 constexpr int kCompactTitleMessageViewSpacing = 12;
 
 constexpr int kProgressBarHeight = 4;
-
-// Character limit = pixels per line * line limit / min. pixels per character.
-constexpr size_t kMessageCharacterLimit =
-    kNotificationWidth * kMessageExpandedLineLimit / 3;
 
 // In progress notification, if both the title and the message are long, the
 // message would be prioritized and the title would be elided.
@@ -775,8 +767,6 @@ void NotificationViewBase::CreateOrUpdateMessageView(
         text, views::style::CONTEXT_DIALOG_BODY_TEXT,
         views::style::STYLE_SECONDARY);
     message_view->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-    message_view->SetMultiLine(true);
-    message_view->SetMaxLines(kMaxLinesForMessageView);
     message_view->SetAllowCharacterBreak(true);
     message_view_ = AddViewToLeftContent(std::move(message_view));
   } else {
@@ -1142,10 +1132,7 @@ void NotificationViewBase::ToggleExpanded() {
 void NotificationViewBase::UpdateViewForExpandedState(bool expanded) {
   if (!header_view_in_ash_notification_)
     header_row_->SetExpanded(expanded);
-  if (message_view_) {
-    message_view_->SetMaxLines(expanded ? kMaxLinesForExpandedMessageView
-                                        : kMaxLinesForMessageView);
-  }
+
   if (!image_container_view_->children().empty())
     image_container_view_->SetVisible(expanded);
 

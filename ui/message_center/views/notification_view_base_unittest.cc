@@ -859,39 +859,7 @@ TEST_F(NotificationViewBaseTest, SnoozeButton) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-TEST_F(NotificationViewBaseTest, ExpandLongMessage) {
-  std::unique_ptr<Notification> notification = CreateSimpleNotification();
-  notification->set_type(NotificationType::NOTIFICATION_TYPE_SIMPLE);
-  // Test in a case where left_content_ does not have views other than
-  // message_view_.
-  // Without doing this, inappropriate fix such as
-  // message_view_->GetPreferredSize() returning gfx::Size() can pass.
-  notification->set_title(std::u16string());
-  notification->set_message(
-      u"consectetur adipiscing elit, sed do eiusmod tempor incididunt ut "
-      u"labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
-      u"exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
-
-  UpdateNotificationViews(*notification);
-  EXPECT_FALSE(notification_view()->expanded_);
-  const int collapsed_height = notification_view()->message_view_->height();
-  const int collapsed_preferred_height =
-      notification_view()->GetPreferredSize().height();
-  EXPECT_LT(0, collapsed_height);
-  EXPECT_LT(0, collapsed_preferred_height);
-
-  notification_view()->ToggleExpanded();
-  EXPECT_TRUE(notification_view()->expanded_);
-  EXPECT_LT(collapsed_height, notification_view()->message_view_->height());
-  EXPECT_LT(collapsed_preferred_height,
-            notification_view()->GetPreferredSize().height());
-
-  notification_view()->ToggleExpanded();
-  EXPECT_FALSE(notification_view()->expanded_);
-  EXPECT_EQ(collapsed_height, notification_view()->message_view_->height());
-  EXPECT_EQ(collapsed_preferred_height,
-            notification_view()->GetPreferredSize().height());
-
+TEST_F(NotificationViewBaseTest, ManuallyExpandedOrCollapsed) {
   // Test |manually_expanded_or_collapsed| being set when the toggle is done by
   // user interaction.
   EXPECT_FALSE(notification_view()->IsManuallyExpandedOrCollapsed());

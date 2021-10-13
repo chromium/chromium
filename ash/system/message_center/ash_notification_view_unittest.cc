@@ -118,6 +118,9 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
     return notification_view_->title_row_->timestamp_in_collapsed_view_;
   }
   views::Label* message_view() { return notification_view_->message_view(); }
+  views::Label* message_view_in_expanded_state() {
+    return notification_view_->message_view_in_expanded_state_;
+  }
   AshNotificationView::ExpandButton* expand_button() {
     return notification_view_->expand_button_;
   }
@@ -216,12 +219,16 @@ TEST_F(AshNotificationViewTest, ExpandCollapseBehavior) {
   EXPECT_FALSE(header_row()->GetVisible());
   EXPECT_TRUE(timestamp_in_collapsed_view()->GetVisible());
   EXPECT_TRUE(title_row_divider()->GetVisible());
+  EXPECT_TRUE(message_view()->GetVisible());
+  EXPECT_FALSE(message_view_in_expanded_state()->GetVisible());
 
   // Expected behavior in expanded mode.
   notification_view()->SetExpanded(true);
   EXPECT_TRUE(header_row()->GetVisible());
   EXPECT_FALSE(timestamp_in_collapsed_view()->GetVisible());
   EXPECT_FALSE(title_row_divider()->GetVisible());
+  EXPECT_FALSE(message_view()->GetVisible());
+  EXPECT_TRUE(message_view_in_expanded_state()->GetVisible());
 }
 
 TEST_F(AshNotificationViewTest, GroupedNotificationStartsCollapsed) {

@@ -258,7 +258,8 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, AppNameWebNotification);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, AppNameWebAppNotification);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, CreateOrUpdateTest);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, ExpandLongMessage);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest,
+                           ManuallyExpandedOrCollapsed);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, InlineSettings);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest,
                            InlineSettingsInkDropAnimation);
@@ -289,6 +290,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, InlineSettingsNotBlock);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, InlineSettingsBlockAll);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, TestAccentColor);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, ExpandLongMessage);
 
   friend class NotificationViewBaseTest;
 
