@@ -22,6 +22,7 @@
 #include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -184,10 +185,14 @@ void FileSystemAccessFileHandleImpl::Move(
     MoveCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  RenderFrameHost* rfh = RenderFrameHost::FromID(context().frame_id);
+  bool has_transient_user_activation = rfh && rfh->HasTransientUserActivation();
+
   RunWithWritePermission(
       base::BindOnce(&FileSystemAccessHandleBase::DoMove,
                      weak_factory_.GetWeakPtr(),
-                     std::move(destination_directory), new_entry_name),
+                     std::move(destination_directory), new_entry_name,
+                     has_transient_user_activation),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         MoveCallback callback) {
         std::move(callback).Run(std::move(result));
@@ -199,9 +204,13 @@ void FileSystemAccessFileHandleImpl::Rename(const std::string& new_entry_name,
                                             RenameCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  RenderFrameHost* rfh = RenderFrameHost::FromID(context().frame_id);
+  bool has_transient_user_activation = rfh && rfh->HasTransientUserActivation();
+
   RunWithWritePermission(
       base::BindOnce(&FileSystemAccessHandleBase::DoRename,
-                     weak_factory_.GetWeakPtr(), new_entry_name),
+                     weak_factory_.GetWeakPtr(), new_entry_name,
+                     has_transient_user_activation),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         MoveCallback callback) {
         std::move(callback).Run(std::move(result));

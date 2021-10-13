@@ -75,11 +75,13 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   void DoMove(mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
                   destination_directory,
               const std::string& new_entry_name,
+              bool has_transient_user_activation,
               base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
                   callback);
   // Implementation for the Rename method in the
   // blink::mojom::FileSystemAccessFileHandle and DirectoryHandle interfaces.
   void DoRename(const std::string& new_entry_name,
+                bool has_transient_user_activation,
                 base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
                     callback);
 
@@ -122,11 +124,13 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
 
   void DidResolveTokenToMove(
       const std::string& new_entry_name,
+      bool has_transient_user_activation,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
       FileSystemAccessTransferTokenImpl* resolved_token);
   void DidCreateDestinationDirectoryHandle(
       const std::string& new_entry_name,
       std::unique_ptr<FileSystemAccessDirectoryHandleImpl> dir_handle,
+      bool has_transient_user_activation,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
           callback);
 

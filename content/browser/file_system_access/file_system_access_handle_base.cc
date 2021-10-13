@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -14,15 +15,20 @@
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
+#include "content/browser/file_system_access/safe_move_helper.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "net/base/filename_util.h"
+#include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-forward.h"
 
 namespace content {
 
@@ -198,16 +204,20 @@ void FileSystemAccessHandleBase::DoMove(
     mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
         destination_directory,
     const std::string& new_entry_name,
+    bool has_transient_user_activation,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   // TODO(crbug.com/1247850): Allow moves of files outside of the OPFS.
-  if (url().type() != storage::FileSystemType::kFileSystemTypeTemporary) {
-    std::move(callback).Run(file_system_access_error::FromStatus(
-        blink::mojom::FileSystemAccessStatus::kOperationAborted));
-    return;
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableExperimentalWebPlatformFeatures)) {
+    if (url().type() != storage::FileSystemType::kFileSystemTypeTemporary) {
+      std::move(callback).Run(file_system_access_error::FromStatus(
+          blink::mojom::FileSystemAccessStatus::kOperationAborted));
+      return;
+    }
   }
 
   if (!FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
@@ -220,21 +230,26 @@ void FileSystemAccessHandleBase::DoMove(
   manager()->ResolveTransferToken(
       std::move(destination_directory),
       base::BindOnce(&FileSystemAccessHandleBase::DidResolveTokenToMove,
-                     AsWeakPtr(), new_entry_name, std::move(callback)));
+                     AsWeakPtr(), new_entry_name, has_transient_user_activation,
+                     std::move(callback)));
 }
 
 void FileSystemAccessHandleBase::DoRename(
     const std::string& new_entry_name,
+    bool has_transient_user_activation,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   // TODO(crbug.com/1247850): Allow moves of files outside of the OPFS.
-  if (url().type() != storage::FileSystemType::kFileSystemTypeTemporary) {
-    std::move(callback).Run(file_system_access_error::FromStatus(
-        blink::mojom::FileSystemAccessStatus::kOperationAborted));
-    return;
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableExperimentalWebPlatformFeatures)) {
+    if (url().type() != storage::FileSystemType::kFileSystemTypeTemporary) {
+      std::move(callback).Run(file_system_access_error::FromStatus(
+          blink::mojom::FileSystemAccessStatus::kOperationAborted));
+      return;
+    }
   }
 
   if (!FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
@@ -249,11 +264,13 @@ void FileSystemAccessHandleBase::DoRename(
       manager(), context(), dest_parent_url, handle_state_);
 
   DidCreateDestinationDirectoryHandle(new_entry_name, std::move(dir_handle),
+                                      has_transient_user_activation,
                                       std::move(callback));
 }
 
 void FileSystemAccessHandleBase::DidResolveTokenToMove(
     const std::string& new_entry_name,
+    bool has_transient_user_activation,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
     FileSystemAccessTransferTokenImpl* resolved_destination_directory) {
   if (!resolved_destination_directory) {
@@ -275,12 +292,14 @@ void FileSystemAccessHandleBase::DidResolveTokenToMove(
       resolved_destination_directory->CreateDirectoryHandle(context_);
 
   DidCreateDestinationDirectoryHandle(new_entry_name, std::move(dir_handle),
+                                      has_transient_user_activation,
                                       std::move(callback));
 }
 
 void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
     const std::string& new_entry_name,
     std::unique_ptr<FileSystemAccessDirectoryHandleImpl> dir_handle,
+    bool has_transient_user_activation,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
   // Must have write access to the target directory.
   if (dir_handle->GetWritePermissionStatus() !=
@@ -299,10 +318,13 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
   }
 
   // TODO(crbug.com/1247850): Allow moves of files outside of the OPFS.
-  if (dest_url.type() != storage::FileSystemType::kFileSystemTypeTemporary) {
-    std::move(callback).Run(file_system_access_error::FromStatus(
-        blink::mojom::FileSystemAccessStatus::kOperationAborted));
-    return;
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableExperimentalWebPlatformFeatures)) {
+    if (dest_url.type() != storage::FileSystemType::kFileSystemTypeTemporary) {
+      std::move(callback).Run(file_system_access_error::FromStatus(
+          blink::mojom::FileSystemAccessStatus::kOperationAborted));
+      return;
+    }
   }
 
   // The file can only be moved if we can acquire exclusive write locks to
@@ -330,26 +352,33 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
     locks.emplace_back(std::move(dest_write_lock.value()));
   }
 
-  manager()->DoFileSystemOperation(
-      FROM_HERE, &storage::FileSystemOperationRunner::Move,
-      base::BindOnce(
-          [](base::WeakPtr<FileSystemAccessHandleBase> handle,
-             storage::FileSystemURL new_url,
-             std::vector<scoped_refptr<WriteLock>> /*write_locks*/,
-             base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
-                 callback,
-             base::File::Error result) {
-            if (result == base::File::FILE_OK && handle)
-              handle->url_ = std::move(new_url);
-
-            std::move(callback).Run(
-                file_system_access_error::FromFileError(result));
-          },
-          AsWeakPtr(), dest_url, std::move(locks), std::move(callback)),
-      url(), dest_url,
-      storage::FileSystemOperationRunner::CopyOrMoveOption::OPTION_NONE,
-      storage::FileSystemOperationRunner::ErrorBehavior::ERROR_BEHAVIOR_ABORT,
-      storage::FileSystemOperation::CopyOrMoveProgressCallback());
+  auto safe_move_helper = std::make_unique<SafeMoveHelper>(
+      manager()->AsWeakPtr(), context(), url(), dest_url,
+      storage::FileSystemOperation::OPTION_NONE,
+      GetContentClient()->browser()->GetQuarantineConnectionCallback(),
+      has_transient_user_activation);
+  // Allows the unique pointer to be bound to the callback so the helper stays
+  // alive until the operation completes.
+  SafeMoveHelper* raw_helper = safe_move_helper.get();
+  raw_helper->Start(base::BindOnce(
+      [](base::WeakPtr<FileSystemAccessHandleBase> handle,
+         storage::FileSystemURL new_url,
+         std::vector<scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>>
+             write_locks,
+         std::unique_ptr<content::SafeMoveHelper> /*safe_move_helper*/,
+         base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+             callback,
+         blink::mojom::FileSystemAccessErrorPtr result) {
+        if (handle) {
+          if (result->status == blink::mojom::FileSystemAccessStatus::kOk)
+            handle->url_ = std::move(new_url);
+        }
+        // Destroy locks so they are released by the time the callback runs.
+        write_locks.clear();
+        std::move(callback).Run(std::move(result));
+      },
+      AsWeakPtr(), dest_url, std::move(locks), std::move(safe_move_helper),
+      std::move(callback)));
 }
 
 void FileSystemAccessHandleBase::DoRemove(
