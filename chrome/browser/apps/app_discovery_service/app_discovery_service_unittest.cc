@@ -16,11 +16,21 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 
 const char kTestAppId[] = "fake_id";
 const std::u16string kTestAppTitle = u"fake_title";
+
+// Test PlayApp Constants
+const char kTestPlayAppPackageName[] = "com.hbo.hbonow";
+const char kTestPlayAppIconUrl[] = "https://play-lh.googleusercontent.com/fake";
+const std::u16string kTestPlayAppCategory = u"Entertainment";
+const std::u16string kTestPlayAppDescription =
+    u"Stream all of HBO with new hit shows, classic favorites, and Max "
+    u"Originals!";
+const std::u16string kTestPlayAppContentRating = u"Teen";
 
 }  // namespace
 
@@ -76,8 +86,12 @@ TEST_F(AppDiscoveryServiceTest, GetArcAppsFromFetcher) {
       AppDiscoveryServiceFactory::GetForProfile(profile());
   EXPECT_TRUE(app_discovery_service);
 
+  GURL kTestIconUrl(kTestPlayAppIconUrl);
   std::vector<Result> fake_results;
-  auto play_extras = std::make_unique<PlayExtras>(false);
+  auto play_extras = std::make_unique<PlayExtras>(
+      kTestPlayAppPackageName, kTestIconUrl, kTestPlayAppCategory,
+      kTestPlayAppDescription, kTestPlayAppContentRating, kTestIconUrl, true,
+      false, false);
   fake_results.emplace_back(Result(AppSource::kPlay, kTestAppId, kTestAppTitle,
                                    std::move(play_extras)));
   test_fetcher()->SetResults(std::move(fake_results));
@@ -85,12 +99,21 @@ TEST_F(AppDiscoveryServiceTest, GetArcAppsFromFetcher) {
   app_discovery_service->GetApps(
       ResultType::kRecommendedArcApps,
       base::BindLambdaForTesting([this](std::vector<Result> results) {
+        GURL kTestIconUrl(kTestPlayAppIconUrl);
         EXPECT_EQ(results.size(), 1u);
         CheckResult(results[0], AppSource::kPlay, kTestAppId, kTestAppTitle);
         EXPECT_TRUE(results[0].GetSourceExtras());
         auto* play_extras = results[0].GetSourceExtras()->AsPlayExtras();
         EXPECT_TRUE(play_extras);
-        EXPECT_EQ(play_extras->GetPreviouslyInstalled(), false);
+        EXPECT_EQ(play_extras->GetPackageName(), kTestPlayAppPackageName);
+        EXPECT_EQ(play_extras->GetIconUrl(), kTestIconUrl);
+        EXPECT_EQ(play_extras->GetCategory(), kTestPlayAppCategory);
+        EXPECT_EQ(play_extras->GetDescription(), kTestPlayAppDescription);
+        EXPECT_EQ(play_extras->GetContentRating(), kTestPlayAppContentRating);
+        EXPECT_EQ(play_extras->GetContentRatingIconUrl(), kTestIconUrl);
+        EXPECT_EQ(play_extras->GetHasInAppPurchases(), true);
+        EXPECT_EQ(play_extras->GetWasPreviouslyInstalled(), false);
+        EXPECT_EQ(play_extras->GetContainsAds(), false);
       }));
 }
 
