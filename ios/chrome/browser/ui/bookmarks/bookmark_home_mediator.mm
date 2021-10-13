@@ -21,6 +21,7 @@
 #include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_consumer.h"
@@ -557,8 +558,10 @@ const int kMaxBookmarksSearchResults = 50;
 // Returns YES if the user cannot turn on sync for enterprise policy reasons.
 - (BOOL)isSyncDisabledByAdministrator {
   DCHECK(self.syncService);
-  return self.syncService->GetDisableReasons().Has(
+  bool syncDisabledPolicy = self.syncService->GetDisableReasons().Has(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+  bool syncTypesDisabledPolicy = IsManagedSyncDataType(
+      self.browserState, SyncSetupService::kSyncBookmarks);
+  return syncDisabledPolicy || syncTypesDisabledPolicy;
 }
-
 @end
