@@ -164,10 +164,6 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // able to create new EncodeJobs.
   void EncodePendingInputs();
 
-  // Executes encode in hardware. This does not block and may return before
-  // the job is finished.
-  void ExecuteEncode(VASurfaceID va_surface_id);
-
   // Callback that returns a no longer used ScopedVASurface to
   // |va_surfaces| for reuse and kicks EncodePendingInputs() again.
   void RecycleVASurface(

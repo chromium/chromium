@@ -77,16 +77,13 @@ class VaapiVideoEncoderDelegate {
   // memory for output and reference pictures, etc.) as needed.
   class EncodeJob {
    public:
-    // Creates an EncodeJob to encode |input_frame|, which will be executed
-    // by calling |execute_cb|. If |keyframe| is true, requests this job
-    // to produce a keyframe.
-    EncodeJob(scoped_refptr<VideoFrame> input_frame,
-              bool keyframe,
-              base::OnceClosure execute_cb);
+    // Creates an EncodeJob to encode |input_frame|, which will be executed by
+    // calling ExecuteSetupCallbacks() in VaapiVideoEncoderDelegate::Encode().
+    // If |keyframe| is true, requests this job to produce a keyframe.
+    EncodeJob(scoped_refptr<VideoFrame> input_frame, bool keyframe);
     // Constructor for VA-API.
     EncodeJob(scoped_refptr<VideoFrame> input_frame,
               bool keyframe,
-              base::OnceClosure execute_cb,
               scoped_refptr<VASurface> input_surface,
               scoped_refptr<CodecPicture> picture,
               std::unique_ptr<ScopedVABuffer> coded_buffer);
@@ -108,14 +105,8 @@ class VaapiVideoEncoderDelegate {
     // (or discarded).
     void AddReferencePicture(scoped_refptr<CodecPicture> ref_pic);
 
-    // Runs all setup callbacks previously scheduled, if any, in order added,
-    // and executes the job by calling the execute callback. Note that the
-    // actual job execution may be asynchronous, and returning from this method
-    // does not have to indicate that the job has been finished. The execute
-    // callback is responsible for retaining references to any resources that
-    // may be in use after this method returns however, so it is safe to release
-    // the EncodeJob object itself immediately after this method returns.
-    void Execute();
+    // Runs all setup callbacks previously scheduled, if any, in order added.
+    void ExecuteSetupCallbacks();
 
     // Requests this job to produce a keyframe; requesting a keyframe may not
     // always result in one being produced by the encoder (e.g. if it would
@@ -155,9 +146,6 @@ class VaapiVideoEncoderDelegate {
     // Callbacks to be run (in the same order as the order of AddSetupCallback()
     // calls) to set up the job.
     base::queue<base::OnceClosure> setup_callbacks_;
-
-    // Callback to be run to execute this job.
-    base::OnceClosure execute_callback_;
 
     // Reference pictures required for this job.
     std::vector<scoped_refptr<CodecPicture>> reference_pictures_;
@@ -237,7 +225,8 @@ class VaapiVideoEncoderDelegate {
 
  private:
   // Prepares a new |encode_job| to be executed in Accelerator and returns true
-  // on success. The caller may then call Execute() on the job to run it.
+  // on success. The caller may then call ExecuteSetupCallbacks() on the job to
+  // run them.
   virtual bool PrepareEncodeJob(EncodeJob& encode_job) = 0;
 
   // Notifies the encoded chunk size in bytes to update a bitrate controller in
