@@ -32,7 +32,7 @@ void FileSystemAccessTabHelper::DidFinishNavigation(
 }
 
 void FileSystemAccessTabHelper::WebContentsDestroyed() {
-  auto src_origin = url::Origin::Create(web_contents()->GetLastCommittedURL());
+  auto src_origin = web_contents()->GetMainFrame()->GetLastCommittedOrigin();
 
   // Navigated away from |src_origin|, tell permission context to check if
   // permissions need to be revoked.
