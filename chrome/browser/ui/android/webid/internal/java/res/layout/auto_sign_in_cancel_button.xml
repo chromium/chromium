@@ -14,4 +14,4 @@
     android:text="@string/cancel"
     android:ellipsize="end"
     android:singleLine="true"
-    style="@style/FilledButton.Flat"/>
+    style="@style/TextButton"/>
