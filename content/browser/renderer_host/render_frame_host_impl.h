@@ -334,7 +334,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ForEachRenderFrameHost(FrameIterationCallback on_frame) override;
   void ForEachRenderFrameHost(
       FrameIterationAlwaysContinueCallback on_frame) override;
-  int GetFrameTreeNodeId() override;
+  int GetFrameTreeNodeId() const override;
   const base::UnguessableToken& GetDevToolsFrameToken() override;
   absl::optional<base::UnguessableToken> GetEmbeddingToken() override;
   const std::string& GetFrameName() override;
@@ -451,7 +451,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   const RenderFrameHostImpl* GetMainFrame() const;
 
   // Additional non-override const version of GetParent.
-  RenderFrameHostImpl* GetParent() const;
+  const RenderFrameHostImpl* GetParent() const;
 
   // Determines if a clipboard paste using |data| of type |data_type| is allowed
   // in this renderer frame.  The implementation delegates to

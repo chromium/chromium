@@ -363,7 +363,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // over its lifetime, and this RenderFrameHost might have a shorter lifetime
   // than the frame hosting content, as explained above. For associating data
   // with a single document, DocumentUserData can be used.
-  virtual int GetFrameTreeNodeId() = 0;
+  virtual int GetFrameTreeNodeId() const = 0;
 
   // Used for devtools instrumentation and trace-ability. The token is
   // propagated to Blink's LocalFrame and both Blink and content/

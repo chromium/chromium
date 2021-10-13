@@ -1863,7 +1863,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::GetParent() {
   return parent_;
 }
 
-RenderFrameHostImpl* RenderFrameHostImpl::GetParent() const {
+const RenderFrameHostImpl* RenderFrameHostImpl::GetParent() const {
   return parent_;
 }
 
@@ -2001,7 +2001,7 @@ void RenderFrameHostImpl::ForEachRenderFrameHostImpl(
   }
 }
 
-int RenderFrameHostImpl::GetFrameTreeNodeId() {
+int RenderFrameHostImpl::GetFrameTreeNodeId() const {
   return frame_tree_node_->frame_tree_node_id();
 }
 
