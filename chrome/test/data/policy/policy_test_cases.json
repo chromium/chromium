@@ -11094,6 +11094,12 @@
   "ReportUploadFrequency": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
+  "ReportDeviceNetworkTelemetryCollectionRateMs": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
+  "ReportDeviceNetworkTelemetryEventCheckingRateMs": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
   "DeviceAllowNewUsers": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },

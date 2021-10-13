@@ -26552,6 +26552,8 @@ Called by update_document_policy_enum.py.-->
   <int value="911" label="PreconfiguredDeskTemplates"/>
   <int value="912" label="FastPairEnabled"/>
   <int value="913" label="SandboxExternalProtocol"/>
+  <int value="914" label="ReportDeviceNetworkTelemetryCollectionRateMs"/>
+  <int value="915" label="ReportDeviceNetworkTelemetryEventCheckingRateMs"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

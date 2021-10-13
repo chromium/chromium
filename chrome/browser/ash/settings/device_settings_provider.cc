@@ -137,6 +137,8 @@ const char* const kKnownSettings[] = {
     kReportDeviceNetworkConfiguration,
     kReportDeviceNetworkInterfaces,
     kReportDeviceNetworkStatus,
+    kReportDeviceNetworkTelemetryCollectionRateMs,
+    kReportDeviceNetworkTelemetryEventCheckingRateMs,
     kReportDeviceSessionStatus,
     kReportDeviceSecurityStatus,
     kReportDeviceTimezoneInfo,
@@ -737,6 +739,17 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
     if (reporting_policy.has_report_login_logout()) {
       new_values_cache->SetBoolean(kReportDeviceLoginLogout,
                                    reporting_policy.report_login_logout());
+    }
+    if (reporting_policy.has_report_network_telemetry_collection_rate_ms()) {
+      new_values_cache->SetInteger(
+          kReportDeviceNetworkTelemetryCollectionRateMs,
+          reporting_policy.report_network_telemetry_collection_rate_ms());
+    }
+    if (reporting_policy
+            .has_report_network_telemetry_event_checking_rate_ms()) {
+      new_values_cache->SetInteger(
+          kReportDeviceNetworkTelemetryEventCheckingRateMs,
+          reporting_policy.report_network_telemetry_event_checking_rate_ms());
     }
   }
 }

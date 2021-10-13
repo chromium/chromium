@@ -161,6 +161,12 @@ message DeviceReportingProto {
   // This is a internal flag that will be used to control whether enable
   // granular device reporting is enabled
   optional bool enable_granular_reporting = 32 [default = true];
+
+  // Network telemetry policies.
+  optional int64 report_network_telemetry_collection_rate_ms = 33
+      [default = 600000];
+  optional int64 report_network_telemetry_event_checking_rate_ms = 34
+      [default = 60000];
 }
 
 message EphemeralUsersEnabledProto {

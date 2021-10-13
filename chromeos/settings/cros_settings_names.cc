@@ -254,6 +254,14 @@ const char kHeartbeatFrequency[] = "cros.device_status.heartbeat_frequency";
 const char kSystemLogUploadEnabled[] =
     "cros.device_status.system_log_upload_enabled";
 
+// How frequently the networks health telemetry are collected.
+const char kReportDeviceNetworkTelemetryCollectionRateMs[] =
+    "cros.telemetry_reporting.report_network_telemetry_collection_rate_ms";
+
+// How frequently the networks data are checked for events.
+const char kReportDeviceNetworkTelemetryEventCheckingRateMs[] =
+    "cros.telemetry_reporting.report_network_telemetry_event_checking_rate_ms";
+
 // This policy should not appear in the protobuf ever but is used internally to
 // signal that we are running in a "safe-mode" for policy recovery.
 const char kPolicyMissingMitigationMode[] =
