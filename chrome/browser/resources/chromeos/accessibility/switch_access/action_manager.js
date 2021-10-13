@@ -146,6 +146,12 @@ export class ActionManager {
           EventGenerator.sendKeyPress(KeyCode.VOLUME_DOWN);
         }
         break;
+      case SwitchAccessMenuAction.LEAVE_GROUP:
+        if (SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
+          ActionManager.exitAllMenus();
+          Navigator.byItem.exitGroupUnconditionally();
+        }
+        break;
       // Item scan actions:
       default:
         ActionManager.instance.performActionOnCurrentNode_(action);
@@ -222,6 +228,7 @@ export class ActionManager {
         if (SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
           // TODO(crbug.com/1258921): Replace this with quick commands.
           return [
+            SwitchAccessMenuAction.LEAVE_GROUP,
             SwitchAccessMenuAction.STATUS_BAR, SwitchAccessMenuAction.VOLUME_UP,
             SwitchAccessMenuAction.VOLUME_DOWN,
             SwitchAccessMenuAction.SCREENSHOT

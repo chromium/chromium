@@ -974,6 +974,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_SWITCH_ACCESS_VOLUME_DOWN" desc="The label for the Switch Access menu option to decrease volume." translateable="false">
         Volume down
       </message>
+      <message name="IDS_ASH_SWITCH_ACCESS_LEAVE_GROUP" desc="The label for the Switch Access menu option to leave the current group." translateable="false">
+        Leave group
+      </message>
 
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD" desc="The label used in the accessibility menu of the system tray to toggle on/off the onscreen keyboard.">
         On-screen keyboard

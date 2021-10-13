@@ -100,8 +100,7 @@ const base::flat_map<std::string, ButtonInfo>& GetMenuButtonDetails() {
          {"rightClick",
           {&kSwitchAccessRightClickIcon, IDS_ASH_SWITCH_ACCESS_RIGHT_CLICK}}});
 
-    if (switches::
-            IsExperimentalAccessibilitySwitchAccessMultistepAutomationEnabled()) {
+    if (switches::IsSwitchAccessMultistepAutomationEnabled()) {
       base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
           "quickCommands", {&kSwitchAccessQuickCommandsIcon,
                             IDS_ASH_SWITCH_ACCESS_QUICK_COMMANDS}));
@@ -117,6 +116,9 @@ const base::flat_map<std::string, ButtonInfo>& GetMenuButtonDetails() {
       base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
           "volumeDown",
           {&kSwitchAccessVolumeDownIcon, IDS_ASH_SWITCH_ACCESS_VOLUME_DOWN}));
+      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
+          "leaveGroup",
+          {&kSwitchAccessLeaveGroupIcon, IDS_ASH_SWITCH_ACCESS_LEAVE_GROUP}));
     }
 
     menu_button_details->swap(base_menu_button_details);

@@ -150,6 +150,7 @@ chrome.accessibilityPrivate.SwitchAccessMenuAction = {
   SCREENSHOT: 'screenshot',
   VOLUME_UP: 'volumeUp',
   VOLUME_DOWN: 'volumeDown',
+  LEAVE_GROUP: 'leaveGroup',
 };
 
 /**

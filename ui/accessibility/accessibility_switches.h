@@ -41,8 +41,7 @@ AX_BASE_EXPORT bool IsExperimentalAccessibilitySwitchAccessTextEnabled();
 
 // Returns true if experimental accessibility Switch Access multistep automation
 // is enabled.
-AX_BASE_EXPORT bool
-IsExperimentalAccessibilitySwitchAccessMultistepAutomationEnabled();
+AX_BASE_EXPORT bool IsSwitchAccessMultistepAutomationEnabled();
 
 #if defined(OS_WIN)
 AX_BASE_EXPORT extern const char kEnableExperimentalUIAutomation[];

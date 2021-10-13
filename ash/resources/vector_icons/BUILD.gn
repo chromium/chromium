@@ -246,6 +246,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "switch_access_jump_to_beginning_of_text.icon",
     "switch_access_jump_to_end_of_text.icon",
     "switch_access_keyboard.icon",
+    "switch_access_leave_group.icon",
     "switch_access_left_click.icon",
     "switch_access_move_backward_one_char_of_text.icon",
     "switch_access_move_backward_one_word_of_text.icon",

@@ -71,7 +71,7 @@ bool IsMagnifierDebugDrawRectEnabled() {
       ::switches::kEnableMagnifierDebugDrawRect);
 }
 
-bool IsExperimentalAccessibilitySwitchAccessMultistepAutomationEnabled() {
+bool IsSwitchAccessMultistepAutomationEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::
           kEnableExperimentalAccessibilitySwitchAccessMultistepAutomation);
