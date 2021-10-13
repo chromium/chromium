@@ -31,7 +31,7 @@ const base::Feature kAccountManagementFlowsV2{"AccountManagementFlowsV2",
 // Adjusts portrait mode split view to avoid the input field in the bottom
 // window being occluded by the virtual keyboard.
 const base::Feature kAdjustSplitViewForVK{"AdjustSplitViewForVK",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the UI to support Ambient EQ if the device supports it.
 // See https://crbug.com/1021193 for more details.
