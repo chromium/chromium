@@ -67,11 +67,6 @@ class WebTestBuilders(builders.Builders):
             'win10.20h2-blink-rel-dummy': {
                 'win10.20h2-blink-rel',
             },
-            # tryserver.chromium.android
-            # Explicit trybot.
-            'android_blink_rel': {
-                'android_blink_rel',
-            },
             # tryserver.chromium.linux
             # Explicit trybot.
             'linux-blink-web-tests-force-accessibility-rel': {
