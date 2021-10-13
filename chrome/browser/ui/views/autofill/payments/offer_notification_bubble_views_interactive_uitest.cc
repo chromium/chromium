@@ -7,7 +7,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/payments/promo_code_label_button.h"
@@ -15,6 +17,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,7 +63,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
   }
 
   void ShowBubbleForCardLinkedOfferAndVerify() {
-    NavigateTo(chrome::kChromeUINewTabURL);
+    NavigateTo(chrome::kChromeUINewTabPageURL);
     // Set the initial origin that the bubble will be displayed on.
     SetUpCardLinkedOfferDataWithDomains(
         {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
@@ -72,7 +75,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
   }
 
   void ShowBubbleForFreeListingCouponOfferAndVerify() {
-    NavigateTo(chrome::kChromeUINewTabURL);
+    NavigateTo(chrome::kChromeUINewTabPageURL);
     // Set the initial origin that the bubble will be displayed on.
     SetUpFreeListingCouponOfferDataWithDomains(
         {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
@@ -83,39 +86,24 @@ class OfferNotificationBubbleViewsInteractiveUiTest
     EXPECT_TRUE(GetOfferNotificationBubbleViews());
   }
 
-  void ClickOnViewAndWaitForBubbleDismissal(views::View* view) {
-    views::test::WidgetDestroyedWaiter destroyed_waiter(
-        GetOfferNotificationBubbleViews()->GetWidget());
-    GetOfferNotificationBubbleViews()->ResetViewShownTimeStampForTesting();
-    views::BubbleFrameView* bubble_frame_view =
-        static_cast<views::BubbleFrameView*>(GetOfferNotificationBubbleViews()
-                                                 ->GetWidget()
-                                                 ->non_client_view()
-                                                 ->frame_view());
-    bubble_frame_view->ResetViewShownTimeStampForTesting();
-    ClickOnView(view);
+  void CloseBubbleWithReason(views::Widget::ClosedReason closed_reason) {
+    auto* widget = GetOfferNotificationBubbleViews()->GetWidget();
+    EXPECT_TRUE(widget);
+    views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+    widget->CloseWithReason(closed_reason);
     destroyed_waiter.Wait();
     EXPECT_FALSE(GetOfferNotificationBubbleViews());
     EXPECT_TRUE(IsIconVisible());
   }
 
-  void ClickOnIconAndReshowBubble() {
+  void SimulateClickOnIconAndReshowBubble() {
     auto* icon = GetOfferNotificationIconView();
     EXPECT_TRUE(icon);
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-    ClickOnView(icon);
+    chrome::ExecuteCommand(browser(), IDC_OFFERS_AND_REWARDS_FOR_PAGE);
     WaitForObservedEvent();
     EXPECT_TRUE(IsIconVisible());
     EXPECT_TRUE(GetOfferNotificationBubbleViews());
-  }
-
-  // TODO(crbug.com/1181615): Move shared functions to some utils.
-  void ClickOnView(views::View* view) {
-    base::RunLoop closure_loop;
-    ui_test_utils::MoveMouseToCenterAndPress(
-        view, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
-        closure_loop.QuitClosure());
-    closure_loop.Run();
   }
 
   std::string GetSubhistogramNameForOfferType() const {
@@ -142,14 +130,8 @@ INSTANTIATE_TEST_SUITE_P(
     OfferNotificationBubbleViewsInteractiveUiTest,
     testing::Values(AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER));
 
-// Flaky on Linux. crbug.com/1182526
-#if defined(OS_LINUX)
-#define MAYBE_Navigation DISABLED_Navigation
-#else
-#define MAYBE_Navigation Navigation
-#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       MAYBE_Navigation) {
+                       Navigation) {
   static const struct {
     std::string url_navigated_to;
     bool bubble_should_be_visible;
@@ -171,7 +153,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                                                GURL("https://www.test.com/")});
 
   for (const auto& test_case : test_cases) {
-    NavigateTo(chrome::kChromeUINewTabURL);
+    NavigateTo(chrome::kChromeUINewTabPageURL);
 
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
     NavigateTo("https://www.example.com/first");
@@ -208,9 +190,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   ShowBubbleForOfferAndVerify();
 
   // Dismiss the bubble by clicking the ok button.
-  auto* ok_button = GetOfferNotificationBubbleViews()->GetOkButton();
-  EXPECT_TRUE(ok_button);
-  ClickOnViewAndWaitForBubbleDismissal(ok_button);
+  CloseBubbleWithReason(views::Widget::ClosedReason::kAcceptButtonClicked);
 
   // Navigates to another valid domain will not reshow the bubble.
   NavigateTo("https://www.example.com/second");
@@ -223,14 +203,8 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   EXPECT_FALSE(IsIconVisible());
 }
 
-#if defined(OS_LINUX)
-// Flaky: https://crbug.com/1186169.
-#define MAYBE_Logging_Shown DISABLED_Logging_Shown
-#else
-#define MAYBE_Logging_Shown Logging_Shown
-#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       MAYBE_Logging_Shown) {
+                       Logging_Shown) {
   base::HistogramTester histogram_tester;
   ShowBubbleForOfferAndVerify();
 
@@ -239,28 +213,18 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                                      /*firstshow*/ false, 1);
 
   // Dismiss the bubble by clicking the close button.
-  auto* close_button = GetOfferNotificationBubbleViews()
-                           ->GetBubbleFrameView()
-                           ->GetCloseButtonForTesting();
-  EXPECT_TRUE(close_button);
-  ClickOnViewAndWaitForBubbleDismissal(close_button);
+  CloseBubbleWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
 
   // Click on the omnibox icon to reshow the bubble.
-  ClickOnIconAndReshowBubble();
+  SimulateClickOnIconAndReshowBubble();
 
   histogram_tester.ExpectBucketCount("Autofill.OfferNotificationBubbleOffer." +
                                          GetSubhistogramNameForOfferType(),
                                      /*reshow*/ true, 1);
 }
 
-#if defined(OS_LINUX) || defined(OS_MAC)
-// Flaky: https://crbug.com/1186169.
-#define MAYBE_Logging_Acknowledged DISABLED_Logging_Acknowledged
-#else
-#define MAYBE_Logging_Acknowledged Logging_Acknowledged
-#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       MAYBE_Logging_Acknowledged) {
+                       Logging_Acknowledged) {
   // Applies to card-linked offers only, as promo code offers do not have an OK
   // button.
   if (test_offer_type_ != AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER)
@@ -270,9 +234,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   ShowBubbleForOfferAndVerify();
 
   // Dismiss the bubble by clicking the ok button.
-  auto* ok_button = GetOfferNotificationBubbleViews()->GetOkButton();
-  EXPECT_TRUE(ok_button);
-  ClickOnViewAndWaitForBubbleDismissal(ok_button);
+  CloseBubbleWithReason(views::Widget::ClosedReason::kAcceptButtonClicked);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.OfferNotificationBubbleResult." +
@@ -282,12 +244,10 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       1);
 
   // Click on the omnibox icon to reshow the bubble.
-  ClickOnIconAndReshowBubble();
+  SimulateClickOnIconAndReshowBubble();
 
   // Click on the ok button to dismiss the bubble.
-  ok_button = GetOfferNotificationBubbleViews()->GetOkButton();
-  EXPECT_TRUE(ok_button);
-  ClickOnViewAndWaitForBubbleDismissal(ok_button);
+  CloseBubbleWithReason(views::Widget::ClosedReason::kAcceptButtonClicked);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.OfferNotificationBubbleResult." +
@@ -297,23 +257,13 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       1);
 }
 
-#if defined(OS_LINUX) || defined(OS_MAC)
-// Flaky: https://crbug.com/1186169.
-#define MAYBE_Logging_Closed DISABLED_Logging_Closed
-#else
-#define MAYBE_Logging_Closed Logging_Closed
-#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       MAYBE_Logging_Closed) {
+                       Logging_Closed) {
   base::HistogramTester histogram_tester;
   ShowBubbleForOfferAndVerify();
 
   // Dismiss the bubble by clicking the close button.
-  auto* close_button = GetOfferNotificationBubbleViews()
-                           ->GetBubbleFrameView()
-                           ->GetCloseButtonForTesting();
-  EXPECT_TRUE(close_button);
-  ClickOnViewAndWaitForBubbleDismissal(close_button);
+  CloseBubbleWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.OfferNotificationBubbleResult." +
@@ -323,14 +273,10 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       1);
 
   // Click on the omnibox icon to reshow the bubble.
-  ClickOnIconAndReshowBubble();
+  SimulateClickOnIconAndReshowBubble();
 
   // Click on the close button to dismiss the bubble.
-  close_button = GetOfferNotificationBubbleViews()
-                     ->GetBubbleFrameView()
-                     ->GetCloseButtonForTesting();
-  EXPECT_TRUE(close_button);
-  ClickOnViewAndWaitForBubbleDismissal(close_button);
+  CloseBubbleWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.OfferNotificationBubbleResult." +
@@ -359,23 +305,13 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       1);
 }
 
-#if defined(OS_LINUX)
-// Flaky: https://crbug.com/1186169.
-#define MAYBE_Logging_LostFocus DISABLED_Logging_LostFocus
-#else
-#define MAYBE_Logging_LostFocus Logging_LostFocus
-#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       MAYBE_Logging_LostFocus) {
+                       Logging_LostFocus) {
   base::HistogramTester histogram_tester;
   ShowBubbleForOfferAndVerify();
 
   // Mock deactivation due to lost focus.
-  views::test::WidgetDestroyedWaiter destroyed_waiter1(
-      GetOfferNotificationBubbleViews()->GetWidget());
-  GetOfferNotificationBubbleViews()->GetWidget()->CloseWithReason(
-      views::Widget::ClosedReason::kLostFocus);
-  destroyed_waiter1.Wait();
+  CloseBubbleWithReason(views::Widget::ClosedReason::kLostFocus);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.OfferNotificationBubbleResult." +
@@ -385,14 +321,10 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       1);
 
   // Click on the omnibox icon to reshow the bubble.
-  ClickOnIconAndReshowBubble();
+  SimulateClickOnIconAndReshowBubble();
 
   // Mock deactivation due to lost focus.
-  views::test::WidgetDestroyedWaiter destroyed_waiter2(
-      GetOfferNotificationBubbleViews()->GetWidget());
-  GetOfferNotificationBubbleViews()->GetWidget()->CloseWithReason(
-      views::Widget::ClosedReason::kLostFocus);
-  destroyed_waiter2.Wait();
+  CloseBubbleWithReason(views::Widget::ClosedReason::kLostFocus);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.OfferNotificationBubbleResult." +
