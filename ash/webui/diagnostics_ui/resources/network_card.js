@@ -264,10 +264,13 @@ Polymer({
    * @return {!TroubleshootingInfo}
    */
   getDisabledTroubleshootingInfo_() {
+    const linkText =
+        this.network && this.network.type === NetworkType.kCellular ?
+        this.i18n('reconnectLinkText') :
+        this.i18n('joinNetworkLinkText', this.networkType_);
     return {
-      header: this.i18n('disabledText', this.networkType_),
-      linkText: this.i18n('reconnectLinkText'),
-      url: SETTINGS_URL,
+      header: this.i18n('disabledText', this.networkType_), linkText,
+          url: SETTINGS_URL,
     }
   },
 

@@ -165,6 +165,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
        IDS_NETWORK_DIAGNOSTICS_IP_CONFIG_INFO_DRAWER_SUBNET_MASK},
       {"ipConfigInfoDrawerTitle",
        IDS_NETWORK_DIAGNOSTICS_IP_CONFIG_INFO_DRAWER_TITLE},
+      {"joinNetworkLinkText", IDS_DIAGNOSTICS_JOIN_NETWORK_LINK_TEXT},
       {"lanConnectivityFailedText",
        IDS_DIAGNOSTICS_LAN_CONNECTIVITY_FAILED_TEXT},
       {"lanConnectivityGroupText", IDS_NETWORK_DIAGNOSTICS_CONNECTION_GROUP},

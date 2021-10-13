@@ -989,10 +989,13 @@ Try tapping the mic to ask me anything.
         other {Name servers}}
       </message>
       <message name="IDS_DIAGNOSTICS_DISABLED_TEXT" desc="The label for the text displaed when a network has been disabled.">
-        <ph name="NETWORK_NAME">$1<ex>Wi-Fi</ex></ph> has been disabled
+        <ph name="NETWORK_NAME">$1<ex>Wi-Fi</ex></ph> is off
       </message>
       <message name="IDS_DIAGNOSTICS_RECONNECT_LINK_TEXT" desc="The text contains a link to the settings page to allow users to reconnect their network.">
-        Visit Settings to reconnect
+        To reconnect, go to Settings
+      </message>
+      <message name="IDS_DIAGNOSTICS_JOIN_NETWORK_LINK_TEXT" desc="The text contains a link to the settings page to allow users to reconnect their network.">
+        To join a <ph name="NETWORK_NAME">$1<ex>Wi-Fi</ex></ph> network, go to Settings
       </message>
       <message name="IDS_DIAGNOSTICS_NETWORK_TYPE_CELLULAR" desc="Label used to describe Cellular networks.">
         Mobile data
