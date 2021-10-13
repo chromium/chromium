@@ -660,6 +660,7 @@ abstract class Linker {
         }
 
         public static LibInfo fromBundle(Bundle bundle) {
+            bundle.setClassLoader(Linker.class.getClassLoader());
             return bundle.getParcelable(EXTRA_LINKER_LIB_INFO);
         }
 

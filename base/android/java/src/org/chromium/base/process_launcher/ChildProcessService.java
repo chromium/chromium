@@ -220,7 +220,6 @@ public class ChildProcessService {
 
         @Override
         public void consumeRelroBundle(Bundle bundle) {
-            bundle.setClassLoader(ContextUtils.getApplicationContext().getClassLoader());
             mDelegate.consumeRelroBundle(bundle);
         }
     };
