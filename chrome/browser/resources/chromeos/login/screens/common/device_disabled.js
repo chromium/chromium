@@ -3,62 +3,89 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Offline message screen implementation.
+ * @fileoverview Polymer element for Device Disabled message screen.
  */
 
-Polymer({
-  is: 'device-disabled-element',
+/* #js_imports_placeholder */
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {OobeI18nBehaviorInterface}
+ * @implements {LoginScreenBehaviorInterface}
+ */
+const DeviceDisabledElementBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+    Polymer.Element);
 
-  EXTERNAL_API: ['setMessage'],
+class DeviceDisabled extends DeviceDisabledElementBase {
+  static get is() {
+    return 'device-disabled-element';
+  }
 
-  properties: {
-    /**
-     * Device serial number
-     * The serial number of the device.
-     */
-    serial_: {
-      type: String,
-      value: '',
-    },
+  /* #html_template_placeholder */
 
-    /**
-     * The domain that owns the device (can be empty).
-     */
-    enrollmentDomain_: {
-      type: String,
-      value: '',
-    },
+  static get properties() {
+    return {
+      /**
+       * Device serial number
+       * The serial number of the device.
+       * @private
+       */
+      serial_: {
+        type: String,
+      },
 
-    /**
-     * Admin message (external data, non-html-safe).
-     */
-    message_: {
-      type: String,
-      value: '',
-    },
-  },
+      /**
+       * The domain that owns the device (can be empty).
+       * @private
+       */
+      enrollmentDomain_: {
+        type: String,
+      },
 
+      /**
+       * Admin message (external data, non-html-safe).
+       * @private
+       */
+      message_: {
+        type: String,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+    // Properties:
+    this.serial_ = '';
+    this.enrollmentDomain_ = '';
+    this.message_ = '';
+  }
 
   ready() {
+    super.ready();
     this.initializeLoginScreen('DeviceDisabledScreen', {
       resetAllowed: false,
     });
-  },
+  }
+
+  /** @override */
+  get EXTERNAL_API() {
+    return ['setMessage'];
+  }
 
   /** Initial UI State for screen */
   getOobeUIInitialState() {
     return OOBE_UI_STATE.BLOCKING;
-  },
+  }
 
   /**
-   * Returns default event target element.
-   * @type {Object}
+   * @override
+   * @suppress {missingProperties}
    */
   get defaultControl() {
     return this.$.dialog;
-  },
+  }
 
   /**
    * Event handler that is invoked just before the frame is shown.
@@ -71,7 +98,7 @@ Polymer({
       this.enrollmentDomain_ = data.domain;
     if ('message' in data)
       this.message_ = data.message;
-  },
+  }
 
   /**
    * Sets the message to show to the user.
@@ -79,7 +106,7 @@ Polymer({
    */
   setMessage(message) {
     this.message_ = message;
-  },
+  }
 
   /**
    * Updates the explanation shown to the user. The explanation will indicate
@@ -92,5 +119,7 @@ Polymer({
       return this.i18n('deviceDisabledExplanationWithDomain', serial, domain);
     }
     return this.i18n('deviceDisabledExplanationWithoutDomain', serial);
-  },
-});
+  }
+}
+
+customElements.define(DeviceDisabled.is, DeviceDisabled);

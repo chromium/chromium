@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://oobe/screens/common/app_downloading.m.js';
+import 'chrome://oobe/screens/common/device_disabled.m.js';
 import 'chrome://oobe/screens/common/fingerprint_setup.m.js';
 import 'chrome://oobe/screens/common/gesture_navigation.m.js';
 import 'chrome://oobe/screens/common/marketing_opt_in.m.js';

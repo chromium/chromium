@@ -459,6 +459,9 @@ cr.define('cr.ui.login', function() {
       let screenId = el.id;
       assert(screenId);
       assert(!this.screens_.includes(screenId), 'Duplicate screen ID.');
+      assert(
+          this.screens_.length > 0 || screenId !== SCREEN_DEVICE_DISABLED,
+          'Can not register Device disabled screen as the first');
 
       this.screens_.push(screenId);
       this.screensAttributes_.push(attributes);
