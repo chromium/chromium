@@ -362,17 +362,17 @@ const char* GetSignalingStateString(
   const char* result = "";
   switch (state) {
     case webrtc::PeerConnectionInterface::SignalingState::kStable:
-      return "SignalingStateStable";
+      return "stable";
     case webrtc::PeerConnectionInterface::SignalingState::kHaveLocalOffer:
-      return "SignalingStateHaveLocalOffer";
+      return "have-local-offer";
     case webrtc::PeerConnectionInterface::SignalingState::kHaveRemoteOffer:
-      return "SignalingStateHaveRemoteOffer";
+      return "have-remote-offer";
     case webrtc::PeerConnectionInterface::SignalingState::kHaveLocalPrAnswer:
-      return "SignalingStateHaveLocalPrAnswer";
+      return "have-local-pranswer";
     case webrtc::PeerConnectionInterface::SignalingState::kHaveRemotePrAnswer:
-      return "SignalingStateHaveRemotePrAnswer";
+      return "have-remote-pranswer";
     case webrtc::PeerConnectionInterface::SignalingState::kClosed:
-      return "SignalingStateClosed";
+      return "closed";
     default:
       NOTREACHED();
       break;

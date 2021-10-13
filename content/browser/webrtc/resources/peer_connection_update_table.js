@@ -102,40 +102,6 @@ export class PeerConnectionUpdateTable {
       return;
     }
 
-    let {value} = update;
-    // map internal names and values to names and events from the
-    // specification. This is a display change which shall not
-    // change the JSON dump.
-    if (update.type === 'iceConnectionStateChange') {
-      value = {
-        ICEConnectionStateNew: 'new',
-        ICEConnectionStateChecking: 'checking',
-        ICEConnectionStateConnected: 'connected',
-        ICEConnectionStateCompleted: 'completed',
-        ICEConnectionStateFailed: 'failed',
-        ICEConnectionStateDisconnected: 'disconnected',
-        ICEConnectionStateClosed: 'closed',
-      }[value] ||
-          value;
-    } else if (update.type === 'iceGatheringStateChange') {
-      value = {
-        ICEGatheringStateNew: 'new',
-        ICEGatheringStateGathering: 'gathering',
-        ICEGatheringStateComplete: 'complete',
-      }[value] ||
-          value;
-    } else if (update.type === 'signalingStateChange') {
-      value = {
-        SignalingStateStable: 'stable',
-        SignalingStateHaveLocalOffer: 'have-local-offer',
-        SignalingStateHaveRemoteOffer: 'have-remote-offer',
-        SignalingStateHaveLocalPrAnswer: 'have-local-pranswer',
-        SignalingStateHaveRemotePrAnswer: 'have-remote-pranswer',
-        SignalingStateClosed: 'closed',
-      }[value] ||
-          value;
-    }
-
     if (update.type === 'onIceCandidate' || update.type === 'addIceCandidate') {
       // extract ICE candidate type from the field following typ.
       const candidateType = update.value.match(/(?: typ )(host|srflx|relay)/);
@@ -163,7 +129,7 @@ export class PeerConnectionUpdateTable {
       const el = peerConnectionElement.getElementsByClassName(fieldName)[0];
       const numberOfEvents = el.textContent.split(' => ').length;
       if (numberOfEvents < MAX_NUMBER_OF_STATE_CHANGES_DISPLAYED) {
-        el.textContent += ' => ' + value;
+        el.textContent += ' => ' + update.value;
       } else if (numberOfEvents === MAX_NUMBER_OF_STATE_CHANGES_DISPLAYED) {
         el.textContent += ' ...';
       }
@@ -219,7 +185,7 @@ export class PeerConnectionUpdateTable {
         valueContainer.appendChild(sectionDetails);
       });
     } else {
-      valueContainer.textContent = value;
+      valueContainer.textContent = update.value;
     }
   }
 
