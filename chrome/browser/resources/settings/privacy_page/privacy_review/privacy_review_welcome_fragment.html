@@ -1,7 +1,13 @@
 <style include="privacy-review-fragment-shared">
+  :host {
+    display: flex;
+    flex-flow: column;
+  }
+
   .main-content {
     align-items: center;
     display: flex;
+    flex: 1;
     flex-direction: column;
     justify-content: space-between;
     padding: var(--cr-section-padding) 120px;
@@ -12,7 +18,7 @@
     align-items: center;
     display: flex;
     justify-content: space-between;
-    padding: 16px;
+    padding: 16px 0;
   }
 
   h2 {
