@@ -3732,8 +3732,10 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
   if (worker_ref_count_ != 0)
     return false;
 
-  // Note: we intentionally don't include a |shutdown_delay_ref_count_| check
-  // here, since it doesn't preclude fast shutdown.
+  // TODO(wjmaclean): This is probably unnecessary, but let's remove it in a
+  // separate CL to be safe.
+  if (shutdown_delay_ref_count_ != 0)
+    return false;
 
   // Set this before ProcessDied() so observers can tell if the render process
   // died due to fast shutdown versus another cause.
