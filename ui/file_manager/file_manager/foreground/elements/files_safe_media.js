@@ -38,16 +38,15 @@ const FilesSafeMedia = Polymer({
    * @return {string}
    */
   sourceFile_: function() {
-    const sandboxedRelativePath = 'foreground/elements/sandboxed/';
     switch (this.type) {
       case 'image':
-        return sandboxedRelativePath + 'files_img_content.html';
+        return 'untrusted_resources/files_img_content.html';
       case 'audio':
-        return sandboxedRelativePath + 'files_audio_content.html';
+        return 'untrusted_resources/files_audio_content.html';
       case 'video':
-        return sandboxedRelativePath + 'files_video_content.html';
+        return 'untrusted_resources/files_video_content.html';
       case 'html':
-        return sandboxedRelativePath + 'files_text_content.html';
+        return 'untrusted_resources/files_text_content.html';
       default:
         console.error('Unsupported type: ' + this.type);
         return '';

@@ -1098,6 +1098,7 @@ static_library("extensions") {
       "//ash/constants",
       "//ash/keyboard/ui:resources_grit_grit",
       "//ash/public/cpp",
+      "//ash/webui/file_manager/untrusted_resources:file_manager_untrusted_resources",
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
       "//chrome/browser/devtools",
       "//chrome/browser/nearby_sharing/common",

@@ -4,8 +4,8 @@
 
 #include "ash/webui/file_manager/file_manager_untrusted_ui.h"
 
-#include "ash/webui/file_manager/resources/grit/file_manager_untrusted_resources.h"
-#include "ash/webui/file_manager/resources/grit/file_manager_untrusted_resources_map.h"
+#include "ash/webui/file_manager/untrusted_resources/grit/file_manager_untrusted_resources.h"
+#include "ash/webui/file_manager/untrusted_resources/grit/file_manager_untrusted_resources_map.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"

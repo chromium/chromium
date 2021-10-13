@@ -16,7 +16,7 @@ void AddFilesAppResources(content::WebUIDataSource* source,
     std::string path(entries[i].path);
     // Only load resources for Files app.
     if (base::StartsWith(path, "file_manager/") &&
-        path.find("sandboxed/") == std::string::npos) {
+        path.find("untrusted_resources/") == std::string::npos) {
       // Files app UI has all paths relative to //ui/file_manager/file_manager/
       // so we remove the leading file_manager/ to match the existing paths.
       base::ReplaceFirstSubstringAfterOffset(&path, 0, "file_manager/", "");
