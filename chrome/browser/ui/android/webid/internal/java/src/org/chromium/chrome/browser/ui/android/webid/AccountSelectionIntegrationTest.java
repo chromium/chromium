@@ -121,7 +121,7 @@ public class AccountSelectionIntegrationTest {
             mAccountSelection.initialize(
                     mActivityTestRule.getActivity(), mBottomSheetController, mMockBridge);
         });
-        AccountSelectionViewBinder.setTabCreator(sTabCreator);
+        AccountSelectionViewBinder.setTabCreatorForTesting(sTabCreator);
     }
 
     @Test

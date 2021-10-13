@@ -45,19 +45,11 @@ import org.chromium.ui.text.SpanApplier;
  * to the suitable method in {@link AccountSelectionView}.
  */
 class AccountSelectionViewBinder {
-    private static RoundedIconGenerator sRoundedIconGenerator;
-    private static TabCreator sTabCreator = new TabDelegate(/* incognito */ false);
-
-    static RoundedIconGenerator getRoundedIconGenerator(Resources resources) {
-        if (sRoundedIconGenerator == null) {
-            sRoundedIconGenerator = FaviconUtils.createCircularIconGenerator(resources);
-        }
-        return sRoundedIconGenerator;
-    }
+    private static TabCreator sTabCreatorForTesting;
 
     @VisibleForTesting
-    static void setTabCreator(TabCreator creator) {
-        sTabCreator = creator;
+    static void setTabCreatorForTesting(TabCreator creator) {
+        sTabCreatorForTesting = creator;
     }
 
     /**
@@ -121,7 +113,8 @@ class AccountSelectionViewBinder {
         int badgeX = frameSize - badgeSize;
         int badgeY = frameSize - badgeSize;
 
-        RoundedIconGenerator roundedIconGenerator = getRoundedIconGenerator(view.getResources());
+        RoundedIconGenerator roundedIconGenerator =
+                FaviconUtils.createCircularIconGenerator(view.getResources());
 
         // Prepare avatar or its fallback monogram.
         Bitmap avatar = avatarData.mAvatar;
@@ -164,7 +157,10 @@ class AccountSelectionViewBinder {
     }
 
     static void openTab(String url) {
-        sTabCreator.launchUrl(url, TabLaunchType.FROM_CHROME_UI);
+        TabCreator tabCreator = (sTabCreatorForTesting == null)
+                ? new TabDelegate(/* incognito */ false)
+                : sTabCreatorForTesting;
+        tabCreator.launchUrl(url, TabLaunchType.FROM_CHROME_UI);
     }
 
     static NoUnderlineClickableSpan createLink(Resources r, String url) {
