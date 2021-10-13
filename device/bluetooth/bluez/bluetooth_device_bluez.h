@@ -288,6 +288,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
                          const std::string& error_name,
                          const std::string& error_message);
 
+  // Called by dbus:: on successful completion of the D-Bus method to remove the
+  // device.
+  void OnForgetSuccess(base::OnceClosure callback);
+
   // The dbus object path of the device object.
   dbus::ObjectPath object_path_;
 

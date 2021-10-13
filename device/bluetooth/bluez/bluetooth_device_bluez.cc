@@ -124,13 +124,6 @@ BluetoothDevice::ConnectErrorCode DBusErrorToConnectError(
   return error_code;
 }
 
-void OnForgetSuccess(base::OnceClosure callback) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  device::RecordForgetResult(device::ForgetResult::kSuccess);
-#endif
-  std::move(callback).Run();
-}
-
 void OnForgetError(dbus::ObjectPath object_path,
                    bluez::BluetoothDeviceBlueZ::ErrorCallback error_callback,
                    const std::string& error_name,
@@ -688,8 +681,19 @@ void BluetoothDeviceBlueZ::Forget(base::OnceClosure callback,
   BLUETOOTH_LOG(EVENT) << object_path_.value() << ": Removing device";
   bluez::BluezDBusManager::Get()->GetBluetoothAdapterClient()->RemoveDevice(
       adapter()->object_path(), object_path_,
-      base::BindOnce(&OnForgetSuccess, std::move(callback)),
+      base::BindOnce(&BluetoothDeviceBlueZ::OnForgetSuccess,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       base::BindOnce(&OnForgetError, object_path_, std::move(error_callback)));
+}
+
+void BluetoothDeviceBlueZ::OnForgetSuccess(base::OnceClosure callback) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  device::RecordForgetResult(device::ForgetResult::kSuccess);
+#endif
+  if (IsPaired())
+    adapter_->NotifyDevicePairedChanged(this, false);
+
+  std::move(callback).Run();
 }
 
 void BluetoothDeviceBlueZ::ConnectToService(
