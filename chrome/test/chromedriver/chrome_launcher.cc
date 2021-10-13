@@ -516,12 +516,10 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
 
 #if defined(OS_POSIX)
 
-  bool uses_pipe = false;
   int write_fd;
   int read_fd;
 
   if (capabilities.switches.HasSwitch("remote-debugging-pipe")) {
-    uses_pipe = true;
     Status status = PipeSetUp(&options, &write_fd, &read_fd);
   }
 
