@@ -113,7 +113,7 @@ void RecoveryComponentActionHandler::WaitForCommand(base::Process process) {
   bool succeeded = false;
   if (!process.IsValid()) {
     exit_code =
-        static_cast<int>(update_client::InstallError::LAUNCH_PROCESS_FAILED)
+        static_cast<int>(update_client::InstallError::LAUNCH_PROCESS_FAILED);
   } else {
     succeeded = process.WaitForExitWithTimeout(kMaxWaitTime, &exit_code);
   }
