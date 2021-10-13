@@ -43,6 +43,14 @@ CONTENT_EXPORT void RemoveDocumentUserData(RenderFrameHost* rfh,
 // i.e., on speculative RFHs and gets destroyed along with speculative RFHs if
 // it ends up never committing.
 //
+// In case of crashes, DocumentUserData's lifetime doesn't match blink::Document
+// lifetime. DocumentUserData is not cleared when the RenderFrame is deleted but
+// is cleared on a subsequent navigation after a crash. This is done to ensure
+// that the data associated with RenderFrameHost is not reset when the non-live
+// RenderFrameHost is still in use by browser features like permissions or
+// settings, which continue to work on the crashed pages. For more details,
+// please refer to crbug.com/1099237.
+//
 // Note: RenderFrameHost is being replaced with RenderDocumentHost
 // [https://crbug.com/936696]. After this is completed, every
 // DocumentUserData object will be 1:1 with RenderFrameHost. Also

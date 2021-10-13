@@ -401,6 +401,51 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
   EXPECT_TRUE(data);
 }
 
+// Test that the DocumentUserData object is cleared when the RenderFrameHost is
+// reused for the new RenderFrame creation after a RendererDebug URL crash
+// without navigating to a new document. This initializes the RenderFrame using
+// RenderFrameHostManager::InitializeMainRenderFrameForImmediateUse.
+IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
+                       CheckWithRenderFrameCreationAfterRendererDebugURLCrash) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL renderer_debug_url("javascript:'hello'");
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+
+  // 1) Load a javascript URL, which is a renderer debug URL.  This navigation
+  // won't commit, but the renderer process will synchronously process the
+  // javascript URL and install an HTML document that contains "hello".
+  shell()->LoadURL(renderer_debug_url);
+  ASSERT_EQ("hello", EvalJs(shell(), "document.body.innerText"));
+
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  RenderFrameHostImpl* rfh = root->current_frame_host();
+
+  // 2) Get the DocumentUserData associated with rfh.
+  Data::CreateForCurrentDocument(rfh);
+  base::WeakPtr<Data> data = Data::GetForCurrentDocument(rfh)->GetWeakPtr();
+  EXPECT_TRUE(data);
+
+  // 3) Crash the renderer hosting current RFH.
+  RenderProcessHost* renderer_process = rfh->GetProcess();
+  RenderProcessHostWatcher crash_observer(
+      renderer_process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  renderer_process->Shutdown(0);
+  crash_observer.Wait();
+
+  // 4) DUD shouldn't be cleared after the renderer crash.
+  EXPECT_FALSE(rfh->IsRenderFrameLive());
+  EXPECT_TRUE(data);
+
+  // 5) Load the renderer_debug_url again. This should result in calling
+  // RenderFrameHostManager::InitializeMainRenderFrameForImmediateUse where we
+  // initialize new RenderFrame.
+  shell()->LoadURL(renderer_debug_url);
+  ASSERT_EQ("hello", EvalJs(shell(), "document.body.innerText"));
+
+  // 6) DUD should be cleared after initialization.
+  EXPECT_FALSE(data);
+}
+
 // Tests that DocumentUserData object is created for speculative
 // RenderFrameHost and check if they point to same object before and after
 // commit.
