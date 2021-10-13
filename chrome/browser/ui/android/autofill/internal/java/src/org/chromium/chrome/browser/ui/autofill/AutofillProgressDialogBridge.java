@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.autofill;
 
 import android.content.Context;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -30,6 +31,8 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @JNINamespace("autofill")
 public class AutofillProgressDialogBridge {
+    private static final int SUCCESS_VIEW_DURATION_MILLIS = 500;
+
     private final long mNativeAutofillProgressDialogView;
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;
@@ -94,7 +97,8 @@ public class AutofillProgressDialogBridge {
     }
 
     /**
-     * Replaces the progress bar and loadingMessage with a confirmation icon and message
+     * Replaces the progress bar and loadingMessage with a confirmation icon and message and then
+     * dismisses the dialog after a certain period of time.
      * NOTE: This should only be called after show(~) has been called.
      *
      * @param confirmationMessage Message to show below the confirmation icon
@@ -110,6 +114,8 @@ public class AutofillProgressDialogBridge {
             // TODO(crbug.com/1243475): Dismiss the Java View after some delay if confirmation has
             // been shown.
         }
+        Runnable dismissRunnable = () -> dismiss();
+        new Handler().postDelayed(dismissRunnable, SUCCESS_VIEW_DURATION_MILLIS);
     }
 
     /**
