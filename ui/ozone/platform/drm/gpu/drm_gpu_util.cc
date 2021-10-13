@@ -148,7 +148,7 @@ HardwareDisplayControllerInfoList GetDisplayInfosAndUpdateCrtcs(int fd) {
   // instead.
   for (uint32_t crtc : invalid_crtcs) {
     drmModeSetCrtc(fd, crtc, 0, 0, 0, nullptr, 0, nullptr);
-    LOG(ERROR) << "Disabled unpreferred CRTC " << crtc;
+    VLOG(1) << "Disabled unpreferred CRTC " << crtc;
   }
 
   return displays;
