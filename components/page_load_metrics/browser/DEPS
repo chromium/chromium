@@ -7,6 +7,7 @@ include_rules = [
   "+components/heavy_ad_intervention",
   "+components/keyed_service/content",
   "+components/keyed_service/core",
+  "+components/metrics",
   "+components/performance_manager/public",
   "+components/subresource_filter/content/browser",
   "+components/subresource_filter/core/browser",

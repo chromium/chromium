@@ -673,6 +673,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="UMA.Pseudo.{Metrics}" units="seconds/MB"
+    expires_after="2021-11-14">
+  <owner>sweilun@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    This is the pseudo {Metrics} metric. It's logged alongside with the real
+    metric. The value of this pseudo metric is a linear function (ax + b) of the
+    real value (x). The multiplicative factor (a) and additive factor (b) are
+    controlled by field trial experiments. This metric is used for data
+    validation and to help us better assess the accuracy and power of data from
+    field trials.
+  </summary>
+  <token key="Metrics">
+    <variant name="Memory.Browser.MemoryFootprint"/>
+    <variant name="Memory.Total.PrivateMemoryFootprint"/>
+    <variant name="PageLoad.InteractiveTiming.FirstInputDelay4"/>
+    <variant name="PageLoad.LayoutInstability.CumulativeShiftScore"/>
+    <variant name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2"/>
+  </token>
+</histogram>
+
 <histogram name="UMA.ReadAndTruncateMetricsFromFile.DiscardedCount"
     units="samples" expires_after="2022-04-17">
   <owner>iby@chromium.org</owner>

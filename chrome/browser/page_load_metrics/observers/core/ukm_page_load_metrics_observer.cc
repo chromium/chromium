@@ -28,6 +28,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/metrics/metrics_data_validation.h"
 #include "components/metrics/net/network_metrics_provider.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_utils.h"
@@ -1070,10 +1071,15 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
 
   // TODO(crbug.com/1064483): We should move UMA recording to components/
 
+  const float page_shift_score = page_load_metrics::LayoutShiftUmaValue(
+      GetDelegate().GetPageRenderData().layout_shift_score);
+  UMA_HISTOGRAM_COUNTS_100("PageLoad.LayoutInstability.CumulativeShiftScore",
+                           page_shift_score);
+  // The pseudo metric of PageLoad.LayoutInstability.CumulativeShiftScore. Only
+  // used to assess field trial data quality.
   UMA_HISTOGRAM_COUNTS_100(
-      "PageLoad.LayoutInstability.CumulativeShiftScore",
-      page_load_metrics::LayoutShiftUmaValue(
-          GetDelegate().GetPageRenderData().layout_shift_score));
+      "UMA.Pseudo.PageLoad.LayoutInstability.CumulativeShiftScore",
+      metrics::GetPseudoMetricsSample(page_shift_score));
 
   TRACE_EVENT_INSTANT1("loading", "CumulativeShiftScore::AllFrames::UMA",
                        TRACE_EVENT_SCOPE_THREAD, "data",

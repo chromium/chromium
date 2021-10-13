@@ -31,6 +31,7 @@
 #include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/entropy_state.h"
+#include "components/metrics/metrics_data_validation.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_provider.h"
@@ -46,35 +47,6 @@
 
 namespace metrics {
 namespace {
-
-// The parameters for the log normal distribution. They refer to the default
-// mean, the delta that would be applied to the default mean (the actual mean
-// equals mean + log(1 + delta)) and the standard deviation of the distribution
-// that's being generated. These parameters are carefully calculated so that
-// ~0.01% of data drawn from the distribution would fall in the underflow bucket
-// and ~0.01% of data in the overflow bucket. And they also leave us enough
-// wiggle room to shift mean using delta in experiments without losing precision
-// badly because of data in the overflow bucket.
-//
-// The way we get these numbers are based on the following calculation:
-// u := the lower threshold for the overflow bucket (in this case, 10000).
-// l := the upper threshold for the smallest bucket (in this case, 1).
-// p := the probability that an observation will fall in the highest bucket (in
-//   this case, 0.01%) and also the probability that an observation will fall in
-//   the lowest bucket.
-//
-// mean = (log(u) + log(l)) / 2
-// sd = (log(u) - log(l)) / (2 * qnorm(1-p))
-//
-// At this point, experiments should only control the delta but not mean and
-// stdDev. Putting them in feature params so that we can configure them from the
-// server side if we want.
-const base::FeatureParam<double> kLogNormalMean{
-    &kNonUniformityValidationFeature, "mean", 4.605};
-const base::FeatureParam<double> kLogNormalDelta{
-    &kNonUniformityValidationFeature, "delta", 0};
-const base::FeatureParam<double> kLogNormalStdDev{
-    &kNonUniformityValidationFeature, "stdDev", 1.238};
 
 // The argument used to generate a non-identifying entropy source. We want no
 // more than 13 bits of entropy, so use this max to return a number in the range

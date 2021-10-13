@@ -36,6 +36,7 @@
 #include "components/metrics/drive_metrics_provider.h"
 #include "components/metrics/entropy_state_provider.h"
 #include "components/metrics/field_trials_provider.h"
+#include "components/metrics/metrics_data_validation.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_default_state.h"
@@ -362,6 +363,12 @@ void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
     mach_vm_size_t footprint_mb = task_info_data.phys_footprint / 1024 / 1024;
     base::UmaHistogramMemoryLargeMB("Memory.Browser.MemoryFootprint",
                                     footprint_mb);
+    // The pseudo metric of Memory.Browser.MemoryFootprint. Only used to
+    // assess field trial data quality.
+    base::UmaHistogramMemoryLargeMB(
+        "UMA.Pseudo.Memory.Browser.MemoryFootprint",
+        metrics::GetPseudoMetricsSample(
+            static_cast<double>(task_info_data.phys_footprint) / 1024 / 1024));
 
     switch (UIApplication.sharedApplication.applicationState) {
       case UIApplicationStateActive:
