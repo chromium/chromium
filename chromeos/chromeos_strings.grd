@@ -999,7 +999,7 @@ Try tapping the mic to ask me anything.
       </message>
 
       <message name="IDS_DIAGNOSTICS_SETTINGS_LINK_TEXT" desc="The text contains a link to the settings page, allowing a user to set up a new connection.">
-        To set up a new connection, go to <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Settings<ph name="END_LINK">&lt;/a&gt;</ph>.
+        To set up or update a connection, go to <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Settings<ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>
       <message name="IDS_DIAGNOSTICS_NETWORK_SIM_LOCK_STATUS_LABEL" desc="The label for a Cellular network's Sim Lock Status.">
         SIM Lock Status
