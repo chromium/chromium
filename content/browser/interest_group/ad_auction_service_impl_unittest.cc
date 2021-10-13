@@ -178,13 +178,13 @@ class UpdateResponder {
 
 }  // namespace
 
-// Tests the interest group management functionality of AdAuctionService -- this
-// particular functionality used to be in a separate interface called
+// Tests the interest group management functionality of AdAuctionServiceImpl --
+// this particular functionality used to be in a separate interface called
 // RestrictedInterestStore. The interfaces were combined so so that they'd share
 // a Mojo pipe (for message ordering consistency).
-class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
+class AdAuctionServiceImplImplTest : public RenderViewHostTestHarness {
  public:
-  RestrictedInterestGroupStoreImplTest()
+  AdAuctionServiceImplImplTest()
       : RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     feature_list_.InitAndEnableFeature(blink::features::kInterestGroupStorage);
@@ -192,7 +192,7 @@ class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
         SetBrowserClientForTesting(&content_browser_client_);
   }
 
-  ~RestrictedInterestGroupStoreImplTest() override {
+  ~AdAuctionServiceImplImplTest() override {
     SetBrowserClientForTesting(old_content_browser_client_);
   }
 
@@ -331,7 +331,7 @@ class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
 };
 
 // Check basic success case.
-TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestGroupBasic) {
+TEST_F(AdAuctionServiceImplImplTest, JoinInterestGroupBasic) {
   blink::InterestGroup interest_group = CreateInterestGroup();
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -345,7 +345,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestGroupBasic) {
 }
 
 // Non-HTTPS interest groups should be rejected.
-TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestGroupOriginNotHttps) {
+TEST_F(AdAuctionServiceImplImplTest, JoinInterestGroupOriginNotHttps) {
   // Note that the ContentBrowserClient allows URLs based on hosts, not origins,
   // so it should not block this URL. Instead, it should run into the HTTPS
   // check.
@@ -359,8 +359,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestGroupOriginNotHttps) {
 }
 
 // Test one origin trying to add an interest group for another.
-TEST_F(RestrictedInterestGroupStoreImplTest,
-       JoinInterestGroupWrongOwnerOrigin) {
+TEST_F(AdAuctionServiceImplImplTest, JoinInterestGroupWrongOwnerOrigin) {
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.owner = kOriginB;
   JoinInterestGroupAndFlush(interest_group);
@@ -370,7 +369,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
 }
 
 // Test joining an interest group with a cross-site owner.
-TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestFromCrossSiteIFrame) {
+TEST_F(AdAuctionServiceImplImplTest, JoinInterestFromCrossSiteIFrame) {
   // Create a subframe and use it to send the join request.
   content::RenderFrameHostTester* rfh_tester =
       content::RenderFrameHostTester::For(main_rfh());
@@ -407,7 +406,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestFromCrossSiteIFrame) {
 //
 // TODO(mmenke): Once ReportBadMessage is called in these cases, make sure Mojo
 // pipe is closed as well.
-TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestGroupCrossSiteUrls) {
+TEST_F(AdAuctionServiceImplImplTest, JoinInterestGroupCrossSiteUrls) {
   const GURL kBadUrl = GURL("https://user:pass@a.test/");
 
   // Test `bidding_url`.
@@ -430,8 +429,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestGroupCrossSiteUrls) {
 }
 
 // Check that cross-origin leave interest group operations don't work.
-TEST_F(RestrictedInterestGroupStoreImplTest,
-       LeaveInterestGroupWrongOwnerOrigin) {
+TEST_F(AdAuctionServiceImplImplTest, LeaveInterestGroupWrongOwnerOrigin) {
   // https://a.test/ joins an interest group.
   JoinInterestGroupAndFlush(CreateInterestGroup());
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -448,7 +446,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
 }
 
 // Test leaving an interest group with a cross-site owner.
-TEST_F(RestrictedInterestGroupStoreImplTest, LeaveInterestFromCrossSiteIFrame) {
+TEST_F(AdAuctionServiceImplImplTest, LeaveInterestFromCrossSiteIFrame) {
   // Join interest group from c.
   NavigateAndCommit(kUrlC);
 
@@ -495,7 +493,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest, LeaveInterestFromCrossSiteIFrame) {
 // navigator.updateAdInterestGroups() functionality.
 
 // The server JSON updates all fields that can be updated.
-TEST_F(RestrictedInterestGroupStoreImplTest, UpdateAllUpdatableFields) {
+TEST_F(AdAuctionServiceImplImplTest, UpdateAllUpdatableFields) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
   update_responder_->RegisterUpdateResponse(
@@ -555,7 +553,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest, UpdateAllUpdatableFields) {
 }
 
 // Only set the ads field -- the other fields shouldn't be changed.
-TEST_F(RestrictedInterestGroupStoreImplTest, UpdatePartialPerformsMerge) {
+TEST_F(AdAuctionServiceImplImplTest, UpdatePartialPerformsMerge) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
   update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
@@ -613,7 +611,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest, UpdatePartialPerformsMerge) {
 }
 
 // The update shouldn't change the expiration time of the interest group.
-TEST_F(RestrictedInterestGroupStoreImplTest, UpdateDoesntChangeExpiration) {
+TEST_F(AdAuctionServiceImplImplTest, UpdateDoesntChangeExpiration) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
   update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
@@ -664,8 +662,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest, UpdateDoesntChangeExpiration) {
 }
 
 // Only set the ads field -- the other fields shouldn't be changed.
-TEST_F(RestrictedInterestGroupStoreImplTest,
-       UpdateSucceedsIfOptionalNameOwnerMatch) {
+TEST_F(AdAuctionServiceImplImplTest, UpdateSucceedsIfOptionalNameOwnerMatch) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
   update_responder_->RegisterUpdateResponse(
@@ -728,8 +725,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
 // Try to set the name -- for security, name and owner shouldn't be
 // allowed to change. If they don't match the interest group (update URLs are
 // registered per interest group), fail the update and don't update anything.
-TEST_F(RestrictedInterestGroupStoreImplTest,
-       NoUpdateIfOptionalNameDoesntMatch) {
+TEST_F(AdAuctionServiceImplImplTest, NoUpdateIfOptionalNameDoesntMatch) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
   update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
@@ -776,8 +772,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
 // Try to set the owner -- for security, name and owner shouldn't be
 // allowed to change. If they don't match the interest group (update URLs are
 // registered per interest group), fail the update and don't update anything.
-TEST_F(RestrictedInterestGroupStoreImplTest,
-       NoUpdateIfOptionalOwnerDoesntMatch) {
+TEST_F(AdAuctionServiceImplImplTest, NoUpdateIfOptionalOwnerDoesntMatch) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
   update_responder_->RegisterUpdateResponse(
@@ -823,7 +818,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
 
 // Join 2 interest groups, each with the same owner, but with different update
 // URLs. Both interest groups should be updated correctly.
-TEST_F(RestrictedInterestGroupStoreImplTest, UpdateMultipleInterestGroups) {
+TEST_F(AdAuctionServiceImplImplTest, UpdateMultipleInterestGroups) {
   constexpr char kGroupName1[] = "group1";
   constexpr char kGroupName2[] = "group2";
   constexpr char kDailyUpdateUrlPath1[] =
@@ -913,7 +908,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest, UpdateMultipleInterestGroups) {
 // Join 2 interest groups, each with a different owner. When updating interest
 // groups, only the 1 interest group owned by the origin of the frame that
 // called navigator.updateAdInterestGroups() gets updated.
-TEST_F(RestrictedInterestGroupStoreImplTest, UpdateOnlyOwnOrigin) {
+TEST_F(AdAuctionServiceImplImplTest, UpdateOnlyOwnOrigin) {
   // Both interest groups can share the same update logic and path (they just
   // use different origins).
   constexpr char kDailyUpdateUrlPath[] =
@@ -991,7 +986,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest, UpdateOnlyOwnOrigin) {
 }
 
 // Test updating an interest group with a cross-site owner.
-TEST_F(RestrictedInterestGroupStoreImplTest, UpdateFromCrossSiteIFrame) {
+TEST_F(AdAuctionServiceImplImplTest, UpdateFromCrossSiteIFrame) {
   // All interest groups can share the same update logic and path (they just
   // use different origins).
   constexpr char kDailyUpdateUrlPath[] =
@@ -1121,8 +1116,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest, UpdateFromCrossSiteIFrame) {
 
 // The `ads` field is valid, but the ad `renderUrl` field is an invalid
 // URL. The entire update should get cancelled, since updates are atomic.
-TEST_F(RestrictedInterestGroupStoreImplTest,
-       UpdateInvalidFieldCancelsAllUpdates) {
+TEST_F(AdAuctionServiceImplImplTest, UpdateInvalidFieldCancelsAllUpdates) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
   update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
@@ -1167,7 +1161,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
 }
 
 // The server response can't be parsed as valid JSON. The update is cancelled.
-TEST_F(RestrictedInterestGroupStoreImplTest, UpdateInvalidJSONIgnored) {
+TEST_F(AdAuctionServiceImplImplTest, UpdateInvalidJSONIgnored) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
   update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
@@ -1213,7 +1207,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest, UpdateInvalidJSONIgnored) {
 
 // The server response is valid, but we simulate the JSON parser (which may
 // run in a separate process) crashing, so the update doesn't happen.
-TEST_F(RestrictedInterestGroupStoreImplTest, UpdateJSONParserCrash) {
+TEST_F(AdAuctionServiceImplImplTest, UpdateJSONParserCrash) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
   update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
@@ -1264,7 +1258,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest, UpdateJSONParserCrash) {
 #endif  // !defined(OS_ANDROID)
 
 // The network request fails (not implemented), so the update is cancelled.
-TEST_F(RestrictedInterestGroupStoreImplTest, UpdateNetworkFailure) {
+TEST_F(AdAuctionServiceImplImplTest, UpdateNetworkFailure) {
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUrlA.Resolve("no_handler.json");
   interest_group.bidding_url =
@@ -1301,7 +1295,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest, UpdateNetworkFailure) {
 // expires before the interest group updates. Don't advance time enough for DB
 // maintenance tasks to run -- that is the interest group will only exist on
 // disk in an expired state, and not appear in queries.
-TEST_F(RestrictedInterestGroupStoreImplTest,
+TEST_F(AdAuctionServiceImplImplTest,
        UpdateDuringInterestGroupExpirationNoDbMaintenence) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
@@ -1383,7 +1377,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
 // expires before the interest group updates. Advance time enough for DB
 // maintenance tasks to run -- that is the interest group will be deleted from
 // the database.
-TEST_F(RestrictedInterestGroupStoreImplTest,
+TEST_F(AdAuctionServiceImplImplTest,
        UpdateDuringInterestGroupExpirationWithDbMaintenence) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
@@ -1463,8 +1457,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
 
 // The update doesn't happen because the update URL isn't specified at
 // Join() time.
-TEST_F(RestrictedInterestGroupStoreImplTest,
-       DoesntChangeGroupsWithNoUpdateUrl) {
+TEST_F(AdAuctionServiceImplImplTest, DoesntChangeGroupsWithNoUpdateUrl) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
   update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
@@ -1508,7 +1501,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
 
 // Register a bid and a win, then perform a successful update. The bid and win
 // stats shouldn't change.
-TEST_F(RestrictedInterestGroupStoreImplTest, UpdateDoesntChangeBrowserSignals) {
+TEST_F(AdAuctionServiceImplImplTest, UpdateDoesntChangeBrowserSignals) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
   update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
@@ -1576,8 +1569,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest, UpdateDoesntChangeBrowserSignals) {
 // Update attempt does nothing (rate limited).
 // Advance to just before time limit drops, update does nothing (rate limited).
 // Advance after time limit. Update should work.
-TEST_F(RestrictedInterestGroupStoreImplTest,
-       UpdateRateLimitedAfterSuccessfulUpdate) {
+TEST_F(AdAuctionServiceImplImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
   update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
@@ -1683,8 +1675,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
 // Advance to just before rate limit drops (which for bad response is the longer
 // "successful" duration), update does nothing (rate limited).
 // Advance after time limit. Update should work.
-TEST_F(RestrictedInterestGroupStoreImplTest,
-       UpdateRateLimitedAfterBadUpdateResponse) {
+TEST_F(AdAuctionServiceImplImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
   update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
@@ -1788,8 +1779,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
 // Update does nothing (rate limited).
 // Advance to just before rate limit drops, update does nothing (rate limited).
 // Advance after time limit. Update should work.
-TEST_F(RestrictedInterestGroupStoreImplTest,
-       UpdateRateLimitedAfterFailedUpdate) {
+TEST_F(AdAuctionServiceImplImplTest, UpdateRateLimitedAfterFailedUpdate) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
   update_responder_->FailNextRequestWithError(net::ERR_CONNECTION_RESET);
@@ -1891,8 +1881,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
 // Update interest group fails.
 // Change update response to different value that will succeed.
 // Update succeeds (not rate limited).
-TEST_F(RestrictedInterestGroupStoreImplTest,
-       UpdateNotRateLimitedIfDisconnected) {
+TEST_F(AdAuctionServiceImplImplTest, UpdateNotRateLimitedIfDisconnected) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
   update_responder_->FailNextRequestWithError(net::ERR_INTERNET_DISCONNECTED);
@@ -1949,7 +1938,7 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
 }
 
 // Fire off many updates rapidly in a loop. Only one update should happen.
-TEST_F(RestrictedInterestGroupStoreImplTest, UpdateRateLimitedTightLoop) {
+TEST_F(AdAuctionServiceImplImplTest, UpdateRateLimitedTightLoop) {
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
   update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
