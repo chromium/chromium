@@ -93,6 +93,7 @@ scoped_refptr<const ComputedStyle> CreateLayoutStyle(
   scoped_refptr<ComputedStyle> layout_style = ComputedStyle::Clone(style);
   layout_style->SetDirection(propagated_style.Direction());
   layout_style->SetWritingMode(propagated_style.GetWritingMode());
+  layout_style->UpdateFontOrientation();
   return layout_style;
 }
 
@@ -130,29 +131,49 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
       return;
   }
 
-  if (auto* layout_object = GetLayoutObject()) {
-    scoped_refptr<const ComputedStyle> new_style =
-        LayoutStyleForElement(layout_object->Style());
-    layout_object->SetStyle(new_style);
-    // We need to propagate the style to text children because the used
-    // writing-mode and direction affects text children. Child elements,
-    // however, inherit the computed value, which is unaffected by the
-    // propagated used value from body.
-    for (Node* node = firstChild(); node; node = node->nextSibling()) {
-      if (!node->IsTextNode() || node->NeedsReattachLayoutTree())
-        continue;
-      LayoutObject* const layout_text = node->GetLayoutObject();
-      if (!layout_text)
-        continue;
-      auto* const text_combine =
-          DynamicTo<LayoutNGTextCombine>(layout_text->Parent());
-      if (UNLIKELY(text_combine)) {
-        layout_text->SetStyle(text_combine->Style());
-        continue;
-      }
-      layout_text->SetStyle(new_style);
+  auto* const layout_object = GetLayoutObject();
+  if (!layout_object)
+    return;
+
+  const ComputedStyle* const old_style = layout_object->Style();
+  scoped_refptr<const ComputedStyle> new_style =
+      LayoutStyleForElement(layout_object->Style());
+
+  if (old_style == new_style)
+    return;
+
+  const bool is_orthogonal = old_style->IsHorizontalWritingMode() !=
+                             new_style->IsHorizontalWritingMode();
+
+  // We need to propagate the style to text children because the used
+  // writing-mode and direction affects text children. Child elements,
+  // however, inherit the computed value, which is unaffected by the
+  // propagated used value from body.
+  for (Node* node = firstChild(); node; node = node->nextSibling()) {
+    if (!node->IsTextNode() || node->NeedsReattachLayoutTree())
+      continue;
+    LayoutObject* const layout_text = node->GetLayoutObject();
+    if (!layout_text)
+      continue;
+    if (is_orthogonal) {
+      // If the old and new writing-modes are orthogonal, reattach the layout
+      // objects to make sure we create or remove any LayoutNGTextCombine.
+      node->SetNeedsReattachLayoutTree();
+      continue;
     }
+    auto* const text_combine =
+        DynamicTo<LayoutNGTextCombine>(layout_text->Parent());
+    if (UNLIKELY(text_combine)) {
+      layout_text->SetStyle(text_combine->Style());
+      continue;
     }
+    layout_text->SetStyle(new_style);
   }
+
+  // Note: We should not call |Node::SetComputedStyle()| because computed
+  // style keeps original style instead.
+  // See wm-propagation-body-computed-root.html
+  layout_object->SetStyle(new_style);
+}
 
 }  // namespace blink

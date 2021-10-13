@@ -2231,31 +2231,38 @@ void StyleEngine::ClearEnsuredDescendantStyles(Element& root) {
 }
 
 void StyleEngine::RebuildLayoutTree() {
-  DCHECK(GetDocument().documentElement());
-  DCHECK(!InRebuildLayoutTree());
-  base::AutoReset<bool> rebuild_scope(&in_layout_tree_rebuild_, true);
-
-  // We need a root scope here in case we recalc style for ::first-letter
-  // elements as part of UpdateFirstLetterPseudoElement.
-  SelectorFilterRootScope filter_scope(nullptr);
-
-  Element& root_element = layout_tree_rebuild_root_.RootElement();
+  bool propagate_to_root = false;
   {
-    WhitespaceAttacher whitespace_attacher;
-    root_element.RebuildLayoutTree(whitespace_attacher);
-  }
+    DCHECK(GetDocument().documentElement());
+    DCHECK(!InRebuildLayoutTree());
+    base::AutoReset<bool> rebuild_scope(&in_layout_tree_rebuild_, true);
 
-  for (ContainerNode* ancestor = root_element.GetReattachParent(); ancestor;
-       ancestor = ancestor->GetReattachParent()) {
-    if (auto* ancestor_element = DynamicTo<Element>(ancestor))
-      ancestor_element->RebuildLayoutTreeForTraversalRootAncestor();
-    ancestor->ClearChildNeedsStyleRecalc();
-    ancestor->ClearChildNeedsReattachLayoutTree();
-  }
-  layout_tree_rebuild_root_.Clear();
+    // We need a root scope here in case we recalc style for ::first-letter
+    // elements as part of UpdateFirstLetterPseudoElement.
+    SelectorFilterRootScope filter_scope(nullptr);
 
-  if (IsA<HTMLHtmlElement>(root_element) || IsA<HTMLBodyElement>(root_element))
+    Element& root_element = layout_tree_rebuild_root_.RootElement();
+    {
+      WhitespaceAttacher whitespace_attacher;
+      root_element.RebuildLayoutTree(whitespace_attacher);
+    }
+
+    for (ContainerNode* ancestor = root_element.GetReattachParent(); ancestor;
+         ancestor = ancestor->GetReattachParent()) {
+      if (auto* ancestor_element = DynamicTo<Element>(ancestor))
+        ancestor_element->RebuildLayoutTreeForTraversalRootAncestor();
+      ancestor->ClearChildNeedsStyleRecalc();
+      ancestor->ClearChildNeedsReattachLayoutTree();
+    }
+    layout_tree_rebuild_root_.Clear();
+    propagate_to_root = IsA<HTMLHtmlElement>(root_element) ||
+                        IsA<HTMLBodyElement>(root_element);
+  }
+  if (propagate_to_root) {
     PropagateWritingModeAndDirectionToHTMLRoot();
+    if (NeedsLayoutTreeRebuild())
+      RebuildLayoutTree();
+  }
 }
 
 void StyleEngine::UpdateStyleAndLayoutTree() {

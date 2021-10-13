@@ -3128,7 +3128,8 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
         // <br> or <wbr>.
         // See StyleToHorizontalWritingModeWithWordBreak
         DCHECK(child->SlowFirstChild()->IsBR() ||
-               To<LayoutText>(child->SlowFirstChild())->IsWordBreak());
+               To<LayoutText>(child->SlowFirstChild())->IsWordBreak() ||
+               child->SlowFirstChild()->GetNode()->NeedsReattachLayoutTree());
       } else {
         // "text-combine-width-after-style-change.html" reaches here.
         StyleAdjuster::AdjustStyleForTextCombine(*new_style);

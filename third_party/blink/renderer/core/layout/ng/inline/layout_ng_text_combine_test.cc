@@ -764,6 +764,58 @@ TEST_F(LayoutNGTextCombineTest, Outline) {
           PhysicalRect(PhysicalOffset(25, 100), PhysicalSize(100, 100))));
 }
 
+// http://crbug.com/1256783
+TEST_F(LayoutNGTextCombineTest, PropageWritingModeFromBodyToHorizontal) {
+  InsertStyleElement(
+      "body { writing-mode: horizontal-tb; }"
+      "html {"
+      "text-combine-upright: all;"
+      "writing-mode: vertical-lr;"
+      "}");
+
+  // Make |Text| node child in <html> element to call
+  // |HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody()|
+  GetDocument().documentElement()->insertBefore(
+      Text::Create(GetDocument(), "X"), GetDocument().body());
+
+  RunDocumentLifecycle();
+
+  EXPECT_EQ(
+      R"DUMP(
+LayoutNGBlockFlow HTML
+  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutText #text "X"
+  +--LayoutNGBlockFlow BODY
+)DUMP",
+      ToSimpleLayoutTree(*GetDocument().documentElement()->GetLayoutObject()));
+}
+
+TEST_F(LayoutNGTextCombineTest, PropageWritingModeFromBodyToVertical) {
+  InsertStyleElement(
+      "body { writing-mode: vertical-rl; }"
+      "html {"
+      "text-combine-upright: all;"
+      "writing-mode: horizontal-tb;"
+      "}");
+
+  // Make |Text| node child in <html> element to call
+  // |HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody()|
+  GetDocument().documentElement()->insertBefore(
+      Text::Create(GetDocument(), "X"), GetDocument().body());
+
+  RunDocumentLifecycle();
+
+  EXPECT_EQ(
+      R"DUMP(
+LayoutNGBlockFlow HTML
+  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutText #text "X"
+  +--LayoutNGBlockFlow BODY
+)DUMP",
+      ToSimpleLayoutTree(*GetDocument().documentElement()->GetLayoutObject()));
+}
+
 // http://crbug.com/1222160
 TEST_F(LayoutNGTextCombineTest, RebuildLayoutTreeForDetails) {
   InsertStyleElement(
