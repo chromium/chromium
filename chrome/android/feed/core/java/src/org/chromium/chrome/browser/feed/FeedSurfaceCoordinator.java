@@ -25,6 +25,7 @@ import android.widget.ScrollView;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,6 +39,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
+import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
+import org.chromium.chrome.browser.feed.sections.SectionHeaderView;
+import org.chromium.chrome.browser.feed.sections.SectionHeaderViewBinder;
 import org.chromium.chrome.browser.feed.settings.FeedAutoplaySettingsFragment;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceProvider;
@@ -51,9 +55,6 @@ import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.ntp.SnapScrollHelper;
 import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedProtectionPromoController;
-import org.chromium.chrome.browser.ntp.snippets.SectionHeaderListProperties;
-import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
-import org.chromium.chrome.browser.ntp.snippets.SectionHeaderViewBinder;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -139,7 +140,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     // Feed header fields.
     private @Nullable PropertyModel mSectionHeaderModel;
     private @Nullable ViewGroup mViewportView;
-    private @Nullable SectionHeaderView mSectionHeaderView;
+    private SectionHeaderView mSectionHeaderView;
     private @Nullable ListModelChangeProcessor<PropertyListModel<PropertyModel, PropertyKey>,
             SectionHeaderView, PropertyKey> mSectionHeaderListModelChangeProcessor;
     private @Nullable PropertyModelChangeProcessor<PropertyModel, SectionHeaderView, PropertyKey>
@@ -264,7 +265,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
      * @param windowAndroid The window of the page.
      * @param snapScrollHelper The {@link SnapScrollHelper} for the New Tab Page.
      * @param ntpHeader The extra header on top of the feeds for the New Tab Page.
-     * @param sectionHeaderView The {@link SectionHeaderView} for the feed.
+     * @param toolbarHeight The height of the toolbar which overlaps Feed content at the top of the
+     *   view.
      * @param showDarkBackground Whether is shown on dark background.
      * @param delegate The constructing {@link FeedSurfaceDelegate}.
      * @param pageNavigationDelegate The {@link NativePageNavigationDelegate}
@@ -285,8 +287,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
      */
     public FeedSurfaceCoordinator(Activity activity, SnackbarManager snackbarManager,
             WindowAndroid windowAndroid, @Nullable SnapScrollHelper snapScrollHelper,
-            @Nullable View ntpHeader, @Nullable SectionHeaderView sectionHeaderView,
-            boolean showDarkBackground, FeedSurfaceDelegate delegate,
+            @Nullable View ntpHeader, @Px int toolbarHeight, boolean showDarkBackground,
+            FeedSurfaceDelegate delegate,
             @Nullable NativePageNavigationDelegate pageNavigationDelegate, Profile profile,
             boolean isPlaceholderShownInitially, BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier,
@@ -336,18 +338,23 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
         }
 
         // MVC setup for feed header.
-        mSectionHeaderView = sectionHeaderView;
-        mSectionHeaderModel = SectionHeaderListProperties.create();
-        if (mSectionHeaderView != null) {
-            SectionHeaderViewBinder binder = new SectionHeaderViewBinder();
-            mSectionHeaderModelChangeProcessor = PropertyModelChangeProcessor.create(
-                    mSectionHeaderModel, mSectionHeaderView, binder);
-            mSectionHeaderListModelChangeProcessor = new ListModelChangeProcessor<>(
-                    mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY),
-                    mSectionHeaderView, binder);
-            mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
-                    .addObserver(mSectionHeaderListModelChangeProcessor);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
+            mSectionHeaderView = (SectionHeaderView) LayoutInflater.from(mActivity).inflate(
+                    R.layout.new_tab_page_multi_feed_header, null, false);
+        } else {
+            mSectionHeaderView = (SectionHeaderView) LayoutInflater.from(mActivity).inflate(
+                    R.layout.new_tab_page_feed_v2_expandable_header, null, false);
         }
+        mSectionHeaderModel = SectionHeaderListProperties.create(toolbarHeight);
+
+        SectionHeaderViewBinder binder = new SectionHeaderViewBinder();
+        mSectionHeaderModelChangeProcessor = PropertyModelChangeProcessor.create(
+                mSectionHeaderModel, mSectionHeaderView, binder);
+        mSectionHeaderListModelChangeProcessor = new ListModelChangeProcessor<>(
+                mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY),
+                mSectionHeaderView, binder);
+        mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                .addObserver(mSectionHeaderListModelChangeProcessor);
 
         // Mediator should be created before any Stream changes.
         mMediator =
@@ -661,7 +668,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
                 mActivity, mRecyclerView, mUiConfig, mDefaultMarginPixels, mWideMarginPixels);
 
         if (mNtpHeader != null) UiUtils.removeViewFromParent(mNtpHeader);
-        if (mSectionHeaderView != null) UiUtils.removeViewFromParent(mSectionHeaderView);
+        UiUtils.removeViewFromParent(mSectionHeaderView);
         if (mSigninPromoView != null) UiUtils.removeViewFromParent(mSigninPromoView);
         if (mEnhancedProtectionPromoView != null) {
             UiUtils.removeViewFromParent(mEnhancedProtectionPromoView);
@@ -672,9 +679,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
         if (mNtpHeader != null) {
             headerList.add(mNtpHeader);
         }
-        if (mSectionHeaderView != null) {
-            headerList.add(mSectionHeaderView);
-        }
+        headerList.add(mSectionHeaderView);
+
         setHeaders(headerList);
 
         // Work around https://crbug.com/943873 where default focus highlight shows up after
@@ -823,9 +829,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
             headers.add(enhancedProtectionPromoView);
         }
 
-        if (mSectionHeaderView != null) {
-            headers.add(mSectionHeaderView);
-        }
+        headers.add(mSectionHeaderView);
 
         if (isSignInPromoVisible) {
             headers.add(getSigninPromoView());

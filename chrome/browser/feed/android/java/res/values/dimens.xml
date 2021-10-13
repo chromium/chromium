@@ -39,7 +39,10 @@
     <dimen name="no_content_padding">16dp</dimen>
     <dimen name="no_content_text_padding">8dp</dimen>
 
+    <!-- NTP Feed dimensions -->
     <dimen name="content_suggestions_card_modern_margin">0dp</dimen>
     <dimen name="content_suggestions_card_modern_padding">16dp</dimen>
     <dimen name="ntp_wide_card_lateral_margins">36dp</dimen>
+    <dimen name="feed_v2_header_disabled_padding">11dp</dimen>
+    <dimen name="feed_v2_header_menu_touch_size">48dp</dimen>
 </resources>

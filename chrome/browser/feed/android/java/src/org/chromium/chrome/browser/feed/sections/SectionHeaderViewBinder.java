@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp.snippets;
+package org.chromium.chrome.browser.feed.sections;
 
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -48,6 +48,8 @@ public class SectionHeaderViewBinder
             view.setIsLogo(model.get(SectionHeaderListProperties.IS_LOGO_KEY));
         } else if (key == SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY) {
             view.setOptionsPanel(model.get(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY));
+        } else if (key == SectionHeaderListProperties.TOOLBAR_HEIGHT_PX) {
+            view.setToolbarHeight(model.get(SectionHeaderListProperties.TOOLBAR_HEIGHT_PX));
         }
     }
 
@@ -95,8 +97,8 @@ public class SectionHeaderViewBinder
                 PropertyModel tabModel = headers.get(i);
                 boolean hasUnreadContent = tabModel.get(SectionHeaderProperties.UNREAD_CONTENT_KEY);
 
-                view.setHeaderAt(tabModel.get(SectionHeaderProperties.HEADER_TEXT_KEY),
-                        hasUnreadContent, i);
+                view.setHeaderAt(
+                        tabModel.get(SectionHeaderProperties.HEADER_TEXT_KEY), hasUnreadContent, i);
             }
         }
         if (payload == null

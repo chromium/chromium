@@ -3605,7 +3605,7 @@
         id="UnsafeOptInUsageError"
         message="This declaration is opt-in and its usage should be marked with `@com.google.android.material.badge.ExperimentalBadgeUtils` or `@OptIn(markerClass = com.google.android.material.badge.ExperimentalBadgeUtils.class)`">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/snippets/SectionHeaderView.java"
+            file="../../chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderView.java"
             line="96"/>
     </issue>
 
@@ -3613,7 +3613,7 @@
         id="UnsafeOptInUsageError"
         message="This declaration is opt-in and its usage should be marked with `@com.google.android.material.badge.ExperimentalBadgeUtils` or `@OptIn(markerClass = com.google.android.material.badge.ExperimentalBadgeUtils.class)`">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/snippets/SectionHeaderView.java"
+            file="../../chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderView.java"
             line="104"/>
     </issue>
 

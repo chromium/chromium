@@ -4,7 +4,7 @@
      found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.ntp.snippets.SectionHeaderView
+<org.chromium.chrome.browser.feed.sections.SectionHeaderView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -74,4 +74,4 @@
       android:background="@color/default_bg_color_elev_1"
       android:visibility="gone" />
 
-</org.chromium.chrome.browser.ntp.snippets.SectionHeaderView>
+</org.chromium.chrome.browser.feed.sections.SectionHeaderView>

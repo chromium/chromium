@@ -386,10 +386,9 @@ public class StartSurfaceCoordinator implements StartSurface {
         mIsInitializedWithNative = true;
         if (mIsStartSurfaceEnabled) {
             mExploreSurfaceCoordinator = new ExploreSurfaceCoordinator(mActivity,
-                    mTasksSurface.getBodyViewContainer(), mPropertyModel, true,
-                    mBottomSheetController, mParentTabSupplier,
-                    new ScrollableContainerDelegateImpl(), mSnackbarManager, mShareDelegateSupplier,
-                    mWindowAndroid, mTabModelSelector, mToolbarSupplier,
+                    mTasksSurface.getBodyViewContainer(), mPropertyModel, mBottomSheetController,
+                    mParentTabSupplier, new ScrollableContainerDelegateImpl(), mSnackbarManager,
+                    mShareDelegateSupplier, mWindowAndroid, mTabModelSelector, mToolbarSupplier,
                     mFeedLaunchReliabilityLoggingState, mSwipeRefreshLayout);
         }
         mStartSurfaceMediator.initWithNative(

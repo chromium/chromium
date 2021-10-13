@@ -5,7 +5,6 @@
 package org.chromium.chrome.features.start_surface;
 
 import android.app.Activity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
@@ -20,9 +19,7 @@ import org.chromium.chrome.browser.feed.FeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
-import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -42,7 +39,6 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private final FeedSurfaceController mFeedSurfaceController;
     private final Supplier<Tab> mParentTabSupplier;
-    private final boolean mHasHeader;
     private final SnackbarManager mSnackbarManager;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final WindowAndroid mWindowAndroid;
@@ -69,7 +65,6 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
      * @param activity The current {@link Activity}.
      * @param parentView The parent {@link ViewGroup} for the start surface.
      * @param containerPropertyModel The {@link PropertyModel} for the container.
-     * @param hasHeader Whether the surface has a header.
      * @param bottomSheetController Controls the state of the bottom sheet.
      * @param parentTabSupplier Supplies the current {@link Tab}.
      * @param scrollableContainerDelegate Delegate for the scrollable container.
@@ -82,7 +77,7 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
      * @param swipeRefreshLayout The layout to support pull-to-refresg.
      */
     ExploreSurfaceCoordinator(@NonNull Activity activity, @NonNull ViewGroup parentView,
-            @NonNull PropertyModel containerPropertyModel, boolean hasHeader,
+            @NonNull PropertyModel containerPropertyModel,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull Supplier<Tab> parentTabSupplier,
             @NonNull ScrollableContainerDelegate scrollableContainerDelegate,
@@ -93,7 +88,6 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
             FeedLaunchReliabilityLoggingState feedLaunchReliabilityLoggingState,
             @Nullable FeedSwipeRefreshLayout swipeRefreshLayout) {
         mActivity = activity;
-        mHasHeader = hasHeader;
         mParentTabSupplier = parentTabSupplier;
         mSnackbarManager = snackbarManager;
         mShareDelegateSupplier = shareDelegateSupplier;
@@ -106,10 +100,10 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
             @Override
             public FeedSurfaceCoordinator createFeedSurfaceCoordinator(boolean isInNightMode,
                     boolean isPlaceholderShown, @NewTabPageLaunchOrigin int launchOrigin) {
-                return internalCreateFeedSurfaceCoordinator(mHasHeader, isInNightMode,
-                        isPlaceholderShown, bottomSheetController, scrollableContainerDelegate,
-                        launchOrigin, toolbarSupplier, feedLaunchReliabilityLoggingState,
-                        swipeRefreshLayout, parentView);
+                return internalCreateFeedSurfaceCoordinator(isInNightMode, isPlaceholderShown,
+                        bottomSheetController, scrollableContainerDelegate, launchOrigin,
+                        toolbarSupplier, feedLaunchReliabilityLoggingState, swipeRefreshLayout,
+                        parentView);
             }
         };
     }
@@ -127,7 +121,7 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
     public FeedSurfaceLifecycleManager createStreamLifecycleManager(
             Activity activity, FeedSurfaceCoordinator coordinator) {
         mExploreSurfaceFeedLifecycleManager =
-                new ExploreSurfaceFeedLifecycleManager(activity, mHasHeader, coordinator);
+                new ExploreSurfaceFeedLifecycleManager(activity, coordinator);
         return mExploreSurfaceFeedLifecycleManager;
     }
 
@@ -136,9 +130,8 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
         return false;
     }
 
-    private FeedSurfaceCoordinator internalCreateFeedSurfaceCoordinator(boolean hasHeader,
-            boolean isInNightMode, boolean isPlaceholderShown,
-            BottomSheetController bottomSheetController,
+    private FeedSurfaceCoordinator internalCreateFeedSurfaceCoordinator(boolean isInNightMode,
+            boolean isPlaceholderShown, BottomSheetController bottomSheetController,
             ScrollableContainerDelegate scrollableContainerDelegate,
             @NewTabPageLaunchOrigin int launchOrigin, @NonNull Supplier<Toolbar> toolbarSupplier,
             FeedLaunchReliabilityLoggingState feedLaunchReliabilityLoggingState,
@@ -149,22 +142,10 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
         }
         Profile profile = Profile.getLastUsedRegularProfile();
 
-        SectionHeaderView sectionHeaderView = null;
-        if (hasHeader) {
-            LayoutInflater inflater = LayoutInflater.from(mActivity);
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
-                sectionHeaderView = (SectionHeaderView) inflater.inflate(
-                        org.chromium.chrome.R.layout.new_tab_page_multi_feed_header, null, false);
-            } else {
-                sectionHeaderView = (SectionHeaderView) inflater.inflate(
-                        org.chromium.chrome.R.layout.new_tab_page_feed_v2_expandable_header, null,
-                        false);
-            }
-        }
-
         FeedSurfaceCoordinator feedSurfaceCoordinator = new FeedSurfaceCoordinator(mActivity,
-                mSnackbarManager, mWindowAndroid, null, null, sectionHeaderView, isInNightMode,
-                this, mExploreSurfaceNavigationDelegate, profile, isPlaceholderShown,
+                mSnackbarManager, mWindowAndroid, null, null,
+                mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow),
+                isInNightMode, this, mExploreSurfaceNavigationDelegate, profile, isPlaceholderShown,
                 bottomSheetController, mShareDelegateSupplier, scrollableContainerDelegate,
                 launchOrigin, PrivacyPreferencesManagerImpl.getInstance(), toolbarSupplier,
                 feedLaunchReliabilityLoggingState, swipeRefreshLayout, /*overScrollDisabled=*/true,

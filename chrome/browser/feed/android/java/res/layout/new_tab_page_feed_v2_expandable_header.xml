@@ -4,7 +4,7 @@
      found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.ntp.snippets.SectionHeaderView
+<org.chromium.chrome.browser.feed.sections.SectionHeaderView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -39,4 +39,4 @@
         android:contentDescription="@string/accessibility_ntp_feed_menu_button"
         app:menuMaxWidth="@dimen/feed_header_menu_max_width"
         app:tint="@null" />
-</org.chromium.chrome.browser.ntp.snippets.SectionHeaderView>
+</org.chromium.chrome.browser.feed.sections.SectionHeaderView>

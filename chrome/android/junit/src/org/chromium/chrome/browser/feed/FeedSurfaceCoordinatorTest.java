@@ -42,6 +42,8 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooksImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
+import org.chromium.chrome.browser.feed.sections.SectionHeaderView;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.v2.FakeLinearLayoutManager;
@@ -53,8 +55,6 @@ import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.SnapScrollHelper;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
-import org.chromium.chrome.browser.ntp.snippets.SectionHeaderListProperties;
-import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -354,8 +354,8 @@ public class FeedSurfaceCoordinatorTest {
 
     private FeedSurfaceCoordinator createCoordinator() {
         return new FeedSurfaceCoordinator(mActivity, mSnackbarManager, mWindowAndroid, mSnapHelper,
-                null, mSectionHeaderView, false, new TestSurfaceDelegate(), mPageNavigationDelegate,
-                mProfileMock, false, mBottomSheetController, mShareDelegateSupplier, null,
+                null, 0, false, new TestSurfaceDelegate(), mPageNavigationDelegate, mProfileMock,
+                false, mBottomSheetController, mShareDelegateSupplier, null,
                 NewTabPageLaunchOrigin.UNKNOWN, mPrivacyPreferencesManager,
                 ()
                         -> { return null; },

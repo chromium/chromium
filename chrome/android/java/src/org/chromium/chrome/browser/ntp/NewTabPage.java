@@ -44,12 +44,10 @@ import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.NtpFeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
-import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -326,6 +324,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mJankTracker = jankTracker;
         mToolbarSupplier = toolbarSupplier;
         mMostVisitedTileClickObservers = new ObserverList<>();
+        mBrowserControlsStateProvider = browserControlsStateProvider;
+
         Profile profile = Profile.fromWebContents(mTab.getWebContents());
 
         SuggestionsNavigationDelegate navigationDelegate = new SuggestionsNavigationDelegate(
@@ -393,7 +393,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         initializeMainView(activity, windowAndroid, snackbarManager, uma, isInNightMode,
                 bottomSheetController, shareDelegateSupplier, url);
 
-        mBrowserControlsStateProvider = browserControlsStateProvider;
         getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View view) {
@@ -450,19 +449,10 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         LayoutInflater inflater = LayoutInflater.from(activity);
         mNewTabPageLayout = (NewTabPageLayout) inflater.inflate(R.layout.new_tab_page_layout, null);
 
-        final SectionHeaderView sectionHeaderView;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
-            sectionHeaderView = (SectionHeaderView) inflater.inflate(
-                    R.layout.new_tab_page_multi_feed_header, null, false);
-        } else {
-            sectionHeaderView = (SectionHeaderView) inflater.inflate(
-                    R.layout.new_tab_page_feed_v2_expandable_header, null, false);
-        }
-
         mFeedSurfaceProvider = new FeedSurfaceCoordinator(activity, snackbarManager, windowAndroid,
                 new SnapScrollHelper(mNewTabPageManager, mNewTabPageLayout), mNewTabPageLayout,
-                sectionHeaderView, isInNightMode, this, mNewTabPageManager.getNavigationDelegate(),
-                profile,
+                mBrowserControlsStateProvider.getTopControlsHeight(), isInNightMode, this,
+                mNewTabPageManager.getNavigationDelegate(), profile,
                 /* isPlaceholderShownInitially= */ false, bottomSheetController,
                 shareDelegateSupplier, /* externalScrollableContainerDelegate= */ null,
                 NewTabPageUtils.decodeOriginFromNtpUrl(url),

@@ -206,6 +206,7 @@ android_resources("java_resources") {
     "java/res/layout/dialog_control_description.xml",
     "java/res/layout/divider_preference.xml",
     "java/res/layout/expand_arrow_with_separator.xml",
+    "java/res/layout/horizontal_divider.xml",
     "java/res/layout/indeterminate_progress_view.xml",
     "java/res/layout/list_menu_item.xml",
     "java/res/layout/modern_list_item_view.xml",

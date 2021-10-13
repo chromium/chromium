@@ -198,8 +198,6 @@
     <dimen name="feed_header_icon_size">20dp</dimen>
     <dimen name="feed_header_height">44dp</dimen>
     <dimen name="feed_v2_header_menu_width">18dp</dimen>
-    <dimen name="feed_v2_header_menu_touch_size">48dp</dimen>
-    <dimen name="feed_v2_header_disabled_padding">11dp</dimen>
     <dimen name="ntp_header_lateral_paddings_v2">16dp</dimen>
     <dimen name="feed_options_vertical_margins">6dp</dimen>
     <dimen name="feed_options_chip_margin">8dp</dimen>
@@ -315,8 +313,6 @@
          https://www.google.com/design/spec/components/dialogs.html#dialogs-simple-dialogs -->
     <dimen name="dialog_width_unit">56dp</dimen>  <!-- MD dialog widths are multiples of this. -->
 
-    <!--  Miscellaneous dimensions -->
-    <dimen name="text_bubble_menu_anchor_y_inset">14dp</dimen>
     <!--  Used as a margin to force the shadow view to overlap other views. -->
     <dimen name="action_bar_shadow_margin_negative">-10dp</dimen>
     <dimen name="sync_promo_view_padding">16dp</dimen>

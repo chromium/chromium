@@ -47,7 +47,7 @@ public class FeedUma {
     public static void recordFeedLoadMoreTrigger(
             int sectionType, int totalCards, int numCardsRemaining) {
         // TODO(crbug/1238047): annotate sectionType param with
-        // @org.chromium.chrome.browser.ntp.snippets.SectionType
+        // @org.chromium.chrome.browser.feed.sections.SectionType
         assert totalCards >= 0;
         assert numCardsRemaining >= 0;
         assert OFFSET_FROM_END_OF_STREAM_HISTOGRAM_NAMES.length

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp.snippets;
+package org.chromium.chrome.browser.feed.sections;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.badge.BadgeDrawable;
@@ -34,8 +35,8 @@ import com.google.android.material.badge.BadgeUtils;
 import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.base.Log;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.FeedUma;
+import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -143,11 +144,16 @@ public class SectionHeaderView extends LinearLayout {
     private Drawable mNoIndicatorDrawable;
 
     private boolean mTextsEnabled;
+    private @Px int mToolbarHeight;
 
     public SectionHeaderView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         TypedArray attrArray = context.getTheme().obtainStyledAttributes(
                 attrs, R.styleable.SectionHeaderView, 0, 0);
+    }
+
+    public void setToolbarHeight(@Px int toolbarHeight) {
+        mToolbarHeight = toolbarHeight;
     }
 
     @Override
@@ -475,9 +481,7 @@ public class SectionHeaderView extends LinearLayout {
             public boolean onPreDraw() {
                 boolean result = super.onPreDraw();
 
-                int minRectBottomPosPx =
-                        getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
-                        + mMenuView.getHeight() / 2;
+                int minRectBottomPosPx = mToolbarHeight + mMenuView.getHeight() / 2;
                 // Notify that the rectangle is hidden to dismiss the popup if the anchor is
                 // positioned too high.
                 if (getRect().bottom < minRectBottomPosPx) {
@@ -488,20 +492,19 @@ public class SectionHeaderView extends LinearLayout {
             }
         };
         int yInsetPx =
-                getResources().getDimensionPixelOffset(R.dimen.text_bubble_menu_anchor_y_inset);
+                getResources().getDimensionPixelOffset(R.dimen.iph_text_bubble_menu_anchor_y_inset);
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
-        params.setCircleRadius(
-                new PulseDrawable.Bounds() {
-                    @Override
-                    public float getMaxRadiusPx(Rect bounds) {
-                        return Math.max(bounds.width(), bounds.height()) / 2.f;
-                    }
+        params.setCircleRadius(new PulseDrawable.Bounds() {
+            @Override
+            public float getMaxRadiusPx(Rect bounds) {
+                return Math.max(bounds.width(), bounds.height()) / 2.f;
+            }
 
-                    @Override
-                    public float getMinRadiusPx(Rect bounds) {
-                        return Math.min(bounds.width(), bounds.height()) / 1.5f;
-                    }
-                });
+            @Override
+            public float getMinRadiusPx(Rect bounds) {
+                return Math.min(bounds.width(), bounds.height()) / 1.5f;
+            }
+        });
         helper.requestShowIPH(
                 new IPHCommandBuilder(mMenuView.getContext().getResources(),
                         FeatureConstants.FEED_HEADER_MENU_FEATURE, R.string.ntp_feed_menu_iph,
