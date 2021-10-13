@@ -19,6 +19,7 @@
 @protocol GridCommands;
 @protocol GridDragDropHandler;
 @protocol GridImageDataSource;
+@protocol PriceCardDataSource;
 @protocol GridShareableItemsProvider;
 class GURL;
 @protocol IncognitoReauthCommands;
@@ -112,6 +113,9 @@ enum class TabGridPageConfiguration {
 // Data sources provide lazy access to heavy-weight resources.
 @property(nonatomic, weak) id<GridImageDataSource> regularTabsImageDataSource;
 @property(nonatomic, weak) id<GridImageDataSource> incognitoTabsImageDataSource;
+
+// Data source for acquiring data which power the PriceCardView
+@property(nonatomic, weak) id<PriceCardDataSource> priceCardDataSource;
 
 @property(nonatomic, weak) id<GridShareableItemsProvider>
     regularTabsShareableItemsProvider;

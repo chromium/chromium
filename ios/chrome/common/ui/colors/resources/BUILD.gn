@@ -12,6 +12,8 @@ group("resources") {
     ":close_button_color",
     ":disabled_tint_color",
     ":favicon_background_color",
+    ":green_50_color",
+    ":green_700_color",
     ":green_color",
     ":grey_100_color",
     ":grey_200_color",
@@ -73,6 +75,14 @@ colorset("favicon_background_color") {
 
 colorset("green_color") {
   sources = [ "green_color.colorset/Contents.json" ]
+}
+
+colorset("green_50_color") {
+  sources = [ "green_50_color.colorset/Contents.json" ]
+}
+
+colorset("green_700_color") {
+  sources = [ "green_700_color.colorset/Contents.json" ]
 }
 
 colorset("grey_50_color") {

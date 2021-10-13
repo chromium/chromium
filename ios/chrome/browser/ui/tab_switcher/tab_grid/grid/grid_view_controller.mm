@@ -13,8 +13,11 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
+#import "ios/chrome/browser/commerce/price_alert_util.h"
 #include "ios/chrome/browser/procedural_block_types.h"
 #import "ios/chrome/browser/ui/commands/thumb_strip_commands.h"
+#import "ios/chrome/browser/ui/commerce/price_card/price_card_data_source.h"
+#import "ios/chrome/browser/ui/commerce/price_card/price_card_item.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
@@ -1065,6 +1068,16 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                      if (cell.itemIdentifier == itemIdentifier)
                                        cell.snapshot = snapshot;
                                    }];
+  if (IsPriceAlertsEnabled()) {
+    [self.priceCardDataSource
+        priceCardForIdentifier:itemIdentifier
+                    completion:^(PriceCardItem* priceCardItem) {
+                      if (priceCardItem &&
+                          cell.itemIdentifier == itemIdentifier)
+                        [cell setPriceDrop:priceCardItem.price
+                             previousPrice:priceCardItem.previousPrice];
+                    }];
+  }
 }
 
 // Tells the delegate that the user tapped the item with identifier

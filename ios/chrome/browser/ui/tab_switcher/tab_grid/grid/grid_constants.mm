@@ -88,6 +88,9 @@ const CGFloat kGridCellSelectIconSize = 25.0f;
 const CGFloat kGridCellSelectionRingGapWidth = 2.0f;
 const CGFloat kGridCellSelectionRingTintWidth = 5.0f;
 
+const CGFloat kGridCellPriceDropTopSpacing = 10.0f;
+const CGFloat kGridCellPriceDropLeadingSpacing = 10.0f;
+
 const CGFloat kPlusSignImageTrailingCenterDistance = 55.5;
 // The threshold is set so that the hide transition starts at the moment the
 // plus sign image from the button and the one from the plus sign cell coincide
