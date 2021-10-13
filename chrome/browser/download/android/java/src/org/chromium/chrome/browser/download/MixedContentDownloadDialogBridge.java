@@ -44,7 +44,10 @@ public class MixedContentDownloadDialogBridge {
     private void showDialog(WindowAndroid windowAndroid, boolean fillNegatieButton, String fileName,
             long totalBytes, long callbackId) {
         Activity activity = windowAndroid.getActivity().get();
-        if (activity == null) onConfirmed(callbackId, false);
+        if (activity == null) {
+            onConfirmed(callbackId, false);
+            return;
+        }
 
         new MixedContentDownloadDialog().show(activity,
                 ((ModalDialogManagerHolder) activity).getModalDialogManager(), fileName, totalBytes,
