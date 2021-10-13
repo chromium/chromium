@@ -3935,6 +3935,73 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Ndk-translation"/>
 </enum>
 
+<enum name="ArcNetworkError">
+<!-- ArcNetworkError values from components/arc/mojom/metrics.mojom -->
+
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Get host networks error (mojo)"/>
+  <int value="2" label="Add host WiFi network error (mojo)"/>
+  <int value="3" label="Forget host WiFi network error (mojo)"/>
+  <int value="4" label="Connect host WiFi network error (mojo)"/>
+  <int value="5" label="Disconnect host WiFi network error (mojo)"/>
+  <int value="6" label="Host WiFi scan timeout (mojo)"/>
+  <int value="7" label="Get host WiFi scan results error (mojo)"/>
+  <int value="8" label="Get interface IPv4 address error (netd)"/>
+  <int value="9" label="Set interface IPv4 address error (netd)"/>
+  <int value="10" label="List interfaces error (netd)"/>
+  <int value="11" label="Set interface up error (netd)"/>
+  <int value="12" label="Set interface mtu error (netd)"/>
+  <int value="13" label="Clear interface configuration error (netd)"/>
+  <int value="14" label="Get interface configuration error (netd)"/>
+  <int value="15" label="Restart IPv6 error (netd)"/>
+  <int value="16" label="Start IP forwarding error (netd)"/>
+  <int value="17" label="Stop IP forwarding error (netd)"/>
+  <int value="18" label="Start interface forwarding error (netd)"/>
+  <int value="19" label="Stop interface forwarding error (netd)"/>
+  <int value="20" label="Start tethering error (netd)"/>
+  <int value="21" label="Stop tethering error (netd)"/>
+  <int value="23" label="SNAT start error (netd)"/>
+  <int value="24" label="SNAT stop error (netd)"/>
+</enum>
+
+<enum name="ArcNetworkEvent">
+<!-- ArcNetworkEvent values from components/arc/mojom/metrics.mojom -->
+
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Legacy Android VPN connection"/>
+  <int value="2" label="3p Android VPN connection"/>
+  <int value="3" label="Configure Android VPN (mojo)"/>
+  <int value="4" label="Disconnect Android VPN (mojo)"/>
+  <int value="5" label="DNS test (mojo)"/>
+  <int value="6" label="HTTP test (mojo)"/>
+  <int value="7" label="Ping test (mojo)"/>
+  <int value="8" label="New client (WifiScanner)"/>
+  <int value="9" label="Get scan results (WifiScanner)"/>
+  <int value="10" label="Get single scan results (WifiScanner)"/>
+  <int value="11" label="Enable WifiScanner (WifiScanner)"/>
+  <int value="12" label="Disable WifiScanner (WifiScanner)"/>
+  <int value="13" label="Start single scan (WifiScanner)"/>
+  <int value="14" label="Start background scan (WifiScanner)"/>
+  <int value="15" label="Start PNO scan (WifiScanner)"/>
+  <int value="16" label="Register scan result listener (WifiScanner)"/>
+  <int value="17" label="Start scan (WifiManager)"/>
+  <int value="18" label="Enable WiFi (WifiManager)"/>
+  <int value="19" label="Disable WiFi (WifiManager)"/>
+  <int value="20" label="Disconnect WiFi network (WifiManager)"/>
+  <int value="21" label="Reconnect WiFi network (WifiManager)"/>
+  <int value="22" label="Get WiFi networks (WifiManager)"/>
+  <int value="23" label="Get WiFi networks with PIIs (WifiManager)"/>
+  <int value="24" label="Add WiFi network (WifiManager)"/>
+  <int value="25" label="Remove WiFi network (WifiManager)"/>
+  <int value="26" label="Enable WiFi network (WifiManager)"/>
+  <int value="27" label="Disable WiFi network (WifiManager)"/>
+  <int value="28" label="Connect WiFi network (WifiManager)"/>
+  <int value="29" label="Save WiFi network (WifiManager)"/>
+  <int value="30" label="Forget WiFi network (WifiManager)"/>
+  <int value="31" label="Register scan result listener (WifiManager)"/>
+  <int value="32" label="Add WiFi network suggestion (WifiManager)"/>
+</enum>
+
 <enum name="ArcNoWindowReason">
   <int value="0" label="NoHandler"/>
   <int value="1" label="NoHandler (from crash)"/>

@@ -596,6 +596,16 @@ void ArcMetricsService::ReportMemoryPressureArcVmKills(int count,
     obs.OnArcMemoryPressureKill(count, estimated_freed_kb);
 }
 
+void ArcMetricsService::ReportArcNetworkEvent(mojom::ArcNetworkEvent event) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramEnumeration("Arc.Net.ArcNetworkEvent", event);
+}
+
+void ArcMetricsService::ReportArcNetworkError(mojom::ArcNetworkError error) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramEnumeration("Arc.Net.ArcNetworkError", error);
+}
+
 ArcMetricsService::ProcessObserver::ProcessObserver(
     ArcMetricsService* arc_metrics_service)
     : arc_metrics_service_(arc_metrics_service) {}

@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 16
+// Next MinVersion: 17
 
 module arc.mojom;
 
@@ -158,6 +158,75 @@ enum ArcDnsQuery {
   ANDROID_API_HOST_NAME = 1,
 };
 
+// These enum values are persisted to metrics thus must be treated as
+// append-only.
+[Extensible]
+enum ArcNetworkEvent {
+  kUnknown = 0,
+  kAndroidLegacyVpnConnection = 1,
+  kAndroidThirdPartyVpnConnection = 2,
+  kMojoConfigureAndroidVpn = 3,
+  kMojoDisconnectAndroidVpn = 4,
+  kMojoDnsTest = 5,
+  kMojoHttpTest = 6,
+  kMojoPingTest = 7,
+  kWifiScannerClientConnection = 8,
+  kWifiScannerGetScanResults = 9,
+  kWifiScannerGetSingleScanResults = 10,
+  kWifiScannerEnable = 11,
+  kWifiScannerDisable = 12,
+  kWifiScannerStartSingleScan = 13,
+  kWifiScannerStartBackgroundScan = 14,
+  kWifiScannerStartPnoScan = 15,
+  kWifiScannerRegisterListener = 16,
+  kWifiManagerStartScan = 17,
+  kWifiManagerEnable = 18,
+  kWifiManagerDisable = 19,
+  kWifiManagerDisconnect = 20,
+  kWifiManagerReconnect = 21,
+  kWifiManagerGetNetworks = 22,
+  kWifiManagerGetNetworksPrivileged = 23,
+  kWifiManagerAddNetwork = 24,
+  kWifiManagerRemoveNetwork = 25,
+  kWifiManagerEnableNetwork = 26,
+  kWifiManagerDisableNetwork = 27,
+  kWifiManagerConnect = 28,
+  kWifiManagerSave = 29,
+  kWifiManagerForget = 30,
+  kWifiManagerRegisterScanListener = 31,
+  kWifiManagerAddNetworkSuggestions = 32,
+};
+
+// These enum values are persisted to metrics thus must be treated as
+// append-only.
+[Extensible]
+enum ArcNetworkError {
+  kUnknown = 0,
+  kMojoGetNetworksError = 1,
+  kMojoWifiAddNetworkFailed = 2,
+  kMojoWifiForgetNetworkFailed = 3,
+  kMojoWifiConnectFailed = 4,
+  kMojoWifiDisconnectFailed = 5,
+  kMojoWifiScanTimeout = 6,
+  kMojoWifiGetScanResultsFailed = 7,
+  kNetdGetIpv4Error = 8,
+  kNetdSetIpv4Error = 9,
+  kNetdIfaceListError = 10,
+  kNetdIfaceUpError = 11,
+  kNetdIfaceMtuError = 12,
+  kNetdIfaceClearError = 13,
+  kNetdIfconfigGetError = 14,
+  kNetdRestartIpv6Error = 15,
+  kNetdIpForwardingStartError = 16,
+  kNetdIpForwardingStopError = 17,
+  kNetdIfaceForwardingStartError = 18,
+  kNetdIfaceForwardingStopError = 19,
+  kNetdTetheringStartError = 20,
+  kNetdTetheringStopError = 21,
+  kNetdSnatStartError = 22,
+  kNetdSnatStopError = 23,
+};
+
 // Describes the type of app kill being reported.
 [Extensible]
 enum AppKillType {
@@ -274,7 +343,7 @@ enum MainAccountHashMigrationStatus {
   // tools/metrics/histograms/enums.xml.
 };
 
-// Next method ID: 19
+// Next method ID: 21
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -353,6 +422,12 @@ interface MetricsHost {
   // don't support images in the clipboard.
   [MinVersion=15] ReportImageCopyPasteCompatAction@18(
       ArcImageCopyPasteCompatAction action_type);
+
+  // Reports occurrence of one event in the ARC networking stack.
+  [MinVersion=16] ReportArcNetworkEvent@19(ArcNetworkEvent event);
+
+  // Reports occurrence of one error in the ARC networking stack.
+  [MinVersion=16] ReportArcNetworkError@20(ArcNetworkError error);
 };
 
 // Next method ID: 3

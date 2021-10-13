@@ -1063,6 +1063,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Arc.Net.ArcNetworkError" enum="ArcNetworkError"
+    expires_after="2022-04-01">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-networking@google.com</owner>
+  <summary>
+    Records errors that happened inside the ARC networking and WiFi Java stack.
+  </summary>
+</histogram>
+
+<histogram name="Arc.Net.ArcNetworkEvent" enum="ArcNetworkEvent"
+    expires_after="2022-04-01">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-networking@google.com</owner>
+  <summary>
+    Records events triggered inside ARC networking and WiFi Java stack related
+    to Android API usage by Android Apps, mojom API usage by the host, and other
+    events such as VPN connections
+  </summary>
+</histogram>
+
 <histogram name="Arc.Net.DnsQuery.AndroidApi" enum="BooleanSuccess"
     expires_after="2022-07-22">
   <owner>mhasank@google.com</owner>
