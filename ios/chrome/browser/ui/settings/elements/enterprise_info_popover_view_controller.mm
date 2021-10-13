@@ -44,10 +44,9 @@ NSAttributedString* SecondaryMessage(NSString* enterpriseName,
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
   };
 
-  NSString* message;
   NSAttributedString* attributedString;
-
   if (addLearnMoreLink) {
+    NSString* message;
     if (enterpriseName) {
       message = l10n_util::GetNSStringF(
           IDS_IOS_ENTERPRISE_MANAGED_SETTING_DESC_WITH_COMPANY_NAME,
@@ -65,18 +64,20 @@ NSAttributedString* SecondaryMessage(NSString* enterpriseName,
           [NSString stringWithUTF8String:kChromeUIManagementURL],
     };
 
-    // Add a space to have a distance with the leading icon.
     attributedString = AttributedStringFromStringWithLink(
-        [@" " stringByAppendingString:message], textAttributes, linkAttributes);
+        message, textAttributes, linkAttributes);
   } else {
-    message =
-        l10n_util::GetNSString(IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION);
-
-    // Add a space to have a distance with the leading icon.
     attributedString = [[NSAttributedString alloc]
-        initWithString:[@" " stringByAppendingString:message]
+        initWithString:l10n_util::GetNSString(
+                           IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION)
             attributes:textAttributes];
   }
+
+  // Create the padding attachment with width size 10.
+  NSTextAttachment* padding = [[NSTextAttachment alloc] init];
+  padding.bounds = CGRectMake(0, 0, 10, 0);
+  NSAttributedString* paddingString =
+      [NSAttributedString attributedStringWithAttachment:padding];
 
   // Create the leading enterprise icon.
   NSTextAttachment* attachment = [[NSTextAttachment alloc] init];
@@ -96,6 +97,7 @@ NSAttributedString* SecondaryMessage(NSString* enterpriseName,
   NSMutableAttributedString* fullAtrributedString =
       [[NSMutableAttributedString alloc] initWithString:@""];
   [fullAtrributedString appendAttributedString:attachmentString];
+  [fullAtrributedString appendAttributedString:paddingString];
   [fullAtrributedString appendAttributedString:attributedString];
 
   return fullAtrributedString;

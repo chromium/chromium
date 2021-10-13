@@ -172,6 +172,8 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
     _learnMoreTextView.scrollEnabled = NO;
     _learnMoreTextView.editable = NO;
     _learnMoreTextView.adjustsFontForContentSizeCategory = YES;
+    _learnMoreTextView.textContainerInset = UIEdgeInsetsZero;
+    _learnMoreTextView.textContainer.lineFragmentPadding = 0;
     _learnMoreTextView.accessibilityIdentifier =
         kLearnMoreTextViewAccessibilityIdentifier;
 

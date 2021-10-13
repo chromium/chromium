@@ -14,7 +14,7 @@
 namespace {
 
 // Vertical inset for the text content.
-constexpr CGFloat kVerticalInsetValue = 20;
+constexpr CGFloat kVerticalInsetValue = 16;
 // Horizontal inset for the text content.
 constexpr CGFloat kHorizontalInsetValue = 16;
 // Desired percentage of the width of the presented view controller.
@@ -22,7 +22,7 @@ constexpr CGFloat kWidthProportion = 0.75;
 // Max width for the popover.
 constexpr CGFloat kMaxWidth = 300;
 // Distance between the primary text label and the secondary text label.
-constexpr CGFloat kVerticalDistance = 24;
+constexpr CGFloat kVerticalDistance = 10;
 
 }  // namespace
 
@@ -77,7 +77,7 @@ constexpr CGFloat kVerticalDistance = 24;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.view.backgroundColor = UIColor.clearColor;
 
   _scrollView = [[UIScrollView alloc] init];
   _scrollView.backgroundColor = UIColor.clearColor;
@@ -93,6 +93,7 @@ constexpr CGFloat kVerticalDistance = 24;
   // Using a UIView instead of UILayoutGuide as the later behaves weirdly with
   // the scroll view.
   UIView* textContainerView = [[UIView alloc] init];
+  textContainerView.backgroundColor = UIColor.clearColor;
   textContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   [_scrollView addSubview:textContainerView];
   AddSameConstraints(textContainerView, _scrollView);
@@ -186,6 +187,15 @@ constexpr CGFloat kVerticalDistance = 24;
   // scroll view.
   heightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
   heightConstraint.active = YES;
+
+  // Set up a blurred background.
+  UIBlurEffect* blurEffect =
+      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
+  UIVisualEffectView* blurBackgroundView =
+      [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+  blurBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  blurBackgroundView.frame = self.view.bounds;
+  [self.view insertSubview:blurBackgroundView atIndex:0];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
