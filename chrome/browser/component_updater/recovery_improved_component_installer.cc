@@ -110,8 +110,13 @@ void RecoveryComponentActionHandler::RunCommand(
 void RecoveryComponentActionHandler::WaitForCommand(base::Process process) {
   int exit_code = 0;
   const base::TimeDelta kMaxWaitTime = base::Seconds(600);
-  const bool succeeded =
-      process.WaitForExitWithTimeout(kMaxWaitTime, &exit_code);
+  bool succeeded = false;
+  if (!process.IsValid()) {
+    exit_code =
+        static_cast<int>(update_client::InstallError::LAUNCH_PROCESS_FAILED)
+  } else {
+    succeeded = process.WaitForExitWithTimeout(kMaxWaitTime, &exit_code);
+  }
   base::DeletePathRecursively(unpack_path_);
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), succeeded, exit_code, 0));
