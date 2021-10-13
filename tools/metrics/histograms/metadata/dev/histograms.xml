@@ -382,7 +382,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.PanelClosed" enum="DevToolsPanel"
-    expires_after="2021-12-05">
+    expires_after="2022-05-01">
   <owner>yangguo@chromium.org</owner>
   <owner>joselea@microsoft.com</owner>
   <summary>
