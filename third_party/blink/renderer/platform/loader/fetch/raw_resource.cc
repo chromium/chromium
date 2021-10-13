@@ -427,8 +427,11 @@ NOINLINE void RawResourceClientStateChecker::NotifyFinished(
   const int32_t context =
       static_cast<int32_t>(resource->GetResourceRequest().GetRequestContext()) +
       0x800;
-  const int32_t mark1 = 0xcdcdcdcd;
+  const int32_t mark1 = 0xabababab;
   char url[80] = {};
+  std::string url_string =
+      resource->Url().UrlStrippedForUseAsReferrer().GetString().Utf8();
+  base::strlcpy(url, url_string.c_str(), sizeof(url));
   const int32_t mark2 = 0xcdcdcdcd;
   base::debug::Alias(&destination);
   base::debug::Alias(&context);
@@ -442,10 +445,6 @@ NOINLINE void RawResourceClientStateChecker::NotifyFinished(
   // TODO(https://crbug.com/1158346): Remove these CHECKs once the investigation
   // is done.
   if (!resource->ErrorOccurred()) {
-    std::string url_string =
-        resource->Url().UrlStrippedForUseAsReferrer().GetString().Utf8();
-    strncpy(url, url_string.c_str(), sizeof(url) - 1);
-
     SECURITY_CHECK(state_ != kStarted);
     SECURITY_CHECK(state_ != kRedirectBlocked);
   }
