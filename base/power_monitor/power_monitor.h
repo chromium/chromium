@@ -112,6 +112,7 @@ class BASE_EXPORT PowerMonitor {
   static void NotifyResume();
   static void NotifyThermalStateChange(
       PowerThermalObserver::DeviceThermalState new_state);
+  static void NotifySpeedLimitChange(int speed_limit);
 
   static PowerMonitor* GetInstance();
 
@@ -124,6 +125,8 @@ class BASE_EXPORT PowerMonitor {
   PowerThermalObserver::DeviceThermalState power_thermal_state_
       GUARDED_BY(power_thermal_state_lock_) =
           PowerThermalObserver::DeviceThermalState::kUnknown;
+  int speed_limit_ GUARDED_BY(power_thermal_state_lock_) =
+      PowerThermalObserver::kSpeedLimitMax;
   Lock power_thermal_state_lock_;
 
   scoped_refptr<ObserverListThreadSafe<PowerStateObserver>>

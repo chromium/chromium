@@ -2240,6 +2240,11 @@ void MediaStreamManager::OnThermalStateChange(
       "OnThermalStateChange({this=%p}, {new_state=%s})", this, state_name));
 }
 
+void MediaStreamManager::OnSpeedLimitChange(int new_limit) {
+  SendLogMessage(base::StringPrintf(
+      "OnSpeedLimitChange({this=%p}, {new_limit=%d})", this, new_limit));
+}
+
 void MediaStreamManager::UseFakeUIFactoryForTests(
     base::RepeatingCallback<std::unique_ptr<FakeMediaStreamUIProxy>(void)>
         fake_ui_factory) {

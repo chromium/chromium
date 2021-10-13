@@ -304,6 +304,7 @@ class CONTENT_EXPORT MediaStreamManager
   // base::PowerThermalObserver overrides.
   void OnThermalStateChange(
       base::PowerThermalObserver::DeviceThermalState new_state) override;
+  void OnSpeedLimitChange(int new_limit) override;
 
   // Called by the tests to specify a factory for creating
   // FakeMediaStreamUIProxys to be used for generated streams.

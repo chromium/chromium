@@ -35,6 +35,10 @@ class BASE_EXPORT PowerMonitorSource {
   // Otherwise, returns kUnknown.
   virtual PowerThermalObserver::DeviceThermalState GetCurrentThermalState();
 
+  // Reads the current operating system CPU speed limit, if available on the
+  // platform. Otherwise returns PowerThermalObserver::kSpeedLimitMax.
+  virtual int GetCurrentSpeedLimit();
+
   // Update the result of thermal state.
   virtual void SetCurrentThermalState(
       PowerThermalObserver::DeviceThermalState state);
@@ -62,6 +66,7 @@ class BASE_EXPORT PowerMonitorSource {
   static void ProcessPowerEvent(PowerEvent event_id);
   static void ProcessThermalEvent(
       PowerThermalObserver::DeviceThermalState new_thermal_state);
+  static void ProcessSpeedLimitEvent(int speed_limit);
 };
 
 }  // namespace base

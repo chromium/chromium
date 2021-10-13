@@ -86,6 +86,14 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
   source().GeneratePowerStateEvent(false);
   EXPECT_EQ(observers[0].power_state_changes(), 2);
 
+  // Send speed limit change notifications.
+  source().GenerateSpeedLimitEvent(666);
+  EXPECT_EQ(observers[0].speed_limit_changes(), 1);
+  EXPECT_EQ(observers[0].last_speed_limit(), 666);
+  source().GenerateSpeedLimitEvent(777);
+  EXPECT_EQ(observers[0].speed_limit_changes(), 2);
+  EXPECT_EQ(observers[0].last_speed_limit(), 777);
+
   EXPECT_EQ(observers[0].thermal_state_changes(), 0);
 
   // Send a power thermal change notification.

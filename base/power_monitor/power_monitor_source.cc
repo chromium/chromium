@@ -5,6 +5,7 @@
 #include "base/power_monitor/power_monitor_source.h"
 
 #include "base/power_monitor/power_monitor.h"
+#include "base/power_monitor/power_observer.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -15,6 +16,10 @@ PowerMonitorSource::~PowerMonitorSource() = default;
 PowerThermalObserver::DeviceThermalState
 PowerMonitorSource::GetCurrentThermalState() {
   return PowerThermalObserver::DeviceThermalState::kUnknown;
+}
+
+int PowerMonitorSource::GetCurrentSpeedLimit() {
+  return PowerThermalObserver::kSpeedLimitMax;
 }
 
 void PowerMonitorSource::SetCurrentThermalState(
@@ -51,6 +56,13 @@ void PowerMonitorSource::ProcessThermalEvent(
   if (!PowerMonitor::IsInitialized())
     return;
   PowerMonitor::NotifyThermalStateChange(new_thermal_state);
+}
+
+// static
+void PowerMonitorSource::ProcessSpeedLimitEvent(int speed_limit) {
+  if (!PowerMonitor::IsInitialized())
+    return;
+  PowerMonitor::NotifySpeedLimitChange(speed_limit);
 }
 
 // static

@@ -25,6 +25,9 @@ void PowerMonitor::Initialize(std::unique_ptr<PowerMonitorSource> source) {
 
   PowerMonitor::PowerMonitor::NotifyThermalStateChange(
       PowerMonitor::Source()->GetCurrentThermalState());
+
+  PowerMonitor::PowerMonitor::NotifySpeedLimitChange(
+      PowerMonitor::Source()->GetCurrentSpeedLimit());
 }
 
 bool PowerMonitor::IsInitialized() {
@@ -196,6 +199,19 @@ void PowerMonitor::NotifyThermalStateChange(
     power_monitor->power_thermal_state_ = new_state;
     GetInstance()->thermal_state_observers_->Notify(
         FROM_HERE, &PowerThermalObserver::OnThermalStateChange, new_state);
+  }
+}
+
+void PowerMonitor::NotifySpeedLimitChange(int speed_limit) {
+  DCHECK(IsInitialized());
+  DVLOG(1) << "SpeedLimitChange: " << speed_limit;
+
+  PowerMonitor* power_monitor = GetInstance();
+  AutoLock auto_lock(power_monitor->power_thermal_state_lock_);
+  if (power_monitor->speed_limit_ != speed_limit) {
+    power_monitor->speed_limit_ = speed_limit;
+    GetInstance()->thermal_state_observers_->Notify(
+        FROM_HERE, &PowerThermalObserver::OnSpeedLimitChange, speed_limit);
   }
 }
 
