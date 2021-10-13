@@ -1,16 +1,8 @@
-// Copyright 2015 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview The default base64-encoded Protobuf stream parser.
@@ -22,10 +14,10 @@
 
 goog.module('goog.net.streams.Base64PbStreamParser');
 
-var Base64StreamDecoder = goog.require('goog.net.streams.Base64StreamDecoder');
-var PbStreamParser = goog.require('goog.net.streams.PbStreamParser');
-var StreamParser = goog.require('goog.net.streams.StreamParser');
-var asserts = goog.require('goog.asserts');
+const Base64StreamDecoder = goog.require('goog.net.streams.Base64StreamDecoder');
+const PbStreamParser = goog.require('goog.net.streams.PbStreamParser');
+const StreamParser = goog.require('goog.net.streams.StreamParser');
+const asserts = goog.require('goog.asserts');
 
 
 /**
@@ -36,7 +28,7 @@ var asserts = goog.require('goog.asserts');
  * @implements {StreamParser}
  * @final
  */
-var Base64PbStreamParser = function() {
+const Base64PbStreamParser = function() {
   /**
    * The current error message, if any.
    * @private {?string}
@@ -87,6 +79,13 @@ Base64PbStreamParser.prototype.error_ = function(input, errorMsg) {
   throw new Error(this.errorMessage_);
 };
 
+/**
+ * @override
+ * @return {boolean}
+ */
+Base64PbStreamParser.prototype.acceptsBinaryInput = function() {
+  return false;
+};
 
 /** @override */
 Base64PbStreamParser.prototype.parse = function(input) {
@@ -96,9 +95,9 @@ Base64PbStreamParser.prototype.parse = function(input) {
     this.error_(input, 'stream already broken');
   }
 
-  var result = null;
+  let result = null;
   try {
-    var rawBytes = this.base64Decoder_.decode(input);
+    const rawBytes = this.base64Decoder_.decode(input);
     result = (rawBytes === null) ? null : this.pbParser_.parse(rawBytes);
   } catch (e) {
     this.error_(input, e.message);

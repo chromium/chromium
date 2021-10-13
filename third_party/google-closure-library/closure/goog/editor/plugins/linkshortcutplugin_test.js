@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.editor.plugins.LinkShortcutPluginTest');
 goog.setTestOnly();
@@ -44,7 +36,7 @@ testSuite({
 
   testShortcutCreatesALink() {
     if (product.SAFARI) {
-      // TODO(b/20733468): Disabled so we can get the rest of the Closure test
+      // TODO(user): Disabled so we can get the rest of the Closure test
       // suite running in a continuous build. Will investigate later.
       return;
     }
@@ -63,8 +55,10 @@ testSuite({
     const textNode = testingDom.findTextNode('http://www.google.com/', fieldEl);
     events.fireKeySequence(field.getElement(), KeyCodes.K, {ctrlKey: true});
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const href = dom.getElementsByTagName(TagName.A, field.getElement())[0];
     assertEquals('http://www.google.com/', href.href);
+    /** @suppress {visibility} suppression added to enable type checking */
     const bubbleLink = document.getElementById(LinkBubble.TEST_LINK_ID_);
     assertEquals('http://www.google.com/', bubbleLink.innerHTML);
   },

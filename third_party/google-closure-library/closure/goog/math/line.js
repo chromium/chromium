@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 
 /**
@@ -35,6 +27,7 @@ goog.require('goog.math.Coordinate');
  * @final
  */
 goog.math.Line = function(x0, y0, x1, y1) {
+  'use strict';
   /**
    * X coordinate of the first point.
    * @type {number}
@@ -65,6 +58,7 @@ goog.math.Line = function(x0, y0, x1, y1) {
  * @return {!goog.math.Line} A copy of this line.
  */
 goog.math.Line.prototype.clone = function() {
+  'use strict';
   return new goog.math.Line(this.x0, this.y0, this.x1, this.y1);
 };
 
@@ -75,6 +69,7 @@ goog.math.Line.prototype.clone = function() {
  * @return {boolean} Whether the given line is the same as this one.
  */
 goog.math.Line.prototype.equals = function(other) {
+  'use strict';
   return this.x0 == other.x0 && this.y0 == other.y0 && this.x1 == other.x1 &&
       this.y1 == other.y1;
 };
@@ -85,6 +80,7 @@ goog.math.Line.prototype.equals = function(other) {
  *     line.
  */
 goog.math.Line.prototype.getSegmentLengthSquared = function() {
+  'use strict';
   var xdist = this.x1 - this.x0;
   var ydist = this.y1 - this.y0;
   return xdist * xdist + ydist * ydist;
@@ -95,6 +91,7 @@ goog.math.Line.prototype.getSegmentLengthSquared = function() {
  * @return {number} The length of the line segment used to define the line.
  */
 goog.math.Line.prototype.getSegmentLength = function() {
+  'use strict';
   return Math.sqrt(this.getSegmentLengthSquared());
 };
 
@@ -111,6 +108,7 @@ goog.math.Line.prototype.getSegmentLength = function() {
  * @private
  */
 goog.math.Line.prototype.getClosestLinearInterpolation_ = function(x, opt_y) {
+  'use strict';
   var y;
   if (x instanceof goog.math.Coordinate) {
     y = x.y;
@@ -138,6 +136,7 @@ goog.math.Line.prototype.getClosestLinearInterpolation_ = function(x, opt_y) {
  * @return {!goog.math.Coordinate} The point on the line segment at t.
  */
 goog.math.Line.prototype.getInterpolatedPoint = function(t) {
+  'use strict';
   return new goog.math.Coordinate(
       goog.math.lerp(this.x0, this.x1, t), goog.math.lerp(this.y0, this.y1, t));
 };
@@ -156,6 +155,7 @@ goog.math.Line.prototype.getInterpolatedPoint = function(t) {
  *     point.
  */
 goog.math.Line.prototype.getClosestPoint = function(x, opt_y) {
+  'use strict';
   return this.getInterpolatedPoint(
       this.getClosestLinearInterpolation_(x, opt_y));
 };
@@ -171,6 +171,7 @@ goog.math.Line.prototype.getClosestPoint = function(x, opt_y) {
  *     given point.
  */
 goog.math.Line.prototype.getClosestSegmentPoint = function(x, opt_y) {
+  'use strict';
   return this.getInterpolatedPoint(
       goog.math.clamp(this.getClosestLinearInterpolation_(x, opt_y), 0, 1));
 };

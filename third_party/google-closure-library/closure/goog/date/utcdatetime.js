@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Locale independent date/time class.
@@ -46,6 +38,7 @@ goog.require('goog.date.Interval');
 goog.date.UtcDateTime = function(
     opt_year, opt_month, opt_date, opt_hours, opt_minutes, opt_seconds,
     opt_milliseconds) {
+  'use strict';
   var timestamp;
   if (typeof opt_year === 'number') {
     timestamp = Date.UTC(
@@ -65,6 +58,7 @@ goog.inherits(goog.date.UtcDateTime, goog.date.DateTime);
  * @return {!goog.date.UtcDateTime}
  */
 goog.date.UtcDateTime.fromTimestamp = function(timestamp) {
+  'use strict';
   var date = new goog.date.UtcDateTime();
   date.setTime(timestamp);
   return date;
@@ -78,6 +72,7 @@ goog.date.UtcDateTime.fromTimestamp = function(timestamp) {
  * @return {goog.date.UtcDateTime} Parsed date or null if parse fails.
  */
 goog.date.UtcDateTime.fromIsoString = function(formatted) {
+  'use strict';
   var ret = new goog.date.UtcDateTime(2000);
   return goog.date.setIso8601DateTime(ret, formatted) ? ret : null;
 };
@@ -90,6 +85,7 @@ goog.date.UtcDateTime.fromIsoString = function(formatted) {
  * @override
  */
 goog.date.UtcDateTime.prototype.clone = function() {
+  'use strict';
   var date = new goog.date.UtcDateTime(this.date);
   date.setFirstDayOfWeek(this.getFirstDayOfWeek());
   date.setFirstWeekCutOffDay(this.getFirstWeekCutOffDay());
@@ -99,6 +95,7 @@ goog.date.UtcDateTime.prototype.clone = function() {
 
 /** @override */
 goog.date.UtcDateTime.prototype.add = function(interval) {
+  'use strict';
   if (interval.years || interval.months) {
     var yearsMonths = new goog.date.Interval(interval.years, interval.months);
     goog.date.Date.prototype.add.call(this, yearsMonths);
@@ -112,6 +109,7 @@ goog.date.UtcDateTime.prototype.add = function(interval) {
 
 /** @override */
 goog.date.UtcDateTime.prototype.getTimezoneOffset = function() {
+  'use strict';
   return 0;
 };
 

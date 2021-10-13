@@ -7,9 +7,11 @@
 
 /*
  * Standard styling for toolbars and toolbar items.
- *
- * @provide {goog.css.toolbar}
  */
+
+@provide 'goog.css.toolbar';
+
+@require './common';
 
 /*
  * Styles used by goog.ui.ToolbarRenderer.

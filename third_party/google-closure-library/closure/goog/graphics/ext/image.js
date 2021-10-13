@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 
 /**
@@ -20,8 +12,8 @@
 
 goog.provide('goog.graphics.ext.Image');
 
-goog.forwardDeclare('goog.graphics.ext.Group');
 goog.require('goog.graphics.ext.Element');
+goog.requireType('goog.graphics.ext.Group');
 
 
 
@@ -34,8 +26,9 @@ goog.require('goog.graphics.ext.Element');
  * @final
  */
 goog.graphics.ext.Image = function(group, src) {
+  'use strict';
   // Initialize with some stock values.
-  var wrapper = group.getGraphicsImplementation().drawImage(
+  const wrapper = group.getGraphicsImplementation().drawImage(
       0, 0, 1, 1, src, group.getWrapper());
   goog.graphics.ext.Element.call(this, group, wrapper);
 };
@@ -48,6 +41,7 @@ goog.inherits(goog.graphics.ext.Image, goog.graphics.ext.Element);
  * @override
  */
 goog.graphics.ext.Image.prototype.redraw = function() {
+  'use strict';
   goog.graphics.ext.Image.superClass_.redraw.call(this);
 
   // Our position is already handled bu transform_.
@@ -60,5 +54,6 @@ goog.graphics.ext.Image.prototype.redraw = function() {
  * @param {string} src  Source of the image.
  */
 goog.graphics.ext.Image.prototype.setSource = function(src) {
+  'use strict';
   this.getWrapper().setSource(src);
 };

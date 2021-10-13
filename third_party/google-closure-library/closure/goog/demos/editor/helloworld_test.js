@@ -1,5 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-// Use of this source code is governed by the Apache License, Version 2.0.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.demos.editor.HelloWorldTest');
 goog.setTestOnly('goog.demos.editor.HelloWorldTest');
@@ -52,6 +55,7 @@ testSuite({
     }
 
     fieldMock.$replay();
+    /** @suppress {visibility} suppression added to enable type checking */
     const result = plugin.execCommandInternal(HelloWorld.COMMAND.HELLO_WORLD);
     assertUndefined(result);
     const spans = FIELD.getElementsByTagName('span');

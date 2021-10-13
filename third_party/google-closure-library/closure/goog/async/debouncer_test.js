@@ -1,23 +1,14 @@
-// Copyright 2015 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.async.DebouncerTest');
 goog.setTestOnly();
 
 const Debouncer = goog.require('goog.async.Debouncer');
 const MockClock = goog.require('goog.testing.MockClock');
-const googArray = goog.require('goog.array');
 const recordFunction = goog.require('goog.testing.recordFunction');
 const testSuite = goog.require('goog.testing.testSuite');
 
@@ -86,10 +77,10 @@ testSuite({
       assertEquals(
           `Expected ${expectedCalls} calls for command sequence "` +
               commandSequence + '" (' +
-              googArray
-                  .map(
+              Array.prototype.map
+                  .call(
                       commandSequence,
-                      (command) => {
+                      command => {
                         switch (command) {
                           case 'f':
                             return 'fire';

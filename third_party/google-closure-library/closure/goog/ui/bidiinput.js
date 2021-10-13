@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Component for an input field with bidi direction automatic
@@ -42,10 +34,10 @@ goog.require('goog.ui.Component');
  * @extends {goog.ui.Component}
  */
 goog.ui.BidiInput = function(opt_domHelper) {
+  'use strict';
   goog.ui.Component.call(this, opt_domHelper);
 };
 goog.inherits(goog.ui.BidiInput, goog.ui.Component);
-goog.tagUnsealableClass(goog.ui.BidiInput);
 
 
 /**
@@ -65,8 +57,19 @@ goog.ui.BidiInput.prototype.inputHandler_ = null;
  * @override
  */
 goog.ui.BidiInput.prototype.decorateInternal = function(element) {
+  'use strict';
   goog.ui.BidiInput.superClass_.decorateInternal.call(this, element);
   this.init_();
+};
+
+
+/**
+ * @return {?HTMLInputElement}
+ * @override
+ */
+goog.ui.BidiInput.prototype.getElement = function() {
+  return /** @type {?HTMLInputElement} */ (
+      goog.ui.BidiInput.superClass_.getElement.call(this));
 };
 
 
@@ -76,9 +79,9 @@ goog.ui.BidiInput.prototype.decorateInternal = function(element) {
  * @override
  */
 goog.ui.BidiInput.prototype.createDom = function() {
-  this.setElementInternal(
-      this.getDomHelper().createDom(
-          goog.dom.TagName.INPUT, {'type': goog.dom.InputType.TEXT}));
+  'use strict';
+  this.setElementInternal(this.getDomHelper().createDom(
+      goog.dom.TagName.INPUT, {'type': goog.dom.InputType.TEXT}));
   this.init_();
 };
 
@@ -90,6 +93,7 @@ goog.ui.BidiInput.prototype.createDom = function() {
  * @private
  */
 goog.ui.BidiInput.prototype.init_ = function() {
+  'use strict';
   // Set initial direction by current text
   this.setDirection_();
 
@@ -111,6 +115,7 @@ goog.ui.BidiInput.prototype.init_ = function() {
  * @private
  */
 goog.ui.BidiInput.prototype.setDirection_ = function() {
+  'use strict';
   var element = this.getElement();
   if (element) {
     var text = this.getValue();
@@ -129,6 +134,7 @@ goog.ui.BidiInput.prototype.setDirection_ = function() {
  * @suppress {strictMissingProperties} Part of the go/strict_warnings_migration
  */
 goog.ui.BidiInput.prototype.getDirection = function() {
+  'use strict';
   var dir = this.getElement().dir;
   if (dir == '') {
     dir = null;
@@ -144,6 +150,7 @@ goog.ui.BidiInput.prototype.getDirection = function() {
  * @suppress {strictMissingProperties} Part of the go/strict_warnings_migration
  */
 goog.ui.BidiInput.prototype.setValue = function(value) {
+  'use strict';
   var element = this.getElement();
   if (element.value != null) {
     element.value = value;
@@ -160,6 +167,7 @@ goog.ui.BidiInput.prototype.setValue = function(value) {
  * @suppress {strictMissingProperties} Part of the go/strict_warnings_migration
  */
 goog.ui.BidiInput.prototype.getValue = function() {
+  'use strict';
   var element = this.getElement();
   return element.value != null ? element.value :
                                  goog.dom.getRawTextContent(element);
@@ -168,6 +176,7 @@ goog.ui.BidiInput.prototype.getValue = function() {
 
 /** @override */
 goog.ui.BidiInput.prototype.disposeInternal = function() {
+  'use strict';
   if (this.inputHandler_) {
     goog.events.removeAll(this.inputHandler_);
     this.inputHandler_.dispose();

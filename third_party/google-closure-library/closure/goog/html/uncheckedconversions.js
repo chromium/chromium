@@ -1,16 +1,8 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Unchecked conversions to create values of goog.html types from
@@ -38,6 +30,7 @@ goog.require('goog.html.SafeUrl');
 goog.require('goog.html.TrustedResourceUrl');
 goog.require('goog.string.Const');
 goog.require('goog.string.internal');
+goog.requireType('goog.i18n.bidi.Dir');
 
 
 /**
@@ -62,6 +55,7 @@ goog.require('goog.string.internal');
  */
 goog.html.uncheckedconversions.safeHtmlFromStringKnownToSatisfyTypeContract =
     function(justification, html, opt_dir) {
+  'use strict';
   // unwrap() called inside an assert so that justification can be optimized
   // away in production code.
   goog.asserts.assertString(
@@ -93,6 +87,7 @@ goog.html.uncheckedconversions.safeHtmlFromStringKnownToSatisfyTypeContract =
  */
 goog.html.uncheckedconversions.safeScriptFromStringKnownToSatisfyTypeContract =
     function(justification, script) {
+  'use strict';
   // unwrap() called inside an assert so that justification can be optimized
   // away in production code.
   goog.asserts.assertString(
@@ -124,6 +119,7 @@ goog.html.uncheckedconversions.safeScriptFromStringKnownToSatisfyTypeContract =
  */
 goog.html.uncheckedconversions.safeStyleFromStringKnownToSatisfyTypeContract =
     function(justification, style) {
+  'use strict';
   // unwrap() called inside an assert so that justification can be optimized
   // away in production code.
   goog.asserts.assertString(
@@ -156,6 +152,7 @@ goog.html.uncheckedconversions.safeStyleFromStringKnownToSatisfyTypeContract =
 goog.html.uncheckedconversions
     .safeStyleSheetFromStringKnownToSatisfyTypeContract = function(
     justification, styleSheet) {
+  'use strict';
   // unwrap() called inside an assert so that justification can be optimized
   // away in production code.
   goog.asserts.assertString(
@@ -187,6 +184,7 @@ goog.html.uncheckedconversions
  */
 goog.html.uncheckedconversions.safeUrlFromStringKnownToSatisfyTypeContract =
     function(justification, url) {
+  'use strict';
   // unwrap() called inside an assert so that justification can be optimized
   // away in production code.
   goog.asserts.assertString(
@@ -218,6 +216,7 @@ goog.html.uncheckedconversions.safeUrlFromStringKnownToSatisfyTypeContract =
 goog.html.uncheckedconversions
     .trustedResourceUrlFromStringKnownToSatisfyTypeContract = function(
     justification, url) {
+  'use strict';
   // unwrap() called inside an assert so that justification can be optimized
   // away in production code.
   goog.asserts.assertString(

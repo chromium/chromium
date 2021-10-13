@@ -20,6 +20,10 @@
 Paths can be specified as arguments or (more commonly) specifying trees
 with the flags (call with --help for descriptions).
 
+DEPRECATED: Use the npm package google-closure-deps instead. See
+https://github.com/google/closure-library/wiki/Migrating-off-Closure-Python-Scripts
+for more details.
+
 Usage: depswriter.py [path/to/js1.js [path/to/js2.js] ...]
 """
 
@@ -174,6 +178,11 @@ def main():
   logging.basicConfig(format=(sys.argv[0] + ': %(message)s'),
                       level=logging.INFO)
   options, args = _GetOptionsParser().parse_args()
+
+  logging.warning(
+      'This utility is deprecated! See '
+      'https://github.com/google/closure-library/wiki/Migrating-off-Closure-Python-Scripts'
+      ' for more details.')
 
   path_to_source = {}
 

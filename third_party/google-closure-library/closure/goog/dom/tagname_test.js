@@ -1,32 +1,29 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.dom.TagNameTest');
 goog.setTestOnly();
 
 const TagName = goog.require('goog.dom.TagName');
-const googObject = goog.require('goog.object');
 const testSuite = goog.require('goog.testing.testSuite');
 
 testSuite({
   testCorrectNumberOfTagNames() {
-    assertEquals(130, googObject.getCount(TagName));
+    assertEquals(
+        130,
+        Object.entries(TagName)
+            .filter(([k, v]) => typeof v === 'string')
+            .length);
   },
 
   testPropertyNamesEqualValues() {
-    for (let propertyName in TagName) {
-      assertEquals(propertyName, String(TagName[propertyName]));
-    }
+    Object.entries(TagName)
+        .filter(([k, v]) => typeof v === 'string')
+        .forEach(([k, v]) => {
+          assertEquals(k, v);
+        });
   },
 });

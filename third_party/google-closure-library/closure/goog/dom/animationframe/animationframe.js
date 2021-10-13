@@ -1,16 +1,8 @@
-// Copyright 2014 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview goog.dom.animationFrame permits work to be done in-sync with
@@ -158,11 +150,12 @@ goog.dom.animationFrame.running_ = false;
  * @template THIS
  */
 goog.dom.animationFrame.createTask = function(spec, opt_context) {
-  var id = goog.dom.animationFrame.taskId_++;
-  var measureTask = {id: id, fn: spec.measure, context: opt_context};
-  var mutateTask = {id: id, fn: spec.mutate, context: opt_context};
+  'use strict';
+  const id = goog.dom.animationFrame.taskId_++;
+  const measureTask = {id: id, fn: spec.measure, context: opt_context};
+  const mutateTask = {id: id, fn: spec.mutate, context: opt_context};
 
-  var taskSet = {
+  const taskSet = {
     measureTask: measureTask,
     mutateTask: mutateTask,
     state: {},
@@ -171,6 +164,7 @@ goog.dom.animationFrame.createTask = function(spec, opt_context) {
   };
 
   return function() {
+    'use strict';
     // Save args and state.
     if (arguments.length > 0) {
       // The state argument goes last. That is kinda horrible but compatible
@@ -191,8 +185,9 @@ goog.dom.animationFrame.createTask = function(spec, opt_context) {
     }
     if (!taskSet.isScheduled) {
       taskSet.isScheduled = true;
-      var tasksArray = goog.dom.animationFrame
-                           .tasks_[goog.dom.animationFrame.doubleBufferIndex_];
+      const tasksArray =
+          goog.dom.animationFrame
+              .tasks_[goog.dom.animationFrame.doubleBufferIndex_];
       tasksArray.push(
           /** @type {goog.dom.animationFrame.TaskSet_} */ (taskSet));
     }
@@ -206,23 +201,24 @@ goog.dom.animationFrame.createTask = function(spec, opt_context) {
  * @private
  */
 goog.dom.animationFrame.runTasks_ = function() {
+  'use strict';
   goog.dom.animationFrame.running_ = true;
   goog.dom.animationFrame.requestedFrame_ = false;
-  var tasksArray = goog.dom.animationFrame
-                       .tasks_[goog.dom.animationFrame.doubleBufferIndex_];
-  var taskLength = tasksArray.length;
+  const tasksArray = goog.dom.animationFrame
+                         .tasks_[goog.dom.animationFrame.doubleBufferIndex_];
+  const taskLength = tasksArray.length;
 
   // During the runTasks_, if there is a recursive call to queue up more
   // task(s) for the next frame, we use double-buffering for that.
   goog.dom.animationFrame.doubleBufferIndex_ =
       (goog.dom.animationFrame.doubleBufferIndex_ + 1) % 2;
 
-  var task;
+  let task;
 
   // Run all the measure tasks first.
-  for (var i = 0; i < taskLength; ++i) {
+  for (let i = 0; i < taskLength; ++i) {
     task = tasksArray[i];
-    var measureTask = task.measureTask;
+    const measureTask = task.measureTask;
     task.isScheduled = false;
     if (measureTask.fn) {
       // TODO (perumaal): Handle any exceptions thrown by the lambda.
@@ -231,9 +227,9 @@ goog.dom.animationFrame.runTasks_ = function() {
   }
 
   // Run the mutate tasks next.
-  for (var i = 0; i < taskLength; ++i) {
+  for (let i = 0; i < taskLength; ++i) {
     task = tasksArray[i];
-    var mutateTask = task.mutateTask;
+    const mutateTask = task.mutateTask;
     task.isScheduled = false;
     if (mutateTask.fn) {
       // TODO (perumaal): Handle any exceptions thrown by the lambda.
@@ -256,6 +252,7 @@ goog.dom.animationFrame.runTasks_ = function() {
  *     additional frame.
  */
 goog.dom.animationFrame.isRunning = function() {
+  'use strict';
   return goog.dom.animationFrame.running_;
 };
 
@@ -266,6 +263,7 @@ goog.dom.animationFrame.isRunning = function() {
  * @private
  */
 goog.dom.animationFrame.requestAnimationFrame_ = function() {
+  'use strict';
   if (goog.dom.animationFrame.requestedFrame_) {
     return;
   }

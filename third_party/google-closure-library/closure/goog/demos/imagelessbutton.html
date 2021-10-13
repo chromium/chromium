@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!--
-Copyright 2010 The Closure Library Authors. All Rights Reserved.
+Copyright The Closure Library Authors. All Rights Reserved.
 
 Use of this source code is governed by the Apache License, Version 2.0.
 See the COPYING file for details.
@@ -14,7 +14,6 @@ See the COPYING file for details.
   <script>
     goog.require('goog.array');
     goog.require('goog.debug.DivConsole');
-    goog.require('goog.debug.LogManager');
     goog.require('goog.events');
     goog.require('goog.log');
     goog.require('goog.object');
@@ -123,7 +122,7 @@ See the COPYING file for details.
     var timer = goog.now();
 
     // Set up a logger.
-    goog.debug.LogManager.getRoot().setLevel(goog.log.Level.ALL);
+    goog.log.setLevel(goog.log.getRootLogger(), goog.log.Level.ALL);
     var logger = goog.log.getLogger('demo');
     var logconsole = new goog.debug.DivConsole(goog.dom.getElement('log'));
     logconsole.setCapturing(true);

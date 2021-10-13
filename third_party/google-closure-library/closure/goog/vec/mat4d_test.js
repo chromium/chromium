@@ -1,5 +1,8 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-// Use of this source code is governed by the Apache License, Version 2.0.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 ////////////////////////// NOTE ABOUT EDITING THIS FILE ///////////////////////
 //                                                                           //
@@ -14,6 +17,7 @@ goog.setTestOnly();
 const Quaternion = goog.require('goog.vec.Quaternion');
 const mat4d = goog.require('goog.vec.mat4d');
 const testSuite = goog.require('goog.testing.testSuite');
+const vec = goog.require('goog.vec');
 const vec3d = goog.require('goog.vec.vec3d');
 const vec4d = goog.require('goog.vec.vec4d');
 
@@ -36,6 +40,7 @@ testSuite({
     assertElementsEquals([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], m);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSet() {
     const m0 = mat4d.create();
     const m1 = mat4d.setFromArray(
@@ -51,6 +56,7 @@ testSuite({
         [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17], m0);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSetDiagonal() {
     const m0 = mat4d.create();
     mat4d.setDiagonalValues(m0, 1, 2, 3, 4);
@@ -102,6 +108,7 @@ testSuite({
     assertElementsEquals([0, 0, 0, 0], v0);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSetGetColumn() {
     const m0 = mat4d.create();
     mat4d.setColumn(m0, 0, [1, 2, 3, 4]);
@@ -122,6 +129,7 @@ testSuite({
     assertElementsEquals([13, 14, 15, 16], v0);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSetGetColumns() {
     const m0 = mat4d.create();
     mat4d.setColumns(
@@ -142,6 +150,7 @@ testSuite({
     assertElementsEquals([13, 14, 15, 16], v3);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSetGetRow() {
     const m0 = mat4d.create();
     mat4d.setRow(m0, 0, [1, 2, 3, 4]);
@@ -162,6 +171,7 @@ testSuite({
     assertElementsEquals([13, 14, 15, 16], v0);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSetGetRows() {
     const m0 = mat4d.create();
     mat4d.setRows(
@@ -332,7 +342,7 @@ testSuite({
           -0.225, 0.025, 0.025, 0.275, 0.025, 0.025, 0.275, -0.225, 0.025,
           0.275, -0.225, 0.025, 0.275, -0.225, 0.025, 0.025
         ],
-        m0, goog.vec.EPSILON);
+        m0, vec.EPSILON);
 
     mat4d.makeScale(m0, .01, .01, .01);
     assertTrue(mat4d.invert(m0, m0));
@@ -355,6 +365,7 @@ testSuite({
     }
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testMultVec3() {
     const m0 = mat4d.setFromValues(
         mat4d.create(), 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
@@ -369,6 +380,7 @@ testSuite({
     assertElementsEquals([51, 58, 65], v0);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testMultVec3NoTranslate() {
     const m0 = mat4d.setFromValues(
         mat4d.create(), 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
@@ -383,6 +395,7 @@ testSuite({
     assertElementsEquals([38, 44, 50], v0);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testMultVec3Projective() {
     const m0 = mat4d.setFromValues(
         mat4d.create(), 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
@@ -398,6 +411,7 @@ testSuite({
     assertElementsEquals([51 * invw, 58 * invw, 65 * invw], v0);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testMultVec4() {
     const m0 = mat4d.setFromValues(
         mat4d.create(), 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
@@ -454,8 +468,7 @@ testSuite({
     const m0 = mat4d.create();
     mat4d.makeRotate(m0, Math.PI / 2, 0, 0, 1);
     assertElementsRoughlyEqual(
-        [0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], m0,
-        goog.vec.EPSILON);
+        [0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], m0, vec.EPSILON);
 
     const m1 = mat4d.create();
     mat4d.makeRotate(m1, -Math.PI / 4, 0, 0, 1);
@@ -465,7 +478,7 @@ testSuite({
           0.7071068, 0.7071068, 0, 0, -0.7071068, 0.7071068, 0, 0, 0, 0, 1, 0,
           0, 0, 0, 1
         ],
-        m1, goog.vec.EPSILON);
+        m1, vec.EPSILON);
   },
 
   testMakeRotateX() {
@@ -474,7 +487,7 @@ testSuite({
 
     mat4d.makeRotateX(m0, Math.PI / 7);
     mat4d.makeRotate(m1, Math.PI / 7, 1, 0, 0);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testMakeRotateY() {
@@ -483,7 +496,7 @@ testSuite({
 
     mat4d.makeRotateY(m0, Math.PI / 7);
     mat4d.makeRotate(m1, Math.PI / 7, 0, 1, 0);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testMakeRotateZ() {
@@ -492,7 +505,7 @@ testSuite({
 
     mat4d.makeRotateZ(m0, Math.PI / 7);
     mat4d.makeRotate(m1, Math.PI / 7, 0, 0, 1);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testTranslate() {
@@ -520,8 +533,7 @@ testSuite({
     const m0 = mat4d.makeIdentity(mat4d.create());
     mat4d.rotate(m0, Math.PI / 2, 0, 0, 1);
     assertElementsRoughlyEqual(
-        [0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], m0,
-        goog.vec.EPSILON);
+        [0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], m0, vec.EPSILON);
 
     mat4d.rotate(m0, -Math.PI / 4, 0, 0, 1);
     assertElementsRoughlyEqual(
@@ -529,37 +541,40 @@ testSuite({
           0.7071068, 0.7071068, 0, 0, -0.7071068, 0.7071068, 0, 0, 0, 0, 1, 0,
           0, 0, 0, 1
         ],
-        m0, goog.vec.EPSILON);
+        m0, vec.EPSILON);
   },
 
   testRotateX() {
     const m0 = mat4d.create();
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const m1 = mat4d.setFromArray(mat4d.create(), randommat4d);
 
     mat4d.makeRotateX(m0, Math.PI / 7);
     mat4d.multMat(m1, m0, m0);
     mat4d.rotateX(m1, Math.PI / 7);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testRotateY() {
     const m0 = mat4d.create();
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const m1 = mat4d.setFromArray(mat4d.create(), randommat4d);
 
     mat4d.makeRotateY(m0, Math.PI / 7);
     mat4d.multMat(m1, m0, m0);
     mat4d.rotateY(m1, Math.PI / 7);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testRotateZ() {
     const m0 = mat4d.create();
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const m1 = mat4d.setFromArray(mat4d.create(), randommat4d);
 
     mat4d.makeRotateZ(m0, Math.PI / 7);
     mat4d.multMat(m1, m0, m0);
     mat4d.rotateZ(m1, Math.PI / 7);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testMakeRotationTranslation() {
@@ -576,7 +591,7 @@ testSuite({
     const v = vec3d.createFromValues(3, 4, 5);
     mat4d.makeRotationTranslation(m1, q, v);
 
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testMakeRotationTranslationScale() {
@@ -595,7 +610,7 @@ testSuite({
     const s = vec3d.createFromValues(6, 7, 8);
     mat4d.makeRotationTranslationScale(m1, q, v, s);
 
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testMakeRotationTranslationScaleOrigin() {
@@ -621,12 +636,13 @@ testSuite({
   },
 
   testGetTranslation() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const mat = mat4d.setFromArray(mat4d.create(), randommat4d);
     const translation = vec3d.create();
     mat4d.getTranslation(mat, translation);
     assertElementsRoughlyEqual(
         [0.59465038776, 0.413479506969, 0.0663217827677], translation,
-        goog.vec.EPSILON);
+        vec.EPSILON);
   },
 
   testMakeFrustum() {
@@ -637,7 +653,7 @@ testSuite({
           0.06666666, 0, 0, 0, 0, 0.06666666, 0, 0, 0.33333333, -0.33333333,
           -1.2, -1, 0, 0, -0.22, 0
         ],
-        m0, goog.vec.EPSILON);
+        m0, vec.EPSILON);
   },
 
   testMakePerspective() {
@@ -645,7 +661,7 @@ testSuite({
     mat4d.makePerspective(m0, 90 * Math.PI / 180, 2, 0.1, 1.1);
     assertElementsRoughlyEqual(
         [0.5, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1.2, -1, 0, 0, -0.22, 0], m0,
-        goog.vec.EPSILON);
+        vec.EPSILON);
   },
 
   testMakeOrtho() {
@@ -656,9 +672,10 @@ testSuite({
           0.6666666, 0, 0, 0, 0, 0.6666666, 0, 0, 0, 0, -2, 0, -0.333333,
           0.3333333, -1.2, 1
         ],
-        m0, goog.vec.EPSILON);
+        m0, vec.EPSILON);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testMakeEulerZXZ() {
     const m0 = mat4d.create();
     const roll = 0.200982 * 2 * Math.PI;
@@ -671,14 +688,14 @@ testSuite({
 
     const m1 = mat4d.create();
     mat4d.makeEulerZXZ(m1, roll, tilt, yaw);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
 
     let euler = [0, 0, 0];
     mat4d.toEulerZXZ(m0, euler);
 
-    assertRoughlyEquals(roll, euler[0], goog.vec.EPSILON);
-    assertRoughlyEquals(tilt, euler[1], goog.vec.EPSILON);
-    assertRoughlyEquals(yaw, euler[2], goog.vec.EPSILON);
+    assertRoughlyEquals(roll, euler[0], vec.EPSILON);
+    assertRoughlyEquals(tilt, euler[1], vec.EPSILON);
+    assertRoughlyEquals(yaw, euler[2], vec.EPSILON);
 
     // Test negative tilt now.
     mat4d.makeRotate(m0, roll, 0, 0, 1);
@@ -686,16 +703,17 @@ testSuite({
     mat4d.rotate(m0, yaw, 0, 0, 1);
 
     mat4d.makeEulerZXZ(m1, roll, -tilt, yaw);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
 
     euler = [0, 0, 0];
     mat4d.toEulerZXZ(m0, euler, true);
 
-    assertRoughlyEquals(roll, euler[0], goog.vec.EPSILON);
-    assertRoughlyEquals(-tilt, euler[1], goog.vec.EPSILON);
-    assertRoughlyEquals(yaw, euler[2], goog.vec.EPSILON);
+    assertRoughlyEquals(roll, euler[0], vec.EPSILON);
+    assertRoughlyEquals(-tilt, euler[1], vec.EPSILON);
+    assertRoughlyEquals(yaw, euler[2], vec.EPSILON);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testEulerZXZExtrema() {
     const m0 = mat4d.setFromArray(
         mat4d.create(), [1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1]);
@@ -705,19 +723,21 @@ testSuite({
     const euler = [0, 0, 0];
     mat4d.toEulerZXZ(m0, euler);
     assertElementsRoughlyEqual(
-        [Math.PI, Math.PI / 2, Math.PI], euler, goog.vec.EPSILON);
+        [Math.PI, Math.PI / 2, Math.PI], euler, vec.EPSILON);
     mat4d.makeEulerZXZ(m1, euler[0], euler[1], euler[2]);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testLookAt() {
     const viewMatrix = mat4d.create();
     mat4d.makeLookAt(viewMatrix, [0, 0, 0], [1, 0, 0], [0, 1, 0]);
     assertElementsRoughlyEqual(
         [0, 0, -1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1], viewMatrix,
-        goog.vec.EPSILON);
+        vec.EPSILON);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testToLookAt() {
     // This test does not use the default precision goog.vec.EPSILON due to
     // precision issues in some browsers leading to flaky tests.
@@ -742,6 +762,7 @@ testSuite({
     assertElementsRoughlyEqual(upExp, upRes, EPSILON);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testLookAtDecomposition() {
     // This test does not use the default precision goog.vec.EPSILON due to
     // precision issues in some browsers leading to flaky tests.
@@ -752,6 +773,7 @@ testSuite({
 
     // Get a valid set of random vectors eye, forward, up by decomposing
     // a random matrix into a set of lookAt vectors.
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const tmp = mat4d.setFromArray(mat4d.create(), randommat4d);
     const eyeExp = [0, 0, 0];
     const fwdExp = [0, 0, 0];

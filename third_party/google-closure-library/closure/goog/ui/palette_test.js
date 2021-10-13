@@ -1,16 +1,8 @@
-// Copyright 2012 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.PaletteTest');
 goog.setTestOnly();
@@ -26,6 +18,7 @@ const aria = goog.require('goog.a11y.aria');
 const dom = goog.require('goog.dom');
 const googEvents = goog.require('goog.events');
 const recordFunction = goog.require('goog.testing.recordFunction');
+const style = goog.require('goog.style');
 const testSuite = goog.require('goog.testing.testSuite');
 
 let palette;
@@ -48,6 +41,7 @@ testSuite({
 
   testAfterHighlightListener() {
     palette.setHighlightedIndex(0);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const handler = new recordFunction();
     googEvents.listen(palette, Palette.EventType.AFTER_HIGHLIGHT, handler);
     palette.setHighlightedIndex(2);
@@ -56,6 +50,7 @@ testSuite({
     assertEquals(2, handler.getCallCount());
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testHighlightItemUpdatesParentA11yActiveDescendant() {
     const container = new Container();
     container.render(document.getElementById('sandbox'));
@@ -81,6 +76,7 @@ testSuite({
     container.dispose();
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testHighlightCellEvents() {
     const container = new Container();
     container.render(document.getElementById('sandbox'));
@@ -154,6 +150,10 @@ testSuite({
   },
 
   testHandleKeyEventLoops() {
+    const container = new Container();
+    container.render(document.getElementById('sandbox'));
+    container.addChild(palette, true);
+
     palette.setHighlightedIndex(0);
     const createKeyEvent = (keyCode) => {
       return new KeyEvent(
@@ -165,6 +165,42 @@ testSuite({
 
     palette.handleKeyEvent(createKeyEvent(KeyCodes.RIGHT));
     assertEquals(0, palette.getHighlightedIndex());
+  },
+
+  testHandleKeyEventScrollIntoView() {
+    // Set the palette to have 5 columns. Since the palette has 23 items, it
+    // will have 5 rows (with last row containing only 3 items).
+    palette.setSize(5 /* number of columns */);
+
+    const container = new Container();
+    container.render(document.getElementById('sandbox'));
+    container.addChild(palette, true);
+    const containerEl = container.getElementStrict();
+    // Set container height to be smaller than content height and add scrolling.
+    style.setSize(containerEl, 400, 50);
+    style.setStyle(containerEl, 'overflow', 'auto');
+
+    // Pressing down arrow key 4 times should move highlight from index 0 to
+    // index 20 (first item of the last row). Verify that this causes the
+    // container to scroll.
+    const item20 = palette.getRenderer().getCellForItem(nodes[20]);
+    const pressDownArrowKeyFourTimes = () => {
+      const downArrayKeyEvent = new KeyEvent(
+          KeyCodes.DOWN, 0 /* charCode */, false /* repeat */,
+          new GoogTestingEvent(EventType.KEYDOWN));
+      for (let i = 0; i < 4; i++) {
+        palette.handleKeyEvent(downArrayKeyEvent);
+      }
+    };
+
+    palette.setHighlightedIndex(0);
+    assert(style.getContainerOffsetToScrollInto(item20, containerEl).y > 0);
+    assertEquals(0, containerEl.scrollTop);
+    pressDownArrowKeyFourTimes();
+    assertEquals(20, palette.getHighlightedIndex());
+    assert(
+        'Container should scroll down to make the highlighted item visible.',
+        containerEl.scrollTop > 0);
   },
 
   testSetHighlight() {
@@ -198,6 +234,7 @@ testSuite({
     assertEquals(3, palette.getHighlightedIndex());
 
     // Click somewhere in the palette, but not inside a cell.
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const mouseUp = new googEvents.BrowserEvent(
         {type: 'mouseup', button: 1, target: palette});
     palette.handleMouseUp(mouseUp);
@@ -218,9 +255,6 @@ testSuite({
     assertEquals(
         'Palette element must have expected aria-label', 'My Palette',
         element.getAttribute('aria-label'));
-    assertEquals(
-        'Palette element must have expected aria role', 'grid',
-        element.getAttribute('role'));
     palette.setAriaLabel('My new Palette');
     assertEquals(
         'Palette element must have updated aria-label', 'My new Palette',

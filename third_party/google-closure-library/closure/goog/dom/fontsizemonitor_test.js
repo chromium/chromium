@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.dom.FontSizeMonitorTest');
 goog.setTestOnly();
@@ -25,12 +17,9 @@ const testSuite = goog.require('goog.testing.testSuite');
 const testingEvents = goog.require('goog.testing.events');
 const userAgent = goog.require('goog.userAgent');
 
-function isBuggyGecko() {
-  return userAgent.GECKO && !userAgent.isVersionOrHigher('1.9');
-}
-
 let monitor;
 
+/** @suppress {visibility} suppression added to enable type checking */
 function getResizeTarget() {
   return userAgent.IE ? monitor.sizeElement_ :
                         dom.getFrameContentWindow(monitor.sizeElement_);
@@ -45,6 +34,7 @@ testSuite({
     monitor.dispose();
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testFontSizeNoChange() {
     // This tests that firing the resize event without changing the font-size
     // does not trigger the event.
@@ -60,6 +50,10 @@ testSuite({
     assertFalse('The font size should not have changed', fired);
   },
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testFontSizeChanged() {
     // One can trigger the iframe resize by changing the
     // document.body.style.fontSize but the event is fired asynchronously in
@@ -93,11 +87,10 @@ testSuite({
     const newDivElementCount = dom.getElementsByTagName(TagName.DIV).length;
 
     assertEquals(
-        'There should be no trailing frames', frameCount + isBuggyGecko(),
-        newFrameCount);
+        'There should be no trailing frames', frameCount, newFrameCount);
     assertEquals(
-        'There should be no trailing iframe elements',
-        iframeElementCount + isBuggyGecko(), newIframeElementCount);
+        'There should be no trailing iframe elements', iframeElementCount,
+        newIframeElementCount);
     assertEquals(
         'There should be no trailing div elements', divElementCount,
         newDivElementCount);
@@ -205,6 +198,10 @@ testSuite({
     try {
       // 1.9 should clear iframes
       pr.set(userAgent, 'VERSION', '1.9');
+      /**
+       * @suppress {visibility,checkTypes,constantProperty} suppression added
+       * to enable type checking
+       */
       userAgent.isVersionOrHigherCache_ = {};
 
       const frameCount = window.frames.length;
@@ -233,39 +230,4 @@ testSuite({
     }
   },
 
-  testFirefox2WorkAroundFirefox2() {
-    const pr = new PropertyReplacer();
-    pr.set(userAgent, 'GECKO', true);
-    pr.set(userAgent, 'IE', false);
-
-    try {
-      // 1.8 should NOT clear iframes
-      pr.set(userAgent, 'VERSION', '1.8');
-      userAgent.isVersionOrHigherCache_ = {};
-
-      const frameCount = window.frames.length;
-      const iframeElementCount =
-          dom.getElementsByTagName(TagName.IFRAME).length;
-      const divElementCount = dom.getElementsByTagName(TagName.DIV).length;
-
-      const monitor = new FontSizeMonitor();
-      monitor.dispose();
-
-      const newFrameCount = window.frames.length;
-      const newIframeElementCount =
-          dom.getElementsByTagName(TagName.IFRAME).length;
-      const newDivElementCount = dom.getElementsByTagName(TagName.DIV).length;
-
-      assertEquals(
-          'There should be no trailing frames', frameCount + 1, newFrameCount);
-      assertEquals(
-          'There should be no trailing iframe elements', iframeElementCount + 1,
-          newIframeElementCount);
-      assertEquals(
-          'There should be no trailing div elements', divElementCount,
-          newDivElementCount);
-    } finally {
-      pr.reset();
-    }
-  },
 });

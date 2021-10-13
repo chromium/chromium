@@ -1,16 +1,13 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
+ * @fileoverview
+ * @suppress {missingRequire} Stubbing goog.async.Throttle
+ */
 
 goog.module('goog.ui.ac.CachingMatcherTest');
 goog.setTestOnly();
@@ -24,7 +21,8 @@ let ignoreArgument = mockmatchers.ignoreArgument;
 
 /**
  * Fake version of Throttle which only fires when we call permitOne().
- * @suppress {missingProvide}
+ * @suppress {missingProvide,checkTypes} suppression added to enable type
+ * checking
  */
 goog.async.Throttle = class {
   constructor(fn, time, self) {
@@ -34,12 +32,10 @@ goog.async.Throttle = class {
     this.numFires = 0;
   }
 
-  /** @suppress {missingProvide} */
   fire() {
     this.numFires++;
   }
 
-  /** @suppress {missingProvide} */
   permitOne() {
     if (this.numFires == 0) {
       return;
@@ -70,6 +66,10 @@ testSuite({
     mockControl.$tearDown();
   },
 
+  /**
+     @suppress {checkTypes,visibility} suppression added to enable type
+     checking
+   */
   testLocalThenRemoteMatch() {
     // We immediately get the local match.
     mockHandler('foo', []);
@@ -90,6 +90,10 @@ testSuite({
     mockControl.$resetAll();
   },
 
+  /**
+     @suppress {checkTypes,visibility} suppression added to enable type
+     checking
+   */
   testCacheSize() {
     matcher.setMaxCacheSize(4);
 
@@ -136,6 +140,10 @@ testSuite({
     mockControl.$resetAll();
   },
 
+  /**
+     @suppress {checkTypes,visibility} suppression added to enable type
+     checking
+   */
   testClearCache() {
     // First we populate the cache.
     mockHandler('foo', []);
@@ -168,6 +176,10 @@ testSuite({
     mockControl.$resetAll();
   },
 
+  /**
+     @suppress {checkTypes,visibility} suppression added to enable type
+     checking
+   */
   testSimilarMatchingDoesntReorderResults() {
     // Populate the cache. We get two prefix matches.
     mockHandler('ba', []);
@@ -210,12 +222,14 @@ testSuite({
     mockControl.$resetAll();
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testSetThrottleTime() {
     assertEquals(150, matcher.throttledTriggerBaseMatch_.time);
     matcher.setThrottleTime(234);
     assertEquals(234, matcher.throttledTriggerBaseMatch_.time);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSetBaseMatcherMaxMatches() {
     mockHandler('foo', []);  // Local match
     mockMatcher.requestMatchingRows('foo', 789, ignoreArgument);
@@ -224,6 +238,10 @@ testSuite({
     matcher.requestMatchingRows('foo', 12, mockHandler);
   },
 
+  /**
+     @suppress {checkTypes,visibility} suppression added to enable type
+     checking
+   */
   testSetLocalMatcher() {
     // Use a local matcher which just sorts all the rows alphabetically.
     function sillyMatcher(token, maxMatches, rows) {

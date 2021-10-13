@@ -1,16 +1,8 @@
-// Copyright 2016 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Provides an interface that defines how users can extend the
@@ -139,8 +131,7 @@ goog.labs.mock.verification.never = function() {
  * functionality to it's subclasses.
  * @package
  */
-goog.labs.mock.verification.BaseVerificationMode =
-    goog.defineClass(null, {constructor() {}});
+goog.labs.mock.verification.BaseVerificationMode = class {};
 
 /**
  * A `VerificationMode` which verifies a method was called
@@ -149,26 +140,27 @@ goog.labs.mock.verification.BaseVerificationMode =
  * @private @implements {goog.labs.mock.verification.VerificationMode}
  */
 goog.labs.mock.verification.TimesVerificationMode_ =
-    goog.defineClass(goog.labs.mock.verification.BaseVerificationMode, {
-      /**
-       * @param {number} expectedNumberOfInvocations
-       * @constructor
-       */
-      constructor: function(expectedNumberOfInvocations) {
-        /** @private @const */
-        this.expectedNumberOfInvocations_ = expectedNumberOfInvocations;
-      },
+    class extends goog.labs.mock.verification.BaseVerificationMode {
+  /**
+   * @param {number} expectedNumberOfInvocations
+   */
+  constructor(expectedNumberOfInvocations) {
+    super();
 
-      /** @override */
-      verify: function(actualNumberOfInvocations) {
-        return actualNumberOfInvocations == this.expectedNumberOfInvocations_;
-      },
+    /** @private @const */
+    this.expectedNumberOfInvocations_ = expectedNumberOfInvocations;
+  }
 
-      /** @override */
-      describe: function() {
-        return this.expectedNumberOfInvocations_ + ' times';
-      }
-    });
+  /** @override */
+  verify(actualNumberOfInvocations) {
+    return actualNumberOfInvocations == this.expectedNumberOfInvocations_;
+  }
+
+  /** @override */
+  describe() {
+    return this.expectedNumberOfInvocations_ + ' times';
+  }
+};
 
 
 /**
@@ -178,26 +170,27 @@ goog.labs.mock.verification.TimesVerificationMode_ =
  * @private @implements {goog.labs.mock.verification.VerificationMode}
  */
 goog.labs.mock.verification.AtLeastVerificationMode_ =
-    goog.defineClass(goog.labs.mock.verification.BaseVerificationMode, {
-      /**
-       * @param {number} minimumNumberOfInvocations
-       * @constructor
-       */
-      constructor: function(minimumNumberOfInvocations) {
-        /** @private @const */
-        this.minimumNumberOfInvocations_ = minimumNumberOfInvocations;
-      },
+    class extends goog.labs.mock.verification.BaseVerificationMode {
+  /**
+   * @param {number} minimumNumberOfInvocations
+   */
+  constructor(minimumNumberOfInvocations) {
+    super();
 
-      /** @override */
-      verify: function(actualNumberOfInvocations) {
-        return actualNumberOfInvocations >= this.minimumNumberOfInvocations_;
-      },
+    /** @private @const */
+    this.minimumNumberOfInvocations_ = minimumNumberOfInvocations;
+  }
 
-      /** @override */
-      describe: function() {
-        return 'at least ' + this.minimumNumberOfInvocations_ + ' times';
-      }
-    });
+  /** @override */
+  verify(actualNumberOfInvocations) {
+    return actualNumberOfInvocations >= this.minimumNumberOfInvocations_;
+  }
+
+  /** @override */
+  describe() {
+    return 'at least ' + this.minimumNumberOfInvocations_ + ' times';
+  }
+};
 
 
 /**
@@ -206,23 +199,25 @@ goog.labs.mock.verification.AtLeastVerificationMode_ =
  *
  * @private @implements {goog.labs.mock.verification.VerificationMode}
  */
-goog.labs.mock.verification.AtMostVerificationMode_ = goog.defineClass(null, {
+goog.labs.mock.verification.AtMostVerificationMode_ =
+    class extends goog.labs.mock.verification.BaseVerificationMode {
   /**
    * @param {number} maxNumberOfInvocations
-   * @constructor
    */
-  constructor: function(maxNumberOfInvocations) {
+  constructor(maxNumberOfInvocations) {
+    super();
+
     /** @private */
     this.maxNumberOfInvocations_ = maxNumberOfInvocations;
-  },
+  }
 
   /** @override */
-  verify: function(actualNumberOfInvocations) {
+  verify(actualNumberOfInvocations) {
     return actualNumberOfInvocations <= this.maxNumberOfInvocations_;
-  },
+  }
 
   /** @override */
-  describe: function() {
+  describe() {
     return 'at most ' + this.maxNumberOfInvocations_ + ' times';
   }
-});
+};

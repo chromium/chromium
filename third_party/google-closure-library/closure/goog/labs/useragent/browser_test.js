@@ -1,16 +1,8 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /** @fileoverview Unit tests for userAgentBrowser. */
 
@@ -96,9 +88,11 @@ function assertVersionBetween(lowVersion, highVersion) {
   assertTrue(userAgentBrowser.isVersionOrHigher(lowVersion));
   assertFalse(userAgentBrowser.isVersionOrHigher(highVersion));
 }
+
 testSuite({
   setUp() {
     util.setUserAgent(null);
+    util.setUserAgentData(null);
   },
 
   testOpera10() {
@@ -136,6 +130,13 @@ testSuite({
     assertBrowser(Browser.OPERA);
     assertVersion('11.10');
     assertVersionBetween('11.00', '12.00');
+  },
+
+  testOperaChromiumUserAgentData() {
+    util.setUserAgentData(testAgents.OPERACHROMIUM_USERAGENT_DATA);
+    assertBrowser(Browser.CHROME);
+    assertNonChromeChromiumBrowser(NonChromeChromiumBrowser.OPERA_CHROMIUM);
+    assertFalse(userAgentBrowser.isOpera());
   },
 
   testIE6() {
@@ -237,6 +238,13 @@ testSuite({
     assertVersionBetween('74.1', '74.2');
   },
 
+  testEdgeChromiumUserAgentData() {
+    util.setUserAgentData(testAgents.EDGECHROMIUM_USERAGENT_DATA);
+    assertBrowser(Browser.CHROME);
+    assertNonChromeChromiumBrowser(NonChromeChromiumBrowser.EDGE_CHROMIUM);
+    assertFalse(userAgentBrowser.isEdge());
+  },
+
   testFirefox19() {
     util.setUserAgent(testAgents.FIREFOX_19);
     assertBrowser(Browser.FIREFOX);
@@ -275,6 +283,15 @@ testSuite({
     assertVersionBetween('17.0', '18.1');
   },
 
+  testChromeHeadless() {
+    util.setUserAgent(testAgents.CHROME_HEADLESS);
+    assertBrowser(Browser.CHROME);
+    assertTrue(userAgentBrowser.isChrome());
+    assertVersion('79.0.3945.84');
+    assertVersionBetween('78.0', '80.0');
+    assertVersionBetween('79.0', '79.1');
+  },
+
   testChromeIphone() {
     util.setUserAgent(testAgents.CHROME_IPHONE);
     assertBrowser(Browser.CHROME);
@@ -302,6 +319,12 @@ testSuite({
     assertVersionBetween('24.0', '24.10');
   },
 
+  testChromeUserAgentData() {
+    util.setUserAgentData(testAgents.CHROME_USERAGENT_DATA);
+    assertBrowser(Browser.CHROME);
+    assertTrue(userAgentBrowser.isChrome());
+  },
+
   testSafariIpad() {
     util.setUserAgent(testAgents.IPAD_6);
     assertBrowser(Browser.SAFARI);
@@ -324,6 +347,46 @@ testSuite({
     assertTrue(userAgentBrowser.isSafari());
     assertVersion('6.0');
     assertVersionBetween('5.0', '7.0');
+  },
+
+  testSafariOnIphoneIos14() {
+    util.setUserAgent(testAgents.SAFARI_IPHONE_IOS_14);
+    assertBrowser(Browser.SAFARI);
+    assertTrue(userAgentBrowser.isSafari());
+    assertVersion('14.1.1');
+    assertVersionBetween('14.0', '15.0');
+  },
+
+  testSafariOnIphoneIos15() {
+    util.setUserAgent(testAgents.SAFARI_IPHONE_IOS_15);
+    assertBrowser(Browser.SAFARI);
+    assertTrue(userAgentBrowser.isSafari());
+    assertVersion('15.0');
+    assertVersionBetween('15.0', '16.0');
+  },
+
+  testSafariDesktopOnIpadIos15() {
+    util.setUserAgent(testAgents.SAFARI_DESKTOP_IPAD_IOS_15);
+    assertBrowser(Browser.SAFARI);
+    assertTrue(userAgentBrowser.isSafari());
+    assertVersion('15.0');
+    assertVersionBetween('15.0', '16.0');
+  },
+
+  testSafariMobileOnIpadIos15() {
+    util.setUserAgent(testAgents.SAFARI_MOBILE_IPAD_IOS_15);
+    assertBrowser(Browser.SAFARI);
+    assertTrue(userAgentBrowser.isSafari());
+    assertVersion('15.0');
+    assertVersionBetween('15.0', '16.0');
+  },
+
+  testSafariOnMacOsBigSur() {
+    util.setUserAgent(testAgents.SAFARI_MAC_OS_BIG_SUR);
+    assertBrowser(Browser.SAFARI);
+    assertTrue(userAgentBrowser.isSafari());
+    assertVersion('14.1.2');
+    assertVersionBetween('14.1', '14.2');
   },
 
   testCoast() {
@@ -384,5 +447,12 @@ testSuite({
     assertBrowser(Browser.FIREFOX);
     assertVersion('28.0');
     assertVersionBetween('27.0', '29.0');
+  },
+
+  testIncompleteUserAgentData() {
+    util.setUserAgentData(testAgents.INCOMPLETE_USERAGENT_DATA);
+    util.setUserAgent(testAgents.CHROME_HEADLESS);
+    assertBrowser(Browser.CHROME);
+    assertTrue(userAgentBrowser.isChrome());
   },
 });

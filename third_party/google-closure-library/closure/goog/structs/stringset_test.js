@@ -1,23 +1,14 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.structs.StringSetTest');
 goog.setTestOnly();
 
 const StringSet = goog.require('goog.structs.StringSet');
 const asserts = goog.require('goog.testing.asserts');
-const googArray = goog.require('goog.array');
 const iter = goog.require('goog.iter');
 const testSuite = goog.require('goog.testing.testSuite');
 
@@ -64,14 +55,14 @@ testSuite({
   },
 
   testConstructorAssertsThatObjectPrototypeHasNoEnumerableKeys() {
-    assertNotThrows(StringSet);
+    assertNotThrows(() => new StringSet());
     Object.prototype.foo = 0;
     try {
-      assertThrows(StringSet);
+      assertThrows(() => new StringSet());
     } finally {
       delete Object.prototype.foo;
     }
-    assertNotThrows(StringSet);
+    assertNotThrows(() => new StringSet());
   },
 
   testOverridingObjectPrototypeToStringIsSafe() {
@@ -87,7 +78,7 @@ testSuite({
 
   testAdd() {
     const s = new StringSet;
-    googArray.forEach(TEST_VALUES_WITH_DUPLICATES, s.add, s);
+    TEST_VALUES_WITH_DUPLICATES.forEach(s.add, s);
     assertSameElements(TEST_VALUES, s.getValues());
   },
 
@@ -123,15 +114,18 @@ testSuite({
 
   testContains() {
     const e = new StringSet;
-    googArray.forEach(TEST_VALUES, (element) => {
+    TEST_VALUES.forEach(element => {
       assertFalse(`empty set does not contain ${element}`, e.contains(element));
+      assertFalse(`empty set does not contain ${element}`, e.has(element));
     });
 
     const s = new StringSet(TEST_VALUES);
-    googArray.forEach(TEST_VALUES_WITH_DUPLICATES, (element) => {
+    TEST_VALUES_WITH_DUPLICATES.forEach(element => {
       assertTrue(`s contains ${element}`, s.contains(element));
+      assertTrue(`s contains ${element}`, s.has(element));
     });
     assertFalse('s does not contain 42', s.contains(42));
+    assertFalse('s does not contain 42', s.has(42));
   },
 
   testContainsArray() {
@@ -255,9 +249,23 @@ testSuite({
     assertSameElements('set == {}', [], n.getValues());
 
     const s = new StringSet(TEST_VALUES);
-    googArray.forEach(TEST_VALUES, s.remove, s);
+    TEST_VALUES.forEach(s.remove, s);
     assertSameElements(
         'all special values have been removed', [], s.getValues());
+  },
+
+  testDelete() {
+    const n = new StringSet([1, 2]);
+    assertFalse('3 not deleted from {1, 2}', n.delete(3));
+    assertSameElements('set == {1, 2}', ['1', '2'], n.values());
+    assertTrue('2 deleted from {1, 2}', n.delete(2));
+    assertSameElements('set == {1}', ['1'], n.values());
+    assertTrue('"1" deleted from {1}', n.delete('1'));
+    assertSameElements('set == {}', [], n.values());
+
+    const s = new StringSet(TEST_VALUES);
+    TEST_VALUES.forEach(s.delete, s);
+    assertSameElements('all special values have been removed', [], s.values());
   },
 
   testRemoveArray() {

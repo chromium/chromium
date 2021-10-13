@@ -1,107 +1,135 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
+/**
+ * @fileoverview
+ * @suppress {missingRequire} Swapping using fully qualified name
+ */
 goog.module('goog.i18n.DateTimeParseTest');
 goog.setTestOnly();
 
-const DateDate = goog.require('goog.date.Date');
+const DateLike = goog.require('goog.date.DateLike');
 const DateTimeFormat = goog.require('goog.i18n.DateTimeFormat');
 const DateTimeParse = goog.require('goog.i18n.DateTimeParse');
 /** @suppress {extraRequire} */
 const DateTimeSymbols = goog.require('goog.i18n.DateTimeSymbols');
+const DateTimeSymbols_ca = goog.require('goog.i18n.DateTimeSymbols_ca');
 const DateTimeSymbols_en = goog.require('goog.i18n.DateTimeSymbols_en');
 const DateTimeSymbols_fa = goog.require('goog.i18n.DateTimeSymbols_fa');
 const DateTimeSymbols_fr = goog.require('goog.i18n.DateTimeSymbols_fr');
+const DateTimeSymbols_ko = goog.require('goog.i18n.DateTimeSymbols_ko');
 const DateTimeSymbols_pl = goog.require('goog.i18n.DateTimeSymbols_pl');
 const DateTimeSymbols_zh = goog.require('goog.i18n.DateTimeSymbols_zh');
-const ExpectedFailures = goog.require('goog.testing.ExpectedFailures');
+const GoogDate = goog.require('goog.date.Date');
 const testSuite = goog.require('goog.testing.testSuite');
-const userAgent = goog.require('goog.userAgent');
 
 goog.i18n.DateTimeSymbols = DateTimeSymbols_en;
 
-let expectedFailures;
 
-// Helper equivalent of assertEquals for dates, with day of month optional
+/**
+ * Asserts that `date` has the expected date field values.
+ * @param {number|undefined} expectYear
+ * @param {number} expectMonth
+ * @param {number|undefined} expectDate
+ * @param {!DateLike} date
+ */
 function assertDateEquals(expectYear, expectMonth, expectDate, date) {
-  assertEquals(expectYear, date.getFullYear());
+  if (expectYear !== undefined) {
+    assertEquals(expectYear, date.getFullYear());
+  }
   assertEquals(expectMonth, date.getMonth());
-  if (expectDate) assertEquals(expectDate, date.getDate());
+  if (expectDate !== undefined) {
+    assertEquals(expectDate, date.getDate());
+  }
 }
 
-// Helper equivalent of assertEquals for times, with seconds and milliseconds
+/**
+ * Asserts that `date` has the expected time field values.
+ * @param {number} expectHour
+ * @param {number} expectMin
+ * @param {number|undefined} expectSec
+ * @param {number|undefined} expectMilli
+ * @param {!DateLike} date
+ */
 function assertTimeEquals(expectHour, expectMin, expectSec, expectMilli, date) {
   assertEquals(expectHour, date.getHours());
   assertEquals(expectMin, date.getMinutes());
-  if (expectSec) assertEquals(expectSec, date.getSeconds());
-  if (expectMilli) assertEquals(expectMilli, date.getTime() % 1000);
+  if (expectSec !== undefined) {
+    assertEquals(expectSec, date.getSeconds());
+  }
+  if (expectMilli !== undefined) {
+    assertEquals(expectMilli, date.getMilliseconds());
+  }
 }
 
-// Helper function, doing parse and assert on dates
+/**
+ * Parses and asserts that the result has the expected values.
+ * @param {number|undefined} expectYear
+ * @param {number} expectMonth calendar month (1-based)
+ * @param {number|undefined} expectDate
+ * @param {!DateTimeParse} parser
+ * @param {string} text
+ * @param {!DateTimeParse.ParseOptions=} options
+ */
 function assertParsedDateEquals(
-    expectYear, expectMonth, expectDate, parser, stringToParse, date) {
-  assertTrue(parser.parse(stringToParse, date) > 0);
+    expectYear, expectMonth, expectDate, parser, text, options) {
+  const date = new Date(0);
+
+  assertTrue(parser.parse(text, date, options) > 0);
   assertDateEquals(expectYear, expectMonth, expectDate, date);
 }
 
-// Helper function, doing parse and assert on times
+/**
+ * Parses and asserts that the result has the expected values.
+ * @param {number} expectHour
+ * @param {number} expectMin
+ * @param {number|undefined} expectSec
+ * @param {number|undefined} expectMilli
+ * @param {!DateTimeParse} parser
+ * @param {string} text
+ * @param {!DateTimeParse.ParseOptions=} options
+ */
 function assertParsedTimeEquals(
-    expectHour, expectMin, expectSec, expectMilli, parser, stringToParse,
-    date) {
-  assertTrue(parser.parse(stringToParse, date) > 0);
+    expectHour, expectMin, expectSec, expectMilli, parser, text, options) {
+  const date = new Date(0);
+
+  assertTrue(parser.parse(text, date, options) > 0);
   assertTimeEquals(expectHour, expectMin, expectSec, expectMilli, date);
 }
 
-testSuite({
-  setUpPage() {
-    expectedFailures = new ExpectedFailures();
-  },
+/**
+ * Asserts that parsing of `text` fails.
+ * @param {!DateTimeParse} parser
+ * @param {string} text
+ * @param {!DateTimeParse.ParseOptions=} options
+ */
+function assertParseFails(parser, text, options) {
+  const date = new Date(0);
 
+  assertEquals(0, parser.parse(text, date, options));
+}
+
+testSuite({
   tearDown() {
     goog.i18n.DateTimeSymbols = DateTimeSymbols_en;
-    expectedFailures.handleTearDown();
   },
 
   testNegativeYear() {
-    const date = new Date();
-
     const parser = new DateTimeParse('MM/dd, yyyy');
-    assertParsedDateEquals(1999, 11 - 1, 22, parser, '11/22, 1999', date);
-    assertParsedDateEquals(-1999, 11 - 1, 22, parser, '11/22, -1999', date);
+
+    assertParsedDateEquals(1999, 11 - 1, 22, parser, '11/22, 1999');
+    assertParsedDateEquals(-1999, 11 - 1, 22, parser, '11/22, -1999');
   },
 
   testEra() {
-    // Bug 2350397
-    if (userAgent.WEBKIT) {
-      // Bug 2350397 Test seems to be very flaky on Chrome. Disabling it
-      return;
-    }
-
-    const date = new Date();
     const parser = new DateTimeParse('MM/dd, yyyyG');
-    assertParsedDateEquals(-1998, 11 - 1, 22, parser, '11/22, 1999BC', date);
-    assertParsedDateEquals(0, 11 - 1, 22, parser, '11/22, 1BC', date);
-    assertParsedDateEquals(1999, 11 - 1, 22, parser, '11/22, 1999AD', date);
-  },
 
-  testFractionalSeconds() {
-    const date = new Date();
-    const parser = new DateTimeParse('hh:mm:ss.SSS');
-
-    assertParsedTimeEquals(11, 12, 13, 956, parser, '11:12:13.956', date);
-    assertParsedTimeEquals(11, 12, 13, 950, parser, '11:12:13.95', date);
-    assertParsedTimeEquals(11, 12, 13, 900, parser, '11:12:13.9', date);
+    assertParsedDateEquals(-1998, 11 - 1, 22, parser, '11/22, 1999BC');
+    assertParsedDateEquals(0, 11 - 1, 22, parser, '11/22, 1BC');
+    assertParsedDateEquals(1999, 11 - 1, 22, parser, '11/22, 1999AD');
   },
 
   testAmbiguousYear() {
@@ -156,202 +184,269 @@ testSuite({
   },
 
   testLeapYear() {
-    const date = new Date();
-
     const parser = new DateTimeParse('MMdd, yyyy');
 
-    assertParsedDateEquals(2001, 3 - 1, 1, parser, '0229, 2001', date);
-    assertParsedDateEquals(2000, 2 - 1, 29, parser, '0229, 2000', date);
+    assertParsedDateEquals(2001, 3 - 1, 1, parser, '0229, 2001');
+    assertParsedDateEquals(2000, 2 - 1, 29, parser, '0229, 2000');
   },
 
-  testAbutField() {
-    const date = new Date();
+  testAbuttingNumberPatterns() {
+    let parser = new DateTimeParse('hhmm');
+    assertParsedTimeEquals(11, 22, 0, 0, parser, '1122');
+    assertParsedTimeEquals(1, 22, 0, 0, parser, '122');
+    assertParseFails(parser, '22');
+    // Probable bug: non-digit can cause too-short abutting run to succeed
+    assertParsedTimeEquals(2, 2, 0, 0, parser, '22b');
 
-    const parser = new DateTimeParse('hhmm');
-    assertParsedTimeEquals(11, 22, undefined, undefined, parser, '1122', date);
-    assertParsedTimeEquals(1, 22, undefined, undefined, parser, '122', date);
+    parser = new DateTimeParse('HHmmss');
+    assertParsedTimeEquals(12, 34, 56, 0, parser, '123456789');
+    assertParsedTimeEquals(12, 34, 56, 0, parser, '123456');
+    assertParsedTimeEquals(1, 23, 45, 0, parser, '12345');
+    assertParseFails(parser, '1234');
 
-    const parser2 = new DateTimeParse('hhmmss');
-    assertParsedTimeEquals(11, 22, 33, undefined, parser2, '112233', date);
-    assertParsedTimeEquals(1, 22, 33, undefined, parser2, '12233', date);
+    parser = new DateTimeParse('yyyyMMdd');
+    assertParsedDateEquals(1999, 12 - 1, 2, parser, '19991202');
+    assertParsedDateEquals(999, 12 - 1, 2, parser, '9991202');
+    assertParsedDateEquals(99, 12 - 1, 2, parser, '991202');
+    assertParsedDateEquals(9, 12 - 1, 2, parser, '91202');
+    assertParseFails(parser, '1202');
+  },
 
-    const parser3 = new DateTimeParse('yyyyMMdd');
-    assertParsedDateEquals(1999, 12 - 1, 2, parser3, '19991202', date);
-    assertParsedDateEquals(999, 12 - 1, 2, parser3, '9991202', date);
-    assertParsedDateEquals(99, 12 - 1, 2, parser3, '991202', date);
-    assertParsedDateEquals(9, 12 - 1, 2, parser3, '91202', date);
+  testDelimitedNumberPatterns() {
+    const parser = new DateTimeParse('H:mm');
+
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '0:22');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '00:22');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '000:22');
+    assertParsedTimeEquals(1, 22, 0, 0, parser, '001:22');
+    assertParsedTimeEquals(11, 22, 0, 0, parser, '011:22');
+    assertParsedTimeEquals(11, 0, 0, 0, parser, '11:0');
+    assertParsedTimeEquals(11, 0, 0, 0, parser, '11:00');
+    assertParsedTimeEquals(11, 2, 0, 0, parser, '11:002');
+    assertParsedTimeEquals(11, 22, 0, 0, parser, '11:0022');
   },
 
   testYearParsing() {
-    const date = new Date();
+    let parser = new DateTimeParse('yyMMdd');
+    assertParsedDateEquals(1999, 12 - 1, 2, parser, '991202');
+    assertParseFails(parser, '-91202');
+    assertParseFails(parser, '+91202');
 
-    const parser = new DateTimeParse('yyMMdd');
-    assertParsedDateEquals(1999, 12 - 1, 2, parser, '991202', date);
+    parser = new DateTimeParse('yyyyMMdd');
+    assertParsedDateEquals(2005, 12 - 1, 2, parser, '20051202');
 
-    const parser2 = new DateTimeParse('yyyyMMdd');
-    assertParsedDateEquals(2005, 12 - 1, 2, parser2, '20051202', date);
+    parser = new DateTimeParse('MM/y');
+    assertParsedDateEquals(1999, 12 - 1, undefined, parser, '12/1999');
+    assertParsedDateEquals(19999, 12 - 1, undefined, parser, '12/19999');
 
-    const parser3 = new DateTimeParse('MM/y');
-    assertParsedDateEquals(1999, 12 - 1, 2, parser3, '12/1999', date);
+    parser = new DateTimeParse('MM-y');
+    assertParsedDateEquals(1999, 12 - 1, undefined, parser, '12-1999');
+  },
 
-    const parser4 = new DateTimeParse('MM-y');
-    assertParsedDateEquals(1999, 12 - 1, 2, parser4, '12-1999', date);
+  testMonthParsing() {
+    let parser = new DateTimeParse('MMM d, y');
+    assertParsedDateEquals(2021, 3 - 1, 31, parser, 'Mar 31, 2021');
+
+    parser = new DateTimeParse('d MMM y', DateTimeSymbols_ca);
+    assertParsedDateEquals(2021, 2 - 1, 1, parser, '1 de febrer 2021');
+    assertParsedDateEquals(2021, 2 - 1, 1, parser, '1 febrer 2021');
+    assertParsedDateEquals(2021, 2 - 1, 1, parser, '1 de febr. 2021');
+    assertParsedDateEquals(2021, 2 - 1, 1, parser, '1 febr. 2021');
   },
 
   testGoogDateParsing() {
-    const date = new DateDate();
-
     const parser = new DateTimeParse('yyMMdd');
-    assertParsedDateEquals(1999, 12 - 1, 2, parser, '991202', date);
+    const date = new GoogDate();
+
+    assertTrue(parser.parse('991202', date) > 0);
+    assertDateEquals(1999, 12 - 1, 2, date);
   },
 
-  testHourParsing_hh() {
-    const date = new Date();
+  testTimeParsing_hh() {
+    let parser = new DateTimeParse('hhmm');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '0022');
+    assertParsedTimeEquals(11, 22, 0, 0, parser, '1122');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '1222');
+    assertParsedTimeEquals(23, 22, 0, 0, parser, '2322');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '2422');
 
-    const parser = new DateTimeParse('hhmm');
-    assertParsedTimeEquals(0, 22, undefined, undefined, parser, '0022', date);
-    assertParsedTimeEquals(11, 22, undefined, undefined, parser, '1122', date);
-    assertParsedTimeEquals(0, 22, undefined, undefined, parser, '1222', date);
-    assertParsedTimeEquals(23, 22, undefined, undefined, parser, '2322', date);
-    assertParsedTimeEquals(0, 22, undefined, undefined, parser, '2422', date);
-
-    const parser2 = new DateTimeParse('hhmma');
-    assertParsedTimeEquals(
-        0, 22, undefined, undefined, parser2, '0022am', date);
-    assertParsedTimeEquals(
-        11, 22, undefined, undefined, parser2, '1122am', date);
-    assertParsedTimeEquals(
-        0, 22, undefined, undefined, parser2, '1222am', date);
-    assertParsedTimeEquals(
-        23, 22, undefined, undefined, parser2, '2322am', date);
-    assertParsedTimeEquals(
-        0, 22, undefined, undefined, parser2, '2422am', date);
-    assertParsedTimeEquals(
-        12, 22, undefined, undefined, parser2, '0022pm', date);
-    assertParsedTimeEquals(
-        23, 22, undefined, undefined, parser2, '1122pm', date);
-    assertParsedTimeEquals(
-        12, 22, undefined, undefined, parser2, '1222pm', date);
-    assertParsedTimeEquals(
-        23, 22, undefined, undefined, parser2, '2322pm', date);
-    assertParsedTimeEquals(
-        0, 22, undefined, undefined, parser2, '2422pm', date);
+    parser = new DateTimeParse('hhmma');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '0022am');
+    assertParsedTimeEquals(11, 22, 0, 0, parser, '1122am');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '1222am');
+    assertParsedTimeEquals(23, 22, 0, 0, parser, '2322am');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '2422am');
+    assertParsedTimeEquals(12, 22, 0, 0, parser, '0022pm');
+    assertParsedTimeEquals(23, 22, 0, 0, parser, '1122pm');
+    assertParsedTimeEquals(12, 22, 0, 0, parser, '1222pm');
+    assertParsedTimeEquals(23, 22, 0, 0, parser, '2322pm');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '2422pm');
   },
 
-  testHourParsing_KK() {
-    const date = new Date();
+  testTimeParsing_KK() {
+    let parser = new DateTimeParse('KKmm');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '0022');
+    assertParsedTimeEquals(11, 22, 0, 0, parser, '1122');
+    assertParsedTimeEquals(12, 22, 0, 0, parser, '1222');
+    assertParsedTimeEquals(23, 22, 0, 0, parser, '2322');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '2422');
 
-    const parser = new DateTimeParse('KKmm');
-    assertParsedTimeEquals(0, 22, undefined, undefined, parser, '0022', date);
-    assertParsedTimeEquals(11, 22, undefined, undefined, parser, '1122', date);
-    assertParsedTimeEquals(12, 22, undefined, undefined, parser, '1222', date);
-    assertParsedTimeEquals(23, 22, undefined, undefined, parser, '2322', date);
-    assertParsedTimeEquals(0, 22, undefined, undefined, parser, '2422', date);
-
-    const parser2 = new DateTimeParse('KKmma');
-    assertParsedTimeEquals(
-        0, 22, undefined, undefined, parser2, '0022am', date);
-    assertParsedTimeEquals(
-        11, 22, undefined, undefined, parser2, '1122am', date);
-    assertParsedTimeEquals(
-        12, 22, undefined, undefined, parser2, '1222am', date);
-    assertParsedTimeEquals(
-        23, 22, undefined, undefined, parser2, '2322am', date);
-    assertParsedTimeEquals(
-        0, 22, undefined, undefined, parser2, '2422am', date);
-    assertParsedTimeEquals(
-        12, 22, undefined, undefined, parser2, '0022pm', date);
-    assertParsedTimeEquals(
-        23, 22, undefined, undefined, parser2, '1122pm', date);
-    assertParsedTimeEquals(
-        12, 22, undefined, undefined, parser2, '1222pm', date);
-    assertParsedTimeEquals(
-        23, 22, undefined, undefined, parser2, '2322pm', date);
-    assertParsedTimeEquals(
-        0, 22, undefined, undefined, parser2, '2422pm', date);
+    parser = new DateTimeParse('KKmma');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '0022am');
+    assertParsedTimeEquals(11, 22, 0, 0, parser, '1122am');
+    assertParsedTimeEquals(12, 22, 0, 0, parser, '1222am');
+    assertParsedTimeEquals(23, 22, 0, 0, parser, '2322am');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '2422am');
+    assertParsedTimeEquals(12, 22, 0, 0, parser, '0022pm');
+    assertParsedTimeEquals(23, 22, 0, 0, parser, '1122pm');
+    assertParsedTimeEquals(12, 22, 0, 0, parser, '1222pm');
+    assertParsedTimeEquals(23, 22, 0, 0, parser, '2322pm');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '2422pm');
   },
 
-  testHourParsing_kk() {
-    const date = new Date();
+  testTimeParsing_kk() {
+    let parser = new DateTimeParse('kkmm');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '0022');
+    assertParsedTimeEquals(11, 22, 0, 0, parser, '1122');
+    assertParsedTimeEquals(12, 22, 0, 0, parser, '1222');
+    assertParsedTimeEquals(23, 22, 0, 0, parser, '2322');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '2422');
 
-    const parser = new DateTimeParse('kkmm');
-    assertParsedTimeEquals(0, 22, undefined, undefined, parser, '0022', date);
-    assertParsedTimeEquals(11, 22, undefined, undefined, parser, '1122', date);
-    assertParsedTimeEquals(12, 22, undefined, undefined, parser, '1222', date);
-    assertParsedTimeEquals(23, 22, undefined, undefined, parser, '2322', date);
-    assertParsedTimeEquals(0, 22, undefined, undefined, parser, '2422', date);
-
-    const parser2 = new DateTimeParse('kkmma');
-    assertParsedTimeEquals(
-        0, 22, undefined, undefined, parser2, '0022am', date);
-    assertParsedTimeEquals(
-        11, 22, undefined, undefined, parser2, '1122am', date);
-    assertParsedTimeEquals(
-        12, 22, undefined, undefined, parser2, '1222am', date);
-    assertParsedTimeEquals(
-        23, 22, undefined, undefined, parser2, '2322am', date);
-    assertParsedTimeEquals(
-        0, 22, undefined, undefined, parser2, '2422am', date);
-    assertParsedTimeEquals(
-        12, 22, undefined, undefined, parser2, '0022pm', date);
-    assertParsedTimeEquals(
-        23, 22, undefined, undefined, parser2, '1122pm', date);
-    assertParsedTimeEquals(
-        12, 22, undefined, undefined, parser2, '1222pm', date);
-    assertParsedTimeEquals(
-        23, 22, undefined, undefined, parser2, '2322pm', date);
-    assertParsedTimeEquals(
-        0, 22, undefined, undefined, parser2, '2422pm', date);
+    parser = new DateTimeParse('kkmma');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '0022am');
+    assertParsedTimeEquals(11, 22, 0, 0, parser, '1122am');
+    assertParsedTimeEquals(12, 22, 0, 0, parser, '1222am');
+    assertParsedTimeEquals(23, 22, 0, 0, parser, '2322am');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '2422am');
+    assertParsedTimeEquals(12, 22, 0, 0, parser, '0022pm');
+    assertParsedTimeEquals(23, 22, 0, 0, parser, '1122pm');
+    assertParsedTimeEquals(12, 22, 0, 0, parser, '1222pm');
+    assertParsedTimeEquals(23, 22, 0, 0, parser, '2322pm');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '2422pm');
   },
 
-  testHourParsing_HH() {
-    const date = new Date();
+  testTimeParsing_HH() {
+    let parser = new DateTimeParse('HHmm');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '0022');
+    assertParsedTimeEquals(11, 22, 0, 0, parser, '1122');
+    assertParsedTimeEquals(12, 22, 0, 0, parser, '1222');
+    assertParsedTimeEquals(23, 22, 0, 0, parser, '2322');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '2422');
 
-    const parser = new DateTimeParse('HHmm');
-    assertParsedTimeEquals(0, 22, undefined, undefined, parser, '0022', date);
-    assertParsedTimeEquals(11, 22, undefined, undefined, parser, '1122', date);
-    assertParsedTimeEquals(12, 22, undefined, undefined, parser, '1222', date);
-    assertParsedTimeEquals(23, 22, undefined, undefined, parser, '2322', date);
-    assertParsedTimeEquals(0, 22, undefined, undefined, parser, '2422', date);
+    parser = new DateTimeParse('HHmma');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '0022am');
+    assertParsedTimeEquals(11, 22, 0, 0, parser, '1122am');
+    assertParsedTimeEquals(12, 22, 0, 0, parser, '1222am');
+    assertParsedTimeEquals(23, 22, 0, 0, parser, '2322am');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '2422am');
+    assertParsedTimeEquals(12, 22, 0, 0, parser, '0022pm');
+    assertParsedTimeEquals(23, 22, 0, 0, parser, '1122pm');
+    assertParsedTimeEquals(12, 22, 0, 0, parser, '1222pm');
+    assertParsedTimeEquals(23, 22, 0, 0, parser, '2322pm');
+    assertParsedTimeEquals(0, 22, 0, 0, parser, '2422pm');
+  },
 
-    const parser2 = new DateTimeParse('HHmma');
-    assertParsedTimeEquals(
-        0, 22, undefined, undefined, parser2, '0022am', date);
-    assertParsedTimeEquals(
-        11, 22, undefined, undefined, parser2, '1122am', date);
-    assertParsedTimeEquals(
-        12, 22, undefined, undefined, parser2, '1222am', date);
-    assertParsedTimeEquals(
-        23, 22, undefined, undefined, parser2, '2322am', date);
-    assertParsedTimeEquals(
-        0, 22, undefined, undefined, parser2, '2422am', date);
-    assertParsedTimeEquals(
-        12, 22, undefined, undefined, parser2, '0022pm', date);
-    assertParsedTimeEquals(
-        23, 22, undefined, undefined, parser2, '1122pm', date);
-    assertParsedTimeEquals(
-        12, 22, undefined, undefined, parser2, '1222pm', date);
-    assertParsedTimeEquals(
-        23, 22, undefined, undefined, parser2, '2322pm', date);
-    assertParsedTimeEquals(
-        0, 22, undefined, undefined, parser2, '2422pm', date);
+  testTimeParsing_milliseconds() {
+    const parser = new DateTimeParse('hh:mm:ss.SSS');
+
+    assertParsedTimeEquals(11, 12, 13, 956, parser, '11:12:13.956');
+    assertParsedTimeEquals(11, 12, 13, 950, parser, '11:12:13.95');
+    assertParsedTimeEquals(11, 12, 13, 900, parser, '11:12:13.9');
+  },
+
+  testTimeParsing_partial() {
+    let parser = new DateTimeParse('h:mma');
+    assertParseFails(parser, '5');
+    assertParsedTimeEquals(5, 0, 0, 0, parser, '5:');
+    assertParsedTimeEquals(5, 4, 0, 0, parser, '5:4');
+    assertParsedTimeEquals(5, 44, 0, 0, parser, '5:44');
+    assertParsedTimeEquals(5, 44, 0, 0, parser, '5:44p');
+    assertParsedTimeEquals(17, 44, 0, 0, parser, '5:44pm');
+    assertParsedTimeEquals(5, 44, 0, 0, parser, '5:44ym');
+
+    parser = new DateTimeParse('h:mm a');
+    assertParseFails(parser, '5');
+    assertParseFails(parser, '5:');
+    assertParseFails(parser, '5:4');
+    assertParseFails(parser, '5:44');
+    assertParsedTimeEquals(5, 44, 0, 0, parser, '5:44 ');
+    assertParsedTimeEquals(5, 44, 0, 0, parser, '5:44 p');
+    assertParsedTimeEquals(17, 44, 0, 0, parser, '5:44 pm');
+    assertParsedTimeEquals(5, 44, 0, 0, parser, '5:44 ym');
+
+    parser = new DateTimeParse('mm:ss');
+    const date = new Date(0);
+    assertTrue(parser.parse('15:', date) > 0);
+    assertEquals(15, date.getMinutes());
+    assertEquals(0, date.getSeconds());
+  },
+
+  testTimeParsing_overflow() {
+    const parser = new DateTimeParse('H:mm');
+
+    assertParsedTimeEquals(0, 0, 0, 0, parser, '24:00');
+    assertParsedTimeEquals(0, 30, 0, 0, parser, '23:90');
+  },
+
+  testTimeParsing_predictive() {
+    const opts =
+        /** @type {!DateTimeParse.ParseOptions} */ ({predictive: true});
+
+    let parser = new DateTimeParse('h:mm a');
+    assertParsedTimeEquals(5, 0, 0, 0, parser, '5', opts);
+    assertParsedTimeEquals(5, 0, 0, 0, parser, '5:', opts);
+    assertParsedTimeEquals(5, 40, 0, 0, parser, '5:4', opts);
+    assertParsedTimeEquals(5, 44, 0, 0, parser, '5:44', opts);
+    assertParsedTimeEquals(5, 44, 0, 0, parser, '5:44 ', opts);
+    assertParseFails(parser, '5:44 x', opts);
+    assertParsedTimeEquals(17, 44, 0, 0, parser, '5:44 p', opts);
+    assertParsedTimeEquals(17, 44, 0, 0, parser, '5:44 pm', opts);
+    assertParsedTimeEquals(17, 44, 0, 0, parser, '5:44 pmx', opts);
+
+    parser = new DateTimeParse('HH:mm');
+    assertParsedTimeEquals(0, 0, 0, 0, parser, '0', opts);
+    // 50 % 24 == 2
+    assertParsedTimeEquals(2, 0, 0, 0, parser, '5', opts);
+    assertParsedTimeEquals(2, 0, 0, 0, parser, '50', opts);
+    assertParseFails(parser, '5:', opts);
+    assertParsedTimeEquals(5, 0, 0, 0, parser, '05:', opts);
+    assertParsedTimeEquals(5, 40, 0, 0, parser, '05:4', opts);
+    assertParsedTimeEquals(5, 44, 0, 0, parser, '05:44', opts);
+    assertParsedTimeEquals(17, 44, 0, 0, parser, '17:44', opts);
+    // overflow
+    assertParsedTimeEquals(18, 1, 0, 0, parser, '17:061', opts);
+
+    parser = new DateTimeParse('a h시 m분', DateTimeSymbols_ko);
+    assertParsedTimeEquals(10, 0, 0, 0, parser, '오전 10', opts);
+    assertParsedTimeEquals(10, 2, 0, 0, parser, '오전 10시 2', opts);
+    assertParsedTimeEquals(10, 2, 0, 0, parser, '오전 10시 2분', opts);
+    assertParsedTimeEquals(16, 20, 0, 0, parser, '오후 4시 20', opts);
+    assertParsedTimeEquals(16, 20, 0, 0, parser, '오후 4시 20분', opts);
+  },
+
+  testTimeParsing_predictiveValidate() {
+    const opts =
+        /** @type {!DateTimeParse.ParseOptions} */ (
+            {predictive: true, validate: true});
+
+    const parser = new DateTimeParse('HH:mm');
+    assertParsedTimeEquals(5, 0, 0, 0, parser, '05', opts);
+    assertParsedTimeEquals(12, 34, 0, 0, parser, '12:34', opts);
+    assertParseFails(parser, '5', opts);
+    assertParseFails(parser, '50', opts);
+    assertParseFails(parser, '123', opts);
+    assertParseFails(parser, '123:45', opts);
+    assertParseFails(parser, '12:345', opts);
+    assertParseFails(parser, '5:', opts);
   },
 
   testEnglishDate() {
-    const date = new Date();
-
     const parser = new DateTimeParse('yyyy MMM dd hh:mm');
+    const date = new Date(0);
 
-    // Fails in Safari4/Chrome Winxp because of infrastructure issues,
-    // temporarily disabled. See b/4274778.
-    expectedFailures.expectFailureFor(userAgent.WEBKIT);
-    try {
-      assertParsedDateEquals(
-          2006, 7 - 1, 10, parser, '2006 Jul 10 15:44', date);
-      assertTimeEquals(15, 44, undefined, undefined, date);
-    } catch (e) {
-      expectedFailures.handleException(e);
-    }
+    assertTrue(parser.parse('2006 Jul 10 15:44', date) > 0);
+    assertDateEquals(2006, 7 - 1, 10, date);
+    assertTimeEquals(15, 44, undefined, undefined, date);
   },
 
   testChineseDate() {
@@ -363,26 +458,19 @@ testSuite({
     const dateStr = formatter.format(date);
     let parser = new DateTimeParse(DateTimeFormat.Format.FULL_DATE);
 
-    assertParsedDateEquals(2006, 7 - 1, 24, parser, dateStr, date);
+    assertParsedDateEquals(2006, 7 - 1, 24, parser, dateStr);
 
     parser = new DateTimeParse(DateTimeFormat.Format.LONG_DATE);
     assertParsedDateEquals(
-        2006, 7 - 1, 24, parser, '2006\u5E747\u670824\u65E5', date);
+        2006, 7 - 1, 24, parser, '2006\u5E747\u670824\u65E5');
 
     parser = new DateTimeParse(DateTimeFormat.Format.FULL_TIME);
     assertTrue(parser.parse('GMT-07:00 \u4E0B\u534803:26:28', date) > 0);
 
-    // Fails in Safari4/Chrome Winxp because of infrastructure issues,
-    // temporarily disabled. See b/4274778.
-    expectedFailures.expectFailureFor(userAgent.WEBKIT);
-    try {
-      assertEquals(
-          22, (24 + date.getHours() + date.getTimezoneOffset() / 60) % 24);
-      assertEquals(26, date.getMinutes());
-      assertEquals(28, date.getSeconds());
-    } catch (e) {
-      expectedFailures.handleException(e);
-    }
+    assertEquals(
+        22, (24 + date.getHours() + date.getTimezoneOffset() / 60) % 24);
+    assertEquals(26, date.getMinutes());
+    assertEquals(28, date.getSeconds());
   },
 
   // For languages with goog.i18n.DateTimeSymbols.ZERODIGIT defined, the int
@@ -393,31 +481,28 @@ testSuite({
     // goog.i18n.DateTimeSymbols.ZERODIGIT defined.
     goog.i18n.DateTimeSymbols = DateTimeSymbols_fa;
 
-    // JavaScript month starts from 0, July is 7 - 1
-    let date = new Date(2006, 7 - 1, 24, 12, 12, 12, 0);
     let formatter = new DateTimeFormat(DateTimeFormat.Format.FULL_DATE);
-    let dateStr = formatter.format(date);
     let parser = new DateTimeParse(DateTimeFormat.Format.FULL_DATE);
+    // JavaScript month starts from 0, July is 7 - 1
+    let text = formatter.format(new Date(2006, 7 - 1, 24, 12, 12, 12, 0));
 
-    assertParsedDateEquals(2006, 7 - 1, 24, parser, dateStr, date);
+    assertParsedDateEquals(2006, 7 - 1, 24, parser, text);
 
-    date = new Date(2006, 7 - 1, 24);
     formatter = new DateTimeFormat(DateTimeFormat.Format.SHORT_DATE);
-    dateStr = formatter.format(date);
     parser = new DateTimeParse(DateTimeFormat.Format.SHORT_DATE);
+    text = formatter.format(new Date(2006, 7 - 1, 24));
 
-    assertParsedDateEquals(2006, 7 - 1, 24, parser, dateStr, date);
-
-    date = new Date();
+    assertParsedDateEquals(2006, 7 - 1, 24, parser, text);
 
     parser = new DateTimeParse('y/MM/dd H:mm:ss٫SS');
-    assertParsedDateEquals(2006, 6, 27, parser, '۲۰۰۶/۰۷/۲۷ ۱۳:۱۰:۱۰٫۲۵', date);
+
+    assertParsedDateEquals(2006, 7 - 1, 27, parser, '۲۰۰۶/۰۷/۲۷ ۱۳:۱۰:۱۰٫۲۵');
   },
 
   testTimeZone() {
+    const parser = new DateTimeParse('MM/dd/yyyy, hh:mm:ss zzz');
     const date = new Date();
 
-    const parser = new DateTimeParse('MM/dd/yyyy, hh:mm:ss zzz');
     assertTrue(parser.parse('07/21/2003, 11:22:33 GMT-0700', date) > 0);
     const hourGmtMinus07 = date.getHours();
 
@@ -436,139 +521,112 @@ testSuite({
     const hourGmt08 = date.getHours();
     assertEquals(16, (hourGmtMinus08 + 24 - hourGmt08) % 24);
 
+    assertTrue(parser.parse('07/21/2003, 11:22:33 GMT+08', date) > 0);
+    assertEquals(hourGmt08, date.getHours());
+
     assertTrue(parser.parse('07/21/2003, 11:22:33 GMT0800', date) > 0);
     assertEquals(hourGmt08, date.getHours());
 
     // 'foo' is not a timezone
-    assertFalse(parser.parse('07/21/2003, 11:22:33 foo', date) > 0);
+    assertParseFails(parser, '07/21/2003, 11:22:33 foo');
   },
 
   testWeekDay() {
-    const date = new Date();
     let parser = new DateTimeParse('EEEE, MM/dd/yyyy');
+    const date = new Date();
 
-    assertTrue(parser.parse('Wednesday, 08/16/2006', date) > 0);
-    assertDateEquals(2006, 8 - 1, 16, date);
-    assertTrue(parser.parse('Tuesday, 08/16/2006', date) == 0);
-    assertTrue(parser.parse('Thursday, 08/16/2006', date) == 0);
-    assertTrue(parser.parse('Wed, 08/16/2006', date) > 0);
-    assertTrue(parser.parse('Wasdfed, 08/16/2006', date) == 0);
+    assertParsedDateEquals(2006, 8 - 1, 16, parser, 'Wednesday, 08/16/2006');
+    assertParseFails(parser, 'Tuesday, 08/16/2006');
+    assertParseFails(parser, 'Thursday, 08/16/2006');
+    assertParsedDateEquals(2006, 8 - 1, 16, parser, 'Wed, 08/16/2006');
+    assertParseFails(parser, 'Wasdfed, 08/16/2006');
+
+    parser = new DateTimeParse('EEEE, MM/yyyy');
 
     date.setDate(25);
-    parser = new DateTimeParse('EEEE, MM/yyyy');
-    assertTrue(parser.parse('Wed, 09/2006', date) > 0);
-    assertEquals(27, date.getDate());
+    assertParsedDateEquals(2006, 9 - 1, 27, parser, 'Wed, 09/2006');
 
     date.setDate(30);
-    assertTrue(parser.parse('Wed, 09/2006', date) > 0);
-    assertEquals(27, date.getDate());
+    assertParsedDateEquals(2006, 9 - 1, 27, parser, 'Wed, 09/2006');
+
     date.setDate(30);
-    assertTrue(parser.parse('Mon, 09/2006', date) > 0);
-    assertEquals(25, date.getDate());
+    assertParsedDateEquals(2006, 9 - 1, 25, parser, 'Mon, 09/2006');
   },
 
-  testStrictParse() {
-    const date = new Date();
+  testPredictiveOption() {
+    const opts =
+        /** @type {!DateTimeParse.ParseOptions} */ ({predictive: true});
+
+    const parser = new DateTimeParse('h \'text\' m');
+    assertParsedTimeEquals(9, 5, 0, 0, parser, '9 text 5', opts);
+    assertParsedTimeEquals(9, 0, 0, 0, parser, '9 te', opts);
+    assertParseFails(parser, '9 te 5', opts);
+  },
+
+  testValidateOption() {
+    const opts = /** @type {!DateTimeParse.ParseOptions} */ ({validate: true});
 
     let parser = new DateTimeParse('yyyy/MM/dd');
-    assertTrue(parser.strictParse('2000/13/10', date) == 0);
-    assertTrue(parser.strictParse('2000/13/40', date) == 0);
-    assertTrue(parser.strictParse('2000/11/10', date) > 0);
-    assertDateEquals(2000, 11 - 1, 10, date);
+    assertParseFails(parser, '2000/13/10', opts);
+    assertParseFails(parser, '2000/13/40', opts);
+    assertParsedDateEquals(2000, 11 - 1, 10, parser, '2000/11/10', opts);
 
     parser = new DateTimeParse('yy/MM/dd');
-    assertTrue(parser.strictParse('00/11/10', date) > 0);
-    assertTrue(parser.strictParse('99/11/10', date) > 0);
-    assertTrue(parser.strictParse('00/13/10', date) == 0);
-    assertTrue(parser.strictParse('00/11/32', date) == 0);
-    assertTrue(parser.strictParse('1900/11/2', date) > 0);
+    assertParsedDateEquals(2000, 11 - 1, 10, parser, '00/11/10', opts);
+    assertParsedDateEquals(1999, 11 - 1, 10, parser, '99/11/10', opts);
+    assertParseFails(parser, '00/13/10', opts);
+    assertParseFails(parser, '00/11/32', opts);
+    assertParsedDateEquals(1900, 11 - 1, 2, parser, '1900/11/2', opts);
 
     parser = new DateTimeParse('hh:mm');
-    assertTrue(parser.strictParse('15:44', date) > 0);
-    assertTrue(parser.strictParse('25:44', date) == 0);
-    assertTrue(parser.strictParse('15:64', date) == 0);
+    assertParsedTimeEquals(15, 44, 0, 0, parser, '15:44', opts);
+    assertParseFails(parser, '25:44', opts);
+    assertParseFails(parser, '15:64', opts);
 
     // leap year
     parser = new DateTimeParse('yy/MM/dd');
-    assertTrue(parser.strictParse('00/02/29', date) > 0);
-    assertTrue(parser.strictParse('01/02/29', date) == 0);
-  },
-
-  testPartialParses() {
-    let date = new Date(0);
-    let parser = new DateTimeParse('h:mma');
-    assertTrue(parser.parse('5:', date) > 0);
-    assertEquals(5, date.getHours());
-    assertEquals(0, date.getMinutes());
-
-    date = new Date(0);
-    assertTrue(parser.parse('5:44pm', date) > 0);
-    assertEquals(17, date.getHours());
-    assertEquals(44, date.getMinutes());
-
-    date = new Date(0);
-    assertTrue(parser.parse('5:44ym', date) > 0);
-    assertEquals(5, date.getHours());
-    assertEquals(44, date.getMinutes());
-
-    parser = new DateTimeParse('mm:ss');
-    date = new Date(0);
-    assertTrue(parser.parse('15:', date) > 0);
-    assertEquals(15, date.getMinutes());
-    assertEquals(0, date.getSeconds());
+    assertParsedDateEquals(2000, 2 - 1, 29, parser, '00/02/29', opts);
+    assertParseFails(parser, '01/02/29', opts);
   },
 
   testEnglishQuarter() {
-    const date = new Date();
     const parser = new DateTimeParse('QQQQ yyyy');
 
-    // Fails in Safari4/Chrome Winxp because of infrastructure issues,
-    // temporarily disabled. See b/4274778.
-    expectedFailures.expectFailureFor(userAgent.WEBKIT);
-    try {
-      assertParsedDateEquals(2009, 0, 1, parser, '1st quarter 2009', date);
-    } catch (e) {
-      expectedFailures.handleException(e);
-    }
+    assertParsedDateEquals(2009, 1 - 1, 1, parser, '1st quarter 2009');
   },
 
   testEnglishShortQuarter() {
-    const date = new Date();
     const parser = new DateTimeParse('yyyyQQ');
 
-    // Fails in Safari4/Chrome Winxp because of infrastructure issues,
-    // temporarily disabled. See b/4274778.
-    expectedFailures.expectFailureFor(userAgent.WEBKIT);
-    try {
-      assertParsedDateEquals(2006, 4 - 1, 1, parser, '2006Q2', date);
-    } catch (e) {
-      expectedFailures.handleException(e);
-    }
+    assertParsedDateEquals(2006, 4 - 1, 1, parser, '2006Q2');
   },
 
   testFrenchShortQuarter() {
     goog.i18n.DateTimeSymbols = DateTimeSymbols_fr;
-
-    const date = new Date();
     const parser = new DateTimeParse('yyyyQQ');
-    assertParsedDateEquals(2009, 7 - 1, 1, parser, '2009T3', date);
+
+    assertParsedDateEquals(2009, 7 - 1, 1, parser, '2009T3');
+  },
+
+  testDate() {
+    const parser = new DateTimeParse('M/d/yy');
+
+    assertParsedDateEquals(1987, 5 - 1, 25, parser, '5/25/1987');
+    assertParsedDateEquals(1987, 5 - 1, 25, parser, '05/25/1987');
+    // Probable bug: numeric month parsing accepts text inputs
+    assertParsedDateEquals(1987, 5 - 1, 25, parser, 'May/25/1987');
   },
 
   testDateTime() {
-    const dateOrg = new Date(2006, 7 - 1, 24, 17, 21, 42, 0);
-
     const formatter = new DateTimeFormat(DateTimeFormat.Format.MEDIUM_DATETIME);
-    let dateStr = formatter.format(dateOrg);
-
     const parser = new DateTimeParse(DateTimeFormat.Format.MEDIUM_DATETIME);
-    const dateParsed = new Date();
+    const text = formatter.format(new Date(2006, 7 - 1, 24, 17, 21, 42, 0));
 
-    assertParsedDateEquals(
-        dateOrg.getFullYear(), dateOrg.getMonth(), dateOrg.getDate(), parser,
-        dateStr, dateParsed);
-    assertTimeEquals(
-        dateOrg.getHours(), dateOrg.getMinutes(), dateOrg.getSeconds(),
-        undefined, dateParsed);
+    const date = new Date(0);
+
+    assertTrue(parser.parse(text, date) > 0);
+    assertDateEquals(2006, 7 - 1, 24, date);
+    assertTimeEquals(17, 21, 42, 0, date);
   },
 
   /** @bug 10075434 */
@@ -589,53 +647,60 @@ testSuite({
     // before every test (because the previous test changes it).
 
     dateParsed = new Date(dateOrg.getTime());
-    // if preserved February 30 overflows, so we get the closest February day,
+
+    // If preserved February 30 overflows, so we get the closest February day,
     // 28
-    assertParsedDateEquals(
-        2013, 2 - 1, 28, parserMonthYear, 'February 2013', dateParsed);
+    assertTrue(parserMonthYear.parse('February 2013', dateParsed) > 0);
+    assertDateEquals(2013, 2 - 1, 28, dateParsed);
+
+    dateParsed = new Date(dateOrg.getTime());
 
     // Same as above, but the last February date is 29 (leap year)
-    dateParsed = new Date(dateOrg.getTime());
-    assertParsedDateEquals(
-        2012, 2 - 1, 29, parserMonthYear, 'February 2012', dateParsed);
+    assertTrue(parserMonthYear.parse('February 2012', dateParsed) > 0);
+    assertDateEquals(2012, 2 - 1, 29, dateParsed);
 
-    // Same as above, but no overflow (Match has 31 days, the parsed 30 is OK)
     dateParsed = new Date(dateOrg.getTime());
-    assertParsedDateEquals(
-        2013, 3 - 1, 30, parserMonthYear, 'March 2013', dateParsed);
+
+    // Same as above, but no overflow (March has 31 days, 30 is OK)
+    assertTrue(parserMonthYear.parse('March 2013', dateParsed) > 0);
+    assertDateEquals(2013, 3 - 1, 30, dateParsed);
+
+    dateParsed = new Date(dateOrg.getTime());
 
     // The pattern does not expect the day of month, so 12 is interpreted
     // as year, 12. May be weird, but this is the original behavior.
     // The overflow for leap year applies, same as above.
-    dateParsed = new Date(dateOrg.getTime());
-    assertParsedDateEquals(
-        12, 2 - 1, 29, parserMonthYear, 'February 12, 2013', dateParsed);
+    assertTrue(parserMonthYear.parse('February 12, 2013', dateParsed) > 0);
+    assertDateEquals(12, 2 - 1, 29, dateParsed);
 
     // We make sure that the fix did not break parsing with day of month present
     const parserMonthDayYear = new DateTimeParse('MMMM d, yyyy');
 
     dateParsed = new Date(dateOrg.getTime());
-    assertParsedDateEquals(
-        2012, 2 - 1, 12, parserMonthDayYear, 'February 12, 2012', dateParsed);
+
+    assertTrue(parserMonthDayYear.parse('February 12, 2012', dateParsed) > 0);
+    assertDateEquals(2012, 2 - 1, 12, dateParsed);
+
+    dateParsed = new Date(dateOrg.getTime());
 
     // The current behavior when parsing 'February 31, 2012' is to
     // return 'March 2, 2012'
     // Expected or not, we make sure the fix does not break this.
-    assertParsedDateEquals(
-        2012, 3 - 1, 2, parserMonthDayYear, 'February 31, 2012', dateParsed);
+    assertTrue(parserMonthDayYear.parse('February 31, 2012', dateParsed) > 0);
+    assertDateEquals(2012, 3 - 1, 2, dateParsed);
   },
 
   /** @bug 9901750 */
   testStandaloneMonthPattern() {
     goog.i18n.DateTimeSymbols = DateTimeSymbols_pl;
-    const date1 = new DateDate(2006, 7 - 1);
-    const date2 = new DateDate();
+    const date1 = new GoogDate(2006, 7 - 1);
+    const date2 = new GoogDate();
     const formatter = new DateTimeFormat('LLLL yyyy');
     let parser = new DateTimeParse('LLLL yyyy');
     let dateStr = formatter.format(date1);
-    assertParsedDateEquals(
-        date1.getFullYear(), date1.getMonth(), undefined, parser, dateStr,
-        date2);
+
+    assertTrue(parser.parse(dateStr, date2) > 0);
+    assertDateEquals(date1.getFullYear(), date1.getMonth(), undefined, date2);
 
     // Sanity tests to make sure MMM... (and LLL...) formats still work for
     // different locales.
@@ -655,66 +720,56 @@ testSuite({
         const months = tests[format];
         for (let m = 0; m < months.length; m++) {
           const dateStr = months[m] + ' 2006';
-          const date = new DateDate();
-          assertParsedDateEquals(2006, m, undefined, parser, dateStr, date);
+          const date = new GoogDate();
+
+          assertTrue(parser.parse(dateStr, date) > 0);
+          assertDateEquals(2006, m, undefined, date);
         }
       }
     }
   },
 
   testConstructorSymbols() {
-    const y = 2015;
-    const m = 8;
-    const d = 28;
-    const dateFr = new Date(y, m, d);
-    const dateZh = new Date(y, m, d);
-
-    const parserFr =
-        new DateTimeParse(DateTimeFormat.Format.FULL_DATE, DateTimeSymbols_fr);
-
-    const parserZh =
-        new DateTimeParse(DateTimeFormat.Format.FULL_DATE, DateTimeSymbols_zh);
-
     const fmtFr =
         new DateTimeFormat(DateTimeFormat.Format.FULL_DATE, DateTimeSymbols_fr);
+    const parserFr =
+        new DateTimeParse(DateTimeFormat.Format.FULL_DATE, DateTimeSymbols_fr);
+    const dateStrFr = fmtFr.format(new Date(2015, 9 - 1, 28));
+
+    assertParsedDateEquals(2015, 9 - 1, 28, parserFr, dateStrFr);
 
     const fmtZh =
         new DateTimeFormat(DateTimeFormat.Format.FULL_DATE, DateTimeSymbols_zh);
+    const parserZh =
+        new DateTimeParse(DateTimeFormat.Format.FULL_DATE, DateTimeSymbols_zh);
+    const dateStrZh = fmtZh.format(new Date(2015, 9 - 1, 28));
 
-    const dateStrFr = fmtFr.format(dateFr);
-    const dateStrZh = fmtZh.format(dateZh);
-
-    assertParsedDateEquals(y, m, d, parserFr, dateStrFr, dateFr);
-    assertParsedDateEquals(y, m, d, parserZh, dateStrZh, dateZh);
+    assertParsedDateEquals(2015, 9 - 1, 28, parserZh, dateStrZh);
   },
 
   testQuotedPattern() {
     // Regression test for b/29990921.
     goog.i18n.DateTimeSymbols = DateTimeSymbols_en;
-    const y = 2013;
-    const m = 10;
-    const d = 15;
 
     // Literal apostrophe
-    let date = new Date(y, m, d);
     let parser = new DateTimeParse('MMM \'\'yy');
-    assertParsedDateEquals(y, m, d, parser, 'Nov \'13', date);
+    assertParsedDateEquals(2013, 11 - 1, undefined, parser, 'Nov \'13');
+
     // Quoted text
-    date = new Date(y, m, d);
     parser = new DateTimeParse('MMM dd\'th\' yyyy');
-    assertParsedDateEquals(y, m, d, parser, 'Nov 15th 2013', date);
+    assertParsedDateEquals(2013, 11 - 1, 15, parser, 'Nov 15th 2013');
+
     // Quoted text (only opening apostrophe)
-    date = new Date(y, m, d);
     parser = new DateTimeParse('MMM dd\'th yyyy');
-    assertParsedDateEquals(y, m, d, parser, 'Nov 15th yyyy', date);
+    assertParsedDateEquals(undefined, 11 - 1, 15, parser, 'Nov 15th yyyy');
+
     // Quoted text with literal apostrophe
-    date = new Date(y, m, d);
     parser = new DateTimeParse('MMM dd\'th\'\'\'');
-    assertParsedDateEquals(y, m, d, parser, 'Nov 15th\'', date);
+    assertParsedDateEquals(undefined, 11 - 1, 15, parser, 'Nov 15th\'');
+
     // Quoted text with literal apostrophe (only opening apostrophe)
-    date = new Date(y, m, d);
     parser = new DateTimeParse('MMM dd\'th\'\'');
-    assertParsedDateEquals(y, m, d, parser, 'Nov 15th\'', date);
+    assertParsedDateEquals(undefined, 11 - 1, 15, parser, 'Nov 15th\'');
   },
 
   testNullDate() {
@@ -726,5 +781,19 @@ testSuite({
     assertThrows(() => {
       parser.parse('11/22, 1999', null);
     });
+  },
+
+  testPredictiveParseWithUnsupportedPattern() {
+    const date = new Date();
+    const opts =
+        /** @type {!DateTimeParse.ParseOptions} */ ({predictive: true});
+
+    // Abutting runs of numbers are not supported for predictive parsing.
+    let parser = new DateTimeParse('hhmm');
+    assertThrows(() => parser.parse('1234', date, opts));
+
+    // The year field is not supported for predictive parsing.
+    parser = new DateTimeParse('yyyy');
+    assertThrows(() => parser.parse('1234', date, opts));
   },
 });

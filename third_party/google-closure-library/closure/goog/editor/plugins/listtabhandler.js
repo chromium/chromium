@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Editor plugin to handle tab keys in lists to indent and
@@ -34,6 +26,7 @@ goog.require('goog.iter');
  * @final
  */
 goog.editor.plugins.ListTabHandler = function() {
+  'use strict';
   goog.editor.plugins.AbstractTabHandler.call(this);
 };
 goog.inherits(
@@ -42,16 +35,19 @@ goog.inherits(
 
 /** @override */
 goog.editor.plugins.ListTabHandler.prototype.getTrogClassId = function() {
+  'use strict';
   return 'ListTabHandler';
 };
 
 
 /** @override */
 goog.editor.plugins.ListTabHandler.prototype.handleTabKey = function(e) {
+  'use strict';
   var range = this.getFieldObject().getRange();
   if (goog.dom.getAncestorByTagNameAndClass(
           range.getContainerElement(), goog.dom.TagName.LI) ||
       goog.iter.some(range, function(node) {
+        'use strict';
         return node.tagName == goog.dom.TagName.LI;
       })) {
     this.getFieldObject().execCommand(

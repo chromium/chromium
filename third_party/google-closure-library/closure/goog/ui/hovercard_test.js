@@ -1,16 +1,8 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.HoverCardTest');
 goog.setTestOnly();
@@ -63,6 +55,7 @@ function initCard(
   // This gets around the problem where AdvancedToolTip thinks it's
   // receiving a ghost event because cursor position hasn't moved off of
   // (0, 0).
+  /** @suppress {visibility} suppression added to enable type checking */
   card.cursorPosition = new Coordinate(1, 1);
 }
 
@@ -177,6 +170,7 @@ testSuite({
   /**
    * Verify that a mouse over event with no target will not break
    * hover card.
+   * @suppress {visibility,checkTypes} suppression added to enable type checking
    */
   testMouseOverNoTarget() {
     initCard();
@@ -317,6 +311,7 @@ testSuite({
     assertTrue('Should trigger card', card.isVisible());
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testPositionAfterSecondTriggerWithMaxSearchSteps() {
     initCard(undefined, true, 2);
 
@@ -326,6 +321,7 @@ testSuite({
     assertTrue('Should trigger card', card.isVisible());
     assertEquals(
         'Card cursor x coordinate should be 1', card.position_.coordinate.x, 1);
+    /** @suppress {visibility} suppression added to enable type checking */
     card.cursorPosition = new Coordinate(2, 2);
     testingEvents.fireMouseOverEvent(child, elsewhere);
     timer.tick(showDelay);

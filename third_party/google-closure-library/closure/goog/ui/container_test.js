@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.ContainerTest');
 goog.setTestOnly();
@@ -27,6 +19,7 @@ const PointerFallbackEventType = goog.require('goog.events.PointerFallbackEventT
 const TagName = goog.require('goog.dom.TagName');
 const aria = goog.require('goog.a11y.aria');
 const classlist = goog.require('goog.dom.classlist');
+const dispose = goog.require('goog.dispose');
 const dom = goog.require('goog.dom');
 const googEvents = goog.require('goog.events');
 const testSuite = goog.require('goog.testing.testSuite');
@@ -48,7 +41,11 @@ class ListContainer extends Container {
     Container.call(this);
   }
 
-  /** @override */
+  /**
+   * @override
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
   createDom() {
     ListContainer.superClass_.createDom.call(this);
     const ul = this.getDomHelper().createDom(TagName.UL);
@@ -117,8 +114,8 @@ testSuite({
   tearDown() {
     dom.removeChildren(sandbox);
     container.dispose();
-    goog.dispose(keyContainer);
-    goog.dispose(listContainer);
+    dispose(keyContainer);
+    dispose(listContainer);
   },
 
   testDecorateHidden() {
@@ -234,6 +231,7 @@ testSuite({
         container.getChildAt(0).isHighlighted());
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testGetOwnerControl() {
     container.decorate(containerElement);
 
@@ -312,6 +310,7 @@ testSuite({
     const control = new Control('item');
     listContainer.addChild(control);
     listContainer.render();
+    /** @suppress {visibility} suppression added to enable type checking */
     const ownerControl = listContainer.getOwnerControl(control.getElement());
 
     assertEquals(
@@ -319,6 +318,7 @@ testSuite({
         ownerControl);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testHandleKeyEvent_onlyHandlesWhenVisible() {
     keyContainer = new KeyHandlingContainer();
     keyContainer.decorate(containerElement);
@@ -334,6 +334,7 @@ testSuite({
         'One key event should be handled', 1, keyContainer.keyEventsHandled);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testHandleKeyEvent_onlyHandlesWhenEnabled() {
     keyContainer = new KeyHandlingContainer();
     keyContainer.decorate(containerElement);
@@ -350,6 +351,7 @@ testSuite({
         'One key event should be handled', 1, keyContainer.keyEventsHandled);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testHandleKeyEvent_childlessContainersIgnoreKeyEvents() {
     keyContainer = new KeyHandlingContainer();
     keyContainer.render();
@@ -365,6 +367,7 @@ testSuite({
         'One key event should be handled', 1, keyContainer.keyEventsHandled);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testHandleKeyEvent_alwaysHandlesWithKeyEventTarget() {
     keyContainer = new KeyHandlingContainer();
     keyContainer.render();

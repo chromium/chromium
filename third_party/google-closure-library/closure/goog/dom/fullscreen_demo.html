@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<head>
+<title>goog.dom.fullscreen Demo</title>
+<script src="../base.js"></script>
+<script>
+
+goog.require('goog.dom');
+goog.require('goog.dom.fullscreen');
+goog.require('goog.events');
+goog.require('goog.events.EventType');
+
+</script>
+</head>
+<body>
+<div id="fullscreen">
+Click anywhere to make this element fullscreen, or to switch back to non-fullscreen.
+</div>
+<script>
+
+var fullscreenElem = goog.dom.getElement('fullscreen');
+goog.events.listen(goog.global, goog.events.EventType.CLICK, function() {
+  if (goog.dom.fullscreen.isFullScreen()) {
+    goog.dom.fullscreen.exitFullScreen();
+  } else {
+    goog.dom.fullscreen.requestFullScreen(fullscreenElem);
+  }
+});
+
+</script>
+</body>
+</html>

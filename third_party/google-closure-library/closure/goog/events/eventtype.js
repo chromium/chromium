@@ -1,16 +1,8 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Event Types.
@@ -33,14 +25,11 @@ goog.require('goog.userAgent');
  * Returns a prefixed event name for the current browser.
  * @param {string} eventName The name of the event.
  * @return {string} The prefixed event name.
- * @suppress {missingRequire|missingProvide}
  * @private
  */
 goog.events.getVendorPrefixedName_ = function(eventName) {
-  return goog.userAgent.WEBKIT ?
-      'webkit' + eventName :
-      (goog.userAgent.OPERA ? 'o' + eventName.toLowerCase() :
-                              eventName.toLowerCase());
+  'use strict';
+  return goog.userAgent.WEBKIT ? 'webkit' + eventName : eventName.toLowerCase();
 };
 
 
@@ -205,16 +194,12 @@ goog.events.EventType = {
   CONTROLLERCHANGE: 'controllerchange',
 
   // CSS animation events.
-  /** @suppress {missingRequire} */
   ANIMATIONSTART: goog.events.getVendorPrefixedName_('AnimationStart'),
-  /** @suppress {missingRequire} */
   ANIMATIONEND: goog.events.getVendorPrefixedName_('AnimationEnd'),
-  /** @suppress {missingRequire} */
   ANIMATIONITERATION: goog.events.getVendorPrefixedName_('AnimationIteration'),
 
   // CSS transition events. Based on the browser support described at:
   // https://developer.mozilla.org/en/css/css_transitions#Browser_compatibility
-  /** @suppress {missingRequire} */
   TRANSITIONEND: goog.events.getVendorPrefixedName_('TransitionEnd'),
 
   // W3C Pointer Events
@@ -317,6 +302,7 @@ goog.events.EventType = {
  */
 goog.events.getPointerFallbackEventName_ = function(
     pointerEventName, msPointerEventName, fallbackEventName) {
+  'use strict';
   if (goog.events.BrowserFeature.POINTER_EVENTS) {
     return pointerEventName;
   }

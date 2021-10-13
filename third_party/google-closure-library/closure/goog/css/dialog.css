@@ -7,10 +7,9 @@
 
 /*
  * Standard styling for goog.ui.Dialog.
- *
- * @provide {goog.css.dialog}
  */
 
+@provide 'goog.css.dialog';
 
 .modal-dialog {
   background: #c1d9ff;

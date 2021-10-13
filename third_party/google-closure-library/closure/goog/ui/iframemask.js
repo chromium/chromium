@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Iframe shims, to protect controls on the underlying page
@@ -27,6 +19,7 @@ goog.require('goog.dom.iframe');
 goog.require('goog.events.EventHandler');
 goog.require('goog.structs.Pool');
 goog.require('goog.style');
+goog.requireType('goog.events.EventTarget');
 
 
 
@@ -43,6 +36,7 @@ goog.require('goog.style');
  * @extends {goog.Disposable}
  */
 goog.ui.IframeMask = function(opt_domHelper, opt_iframePool) {
+  'use strict';
   goog.Disposable.call(this);
 
   /**
@@ -75,7 +69,6 @@ goog.ui.IframeMask = function(opt_domHelper, opt_iframePool) {
   this.iframePool_ = opt_iframePool;
 };
 goog.inherits(goog.ui.IframeMask, goog.Disposable);
-goog.tagUnsealableClass(goog.ui.IframeMask);
 
 
 /**
@@ -109,6 +102,7 @@ goog.ui.IframeMask.prototype.opacity_ = 0;
  * @protected
  */
 goog.ui.IframeMask.prototype.disposeInternal = function() {
+  'use strict';
   if (this.iframePool_) {
     this.iframePool_.releaseObject(
         /** @type {HTMLIFrameElement} */ (this.iframe_));
@@ -137,6 +131,7 @@ goog.ui.IframeMask.HIDDEN_CSS_TEXT_ =
  * Removes the mask from the screen.
  */
 goog.ui.IframeMask.prototype.hideMask = function() {
+  'use strict';
   if (this.iframe_) {
     this.iframe_.style.cssText = goog.ui.IframeMask.HIDDEN_CSS_TEXT_;
     if (this.iframePool_) {
@@ -154,6 +149,7 @@ goog.ui.IframeMask.prototype.hideMask = function() {
  * @private
  */
 goog.ui.IframeMask.prototype.getIframe_ = function() {
+  'use strict';
   if (!this.iframe_) {
     this.iframe_ = this.iframePool_ ?
         /** @type {HTMLIFrameElement} */ (this.iframePool_.getObject()) :
@@ -169,6 +165,7 @@ goog.ui.IframeMask.prototype.getIframe_ = function() {
  * Applies the iframe mask to the screen.
  */
 goog.ui.IframeMask.prototype.applyMask = function() {
+  'use strict';
   var iframe = this.getIframe_();
   var bounds = goog.style.getBounds(this.snapElement_);
   iframe.style.cssText = 'position:absolute;' +
@@ -189,6 +186,7 @@ goog.ui.IframeMask.prototype.applyMask = function() {
  *     totally opaque.
  */
 goog.ui.IframeMask.prototype.setOpacity = function(opacity) {
+  'use strict';
   this.opacity_ = opacity;
 };
 
@@ -199,6 +197,7 @@ goog.ui.IframeMask.prototype.setOpacity = function(opacity) {
  * @param {number} zIndex A z-index value.
  */
 goog.ui.IframeMask.prototype.setZIndex = function(zIndex) {
+  'use strict';
   this.zIndex_ = zIndex;
 };
 
@@ -209,6 +208,7 @@ goog.ui.IframeMask.prototype.setZIndex = function(zIndex) {
  *     "snapped" around.
  */
 goog.ui.IframeMask.prototype.setSnapElement = function(snapElement) {
+  'use strict';
   this.snapElement_ = snapElement;
   if (this.iframe_ && goog.style.isElementShown(this.iframe_)) {
     this.applyMask();
@@ -228,8 +228,10 @@ goog.ui.IframeMask.prototype.setSnapElement = function(snapElement) {
  */
 goog.ui.IframeMask.prototype.listenOnTarget = function(
     target, showEvent, hideEvent, opt_snapElement) {
+  'use strict';
   var timerKey;
   this.handler_.listen(target, showEvent, function() {
+    'use strict';
     if (opt_snapElement) {
       this.setSnapElement(opt_snapElement);
     }
@@ -238,6 +240,7 @@ goog.ui.IframeMask.prototype.listenOnTarget = function(
     timerKey = goog.Timer.callOnce(this.applyMask, 0, this);
   });
   this.handler_.listen(target, hideEvent, function() {
+    'use strict';
     if (timerKey) {
       goog.Timer.clear(timerKey);
       timerKey = null;
@@ -251,5 +254,6 @@ goog.ui.IframeMask.prototype.listenOnTarget = function(
  * Removes all handlers attached by listenOnTarget.
  */
 goog.ui.IframeMask.prototype.removeHandlers = function() {
+  'use strict';
   this.handler_.removeAll();
 };

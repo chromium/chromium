@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.net.ChannelRequestTest');
 goog.setTestOnly();
@@ -78,14 +70,28 @@ function createChannelRequest() {
 
   // Install mock browser channel and no-op debug logger.
   mockBrowserChannel = new MockBrowserChannel();
+  /** @suppress {checkTypes} suppression added to enable type checking */
   channelRequest = new ChannelRequest(mockBrowserChannel, new ChannelDebug());
 
   // Install test XhrIo.
+  /** @suppress {checkTypes} suppression added to enable type checking */
   mockBrowserChannel.createXhrIo = () => xhrIo;
 
   // Install watchdogTimeoutCallCount.
+  /**
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
   channelRequest.watchdogTimeoutCallCount = 0;
+  /**
+   * @suppress {strictMissingProperties,visibility} suppression added to enable
+   * type checking
+   */
   channelRequest.originalOnWatchDogTimeout = channelRequest.onWatchDogTimeout_;
+  /**
+   * @suppress {visibility,globalThis} suppression added to enable type
+   * checking
+   */
   channelRequest.onWatchDogTimeout_ = function() {
     this.watchdogTimeoutCallCount++;
     return this.originalOnWatchDogTimeout();
@@ -138,10 +144,10 @@ testSuite({
       checkReachabilityEvents(1, 0, 0, 1);
       xhrIo.simulatePartialResponse('23\nI am another BC Message');
       checkReachabilityEvents(1, 0, 0, 2);
-      xhrIo.simulateResponse(200, '16\Final BC Message');
+      xhrIo.simulateResponse(200, '16Final BC Message');
       checkReachabilityEvents(1, 1, 0, 2);
     } else {
-      xhrIo.simulateResponse(200, '16\Final BC Message');
+      xhrIo.simulateResponse(200, '16Final BC Message');
       checkReachabilityEvents(1, 1, 0, 0);
     }
   },
@@ -151,6 +157,7 @@ testSuite({
     createChannelRequest();
     channelRequest.setReadyStateChangeThrottle(THROTTLE_TIME);
 
+    /** @suppress {visibility} suppression added to enable type checking */
     const recordedHandler = recordFunction(channelRequest.xmlHttpHandler_);
     stubs.set(channelRequest, 'xmlHttpHandler_', recordedHandler);
 
@@ -175,11 +182,11 @@ testSuite({
       // Only one more call because of throttling.
       assertEquals(4, recordedHandler.getCallCount());
 
-      xhrIo.simulateResponse(200, '16\Final BC Message');
+      xhrIo.simulateResponse(200, '16Final BC Message');
       checkReachabilityEvents(1, 1, 0, 3);
       assertEquals(5, recordedHandler.getCallCount());
     } else {
-      xhrIo.simulateResponse(200, '16\Final BC Message');
+      xhrIo.simulateResponse(200, '16Final BC Message');
       checkReachabilityEvents(1, 1, 0, 0);
     }
   },
@@ -187,6 +194,8 @@ testSuite({
   /**
    * Make sure that the request "completes" with an error when the timeout
    * expires.
+   * @suppress {strictMissingProperties,visibility} suppression added to enable
+   * type checking
    */
   testRequestTimeout() {
     createChannelRequest();
@@ -209,8 +218,13 @@ testSuite({
     checkReachabilityEvents(1, 0, 1, 0);
   },
 
+  /**
+     @suppress {strictMissingProperties,visibility} suppression added to enable
+     type checking
+   */
   testRequestTimeoutWithUnexpectedException() {
     createChannelRequest();
+    /** @suppress {visibility} suppression added to enable type checking */
     channelRequest.channel_.createXhrIo = functions.error('Weird error');
 
     try {
@@ -239,8 +253,7 @@ testSuite({
 
   testActiveXBlocked() {
     createChannelRequest();
-    stubs.set(
-        goog.global, 'ActiveXObject', functions.error('Active X blocked'));
+    stubs.set(globalThis, 'ActiveXObject', functions.error('Active X blocked'));
 
     channelRequest.tridentGet(new Uri('some_uri'), false);
     assertFalse(channelRequest.getSuccess());
@@ -255,6 +268,7 @@ testSuite({
    * to verify it works properly.
    */
   testEscapeForStringInScript() {
+    /** @suppress {visibility} suppression added to enable type checking */
     const actual = ChannelRequest.escapeForStringInScript_('"\'<>');
     assertEquals('\\"\\\'\\x3c\\x3e', actual);
   },

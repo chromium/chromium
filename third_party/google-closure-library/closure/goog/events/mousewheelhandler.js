@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview This event wrapper will dispatch an event when the user uses
@@ -52,6 +44,7 @@ goog.require('goog.userAgent');
  * @extends {goog.events.EventTarget}
  */
 goog.events.MouseWheelHandler = function(element, opt_capture) {
+  'use strict';
   goog.events.EventTarget.call(this);
 
   /**
@@ -116,6 +109,7 @@ goog.events.MouseWheelHandler.prototype.maxDeltaY_;
  *     event. Should be non-negative.
  */
 goog.events.MouseWheelHandler.prototype.setMaxDeltaX = function(maxDeltaX) {
+  'use strict';
   this.maxDeltaX_ = maxDeltaX;
 };
 
@@ -125,6 +119,7 @@ goog.events.MouseWheelHandler.prototype.setMaxDeltaX = function(maxDeltaX) {
  *     event. Should be non-negative.
  */
 goog.events.MouseWheelHandler.prototype.setMaxDeltaY = function(maxDeltaY) {
+  'use strict';
   this.maxDeltaY_ = maxDeltaY;
 };
 
@@ -135,6 +130,7 @@ goog.events.MouseWheelHandler.prototype.setMaxDeltaY = function(maxDeltaY) {
  * @suppress {strictMissingProperties} Part of the go/strict_warnings_migration
  */
 goog.events.MouseWheelHandler.prototype.handleEvent = function(e) {
+  'use strict';
   var deltaX = 0;
   var deltaY = 0;
   var detail = 0;
@@ -212,6 +208,7 @@ goog.events.MouseWheelHandler.prototype.handleEvent = function(e) {
  */
 goog.events.MouseWheelHandler.smartScale_ = function(
     mouseWheelDelta, scaleFactor) {
+  'use strict';
   // The basic problem here is that in Webkit on Mac and Linux, we can get two
   // very different types of mousewheel events: from continuous devices
   // (touchpads, Mighty Mouse) or non-continuous devices (normal wheel mice).
@@ -235,6 +232,7 @@ goog.events.MouseWheelHandler.smartScale_ = function(
 
 /** @override */
 goog.events.MouseWheelHandler.prototype.disposeInternal = function() {
+  'use strict';
   goog.events.MouseWheelHandler.superClass_.disposeInternal.call(this);
   goog.events.unlistenByKey(this.listenKey_);
   this.listenKey_ = null;
@@ -257,6 +255,7 @@ goog.events.MouseWheelHandler.prototype.disposeInternal = function() {
  * @final
  */
 goog.events.MouseWheelEvent = function(detail, browserEvent, deltaX, deltaY) {
+  'use strict';
   goog.events.BrowserEvent.call(this, browserEvent);
 
   this.type = goog.events.MouseWheelHandler.EventType.MOUSEWHEEL;

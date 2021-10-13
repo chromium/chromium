@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview A utility class for representing a numeric range.
@@ -31,6 +23,7 @@ goog.require('goog.asserts');
  * @constructor
  */
 goog.math.Range = function(a, b) {
+  'use strict';
   /**
    * The lowest value in the range.
    * @type {number}
@@ -51,6 +44,7 @@ goog.math.Range = function(a, b) {
  * @return {!goog.math.Range}
  */
 goog.math.Range.fromPair = function(pair) {
+  'use strict';
   goog.asserts.assert(pair.length == 2);
   return new goog.math.Range(pair[0], pair[1]);
 };
@@ -60,6 +54,7 @@ goog.math.Range.fromPair = function(pair) {
  * @return {!goog.math.Range} A clone of this Range.
  */
 goog.math.Range.prototype.clone = function() {
+  'use strict';
   return new goog.math.Range(this.start, this.end);
 };
 
@@ -68,6 +63,7 @@ goog.math.Range.prototype.clone = function() {
  * @return {number} Length of the range.
  */
 goog.math.Range.prototype.getLength = function() {
+  'use strict';
   return this.end - this.start;
 };
 
@@ -77,6 +73,7 @@ goog.math.Range.prototype.getLength = function() {
  * @param {number} point
  */
 goog.math.Range.prototype.includePoint = function(point) {
+  'use strict';
   this.start = Math.min(this.start, point);
   this.end = Math.max(this.end, point);
 };
@@ -87,6 +84,7 @@ goog.math.Range.prototype.includePoint = function(point) {
  * @param {!goog.math.Range} range
  */
 goog.math.Range.prototype.includeRange = function(range) {
+  'use strict';
   this.start = Math.min(this.start, range.start);
   this.end = Math.max(this.end, range.end);
 };
@@ -99,6 +97,7 @@ if (goog.DEBUG) {
    * @override
    */
   goog.math.Range.prototype.toString = function() {
+    'use strict';
     return '[' + this.start + ', ' + this.end + ']';
   };
 }
@@ -112,6 +111,7 @@ if (goog.DEBUG) {
  *     equal, or if both ranges are null.
  */
 goog.math.Range.equals = function(a, b) {
+  'use strict';
   if (a == b) {
     return true;
   }
@@ -132,6 +132,7 @@ goog.math.Range.equals = function(a, b) {
  *     include their end points, and the intersection can be a point.
  */
 goog.math.Range.intersection = function(a, b) {
+  'use strict';
   var c0 = Math.max(a.start, b.start);
   var c1 = Math.min(a.end, b.end);
   return (c0 <= c1) ? new goog.math.Range(c0, c1) : null;
@@ -145,6 +146,7 @@ goog.math.Range.intersection = function(a, b) {
  * @return {boolean} Whether they intersect.
  */
 goog.math.Range.hasIntersection = function(a, b) {
+  'use strict';
   return Math.max(a.start, b.start) <= Math.min(a.end, b.end);
 };
 
@@ -158,6 +160,7 @@ goog.math.Range.hasIntersection = function(a, b) {
  *     range.
  */
 goog.math.Range.boundingRange = function(a, b) {
+  'use strict';
   return new goog.math.Range(
       Math.min(a.start, b.start), Math.max(a.end, b.end));
 };
@@ -171,6 +174,7 @@ goog.math.Range.boundingRange = function(a, b) {
  * @return {boolean} True if b is contained inside a, false otherwise.
  */
 goog.math.Range.contains = function(a, b) {
+  'use strict';
   return a.start <= b.start && a.end >= b.end;
 };
 
@@ -182,5 +186,6 @@ goog.math.Range.contains = function(a, b) {
  * @return {boolean} True if p is contained inside range, false otherwise.
  */
 goog.math.Range.containsPoint = function(range, p) {
+  'use strict';
   return range.start <= p && range.end >= p;
 };

@@ -7,9 +7,13 @@
 
 /*
  * Styles for Editor dialogs and their sub-components.
- *
  */
 
+@provide 'goog.css.editor.dialog';
+
+@require '../dialog';
+@require '../tab';
+@require '../tabbar';
 
 .tr-dialog {
   width: 475px;

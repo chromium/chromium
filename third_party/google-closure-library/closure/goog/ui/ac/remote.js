@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Factory class to create a simple autocomplete that will match
@@ -25,6 +17,7 @@ goog.require('goog.ui.ac.AutoComplete');
 goog.require('goog.ui.ac.InputHandler');
 goog.require('goog.ui.ac.RemoteArrayMatcher');
 goog.require('goog.ui.ac.Renderer');
+goog.requireType('goog.structs.Map');
 
 
 
@@ -41,6 +34,7 @@ goog.require('goog.ui.ac.Renderer');
  * @extends {goog.ui.ac.AutoComplete}
  */
 goog.ui.ac.Remote = function(url, input, opt_multi, opt_useSimilar) {
+  'use strict';
   var matcher = new goog.ui.ac.RemoteArrayMatcher(url, !opt_useSimilar);
   this.matcher_ = matcher;
 
@@ -62,6 +56,7 @@ goog.inherits(goog.ui.ac.Remote, goog.ui.ac.AutoComplete);
  */
 goog.ui.ac.Remote.prototype.setUseStandardHighlighting = function(
     useStandardHighlighting) {
+  'use strict';
   this.renderer_.setUseStandardHighlighting(useStandardHighlighting);
 };
 
@@ -71,6 +66,7 @@ goog.ui.ac.Remote.prototype.setUseStandardHighlighting = function(
  * @return {goog.ui.ac.InputHandler} The input handler.
  */
 goog.ui.ac.Remote.prototype.getInputHandler = function() {
+  'use strict';
   return /** @type {goog.ui.ac.InputHandler} */ (this.selectionHandler_);
 };
 
@@ -80,6 +76,7 @@ goog.ui.ac.Remote.prototype.getInputHandler = function() {
  * @param {string} method The send method; default: GET.
  */
 goog.ui.ac.Remote.prototype.setMethod = function(method) {
+  'use strict';
   this.matcher_.setMethod(method);
 };
 
@@ -89,6 +86,7 @@ goog.ui.ac.Remote.prototype.setMethod = function(method) {
  * @param {string} content Post data.
  */
 goog.ui.ac.Remote.prototype.setContent = function(content) {
+  'use strict';
   this.matcher_.setContent(content);
 };
 
@@ -99,6 +97,7 @@ goog.ui.ac.Remote.prototype.setContent = function(content) {
  *     request.
  */
 goog.ui.ac.Remote.prototype.setHeaders = function(headers) {
+  'use strict';
   this.matcher_.setHeaders(headers);
 };
 
@@ -109,5 +108,6 @@ goog.ui.ac.Remote.prototype.setHeaders = function(headers) {
  *     incomplete request will be aborted; 0 means no timeout is set.
  */
 goog.ui.ac.Remote.prototype.setTimeoutInterval = function(interval) {
+  'use strict';
   this.matcher_.setTimeoutInterval(interval);
 };

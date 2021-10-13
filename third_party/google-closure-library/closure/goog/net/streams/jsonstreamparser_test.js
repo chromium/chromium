@@ -1,16 +1,8 @@
-// Copyright 2015 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.net.streams.JsonStreamParserTest');
 goog.setTestOnly();
@@ -18,7 +10,6 @@ goog.setTestOnly();
 const JsonFuzzing = goog.require('goog.labs.testing.JsonFuzzing');
 const JsonStreamParser = goog.require('goog.net.streams.JsonStreamParser');
 const asserts = goog.require('goog.testing.asserts');
-const googArray = goog.require('goog.array');
 const googJson = goog.require('goog.json');
 const testSuite = goog.require('goog.testing.testSuite');
 const utils = goog.require('goog.uri.utils');
@@ -31,11 +22,12 @@ let debug;
  */
 function print(info) {
   if (debug) {
-    debug.innerHTML += `<p><p>${info}`;
+    debug.append(
+        document.createElement('p'), document.createElement('p'), info);
   }
 }
 
-// TODO(user): add a fuzzy test for this.
+// TODO(updogliu): add a fuzzy test for this.
 
 testSuite({
   setUp() {
@@ -75,6 +67,10 @@ testSuite({
     });
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testSingleMessage() {
     const parser = new JsonStreamParser();
     const result = parser.parse('[{"a" : "b"}]');
@@ -82,6 +78,10 @@ testSuite({
     assertEquals('b', result[0].a);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testEnclosingArray() {
     const parser = new JsonStreamParser();
     let result = parser.parse('[\n');
@@ -95,6 +95,10 @@ testSuite({
     assertNull(result);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testSingleMessageInChunks() {
     let parser = new JsonStreamParser();
     let result = parser.parse('[{"a" : ');
@@ -114,6 +118,10 @@ testSuite({
     assertNull(result);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testTwoMessages() {
     const parser = new JsonStreamParser();
     const result = parser.parse('[{"a" : "b"}, {"c" : "d"}]');
@@ -122,6 +130,10 @@ testSuite({
     assertEquals('d', result[1].c);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testTwoMessagesInChunks() {
     const parser = new JsonStreamParser();
     let result = parser.parse('[{"a" : "b"}, ');
@@ -149,7 +161,7 @@ testSuite({
       const result = parser.parse(dataString);
 
       assertEquals(data.length, result.length);
-      googArray.forEach(data, (elm, index) => {
+      data.forEach((elm, index) => {
         assertNotNull(elm);
         assertObjectEquals(dataString, elm, result[index]);
       });
@@ -178,18 +190,18 @@ testSuite({
 
       let parsed = parser.parse(string1);
       if (parsed) {
-        result = googArray.concat(result, parsed);
+        result = result.concat(parsed);
       }
 
       const string2 = dataString.substring(j);
 
       parsed = parser.parse(string2);
       if (parsed) {
-        result = googArray.concat(result, parsed);
+        result = result.concat(parsed);
       }
 
       assertEquals(data.length, result.length);
-      googArray.forEach(data, (elm, index) => {
+      data.forEach((elm, index) => {
         assertObjectEquals(dataString, elm, result[index]);
       });
     }
@@ -220,12 +232,12 @@ testSuite({
       pos = next;
       const parsed = parser.parse(subString);
       if (parsed) {
-        result = googArray.concat(result, parsed);
+        result = result.concat(parsed);
       }
     }
 
     assertEquals(data.length, result.length);
-    googArray.forEach(data, (elm, index) => {
+    data.forEach((elm, index) => {
       assertObjectEquals(
           `${dataString}
 @${index}`,

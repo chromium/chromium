@@ -7,9 +7,11 @@
 
 /*
  * Styling for link buttons created by goog.ui.LinkButtonRenderer.
- *
- * @provide {goog.css.linkbutton}
  */
+
+@provide 'goog.css.linkbutton';
+
+@require './common';
 
 .goog-link-button {
   position: relative;

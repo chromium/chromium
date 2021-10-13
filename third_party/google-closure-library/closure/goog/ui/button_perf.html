@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!--
-Copyright 2008 The Closure Library Authors. All Rights Reserved.
+Copyright The Closure Library Authors. All Rights Reserved.
 
 Use of this source code is governed by the Apache License, Version 2.0.
 See the COPYING file for details.
@@ -29,12 +29,12 @@ See the COPYING file for details.
   </p>
   <div id="perfTable"></div>
   <hr>
-  <div id="renderSandbox"></div>
-  <div id="decorateSandbox"></div>
+  <div id="renderElement"></div>
+  <div id="decorateElement"></div>
   <script>
     // The sandboxen.
-    var renderSandbox = goog.dom.getElement('renderSandbox');
-    var decorateSandbox = goog.dom.getElement('decorateSandbox');
+    var renderElement = goog.dom.getElement('renderElement');
+    var decorateElement = goog.dom.getElement('decorateElement');
 
     // Arrays of rendered/decorated buttons (so we can dispose of them).
     var renderedButtons;
@@ -70,17 +70,17 @@ See the COPYING file for details.
         renderedButtons[i].dispose();
       }
       renderedButtons = null;
-      goog.dom.removeChildren(renderSandbox);
+      goog.dom.removeChildren(renderElement);
     }
 
     // Sets up a decorate test.
     function setUpDecorateTest(opt_count) {
       var count = opt_count || 1000;
       for (var i = 0; i < count; i++) {
-        decorateSandbox.appendChild(goog.dom.createDom(goog.dom.TagName.BUTTON, 'goog-button',
+        decorateElement.appendChild(goog.dom.createDom(goog.dom.TagName.BUTTON, 'goog-button',
             'W00t!'));
       }
-      elementToDecorate = decorateSandbox.firstChild;
+      elementToDecorate = decorateElement.firstChild;
       decoratedButtons = [];
       decorateIndex = 0;
     }
@@ -91,7 +91,7 @@ See the COPYING file for details.
         decoratedButtons[i].dispose();
       }
       decoratedButtons = null;
-      goog.dom.removeChildren(decorateSandbox);
+      goog.dom.removeChildren(decorateElement);
     }
 
     // Renders the given number of buttons.  Since children are appended to
@@ -103,7 +103,7 @@ See the COPYING file for details.
         if (!autoDetectBiDi) {
           button.setRightToLeft(false);
         }
-        button.render(renderSandbox);
+        button.render(renderElement);
         renderedButtons[renderIndex++] = button;
       }
     }

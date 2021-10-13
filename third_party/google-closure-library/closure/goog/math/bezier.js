@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 
 /**
@@ -46,6 +38,7 @@ goog.require('goog.math.Coordinate');
  * @final
  */
 goog.math.Bezier = function(x0, y0, x1, y1, x2, y2, x3, y3) {
+  'use strict';
   /**
    * X coordinate of the first point.
    * @type {number}
@@ -108,6 +101,7 @@ goog.math.Bezier.KAPPA = 4 * (Math.sqrt(2) - 1) / 3;
  * @return {!goog.math.Bezier} A copy of this curve.
  */
 goog.math.Bezier.prototype.clone = function() {
+  'use strict';
   return new goog.math.Bezier(
       this.x0, this.y0, this.x1, this.y1, this.x2, this.y2, this.x3, this.y3);
 };
@@ -119,6 +113,7 @@ goog.math.Bezier.prototype.clone = function() {
  * @return {boolean} Whether the given curve is the same as this one.
  */
 goog.math.Bezier.prototype.equals = function(other) {
+  'use strict';
   return this.x0 == other.x0 && this.y0 == other.y0 && this.x1 == other.x1 &&
       this.y1 == other.y1 && this.x2 == other.x2 && this.y2 == other.y2 &&
       this.x3 == other.x3 && this.y3 == other.y3;
@@ -129,6 +124,7 @@ goog.math.Bezier.prototype.equals = function(other) {
  * Modifies the curve in place to progress in the opposite direction.
  */
 goog.math.Bezier.prototype.flip = function() {
+  'use strict';
   var temp = this.x0;
   this.x0 = this.x3;
   this.x3 = temp;
@@ -151,6 +147,7 @@ goog.math.Bezier.prototype.flip = function() {
  * @return {number} The computed coordinate.
  */
 goog.math.Bezier.prototype.getPointX = function(t) {
+  'use strict';
   // Special case start and end.
   if (t == 0) {
     return this.x0;
@@ -178,6 +175,7 @@ goog.math.Bezier.prototype.getPointX = function(t) {
  * @return {number} The computed coordinate.
  */
 goog.math.Bezier.prototype.getPointY = function(t) {
+  'use strict';
   // Special case start and end.
   if (t == 0) {
     return this.y0;
@@ -205,6 +203,7 @@ goog.math.Bezier.prototype.getPointY = function(t) {
  * @return {!goog.math.Coordinate} The computed coordinate.
  */
 goog.math.Bezier.prototype.getPoint = function(t) {
+  'use strict';
   return new goog.math.Coordinate(this.getPointX(t), this.getPointY(t));
 };
 
@@ -214,6 +213,7 @@ goog.math.Bezier.prototype.getPoint = function(t) {
  * @param {number} t The start of the desired portion of the curve.
  */
 goog.math.Bezier.prototype.subdivideLeft = function(t) {
+  'use strict';
   if (t == 1) {
     return;
   }
@@ -254,6 +254,7 @@ goog.math.Bezier.prototype.subdivideLeft = function(t) {
  * @param {number} t The end of the desired portion of the curve.
  */
 goog.math.Bezier.prototype.subdivideRight = function(t) {
+  'use strict';
   this.flip();
   this.subdivideLeft(1 - t);
   this.flip();
@@ -266,6 +267,7 @@ goog.math.Bezier.prototype.subdivideRight = function(t) {
  * @param {number} t The end of the desired portion of the curve.
  */
 goog.math.Bezier.prototype.subdivide = function(s, t) {
+  'use strict';
   this.subdivideRight(s);
   this.subdivideLeft((t - s) / (1 - s));
 };
@@ -280,6 +282,7 @@ goog.math.Bezier.prototype.subdivide = function(s, t) {
  * @return {number} The position t.
  */
 goog.math.Bezier.prototype.solvePositionFromXValue = function(xVal) {
+  'use strict';
   // Desired precision on the computation.
   var epsilon = 1e-6;
 
@@ -335,5 +338,6 @@ goog.math.Bezier.prototype.solvePositionFromXValue = function(xVal) {
  * @return {number} The y coordinate of the point on the curve.
  */
 goog.math.Bezier.prototype.solveYValueFromXValue = function(xVal) {
+  'use strict';
   return this.getPointY(this.solvePositionFromXValue(xVal));
 };

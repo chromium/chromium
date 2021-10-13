@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!--
-Copyright 2007 The Closure Library Authors. All Rights Reserved.
+Copyright The Closure Library Authors. All Rights Reserved.
 
 Use of this source code is governed by the Apache License, Version 2.0.
 See the COPYING file for details.
@@ -52,7 +52,7 @@ See the COPYING file for details.
     <label for="setHighlighting">standard highlighting</label>
     <p>
       This data is being pulled from the server at
-      <a href="autocompleterichremotedata.js">autocompleterichremotedata.js</a>.
+      <a href="autocompleterichremotedata.json">autocompleterichremotedata.json</a>.
     </p>
     <p>
       Ideally the server would perform a search on the query and would only
@@ -86,22 +86,15 @@ See the COPYING file for details.
       return item;
     };
 
-    var apple = function(item) {
-      return makeRichRow_(item, "Apple", "apple");
-    };
-
-    var citrus = function(item) {
-      return makeRichRow_(item, "Citrus", "citrus");
-    };
-
-    var berry = function(item) {
-      return makeRichRow_(item, "Berry", "berry");
-    };
-
     var input = document.getElementById("txtInput");
     var wikipedia = document.getElementById("wikipedia");
-    var ac = new goog.ui.ac.RichRemote("autocompleterichremotedata.js",
+    var ac = new goog.ui.ac.RichRemote("autocompleterichremotedata.json",
         input);
+
+    ac.setRowBuilder(function(type, item) {
+      var itemType = type[0].toUpperCase() + type.slice(1);
+      return makeRichRow_(item, itemType, type);
+    });
 
     // Set the autocomplete"s rowFilter appropriately
     var setFilter = function() {

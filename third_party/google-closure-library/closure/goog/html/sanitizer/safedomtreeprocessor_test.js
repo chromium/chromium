@@ -1,16 +1,8 @@
-// Copyright 2017 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /** @fileoverview Tests for {@link goog.html.sanitizer.SafeDomTreeProcessor} */
 
@@ -52,6 +44,7 @@ class NoopProcessor extends SafeDomTreeProcessor {
 }
 
 testSuite({
+  /** @suppress {visibility} suppression added to enable type checking */
   testBasic() {
     let input = '';
     assertHtmlMatchesOnSupportedBrowser(
@@ -70,8 +63,10 @@ testSuite({
         input, new NoopProcessor().processToString(input));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testTagChanged() {
     const processor = new NoopProcessor();
+    /** @suppress {visibility} suppression added to enable type checking */
     processor.createElementWithoutAttributes = anchorToFoo;
     const input = '<a href="bar"><p>baz</p></a>';
     const expected = '<foo href="bar"><p>baz</p></foo>';
@@ -79,8 +74,10 @@ testSuite({
         expected, processor.processToString(input));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testTagDropped() {
     const processor = new NoopProcessor();
+    /** @suppress {visibility} suppression added to enable type checking */
     processor.createElementWithoutAttributes = (originalElement) =>
         originalElement.tagName.toUpperCase() == 'A' ?
         null :
@@ -107,8 +104,10 @@ testSuite({
         expected, processor.processToString(input));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testAttributeDropped() {
     const processor = new NoopProcessor();
+    /** @suppress {visibility} suppression added to enable type checking */
     processor.processElementAttribute = (element, attribute) =>
         attribute.name == 'src' ? null : attribute.value;
 
@@ -118,6 +117,7 @@ testSuite({
         expected, processor.processToString(input));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testTemplateDropped() {
     const input = '<div><template id="foo"><p>foo</p></template></div>';
     const expected = '<div></div>';
@@ -125,8 +125,10 @@ testSuite({
         expected, new NoopProcessor().processToString(input));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testProcessRoot() {
     const processor = new NoopProcessor();
+    /** @suppress {visibility} suppression added to enable type checking */
     processor.processRoot = (spanElement) => {
       spanElement.id = 'bar';
     };
@@ -137,8 +139,10 @@ testSuite({
         expected, processor.processToString(input));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testPreprocessHtml() {
     const processor = new NoopProcessor();
+    /** @suppress {visibility} suppression added to enable type checking */
     processor.preProcessHtml = (html) => html.toLowerCase();
 
     const input = '<p id="BAR">FOO</p>';

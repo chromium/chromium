@@ -1,16 +1,8 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Utilities for dealing with POSIX path strings. Based on
@@ -31,7 +23,8 @@ goog.require('goog.string');
  *     after the final slash.
  */
 goog.string.path.baseName = function(path) {
-  var i = path.lastIndexOf('/') + 1;
+  'use strict';
+  const i = path.lastIndexOf('/') + 1;
   return path.slice(i);
 };
 
@@ -53,8 +46,9 @@ goog.string.path.basename = goog.string.path.baseName;
  *     leading up to the final slash.
  */
 goog.string.path.dirname = function(path) {
-  var i = path.lastIndexOf('/') + 1;
-  var head = path.slice(0, i);
+  'use strict';
+  const i = path.lastIndexOf('/') + 1;
+  let head = path.slice(0, i);
   // If the path isn't all forward slashes, trim the trailing slashes.
   if (!/^\/+$/.test(head)) {
     head = head.replace(/\/+$/, '');
@@ -69,10 +63,11 @@ goog.string.path.dirname = function(path) {
  * @return {string} The extension if any, otherwise the empty string.
  */
 goog.string.path.extension = function(path) {
-  var separator = '.';
+  'use strict';
+  const separator = '.';
   // Combining all adjacent periods in the basename to a single period.
-  var baseName = goog.string.path.baseName(path).replace(/\.+/g, separator);
-  var separatorIndex = baseName.lastIndexOf(separator);
+  const baseName = goog.string.path.baseName(path).replace(/\.+/g, separator);
+  const separatorIndex = baseName.lastIndexOf(separator);
   return separatorIndex <= 0 ? '' : baseName.substr(separatorIndex + 1);
 };
 
@@ -86,10 +81,11 @@ goog.string.path.extension = function(path) {
  * @return {string} The path components joined.
  */
 goog.string.path.join = function(var_args) {
-  var path = arguments[0];
+  'use strict';
+  let path = arguments[0];
 
-  for (var i = 1; i < arguments.length; i++) {
-    var arg = arguments[i];
+  for (let i = 1; i < arguments.length; i++) {
+    const arg = arguments[i];
     if (goog.string.startsWith(arg, '/')) {
       path = arg;
     } else if (path == '' || goog.string.endsWith(path, '/')) {
@@ -111,11 +107,12 @@ goog.string.path.join = function(var_args) {
  * @return {string} The path after normalization.
  */
 goog.string.path.normalizePath = function(path) {
+  'use strict';
   if (path == '') {
     return '.';
   }
 
-  var initialSlashes = '';
+  let initialSlashes = '';
   // POSIX will keep two slashes, but three or more will be collapsed to one.
   if (goog.string.startsWith(path, '/')) {
     initialSlashes = '/';
@@ -125,11 +122,11 @@ goog.string.path.normalizePath = function(path) {
     }
   }
 
-  var parts = path.split('/');
-  var newParts = [];
+  const parts = path.split('/');
+  const newParts = [];
 
-  for (var i = 0; i < parts.length; i++) {
-    var part = parts[i];
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i];
 
     // '' and '.' don't change the directory, ignore.
     if (part == '' || part == '.') {
@@ -147,7 +144,7 @@ goog.string.path.normalizePath = function(path) {
     }
   }
 
-  var returnPath = initialSlashes + newParts.join('/');
+  const returnPath = initialSlashes + newParts.join('/');
   return returnPath || '.';
 };
 
@@ -160,8 +157,9 @@ goog.string.path.normalizePath = function(path) {
  * @return {!Array<string>} An array of [dirname, basename].
  */
 goog.string.path.split = function(path) {
-  var head = goog.string.path.dirname(path);
-  var tail = goog.string.path.baseName(path);
+  'use strict';
+  const head = goog.string.path.dirname(path);
+  const tail = goog.string.path.baseName(path);
   return [head, tail];
 };
 

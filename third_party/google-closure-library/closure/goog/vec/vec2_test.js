@@ -1,13 +1,18 @@
-// Copyright 2012 The Closure Library Authors. All Rights Reserved.
-// Use of this source code is governed by the Apache License, Version 2.0.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.vec.Vec2Test');
 goog.setTestOnly();
 
 const Vec2 = goog.require('goog.vec.Vec2');
 const testSuite = goog.require('goog.testing.testSuite');
+const vec = goog.require('goog.vec');
 
 testSuite({
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testConstructor() {
     const v = Vec2.createFloat32();
     assertElementsEquals(0, v[0]);
@@ -58,6 +63,7 @@ testSuite({
     assertElementsEquals([6, 9], v2);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testSubtract() {
     const v0 = Vec2.createFloat32FromArray([1, 2]);
     const v1 = Vec2.createFloat32FromArray([4, 5]);
@@ -125,7 +131,17 @@ testSuite({
   testMagnitude() {
     const v0 = Vec2.createFloat32FromArray([1, 2]);
     assertEquals(Math.sqrt(5), Vec2.magnitude(v0));
+    const v1 = Vec2.createFloat32FromArray([0, 0]);
+    assertEquals(0, Vec2.magnitude(v1));
   },
+
+  testMagnitudeOverflow() {
+    const x = Number.MAX_VALUE / 2;
+    assertEquals(
+        (Number.MAX_VALUE / 2) * Math.sqrt(2),
+        Vec2.magnitude(Vec2.createFloat64FromArray([x, x])));
+  },
+
 
   testNormalize() {
     const v0 = Vec2.createFloat32FromArray([2, 3]);
@@ -181,7 +197,7 @@ testSuite({
     Vec2.setFromValues(v1, 0, 0);
     Vec2.direction(v0, v1, dirVec);
     assertElementsRoughlyEqual(
-        [-0.707106781, -0.707106781], dirVec, goog.vec.EPSILON);
+        [-0.707106781, -0.707106781], dirVec, vec.EPSILON);
   },
 
   testLerp() {

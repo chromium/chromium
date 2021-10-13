@@ -193,9 +193,7 @@ component("protobuf_lite") {
     configs -= [ "//build/config/win:lean_and_mean" ]
   }
 
-  public_configs = [
-    ":protobuf_config",
-  ]
+  public_configs = [ ":protobuf_config" ]
 
   if (is_android) {
     libs = [ "log" ]  # Used by src/google/protobuf/stubs/common.cc
@@ -409,9 +407,7 @@ static_library("protobuf_full") {
   if (is_win) {
     configs -= [ "//build/config/win:lean_and_mean" ]
   }
-  public_configs = [
-    ":protobuf_config",
-  ]
+  public_configs = [ ":protobuf_config" ]
 
   cflags = protobuf_lite_cflags
 
@@ -728,6 +724,7 @@ if (enable_js_protobuf) {
       "//third_party/google-closure-library/closure/goog/dom/safe.js",
       "//third_party/google-closure-library/closure/goog/dom/tagname.js",
       "//third_party/google-closure-library/closure/goog/dom/tags.js",
+      "//third_party/google-closure-library/closure/goog/fs/blob.js",
       "//third_party/google-closure-library/closure/goog/fs/url.js",
       "//third_party/google-closure-library/closure/goog/functions/functions.js",
       "//third_party/google-closure-library/closure/goog/goog.js",
@@ -743,6 +740,7 @@ if (enable_js_protobuf) {
       "//third_party/google-closure-library/closure/goog/labs/useragent/browser.js",
       "//third_party/google-closure-library/closure/goog/labs/useragent/engine.js",
       "//third_party/google-closure-library/closure/goog/labs/useragent/platform.js",
+      "//third_party/google-closure-library/closure/goog/labs/useragent/useragent.js",
       "//third_party/google-closure-library/closure/goog/labs/useragent/util.js",
       "//third_party/google-closure-library/closure/goog/math/coordinate.js",
       "//third_party/google-closure-library/closure/goog/math/math.js",

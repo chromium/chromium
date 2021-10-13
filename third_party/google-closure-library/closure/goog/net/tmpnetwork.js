@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview tmpnetwork.js contains some temporary networking functions
@@ -57,9 +49,10 @@ goog.net.tmpnetwork.TEST_URL = goog.define(
  */
 goog.net.tmpnetwork.testGoogleCom = function(
     callback, opt_imageUri, opt_timeout) {
+  'use strict';
   // We need to add a 'rand' to make sure the response is not fulfilled
   // by browser cache.
-  var uri = opt_imageUri;
+  let uri = opt_imageUri;
   if (!uri) {
     uri = new goog.Uri(goog.net.tmpnetwork.TEST_URL);
     uri.makeUnique();
@@ -81,7 +74,8 @@ goog.net.tmpnetwork.testGoogleCom = function(
  */
 goog.net.tmpnetwork.testLoadImageWithRetries = function(
     url, timeout, callback, retries, opt_pauseBetweenRetriesMS) {
-  var channelDebug = new goog.net.ChannelDebug();
+  'use strict';
+  const channelDebug = new goog.net.ChannelDebug();
   channelDebug.debug('TestLoadImageWithRetries: ' + opt_pauseBetweenRetriesMS);
   if (retries == 0) {
     // no more retries, give up
@@ -89,14 +83,16 @@ goog.net.tmpnetwork.testLoadImageWithRetries = function(
     return;
   }
 
-  var pauseBetweenRetries = opt_pauseBetweenRetriesMS || 0;
+  const pauseBetweenRetries = opt_pauseBetweenRetriesMS || 0;
   retries--;
   goog.net.tmpnetwork.testLoadImage(url, timeout, function(succeeded) {
+    'use strict';
     if (succeeded) {
       callback(true);
     } else {
       // try again
       goog.global.setTimeout(function() {
+        'use strict';
         goog.net.tmpnetwork.testLoadImageWithRetries(
             url, timeout, callback, retries, pauseBetweenRetries);
       }, pauseBetweenRetries);
@@ -113,10 +109,12 @@ goog.net.tmpnetwork.testLoadImageWithRetries = function(
  * @suppress {strictMissingProperties} Part of the go/strict_warnings_migration
  */
 goog.net.tmpnetwork.testLoadImage = function(url, timeout, callback) {
-  var channelDebug = new goog.net.ChannelDebug();
+  'use strict';
+  const channelDebug = new goog.net.ChannelDebug();
   channelDebug.debug('TestLoadImage: loading ' + url);
-  var img = new Image();
+  const img = new Image();
   img.onload = function() {
+    'use strict';
     try {
       channelDebug.debug('TestLoadImage: loaded');
       goog.net.tmpnetwork.clearImageCallbacks_(img);
@@ -126,6 +124,7 @@ goog.net.tmpnetwork.testLoadImage = function(url, timeout, callback) {
     }
   };
   img.onerror = function() {
+    'use strict';
     try {
       channelDebug.debug('TestLoadImage: error');
       goog.net.tmpnetwork.clearImageCallbacks_(img);
@@ -135,6 +134,7 @@ goog.net.tmpnetwork.testLoadImage = function(url, timeout, callback) {
     }
   };
   img.onabort = function() {
+    'use strict';
     try {
       channelDebug.debug('TestLoadImage: abort');
       goog.net.tmpnetwork.clearImageCallbacks_(img);
@@ -144,6 +144,7 @@ goog.net.tmpnetwork.testLoadImage = function(url, timeout, callback) {
     }
   };
   img.ontimeout = function() {
+    'use strict';
     try {
       channelDebug.debug('TestLoadImage: timeout');
       goog.net.tmpnetwork.clearImageCallbacks_(img);
@@ -154,6 +155,7 @@ goog.net.tmpnetwork.testLoadImage = function(url, timeout, callback) {
   };
 
   goog.global.setTimeout(function() {
+    'use strict';
     if (img.ontimeout) {
       img.ontimeout();
     }
@@ -169,6 +171,7 @@ goog.net.tmpnetwork.testLoadImage = function(url, timeout, callback) {
  * @suppress {strictMissingProperties} Part of the go/strict_warnings_migration
  */
 goog.net.tmpnetwork.clearImageCallbacks_ = function(img) {
+  'use strict';
   // NOTE(user): Nullified individually to avoid compiler warnings
   // (BUG 658126)
   img.onload = null;

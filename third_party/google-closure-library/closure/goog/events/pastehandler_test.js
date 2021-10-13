@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.events.PasteHandlerTest');
 goog.setTestOnly();
@@ -24,8 +16,8 @@ const PasteHandler = goog.require('goog.events.PasteHandler');
 const dom = goog.require('goog.dom');
 const events = goog.require('goog.events');
 const testSuite = goog.require('goog.testing.testSuite');
-const userAgent = goog.require('goog.userAgent');
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 function newBrowserEvent(type) {
   if (typeof type === 'string') {
     return new BrowserEvent({type: type});
@@ -42,8 +34,13 @@ let pasted;
 testSuite({
   setUp() {
     textarea = new GoogEventTarget();
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     textarea.value = '';
     clock = new MockClock(true);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     handler = new PasteHandler(textarea);
     pasted = false;
     events.listen(handler, PasteHandler.EventType.PASTE, () => {
@@ -61,6 +58,7 @@ testSuite({
     if (!PasteHandler.SUPPORTS_NATIVE_PASTE_EVENT) {
       return;
     }
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const handlerThatSupportsPasteEvents = new PasteHandler(textarea);
     // user clicks on the textarea and give it focus
     events.listen(
@@ -83,16 +81,28 @@ testSuite({
       type: EventType.KEYDOWN,
       keyCode: KeyCodes.A,
     }));
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     textarea.value = 'a';
     assertFalse(pasted);
 
     // still typing
     textarea.dispatchEvent({type: EventType.KEYDOWN, keyCode: KeyCodes.B});
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     textarea.value = 'ab';
     assertFalse(pasted);
 
     // ends typing
     textarea.dispatchEvent({type: EventType.KEYDOWN, keyCode: KeyCodes.C});
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     textarea.value = 'abc';
     assertFalse(pasted);
   },
@@ -166,6 +176,10 @@ testSuite({
       return;
     }
     // user has something on the events
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     textarea.value = 'pasted string';
     // and right click -> paste it on the textarea, WITHOUT giving focus
     textarea.dispatchEvent(newBrowserEvent(EventType.MOUSEOVER));
@@ -182,6 +196,7 @@ testSuite({
     assertFalse(pasted);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testMouseOverAfterTyping() {
     if (PasteHandler.SUPPORTS_NATIVE_PASTE_EVENT) {
       return;
@@ -190,6 +205,10 @@ testSuite({
     assertFalse(pasted);
     textarea.dispatchEvent({type: EventType.KEYDOWN, keyCode: KeyCodes.A});
     assertFalse(pasted);
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     textarea.value = 'a';
     textarea.dispatchEvent('input');
     assertFalse(pasted);
@@ -198,6 +217,7 @@ testSuite({
     assertFalse(pasted);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testTypingAndThenRightClickPaste() {
     if (PasteHandler.SUPPORTS_NATIVE_PASTE_EVENT) {
       return;
@@ -206,6 +226,10 @@ testSuite({
 
     textarea.dispatchEvent({type: EventType.KEYDOWN, keyCode: KeyCodes.A});
     assertFalse(pasted);
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     textarea.value = 'a';
     clock.tick(PasteHandler.MANDATORY_MS_BETWEEN_INPUT_EVENTS_TIE_BREAKER + 1);
     textarea.dispatchEvent('input');
@@ -213,6 +237,10 @@ testSuite({
 
     assertEquals('a', handler.oldValue_);
 
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     textarea.value = 'ab';
     clock.tick(PasteHandler.MANDATORY_MS_BETWEEN_INPUT_EVENTS_TIE_BREAKER + 1);
     textarea.dispatchEvent(newBrowserEvent('input'));
@@ -235,12 +263,20 @@ testSuite({
 
     textarea.dispatchEvent({type: EventType.KEYDOWN, keyCode: KeyCodes.A});
     assertFalse(pasted);
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     textarea.value = 'a';
     clock.tick(PasteHandler.MANDATORY_MS_BETWEEN_INPUT_EVENTS_TIE_BREAKER - 1);
     textarea.dispatchEvent('input');
     assertFalse(pasted);
 
     // second key down events gets fired on a different order
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     textarea.value = 'ab';
     clock.tick(PasteHandler.MANDATORY_MS_BETWEEN_INPUT_EVENTS_TIE_BREAKER - 1);
     textarea.dispatchEvent('input');
@@ -257,12 +293,20 @@ testSuite({
     // but in a valid paste action: if the user edit -> paste -> edit -> paste,
     // it is a valid paste action.
 
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     textarea.value = 'a';
     clock.tick(PasteHandler.MANDATORY_MS_BETWEEN_INPUT_EVENTS_TIE_BREAKER + 1);
     textarea.dispatchEvent(newBrowserEvent('input'));
     assertTrue(pasted);
 
     // second key down events gets fired on a different order
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     textarea.value = 'ab';
     clock.tick(PasteHandler.MANDATORY_MS_BETWEEN_INPUT_EVENTS_TIE_BREAKER + 1);
     textarea.dispatchEvent(newBrowserEvent('input'));
@@ -280,45 +324,8 @@ testSuite({
     assertTrue(pasted);
   },
 
-  testMacRightClickPasteRequiresCtrlBecauseItHasOneButton() {
-    if (!userAgent.OPERA || !userAgent.MAC) {
-      return;
-    }
-    const handler = new PasteHandler(textarea);
-    // user clicks on the textarea and give it focus
-    events.listen(handler, PasteHandler.EventType.PASTE, () => {
-      pasted = true;
-    });
-    textarea.dispatchEvent(EventType.FOCUS);
-    assertFalse(pasted);
-    textarea.dispatchEvent({type: EventType.KEYDOWN, keyCode: 0});
-    assertFalse(pasted);
-    clock.tick(PasteHandler.MANDATORY_MS_BETWEEN_INPUT_EVENTS_TIE_BREAKER + 1);
-    textarea.dispatchEvent(newBrowserEvent('input'));
-    assertTrue(pasted);
-  },
-
-  testOperaMacFiresKeyCode17WhenAppleKeyPressedButDoesNotFireKeyDown() {
-    if (!userAgent.OPERA || !userAgent.MAC) {
-      return;
-    }
-    const handler = new PasteHandler(textarea);
-    // user clicks on the textarea and give it focus
-    events.listen(handler, PasteHandler.EventType.PASTE, () => {
-      pasted = true;
-    });
-    textarea.dispatchEvent(EventType.FOCUS);
-    assertFalse(pasted);
-    // apple key is pressed, generating a keydown event
-    textarea.dispatchEvent({type: EventType.KEYDOWN, keyCode: 17});
-    assertFalse(pasted);
-    clock.tick(PasteHandler.MANDATORY_MS_BETWEEN_INPUT_EVENTS_TIE_BREAKER + 1);
-    // and then text is added magically without any extra keydown events.
-    textarea.dispatchEvent(newBrowserEvent('input'));
-    assertTrue(pasted);
-  },
-
   testScriptingDoesntTriggerPasteEvents() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const handlerUsedToListenForScriptingChanges = new PasteHandler(textarea);
     pasted = false;
     // user clicks on the textarea and give it focus
@@ -327,20 +334,38 @@ testSuite({
         () => {
           pasted = true;
         });
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     dom.getElement('foo').value = 'dear paste handler,';
     assertFalse(pasted);
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     dom.getElement('foo').value = 'please dont misunderstand script changes';
     assertFalse(pasted);
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     dom.getElement('foo').value = 'with user generated paste events';
     assertFalse(pasted);
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     dom.getElement('foo').value = 'thanks!';
     assertFalse(pasted);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testAfterPaste() {
     if (!PasteHandler.SUPPORTS_NATIVE_PASTE_EVENT) {
       return;
     }
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const handlerThatSupportsPasteEvents = new PasteHandler(textarea);
     pasted = false;
     events.listen(
@@ -362,15 +387,21 @@ testSuite({
     // Once text is pasted, it takes a bit to detect it, at which point
     // AFTER_PASTE is fired.
     clock.tick(PasteHandler.PASTE_POLLING_PERIOD_MS_);
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     textarea.value = 'text';
     clock.tick(PasteHandler.PASTE_POLLING_PERIOD_MS_);
     assertTrue(afterPasteFired);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testAfterPasteNotFiredIfDelayTooLong() {
     if (!PasteHandler.SUPPORTS_NATIVE_PASTE_EVENT) {
       return;
     }
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const handlerThatSupportsPasteEvents = new PasteHandler(textarea);
     pasted = false;
     events.listen(
@@ -391,6 +422,10 @@ testSuite({
 
     // If the new text doesn't show up in time, we never fire AFTER_PASTE.
     clock.tick(PasteHandler.PASTE_POLLING_TIMEOUT_MS_);
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     textarea.value = 'text';
     clock.tick(PasteHandler.PASTE_POLLING_PERIOD_MS_);
     assertFalse(afterPasteFired);

@@ -9,6 +9,8 @@
  * Standard styling for buttons created by goog.ui.Css3MenuButtonRenderer.
  */
 
+@provide 'goog.css.css3menubutton';
+
 /* Dropdown arrow style. */
 .goog-css3-button-dropdown {
   height: 16px;

@@ -1,16 +1,8 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview An alternative imageless button renderer that uses CSS3 rather
@@ -36,6 +28,7 @@ goog.require('goog.ui.ButtonRenderer');
 goog.require('goog.ui.Component');
 goog.require('goog.ui.INLINE_BLOCK_CLASSNAME');
 goog.require('goog.ui.registry');
+goog.requireType('goog.ui.Control');
 
 
 
@@ -49,6 +42,7 @@ goog.require('goog.ui.registry');
  * @final
  */
 goog.ui.Css3ButtonRenderer = function() {
+  'use strict';
   goog.ui.ButtonRenderer.call(this);
 };
 goog.inherits(goog.ui.Css3ButtonRenderer, goog.ui.ButtonRenderer);
@@ -65,6 +59,7 @@ goog.ui.Css3ButtonRenderer.CSS_CLASS = goog.getCssName('goog-css3-button');
 
 /** @override */
 goog.ui.Css3ButtonRenderer.prototype.getContentElement = function(element) {
+  'use strict';
   return /** @type {Element} */ (element);
 };
 
@@ -82,6 +77,7 @@ goog.ui.Css3ButtonRenderer.prototype.getContentElement = function(element) {
  * @override
  */
 goog.ui.Css3ButtonRenderer.prototype.createDom = function(control) {
+  'use strict';
   var button = /** @type {goog.ui.Button} */ (control);
   var classNames = this.getClassNames(button);
   return button.getDomHelper().createDom(
@@ -102,12 +98,14 @@ goog.ui.Css3ButtonRenderer.prototype.createDom = function(control) {
  * @override
  */
 goog.ui.Css3ButtonRenderer.prototype.canDecorate = function(element) {
+  'use strict';
   return element.tagName == goog.dom.TagName.DIV;
 };
 
 
 /** @override */
 goog.ui.Css3ButtonRenderer.prototype.decorate = function(button, element) {
+  'use strict';
   goog.asserts.assert(element);
   goog.dom.classlist.addAll(
       element, [goog.ui.INLINE_BLOCK_CLASSNAME, this.getCssClass()]);
@@ -123,6 +121,7 @@ goog.ui.Css3ButtonRenderer.prototype.decorate = function(button, element) {
  * @override
  */
 goog.ui.Css3ButtonRenderer.prototype.getCssClass = function() {
+  'use strict';
   return goog.ui.Css3ButtonRenderer.CSS_CLASS;
 };
 
@@ -130,6 +129,7 @@ goog.ui.Css3ButtonRenderer.prototype.getCssClass = function() {
 // Register a decorator factory function for goog.ui.Css3ButtonRenderer.
 goog.ui.registry.setDecoratorByClassName(
     goog.ui.Css3ButtonRenderer.CSS_CLASS, function() {
+      'use strict';
       return new goog.ui.Button(null, goog.ui.Css3ButtonRenderer.getInstance());
     });
 
@@ -138,6 +138,7 @@ goog.ui.registry.setDecoratorByClassName(
 // goog.ui.Css3ButtonRenderer.
 goog.ui.registry.setDecoratorByClassName(
     goog.getCssName('goog-css3-toggle-button'), function() {
+      'use strict';
       var button =
           new goog.ui.Button(null, goog.ui.Css3ButtonRenderer.getInstance());
       button.setSupportedState(goog.ui.Component.State.CHECKED, true);
