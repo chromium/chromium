@@ -53,7 +53,6 @@ const ThreatSeverity kLeastSeverity =
 // This map contain pairs of the old and the new name for certain .store files.
 constexpr auto kStoreFilesToRename =
     base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>({
-        {"CertCsdDownloadWhitelist.store", "CertCsdDownloadAllowlist.store"},
         {"UrlCsdDownloadWhitelist.store", "UrlCsdDownloadAllowlist.store"},
         {"UrlCsdWhitelist.store", "UrlCsdAllowlist.store"},
     });
@@ -102,8 +101,6 @@ ListInfos GetListInfos() {
                SB_THREAT_TYPE_URL_BINARY_MALWARE),
       ListInfo(kSyncOnDesktopBuilds, "ChromeExtMalware.store",
                GetChromeExtMalwareId(), SB_THREAT_TYPE_EXTENSION),
-      ListInfo(kSyncOnChromeDesktopBuilds, "CertCsdDownloadAllowlist.store",
-               GetCertCsdDownloadAllowlistId(), SB_THREAT_TYPE_UNUSED),
       ListInfo(kSyncOnChromeDesktopBuilds, "ChromeUrlClientIncident.store",
                GetChromeUrlClientIncidentId(),
                SB_THREAT_TYPE_BLOCKLISTED_RESOURCE),
@@ -599,21 +596,6 @@ AsyncMatch V4LocalDatabaseManager::CheckCsdAllowlistUrl(const GURL& url,
       std::vector<GURL>(1, url));
 
   return HandleAllowlistCheck(std::move(check));
-}
-
-bool V4LocalDatabaseManager::MatchDownloadAllowlistString(
-    const std::string& str) {
-  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
-
-  StoresToCheck stores_to_check({GetCertCsdDownloadAllowlistId()});
-  if (!AreAllStoresAvailableNow(stores_to_check)) {
-    // Fail close: Allowlist nothing. This may generate download-protection
-    // pings for allowlisted binaries, but that's fine.
-    return false;
-  }
-
-  return HandleHashSynchronously(crypto::SHA256HashString(str),
-                                 stores_to_check);
 }
 
 bool V4LocalDatabaseManager::MatchDownloadAllowlistUrl(const GURL& url) {
