@@ -109,6 +109,7 @@ class MODULES_EXPORT LowLatencyVideoRendererAlgorithm {
     int no_new_frame_to_render;
     int accumulated_queue_length;
     int accumulated_queue_length_count;
+    int max_queue_length;
     int enter_drain_mode;
     int reduce_steady_state;
     int max_size_drop_queue;
