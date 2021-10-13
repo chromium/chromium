@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -29,6 +30,15 @@ namespace test {
 
 class ScopedServer {
  public:
+  // Defines a generic predicate to match expectations for a `request_body`.
+  using RequestMatcherPredicate =
+      base::RepeatingCallback<bool(const std::string& request_body)>;
+
+  // Defines a sequence of predicates which all must pass in order to match
+  // a request. This allows for combining several predicates when matching a
+  // single request.
+  using RequestMatcher = std::list<RequestMatcherPredicate>;
+
   // Creates and starts a scoped server. Sets up the updater to communicate
   // with it. Multiple scoped servers are not allowed.
   explicit ScopedServer(
@@ -42,13 +52,14 @@ class ScopedServer {
   ScopedServer& operator=(const ScopedServer&) = delete;
 
   // Registers an expected request with the server. Requests must match the
-  // expectation regexes in the order the expectations were set. The server
-  // replies with an HTTP 200 and `response_body` to an expected request. It
-  // replies with HTTP 500 and fails the test if a request does not match the
-  // next expected `request_body_regex`, or if there are no more expected
-  // requests. If the server does not receive every expected request, it will
-  // fail the test during destruction.
-  void ExpectOnce(const std::string& request_body_regex,
+  // expectation defined by applying all individual request matching predicates
+  // composing the `request_matcher` in the order the expectations were set.
+  // The server replies with an HTTP 200 and `response_body` to an expected
+  // request. It replies with HTTP 500 and fails the test if a request does
+  // not match the next expected `request_matcher`, or if there are no more
+  // expected requests. If the server does not receive every expected request,
+  // it will fail the test during destruction.
+  void ExpectOnce(RequestMatcher request_matcher,
                   const std::string& response_body);
 
   const GURL& base_url() const { return test_server_->base_url(); }
@@ -59,7 +70,7 @@ class ScopedServer {
 
   std::unique_ptr<net::test_server::EmbeddedTestServer> test_server_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
-  std::list<std::string> request_body_regexes_;
+  std::list<RequestMatcher> request_matchers_;
   std::list<std::string> response_bodies_;
   scoped_refptr<IntegrationTestCommands> integration_test_commands_;
 };

@@ -4,7 +4,9 @@
 
 #include <cstdlib>
 #include <memory>
+#include <string>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -16,7 +18,6 @@
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -36,6 +37,7 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
 #if defined(OS_WIN)
@@ -61,6 +63,16 @@ constexpr char kDoNothingCRXHash[] =
 #else
 static_assert(false, "Unsupported platform for IntegrationTest.*");
 #endif
+
+bool RequestMatcherRegex(const std::string& request_body_regex,
+                         const std::string& request_body) {
+  if (!re2::RE2::PartialMatch(request_body, request_body_regex)) {
+    ADD_FAILURE() << "Request with body: " << request_body
+                  << " did not match expected regex " << request_body_regex;
+    return false;
+  }
+  return true;
+}
 
 std::string GetUpdateResponse(const std::string& app_id,
                               const std::string& codebase,
@@ -99,7 +111,9 @@ void ExpectUpdateSequence(ScopedServer* test_server,
                           const base::Version& to_version) {
   // First request: update check.
   test_server->ExpectOnce(
-      base::StringPrintf(R"(.*"appid":"%s".*)", app_id.c_str()),
+      {base::BindRepeating(
+          RequestMatcherRegex,
+          base::StringPrintf(R"(.*"appid":"%s".*)", app_id.c_str()))},
       GetUpdateResponse(app_id, test_server->base_url().spec(), to_version));
 
   // Second request: update download.
@@ -110,21 +124,26 @@ void ExpectUpdateSequence(ScopedServer* test_server,
   ASSERT_TRUE(base::PathExists(crx_path));
   std::string crx_bytes;
   base::ReadFileToString(crx_path, &crx_bytes);
-  test_server->ExpectOnce("", crx_bytes);
+  test_server->ExpectOnce({base::BindRepeating(RequestMatcherRegex, "")},
+                          crx_bytes);
 
   // Third request: event ping.
   test_server->ExpectOnce(
-      base::StringPrintf(R"(.*"eventresult":1,"eventtype":3,)"
-                         R"("nextversion":"%s","previousversion":"%s".*)",
-                         to_version.GetString().c_str(),
-                         from_version.GetString().c_str()),
+      {base::BindRepeating(
+          RequestMatcherRegex,
+          base::StringPrintf(R"(.*"eventresult":1,"eventtype":3,)"
+                             R"("nextversion":"%s","previousversion":"%s".*)",
+                             to_version.GetString().c_str(),
+                             from_version.GetString().c_str()))},
       ")]}'\n");
 }
 
 void ExpectNoUpdateSequence(ScopedServer* test_server,
                             const std::string& app_id) {
   test_server->ExpectOnce(
-      base::StringPrintf(R"(.*"appid":"%s".*)", app_id.c_str()),
+      {base::BindRepeating(
+          RequestMatcherRegex,
+          base::StringPrintf(R"(.*"appid":"%s".*)", app_id.c_str()))},
       base::StringPrintf(")]}'\n"
                          R"({"response":{)"
                          R"(  "protocol":"3.1",)"
@@ -350,7 +369,10 @@ TEST_F(IntegrationTest, QualifyUpdater) {
 
   // This instance is now qualified and should activate itself and check itself
   // for updates on the next check.
-  test_server.ExpectOnce(base::StringPrintf(".*%s.*", kUpdaterAppId), ")]}'\n");
+  test_server.ExpectOnce(
+      {base::BindRepeating(RequestMatcherRegex,
+                           base::StringPrintf(".*%s.*", kUpdaterAppId))},
+      ")]}'\n");
   RunWake(0);
   WaitForServerExit();
   ExpectVersionActive(kUpdaterVersion);
@@ -396,7 +418,9 @@ TEST_F(IntegrationTest, ReportsActive) {
   ExpectActive("test1");
   ExpectNotActive("test2");
   test_server.ExpectOnce(
-      R"(.*"appid":"test1","enabled":true,"ping":{"a":-2,.*)",
+      {base::BindRepeating(
+          RequestMatcherRegex,
+          R"(.*"appid":"test1","enabled":true,"ping":{"a":-2,.*)")},
       R"()]}')"
       "\n"
       R"({"response":{"protocol":"3.1","daystart":{"elapsed_)"
