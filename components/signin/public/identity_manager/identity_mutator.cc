@@ -4,9 +4,9 @@
 
 #include "components/signin/public/identity_manager/identity_mutator.h"
 
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 

@@ -20,7 +20,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -363,10 +363,10 @@ enum AuthenticationState {
       << "|completeSignInWithSuccess| should not be called twice.";
   if (success) {
     bool isManagedAccount = _identityToSignInHostedDomain.length > 0;
-    signin_metrics::RecordSigninAccountType(/*is_signin_and_sync=*/false,
+    signin_metrics::RecordSigninAccountType(signin::ConsentLevel::kSignin,
                                             isManagedAccount);
     if (_shouldCommitSync)
-      signin_metrics::RecordSigninAccountType(/*is_signin_and_sync=*/true,
+      signin_metrics::RecordSigninAccountType(signin::ConsentLevel::kSync,
                                               isManagedAccount);
   }
   if (_signInCompletion)

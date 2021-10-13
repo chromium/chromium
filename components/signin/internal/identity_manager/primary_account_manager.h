@@ -25,9 +25,9 @@
 #include "base/observer_list_types.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 
 class AccountTrackerService;

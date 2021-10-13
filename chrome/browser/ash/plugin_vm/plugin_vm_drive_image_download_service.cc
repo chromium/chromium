@@ -23,7 +23,7 @@
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/drive/service/drive_api_service.h"
 #include "components/drive/service/drive_service_interface.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"

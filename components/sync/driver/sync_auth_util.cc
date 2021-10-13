@@ -4,8 +4,8 @@
 
 #include "components/sync/driver/sync_auth_util.h"
 
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"

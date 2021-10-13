@@ -9,8 +9,8 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 
 namespace network {
 class TestURLLoaderFactory;

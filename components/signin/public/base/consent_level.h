@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_CONSENT_LEVEL_H_
-#define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_CONSENT_LEVEL_H_
+#ifndef COMPONENTS_SIGNIN_PUBLIC_BASE_CONSENT_LEVEL_H_
+#define COMPONENTS_SIGNIN_PUBLIC_BASE_CONSENT_LEVEL_H_
 
 namespace signin {
 
@@ -26,4 +26,4 @@ enum class ConsentLevel {
 
 }  // namespace signin
 
-#endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_CONSENT_LEVEL_H_
+#endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_CONSENT_LEVEL_H_

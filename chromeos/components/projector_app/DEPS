@@ -3,6 +3,7 @@ include_rules = [
   "+ash/public/cpp/test",
   "-chrome",
   "+components/signin/public/identity_manager",
+  "+components/signin/public/base",
   "+content/public/browser",
   "+content/public/common",
   "+content/public/test",

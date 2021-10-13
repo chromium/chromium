@@ -10,8 +10,8 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/pref_names.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 SigninProfileAttributesUpdater::SigninProfileAttributesUpdater(

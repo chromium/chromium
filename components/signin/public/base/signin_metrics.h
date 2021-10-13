@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/signin/public/base/consent_level.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace signin_metrics {
@@ -511,7 +512,8 @@ void RecordRefreshTokenUpdatedFromSource(bool refresh_token_is_valid,
 void RecordRefreshTokenRevokedFromSource(SourceForRefreshTokenOperation source);
 
 // Records the account type when the user signs in.
-void RecordSigninAccountType(bool is_signin_and_sync, bool is_managed_account);
+void RecordSigninAccountType(signin::ConsentLevel consent_level,
+                             bool is_managed_account);
 
 // -----------------------------------------------------------------------------
 // User actions

@@ -4,8 +4,8 @@
 
 #include "chromeos/components/projector_app/test/mock_app_client.h"
 
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace {

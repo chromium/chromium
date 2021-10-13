@@ -18,7 +18,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace arc {

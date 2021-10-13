@@ -24,7 +24,6 @@ source_set("identity_manager") {
     "accounts_in_cookie_jar_info.cc",
     "accounts_in_cookie_jar_info.h",
     "accounts_mutator.h",
-    "consent_level.h",
     "device_accounts_synchronizer.h",
     "diagnostics_provider.h",
     "identity_manager.cc",
@@ -86,12 +85,6 @@ source_set("identity_manager") {
     # together and include headers from each other.
     "//components/signin/internal/identity_manager",
   ]
-}
-
-if (is_android) {
-  java_cpp_enum("identity_manager_enum_javagen") {
-    sources = [ "consent_level.h" ]
-  }
 }
 
 source_set("unit_tests") {
