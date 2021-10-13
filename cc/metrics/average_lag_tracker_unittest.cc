@@ -63,11 +63,13 @@ class AverageLagTrackerTest : public testing::Test {
         ElementsAre(Bucket(bucket_value, count)));
   }
 
-  void CheckScrollUpdateHistograms(int bucket_value, int count) {
+  void CheckScrollUpdateWithPredictionHistograms(int bucket_value, int count) {
     EXPECT_THAT(histogram_tester().GetAllSamples(
                     "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation"),
                 ElementsAre(Bucket(bucket_value, count)));
+  }
 
+  void CheckScrollUpdateNoPredictionHistograms(int bucket_value, int count) {
     EXPECT_THAT(
         histogram_tester().GetAllSamples("Event.Latency.ScrollUpdate.Touch."
                                          "AverageLagPresentation.NoPrediction"),
@@ -168,7 +170,8 @@ TEST_F(AverageLagTrackerTest, OneSecondInterval) {
   // is 5px, and Lag at this frame swap is 15px. For the one changing direction,
   // the Lag is from 5 to 10 and down to 5 again. So total LagArea is 99 * 100,
   // plus 75. the AverageLag in 1 second is 9.975px.
-  CheckScrollUpdateHistograms(9, 1);
+  CheckScrollUpdateWithPredictionHistograms(9, 1);
+  CheckScrollUpdateNoPredictionHistograms(9, 1);
   CheckPredictionPositiveHistograms(0, 1);
   CheckPredictionNegativeHistogramsTotalCount(0);
   CheckRemainingLagPercentageHistograms(100 - 0, 1);
@@ -181,7 +184,8 @@ TEST_F(AverageLagTrackerTest, OneSecondInterval) {
   SyntheticTouchScrollBegin(event_time, frame_time, scroll_delta);
 
   // The last ScrollUpdate's lag is 8.75px and truncated to 8.
-  CheckScrollUpdateHistograms(8, 1);
+  CheckScrollUpdateWithPredictionHistograms(8, 1);
+  CheckScrollUpdateNoPredictionHistograms(8, 1);
   CheckPredictionPositiveHistograms(0, 1);
   CheckPredictionNegativeHistogramsTotalCount(0);
   CheckRemainingLagPercentageHistograms(100 - 0, 1);
@@ -218,7 +222,8 @@ TEST_F(AverageLagTrackerTest, LargerLatency) {
   SyntheticTouchScrollBegin(event_time, frame_time, scroll_delta);
   // The to unfinished frames' lag are (finger_positon-rendered_position)*time,
   // AverageLag is ((30px-10px)*10ms+(30px-20px)*10ms)/20ms = 15px.
-  CheckScrollUpdateHistograms(14, 1);
+  CheckScrollUpdateWithPredictionHistograms(14, 1);
+  CheckScrollUpdateNoPredictionHistograms(14, 1);
 }
 
 // Test that multiple latency being flush in the same frame swap.
@@ -251,7 +256,8 @@ TEST_F(AverageLagTrackerTest, TwoLatencyInfoInSameFrame) {
   // at t=25ms, finger_pos=-15px, rendered_pos=-10px;
   // To t=30ms both events get flush.
   // AverageLag is (0.5*(10px+5px)*5ms + 5px*5ms)/10ms = 6.25px
-  CheckScrollUpdateHistograms(6, 1);
+  CheckScrollUpdateWithPredictionHistograms(6, 1);
+  CheckScrollUpdateNoPredictionHistograms(6, 1);
 }
 
 // Test the case that switching direction causes lag at current frame
@@ -280,7 +286,8 @@ TEST_F(AverageLagTrackerTest, ChangeDirectionInFrame) {
   // From t=20 to t=30, lag_area=2*(0.5*10px*5ms)=50px*ms.
   // From t=30 to t=40, lag_area=20px*10ms=200px*ms
   // AverageLag = (50+200)/20 = 12.5px.
-  CheckScrollUpdateHistograms(12, 1);
+  CheckScrollUpdateWithPredictionHistograms(12, 1);
+  CheckScrollUpdateNoPredictionHistograms(12, 1);
 }
 
 // A simple case without scroll prediction to compare with the two with
@@ -313,7 +320,8 @@ TEST_F(AverageLagTrackerTest, NoScrollPrediction) {
   // At t=30, finger_pos = 25px, rendered_pos = 25px.
   // AverageLag = ((5px+15px)*10ms/2 + (5px+10px)*5ms/2 + 10px*5ms)/20ms
   //            = 9.375
-  CheckScrollUpdateHistograms(9, 1);
+  CheckScrollUpdateWithPredictionHistograms(9, 1);
+  CheckScrollUpdateNoPredictionHistograms(9, 1);
 }
 
 // Test AverageLag with perfect scroll prediction.
@@ -351,11 +359,12 @@ TEST_F(AverageLagTrackerTest, ScrollPrediction) {
   // At t=30, finger_pos = 25px, rendered_pos = 30px.
   // AverageLag = ((0px+10px)*10ms/2 + (0px+5px)*10ms/2 + 5px*5ms)/20ms
   //            = 4.375px
+  CheckScrollUpdateWithPredictionHistograms(4, 1);
   // AverageLag (w/o prediction)
   //              ((5px+15px)*10ms/2 + (5px+10px)*5ms/2 + 10px*5ms)/20ms
   //            = 9.375px
+  CheckScrollUpdateNoPredictionHistograms(9, 1);
   // Positive effect of prediction = 5px
-  CheckScrollUpdateHistograms(4, 1);
   CheckPredictionPositiveHistograms(5, 1);
   CheckPredictionNegativeHistogramsTotalCount(0);
   CheckRemainingLagPercentageHistograms(100 * 4.375 / 9.375, 1);
@@ -392,10 +401,11 @@ TEST_F(AverageLagTrackerTest, ImperfectScrollPrediction) {
   CheckScrollBeginHistograms(7, 1);
   // AverageLag = ((2px*2ms/2+8px*8ms/2)+ ((3px+8px)*5ms/2+8px*5ms))/20ms
   //            = 5.075px
-  CheckScrollUpdateHistograms(5, 1);
+  CheckScrollUpdateWithPredictionHistograms(5, 1);
   // AverageLag (w/o prediction =
   //              ((5px+15px)*10ms/2 + (5px+10px)*5ms/2 + 10px*5ms)/20ms
   //            = 9.375px
+  CheckScrollUpdateNoPredictionHistograms(9, 1);
   // Positive effect of prediction = 4.3px
   CheckPredictionPositiveHistograms(4, 1);
   CheckPredictionNegativeHistogramsTotalCount(0);
@@ -432,10 +442,11 @@ TEST_F(AverageLagTrackerTest, NegativePredictionEffect) {
   CheckScrollBeginHistograms(7, 1);
   // AverageLag = ((10px+0px)*10ms/2)+ ((40px+35px)*5ms/2+35px*5ms))/20ms
   //            = 20.625px
-  CheckScrollUpdateHistograms(20, 1);
+  CheckScrollUpdateWithPredictionHistograms(20, 1);
   // AverageLag (w/o prediction =
   //              ((5px+15px)*10ms/2 + (5px+10px)*5ms/2 + 10px*5ms)/20ms
   //            = 9.375px
+  CheckScrollUpdateNoPredictionHistograms(9, 1);
   // Negative effect of prediction = 11.25
   CheckPredictionPositiveHistogramsTotalCount(0);
   CheckPredictionNegativeHistograms(11, 1);
@@ -474,10 +485,11 @@ TEST_F(AverageLagTrackerTest, NoPredictionEffect) {
   CheckScrollBeginHistograms(7, 1);
   // AverageLag = ((15px+5px)*10ms/2 + (12px+7px)*5ms/2 + 7px*5ms)/20ms
   //            = 9.125px
-  CheckScrollUpdateHistograms(9, 1);
+  CheckScrollUpdateWithPredictionHistograms(9, 1);
   // AverageLag (w/o prediction) =
   //              ((5px+15px)*10ms/2 + (5px+10px)*5ms/2 + 10px*5ms)/20ms
   //            = 9.375px
+  CheckScrollUpdateNoPredictionHistograms(9, 1);
   // Prediction slightly positive, we should see a 0 bucket in
   // PredictionPositive UMA
   CheckPredictionPositiveHistograms(0, 1);

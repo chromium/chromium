@@ -196,7 +196,7 @@ void AverageLagTracker::CalculateAndReportAverageLagUma(bool send_anyway) {
     base::UmaHistogramCounts1000(
         base::JoinString({GetAverageLagMetricName(event_type), "NoPrediction"},
                          "."),
-        scaled_lag_with_prediction);
+        scaled_lag_no_prediction);
 
     const float lag_improvement =
         scaled_lag_no_prediction - scaled_lag_with_prediction;
