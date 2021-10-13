@@ -2674,7 +2674,10 @@ if (!is_android && !is_fuchsia) {
       if (is_win || is_linux || is_mac) {
         sources += [ "../browser/enterprise/connectors/device_trust/device_trust_browsertest.cc" ]
 
-        deps += [ "//chrome/browser/enterprise/connectors/device_trust/attestation/desktop:test_support" ]
+        deps += [
+          "//chrome/browser/enterprise/connectors/device_trust:features",
+          "//chrome/browser/enterprise/connectors/device_trust/attestation/desktop:test_support",
+        ]
       }
 
       if (is_win) {
@@ -7243,6 +7246,7 @@ test("unit_tests") {
     ]
 
     deps += [
+      "../browser/enterprise/connectors/device_trust:features",
       "../browser/enterprise/connectors/device_trust:test_support",
       "../browser/enterprise/connectors/device_trust/attestation/common",
       "../browser/enterprise/connectors/device_trust/attestation/common:test_support",

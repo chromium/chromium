@@ -15,6 +15,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/scoped_tpm_signing_key_pair.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -78,7 +79,8 @@ constexpr char kVerifiedAccessResponseHeader[] =
 
 }  // namespace
 
-class DeviceTrustBrowserTest : public InProcessBrowserTest {
+class DeviceTrustBrowserTest : public InProcessBrowserTest,
+                               public ::testing::WithParamInterface<bool> {
  public:
   DeviceTrustBrowserTest() {
     browser_dm_token_storage_ =
@@ -89,6 +91,9 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest {
     browser_dm_token_storage_->SetDMToken(kFakeBrowserDMToken);
     policy::BrowserDMTokenStorage::SetForTesting(
         browser_dm_token_storage_.get());
+
+    scoped_feature_list_.InitWithFeatureState(kDeviceTrustConnectorEnabled,
+                                              is_enabled());
   }
 
   void SetUpOnMainThread() override {
@@ -190,6 +195,8 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  bool is_enabled() { return GetParam(); }
+
   PrefService* prefs() { return browser()->profile()->GetPrefs(); }
 
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
@@ -204,7 +211,7 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest {
 
 // Tests that the whole attestation flow occurs when navigating to an allowed
 // domain.
-IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationFullFlow) {
+IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationFullFlow) {
   GURL redirect_url = GetRedirectUrl();
   TestNavigationManager first_navigation(web_contents(), redirect_url);
 
@@ -213,6 +220,14 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationFullFlow) {
   NavigateToUrl(redirect_url);
 
   first_navigation.WaitForNavigationFinished();
+
+  if (!is_enabled()) {
+    // If the feature flag is disabled, the attestation flow should not have
+    // been triggered (and that is the end of the test);
+    EXPECT_FALSE(initial_attestation_request_);
+    EXPECT_FALSE(challenge_response_request_);
+    return;
+  }
 
   // Attestation flow should be fully done.
   EXPECT_TRUE(initial_attestation_request_);
@@ -239,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationFullFlow) {
 
 // Tests that the attestation flow does not get triggered when navigating to a
 // domain that is not part of the allow-list.
-IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationHostNotAllowed) {
+IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationHostNotAllowed) {
   GURL navigation_url = GetDisallowedUrl();
   TestNavigationManager navigation_manager(web_contents(), navigation_url);
 
@@ -256,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationHostNotAllowed) {
 
 // Tests that the attestation flow does not get triggered when the allow-list is
 // empty.
-IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationPrefEmptyList) {
+IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationPrefEmptyList) {
   GURL navigation_url = GetRedirectUrl();
   TestNavigationManager navigation_manager(web_contents(), navigation_url);
 
@@ -273,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationPrefEmptyList) {
 
 // Tests that the attestation flow does not get triggered when the allow-list
 // pref was never populate.
-IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationPrefNotSet) {
+IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationPrefNotSet) {
   GURL navigation_url = GetRedirectUrl();
   TestNavigationManager navigation_manager(web_contents(), navigation_url);
 
@@ -285,5 +300,7 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationPrefNotSet) {
   EXPECT_FALSE(initial_attestation_request_);
   EXPECT_FALSE(challenge_response_request_);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, DeviceTrustBrowserTest, testing::Bool());
 
 }  // namespace enterprise_connectors
