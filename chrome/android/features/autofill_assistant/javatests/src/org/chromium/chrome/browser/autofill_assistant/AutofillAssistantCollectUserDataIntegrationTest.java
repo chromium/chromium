@@ -15,6 +15,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.PickerActions.setDate;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
+import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -36,6 +37,7 @@ import static org.hamcrest.Matchers.iterableWithSize;
 import static org.hamcrest.Matchers.not;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getElementValue;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.isNextAfterSibling;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilKeyboardMatchesCondition;
@@ -45,6 +47,7 @@ import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCss
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toVisibleCssSelector;
 
 import android.widget.DatePicker;
+import android.widget.RadioButton;
 
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
@@ -79,6 +82,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ElementAreaProto.Rec
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementConditionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.IntList;
 import org.chromium.chrome.browser.autofill_assistant.proto.KeyboardValueFillStrategy;
+import org.chromium.chrome.browser.autofill_assistant.proto.LoginDetailsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ModelProto.ModelValue;
 import org.chromium.chrome.browser.autofill_assistant.proto.PopupListSectionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionProto;
@@ -104,6 +108,7 @@ import org.chromium.content_public.browser.WebContents;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -985,5 +990,63 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         onView(withText("John Doe")).check(doesNotExist());
         onView(allOf(withText("johndoe@gmail.com"), hasSibling(withId(R.id.details_title))))
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void highestPriorityLoginChoiceIsDefaultSelected() throws Exception {
+        List<LoginDetailsProto.LoginOptionProto> loginDetails = Arrays.asList(
+                LoginDetailsProto.LoginOptionProto.newBuilder()
+                        .setCustom(LoginDetailsProto.LoginOptionCustomProto.newBuilder().setLabel(
+                                "Guest checkout"))
+                        .setPreselectionPriority(2)
+                        .build(),
+                LoginDetailsProto.LoginOptionProto.newBuilder()
+                        .setCustom(LoginDetailsProto.LoginOptionCustomProto.newBuilder().setLabel(
+                                "VIP checkout"))
+                        .setPreselectionPriority(0)
+                        .build(),
+                LoginDetailsProto.LoginOptionProto.newBuilder()
+                        .setCustom(LoginDetailsProto.LoginOptionCustomProto.newBuilder().setLabel(
+                                "Full checkout"))
+                        .setPreselectionPriority(1)
+                        .build());
+
+        List<ActionProto> actions = Collections.singletonList(
+                ActionProto.newBuilder()
+                        .setCollectUserData(
+                                CollectUserDataProto.newBuilder()
+                                        .setLoginDetails(LoginDetailsProto.newBuilder()
+                                                                 .setSectionTitle("Login options")
+                                                                 .addAllLoginOptions(loginDetails))
+                                        .setRequestTermsAndConditions(false))
+                        .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("form_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
+                                ChipProto.newBuilder().setText("Payment")))
+                        .build(),
+                actions);
+
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        startAutofillAssistant(mTestRule.getActivity(), testService);
+
+        waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
+        onView(withText("Login options")).perform(click());
+        waitUntilViewMatchesCondition(withText("Guest checkout"), isDisplayed());
+        waitUntilViewMatchesCondition(withText("Full checkout"), isDisplayed());
+
+        // "VIP checkout" is selected
+        onView(allOf(withId(R.id.label),
+                       withParent(allOf(withId(R.id.login_summary),
+                               isNextAfterSibling(
+                                       allOf(instanceOf(RadioButton.class), isChecked()))))))
+                .check(matches(withText("VIP checkout")));
+
+        waitUntilViewMatchesCondition(
+                withContentDescription("Continue"), allOf(isDisplayed(), isEnabled()));
     }
 }
