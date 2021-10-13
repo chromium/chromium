@@ -282,13 +282,11 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
   space_builder.SetCacheSlot(NGCacheSlot::kMeasure);
   space_builder.SetIsPaintedAtomically(true);
 
-  if (!flex_item.IsReplaced()) {
-    if (WillChildCrossSizeBeContainerCrossSize(flex_item)) {
-      if (is_column_)
-        space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchExplicit);
-      else
-        space_builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
-    }
+  if (WillChildCrossSizeBeContainerCrossSize(flex_item)) {
+    if (is_column_)
+      space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchExplicit);
+    else
+      space_builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
   }
 
   // For determining the intrinsic block-size we make %-block-sizes resolve
