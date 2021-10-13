@@ -226,8 +226,8 @@ struct FeatureParam<bool> {
 
 // Declares an TimeDelta-valued parameter. Example:
 //
-//     constexpr base::FeatureParam<base::TimeDelta> kPerAgentDelayMs{
-//         &kPerAgentSchedulingExperiments, "delay_ms", base::TimeDelta()};
+//     constexpr base::FeatureParam<base::TimeDelta> kPerAgentDelay{
+//         &kPerAgentSchedulingExperiments, "delay", base::TimeDelta()};
 //
 // If the parameter is not set, or set to an invalid value (as defined by
 // base::TimeDelta::FromString()), then Get() will return the default value.
