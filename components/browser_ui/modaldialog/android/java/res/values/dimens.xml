@@ -8,4 +8,5 @@
     <dimen name="modal_dialog_control_horizontal_padding">8dp</dimen>
     <dimen name="modal_dialog_control_vertical_padding_filled">10dp</dimen>
     <dimen name="modal_dialog_control_horizontal_padding_filled">16dp</dimen>
+    <dimen name="modal_dialog_max_height">560dp</dimen>
 </resources>
