@@ -428,6 +428,7 @@ void ChromeAppListModelUpdater::AddItemToOemFolder(
     position_to_try = oem_sync_item->item_ordinal;
 
   if (app_list_controller_) {
+    // TODO(https://crbug.com/1258851): handle adding OEM apps in a better way.
     app_list_controller_->FindOrCreateOemFolder(
         oem_folder_name, position_to_try,
         base::BindOnce(

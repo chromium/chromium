@@ -17,6 +17,7 @@
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/app_list/page_break_constants.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -175,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
 
-  const size_t kNumApps = 5;
+  const size_t kNumApps = 7;
   syncer::StringOrdinal pin_position =
       syncer::StringOrdinal::CreateInitialOrdinal();
   std::vector<std::string> app_ids;
@@ -192,9 +193,30 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
   }
   EXPECT_TRUE(SyncItemsHaveNames(service));
 
+  auto folder_item1 = std::make_unique<ChromeAppListItem>(
+      profile, "folder1", service->GetModelUpdater());
+  folder_item1->SetChromeIsFolder(true);
+  ChromeAppListItem::TestApi(folder_item1.get()).SetPosition(pin_position);
+  pin_position = pin_position.CreateAfter();
+  ChromeAppListItem::TestApi(folder_item1.get()).SetName("Folder 1");
+  service->AddItem(std::move(folder_item1));
+
+  auto folder_item2 = std::make_unique<ChromeAppListItem>(
+      profile, "folder2", service->GetModelUpdater());
+  folder_item2->SetChromeIsFolder(true);
+  ChromeAppListItem::TestApi(folder_item2.get()).SetPosition(pin_position);
+  ChromeAppListItem::TestApi(folder_item2.get()).SetName("Folder 2");
+  service->AddItem(std::move(folder_item2));
+
+  // Ensure that one folder has more than one child. Otherwise, the folder could
+  // be deleted.
   SyncAppListHelper::GetInstance()->MoveAppToFolder(profile, app_ids[2],
                                                     "folder1");
   SyncAppListHelper::GetInstance()->MoveAppToFolder(profile, app_ids[3],
+                                                    "folder2");
+  SyncAppListHelper::GetInstance()->MoveAppToFolder(profile, app_ids[5],
+                                                    "folder1");
+  SyncAppListHelper::GetInstance()->MoveAppToFolder(profile, app_ids[6],
                                                     "folder2");
 
   app_list::AppListSyncableService compare_service(profile);

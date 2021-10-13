@@ -39,7 +39,7 @@ enum class AppListSortOrder;
 namespace extensions {
 class ExtensionRegistry;
 class ExtensionSystem;
-}
+}  // namespace extensions
 
 namespace sync_pb {
 class AppListSpecifics;
@@ -353,6 +353,14 @@ class AppListSyncableService : public syncer::SyncableService,
   // refreshed.
   void ApplyAppAttributes(const std::string& app_id,
                           std::unique_ptr<SyncItem> attributes);
+
+  // Creates or updates the Crostini folder sync data if the Crostini folder is
+  // missing.
+  void MaybeAddOrUpdateCrostiniFolderSyncData();
+
+  // Creates a folder if the parent folder is missing before adding `app_item`.
+  void MaybeCreateFolderBeforeAddingItem(ChromeAppListItem* app_item,
+                                         const std::string& folder_id);
 
   Profile* profile_;
   extensions::ExtensionSystem* extension_system_;
