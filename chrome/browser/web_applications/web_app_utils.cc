@@ -173,14 +173,11 @@ bool AreAppsLocallyInstalledBySync() {
 #endif
 }
 
-bool AreFileHandlersAlreadyRegistered(Profile* profile,
-                                      const GURL& url,
-                                      const apps::FileHandlers& new_handlers) {
+bool AreNewFileHandlersASubsetOfOld(const apps::FileHandlers& old_handlers,
+                                    const apps::FileHandlers& new_handlers) {
   if (new_handlers.empty())
     return true;
 
-  const apps::FileHandlers old_handlers =
-      GetFileHandlersForAllWebAppsWithOrigin(profile, url);
   const std::set<std::string> mime_types_set =
       apps::GetMimeTypesFromFileHandlers(old_handlers);
   const std::set<std::string> extensions_set =
@@ -200,6 +197,13 @@ bool AreFileHandlersAlreadyRegistered(Profile* profile,
   }
 
   return true;
+}
+
+bool AreFileHandlersAlreadyRegistered(Profile* profile,
+                                      const GURL& url,
+                                      const apps::FileHandlers& new_handlers) {
+  return AreNewFileHandlersASubsetOfOld(
+      GetFileHandlersForAllWebAppsWithOrigin(profile, url), new_handlers);
 }
 
 apps::FileHandlers GetFileHandlersForAllWebAppsWithOrigin(Profile* profile,

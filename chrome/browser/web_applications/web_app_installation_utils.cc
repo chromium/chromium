@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -118,6 +119,11 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
       GetDownloadedShortcutsMenuIconsSizes(
           web_app_info.shortcuts_menu_icon_bitmaps));
 
+  if (web_app.file_handler_approval_state() == ApiApprovalState::kAllowed &&
+      !AreNewFileHandlersASubsetOfOld(web_app.file_handlers(),
+                                      web_app_info.file_handlers)) {
+    web_app.SetFileHandlerApprovalState(ApiApprovalState::kRequiresPrompt);
+  }
   web_app.SetFileHandlers(web_app_info.file_handlers);
   web_app.SetShareTarget(web_app_info.share_target);
   web_app.SetProtocolHandlers(web_app_info.protocol_handlers);

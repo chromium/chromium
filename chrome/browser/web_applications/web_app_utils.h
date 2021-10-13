@@ -79,6 +79,12 @@ bool IsChromeOsDataMandatory();
 // Returns true if sync should install web apps locally by default.
 bool AreAppsLocallyInstalledBySync();
 
+// Returns whether `old_handlers` contains all handlers in `new_handlers`.
+// Useful for determining whether the user's approval of the API needs to be
+// reset during app update.
+bool AreNewFileHandlersASubsetOfOld(const apps::FileHandlers& old_handlers,
+                                    const apps::FileHandlers& new_handlers);
+
 // Returns true if `new_handlers` are effectively the same or less broad than
 // the file handlers for PWAs installed under the same origin as `url` in
 // `profile`. In other words, if `new_handlers` would not change the text

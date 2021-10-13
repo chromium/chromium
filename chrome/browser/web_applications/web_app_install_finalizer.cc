@@ -410,7 +410,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
   bool should_update_os_hooks = ShouldUpdateOsHooks(app_id);
 
   FileHandlerUpdateAction file_handlers_need_os_update =
-      file_handlers_helper_->WillUpdateApp(app_id, web_app_info);
+      file_handlers_helper_->WillUpdateApp(*existing_web_app, web_app_info);
 
   CommitCallback commit_callback = base::BindOnce(
       &WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate,

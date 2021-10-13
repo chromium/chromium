@@ -38,13 +38,13 @@ class FileHandlersPermissionHelper : public content_settings::Observer,
   // To be called when an app is going to be installed with `web_app_info`.
   void WillInstallApp(const WebApplicationInfo& web_app_info);
 
-  // To be called before the app corresponding to `app_id` is updated with
-  // `web_app_info` changes. Checks whether OS registered file handlers need to
-  // update, taking into account permission settings, as file handlers should be
-  // unregistered when the permission has been denied. Also, downgrades granted
-  // file handling permissions if file handlers have changed. Returns whether
-  // the OS file handling registrations need to be updated.
-  FileHandlerUpdateAction WillUpdateApp(const AppId app_id,
+  // To be called before `web_app` is updated with `web_app_info` changes.
+  // Checks whether OS registered file handlers need to update, taking into
+  // account permission settings, as file handlers should be unregistered when
+  // the permission has been denied. Also, downgrades granted file handling
+  // permissions if file handlers have changed. Returns whether the OS file
+  // handling registrations need to be updated.
+  FileHandlerUpdateAction WillUpdateApp(const WebApp& web_app,
                                         const WebApplicationInfo& web_app_info);
 
   // Checks if file handling permission is blocked in settings.

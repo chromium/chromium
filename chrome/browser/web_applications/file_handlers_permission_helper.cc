@@ -53,9 +53,10 @@ void FileHandlersPermissionHelper::WillInstallApp(
 }
 
 FileHandlerUpdateAction FileHandlersPermissionHelper::WillUpdateApp(
-    const AppId app_id,
+    const WebApp& web_app,
     const WebApplicationInfo& web_app_info) {
-  if (!finalizer_->os_integration_manager().IsFileHandlingAPIAvailable(app_id))
+  if (!finalizer_->os_integration_manager().IsFileHandlingAPIAvailable(
+          web_app.app_id()))
     return FileHandlerUpdateAction::kNoUpdate;
 
   const GURL& url = web_app_info.scope;
@@ -74,7 +75,10 @@ FileHandlerUpdateAction FileHandlersPermissionHelper::WillUpdateApp(
 
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsFileHandlingSettingsGated)) {
-    // TODO(estade): reset approval to ask if the file handlers have changed.
+    if (web_app.file_handler_approval_state() ==
+        ApiApprovalState::kDisallowed) {
+      return FileHandlerUpdateAction::kNoUpdate;
+    }
   } else {
     // It's possible we'll downgrade the permission and then fail to update OS
     // integrations (ex. if the disk or icon downloads fail), but this is ok
@@ -94,7 +98,7 @@ FileHandlerUpdateAction FileHandlersPermissionHelper::WillUpdateApp(
   // TODO(https://crbug.com/1197013): Consider trying to re-use the comparison
   // results from the ManifestUpdateTask.
   const apps::FileHandlers* old_handlers =
-      finalizer_->registrar().GetAppFileHandlers(app_id);
+      finalizer_->registrar().GetAppFileHandlers(web_app.app_id());
   DCHECK(old_handlers);
   if (*old_handlers == web_app_info.file_handlers)
     return FileHandlerUpdateAction::kNoUpdate;
