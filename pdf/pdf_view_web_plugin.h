@@ -228,9 +228,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool Confirm(const std::string& message) override;
   std::string Prompt(const std::string& question,
                      const std::string& default_answer) override;
-  void SubmitForm(const std::string& url,
-                  const void* data,
-                  int length) override;
   std::vector<SearchStringResult> SearchString(const char16_t* string,
                                                const char16_t* term,
                                                bool case_sensitive) override;

@@ -154,6 +154,7 @@ using ::guest_view::TestGuestViewManagerFactory;
 using ::pdf_extension_test_util::ConvertPageCoordToScreenCoord;
 using ::testing::IsEmpty;
 using ::testing::MatchesRegex;
+using ::testing::StartsWith;
 using ::ui::AXTreeFormatter;
 
 const int kNumberLoadTestParts = 10;
@@ -3701,6 +3702,54 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderTest,
   ASSERT_EQ(web_contents->GetLastCommittedURL(), pdf_url);
 }
 
+class PDFExtensionSubmitFormTest : public PDFExtensionTest {
+ public:
+  void SetUpOnMainThread() override {
+    embedded_test_server()->RegisterRequestMonitor(base::BindLambdaForTesting(
+        [this](const net::test_server::HttpRequest& request) {
+          if (request.relative_url != "/pdf/test_endpoint")
+            return;
+
+          EXPECT_EQ(request.method, net::test_server::METHOD_POST);
+          EXPECT_THAT(request.content, StartsWith("\%FDF"));
+          ASSERT_TRUE(quit_closure_);
+          std::move(quit_closure_).Run();
+        }));
+
+    PDFExtensionTest::SetUpOnMainThread();
+  }
+
+ protected:
+  // Retrieves a `base::RunLoop` and saves its `QuitClosure()`. The test
+  // monitors HTTP requests on the IO thread, so `quit_closure_` needs to be set
+  // up on the UI thread before the requests can arrive.
+  std::unique_ptr<base::RunLoop> CreateFormSubmissionRunLoop() {
+    auto run_loop = std::make_unique<base::RunLoop>();
+    EXPECT_FALSE(quit_closure_);
+    quit_closure_ = run_loop->QuitClosure();
+    return run_loop;
+  }
+
+ private:
+  base::OnceClosure quit_closure_;
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionSubmitFormTest, SubmitForm) {
+  WebContents* guest_contents = LoadPdfGetGuestContents(
+      embedded_test_server()->GetURL("/pdf/submit_form.pdf"));
+  ASSERT_TRUE(guest_contents);
+
+  std::unique_ptr<base::RunLoop> run_loop = CreateFormSubmissionRunLoop();
+
+  // Click on the "Submit Form" button.
+  content::SimulateMouseClickAt(
+      guest_contents, blink::WebInputEvent::kNoModifiers,
+      blink::WebMouseEvent::Button::kLeft,
+      ConvertPageCoordToScreenCoord(guest_contents, {200, 200}));
+
+  run_loop->Run();
+}
+
 // TODO(crbug.com/702993): Stop testing both modes after unseasoned launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionTestWithPartialLoading);
@@ -3721,3 +3770,4 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionHitTestTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionAccessibilityNavigationTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionPrerenderTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionSubmitFormTest);
