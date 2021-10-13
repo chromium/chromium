@@ -349,13 +349,13 @@ ScriptPromise MediaDevices::produceCropId(
       element_union->IsHTMLDivElement()
           ? static_cast<Element*>(element_union->GetAsHTMLDivElement())
           : static_cast<Element*>(element_union->GetAsHTMLIFrameElement());
-  const base::UnguessableToken token = element->MarkWithRegionCaptureCropId();
-  DCHECK(!token.is_empty());
+  const RegionCaptureCropId crop_id = element->MarkWithRegionCaptureCropId();
+  DCHECK(!crop_id->is_zero());
 
   // TODO(crbug.com/1247761): Delay resolution until ack from Viz received.
-  const std::string stringified_token = token.ToString();
+  const std::string serialized_crop_id = crop_id->ToString();
   resolver->Resolve(
-      WTF::String(stringified_token.c_str(), stringified_token.length()));
+      WTF::String(serialized_crop_id.c_str(), serialized_crop_id.length()));
   return promise;
 }
 

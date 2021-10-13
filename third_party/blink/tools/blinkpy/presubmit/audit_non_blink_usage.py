@@ -84,6 +84,7 @@ _CONFIG = [
             'base::TimeTicks',
             'base::ThreadTicks',
             'base::trace_event::.*',
+            'base::Token',
             'base::UnguessableToken',
             'base::UnguessableTokenHash',
             'base::UnsafeSharedMemoryRegion',

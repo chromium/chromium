@@ -23,7 +23,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_RARE_DATA_H_
 
 #include <memory>
-#include "base/unguessable_token.h"
+#include "base/token.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element_data.h"
+#include "third_party/blink/renderer/core/dom/region_capture_crop_id.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
@@ -150,16 +151,10 @@ class ElementRareData final : public NodeRareData {
     return element_internals_;
   }
 
-  // There is no meaningful difference between a nullptr token and a Null
-  // token, so we simplify the return type here.
-  base::UnguessableToken RegionCaptureCropId() const {
-    return region_capture_crop_id_ ? *region_capture_crop_id_
-                                   : base::UnguessableToken::Null();
+  RegionCaptureCropId* GetRegionCaptureCropId() const {
+    return region_capture_crop_id_.get();
   }
-  void SetRegionCaptureCropId(std::unique_ptr<base::UnguessableToken> value) {
-    if (!value || value->is_empty()) {
-      region_capture_crop_id_ = nullptr;
-    }
+  void SetRegionCaptureCropId(std::unique_ptr<RegionCaptureCropId> value) {
     region_capture_crop_id_ = std::move(value);
   }
 
@@ -262,7 +257,7 @@ class ElementRareData final : public NodeRareData {
 
   Member<DisplayLockContext> display_lock_context_;
   Member<ContainerQueryData> container_query_data_;
-  std::unique_ptr<base::UnguessableToken> region_capture_crop_id_;
+  std::unique_ptr<RegionCaptureCropId> region_capture_crop_id_;
 };
 
 inline LayoutSize DefaultMinimumSizeForResizing() {

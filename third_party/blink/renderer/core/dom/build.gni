@@ -210,6 +210,7 @@ blink_core_sources_dom = [
   "node_iterator.h",
   "node_iterator_base.cc",
   "node_iterator_base.h",
+  "region_capture_crop_id.h",
   "node_list.h",
   "node_lists_node_data.cc",
   "node_lists_node_data.h",

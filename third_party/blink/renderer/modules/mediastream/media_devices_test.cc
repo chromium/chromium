@@ -768,4 +768,29 @@ TEST_F(MediaDevicesTest, ProduceCropIdDuplicate) {
   EXPECT_EQ(first_result, second_result);
 }
 
+TEST_F(MediaDevicesTest, ProduceCropIdStringFormat) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  ASSERT_TRUE(media_devices);
+
+  SetBodyContent(R"HTML(
+    <div id='test-div'></div>
+  )HTML");
+
+  Document& document = GetDocument();
+  auto div = V8UnionHTMLDivElementOrHTMLIFrameElement(
+      reinterpret_cast<HTMLDivElement*>(document.getElementById("test-div")));
+  const ScriptPromise promise = media_devices->produceCropId(
+      scope.GetScriptState(), &div, scope.GetExceptionState());
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  WTF::String result;
+  tester.Value().ToString(result);
+  EXPECT_TRUE(result.ContainsOnlyASCIIOrEmpty());
+  EXPECT_EQ(32u, result.length());
+}
+
 }  // namespace blink

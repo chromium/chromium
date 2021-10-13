@@ -3626,10 +3626,9 @@ void Element::SetNeedsCompositingUpdate() {
 }
 
 RegionCaptureCropId Element::MarkWithRegionCaptureCropId() {
-  if (GetRegionCaptureCropId().is_empty()) {
+  if (!GetRegionCaptureCropId()) {
     EnsureElementRareData().SetRegionCaptureCropId(
-        std::make_unique<base::UnguessableToken>(
-            base::UnguessableToken::Create()));
+        std::make_unique<RegionCaptureCropId>(base::Token::CreateRandom()));
 
     // The crop ID needs to be propagated to the paint system by the time that
     // capture begins. The API requires the implementation to propagate the
@@ -3638,12 +3637,12 @@ RegionCaptureCropId Element::MarkWithRegionCaptureCropId() {
       GetLayoutObject()->SetShouldDoFullPaintInvalidation();
     }
   }
-  return GetRegionCaptureCropId();
+  return *GetRegionCaptureCropId();
 }
 
-RegionCaptureCropId Element::GetRegionCaptureCropId() const {
-  return HasRareData() ? GetElementRareData()->RegionCaptureCropId()
-                       : base::UnguessableToken::Null();
+RegionCaptureCropId* Element::GetRegionCaptureCropId() const {
+  return HasRareData() ? GetElementRareData()->GetRegionCaptureCropId()
+                       : nullptr;
 }
 
 void Element::SetCustomElementDefinition(CustomElementDefinition* definition) {
