@@ -5,8 +5,7 @@
 #ifndef ASH_LOGIN_UI_AUTH_FACTOR_MODEL_H_
 #define ASH_LOGIN_UI_AUTH_FACTOR_MODEL_H_
 
-#include <string>
-
+#include "ash/ash_export.h"
 #include "base/callback.h"
 
 namespace ash {
@@ -25,7 +24,7 @@ int operator|(AuthFactorType type1, AuthFactorType type2);
 
 // Base class representing an auth factor. Used by LoginAuthFactorsView to
 // display a list of auth factors.
-class AuthFactorModel {
+class ASH_EXPORT AuthFactorModel {
  public:
   enum class AuthFactorState {
     // The feature is disabled, disallowed by policy, or requires
@@ -62,19 +61,20 @@ class AuthFactorModel {
 
   virtual AuthFactorType GetType() = 0;
 
-  // The label that should be shown in the current state.
-  virtual std::u16string GetLabel() = 0;
+  // The ID of the label that should be shown in the current state.
+  virtual int GetLabelId() = 0;
 
   // Controls whether the label is announced by Chromevox.
   virtual bool ShouldAnnounceLabel() = 0;
 
   // Alternative text to be provided to screen readers.
-  virtual std::u16string GetAccessibleName() = 0;
+  virtual int GetAccessibleNameId() = 0;
 
   // Update an AuthIconView to represent the current state of the auth factor.
   // Should call SetIcon() or set up an animation.
   virtual void UpdateIcon(AuthIconView* icon_view) = 0;
 
+  // This will be called when the auth factor view is tapped.
   virtual void OnTapEvent() {}
 
   // Set a callback that will be called by the AuthFactorModel whenever its

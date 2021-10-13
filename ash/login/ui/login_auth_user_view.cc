@@ -25,6 +25,7 @@
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/pin_keyboard_animation.h"
 #include "ash/login/ui/pin_request_view.h"
+#include "ash/login/ui/smart_lock_auth_model.h"
 #include "ash/login/ui/system_label_button.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/smartlock_state.h"
@@ -1122,13 +1123,21 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   auto locked_tpm_message_view = std::make_unique<LockedTpmMessageView>();
   locked_tpm_message_view_ = locked_tpm_message_view.get();
 
-  bool smartLockUIRevampEnabled =
+  smart_lock_ui_revamp_enabled_ =
       base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp);
   std::unique_ptr<FingerprintView> fingerprint_view;
   std::unique_ptr<LoginAuthFactorsView> auth_factors_view;
-  if (smartLockUIRevampEnabled) {
-    auth_factors_view = std::make_unique<LoginAuthFactorsView>();
+  if (smart_lock_ui_revamp_enabled_) {
+    // TODO(crbug.com/1233614): Inject a more specialized "click to enter"
+    // callback directly into SmartLockAuthModel and remove this behavior from
+    // OnUserViewTap().
+    auth_factors_view =
+        std::make_unique<LoginAuthFactorsView>(base::BindRepeating(
+            &LoginAuthUserView::OnUserViewTap, base::Unretained(this)));
     auth_factors_view_ = auth_factors_view.get();
+    auto smart_lock_auth_model = std::make_unique<SmartLockAuthModel>();
+    smart_lock_auth_model_ = smart_lock_auth_model.get();
+    auth_factors_view_->AddAuthFactor(std::move(smart_lock_auth_model));
     auto fingerprint_auth_model = std::make_unique<FingerprintAuthModel>();
     fingerprint_auth_model_ = fingerprint_auth_model.get();
     auth_factors_view_->AddAuthFactor(std::move(fingerprint_auth_model));
@@ -1167,7 +1176,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       login_views_utils::WrapViewForPreferredSize(std::move(toggle_container));
   std::unique_ptr<views::View> wrapped_fingerprint_view;
   std::unique_ptr<views::View> wrapped_auth_factors_view;
-  if (smartLockUIRevampEnabled) {
+  if (smart_lock_ui_revamp_enabled_) {
     wrapped_auth_factors_view = login_views_utils::WrapViewForPreferredSize(
         std::move(auth_factors_view));
   } else {
@@ -1200,7 +1209,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       AddChildView(std::move(wrapped_pin_password_toggle_view));
   views::View* wrapped_fingerprint_view_ptr;
   views::View* wrapped_auth_factors_view_ptr;
-  if (smartLockUIRevampEnabled) {
+  if (smart_lock_ui_revamp_enabled_) {
     wrapped_auth_factors_view_ptr =
         AddChildView(std::move(wrapped_auth_factors_view));
   } else {
@@ -1245,7 +1254,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   add_view(wrapped_padding_below_password_view_ptr);
   add_view(wrapped_pin_view_ptr);
   add_view(wrapped_pin_password_toggle_view_ptr);
-  if (smartLockUIRevampEnabled) {
+  if (smart_lock_ui_revamp_enabled_) {
     add_view(wrapped_auth_factors_view_ptr);
   } else {
     add_view(wrapped_fingerprint_view_ptr);
@@ -1332,13 +1341,14 @@ void LoginAuthUserView::SetAuthMethods(
   pin_password_toggle_->SetVisible(current_state.has_toggle);
   pin_password_toggle_->SetText(GetPinPasswordToggleText());
 
-  if (fingerprint_view_) {
-    fingerprint_view_->SetVisible(current_state.has_fingerprint);
-    fingerprint_view_->SetCanUsePin(HasAuthMethod(AUTH_PIN));
-  }
-  if (fingerprint_auth_model_) {
+  if (smart_lock_ui_revamp_enabled_) {
+    DCHECK(fingerprint_auth_model_);
     fingerprint_auth_model_->SetVisible(current_state.has_fingerprint);
     fingerprint_auth_model_->SetCanUsePin(HasAuthMethod(AUTH_PIN));
+  } else {
+    DCHECK(fingerprint_view_);
+    fingerprint_view_->SetVisible(current_state.has_fingerprint);
+    fingerprint_view_->SetCanUsePin(HasAuthMethod(AUTH_PIN));
   }
   challenge_response_view_->SetVisible(current_state.has_challenge_response);
 
@@ -1362,18 +1372,23 @@ void LoginAuthUserView::SetAuthMethods(
 void LoginAuthUserView::SetEasyUnlockIcon(
     EasyUnlockIconState icon_state,
     const std::u16string& accessibility_label) {
-  password_view_->SetEasyUnlockIcon(icon_state, accessibility_label);
-
-  const std::string& user_display_email =
-      current_user().basic_user_info.display_email;
-  if (icon_state == EasyUnlockIconState::UNLOCKED) {
-    password_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
-        IDS_ASH_LOGIN_POD_AUTH_TAP_PASSWORD_FIELD_ACCESSIBLE_NAME,
-        base::UTF8ToUTF16(user_display_email)));
+  if (smart_lock_ui_revamp_enabled_) {
+    DCHECK(smart_lock_auth_model_);
+    smart_lock_auth_model_->SetEasyUnlockIconState(icon_state);
   } else {
-    password_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
-        IDS_ASH_LOGIN_POD_PASSWORD_FIELD_ACCESSIBLE_NAME,
-        base::UTF8ToUTF16(user_display_email)));
+    password_view_->SetEasyUnlockIcon(icon_state, accessibility_label);
+
+    const std::string& user_display_email =
+        current_user().basic_user_info.display_email;
+    if (icon_state == EasyUnlockIconState::UNLOCKED) {
+      password_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
+          IDS_ASH_LOGIN_POD_AUTH_TAP_PASSWORD_FIELD_ACCESSIBLE_NAME,
+          base::UTF8ToUTF16(user_display_email)));
+    } else {
+      password_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
+          IDS_ASH_LOGIN_POD_PASSWORD_FIELD_ACCESSIBLE_NAME,
+          base::UTF8ToUTF16(user_display_email)));
+    }
   }
 }
 
@@ -1572,20 +1587,22 @@ void LoginAuthUserView::UpdateForUser(const LoginUserInfo& user) {
 }
 
 void LoginAuthUserView::SetFingerprintState(FingerprintState state) {
-  if (fingerprint_view_) {
-    fingerprint_view_->SetState(state);
-  }
-  if (fingerprint_auth_model_) {
+  if (smart_lock_ui_revamp_enabled_) {
+    DCHECK(fingerprint_auth_model_);
     fingerprint_auth_model_->SetFingerprintState(state);
+  } else {
+    DCHECK(fingerprint_view_);
+    fingerprint_view_->SetState(state);
   }
 }
 
 void LoginAuthUserView::NotifyFingerprintAuthResult(bool success) {
-  if (fingerprint_view_) {
-    fingerprint_view_->NotifyFingerprintAuthResult(success);
-  }
-  if (fingerprint_auth_model_) {
+  if (smart_lock_ui_revamp_enabled_) {
+    DCHECK(fingerprint_auth_model_);
     fingerprint_auth_model_->NotifyFingerprintAuthResult(success);
+  } else {
+    DCHECK(fingerprint_view_);
+    fingerprint_view_->NotifyFingerprintAuthResult(success);
   }
 }
 
@@ -1923,7 +1940,7 @@ std::u16string LoginAuthUserView::GetPinPasswordToggleText() const {
 std::u16string LoginAuthUserView::GetPasswordViewPlaceholder() const {
   // Note: |AUTH_TAP| must have higher priority than |AUTH_PIN| when
   // determining the placeholder.
-  if (HasAuthMethod(AUTH_TAP))
+  if (HasAuthMethod(AUTH_TAP) && !smart_lock_ui_revamp_enabled_)
     return l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_POD_PASSWORD_TAP_PLACEHOLDER);
   if (input_field_mode_ == InputFieldMode::PIN_AND_PASSWORD)

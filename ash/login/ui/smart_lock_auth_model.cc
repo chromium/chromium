@@ -1,0 +1,188 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/login/ui/smart_lock_auth_model.h"
+
+#include "ash/login/ui/auth_icon_view.h"
+#include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
+
+namespace ash {
+
+namespace {
+
+constexpr int kSmartLockIconSizeDp = 28;
+
+}  // namespace
+
+SmartLockAuthModel::SmartLockAuthModel() = default;
+
+SmartLockAuthModel::~SmartLockAuthModel() = default;
+
+void SmartLockAuthModel::SetEasyUnlockIconState(EasyUnlockIconState state) {
+  switch (state) {
+    case EasyUnlockIconState::NONE:
+      FALLTHROUGH;
+    case EasyUnlockIconState::HARDLOCKED:
+      SetSmartLockState(SmartLockState::kDisabled);
+      break;
+    case EasyUnlockIconState::LOCKED_WITH_PROXIMITY_HINT:
+      SetSmartLockState(SmartLockState::kPhoneFoundLockedAndDistant);
+      break;
+    case EasyUnlockIconState::LOCKED:
+      SetSmartLockState(SmartLockState::kPhoneNotFound);
+      break;
+    case EasyUnlockIconState::LOCKED_TO_BE_ACTIVATED:
+      SetSmartLockState(SmartLockState::kPhoneFoundLockedAndProximate);
+      break;
+    case EasyUnlockIconState::UNLOCKED:
+      SetSmartLockState(SmartLockState::kPhoneAuthenticated);
+      break;
+    case EasyUnlockIconState::SPINNER:
+      SetSmartLockState(SmartLockState::kConnectingToPhone);
+      break;
+  }
+}
+
+void SmartLockAuthModel::SetSmartLockState(SmartLockState state) {
+  if (state_ == state)
+    return;
+
+  state_ = state;
+  NotifyOnStateChanged();
+}
+
+void SmartLockAuthModel::NotifySmartLockAuthResult(bool result) {
+  auth_result_ = result;
+  NotifyOnStateChanged();
+}
+
+AuthFactorModel::AuthFactorState SmartLockAuthModel::GetAuthFactorState() {
+  // TODO(crbug.com/1233614): Handle all SmartLockState values appropriately.
+  switch (state_) {
+    case SmartLockState::kDisabled:
+      FALLTHROUGH;
+    case SmartLockState::kInactive:
+      return AuthFactorState::kUnavailable;
+    case SmartLockState::kPhoneNotFound:
+      FALLTHROUGH;
+    case SmartLockState::kConnectingToPhone:
+      FALLTHROUGH;
+    case SmartLockState::kPhoneFoundLockedAndDistant:
+      FALLTHROUGH;
+    case SmartLockState::kPhoneFoundUnlockedAndDistant:
+      return AuthFactorState::kAvailable;
+    case SmartLockState::kPhoneAuthenticated:
+      return AuthFactorState::kClickRequired;
+    default:
+      return AuthFactorState::kReady;
+  }
+}
+
+AuthFactorType SmartLockAuthModel::GetType() {
+  return AuthFactorType::kSmartLock;
+}
+
+int SmartLockAuthModel::GetLabelId() {
+  if (auth_result_.has_value()) {
+    return auth_result_.value() ? IDS_SMART_LOCK_LABEL_PHONE_LOCKED
+                                : IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD;
+  }
+
+  switch (state_) {
+    // TODO(crbug.com/1233614): ** Add strings for these error states
+    case SmartLockState::kDisabled:
+      FALLTHROUGH;
+    case SmartLockState::kInactive:
+      FALLTHROUGH;
+    case SmartLockState::kBluetoothDisabled:  // **
+      FALLTHROUGH;
+    case SmartLockState::kPhoneNotLockable:  // **
+      FALLTHROUGH;
+    case SmartLockState::kPasswordReentryRequired:
+      FALLTHROUGH;
+    case SmartLockState::kPrimaryUserAbsent:  // **
+      FALLTHROUGH;
+    case SmartLockState::kPhoneNotAuthenticated:
+      return IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD;
+    case SmartLockState::kConnectingToPhone:
+      return IDS_SMART_LOCK_LABEL_LOOKING_FOR_PHONE;
+    case SmartLockState::kPhoneNotFound:
+      FALLTHROUGH;
+    case SmartLockState::kPhoneFoundLockedAndDistant:  // **
+      FALLTHROUGH;
+    case SmartLockState::kPhoneFoundUnlockedAndDistant:
+      return IDS_SMART_LOCK_LABEL_NO_PHONE;
+    case SmartLockState::kPhoneFoundLockedAndProximate:
+      return IDS_SMART_LOCK_LABEL_PHONE_LOCKED;
+    case SmartLockState::kPhoneAuthenticated:
+      return IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER;
+  }
+  NOTREACHED();
+}
+
+bool SmartLockAuthModel::ShouldAnnounceLabel() {
+  // TODO(crbug.com/1233614): Return 'true' depending on SmartLockState.
+  return false;
+}
+
+int SmartLockAuthModel::GetAccessibleNameId() {
+  // TODO(crbug.com/1233614): Determine whether any state needs to have a
+  // different label for a11y.
+  return GetLabelId();
+}
+
+void SmartLockAuthModel::UpdateIcon(AuthIconView* icon_view) {
+  if (auth_result_.has_value() && auth_result_.value()) {
+    icon_view->SetImage(gfx::CreateVectorIcon(
+        kLockScreenFingerprintSuccessIcon, kSmartLockIconSizeDp,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorPositive)));
+    return;
+  }
+
+  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  const gfx::VectorIcon* icon;
+  switch (state_) {
+    case SmartLockState::kPhoneNotFound:
+      FALLTHROUGH;
+    case SmartLockState::kPhoneFoundLockedAndDistant:
+      FALLTHROUGH;
+    case SmartLockState::kPhoneFoundUnlockedAndDistant:
+      FALLTHROUGH;
+    case SmartLockState::kConnectingToPhone:
+      icon = &kLockScreenSmartLockBluetoothIcon;
+      break;
+    case SmartLockState::kPhoneFoundLockedAndProximate:
+      icon = &kLockScreenSmartLockPhoneIcon;
+      break;
+    case SmartLockState::kPhoneAuthenticated:
+      // Click to enter, icon doesn't matter.
+      FALLTHROUGH;
+    case SmartLockState::kDisabled:
+      FALLTHROUGH;
+    case SmartLockState::kInactive:
+      FALLTHROUGH;
+    case SmartLockState::kBluetoothDisabled:
+      FALLTHROUGH;
+    case SmartLockState::kPhoneNotLockable:
+      FALLTHROUGH;
+    case SmartLockState::kPhoneNotAuthenticated:
+      FALLTHROUGH;
+    case SmartLockState::kPasswordReentryRequired:
+      FALLTHROUGH;
+    case SmartLockState::kPrimaryUserAbsent:
+      icon = &kLockScreenSmartLockDisabledIcon;
+      break;
+  }
+  icon_view->SetImage(
+      gfx::CreateVectorIcon(*icon, kSmartLockIconSizeDp, icon_color));
+}
+
+}  // namespace ash

@@ -908,7 +908,8 @@ void LockContentsView::OnUsersChanged(const std::vector<LoginUserInfo>& users) {
   // getting focused. Make sure to clear internal references before that happens
   // so there is not stale-pointer usage. See crbug.com/884402.
   // TODO(crbug.com/1222096): We should figure out a better way of handling
-  // user info changes such as avatar changes. They should not cause view re-layouting.
+  // user info changes such as avatar changes. They should not cause view
+  // re-layouting.
   main_view_->RemoveAllChildViews();
 
   // Build user state list. Preserve previous state if the user already exists.
@@ -1170,17 +1171,17 @@ void LockContentsView::OnForceOnlineSignInForUser(const AccountId& user) {
 void LockContentsView::OnShowEasyUnlockIcon(
     const AccountId& user,
     const EasyUnlockIconInfo& icon_info) {
-  // Do not update EasyUnlockIconState if the Smart Lock revamp is enabled since
-  // it will be removed post launch.
-  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
-    return;
-
   UserState* state = FindStateForUser(user);
   if (!state)
     return;
 
   state->easy_unlock_icon_info = icon_info;
   UpdateEasyUnlockIconForUser(user);
+
+  // Do not show tooltip if the Smart Lock revamp is enabled since it will be
+  // removed post launch.
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+    return;
 
   // Show tooltip only if the user is actively showing auth.
   LoginBigUserView* big_user =
@@ -2083,11 +2084,6 @@ void LockContentsView::OnBigUserChanged() {
 }
 
 void LockContentsView::UpdateEasyUnlockIconForUser(const AccountId& user) {
-  // Do not update EasyUnlockIconState if the Smart Lock revamp is enabled since
-  // it will be removed post launch.
-  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
-    return;
-
   // Try to find an big view for |user|. If there is none, there is no state to
   // update.
   LoginBigUserView* big_view =

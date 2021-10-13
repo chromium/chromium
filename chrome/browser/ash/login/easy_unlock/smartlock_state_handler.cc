@@ -163,10 +163,7 @@ void SmartLockStateHandler::ChangeState(SmartLockState new_state) {
 
   UpdateScreenlockAuthType();
 
-  // Do not update UserPodCustomIcon if the Smart Lock revamp is enabled since
-  // it will be removed post launch.
-  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
-    return;
+  // TODO(crbug.com/1233614): Return early if kSmartLockUIRevamp is enabled.
 
   if (hardlock_state_ != NO_HARDLOCK) {
     ShowHardlockUI();

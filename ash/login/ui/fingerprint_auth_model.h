@@ -5,8 +5,6 @@
 #ifndef ASH_LOGIN_UI_FINGERPRINT_AUTH_MODEL_H_
 #define ASH_LOGIN_UI_FINGERPRINT_AUTH_MODEL_H_
 
-#include <string>
-
 #include "ash/login/ui/auth_factor_model.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/timer/timer.h"
@@ -32,9 +30,9 @@ class FingerprintAuthModel : public AuthFactorModel {
   // AuthFactorModel:
   AuthFactorState GetAuthFactorState() override;
   AuthFactorType GetType() override;
-  std::u16string GetLabel() override;
+  int GetLabelId() override;
   bool ShouldAnnounceLabel() override;
-  std::u16string GetAccessibleName() override;
+  int GetAccessibleNameId() override;
   void UpdateIcon(AuthIconView* icon_view) override;
   void OnTapEvent() override;
 

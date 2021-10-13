@@ -10,7 +10,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -80,31 +79,27 @@ AuthFactorType FingerprintAuthModel::GetType() {
   return AuthFactorType::kFingerprint;
 }
 
-std::u16string FingerprintAuthModel::GetLabel() {
-  auto get_displayed_id = [&]() {
-    if (auth_result_.has_value()) {
-      return auth_result_.value()
-                 ? IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_AUTH_SUCCESS
-                 : IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_AUTH_FAILED;
-    }
+int FingerprintAuthModel::GetLabelId() {
+  if (auth_result_.has_value()) {
+    return auth_result_.value() ? IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_AUTH_SUCCESS
+                                : IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_AUTH_FAILED;
+  }
 
-    switch (state_) {
-      case FingerprintState::UNAVAILABLE:
-      case FingerprintState::AVAILABLE_DEFAULT:
-        return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_AVAILABLE;
-      case FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING:
-        return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_TOUCH_SENSOR;
-      case FingerprintState::DISABLED_FROM_ATTEMPTS:
-        return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_DISABLED_FROM_ATTEMPTS;
-      case FingerprintState::DISABLED_FROM_TIMEOUT:
-        if (can_use_pin_)
-          return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_PIN_OR_PASSWORD_REQUIRED;
-        return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_PASSWORD_REQUIRED;
-    }
-    NOTREACHED();
-  };
-
-  return l10n_util::GetStringUTF16(get_displayed_id());
+  switch (state_) {
+    case FingerprintState::UNAVAILABLE:
+      FALLTHROUGH;
+    case FingerprintState::AVAILABLE_DEFAULT:
+      return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_AVAILABLE;
+    case FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING:
+      return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_TOUCH_SENSOR;
+    case FingerprintState::DISABLED_FROM_ATTEMPTS:
+      return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_DISABLED_FROM_ATTEMPTS;
+    case FingerprintState::DISABLED_FROM_TIMEOUT:
+      if (can_use_pin_)
+        return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_PIN_OR_PASSWORD_REQUIRED;
+      return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_PASSWORD_REQUIRED;
+  }
+  NOTREACHED();
 }
 
 bool FingerprintAuthModel::ShouldAnnounceLabel() {
@@ -113,11 +108,11 @@ bool FingerprintAuthModel::ShouldAnnounceLabel() {
          (auth_result_.has_value() && !auth_result_.value());
 }
 
-std::u16string FingerprintAuthModel::GetAccessibleName() {
+int FingerprintAuthModel::GetAccessibleNameId() {
   if (state_ == FingerprintState::DISABLED_FROM_ATTEMPTS)
-    return l10n_util::GetStringUTF16(
-        IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_ACCESSIBLE_AUTH_DISABLED_FROM_ATTEMPTS);
-  return GetLabel();
+    return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_ACCESSIBLE_AUTH_DISABLED_FROM_ATTEMPTS;
+
+  return GetLabelId();
 }
 
 void FingerprintAuthModel::UpdateIcon(AuthIconView* icon_view) {
@@ -150,8 +145,11 @@ void FingerprintAuthModel::UpdateIcon(AuthIconView* icon_view) {
           : AshColorProvider::Get()->GetDisabledColor(icon_color);
   switch (state_) {
     case FingerprintState::UNAVAILABLE:
+      FALLTHROUGH;
     case FingerprintState::AVAILABLE_DEFAULT:
+      FALLTHROUGH;
     case FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING:
+      FALLTHROUGH;
     case FingerprintState::DISABLED_FROM_TIMEOUT:
       icon_view->SetImage(gfx::CreateVectorIcon(kLockScreenFingerprintIcon,
                                                 kFingerprintIconSizeDp, color));

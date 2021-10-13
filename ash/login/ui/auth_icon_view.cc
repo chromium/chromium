@@ -12,7 +12,7 @@
 namespace ash {
 
 namespace {
-constexpr int kAuthIconSizeDp = 28;
+constexpr int kAuthIconSizeDp = 32;
 }
 
 AuthIconView::AuthIconView()

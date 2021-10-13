@@ -5,6 +5,7 @@
 #ifndef ASH_LOGIN_UI_LOGIN_AUTH_FACTORS_VIEW_H_
 #define ASH_LOGIN_UI_LOGIN_AUTH_FACTORS_VIEW_H_
 
+#include "base/callback.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -12,12 +13,13 @@ namespace ash {
 class AuthIconView;
 class AuthFactorModel;
 class AuthFactorsLabel;
+class ArrowButtonView;
 
 // A view that displays a collection of auth factors to be shown on the lock and
 // login screens.
 class LoginAuthFactorsView : public views::View {
  public:
-  LoginAuthFactorsView();
+  explicit LoginAuthFactorsView(base::RepeatingClosure on_click_to_enter);
   LoginAuthFactorsView(LoginAuthFactorsView&) = delete;
   LoginAuthFactorsView& operator=(LoginAuthFactorsView&) = delete;
   ~LoginAuthFactorsView() override;
@@ -44,11 +46,17 @@ class LoginAuthFactorsView : public views::View {
   // Causes screen readers to read the label as an alert.
   void FireAlert();
 
+  // Should be called when the "click to enter" button is pressed.
+  void ArrowButtonPressed(const ui::Event& event);
+
   // TODO(crbug.com/1233614): Replace |icon_| with a collection of icons and
   // animate them with, e.g. an AnimatingLayoutManager.
   AuthIconView* icon_;
   AuthFactorsLabel* label_;
+  ArrowButtonView* arrow_button_;
   std::vector<std::unique_ptr<AuthFactorModel>> auth_factors_;
+
+  base::RepeatingClosure on_click_to_enter_callback_;
 };
 
 }  // namespace ash

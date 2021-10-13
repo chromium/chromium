@@ -30,6 +30,7 @@ namespace ash {
 
 class LoginAuthFactorsView;
 class FingerprintAuthModel;
+class SmartLockAuthModel;
 class LoginPasswordView;
 class LoginPinView;
 class LoginPinInputView;
@@ -275,6 +276,10 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // Controls which input field is currently being shown.
   InputFieldMode input_field_mode_ = InputFieldMode::NONE;
 
+  // TODO(crbug.com/1233614): Remove this field once the Smart Lock UI revamp is
+  // complete.
+  bool smart_lock_ui_revamp_enabled_ = false;
+
   LoginUserView* user_view_ = nullptr;
   LoginPasswordView* password_view_ = nullptr;
   NonAccessibleView* password_view_container_ = nullptr;
@@ -286,6 +291,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   FingerprintView* fingerprint_view_ = nullptr;
   LoginAuthFactorsView* auth_factors_view_ = nullptr;
   FingerprintAuthModel* fingerprint_auth_model_ = nullptr;
+  SmartLockAuthModel* smart_lock_auth_model_ = nullptr;
   ChallengeResponseView* challenge_response_view_ = nullptr;
   LockedTpmMessageView* locked_tpm_message_view_ = nullptr;
 
