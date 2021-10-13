@@ -9,11 +9,38 @@
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
+#include "base/profiler/chrome_unwind_info_android.h"
+#include "base/profiler/module_cache.h"
 #include "base/profiler/register_context.h"
+#include "base/profiler/unwinder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
+// Chrome unwinder implementation for Android, using ChromeUnwindInfoAndroid,
+// a separate binary resource. This implementation is intended to replace
+// `ChromeUnwinderAndroid`, which uses ArmCfiTable.
+class BASE_EXPORT ChromeUnwinderAndroidV2 : public Unwinder {
+ public:
+  ChromeUnwinderAndroidV2(const ChromeUnwindInfoAndroid& unwind_info,
+                          uintptr_t chrome_module_base_address,
+                          uintptr_t text_section_start_address);
+  ChromeUnwinderAndroidV2(const ChromeUnwinderAndroidV2&) = delete;
+  ChromeUnwinderAndroidV2& operator=(const ChromeUnwinderAndroidV2&) = delete;
+
+  // Unwinder:
+  bool CanUnwindFrom(const Frame& current_frame) const override;
+  UnwindResult TryUnwind(RegisterContext* thread_context,
+                         uintptr_t stack_top,
+                         std::vector<Frame>* stack) const override;
+
+ private:
+  const ChromeUnwindInfoAndroid unwind_info_;
+  const uintptr_t chrome_module_base_address_;
+  const uintptr_t text_section_start_address_;
+};
+
+// Following functions are exposed for testing purpose only.
 struct FunctionTableEntry;
 
 enum class UnwindInstructionResult {
@@ -43,27 +70,29 @@ ExecuteUnwindInstruction(const uint8_t*& instruction,
 // table.
 struct FunctionOffsetTableIndex {
   // Number of 2-byte instructions between the instruction of interest and
-  // function_start_address.
+  // function start address.
   int instruction_offset_from_function_start;
   // The byte index of the first offset for the function in the function
   // offset table.
   uint16_t function_offset_table_byte_index;
 };
 
-// Given `FunctionOffsetTableIndex`, finds the instruction to execute on unwind
-// instruction table.
+// Given function offset table entry, finds the first unwind instruction to
+// execute in unwind instruction table.
 //
 // Arguments:
-//  unwind_instruction_table: See
-//    `ChromeUnwindInfoAndroid::unwind_instruction_table` for details.
-//  function_offset_table: See
+//  function_offset_table_entry: An entry in function offset table. See
 //    `ChromeUnwindInfoAndroid::function_offset_table` for details.
-//  index: The index used to locate an entry in `function_offset_table`.
-BASE_EXPORT const uint8_t*
-GetFirstUnwindInstructionFromFunctionOffsetTableIndex(
-    const uint8_t* unwind_instruction_table,
-    const uint8_t* function_offset_table,
-    const FunctionOffsetTableIndex& index);
+//  instruction_offset_from_function_start: Number of 2-byte instructions
+//    between the instruction of interest and function start address.
+//
+// Returns:
+//   The index of the first unwind instruction to execute in
+//   `ChromeUnwindInfoAndroid::unwind_instruction_table`.
+BASE_EXPORT uintptr_t
+GetFirstUnwindInstructionIndexFromFunctionOffsetTableEntry(
+    const uint8_t* function_offset_table_entry,
+    int instruction_offset_from_function_start);
 
 // Given an instruction_offset_from_text_section_start, finds the corresponding
 // `FunctionOffsetTableIndex`.

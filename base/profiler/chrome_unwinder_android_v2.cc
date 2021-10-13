@@ -67,6 +67,76 @@ uint8_t GetTopBits(uint8_t byte, unsigned bits) {
 
 }  // namespace
 
+ChromeUnwinderAndroidV2::ChromeUnwinderAndroidV2(
+    const ChromeUnwindInfoAndroid& unwind_info,
+    uintptr_t chrome_module_base_address,
+    uintptr_t text_section_start_address)
+    : unwind_info_(unwind_info),
+      chrome_module_base_address_(chrome_module_base_address),
+      text_section_start_address_(text_section_start_address) {
+  DCHECK_GT(text_section_start_address_, chrome_module_base_address_);
+}
+
+bool ChromeUnwinderAndroidV2::CanUnwindFrom(const Frame& current_frame) const {
+  return current_frame.module &&
+         current_frame.module->GetBaseAddress() == chrome_module_base_address_;
+}
+
+UnwindResult ChromeUnwinderAndroidV2::TryUnwind(
+    RegisterContext* thread_context,
+    uintptr_t stack_top,
+    std::vector<Frame>* stack) const {
+  DCHECK(CanUnwindFrom(stack->back()));
+  do {
+    const uintptr_t pc = RegisterContextInstructionPointer(thread_context);
+    const uintptr_t instruction_offset_from_text_section_start =
+        pc - text_section_start_address_;
+
+    const absl::optional<FunctionOffsetTableIndex> function_offset_table_index =
+        GetFunctionTableIndexFromInstructionOffset(
+            unwind_info_.page_table, unwind_info_.function_table,
+            instruction_offset_from_text_section_start);
+
+    if (!function_offset_table_index) {
+      return UnwindResult::ABORTED;
+    }
+
+    const uint32_t current_unwind_instruction_index =
+        GetFirstUnwindInstructionIndexFromFunctionOffsetTableEntry(
+            &unwind_info_
+                 .function_offset_table[function_offset_table_index
+                                            ->function_offset_table_byte_index],
+            function_offset_table_index
+                ->instruction_offset_from_function_start);
+
+    const uint8_t* current_unwind_instruction =
+        &unwind_info_
+             .unwind_instruction_table[current_unwind_instruction_index];
+
+    UnwindInstructionResult instruction_result;
+    bool pc_was_updated = false;
+
+    do {
+      instruction_result = ExecuteUnwindInstruction(
+          current_unwind_instruction, pc_was_updated, thread_context);
+      if (RegisterContextStackPointer(thread_context) >= stack_top) {
+        return UnwindResult::ABORTED;
+      }
+    } while (instruction_result ==
+             UnwindInstructionResult::kInstructionPending);
+
+    if (instruction_result == UnwindInstructionResult::kAborted) {
+      return UnwindResult::ABORTED;
+    }
+
+    DCHECK_EQ(instruction_result, UnwindInstructionResult::kCompleted);
+    stack->emplace_back(RegisterContextInstructionPointer(thread_context),
+                        module_cache()->GetModuleForAddress(
+                            RegisterContextInstructionPointer(thread_context)));
+  } while (CanUnwindFrom(stack->back()));
+  return UnwindResult::UNRECOGNIZED_FRAME;
+}
+
 UnwindInstructionResult ExecuteUnwindInstruction(
     const uint8_t*& instruction,
     bool& pc_was_updated,
@@ -167,13 +237,12 @@ UnwindInstructionResult ExecuteUnwindInstruction(
   return UnwindInstructionResult::kInstructionPending;
 }
 
-const uint8_t* GetFirstUnwindInstructionFromFunctionOffsetTableIndex(
-    const uint8_t* unwind_instruction_table,
-    const uint8_t* function_offset_table,
-    const FunctionOffsetTableIndex& index) {
-  DCHECK_GE(index.instruction_offset_from_function_start, 0);
+uintptr_t GetFirstUnwindInstructionIndexFromFunctionOffsetTableEntry(
+    const uint8_t* function_offset_table_entry,
+    int instruction_offset_from_function_start) {
+  DCHECK_GE(instruction_offset_from_function_start, 0);
   const uint8_t* current_function_offset_table_position =
-      &function_offset_table[index.function_offset_table_byte_index];
+      function_offset_table_entry;
 
   do {
     const uintptr_t function_offset =
@@ -185,13 +254,13 @@ const uint8_t* GetFirstUnwindInstructionFromFunctionOffsetTableIndex(
     // Each function always ends at 0 offset. It is guaranteed to find an entry
     // as long as the function offset table is well-structured.
     if (function_offset <=
-        static_cast<uint32_t>(index.instruction_offset_from_function_start))
-      return &unwind_instruction_table[unwind_table_index];
+        static_cast<uint32_t>(instruction_offset_from_function_start))
+      return unwind_table_index;
 
   } while (true);
 
   NOTREACHED();
-  return nullptr;
+  return 0;
 }
 
 const absl::optional<FunctionOffsetTableIndex>

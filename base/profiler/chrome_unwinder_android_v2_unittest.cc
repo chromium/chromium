@@ -658,7 +658,6 @@ TEST(ChromeAndroidUnwindInstructionTest, TestBigStackPointerIncrementOverflow) {
 
 TEST(ChromeUnwinderAndroidV2Test,
      TestFunctionOffsetTableLookupExactMatchingOffset) {
-  const uint8_t unwind_instruction_table[] = {0, 1, 2, 3, 4, 5, 6};
   const uint8_t function_offset_table[] = {
       // Function 1: [(130, 2), (128, 3), (0, 4)]
       // offset = 130
@@ -677,16 +676,13 @@ TEST(ChromeUnwinderAndroidV2Test,
       0b00000100,
   };
 
-  EXPECT_EQ(unwind_instruction_table + 3,
-            GetFirstUnwindInstructionFromFunctionOffsetTableIndex(
-                unwind_instruction_table, function_offset_table,
-                {/* instruction_offset_from_function_start */ 128,
-                 /* function_offset_table_byte_index */ 0x0}));
+  EXPECT_EQ(3ul, GetFirstUnwindInstructionIndexFromFunctionOffsetTableEntry(
+                     &function_offset_table[0],
+                     /* instruction_offset_from_function_start */ 128));
 }
 
 TEST(ChromeUnwinderAndroidV2Test,
      TestFunctionOffsetTableLookupNonExactMatchingOffset) {
-  const uint8_t unwind_instruction_table[] = {0, 1, 2, 3, 4, 5, 6};
   const uint8_t function_offset_table[] = {
       // Function 1: [(130, 2), (128, 3), (0, 4)]
       // offset = 130
@@ -705,15 +701,12 @@ TEST(ChromeUnwinderAndroidV2Test,
       0b00000100,
   };
 
-  EXPECT_EQ(unwind_instruction_table + 3,
-            GetFirstUnwindInstructionFromFunctionOffsetTableIndex(
-                unwind_instruction_table, function_offset_table,
-                {/* instruction_offset_from_function_start */ 129,
-                 /* function_offset_table_byte_index */ 0x0}));
+  EXPECT_EQ(3ul, GetFirstUnwindInstructionIndexFromFunctionOffsetTableEntry(
+                     &function_offset_table[0],
+                     /* instruction_offset_from_function_start */ 129));
 }
 
 TEST(ChromeUnwinderAndroidV2Test, TestFunctionOffsetTableLookupZeroOffset) {
-  const uint8_t unwind_instruction_table[] = {0, 1, 2, 3, 4, 5, 6};
   const uint8_t function_offset_table[] = {
       // Function 1: [(130, 2), (128, 3), (0, 4)]
       // offset = 130
@@ -732,11 +725,9 @@ TEST(ChromeUnwinderAndroidV2Test, TestFunctionOffsetTableLookupZeroOffset) {
       0b00000100,
   };
 
-  EXPECT_EQ(unwind_instruction_table + 4,
-            GetFirstUnwindInstructionFromFunctionOffsetTableIndex(
-                unwind_instruction_table, function_offset_table,
-                {/* instruction_offset_from_function_start */ 0,
-                 /* function_offset_table_byte_index */ 0x0}));
+  EXPECT_EQ(4ul, GetFirstUnwindInstructionIndexFromFunctionOffsetTableEntry(
+                     &function_offset_table[0],
+                     /* instruction_offset_from_function_start */ 0));
 }
 
 TEST(ChromeUnwinderAndroidV2Test, TestAddressTableLookupEntryInPage) {
@@ -957,4 +948,165 @@ TEST(ChromeUnwinderAndroidV2Test,
     EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
   }
 }
+
+class TestModule : public ModuleCache::Module {
+ public:
+  TestModule(uintptr_t base_address,
+             size_t size,
+             const std::string& build_id = "TestModule")
+      : base_address_(base_address), size_(size), build_id_(build_id) {}
+
+  uintptr_t GetBaseAddress() const override { return base_address_; }
+  std::string GetId() const override { return build_id_; }
+  FilePath GetDebugBasename() const override { return FilePath(); }
+  size_t GetSize() const override { return size_; }
+  bool IsNative() const override { return true; }
+
+ private:
+  const uintptr_t base_address_;
+  const size_t size_;
+  const std::string build_id_;
+};
+
+// Utility function to add a single native module during test setup. Returns
+// a pointer to the provided module.
+const ModuleCache::Module* AddNativeModule(
+    ModuleCache* cache,
+    std::unique_ptr<const ModuleCache::Module> module) {
+  const ModuleCache::Module* module_ptr = module.get();
+  cache->AddCustomNativeModule(std::move(module));
+  return module_ptr;
+}
+
+TEST(ChromeUnwinderAndroidV2Test, CanUnwindFrom) {
+  const uint32_t page_table[] = {0};
+  const FunctionTableEntry function_table[] = {{0, 0}};
+  const uint8_t function_offset_table[] = {0};
+  const uint8_t unwind_instruction_table[] = {0};
+  auto dummy_unwind_info = ChromeUnwindInfoAndroid{
+      make_span(unwind_instruction_table, 1ul),
+      make_span(function_offset_table, 1ul),
+      make_span(function_table, 1ul),
+      make_span(page_table, 1ul),
+  };
+
+  auto chrome_module =
+      std::make_unique<TestModule>(0x1000, 0x500, "ChromeModule");
+  auto non_chrome_module =
+      std::make_unique<TestModule>(0x2000, 0x500, "OtherModule");
+
+  ModuleCache module_cache;
+  ChromeUnwinderAndroidV2 unwinder(dummy_unwind_info,
+                                   chrome_module->GetBaseAddress(),
+                                   /* text_section_start_address */
+                                   chrome_module->GetBaseAddress() + 4);
+  unwinder.Initialize(&module_cache);
+
+  EXPECT_TRUE(unwinder.CanUnwindFrom({0x1100, chrome_module.get()}));
+  EXPECT_TRUE(unwinder.CanUnwindFrom({0x1000, chrome_module.get()}));
+  EXPECT_FALSE(unwinder.CanUnwindFrom({0x2100, non_chrome_module.get()}));
+  EXPECT_FALSE(unwinder.CanUnwindFrom({0x400, nullptr}));
+}
+
+void ExpectFramesEq(const std::vector<Frame>& actual,
+                    const std::vector<Frame>& expected) {
+  EXPECT_EQ(actual.size(), expected.size());
+  if (actual.size() != expected.size())
+    return;
+
+  for (size_t i = 0; i < actual.size(); i++) {
+    EXPECT_EQ(actual[i].module, expected[i].module);
+    EXPECT_EQ(actual[i].instruction_pointer, expected[i].instruction_pointer);
+  }
+}
+
+TEST(ChromeUnwinderAndroidV2Test, TryUnwind) {
+  const uint32_t page_table[] = {0, 2};
+  const size_t number_of_pages = base::size(page_table);
+  const size_t page_size = 1 << 17;
+
+  const FunctionTableEntry function_table[] = {
+      // Page 0.
+      {0, 0},     // Function 0.
+      {0x10, 4},  // Function 1. The function to unwind 2 times.
+      // Page 1.
+      {0x5, 8},    // Function 2.
+      {0x20, 12},  // Function 3.
+  };
+  const uint8_t function_offset_table[] = {
+      // Function 0.
+      0x2,
+      0,
+      0x0,
+      2,
+      // Function 1.
+      0x7f,
+      0,
+      0x0,
+      2,
+      // Function 2.
+      0x78,
+      0,
+      0x0,
+      2,
+      // Function 3.
+      0x2,
+      0,
+      0x0,
+      2,
+  };
+  const uint8_t unwind_instruction_table[] = {
+      // Offset 0: Pop r14 from stack top.
+      0b10000100,
+      0b00000000,
+      // Offset 2: COMPLETE.
+      0b10110000,
+  };
+
+  auto unwind_info = ChromeUnwindInfoAndroid{
+      make_span(unwind_instruction_table, base::size(unwind_instruction_table)),
+      make_span(function_offset_table, base::size(function_offset_table)),
+      make_span(function_table, base::size(function_table)),
+      make_span(page_table, base::size(page_table)),
+  };
+
+  ModuleCache module_cache;
+  const ModuleCache::Module* chrome_module = AddNativeModule(
+      &module_cache, std::make_unique<TestModule>(
+                         0x1000, number_of_pages * page_size, "ChromeModule"));
+
+  uintptr_t text_section_start_address = 0x1100;
+  ChromeUnwinderAndroidV2 unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                   text_section_start_address);
+
+  unwinder.Initialize(&module_cache);
+
+  // Both first_pc and second_pc lie in Function 1's address range.
+  uintptr_t first_pc = text_section_start_address + 0x20;
+  uintptr_t second_pc = text_section_start_address + page_size + 0x4;
+  // third_pc lies outside chrome_module's address range.
+  uintptr_t third_pc = text_section_start_address + 3 * page_size;
+
+  const std::vector<uintptr_t> stack_memory = {
+      third_pc,
+      0xFFFF,
+  };
+  uintptr_t stack_top =
+      reinterpret_cast<uintptr_t>(stack_memory.data() + stack_memory.size());
+
+  std::vector<Frame> unwound_frames = {{first_pc, chrome_module}};
+  RegisterContext context;
+  RegisterContextInstructionPointer(&context) = first_pc;
+  RegisterContextStackPointer(&context) =
+      reinterpret_cast<uintptr_t>(stack_memory.data());
+  context.arm_lr = second_pc;
+
+  EXPECT_EQ(UnwindResult::UNRECOGNIZED_FRAME,
+            unwinder.TryUnwind(&context, stack_top, &unwound_frames));
+  ExpectFramesEq(std::vector<Frame>({{first_pc, chrome_module},
+                                     {second_pc, chrome_module},
+                                     {third_pc, nullptr}}),
+                 unwound_frames);
+}
+
 }  // namespace base

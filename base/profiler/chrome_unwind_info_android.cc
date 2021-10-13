@@ -20,6 +20,11 @@ ChromeUnwindInfoAndroid::ChromeUnwindInfoAndroid(
 
 ChromeUnwindInfoAndroid::~ChromeUnwindInfoAndroid() = default;
 ChromeUnwindInfoAndroid::ChromeUnwindInfoAndroid(
+    const ChromeUnwindInfoAndroid& other) = default;
+ChromeUnwindInfoAndroid& ChromeUnwindInfoAndroid::operator=(
+    const ChromeUnwindInfoAndroid& other) = default;
+
+ChromeUnwindInfoAndroid::ChromeUnwindInfoAndroid(
     ChromeUnwindInfoAndroid&& other) = default;
 ChromeUnwindInfoAndroid& ChromeUnwindInfoAndroid::operator=(
     ChromeUnwindInfoAndroid&& other) = default;

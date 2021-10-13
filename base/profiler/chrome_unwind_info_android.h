@@ -88,6 +88,9 @@ struct BASE_EXPORT ChromeUnwindInfoAndroid {
                           span<const FunctionTableEntry> function_table,
                           span<const uint32_t> page_table);
   ~ChromeUnwindInfoAndroid();
+  ChromeUnwindInfoAndroid(const ChromeUnwindInfoAndroid& other);
+  ChromeUnwindInfoAndroid& operator=(const ChromeUnwindInfoAndroid& other);
+
   ChromeUnwindInfoAndroid(ChromeUnwindInfoAndroid&& other);
   ChromeUnwindInfoAndroid& operator=(ChromeUnwindInfoAndroid&& other);
 
