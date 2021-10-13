@@ -5,8 +5,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
 #include "chrome/browser/ash/login/test/enrollment_helper_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
@@ -21,8 +19,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/ui/webui/chromeos/login/demo_preferences_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/demo_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
@@ -43,10 +39,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/mock_notification_observer.h"
 #include "ui/base/ime/ash/input_method_util.h"
-
-// Disabled due to flakiness: https://crbug.com/997685.
-#define MAYBE_TestDemoModeOfflineNetwork DISABLED_TestDemoModeOfflineNetwork
-#define MAYBE_TestDemoModeAcceptEula DISABLED_TestDemoModeAcceptEula
 
 namespace ash {
 
@@ -78,16 +70,6 @@ class OobeConfigurationTest : public OobeBaseTest {
 
     // Let screens to settle.
     base::RunLoop().RunUntilIdle();
-  }
-
-  void SimulateOfflineEnvironment() {
-    DemoSetupController* controller =
-        WizardController::default_controller()->demo_setup_controller();
-
-    // Simulate offline data directory.
-    ASSERT_TRUE(test::SetupDummyOfflinePolicyDir("test", &fake_policy_dir_));
-    controller->SetPreinstalledOfflineResourcesPathForTesting(
-        fake_policy_dir_.GetPath());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -181,52 +163,6 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestSwitchLanguageIME) {
   const std::string language_code = g_browser_process->local_state()->GetString(
       language::prefs::kApplicationLocale);
   EXPECT_EQ("de", language_code);
-}
-
-// Check that configuration lets correctly start Demo mode setup.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestEnableDemoMode) {
-  LoadConfiguration();
-  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-}
-
-// Check that configuration lets correctly pass through demo preferences.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestDemoModePreferences) {
-  LoadConfiguration();
-  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
-}
-
-// Check that configuration lets correctly use offline demo mode on network
-// screen.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationTest,
-                       MAYBE_TestDemoModeOfflineNetwork) {
-  LoadConfiguration();
-  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-  SimulateOfflineEnvironment();
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
-}
-
-// Check that configuration lets correctly use offline demo mode on EULA
-// screen.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, MAYBE_TestDemoModeAcceptEula) {
-  LoadConfiguration();
-  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-  SimulateOfflineEnvironment();
-  OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
-}
-
-// Check that configuration lets correctly use offline demo mode on ARC++ ToS
-// screen.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestDemoModeAcceptArcTos) {
-  LoadConfiguration();
-  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-  SimulateOfflineEnvironment();
-
-  test::OobeJS().Evaluate(
-      "login.ArcTermsOfServiceScreen.setTosForTesting('Test "
-      "Play Store Terms of Service');");
-  test::OobeJS().ClickOnPath({"demo-preferences", "nextButton"});
-
-  OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
 }
 
 // Check that configuration lets correctly select a network by GUID.
