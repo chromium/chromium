@@ -20,13 +20,9 @@ bool StyleRecalcChange::TraversePseudoElements(const Element& element) const {
 }
 
 bool StyleRecalcChange::TraverseChild(const Node& node) const {
-  if (ShouldRecalcStyleFor(node) || node.ChildNeedsStyleRecalc() ||
-      node.GetForceReattachLayoutTree() || RecalcContainerQueryDependent()) {
-    return true;
-  }
-  if (LayoutObject* layout_object = node.GetLayoutObject())
-    return layout_object->WhitespaceChildrenMayChange();
-  return false;
+  return ShouldRecalcStyleFor(node) || node.ChildNeedsStyleRecalc() ||
+         node.GetForceReattachLayoutTree() || RecalcContainerQueryDependent() ||
+         node.NeedsLayoutSubtreeUpdate();
 }
 
 bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {
@@ -51,6 +47,8 @@ bool StyleRecalcChange::ShouldUpdatePseudoElement(
   if (UpdatePseudoElements())
     return true;
   if (pseudo_element.NeedsStyleRecalc())
+    return true;
+  if (pseudo_element.NeedsLayoutSubtreeUpdate())
     return true;
   return RecalcContainerQueryDependent() &&
          pseudo_element.ComputedStyleRef().DependsOnContainerQueries();

@@ -2688,15 +2688,28 @@ void StyleEngine::MarkForLayoutTreeChangesAfterDetach() {
     if (layout_object->IsInline())
       layout_object = layout_object->ContinuationRoot();
     DCHECK_EQ(layout_object, layout_object_element->GetLayoutObject());
-    // Mark the parent of a detached subtree for doing a whitespace update. This
-    // flag will be cause the element to be marked for layout tree rebuild
-    // traversal during style recalc to make sure we revisit whitespace text
-    // nodes.
-    if (!layout_object->WhitespaceChildrenMayChange() &&
-        MayHaveFlatTreeChildren(*layout_object_element)) {
-      layout_object->SetWhitespaceChildrenMayChange(true);
-      layout_object_element->MarkAncestorsWithChildNeedsStyleRecalc();
+
+    // Mark the parent of a detached subtree for doing a whitespace or list item
+    // update. These flags will be cause the element to be marked for layout
+    // tree rebuild traversal during style recalc to make sure we revisit
+    // whitespace text nodes and list items.
+
+    bool mark_ancestors = false;
+
+    // If there are no children left, no whitespace children may need
+    // reattachment.
+    if (MayHaveFlatTreeChildren(*layout_object_element)) {
+      if (!layout_object->WhitespaceChildrenMayChange()) {
+        layout_object->SetWhitespaceChildrenMayChange(true);
+        mark_ancestors = true;
+      }
     }
+    if (!layout_object->WasNotifiedOfSubtreeChange()) {
+      if (layout_object->NotifyOfSubtreeChange())
+        mark_ancestors = true;
+    }
+    if (mark_ancestors)
+      layout_object_element->MarkAncestorsWithChildNeedsStyleRecalc();
   }
   parent_for_detached_subtree_ = nullptr;
 }

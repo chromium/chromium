@@ -2196,8 +2196,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 
   // Flags used to mark if a descendant subtree of this object has changed.
-  void NotifyOfSubtreeChange();
-  void NotifyAncestorsOfSubtreeChange();
+
+  // Returns true if the flag did change.
+  bool NotifyOfSubtreeChange();
   bool WasNotifiedOfSubtreeChange() const {
     NOT_DESTROYED();
     return bitfields_.NotifiedOfSubtreeChange();

@@ -1657,9 +1657,11 @@ void Node::SetForceReattachLayoutTree() {
   }
 }
 
-bool Node::WhitespaceChildrenMayChange() const {
-  if (const auto* layout_object = GetLayoutObject())
-    return layout_object->WhitespaceChildrenMayChange();
+bool Node::NeedsLayoutSubtreeUpdate() const {
+  if (const auto* layout_object = GetLayoutObject()) {
+    return layout_object->WhitespaceChildrenMayChange() ||
+           layout_object->WasNotifiedOfSubtreeChange();
+  }
   return false;
 }
 

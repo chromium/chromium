@@ -1806,7 +1806,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void UpdateStyleInvalidationIfNeeded();
   void UpdateStyle();
-  void NotifyLayoutTreeOfSubtreeChanges();
   bool ChildrenCanHaveStyle() const final;
 
   // Objects and embeds depend on "being rendered" for delaying the load event.

@@ -126,8 +126,14 @@ void LayoutImage::ImageChanged(WrappedImagePtr new_image,
 
   // If error occurred, image marker should be replaced by a LayoutText.
   // NotifyOfSubtreeChange to make list item updating its marker content.
-  if (IsListMarkerImage() && image_resource_->ErrorOccurred())
-    NotifyOfSubtreeChange();
+  if (IsListMarkerImage() && image_resource_->ErrorOccurred()) {
+    LayoutObject* item = this;
+    while (item->IsAnonymous())
+      item = item->Parent();
+    DCHECK(item);
+    if (item->NotifyOfSubtreeChange())
+      item->GetNode()->MarkAncestorsWithChildNeedsStyleRecalc();
+  }
 
   // Per the spec, we let the server-sent header override srcset/other sources
   // of dpr.

@@ -545,14 +545,22 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     RebuildFirstLetterLayoutTree();
     WhitespaceAttacher whitespace_attacher;
     RebuildMarkerLayoutTree(whitespace_attacher);
+    HandleSubtreeModifications();
   }
-  bool NeedsRebuildLayoutTree(
+  bool NeedsRebuildChildLayoutTrees(
       const WhitespaceAttacher& whitespace_attacher) const {
-    return NeedsReattachLayoutTree() || ChildNeedsReattachLayoutTree() ||
+    return ChildNeedsReattachLayoutTree() ||
            (whitespace_attacher.TraverseIntoDisplayContents() &&
             HasDisplayContentsStyle());
   }
+  bool NeedsRebuildLayoutTree(
+      const WhitespaceAttacher& whitespace_attacher) const {
+    return NeedsReattachLayoutTree() ||
+           NeedsRebuildChildLayoutTrees(whitespace_attacher) ||
+           NeedsLayoutSubtreeUpdate();
+  }
   void RebuildLayoutTree(WhitespaceAttacher&);
+  void HandleSubtreeModifications();
   void PseudoStateChanged(CSSSelector::PseudoType);
   void SetAnimationStyleChange(bool);
   void SetNeedsAnimationStyleRecalc();

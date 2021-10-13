@@ -532,10 +532,10 @@ class CORE_EXPORT Node : public EventTarget {
     return GetFlag(kForceReattachLayoutTree);
   }
 
-  bool WhitespaceChildrenMayChange() const;
+  bool NeedsLayoutSubtreeUpdate() const;
   bool IsDirtyForStyleRecalc() const {
     return NeedsStyleRecalc() || GetForceReattachLayoutTree() ||
-           WhitespaceChildrenMayChange();
+           NeedsLayoutSubtreeUpdate();
   }
 
   // True if the style invalidation process should traverse this node's children

@@ -2777,6 +2777,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
   if (layout_object) {
     if (layout_object->AffectsWhitespaceSiblings())
       context.previous_in_flow = layout_object;
+    layout_object->HandleSubtreeModifications();
   } else {
     context.previous_in_flow = children_context.previous_in_flow;
   }
@@ -2982,12 +2983,28 @@ void Element::RecalcStyle(const StyleRecalcChange change,
       display_lock_style_scope.AdjustStyleRecalcChangeForChildren(child_change);
 
   if (!child_change.ReattachLayoutTree()) {
-    LayoutObject* layout_object = GetLayoutObject();
-    if (layout_object && layout_object->WhitespaceChildrenMayChange()) {
-      if (Node* first_child = LayoutTreeBuilderTraversal::FirstChild(*this))
-        first_child->MarkAncestorsWithChildNeedsReattachLayoutTree();
-      else
-        layout_object->SetWhitespaceChildrenMayChange(false);
+    if (LayoutObject* layout_object = GetLayoutObject()) {
+      // If a layout subtree was synchronously detached on DOM or flat tree
+      // changes, we need to revisit the element during layout tree rebuild for
+      // two reasons:
+      //
+      // 1. SubtreeDidChange() needs to be called on list-item layout objects
+      //    ancestors for markers (see SubtreeDidChange() implementation on list
+      //    item layout objects).
+      // 2. Whitespace siblings of removed subtrees may change to have their
+      //    layout object added or removed as the need for rendering the
+      //    whitespace may have changed.
+      Node* node = nullptr;
+      if (layout_object->WasNotifiedOfSubtreeChange())
+        node = this;
+      if (layout_object->WhitespaceChildrenMayChange()) {
+        if (Node* first_child = LayoutTreeBuilderTraversal::FirstChild(*this))
+          node = first_child;
+        else
+          layout_object->SetWhitespaceChildrenMayChange(false);
+      }
+      if (node)
+        node->MarkAncestorsWithChildNeedsReattachLayoutTree();
     }
   }
 
@@ -3341,7 +3358,8 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     ReattachLayoutTree(reattach_context);
     whitespace_attacher.DidReattachElement(this,
                                            reattach_context.previous_in_flow);
-  } else if (!ChildStyleRecalcBlockedByDisplayLock()) {
+  } else if (NeedsRebuildChildLayoutTrees(whitespace_attacher) &&
+             !ChildStyleRecalcBlockedByDisplayLock()) {
     // TODO(crbug.com/972752): Make the condition above a DCHECK instead when
     // style recalc and dirty bit propagation uses flat-tree traversal.
     // We create a local WhitespaceAttacher when rebuilding children of an
@@ -3381,6 +3399,7 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
   DCHECK(!NeedsReattachLayoutTree());
   DCHECK(!ChildNeedsReattachLayoutTree() ||
          ChildStyleRecalcBlockedByDisplayLock());
+  HandleSubtreeModifications();
 }
 
 void Element::RebuildShadowRootLayoutTree(
@@ -3451,6 +3470,11 @@ void Element::RebuildMarkerLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     if (marker->NeedsRebuildLayoutTree(whitespace_attacher))
       marker->RebuildLayoutTree(whitespace_attacher);
   }
+}
+
+void Element::HandleSubtreeModifications() {
+  if (auto* layout_object = GetLayoutObject())
+    layout_object->HandleSubtreeModifications();
 }
 
 void Element::UpdateCallbackSelectors(const ComputedStyle* old_style,
@@ -5426,15 +5450,19 @@ void Element::UpdatePseudoElement(
   }
 
   if (change.ShouldUpdatePseudoElement(*element)) {
-    if (CanGeneratePseudoElement(pseudo_id)) {
+    bool generate_pseudo = CanGeneratePseudoElement(pseudo_id);
+    if (generate_pseudo) {
       element->RecalcStyle(change.ForPseudoElement(), style_recalc_context);
-      if (!element->NeedsReattachLayoutTree())
-        return;
-      if (PseudoElementLayoutObjectIsNeeded(element->GetComputedStyle(), this))
-        return;
+      if (element->NeedsReattachLayoutTree() &&
+          !PseudoElementLayoutObjectIsNeeded(element->GetComputedStyle(),
+                                             this)) {
+        generate_pseudo = false;
+      }
     }
-    GetElementRareData()->SetPseudoElement(pseudo_id, nullptr);
-    GetDocument().GetStyleEngine().PseudoElementRemoved(*this);
+    if (!generate_pseudo) {
+      GetElementRareData()->SetPseudoElement(pseudo_id, nullptr);
+      GetDocument().GetStyleEngine().PseudoElementRemoved(*this);
+    }
   }
 }
 

@@ -61,8 +61,12 @@ void LayoutListItem::StyleDidChange(StyleDifference diff,
   LayoutBlockFlow::StyleDidChange(diff, old_style);
 
   StyleImage* current_image = StyleRef().ListStyleImage();
-  if (StyleRef().ListStyleType() ||
-      (current_image && !current_image->ErrorOccurred())) {
+  if (old_style && (StyleRef().ListStyleType() ||
+                    (current_image && !current_image->ErrorOccurred()))) {
+    // The old_style check makes sure we don't enter here when attaching the
+    // LayoutObject. Check that this happens during style recalc.
+    DCHECK(GetDocument().InStyleRecalc());
+    DCHECK(!GetDocument().GetStyleEngine().InRebuildLayoutTree());
     NotifyOfSubtreeChange();
   }
 

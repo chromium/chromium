@@ -1850,8 +1850,6 @@ bool Document::NeedsLayoutTreeUpdateForThisDocument() const {
     return true;
   if (style_engine_->NeedsStyleInvalidation())
     return true;
-  if (GetLayoutView() && GetLayoutView()->WasNotifiedOfSubtreeChange())
-    return true;
   if (style_engine_->NeedsLayoutTreeRebuild()) {
     // TODO(futhark): there a couple of places where call back into the top
     // frame while recursively doing a lifecycle update. One of them are for the
@@ -1946,8 +1944,7 @@ static void AssertNodeClean(const Node& node) {
   DCHECK(!node.NeedsStyleInvalidation());
   DCHECK(!node.ChildNeedsStyleInvalidation());
   DCHECK(!node.GetForceReattachLayoutTree());
-  DCHECK(!node.GetLayoutObject() ||
-         !node.GetLayoutObject()->WhitespaceChildrenMayChange());
+  DCHECK(!node.NeedsLayoutSubtreeUpdate());
 }
 
 static void AssertLayoutTreeUpdatedForPseudoElements(const Element& element) {
@@ -2123,8 +2120,6 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
     View()->MarkOrthogonalWritingModeRootsForLayout();
   }
 
-  NotifyLayoutTreeOfSubtreeChanges();
-
   if (focused_element_ && !focused_element_->IsFocusable())
     ClearFocusedElementSoon();
   GetLayoutView()->ClearHitTestCache();
@@ -2190,18 +2185,6 @@ void Document::UpdateStyle() {
         "blink,blink_style", "Document::updateStyle", "resolverAccessCount",
         GetStyleEngine().StyleForElementCount() - initial_element_count);
   }
-}
-
-void Document::NotifyLayoutTreeOfSubtreeChanges() {
-  if (!GetLayoutView()->WasNotifiedOfSubtreeChange())
-    return;
-
-  lifecycle_.AdvanceTo(DocumentLifecycle::kInLayoutSubtreeChange);
-
-  GetLayoutView()->HandleSubtreeModifications();
-  DCHECK(!GetLayoutView()->WasNotifiedOfSubtreeChange());
-
-  lifecycle_.AdvanceTo(DocumentLifecycle::kLayoutSubtreeChangeClean);
 }
 
 bool Document::NeedsLayoutTreeUpdateForNode(const Node& node,
