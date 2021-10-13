@@ -1073,17 +1073,21 @@ IN_PROC_BROWSER_TEST_F(ErrorPageSniffTest,
 
 #if defined(OS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH)
 // On ChromeOS "Running Connectivity Diagnostics" link on error page should
-// launch chrome://diagnostics/?connectivity app by default. Not running test on
+// launch chrome://connectivity-diagnostics app by default. Not running test on
 // LaCROS due to errors on Wayland initialization and to keep test to ChromeOS
 // devices.
-class ErrorPageOfflineAppLaunchTest
+class ErrorPageOfflineAppLaunchFeatureDisabledTest
     : public web_app::SystemWebAppBrowserTestBase {
  public:
-  ErrorPageOfflineAppLaunchTest()
+  ErrorPageOfflineAppLaunchFeatureDisabledTest()
       : web_app::SystemWebAppBrowserTestBase(true) {}
+
+ private:
+  base::test::ScopedFeatureList features;
 };
 
-IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchTest, DiagnosticsConnectivity) {
+IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchFeatureDisabledTest,
+                       DiagnosticsConnectivityFeatureDisabled) {
   WaitForTestSystemAppInstall();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -1094,6 +1098,45 @@ IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchTest, DiagnosticsConnectivity) {
   web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
 
   // The active screen should be Connectivity Diagnostics app.
+  content::WebContents* contents =
+      ::chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(GURL("chrome://connectivity-diagnostics"),
+            contents->GetVisibleURL());
+}
+
+// On ChromeOS "Running Connectivity Diagnostics" link on error page should
+// launch chrome://diagnostics/?connectivity app when related features are
+// enabled.
+class ErrorPageOfflineAppLaunchFeatureEnabledTest
+    : public web_app::SystemWebAppBrowserTestBase {
+ public:
+  ErrorPageOfflineAppLaunchFeatureEnabledTest()
+      : web_app::SystemWebAppBrowserTestBase(true) {
+    // Ensure required features are enabled.
+    features.InitWithFeatures(
+        std::vector<base::Feature>{
+            ash::features::kDiagnosticsAppNavigation,
+            ash::features::kEnableNetworkingInDiagnosticsApp,
+            ash::features::kDiagnosticsApp},
+        std::vector<base::Feature>{});
+  }
+
+ private:
+  base::test::ScopedFeatureList features;
+};
+
+IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchFeatureEnabledTest,
+                       DiagnosticsConnectivityFeatureEnabled) {
+  WaitForTestSystemAppInstall();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      URLRequestFailedJob::GetMockHttpUrl(net::ERR_INTERNET_DISCONNECTED)));
+
+  // Click to open diagnostics app.
+  ClickDiagnosticsLink(browser());
+  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+
+  // The active screen should be Diagnostics app at connectivity screen.
   content::WebContents* contents =
       ::chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(GURL("chrome://diagnostics/?connectivity"),
