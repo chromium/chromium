@@ -6,12 +6,16 @@ package org.chromium.chrome.browser.page_info;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
 import org.chromium.components.page_info.PageInfoMainController;
 import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
+import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.url.GURL;
 
 /**
  * Class for controlling the page info 'About This Site' section.
@@ -22,12 +26,14 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
     private final PageInfoMainController mMainController;
     private final PageInfoRowView mRowView;
     private final PageInfoControllerDelegate mDelegate;
+    private final String mSiteDescription;
 
     public PageInfoAboutThisSiteController(PageInfoMainController mainController,
             PageInfoRowView rowView, PageInfoControllerDelegate delegate) {
         mMainController = mainController;
         mRowView = rowView;
         mDelegate = delegate;
+        mSiteDescription = getSiteDescription();
         setupRow();
     }
 
@@ -43,7 +49,9 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
 
     @Override
     public View createViewForSubpage(ViewGroup parent) {
-        return new View(parent.getContext());
+        TextView view = new TextView(parent.getContext());
+        view.setText(mSiteDescription);
+        return view;
     }
 
     @Override
@@ -51,9 +59,16 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
 
     private void setupRow() {
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
+        String subtitle = null;
+        if (mSiteDescription != null && !mSiteDescription.isEmpty()) {
+            subtitle = mSiteDescription;
+        }
+
         // TODO(crbug.com/1250653): Add translated string.
         rowParams.title = "Site info";
-        rowParams.visible = mDelegate.isSiteSettingsAvailable() && !mDelegate.isIncognito();
+        rowParams.subtitle = subtitle;
+        rowParams.visible =
+                subtitle != null && mDelegate.isSiteSettingsAvailable() && !mDelegate.isIncognito();
         rowParams.iconResId = R.drawable.ic_info_outline_grey_24dp;
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
@@ -61,9 +76,20 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         mRowView.setParams(rowParams);
     }
 
+    private String getSiteDescription() {
+        return PageInfoAboutThisSiteControllerJni.get().getSiteDescription(
+                mMainController.getBrowserContext(), mMainController.getURL());
+    }
+
     @Override
     public void clearData() {}
 
     @Override
     public void updateRowIfNeeded() {}
+
+    @NativeMethods
+    interface Natives {
+        // TODO(crbug.com/1250653): Pass protobuf instead.
+        String getSiteDescription(BrowserContextHandle browserContext, GURL url);
+    }
 }
