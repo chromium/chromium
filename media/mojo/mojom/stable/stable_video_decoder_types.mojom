@@ -385,7 +385,7 @@ struct EosVideoFrameData {
 
 // Based on |gfx.mojom.NativePixmapHandle|.
 // Next min field ID: 2
-[EnableIf=supports_native_pixmap, Stable]
+[Stable]
 struct NativePixmapHandle {
   array<gfx.mojom.NativePixmapPlane> planes@0;
   uint64 modifier@1;
@@ -397,8 +397,6 @@ struct NativePixmapHandle {
 [Stable]
 struct NativeGpuMemoryBufferHandle {
   gfx.mojom.GpuMemoryBufferId id@0;
-
-  [EnableIf=supports_native_pixmap]
   NativePixmapHandle? platform_handle@1;
 };
 

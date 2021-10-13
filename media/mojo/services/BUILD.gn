@@ -58,8 +58,6 @@ component("services") {
     "mojo_video_encode_accelerator_service.h",
     "playback_events_recorder.cc",
     "playback_events_recorder.h",
-    "stable_video_decoder_factory_service.cc",
-    "stable_video_decoder_factory_service.h",
     "test_mojo_media_client.cc",
     "test_mojo_media_client.h",
     "video_decode_perf_history.cc",
@@ -79,7 +77,6 @@ component("services") {
     "//media/gpu/ipc/common",
     "//media/mojo:buildflags",
     "//media/mojo/mojom",
-    "//media/mojo/mojom/stable:stable_video_decoder_cpp_sources",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//services/service_manager/public/cpp",
@@ -175,6 +172,16 @@ component("services") {
       "media_foundation_service_broker.h",
     ]
     deps += [ "//media/base/win:media_foundation_util" ]
+  }
+
+  if (is_chromeos_ash || is_linux) {
+    sources += [
+      "stable_video_decoder_factory_service.cc",
+      "stable_video_decoder_factory_service.h",
+    ]
+
+    public_deps +=
+        [ "//media/mojo/mojom/stable:stable_video_decoder_cpp_sources" ]
   }
 }
 
