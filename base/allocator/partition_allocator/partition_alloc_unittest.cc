@@ -3218,10 +3218,6 @@ TEST_F(PartitionAllocTest, ReservationOffset) {
   EXPECT_EQ(kOffsetTagNormalBuckets, *ReservationOffsetPointer(ptr_as_uintptr));
   allocator.root()->Free(ptr);
 
-  // For not yet allocated memory, offset should be kOffsetTagNotAllocated.
-  EXPECT_EQ(kOffsetTagNotAllocated,
-            *ReservationOffsetPointer(ptr_as_uintptr + 100 * kSuperPageSize));
-
   // For direct-map,
   size_t large_size = kSuperPageSize * 5 + PartitionPageSize() * .5f;
   ptr = allocator.root()->Alloc(large_size, type_name);
@@ -3306,15 +3302,6 @@ TEST_F(PartitionAllocTest, CheckReservationType) {
   EXPECT_TRUE(IsManagedByNormalBuckets(ptr_to_check));
   EXPECT_FALSE(IsManagedByDirectMap(ptr_to_check));
   EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
-  // Pick a likely unallocated super page.
-  ptr_to_check = bits::AlignUp(ptr, kSuperPageSize) + 100 * kSuperPageSize;
-#if DCHECK_IS_ON()
-  // Expect to DCHECK on unallocated region.
-  EXPECT_DEATH_IF_SUPPORTED(IsReservationStart(ptr_to_check), "");
-#endif
-  EXPECT_FALSE(IsManagedByNormalBuckets(ptr_to_check));
-  EXPECT_FALSE(IsManagedByDirectMap(ptr_to_check));
-  EXPECT_FALSE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
 
   size_t large_size = 2 * kSuperPageSize;
   ptr = reinterpret_cast<char*>(allocator.root()->Alloc(large_size, type_name));
