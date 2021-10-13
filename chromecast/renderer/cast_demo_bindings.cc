@@ -359,7 +359,7 @@ void CastDemoBindings::OnMojoConnectionError() {
       FROM_HERE,
       base::BindOnce(&CastDemoBindings::ReconnectMojo,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kDelayBetweenReconnectionInMillis));
+      base::Milliseconds(kDelayBetweenReconnectionInMillis));
 }
 
 const mojo::Remote<mojom::CastDemo>& CastDemoBindings::GetCastDemo() {

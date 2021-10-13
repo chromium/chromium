@@ -542,7 +542,7 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest, PurgeMultipleTimes) {
   auto mem1 =
       client->AllocateLockedDiscardableMemory(base::GetPageSize() * 1.2);
 
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(60));
+  task_env_.FastForwardBy(base::Seconds(60));
 
   auto mem2 =
       client->AllocateLockedDiscardableMemory(base::GetPageSize() * 2.2);
@@ -555,7 +555,7 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest, PurgeMultipleTimes) {
   task_env_.FastForwardBy(
       ClientDiscardableSharedMemoryManager::kScheduledPurgeInterval);
 
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(60));
+  task_env_.FastForwardBy(base::Seconds(60));
 
   EXPECT_TRUE(client->IsPurgeScheduled());
 

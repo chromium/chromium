@@ -59,10 +59,8 @@ void RecordFDUsageUMA() {
                           &rlim_cur))
     return;
 
-  static constexpr base::TimeDelta kHistogramMinTime =
-      base::TimeDelta::FromMicroseconds(5);
-  static constexpr base::TimeDelta kHistogramMaxTime =
-      base::TimeDelta::FromMilliseconds(10);
+  static constexpr base::TimeDelta kHistogramMinTime = base::Microseconds(5);
+  static constexpr base::TimeDelta kHistogramMaxTime = base::Milliseconds(10);
   static constexpr int kHistogramTimeBuckets = 50;
   int percentage_usage_int = (active_fd_count * 100) / fd_max;
   UMA_HISTOGRAM_PERCENTAGE("Viz.FileDescriptorTracking.PercentageUsed",

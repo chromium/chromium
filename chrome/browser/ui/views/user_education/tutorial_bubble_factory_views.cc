@@ -19,11 +19,9 @@ namespace {
 
 // The amount of time the tutorial should stay onscreen depending on if the
 // bubble is interacted with it. similar to FeaturePromoBubbleView's timeouts
-constexpr base::TimeDelta kDelayNoInteraction =
-    base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kDelayWithInteraction =
-    base::TimeDelta::FromSeconds(3);
-constexpr base::TimeDelta kDelayZero = base::TimeDelta::FromSeconds(0);
+constexpr base::TimeDelta kDelayNoInteraction = base::Seconds(10);
+constexpr base::TimeDelta kDelayWithInteraction = base::Seconds(3);
+constexpr base::TimeDelta kDelayZero = base::Seconds(0);
 }  // namespace
 
 TutorialBubbleViews::TutorialBubbleViews(absl::optional<base::Token> bubble_id)

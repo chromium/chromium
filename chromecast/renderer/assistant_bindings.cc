@@ -135,9 +135,8 @@ void AssistantBindings::OnAssistantConnectionError() {
                << kDelayBetweenReconnectionInMillis << " milliseconds";
   assistant_.reset();
   reconnect_assistant_timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromMilliseconds(kDelayBetweenReconnectionInMillis),
-      this, &AssistantBindings::ReconnectMessagePipe);
+      FROM_HERE, base::Milliseconds(kDelayBetweenReconnectionInMillis), this,
+      &AssistantBindings::ReconnectMessagePipe);
 }
 
 void AssistantBindings::FlushV8ToAssistantQueue() {

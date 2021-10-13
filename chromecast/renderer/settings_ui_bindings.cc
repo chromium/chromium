@@ -162,9 +162,8 @@ void SettingsUiBindings::OnMojoConnectionError() {
   LOG(WARNING) << "Disconnected from settings UI MOJO. Will reconnect every "
                << kDelayBetweenReconnectionInMillis << " milliseconds.";
   mojo_reconnect_timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromMilliseconds(kDelayBetweenReconnectionInMillis),
-      this, &SettingsUiBindings::ReconnectMojo);
+      FROM_HERE, base::Milliseconds(kDelayBetweenReconnectionInMillis), this,
+      &SettingsUiBindings::ReconnectMojo);
 }
 
 }  // namespace shell
