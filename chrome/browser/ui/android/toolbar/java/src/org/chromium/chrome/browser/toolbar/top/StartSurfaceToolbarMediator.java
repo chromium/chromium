@@ -431,9 +431,11 @@ class StartSurfaceToolbarMediator {
     }
 
     private void updateNewTabViewTextVisibility() {
+        // Show new tab view text view when new tab view is at start and incognito switch
+        // is hidden.
         mPropertyModel.set(NEW_TAB_VIEW_TEXT_IS_VISIBLE,
-                mPropertyModel.get(NEW_TAB_VIEW_AT_START)
-                        && !(Boolean) mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
+                mPropertyModel.get(NEW_TAB_VIEW_AT_START) && mHideIncognitoSwitchWhenNoTabs
+                        && !hasIncognitoTabs());
     }
 
     private void updateHomeButtonVisibility() {
