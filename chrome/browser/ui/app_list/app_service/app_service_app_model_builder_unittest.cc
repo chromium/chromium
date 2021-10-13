@@ -695,9 +695,8 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
 
   std::vector<ChromeAppListItem*> GetAllApps() const {
     std::vector<ChromeAppListItem*> result;
-    for (size_t i = 0; i < GetModelItemCount(); ++i) {
+    for (size_t i = 0; i < GetModelItemCount(); ++i)
       result.emplace_back(GetModelUpdater()->ItemAtForTest(i));
-    }
     return result;
   }
 
@@ -765,17 +764,19 @@ TEST_F(CrostiniAppTest, EnableAndDisableCrostini) {
   EXPECT_EQ(0u, GetModelItemCount());
 
   CrostiniTestHelper::EnableCrostini(testing_profile());
-  EXPECT_THAT(GetAllApps(), testing::UnorderedElementsAre(IsChromeApp(
-                                crostini::kCrostiniTerminalSystemAppId,
-                                TerminalAppName(), ash::kCrostiniFolderId)));
+  EXPECT_THAT(GetAllApps(),
+              testing::UnorderedElementsAre(
+                  IsChromeApp(crostini::kCrostiniTerminalSystemAppId,
+                              TerminalAppName(), ash::kCrostiniFolderId),
+                  IsChromeApp(ash::kCrostiniFolderId, _, "")));
 
   CrostiniTestHelper::DisableCrostini(testing_profile());
   EXPECT_THAT(GetAllApps(), testing::IsEmpty());
 }
 
 TEST_F(CrostiniAppTest, AppInstallation) {
-  // Terminal app.
-  EXPECT_EQ(1u, GetModelItemCount());
+  // Terminal app and the Crostini folder.
+  EXPECT_EQ(2u, GetModelItemCount());
 
   test_helper_->SetupDummyApps();
 
@@ -784,7 +785,8 @@ TEST_F(CrostiniAppTest, AppInstallation) {
                   IsChromeApp(crostini::kCrostiniTerminalSystemAppId,
                               TerminalAppName(), ash::kCrostiniFolderId),
                   IsChromeApp(_, kDummyApp1Name, ash::kCrostiniFolderId),
-                  IsChromeApp(_, kDummyApp2Name, ash::kCrostiniFolderId)));
+                  IsChromeApp(_, kDummyApp2Name, ash::kCrostiniFolderId),
+                  IsChromeApp(ash::kCrostiniFolderId, _, "")));
 
   test_helper_->AddApp(
       CrostiniTestHelper::BasicApp(kBananaAppId, kBananaAppName));
@@ -794,24 +796,27 @@ TEST_F(CrostiniAppTest, AppInstallation) {
                               TerminalAppName(), ash::kCrostiniFolderId),
                   IsChromeApp(_, kDummyApp1Name, ash::kCrostiniFolderId),
                   IsChromeApp(_, kDummyApp2Name, ash::kCrostiniFolderId),
-                  IsChromeApp(_, kBananaAppName, ash::kCrostiniFolderId)));
+                  IsChromeApp(_, kBananaAppName, ash::kCrostiniFolderId),
+                  IsChromeApp(ash::kCrostiniFolderId, _, "")));
 }
 
 // Test that the app model builder correctly picks up changes to existing apps.
 TEST_F(CrostiniAppTest, UpdateApps) {
   test_helper_->SetupDummyApps();
-  // 3 apps.
-  EXPECT_EQ(3u, GetModelItemCount());
+
+  // 4 items: Terminal, two dummy apps and the Crostini folder.
+  EXPECT_EQ(4u, GetModelItemCount());
 
   // Setting NoDisplay to true should hide an app.
   vm_tools::apps::App dummy1 = test_helper_->GetApp(0);
   dummy1.set_no_display(true);
   test_helper_->AddApp(dummy1);
-  EXPECT_THAT(GetAllApps(),
-              testing::UnorderedElementsAre(
-                  IsChromeApp(crostini::kCrostiniTerminalSystemAppId, _, _),
-                  IsChromeApp(CrostiniTestHelper::GenerateAppId(kDummyApp2Name),
-                              _, _)));
+  EXPECT_THAT(
+      GetAllApps(),
+      testing::UnorderedElementsAre(
+          IsChromeApp(crostini::kCrostiniTerminalSystemAppId, _, _),
+          IsChromeApp(CrostiniTestHelper::GenerateAppId(kDummyApp2Name), _, _),
+          IsChromeApp(ash::kCrostiniFolderId, _, "")));
 
   // Setting NoDisplay to false should unhide an app.
   dummy1.set_no_display(false);
@@ -821,8 +826,8 @@ TEST_F(CrostiniAppTest, UpdateApps) {
       testing::UnorderedElementsAre(
           IsChromeApp(crostini::kCrostiniTerminalSystemAppId, _, _),
           IsChromeApp(CrostiniTestHelper::GenerateAppId(kDummyApp1Name), _, _),
-          IsChromeApp(CrostiniTestHelper::GenerateAppId(kDummyApp2Name), _,
-                      _)));
+          IsChromeApp(CrostiniTestHelper::GenerateAppId(kDummyApp2Name), _, _),
+          IsChromeApp(ash::kCrostiniFolderId, _, "")));
 
   // Changes to app names should be detected.
   vm_tools::apps::App dummy2 =
@@ -834,38 +839,27 @@ TEST_F(CrostiniAppTest, UpdateApps) {
                   IsChromeApp(CrostiniTestHelper::GenerateAppId(kDummyApp1Name),
                               kDummyApp1Name, _),
                   IsChromeApp(CrostiniTestHelper::GenerateAppId(kDummyApp2Name),
-                              kAppNewName, _)));
+                              kAppNewName, _),
+                  IsChromeApp(ash::kCrostiniFolderId, _, "")));
 }
 
 // Test that the app model builder handles removed apps
 TEST_F(CrostiniAppTest, RemoveApps) {
   test_helper_->SetupDummyApps();
-  // 3 apps.
-  EXPECT_EQ(3u, GetModelItemCount());
+  // 4 items: Terminal, two dummy apps and the Crostini folder.
+  EXPECT_EQ(4u, GetModelItemCount());
 
   // Remove dummy1
   test_helper_->RemoveApp(0);
-  EXPECT_EQ(2u, GetModelItemCount());
+  EXPECT_EQ(3u, GetModelItemCount());
 
   // Remove dummy2
   test_helper_->RemoveApp(0);
-  EXPECT_EQ(1u, GetModelItemCount());
+  EXPECT_EQ(2u, GetModelItemCount());
 }
 
-// Tests that the crostini folder is (re)created with the correct parameters.
+// Tests that the crostini folder is created with the correct parameters.
 TEST_F(CrostiniAppTest, CreatesFolder) {
-  EXPECT_THAT(GetAllApps(), testing::UnorderedElementsAre(IsChromeApp(
-                                crostini::kCrostiniTerminalSystemAppId,
-                                TerminalAppName(), ash::kCrostiniFolderId)));
-
-  // We simulate ash creating the crostini folder and calling back into chrome
-  // (rather than use a full browser test).
-  auto metadata = std::make_unique<ash::AppListItemMetadata>();
-  metadata->id = ash::kCrostiniFolderId;
-  metadata->is_folder = true;
-  metadata->position = syncer::StringOrdinal::CreateInitialOrdinal();
-  GetModelUpdater()->OnItemAdded(std::move(metadata));
-
   EXPECT_THAT(GetAllApps(),
               testing::UnorderedElementsAre(
                   IsChromeApp(crostini::kCrostiniTerminalSystemAppId,
@@ -878,8 +872,8 @@ TEST_F(CrostiniAppTest, CreatesFolder) {
 // Test that the Terminal app is removed when Crostini is disabled.
 TEST_F(CrostiniAppTest, DisableCrostini) {
   test_helper_->SetupDummyApps();
-  // 3 apps.
-  EXPECT_EQ(3u, GetModelItemCount());
+  // 4 items: one termnial, two dummy apps and the Crostini folder.
+  EXPECT_EQ(4u, GetModelItemCount());
 
   // The uninstall flow removes all apps before setting the CrostiniEnabled pref
   // to false, so we need to do that explicitly too.

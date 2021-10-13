@@ -32,57 +32,11 @@ bool ShouldShowInLauncher(const apps::AppUpdate& update) {
 
 }  // namespace
 
-// Folder items are created by the Ash process and their existence is
-// communicated to chrome via the AppListClient. Therefore, Crostini has an
-// observer that listens for the creation of its folder, and updates the
-// properties accordingly.
-//
-// Folders are an App List UI concept, not intrinsic to apps, so this
-// Crostini-specific feature is implemented here (chrome/browser/ui/app_list)
-// instead of in the App Service per se.
-class AppServiceAppModelBuilder::CrostiniFolderObserver
-    : public AppListModelUpdaterObserver {
- public:
-  explicit CrostiniFolderObserver(AppServiceAppModelBuilder* parent)
-      : parent_(parent) {}
-
-  ~CrostiniFolderObserver() override = default;
-
-  void OnAppListItemAdded(ChromeAppListItem* item) override {
-    if (item->id() != ash::kCrostiniFolderId)
-      return;
-
-    item->SetIsPersistent(true);
-
-    if (!parent_->GetSyncItem(ash::kCrostiniFolderId,
-                              sync_pb::AppListSpecifics::TYPE_FOLDER)) {
-      item->model_updater()->SetItemPosition(
-          item->id(),
-          item->CalculateDefaultPositionIfApplicable(parent_->model_updater()));
-    }
-
-    // Reset the folder name whether it's in the sync service or not
-    // to ensure the "Linux apps" string is translated into the current
-    // language, even if that's a different language then the folder was created
-    // with.
-    item->model_updater()->SetItemName(
-        item->id(),
-        l10n_util::GetStringUTF8(IDS_APP_LIST_CROSTINI_DEFAULT_FOLDER_NAME));
-  }
-
- private:
-  AppServiceAppModelBuilder* parent_;
-};
-
 AppServiceAppModelBuilder::AppServiceAppModelBuilder(
     AppListControllerDelegate* controller)
     : AppListModelBuilder(controller, AppServiceAppItem::kItemType) {}
 
-AppServiceAppModelBuilder::~AppServiceAppModelBuilder() {
-  if (model_updater() && crostini_folder_observer_) {
-    model_updater()->RemoveObserver(crostini_folder_observer_.get());
-  }
-}
+AppServiceAppModelBuilder::~AppServiceAppModelBuilder() = default;
 
 void AppServiceAppModelBuilder::BuildModel() {
   apps::AppServiceProxyChromeOs* proxy =
@@ -90,11 +44,6 @@ void AppServiceAppModelBuilder::BuildModel() {
   proxy->AppRegistryCache().ForEachApp(
       [this](const apps::AppUpdate& update) { OnAppUpdate(update); });
   Observe(&proxy->AppRegistryCache());
-
-  if (model_updater()) {
-    crostini_folder_observer_ = std::make_unique<CrostiniFolderObserver>(this);
-    model_updater()->AddObserver(crostini_folder_observer_.get());
-  }
 }
 
 void AppServiceAppModelBuilder::OnAppUpdate(const apps::AppUpdate& update) {

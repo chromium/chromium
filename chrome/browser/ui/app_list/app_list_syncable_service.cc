@@ -201,11 +201,30 @@ bool IsOsSettingsApp(const std::string& app_id) {
   return app_id == web_app::kOsSettingsAppId;
 }
 
-bool IsSystemCreatedSyncFolder(AppListSyncableService::SyncItem* folder_item) {
-  if (folder_item->item_type != sync_pb::AppListSpecifics::TYPE_FOLDER)
+bool IsSystemCreatedSyncFolder(
+    const AppListSyncableService::SyncItem& folder_item) {
+  if (folder_item.item_type != sync_pb::AppListSpecifics::TYPE_FOLDER)
     return false;
-  return (folder_item->item_id == ash::kOemFolderId ||
-          folder_item->item_id == ash::kCrostiniFolderId);
+  return (folder_item.item_id == ash::kOemFolderId ||
+          folder_item.item_id == ash::kCrostiniFolderId);
+}
+
+// Generates app list item meta data from the given sync item.
+std::unique_ptr<ash::AppListItemMetadata> GenerateItemMetadataFromSyncItem(
+    const AppListSyncableService::SyncItem& sync_item) {
+  auto item_meta_data = std::make_unique<ash::AppListItemMetadata>();
+  item_meta_data->id = sync_item.item_id;
+  item_meta_data->position = sync_item.item_ordinal;
+  item_meta_data->is_folder =
+      (sync_item.item_type == sync_pb::AppListSpecifics::TYPE_FOLDER);
+  item_meta_data->is_page_break =
+      (sync_item.item_type == sync_pb::AppListSpecifics::TYPE_PAGE_BREAK);
+  item_meta_data->name = sync_item.item_name;
+  item_meta_data->folder_id = sync_item.parent_id;
+
+  if (IsSystemCreatedSyncFolder(sync_item))
+    item_meta_data->is_persistent = true;
+  return item_meta_data;
 }
 
 }  // namespace
@@ -603,7 +622,7 @@ void AppListSyncableService::CleanUpSingleItemSyncFolder() {
 AppListSyncableService::SyncItem*
 AppListSyncableService::GetOnlyChildOfUserCreatedFolder(SyncItem* sync_item) {
   if (sync_item->item_type != sync_pb::AppListSpecifics::TYPE_FOLDER ||
-      IsSystemCreatedSyncFolder(sync_item))
+      IsSystemCreatedSyncFolder(*sync_item))
     return nullptr;
 
   const std::string& folder_id = sync_item->item_id;
@@ -653,6 +672,41 @@ void AppListSyncableService::AddItem(
     std::string folder_id = sync_item->parent_id;
     VLOG(2) << this << ": AddItem: " << sync_item->ToString() << " Folder: '"
             << folder_id << "'";
+
+    if (folder_id == ash::kCrostiniFolderId &&
+        !model_updater_->FindItem(folder_id)) {
+      ChromeAppListItem crostini_folder(profile_, folder_id,
+                                        model_updater_.get());
+      crostini_folder.SetChromeName(
+          l10n_util::GetStringUTF8(IDS_APP_LIST_CROSTINI_DEFAULT_FOLDER_NAME));
+      crostini_folder.SetIsPersistent(true);
+      crostini_folder.SetChromeIsFolder(true);
+
+      // Calculate the Crostini folder's position.
+      SyncItem* current_sync_data = FindSyncItem(folder_id);
+      syncer::StringOrdinal crostini_folder_position =
+          current_sync_data
+              ? current_sync_data->item_ordinal
+              : crostini_folder.CalculateDefaultPositionIfApplicable(
+                    model_updater_.get());
+      crostini_folder.SetChromePosition(crostini_folder_position);
+
+      // Add or update the Crostini folder's sync data.
+      // Note that we cannot call `AddOrUpdateFromSyncItem()` here because
+      // the Crostini folder is not added to `model_updater_` yet.
+      if (current_sync_data)
+        UpdateSyncItem(&crostini_folder);
+      else
+        CreateSyncItemFromAppItem(&crostini_folder);
+
+      // Add the Crostini folder before adding the app.
+      auto new_folder_item = std::make_unique<ChromeAppListItem>(
+          profile_, folder_id, model_updater_.get());
+      new_folder_item->SetMetadata(
+          GenerateItemMetadataFromSyncItem(*(FindSyncItem(folder_id))));
+      model_updater_->AddItem(std::move(new_folder_item));
+    }
+
     model_updater_->AddItemToFolder(std::move(app_item), folder_id);
   }
 

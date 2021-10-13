@@ -46,8 +46,22 @@ void FakeAppListModelUpdater::AddItemToOemFolder(
 
 void FakeAppListModelUpdater::RemoveItem(const std::string& id) {
   size_t index;
-  if (FindItemIndexForTest(id, &index))
+  if (FindItemIndexForTest(id, &index)) {
+    const std::string folder_id = items_[index]->folder_id();
     items_.erase(items_.begin() + index);
+
+    if (folder_id.empty())
+      return;
+
+    // Remove the parent folder if the folder is empty.
+    int folder_item_count = 0;
+    for (const auto& item : items_) {
+      if (item->folder_id() == folder_id)
+        ++folder_item_count;
+    }
+    if (!folder_item_count)
+      RemoveItem(folder_id);
+  }
 }
 
 void FakeAppListModelUpdater::RemoveUninstalledItem(const std::string& id) {
