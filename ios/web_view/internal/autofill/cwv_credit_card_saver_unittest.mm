@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
@@ -89,6 +90,7 @@ TEST_F(CWVCreditCardSaverTest, Ignore) {
                                   savePromptCallback:std::move(callback)];
   // Force -[CWVCreditCardSaver dealloc].
   credit_card_saver = nil;
+  ALLOW_UNUSED_LOCAL(credit_card_saver);
 
   EXPECT_TRUE(callback_called);
 }
