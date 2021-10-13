@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_EXTENSION_APPS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_EXTENSION_APPS_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
@@ -50,6 +53,10 @@ class StandaloneBrowserExtensionApps : public KeyedService,
   // to publish chrome apps to the app service in ash-chrome.
   void RegisterChromeAppsCrosapiHost(
       mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver);
+
+  // Registers the keep alive, as the current implementation relies on the
+  // assumption that Lacros is always running.
+  void RegisterKeepAlive();
 
  private:
   // apps::PublisherBase:
@@ -98,6 +105,8 @@ class StandaloneBrowserExtensionApps : public KeyedService,
 
   // Used to send chrome app publisher actions to Lacros.
   mojo::Remote<crosapi::mojom::AppController> controller_;
+
+  std::unique_ptr<crosapi::BrowserManager::ScopedKeepAlive> keep_alive_;
 
   base::WeakPtrFactory<StandaloneBrowserExtensionApps> weak_factory_{this};
 };

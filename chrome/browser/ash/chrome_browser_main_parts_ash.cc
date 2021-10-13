@@ -42,6 +42,8 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps.h"
+#include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps_factory.h"
 #include "chrome/browser/ash/accessibility/accessibility_event_rewriter_delegate_impl.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
@@ -1220,6 +1222,19 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
       std::move(wake_lock_provider));
 
   ChromeBrowserMainPartsLinux::PostBrowserStart();
+}
+
+void ChromeBrowserMainPartsAsh::OnFirstIdle() {
+  ChromeBrowserMainPartsLinux::OnFirstIdle();
+
+  // TODO(https://crbug.com/1225848): As a short term workaround, the
+  // implementation of Chrome Apps requires Lacros to always be running.
+  if (crosapi::browser_util::IsLacrosChromeAppsEnabled()) {
+    Profile* profile = ProfileManager::GetPrimaryUserProfile();
+    apps::StandaloneBrowserExtensionApps* chrome_apps =
+        apps::StandaloneBrowserExtensionAppsFactory::GetForProfile(profile);
+    chrome_apps->RegisterKeepAlive();
+  }
 }
 
 // Shut down services before the browser process, etc are destroyed.

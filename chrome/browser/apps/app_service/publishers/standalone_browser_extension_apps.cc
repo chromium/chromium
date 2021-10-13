@@ -42,6 +42,11 @@ void StandaloneBrowserExtensionApps::RegisterChromeAppsCrosapiHost(
                      weak_factory_.GetWeakPtr()));
 }
 
+void StandaloneBrowserExtensionApps::RegisterKeepAlive() {
+  keep_alive_ = crosapi::BrowserManager::Get()->KeepAlive(
+      crosapi::BrowserManager::Feature::kChromeApps);
+}
+
 void StandaloneBrowserExtensionApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {

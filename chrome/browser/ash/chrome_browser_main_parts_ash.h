@@ -142,6 +142,9 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   void PreBrowserStart() override;
   void PostBrowserStart() override;
 
+  // After initialization is finished.
+  void OnFirstIdle() override;
+
   void PostMainMessageLoopRun() override;
   void PostDestroyThreads() override;
 

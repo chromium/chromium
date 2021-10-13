@@ -31,6 +31,10 @@ namespace component_updater {
 class CrOSComponentManager;
 }  // namespace component_updater
 
+namespace apps {
+class StandaloneBrowserExtensionApps;
+}  // namespace apps
+
 namespace crosapi {
 namespace mojom {
 class Crosapi;
@@ -224,6 +228,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest, LacrosKeepAlive);
+  friend class apps::StandaloneBrowserExtensionApps;
 
   // Remember the launch mode of Lacros.
   void RecordLacrosLaunchMode();
@@ -233,6 +238,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   enum class Feature {
     kTestOnly,
     kAppService,
+    kChromeApps,
   };
 
   // Any instance of this class will ensure that the Lacros browser will stay
