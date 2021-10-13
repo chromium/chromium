@@ -1466,8 +1466,9 @@ void AppListView::OnMouseEvent(ui::MouseEvent* event) {
       break;
     case ui::ET_MOUSEWHEEL:
       if (HandleScroll(event->location(), event->AsMouseWheelEvent()->offset(),
-                       ui::ET_MOUSEWHEEL))
+                       ui::ET_MOUSEWHEEL)) {
         event->SetHandled();
+      }
       break;
     default:
       break;
@@ -1525,12 +1526,6 @@ void AppListView::OnGestureEvent(ui::GestureEvent* event) {
         return;
       EndDrag(event->root_location_f());
       event->SetHandled();
-      break;
-    }
-    case ui::ET_MOUSEWHEEL: {
-      if (HandleScroll(event->location(), event->AsMouseWheelEvent()->offset(),
-                       ui::ET_MOUSEWHEEL))
-        event->SetHandled();
       break;
     }
     default:
@@ -1623,22 +1618,23 @@ bool AppListView::HandleScroll(const gfx::Point& location,
   if ((offset.y() == 0 && offset.x() == 0) || ShouldIgnoreScrollEvents())
     return false;
 
-  AppsGridView* apps_grid_view = GetAppsContainerView()->IsInFolderView()
-                                     ? GetFolderAppsGridView()
-                                     : GetRootAppsGridView();
+  // Don't forward scroll information if a folder is open. The folder view will
+  // handle scroll events itself.
+  if (GetAppsContainerView()->IsInFolderView())
+    return false;
+
+  PagedAppsGridView* apps_grid_view = GetRootAppsGridView();
 
   gfx::Point root_apps_grid_location(location);
-  views::View::ConvertPointToTarget(this, GetRootAppsGridView(),
+  views::View::ConvertPointToTarget(this, apps_grid_view,
                                     &root_apps_grid_location);
 
   // For the purposes of whether or not to dismiss the AppList, we treat any
   // scroll to the left or the right of the apps grid as though it was in the
   // apps grid, as long as it is within the vertical bounds of the apps grid.
   bool is_in_vertical_bounds =
-      root_apps_grid_location.y() >
-          GetRootAppsGridView()->GetLocalBounds().y() &&
-      root_apps_grid_location.y() <
-          GetRootAppsGridView()->GetLocalBounds().bottom();
+      root_apps_grid_location.y() > apps_grid_view->GetLocalBounds().y() &&
+      root_apps_grid_location.y() < apps_grid_view->GetLocalBounds().bottom();
 
   // First see if we need to collapse the app list from this scroll when in a
   // side shelf alignment. We do this first because if this happens anywhere on
@@ -1661,22 +1657,12 @@ bool AppListView::HandleScroll(const gfx::Point& location,
     return true;
   }
 
-  // Now if we haven't dismissed or expanded we pass the event on to
-  // `apps_grid_view`.
-  if (app_list_state_ == AppListViewState::kFullscreenAllApps) {
-    gfx::Point apps_grid_location(location);
-    views::View::ConvertPointToTarget(this, apps_grid_view,
-                                      &apps_grid_location);
-    bool is_in_active_apps_grid =
-        apps_grid_view->GetLocalBounds().Contains(apps_grid_location);
-    // If we are not in a folder, the event just need to be within the vertical
-    // bounds of the apps grid. If we are in a folder, it must be inside that
-    // folder's view.
-    if ((!GetAppsContainerView()->IsInFolderView() && is_in_vertical_bounds) ||
-        is_in_active_apps_grid) {
-      apps_grid_view->HandleScrollFromAppListView(offset, type);
-      return true;
-    }
+  // In fullscreen, forward events to `apps_grid_view`. For example, this allows
+  // scroll events to the right of the page switcher (not inside the apps grid)
+  // to switch pages.
+  if (app_list_state_ == AppListViewState::kFullscreenAllApps &&
+      is_in_vertical_bounds) {
+    apps_grid_view->HandleScrollFromParentView(offset, type);
   }
   return true;
 }

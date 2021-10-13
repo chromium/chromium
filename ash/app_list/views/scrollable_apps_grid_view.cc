@@ -277,15 +277,15 @@ bool ScrollableAppsGridView::CanAutoScrollView(
   return visible_rect.bottom() < scroll_view_->contents()->height();
 }
 
-void ScrollableAppsGridView::HandleScrollFromAppListView(
+void ScrollableAppsGridView::HandleScrollFromParentView(
     const gfx::Vector2d& offset,
     ui::EventType type) {
   // AppListView uses a paged apps grid view, so this must be a folder opened
   // in the fullscreen launcher.
   DCHECK(IsInFolder());
 
-  // TODO(crbug.com/1214064): Handle scroll events once folders are working.
-  NOTIMPLEMENTED_LOG_ONCE();
+  // Scroll events in the folder view title area should scroll the view.
+  scroll_view_->vertical_scroll_bar()->OnScroll(/*dx=*/0, offset.y());
 }
 
 void ScrollableAppsGridView::SetFocusAfterEndDrag() {

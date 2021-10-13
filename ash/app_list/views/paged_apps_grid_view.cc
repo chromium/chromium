@@ -249,8 +249,8 @@ void PagedAppsGridView::OnTabletModeChanged(bool started) {
   CancelContextMenusOnCurrentPage();
 }
 
-void PagedAppsGridView::HandleScrollFromAppListView(const gfx::Vector2d& offset,
-                                                    ui::EventType type) {
+void PagedAppsGridView::HandleScrollFromParentView(const gfx::Vector2d& offset,
+                                                   ui::EventType type) {
   // If |pagination_model_| is empty, don't handle scroll events.
   if (pagination_model_.total_pages() <= 0)
     return;

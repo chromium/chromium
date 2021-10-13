@@ -266,10 +266,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // return 1x1 rectangle in the apps grid center.
   gfx::Rect GetExpectedItemBoundsInFirstPage(const std::string& id) const;
 
-  // Passes scroll information from AppListView, so that subclasses may scroll
+  // Passes scroll information from a parent view, so that subclasses may scroll
   // or switch pages.
-  virtual void HandleScrollFromAppListView(const gfx::Vector2d& offset,
-                                           ui::EventType type) = 0;
+  virtual void HandleScrollFromParentView(const gfx::Vector2d& offset,
+                                          ui::EventType type) = 0;
 
   // Return the view model.
   views::ViewModelT<AppListItemView>* view_model() { return &view_model_; }

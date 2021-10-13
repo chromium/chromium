@@ -42,6 +42,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
@@ -913,6 +914,20 @@ void AppListFolderView::OnTabletModeChanged(bool started) {
   folder_header_view()->set_tablet_mode(started);
   if (page_switcher_)
     page_switcher_->set_is_tablet_mode(started);
+}
+
+void AppListFolderView::OnScrollEvent(ui::ScrollEvent* event) {
+  items_grid_view_->HandleScrollFromParentView(
+      gfx::Vector2d(event->x_offset(), event->y_offset()), event->type());
+  event->SetHandled();
+}
+
+void AppListFolderView::OnMouseEvent(ui::MouseEvent* event) {
+  if (event->type() == ui::ET_MOUSEWHEEL) {
+    items_grid_view_->HandleScrollFromParentView(
+        event->AsMouseWheelEvent()->offset(), ui::ET_MOUSEWHEEL);
+    event->SetHandled();
+  }
 }
 
 bool AppListFolderView::IsDragPointOutsideOfFolder(

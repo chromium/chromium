@@ -112,8 +112,8 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void MaybeStopPageFlip() override;
   bool MaybeAutoScroll() override;
   void StopAutoScroll() override {}
-  void HandleScrollFromAppListView(const gfx::Vector2d& offset,
-                                   ui::EventType type) override;
+  void HandleScrollFromParentView(const gfx::Vector2d& offset,
+                                  ui::EventType type) override;
   void SetFocusAfterEndDrag() override;
   void CalculateIdealBoundsForNonFolder() override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;

@@ -151,6 +151,10 @@ class ASH_EXPORT AppListFolderView
   // Called when tablet mode starts and ends.
   void OnTabletModeChanged(bool started);
 
+  // views::View:
+  void OnScrollEvent(ui::ScrollEvent* event) override;
+  void OnMouseEvent(ui::MouseEvent* event) override;
+
   // Overridden from FolderHeaderViewDelegate:
   void SetItemName(AppListFolderItem* item, const std::string& name) override;
 
@@ -175,6 +179,8 @@ class ASH_EXPORT AppListFolderView
                                      int page_flip_zone_size) const override;
 
   const AppListConfig* GetAppListConfig() const;
+
+  views::ScrollView* scroll_view_for_test() { return scroll_view_; }
 
  private:
   // Creates an apps grid view with fixed-size pages.
