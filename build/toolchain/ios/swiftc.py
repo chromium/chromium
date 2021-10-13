@@ -65,7 +65,25 @@ def compile_module(module, sources, settings, extras, tmpdir):
     ])
 
   if settings.whole_module_optimization:
+    # When building with whole module optimization enabled, swiftc has a hidden
+    # requirements that pch for the bridging headers are saved between runs
+    # (via `-pch-output-dir $dir`) or disabled (via `-disable-bridging-pch`).
+    #
+    # Otherwise, the frontend generates the pch of dependent modules and then
+    # try to parse it as a source file. This manifests as weird errors when
+    # module B depends on module A and module A has a bridging header.
+    #
+    # This is not documented but is tested by swiftc unit tests:
+    # https://github.com/apple/swift/blob/main/test/Driver/bridging-pch.swift
+    #
+    # Behaviour was introduced by the following change:
+    # https://github.com/apple/swift/pull/9509
+    #
+    # For the moment disable the use of pch for bridging headers (simpler).
+    # A more future proof solution would be to build all Objective-C code as
+    # modules which would allow not using bridging headers at all.
     extra_args.append('-whole-module-optimization')
+    extra_args.append('-disable-bridging-pch')
 
   if settings.target:
     extra_args.extend([
@@ -104,15 +122,10 @@ def compile_module(module, sources, settings, extras, tmpdir):
       settings.header_path,
       '-output-file-map',
       output_file_map_path,
-  ] + extra_args + extras + sources,
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE,
-                             universal_newlines=True)
+  ] + extra_args + extras + sources)
 
-  stdout, stderr = process.communicate()
+  process.communicate()
   if process.returncode:
-    sys.stdout.write(stdout)
-    sys.stderr.write(stderr)
     sys.exit(process.returncode)
 
   depfile_content = collections.OrderedDict()
