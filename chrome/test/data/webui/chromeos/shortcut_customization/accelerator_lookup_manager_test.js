@@ -167,48 +167,6 @@ export function acceleratorLookupManagerTest() {
     });
   });
 
-  test('ReplacePreexistingLockedAccelerator', () => {
-    provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
-    return provider.getAllAcceleratorConfig().then((result) => {
-      assertDeepEquals(fakeAcceleratorConfig, result);
-
-      manager.setAcceleratorLookup(result);
-
-      // Get Snap Window Left accelerator, which has a locked accelerator.
-      const snapWindowLeftAction = 0;
-      const ashMap = fakeAcceleratorConfig.get(AcceleratorSource.kAsh);
-      const snapWindowLeftAccels = ashMap.get(snapWindowLeftAction);
-      // Modifier.Alt + key::219 ('[')
-      const overridenAccel = snapWindowLeftAccels[0].accelerator;
-      // Verify state is kEnabled.
-      assertEquals(AcceleratorState.kEnabled, snapWindowLeftAccels[0].state);
-
-      // Replace New Desk shortcut with Alt+'['.
-      const newDeskAction = 2;
-      const oldNewDeskAccel = ashMap.get(newDeskAction)[0].accelerator;
-
-      replaceAndVerify(
-          AcceleratorSource.kAsh, newDeskAction, oldNewDeskAccel,
-          overridenAccel);
-
-      // Verify that the New Desk shortcut now has the ALT + '[' accelerator.
-      const newDeskLookup =
-          manager.getAccelerators(AcceleratorSource.kAsh, newDeskAction);
-      assertEquals(1, newDeskLookup.length);
-      assertEquals(
-          JSON.stringify(overridenAccel),
-          JSON.stringify(newDeskLookup[0].accelerator));
-
-      // Verify that Snap Window Left's accelerator is not removed (since it is,
-      // locked). But it's state is updated to kDisabledByUser.
-      const snapWindowLeftLookup =
-          manager.getAccelerators(AcceleratorSource.kAsh, snapWindowLeftAction);
-      assertEquals(1, snapWindowLeftLookup.length);
-      assertEquals(
-          AcceleratorState.kDisabledByUser, snapWindowLeftLookup[0].state);
-    });
-  });
-
   test('AddBasicAccelerator', () => {
     provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
     return provider.getAllAcceleratorConfig().then((result) => {

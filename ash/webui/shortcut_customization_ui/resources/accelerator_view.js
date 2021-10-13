@@ -306,11 +306,24 @@ export class AcceleratorViewElement extends PolymerElement {
     if (foundId !== undefined) {
       // TODO(jimmyxgong): Fetch name of accelerator with real implementation.
       const uuidParams = foundId.split('-');
+      const conflictSource =
+          /** @type {!AcceleratorSource} */(parseInt(uuidParams[0], 10));
+      const conflictAction = parseInt(uuidParams[1], 10);
       const conflictAccelName = this.lookupManager_.getAcceleratorName(
-          /**source=*/ parseInt(uuidParams[0], 10),
-          /**action=*/ parseInt(uuidParams[1], 10));
+          conflictSource, conflictAction);
+
+      // Cannot override a locked action.
+      if (!this.shortcutProvider_.isMutable(conflictSource) ||
+          this.lookupManager_.isAcceleratorLocked(
+              conflictSource, conflictAction, pendingKeys)) {
+        // TODO(jimmyxgong): i18n this string.
+        this.statusMessage = 'Shortcut is used by \"' + conflictAccelName +
+            '\". Press a new shortcut to replace.';
+        this.hasError = true;
+        return;
+      }
+
       // TODO(jimmyxgong): i18n this string.
-      // TODO(jimmyxgong): Handle attempting to override a locked action.
       this.statusMessage = 'Shortcut is used by ' + conflictAccelName +
           '. Press a new shortcut or press the same one again to use it for ' +
           'this action instead.';
