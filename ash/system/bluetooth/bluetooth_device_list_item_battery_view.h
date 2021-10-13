@@ -18,6 +18,9 @@ class Label;
 
 namespace ash {
 
+// This class encapsulates the logic of configuring the view shown for a single
+// Bluetooth device battery for a device in the detailed Bluetooth page within
+// the quick settings.
 class ASH_EXPORT BluetoothDeviceListItemBatteryView : public views::View {
  public:
   METADATA_HEADER(BluetoothDeviceListItemBatteryView);

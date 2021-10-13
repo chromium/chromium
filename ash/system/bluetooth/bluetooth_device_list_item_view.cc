@@ -89,19 +89,29 @@ void BluetoothDeviceListItemView::UpdateDeviceProperties(
   if (connection_state == DeviceConnectionState::kConnecting) {
     SetupConnectingScrollListItem(this);
   } else if (connection_state == DeviceConnectionState::kConnected) {
-    const DeviceBatteryInfoPtr& battery_info =
-        device_properties_->device_properties->battery_info;
-
-    if (!battery_info || !battery_info->default_properties) {
-      sub_row()->RemoveAllChildViews();
-      return;
-    }
-    if (!battery_view_) {
-      battery_view_ = sub_row()->AddChildView(
-          std::make_unique<BluetoothDeviceListItemBatteryView>());
-    }
-    battery_view_->UpdateBatteryInfo(battery_info->default_properties);
+    UpdateBatteryInfo(device_properties_->device_properties->battery_info);
   }
+}
+
+void BluetoothDeviceListItemView::UpdateBatteryInfo(
+    const DeviceBatteryInfoPtr& battery_info) {
+  if (!battery_info || !battery_info->default_properties) {
+    sub_row()->RemoveAllChildViews();
+    return;
+  }
+
+  BluetoothDeviceListItemBatteryView* battery_view = nullptr;
+
+  if (sub_row()->children().empty()) {
+    battery_view = sub_row()->AddChildView(
+        std::make_unique<BluetoothDeviceListItemBatteryView>());
+  } else {
+    DCHECK_EQ(1u, sub_row()->children().size());
+    battery_view = static_cast<BluetoothDeviceListItemBatteryView*>(
+        sub_row()->children().at(0));
+  }
+
+  battery_view->UpdateBatteryInfo(battery_info->default_properties);
 }
 
 const char* BluetoothDeviceListItemView::GetClassName() const {

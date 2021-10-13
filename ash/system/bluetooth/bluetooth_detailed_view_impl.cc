@@ -89,7 +89,7 @@ ash::TriView* BluetoothDetailedViewImpl::AddDeviceListSubHeader(
 }
 
 void BluetoothDetailedViewImpl::NotifyDeviceListChanged() {
-  scroller()->InvalidateLayout();
+  scroll_content()->InvalidateLayout();
   Layout();
 }
 
