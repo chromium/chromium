@@ -6,29 +6,31 @@ package org.chromium.chrome.browser.privacy_review;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.appcompat.widget.Toolbar;
 
+import org.chromium.ui.widget.ButtonCompat;
+
 /**
  * UI for the Privacy Review dialog in Privacy and security settings.
  */
 public class PrivacyReviewDialog extends Dialog {
+    private View mDialogView;
+
     public PrivacyReviewDialog(Context context) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
-        View view = LayoutInflater.from(context).inflate(R.layout.privacy_review_dialog, null);
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        mDialogView = getLayoutInflater().inflate(R.layout.privacy_review_dialog, null);
+
+        Toolbar toolbar = (Toolbar) mDialogView.findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.prefs_privacy_review_title);
         toolbar.inflateMenu(R.menu.privacy_review_toolbar_menu);
         toolbar.setOnMenuItemClickListener(this::onMenuItemClick);
 
-        FrameLayout content = view.findViewById(R.id.dialog_content);
-        LayoutInflater.from(context).inflate(R.layout.privacy_review_welcome, content);
-
-        setContentView(view);
+        setContentView(mDialogView);
+        displayWelcomePage();
     }
 
     private boolean onMenuItemClick(MenuItem menuItem) {
@@ -37,5 +39,20 @@ public class PrivacyReviewDialog extends Dialog {
             return true;
         }
         return false;
+    }
+
+    private void displayWelcomePage() {
+        FrameLayout content = mDialogView.findViewById(R.id.dialog_content);
+        content.removeAllViews();
+        getLayoutInflater().inflate(R.layout.privacy_review_welcome, content);
+
+        ButtonCompat welcomeButton = (ButtonCompat) mDialogView.findViewById(R.id.start_button);
+        welcomeButton.setOnClickListener((View v) -> displayMainFlow());
+    }
+
+    private void displayMainFlow() {
+        FrameLayout content = mDialogView.findViewById(R.id.dialog_content);
+        content.removeAllViews();
+        getLayoutInflater().inflate(R.layout.privacy_review_steps, content);
     }
 }

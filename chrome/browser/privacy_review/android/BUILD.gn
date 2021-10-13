@@ -9,6 +9,7 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//ui/android:ui_full_java",
   ]
   resources_package = "org.chromium.chrome.browser.privacy_review"
 }
@@ -17,6 +18,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/privacy_review_illustration.xml",
     "java/res/layout/privacy_review_dialog.xml",
+    "java/res/layout/privacy_review_steps.xml",
     "java/res/layout/privacy_review_welcome.xml",
     "java/res/menu/privacy_review_toolbar_menu.xml",
     "java/res/values/dimens.xml",
