@@ -67,14 +67,16 @@ void RegisterApp(const std::string& app_id) {
   loop.Run();
 }
 
-void ExpectVersionActive(const std::string& version) {
-  scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(GetUpdaterScope());
+void ExpectVersionActive(UpdaterScope updater_scope,
+                         const std::string& version) {
+  scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(updater_scope);
   ASSERT_NE(prefs, nullptr) << "Failed to acquire GlobalPrefs.";
   EXPECT_EQ(prefs->GetActiveVersion(), version);
 }
 
-void ExpectVersionNotActive(const std::string& version) {
-  scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(GetUpdaterScope());
+void ExpectVersionNotActive(UpdaterScope updater_scope,
+                            const std::string& version) {
+  scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(updater_scope);
   ASSERT_NE(prefs, nullptr) << "Failed to acquire GlobalPrefs.";
   EXPECT_NE(prefs->GetActiveVersion(), version);
 }
@@ -158,9 +160,9 @@ void UpdateAll() {
   loop.Run();
 }
 
-void SetupFakeUpdaterPrefs(const base::Version& version) {
-  scoped_refptr<GlobalPrefs> global_prefs =
-      CreateGlobalPrefs(GetUpdaterScope());
+void SetupFakeUpdaterPrefs(UpdaterScope updater_scope,
+                           const base::Version& version) {
+  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(updater_scope);
   ASSERT_TRUE(global_prefs) << "No global prefs.";
   global_prefs->SetActiveVersion(version.GetString());
   global_prefs->SetSwapping(false);
@@ -178,7 +180,7 @@ void SetupFakeUpdaterInstallFolder(UpdaterScope scope,
 }
 
 void SetupFakeUpdater(UpdaterScope scope, const base::Version& version) {
-  SetupFakeUpdaterPrefs(version);
+  SetupFakeUpdaterPrefs(scope, version);
   SetupFakeUpdaterInstallFolder(scope, version);
 }
 
@@ -200,27 +202,26 @@ void SetupFakeUpdaterHigherVersion(UpdaterScope scope) {
   SetupFakeUpdaterVersion(scope, 1);
 }
 
-void SetExistenceCheckerPath(const std::string& app_id,
+void SetExistenceCheckerPath(UpdaterScope scope,
+                             const std::string& app_id,
                              const base::FilePath& path) {
-  scoped_refptr<GlobalPrefs> global_prefs =
-      CreateGlobalPrefs(GetUpdaterScope());
+  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
   base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService())
       ->SetExistenceCheckerPath(app_id, path);
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
 }
 
-void SetServerStarts(int value) {
-  scoped_refptr<GlobalPrefs> global_prefs =
-      CreateGlobalPrefs(GetUpdaterScope());
+void SetServerStarts(UpdaterScope scope, int value) {
+  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
   for (int i = 0; i <= value; ++i) {
     global_prefs->CountServerStarts();
   }
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
 }
 
-void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id) {
-  scoped_refptr<GlobalPrefs> global_prefs =
-      CreateGlobalPrefs(GetUpdaterScope());
+void ExpectAppUnregisteredExistenceCheckerPath(UpdaterScope scope,
+                                               const std::string& app_id) {
+  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
   auto persisted_data =
       base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
   EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("")).value(),

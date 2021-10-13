@@ -69,8 +69,8 @@ void Install(UpdaterScope scope);
 // are updated correctly.
 void ExpectActiveUpdater(UpdaterScope scope);
 
-void ExpectVersionActive(const std::string& version);
-void ExpectVersionNotActive(const std::string& version);
+void ExpectVersionActive(UpdaterScope scope, const std::string& version);
+void ExpectVersionNotActive(UpdaterScope scope, const std::string& version);
 
 // Uninstalls the updater. If the updater was installed during the test, it
 // should be uninstalled before the end of the test to avoid having an actual
@@ -100,7 +100,7 @@ absl::optional<base::FilePath> GetFakeUpdaterInstallFolderPath(
     const base::Version& version);
 
 // Creates Prefs with the fake updater version set as active.
-void SetupFakeUpdaterPrefs(const base::Version& version);
+void SetupFakeUpdaterPrefs(UpdaterScope scope, const base::Version& version);
 
 // Creates an install folder on the system with the fake updater version.
 void SetupFakeUpdaterInstallFolder(UpdaterScope scope,
@@ -124,12 +124,14 @@ void ExpectActive(UpdaterScope scope, const std::string& app_id);
 // Expects that the active bit for `app_id` is unset.
 void ExpectNotActive(UpdaterScope scope, const std::string& app_id);
 
-void SetExistenceCheckerPath(const std::string& app_id,
+void SetExistenceCheckerPath(UpdaterScope scope,
+                             const std::string& app_id,
                              const base::FilePath& path);
 
-void SetServerStarts(int value);
+void SetServerStarts(UpdaterScope scope, int value);
 
-void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id);
+void ExpectAppUnregisteredExistenceCheckerPath(UpdaterScope scope,
+                                               const std::string& app_id);
 
 void ExpectAppVersion(UpdaterScope scope,
                       const std::string& app_id,

@@ -58,11 +58,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   }
 
   void ExpectVersionActive(const std::string& version) const override {
-    updater::test::ExpectVersionActive(version);
+    updater::test::ExpectVersionActive(kUpdaterScope, version);
   }
 
   void ExpectVersionNotActive(const std::string& version) const override {
-    updater::test::ExpectVersionNotActive(version);
+    updater::test::ExpectVersionNotActive(kUpdaterScope, version);
   }
 
   void ExpectActiveUpdater() const override {
@@ -79,16 +79,17 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void SetExistenceCheckerPath(const std::string& app_id,
                                const base::FilePath& path) const override {
-    updater::test::SetExistenceCheckerPath(app_id, path);
+    updater::test::SetExistenceCheckerPath(kUpdaterScope, app_id, path);
   }
 
   void SetServerStarts(int value) const override {
-    updater::test::SetServerStarts(value);
+    updater::test::SetServerStarts(kUpdaterScope, value);
   }
 
   void ExpectAppUnregisteredExistenceCheckerPath(
       const std::string& app_id) const override {
-    updater::test::ExpectAppUnregisteredExistenceCheckerPath(app_id);
+    updater::test::ExpectAppUnregisteredExistenceCheckerPath(kUpdaterScope,
+                                                             app_id);
   }
 
   void ExpectAppVersion(const std::string& app_id,
