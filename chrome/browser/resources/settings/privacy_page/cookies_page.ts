@@ -34,18 +34,7 @@ import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
-
-/**
- * The primary cookie setting associated with each radio button. Must be kept in
- * sync with the C++ enum of the same name in
- * chrome/browser/content_settings/generated_cookie_prefs.h
- */
-enum CookiePrimarySetting {
-  ALLOW_ALL = 0,
-  BLOCK_THIRD_PARTY_INCOGNITO = 1,
-  BLOCK_THIRD_PARTY = 2,
-  BLOCK_ALL = 3,
-}
+import {CookiePrimarySetting} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 /**
  * Must be kept in sync with the C++ enum of the same name (see

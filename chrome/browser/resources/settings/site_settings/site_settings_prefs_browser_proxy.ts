@@ -140,6 +140,18 @@ export type DefaultContentSetting = {
   source: ContentSettingProvider,
 };
 
+/**
+ * The primary cookie setting states that are possible. Must be kept in sync
+ * with the C++ enum of the same name in
+ * chrome/browser/content_settings/generated_cookie_prefs.h
+ */
+export enum CookiePrimarySetting {
+  ALLOW_ALL = 0,
+  BLOCK_THIRD_PARTY_INCOGNITO = 1,
+  BLOCK_THIRD_PARTY = 2,
+  BLOCK_ALL = 3,
+}
+
 export type MediaPickerEntry = {
   name: string,
   id: string,

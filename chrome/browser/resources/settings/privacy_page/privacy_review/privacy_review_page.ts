@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import '../../prefs/prefs.js';
 import '../../settings_shared_css.js';
 import './privacy_review_clear_on_exit_fragment.js';
+import './privacy_review_cookies_fragment.js';
 import './privacy_review_history_sync_fragment.js';
 import './privacy_review_msbb_fragment.js';
 import './privacy_review_welcome_fragment.js';
@@ -38,6 +39,7 @@ enum PrivacyReviewStep {
   MSBB = 'msbb',
   CLEAR_ON_EXIT = 'clearOnExit',
   HISTORY_SYNC = 'historySync',
+  COOKIES = 'cookies',
   COMPLETION = 'completion',
 }
 
@@ -186,12 +188,25 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         {
           headerString: this.i18n('privacyReviewHistorySyncCardHeader'),
           onForwardNavigation: () => {
-            this.navigateToCard_(PrivacyReviewStep.COMPLETION);
+            this.navigateToCard_(PrivacyReviewStep.COOKIES);
           },
           onBackNavigation: () => {
             this.navigateToCard_(PrivacyReviewStep.CLEAR_ON_EXIT, true);
           },
           isAvailable: () => this.isSyncOn_(),
+        },
+      ],
+      [
+        PrivacyReviewStep.COOKIES,
+        {
+          headerString: this.i18n('privacyReviewCookiesCardHeader'),
+          onForwardNavigation: () => {
+            this.navigateToCard_(PrivacyReviewStep.COMPLETION);
+          },
+          onBackNavigation: () => {
+            this.navigateToCard_(PrivacyReviewStep.HISTORY_SYNC, true);
+          },
+          isAvailable: () => true,
         },
       ],
     ]);

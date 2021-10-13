@@ -72,6 +72,12 @@
         prefs="{{prefs}}">
     </privacy-review-history-sync-fragment>
   </template>
+  <template is="dom-if"
+      if="[[showFragment_(
+             privacyReviewStepEnum_.COOKIES, privacyReviewStep_)]]">
+    <privacy-review-cookies-fragment id="cookiesFragment" prefs="{{prefs}}">
+    </privacy-review-cookies-fragment>
+  </template>
   <template is="dom-if" if="[[showAnySettingFragment_(privacyReviewStep_)]]">
     <div id="settingFooter" class="footer hr">
       <cr-button id="backButton" role="button" on-click="onBackButtonClick_"

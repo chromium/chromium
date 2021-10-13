@@ -7,6 +7,7 @@ import("//tools/polymer/html_to_js.gni")
 html_to_js("web_components") {
   js_files = [
     "privacy_review_clear_on_exit_fragment.ts",
+    "privacy_review_cookies_fragment.ts",
     "privacy_review_description_item.ts",
     "privacy_review_fragment_shared_css.ts",
     "privacy_review_history_sync_fragment.ts",

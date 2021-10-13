@@ -15,7 +15,7 @@ import {flushTasks, isChildVisible} from '../test_util.js';
 // clang-format on
 
 /* Maximum number of steps in the privacy review, excluding the welcome step. */
-const PRIVACY_REVIEW_STEPS = 3;
+const PRIVACY_REVIEW_STEPS = 4;
 
 suite('PrivacyReviewPage', function() {
   /** @type {!SettingsPrivacyReviewPageElement} */
@@ -110,6 +110,7 @@ suite('PrivacyReviewPage', function() {
    *   isMsbbFragmentVisibleExpected: (boolean|undefined),
    *   isClearOnExitFragmentVisibleExpected: (boolean|undefined),
    *   isHistorySyncFragmentVisibleExpected: (boolean|undefined),
+   *   isCookiesFragmentVisibleExpected: (boolean|undefined),
    * }} destructured1
    */
   function assertCardComponentsVisible({
@@ -121,6 +122,7 @@ suite('PrivacyReviewPage', function() {
     isMsbbFragmentVisibleExpected,
     isClearOnExitFragmentVisibleExpected,
     isHistorySyncFragmentVisibleExpected,
+    isCookiesFragmentVisibleExpected,
   }) {
     assertEquals(!!headerTextExpected, isChildVisible(page, '#header'));
     if (headerTextExpected) {
@@ -153,6 +155,9 @@ suite('PrivacyReviewPage', function() {
     assertEquals(
         !!isHistorySyncFragmentVisibleExpected,
         isChildVisible(page, '#historySyncFragment'));
+    assertEquals(
+        !!isCookiesFragmentVisibleExpected,
+        isChildVisible(page, '#cookiesFragment'));
   }
 
   /**
@@ -219,6 +224,20 @@ suite('PrivacyReviewPage', function() {
     assertStepIndicatorModel(1, PRIVACY_REVIEW_STEPS);
   }
 
+  /** @param {boolean|undefined} opt_isSyncOn */
+  function assertCookiesCardVisible(opt_isSyncOn) {
+    assertQueryParameter('cookies');
+    assertCardComponentsVisible({
+      headerTextExpected: page.i18n('privacyReviewCookiesCardHeader'),
+      isSettingFooterVisibleExpected: true,
+      isBackButtonVisibleExpected: true,
+      isCookiesFragmentVisibleExpected: true,
+    });
+    assertStepIndicatorModel(
+        opt_isSyncOn ? 2 : 1,
+        opt_isSyncOn ? PRIVACY_REVIEW_STEPS : PRIVACY_REVIEW_STEPS - 1);
+  }
+
   test('startPrivacyReview', function() {
     // Make sure the pref to show the welcome card is on.
     page.setPrefValue('privacy_review.show_welcome_card', true);
@@ -283,7 +302,7 @@ suite('PrivacyReviewPage', function() {
 
     page.shadowRoot.querySelector('#nextButton').click();
     flush();
-    assertCompletionCardVisible();
+    assertCookiesCardVisible(false);
   });
 
   test('historySyncBackNavigation', function() {
@@ -303,7 +322,7 @@ suite('PrivacyReviewPage', function() {
 
     page.shadowRoot.querySelector('#nextButton').click();
     flush();
-    assertCompletionCardVisible(true);
+    assertCookiesCardVisible(true);
   });
 
   test('historySyncNavigatesAwayOnSyncOff', function() {
@@ -313,13 +332,43 @@ suite('PrivacyReviewPage', function() {
 
     // User disables sync while history sync card is shown.
     setSyncEnabled(false);
-    assertCompletionCardVisible();
+    assertCookiesCardVisible(false);
   });
 
   test('historySyncNotReachableWhenSyncOff', function() {
     navigateToStep('historySync');
     setSyncEnabled(false);
-    assertCompletionCardVisible();
+    assertCookiesCardVisible(false);
+  });
+
+  test('cookiesCardBackNavigationSyncOn', function() {
+    navigateToStep('cookies');
+    setSyncEnabled(true);
+    assertCookiesCardVisible(true);
+
+    page.shadowRoot.querySelector('#backButton').click();
+    flush();
+    assertHistorySyncCardVisible();
+  });
+
+  test('cookiesCardBackNavigationSyncOff', function() {
+    navigateToStep('cookies');
+    setSyncEnabled(false);
+    assertCookiesCardVisible(false);
+
+    page.shadowRoot.querySelector('#backButton').click();
+    flush();
+    assertMsbbCardVisible(false);
+  });
+
+  test('cookiesCardForwardNavigation', function() {
+    navigateToStep('cookies');
+    setSyncEnabled(true);
+    assertCookiesCardVisible(true);
+
+    page.shadowRoot.querySelector('#nextButton').click();
+    flush();
+    assertCompletionCardVisible(true);
   });
 
   test('completionCardBackToSettingsNavigation', function() {
