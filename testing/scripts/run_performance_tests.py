@@ -610,7 +610,7 @@ def parse_arguments(args):
   # crbug.com/1236245: This allows for per-benchmark device logs.
   parser.add_argument('--per-test-logs-dir',
                       help='Require --logs-dir args for test', required=False,
-                      default=False)
+                      default=False, action='store_true')
   # Some executions may have a different sharding scheme and/or set of tests.
   # These files must live in src/tools/perf/core/shard_maps
   parser.add_argument('--test-shard-map-filename', type=str, required=False)
