@@ -79,10 +79,16 @@ class TestNotificationView : public NotificationViewBase {
   TestNotificationView& operator=(const TestNotificationView&) = delete;
   ~TestNotificationView() override = default;
 
+  // NotificationViewBase:
   void CreateOrUpdateTitleView(const Notification& notification) override {}
   gfx::Size GetIconViewSize() const override { return gfx::Size(); }
   void CreateOrUpdateSmallIconView(const Notification& notification) override {}
   bool IsExpandable() const override { return true; }
+  std::unique_ptr<views::LabelButton> GenerateNotificationLabelButton(
+      views::Button::PressedCallback callback,
+      const std::u16string& label) override {
+    return std::make_unique<views::LabelButton>(std::move(callback), label);
+  }
 };
 
 class NotificationTestDelegate : public NotificationDelegate {

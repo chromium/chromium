@@ -433,29 +433,25 @@ TEST_F(NotificationViewTest, TestAccentColor) {
       DeriveMinContrastColor(gfx::kGoogleBlue600, kActionButtonBackgroundColor);
   EXPECT_FALSE(
       notification_view()->header_row_->color_for_testing().has_value());
-  EXPECT_EQ(
-      kActionButtonTextColor,
-      notification_view()->action_buttons_[0]->enabled_color_for_testing());
-  EXPECT_EQ(
-      kActionButtonTextColor,
-      notification_view()->action_buttons_[1]->enabled_color_for_testing());
+  EXPECT_EQ(kActionButtonTextColor,
+            notification_view()->action_buttons_[0]->GetCurrentTextColor());
+  EXPECT_EQ(kActionButtonTextColor,
+            notification_view()->action_buttons_[1]->GetCurrentTextColor());
   EXPECT_TRUE(
       app_icon_color_matches(notification_view()->GetColorProvider()->GetColor(
           ui::kColorNotificationHeaderForeground)));
 
-  // If custom accent color is set, the header and the buttons should have the
-  // same accent color.
+  // If custom accent color is set, the header and the buttons should have
+  // the same accent color.
   notification->set_accent_color(kDarkCustomAccentColor);
   UpdateNotificationViews(*notification);
   auto accent_color = notification_view()->header_row_->color_for_testing();
   ASSERT_TRUE(accent_color.has_value());
   EXPECT_EQ(kDarkCustomAccentColor, accent_color.value());
-  EXPECT_EQ(
-      kDarkCustomAccentColor,
-      notification_view()->action_buttons_[0]->enabled_color_for_testing());
-  EXPECT_EQ(
-      kDarkCustomAccentColor,
-      notification_view()->action_buttons_[1]->enabled_color_for_testing());
+  EXPECT_EQ(kDarkCustomAccentColor,
+            notification_view()->action_buttons_[0]->GetCurrentTextColor());
+  EXPECT_EQ(kDarkCustomAccentColor,
+            notification_view()->action_buttons_[1]->GetCurrentTextColor());
   EXPECT_TRUE(app_icon_color_matches(kDarkCustomAccentColor));
 
   // If the custom accent color is too bright, we expect it to be darkened so
@@ -471,12 +467,10 @@ TEST_F(NotificationViewTest, TestAccentColor) {
   accent_color = notification_view()->header_row_->color_for_testing();
   ASSERT_TRUE(accent_color.has_value());
   EXPECT_EQ(kBrightCustomAccentColor, accent_color.value());
-  EXPECT_EQ(
-      expected_color_actions,
-      notification_view()->action_buttons_[0]->enabled_color_for_testing());
-  EXPECT_EQ(
-      expected_color_actions,
-      notification_view()->action_buttons_[1]->enabled_color_for_testing());
+  EXPECT_EQ(expected_color_actions,
+            notification_view()->action_buttons_[0]->GetCurrentTextColor());
+  EXPECT_EQ(expected_color_actions,
+            notification_view()->action_buttons_[1]->GetCurrentTextColor());
   EXPECT_TRUE(app_icon_color_matches(expected_color_title));
 }
 
