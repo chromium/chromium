@@ -772,13 +772,14 @@ bool ChromeContentRendererClient::IsPluginHandledExternally(
     // otherwise, let Blink try to create the in-process PDF plugin.
     url::Origin frame_origin = render_frame->GetWebFrame()->GetSecurityOrigin();
     if (IsPdfInternalPluginAllowedOrigin(frame_origin)) {
-      // TODO(crbug.com/1253984): Until this is fixed, allow Print Preview to
-      // create the in-process plugin directly within its own frames.
-      if (frame_origin ==
-          url::Origin::Create(GURL(chrome::kChromeUIPrintURL))) {
-        DCHECK_EQ(original_url.GetOrigin(), chrome::kChromeUIPrintURL);
+      // Print Preview workaround: We can't distinguish external vs. internal by
+      // origin alone, but we know that the plugin frame is in a special PDF
+      // renderer, and therefore the Print Preview UI frames are remote.
+      // TODO(crbug.com/1238829): Use chrome-untrusted://print instead.
+      blink::WebFrame* parent = render_frame->GetWebFrame()->Parent();
+      if (parent && parent->IsWebRemoteFrame())
         return false;
-      }
+
       return true;
     }
   }
