@@ -154,6 +154,10 @@ Bus::Options::Options()
 
 Bus::Options::~Options() = default;
 
+Bus::Options::Options(Bus::Options&&) = default;
+
+Bus::Options& Bus::Options::operator=(Bus::Options&&) = default;
+
 Bus::Bus(const Options& options)
     : bus_type_(options.bus_type),
       connection_type_(options.connection_type),
