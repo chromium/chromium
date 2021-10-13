@@ -110,6 +110,10 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
       return handle;
   }
 
+  size_t buffer_size;
+  if (!BufferSizeForBufferFormatChecked(size, format, &buffer_size))
+    return handle;
+
   // We are binding as a shader resource and render target regardless of usage,
   // so make sure that the usage is one that we support.
   DCHECK(usage == gfx::BufferUsage::GPU_READ ||
@@ -141,10 +145,6 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
   if (FAILED(dxgi_resource->CreateSharedHandle(
           nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
           nullptr, &texture_handle)))
-    return handle;
-
-  size_t buffer_size;
-  if (!BufferSizeForBufferFormatChecked(size, format, &buffer_size))
     return handle;
 
   handle.dxgi_handle.Set(texture_handle);
