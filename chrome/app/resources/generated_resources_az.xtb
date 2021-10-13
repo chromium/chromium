@@ -216,7 +216,6 @@
 <translation id="1218015446623563536">Linux'u silin</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Google'un məkan xidməti bu cihazın məkanını tapmaq üçün Wi-Fi və mobil şəbəkələr və sensorlardan istifadə edir.<ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />Bu cihazda əsas Məkan ayarını deaktiv etməklə Məkanı deaktiv edə bilərsiniz. Həmçinin, məkanın Wi-Fi və mobil şəbəkələr və sensorlardan istifadəsini məkan ayarlarından deaktiv edə bilərsiniz.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247"><ph name="LANGUAGE" /> dilində danışıq fayllarını endirmək mümkün olmadı. Endirməyə daha sonra cəhd ediləcək. Danışıq hələlik emal üçün Google'a göndərilir.</translation>
 <translation id="122082903575839559">Sertifikat İmza Alqoritmi</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 With RSA Şifrləmə</translation>
 <translation id="1221825588892235038">Yalnız seçim</translation>
@@ -4919,7 +4918,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6232017090690406397">Batareya</translation>
 <translation id="6232116551750539448"><ph name="NAME" /> bağlantısı kəsildi</translation>
 <translation id="6233154960150021497">Klaviatura əvəzinə səsdən istifadə üçün defolt</translation>
-<translation id="6233455992368963267"><ph name="LANGUAGE" /> nitqi işlənmək üçün Google'a göndəriləcək.</translation>
 <translation id="6234108445915742946">Chrome’un Xidmət Şərtləri 31 martda dəyişəcək</translation>
 <translation id="6234474535228214774">Quraşdırma gözlənilir</translation>
 <translation id="6235208551686043831">Cihaz kamerası aktiv edilib. eSIM QR kodunuzu kameranın qarşısına tutun.</translation>

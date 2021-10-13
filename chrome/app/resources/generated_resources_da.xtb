@@ -221,7 +221,6 @@
 <translation id="1218015446623563536">Slet Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Googles lokationstjeneste anvender kilder som f.eks. Wi‑Fi, mobilnetværk og sensorer til at fastslå enhedens placering.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan slå Placering fra ved at deaktivere den overordnede lokationsindstilling på enheden. Du kan også deaktivere brugen af Wi-Fi, mobilnetværk og sensorer ifm. placering i lokationsindstillingerne.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Talefilerne på <ph name="LANGUAGE" /> kunne ikke downloades. Downloaden forsøges senere. Tale sendes i mellemtiden til behandling hos Google.</translation>
 <translation id="122082903575839559">Algoritme for certifikatsignatur</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 med RSA-kryptering</translation>
 <translation id="1221825588892235038">Kun det markerede</translation>
@@ -309,6 +308,7 @@
 <translation id="1313660246522271310">Du logges ud af alle websites, også i åbne faner</translation>
 <translation id="1313705515580255288">Dine bogmærker, din historik og dine andre indstillinger bliver synkroniseret med din Google-konto.</translation>
 <translation id="1316136264406804862">Søger...</translation>
+<translation id="1316248800168909509">Der kunne ikke oprettes forbindelse til <ph name="DEVICE" />. Prøv igen.</translation>
 <translation id="1316495628809031177">Synkroniseringen er sat på pause</translation>
 <translation id="1317637799698924700">Din dockingstation køres i USB-C-kompatibel tilstand.</translation>
 <translation id="1319983966058170660">Knap til undersiden <ph name="SUBPAGE_TITLE" /></translation>
@@ -1191,6 +1191,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2200356397587687044">Chrome skal have tilladelse til at fortsætte</translation>
 <translation id="2202898655984161076">Der opstod et problem under fortegnelsen af printere. Nogle af dine printere er muligvis ikke registreret korrekt hos <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Navne må indeholde bogstaver, tal og specialtegn</translation>
+<translation id="220321590587754225">Der kunne ikke oprettes forbindelse. Prøv igen.</translation>
 <translation id="2204034823255629767">Læs og rediger alt, hvad du indtaster</translation>
 <translation id="220858061631308971">Angiv denne pinkode på "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Installationen kunne ikke gennemføres</translation>
@@ -4942,7 +4943,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6232116551750539448">Forbindelsen til <ph name="NAME" /> er afbrudt.</translation>
 <translation id="6233154960150021497">Brug stemmen som standard i stedet for tastaturet</translation>
-<translation id="6233455992368963267"><ph name="LANGUAGE" /> tale sendes til behandling hos Google.</translation>
 <translation id="6234108445915742946">Servicevilkårene for Chrome ændres den 31. marts</translation>
 <translation id="6234474535228214774">Installation afventer</translation>
 <translation id="6235208551686043831">Enhedens kamera er aktiveret. Placer QR-koden for dit eSIM foran kameraet.</translation>
@@ -4979,6 +4979,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6263284346895336537">Ikke kritisk</translation>
 <translation id="6264365405983206840">Vælg &amp;alle</translation>
 <translation id="6265687851677020761">Fjern port</translation>
+<translation id="6266532094411434237">Der oprettes forbindelse til <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Vælg et certifikat til at bekræfte dig selv over for <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Åbn med <ph name="APP" /></translation>
 <translation id="6270391203985052864">Websites kan spørge dig, om de må sende dig notifikationer</translation>

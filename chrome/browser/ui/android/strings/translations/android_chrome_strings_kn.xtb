@@ -404,6 +404,7 @@
 <translation id="3429160811076349561">ಪ್ರಾಯೋಗಿಕ ವೈಶಿಷ್ಟ್ಯಗಳು ಆಫ್ ಆಗಿವೆ</translation>
 <translation id="3440975416244667276">ಹೆಚ್ಚು ಸೂಕ್ತವಾದ ಮಾಹಿತಿಗಾಗಿ ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಹೋಲ್ಡ್‌ ಮಾಡಿ</translation>
 <translation id="3443221991560634068">ಪ್ರಸ್ತುತ ಪುಟ ಮರುಲೋಡ್ ಮಾಡಿ</translation>
+<translation id="3444179773590444986">ಸೈಟ್‌ಗಳಿಗಾಗಿ ಡಾರ್ಕ್ ಥೀಮ್‌ ಕುರಿತು ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ನಿಗದಿಪಡಿಸಲಾಗಿದೆ}one{# ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ನಿಗದಿಪಡಿಸಲಾಗಿದೆ}other{# ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ನಿಗದಿಪಡಿಸಲಾಗಿದೆ}}</translation>
 <translation id="3478363558367712427">ನಿಮ್ಮ ಹುಡುಕಾಟ ಎಂಜಿನ್ ಅನ್ನು ನೀವು ಆಯ್ಕೆಮಾಡಬಹುದು</translation>
 <translation id="3493531032208478708">ಸೂಚಿಸಲಾದ ವಿಷಯದ ಕುರಿತು <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
@@ -584,6 +585,7 @@
 <translation id="4663499661119906179">ನಿಮಗಾಗಿ ಪ್ರಮುಖ ಸೈಟ್‌ಗಳು ಮತ್ತು ಸ್ಟೋರಿಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4668347365065281350">ಕುಕೀಗಳು ಮತ್ತು ಸ್ಥಳೀಯವಾಗಿ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾಗಿರುವ ಡೇಟಾ ಸೇರಿದ ಹಾಗೆ, ಸೈಟ್‌ಗಳು ಸಂಗ್ರಹಣೆ ಮಾಡಿರುವ ಎಲ್ಲಾ ಡೇಟಾ</translation>
+<translation id="4678082183394354975">ಸೈಟ್‌ಗಳಿಗಾಗಿ ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ನು Chrome ನಲ್ಲಿ ಆನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4684427112815847243">ಪ್ರತಿಯೊಂದನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">ನಿಮ್ಮ ಸಾಧನಗಳಿಗೆ ಪಠ್ಯವನ್ನು ಕಳುಹಿಸಿ</translation>
@@ -765,6 +767,7 @@
 <translation id="5754350196967618083">Discover ಅನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="5763382633136178763">ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="5763514718066511291">ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗಾಗಿ URL ನಕಲಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
+<translation id="5765517223145864268">ನಿಮ್ಮ ಅನುಭವದ ಬಗ್ಗೆ ನಮಗೆ ತಿಳಿಸಿ. ಅಥವಾ <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಿಸಿ<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">ವಿವರಣೆ:</translation>
 <translation id="5767013862801005129"><ph name="TAB_TITLE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
 <translation id="5776970333778123608">ಮುಖ್ಯವಲ್ಲದ ಡೇಟಾ</translation>
@@ -952,6 +955,7 @@
 <translation id="6738516213925468394">ನಿಮ್ಮ ಡೇಟಾವನ್ನು <ph name="TIME" /> ಸಮಯಕ್ಕೆ ನಿಮ್ಮ <ph name="BEGIN_LINK" />ಸಿಂಕ್ ಪಾಸ್‌ಫ್ರೇಸ್<ph name="END_LINK" /> ನೊಂದಿಗೆ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ. ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು ಅದನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="6738867403308150051">ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="6751521182688001123">ಹೊಸ ಟ್ಯಾಬ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ತೆರೆಯಿರಿ. ಈ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಒತ್ತಿ ಹಿಡಿಯಿರಿ.</translation>
+<translation id="6756507620369789050">ಪ್ರತಿಕ್ರಿಯೆ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="6767294960381293877">ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕಾದ ಸಾಧನಗಳ ಪಟ್ಟಿಯನ್ನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="6783942555455976443">ನಂತರದ ಬಳಕೆಗಾಗಿ ಈ ಪುಟವನ್ನು ಉಳಿಸಿ ಮತ್ತು ಜ್ಞಾಪನೆಯನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="6795633245022906657">ಹೊಸ ಟ್ಯಾಬ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ತೆರೆಯಿರಿ. ಈ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ.</translation>
@@ -1043,6 +1047,7 @@
 <translation id="7352651011704765696">ಯಾವುದೋ ತಪ್ಪು ಸಂಭವಿಸಿದೆ</translation>
 <translation id="7352939065658542140">ವೀಡಿಯೊ</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{ಆಯ್ಕೆಮಾಡಲಾದ 1 ಐಟಂ ಹಂಚಿಕೊಳ್ಳಿ}one{ಆಯ್ಕೆಮಾಡಲಾದ # ಐಟಂಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ}other{ಆಯ್ಕೆಮಾಡಲಾದ # ಐಟಂಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ}}</translation>
+<translation id="7356631068872238169">ಓದುವ ಪಟ್ಟಿಯಿಂದ ಅಳಿಸಿ</translation>
 <translation id="7359002509206457351">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="7375125077091615385">ಪ್ರಕಾರ:</translation>
 <translation id="7376560087009844242">ಪುಟದಲ್ಲಿರುವ ಇನ್ನಷ್ಟು ಪಠ್ಯವನ್ನು ಸೇರಿಸುವ ಮೂಲಕ, ಹುಡುಕಲು ಸ್ಪರ್ಶಿಸಿ ಎಂಬುದನ್ನು ಬಳಸುವಾಗ ನೀವು ಉತ್ತಮ ಫಲಿತಾಂಶಗಳನ್ನು ನೋಡಬಹುದು. ಇದನ್ನು ಬದಲಾಯಿಸಲು ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="END_LINK" /> ಭೇಟಿ ನೀಡಬಹುದು.</translation>
@@ -1213,6 +1218,7 @@
 <translation id="8266862848225348053">ಡೌನ್‌ಲೋಡ್ ಸ್ಥಳ</translation>
 <translation id="8274165955039650276">ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="8281886186245836920">ಸ್ಕಿಪ್‌</translation>
+<translation id="8282297628636750033">ಸೈಟ್‌ಗೆ ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ವಯಿಸಿ</translation>
 <translation id="8284326494547611709">ಶೀರ್ಷಿಕೆಗಳು</translation>
 <translation id="829672787777123339">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="8310344678080805313">ಪ್ರಮಾಣಿತ ಟ್ಯಾಬ್‌ಗಳು</translation>
@@ -1344,6 +1350,7 @@
 <translation id="9063523880881406963">ಡೆಸ್ಕ್‌ಟಾಪ್ ಸೈಟ್ ವಿನಂತಿಯನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="9065203028668620118">ಎಡಿಟ್</translation>
 <translation id="9065383040763568503">Chrome ಪ್ರಕಾರ ಮುಖ್ಯವಲ್ಲದ, ಸಂಗ್ರಹಣೆ ಮಾಡಲಾಗಿರುವ ಡೇಟಾ (ಉದಾ., ಉಳಿಸಿದ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿರದ ಸೈಟ್‌ಗಳು ಅಥವಾ ನೀವು ಆಗಾಗ ಭೇಟಿ ನೀಡದ ಸೈಟ್‌ಗಳು)</translation>
+<translation id="906781307897697745"><ph name="PRODUCT_NAME" /> ನಲ್ಲಿ</translation>
 <translation id="9069999660519089861">ಯಾವುದೇ ಓದದಿರುವ ಪುಟಗಳಿಲ್ಲ</translation>
 <translation id="9070377983101773829">ಧ್ವನಿ ಹುಡುಕಾಟವನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="9074336505530349563">Google ಸಲಹೆ ನೀಡಿದ ವೈಯಕ್ತೀಕರಿಸಲಾದ ವಿಷಯವನ್ನು ಪಡೆದುಕೊಳ್ಳಲು, ಸೈನ್ ಇನ್ ಮಾಡಿ ಮತ್ತು ಸಿಂಕ್ ಆನ್ ಮಾಡಿ</translation>

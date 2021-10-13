@@ -214,6 +214,7 @@
 <translation id="160851722280695521">Dino Run оюнун Chrome'до ойноо</translation>
 <translation id="161042844686301425">Көгүлтүр</translation>
 <translation id="1611101756749861742">Экинчи барабан</translation>
+<translation id="1615402009686901181">Купуя нерселер көрүнүп турганда, Администратордун саясатына ылайык экрандагыны сүрөткө тартып алууга болбойт</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1623104350909869708">Бул бет кошумча диалогдорду түзбөсүн</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -863,7 +864,6 @@
 <translation id="3781428340399460090">Ачык кызгылтым</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth түзмөктөрү</translation>
-<translation id="3787675388804467730">Виртуалдык картанын номери</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /> мөөнөтү аяктайт</translation>
 <translation id="3789155188480882154">Өлчөмү: 16</translation>
 <translation id="3789841737615482174">Орнотуу</translation>
@@ -1578,6 +1578,7 @@
 <translation id="6080696365213338172">Мазмунду администратор берген тастыктама аркылуу колдондуңуз. <ph name="DOMAIN" /> тапшырылган дайын-даректериңизди ортодон администраторуңуз кармап калышы мүмкүн.</translation>
 <translation id="6087312102907839798">Окшош натыйжалар</translation>
 <translation id="6094273045989040137">Аннотация режимин иштетүү</translation>
+<translation id="6094290315941448991">Купуя нерселер көрүнүп турганда, Администратордун саясатына ылайык экрандагыны видеого жаздырып алууга болбойт</translation>
 <translation id="6104072995492677441">JIS B6 (128mm x 182mm)</translation>
 <translation id="6105460996796456817">Сайт түзүү</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> дарегиндеги веб-баракча убактылуу иштебейт же жаңы веб дарекке биротоло көчүрүлгөн окшойт.</translation>
@@ -2378,6 +2379,7 @@
 <translation id="8870494189203302833">Ошол эле иретте алдыңкы бетин ылдый каратып</translation>
 <translation id="8871553383647848643">Cерепчинин көрүнүшүн ыңгайлаштыруу</translation>
 <translation id="8874824191258364635">Жарактуу карточканын номерин киргизиңиз</translation>
+<translation id="8884537526797090108">Купуя мазмунду жаздырууга болбойт</translation>
 <translation id="8891727572606052622">Жараксыз прокси режими.</translation>
 <translation id="8894794286471754040">Биринчи узундугу боюнча</translation>
 <translation id="8903921497873541725">Чоңойтуу</translation>
@@ -2432,6 +2434,7 @@
 <translation id="9050666287014529139">Купуя сөз айкашы</translation>
 <translation id="9056953843249698117">Дүкөн</translation>
 <translation id="9062620674789239642">Ал башка жакка көчүрүлгөн, түзөтүлгөн же өчүрүлгөн окшойт.</translation>
+<translation id="9063800855227801443">Купуя мазмунду сүрөткө тартып алууга болбойт</translation>
 <translation id="9065203028668620118">Түзөтүү</translation>
 <translation id="9065745800631924235">Таржымалдан <ph name="TEXT" /> сурамын издөө</translation>
 <translation id="9069693763241529744">Кеңейтүү тарабынан бөгөттөлгөн</translation>

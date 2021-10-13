@@ -214,6 +214,7 @@
 <translation id="160851722280695521">‏تشغيل لعبة الديناصور في Chrome</translation>
 <translation id="161042844686301425">سماوي</translation>
 <translation id="1611101756749861742">اللفافة الثانية</translation>
+<translation id="1615402009686901181">تحظر سياسة المشرف إمكانية تصوير الشاشة عند عرض محتوى سري.</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1623104350909869708">منع هذه الصفحة من إنشاء مربعات حوار إضافية.</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -863,7 +864,6 @@
 <translation id="3781428340399460090">وردي برّاق</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">أجهزة بلوتوث</translation>
-<translation id="3787675388804467730">رقم البطاقة الافتراضية</translation>
 <translation id="3787705759683870569">تنتهي في <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">الحجم 16</translation>
 <translation id="3789841737615482174">تثبيت</translation>
@@ -1577,6 +1577,7 @@
 <translation id="6080696365213338172">لقد دخلت إلى المحتوى باستخدام شهادة وفرها المشرف. ويمكن أن يعترض المشرف طريق البيانات التي تقدمها إلى <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">عمليات البحث ذات الصلة</translation>
 <translation id="6094273045989040137">إضافة تعليق توضيحي</translation>
+<translation id="6094290315941448991">تحظر سياسة المشرف ميزة تسجيل الشاشة عند عرض محتوى سري.</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">إنشاء موقع إلكتروني</translation>
 <translation id="6106989379647458772">قد تكون صفحة الويب على <ph name="PAGE" /> غير متاحة مؤقتًا أو تم نقلها نهائيًا إلى عنوان ويب جديد.</translation>
@@ -2378,6 +2379,7 @@
 <translation id="8870494189203302833">نفس الترتيب والوجه للأسفل</translation>
 <translation id="8871553383647848643">تخصيص مظهر المتصفِّح</translation>
 <translation id="8874824191258364635">أدخِل رقم بطاقة صحيحًا</translation>
+<translation id="8884537526797090108">لا يمكن تسجيل الشاشة بسبب المحتوى السري</translation>
 <translation id="8891727572606052622">وضع الخادم الوكيل غير صالح.</translation>
 <translation id="8894794286471754040">الحافة الطويلة أولًا</translation>
 <translation id="8903921497873541725">تكبير</translation>
@@ -2432,6 +2434,7 @@
 <translation id="9050666287014529139">عبارة المرور</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">من المحتمل أن يكون قد تم نقل الملف أو تعديله أو حذفه.</translation>
+<translation id="9063800855227801443">لا يمكن تصوير الشاشة بسبب المحتوى السري</translation>
 <translation id="9065203028668620118">تعديل</translation>
 <translation id="9065745800631924235">البحث عن <ph name="TEXT" /> من السجلّ.</translation>
 <translation id="9069693763241529744">تم الحظر بواسطة إحدى الإضافات</translation>

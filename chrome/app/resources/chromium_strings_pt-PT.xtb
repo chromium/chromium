@@ -131,7 +131,6 @@
 <translation id="5386450000063123300">A atualizar o Chromium (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="538767207339317086">Permitir o início de sessão no Chromium</translation>
 <translation id="5398878173008909840">Está disponível uma nova versão do Chromium.</translation>
-<translation id="5416696090975899932">O Chromium não pode apresentar a pré-visualização de impressão com o visualizador de PDFs incorporado em falta.</translation>
 <translation id="5427571867875391349">Definir o Chromium como o seu navegador predefinido</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5479196819031988440">O SO Chromium não consegue abrir esta página.</translation>
@@ -209,6 +208,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="718435575166326686">O Chromium necessita da autorização da câmara para este site</translation>
 <translation id="7196312274710523067">Não foi possível iniciar o Chromium. Tente novamente.</translation>
 <translation id="7197677400338048821">O Chromium não consegue verificar as suas palavras-passe. Tente novamente após 24 horas.</translation>
+<translation id="7218568399872925918">Os sites que visita memorizam as suas informações até fechar o Chromium</translation>
 <translation id="7223968959479464213">Gestor de Tarefas - Chromium</translation>
 <translation id="731795002583552498">A atualizar o Chromium…</translation>
 <translation id="7318036098707714271">O ficheiro de preferências está danificado ou não é válido.
@@ -262,6 +262,8 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8621669128220841554">A instalação falhou devido a um erro não especificado. Descarregue novamente o Chromium .</translation>
 <translation id="8697124171261953979">Também controla a página apresentada quando inicia o Chromium ou pesquisa a partir da Caixa geral.</translation>
 <translation id="8704119203788522458">Este é o seu Chromium</translation>
+<translation id="8713679423359107094">Quando fecha todas as janelas do Chromium, os cookies e os dados de sites são automaticamente limpos</translation>
+<translation id="8796443464227412154">A sua <ph name="BEGIN_BOLD" />sessão será terminada na maioria dos sites<ph name="END_BOLD" /> quando fecha o Chromium. Se a sincronização estiver desativada, a sua <ph name="BEGIN_BOLD" />sessão também será terminada nos serviços Google e no Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">O Chromium necessita de autorização de acesso à câmara e ao microfone para este site.</translation>
 <translation id="8803635938069941624">Termos do SO Chromium</translation>
 <translation id="8821041990367117597">O Chromium não conseguiu sincronizar os dados porque os detalhes de início de sessão da sua conta estão desatualizados.</translation>

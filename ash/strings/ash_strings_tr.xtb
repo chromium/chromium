@@ -264,6 +264,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2996462380875591307">Yerleştirilmiş Büyüteç etkinleştirildi. Kapatmak için tekrar Ctrl+Arama+H tuşlarına basın.</translation>
 <translation id="3000461861112256445">Mono ses</translation>
 <translation id="3009178788565917040">Çıkış</translation>
+<translation id="3009958530611748826">Kaydedilecek bir klasör seçin</translation>
 <translation id="3017687597151988916">Seçim alanı pencere olarak ayarlandı</translation>
 <translation id="3033545621352269033">Açık</translation>
 <translation id="3036649622769666520">Dosya Aç</translation>
@@ -509,7 +510,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> indiriliyor</translation>
 <translation id="4696813013609194136">Kilidi ebeveyn koduyla açın</translation>
 <translation id="4702647871202761252">Gizlilik ekranı kapalı</translation>
-<translation id="4706121060329443414">İndirme işlemi daha sonra tekrar denenecek. Konuşma şimdilik işlenmek üzere Google'a gönderilecek.</translation>
 <translation id="4731797938093519117">Ebeveyn erişimi</translation>
 <translation id="4734965478015604180">Yatay</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Sayı klavye kısayolu değişti. İşlev tuşlarını kullanmak için <ph name="LAUNCHER_KEY_NAME" /> tuşu + üst sıradaki tuşlardan birine basın.</translation>
@@ -695,7 +695,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6073451960410192870">Kaydı durdur</translation>
 <translation id="607652042414456612">Bilgisayarınız yakındaki Bluetooth cihazlar tarafından keşfedilebilir durumdadır. Ayrıca,
 <ph name="ADDRESS" /> adresine sahip "<ph name="NAME" />" olarak görünecek</translation>
-<translation id="6094290315941448991">Yönetici politikası ekranda gizli içerik varken ekran kaydı almaya izin vermiyor</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> dosyaları indirildi</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Asistan, misafir oturumunda kullanılamaz.</translation>
@@ -1051,7 +1050,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8876661425082386199">Bağlantınızı denetleyin</translation>
 <translation id="8877788021141246043">Hatırlatıcı oluştur</translation>
 <translation id="8878886163241303700">Genişletilmiş ekran</translation>
-<translation id="8884537526797090108">Gizli içerik kaydedilemez</translation>
 <translation id="890616557918890486">Kaynağı değiştir</translation>
 <translation id="8909138438987180327">Pil yüzde <ph name="PERCENTAGE" /> dolu.</translation>
 <translation id="8913384980486163186">Temalı (varsayılan)</translation>

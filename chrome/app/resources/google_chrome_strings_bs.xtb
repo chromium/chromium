@@ -52,7 +52,6 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2121284319307530122">Ponovo pokrenite da ažurirate &amp;Chrome</translation>
 <translation id="2123055963409958220">Pomozite nam da poboljšamo Chrome izvještavanjem o <ph name="BEGIN_LINK" />trenutnim postavkama<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Ponovo pokrenite Chrome sada</translation>
-<translation id="2246246234298806438">Google Chrome ne može prikazati pregled prije štampanja kada nedostaje ugrađeni preglednik za PDF.</translation>
 <translation id="2290014774651636340">Nedostaju ključevi za Google API. Neke funkcionalnosti Google Chromea će biti onemogućene.</translation>
 <translation id="2290095356545025170">Jeste li sigurni da želite deinstalirati Google Chrome?</translation>
 <translation id="2309047409763057870">Ovo je sekundarna instalacija Google Chromea, pa on ne može biti vaš zadani preglednik.</translation>
@@ -91,6 +90,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="3037838751736561277">Google Chrome radi u pozadinskom načinu rada.</translation>
 <translation id="3059710691562604940">Sigurno pregledanje je isključeno. Chrome preporučuje da ga uključite.</translation>
 <translation id="3065168410429928842">Chromeova kartica</translation>
+<translation id="3069821012350118710">Web lokacije koje posjetite pamte vaše podatke dok ne zatvorite Chrome</translation>
 <translation id="3080151273017101988">Ostavi aplikacije da rade u pozadini kada se Google Chrome zatvori</translation>
 <translation id="3089968997497233615">Dostupna je nova, sigurnija verzija Google Chromea.</translation>
 <translation id="3100998948628680988">Dajte naziv Chrome profilu</translation>
@@ -192,6 +192,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="5804318322022881572">Pokretanje Chromea nije uspjelo. Ponovite.</translation>
 <translation id="5867197326698922595">Google Chrome pokušava urediti lozinke.</translation>
 <translation id="5895138241574237353">Ponovo pokreni</translation>
+<translation id="5901850848447342934"><ph name="BEGIN_BOLD" />Odjavit ćete se s većine web lokacija<ph name="END_BOLD" /> kada zatvorite Chrome. Ako je sinhronizacija isključena, također ćete se <ph name="BEGIN_BOLD" />odjaviti s Googleovih usluga i Chromea<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – prijava na mrežu</translation>
 <translation id="5940385492829620908">Vaša aktivnost na webu, oznake i drugi sadržaji s Chromea se nalaze ovdje.</translation>
 <translation id="5941830788786076944">Postavite Google Chrome kao zadani preglednik</translation>
@@ -281,6 +282,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="8614913330719544658">Google Chrome ne reagira. Ponovo pokrenuti sada?</translation>
 <translation id="861702415419836452">Chromeu je potrebno odobrenje da pristupi kameri radi kreiranja 3D mape vašeg okruženja</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome će se ponovo pokrenuti za 1 minutu}one{Chrome će se ponovo pokrenuti za # minutu}few{Chrome će se ponovo pokrenuti za # minute}other{Chrome će se ponovo pokrenuti za # minuta}}</translation>
+<translation id="8629311577791198377">Kada zatvorite sve prozore Chromea, kolačići i podaci web lokacija se automatski brišu</translation>
 <translation id="8641606876632989680">Chrome će vas obavijestiti kada se prijavite s ugroženom lozinkom</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Također kontrolira koja stranica se prikazuje kada pokrenete Chrome.</translation>

@@ -261,6 +261,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2996462380875591307">Gaituta dago lupa ainguratua. Desaktibatzeko, sakatu berriro Ktrl + Bilatu + D.</translation>
 <translation id="3000461861112256445">Audio monofonikoa</translation>
 <translation id="3009178788565917040">Irteera</translation>
+<translation id="3009958530611748826">Hautatu zer karpetatan gorde nahi duzun</translation>
 <translation id="3017687597151988916">Hautapen-eremua leihoan dago ezarrita</translation>
 <translation id="3033545621352269033">Aktibatuta</translation>
 <translation id="3036649622769666520">Ireki fitxategiak</translation>
@@ -505,7 +506,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4665114317261903604">Gaitu/Desgaitu ez molestatzeko modua. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Desblokeatu gailua gurasoen kodearekin</translation>
 <translation id="4702647871202761252">Desaktibatuta dago pribatutasun-pantaila</translation>
-<translation id="4706121060329443414">Geroago saiatuko da deskargatzen berriro. Hizketa Google-ra bidaliko da prozesatzeko, oraingoz.</translation>
 <translation id="4731797938093519117">Gurasoen sarbidea</translation>
 <translation id="4734965478015604180">Horizontala</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + zenbakia lasterbidea aldatu egin da. Funtzio-teklak erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + goiko errenkadako tekla bat.</translation>
@@ -689,7 +689,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6062360702481658777">Saioa automatikoki amaituko da <ph name="LOGOUT_TIME_LEFT" /> igarotakoan.</translation>
 <translation id="6073451960410192870">Utzi grabatzeari</translation>
 <translation id="607652042414456612">Ordenagailua ikusgai dago inguruko Bluetooth bidezko gailuetarako, eta "<ph name="NAME" />" izenarekin eta <ph name="ADDRESS" /> helbidearekin agertuko da</translation>
-<translation id="6094290315941448991">Administratzailearen gidalerroek pantaila-grabaketa bat egitea eragozten dute isilpeko edukia ikusgai dagoenean</translation>
 <translation id="6114505516289286752">Deskargatu dira hizketa-fitxategiak (<ph name="LANGUAGE" />)</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google-ren Laguntzailea ez dago erabilgarri gonbidatuentzako saioetan.</translation>
@@ -1044,7 +1043,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8876661425082386199">Egiaztatu konektatuta zaudela</translation>
 <translation id="8877788021141246043">Ezarri abisu bat</translation>
 <translation id="8878886163241303700">Pantaila hedatzen</translation>
-<translation id="8884537526797090108">Ezin da grabatu isilpeko edukirik</translation>
 <translation id="890616557918890486">Aldatu iturburua</translation>
 <translation id="8909138438987180327">Bateriaren % <ph name="PERCENTAGE" /> geratzen zaizu.</translation>
 <translation id="8913384980486163186">Gaikakoa (lehenetsia)</translation>

@@ -264,6 +264,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2996462380875591307">Zabudovaná lupa je zapnutá. Vypnete ji opětovným stisknutím kombinace kláves Ctrl+Hledat+D.</translation>
 <translation id="3000461861112256445">Zvuk mono</translation>
 <translation id="3009178788565917040">Výstup</translation>
+<translation id="3009958530611748826">Vyberte cílovou složku</translation>
 <translation id="3017687597151988916">Oblast výběru nastavena na okno</translation>
 <translation id="3033545621352269033">Zapnuto</translation>
 <translation id="3036649622769666520">Otevřít soubory</translation>
@@ -509,7 +510,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4667099493359681081">Stahování souboru <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Odemkněte zařízení rodičovským kódem</translation>
 <translation id="4702647871202761252">Obrazovka ochrany soukromí je vypnutá</translation>
-<translation id="4706121060329443414">Soubory zkusíme stáhnout později. Prozatím se řeč bude ke zpracování odesílat do Googlu.</translation>
 <translation id="4731797938093519117">Rodičovský přístup</translation>
 <translation id="4734965478015604180">Na šířku</translation>
 <translation id="4735498845456076464">Klávesová zkratka <ph name="LAUNCHER_KEY_NAME" /> + číslo se změnila. Pokud chcete použít funkční klávesy, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + klávesu na horním řádku.</translation>
@@ -694,7 +694,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6062360702481658777">Za <ph name="LOGOUT_TIME_LEFT" /> budete automaticky odhlášeni.</translation>
 <translation id="6073451960410192870">Zastavit nahrávání</translation>
 <translation id="607652042414456612">Váš počítač mohou objevit okolní zařízení Bluetooth, ve kterých se bude zobrazovat s názvem „<ph name="NAME" />“ a adresou <ph name="ADDRESS" />.</translation>
-<translation id="6094290315941448991">Zásady administrátora zakazují nahrávání obrazovky, když je viditelný důvěrný obsah</translation>
 <translation id="6114505516289286752">Byly staženy řečové soubory pro jazyk <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Asistent Google v relaci hosta není k dispozici.</translation>
@@ -1050,7 +1049,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8876661425082386199">Zkontrolujte připojení</translation>
 <translation id="8877788021141246043">Nastavit připomenutí</translation>
 <translation id="8878886163241303700">Rozšíření obrazovky</translation>
-<translation id="8884537526797090108">Důvěrný obsah zaznamenat nelze</translation>
 <translation id="890616557918890486">Změnit zdroj</translation>
 <translation id="8909138438987180327">Baterie je nabitá na <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8913384980486163186">Podle motivu (výchozí)</translation>

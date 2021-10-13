@@ -214,6 +214,7 @@
 <translation id="160851722280695521">Chrome मा Dino Run गेम खेल्नुहोस्</translation>
 <translation id="161042844686301425">सायन</translation>
 <translation id="1611101756749861742">दोस्रो रोल</translation>
+<translation id="1615402009686901181">तपाईंको स्क्रिनमा गोप्य सामग्री देखिएका बेला एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन क्याप्चर गर्ने सुविधा अफ गरिन्छ</translation>
 <translation id="1620510694547887537">क्यामेरा</translation>
 <translation id="1623104350909869708">यो पृष्ठलाई अतिरिक्त संवादहरू सिर्जना गर्नबाट रोक्नुहोस्</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -857,7 +858,6 @@
 <translation id="3781428340399460090">गाढा गुलाबी</translation>
 <translation id="3783418713923659662">मास्टरकार्ड</translation>
 <translation id="3784372983762739446">ब्लुटुथ उपकरणहरू</translation>
-<translation id="3787675388804467730">भर्चुअल कार्ड नम्बर</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /> मा म्याद सकिन्छ</translation>
 <translation id="3789155188480882154">आकार १६</translation>
 <translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
@@ -1565,6 +1565,7 @@
 <translation id="6080696365213338172">तपाइँले प्रशासक-प्रदान गरिएको प्रमाणपत्र प्रयोग गर्दै सामग्री पहुँच गर्नुभएको छ। तपाइँले <ph name="DOMAIN" /> लाई उपलब्ध गर्नुभएको लगत तपाइँको प्रशासकद्वारा अन्तर्खण्ड गर्न सकिन्छ।</translation>
 <translation id="6087312102907839798">सम्बन्धित खोजहरू</translation>
 <translation id="6094273045989040137">एनोटेसन गर्नुहोस्</translation>
+<translation id="6094290315941448991">स्क्रिनमा गोप्य सामग्री देखिएका बेला एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन रेकर्ड गर्ने सुविधा अफ गरिन्छ</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">साइट बनाउनुहोस्</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> को वेबपृष्ठ अस्थायी रूपमा बन्द भएको हुन सक्छ वा त्यो स्थायी रूपमा एउटा नयाँ वेब ठेगानामा सरेको हुन सक्छ।</translation>
@@ -2359,6 +2360,7 @@
 <translation id="8870494189203302833">उही क्रम तर तलतिर फर्काएर</translation>
 <translation id="8871553383647848643">आफ्नो ब्राउजरको स्वरूप कस्टमाइज गर्नुहोस्</translation>
 <translation id="8874824191258364635">मान्य कार्ड नम्बर प्रविष्टि गर्नुहोस्</translation>
+<translation id="8884537526797090108">गोप्य सामग्री रेकर्ड गर्न मिल्दैन</translation>
 <translation id="8891727572606052622">अवैध प्रोक्सी मोड।</translation>
 <translation id="8894794286471754040">पहिले लामो किनारा</translation>
 <translation id="8903921497873541725">जुम इन</translation>
@@ -2413,6 +2415,7 @@
 <translation id="9050666287014529139">पासफ्रेज</translation>
 <translation id="9056953843249698117">भण्डार गर्नुहोस्</translation>
 <translation id="9062620674789239642">यो सारिएको, सम्पादन गरिएको वा मेटाइएको हुन सक्छ।</translation>
+<translation id="9063800855227801443">गोप्य सामग्रीको स्क्रिन क्याप्चर गर्न मिल्दैन</translation>
 <translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>
 <translation id="9065745800631924235">इतिहासबाट लिइएको <ph name="TEXT" /> को खोज</translation>
 <translation id="9069693763241529744">कुनै विस्तारले रोक लगाएको</translation>

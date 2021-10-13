@@ -261,6 +261,7 @@
 <translation id="2996462380875591307">ドッキング拡大鏡がオンになっています。オフにするには Ctrl+検索+D キーをもう一度押します。</translation>
 <translation id="3000461861112256445">モノラル音声</translation>
 <translation id="3009178788565917040">出力</translation>
+<translation id="3009958530611748826">保存先のフォルダを選択</translation>
 <translation id="3017687597151988916">選択領域をウィンドウに設定しました</translation>
 <translation id="3033545621352269033">オン</translation>
 <translation id="3036649622769666520">ファイルを開く</translation>
@@ -504,7 +505,6 @@
 <translation id="4665114317261903604">サイレント モードを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">保護者のコードでデバイスをロック解除</translation>
 <translation id="4702647871202761252">プライバシー スクリーンはオフになっています</translation>
-<translation id="4706121060329443414">ダウンロードは後で試行されます。音声は処理のためにひとまず Google に送信されます。</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="4734965478015604180">横</translation>
 <translation id="4735498845456076464">キーボード ショートカット「<ph name="LAUNCHER_KEY_NAME" />+数字」が変更されました。ファンクション キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+最上列のキーを押してください。</translation>
@@ -688,7 +688,6 @@
 <translation id="6062360702481658777">あと <ph name="LOGOUT_TIME_LEFT" />で自動的にログアウトします。</translation>
 <translation id="6073451960410192870">撮影を停止</translation>
 <translation id="607652042414456612">お使いのパソコンは近くの Bluetooth デバイスで検出可能です。名前「<ph name="NAME" />」、アドレス「<ph name="ADDRESS" />」のデバイスとして表示されます</translation>
-<translation id="6094290315941448991">管理者のポリシーによって、機密コンテンツが表示されているときは、画面の録画が無効になります</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />の音声ファイルをダウンロードしました</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google アシスタントは、ゲスト セッションではご利用いただけません。</translation>
@@ -1044,7 +1043,6 @@
 <translation id="8876661425082386199">接続を確認してください</translation>
 <translation id="8877788021141246043">リマインダーを設定して</translation>
 <translation id="8878886163241303700">画面を拡張しています</translation>
-<translation id="8884537526797090108">機密コンテンツは録画できません</translation>
 <translation id="890616557918890486">ソースを変更</translation>
 <translation id="8909138438987180327">電池残量は <ph name="PERCENTAGE" />% です。</translation>
 <translation id="8913384980486163186">テーマ（デフォルト）</translation>

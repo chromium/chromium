@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">వినియోగదారు</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> ద్వారా ఈ <ph name="DEVICE_TYPE" /> మేనేజ్ చేయబడుతోంది.</translation>
+<translation id="1175951029573070619">మోస్తరుగా ఉంది (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">తీసివేయి</translation>
 <translation id="1195447618553298278">తెలియని ఎర్రర్.</translation>
 <translation id="1204296502688602597">DNS ప్రతిస్పందన సమయం</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" />, అలాగే <ph name="SECOND_MANAGER" /> ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="1726100011689679555">పేరు సర్వర్‌లు</translation>
 <translation id="1731082422893354635">బ్లూటూత్ టచ్‌ప్యాడ్</translation>
+<translation id="175763766237925754">బాగుంది (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">స్కానింగ్ రద్దు అవుతోంది</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">స్కిప్ చేయబడింది</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">సమీప పరికరాలను కనుగొనడానికి బ్లూటూత్‌ను ఆన్ చేయండి</translation>
+<translation id="2346474577291266260">అద్భుతంగా ఉంది (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">ఆమోదించినవి</translation>
 <translation id="2380886658946992094">చట్టపరం</translation>
 <translation id="2391082728065870591">ఫీడ్‌బ్యాక్ రిపోర్ట్‌ను పంపు</translation>
@@ -339,8 +342,10 @@
 <translation id="6379086450106841622">టచ్‌స్క్రీన్</translation>
 <translation id="6388847657025262518">స్కానర్ డాక్యుమెంట్ ఫీడర్ ఇరుక్కుపోయింది. ఫీడర్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6395640744968320699">ఫైర్‌వాల్ ద్వారా HTTP (పోర్ట్ 80) వెబ్‌సైట్‌లకు కనెక్ట్ చేయడం సాధ్యపడలేదు</translation>
+<translation id="6398765197997659313">పూర్తి స్క్రీన్ నుండి నిష్క్రమించు</translation>
 <translation id="641081527798843608">విషయ సరిపోలిక</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">బలహీనం (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">శ్రేష్టమైనది</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{పేజీని మళ్లీ స్కాన్ చేయాలా?}=1{{PAGE_NUMBER}వ పేజీని మళ్లీ స్కాన్ చేయాలా?}other{{PAGE_NUMBER}వ పేజీని మళ్లీ స్కాన్ చేయాలా?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -443,7 +448,6 @@
 <translation id="7960831585769876809">ఉష్ణోగ్రత</translation>
 <translation id="7978412674231730200">వ్యక్తిగత కీ</translation>
 <translation id="7994702968232966508">EAP పద్ధతి</translation>
-<translation id="8020238979854764615">ఎర్రర్ ఏర్పడింది. ఇతర ఇమేజ్‌లను ఎంచుకోవడం ద్వారా దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="802154636333426148">డౌన్‌లోడ్ విఫలమైంది</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">ప్రతిస్పందనను పంపండి</translation>

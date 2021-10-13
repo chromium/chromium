@@ -133,7 +133,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="5386450000063123300">Aktualizace prohlížeče Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Povolit přihlášení do prohlížeče Chromium</translation>
 <translation id="5398878173008909840">K dispozici je nová verze prohlížeče Chromium.</translation>
-<translation id="5416696090975899932">Pokud chybí integrovaný program k zobrazení souborů PDF, nemůže prohlížeč Chromium zobrazit náhled tisku.</translation>
 <translation id="5427571867875391349">Nastavit Chromium jako výchozí prohlížeč</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5479196819031988440">Chromium OS tuto stránku nedokáže otevřít</translation>
@@ -211,6 +210,7 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="718435575166326686">Chromium pro tento web potřebuje přístup k fotoaparátu</translation>
 <translation id="7196312274710523067">Chromium nelze spustit. Zkuste to znovu.</translation>
 <translation id="7197677400338048821">Chromium nemůže zkontrolovat hesla. Zkuste to znovu za 24 hodin.</translation>
+<translation id="7218568399872925918">Navštívené weby si pamatují vaše údaje, dokud Chromium nezavřete</translation>
 <translation id="7223968959479464213">Správce úloh – Chromium</translation>
 <translation id="731795002583552498">Aktualizace prohlížeče Chromium</translation>
 <translation id="7318036098707714271">Soubor nastavení je poškozený nebo neplatný.
@@ -263,6 +263,8 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8621669128220841554">Instalace se z neznámého důvodu nezdařila. Stáhněte prosím Chromium znovu.</translation>
 <translation id="8697124171261953979">Také řídí, která stránka se zobrazí po spuštění prohlížeče Chromium nebo při vyhledávání v omniboxu.</translation>
 <translation id="8704119203788522458">Toto je váš prohlížeč Chromium</translation>
+<translation id="8713679423359107094">Když zavřete všechna okna prohlížeče Chromium, automaticky se vymažou soubory cookie a data webů</translation>
+<translation id="8796443464227412154">Po zavření prohlížeče Chromium budete <ph name="BEGIN_BOLD" />odhlášeni z většiny webů<ph name="END_BOLD" />. Pokud je vypnutá synchronizace, budete také <ph name="BEGIN_BOLD" />odhlášeni ze služeb Google a z prohlížeče Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium pro tento web potřebuje oprávnění k přístupu k fotoaparátu a mikrofonu</translation>
 <translation id="8803635938069941624">Smluvní podmínky systému Chromium OS</translation>
 <translation id="8821041990367117597">Prohlížeč Chromium nemůže synchronizovat data, protože vaše přihlašovací údaje k účtu jsou zastaralé.</translation>

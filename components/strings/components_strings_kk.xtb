@@ -214,6 +214,7 @@
 <translation id="160851722280695521">Chrome-да Dino Run ойынын ойнау</translation>
 <translation id="161042844686301425">Көгілдір</translation>
 <translation id="1611101756749861742">Екінші орам</translation>
+<translation id="1615402009686901181">Құпия мазмұн көрініп тұрғанда, әкімші саясаты экранды түсіру функциясын өшіреді.</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1623104350909869708">Бұл беттің қосымша диалогтік терезелерді жасауына жол бермеу</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -859,7 +860,6 @@
 <translation id="3781428340399460090">Қою алқызыл</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth құрылғылары</translation>
-<translation id="3787675388804467730">Виртуалды карта нөмірі</translation>
 <translation id="3787705759683870569">Жарамдылық мерзімі: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Өлшемі: 16</translation>
 <translation id="3789841737615482174">Орнату</translation>
@@ -1568,6 +1568,7 @@
 <translation id="6080696365213338172">Мазмұнды әкімші берген сертификат көмегімен көрдіңіз. Сіз <ph name="DOMAIN" /> доменіне беретін деректерді әкімші ұстап алуы мүмкін.</translation>
 <translation id="6087312102907839798">Ұқсас іздеу сұраулары</translation>
 <translation id="6094273045989040137">Аннотация қосу</translation>
+<translation id="6094290315941448991">Құпия мазмұн көрініп тұрғанда, әкімші саясаты экранды жазу функциясын өшіреді.</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Сайт жасау</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> мекенжайындағы веб-бет уақытша өшірілген немесе біржола жаңа мекенжайға көшірілген болуы мүмкін.</translation>
@@ -2362,6 +2363,7 @@
 <translation id="8870494189203302833">Бірдей ретпен артқы жағында</translation>
 <translation id="8871553383647848643">Браузер көрінісін реттеу</translation>
 <translation id="8874824191258364635">Дұрыс карта нөмірін енгізіңіз</translation>
+<translation id="8884537526797090108">Құпия мазмұнды жазу мүмкін емес</translation>
 <translation id="8891727572606052622">Жарамсыз прокси режимі.</translation>
 <translation id="8894794286471754040">Алдымен ұзын шеті</translation>
 <translation id="8903921497873541725">Үлкейту</translation>
@@ -2416,6 +2418,7 @@
 <translation id="9050666287014529139">Құпия фраза</translation>
 <translation id="9056953843249698117">Сақтау</translation>
 <translation id="9062620674789239642">Ол басқа орынға көшірілген, өзгертілген немесе жойылған болуы мүмкін.</translation>
+<translation id="9063800855227801443">Құпия мазмұнды түсіру мүмкін емес</translation>
 <translation id="9065203028668620118">Өзгерту</translation>
 <translation id="9065745800631924235">Тарихтан <ph name="TEXT" /> сұрауын іздеу</translation>
 <translation id="9069693763241529744">Кеңейтім арқылы тыйым салынған</translation>

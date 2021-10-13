@@ -264,6 +264,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2996462380875591307">"Zmadhuesi i stacionuar" u aktivizua. Shtyp sërish "Ctrl+Kërko+D" për ta çaktivizuar.</translation>
 <translation id="3000461861112256445">Audioja mono</translation>
 <translation id="3009178788565917040">Dalja</translation>
+<translation id="3009958530611748826">Zgjidh një dosje për ruajtje</translation>
 <translation id="3017687597151988916">Zona e përzgjedhjes u caktua në dritare</translation>
 <translation id="3033545621352269033">Aktiv</translation>
 <translation id="3036649622769666520">Hap skedarët</translation>
@@ -509,7 +510,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4667099493359681081">Po shkarkon <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Shkyç pajisjen me kodin e prindit</translation>
 <translation id="4702647871202761252">Ekrani i privatësisë është joaktiv</translation>
-<translation id="4706121060329443414">Shkarkimi do të provohet më vonë. Ligjërimi do t'i dërgohet Google për përpunim tani.</translation>
 <translation id="4731797938093519117">Qasja e prindit</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Shkurtorja e tastierës për <ph name="LAUNCHER_KEY_NAME" /> + Numri është ndryshuar. Për të përdorur tastet e funksioneve, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + një tast në rreshtin e sipërm.</translation>
@@ -694,7 +694,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6062360702481658777">Do të dalësh automatikisht për <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Ndalo regjistrimin</translation>
 <translation id="607652042414456612">Kompjuteri është i zbulueshëm për pajisjet me Bluetooth në afërsi dhe do të shfaqet si "<ph name="NAME" />" me adresën <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Politika e administratorit çaktivizon regjistrimin e ekranit kur përmbajtja konfidenciale është e dukshme</translation>
 <translation id="6114505516289286752">Skedarët e ligjërimit në <ph name="LANGUAGE" /> u shkarkuan</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">"Asistenti i Google" nuk ofrohet në një sesion për vizitorët.</translation>
@@ -1050,7 +1049,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8876661425082386199">Kontrollo lidhjen tënde</translation>
 <translation id="8877788021141246043">Cakto një alarm rikujtues</translation>
 <translation id="8878886163241303700">Ekran i zgjeruar</translation>
-<translation id="8884537526797090108">Nuk mund të regjistrojë përmbajtje konfidenciale</translation>
 <translation id="890616557918890486">Ndrysho burimin</translation>
 <translation id="8909138438987180327">Bateria është në <ph name="PERCENTAGE" /> për qind.</translation>
 <translation id="8913384980486163186">Me temë (e parazgjedhur)</translation>

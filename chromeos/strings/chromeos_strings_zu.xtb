@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">Umsebenzisi</translation>
 <translation id="1128128132059598906">I-EAP-TTLS</translation>
 <translation id="1175697296044146566">Le-<ph name="DEVICE_TYPE" /> iphethwe yi-<ph name="MANAGER" />.</translation>
+<translation id="1175951029573070619">Ngokusesilinganisweni (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Susa</translation>
 <translation id="1195447618553298278">Iphutha elingaziwa.</translation>
 <translation id="1204296502688602597">I-DNS Latency</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422">Iphethwe ngu-<ph name="FIRST_MANAGER" /> no-<ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Amagama wamasevisi</translation>
 <translation id="1731082422893354635">Iphedi yokuthinta ye-Bluetooth</translation>
+<translation id="175763766237925754">Kuhle (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">I-EAP-TLS</translation>
 <translation id="1759842336958782510">I-Chrome</translation>
 <translation id="1792647875738159689">Ikhansela ukuskena</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">KWEQIWE</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Vula i-Bluetooth ukuze uthole amadivayisi aseduze</translation>
+<translation id="2346474577291266260">Kuhle kakhulu (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">Kuphumelele</translation>
 <translation id="2380886658946992094">Ezomthetho</translation>
 <translation id="2391082728065870591">Thumela Umbiko Wempendulo</translation>
@@ -340,8 +343,10 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="6379086450106841622">Isikrini esithintwayo</translation>
 <translation id="6388847657025262518">Okuphakelayo kweskena sedokhumenti kujemile. Hlola okuphakelayo bese uyazama futhi.</translation>
 <translation id="6395640744968320699">Ayikwazi ukuxhuma ngohlelo lokuvikela kumawebhusayithi we-HTTP (imbobo 80)</translation>
+<translation id="6398765197997659313">Phuma kusikrini esigcwele</translation>
 <translation id="641081527798843608">Ukufana kwesihloko</translation>
 <translation id="6423239382391657905">I-OpenVPN</translation>
+<translation id="6439505561246192797">Buthakathaka (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">Kulungile</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Skena kabusha ikhasi?}=1{Skena kabusha ikhasi {PAGE_NUMBER}?}one{Skena kabusha ikhasi {PAGE_NUMBER}?}other{Skena kabusha ikhasi {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">I-OTP</translation>
@@ -444,7 +449,6 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7960831585769876809">Izinga lokushisa</translation>
 <translation id="7978412674231730200">Ukhiye oyimfihlo</translation>
 <translation id="7994702968232966508">Indlela ye-EAP</translation>
-<translation id="8020238979854764615">Kube nephutha. Sicela uzame futhi ngokukhetha eminye imifanekiso.</translation>
 <translation id="802154636333426148">Ukulanda kwehlulekile</translation>
 <translation id="8031884997696620457">I-HSPAPlus</translation>
 <translation id="8041089156583427627">Thumela impendulo</translation>

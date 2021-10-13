@@ -261,6 +261,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2996462380875591307">Loupe en mode ancré activée. Appuyez à nouveau sur Ctrl+Recherche+D pour la désactiver.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Sortie</translation>
+<translation id="3009958530611748826">Sélectionnez un dossier dans lequel enregistrer les fichiers</translation>
 <translation id="3017687597151988916">La zone de sélection est définie à Fenêtre</translation>
 <translation id="3033545621352269033">Activé</translation>
 <translation id="3036649622769666520">Ouvrir des fichiers</translation>
@@ -504,7 +505,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4665114317261903604">Basculer le mode Ne pas déranger. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Déverrouiller l'appareil avec le code parental</translation>
 <translation id="4702647871202761252">L'écran de confidentialité est désactivé</translation>
-<translation id="4706121060329443414">Une tentative de téléchargement aura lieu ultérieurement. Le fichier vocal sera maintenant envoyé à Google aux fin de traitement.</translation>
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Le raccourci-clavier <ph name="LAUNCHER_KEY_NAME" />+Chiffre a été modifié. Pour utiliser les touches de fonction, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" /> ainsi que sur une touche de la rangée du haut.</translation>
@@ -688,7 +688,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6062360702481658777">Vous serez automatiquement déconnecté dans <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
 <translation id="607652042414456612">Votre ordinateur est visible pour les appareils Bluetooth situés à proximité sous le nom « <ph name="NAME" /> » et a comme adresse <ph name="ADDRESS" />.</translation>
-<translation id="6094290315941448991">La politique définie par l'administrateur désactive l'enregistrement de l'écran lorsque du contenu confidentiel est visible</translation>
 <translation id="6114505516289286752">Fichiers vocaux en <ph name="LANGUAGE" /> téléchargés</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">L'Assistant Google n'est pas accessible dans une session d'invité.</translation>
@@ -1043,7 +1042,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="8876661425082386199">Vérifiez votre connexion</translation>
 <translation id="8877788021141246043">Créer un rappel</translation>
 <translation id="8878886163241303700">Extension de l'écran</translation>
-<translation id="8884537526797090108">Impossible d'enregistrer du contenu confidentiel</translation>
 <translation id="890616557918890486">Changer de source</translation>
 <translation id="8909138438987180327">Pile chargée à <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8913384980486163186">Thème (par défaut)</translation>

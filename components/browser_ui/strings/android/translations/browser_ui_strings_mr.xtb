@@ -116,7 +116,6 @@
 <translation id="4008040567710660924">विशिष्ट साइटसाठी कुकीना अनुमती द्या.</translation>
 <translation id="4046123991198612571">पुढील ट्रॅक</translation>
 <translation id="4165986682804962316">साइट सेटिंग्ज</translation>
-<translation id="4176463684765177261">अक्षम केले</translation>
 <translation id="4200726100658658164">स्थान सेटिंग्ज उघडा</translation>
 <translation id="4226663524361240545">सूचनांमुळे डिव्हाइसचे कंपन होऊ शकते</translation>
 <translation id="4259722352634471385">नेव्हिगेशन अवरोधित केले आहे: <ph name="URL" /></translation>
@@ -170,6 +169,7 @@
 <translation id="5505264765875738116">साइट सूचना पाठवण्यास सांगू शकत नाहीत</translation>
 <translation id="5516455585884385570">सूचना सेटिंग्ज उघडा</translation>
 <translation id="5527111080432883924">साइटला क्लिपबोर्डमधून मजकूर आणि इमेज रीड करण्याची अनुमती देण्यापूर्वी विचारा (शिफारस केली)</translation>
+<translation id="5553374991681107062">नवीनतम</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
 <translation id="5596627076506792578">अधिक पर्याय</translation>
 <translation id="5649053991847567735">स्वयंचलित डाउनलोड</translation>
@@ -184,7 +184,6 @@
 <translation id="5876056640971328065">व्हिडिओ थांबवा</translation>
 <translation id="5887687176710214216">काल शेवटची भेट दिली</translation>
 <translation id="5916664084637901428">सुरू</translation>
-<translation id="59174027418879706">सक्षम</translation>
 <translation id="5922853908706496913">तुमची स्क्रीन शेअर करत आहे</translation>
 <translation id="5939518447894949180">रीसेट करा</translation>
 <translation id="5975083100439434680">झूम कमी करा</translation>
@@ -271,6 +270,7 @@
 <translation id="7999064672810608036">तुम्ही कुकीजसह, सर्व स्थानिक डेटा साफ करू इच्छिता आणि या वेबसाइटसाठी सर्व परवानग्या रीसेट करू इच्छिता?</translation>
 <translation id="8007176423574883786">या डिव्हाइससाठी बंद करा</translation>
 <translation id="802154636333426148">डाउनलोड अयशस्वी झाले</translation>
+<translation id="8042586301629853791">यानुसार क्रमाने लावा:</translation>
 <translation id="8067883171444229417">व्हिडिओ प्ले करा</translation>
 <translation id="8068648041423924542">सर्टिफिकेट निवडण्यास अक्षम.</translation>
 <translation id="8087000398470557479">Google ने वितरित केलेली ही आशय, <ph name="DOMAIN_NAME" /> मधील आहे.</translation>

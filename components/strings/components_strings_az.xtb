@@ -214,6 +214,7 @@
 <translation id="160851722280695521">Chrome'da Dinozavr Qaçış oyununu oynayın</translation>
 <translation id="161042844686301425">Firuzəyi</translation>
 <translation id="1611101756749861742">İkinci Rulon</translation>
+<translation id="1615402009686901181">Administrator siyasəti məxfi məzmun görünəndə ekran çəkimini deaktiv edir</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Bu səhifədə əlavə dialoqlar yaranmasın</translation>
 <translation id="16338877384480380">Arxitektura-B</translation>
@@ -859,7 +860,6 @@
 <translation id="3781428340399460090">Parlaq Çəhrayı</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth cihazları</translation>
-<translation id="3787675388804467730">Virtual kart nömrəsi</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /> tarixində bitir</translation>
 <translation id="3789155188480882154">Ölçü 16</translation>
 <translation id="3789841737615482174">Quraşdırın</translation>
@@ -1572,6 +1572,7 @@
 <translation id="6080696365213338172">Administrator tərəfindən təqdim olunmuş sertifikatı istifadə edərək məzmuna daxil oldunuz. <ph name="DOMAIN" /> domeninə təqdim etdiyiniz data administrator tərəfindən ələ keçirilə bilər.</translation>
 <translation id="6087312102907839798">Əlaqəli axtarışlar</translation>
 <translation id="6094273045989040137">Annotasiya</translation>
+<translation id="6094290315941448991">Administrator siyasəti məxfi məzmun görünəndə ekranın yazılmasını deaktiv edir</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Sayt yaradın</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> veb səhifəsi müvəqqəti işləməyə bilər və ya yeni veb ünvana köçürülmüş ola bilər.</translation>
@@ -2372,6 +2373,7 @@
 <translation id="8870494189203302833">Eyni sıra ilə üzü aşağı</translation>
 <translation id="8871553383647848643">Brauzerinizin görünüşünü fərdiləşdirin</translation>
 <translation id="8874824191258364635">Düzgün kart nömrəsi daxil edin</translation>
+<translation id="8884537526797090108">Məxfi məzmunu yazmaq olmur</translation>
 <translation id="8891727572606052622">Yanlış proksi rejimi.</translation>
 <translation id="8894794286471754040">Əvvəlcə uzun kənar</translation>
 <translation id="8903921497873541725">Zoom</translation>
@@ -2426,6 +2428,7 @@
 <translation id="9050666287014529139">Parol ifadəsi</translation>
 <translation id="9056953843249698117">Mağaza</translation>
 <translation id="9062620674789239642">Köçürülmüş, redaktə edilmiş və ya silinmiş ola bilər.</translation>
+<translation id="9063800855227801443">Məxfi məzmunu çəkmək olmur</translation>
 <translation id="9065203028668620118">Düzəliş edin</translation>
 <translation id="9065745800631924235">Tarixçədən <ph name="TEXT" /> axtarışı</translation>
 <translation id="9069693763241529744">Artırma tərəfindən blok edildi</translation>

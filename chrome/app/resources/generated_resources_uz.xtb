@@ -218,7 +218,6 @@
 <translation id="1218015446623563536">Linuxni o‘chirib tashlash</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Google joylashuvni aniqlash xizmati bu qurilmaning joylashuvini bilish uchun Wi-Fi, mobil tarmoqlar va sensorlar kabi manbalardan foydalanadi.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Bu qurilmada asosiy Joylashuv sozlamasini faolsizlantirish orqali Joylashuvni aniqlash xizmatini faolsizlantirish mumkin. Shuningdek, joylashuv parametri orqali joylashuv axboroti uchun Wi-Fi va mobil tarmoqlardan foydalanish hamda sensorlarni ham faolsizlantirish mumkin.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247"><ph name="LANGUAGE" /> nutq fayllari yuklab olinmadi. Keyinroq yuklab olinadi. Nutq qayta ishlanishi uchun Googlega yuborildi.</translation>
 <translation id="122082903575839559">Sertifikat imzosi algoritmi</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 algoritmli RSA shifrlash</translation>
 <translation id="1221825588892235038">Faqat tanlanganlar</translation>
@@ -306,6 +305,7 @@
 <translation id="1313660246522271310">Barcha saytlardagi hisobingizdan avtomatik chiqarilasiz (shuningdek, ochiq varaqlardan ham)</translation>
 <translation id="1313705515580255288">Xatcho‘plar, brauzer tarixi va boshqa sozlamalaringiz Google hisobingizga sinxronlanadi.</translation>
 <translation id="1316136264406804862">Qidirilmoqda...</translation>
+<translation id="1316248800168909509"><ph name="DEVICE" /> qurilmasiga ulanmadi. Qayta urining.</translation>
 <translation id="1316495628809031177">Sinxronizatsiya pauza qilingan</translation>
 <translation id="1317637799698924700">Dok stansiya USB Type-C bilan mos rejimda ishlaydi.</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> quyi sahifasi orqaga tugmasi</translation>
@@ -1177,6 +1177,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2200356397587687044">Chrome davom etishga ruxsat so‘ramoqda</translation>
 <translation id="2202898655984161076">Printerlar ro‘yxatini yuklashda xatolik yuz berdi. Ba’zi printerlar <ph name="CLOUD_PRINT_NAME" /> yordamida ro‘yxatdan o‘tkazilmagan bo‘lishi mumkin.</translation>
 <translation id="2203088913459920044">Nomi harf, raqam va maxsus belgilardan iborat boʻlsin</translation>
+<translation id="220321590587754225">Ulanmadi. Qayta urining.</translation>
 <translation id="2204034823255629767">Kiritilayotgan matnni ko‘rish va o‘zagartirish</translation>
 <translation id="220858061631308971">“<ph name="DEVICE_NAME" />” qurilmasi PIN-kodini kiriting:</translation>
 <translation id="2210462644007531147">Oʻrnatish yakunlanmadi</translation>
@@ -4928,7 +4929,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6232017090690406397">Batareya</translation>
 <translation id="6232116551750539448"><ph name="NAME" /> tarmog‘iga ulanish uzilib qoldi</translation>
 <translation id="6233154960150021497">Birlamchi holatda klaviatura oʻrniga ovoz ishlatilsin</translation>
-<translation id="6233455992368963267"><ph name="LANGUAGE" /> tilidagi nutq qayta ishlanishi uchun Googlega yuborildi.</translation>
 <translation id="6234108445915742946">Chrome xizmat shartlari 31-mart kuni yangilanadi</translation>
 <translation id="6234474535228214774">Oʻrnatilishi kutilmoqda</translation>
 <translation id="6235208551686043831">Qurilma kamerasi yoqildi. Kameraga eSIM QR kodini qarating.</translation>
@@ -4965,6 +4965,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6263284346895336537">Muhim emas</translation>
 <translation id="6264365405983206840">&amp;Barchasini tanlash</translation>
 <translation id="6265687851677020761">Portni olib tashlash</translation>
+<translation id="6266532094411434237"><ph name="DEVICE" /> qurilmasiga ulanmoqda</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> saytida haqiqiylik tekshiruvi uchun sertifikat tanlang</translation>
 <translation id="6268252012308737255"><ph name="APP" /> orqali ochish</translation>
 <translation id="6270391203985052864">Saytlar bildirishnoma chiqarishga ruxsat soʻray oladi</translation>

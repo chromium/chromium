@@ -216,7 +216,6 @@
 <translation id="1218015446623563536">ลบ Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />บริการตำแหน่งของ Google ใช้แหล่งที่มาต่างๆ เช่น Wi‑Fi, เครือข่ายมือถือ และเซ็นเซอร์เพื่อช่วยคาดคะเนตำแหน่งของอุปกรณ์นี้<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />คุณปิดตำแหน่งได้โดยปิดการตั้งค่าตำแหน่งหลักในอุปกรณ์นี้ และปิดการใช้ Wi‑Fi, เครือข่ายมือถือ และเซ็นเซอร์สำหรับการบอกตำแหน่งในการตั้งค่าตำแหน่งได้ด้วย<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">ดาวน์โหลดไฟล์คำพูดภาษา<ph name="LANGUAGE" />ไม่สำเร็จ ระบบจะพยายามดาวน์โหลดภายหลัง โดยจะส่งคำพูดไปประมวลผลที่ Google ก่อนในขณะนี้</translation>
 <translation id="122082903575839559">อัลกอริธึมลายเซ็นใบรับรอง </translation>
 <translation id="1221024147024329929">PKCS #1 MD2 พร้อมการเข้ารหัส RSA</translation>
 <translation id="1221825588892235038">เนื้อหาที่เลือกเท่านั้น</translation>
@@ -4898,7 +4897,6 @@
 <translation id="6232017090690406397">แบตเตอรี่</translation>
 <translation id="6232116551750539448">ขาดการเชื่อมต่อกับ <ph name="NAME" /></translation>
 <translation id="6233154960150021497">มีค่าเริ่มต้นเป็นการใช้เสียงแทนแป้นพิมพ์</translation>
-<translation id="6233455992368963267">ระบบจะส่งคำพูดภาษา<ph name="LANGUAGE" />ไปยัง Google เพื่อประมวลผล</translation>
 <translation id="6234108445915742946">ข้อกำหนดในการให้บริการของ Chrome จะมีการเปลี่ยนแปลงในวันที่ 31 มีนาคม</translation>
 <translation id="6234474535228214774">กำลังรอการติดตั้ง</translation>
 <translation id="6235208551686043831">เปิดกล้องของอุปกรณ์แล้ว โปรดวางคิวอาร์โค้ด eSIM ตรงหน้ากล้อง</translation>

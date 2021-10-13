@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">‏המערכת מבקשת אישור כשאתר רוצה לאתר התקני Bluetooth קרובים (מומלץ)</translation>
 <translation id="2315043854645842844">מערכת ההפעלה אינה תומכת בבחירת אישור בצד הלקוח.</translation>
 <translation id="2359808026110333948">המשך</translation>
+<translation id="2379925928934107488">‏העיצוב הכהה יוחל על אתרים כש-Chrome ישתמש בעיצוב הכהה, כשהפעולה תתאפשר</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד אחת (<ph name="NUM_MORE" />)}two{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}many{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">ההורדה הושלמה <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">‏גם הגישה למיקום כבויה בשביל המכשיר הזה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">מורחב - יש ללחוץ כדי לכווץ.</translation>
 <translation id="2586657967955657006">לוח</translation>
+<translation id="2597457036804169544">אין להחיל עיצוב כהה על אתרים</translation>
 <translation id="2621115761605608342">‏אישור JavaScript לאתר ספציפי.</translation>
 <translation id="2653659639078652383">שליחה</translation>
 <translation id="2677748264148917807">יציאה</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">השתקת אתרים שמשמיעים צלילים</translation>
 <translation id="3744111561329211289">סנכרון ברקע</translation>
 <translation id="3763247130972274048">בלחיצה פעמיים על הסרטון בצד ימין או שמאל אפשר לדלג על 10 שניות</translation>
+<translation id="3797520601150691162">אין להחיל עיצוב כהה על אתר ספציפי</translation>
 <translation id="381841723434055211">מספרי טלפון</translation>
 <translation id="3835233591525155343">השימוש שלך במכשיר</translation>
 <translation id="385051799172605136">חזרה</translation>
@@ -113,7 +116,6 @@
 <translation id="4008040567710660924">‏אישור קובצי Cookie של אתר מסוים.</translation>
 <translation id="4046123991198612571">הרצועה הבאה</translation>
 <translation id="4165986682804962316">הגדרות לאתרים</translation>
-<translation id="4176463684765177261">מושבת</translation>
 <translation id="4200726100658658164">פתיחת הגדרות המיקום</translation>
 <translation id="4226663524361240545">רטט של המכשיר אפשרי כשמתקבלת הודעה</translation>
 <translation id="4259722352634471385">הניווט חסום: <ph name="URL" /></translation>
@@ -182,7 +184,6 @@
 <translation id="5876056640971328065">השהיית הסרטון</translation>
 <translation id="5887687176710214216">הכניסה האחרונה בוצעה אתמול</translation>
 <translation id="5916664084637901428">פועל</translation>
-<translation id="59174027418879706">מופעל</translation>
 <translation id="5922853908706496913">מתבצע שיתוף מסך</translation>
 <translation id="5939518447894949180">איפוס</translation>
 <translation id="5975083100439434680">התרחקות</translation>
@@ -245,6 +246,7 @@
 <translation id="7302486331832100261">הבחירה שלך היא בדרך כלל לחסום התראות. כדי לאפשר את ההתראות, ניתן להקיש על 'פרטים'.</translation>
 <translation id="7423098979219808738">תופיע בקשת אישור</translation>
 <translation id="7423538860840206698">הגישה לקריאה מלוח העריכה נחסמה</translation>
+<translation id="7425915948813553151">עיצוב כהה באתרים</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">אתר כלשהו משתמש במיקרופון שלך</translation>
 <translation id="7561196759112975576">תמיד</translation>

@@ -214,6 +214,7 @@
 <translation id="160851722280695521">Joacă jocul Dino Run în Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">A doua rolă</translation>
+<translation id="1615402009686901181">Politica implementată de administrator dezactivează capturarea ecranului atunci când se afișează conținut confidențial</translation>
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="1623104350909869708">Restricționați capacitatea acestei pagini de a crea casete de dialog suplimentare</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -864,7 +865,6 @@
 <translation id="3781428340399460090">Roz aprins</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispozitive Bluetooth</translation>
-<translation id="3787675388804467730">Numărul cardului virtual</translation>
 <translation id="3787705759683870569">Expiră în <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Mărimea 16</translation>
 <translation id="3789841737615482174">Instalează</translation>
@@ -1579,6 +1579,7 @@
 <translation id="6080696365213338172">Ați accesat conținut utilizând un certificat oferit de administrator. Datele pe care le transmiteți către <ph name="DOMAIN" /> pot fi interceptate de administratorul dvs.</translation>
 <translation id="6087312102907839798">Căutări similare</translation>
 <translation id="6094273045989040137">Adnotează</translation>
+<translation id="6094290315941448991">Politica implementată de administrator dezactivează înregistrarea ecranului atunci când se afișează conținut confidențial</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Creează un site</translation>
 <translation id="6106989379647458772">Este posibil ca pagina web de la <ph name="PAGE" /> să fie blocată temporar sau să fi fost mutată definitiv la o nouă adresă web.</translation>
@@ -2380,6 +2381,7 @@ Detalii suplimentare:
 <translation id="8870494189203302833">În aceeași ordine, cu fața în jos</translation>
 <translation id="8871553383647848643">Personalizează aspectul browserului</translation>
 <translation id="8874824191258364635">Introdu un număr de card valid</translation>
+<translation id="8884537526797090108">Conținutul confidențial nu se poate înregistra</translation>
 <translation id="8891727572606052622">Mod proxy nevalid.</translation>
 <translation id="8894794286471754040">Cu latura lungă înainte</translation>
 <translation id="8903921497873541725">Mărește</translation>
@@ -2434,6 +2436,7 @@ Detalii suplimentare:
 <translation id="9050666287014529139">Expresie de acces</translation>
 <translation id="9056953843249698117">Magazin</translation>
 <translation id="9062620674789239642">Este posibil să fi fost mutat, editat sau șters.</translation>
+<translation id="9063800855227801443">Capturarea conținutului confidențial nu este permisă</translation>
 <translation id="9065203028668620118">Editează</translation>
 <translation id="9065745800631924235">Căutare <ph name="TEXT" /> în istoric</translation>
 <translation id="9069693763241529744">Blocată de o extensie</translation>

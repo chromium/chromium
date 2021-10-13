@@ -218,7 +218,6 @@
 <translation id="1218015446623563536">Eliminar o Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />O serviço de localização da Google utiliza fontes como as redes Wi‑Fi, as redes móveis e os sensores para ajudar a calcular a localização deste dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Pode desativar a Localização ao desativar a definição de Localização principal neste dispositivo. Também pode desativar a utilização das redes Wi-Fi, das redes móveis e dos sensores para fins de localização nas definições de localização.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Não foi possível transferir os ficheiros de voz em <ph name="LANGUAGE" />. Tentar-se-á a transferência mais tarde. Por agora, a voz será enviada para a Google para processamento.</translation>
 <translation id="122082903575839559">Algoritmo de assinatura do certificado</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 Com encriptação RSA</translation>
 <translation id="1221825588892235038">Apenas a seleção</translation>
@@ -306,6 +305,7 @@
 <translation id="1313660246522271310">A sua sessão será terminada em todos os sites, incluindo nos separadores abertos.</translation>
 <translation id="1313705515580255288">Os seus marcadores, o seu histórico e outras definições estão a ser sincronizados com a sua Conta Google.</translation>
 <translation id="1316136264406804862">A pesquisar...</translation>
+<translation id="1316248800168909509">Não foi possível ligar ao dispositivo <ph name="DEVICE" />. Tente novamente.</translation>
 <translation id="1316495628809031177">A sincronização está em pausa.</translation>
 <translation id="1317637799698924700">A estação de ancoragem vai funcionar no modo compatível com USB tipo C.</translation>
 <translation id="1319983966058170660">Botão anterior da subpágina <ph name="SUBPAGE_TITLE" /></translation>
@@ -1178,6 +1178,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2200356397587687044">O Chrome necessita de autorização para continuar</translation>
 <translation id="2202898655984161076">Ocorreu um problema ao listar as impressoras. Algumas impressoras podem não ter sido registadas com êxito no <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">O nome pode utilizar letras, números e carateres especiais</translation>
+<translation id="220321590587754225">Não foi possível ligar. Tente novamente.</translation>
 <translation id="2204034823255629767">Ler e alterar tudo o que introduzir</translation>
 <translation id="220858061631308971">Introduza este código PIN no "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Não foi possível concluir a instalação</translation>
@@ -4927,7 +4928,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6232116551750539448">Perdeu-se a ligação a <ph name="NAME" /></translation>
 <translation id="6233154960150021497">Predefinir para utilizar a voz em vez do teclado</translation>
-<translation id="6233455992368963267">A voz em <ph name="LANGUAGE" /> é enviada para a Google para processamento.</translation>
 <translation id="6234108445915742946">Os Termos de Utilização do Chrome vão ser alterados a 31 de março</translation>
 <translation id="6234474535228214774">Instalação pendente</translation>
 <translation id="6235208551686043831">A câmara do dispositivo foi ativada. Coloque o código QR do seu eSIM à frente da câmara.</translation>
@@ -4964,6 +4964,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6263284346895336537">Não crítica</translation>
 <translation id="6264365405983206840">Seleccion&amp;ar Tudo</translation>
 <translation id="6265687851677020761">Remover porta</translation>
+<translation id="6266532094411434237">A ligar ao dispositivo <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Selecione um certificado para se autenticar perante <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Abrir com <ph name="APP" /></translation>
 <translation id="6270391203985052864">Os sites podem pedir para enviar notificações.</translation>

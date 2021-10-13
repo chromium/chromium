@@ -133,7 +133,6 @@
 <translation id="5386450000063123300">Chromium абнаўляецца (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Дазволіць уваход у Chromium</translation>
 <translation id="5398878173008909840">Даступная новая версія Chromium.</translation>
-<translation id="5416696090975899932">Chromium не можа паказаць перадпрагляд друку: убудаваны сродак прагляду PDF адсутнічае.</translation>
 <translation id="5427571867875391349">Зрабіць Chromium стандартным браўзерам</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium (бэта-версія)</translation>
 <translation id="5479196819031988440">Сістэме Chromium OS не ўдалося адкрыць гэту старонку.</translation>
@@ -210,6 +209,7 @@
 <translation id="718435575166326686">Chromium запытвае дазвол на доступ да камеры для гэтага сайта</translation>
 <translation id="7196312274710523067">Не атрымалася запусціць Chromium. Паўтарыце спробу.</translation>
 <translation id="7197677400338048821">Браўзеру Chromium не ўдаецца праверыць паролі. Паўтарыце спробу праз 24 гадзіны.</translation>
+<translation id="7218568399872925918">Сайты, якія вы наведваеце, захоўваюць вашы даныя, пакуль вы не закрыеце Chromium</translation>
 <translation id="7223968959479464213">Менеджар заданняў – Chromium</translation>
 <translation id="731795002583552498">Ідзе абнаўленне Chromium</translation>
 <translation id="7318036098707714271">Файл параметраў пашкоджаны або няправільны.
@@ -263,6 +263,8 @@
 <translation id="8621669128220841554">Збой усталявання з-за нявызначанай памылкі. Спампуйце Chromium зноў.</translation>
 <translation id="8697124171261953979">Таксама вызначае, якая старонка паказваецца пры запуску Chromium або пошуку з амнібокса.</translation>
 <translation id="8704119203788522458">Гэта ваш Chromium</translation>
+<translation id="8713679423359107094">Калі вы закрыеце ўсе вокны Chromium, файлы cookie і даныя сайтаў будуць аўтаматычна выдалены</translation>
+<translation id="8796443464227412154">Калі вы закрыеце Chromium, вы <ph name="BEGIN_BOLD" />выйдзеце з большасці сайтаў<ph name="END_BOLD" />. Калі сінхранізацыя выключана, вы таксама <ph name="BEGIN_BOLD" />выйдзеце з сэрвісаў Google і браўзера Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium запытвае доступ да камеры і мікрафона для гэтага сайта</translation>
 <translation id="8803635938069941624">Умовы Chromium OS</translation>
 <translation id="8821041990367117597">Сінхранізаваць даныя ў браўзеры Chromium не ўдалося: даныя ўліковага запісу для ўваходу састарэлі.</translation>

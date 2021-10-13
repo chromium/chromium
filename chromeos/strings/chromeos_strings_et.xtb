@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">Kasutaja</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />.</translation>
+<translation id="1175951029573070619">Keskmine (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Eemalda</translation>
 <translation id="1195447618553298278">Tundmatu viga.</translation>
 <translation id="1204296502688602597">DNS-i latentsusaeg</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422">Seadet haldab <ph name="FIRST_MANAGER" /> ja <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nimeserverid</translation>
 <translation id="1731082422893354635">Bluetooth-puuteplaat</translation>
+<translation id="175763766237925754">Hea (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Skannimise tühistamine</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">VAHELE JÄETUD</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Lülitage Bluetooth sisse, et läheduses olevaid seadmeid avastada</translation>
+<translation id="2346474577291266260">Suurepärane (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">Läbitud</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Saada tagasisidearuanne</translation>
@@ -340,8 +343,10 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6379086450106841622">Puuteekraan</translation>
 <translation id="6388847657025262518">Skanneri dokumendisöötur on ummistunud. Kontrollige sööturit ja proovige uuesti.</translation>
 <translation id="6395640744968320699">HTTP-veebisaitidega (port 80) ei saa läbi tulemüüri ühendust luua</translation>
+<translation id="6398765197997659313">Välju täisekraanilt</translation>
 <translation id="641081527798843608">Teema vaste</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">Nõrk (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">Hea</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Kas skannida leht uuesti?}=1{Kas skannida {PAGE_NUMBER}. leht uuesti?}other{Kas skannida {PAGE_NUMBER}. leht uuesti?}}</translation>
 <translation id="6472207088655375767">Ühekordne parool</translation>
@@ -444,7 +449,6 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7960831585769876809">Temperatuur</translation>
 <translation id="7978412674231730200">Privaatvõti</translation>
 <translation id="7994702968232966508">EAP meetod</translation>
-<translation id="8020238979854764615">Esines viga. Proovige uuesti, valides muud pildid.</translation>
 <translation id="802154636333426148">Allalaadimine ebaõnnestus</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Saada tagasiside</translation>

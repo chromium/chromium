@@ -218,7 +218,6 @@
 <translation id="1218015446623563536">Odstránenie systému Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Služba určovania polohy od Googlu používa na presnejšie odhadnutie polohy tohto zariadenia zdroje, ako sú Wi-Fi, mobilná sieť a senzory.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Nastavenie Poloha môžete deaktivovať vypnutím hlavného nastavenia Poloha v tomto zariadení. V nastaveniach polohy môžete tiež vypnúť určovanie polohy pomocou siete Wi‑Fi, mobilnej siete a senzorov.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Súbory s balíkmi reči <ph name="LANGUAGE" /> sa nepodarilo stiahnuť. K pokusu o stiahnutie dôjde neskôr. Reč sa odošle Googlu na spracovanie.</translation>
 <translation id="122082903575839559">Algoritmus podpisu certifikátu</translation>
 <translation id="1221024147024329929">Štandard PKCS #1 MD2 so šifrovaním RSA</translation>
 <translation id="1221825588892235038">Len výber</translation>
@@ -4901,7 +4900,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6232017090690406397">Batéria</translation>
 <translation id="6232116551750539448">Pripojenie k sieti <ph name="NAME" /> bolo prerušené</translation>
 <translation id="6233154960150021497">Predvolene používať namiesto klávesnice hlas</translation>
-<translation id="6233455992368963267">Reč v jazyku <ph name="LANGUAGE" /> sa odosiela na spracovanie Googlu.</translation>
 <translation id="6234108445915742946">Zmluvné podmienky prehliadača Chrome sa 31. marca zmenia</translation>
 <translation id="6234474535228214774">Inštalácia čaká na spracovanie</translation>
 <translation id="6235208551686043831">Fotoaparát zariadenia je zapnutý. Umiestnite QR kód eSIM karty pred jeho objektív.</translation>

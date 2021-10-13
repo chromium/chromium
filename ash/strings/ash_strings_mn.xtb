@@ -264,6 +264,7 @@
 <translation id="2996462380875591307">Суурилуулсан томруулагчийг идэвхжүүлсэн. Үүнийг асаах/унтраахын тулд Ctrl+Search+D-г дахин дарна уу.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3009178788565917040">Гаралт</translation>
+<translation id="3009958530611748826">Хадгалах фолдероо сонгоно уу</translation>
 <translation id="3017687597151988916">Сонголтын хэсгийг цонх болгож тохируулсан</translation>
 <translation id="3033545621352269033">Асаалттай</translation>
 <translation id="3036649622769666520">Файл нээх</translation>
@@ -510,7 +511,6 @@
 <translation id="4667099493359681081"><ph name="FILENAME" />-г татаж байна</translation>
 <translation id="4696813013609194136">Төхөөрөмжийн түгжээг эцэг эхийн кодоор тайлна уу</translation>
 <translation id="4702647871202761252">Нууцлалын дэлгэц унтраалттай байна</translation>
-<translation id="4706121060329443414">Таталтыг дараа оролдоно. Яриаг одоогоор Google-д боловсруулахаар илгээнэ.</translation>
 <translation id="4731797938093519117">Эцэг эхийн хандалт</translation>
 <translation id="4734965478015604180">Хөндлөн</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Тоон товчлуурын шууд холбоосыг өөрчилсөн байна. Функцийн товчлууруудыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + дээд мөрд байх товчлуурыг дарна уу.</translation>
@@ -695,7 +695,6 @@
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" />-н дотор та сүлжээнээс автоматаар гарах болно.</translation>
 <translation id="6073451960410192870">Бичихийг зогсоох</translation>
 <translation id="607652042414456612">Таны компьютер ойролцоо байгаа Bluetooth төхөөрөмж дээр илрэх боломжтой бөгөөд <ph name="ADDRESS" /> хаяг бүхий "<ph name="NAME" />" нэрээр гарч ирэх болно.</translation>
-<translation id="6094290315941448991">Администраторын бодлого нь нууцлалтай контентыг харагдаж байх үед дэлгэцийн үйлдэл бичихийг идэвхгүй болгодог</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> дээрх ярианы файлуудыг татсан</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Зочны сургалтад Google Туслах боломжгүй байна.</translation>
@@ -1052,7 +1051,6 @@
 <translation id="8876661425082386199">Холболтоо шалгана уу</translation>
 <translation id="8877788021141246043">Сануулагч тохируулах</translation>
 <translation id="8878886163241303700">Дэлгэцийг сунгаж байна</translation>
-<translation id="8884537526797090108">Нууцлалтай контентыг бичих боломжгүй</translation>
 <translation id="890616557918890486">Эх сурвалжийг өөрчлөх</translation>
 <translation id="8909138438987180327">Батарей <ph name="PERCENTAGE" /> хувьтай байна.</translation>
 <translation id="8913384980486163186">Загвартай (өгөгдмөл)</translation>

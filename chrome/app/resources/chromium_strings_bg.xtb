@@ -129,7 +129,6 @@
 <translation id="5386450000063123300">Chromium се актуализира (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Разрешаване на влизането в Chromium</translation>
 <translation id="5398878173008909840">Налице е нова версия на Chromium.</translation>
-<translation id="5416696090975899932">Chromium не може да покаже визуализацията за печат, когато вграденият визуализатор на PDF файлове липсва.</translation>
 <translation id="5427571867875391349">Задаване на Chromium като браузър по подразбиране</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium бета</translation>
 <translation id="5479196819031988440">Chromium OS не може да отвори тази страница.</translation>
@@ -205,6 +204,7 @@
 <translation id="718435575166326686">За този сайт Chromium се нуждае от разрешение за достъп до камерата</translation>
 <translation id="7196312274710523067">Chromium не можа да се стартира. Опитайте отново.</translation>
 <translation id="7197677400338048821">Chromium не може да провери паролите ви. Опитайте отново след 24 часа.</translation>
+<translation id="7218568399872925918">Сайтовете, които посещавате, помнят информацията ви, докато затворите Chromium</translation>
 <translation id="7223968959479464213">Диспечер на задачите – Chromium</translation>
 <translation id="731795002583552498">Chromium се актуализира</translation>
 <translation id="7318036098707714271">Файлът с предпочитанията ви е повреден или невалиден. Chromium не може да възстанови настройките ви.</translation>
@@ -255,6 +255,8 @@
 <translation id="8621669128220841554">Инсталирането не бе успешно поради неизвестна грешка. Моля, изтеглете отново Chromium.</translation>
 <translation id="8697124171261953979">То също контролира коя страница се показва при стартиране на Chromium или при търсене от полето за всичко.</translation>
 <translation id="8704119203788522458">Това е вашият Chromium</translation>
+<translation id="8713679423359107094">Когато затворите прозорците на Chromium, „бисквитките“ и данните за сайтовете автоматично се изчистват</translation>
+<translation id="8796443464227412154">Когато затворите Chromium, <ph name="BEGIN_BOLD" />ще излезете от повечето сайтове<ph name="END_BOLD" />. Ако синхронизирането е изключено, <ph name="BEGIN_BOLD" />ще излезете и от услугите на Google и Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium се нуждае от разрешение за достъп до камерата и микрофона ви за този сайт</translation>
 <translation id="8803635938069941624">Общи условия на Chromium OS</translation>
 <translation id="8821041990367117597">Chromium не можа да синхронизира данните ви, защото потребителското име и паролата за вход в профила ви не са актуални.</translation>

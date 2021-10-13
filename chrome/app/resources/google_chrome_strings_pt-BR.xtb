@@ -48,7 +48,6 @@
 <translation id="2121284319307530122">Reinicializar para atualizar o &amp;Chrome</translation>
 <translation id="2123055963409958220">Ajude a melhorar o Chrome informando as <ph name="BEGIN_LINK" />configurações atuais<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Reinicie o Chrome agora</translation>
-<translation id="2246246234298806438">O Google Chrome não consegue mostrar a visualização de impressão quando não há visualizador de PDF integrado.</translation>
 <translation id="2290014774651636340">As chaves da API do Google não foram encontradas. Algumas funcionalidades do Google Chrome serão desativadas.</translation>
 <translation id="2290095356545025170">Você quer mesmo desinstalar o Google Chrome?</translation>
 <translation id="2309047409763057870">Como esta é uma instalação secundária do Google Chrome, ele não pode se tornar seu navegador padrão.</translation>
@@ -87,6 +86,7 @@
 <translation id="3037838751736561277">O Google Chrome está em modo de segundo plano.</translation>
 <translation id="3059710691562604940">O "Navegação segura" está desativado. O Chrome recomenda ativá-lo.</translation>
 <translation id="3065168410429928842">Guia do Chrome</translation>
+<translation id="3069821012350118710">Os sites que você acessar armazenarão suas informações até que o Chrome seja fechado</translation>
 <translation id="3080151273017101988">Executar aplicativos em segundo plano quando o Google Chrome estiver fechado</translation>
 <translation id="3089968997497233615">Há uma versão nova e mais segura do Google Chrome disponível.</translation>
 <translation id="3100998948628680988">Nomear seu perfil do Chrome</translation>
@@ -185,6 +185,7 @@
 <translation id="5804318322022881572">Não foi possível iniciar o Chrome. Tente novamente.</translation>
 <translation id="5867197326698922595">O Google Chrome está tentando editar senhas.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="5901850848447342934">Sua conta será <ph name="BEGIN_BOLD" />desconectada da maioria dos sites<ph name="END_BOLD" /> quando você fechar o Chrome. Se a sincronização estiver desativada, a conta também será <ph name="BEGIN_BOLD" />desconectada dos Serviços do Google e do navegador<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Login na rede</translation>
 <translation id="5940385492829620908">Sua Web, seus favoritos e demais conteúdo do Chrome estão aqui.</translation>
 <translation id="5941830788786076944">Fazer do Google Chrome o navegador padrão</translation>
@@ -274,6 +275,7 @@
 <translation id="8614913330719544658">O Google Chrome não responde. Reiniciar agora?</translation>
 <translation id="861702415419836452">O Chrome precisa de permissão para acessar sua câmera e criar um mapa 3D do ambiente a sua volta</translation>
 <translation id="8625237574518804553">{0,plural, =1{O Chrome será reiniciado em 1 minuto}one{O Chrome será reiniciado em # minuto}other{O Chrome será reiniciado em # minutos}}</translation>
+<translation id="8629311577791198377">Quando você fechar todas as janelas do Chrome, os cookies e os dados dos sites serão apagados automaticamente</translation>
 <translation id="8641606876632989680">O Chrome enviará uma notificação quando você fizer login com uma senha comprometida</translation>
 <translation id="8669527147644353129">Auxiliar do Google Chrome</translation>
 <translation id="8679801911857917785">Controla também qual página deve ser exibida quando você inicia o Chrome.</translation>

@@ -264,6 +264,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2996462380875591307">Mahkamlangan lupa yoniq. Uni olib tashlash uchun Ctrl+Qidiruv+D tugmalarini bosing.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3009178788565917040">Chiqarish</translation>
+<translation id="3009958530611748826">Saqlash uchun jild tanlang</translation>
 <translation id="3017687597151988916">Tanlash hududi sifatida oynani belgilash</translation>
 <translation id="3033545621352269033">Yoniq</translation>
 <translation id="3036649622769666520">Ochiq fayllar</translation>
@@ -509,7 +510,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> yuklab olinmoqda</translation>
 <translation id="4696813013609194136">Ota-ona kodi bilan qurilmani qulfdan chiqarish</translation>
 <translation id="4702647871202761252">Maxfiylik ekrani yoniq emas</translation>
-<translation id="4706121060329443414">Keyinroq yuklab olinadi. Hozir nutq qayta ishlanishi uchun Googlega yuboriladi.</translation>
 <translation id="4731797938093519117">Ota-ona kirishi</translation>
 <translation id="4734965478015604180">Gorizontal</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Raqam tezkor tugmasi oʻzgardi. Funksiya tugmalaridan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + yuqori qatordagi kalitni bosing.</translation>
@@ -694,7 +694,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" />dan keyin tizimdan avtomatik ravishda chiqiladi.</translation>
 <translation id="6073451960410192870">Yozuvni toʻxtatish</translation>
 <translation id="607652042414456612">Kompyuteringiz yaqin-atrofdagi Bluetooth qurilmalariga <ph name="NAME" /> nomida <ph name="ADDRESS" /> manzilida ko‘rinadi</translation>
-<translation id="6094290315941448991">Maxfiy axborotlar koʻrinib turganda administrator ekranni yozib olishni taqiqlagan</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> nutq fayllari yuklab olindi</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistent mehmon seansida ishlamaydi.</translation>
@@ -1050,7 +1049,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="8876661425082386199">Aloqani tekshiring</translation>
 <translation id="8877788021141246043">Eslatma belgilash</translation>
 <translation id="8878886163241303700">Yoyilgan ekran</translation>
-<translation id="8884537526797090108">Maxfiy kontent yozib olinmadi</translation>
 <translation id="890616557918890486">Manbani almashtirish</translation>
 <translation id="8909138438987180327">Batareya quvvati: <ph name="PERCENTAGE" />%.</translation>
 <translation id="8913384980486163186">Mavzudagi (standart)</translation>

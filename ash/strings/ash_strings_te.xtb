@@ -264,6 +264,7 @@
 <translation id="2996462380875591307">డాక్ చేయబడిన మాగ్నిఫైయర్ ప్రారంభించబడింది. దాన్ని టోగుల్ ఆఫ్ చేయడానికి మళ్లీ Ctrl+Search+Dని నొక్కండి.</translation>
 <translation id="3000461861112256445">మోనో ఆడియో</translation>
 <translation id="3009178788565917040">అవుట్‌పుట్</translation>
+<translation id="3009958530611748826">దీనిలో సేవ్ చేయడానికి ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="3017687597151988916">ఎంపిక చేసుకోవాల్సిన చోటు విండోకు సెట్ చేయబడింది</translation>
 <translation id="3033545621352269033">ఆన్</translation>
 <translation id="3036649622769666520">ఫైళ్ళను తెరువు</translation>
@@ -510,7 +511,6 @@
 <translation id="4667099493359681081"><ph name="FILENAME" />ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="4696813013609194136">తల్లి/తండ్రి కోడ్‌తో పరికరాన్ని అన్‌లాక్ చేయండి</translation>
 <translation id="4702647871202761252">గోప్యతా స్క్రీన్ ఆఫ్‌లో ఉంది</translation>
-<translation id="4706121060329443414">మీ డౌన్‌లోడ్ తర్వాత మళ్లీ ప్రారంభమవుతుంది. ప్రస్తుతానికి, ప్రాసెసింగ్ కోసం స్పీచ్ Googleకు పంపబడుతుంది.</translation>
 <translation id="4731797938093519117">తల్లి/తండ్రి యాక్సెస్</translation>
 <translation id="4734965478015604180">అడ్డంగా ఉంది</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + నంబర్ కీబోర్డ్ షార్ట్‌కట్ మార్చబడింది. ఫంక్షన్ కీలను ఉపయోగించడానికి, <ph name="LAUNCHER_KEY_NAME" /> కీ + ఎగువ అడ్డు వరుసలోని కీను నొక్కండి.</translation>
@@ -695,7 +695,6 @@
 <translation id="6062360702481658777">మీరు <ph name="LOGOUT_TIME_LEFT" />లో ఆటోమేటిక్‌గా సైన్ అవుట్ చేయబడతారు.</translation>
 <translation id="6073451960410192870">రికార్డ్ చేయడం ఆపివేయి</translation>
 <translation id="607652042414456612">మీ కంప్యూటర్ సమీప బ్లూటూత్ పరికరాల్లో కనుగొనబడుతుంది మరియు అడ్రస్‌ <ph name="ADDRESS" />తో "<ph name="NAME" />" లాగా కనిపిస్తుంది</translation>
-<translation id="6094290315941448991">గోప్యమైన కంటెంట్ కనిపించినప్పుడు, అడ్మినిస్ట్రేటర్ పాలసీ స్క్రీన్ రికార్డింగ్‌ను డిజేబుల్ చేస్తుంది</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> స్పీచ్ ఫైల్‌లు డౌన్‌లోడ్ చేయబడ్డాయి</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">అతిథి సెషన్‌లో Google అసిస్టెంట్ పని చేయదు.</translation>
@@ -1051,7 +1050,6 @@
 <translation id="8876661425082386199">మీ కనెక్షన్‌ను చెక్ చేయండి</translation>
 <translation id="8877788021141246043">రిమైండర్‌ సెట్ చేయి</translation>
 <translation id="8878886163241303700">స్క్రీన్ విస్తరించబడుతోంది</translation>
-<translation id="8884537526797090108">గోప్యమైన కంటెంట్‌ను రికార్డ్ చేయడం సాధ్యం కాదు</translation>
 <translation id="890616557918890486">మూలాధారాన్ని మార్చు</translation>
 <translation id="8909138438987180327">బ్యాటరీ ఛార్జ్ <ph name="PERCENTAGE" /> శాతం ఉంది.</translation>
 <translation id="8913384980486163186">రూపం పొందుతుంది (ఆటోమేటిక్ సెట్టింగ్)</translation>

@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">ຜູ້​ໃຊ້</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />.</translation>
+<translation id="1175951029573070619">ສະເລ່ຍ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ລຶບອອກ</translation>
 <translation id="1195447618553298278">ຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ.</translation>
 <translation id="1204296502688602597">ການຕອບສະໜອງຂອງ DNS</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422">ຈັດການໂດຍ <ph name="FIRST_MANAGER" /> ແລະ <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">ຕັ້ງຊື່ເຊີບເວີ</translation>
 <translation id="1731082422893354635">ແຜ່ນສໍາຜັດ Bluetooth</translation>
+<translation id="175763766237925754">ດີ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">ກຳລັງຍົກເລີກການສະແກນ</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">ຂ້າມແລ້ວ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ເປີດ Bluetooth ເພື່ອຊອກຫາອຸປະກອນທີ່ຢູ່ໃກ້ຄຽງ</translation>
+<translation id="2346474577291266260">ດີເລີດ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">ຜ່ານແລ້ວ</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ສົ່ງລາຍງານຄຳຕິຊົມ</translation>
@@ -340,8 +343,10 @@
 <translation id="6379086450106841622">ໜ້າຈໍສຳຜັດ</translation>
 <translation id="6388847657025262518">ຕົວປ້ອນເອກະສານຂອງເຄື່ອງສະແກນຕິດຂັດ. ກະລຸນາກວດສອບຕົວປ້ອນເອກະສານແລ້ວລອງໃໝ່.</translation>
 <translation id="6395640744968320699">ບໍ່ສາມາດເຊື່ອມຕໍ່ຜ່ານ firewall ຫາເວັບໄຊ HTTP (ຜອດ 80) ໄດ້</translation>
+<translation id="6398765197997659313">ອອກຈາກເຕັມໜ້າຈໍ</translation>
 <translation id="641081527798843608">ຫົວຂໍ້ກົງກັນ</translation>
 <translation id="6423239382391657905">ເປີດVPN</translation>
+<translation id="6439505561246192797">ອ່ອນ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">ດີ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ສະແກນໜ້າຄືນໃໝ່ບໍ?}=1{ສະແກນ {PAGE_NUMBER} ໜ້າຄືນໃໝ່ບໍ?}other{ສະແກນ {PAGE_NUMBER} ໜ້າຄືນໃໝ່ບໍ?}}</translation>
 <translation id="6472207088655375767">OTP​:</translation>
@@ -445,7 +450,6 @@
 <translation id="7960831585769876809">ອຸນຫະພູມ</translation>
 <translation id="7978412674231730200">ປຸ່ມສ່ວນຕົວ</translation>
 <translation id="7994702968232966508">ວິທີການ EAP</translation>
-<translation id="8020238979854764615">ເກີດຄວາມຜິດພາດຂຶ້ນ. ກະລຸນາລອງໃໝ່ໂດຍການເລືອກຮູບອື່ນ.</translation>
 <translation id="802154636333426148">ການດາວໂຫຼດບໍ່ສຳເລັດ</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">ສົ່ງຄຳຕິຊົມ</translation>

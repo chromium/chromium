@@ -261,6 +261,7 @@
 <translation id="2996462380875591307">ഡോക്ക് ചെയ്‌ത മാഗ്നിഫയർ പ്രവർത്തനക്ഷമമാക്കി. ഇത് മാറ്റാൻ, കൺട്രോൾ+തിരയൽ+D വീണ്ടും അമർത്തുക.</translation>
 <translation id="3000461861112256445">മോണോ ഓഡിയോ</translation>
 <translation id="3009178788565917040">ഔട്ട്പുട്ട്</translation>
+<translation id="3009958530611748826">സംരക്ഷിക്കാൻ ഒരു ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3017687597151988916">തിരഞ്ഞെടുക്കൽ ഏരിയ വിൻഡോയായി സജ്ജീകരിച്ചു</translation>
 <translation id="3033545621352269033">ഓണാണ്</translation>
 <translation id="3036649622769666520">ഫയലുകള്‍‌ തുറക്കുക</translation>
@@ -504,7 +505,6 @@
 <translation id="4665114317261903604">ശല്യപ്പെടുത്തരുത് മോഡ് മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">രക്ഷാകർതൃ കോഡ് ഉപയോഗിച്ച് ഉപകരണം അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="4702647871202761252">സ്വകാര്യതാ സ്‌ക്രീൻ ഓഫാണ്</translation>
-<translation id="4706121060329443414">പിന്നീട് ഡൗൺലോഡ് ചെയ്യാൻ ശ്രമിക്കും. സംഭാഷണം ഇപ്പോൾ പ്രോസസ് ചെയ്യുന്നതിനായി Google-ലേക്ക് അയയ്ക്കും.</translation>
 <translation id="4731797938093519117">രക്ഷാകർതൃ ആക്‌സസ്</translation>
 <translation id="4734965478015604180">സമാന്തരം</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + നമ്പർ' കീബോഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. ഫംഗ്ഷന്‍ കീകൾ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> + ഏറ്റവും മുകളിലെ വരിയിലുള്ള കീ അമർത്തുക.</translation>
@@ -688,7 +688,6 @@
 <translation id="6062360702481658777">നിങ്ങൾ <ph name="LOGOUT_TIME_LEFT" />-നുള്ളിൽ സ്വയമേവ സൈൻ ഔട്ട് ചെയ്യും.</translation>
 <translation id="6073451960410192870">റെക്കോർഡിംഗ് നിർത്തുക</translation>
 <translation id="607652042414456612">നിങ്ങളുടെ കമ്പ്യൂട്ടർ സമീപത്തുള്ള Bluetooth ഉപകരണങ്ങൾക്ക് കണ്ടെത്താനാകുന്നതാണ് ഒപ്പം അത് <ph name="ADDRESS" /> എന്ന വിലാസത്തിൽ "<ph name="NAME" />" എന്നതായി ദൃശ്യമാകും.</translation>
-<translation id="6094290315941448991">രഹസ്യാത്മക ഉള്ളടക്കം ദൃശ്യമായിരിക്കുമ്പോൾ അഡ്‌മിൻ നയം സ്ക്രീൻ റെക്കോർഡിംഗ് പ്രവർത്തനരഹിതമാക്കുന്നു</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്‌തു</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">അതിഥി സെഷനിൽ Google അസി‌സ്‌റ്റന്റ് ലഭ്യമല്ല.</translation>
@@ -1043,7 +1042,6 @@
 <translation id="8876661425082386199">നിങ്ങളുടെ കണക്ഷൻ പരിശോധിക്കുക</translation>
 <translation id="8877788021141246043">ഒരു റിമൈൻഡർ സജ്ജീകരിക്കുക</translation>
 <translation id="8878886163241303700">സ്‌ക്രീൻ വിപുലീകരിക്കുന്നു</translation>
-<translation id="8884537526797090108">രഹസ്യാത്മക ഉള്ളടക്കം റെക്കോർഡ് ചെയ്യാനാകില്ല</translation>
 <translation id="890616557918890486">ഉറവിടം മാറ്റുക</translation>
 <translation id="8909138438987180327">ബാറ്ററി <ph name="PERCENTAGE" /> ശതമാനം ഉണ്ട്..</translation>
 <translation id="8913384980486163186">തീമുള്ള (ഡിഫോൾട്ട്)</translation>

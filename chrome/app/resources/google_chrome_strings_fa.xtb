@@ -48,7 +48,6 @@
 <translation id="2121284319307530122">‏راه‌اندازی مجدد برای به‌روزرسانی Chrome</translation>
 <translation id="2123055963409958220">‏با گزارش <ph name="BEGIN_LINK" />تنظیمات کنونی<ph name="END_LINK" />، به بهتر شدن Chrome کمک کنید</translation>
 <translation id="2151406531797534936">‏لطفاً اکنون Chrome را بازراه‌اندازی کنید</translation>
-<translation id="2246246234298806438">‏زمانی که نمایش دهنده داخلی PDF وجود نداشته باشد، Google Chrome نمی‌تواند پیش‌نمای چاپ را نشان دهد.</translation>
 <translation id="2290014774651636340">‏کلیدهای Google API وجود ندارد. برخی از عملکردهای Google Chrome از کار خواهد افتاد.</translation>
 <translation id="2290095356545025170">‏آیا می‌خواهید Google Chrome را غیر فعال کنید؟</translation>
 <translation id="2309047409763057870">‏این نصب ثانویه Google Chrome است و نمی‌تواند مرورگر پیش‌فرضتان شود.</translation>
@@ -87,6 +86,7 @@
 <translation id="3037838751736561277">‏Google Chrome در حالت پس‌زمینه است.</translation>
 <translation id="3059710691562604940">‏«مرور ایمن» خاموش است. Chrome توصیه می‌کند آن را روشن کنید.</translation>
 <translation id="3065168410429928842">‏برگه Chrome</translation>
+<translation id="3069821012350118710">‏تا زمانی‌که Chrome بسته نشود، سایت‌هایی که بازدید می‌کنید اطلاعاتتان را به‌خاطر می‌سپارند</translation>
 <translation id="3080151273017101988">‏ادامه اجرای برنامه‌ها در پس‌زمینه هنگامیکه Google Chrome بسته می‌شود</translation>
 <translation id="3089968997497233615">‏نسخه جدید و امن تری از Google Chrome موجود است.</translation>
 <translation id="3100998948628680988">‏نام‌گذاری نمایه Chrome</translation>
@@ -186,6 +186,7 @@
 <translation id="5804318322022881572">‏Chrome راه‌اندازی نشد. دوباره امتحان کنید.</translation>
 <translation id="5867197326698922595">‏Google Chrome می‌خواهد گذرواژه‌ها را ویرایش کند.</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
+<translation id="5901850848447342934">‏وقتی Chrome را می‌بندید، <ph name="BEGIN_BOLD" />از سیستم اکثر سایت‌ها خارج می‌شوید<ph name="END_BOLD" />. اگر همگام‌سازی خاموش باشد، از <ph name="BEGIN_BOLD" />از سیستم Chrome و سرویس‌های Google نیز خارج می‌شوید<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ورود به سیستم شبکه</translation>
 <translation id="5940385492829620908">‏وب، نشانک‌ها و موارد دیگر Chrome شما در اینجا هستند.</translation>
 <translation id="5941830788786076944">‏Google Chrome مرورگر پیش‌فرض شود</translation>
@@ -275,6 +276,7 @@
 <translation id="8614913330719544658">‏Google Chrome پاسخ نمی‌دهد. مجدداً راه‌اندازی شود؟</translation>
 <translation id="861702415419836452">‏Chrome برای دسترسی به دوربین به اجازه نیاز دارد تا بتواند نقشه سه‌بعدی محیط شما را ایجاد کند</translation>
 <translation id="8625237574518804553">{0,plural, =1{‏Chrome ‏۱ دقیقه دیگر راه‌اندازی مجدد می‌شود}one{‏Chrome ‏# دقیقه دیگر راه‌اندازی مجدد می‌شود}other{‏Chrome ‏# دقیقه دیگر راه‌اندازی مجدد می‌شود}}</translation>
+<translation id="8629311577791198377">‏با بستن همه پنجره‌های Chrome، کوکی‌ها و داده‌های سایت به‌طور خودکار پاک می‌شوند.</translation>
 <translation id="8641606876632989680">‏وقتی با گذرواژه‌ای لورفته به سیستم وارد شوید، Chrome به شما اطلاع می‌دهد</translation>
 <translation id="8669527147644353129">‏راهنمای Google Chrome</translation>
 <translation id="8679801911857917785">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chrome نشان داده می‌شود، کنترل می‌کند.</translation>

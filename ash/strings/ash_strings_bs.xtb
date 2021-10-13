@@ -264,6 +264,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2996462380875591307">Omogućeno je priključeno uvećalo. Pritisnite ponovo Ctrl + tipku za pretraživanje + D da ga isključite.</translation>
 <translation id="3000461861112256445">Mono zvuk</translation>
 <translation id="3009178788565917040">Izlaz</translation>
+<translation id="3009958530611748826">Odaberite folder za pohranjivanje</translation>
 <translation id="3017687597151988916">Područje za odabir je postavljeno tako da snima prozor</translation>
 <translation id="3033545621352269033">Uključeno</translation>
 <translation id="3036649622769666520">Otvori fajlove</translation>
@@ -509,7 +510,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4667099493359681081">Preuzima se <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Otključajte uređaj pomoću koda roditelja</translation>
 <translation id="4702647871202761252">Ekran za privatnost je isključen</translation>
-<translation id="4706121060329443414">Pokušaj preuzimanja će se izvršiti kasnije. Govor će se odmah poslati Googleu na obradu.</translation>
 <translation id="4731797938093519117">Pristup roditelja</translation>
 <translation id="4734965478015604180">Horizontalno</translation>
 <translation id="4735498845456076464">Prečica na tastaturi <ph name="LAUNCHER_KEY_NAME" /> + broj je promijenjena. Da koristite funkcijske tipke, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + tipku u gornjem redu.</translation>
@@ -694,7 +694,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6062360702481658777">Bit ćete automatski odjavljeni za <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Zaustavi snimanje</translation>
 <translation id="607652042414456612">Vaš računar je vidljiv Bluetooth uređajima u blizini i pojavit će se kao "<ph name="NAME" />" s adresom <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Administratorska pravila onemogućavaju snimanje ekrana kada je prisutan povjerljivi sadržaj</translation>
 <translation id="6114505516289286752">Fajlovi govora na jeziku <ph name="LANGUAGE" /> su preuzeti</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Asistent nije dostupan u sesiji gosta.</translation>
@@ -1050,7 +1049,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="8876661425082386199">Provjerite stanje veze</translation>
 <translation id="8877788021141246043">Postavite podsjetnik</translation>
 <translation id="8878886163241303700">Prošireni ekran</translation>
-<translation id="8884537526797090108">Nije moguće snimiti povjerljivi sadržaj</translation>
 <translation id="890616557918890486">Promijeni izvor</translation>
 <translation id="8909138438987180327">Baterija je na <ph name="PERCENTAGE" /> posto.</translation>
 <translation id="8913384980486163186">Tematski (zadano)</translation>

@@ -219,7 +219,6 @@
 <translation id="1218015446623563536">Excluir Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />O serviço de localização do Google usa fontes como redes móveis, Wi‑Fi e sensores para ajudar a estimar o local do dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />É possível desativar esse serviço desativando a configuração de localização principal no dispositivo. Nessa configuração, você também pode desativar o uso de redes móveis, Wi‑Fi e sensores de local.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Não foi possível fazer o download dos arquivos de fala em <ph name="LANGUAGE" />. O download será feito mais tarde. Por enquanto, a fala é enviada ao Google para processamento.</translation>
 <translation id="122082903575839559">Algoritmo de assinatura do certificado</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 com criptografia RSA</translation>
 <translation id="1221825588892235038">Apenas seleção</translation>
@@ -306,6 +305,7 @@
 <translation id="1313660246522271310">Sua conta será desconectada de todos os sites, inclusive nas guias abertas</translation>
 <translation id="1313705515580255288">Seus favoritos, histórico e outras configurações serão sincronizados com sua Conta do Google.</translation>
 <translation id="1316136264406804862">Pesquisando...</translation>
+<translation id="1316248800168909509">Não foi possível se conectar ao <ph name="DEVICE" />. Tente de novo.</translation>
 <translation id="1316495628809031177">A sincronização está pausada</translation>
 <translation id="1317637799698924700">Sua base de encaixe funcionará no modo de compatibilidade com USB-C.</translation>
 <translation id="1319983966058170660">Botão "Voltar" da subpágina <ph name="SUBPAGE_TITLE" /></translation>
@@ -1185,6 +1185,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2200356397587687044">O Chrome precisa de permissão para continuar</translation>
 <translation id="2202898655984161076">Ocorreu um problema na listagem de impressoras. Algumas impressoras podem não ter sido registradas no <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Os nomes podem usar letras, números e caracteres especiais</translation>
+<translation id="220321590587754225">Não foi possível conectar. Tente de novo.</translation>
 <translation id="2204034823255629767">Ler e alterar tudo o que você digitar</translation>
 <translation id="220858061631308971">Digite este código PIN em "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Não foi possível concluir a instalação</translation>
@@ -4918,7 +4919,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6232116551750539448">A conexão com <ph name="NAME" /> foi perdida</translation>
 <translation id="6233154960150021497">Usar voz em vez de teclado por padrão</translation>
-<translation id="6233455992368963267">A fala em <ph name="LANGUAGE" /> é enviada ao Google para processamento.</translation>
 <translation id="6234108445915742946">Os Termos de Serviço do Chrome serão atualizados em 31 de março</translation>
 <translation id="6234474535228214774">Instalação pendente</translation>
 <translation id="6235208551686043831">A câmera do dispositivo foi ativada. Posicione o código QR do eSIM na frente dela.</translation>
@@ -4955,6 +4955,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6263284346895336537">Não crítico</translation>
 <translation id="6264365405983206840">Selecionar &amp;tudo</translation>
 <translation id="6265687851677020761">Remover porta</translation>
+<translation id="6266532094411434237">Conectando ao <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Selecione um certificado para se autenticar no <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Abrir com <ph name="APP" /></translation>
 <translation id="6270391203985052864">Os sites podem pedir para enviar notificações</translation>

@@ -343,6 +343,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6379086450106841622">Dodirni ekran</translation>
 <translation id="6388847657025262518">Mehanizam za uvlačenje dokumenata na skeneru je zaglavljen. Proverite mehanizam i probajte ponovo.</translation>
 <translation id="6395640744968320699">Povezivanje sa HTTP veb-sajtovima (port 80) preko zaštitnog zida nije moguće</translation>
+<translation id="6398765197997659313">Izađi iz režima celog ekrana</translation>
 <translation id="641081527798843608">Podudaranje naslova</translation>
 <translation id="6423239382391657905">Otvorena VPN</translation>
 <translation id="6439505561246192797">Slab (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,7 +449,6 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7978412674231730200">Privatni ključ</translation>
 <translation id="7994702968232966508">EAP metod</translation>
-<translation id="8020238979854764615">Došlo je do greške. Probajte ponovo tako što ćete odabrati druge slike.</translation>
 <translation id="802154636333426148">Preuzimanje nije uspelo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Pošalji povratne informacije</translation>

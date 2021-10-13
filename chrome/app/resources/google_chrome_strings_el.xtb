@@ -50,7 +50,6 @@
 <translation id="2121284319307530122">Επανεκκίνηση για ενημέρωση του &amp;Chrome</translation>
 <translation id="2123055963409958220">Συμβάλετε στη βελτίωση του Chrome, αναφέροντας τις <ph name="BEGIN_LINK" />τρέχουσες ρυθμίσεις<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Επανεκκινήστε το Chrome τώρα</translation>
-<translation id="2246246234298806438">Το Google Chrome δεν είναι δυνατό να εμφανίσει την προεπισκόπηση εκτύπωσης όταν λείπει το ενσωματωμένο πρόγραμμα προβολής PDF.</translation>
 <translation id="2290014774651636340">Λείπουν κλειδιά του Google API. Ορισμένες λειτουργίες του Google Chrome θα απενεργοποιηθούν.</translation>
 <translation id="2290095356545025170">Είστε βέβαιοι ότι θέλετε να απεγκαταστήσετε του Google Chrome;</translation>
 <translation id="2309047409763057870">Αυτή είναι μια δευτερεύουσα εγκατάσταση του Google Chrome και δεν μπορεί να γίνει το προεπιλεγμένο πρόγραμμα περιήγησης.</translation>
@@ -89,6 +88,7 @@
 <translation id="3037838751736561277">Το Google Chrome εκτελείται στο παρασκήνιο.</translation>
 <translation id="3059710691562604940">Η Ασφαλής περιήγηση είναι απενεργοποιημένη. Το Chrome συνιστά να την ενεργοποιήσετε.</translation>
 <translation id="3065168410429928842">Καρτέλα Chrome</translation>
+<translation id="3069821012350118710">Οι ιστότοποι που επισκέπτεστε απομνημονεύουν τις πληροφορίες σας έως ότου κλείσετε το Chrome.</translation>
 <translation id="3080151273017101988">Να συνεχίζεται η εκτέλεση εφαρμογών παρασκηνίου όταν το Google Chrome είναι κλειστό</translation>
 <translation id="3089968997497233615">Υπάρχει μια νέα, ασφαλέστερη έκδοση του Google Chrome.</translation>
 <translation id="3100998948628680988">Ονομάστε το προφίλ σας στο Chrome</translation>
@@ -190,6 +190,7 @@
 <translation id="5804318322022881572">Δεν ήταν δυνατή η εκκίνηση του Chrome. Προσπάθησε ξανά.</translation>
 <translation id="5867197326698922595">Το Google Chrome προσπαθεί να επεξεργαστεί κωδικούς πρόσβασης.</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
+<translation id="5901850848447342934">Θα <ph name="BEGIN_BOLD" />αποσυνδέεστε από τους περισσότερους ιστοτόπους<ph name="END_BOLD" /> όταν κλείνετε το Chrome. Εάν ο συγχρονισμός είναι ανενεργός, θα <ph name="BEGIN_BOLD" />αποσυνδέεστε επίσης από τις υπηρεσίες Google και το Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Σύνδεση δικτύου</translation>
 <translation id="5940385492829620908">Εδώ μπορείτε να βρείτε τις ιστοσελίδες, τους σελιδοδείκτες σας και άλλα δεδομένα του Chrome.</translation>
 <translation id="5941830788786076944">Ορισμός Google Chrome ως προεπιλεγμένο πρόγραμμα περιήγησης</translation>
@@ -279,6 +280,7 @@
 <translation id="8614913330719544658">Το Google Chrome δεν αποκρίνεται. Επανεκκίνηση τώρα;</translation>
 <translation id="861702415419836452">Το Chrome χρειάζεται άδεια πρόσβασης στην κάμερά σας, για να δημιουργήσει έναν τρισδιάστατο χάρτη του περιβάλλοντα χώρου σας.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Η επανεκκίνηση του Chrome θα γίνει σε 1 λεπτό}other{Η επανεκκίνηση του Chrome θα γίνει σε # λεπτά}}</translation>
+<translation id="8629311577791198377">Όταν κλείνετε όλα τα παράθυρα του Chrome, τα cookie και τα δεδομένα ιστοτόπων διαγράφονται αυτόματα.</translation>
 <translation id="8641606876632989680">Το Chrome θα σας ειδοποιήσει όταν συνδεθείτε με έναν παραβιασμένο κωδικό πρόσβαση</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Επίσης, ελέγχει τη σελίδα που εμφανίζεται κατά την εκκίνηση του Chrome.</translation>

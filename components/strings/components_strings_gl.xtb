@@ -214,6 +214,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="160851722280695521">Xogar a Dino Run en Chrome</translation>
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611101756749861742">Segundo rolo</translation>
+<translation id="1615402009686901181">A política do administrador desactiva o modo de captura de pantalla cando nela se mostra contido confidencial</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1623104350909869708">Evitar que esta páxina cree caixas de diálogo adicionais</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -863,7 +864,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3781428340399460090">Rosa fucsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivos Bluetooth</translation>
-<translation id="3787675388804467730">Número da tarxeta virtual</translation>
 <translation id="3787705759683870569">Caduca o <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Tamaño 16</translation>
 <translation id="3789841737615482174">Instalar</translation>
@@ -1578,6 +1578,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6080696365213338172">Accediches a contido mediante un certificado fornecido por un administrador. O teu administrador pode interceptar os datos que fornezas a <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">Buscas relacionadas</translation>
 <translation id="6094273045989040137">Anotar</translation>
+<translation id="6094290315941448991">A política do administrador desactiva a gravación da pantalla cando nela se mostra contido confidencial</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Crear sitio</translation>
 <translation id="6106989379647458772">É posible que a páxina web de <ph name="PAGE" /> estea temporalmente inactiva ou que se trasladase definitivamente a un enderezo web novo.</translation>
@@ -2378,6 +2379,7 @@ Detalles adicionais:
 <translation id="8870494189203302833">A mesma orde cara abaixo</translation>
 <translation id="8871553383647848643">Personalizar o aspecto do navegador</translation>
 <translation id="8874824191258364635">Introduce un número de tarxeta válido</translation>
+<translation id="8884537526797090108">Non se pode gravar contido confidencial</translation>
 <translation id="8891727572606052622">Modo de proxy non válido.</translation>
 <translation id="8894794286471754040">Co bordo longo primeiro</translation>
 <translation id="8903921497873541725">Achegar</translation>
@@ -2432,6 +2434,7 @@ Detalles adicionais:
 <translation id="9050666287014529139">Frase de acceso</translation>
 <translation id="9056953843249698117">Tenda</translation>
 <translation id="9062620674789239642">É posible que se movese, editase ou eliminase.</translation>
+<translation id="9063800855227801443">Non se pode realizar unha captura de contido confidencial</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9065745800631924235">Busca de "<ph name="TEXT" />" desde o historial</translation>
 <translation id="9069693763241529744">Bloqueado por unha extensión</translation>

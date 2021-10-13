@@ -220,7 +220,6 @@
 <translation id="1218015446623563536">刪除 Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Google 的定位服務會使用 Wi-Fi、流動網絡和感應器等來源，以便估計此裝置的所在位置。<ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />關閉裝置的主要位置資訊設定，即可關閉定位服務。您也可以在位置資訊設定中關閉使用 Wi‑Fi、流動網絡和感應器確定位置的功能。<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">無法下載<ph name="LANGUAGE" />語音檔案。系統稍後將再次嘗試下載，目前會暫時將語音傳送給 Google 處理。</translation>
 <translation id="122082903575839559">憑證簽章演算法</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 (使用 RSA 加密)</translation>
 <translation id="1221825588892235038">只限選取的內容</translation>
@@ -308,6 +307,7 @@
 <translation id="1313660246522271310">您將會從所有網站 (包括已開啟的分頁) 登出</translation>
 <translation id="1313705515580255288">系統會將您的書籤、記錄和其他設定與您的 Google 帳戶同步處理。</translation>
 <translation id="1316136264406804862">搜尋中...</translation>
+<translation id="1316248800168909509">無法連線到 <ph name="DEVICE" />，請再試一次。</translation>
 <translation id="1316495628809031177">已暫停同步處理</translation>
 <translation id="1317637799698924700">您的插座將以 USB-C 兼容模式執行。</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" />子頁面返回掣</translation>
@@ -592,6 +592,7 @@
 <translation id="1612019740169791082">您的容器並未設定至可以支援調整磁碟大小。如要調整保留給 Linux 的空間數量，請先備份容器，然後再復原至新容器。</translation>
 <translation id="1614511179807650956">您可能已用盡流動數據配額。前往 <ph name="NAME" /> 啟用入口網站即可購買更多數據用量。</translation>
 <translation id="161460670679785907">無法偵測您的手機</translation>
+<translation id="1615337439947999338">儲存在 Google 帳戶 (<ph name="EMAIL" />) 中</translation>
 <translation id="1615402009686901181">當畫面上出現機密內容時，管理員政策就會停用螢幕截圖擷取功能</translation>
 <translation id="1616206807336925449">這個擴充功能不需任何特殊權限。</translation>
 <translation id="1616298854599875024">「<ph name="IMPORT_NAME" />」擴充程式並非共用模組，因此無法匯入。</translation>
@@ -932,6 +933,7 @@
 <translation id="1929546189971853037">讀取您已登入的所有裝置上的瀏覽記錄</translation>
 <translation id="1930879306590754738">密碼已從此裝置及您的 Google 帳戶中刪除</translation>
 <translation id="1931152874660185993">未安裝任何組件。</translation>
+<translation id="1931410639376954712">正在安裝 <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">此日期之後</translation>
 <translation id="1935303383381416800">已允許查看您的位置</translation>
 <translation id="1936931585862840749">使用數字指定列印份數 (1 至 <ph name="MAX_COPIES" /> 份)。</translation>
@@ -1064,6 +1066,7 @@
 <translation id="208586643495776849">請再試一次</translation>
 <translation id="208634871997892083">保持開啟 VPN</translation>
 <translation id="2087822576218954668">列印：<ph name="PRINT_NAME" /></translation>
+<translation id="2088092308059522196">安裝 <ph name="DEVICE_OS" /> 後才能註冊。</translation>
 <translation id="208928984520943006">從底部向上滑動即可隨時前往主畫面。</translation>
 <translation id="2089566709556890888">透過 Google Chrome 瀏覽器安全瀏覽內容</translation>
 <translation id="2089795179672254991">在網站要求查看複製到剪貼簿的文字和圖片時詢問您 (建議)</translation>
@@ -1186,8 +1189,10 @@
 <translation id="2200356397587687044">Chrome 需要權限才能繼續</translation>
 <translation id="2202898655984161076">列出打印機清單時發生問題，您的部分打印機尚未在 <ph name="CLOUD_PRINT_NAME" /> 完成註冊。</translation>
 <translation id="2203088913459920044">名稱可以使用字母、數字和特殊字元</translation>
+<translation id="220321590587754225">無法連線，請再試一次。</translation>
 <translation id="2204034823255629767">讀取及變更您輸入的任何設定</translation>
 <translation id="220858061631308971">請在「<ph name="DEVICE_NAME" />」上輸入以下 PIN：</translation>
+<translation id="2210462644007531147">無法完成安裝</translation>
 <translation id="2212565012507486665">允許 Cookie</translation>
 <translation id="2214018885812055163">共用的資料夾</translation>
 <translation id="2214884991347062907">密碼錯誤，請再試一次</translation>
@@ -1244,6 +1249,8 @@
 <translation id="22665427234727190">在網站要求存取藍牙裝置時詢問您 (建議)</translation>
 <translation id="2266957463645820432">透過 USB 的 IPP (IPPUSB)</translation>
 <translation id="2270450558902169558">與網域 <ph name="DOMAIN" /> 中的任何裝置交換數據</translation>
+<translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />安裝程序<ph name="BEGIN_BOLD" />會清除整個硬碟的資料<ph name="END_BOLD" />。請確保已將資料備份。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />安裝程序開始後就無法取消。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">與網域 <ph name="DOMAINS" /> 中的任何裝置交換數據</translation>
 <translation id="2270666014403455717">指派用來「選取」的按鈕裝置</translation>
 <translation id="2271469253353559191">暗光模式時間表</translation>
@@ -1507,6 +1514,7 @@
 <translation id="2521854691574443804">正在檢查 <ph name="FILE_NAME" /> 是否符合您機構的安全性政策…</translation>
 <translation id="252219247728877310">組件未更新</translation>
 <translation id="2523184218357549926">將您瀏覽的網頁網址傳送給 Google</translation>
+<translation id="252418934079508528">安裝 <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome 對電腦進行有害軟件檢查…</translation>
 <translation id="2526590354069164005">桌面電腦</translation>
 <translation id="2526619973349913024">檢查更新</translation>
@@ -1711,6 +1719,7 @@
 <translation id="2740531572673183784">確定</translation>
 <translation id="2741713322780029189">開啟復原終端機</translation>
 <translation id="2741912629735277980">在登入畫面上顯示使用者介面</translation>
+<translation id="2742448780373473567">安裝 <ph name="DEVICE_OS" /> 會覆寫裝置上的所有資料。</translation>
 <translation id="274290345632688601">正在還原 Linux 應用程式和檔案</translation>
 <translation id="274318651891194348">正在搜尋鍵盤</translation>
 <translation id="2743387203779672305">複製到剪貼簿</translation>
@@ -2909,6 +2918,8 @@
 <translation id="3979748722126423326">啟用 <ph name="NETWORKDEVICE" /></translation>
 <translation id="3981058120448670012">以「<ph name="DEVICE_NAME" />」向附近的裝置顯示 <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">輸入的儲存類型無效。</translation>
+<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />發生問題，系統無法安裝 <ph name="DEVICE_OS" />。<ph name="END_PARAGRAPH1" />
+    如需詳細說明，請瀏覽：<ph name="BEGIN_PARAGRAPH2" />g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">只需幾個簡單步驟，便可以完成瀏覽器設定</translation>
 <translation id="3983400541576569538">部分應用程式的資料可能會遺失</translation>
 <translation id="3983586614702900908">來自未知供應商的裝置</translation>
@@ -2998,6 +3009,7 @@
 <translation id="4084835346725913160">關閉 <ph name="TAB_NAME" /></translation>
 <translation id="4085270836953633510">在網站要存取序列連接埠時詢問您</translation>
 <translation id="4085298594534903246">系統已封鎖此網頁的 JavaScript。</translation>
+<translation id="4085947337119280756">其他擴充程式</translation>
 <translation id="4087089424473531098">已建立以下擴充功能：
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -3304,6 +3316,7 @@
 <translation id="4449996769074858870">這個分頁正在播放音效檔案。</translation>
 <translation id="4450274068924249931">在螢幕閒置時顯示相片、時間、天氣和媒體資訊。啟用螢幕保護程式後，螢幕在充電時亦會保持開啟。</translation>
 <translation id="4450974146388585462">診斷</translation>
+<translation id="445099924538929605"><ph name="DEVICE_OS" /> 偵測到有效的 TPM，能夠更安全地儲存您的資料。</translation>
 <translation id="4451479197788154834">您的密碼已儲存在此裝置和 Google 帳戶中</translation>
 <translation id="4451757071857432900">封鎖顯示滋擾性或誤導廣告網站上的廣告 (建議)</translation>
 <translation id="4453946976636652378">搜尋 <ph name="SEARCH_ENGINE_NAME" /> 或輸入網址</translation>
@@ -3807,6 +3820,10 @@
 <translation id="4992473555164495036">您的管理員已限制可用的輸入方法。</translation>
 <translation id="4994474651455208930">允許網站要求成為通訊協定的預設處理常式</translation>
 <translation id="4994754230098574403">正在設定</translation>
+<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />在註冊裝置前，您需要清除 TPM，<ph name="DEVICE_OS" /> 才能取得裝置的擁有權。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您亦可完全關閉 TPM 裝置。系統仍會透過軟件加密功能安全儲存您的資料，但會停用硬件支援憑證等特定安全性功能。<ph name="END_PARAGRAPH2" />
+    
+<ph name="BEGIN_PARAGRAPH3" />如要變更 TPM 設定，請重新啟動並進入系統的 BIOS/UEFI 設定。操作步驟根據裝置型號而有所不同。如需更多資料，請在重新啟動前使用其他裝置開啟 <ph name="DEVICE_OS" /> 文件：[URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{找不到 <ph name="VM_TYPE" /> 虛擬機器}=1{已找到 <ph name="VM_TYPE" /> 個 <ph name="VM_NAME_LIST" /> 虛擬機器：}other{已找到 {NUM_VMS} 個 <ph name="VM_TYPE" /> 虛擬機器：<ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">沒有互聯網連線。</translation>
 <translation id="4998430619171209993">開啟</translation>
@@ -3922,6 +3939,7 @@
 <translation id="5127620150973591153">安全連線 ID：<ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">同步處理已停用</translation>
 <translation id="5127881134400491887">管理網絡連線</translation>
+<translation id="5128774403617662387">開始操作前，請確認資料已備份。安裝 <ph name="DEVICE_OS" /> 會覆寫硬碟的資料。詳情請參閱：g.co/TBD。</translation>
 <translation id="512903556749061217">已附加</translation>
 <translation id="5130080518784460891">倚天</translation>
 <translation id="5130675701626084557">無法下載設定檔。請稍候再試，或向流動網絡供應商尋求協助。</translation>
@@ -4358,6 +4376,7 @@
 <translation id="5592595402373377407">目前還沒有足夠的數據。</translation>
 <translation id="5595485650161345191">編輯地址</translation>
 <translation id="5596627076506792578">更多選項</translation>
+<translation id="5600348067066185292">只要簡單幾個步驟即可完成安裝。您亦可於系統變更電腦前，再次進行確認。</translation>
 <translation id="5600706100022181951">下載更新將會使用 <ph name="UPDATE_SIZE_MB" /> MB 流動數據。要繼續嗎？</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">不允許連接 MIDI 裝置</translation>
@@ -4418,6 +4437,7 @@
 <translation id="5659593005791499971">電郵</translation>
 <translation id="5659833766619490117">無法翻譯此網頁的內容</translation>
 <translation id="5662513737565158057">變更 Linux 應用程式的運作方式。</translation>
+<translation id="5667490069342183561">Google 對任何資料遺失概不負責，而且 <ph name="DEVICE_OS" /> 可能不適用於未通過認證的型號。詳情請參閱：g.co/TBD。</translation>
 <translation id="5667546120811588575">正在設定 Google Play…</translation>
 <translation id="5668351004957198136">未通過</translation>
 <translation id="56702779821643359">與附近的人分享檔案。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -4436,6 +4456,7 @@
 <translation id="5684181005476681636">Wi-Fi 詳情</translation>
 <translation id="5684661240348539843">資產識別碼</translation>
 <translation id="5687326903064479980">時區</translation>
+<translation id="5687935527303996204">請確保裝置已正確插上電源並保持啟動狀態。安裝最多可能需要 20 分鐘才能完成。安裝完成後，該裝置會自動關機。</translation>
 <translation id="5689516760719285838">位置</translation>
 <translation id="5689531695336322499">「<ph name="SUPERVISED_USER_NAME" />」似乎已在另一部裝置上透過「Google 助理」設定了 Voice Match 功能。系統已使用先前的錄音在此裝置上建立語音模型。</translation>
 <translation id="56907980372820799">連結數據</translation>
@@ -4921,7 +4942,6 @@
 <translation id="6232017090690406397">電池</translation>
 <translation id="6232116551750539448">與 <ph name="NAME" /> 的連線已中斷</translation>
 <translation id="6233154960150021497">預設使用語音取代鍵盤</translation>
-<translation id="6233455992368963267"><ph name="LANGUAGE" />語音將會傳送至 Google 進行處理。</translation>
 <translation id="6234108445915742946">Chrome 的《服務條款》將於 3 月 31 日變更</translation>
 <translation id="6234474535228214774">正在等待安裝</translation>
 <translation id="6235208551686043831">開咗裝置相機。請將相機鏡頭對準 eSIM 卡嘅 QR 碼。</translation>
@@ -4958,6 +4978,7 @@
 <translation id="6263284346895336537">非重要</translation>
 <translation id="6264365405983206840">全部選取(&amp;A)</translation>
 <translation id="6265687851677020761">移除連接埠</translation>
+<translation id="6266532094411434237">正在連線到 <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">請選取您在 <ph name="HOST_NAME" /> 的驗證憑證</translation>
 <translation id="6268252012308737255">使用 <ph name="APP" /> 開啟</translation>
 <translation id="6270391203985052864">網站將可以要求向您傳送通知</translation>
@@ -5781,6 +5802,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> 正在使用您的麥克風</translation>
 <translation id="7141105143012495934">系統無法擷取您帳戶的詳細資料，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
 <translation id="7144878232160441200">重試</translation>
+<translation id="7149839598364933473">在此裝置上安裝 <ph name="DEVICE_OS" />。</translation>
 <translation id="7149893636342594995">最近 24 小時</translation>
 <translation id="7152478047064750137">這個擴充程式不需要任何特殊權限</translation>
 <translation id="7154130902455071009">將您的起始網頁變更為：<ph name="START_PAGE" /></translation>
@@ -5876,6 +5898,16 @@
 <translation id="7257666756905341374">讀取您複製並貼上的資料</translation>
 <translation id="7258225044283673131">應用程式沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
 <translation id="7262004276116528033">此登入服務是由 <ph name="SAML_DOMAIN" /> 代管</translation>
+<translation id="7264432249010320236">其他網站</translation>
+<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />請嘗試執行以下解決疑難步驟：
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />確保裝置含有可用的內部儲存空間，例如 HDD、SSD 或 eMMC
+    <ph name="LIST_ITEM" />確認裝置內部儲存空間大於 16 GB
+    <ph name="LIST_ITEM" />檢查內部儲存空間的連接狀態 (如果支援實體存取方式)
+    <ph name="LIST_ITEM" />務必使用通過認證的型號，並查看安裝注意事項
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />如需詳細說明，請前往：g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">無法安裝虛擬機器。請再試一次，或聯絡您的管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="7267875682732693301">覆按壓指紋感應器，以建立完整的指紋檔案</translation>
 <translation id="7268127947535186412">此設定由裝置擁有者管理。</translation>
@@ -6607,6 +6639,7 @@
 <translation id="7986295104073916105">讀取及變更已儲存的密碼設定</translation>
 <translation id="7987814697832569482">永遠透過此 VPN 連接</translation>
 <translation id="7988355189918024273">啟用無障礙功能</translation>
+<translation id="7988805580376093356">保留現有作業系統，並透過 USB 執行 <ph name="DEVICE_OS" />。</translation>
 <translation id="7991296728590311172">「按鈕控制」設定</translation>
 <translation id="7997826902155442747">處理優先次序</translation>
 <translation id="7999229196265990314">已建立下列檔案：
@@ -6715,6 +6748,7 @@
 <translation id="80974698889265265">PIN 不相符</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> 正在使用擴充程式的 Proxy 設定</translation>
 <translation id="8097959162767603171">您的管理員必須先接受管理控制台 Chrome 裝置清單中的服務條款。</translation>
+<translation id="8098156986344908134">要安裝 <ph name="DEVICE_OS" /> 並清除硬碟的資料嗎？</translation>
 <translation id="8098616321286360457">需要網絡連線</translation>
 <translation id="810068641062493918">揀咗「<ph name="LANGUAGE" />」。㩒搜尋鍵加空白鍵就可以取消選取揀咗嘅語言。</translation>
 <translation id="8100972288595615768">要清除 <ph name="SITE_NAME" /> 的網站資料和權限嗎？</translation>
@@ -6901,6 +6935,7 @@
 <translation id="8287902281644548111">按 API 調用/網址搜尋</translation>
 <translation id="8288032458496410887">解除安裝 <ph name="APP" />…</translation>
 <translation id="8289128870594824098">磁碟大小</translation>
+<translation id="8289509909262565712">歡迎使用 <ph name="DEVICE_OS" /></translation>
 <translation id="8293206222192510085">新增書籤</translation>
 <translation id="8294431847097064396">來源</translation>
 <translation id="8298429963694909221">您現在可在 <ph name="DEVICE_TYPE" /> 上接收手機的通知。在 <ph name="DEVICE_TYPE" /> 上關閉通知，您手機上的通知也會關閉。請確認您的手機在附近，且已開啟藍牙和 Wi-Fi。</translation>
@@ -7228,6 +7263,7 @@
 <translation id="867085395664725367">伺服器暫時發生錯誤。</translation>
 <translation id="8673026256276578048">搜尋網頁…</translation>
 <translation id="8673383193459449849">伺服器問題</translation>
+<translation id="8675704450909805533">安裝程式找不到可安裝 <ph name="DEVICE_OS" /> 的有效目的地。</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{影片}other{# 部影片}}</translation>
 <translation id="8676313779986170923">多謝您提供意見。</translation>
 <translation id="8676374126336081632">清除輸入</translation>
@@ -7384,6 +7420,7 @@
 <translation id="8823559166155093873">封鎖 Cookie</translation>
 <translation id="8823704566850948458">建議密碼…</translation>
 <translation id="8824701697284169214">新增網頁(&amp;G)…</translation>
+<translation id="8826773185686617320">如要開始使用 <ph name="DEVICE_OS" />，請移除 USB 並重新啟動裝置。否則，裝置將會在 <ph name="TIME_LEFT" />後關機。</translation>
 <translation id="8827125715368568315">已封鎖<ph name="PERMISSION" />和其他 <ph name="COUNT" /> 個項目</translation>
 <translation id="8827289157496676362">固定擴充功能</translation>
 <translation id="8827752199525959199">更多操作，<ph name="USERNAME" /> 喺 <ph name="DOMAIN" /> 上面嘅密碼</translation>
@@ -7519,6 +7556,7 @@
 <translation id="8962051932294470566">一次只能分享一個檔案，請在目前的傳輸完成後再試一次。</translation>
 <translation id="8962083179518285172">隱藏詳情</translation>
 <translation id="8962918469425892674">此網站正在使用動作或光線感應器。</translation>
+<translation id="8964943308070692533">其他無效網站</translation>
 <translation id="8965037249707889821">輸入舊密碼</translation>
 <translation id="89667524227025535">請使用裝置相機掃瞄 QR 碼，或輸入流動網絡供應商提供的啟動碼</translation>
 <translation id="8966809848145604011">其他個人檔案</translation>
@@ -7683,6 +7721,8 @@
 <translation id="9116465289595958864">上次修改時間</translation>
 <translation id="9116799625073598554">筆記應用程式</translation>
 <translation id="9117030152748022724">管理應用程式</translation>
+<translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />為獲得最佳體驗，請將 <ph name="DEVICE_OS" /> 安裝至內置磁碟。您亦可稍後從登入畫面進行安裝。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />如果現在還不想安裝，可透過 USB 執行並試用 CloudReady 2.0。此操作會保留您現有的作業系統和資料，但系統的儲存空間和效能可能受限。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">在固定分頁中開啟</translation>
 <translation id="9122176249172999202">「<ph name="IDS_SHORT_PRODUCT_NAME" />」已暫停</translation>
 <translation id="9124003689441359348">已儲存的密碼將會在這裡顯示</translation>

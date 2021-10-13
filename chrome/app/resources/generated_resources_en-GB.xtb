@@ -220,7 +220,6 @@
 <translation id="1218015446623563536">Delete Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Google's location service uses sources such as Wi-Fi, mobile networks and sensors to help estimate this device’s location.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />You can turn off location by turning off the main location setting on this device. You can also turn off the use of Wi-Fi, mobile networks and sensors for location in location settings.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Couldn’t download <ph name="LANGUAGE" /> speech files. Download will be attempted later. Speech is sent to Google for processing for now.</translation>
 <translation id="122082903575839559">Certificate Signature Algorithm</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 With RSA Encryption</translation>
 <translation id="1221825588892235038">Selection only</translation>
@@ -308,6 +307,7 @@
 <translation id="1313660246522271310">You'll be signed out of all sites, including in open tabs</translation>
 <translation id="1313705515580255288">Your bookmarks, history and other settings will be synced to your Google Account.</translation>
 <translation id="1316136264406804862">Searching...</translation>
+<translation id="1316248800168909509">Could not connect to <ph name="DEVICE" />. Try again.</translation>
 <translation id="1316495628809031177">Sync is paused</translation>
 <translation id="1317637799698924700">Your docking station will operate in USB Type-C compatible mode.</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> sub-page back button</translation>
@@ -1190,6 +1190,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2200356397587687044">Chrome needs permission to continue</translation>
 <translation id="2202898655984161076">There was a problem while listing printers. Some of your printers may not have registered successfully with <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Name can use letters, numbers and special characters</translation>
+<translation id="220321590587754225">Couldn't connect. Try again.</translation>
 <translation id="2204034823255629767">Read and change anything that you type</translation>
 <translation id="220858061631308971">Please enter this PIN code on "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Couldn’t complete installation</translation>
@@ -4941,7 +4942,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6232017090690406397">Battery</translation>
 <translation id="6232116551750539448">Connection to <ph name="NAME" /> has been lost</translation>
 <translation id="6233154960150021497">Default to using voice instead of keyboard</translation>
-<translation id="6233455992368963267"><ph name="LANGUAGE" /> speech is sent to Google for processing.</translation>
 <translation id="6234108445915742946">Chrome's Terms of Service are changing on 31 March</translation>
 <translation id="6234474535228214774">Install pending</translation>
 <translation id="6235208551686043831">Device camera has turned on. Please place your eSIM QR code in front of the camera.</translation>
@@ -4978,6 +4978,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6263284346895336537">Not Critical</translation>
 <translation id="6264365405983206840">Select &amp;All</translation>
 <translation id="6265687851677020761">Remove port</translation>
+<translation id="6266532094411434237">Connecting to <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Select a certificate to which you want to authenticate <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Open with <ph name="APP" /></translation>
 <translation id="6270391203985052864">Sites can ask to send notifications</translation>

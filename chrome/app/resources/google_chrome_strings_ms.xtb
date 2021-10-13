@@ -48,7 +48,6 @@
 <translation id="2121284319307530122">Lancarkan Semula untuk Mengemas Kini &amp;Chrome</translation>
 <translation id="2123055963409958220">Bantu jadikan Chrome lebih baik dengan melaporkan <ph name="BEGIN_LINK" />tetapan semasa<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Sila mulakan semula Chrome sekarang</translation>
-<translation id="2246246234298806438">Google Chrome tidak dapat memaparkan pratonton cetakan apabila pemapar PDF terbina dalam tiada.</translation>
 <translation id="2290014774651636340">Kunci API Google tiada. Sesetengah fungsi Google Chrome akan dilumpuhkan.</translation>
 <translation id="2290095356545025170">Adakah anda pasti anda mahu menyahpasang Google Chrome?</translation>
 <translation id="2309047409763057870">Ini adalah pemasangan kedua Google Chrome dan tidak boleh dijadikan penyemak imbas lalai anda.</translation>
@@ -87,6 +86,7 @@
 <translation id="3037838751736561277">Google Chrome dalam mod latar belakang.</translation>
 <translation id="3059710691562604940">Penyemakan Imbas Selamat dimatikan. Chrome mengesyorkan agar ciri ini dihidupkan.</translation>
 <translation id="3065168410429928842">Tab Chrome</translation>
+<translation id="3069821012350118710">Laman yang anda lawati mengingati maklumat anda sehingga anda menutup Chrome</translation>
 <translation id="3080151273017101988">Terus menjalankan apl latar belakang apabila Google Chrome ditutup</translation>
 <translation id="3089968997497233615">Terdapat versi Google Chrome baharu yang lebih selamat tersedia.</translation>
 <translation id="3100998948628680988">Namakan profil Chrome anda</translation>
@@ -186,6 +186,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="5804318322022881572">Tidak dapat melancarkan Chrome. Cuba lagi.</translation>
 <translation id="5867197326698922595">Google Chrome cuba mengedit kata laluan.</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
+<translation id="5901850848447342934">Anda akan <ph name="BEGIN_BOLD" />dilog keluar daripada kebanyakan laman<ph name="END_BOLD" /> apabila anda menutup Chrome. Jika penyegerakan dimatikan, anda juga akan <ph name="BEGIN_BOLD" />dilog keluar daripada perkhidmatan Google dan Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Log Masuk Rangkaian</translation>
 <translation id="5940385492829620908">Web, penanda halaman dan barangan Chrome anda yang lain tinggal di sini.</translation>
 <translation id="5941830788786076944">Jadikan Google Chrome penyemak imbas lalai</translation>
@@ -275,6 +276,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="8614913330719544658">Google Chrome tidak responsif. Lancarkan semula sekarang?</translation>
 <translation id="861702415419836452">Chrome memerlukan kebenaran untuk mengakses kamera anda untuk membuat peta 3D persekitaran anda</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome akan dilancarkan semula dalam masa seminit}other{Chrome akan dilancarkan semula dalam masa # minit}}</translation>
+<translation id="8629311577791198377">Apabila anda menutup semua tetingkap Chrome, kuki dan data laman akan dikosongkan secara automatik</translation>
 <translation id="8641606876632989680">Chrome akan memaklumkan kepada anda apabila anda log masuk menggunakan kata laluan yang terjejas</translation>
 <translation id="8669527147644353129">Pembantu Google Chrome</translation>
 <translation id="8679801911857917785">Sambungan turut mengawal halaman yang ditunjukkan apabila anda memulakan Chrome.</translation>

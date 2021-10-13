@@ -218,7 +218,6 @@
 <translation id="1218015446623563536">Fshi Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Shërbimi i vendndodhjes i Google përdor burime si Wi-Fi, rrjetet celulare dhe sensorët, për të ndihmuar në përllogaritjen e vendndodhjes së kësaj pajisjeje.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Mund ta çaktivizosh "Vendndodhjen" duke çaktivizuar cilësimin kryesor të "Vendndodhjes" në këtë pajisje. Mund edhe ta çaktivizosh përdorimin e Wi-Fi, rrjeteve celulare dhe sensorëve për vendndodhjen te cilësimet e vendndodhjes.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">S'mund të shkarkoheshin skedarët ligjërimit në <ph name="LANGUAGE" />. Shkarkimi do të provohet më vonë. Ligjërimi dërgohet te Google për përpunim për momentin.</translation>
 <translation id="122082903575839559">Algoritmi i nënshkrimit të certifikatës</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 me enkriptimin RSA</translation>
 <translation id="1221825588892235038">Vetëm zgjedhja</translation>
@@ -306,6 +305,7 @@
 <translation id="1313660246522271310">Do të dalësh nga të gjitha sajtet, duke përfshirë edhe në skedat e hapura</translation>
 <translation id="1313705515580255288">Faqeshënuesit e tu, historiku dhe cilësime të tjera do të sinkronizohen në llogarinë tënde të Google.</translation>
 <translation id="1316136264406804862">Po kërkon...</translation>
+<translation id="1316248800168909509">Nuk mund të lidhej me <ph name="DEVICE" />. Provo përsëri.</translation>
 <translation id="1316495628809031177">Sinkronizimi është vendosur në pauzë</translation>
 <translation id="1317637799698924700">Stacioni yt do të funksionojë në modalitetin e pajtueshëm me USB të tipit C.</translation>
 <translation id="1319983966058170660">Butoni i kthimit për nënfaqen "<ph name="SUBPAGE_TITLE" />"</translation>
@@ -1175,6 +1175,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2200356397587687044">Chrome ka nevojë për leje për të vazhduar</translation>
 <translation id="2202898655984161076">Pati një problem në renditjen e printerëve. Disa prej tyre rinterëve mund të mos jenë regjistruar me sukses në <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Emri mund të përdorë shkronja, numra dhe karaktere të veçanta</translation>
+<translation id="220321590587754225">Nuk mund të lidhej. Provo përsëri.</translation>
 <translation id="2204034823255629767">Lexo dhe ndrysho gjithçka që shkruan</translation>
 <translation id="220858061631308971">Fut këtë kod PIN në "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Instalimi nuk mund të përfundohej</translation>
@@ -4922,7 +4923,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6232116551750539448">Lidhja me <ph name="NAME" /> ka humbur</translation>
 <translation id="6233154960150021497">Cakto si parazgjedhje përdorimin e zërit në vend të tastierës</translation>
-<translation id="6233455992368963267">Ligjërata në <ph name="LANGUAGE" /> dërgohet te Google për përpunim.</translation>
 <translation id="6234108445915742946">Kushtet e shërbimit të Chrome ndryshojnë më 31 mars</translation>
 <translation id="6234474535228214774">Instalimi në pritje</translation>
 <translation id="6235208551686043831">Kamera e pajisjes është aktivizuar. Vendose kodin QR të kartës eSIM përpara kamerës.</translation>
@@ -4959,6 +4959,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6263284346895336537">Jo vendimtare</translation>
 <translation id="6264365405983206840">Zgjidh të &amp;gjitha</translation>
 <translation id="6265687851677020761">Hiq portën</translation>
+<translation id="6266532094411434237">Po lidhet me <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Zgjidh një certifikatë për të verifikuar veten te <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Hape me <ph name="APP" /></translation>
 <translation id="6270391203985052864">Sajtet mund të kërkojnë të dërgojnë njoftime</translation>

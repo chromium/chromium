@@ -264,6 +264,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2996462380875591307">Dokket lupe er slått på. Trykk på Ctrl + Søk + D igjen for å slå det av.</translation>
 <translation id="3000461861112256445">Monolyd</translation>
 <translation id="3009178788565917040">Utdata</translation>
+<translation id="3009958530611748826">Velg mappen du vil lagre i</translation>
 <translation id="3017687597151988916">Vinduet er valgt som kilde</translation>
 <translation id="3033545621352269033">På</translation>
 <translation id="3036649622769666520">Åpne filer</translation>
@@ -509,7 +510,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4667099493359681081">Laster ned <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Lås opp enheten med foreldrekode</translation>
 <translation id="4702647871202761252">Personvernskjermen er av</translation>
-<translation id="4706121060329443414">Vi forsøker å laste ned filene senere. Inntil videre blir tale sendt til Google for behandling.</translation>
 <translation id="4731797938093519117">Foreldretilgang</translation>
 <translation id="4734965478015604180">Horisontal</translation>
 <translation id="4735498845456076464">Hurtigtasten <ph name="LAUNCHER_KEY_NAME" /> + tall er endret. For å bruke funksjonstastene, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + en tast på øverste rad.</translation>
@@ -694,7 +694,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6062360702481658777">Du logges automatisk av om <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Stopp opptaket</translation>
 <translation id="607652042414456612">Datamaskinen din kan registreres av Bluetooth-enheter i nærheten, og vises med navnet «<ph name="NAME" />» og adressen <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">På grunn av en administratorregel er skjermopptak deaktivert når konfidensielt innhold er synlig</translation>
 <translation id="6114505516289286752">Talefiler for <ph name="LANGUAGE" /> er lastet ned</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google-assistenten er ikke tilgjengelig i gjesteøkter.</translation>
@@ -1050,7 +1049,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8876661425082386199">Sjekk tilkoblingen din</translation>
 <translation id="8877788021141246043">Angi en påminnelse</translation>
 <translation id="8878886163241303700">Utvidet skjerm</translation>
-<translation id="8884537526797090108">Kan ikke ta opp konfidensielt innhold</translation>
 <translation id="890616557918890486">Endre kilde</translation>
 <translation id="8909138438987180327">Batteriet er <ph name="PERCENTAGE" /> % fullt.</translation>
 <translation id="8913384980486163186">Tema (standard)</translation>

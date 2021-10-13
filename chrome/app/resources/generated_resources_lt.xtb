@@ -223,7 +223,6 @@
 <translation id="1218015446623563536">„Linux“ ištrynimas</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />„Google“ vietovės paslauga naudoja įvairius šaltinius, pvz., „Wi‑Fi“, mobiliojo ryšio tinklus ir jutiklius, šio įrenginio vietovei nustatyti.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Galite išjungti vietovės nustatymą išjungdami pagrindinį vietovės nustatymą šiame įrenginyje. Vietovės nustatymuose taip pat galite išjungti „Wi‑Fi“, mobiliojo ryšio tinklų ir jutiklių naudojimą vietovei nustatyti.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Nepavyko atsisiųsti <ph name="LANGUAGE" /> kalbos failų. Atsisiųsti bus bandoma vėliau. Dabar kalba siunčiama į sistemą „Google“ apdoroti.</translation>
 <translation id="122082903575839559">Sertifikato parašo algoritmas</translation>
 <translation id="1221024147024329929">PKCS Nr. 1 MD2 su RSA šifruote</translation>
 <translation id="1221825588892235038">Tik pasirinkimas</translation>
@@ -311,6 +310,7 @@
 <translation id="1313660246522271310">Būsite atjungti nuo visų svetainių, įskaitant atidarytus skirtukus</translation>
 <translation id="1313705515580255288">Žymės, istorija ir kiti nustatymai bus sinchronizuojami su „Google“ paskyra.</translation>
 <translation id="1316136264406804862">Ieškoma...</translation>
+<translation id="1316248800168909509">Nepavyko prisijungti prie „<ph name="DEVICE" />“. Bandykite dar kartą.</translation>
 <translation id="1316495628809031177">Sinchronizavimas pristabdytas</translation>
 <translation id="1317637799698924700">Jūsų doko stotis veiks su „Type-C“ USB suderinamu režimu.</translation>
 <translation id="1319983966058170660">Papildomo puslapio „<ph name="SUBPAGE_TITLE" />“ mygtukas „Atgal“</translation>
@@ -1193,6 +1193,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2200356397587687044">Norint tęsti „Chrome“ reikia leidimo</translation>
 <translation id="2202898655984161076">Sudarant spausdintuvų sąrašą iškilo problema. Kai kurie spausdintuvai galėjo nebūti sėkmingai užregistruoti „<ph name="CLOUD_PRINT_NAME" />“.</translation>
 <translation id="2203088913459920044">Pavadinimą gali sudaryti raidės, skaitmenys ir specialieji ženklai</translation>
+<translation id="220321590587754225">Nepavyko prijungti. Bandykite dar kartą.</translation>
 <translation id="2204034823255629767">Skaityti ir keisti viską, ką įvedate</translation>
 <translation id="220858061631308971">Įveskite šį PIN kodą „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="2210462644007531147">Nepavyko baigti diegimo</translation>
@@ -4945,7 +4946,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6232017090690406397">Akumuliatorius</translation>
 <translation id="6232116551750539448">Ryšys su „<ph name="NAME" />“ nutrūko</translation>
 <translation id="6233154960150021497">Numatyta naudoti balsą, o ne klaviatūrą</translation>
-<translation id="6233455992368963267"><ph name="LANGUAGE" /> kalba siunčiama apdoroti sistemai „Google“.</translation>
 <translation id="6234108445915742946">Kovo 31 d. bus pakeistos „Chrome“ paslaugų teikimo sąlygos</translation>
 <translation id="6234474535228214774">Laukiama, kol bus įdiegta</translation>
 <translation id="6235208551686043831">Įrenginio fotoaparatas įjungtas. Padėkite „eSIM“ kortelės QR kodą prieš fotoaparatą.</translation>
@@ -4982,6 +4982,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6263284346895336537">Ne kritinis</translation>
 <translation id="6264365405983206840">Pasirinkti &amp;viską</translation>
 <translation id="6265687851677020761">Pašalinti prievadą</translation>
+<translation id="6266532094411434237">Prisijungiama prie „<ph name="DEVICE" />“</translation>
 <translation id="6267166720438879315">Pasirinkite sertifikatą, kad patvirtintumėte savo autentiškumą <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Atidaryti naudojant „<ph name="APP" />“</translation>
 <translation id="6270391203985052864">Svetainės gali prašyti siųsti pranešimus</translation>

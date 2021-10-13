@@ -214,6 +214,7 @@
 <translation id="160851722280695521">Играть в Chrome Dino</translation>
 <translation id="161042844686301425">Голубой</translation>
 <translation id="1611101756749861742">Второй рулон</translation>
+<translation id="1615402009686901181">Администратор запретил запись экрана, когда видны конфиденциальные данные.</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1623104350909869708">Запретить создание дополнительных диалоговых окон на этой странице</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -400,6 +401,7 @@
 <translation id="2241693394036365668">Скачан файл</translation>
 <translation id="2248949050832152960">Использовать WebAuthn</translation>
 <translation id="2250931979407627383">Скобы по левому краю</translation>
+<translation id="2251943122176102076">Администратор не рекомендует делать скриншоты или видеозаписи, так как может быть сохранена конфиденциальная информация:</translation>
 <translation id="225207911366869382">Это значение для данного правила больше не используется.</translation>
 <translation id="2258928405015593961">Введите правильный срок окончания действия и повторите попытку.</translation>
 <translation id="225943865679747347">Код ошибки: <ph name="ERROR_CODE" /></translation>
@@ -855,7 +857,6 @@
 <translation id="3781428340399460090">Ярко-розовый</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Устройства Bluetooth</translation>
-<translation id="3787675388804467730">Номер виртуальной карты</translation>
 <translation id="3787705759683870569">Срок действия: до <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Размер: 16</translation>
 <translation id="3789841737615482174">Установить</translation>
@@ -1185,6 +1186,7 @@
           <ph name="LIST_ITEM" />интернет-провайдеры могут отслеживать трафик.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Включить предупреждения</translation>
+<translation id="4834718916855725099">Администратор не рекомендует делать скриншоты или видеозаписи, так как на экране сейчас видна конфиденциальная информация:</translation>
 <translation id="4838327282952368871">Сказочный</translation>
 <translation id="4840250757394056958">Посмотреть историю Chrome</translation>
 <translation id="484462545196658690">Выбрать автоматически</translation>
@@ -1559,6 +1561,7 @@
 <translation id="6080696365213338172">Вы используете сертификат, предоставленный администратором, поэтому он может заблокировать передачу данных на сайт <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">Связанные запросы</translation>
 <translation id="6094273045989040137">Аннотировать</translation>
+<translation id="6094290315941448991">Администратор запретил запись видео с экрана, когда показаны конфиденциальные данные.</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Создать сайт</translation>
 <translation id="6106989379647458772">Возможно, веб-страница <ph name="PAGE" /> временно недоступна или находится по новому адресу.</translation>
@@ -2352,6 +2355,7 @@
 <translation id="8870494189203302833">В том же порядке лицевой стороной вниз</translation>
 <translation id="8871553383647848643">Настроить внешний вид браузера</translation>
 <translation id="8874824191258364635">Введите действительный номер карты.</translation>
+<translation id="8884537526797090108">Не удается записать видео конфиденциального контента</translation>
 <translation id="8891727572606052622">Недопустимый режим работы прокси-сервера.</translation>
 <translation id="8894794286471754040">Начиная с длинного края</translation>
 <translation id="8903921497873541725">Увеличить</translation>
@@ -2406,6 +2410,7 @@
 <translation id="9050666287014529139">Кодовая фраза</translation>
 <translation id="9056953843249698117">Магазин</translation>
 <translation id="9062620674789239642">Возможно, он был перемещен, изменен или удален.</translation>
+<translation id="9063800855227801443">Не удается сделать снимок конфиденциального контента</translation>
 <translation id="9065203028668620118">Изменить</translation>
 <translation id="9065745800631924235">Поисковый запрос "<ph name="TEXT" />" из истории</translation>
 <translation id="9069693763241529744">Заблокировано расширением</translation>

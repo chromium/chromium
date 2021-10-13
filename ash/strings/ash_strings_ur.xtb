@@ -261,6 +261,7 @@
 <translation id="2996462380875591307">‏ڈاک کردہ میگنیفائر فعال ہے۔ اسے ٹوگل کر کے بند کرنے کیلئے Ctrl+Search+D کو دوبارہ دبائیں۔</translation>
 <translation id="3000461861112256445">مونو آڈیو</translation>
 <translation id="3009178788565917040">آؤٹ پٹ</translation>
+<translation id="3009958530611748826">محفوظ کرنے کے لئے فولڈر منتخب کریں</translation>
 <translation id="3017687597151988916">ونڈو کو بطور سورس سیٹ کیا گیا</translation>
 <translation id="3033545621352269033">آن</translation>
 <translation id="3036649622769666520">فائلیں کھولیں</translation>
@@ -504,7 +505,6 @@
 <translation id="4665114317261903604">ڈسٹرب نہ کریں کو ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">والدین کے کوڈ سے آلہ غیر مقفل کریں</translation>
 <translation id="4702647871202761252">رازداری کی اسکرین آف ہے</translation>
-<translation id="4706121060329443414">‏بعد میں ڈاؤن لوڈ کرنے کی کوشش کی جائے گی۔ اسپیچ اب پروسیسنگ کیلئے Google کو بھیجی جائے گی۔</translation>
 <translation id="4731797938093519117">والدین کی رسائی</translation>
 <translation id="4734965478015604180">افقی</translation>
 <translation id="4735498845456076464">‏Number + <ph name="LAUNCHER_KEY_NAME" /> کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ فنکشن کلیدوں کا استعمال کرنے کے لیے <ph name="LAUNCHER_KEY_NAME" /> کلید + سب سے اوپر کی قطار پر ایک کلید کو دبائیں۔</translation>
@@ -688,7 +688,6 @@
 <translation id="6062360702481658777">آپ <ph name="LOGOUT_TIME_LEFT" /> میں خود بخود سائن آؤٹ ہو جائیں گے۔</translation>
 <translation id="6073451960410192870">ریکارڈنگ روکیں</translation>
 <translation id="607652042414456612">آپ کا کمپیوٹر قریبی بلوٹوتھ آلات کے ذریعہ قابل دریافت ہے اور "<ph name="NAME" />" کے بطور پتہ <ph name="ADDRESS" /> کے ساتھ ظاہر ہوگا</translation>
-<translation id="6094290315941448991">منتظم کی پالیسی کے تحت، رازدارانہ مواد کے مرئی ہونے پر اسکرین ریکارڈ کرنے کی سہولت غیر فعال ہو جاتی ہے</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> کی اسپیچ فائلز ڈاؤن لوڈ ہو گئی</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />۔ <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">‏Google اسسٹنٹ مہمان سیشن میں دستیاب نہیں ہے۔</translation>
@@ -1043,7 +1042,6 @@
 <translation id="8876661425082386199">اپنا کنکشن چیک کریں</translation>
 <translation id="8877788021141246043">یاد دہانی سیٹ کریں</translation>
 <translation id="8878886163241303700">اسکرین کو پھیلایا جا رہا ہے</translation>
-<translation id="8884537526797090108">رازدارانہ مواد کو ریکارڈ نہیں کیا جا سکتا</translation>
 <translation id="890616557918890486">ماخذ تبدیل کریں</translation>
 <translation id="8909138438987180327">بیٹری <ph name="PERCENTAGE" /> فیصد ہے۔</translation>
 <translation id="8913384980486163186">تھیم کردہ (ڈیفالٹ)</translation>

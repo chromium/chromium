@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">Utilizador</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Este <ph name="DEVICE_TYPE" /> é gerido por <ph name="MANAGER" />.</translation>
+<translation id="1175951029573070619">Média (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1195447618553298278">Erro desconhecido.</translation>
 <translation id="1204296502688602597">Latência de DNS</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422">Gerido por <ph name="FIRST_MANAGER" /> e <ph name="SECOND_MANAGER" />.</translation>
 <translation id="1726100011689679555">Servidores de nomes</translation>
 <translation id="1731082422893354635">Touchpad Bluetooth</translation>
+<translation id="175763766237925754">Boa (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">A cancelar a digitalização…</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">IGNORADO</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Ativar o Bluetooth para detetar dispositivos próximos</translation>
+<translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">Aprovado</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Enviar relatório de feedback</translation>
@@ -340,8 +343,10 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6379086450106841622">Ecrã tátil</translation>
 <translation id="6388847657025262518">O alimentador de documentos do scanner está encravado. Verifique o alimentador e tente novamente.</translation>
 <translation id="6395640744968320699">Não é possível estabelecer ligação através da firewall aos Websites HTTP (porta 80)</translation>
+<translation id="6398765197997659313">Sair do modo de ecrã inteiro</translation>
 <translation id="641081527798843608">Correspondência de assunto</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">Fraca (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">Boa</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Pretende digitalizar novamente a página?}=1{Pretende digitalizar novamente a página {PAGE_NUMBER}?}other{Pretende digitalizar novamente a página {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">PUU</translation>
@@ -444,7 +449,6 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7978412674231730200">Chave privada</translation>
 <translation id="7994702968232966508">Método EAP</translation>
-<translation id="8020238979854764615">Ocorreu um erro. Tente novamente ao escolher outras imagens.</translation>
 <translation id="802154636333426148">Falha ao transferir</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Enviar feedback</translation>

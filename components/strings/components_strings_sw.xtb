@@ -214,6 +214,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="160851722280695521">Cheza mchezo wa Dinosau Anayekimbia katika Chrome</translation>
 <translation id="161042844686301425">Samawati-Kijani</translation>
 <translation id="1611101756749861742">Gombo la Pili</translation>
+<translation id="1615402009686901181">Sera ya msimamizi huzuia kupiga picha ya skrini wakati maudhui ya siri yanaonekana</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Zuia ukurasa huu usiunde vidadisi zaidi</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -405,6 +406,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2241693394036365668">Faili inapopakuliwa</translation>
 <translation id="2248949050832152960">Tumia WebAuthn</translation>
 <translation id="2250931979407627383">Shona ncha ya kushoto</translation>
+<translation id="2251943122176102076">Msimamizi hapendekezi kupiga picha za skrini au kurekodi kwa sababu kuna maudhui ya siri yaliyonaswa:</translation>
 <translation id="225207911366869382">Thamani hii inapingwa kwa sera hii.</translation>
 <translation id="2258928405015593961">Weka tarehe ya mwisho wa matumizi katika wakati ujao kisha ujaribu tena</translation>
 <translation id="225943865679747347">Hitilafu ya msimbo: <ph name="ERROR_CODE" /></translation>
@@ -862,7 +864,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3781428340399460090">Waridi Inayong'aa</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Vifaa vya Bluetooth</translation>
-<translation id="3787675388804467730">Nambari ya kadi pepe</translation>
 <translation id="3787705759683870569">Muda wa matumizi utakwisha <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Ukubwa wa 16</translation>
 <translation id="3789841737615482174">Sakinisha</translation>
@@ -1199,6 +1200,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
           <ph name="LIST_ITEM" />Huenda watoa huduma za intaneti wakafuatilia trafiki kwenye wavuti<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Washa maonyo</translation>
+<translation id="4834718916855725099">Msimamizi hapendekezi kupiga picha za skrini au kurekodi kwa sababu kuna maudhui ya siri kwenye skrini yako.</translation>
 <translation id="4838327282952368871">Dreamy</translation>
 <translation id="4840250757394056958">Angalia historia yako kwenye Chrome</translation>
 <translation id="484462545196658690">Otomatiki</translation>
@@ -1576,6 +1578,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6080696365213338172">Umefikia maudhui kwa kutumia cheti kilichotolewa cha msimamizi. Data unayotoa katika <ph name="DOMAIN" /> inaweza kuzuiliwa na msimamizi wako.</translation>
 <translation id="6087312102907839798">Utafutaji unaohusiana</translation>
 <translation id="6094273045989040137">Weka vidokezo</translation>
+<translation id="6094290315941448991">Sera ya msimamizi huzuia kurekodi skrini wakati maudhui ya siri yanaonekana</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Unda tovuti</translation>
 <translation id="6106989379647458772">Huenda ukurasa wa wavuti ulio kwenye <ph name="PAGE" /> haupatikani kwa muda au umehamishwa kabisa hadi kwenye anwani mpya ya wavuti.</translation>
@@ -2373,6 +2376,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8870494189203302833">Mpangilio sawa zikiangalia chini</translation>
 <translation id="8871553383647848643">Weka mapendeleo ya mwonekano wa kivinjari chako</translation>
 <translation id="8874824191258364635">Andika nambari sahihi ya kadi</translation>
+<translation id="8884537526797090108">Huwezi kurekodi maudhui ya siri</translation>
 <translation id="8891727572606052622">Modi batili ya proksi.</translation>
 <translation id="8894794286471754040">Upande wa pembe ndefu kwanza</translation>
 <translation id="8903921497873541725">Kuza karibu</translation>
@@ -2427,6 +2431,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="9050666287014529139">Kaulisiri</translation>
 <translation id="9056953843249698117">Duka</translation>
 <translation id="9062620674789239642">Huenda imehamishwa, imebadilishwa au imefutwa.</translation>
+<translation id="9063800855227801443">Huwezi kupiga picha maudhui ya siri</translation>
 <translation id="9065203028668620118">Badilisha</translation>
 <translation id="9065745800631924235"><ph name="TEXT" /> tafuta kwenye historia</translation>
 <translation id="9069693763241529744">Imezuiwa na kiendelezi</translation>

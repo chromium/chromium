@@ -133,7 +133,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5386450000063123300">Updating Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Allow Chromium sign-in</translation>
 <translation id="5398878173008909840">There is a new version of Chromium available.</translation>
-<translation id="5416696090975899932">Chromium cannot show the print preview when the built-in PDF viewer is missing.</translation>
 <translation id="5427571867875391349">Set Chromium as your default browser</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5479196819031988440">Chromium OS can't open this page.</translation>
@@ -210,6 +209,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="718435575166326686">Chromium needs camera permission for this site</translation>
 <translation id="7196312274710523067">Couldn't launch Chromium. Try again.</translation>
 <translation id="7197677400338048821">Chromium can't check your passwords. Try again after 24 hours.</translation>
+<translation id="7218568399872925918">Sites that you visit remember your information until you close Chromium</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
 <translation id="731795002583552498">Updating Chromium</translation>
 <translation id="7318036098707714271">Your preferences file is corrupt or invalid.
@@ -263,6 +263,8 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8621669128220841554">Installation failed due to unspecified error. Please download Chromium again.</translation>
 <translation id="8697124171261953979">It also controls what page is shown when you start Chromium or search from the Omnibox.</translation>
 <translation id="8704119203788522458">This is your Chromium</translation>
+<translation id="8713679423359107094">When you close all Chromium windows, cookies and site data are automatically cleared</translation>
+<translation id="8796443464227412154">You will be <ph name="BEGIN_BOLD" />signed out of most sites<ph name="END_BOLD" /> when you close Chromium. If sync is off, you will also be <ph name="BEGIN_BOLD" />signed out of Google services and Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium needs permission to access your camera and microphone for this site</translation>
 <translation id="8803635938069941624">Chromium OS terms</translation>
 <translation id="8821041990367117597">Chromium could not sync your data because your account sign-in details are out of date.</translation>

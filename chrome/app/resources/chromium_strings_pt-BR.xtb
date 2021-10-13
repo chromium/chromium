@@ -129,7 +129,6 @@
 <translation id="5386450000063123300">Atualizando o Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Permitir login no Chromium</translation>
 <translation id="5398878173008909840">Há uma nova versão do Chromium disponível.</translation>
-<translation id="5416696090975899932">O Chromium não pode mostrar a visualização de impressão sem o visualizador de PDF integrado.</translation>
 <translation id="5427571867875391349">Definir o Chromium como seu navegador padrão</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" />: Chromium Beta</translation>
 <translation id="5479196819031988440">O Chromium OS não pode abrir essa página.</translation>
@@ -205,6 +204,7 @@
 <translation id="718435575166326686">O Chromium precisa da permissão de acesso à câmera para este site</translation>
 <translation id="7196312274710523067">Não foi possível iniciar o Chromium. Tente novamente.</translation>
 <translation id="7197677400338048821">Não foi possível verificar suas senhas. Tente novamente em 24 horas.</translation>
+<translation id="7218568399872925918">Os sites que você acessar armazenarão suas informações até que o Chromium seja fechado</translation>
 <translation id="7223968959479464213">Gerenciador de tarefas - Chromium</translation>
 <translation id="731795002583552498">Atualizando o Chromium</translation>
 <translation id="7318036098707714271">Seu arquivo de preferências foi corrompido ou não é válido. O Chromium não conseguiu recuperar suas configurações.</translation>
@@ -255,6 +255,8 @@
 <translation id="8621669128220841554">Falha na instalação devido a um erro não especificado. Faça o download do Chromium novamente.</translation>
 <translation id="8697124171261953979">Controla também qual página deve ser exibida quando você inicia o Chromium ou faz uma pesquisa na Omnibox.</translation>
 <translation id="8704119203788522458">Este é seu Chromium</translation>
+<translation id="8713679423359107094">Quando você fechar todas as janelas do Chromium, os cookies e os dados dos sites serão apagados automaticamente</translation>
+<translation id="8796443464227412154">Sua conta será <ph name="BEGIN_BOLD" />desconectada da maioria dos sites<ph name="END_BOLD" /> quando você fechar o Chromium. Se a sincronização estiver desativada, a conta também será <ph name="BEGIN_BOLD" />desconectada dos Serviços do Google e do navegador<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">O Chromium precisa de permissão para este site acessar sua câmera e seu microfone</translation>
 <translation id="8803635938069941624">Termos do Chromium OS</translation>
 <translation id="8821041990367117597">O Chromium não pôde sincronizar seus dados, pois os detalhes de login da sua conta estão desatualizados.</translation>

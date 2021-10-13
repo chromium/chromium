@@ -49,7 +49,6 @@
 <translation id="2121284319307530122">&amp;Chrome brauzerini yangilash uchun qayta ishga tushiring</translation>
 <translation id="2123055963409958220">Chrome brauzerining <ph name="BEGIN_LINK" />joriy sozlamalari<ph name="END_LINK" /> asosida hisobot yuboring va brauzerning ishlashini yaxshilashga yordamlashing</translation>
 <translation id="2151406531797534936">Chromeni hozir qayta ishga tushiring</translation>
-<translation id="2246246234298806438">Agar ichki PDF hujjatlarini ko‘rish dasturi mavjud bo‘lmasa, Google Chrome‘da oldindan ko‘rsatish imkoniyati bo‘lmaydi.</translation>
 <translation id="2290014774651636340">Google API kalitlari topilmadi. Google Chrome’ning ba’zi funksiyalari o‘chirib qo‘yiladi.</translation>
 <translation id="2290095356545025170">Haqiqatan ham Google Chrome brauzerini o‘chirib tashlamoqchimisiz?</translation>
 <translation id="2309047409763057870">Google Chrome takroran o‘rnatilgan, shuning uchun u asosiy brauzer bo‘la olmaydi.</translation>
@@ -88,6 +87,7 @@
 <translation id="3037838751736561277">Google Chrome orqa fon rejimida ishlamoqda.</translation>
 <translation id="3059710691562604940">Saytlarni xavfsiz kezish yoniq emas. Chrome uni yoqishingizni tavsiya qiladi.</translation>
 <translation id="3065168410429928842">Chrome sahifasi</translation>
+<translation id="3069821012350118710">Siz ochgan saytlar maʼlumotlaringizni Chrome yopilmaguncha esda saqlaydi</translation>
 <translation id="3080151273017101988">Google Chrome yopilishida orqa fon rejimida ishlayotgan ilovalar to‘xtatilmasin</translation>
 <translation id="3089968997497233615">Google Chrome brauzerining yangi, yanada xavfsiz versiyasi chiqdi.</translation>
 <translation id="3100998948628680988">Chrome profilingizga nom bering</translation>
@@ -191,6 +191,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="5804318322022881572">Chrome ishga tushmadi. Qayta urining.</translation>
 <translation id="5867197326698922595">Google Chrome parollarni tahrirlashga urinmoqda.</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
+<translation id="5901850848447342934">Chrome yopilganda <ph name="BEGIN_BOLD" />aksar saytlardan chiqib ketasiz<ph name="END_BOLD" />. Agar sinxronizatsiya oʻchiq boʻlsa, <ph name="BEGIN_BOLD" />Google xizmatlari va Chrome hisobingizdan ham chiqib ketasiz<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Tarmoqqa kirish</translation>
 <translation id="5940385492829620908">Chrome‘dagi barcha veb sahifalar, xatcho‘plar va boshqa ma’lumotlarni bu yerdan topish mumkin.</translation>
 <translation id="5941830788786076944">Google Chrome standart brauzer qilib belgilansin</translation>
@@ -280,6 +281,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8614913330719544658">Google Chrome javob bermayapti. Qaytadan ishga tushirilsinmi?</translation>
 <translation id="861702415419836452">Chrome atrofingiz 3D xaritasini yaratishi uchun unga kamera ruxsati zarur</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 daqiqadan keyin qayta ishga tushadi}other{Chrome # daqiqadan keyin qayta ishga tushadi}}</translation>
+<translation id="8629311577791198377">Barcha Chrome oynalari yopilganda, cookie fayllar va sayt maʼlumotlari avtomatik ravishda tozalanadi</translation>
 <translation id="8641606876632989680">Google hisobingizga kirsangiz, Chrome oshkor qilingan parollar haqida xabar qiladi</translation>
 <translation id="8669527147644353129">Google Chrome yordamchisi</translation>
 <translation id="8679801911857917785">Bundan tashqari, kengaytma Chrome bosh sahifasini o‘zgarib qo‘ydi.</translation>

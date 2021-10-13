@@ -220,7 +220,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1218015446623563536">Usuń Linuksa</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Usługa lokalizacyjna Google używa takich źródeł jak sieci Wi-Fi, sieci komórkowe i czujniki, by łatwiej określać lokalizację tego urządzenia.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Aby wyłączyć tę usługę, wyłącz główne ustawienie Lokalizacja na urządzeniu. Możesz też wyłączyć w ustawieniach lokalizacji korzystanie z sieci Wi‑Fi, sieci komórkowych i czujników przy określaniu lokalizacji.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Nie udało się pobrać plików z mową w języku: <ph name="LANGUAGE" />. Spróbuję je pobrać później. Na razie mowa jest wysyłana do Google i tam przetwarzana.</translation>
 <translation id="122082903575839559">Algorytm podpisu certyfikatu</translation>
 <translation id="1221024147024329929">PKCS #1, MD2 z szyfrowaniem RSA</translation>
 <translation id="1221825588892235038">Tylko zaznaczenie</translation>
@@ -308,6 +307,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1313660246522271310">Wylogujemy Cię ze wszystkich stron – także na otwartych kartach</translation>
 <translation id="1313705515580255288">Zakładki, historia i ustawienia są synchronizowane z Twoim kontem Google.</translation>
 <translation id="1316136264406804862">Trwa wyszukiwanie...</translation>
+<translation id="1316248800168909509">Nie udało się połączyć z urządzeniem <ph name="DEVICE" />. Spróbuj ponownie.</translation>
 <translation id="1316495628809031177">Synchronizacja została wstrzymana</translation>
 <translation id="1317637799698924700">Stacja dokująca będzie działać w trybie zgodności z USB typu C.</translation>
 <translation id="1319983966058170660">Przycisk Wstecz na podstronie <ph name="SUBPAGE_TITLE" /></translation>
@@ -1176,6 +1176,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2200356397587687044">Chrome wymaga pozwolenia na kontynuację</translation>
 <translation id="2202898655984161076">Podczas tworzenia listy drukarek wystąpił problem. Niektóre drukarki mogły nie zostać pomyślnie zarejestrowane w usłudze <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Nazwa może zawierać litery, cyfry i znaki specjalne</translation>
+<translation id="220321590587754225">Nie udało się połączyć. Spróbuj ponownie.</translation>
 <translation id="2204034823255629767">Odczyt i zmiana wpisanego tekstu</translation>
 <translation id="220858061631308971">Wpisz ten kod PIN na urządzeniu „<ph name="DEVICE_NAME" />”:</translation>
 <translation id="2210462644007531147">Nie udało się ukończyć instalacji</translation>
@@ -4921,7 +4922,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6232116551750539448">Połączenie z <ph name="NAME" /> zostało utracone</translation>
 <translation id="6233154960150021497">Domyślnie używaj głosu zamiast klawiatury</translation>
-<translation id="6233455992368963267">Mowa w języku: <ph name="LANGUAGE" /> jest wysyłana do Google w celu przetworzenia.</translation>
 <translation id="6234108445915742946">31 marca zmienią się Warunki korzystania z Chrome</translation>
 <translation id="6234474535228214774">Oczekiwanie na instalację</translation>
 <translation id="6235208551686043831">Aparat urządzenia został włączony. Umieść kod QR eSIM przed jego obiektywem.</translation>
@@ -4958,6 +4958,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6263284346895336537">Niekrytyczne</translation>
 <translation id="6264365405983206840">Wybierz &amp;wszystko</translation>
 <translation id="6265687851677020761">Usuń port</translation>
+<translation id="6266532094411434237">Łączę z urządzeniem <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Wybierz certyfikat, aby uwierzytelnić się na serwerze <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Otwórz w <ph name="APP" /></translation>
 <translation id="6270391203985052864">Strony mogą prosić o zgodę na wysyłanie powiadomień</translation>

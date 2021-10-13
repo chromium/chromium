@@ -264,6 +264,7 @@
 <translation id="2996462380875591307">Жалгаштырылган лупа иштетилди. Аны өчүрүү үчүн Ctrl+Search+D баскычтарын кайра басыңыз.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3009178788565917040">Чыгаруу</translation>
+<translation id="3009958530611748826">Скандалган нерселерди сактоо үчүн папка тандаңыз</translation>
 <translation id="3017687597151988916">Терезе тандалды</translation>
 <translation id="3033545621352269033">Күйүк</translation>
 <translation id="3036649622769666520">Файлдарды ачуу</translation>
@@ -509,7 +510,6 @@
 <translation id="4667099493359681081"><ph name="FILENAME" /> жүктөлүп алынууда</translation>
 <translation id="4696813013609194136">Түзмөктүн кулпусун ата-эненин коду менен ачуу</translation>
 <translation id="4702647871202761252">Купуялык экраны өчүк</translation>
-<translation id="4706121060329443414">Жүктөп алууга кийинчерээк аракет жасалат. Азырынча иштетүү үчүн кеп Google'га жөнөтүлөт.</translation>
 <translation id="4731797938093519117">Ата-эненин кирүү уруксаты</translation>
 <translation id="4734965478015604180">Туурасынан</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Номер ыкчам баскычы өзгөртүлдү. Функциялык баскычтарды колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + жогорку саптагы баскычты басыңыз.</translation>
@@ -694,7 +694,6 @@
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> ичинен автоматтык түрдө чыгарыласыз.</translation>
 <translation id="6073451960410192870">Жаздырууну токтотуу</translation>
 <translation id="607652042414456612">Компьютериңиз жакын арадагы Bluetooth түзмөктөрүнө көрүнүп, <ph name="ADDRESS" /> дарегиндеги "<ph name="NAME" />" катары күйүп турат.</translation>
-<translation id="6094290315941448991">Купуя нерселер көрүнүп турганда, Администратордун саясатына ылайык экрандагыны видеого жаздырып алууга болбойт</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> тилиндеги кеп файлдары жүктөлүп алынды</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Жардамчысы конок сеансында жеткиликсиз.</translation>
@@ -1050,7 +1049,6 @@
 <translation id="8876661425082386199">Туташууңузду текшериңиз</translation>
 <translation id="8877788021141246043">Эстеткич коюу</translation>
 <translation id="8878886163241303700">Кеңейтилген экран</translation>
-<translation id="8884537526797090108">Купуя мазмунду жаздырууга болбойт</translation>
 <translation id="890616557918890486">Булагын өзгөртүү</translation>
 <translation id="8909138438987180327">Батареянын кубаты – <ph name="PERCENTAGE" /> пайыз.</translation>
 <translation id="8913384980486163186">Тема кошулган (демейки)</translation>

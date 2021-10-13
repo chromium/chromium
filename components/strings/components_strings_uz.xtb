@@ -213,6 +213,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="160851722280695521">Chromeda Dino oʻyinini boshlash</translation>
 <translation id="161042844686301425">Havorang</translation>
 <translation id="1611101756749861742">Ikkinchi oʻram</translation>
+<translation id="1615402009686901181">Maxfiy axborotlar koʻrinib turganda administrator ekranni tasvirga olishni taqiqlagan</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Bu sahifada qo‘shimcha muloqot oynalari yaratishni taqiqlash</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -405,6 +406,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2241693394036365668">Fayl yuklab olinishi</translation>
 <translation id="2248949050832152960">WebAuthn ishlatish</translation>
 <translation id="2250931979407627383">Chap chekkasini tikish</translation>
+<translation id="2251943122176102076">Ekrandagi maxfiy maʼlumotlar tufayli skrinshot yoki video yozib olish administrator tomonidan tavsiya etilmaydi:</translation>
 <translation id="225207911366869382">Bu qiymat joriy qoida uchun boshqa qo‘llanilmaydi.</translation>
 <translation id="2258928405015593961">Kelgusidagi muddatni kiriting va qaytadan urining</translation>
 <translation id="225943865679747347">Xatolik kodi: <ph name="ERROR_CODE" /></translation>
@@ -858,7 +860,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3781428340399460090">Och pushti</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth qurilmalar</translation>
-<translation id="3787675388804467730">Virtual karta raqami</translation>
 <translation id="3787705759683870569">Amal qilish muddati: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Hajmi: 16</translation>
 <translation id="3789841737615482174">O‘rnatish</translation>
@@ -1195,6 +1196,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
           <ph name="LIST_ITEM" />Internet provayderlari ham trafikni kuzatishi mumkin<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Ogohlantiruvlarni yoqish</translation>
+<translation id="4834718916855725099">Ekrandagi maxfiy maʼlumotlar tufayli skrinshot yoki video yozib olish administrator tomonidan tavsiya etilmaydi:</translation>
 <translation id="4838327282952368871">Xayolparast</translation>
 <translation id="4840250757394056958">Chrome tarixini koʻrish</translation>
 <translation id="484462545196658690">Avto</translation>
@@ -1572,6 +1574,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6080696365213338172">Siz administrator bergan sertifikat bilan kontentga kirdingiz. <ph name="DOMAIN" /> domeniga uzatiladigan ma’lumotlarni administratoringiz tutishi mumkin.</translation>
 <translation id="6087312102907839798">Aloqador qidiruvlar</translation>
 <translation id="6094273045989040137">Izohlash</translation>
+<translation id="6094290315941448991">Maxfiy axborotlar koʻrinib turganda administrator ekranni yozib olishni taqiqlagan</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Sayt yaratish</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> veb-sahifasi vaqtincha ishlamayotgan yoki yangi veb-manzilga o‘tkazilgan bo‘lishi mumkin.</translation>
@@ -2371,6 +2374,7 @@ Batafsil axborot:
 <translation id="8870494189203302833">Bir xil tartibda orqa tomonida</translation>
 <translation id="8871553383647848643">Brauzer koʻrinishini moslash</translation>
 <translation id="8874824191258364635">Karta raqamini xatosiz kiriting</translation>
+<translation id="8884537526797090108">Maxfiy kontent yozib olinmadi</translation>
 <translation id="8891727572606052622">Yaroqsiz proksi-server rejimi.</translation>
 <translation id="8894794286471754040">Avval uzunasiga</translation>
 <translation id="8903921497873541725">Kattalashtirish</translation>
@@ -2425,6 +2429,7 @@ Batafsil axborot:
 <translation id="9050666287014529139">Kodli ibora</translation>
 <translation id="9056953843249698117">Doʻkon</translation>
 <translation id="9062620674789239642">Fayl boshqa joyga koʻchirilgan, tahrirlangan yoki oʻchirib yuborilgan boʻlishi mumkin.</translation>
+<translation id="9063800855227801443">Maxfiy kontentni tasvirga olish imkonsiz</translation>
 <translation id="9065203028668620118">O‘zgartirish</translation>
 <translation id="9065745800631924235">tarixdan <ph name="TEXT" /> deb qidiring</translation>
 <translation id="9069693763241529744">Kengaytma bloklagan</translation>

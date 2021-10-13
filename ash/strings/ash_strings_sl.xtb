@@ -264,6 +264,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2996462380875591307">Zasidrana lupa je omogočena. Če jo želite izklopiti, znova pritisnite Ctrl + tipko za iskanje + D.</translation>
 <translation id="3000461861112256445">Mono zvok</translation>
 <translation id="3009178788565917040">Izhod</translation>
+<translation id="3009958530611748826">Izberite mapo za shranjevanje</translation>
 <translation id="3017687597151988916">Območje izbire je nastavljeno na okno</translation>
 <translation id="3033545621352269033">Vklopljeno</translation>
 <translation id="3036649622769666520">Odpri datoteke</translation>
@@ -509,7 +510,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4667099493359681081">Prenašanje datoteke <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Odklepanje naprave s kodo starša</translation>
 <translation id="4702647871202761252">Zaslon za zasebnost je izklopljen</translation>
-<translation id="4706121060329443414">Poskus prenosa bo izveden pozneje. Za zdaj bo govor poslan Googlu v obdelavo.</translation>
 <translation id="4731797938093519117">Starševski dostop</translation>
 <translation id="4734965478015604180">Vodoravno</translation>
 <translation id="4735498845456076464">Bližnjica na tipkovnici <ph name="LAUNCHER_KEY_NAME" /> + številka je spremenjena. Če želite uporabljati funkcijske tipke, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in tipko v vrhnji vrstici.</translation>
@@ -694,7 +694,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6062360702481658777">Samodejno boste odjavljeni čez <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Ustavi snemanje</translation>
 <translation id="607652042414456612">Vaš računalnik je viden bližnjim napravam Bluetooth in bo videti kot »<ph name="NAME" />« z naslovom <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Pravilnik skrbnika onemogoča snemanje zaslona, če je vidna zaupna vsebina.</translation>
 <translation id="6114505516289286752">Datoteke za govor v jeziku <ph name="LANGUAGE" /> so bile prenesene</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="612734058257491180">Pomočnik Google ni na voljo v gostujoči seji.</translation>
@@ -1050,7 +1049,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="8876661425082386199">Preverjanje povezave</translation>
 <translation id="8877788021141246043">Nastavi opomnik</translation>
 <translation id="8878886163241303700">Razširjanje zaslona</translation>
-<translation id="8884537526797090108">Zaupne vsebine ni mogoče posneti</translation>
 <translation id="890616557918890486">Spremeni vir</translation>
 <translation id="8909138438987180327">Akumulator je <ph name="PERCENTAGE" />-odstotno napolnjen.</translation>
 <translation id="8913384980486163186">Na podlagi teme (privzeto)</translation>

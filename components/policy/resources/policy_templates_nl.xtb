@@ -78,6 +78,16 @@
 <translation id="1069489575852947981">Als je het beleid toepast of niet instelt, wordt een lokaal account op het apparaat ingesteld voor automatisch inloggen zonder vertraging. <ph name="PRODUCT_OS_NAME" /> behoudt de sneltoets Ctrl+Alt+S waarmee automatisch inloggen wordt omzeild en het inlogscherm wordt getoond.
 
       Als je het beleid niet toepast, kunnen gebruikers automatisch inloggen zonder vertraging (indien geconfigureerd) niet omzeilen.</translation>
+<translation id="1070656322814001059">Chrome blokkeert navigatie naar externe protocollen in iframes in sandboxes. Zie https://chromestatus.com/features/5680742077038592.
+
+      Als dit is ingesteld op True, kan Chrome die navigatie blokkeren.
+
+      Als dit is ingesteld op False, wordt voorkomen dat Chrome die navigatie blokkeert.
+
+      Dit is standaard ingesteld op True: beveiligingsfunctie aan.
+
+      Dit kan worden gebruikt door Enterprise-gebruikers die onder deze beperkingen vallen om de beperkingen tijdelijk op te heffen.
+      </translation>
 <translation id="1073983258515362346">Informatie rapporteren over de schermverlichting van een apparaat.
 
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
@@ -1050,6 +1060,7 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="2246011554082893079">Beheert de beschikbaarheid van <ph name="BOREALIS_NAME" /> voor dit apparaat.
 
       Als je het beleid instelt op False, is <ph name="BOREALIS_NAME" /> niet beschikbaar voor gebruikers van het apparaat. Als je het beleid niet instelt of instelt op True, is <ph name="BOREALIS_NAME" /> beschikbaar als deze functie niet uitstaat op basis van een andere beleidsregel of instelling.</translation>
+<translation id="2246621891161157804">Toestaan dat Chrome navigatie naar externe protocollen in iframes in sandboxes blokkeert</translation>
 <translation id="225340736558643885">Waarschuwingen voor onveilige formulieren aanzetten</translation>
 <translation id="2258126710006312594">Toestaan dat gebruikers met externe toegang bestanden overzetten van/naar de host</translation>
 <translation id="2261648512244797294">Verouderde Privet-afdrukken uitzetten</translation>
@@ -5174,6 +5185,7 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 <translation id="7313672174502374994">De SHA-256-hash van de achtergrondafbeelding.</translation>
 <translation id="7322825363493984512">Het wachtwoord om systeemservices te verifiëren bij de externe webproxy.</translation>
 <translation id="7323896582714668701">Extra opdrachtregelparameters voor <ph name="PRODUCT_NAME" /></translation>
+<translation id="7325801934761922681">Voorkomen dat Chrome navigatie naar externe protocollen in iframes in sandboxes blokkeert</translation>
 <translation id="7326394567531622570">Vergelijkbaar met Wipe (waarde 2), maar probeert inlogtokens te behouden, zodat de gebruiker niet opnieuw hoeft in te loggen.</translation>
 <translation id="7331962793961469250">Wanneer dit is ingesteld op 'true', worden promoties voor apps van de Chrome Web Store niet weergegeven op de pagina 'Nieuw tabblad'.
 
@@ -5314,6 +5326,7 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 <translation id="7544392541165889987">Als je het beleid toepast of niet instelt, kan <ph name="PRODUCT_NAME" /> werken als proxy tussen <ph name="CLOUD_PRINT_NAME" /> en verouderde printers die zijn aangesloten op de machine. Met hun Google-account kunnen gebruikers de proxy voor de cloudprinter aanzetten door zich te verifiëren.
 
       Als je het beleid niet toepast, kunnen gebruikers de proxy niet aanzetten en kan de machine geen printers delen met <ph name="CLOUD_PRINT_NAME" />.</translation>
+<translation id="7546699946724795644">Toestaan dat Chrome navigatie naar externe protocollen in iframes in sandboxes blokkeert</translation>
 <translation id="7547549430720182663">Samenvoegen</translation>
 <translation id="7553535237300701827">Als dit beleid is ingesteld, wordt de inlogverificatie op een van de volgende manieren uitgevoerd (afhankelijk van de waarde van de instelling):
 

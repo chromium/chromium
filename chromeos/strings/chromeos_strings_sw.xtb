@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">Mtumiaji</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> hii inasimamiwa na <ph name="MANAGER" />.</translation>
+<translation id="1175951029573070619">Wastani (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Ondoa</translation>
 <translation id="1195447618553298278">Hitilafu isiyojulikana.</translation>
 <translation id="1204296502688602597">Muda wa Kusubiri wa DNS</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422">Inadhibitiwa na <ph name="FIRST_MANAGER" /> na <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Seva za majina</translation>
 <translation id="1731082422893354635">Padi ya kugusa yenye bluetooth</translation>
+<translation id="175763766237925754">Thabiti (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Inaghairi uchanganuzi</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">LIMERUKWA</translation>
 <translation id="2326139988748364651">Dpi <ph name="RESOLUTION_VALUE" /></translation>
 <translation id="2338501278241028356">Washa Bluetooth ili ugundue vifaa vilivyo karibu</translation>
+<translation id="2346474577291266260">Thabiti zaidi (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">Amefaulu</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Tuma Ripoti ya Maoni</translation>
@@ -339,8 +342,10 @@
 <translation id="6379086450106841622">Skrini ya kugusa</translation>
 <translation id="6388847657025262518">Mashine ya kichanganuzi ya kuingiza hati imekwama. Kagua mashine hiyo kisha ujaribu tena.</translation>
 <translation id="6395640744968320699">Imeshindwa kuunganisha kwenye tovuti za HTTP (mlango wa 80) kupitia kinga mtandao</translation>
+<translation id="6398765197997659313">Ondoka kwenye Skrini nzima</translation>
 <translation id="641081527798843608">Mada inalingana</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">Dhaifu (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">Bora</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Ungependa kuchanganua ukurasa huu upya?}=1{Ungependa kuchanganua ukurasa wa {PAGE_NUMBER} upya?}other{Ungependa kuchanganua ukurasa wa {PAGE_NUMBER} upya?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -443,7 +448,6 @@
 <translation id="7960831585769876809">Halijoto</translation>
 <translation id="7978412674231730200">Ufunguo binafsi</translation>
 <translation id="7994702968232966508">Mbinu ya EAP</translation>
-<translation id="8020238979854764615">Hitilafu fulani imetokea. Tafadhali jaribu tena kwa kuchagua picha zingine.</translation>
 <translation id="802154636333426148">Haikuweza kupakua</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Tuma Maoni</translation>

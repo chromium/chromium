@@ -52,7 +52,6 @@
 <translation id="2121284319307530122">Рестартирајте за да се ажурира &amp;Chrome</translation>
 <translation id="2123055963409958220">Помогнете да го подобриме Chrome со пријавување на <ph name="BEGIN_LINK" />тековните поставки<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Рестартирајте го Chrome сега</translation>
-<translation id="2246246234298806438">Google Chrome не може да прикаже преглед на печатење кога недостасува вградениот прегледувач на PDF.</translation>
 <translation id="2290014774651636340">Клучевите Google API недостасуваат. Некои функции на Google Chrome ќе бидат оневозможени.</translation>
 <translation id="2290095356545025170">Дали сте сигурни дека сакате да го деинсталирате Google Chrome?</translation>
 <translation id="2309047409763057870">Ова е второстепена инсталација на Google Chrome и затоа не може да биде стандарден прелистувач.</translation>
@@ -91,6 +90,7 @@
 <translation id="3037838751736561277">Google Chrome е во заднински режим.</translation>
 <translation id="3059710691562604940">„Безбедното прелистување“ е исклучено. Chrome препорачува да го вклучите.</translation>
 <translation id="3065168410429928842">Картичка на Chrome</translation>
+<translation id="3069821012350118710">Сајтовите што ги посетувате ги помнат вашите податоци сѐ додека не го затворите Chrome</translation>
 <translation id="3080151273017101988">Продолжи со извршување апликации во заднина кога е затворен Google Chrome</translation>
 <translation id="3089968997497233615">Достапна е нова, побезбедна верзија на Google Chrome.</translation>
 <translation id="3100998948628680988">Именувајте го профилот на Chrome</translation>
@@ -194,6 +194,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5804318322022881572">Не може да се стартува Chrome. Обидете се повторно.</translation>
 <translation id="5867197326698922595">Google Chrome се обидува да измени лозинки.</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
+<translation id="5901850848447342934">Ќе ве <ph name="BEGIN_BOLD" />одјавиме од повеќето сајтови<ph name="END_BOLD" /> кога ќе го затворите Chrome. Ако е исклучена синхронизацијата, ќе ве <ph name="BEGIN_BOLD" />одјавиме и од услигите на Google и Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Мрежно најавување</translation>
 <translation id="5940385492829620908">Вебот, обележувачите и останатите работи на Chrome живеат тука.</translation>
 <translation id="5941830788786076944">Постави го Google Chrome за стандарден прелистувач</translation>
@@ -283,6 +284,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8614913330719544658">Google Chrome не реагира. Да се рестартира сега?</translation>
 <translation id="861702415419836452">На Chrome му треба дозвола за да пристапи до камерата и да создаде 3D-карта од вашето опкружување</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ќе се рестартира по 1 минута}one{Chrome ќе се рестартира по # минута}other{Chrome ќе се рестартира по # минути}}</translation>
+<translation id="8629311577791198377">Кога ќе ги затворите сите прозорци на Chrome, колачињата и податоците од сајтовите автоматски се бришат</translation>
 <translation id="8641606876632989680">Chrome ќе ве извести кога ќе се најавите со компромитирана лозинка</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Контролира и која страница се прикажува кога ќе стартувате Chrome.</translation>

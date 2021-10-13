@@ -51,7 +51,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2121284319307530122">Relancer et mettre à jour &amp;Chrome</translation>
 <translation id="2123055963409958220">Aidez-nous à améliorer Chrome en nous signalant vos <ph name="BEGIN_LINK" />paramètres actuels<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Veuillez redémarrer Chrome maintenant</translation>
-<translation id="2246246234298806438">Impossible d'afficher l'aperçu d'impression dans Google Chrome, car la visionneuse de documents PDF intégrée est absente.</translation>
 <translation id="2290014774651636340">Les clés API Google sont manquantes. Certaines fonctionnalités de Google Chrome vont être désactivées.</translation>
 <translation id="2290095356545025170">Voulez-vous vraiment désinstaller Google Chrome ?</translation>
 <translation id="2309047409763057870">Ceci est une installation secondaire de Google Chrome. Vous ne pouvez pas le définir comme navigateur par défaut.</translation>
@@ -90,6 +89,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3037838751736561277">Google Chrome est exécuté en mode arrière-plan.</translation>
 <translation id="3059710691562604940">La navigation sécurisée étant désactivée, Chrome vous recommande de l'activer.</translation>
 <translation id="3065168410429928842">Onglet Chrome</translation>
+<translation id="3069821012350118710">Les sites que vous consultez gardent vos informations en mémoire tant que vous ne fermez pas Chrome</translation>
 <translation id="3080151273017101988">Poursuivre l'exécution d'applications en arrière-plan après la fermeture de Google Chrome</translation>
 <translation id="3089968997497233615">Une nouvelle version de Google Chrome encore plus sûre est disponible.</translation>
 <translation id="3100998948628680988">Nommer votre profil Chrome</translation>
@@ -192,6 +192,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5804318322022881572">Impossible de lancer Chrome. Réessayez.</translation>
 <translation id="5867197326698922595">Google Chrome tente de modifier les mots de passe.</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
+<translation id="5901850848447342934">Vous serez <ph name="BEGIN_BOLD" />déconnecté de la plupart des sites<ph name="END_BOLD" /> lorsque vous fermerez Chrome. Si la synchronisation est désactivée, vous serez aussi <ph name="BEGIN_BOLD" />déconnecté des services Google et de Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Connexion au réseau</translation>
 <translation id="5940385492829620908">Votre contenu Web, vos favoris et toutes vos données Chrome sont conservés ici.</translation>
 <translation id="5941830788786076944">Définir Google Chrome comme navigateur par défaut</translation>
@@ -281,6 +282,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8614913330719544658">Google Chrome ne répond pas. Voulez-vous le relancer maintenant ?</translation>
 <translation id="861702415419836452">Chrome a besoin de votre autorisation pour accéder à votre appareil photo afin de créer un plan 3D de votre environnement</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome va être relancé dans 1 minute}one{Chrome va être relancé dans # minute}other{Chrome va être relancé dans # minutes}}</translation>
+<translation id="8629311577791198377">Lorsque vous fermez toutes les fenêtres Chrome, les cookies et les données des sites sont effacés automatiquement</translation>
 <translation id="8641606876632989680">Chrome vous avertira si vous vous connectez avec un mot de passe compromis</translation>
 <translation id="8669527147644353129">Application d'aide de Google Chrome</translation>
 <translation id="8679801911857917785">Elle contrôle également la page qui s'affiche au démarrage de Chrome.</translation>

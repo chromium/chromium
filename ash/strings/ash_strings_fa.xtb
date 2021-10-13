@@ -264,6 +264,7 @@
 <translation id="2996462380875591307">‏«ذره‌بین متصل» فعال شد. برای خاموش کردن آن، Ctrl+Search+D را دوباره فشار دهید.</translation>
 <translation id="3000461861112256445">صدای مونو</translation>
 <translation id="3009178788565917040">خروجی</translation>
+<translation id="3009958530611748826">پوشه‌ای را برای ذخیره در آن انتخاب کنید</translation>
 <translation id="3017687597151988916">ناحیه انتخاب روی پنجره تنظیم شد</translation>
 <translation id="3033545621352269033">روشن</translation>
 <translation id="3036649622769666520">باز کردن فایل‌ها</translation>
@@ -509,7 +510,6 @@
 <translation id="4667099493359681081">درحال بارگیری <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">باز کردن قفل دستگاه با کد والدین</translation>
 <translation id="4702647871202761252">صفحه حریم‌خصوصی خاموش است</translation>
-<translation id="4706121060329443414">‏بارگیری بعداً انجام خواهد شد. اکنون گفتار برای پردازش به Google ارسال خواهد شد.</translation>
 <translation id="4731797938093519117">دسترسی ولی</translation>
 <translation id="4734965478015604180">افقی</translation>
 <translation id="4735498845456076464">میان‌بر صفحه‌کلید «<ph name="LAUNCHER_KEY_NAME" /> + عدد» تغییر کرده است. برای استفاده از کلیدهای عملکرد، کلید <ph name="LAUNCHER_KEY_NAME" /> + یکی از کلیدهای ردیف بالا را فشار دهید.</translation>
@@ -694,7 +694,6 @@
 <translation id="6062360702481658777">به صورت خودکار در عرض <ph name="LOGOUT_TIME_LEFT" /> از سیستم خارج می‌شوید.</translation>
 <translation id="6073451960410192870">توقف ضبط</translation>
 <translation id="607652042414456612">رایانه شما توسط دستگاه‌های بلوتوث نزدیک قابل شناسایی است و با نام «<ph name="NAME" />» و آدرس <ph name="ADDRESS" /> نشان داده می‌شود</translation>
-<translation id="6094290315941448991">خط‌مشی سرپرست ضبط صفحه‌نمایش را هنگامی که محتوای محرمانه نمایان باشد غیرفعال می‌کند</translation>
 <translation id="6114505516289286752">فایل‌های گفتار <ph name="LANGUAGE" /> بارگیری شد</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">‏«دستیار Google» در جلسه مهمان دردسترس نیست.</translation>
@@ -1050,7 +1049,6 @@
 <translation id="8876661425082386199">بررسی اتصال</translation>
 <translation id="8877788021141246043">‏Set a reminder (یادآوری تنظیم کن)</translation>
 <translation id="8878886163241303700">صفحه گسترش یافته است</translation>
-<translation id="8884537526797090108">نمی‌توان محتوای محرمانه را ضبط کرد</translation>
 <translation id="890616557918890486">تغییر منبع</translation>
 <translation id="8909138438987180327">شارژ باتری <ph name="PERCENTAGE" /> درصد است.</translation>
 <translation id="8913384980486163186">رنگ‌مایه (پیش‌فرض)</translation>

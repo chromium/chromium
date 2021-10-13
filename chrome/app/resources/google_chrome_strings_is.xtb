@@ -51,7 +51,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2121284319307530122">Endurræstu til að uppfæra &amp;Chrome</translation>
 <translation id="2123055963409958220">Hjálpa til við að gera Google Chrome betra með því að tilkynna um <ph name="BEGIN_LINK" />núverandi stillingar<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Endurræstu Chrome núna</translation>
-<translation id="2246246234298806438">Google Chrome getur ekki birt prentforskoðun ef innbyggðan PDF-skoðara vantar.</translation>
 <translation id="2290014774651636340">Lykla fyrir forritaskil Google vantar. Vissir eiginleikar Google Chrome verða óvirkir.</translation>
 <translation id="2290095356545025170">Ertu viss um að þú viljir fjarlægja Google Chrome?</translation>
 <translation id="2309047409763057870">Þetta er aukaleg uppsetning á Google Chrome sem ekki er hægt að gera að sjálfgefnum vafra.</translation>
@@ -90,6 +89,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3037838751736561277">Google Chrome er í bakgrunnsstillingu.</translation>
 <translation id="3059710691562604940">Slökkt er á öruggri vefskoðun. Chrome mælir með því að kveikt sé á henni.</translation>
 <translation id="3065168410429928842">Chrome flipi</translation>
+<translation id="3069821012350118710">Vefsvæðin sem þú opnar muna upplýsingarnar þínar þar til þú lokar Chrome</translation>
 <translation id="3080151273017101988">Halda áfram að keyra forrit í bakgrunni þegar Google Chrome er lokað</translation>
 <translation id="3089968997497233615">Ný og öruggari útgáfa af Google Chrome er í boði.</translation>
 <translation id="3100998948628680988">Gefðu Chrome prófílnum þínum heiti</translation>
@@ -193,6 +193,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="5804318322022881572">Ekki var hægt að ræsa Chrome. Reyndu aftur.</translation>
 <translation id="5867197326698922595">Google Chrome er að reyna að breyta aðgangsorðum.</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
+<translation id="5901850848447342934">Þú verður <ph name="BEGIN_BOLD" />skráð(ur) út af flestum vefsvæðum<ph name="END_BOLD" /> þegar þú lokar Chrome. Ef slökkt er á samstillingu verðurðu einnig <ph name="BEGIN_BOLD" />skráð(ur) út úr Google þjónustum og Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – innskráning á net</translation>
 <translation id="5940385492829620908">Hér er vefefnið þitt, bókamerkin og annað dót úr Chrome.</translation>
 <translation id="5941830788786076944">Gera Google Chrome að sjálfgefnum vafra</translation>
@@ -282,6 +283,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8614913330719544658">Google Chrome svarar ekki. Endurræsa núna?</translation>
 <translation id="861702415419836452">Chrome þarf leyfi til að nota myndavélina til að búa til þrívíddarkort af umhverfinu</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome verður endurræst eftir 1 mínútu}one{Chrome verður endurræst eftir # mínútu}other{Chrome verður endurræst eftir # mínútur}}</translation>
+<translation id="8629311577791198377">Öll fótspor og vefsvæðagögn verða hreinsuð sjálfkrafa um leið og þú lokar öllum Chrome gluggum</translation>
 <translation id="8641606876632989680">Chrome lætur þig vita þegar þú skráir þig inn með aðgangsorði sem er í hættu</translation>
 <translation id="8669527147644353129">Hjálparforrit Google Chrome</translation>
 <translation id="8679801911857917785">Þetta stýrir því einnig hvaða síða birtist þegar þú ræsir Chrome.</translation>

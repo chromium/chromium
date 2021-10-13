@@ -214,6 +214,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="160851722280695521">Igranje igre Dino Run v Chromu</translation>
 <translation id="161042844686301425">Cianova</translation>
 <translation id="1611101756749861742">Kolut 2</translation>
+<translation id="1615402009686901181">Pravilnik skrbnika onemogoča zajem zaslona, če je vidna zaupna vsebina.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Tej strani prepreči, da bi ustvarila dodatna pogovorna okna</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -863,7 +864,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3781428340399460090">Živo rožnata</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Naprave Bluetooth</translation>
-<translation id="3787675388804467730">Številka navidezne kartice</translation>
 <translation id="3787705759683870569">Poteče: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Velikost 16</translation>
 <translation id="3789841737615482174">Namesti</translation>
@@ -1577,6 +1577,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6080696365213338172">Do vsebine ste dostopali z geslom, ki ga je zagotovil skrbnik. Podatke, ki jih pošljete v <ph name="DOMAIN" />, lahko prestreže skrbnik.</translation>
 <translation id="6087312102907839798">Sorodna iskanja</translation>
 <translation id="6094273045989040137">Pripisovanje</translation>
+<translation id="6094290315941448991">Pravilnik skrbnika onemogoča snemanje zaslona, če je vidna zaupna vsebina.</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Ustvari spletno mesto</translation>
 <translation id="6106989379647458772">Spletna stran na naslovu <ph name="PAGE" /> morda začasno ni na voljo ali pa je trajno preseljena na drug spletni naslov.</translation>
@@ -2377,6 +2378,7 @@ Dodatne podrobnosti:
 <translation id="8870494189203302833">V istem vrstnem redu s tiskom na spodnji strani</translation>
 <translation id="8871553383647848643">Prilagajanje videza brskalnika</translation>
 <translation id="8874824191258364635">Vnesite veljavno številko kartice</translation>
+<translation id="8884537526797090108">Zaupne vsebine ni mogoče posneti</translation>
 <translation id="8891727572606052622">Neveljaven način strežnika proxy.</translation>
 <translation id="8894794286471754040">Najprej dolgi rob</translation>
 <translation id="8903921497873541725">Povečaj</translation>
@@ -2431,6 +2433,7 @@ Dodatne podrobnosti:
 <translation id="9050666287014529139">Geslo</translation>
 <translation id="9056953843249698117">Trgovina</translation>
 <translation id="9062620674789239642">Morda je premaknjena, urejena ali izbrisana.</translation>
+<translation id="9063800855227801443">Ni mogoče zajeti zasebne vsebine</translation>
 <translation id="9065203028668620118">Uredi</translation>
 <translation id="9065745800631924235">Iskanje poizvedbe <ph name="TEXT" /> iz zgodovine</translation>
 <translation id="9069693763241529744">Blokirala razširitev</translation>

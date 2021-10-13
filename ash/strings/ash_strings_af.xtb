@@ -264,6 +264,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2996462380875591307">Gedokte vergrootglas is geaktiveer. Druk weer Ctrl+Search+D om dit af te skakel.</translation>
 <translation id="3000461861112256445">Mono-oudio</translation>
 <translation id="3009178788565917040">Uitvoer</translation>
+<translation id="3009958530611748826">Kies 'n vouer om in te stoor</translation>
 <translation id="3017687597151988916">Seleksiearea is gestel op venster</translation>
 <translation id="3033545621352269033">Aan</translation>
 <translation id="3036649622769666520">Maak lêers oop</translation>
@@ -510,7 +511,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4667099493359681081">Laai tans <ph name="FILENAME" /> af</translation>
 <translation id="4696813013609194136">Ontsluit toestel met ouerkode</translation>
 <translation id="4702647871202761252">Privaatheidskerm is af</translation>
-<translation id="4706121060329443414">Sal later probeer aflaai. Spraak sal vir eers na Google toe gestuur word vir verwerking.</translation>
 <translation id="4731797938093519117">Ouertoegang</translation>
 <translation id="4734965478015604180">Horisontaal</translation>
 <translation id="4735498845456076464">Die kortpadsleutel <ph name="LAUNCHER_KEY_NAME" /> + syfer het verander. Om funksiesleutels te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + 'n sleutel in die boonste ry druk.</translation>
@@ -695,7 +695,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6062360702481658777">Jy sal oor <ph name="LOGOUT_TIME_LEFT" /> outomaties afgemeld word.</translation>
 <translation id="6073451960410192870">Stop opname</translation>
 <translation id="607652042414456612">Jou rekenaar is opspoorbaar vir Bluetooth-toestelle wat naby is en sal verskyn as "<ph name="NAME" />" met adres <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Administrateursbeleid deaktiveer skermopname wanneer vertroulike inhoud sigbaar is</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />-spraaklêers is afgelaai</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Die Google Assistent is nie in 'n gastesessie beskikbaar nie.</translation>
@@ -1051,7 +1050,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8876661425082386199">Gaan jou verbinding na</translation>
 <translation id="8877788021141246043">Stel 'n onthounota</translation>
 <translation id="8878886163241303700">Brei skerm uit</translation>
-<translation id="8884537526797090108">Kan nie vertroulike inhoud opneem nie</translation>
 <translation id="890616557918890486">Verander bron</translation>
 <translation id="8909138438987180327">Battery op <ph name="PERCENTAGE" /> persent.</translation>
 <translation id="8913384980486163186">Met tema (verstek)</translation>

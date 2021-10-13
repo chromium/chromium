@@ -214,6 +214,7 @@
 <translation id="160851722280695521">Играјте игру Диносаурус у Chrome-у</translation>
 <translation id="161042844686301425">Плавозелена</translation>
 <translation id="1611101756749861742">Други котур</translation>
+<translation id="1615402009686901181">Смернице администратора онемогућавају снимање екрана када је видљив поверљив садржај</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1623104350909869708">Спречи ову страницу да прави додатне дијалоге</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -864,7 +865,6 @@
 <translation id="3781428340399460090">Јаркорозе</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth уређаји</translation>
-<translation id="3787675388804467730">Број виртуелне картице</translation>
 <translation id="3787705759683870569">Истиче <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Величина 16</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
@@ -1579,6 +1579,7 @@
 <translation id="6080696365213338172">Приступали сте садржају помоћу сертификата који је обезбедио администратор. Администратор може да пресретне податке које обезбедите домену <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">Сродне претраге</translation>
 <translation id="6094273045989040137">Додајте напомене</translation>
+<translation id="6094290315941448991">Смернице администратора онемогућавају снимање екрана када је видљив поверљив садржај</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Направите сајт</translation>
 <translation id="6106989379647458772">Веб-страница на адреси <ph name="PAGE" /> можда привремено не функционише или је трајно премештена на нову веб-адресу.</translation>
@@ -2379,6 +2380,7 @@
 <translation id="8870494189203302833">Истим редоследом са одштампаном страном надоле</translation>
 <translation id="8871553383647848643">Прилагодите изглед прегледача</translation>
 <translation id="8874824191258364635">Унесите важећи број картице</translation>
+<translation id="8884537526797090108">Снимање поверљивог садржаја није успело</translation>
 <translation id="8891727572606052622">Неважећи режим проксија.</translation>
 <translation id="8894794286471754040">Прво дугачка ивица</translation>
 <translation id="8903921497873541725">Увећавање</translation>
@@ -2433,6 +2435,7 @@
 <translation id="9050666287014529139">Приступна фраза</translation>
 <translation id="9056953843249698117">Продавница</translation>
 <translation id="9062620674789239642">Можда је премештен, измењен или избрисан.</translation>
+<translation id="9063800855227801443">Снимање поверљивог садржаја није успело</translation>
 <translation id="9065203028668620118">Измени</translation>
 <translation id="9065745800631924235">Претрага <ph name="TEXT" /> из историје</translation>
 <translation id="9069693763241529744">Блокира додатак</translation>

@@ -51,7 +51,6 @@
 <translation id="2121284319307530122">&amp;Chrome යාවත්කාලීන කිරීමට යළි දියත් කරන්න</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />වත්මන් සැකසීම්<ph name="END_LINK" /> වාර්තා කිරීමෙන් Chrome වඩා යහපත් කිරීමට උදවු වන්න</translation>
 <translation id="2151406531797534936">දැන් Chrome යළි අරඹන්න</translation>
-<translation id="2246246234298806438">Google Chrome හට මුද්‍රණ පෙරදැක්ම පෙන්විය නොහැක්කේ තිළැලි PDF දර්ශකය නොපවතින බැවිනි.</translation>
 <translation id="2290014774651636340">Google API යතුරු අහිමිව ඇත. Google Chrome හි ඇතැම් ක්‍රියාකාරීත්ව අක්‍රීය වනු ඇත.</translation>
 <translation id="2290095356545025170">ඔබට Google Chrome ඉවත්කිරීමට අවශ්‍ය බව විශ්වාසද?</translation>
 <translation id="2309047409763057870">මෙය Google Chrome හි දෙවන ස්ථාපනයක් වන අතර, ඔබේ පෙරනිමි බ්‍රව්සරය කළ නොහැකිය.</translation>
@@ -90,6 +89,7 @@
 <translation id="3037838751736561277">Google Chrome පසුබිම් ප්‍රකාරය තුළ ඇත.</translation>
 <translation id="3059710691562604940">සුරක්ෂිත පිරික්සුම ක්‍රියාවිරහිතයි. එය ක්‍රියාත්මක කිරීමට Chrome නිර්දේශ කරයි.</translation>
 <translation id="3065168410429928842">Chrome පටිත්ත</translation>
+<translation id="3069821012350118710">ඔබ පිවිසෙන අඩවි ඔබ Chrome වසන තෙක් ඔබේ තොරතුරු මතක තබා ගනියි</translation>
 <translation id="3080151273017101988">Google Chrome වසා ඇති විට පසුබිම් යෙදුම් ධාවනය අඛණ්ඩව කරන්න</translation>
 <translation id="3089968997497233615">Google Chrome හි නව, වඩා ආරක්ෂිත සංස්කරණයක් පවතී.</translation>
 <translation id="3100998948628680988">ඔබගේ Chrome පැතිකඩ නම් කරන්න</translation>
@@ -193,6 +193,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="5804318322022881572">Chrome දියත් කළ නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="5867197326698922595">Google Chrome මුරපද සංස්කරණ කිරීමට උත්සහ කරයි.</translation>
 <translation id="5895138241574237353">යළි අරඹන්න</translation>
+<translation id="5901850848447342934">ඔබ Chrome වසන විට ඔබව <ph name="BEGIN_BOLD" />බොහොමයක් අඩවිවලින්<ph name="END_BOLD" /> වරනු ඇත. සමමුහුර්ත කිරීම ක්‍රියාවිරහිත නම්, ඔබව <ph name="BEGIN_BOLD" />Google සේවා සහ Chrome වෙතින්ද වරනු ඇත<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ජාල පුරනය</translation>
 <translation id="5940385492829620908">ඔබේ වෙබ් අඩවි, පිටු සලකුණු සහ වෙනත් Chrome උපකරණ මෙහි ඇත.</translation>
 <translation id="5941830788786076944">Google Chrome පෙරනිමි බ්‍රව්සරය කරන්න</translation>
@@ -282,6 +283,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="8614913330719544658">Google Chrome ප්‍රතිචාර නොදක්වයි. යළි දියත් කරන්නද?</translation>
 <translation id="861702415419836452">Chrome හට ඔබේ වටපිටාවේ ත්‍රිමාන සිතියමක් සෑදීමට ඔබේ කැමරාවට ප්‍රවේශ වීමට අවසර අවශ්‍යයි</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 විනාඩියකින් යළි දියත් වෙයි}one{Chrome විනාඩි # කින් යළි දියත් වෙයි}other{Chrome විනාඩි # කින් යළි දියත් වෙයි}}</translation>
+<translation id="8629311577791198377">ඔබ සියලු Chrome කවුළු වැසූ විට, කුකි සහ අඩවි දත්ත ස්වයංක්‍රියව ඉවත් කෙරේ</translation>
 <translation id="8641606876632989680">ඔබ සමථයට පත් වූ මුරපදයක් සමඟ පුරන විට Chrome ඔබට දැනුම් දෙයි</translation>
 <translation id="8669527147644353129">Google Chrome උදව් කරන්නා</translation>
 <translation id="8679801911857917785">තවද එය ඔබ Chrome ආරම්භයේදී දකින පිටුවද වෙනස් කරයි.</translation>

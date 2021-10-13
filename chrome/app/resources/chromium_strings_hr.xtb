@@ -131,7 +131,6 @@
 <translation id="5386450000063123300">Ažuriranje Chromiuma (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Dopusti prijavu u Chromium</translation>
 <translation id="5398878173008909840">Dostupna je nova verzija preglednika Chromium.</translation>
-<translation id="5416696090975899932">Chromium ne može prikazati pregled ispisa kad nedostaje ugrađeni PDF preglednik.</translation>
 <translation id="5427571867875391349">Postavite Chrome kao zadani preglednik</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5479196819031988440">OS Chromium ne može otvoriti ovu stranicu.</translation>
@@ -209,6 +208,7 @@ Neke su značajke možda nedostupne. Navedite neki drugi direktorij profila ili 
 <translation id="718435575166326686">Chromium treba dopuštenje za fotoaparat za ovu web-lokaciju</translation>
 <translation id="7196312274710523067">Pokretanje Chromiuma nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="7197677400338048821">Chromium ne može provjeriti vaše zaporke. Pokušajte ponovno nakon 24 sata.</translation>
+<translation id="7218568399872925918">Web-lokacije koje posjećujete pamte vaše podatke dok ne zatvorite Chromium</translation>
 <translation id="7223968959479464213">Upravitelj zadataka – Chromium</translation>
 <translation id="731795002583552498">Ažuriranje Chromiuma</translation>
 <translation id="7318036098707714271">Datoteka vaših postavki oštećena je ili nevažeća.
@@ -262,6 +262,8 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="8621669128220841554">Instalacija nije uspjela zbog nepoznate pogreške. Ponovo preuzmite Chromium.</translation>
 <translation id="8697124171261953979">Upravlja i time koja se stranica prikazuje prilikom pokretanja Chromiuma ili pretraživanja putem višenamjenskog okvira.</translation>
 <translation id="8704119203788522458">To je vaš Chromium</translation>
+<translation id="8713679423359107094">Kad zatvorite sve Chromiumove prozore, kolačići i podaci web-lokacija brišu se automatski</translation>
+<translation id="8796443464227412154"><ph name="BEGIN_BOLD" />Odjavit ćete se s većine web-lokacija<ph name="END_BOLD" /> kad zatvorite Chromium. Ako je sinkronizacija isključena, <ph name="BEGIN_BOLD" />odjavit ćete se i s Googleovih usluga i Chromiuma<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium treba dopuštenje za pristup kameri i mikrofonu za ovu web-lokaciju</translation>
 <translation id="8803635938069941624">Uvjeti OS-a Chromium</translation>
 <translation id="8821041990367117597">Chromium nije mogao sinkronizirati podatke vašeg računa jer su pojedinosti prijave na račun zastarjele.</translation>

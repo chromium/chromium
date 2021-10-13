@@ -16,6 +16,7 @@
 <translation id="1066060668811609597">සමමුහූර්තය කළමනා කරන්න</translation>
 <translation id="1076421457278169141">කේතය ස්කෑන් කරන ලදී</translation>
 <translation id="1084365883616172403">Facebook පළ කිරීම සම්පූර්ණයි.</translation>
+<translation id="1086486568852410168">Google Lens සමග සොයන්න</translation>
 <translation id="1103523840287552314">සැමවිටම <ph name="LANGUAGE" /> පරිවර්තනය කරන්න</translation>
 <translation id="1104948393051856124">පිළිගෙන කරගෙන යන්න</translation>
 <translation id="110724200315609752">කවුළුව විවෘත කරන්න වෙත මාරු වන්න</translation>
@@ -57,6 +58,7 @@
 <translation id="1400642268715879018">පසුගිය සති 4</translation>
 <translation id="1407135791313364759">සියල්ල විවෘත කරන්න</translation>
 <translation id="1430915738399379752">මුද්‍රණය කරන්න</translation>
+<translation id="1434356225517321998">ඔබේ බ්‍රවුසරය කළමනාකරණය කෙරේ. <ph name="BEGIN_LINK" />විස්තර<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">මුරපදය සඟවන්න</translation>
 <translation id="145015347812617860">අයිතම <ph name="COUNT" /></translation>
 <translation id="149095475893949513">මෙම වෙබ් අඩවිය වින්‍යාසකරණ පැතිකඩක් බාගැනීමට උත්සාහ කරයි.</translation>
@@ -108,6 +110,7 @@
 <translation id="1941314575388338491">පිටපත් කිරීමට දෙවරක් තට්ටු කරන්න.</translation>
 <translation id="1952172573699511566">හැකි විට, වෙබ් අඩවි ඔබේ කැමතිම භාෂාවෙන් පෙළ පෙන්වනු ඇත.</translation>
 <translation id="1965935827552890526">ඔබගේ අනෙක් විවෘත Chrome කවුළුව තුළ ඔබ කරමින් සිටි දේ අවසන් කරන්න.</translation>
+<translation id="196896377990863006">සබැඳි පෙරදසුන පෙන්වන්න</translation>
 <translation id="1973912524893600642">දත්ත තබා ගන්න</translation>
 <translation id="1974060860693918893">උසස් කළ</translation>
 <translation id="1989112275319619282">බ්‍රවුස් කරන්න</translation>
@@ -120,6 +123,7 @@
 <translation id="209018056901015185">ඩෙක්ස්ටොප් අඩවිය ඉල්ලන්න</translation>
 <translation id="2103075008456228677">history.google.com විවෘත කරන්න</translation>
 <translation id="2116625576999540962">අයිතම <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ක් ගෙන යන ලදි</translation>
+<translation id="2122754583996902531">ඔබේ බ්‍රවුසරය කළමනාකරණය කෙරේ. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="212623074644302906">කියවීම් ලැයිස්තුවට එක් කිරීමට ඉල්ලන්න</translation>
 <translation id="2139867232736819575">ඔබ පිටපත් කළ පාඨය සොයන්න</translation>
 <translation id="214201757571129614">පුරන්න…</translation>
@@ -128,6 +132,7 @@
 <translation id="2218443599109088993">කුඩා කරන්න</translation>
 <translation id="2230173723195178503">වෙබ් පිටුව පූරණය කරන ලදී</translation>
 <translation id="2239626343334228536">බ්‍රවුස් කිරීමේ දත්ත හිස් කිරීම...</translation>
+<translation id="2256933947031277845">නිශ්චිත ගිණුම්වලින් පමණක් පිරීමට ඔබගේ සංවිධානය ඔබට ඉඩ ‍දෙයි.</translation>
 <translation id="225943865679747347">දෝශ කේතය: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">ගිණුම එක් කරන්න</translation>
 <translation id="2268044343513325586">පිරිපහදු කරන්න</translation>
@@ -257,6 +262,7 @@
 <translation id="345565170154308620">මුරපද කළමනා කරන්න...</translation>
 <translation id="3469166899695866866">බාගැනීම නවතන්න</translation>
 <translation id="3470502288861289375">පිටපත් කෙරෙමින්...</translation>
+<translation id="3472993688462687965">ඔබ සමමුහුර්තය ක්‍රියාත්මක කළ විට, ඔබේ සංවිධානය ඉඩ දී ඇති දේ අනුව දත්ත සීමා විය හැකිය.</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> ලෙස කරගෙන යන්න</translation>
 <translation id="3478058380795961209">කල් ඉකුත්වන මාසය</translation>
 <translation id="3482959374254649722">ඔබගේ පටිති සමමුහුර්ත කරමින්...</translation>
@@ -368,10 +374,12 @@
 
 ඔබේ දත්ත ඔබේ සමමුහුර්ත මුරවදන සමඟ සංකේතනය කර ඇත. සමමුහුර්ත කිරීම ආරම්භ කිරීමට ඇතුළු කරන්න.</translation>
 <translation id="4689564913179979534">ගෙවීමේ ක්‍රම කළමනා කරන්න...</translation>
+<translation id="469022783543509074">ඔබ වරා ඇත</translation>
 <translation id="470966556546083668">සමමුහුර්ත කිරීම ක්‍රියාත්මක නොකරන්න</translation>
 <translation id="473775607612524610">යාවත්කාලීනය</translation>
 <translation id="4747097190499141774">මුර-වැකිකඩ සංකේතනයට Google Pay වෙතින් ගෙවීමේ ක්‍රම සහ ලිපින ඇතුළු නෙවේ. සංකේතන කළ දත්ත කියවිය හැක්කේ ඔබේ මුර-වැකිකඩ සහිත අයෙකුට පමණයි. මෙම මුර-වැකිකඩ Google වෙත යැවීම හෝ ගබඩා කිරීම සිදු නොවේ. ඔබට ඔබේ මුර-වැකිකඩ අමතක වූයේ නම්, ඔබ සමමුහූර්ත කිරීම අවශ්‍ය වෙයි. <ph name="BEGIN_LINK" />තවත් දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">නව අප්‍රසිද්ධ පටිත්ත</translation>
+<translation id="4764612367328936189">නිශ්චිත ගිණුම්වලින් පමණක් පිරීමට ඔබගේ සංවිධානය ඔබට ඉඩ ‍දෙයි. ඉඩ නොදෙන ගිණුම් සඟවා ඇත. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="4775879719735953715">පෙරනිමි වෙබ් බ්‍රව්සරය</translation>
 <translation id="4778644898150334464">වෙනත් මුරපදයක් භාවිත කරන්න</translation>
 <translation id="4802417911091824046">මුර-වැකිකඩ සංකේතනයට Google Pay වෙතින් ගෙවීමේ ක්‍රම සහ ලිපින ඇතුළු නොවේ.
@@ -687,6 +695,7 @@
 <translation id="750493650310597496">0 තේරා ගන්නා ලදි</translation>
 <translation id="7508728395076009983">ඔබගේ අප්‍රසිද්ධ ටැබ අගුලු දැමීමට, ස්පර්ශ ID, මුහුණු ID හෝ මුර කේතයක් පිහිටුවන්න.</translation>
 <translation id="7514365320538308">බාගන්න</translation>
+<translation id="753094929961314545">සබැඳි පෙරදසුන සඟවන්න</translation>
 <translation id="7537586195939242955">කනගාටුයි, ඔබේ අවසර පත මේ අවස්ථාවේදී අවසර පොත වෙතට ස්ථාපනය කළ නොහැකිය.</translation>
 <translation id="7554791636758816595">නව ටැබය</translation>
 <translation id="7561196759112975576">සැමවිටම</translation>
@@ -828,6 +837,7 @@
 <translation id="9081058212938299310"><ph name="USERNAME" /> සඳහා මුරපදය යාවත්කාලීන කරන්නේද?</translation>
 <translation id="9083392325882095631">අයිතම 1</translation>
 <translation id="9083838294503912307">උපාංග හරහා සමමුහුර්ත සහ පෞද්ගලීකරණය කිරීමට, සමමුහුර්තය ක්‍රියාත්මක කරන්න.</translation>
+<translation id="9084677839771512880">ඔබගේ සංවිධානය ඔබට සමමුහුර්ත කළ හැකි දේ සීමා කරයි. <ph name="BEGIN_LINK" />විස්තර<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Chrome යෝජනා කළ මුරපදය:</translation>
 <translation id="9094033019050270033">මුරපදය යාවත්කාලීන කරන්න</translation>
 <translation id="9100610230175265781">රහස් පදය අවශ්‍යයි</translation>

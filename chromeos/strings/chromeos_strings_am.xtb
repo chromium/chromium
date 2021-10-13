@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">ተጠቃሚ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">ይህ <ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው።</translation>
+<translation id="1175951029573070619">መካከለኛ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">አስወግድ</translation>
 <translation id="1195447618553298278">ያልታወቀ ስህተት።</translation>
 <translation id="1204296502688602597">የዲኤንስ የሥርዓት ምላሽ ጊዜ</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422">በ <ph name="FIRST_MANAGER" /> እና <ph name="SECOND_MANAGER" /> የሚተዳደር</translation>
 <translation id="1726100011689679555">የስም አገልጋዩች</translation>
 <translation id="1731082422893354635">የብሉቱዝ መዳሰሻ ሰሌዳ</translation>
+<translation id="175763766237925754">ጥሩ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">መቃኘትን በመሰረዝ ላይ</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">ተዘሏል</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">በአቅራቢያ ያሉ መሣሪያዎችን ለማግኘት ብሉቱዝን ያብሩ</translation>
+<translation id="2346474577291266260">እጅግ በጣም ጥሩ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">አልፏል</translation>
 <translation id="2380886658946992094">የሕግ</translation>
 <translation id="2391082728065870591">የግብረመልስ ሪፖርት ላክ</translation>
@@ -340,8 +343,10 @@
 <translation id="6379086450106841622">መነካት የሚችል ማያ</translation>
 <translation id="6388847657025262518">የቃኚው ሰነድ መጋቢ ተቀርቅሯል። መጋቢውን ይፈትሹ እና እንደገና ይሞክሩ።</translation>
 <translation id="6395640744968320699">በኬላ በኩል ወደ ኤችቲቲፒ (ወደብ 80) ድር ጣቢያዎች መገናኘት አልተቻለም</translation>
+<translation id="6398765197997659313">ከሙሉ ማሳያ መስኮት ይውጡ</translation>
 <translation id="641081527798843608">የርዕሰ ጉዳይ ተዛማጅ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">ደካማ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">ጥሩ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ገጽ ዳግም ይቃኝ?}=1{ገጽ {PAGE_NUMBER} ዳግም ይቃኝ?}one{ገጽ {PAGE_NUMBER} ዳግም ይቃኝ?}other{ገጽ {PAGE_NUMBER} ዳግም ይቃኝ?}}</translation>
 <translation id="6472207088655375767">ኦቲፒ</translation>
@@ -444,7 +449,6 @@
 <translation id="7960831585769876809">የሙቀት መጠን</translation>
 <translation id="7978412674231730200">የግል ቁልፍ</translation>
 <translation id="7994702968232966508">የEAP ስልት</translation>
-<translation id="8020238979854764615">ስህተት ነበር። እባክዎ ሌሎች ምስሎችን በመምረጥ እንደገና ይሞክሩ።</translation>
 <translation id="802154636333426148">ማውረድ አልተሳካም</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">ግብረ መልስ ላክ</translation>

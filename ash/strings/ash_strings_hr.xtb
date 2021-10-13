@@ -264,6 +264,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2996462380875591307">Usidreno je povećalo omogućeno. Ponovo pritisnite Ctrl + Search + D da biste ga isključili.</translation>
 <translation id="3000461861112256445">Monozvuk</translation>
 <translation id="3009178788565917040">Izlaz</translation>
+<translation id="3009958530611748826">Odaberite mapu za spremanje</translation>
 <translation id="3017687597151988916">Za područje odabira postavljen je prozor</translation>
 <translation id="3033545621352269033">Uključeno</translation>
 <translation id="3036649622769666520">Otvori datoteke</translation>
@@ -509,7 +510,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4667099493359681081">Preuzima se <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Otključajte uređaj roditeljskim kodom</translation>
 <translation id="4702647871202761252">Zaslon privatnosti je isključen</translation>
-<translation id="4706121060329443414">Kasnije ćemo pokušati preuzimanje. Govor će se sada poslati Googleu radi obrade.</translation>
 <translation id="4731797938093519117">Roditeljski pristup</translation>
 <translation id="4734965478015604180">Vodoravno</translation>
 <translation id="4735498845456076464">Promijenjen je tipkovni prečac <ph name="LAUNCHER_KEY_NAME" /> + broj. Da biste upotrijebili tipke funkcija, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + tipku u gornjem redu.</translation>
@@ -694,7 +694,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="6062360702481658777">Automatski ćete se odjaviti za <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Zaustavi snimanje</translation>
 <translation id="607652042414456612">Vaše računalo mogu otkriti Bluetooth uređaji u blizini i prikazivat će se kao "<ph name="NAME" />" s adresom <ph name="ADDRESS" />.</translation>
-<translation id="6094290315941448991">Administratorska pravila onemogućuju snimanje zaslona ako je vidljiv povjerljiv sadržaj</translation>
 <translation id="6114505516289286752">Preuzete su govorne datoteke za <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google asistent nije dostupan u gostujućoj sesiji.</translation>
@@ -1050,7 +1049,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="8876661425082386199">Provjerite vezu</translation>
 <translation id="8877788021141246043">Postavi podsjetnik</translation>
 <translation id="8878886163241303700">Produljenje zaslona</translation>
-<translation id="8884537526797090108">Snimanje povjerljivog sadržaja nije moguće</translation>
 <translation id="890616557918890486">Promijeni izvor</translation>
 <translation id="8909138438987180327">Baterija je na <ph name="PERCENTAGE" /> posto.</translation>
 <translation id="8913384980486163186">Tema (zadano)</translation>

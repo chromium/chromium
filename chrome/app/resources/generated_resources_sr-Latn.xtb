@@ -220,7 +220,6 @@
 <translation id="1218015446623563536">Izbrišite Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Google usluga lokacije koristi izvore kao što su Wi‑Fi mreže, mobilne mreže i senzori da bi odredila približnu lokaciju ovog uređaja.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Lokaciju možete da isključite ako isključite glavno podešavanje Lokacija na ovom uređaju. U podešavanjima lokacije možete da isključite i korišćenje Wi‑Fi mreža, mobilnih mreža i senzora za lokaciju.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Preuzimanje fajlova sa govorom na jeziku <ph name="LANGUAGE" /> nije uspelo. Probaćemo preuzimanje kasnije. Govor se za sada šalje Google-u radi obrade.</translation>
 <translation id="122082903575839559">Algoritam potpisa sertifikata</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 sa RSA šifrovanjem</translation>
 <translation id="1221825588892235038">Samo izabrani sadržaj</translation>
@@ -2140,7 +2139,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3192947282887913208">Audio datoteke</translation>
 <translation id="3197453258332670132">Kada kliknete desnim tasterom na neku stavku ili je dugo pritisnete, prikazuju se relevantne informacije za izabrani tekst</translation>
 <translation id="3199127022143353223">Serveri</translation>
-<translation id="3200061262156232574">U vašim kolicima za kupovinu</translation>
+<translation id="3200061262156232574">U vašoj korpi za kupovinu</translation>
 <translation id="3201422919974259695">Dostupni USB uređaji će se prikazivati ovde.</translation>
 <translation id="3202131003361292969">Putanja</translation>
 <translation id="3202173864863109533">Zvuk ove kartice je isključen.</translation>
@@ -4926,7 +4925,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6232017090690406397">Baterija</translation>
 <translation id="6232116551750539448">Veza sa mrežom <ph name="NAME" /> je prekinuta</translation>
 <translation id="6233154960150021497">Vraća podrazumevanu upotrebu glasa umesto tastature</translation>
-<translation id="6233455992368963267">Govor (<ph name="LANGUAGE" />) se šalje Google-u radi obrade.</translation>
 <translation id="6234108445915742946">Chrome uslovi korišćenja usluge se menjaju 31. marta</translation>
 <translation id="6234474535228214774">Instaliranje je na čekanju</translation>
 <translation id="6235208551686043831">Kamera uređaja je uključena. Postavite eSIM QR kôd ispred kamere.</translation>

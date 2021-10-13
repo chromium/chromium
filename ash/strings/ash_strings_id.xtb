@@ -261,6 +261,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2996462380875591307">Kaca Pembesar Tersemat diaktifkan. Tekan Ctrl+Search+D lagi untuk menonaktifkannya.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Keluaran</translation>
+<translation id="3009958530611748826">Pilih folder untuk menyimpan</translation>
 <translation id="3017687597151988916">Area pemilihan disetel ke jendela</translation>
 <translation id="3033545621352269033">Aktif</translation>
 <translation id="3036649622769666520">Buka File</translation>
@@ -504,7 +505,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4665114317261903604">Alihkan mode Jangan Ganggu. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Buka kunci perangkat dengan kode orang tua</translation>
 <translation id="4702647871202761252">Layar privasi nonaktif</translation>
-<translation id="4706121060329443414">Download akan dicoba nanti. Untuk saat ini, ucapan akan dikirim ke Google untuk diproses.</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Pintasan keyboard <ph name="LAUNCHER_KEY_NAME" /> + Angka telah diubah. Untuk menggunakan tombol fungsi, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + tombol di baris atas.</translation>
@@ -688,7 +688,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6062360702481658777">Anda akan dikeluarkan secara otomatis dalam <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Berhenti merekam</translation>
 <translation id="607652042414456612">Komputer Anda dapat ditemukan pada perangkat Bluetooth terdekat dan akan muncul sebagai "<ph name="NAME" />" dengan alamat <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Kebijakan administrator akan menonaktifkan perekaman layar saat konten rahasia terlihat</translation>
 <translation id="6114505516289286752">File ucapan bahasa <ph name="LANGUAGE" /> didownload</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Asisten Google tidak tersedia dalam sesi tamu.</translation>
@@ -1043,7 +1042,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8876661425082386199">Periksa koneksi Anda</translation>
 <translation id="8877788021141246043">Setel pengingat</translation>
 <translation id="8878886163241303700">Memperluas layar</translation>
-<translation id="8884537526797090108">Tidak dapat merekam konten rahasia</translation>
 <translation id="890616557918890486">Ubah sumber</translation>
 <translation id="8909138438987180327">Baterai <ph name="PERCENTAGE" /> persen.</translation>
 <translation id="8913384980486163186">Tema (default)</translation>

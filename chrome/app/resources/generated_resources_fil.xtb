@@ -221,7 +221,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1218015446623563536">I-delete ang Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Gumagamit ang serbisyo ng lokasyon ng Google ng mga source tulad ng mga Wi-Fi at mobile network para makatulong na matantya ang lokasyon ng device na ito.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Maaari mong i-off ang Lokasyon sa pamamagitan ng pag-off sa pangunahing setting ng Lokasyon sa device na ito. Maaari mo ring i-off ang paggamit ng Wi‑Fi, mga mobile network, at mga sensor para sa lokasyon sa mga setting ng lokasyon.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Hindi ma-download ang mga <ph name="LANGUAGE" /> na speech file. Susubukan mamaya ang pag-download. Sa ngayon, ipinapadala ang speech sa Google para sa pagpoproseso.</translation>
 <translation id="122082903575839559">Certificate Signature Algorithm</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 na May RSA Encryption</translation>
 <translation id="1221825588892235038">Pinili lang</translation>
@@ -309,6 +308,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1313660246522271310">Masa-sign out ka sa lahat ng site, pati na rin sa mga nakabukas na tab</translation>
 <translation id="1313705515580255288">Isi-sync ang iyong mga bookmark, kasaysayan, at iba pang mga setting sa iyong Google Account.</translation>
 <translation id="1316136264406804862">Naghahanap...</translation>
+<translation id="1316248800168909509">Hindi makakonekta sa <ph name="DEVICE" />. Subukan ulit.</translation>
 <translation id="1316495628809031177">Naka-pause ang pag-sync</translation>
 <translation id="1317637799698924700">Gagana ang iyong istasyon ng pag-dock sa USB Type-C compatible mode.</translation>
 <translation id="1319983966058170660">Button na bumalik ng subpage na <ph name="SUBPAGE_TITLE" /></translation>
@@ -1191,6 +1191,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2200356397587687044">Kailangan ng Chrome ng pahintulot upang magpatuloy</translation>
 <translation id="2202898655984161076">Nagkaproblema sa paglilista ng mga printer. Maaaring hindi matagumpay na nairehistro ang ilan sa iyong mga printer <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Puwedeng gumamit ang pangalan ng mga titik, numero, at special character</translation>
+<translation id="220321590587754225">Hindi makakonekta. Subukan ulit.</translation>
 <translation id="2204034823255629767">Basahin at baguhin ang anumang tina-type mo</translation>
 <translation id="220858061631308971">Pakilagay ang PIN code na ito sa "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Hindi matapos ang pag-install</translation>
@@ -4942,7 +4943,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6232017090690406397">Baterya</translation>
 <translation id="6232116551750539448">Naputol ang koneksyon sa <ph name="NAME" /></translation>
 <translation id="6233154960150021497">Default na gumamit ng boses sa halip na keyboard</translation>
-<translation id="6233455992368963267">Ipapadala ang pagsasalita sa <ph name="LANGUAGE" /> sa Google para sa pagpoproseso.</translation>
 <translation id="6234108445915742946">Magbabago na ang Mga Tuntunin ng Serbisyo ng Chrome sa Marso 31</translation>
 <translation id="6234474535228214774">Nakabinbin ang pag-install</translation>
 <translation id="6235208551686043831">Naka-on na ang camera ng device. Pakitapat ang QR Code ng iyong eSIM sa harap ng camera.</translation>
@@ -4979,6 +4979,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6263284346895336537">Hindi Kritikal</translation>
 <translation id="6264365405983206840">Piliin &amp;Lahat</translation>
 <translation id="6265687851677020761">Alisin ang port</translation>
+<translation id="6266532094411434237">Kumokonekta sa <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Pumili ng certificate upang patunayan ang iyong sarili sa <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Buksan sa <ph name="APP" /></translation>
 <translation id="6270391203985052864">Puwedeng humiling ang mga site na magpadala ng mga notification</translation>

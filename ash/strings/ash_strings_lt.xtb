@@ -264,6 +264,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2996462380875591307">Prie doko prijungtas didintuvas įgalintas. Dar kartą paspauskite „Ctrl“ + paieškos klavišą + D, kad išjungtumėte režimą.</translation>
 <translation id="3000461861112256445">Monofoninis garsas</translation>
 <translation id="3009178788565917040">Išvestis</translation>
+<translation id="3009958530611748826">Pasirinkite aplanką, kuriame pageidaujate išsaugoti</translation>
 <translation id="3017687597151988916">Pasirinkta lango sritis</translation>
 <translation id="3033545621352269033">Įjungta</translation>
 <translation id="3036649622769666520">Atidaryti failus</translation>
@@ -509,7 +510,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4667099493359681081">Atsisiunčiamas failas <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Atrakinkite įrenginį naudodami tėvų kodą</translation>
 <translation id="4702647871202761252">Privatumo ekranas išjungtas</translation>
-<translation id="4706121060329443414">Atsisiųsti bus bandoma vėliau. Dabar kalba bus siunčiama į sistemą „Google“ apdoroti.</translation>
 <translation id="4731797938093519117">Tėvų prieiga</translation>
 <translation id="4734965478015604180">Horizontaliai</translation>
 <translation id="4735498845456076464">Pakeistas spartusis klavišas <ph name="LAUNCHER_KEY_NAME" /> + skaičiaus klavišas. Jei norite naudoti funkcijų klavišus, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + klavišą viršutinėje eilutėje.</translation>
@@ -694,7 +694,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6062360702481658777">Būsite automatiškai atjungti po <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Sustabdyti įrašymą</translation>
 <translation id="607652042414456612">Jūsų kompiuterį galima aptikti netoliese esančiais „Bluetooth“ įrenginiais ir jis rodomas kaip „<ph name="NAME" />“ su adresu <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Remiantis administratoriaus politika, negalima įrašyti ekrano vaizdo, jei matomas konfidencialus turinys</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> kalbos failai atsisiųsti</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">„Google Assistant“ nepasiekiamas svečio sesijoje.</translation>
@@ -1050,7 +1049,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="8876661425082386199">Ryšio patikra</translation>
 <translation id="8877788021141246043">„Set a reminder“ (Nustatyk priminimą)</translation>
 <translation id="8878886163241303700">Išplečiamas ekranas</translation>
-<translation id="8884537526797090108">Negalima įrašyti konfidencialaus turinio</translation>
 <translation id="890616557918890486">Keisti šaltinį</translation>
 <translation id="8909138438987180327">Akumuliatoriaus įkrovos lygis <ph name="PERCENTAGE" /> proc.</translation>
 <translation id="8913384980486163186">Teminė (numatytoji)</translation>

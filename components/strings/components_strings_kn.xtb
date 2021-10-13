@@ -213,6 +213,7 @@
 <translation id="160851722280695521">Chrome ನಲ್ಲಿ Dino Run ಆಟವನ್ನು ಆಡಿ</translation>
 <translation id="161042844686301425">ಹಸಿರುನೀಲಿ</translation>
 <translation id="1611101756749861742">ಎರಡನೇ ರೋಲ್</translation>
+<translation id="1615402009686901181">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಗೌಪ್ಯ ವಿಷಯ ಗೋಚರಿಸುತ್ತಿರುವಾಗ ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್ ಮಾಡುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="1620510694547887537">ಕ್ಯಾಮರಾ</translation>
 <translation id="1623104350909869708">ಹೆಚ್ಚುವರಿ ಸಂವಾದಗಳನ್ನು ರಚಿಸದಂತೆ ಈ ಪುಟವನ್ನು ತಡೆಯಿರಿ</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -855,7 +856,6 @@
 <translation id="3781428340399460090">ಗಾಢ ಗುಲಾಬಿ</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">ಬ್ಲೂಟೂತ್‌‌ ಸಾಧನಗಳು</translation>
-<translation id="3787675388804467730">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆ</translation>
 <translation id="3787705759683870569">ಅವಧಿ-ಮುಕ್ತಾಯ <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">ಗಾತ್ರ 16</translation>
 <translation id="3789841737615482174">ಇನ್‌ಸ್ಟಾಲ್</translation>
@@ -1559,6 +1559,7 @@
 <translation id="6080696365213338172">ನಿರ್ವಾಹಕರು-ಒದಗಿಸಿದ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಬಳಸಿಕೊಂಡು ನೀವು ವಿಷಯವನ್ನು ಪ್ರವೇಶಿಸಿರುವಿರಿ. <ph name="DOMAIN" /> ಗೆ ನೀವು ಒದಗಿಸುವ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ತಡೆಹಿಡಿಯಬಹುದಾಗಿದೆ.</translation>
 <translation id="6087312102907839798">ಸಂಬಂಧಿತ ಹುಡುಕಾಟಗಳು</translation>
 <translation id="6094273045989040137">ಟಿಪ್ಪಣಿ</translation>
+<translation id="6094290315941448991">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಗೌಪ್ಯ ವಿಷಯ ಗೋಚರಿಸುತ್ತಿರುವಾಗ ಸ್ಕ್ರೀನ್‌‌ ರೆಕಾರ್ಡಿಂಗ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">ಸೈಟ್ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> ನಲ್ಲಿರುವ ವೆಬ್‌ಪುಟ ತಾತ್ಕಾಲಿಕವಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ ಅಥವಾ ಅದನ್ನು ಶಾಶ್ವತವಾಗಿ ಹೊಸ ವೆಬ್ ವಿಳಾಸಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ.</translation>
@@ -2352,6 +2353,7 @@
 <translation id="8870494189203302833">ಒಂದೇ ಆರ್ಡರ್ ಮುಖ ಕೆಳಗೆ</translation>
 <translation id="8871553383647848643">ನಿಮ್ಮ ಬ್ರೌಸರ್ ನೋಟವನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="8874824191258364635">ಮಾನ್ಯವಾದ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ</translation>
+<translation id="8884537526797090108">ಗೌಪ್ಯ ವಿಷಯವನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8891727572606052622">ಅಮಾನ್ಯವಾದ ಪ್ರಾಕ್ಸಿ ಮೋಡ್.</translation>
 <translation id="8894794286471754040">ಉದ್ದದ ಅಂಚು ಮೊದಲು</translation>
 <translation id="8903921497873541725">ಝೂಮ್ ಇನ್</translation>
@@ -2406,6 +2408,7 @@
 <translation id="9050666287014529139">ಪಾಸ್‌ಫ್ರೇಸ್</translation>
 <translation id="9056953843249698117">ಸ್ಟೋರ್</translation>
 <translation id="9062620674789239642">ಈ ಫೈಲನ್ನು ಬೇರೆಡೆಗೆ ಸರಿಸಿರಬಹುದು, ಎಡಿಟ್ ಮಾಡಿರಬಹುದು ಅಥವಾ ಅಳಿಸಿರಬಹುದು.</translation>
+<translation id="9063800855227801443">ಗೌಪ್ಯ ವಿಷಯವನ್ನು ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="9065203028668620118">ಎಡಿಟ್</translation>
 <translation id="9065745800631924235">ಇತಿಹಾಸದಿಂದ <ph name="TEXT" /> ಹುಡುಕಾಟ</translation>
 <translation id="9069693763241529744">ವಿಸ್ತರಣೆಯ ಮೂಲಕ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>

@@ -133,7 +133,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="5386450000063123300">Ibuyekeza i-Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Vumela ukungena ngemvume kwe-Chromium</translation>
 <translation id="5398878173008909840">Kukhona inguqulo entsha ye-Chromium etholakalayo.</translation>
-<translation id="5416696090975899932">I-Chromium ayikwazi ukubonisa ukuhlola kuqala kokuphrinta uma isibukeli esakhelwe ngaphakathi se-PDF singekho.</translation>
 <translation id="5427571867875391349">Setha i-Chromium njengesiphequluli sakho esizenzakalelayo</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5479196819031988440">I-Chromium OS ayikwazi ukuvula leli khasi.</translation>
@@ -211,6 +210,7 @@ Ezinye izici kungenzeka zingatholakali. Sicela ucacise umkhombandlela wephrofaye
 <translation id="718435575166326686">I-Chromium idinga imvume yekhamera kule sayithi</translation>
 <translation id="7196312274710523067">Ayikwazanga ukuqalisa i-Chromium. Zama futhi.</translation>
 <translation id="7197677400338048821">I-Chromium ayikwazi ukuhlola iphasiwedi yakho. Zama futhi emva kwamahora angu-24.</translation>
+<translation id="7218568399872925918">Amasayithi owavakashelayo akhumbula ulwazi lwakho uze uvale i-Chromium</translation>
 <translation id="7223968959479464213">Isiphathi somsebenzi - I-Chromium</translation>
 <translation id="731795002583552498">Ibuyekeza i-Chromium</translation>
 <translation id="7318036098707714271">Ifayela lakho lokuncamelayo limoshakele noma alivumelekile.
@@ -264,6 +264,8 @@ I-Chromium ayikwazi ukubuyisela izilungiselelo zakho.</translation>
 <translation id="8621669128220841554">Ukufakwa kuhlulekile ngenxa yephutha elingacacisiwe. Sicela ulande i-Chromium futhi.</translation>
 <translation id="8697124171261953979">Iphinda ilawule ukuthi yiliphi ikhasi eliboniswayo uma uqala i-Chromium noma usesho kusuka ku-Omnibox.</translation>
 <translation id="8704119203788522458">Lena yi-Chromium yakho</translation>
+<translation id="8713679423359107094">Uma uvala wonke amawindi e-Chromium, amakhukhi nedatha yesayithi iyasulwa ngokuzenzakalelayo</translation>
+<translation id="8796443464227412154"><ph name="BEGIN_BOLD" />Uzokhishwa ngemvume kumasayithi amaningi<ph name="END_BOLD" /> lapho uvala i-Chromium. Uma ukuvumelanisa kuvaliwe, nawe <ph name="BEGIN_BOLD" />uzokhishwa ngemvume kumasevisi e-Google naku-Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">I-Chromium idinga imvume ukuze ifinyelele kukhamera yakho nemakrofoni yaleli sayithi</translation>
 <translation id="8803635938069941624">Imigomo ye-Chromium OS</translation>
 <translation id="8821041990367117597">I-Chromium ayikwazanga ukuvumelanisa idatha yakho ngoba imininingwane yokungena ngemvume kwe-akhawunti yakho angaphandle kwedethi.</translation>

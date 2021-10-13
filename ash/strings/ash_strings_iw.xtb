@@ -264,6 +264,7 @@
 <translation id="2996462380875591307">‏הזכוכית המגדלת במצב עגינה הופעלה. כדי לכבות אותה, יש להקיש שוב על Ctrl+Search+D.</translation>
 <translation id="3000461861112256445">אודיו במונו</translation>
 <translation id="3009178788565917040">פלט</translation>
+<translation id="3009958530611748826">בחירת תיקייה לשמירה</translation>
 <translation id="3017687597151988916">אזור הבחירה מוגדר כחלון</translation>
 <translation id="3033545621352269033">מופעל</translation>
 <translation id="3036649622769666520">פתיחת קבצים</translation>
@@ -509,7 +510,6 @@
 <translation id="4667099493359681081"><ph name="FILENAME" /> בהורדה</translation>
 <translation id="4696813013609194136">ביטול נעילת המכשיר באמצעות קוד הורה</translation>
 <translation id="4702647871202761252">מסך הפרטיות כבוי</translation>
-<translation id="4706121060329443414">‏יתבצע ניסיון הורדה מאוחר יותר. בינתיים, דיבור יישלח אל Google לעיבוד.</translation>
 <translation id="4731797938093519117">גישת הורים</translation>
 <translation id="4734965478015604180">אופקי</translation>
 <translation id="4735498845456076464">מקשי הקיצור <ph name="LAUNCHER_KEY_NAME" /> + ספרה הוחלפו. כדי לדמות את הפעולה של מקשי הפונקציה, יש להקיש על המקש <ph name="LAUNCHER_KEY_NAME" /> + מקש כלשהו בשורה העליונה של המקלדת.</translation>
@@ -694,7 +694,6 @@
 <translation id="6062360702481658777">תבוצע יציאה באופן אוטומטי בעוד <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">הפסקת צילום הסרטון</translation>
 <translation id="607652042414456612">‏מכשירי Bluetooth קרובים יכולים לאתר את המחשב שלך, והוא יופיע כ-"<ph name="NAME" />" עם הכתובת <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">בהתאם למדיניות מנהל המערכת, הקלטת המסך מושבתת כשמוצג תוכן סודי</translation>
 <translation id="6114505516289286752">הורדת קובצי הדיבור של <ph name="LANGUAGE" /> הסתיימה</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">‏Google Assistant לא זמינה בגלישה כאורח.</translation>
@@ -1052,7 +1051,6 @@
 <translation id="8876661425082386199">מומלץ לבדוק את החיבור</translation>
 <translation id="8877788021141246043">הגדרת תזכורת</translation>
 <translation id="8878886163241303700">מסך מתרחב</translation>
-<translation id="8884537526797090108">אי אפשר להקליט תוכן סודי</translation>
 <translation id="890616557918890486">שינוי המקור</translation>
 <translation id="8909138438987180327">שיעור הטעינה של הסוללה הוא <ph name="PERCENTAGE" /> אחוזים.</translation>
 <translation id="8913384980486163186">מעוצב (ברירת מחדל)</translation>

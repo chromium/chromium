@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">საიტების მიერ ახლომდებარე Bluetooth მოწყობილობების აღმოჩენის მოთხოვნა (რეკომენდებული)</translation>
 <translation id="2315043854645842844">კლიენტის სერტიფიკატების არჩევა არ არის მხარდაჭერილი ოპერაციული სისტემის მიერ.</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
+<translation id="2379925928934107488">საიტებზე მუქი თემის გამოყენება, როცა Chrome მუქ თემას იყენებს (შეძლებისდაგვარად)</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> მბაიტი</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაშვებულია}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაშვებულია}}</translation>
 <translation id="2434158240863470628">ჩამოტვირთვა დასრულდა: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">მდებარეობაზე წვდომა გამორთულია ამ მოწყობილობისთვისაც. ჩართეთ ის <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">გაშლილია — დააწკაპუნეთ ჩასაკეცად.</translation>
 <translation id="2586657967955657006">გაცვლის ბუფერი</translation>
+<translation id="2597457036804169544">არ მსურს საიტებზე მუქი თემის გამოყენება</translation>
 <translation id="2621115761605608342">კონკრეტულ საიტზე JavaScript-ის დაშვება.</translation>
 <translation id="2653659639078652383">გაგზავნა</translation>
 <translation id="2677748264148917807">დატოვება</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">ხმის დაკვრის მხარდაჭერის მქონე საიტების დადუმება</translation>
 <translation id="3744111561329211289">ფონური სინქრონიზაცია</translation>
 <translation id="3763247130972274048">10 წამის გამოსატოვებლად ორმაგად შეეხეთ ვიდეოს მარცხნივ ან მარჯვნივ</translation>
+<translation id="3797520601150691162">არ მსურს მუქი თემის გამოყენება კონკრეტულ საიტზე</translation>
 <translation id="381841723434055211">ტელეფონის ნომრები</translation>
 <translation id="3835233591525155343">თქვენი მოწყობილობის გამოყენება</translation>
 <translation id="385051799172605136">უკან</translation>
@@ -113,7 +116,6 @@
 <translation id="4008040567710660924">ქუქი-ჩანაწერების დაშვება კონკრეტული საიტისთვის.</translation>
 <translation id="4046123991198612571">შემდეგი ჩანაწერი</translation>
 <translation id="4165986682804962316">საიტის პარამეტრები</translation>
-<translation id="4176463684765177261">გამორთული</translation>
 <translation id="4200726100658658164">მდებარეობის პარამეტრების გახსნა</translation>
 <translation id="4226663524361240545">შეტყობინებებმა შეიძლება მოწყობილობის ვიბრაცია გამოიწვიოს</translation>
 <translation id="4259722352634471385">ნავიგაცია დაბლოკილია: <ph name="URL" /></translation>
@@ -182,7 +184,6 @@
 <translation id="5876056640971328065">ვიდეოს დაპაუზება</translation>
 <translation id="5887687176710214216">ბოლო ვიზიტი იყო გუშინ</translation>
 <translation id="5916664084637901428">ჩართვა</translation>
-<translation id="59174027418879706">ჩართული</translation>
 <translation id="5922853908706496913">თქვენი ეკრანი ზიარდება</translation>
 <translation id="5939518447894949180">გადატვირთვა</translation>
 <translation id="5975083100439434680">დაშორება</translation>
@@ -245,6 +246,7 @@
 <translation id="7302486331832100261">როგორც წესი, თქვენ ბლოკავთ შეტყობინებებს. დასაშვებად შეხებით აირჩიეთ „დეტალები“.</translation>
 <translation id="7423098979219808738">წინასწარი შეკითხვა</translation>
 <translation id="7423538860840206698">გაცვლის ბუფერზე წვდომა დაბლოკილია</translation>
+<translation id="7425915948813553151">მუქი თემა საიტებისთვის</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">ეს საიტი იყენებს თქვენს მიკროფონს</translation>
 <translation id="7561196759112975576">ყოველთვის</translation>

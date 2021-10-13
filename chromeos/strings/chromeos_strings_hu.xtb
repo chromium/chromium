@@ -340,6 +340,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6379086450106841622">Érintőképernyő</translation>
 <translation id="6388847657025262518">A szkenner dokumentumadagolója beragadt. Ellenőrizze az adagolót, és próbálja újra.</translation>
 <translation id="6395640744968320699">Nem sikerült a tűzfalon keresztül HTTP-protokollt használó (a 80-as porton hozzáférhető) webhelyekhez csatlakozni</translation>
+<translation id="6398765197997659313">Kilépés a teljes képernyős módból</translation>
 <translation id="641081527798843608">Tárgyegyeztetés</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Jó</translation>
@@ -444,7 +445,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7960831585769876809">Hőmérséklet</translation>
 <translation id="7978412674231730200">Privát kulcs</translation>
 <translation id="7994702968232966508">EAP módszer</translation>
-<translation id="8020238979854764615">Valami hiba történt. Próbálkozzon újra úgy, hogy más képeket választ.</translation>
 <translation id="802154636333426148">Nem sikerült a letöltés</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Visszajelzés küldése</translation>

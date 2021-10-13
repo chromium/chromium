@@ -133,7 +133,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="5386450000063123300">Actualizando Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Permitir el inicio de sesión en Chromium</translation>
 <translation id="5398878173008909840">Hay una nueva versión de Chromium disponible.</translation>
-<translation id="5416696090975899932">Chromium no puede mostrar la vista previa de impresión si falta el visor de PDF integrado.</translation>
 <translation id="5427571867875391349">Establecer Chromium como navegador predeterminado</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> ‑ Chromium Beta</translation>
 <translation id="5479196819031988440">Chromium OS no puede abrir esta página.</translation>
@@ -211,6 +210,7 @@ Es posible que algunas funciones no estén disponibles. Especifica un directorio
 <translation id="718435575166326686">Chromium necesita el permiso de la cámara para este sitio</translation>
 <translation id="7196312274710523067">No se ha podido iniciar Chromium. Inténtalo de nuevo.</translation>
 <translation id="7197677400338048821">Chromium no puede comprobar tus contraseñas. Vuelve a intentarlo en 24 horas.</translation>
+<translation id="7218568399872925918">Los sitios que visitas recuerdan tu información hasta que cierras Chromium</translation>
 <translation id="7223968959479464213">Administrador de tareas - Chromium</translation>
 <translation id="731795002583552498">Actualizando Chromium</translation>
 <translation id="7318036098707714271">Tu archivo de preferencias está dañado o no es válido.
@@ -264,6 +264,8 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8621669128220841554">La instalación ha fallado debido a un error no especificado. Vuelve a descargar Chromium.</translation>
 <translation id="8697124171261953979">También controla qué página se muestra al iniciar Chromium o al hacer búsquedas desde el omnibox.</translation>
 <translation id="8704119203788522458">Aquí tienes tu navegador Chromium</translation>
+<translation id="8713679423359107094">Cuando cierras todas las ventanas de Chromium, las cookies y los datos de sitios se borran automáticamente</translation>
+<translation id="8796443464227412154">Cuando cierres Chromium, <ph name="BEGIN_BOLD" />se cerrará tu sesión en la mayoría de los sitios<ph name="END_BOLD" />. Si la sincronización está desactivada, también <ph name="BEGIN_BOLD" />se cerrará tu sesión de los servicios de Google y de Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium necesita permiso para acceder a la cámara y al micrófono en este sitio web</translation>
 <translation id="8803635938069941624">Condiciones de Chromium OS</translation>
 <translation id="8821041990367117597">Chromium no ha podido sincronizar los datos porque tu información de inicio de sesión está obsoleta.</translation>

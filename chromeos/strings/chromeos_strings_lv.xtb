@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">Lietotājs</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" />.</translation>
+<translation id="1175951029573070619">Vidējs (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="1195447618553298278">Nezināma kļūda.</translation>
 <translation id="1204296502688602597">DNS latentums</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422">Pārvalda <ph name="FIRST_MANAGER" /> un <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nosaukumu serveri</translation>
 <translation id="1731082422893354635">Bluetooth skārienpaliktnis</translation>
+<translation id="175763766237925754">Labs (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Skenēšana tiek atcelta</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">IZLAISTA</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Ieslēdziet Bluetooth, lai atklātu tuvumā esošas ierīces</translation>
+<translation id="2346474577291266260">Izcils (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">Pārbaude izpildīta</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Sūtīt atsauksmju pārskatu</translation>
@@ -340,8 +343,10 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6379086450106841622">Skārienekrāns</translation>
 <translation id="6388847657025262518">Skenera dokumentu padevējā ir iestrēdzis papīrs. Pārbaudiet padevēju un mēģiniet vēlreiz.</translation>
 <translation id="6395640744968320699">Nevar izveidot savienojumu ar HTTP (80. ports) vietnēm, ja ir iespējots ugunsmūris</translation>
+<translation id="6398765197997659313">Iziet no pilnekrāna režīma</translation>
 <translation id="641081527798843608">Temata atbilstība</translation>
 <translation id="6423239382391657905">Atvērt VPN</translation>
+<translation id="6439505561246192797">Vājš (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">Apmierinošs</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vai atkārtoti skenēt lapu?}=1{Vai atkārtoti skenēt {PAGE_NUMBER}. lapu?}zero{Vai atkārtoti skenēt {PAGE_NUMBER}. lapu?}one{Vai atkārtoti skenēt {PAGE_NUMBER}. lapu?}other{Vai atkārtoti skenēt {PAGE_NUMBER}. lapu?}}</translation>
 <translation id="6472207088655375767">VRP</translation>
@@ -444,7 +449,6 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7960831585769876809">Temperatūra</translation>
 <translation id="7978412674231730200">Privātā atslēga</translation>
 <translation id="7994702968232966508">EAP metode</translation>
-<translation id="8020238979854764615">Radās kļūda. Lūdzu, mēģiniet vēlreiz, izvēloties citus attēlus.</translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Sūtīt atsauksmes</translation>

@@ -220,7 +220,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1218015446623563536">A Linux törlése</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />A Google helyszolgáltatása olyan információforrásokat használ az eszköz helyének meghatározására, mint a Wi-Fi- és mobilhálózatok, valamint az érzékelők.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />A helyszolgáltatás kikapcsolásához kapcsolja ki eszköze fő „Hely” beállítását. Emellett a helybeállításoknál kikapcsolhatja a Wi-Fi- és a mobilhálózatok, illetve az érzékelők használatát a tartózkodási hely meghatározásához.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Nem sikerült letölteni a(z) <ph name="LANGUAGE" /> nyelvű beszédfájlokat. A letöltést később kísérli meg a rendszer. A hangfájlok egyelőre el lesznek küldve a Google-nak feldolgozásra.</translation>
 <translation id="122082903575839559">Tanúsítvány aláírási algoritmusa</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 RSA titkosítással</translation>
 <translation id="1221825588892235038">Csak a kijelölt</translation>
@@ -4940,7 +4939,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6232017090690406397">Akkumulátor</translation>
 <translation id="6232116551750539448">Megszűnt a kapcsolat a következővel: <ph name="NAME" /></translation>
 <translation id="6233154960150021497">Alapértelmezés szerint hang használata billentyűzet helyett</translation>
-<translation id="6233455992368963267">A(z) <ph name="LANGUAGE" /> nyelvű beszédet a rendszer elküldi a Google-nak feldolgozásra.</translation>
 <translation id="6234108445915742946">A Chrome Általános Szerződési Feltételei március 31-én módosulnak</translation>
 <translation id="6234474535228214774">Telepítés függőben</translation>
 <translation id="6235208551686043831">Az eszköz kamerája bekapcsolt. Helyezze az eSIM QR-kódját a kamera elé.</translation>

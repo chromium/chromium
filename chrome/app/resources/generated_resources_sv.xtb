@@ -220,7 +220,6 @@
 <translation id="1218015446623563536">Radera Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Med Googles platstjänst används källor som wifi, mobilnätverk och sensorer för att avgöra enhetens plats.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan inaktivera tjänsten genom att inaktivera huvudinställningen för Plats på enheten. Du kan även inaktivera användningen av wifi, mobilnätverk och sensorer för plats i platsinställningarna.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Det gick inte att ladda ned filer för taligenkänning på <ph name="LANGUAGE" />. Ett nytt nedladdningsförsök görs senare. Tills vidare skickas tal till Google för bearbetning.</translation>
 <translation id="122082903575839559">Certifikatets signaturalgoritm</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 med RSA-kryptering</translation>
 <translation id="1221825588892235038">Endast markering</translation>
@@ -308,6 +307,7 @@
 <translation id="1313660246522271310">Du loggas ut från alla webbplatser, även på öppna flikar</translation>
 <translation id="1313705515580255288">Bokmärken, historik och andra inställningar synkroniseras till ditt Google-konto.</translation>
 <translation id="1316136264406804862">Söker ...</translation>
+<translation id="1316248800168909509">Det gick inte att ansluta till <ph name="DEVICE" />. Försök igen.</translation>
 <translation id="1316495628809031177">Synkroniseringen har pausats</translation>
 <translation id="1317637799698924700">Dockningsstationen körs i kompatibilitetsläge med USB Type-C.</translation>
 <translation id="1319983966058170660">Bakåtknapp för undersidan <ph name="SUBPAGE_TITLE" /></translation>
@@ -1190,6 +1190,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2200356397587687044">Du måste ge Chrome behörighet att fortsätta</translation>
 <translation id="2202898655984161076">Ett problem uppstod när skrivare skulle listas. Vissa av dina skrivare kanske inte har registrerats med <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Namnet kan innehålla bokstäver, siffror och specialtecken</translation>
+<translation id="220321590587754225">Det gick inte att ansluta. Försök igen.</translation>
 <translation id="2204034823255629767">Läsa och ändra allt som du skriver</translation>
 <translation id="220858061631308971">Ange den här pinkoden på <ph name="DEVICE_NAME" />:</translation>
 <translation id="2210462644007531147">Det gick inte att slutföra installationen</translation>
@@ -4941,7 +4942,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6232116551750539448">Anslutningen till <ph name="NAME" /> har brutits</translation>
 <translation id="6233154960150021497">Använd rösten i stället för tangentbordet som standard</translation>
-<translation id="6233455992368963267">Tal på <ph name="LANGUAGE" /> skickas till Google för bearbetning.</translation>
 <translation id="6234108445915742946">Chromes användarvillkor ändras den 31 mars</translation>
 <translation id="6234474535228214774">Väntar på att installeras</translation>
 <translation id="6235208551686043831">Enhetens kamera är aktiverad. Placera QR-koden för ditt eSIM framför kameran.</translation>
@@ -4978,6 +4978,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6263284346895336537">Inte kritiskt</translation>
 <translation id="6264365405983206840">Markera &amp;alla</translation>
 <translation id="6265687851677020761">Ta bort port</translation>
+<translation id="6266532094411434237">Ansluter till <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Välj ett certifikat för att styrka din identitet för <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Öppna med <ph name="APP" /></translation>
 <translation id="6270391203985052864">Webbplatser får be om tillåtelse att skicka aviseringar</translation>
@@ -5501,7 +5502,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6828182567531805778">Ange lösenfrasen för att synkronisera data</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Det gick inte att konfigurera automatiska uppdateringar för alla användare (preliminärt körningsfel: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="682971198310367122">Googles sekretesspolicy</translation>
+<translation id="682971198310367122">Googles integritetspolicy</translation>
 <translation id="6831043979455480757">Översätt</translation>
 <translation id="6833479554815567477">Fliken togs bort från gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Byt till en smart och säker webbläsare</translation>
@@ -6136,7 +6137,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7506130076368211615">Konfigurera nytt nätverk</translation>
 <translation id="7506242536428928412">Ange en ny pinkod om du vill använda din nya säkerhetsnyckel</translation>
 <translation id="7506541170099744506"><ph name="DEVICE_TYPE" /> har registrerats för företagshantering.</translation>
-<translation id="7507207699631365376">Läs leverantörens <ph name="BEGIN_LINK" />sekretesspolicy<ph name="END_LINK" /></translation>
+<translation id="7507207699631365376">Läs leverantörens <ph name="BEGIN_LINK" />integritetspolicy<ph name="END_LINK" /></translation>
 <translation id="7507930499305566459">Status för svarscertifikat</translation>
 <translation id="7509097596023256288">Hantering konfigureras</translation>
 <translation id="7509246181739783082">Verifiera din identitet</translation>
@@ -7323,7 +7324,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8731851055419582926">Kontrollerade lösenord</translation>
 <translation id="8732030010853991079">Använd tillägget genom att klicka på den här ikonen.</translation>
 <translation id="8732212173949624846">Läsa och ändra webbhistoriken på alla enheter där du är inloggad</translation>
-<translation id="8732844209475700754">Fler inställningar som rör sekretess, säkerhet och datainsamling</translation>
+<translation id="8732844209475700754">Fler inställningar som rör integritet, säkerhet och datainsamling</translation>
 <translation id="8734073480934656039">Om du aktiverar den här inställningen kan kioskappar startas automatiskt när du startar datorn.</translation>
 <translation id="8734674662128056360">Blockering av cookies från tredje part</translation>
 <translation id="873545264931343897">När <ph name="PLUGIN_NAME" /> har uppdaterats läser du in sidan igen för att aktivera det.</translation>
@@ -7815,10 +7816,10 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="932327136139879170">Startsida</translation>
 <translation id="932508678520956232">Det gick inte att påbörja utskriften.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Den här filen är så stor att den inte går genom säkerhetskontrollen. Du kan ladda upp filer som är upp till 50 MB stora.}other{Några av de här filerna är så stora att de inte går genom säkerhetskontrollen. Du kan ladda upp filer som är upp till 50 MB stora.}}</translation>
-<translation id="93343527085570547">Besök <ph name="BEGIN_LINK1" />sidan med juridisk hjälp<ph name="END_LINK1" /> om du vill begära innehållsändringar av juridiska skäl. Viss konto- och systeminformation kan skickas till Google. Med hjälp av dessa uppgifter kan vi åtgärda tekniska problem och förbättra våra tjänster. Informationen används i enlighet med Googles <ph name="BEGIN_LINK2" />sekretesspolicy<ph name="END_LINK2" /> och våra <ph name="BEGIN_LINK3" />användarvillkor<ph name="END_LINK3" />.</translation>
+<translation id="93343527085570547">Besök <ph name="BEGIN_LINK1" />sidan med juridisk hjälp<ph name="END_LINK1" /> om du vill begära innehållsändringar av juridiska skäl. Viss konto- och systeminformation kan skickas till Google. Med hjälp av dessa uppgifter kan vi åtgärda tekniska problem och förbättra våra tjänster. Informationen används i enlighet med Googles <ph name="BEGIN_LINK2" />integritetspolicy<ph name="END_LINK2" /> och våra <ph name="BEGIN_LINK3" />användarvillkor<ph name="END_LINK3" />.</translation>
 <translation id="93393615658292258">Endast lösenord</translation>
 <translation id="934244546219308557">Namnge den här gruppen</translation>
-<translation id="934503638756687833">Även objekt som inte står med här tas bort om det behövs. Läs mer om &lt;a href="<ph name="URL" />"&gt;skydd mot oönskad programvara&lt;/a&gt; i vitboken om sekretess och Chrome.</translation>
+<translation id="934503638756687833">Även objekt som inte står med här tas bort om det behövs. Läs mer om &lt;a href="<ph name="URL" />"&gt;skydd mot oönskad programvara&lt;/a&gt; i vitboken om integritet och Chrome.</translation>
 <translation id="93480724622239549">Problem eller fel</translation>
 <translation id="935490618240037774">Bokmärken, historik, lösenord och andra inställningar synkroniseras med ditt Google-konto så att du kan använda dem på alla enheter.</translation>
 <translation id="935854577147268200">Smart Lock används med en annan mobil än tidigare. Ange lösenordet och uppdatera Smart Lock. Nästa gång låser mobilen upp denna <ph name="DEVICE_TYPE" />. Du kan inaktivera Smart Lock i inställningarna</translation>

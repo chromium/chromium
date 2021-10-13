@@ -261,6 +261,7 @@
 <translation id="2996462380875591307">ডক করা ম্যাগনিফায়ার চালু আছে। আবার Ctrl+Search+D প্রেস করে সেটিকে বন্ধ করুন।</translation>
 <translation id="3000461861112256445">মোনো অডিও</translation>
 <translation id="3009178788565917040">আউটপুট</translation>
+<translation id="3009958530611748826">কোন ফোল্ডারে সেভ করতে চান তা বেছে নিন</translation>
 <translation id="3017687597151988916">উইন্ডোকে সোর্স হিসেবে সেট করা হয়েছে</translation>
 <translation id="3033545621352269033">চালু করা আছে</translation>
 <translation id="3036649622769666520">ফাইল খুলুন</translation>
@@ -504,7 +505,6 @@
 <translation id="4665114317261903604">'বিরক্ত করবে না' মোড টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">অভিভাবকীয় কোড দিয়ে ডিভাইস আনলক করুন</translation>
 <translation id="4702647871202761252">গোপনীয়তা স্ক্রিন বন্ধ করা আছে</translation>
-<translation id="4706121060329443414">পরে ডাউনলোডের চেষ্টা করা হবে। এখন প্রসেস করার জন্য Google-এর কাছে স্পিচ পাঠানো হবে।</translation>
 <translation id="4731797938093519117">অভিভাবকীয় অ্যাক্সেস</translation>
 <translation id="4734965478015604180">অনুভূমিক</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। ফাংশান কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> কী + কীবোর্ডের উপরের সারির যেকোনও একটি কী প্রেস করুন।</translation>
@@ -688,7 +688,6 @@
 <translation id="6062360702481658777">আপনি <ph name="LOGOUT_TIME_LEFT" /> এর মধ্যে স্বয়ংক্রিয়ভাবে প্রস্থান করুন হবেন৷</translation>
 <translation id="6073451960410192870">রেকর্ডিং বন্ধ করুন</translation>
 <translation id="607652042414456612">আপনার কম্পিউটার কাছাকাছি ব্লুটুথ ডিভাইসে খুঁজে পাওয়া সম্ভব এবং ঠিকানা <ph name="ADDRESS" /> সমেত "<ph name="NAME" />" হিসাবে প্রদর্শিত হবে</translation>
-<translation id="6094290315941448991">কোনও গোপনীয় কন্টেন্ট দেখা গেলে অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী স্ক্রিন রেকর্ড করার সুবিধা বন্ধ করে দেওয়া হয়</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> স্পিচ ফাইল ডাউনলোড করা হয়েছে</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google অ্যাসিস্ট্যান্ট কোনও গেস্ট সেশনে উপলভ্য নয়।</translation>
@@ -1043,7 +1042,6 @@
 <translation id="8876661425082386199">আপনার ইন্টারনেট কানেকশন চেক করুন</translation>
 <translation id="8877788021141246043">রিমাইন্ডার সেট করুন</translation>
 <translation id="8878886163241303700">স্ক্রিন সম্প্রসারণ করা হচ্ছে</translation>
-<translation id="8884537526797090108">গোপনীয় কন্টেন্ট রেকর্ড করা যাচ্ছে না</translation>
 <translation id="890616557918890486">সোর্স পরিবর্তন করুন</translation>
 <translation id="8909138438987180327">ব্যাটারিতে <ph name="PERCENTAGE" /> শতাংশ চার্জ আছে।</translation>
 <translation id="8913384980486163186">থিমযুক্ত (ডিফল্ট)</translation>

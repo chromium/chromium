@@ -407,6 +407,7 @@
 <translation id="3429160811076349561">試用功能已關閉</translation>
 <translation id="3440975416244667276">輕觸並按住即可查看更多相關資料</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
+<translation id="3444179773590444986">要就網站深色主題背景提供意見嗎？</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{已預定 1 項下載}other{已預定 # 項下載}}</translation>
 <translation id="3478363558367712427">您可以選擇搜尋引擎</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />建議的內容</translation>
@@ -590,6 +591,7 @@
 <translation id="4663499661119906179">查看熱門網站和報導</translation>
 <translation id="4663756553811254707">已刪除 <ph name="NUMBER_OF_BOOKMARKS" /> 個書籤</translation>
 <translation id="4668347365065281350">網站儲存的所有資料，包括 Cookie 和其他儲存在本機上的資料</translation>
+<translation id="4678082183394354975">已在 Chrome 中啟用網站的深色主題背景</translation>
 <translation id="4684427112815847243">同步處理所有資料</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}}</translation>
 <translation id="4696983787092045100">將文字傳送至您的裝置</translation>
@@ -773,6 +775,7 @@
 <translation id="5754350196967618083">無法重新整理「探索」</translation>
 <translation id="5763382633136178763">無痕式分頁</translation>
 <translation id="5763514718066511291">輕按即可複製此應用程式的網址</translation>
+<translation id="5765517223145864268">請分享您的使用體驗。您亦可<ph name="BEGIN_LINK" />變更設定<ph name="END_LINK" />。</translation>
 <translation id="5765780083710877561">描述：</translation>
 <translation id="5767013862801005129">還原咗「<ph name="TAB_TITLE" />」分頁</translation>
 <translation id="5776970333778123608">資料不重要</translation>
@@ -960,6 +963,7 @@
 <translation id="6738516213925468394">您已於 <ph name="TIME" />使用<ph name="BEGIN_LINK" />同步密碼短語<ph name="END_LINK" />加密資料，請輸入密碼短語開始同步資料。</translation>
 <translation id="6738867403308150051">下載中…</translation>
 <translation id="6751521182688001123">快速開啟新分頁。如要編輯此捷徑，請按住捷徑按鈕。</translation>
+<translation id="6756507620369789050">提供意見</translation>
 <translation id="6767294960381293877">要共用分頁嘅裝置清單宜家顯示喺畫面下半部。</translation>
 <translation id="6783942555455976443">將此頁面儲存至稍後閱讀，並接收提醒</translation>
 <translation id="6795633245022906657">快速開啟新分頁。如要編輯此捷徑，請前往「設定」。</translation>
@@ -1051,6 +1055,7 @@
 <translation id="7352651011704765696">發生問題</translation>
 <translation id="7352939065658542140">影片</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{分享 1 個已選取的項目}other{分享 # 個已選取的項目}}</translation>
+<translation id="7356631068872238169">從「閱讀清單」中刪除</translation>
 <translation id="7359002509206457351">存取付款方法</translation>
 <translation id="7375125077091615385">類型：</translation>
 <translation id="7376560087009844242">使用「輕觸搜尋」時，加入網頁上的更多文字可能會找到更相關的結果。您可隨時前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />調整設定。</translation>
@@ -1222,6 +1227,7 @@
 <translation id="8266862848225348053">下載檔案儲存位置</translation>
 <translation id="8274165955039650276">查看已下載的內容</translation>
 <translation id="8281886186245836920">略過</translation>
+<translation id="8282297628636750033">在可用情況下，為網站套用深色主題背景</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="829672787777123339">正在連接您的裝置…</translation>
 <translation id="8310344678080805313">標準分頁</translation>
@@ -1355,6 +1361,7 @@
 <translation id="9063523880881406963">關閉「切換為電腦版網站」</translation>
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9065383040763568503">已儲存 Chrome 認定為不重要的資料 (例如未儲存任何設定的網站，或您不常瀏覽的網站)</translation>
+<translation id="906781307897697745">在 <ph name="PRODUCT_NAME" /> 中</translation>
 <translation id="9069999660519089861">沒有未讀網頁</translation>
 <translation id="9070377983101773829">開始語音搜尋</translation>
 <translation id="9074336505530349563">如要接收 Google 建議的個人化內容，請登入並開啟同步處理功能</translation>

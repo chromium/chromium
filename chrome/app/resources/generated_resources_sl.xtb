@@ -223,7 +223,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1218015446623563536">Izbris Linuxa</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Googlova lokacijska storitev si pri določanju lokacije te naprave pomaga z viri, kot so omrežja Wi‑Fi, mobilna omrežja in tipala.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Zaznavanje lokacije lahko izklopite tako, da v tej napravi izklopite glavno lokacijsko nastavitev. V lokacijskih nastavitvah lahko izklopite tudi uporabo omrežij Wi-Fi, mobilnih omrežij in tipal za zaznavanje lokacije.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Ni bilo mogoče prenesti datotek za govor za jezik <ph name="LANGUAGE" />. Poskus prenosa bo izveden pozneje. Za zdaj je govor poslan Googlu v obdelavo.</translation>
 <translation id="122082903575839559">Algoritem podpisa potrdila</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 s šifriranjem RSA</translation>
 <translation id="1221825588892235038">Samo izbor</translation>
@@ -4946,7 +4945,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6232017090690406397">Baterija</translation>
 <translation id="6232116551750539448">Povezava z omrežjem <ph name="NAME" /> je prekinjena</translation>
 <translation id="6233154960150021497">Privzeta uporaba glasu namesto tipkovnice</translation>
-<translation id="6233455992368963267">Govor v jeziku <ph name="LANGUAGE" /> je poslan Googlu zaradi obdelave.</translation>
 <translation id="6234108445915742946">Pogoji storitve za Chrome se bodo spremenili 31. marca</translation>
 <translation id="6234474535228214774">Namestitev na čakanju</translation>
 <translation id="6235208551686043831">Fotoaparat naprave se je vklopil. Postavite kodo QR kartice eSIM predenj.</translation>

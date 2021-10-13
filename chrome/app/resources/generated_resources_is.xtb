@@ -221,7 +221,6 @@
 <translation id="1218015446623563536">Eyða Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Staðsetningarþjónusta Google notar Wi-Fi, farsímakerfi og skynjara til að áætla staðsetningu þessa tækis.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Hægt er að slökkva á staðsetningu með því að slökkva á aðalstaðsetningarstillingu þessa tækis. Einnig er hægt að slökkva á notkun Wi-Fi, farsímakerfa og skynjara við ákvörðun staðsetningar í staðsetningarstillingunum.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Ekki tókst að sækja <ph name="LANGUAGE" /> talskrár. Reynt verður að hlaða niður síðar. Tal er sent Google til úrvinnslu í millitíðinni.</translation>
 <translation id="122082903575839559">Reiknirit vottorðsundirritunar</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 með RSA-dulkóðun</translation>
 <translation id="1221825588892235038">Eingöngu val</translation>
@@ -309,6 +308,7 @@
 <translation id="1313660246522271310">Þú verður skráð(ur) út af öllum vefsvæðum, þar á meðal opnum flipum</translation>
 <translation id="1313705515580255288">Bókamerkin þín, ferillinn og aðrar stillingar verða samstilltar við Google reikninginn þinn.</translation>
 <translation id="1316136264406804862">Leitar...</translation>
+<translation id="1316248800168909509">Ekki tókst að tengjast <ph name="DEVICE" />. Reyndu aftur.</translation>
 <translation id="1316495628809031177">Hlé er á samstillingu</translation>
 <translation id="1317637799698924700">Tengd dokka virkar í samhæfisstillingu USB (C-gerð).</translation>
 <translation id="1319983966058170660">Bakkhnappur undirsíðu <ph name="SUBPAGE_TITLE" /></translation>
@@ -1191,6 +1191,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2200356397587687044">Chrome þarf að fá heimild til að halda áfram</translation>
 <translation id="2202898655984161076">Vandamál kom upp við að birta prentara. Sumir prentaranna þinna eru ef til vill ekki skráðir á fullnægjandi hátt hjá <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Heitið má innihalda bókstafi, tölur og sérstafi</translation>
+<translation id="220321590587754225">Tenging mistókst. Reyndu aftur.</translation>
 <translation id="2204034823255629767">Lesa og breyta því sem þú skrifar</translation>
 <translation id="220858061631308971">Sláðu þetta PIN-númer inn í „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="2210462644007531147">Ekki tókst að ljúka við uppsetningu</translation>
@@ -4941,7 +4942,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6232017090690406397">Rafhlaða</translation>
 <translation id="6232116551750539448">Tengingin við <ph name="NAME" /> hefur rofnað</translation>
 <translation id="6233154960150021497">Nota rödd í stað lyklaborðs að sjálfgefnu</translation>
-<translation id="6233455992368963267">Töluð <ph name="LANGUAGE" /> verður send til Google til úrvinnslu.</translation>
 <translation id="6234108445915742946">Þjónustuskilmálar Chrome breytast 31. mars</translation>
 <translation id="6234474535228214774">Uppsetning bíður</translation>
 <translation id="6235208551686043831">Kveikt er á myndavél tækisins. Settu QR-kóða eSiM fyrir framan myndavélina.</translation>
@@ -4978,6 +4978,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6263284346895336537">Ekki hætta</translation>
 <translation id="6264365405983206840">Velja &amp;allt</translation>
 <translation id="6265687851677020761">Fjarlægja tengi</translation>
+<translation id="6266532094411434237">Tengist <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Veldu vottorð til að auðkenna þig fyrir <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Opna með <ph name="APP" /></translation>
 <translation id="6270391203985052864">Vefsvæði geta óskað eftir því að senda tilkynningar</translation>

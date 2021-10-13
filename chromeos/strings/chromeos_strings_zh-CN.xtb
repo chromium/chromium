@@ -328,6 +328,7 @@
 <translation id="636850387210749493">企业注册</translation>
 <translation id="6379086450106841622">触摸屏</translation>
 <translation id="6388847657025262518">扫描仪的文件馈送器卡纸了。请检查馈送器，然后重试。</translation>
+<translation id="6398765197997659313">退出全屏模式</translation>
 <translation id="641081527798843608">主题匹配</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">良好</translation>
@@ -430,7 +431,6 @@
 <translation id="7960831585769876809">温度</translation>
 <translation id="7978412674231730200">私有密钥</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
-<translation id="8020238979854764615">出错了。请另选图片以重试。</translation>
 <translation id="802154636333426148">下载失败</translation>
 <translation id="8041089156583427627">发送反馈</translation>
 <translation id="8075838845814659848">剩余电量</translation>

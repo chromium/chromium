@@ -214,6 +214,7 @@
 <translation id="160851722280695521">在 Chrome 中玩《Dino Run》游戏</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1611101756749861742">第 2 卷</translation>
+<translation id="1615402009686901181">管理员政策禁止在屏幕显示机密内容时截取屏幕</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1623104350909869708">阻止此页创建其他对话框</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -852,7 +853,6 @@
 <translation id="3781428340399460090">艳粉色</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">蓝牙设备</translation>
-<translation id="3787675388804467730">虚拟卡号</translation>
 <translation id="3787705759683870569">失效日期：<ph name="EXPIRATION_YEAR" /> 年 <ph name="EXPIRATION_MONTH" /> 月</translation>
 <translation id="3789155188480882154">大小：16</translation>
 <translation id="3789841737615482174">安装</translation>
@@ -1556,6 +1556,7 @@
 <translation id="6080696365213338172">您已使用管理员提供的证书访问了内容，因此管理员可以拦截您提供给 <ph name="DOMAIN" /> 的数据。</translation>
 <translation id="6087312102907839798">相关搜索</translation>
 <translation id="6094273045989040137">注释</translation>
+<translation id="6094290315941448991">管理员政策禁止在屏幕显示机密内容时录制屏幕</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">创建网站</translation>
 <translation id="6106989379647458772">位于 <ph name="PAGE" /> 的网页可能暂时无法打开或已永久移至新网址。</translation>
@@ -2350,6 +2351,7 @@
 <translation id="8870494189203302833">顺序不变，正面朝下</translation>
 <translation id="8871553383647848643">自定义您的浏览器外观</translation>
 <translation id="8874824191258364635">请输入有效的信用卡号</translation>
+<translation id="8884537526797090108">无法录制机密内容</translation>
 <translation id="8891727572606052622">代理模式无效。</translation>
 <translation id="8894794286471754040">长边先入</translation>
 <translation id="8903921497873541725">放大</translation>
@@ -2404,6 +2406,7 @@
 <translation id="9050666287014529139">密码</translation>
 <translation id="9056953843249698117">网上应用店</translation>
 <translation id="9062620674789239642">该文件可能已被移至别处、修改或删除。</translation>
+<translation id="9063800855227801443">无法截取机密内容</translation>
 <translation id="9065203028668620118">编辑</translation>
 <translation id="9065745800631924235">在历史记录中搜索<ph name="TEXT" /></translation>
 <translation id="9069693763241529744">已被某款扩展程序阻止</translation>

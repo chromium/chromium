@@ -222,7 +222,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1218015446623563536">Brisanje Linuxa</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Googleova usluga lokacije koristi izvore kao što su WiFi, mobilne mreže i senzori za lakšu procjenu lokacije ovog uređaja.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Lokaciju možete isključiti ako isključite glavnu postavku lokacije na uređaju. U postavkama lokacije možete isključiti i korištenje WiFi-ja, mobilnih mreža i senzora za lokaciju.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Preuzimanje fajlova govora na jeziku <ph name="LANGUAGE" /> nije uspjelo. Pokušaj preuzimanja će se izvršiti kasnije. Govor se za sada šalje Googleu na obradu.</translation>
 <translation id="122082903575839559">Algoritam potpisa potvrde</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 s RSA šifriranjem</translation>
 <translation id="1221825588892235038">Samo odabir</translation>
@@ -310,6 +309,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1313660246522271310">Odjavit ćete se sa svih web lokacija, uključujući otvorene kartice</translation>
 <translation id="1313705515580255288">Vaše oznake, historija i druge postavke će se sinhronizirati s vašim Google računom.</translation>
 <translation id="1316136264406804862">Pretraživanje…</translation>
+<translation id="1316248800168909509">Povezivanje s uređajem <ph name="DEVICE" /> nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="1316495628809031177">Sinhronizacija je pauzirana</translation>
 <translation id="1317637799698924700">Priključna stanica će funkcinirati u načinu koji je kompatibilan s priključkom USB tipa C.</translation>
 <translation id="1319983966058170660">Dugme za povratak na podstranicu <ph name="SUBPAGE_TITLE" /></translation>
@@ -1189,6 +1189,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2200356397587687044">Chromeu je potrebna dozvola za nastavak</translation>
 <translation id="2202898655984161076">Došlo je do problema prilikom navođenja štampača. Moguće je da neki od vaših štampača nisu uspješno registrirani na serveru <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Naziv može sadržavati slova, brojeve i posebne znakove</translation>
+<translation id="220321590587754225">Povezivanje nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="2204034823255629767">ČItanje i mijenjanje svega što unesete</translation>
 <translation id="220858061631308971">Unesite ovaj PIN kod na "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Završavanje instalacije nije uspjelo</translation>
@@ -4939,7 +4940,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6232017090690406397">Baterija</translation>
 <translation id="6232116551750539448">Veza s mrežom <ph name="NAME" /> je prekinuta</translation>
 <translation id="6233154960150021497">Kao zadanu postavku koristi glas umjesto tastature</translation>
-<translation id="6233455992368963267">Govor na jeziku <ph name="LANGUAGE" /> se šalje Googleu na obradu.</translation>
 <translation id="6234108445915742946">Uslovi korištenja usluge Chrome će se promijeniti 31. marta</translation>
 <translation id="6234474535228214774">Instalacija je na čekanju</translation>
 <translation id="6235208551686043831">Kamera uređaja se uključila. Postavite QR kôd eSIM-a ispred kamere.</translation>
@@ -4976,6 +4976,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6263284346895336537">Nije kritično</translation>
 <translation id="6264365405983206840">Odaberi &amp;sve</translation>
 <translation id="6265687851677020761">Ukloni priključak</translation>
+<translation id="6266532094411434237">Povezivanje s uređajem <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Odaberite potvrdu da autentificirate svoj identitet na <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Otvori koristeći aplikaciju <ph name="APP" /></translation>
 <translation id="6270391203985052864">Web lokacije mogu tražiti da šalju obavještenja</translation>

@@ -343,6 +343,7 @@
 <translation id="6379086450106841622">Мэдрэмтгий дэлгэц</translation>
 <translation id="6388847657025262518">Сканнерын документ дамжуулах тавиур гацсан байна. Дамжуулах тавиурыг шалгаад, дахин оролдоно уу.</translation>
 <translation id="6395640744968320699">HTTP (порт 80) вебсайтуудад галт ханан дундуур холбогдох боломжгүй</translation>
+<translation id="6398765197997659313">Дэлгэц дүүрэн харах горимоос гарах</translation>
 <translation id="641081527798843608">Субъект тохируулах</translation>
 <translation id="6423239382391657905">VPN-г нээх</translation>
 <translation id="6439505561246192797">Сул (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,7 +449,6 @@
 <translation id="7960831585769876809">Температур</translation>
 <translation id="7978412674231730200">Хувийн түлхүүр</translation>
 <translation id="7994702968232966508">EAP арга</translation>
-<translation id="8020238979854764615">Алдаа гарлаа. Өөр зураг сонгож, дахин оролдоно уу.</translation>
 <translation id="802154636333426148">Татаж чадсангүй</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Санал хүсэлт илгээх</translation>

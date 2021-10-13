@@ -214,6 +214,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="160851722280695521">Gioca a Dino in Chrome</translation>
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611101756749861742">Secondo rullo</translation>
+<translation id="1615402009686901181">Il criterio dell'amministratore disattiva l'acquisizione schermo se sono visibili contenuti riservati</translation>
 <translation id="1620510694547887537">Fotocamera</translation>
 <translation id="1623104350909869708">Impedisci la creazione di altre finestre di dialogo in questa pagina</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -404,6 +405,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2241693394036365668">Viene scaricato un file</translation>
 <translation id="2248949050832152960">Usa WebAuthn</translation>
 <translation id="2250931979407627383">Impuntura a sinistra</translation>
+<translation id="2251943122176102076">L'amministratore non consiglia di acquisire screenshot o registrazioni a causa dei contenuti riservati acquisiti:</translation>
 <translation id="225207911366869382">Il valore specificato per la norma è obsoleto.</translation>
 <translation id="2258928405015593961">Inserisci una data di scadenza nel futuro e riprova</translation>
 <translation id="225943865679747347">Codice di errore: <ph name="ERROR_CODE" /></translation>
@@ -857,7 +859,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3781428340399460090">Fucsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivi Bluetooth</translation>
-<translation id="3787675388804467730">Numero carta virtuale</translation>
 <translation id="3787705759683870569">Data di scadenza: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Dimensione 16</translation>
 <translation id="3789841737615482174">Installa</translation>
@@ -1192,6 +1193,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
           <ph name="LIST_ITEM" />I provider di servizi Internet possono monitorare il traffico web<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Attiva gli avvisi</translation>
+<translation id="4834718916855725099">L'amministratore non consiglia di acquisire screenshot o registrazioni a causa dei contenuti riservati sullo schermo:</translation>
 <translation id="4838327282952368871">Surreale</translation>
 <translation id="4840250757394056958">Visualizza la tua cronologia di Chrome</translation>
 <translation id="484462545196658690">Automatico</translation>
@@ -1566,6 +1568,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6080696365213338172">Hai raggiunto i contenuti utilizzando un certificato fornito dall'amministratore. I dati che fornisci a <ph name="DOMAIN" /> possono essere intercettati dal tuo amministratore.</translation>
 <translation id="6087312102907839798">Ricerche correlate</translation>
 <translation id="6094273045989040137">Consente di inserire l'annotazione</translation>
+<translation id="6094290315941448991">Il criterio dell'amministratore disattiva la funzionalità Registrazione dello schermo se sono visibili contenuti riservati</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Crea sito</translation>
 <translation id="6106989379647458772">La pagina web all'indirizzo <ph name="PAGE" /> potrebbe non essere momentaneamente disponibile o potrebbe essere stata trasferita definitivamente a un nuovo indirizzo web.</translation>
@@ -2360,6 +2363,7 @@ Ulteriori dettagli:
 <translation id="8870494189203302833">Stesso ordine a faccia in giù</translation>
 <translation id="8871553383647848643">Personalizza l'aspetto del browser</translation>
 <translation id="8874824191258364635">Inserisci un numero di carta di credito valido</translation>
+<translation id="8884537526797090108">Impossibile registrare contenuti riservati</translation>
 <translation id="8891727572606052622">Modalità proxy non valida.</translation>
 <translation id="8894794286471754040">Prima il lato lungo</translation>
 <translation id="8903921497873541725">Aumenta lo zoom</translation>
@@ -2414,6 +2418,7 @@ Ulteriori dettagli:
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">Potrebbe essere stato spostato, modificato o eliminato.</translation>
+<translation id="9063800855227801443">Impossibile acquisire contenuti riservati</translation>
 <translation id="9065203028668620118">Modifica</translation>
 <translation id="9065745800631924235">Ricerca di <ph name="TEXT" /> nella cronologia</translation>
 <translation id="9069693763241529744">Bloccata da un'estensione</translation>

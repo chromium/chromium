@@ -214,6 +214,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="160851722280695521">Aritu Chrome-ko Dino jokoan</translation>
 <translation id="161042844686301425">Ziana</translation>
 <translation id="1611101756749861742">Bigarren arrabola</translation>
+<translation id="1615402009686901181">Administratzailearen gidalerroek pantaila-kapturak ateratzea eragozten dute isilpeko edukia ikusgai dagoenean</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Ez utzi orri honi elkarrizketa-koadroa gehigarriak sortzea</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -852,7 +853,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3781428340399460090">Arrosa bizia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth bidezko gailuak</translation>
-<translation id="3787675388804467730">Txartel birtualaren zenbakia</translation>
 <translation id="3787705759683870569">Iraungitze-data: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Tamaina: 16</translation>
 <translation id="3789841737615482174">Instalatu</translation>
@@ -1556,6 +1556,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6080696365213338172">Administratzaileak emandako ziurtagiria erabilita atzitu duzu edukia. <ph name="DOMAIN" /> domeinuari bidalitako datuak administratzaileak atzeman ditzake.</translation>
 <translation id="6087312102907839798">Erlazionatutako bilaketak</translation>
 <translation id="6094273045989040137">Egin oharpen bat</translation>
+<translation id="6094290315941448991">Administratzailearen gidalerroek pantaila-grabaketa bat egitea eragozten dute isilpeko edukia ikusgai dagoenean</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Sortu webgune bat</translation>
 <translation id="6106989379647458772">Baliteke <ph name="PAGE" /> helbideko web-orria ez funtzionatzea edo beste web-helbide batera betiko aldatu izatea.</translation>
@@ -2349,6 +2350,7 @@ Xehetasun gehiago:
 <translation id="8870494189203302833">Ordena berean, ahuspez</translation>
 <translation id="8871553383647848643">Pertsonalizatu arakatzailearen itxura</translation>
 <translation id="8874824191258364635">Idatzi balio duen txartel-zenbaki bat</translation>
+<translation id="8884537526797090108">Ezin da grabatu isilpeko edukirik</translation>
 <translation id="8891727572606052622">Proxy moduak ez du balio.</translation>
 <translation id="8894794286471754040">Ertz luzea lehendabizi</translation>
 <translation id="8903921497873541725">Handitu</translation>
@@ -2403,6 +2405,7 @@ Xehetasun gehiago:
 <translation id="9050666287014529139">Pasaesaldia</translation>
 <translation id="9056953843249698117">Denda</translation>
 <translation id="9062620674789239642">Agian lekuz aldatu, editatu edo ezabatu egin da.</translation>
+<translation id="9063800855227801443">Ezin da kapturatu isilpeko edukia</translation>
 <translation id="9065203028668620118">Editatu</translation>
 <translation id="9065745800631924235">Bilatu historian: <ph name="TEXT" /></translation>
 <translation id="9069693763241529744">Luzapen batek blokeatu du</translation>

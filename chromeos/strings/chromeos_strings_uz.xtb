@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">Foydalanuvchi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domenida boshqariladi.</translation>
+<translation id="1175951029573070619">Oʻrtacha (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
 <translation id="1195447618553298278">Noma’lum xatolik.</translation>
 <translation id="1204296502688602597">DNS kechikishi</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> va <ph name="SECOND_MANAGER" /> tomonidan boshqariladi</translation>
 <translation id="1726100011689679555">Nom serverlari (NS)</translation>
 <translation id="1731082422893354635">Bluetooth sensorli panel</translation>
+<translation id="175763766237925754">Yaxshi (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Skanerlash bekor qilinmoqda</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">TASHLAB KETILDI</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yaqin-atrofdagi qurilmalarni aniqlash uchun Bluetooth adapterini yoqing</translation>
+<translation id="2346474577291266260">Aʼlo (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">Tugadi</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Fikr va mulohaza hisobotini yuborish</translation>
@@ -340,8 +343,10 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6379086450106841622">Sensorli ekran</translation>
 <translation id="6388847657025262518">Skanerga joylanadigan qogʻozlar tiqilib qoldi. Hujjat joylash panelini tekshirib, qaytadan urining.</translation>
 <translation id="6395640744968320699">Himoya devori orqali HTTP (port 80) saytlarga ulanish imkonsiz</translation>
+<translation id="6398765197997659313">To‘liq ekran rejimidan chiqish</translation>
 <translation id="641081527798843608">Mavzu mosligi</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">Zaif (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">Yaxshi</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Sahifa qayta skanerlansinmi?}=1{{PAGE_NUMBER} ta sahifani qayta skanerlansinmi?}other{{PAGE_NUMBER} ta sahifani qayta skanerlansinmi?}}</translation>
 <translation id="6472207088655375767">Bir martalik kod</translation>
@@ -444,7 +449,6 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7960831585769876809">Harorat</translation>
 <translation id="7978412674231730200">Xususiy kalit</translation>
 <translation id="7994702968232966508">EAP usuli</translation>
-<translation id="8020238979854764615">Xatolik yuz berdi. Boshqa rasmlarni tanlash orqali qaytadan urining.</translation>
 <translation id="802154636333426148">Yuklab olib bo‘lmadi</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Fikr-mulohaza</translation>

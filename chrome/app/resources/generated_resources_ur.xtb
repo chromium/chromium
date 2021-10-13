@@ -216,7 +216,6 @@
 <translation id="1218015446623563536">‏Linux حذف کریں</translation>
 <translation id="1218839827383191197">‏<ph name="BEGIN_PARAGRAPH1" />اس آلہ کے مقام کا اندازہ لگانے میں مدد کرنے کے لیے، Google کی مقام کی سروس Wi‑Fi، موبائل نیٹ ورکس اور سینسرز جیسے ذرائع کا استعمال کرتی ہے۔<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />آپ اس آلہ پر مقام کی مرکزی ترتیب کو آف کر کے 'مقام' کو آف کر سکتے ہیں۔ آپ مقام کی ترتیبات میں مقام کے لیے Wi‑Fi، موبائل نیٹ ورکس اور سینسرز کے استعمال کو بھی آف کر سکتے ہیں۔<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">‏<ph name="LANGUAGE" /> کی اسپیچ فائلز کو ڈاؤن لوڈ نہیں کیا جا سکا۔ بعد میں ڈاؤن لوڈ کرنے کی کوشش کی جائے گی۔ اسپیچ اب پروسیسنگ کے لیے Google کو بھیجی جاتی ہے۔</translation>
 <translation id="122082903575839559">سرٹیفیکیٹ دستخط الگورتھم</translation>
 <translation id="1221024147024329929">‏RSA مرموز کاری کے ساتھ PKCS #1 MD2</translation>
 <translation id="1221825588892235038">صرف انتخاب</translation>
@@ -303,6 +302,7 @@
 <translation id="1313660246522271310">کسی بھی اوپن ٹیبز سمیت، آپ تمام سائٹس سے سائن آوٹ ہو جائیں گے</translation>
 <translation id="1313705515580255288">‏آپ کے بُک مارکس، سرگزشت اور دیگر ترتیبات کی آپ کے Google اکاؤنٹ سے مطابقت پذیری کی جائے گی۔</translation>
 <translation id="1316136264406804862">تلاش ہو رہی ہے…</translation>
+<translation id="1316248800168909509"><ph name="DEVICE" /> سے منسلک نہیں کیا جا سکا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="1316495628809031177">مطابقت پذیری موقوف ہے</translation>
 <translation id="1317637799698924700">‏آپ کا ڈاکنگ اسٹیشن USB ٹائپ سی موافق موڈ میں آپریٹ کرے گا۔</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> ذیلی صفحے کا پیچھے جانے کا بٹن</translation>
@@ -1169,6 +1169,7 @@
 <translation id="2200356397587687044">‏جاری رکھنے کے لیے Chrome کو اجازت درکار ہے</translation>
 <translation id="2202898655984161076">پرنٹرز کی فہرست سازی میں ایک مسئلہ پیش آ گیا۔ ممکن ہے آپ کے کچھ پرنٹرز <ph name="CLOUD_PRINT_NAME" /> کے ساتھ کامیابی سے رجسٹرڈ نہیں ہوئے ہوں۔</translation>
 <translation id="2203088913459920044">نام میں حروف، نمبرز اور مخصوص حروف کا استعمال کیا جا سکتا ہے</translation>
+<translation id="220321590587754225">منسلک نہیں ہو سکا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="2204034823255629767">آپ جو کچھ بھی ٹائپ کرتے ہیں اسے پڑھیں اور تبدیل کریں</translation>
 <translation id="220858061631308971">‏براہ کرم اس PIN کوڈ کو "<ph name="DEVICE_NAME" />" میں داخل کریں:</translation>
 <translation id="2212565012507486665">کوکیز کی اجازت دیں</translation>
@@ -4878,7 +4879,6 @@
 <translation id="6232017090690406397">بیٹری</translation>
 <translation id="6232116551750539448"><ph name="NAME" /> سے کنکشن ختم ہو گیا ہے</translation>
 <translation id="6233154960150021497">کی بورڈ کی بجائے بطور ڈیفالٹ آواز کا استعمال کریں</translation>
-<translation id="6233455992368963267">‏Google کو <ph name="LANGUAGE" /> اسپیچ پروسیسنگ کے لیے بھیجی جاتی ہے۔</translation>
 <translation id="6234108445915742946">‏Chrome کی سروس کی شرائط 31 مارچ کو بدل رہی ہیں</translation>
 <translation id="6234474535228214774">انسٹال زیر التوا ہے</translation>
 <translation id="6235208551686043831">‏آلہ کا کیمرا آن ہو گیا ہے۔ براہ کرم اپنے eSIM کے QR کوڈ کو کیمرے کے سامنے رکھیں۔</translation>
@@ -4915,6 +4915,7 @@
 <translation id="6263284346895336537">اہم نہیں</translation>
 <translation id="6264365405983206840">&amp;سبھی کو منتخب کریں</translation>
 <translation id="6265687851677020761">پورٹ ہٹائیں</translation>
+<translation id="6266532094411434237"><ph name="DEVICE" /> سے منسلک ہو رہا ہے</translation>
 <translation id="6267166720438879315">اپنی <ph name="HOST_NAME" /> پر توثیق کرنے کیلئے ایک سرٹیفیکیٹ منتخب کریں</translation>
 <translation id="6268252012308737255"><ph name="APP" /> کے ساتھ کھولیں</translation>
 <translation id="6270391203985052864">سائٹس اطلاعات بھیجنے کے لیے کہہ سکتی ہیں</translation>

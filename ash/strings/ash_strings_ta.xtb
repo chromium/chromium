@@ -261,6 +261,7 @@
 <translation id="2996462380875591307">டாக் செய்யப்பட்ட பெரிதாக்கி இயக்கப்பட்டது. அதை முடக்க, Ctrl+Search+Dயை மீண்டும் அழுத்தவும்.</translation>
 <translation id="3000461861112256445">மோனோ ஆடியோ</translation>
 <translation id="3009178788565917040">வெளியீடு</translation>
+<translation id="3009958530611748826">சேமிப்பதற்கான ஃபோல்டரைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="3017687597151988916">தேர்ந்தெடுக்கப்பட்ட பகுதியாகச் சாளரம் அமைக்கப்பட்டது</translation>
 <translation id="3033545621352269033">இயக்கப்பட்டுள்ளது</translation>
 <translation id="3036649622769666520">ஃபைல்களைத் திற</translation>
@@ -504,7 +505,6 @@
 <translation id="4665114317261903604">'தொந்தரவு செய்ய வேண்டாம்' அம்சத்தை ஆன்/ஆஃப் செய்யும். <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">பெற்றோர் குறியீட்டின் மூலம் சாதனத்தை அன்லாக் செய்தல்</translation>
 <translation id="4702647871202761252">தனிப்பட்ட திரை முடக்கப்பட்டுள்ளது</translation>
-<translation id="4706121060329443414">பின்னர் பதிவிறக்க முயலும். இப்போதைக்கு, பேசுபவை அனைத்தும் செயலாக்கத்திற்காக Googleளுக்கு அனுப்பப்படும்.</translation>
 <translation id="4731797938093519117">பெற்றோர் அணுகல்</translation>
 <translation id="4734965478015604180">கிடைமட்டம்</translation>
 <translation id="4735498845456076464">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: <ph name="LAUNCHER_KEY_NAME" /> + எண். செயல்பாட்டு பட்டன்களைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + மேல் வரிசையில் உள்ள ஒரு பட்டனை அழுத்தவும்.</translation>
@@ -688,7 +688,6 @@
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> இல் தானாகவே வெளியேற்றப்படுவீர்கள்.</translation>
 <translation id="6073451960410192870">பதிவுசெய்வதை நிறுத்து</translation>
 <translation id="607652042414456612">உங்கள் கம்ப்யூட்டர் அருகிலுள்ள Bluetooth சாதனங்களால் கண்டறியப்படும், மேலும் <ph name="ADDRESS" /> என்ற முகவரியுடன் "<ph name="NAME" />" என்ற பெயரில் தோன்றும்</translation>
-<translation id="6094290315941448991">ரகசியமான உள்ளடக்கம் காட்டப்படுவதால் ஸ்கிரீன் ரெக்கார்டிங்கை நிர்வாகக் கொள்கை முடக்கிவிட்டது</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> மொழிக்கான பேச்சு அறிதல் ஃபைல்கள் பதிவிறக்கப்பட்டன</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">கெஸ்ட் அமர்வில் Google அசிஸ்டண்ட்டைப் பயன்படுத்த இயலாது.</translation>
@@ -1043,7 +1042,6 @@
 <translation id="8876661425082386199">இணைய இணைப்பைச் சரிபார்க்கவும்</translation>
 <translation id="8877788021141246043">நினைவூட்டலை அமை</translation>
 <translation id="8878886163241303700">திரையை விரிவாக்குகிறது</translation>
-<translation id="8884537526797090108">ரகசியமான உள்ளடக்கம் இருப்பதால் ரெக்கார்டு செய்ய முடியாது</translation>
 <translation id="890616557918890486">மூலத்தை மாற்று</translation>
 <translation id="8909138438987180327">பேட்டரி: <ph name="PERCENTAGE" /> சதவீதம்.</translation>
 <translation id="8913384980486163186">தீம் வண்ணம் (இயல்பு)</translation>

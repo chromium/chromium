@@ -264,6 +264,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2996462380875591307">Dockad skärmförstoring har aktiverats. Tryck på Ctrl + Sök + D igen om du vill inaktivera funktionen.</translation>
 <translation id="3000461861112256445">Monoljud</translation>
 <translation id="3009178788565917040">Utgång</translation>
+<translation id="3009958530611748826">Välj vilken mapp du vill spara i</translation>
 <translation id="3017687597151988916">Markeringsområdet har ställts in på fönster</translation>
 <translation id="3033545621352269033">På</translation>
 <translation id="3036649622769666520">Öppna filer</translation>
@@ -509,7 +510,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> laddas ned</translation>
 <translation id="4696813013609194136">Lås upp enheten med föräldrakod</translation>
 <translation id="4702647871202761252">Sekretesskärmen är inaktiverad</translation>
-<translation id="4706121060329443414">Ett nytt nedladdningsförsök görs senare. Tills vidare skickas tal till Google för bearbetning.</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="4734965478015604180">Horisontell</translation>
 <translation id="4735498845456076464">Kortkommandot <ph name="LAUNCHER_KEY_NAME" /> + siffra har ändrats. Nu används <ph name="LAUNCHER_KEY_NAME" />-tangenten + en tangent i översta raden som funktionstangenter.</translation>
@@ -694,7 +694,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6062360702481658777">Du loggas ut automatiskt om <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Sluta spela in</translation>
 <translation id="607652042414456612">Din dator kan upptäckas av Bluetooth-enheter som finns i närheten och den visas som <ph name="NAME" /> med adressen <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Skärminspelning inaktiveras av en administratörspolicy när konfidentiellt innehåll är synligt</translation>
 <translation id="6114505516289286752">Filerna för taligenkänning på <ph name="LANGUAGE" /> har laddats ned</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google-assistenten är inte tillgänglig i en gästsession.</translation>
@@ -1050,7 +1049,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8876661425082386199">Kontrollera anslutningen</translation>
 <translation id="8877788021141246043">Ställ in en påminnelse</translation>
 <translation id="8878886163241303700">Utökad skärm</translation>
-<translation id="8884537526797090108">Det går inte att spela in konfidentiellt innehåll</translation>
 <translation id="890616557918890486">Ändra källa</translation>
 <translation id="8909138438987180327">Batterinivån är på <ph name="PERCENTAGE" /> procent.</translation>
 <translation id="8913384980486163186">Tema (standard)</translation>

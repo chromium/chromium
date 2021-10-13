@@ -131,7 +131,6 @@
 <translation id="5386450000063123300">Aggiornamento di Chromium in corso (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Consenti l'accesso a Chromium</translation>
 <translation id="5398878173008909840">È disponibile una nuova versione di Chromium.</translation>
-<translation id="5416696090975899932">Impossibile visualizzare l'anteprima di stampa in Chromium senza il visualizzatore PDF integrato.</translation>
 <translation id="5427571867875391349">Imposta Chromium come browser predefinito</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium beta</translation>
 <translation id="5479196819031988440">Chromium OS non è in grado di aprire la pagina.</translation>
@@ -208,6 +207,7 @@ Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory 
 <translation id="718435575166326686">Chromium deve avere l'autorizzazione di accesso alla fotocamera per questo sito</translation>
 <translation id="7196312274710523067">Impossibile avviare Chromium. Riprova.</translation>
 <translation id="7197677400338048821">Chromium non può controllare le tue password. Riprova tra 24 ore.</translation>
+<translation id="7218568399872925918">I siti visitati memorizzano le tue informazioni fino alla chiusura di Chromium</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
 <translation id="731795002583552498">Aggiornamento di Chromium in corso</translation>
 <translation id="7318036098707714271">Il file delle preferenze è danneggiato o non valido.
@@ -260,6 +260,8 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8621669128220841554">Installazione non riuscita a causa di un errore imprecisato. Scarica di nuovo Chromium.</translation>
 <translation id="8697124171261953979">Controlla anche la pagina visualizzata all'avvio di Chromium o quando esegui ricerche dalla Omnibox.</translation>
 <translation id="8704119203788522458">Questo è il tuo account Chromium</translation>
+<translation id="8713679423359107094">Quando chiudi tutte le finestre di Chromium, i cookie e i dati dei siti vengono cancellati automaticamente</translation>
+<translation id="8796443464227412154">Quando chiudi Chromium, verrà <ph name="BEGIN_BOLD" />eseguita la disconnessione dalla maggior parte dei siti<ph name="END_BOLD" />. Se la sincronizzazione è disattivata, verrà anche <ph name="BEGIN_BOLD" />eseguita la disconnessione dai servizi Google e da Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Per questo sito Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera e al microfono</translation>
 <translation id="8803635938069941624">Termini di Chromium OS</translation>
 <translation id="8821041990367117597">Impossibile sincronizzare i dati in Chromium perché i dati di accesso dell'account sono obsoleti.</translation>

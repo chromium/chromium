@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">အသုံးပြုသူ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">ဤ <ph name="DEVICE_TYPE" /> ကို <ph name="MANAGER" /> က စီမံသည်။</translation>
+<translation id="1175951029573070619">သာမန် (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="1195447618553298278">မှားရသည့်အကြောင်း မသိပါ။</translation>
 <translation id="1204296502688602597">DNS တုံ့ပြန်ချိန်</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> နှင့် <ph name="SECOND_MANAGER" /> က စီမံခန့်ခွဲသည်</translation>
 <translation id="1726100011689679555">အမည်ဆာဗာများ</translation>
 <translation id="1731082422893354635">Bluetooth တာ့ချ်ပက်</translation>
+<translation id="175763766237925754">ကောင်း (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">စကင်ဖတ်ခြင်းကို ပယ်ဖျက်နေသည်</translation>
@@ -84,6 +86,7 @@
 <translation id="2323506179655536734">ကျော်လိုက်သည်</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">အနီးတဝိုက်ရှိ စက်ပစ္စည်းများကို ရှာဖွေရန် ဘလူးတုသ်ကို ဖွင့်ပါ</translation>
+<translation id="2346474577291266260">အလွန်ကောင်း (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">အောင်မြင်သည်</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">တုံ့ပြန်ချက် အစီရင်ခံစာ ပို့ရန်</translation>
@@ -327,8 +330,10 @@
 <translation id="636850387210749493">လုပ်ငန်း အမည်စာရင်းသွင်းခြင်း</translation>
 <translation id="6379086450106841622">တို့ထိမျက်နှာပြင်</translation>
 <translation id="6388847657025262518">စကင်ဖတ်စက်၏ စာရွက်ထည့်ရန်ဗန်း ညပ်နေသည်။ ဗန်းကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
+<translation id="6398765197997659313">မျက်နှာပြင် အပြည့်မှ ထွက်ရန်</translation>
 <translation id="641081527798843608">တိုက်ဆိုင်သည့် အကြောင်းအရာ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">အားမကောင်းပါ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">ကောင်းပါသည်</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{စာမျက်နှာကို စကင်ပြန်ဖတ်မလား။}=1{စာမျက်နှာ {PAGE_NUMBER} ကို စကင်ပြန်ဖတ်မလား။}other{စာမျက်နှာ {PAGE_NUMBER} ကို စကင်ပြန်ဖတ်မလား။}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -429,7 +434,6 @@
 <translation id="7960831585769876809">အပူချိန်</translation>
 <translation id="7978412674231730200">ကိုယ်ပိုင် သော့</translation>
 <translation id="7994702968232966508">EAP နည်းလမ်း</translation>
-<translation id="8020238979854764615">အမှားတစ်ခု ဖြစ်သွားသည်။ အခြားပုံများကို ရွေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="802154636333426148">ဒေါင်းလုဒ်လုပ်မှု မအောင်မြင်ပါ</translation>
 <translation id="8041089156583427627">အကြံပြုချက် ပို့ရန်</translation>
 <translation id="8075838845814659848">ကျန်ရှိသော အားပမာဏ</translation>

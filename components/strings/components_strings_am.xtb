@@ -214,6 +214,7 @@
 <translation id="160851722280695521">በChrome ውስጥ የDino አሂድ ጨዋታ አጫውት</translation>
 <translation id="161042844686301425">ውሃ ሰማያዊ</translation>
 <translation id="1611101756749861742">ሁለተኛ ጥቅልል</translation>
+<translation id="1615402009686901181">ሚስጥራዊ ይዘት በሚታይበት ጊዜ የአስተዳዳሪ መመሪያ የማያ ገጽ ማንሳትን ያሰናክላል</translation>
 <translation id="1620510694547887537">ካሜራ</translation>
 <translation id="1623104350909869708">ይህ ገጽ ተጨማሪ መገናኛዎችን እንዳይፈጥር አግድ</translation>
 <translation id="16338877384480380">ስነ-ሕንጻ-B</translation>
@@ -402,6 +403,7 @@
 <translation id="2241693394036365668">ፋይል ወርዷል</translation>
 <translation id="2248949050832152960">WebAuthnን ተጠቀም</translation>
 <translation id="2250931979407627383">በግራ በኩል ጫፉን ስፋ።</translation>
+<translation id="2251943122176102076">አስተዳዳሪው በተቀረጸው ሚስጥራዊ ይዘት ምክንያት ቅጽበታዊ ገጽ እይታዎችን ወይም ቀረጻዎችን እንዲወስዱ አይመክርም፦</translation>
 <translation id="225207911366869382">ይህ ዋጋ ለዚህ መመሪያ ተቋርጧል።</translation>
 <translation id="2258928405015593961">ለወደፊቱ የአገልግሎት ጊዜ ማብቂያ ቀን ያስገቡና እንደገና ይሞክሩ</translation>
 <translation id="225943865679747347">የስህተት ኮድ፦ <ph name="ERROR_CODE" /></translation>
@@ -858,7 +860,6 @@
 <translation id="3781428340399460090">ደመቅ ያለ ሮዝ</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">የብሉቱዝ መሣሪያዎች</translation>
-<translation id="3787675388804467730">ምናባዊ የካርድ ቁጥር</translation>
 <translation id="3787705759683870569">በ<ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /> ላይ የአገልግሎት ጊዜው ያበቃል</translation>
 <translation id="3789155188480882154">መጠን 16</translation>
 <translation id="3789841737615482174">ጫን  </translation>
@@ -1192,6 +1193,7 @@
           <ph name="LIST_ITEM" />የበይነመረብ አገልግሎት አቅራቢዎች የድር ትራፊክን ሊከታተሉ ይችላሉ<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">ማስጠንቀቂያዎችን አብራ</translation>
+<translation id="4834718916855725099">አስተዳዳሪው በማያ ገጹ ላይ ባለው ሚስጥራዊ ይዘት ምክንያት ቅጽበታዊ ገጽ እይታዎችን ወይም ቀረጻዎችን እንዲወስዱ አይመክርም፦</translation>
 <translation id="4838327282952368871">ህልመኛ</translation>
 <translation id="4840250757394056958">የChrome ታሪክዎን ይመልከቱ</translation>
 <translation id="484462545196658690">ራስ-ሰር</translation>
@@ -1569,6 +1571,7 @@
 <translation id="6080696365213338172">በአስተዳዳሪ የቀረበ የእውቅና ማረጋገጫ በመጠቀም ይዘት ደርሰዋል። ለ<ph name="DOMAIN" /> የሚያቀርቡት ውሂብ በአስተዳዳሪዎ ሊያዝ ይችላል።</translation>
 <translation id="6087312102907839798">ተዛማጅ ፍለጋዎች</translation>
 <translation id="6094273045989040137">አብራራ</translation>
+<translation id="6094290315941448991">ሚስጥራዊ ይዘት በሚታይበት ጊዜ የአስተዳዳሪ መመሪያ የማያ ገጽ ቀረጻን ያሰናክላል</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">ጣቢያን ፍጠር</translation>
 <translation id="6106989379647458772">በ<ph name="PAGE" /> ላይ ያለው ድረ-ገፅ ለጊዜው ተበላሽቶ ሊሆን ይችላል ወይም በቋሚነት ወደ አዲስ የድር አድራሻ ተንቀሳቅሶ ሊሆን ይችላል።</translation>
@@ -2370,6 +2373,7 @@
 <translation id="8870494189203302833">ተመሳሳይ ቅደም-ተከተል ፊቱ ወደ ታች</translation>
 <translation id="8871553383647848643">የአሳሽዎን ገጽታ ያብጁ</translation>
 <translation id="8874824191258364635">የሚሰራ የካርድ ቁጥር ያስገቡ</translation>
+<translation id="8884537526797090108">ሚስጥራዊ ይዘት መቅረጽ አልተቻለም</translation>
 <translation id="8891727572606052622">ልክ ያልሆነ የተኪ ሁነታ።</translation>
 <translation id="8894794286471754040">ረጅም ጠርዝ መጀመሪያ</translation>
 <translation id="8903921497873541725">አጉላ</translation>
@@ -2424,6 +2428,7 @@
 <translation id="9050666287014529139">የይለፍ ሐረግ</translation>
 <translation id="9056953843249698117">ማከማቻ</translation>
 <translation id="9062620674789239642">ተወስዶ፣ አርትዕ ተደርጎ ወይም ተሰርዞ ሊሆን ይችላል።</translation>
+<translation id="9063800855227801443">ሚስጥራዊ ይዘትን መቅረጽ አልተቻለም</translation>
 <translation id="9065203028668620118">አርትዕ</translation>
 <translation id="9065745800631924235">የ<ph name="TEXT" /> ፍለጋ ከታሪክ</translation>
 <translation id="9069693763241529744">በቅጥያ ታግዷል</translation>

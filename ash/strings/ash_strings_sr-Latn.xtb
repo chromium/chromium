@@ -264,6 +264,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2996462380875591307">Montirana lupa ekrana je omogućena. Pritisnite Ctrl + taster za pretragu + D ponovo da biste je isključili.</translation>
 <translation id="3000461861112256445">Mono zvuk</translation>
 <translation id="3009178788565917040">Izlaz</translation>
+<translation id="3009958530611748826">Izaberite folder za čuvanje</translation>
 <translation id="3017687597151988916">Oblast za izbor je podešena na prozor</translation>
 <translation id="3033545621352269033">Uključeno</translation>
 <translation id="3036649622769666520">Otvaranje datoteka</translation>
@@ -509,7 +510,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4667099493359681081">Preuzima se fajl <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Otključajte uređaj pomoću koda roditelja</translation>
 <translation id="4702647871202761252">Ekran za privatnost je isključen</translation>
-<translation id="4706121060329443414">Probaćemo preuzimanje kasnije. Govor će za sada biti poslat Google-u radi obrade.</translation>
 <translation id="4731797938093519117">Roditeljski pristup</translation>
 <translation id="4734965478015604180">Horizontalno</translation>
 <translation id="4735498845456076464">Tasterska prečica <ph name="LAUNCHER_KEY_NAME" /> + broj je promenjena. Da biste koristili funkcijske tastere, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + taster u gornjem redu.</translation>
@@ -694,7 +694,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="6062360702481658777">Automatski ćete biti odjavljeni za <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Zaustavi snimanje</translation>
 <translation id="607652042414456612">Obližnji Bluetooth uređaji mogu da otkriju računar i on će se prikazivati kao „<ph name="NAME" />“ sa adresom <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Smernice administratora onemogućavaju snimanje ekrana kada je vidljiv poverljiv sadržaj</translation>
 <translation id="6114505516289286752">Preuzeti su fajlovi sa govorom na jeziku <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google pomoćnik nije dostupan u sesiji gosta.</translation>
@@ -1050,7 +1049,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="8876661425082386199">Proverite vezu</translation>
 <translation id="8877788021141246043">Podesi podsetnik</translation>
 <translation id="8878886163241303700">Prošireni ekran</translation>
-<translation id="8884537526797090108">Snimanje poverljivog sadržaja nije uspelo</translation>
 <translation id="890616557918890486">Promeni izvor</translation>
 <translation id="8909138438987180327">Baterija je na <ph name="PERCENTAGE" />%.</translation>
 <translation id="8913384980486163186">Tematski (podrazumevano)</translation>

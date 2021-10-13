@@ -52,7 +52,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2121284319307530122">Fungua tena ili Usasishe &amp;Chrome</translation>
 <translation id="2123055963409958220">Saidia kuboresha Chrome kwa kuripoti kuhusu <ph name="BEGIN_LINK" />mipangilio ya sasa<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Tafadhali zima kisha uwashe Chrome sasa</translation>
-<translation id="2246246234298806438">Google Chrome haiwezi kuonyesha uhakiki wa kuchapisha wakati kionyeshi kilichojengewa ndani cha PDF kinakosekana.</translation>
 <translation id="2290014774651636340">Funguo za API za Google zinakosekana. Baadhi ya utendaji wa Google Chrome utazimwa.</translation>
 <translation id="2290095356545025170">Je, una hakika kuwa ungependa kusanidua Google Chrome?</translation>
 <translation id="2309047409763057870">Huu ni usakinishaji wa pili wa Google Chrome, na haiwezi kufanywa kuwa kivinjari chako chaguomsingi.</translation>
@@ -91,6 +90,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3037838751736561277">Google Chrome iko katika hali ya chini chini.</translation>
 <translation id="3059710691562604940">Kipengele cha Kuvinjari Salama kimezimwa. Chrome inapendekeza ukiwashe.</translation>
 <translation id="3065168410429928842">Kichupo cha Chrome</translation>
+<translation id="3069821012350118710">Tovuti unazotembelea hukumbuka maelezo yako hadi utakapofunga Chrome</translation>
 <translation id="3080151273017101988">Endelea kuendesha programu zinazofanya kazi chini chini wakati Google Chrome imefungwa</translation>
 <translation id="3089968997497233615">Kuna toleo jipya na salama la Google Chrome.</translation>
 <translation id="3100998948628680988">Upe wasifu wako wa Chrome jina</translation>
@@ -194,6 +194,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="5804318322022881572">Imeshindwa kuanzisha Chrome. Jaribu tena.</translation>
 <translation id="5867197326698922595">Google Chrome inajaribu kubadilisha manenosiri.</translation>
 <translation id="5895138241574237353">Zzima na uwashe</translation>
+<translation id="5901850848447342934"><ph name="BEGIN_BOLD" />Utaondolewa katika akaunti kwenye tovuti nyingi<ph name="END_BOLD" /> unapofunga Chrome. Ikiwa kipengele cha kusawazisha kimezimwa, pia <ph name="BEGIN_BOLD" />utaondolewa katika akaunti kwenye huduma za Google na Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Kuingia katika Akaunti ya Mtandao</translation>
 <translation id="5940385492829620908">Wavuti, alamisho, na vitu vyako vingine vya Chrome vinapatikana hapa.</translation>
 <translation id="5941830788786076944">Fanya Google Chrome iwe kivinjari chaguomsingi</translation>
@@ -283,6 +284,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8614913330719544658">Google Chrome imelemazwa. Izindue upya sasa?</translation>
 <translation id="861702415419836452">Chrome inahitaji ruhusa ya kufikia kamera yako ili iunde ramani ya 3D ya mazingira yako</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome itafunguka upya ndani ya dakika 1}other{Chrome itafunguka upya ndani ya dakika #}}</translation>
+<translation id="8629311577791198377">Unapofunga madirisha yote ya Chrome, vidakuzi na data ya tovuti hufutwa kiotomatiki</translation>
 <translation id="8641606876632989680">Chrome itakuarifu ukiingia katika akaunti ukitumia nenosiri lililoathiriwa</translation>
 <translation id="8669527147644353129">Msaidizi wa Google Chrome</translation>
 <translation id="8679801911857917785">Pia inadhibiti ukurasa unaoonyeshwa unapoanzisha Chrome.</translation>

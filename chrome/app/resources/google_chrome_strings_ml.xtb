@@ -52,7 +52,6 @@
 <translation id="2121284319307530122">&amp;Chrome അപ്‌ഡേറ്റ് ചെയ്യാൻ വീണ്ടും ആരംഭിക്കുക</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />നിലവിലെ ക്രമീകരണം<ph name="END_LINK" /> റിപ്പോർട്ട് ചെയ്‌തുകൊണ്ട് Chrome മികച്ചതാക്കാൻ സഹായിക്കുക</translation>
 <translation id="2151406531797534936">Chrome ഇപ്പോൾ റീസ്‌റ്റാർട്ട് ചെയ്യുക</translation>
-<translation id="2246246234298806438">ബിൽറ്റ്-ഇൻ PDF വ്യൂവർ കാണുന്നില്ലെങ്കിൽ Google Chrome-ന് പ്രിന്റ് പ്രിവ്യു കാണിക്കാൻ കഴിയില്ല.</translation>
 <translation id="2290014774651636340">Google API കീകൾ നഷ്‌ടമായി. Google Chrome-ന്‍റെ ചില പ്രവർത്തനങ്ങൾ പ്രവർത്തനരഹിതമാകും.</translation>
 <translation id="2290095356545025170">Google Chrome അണിന്‍സ്റ്റാള്‍ ചെയ്യണമെന്ന് നിങ്ങള്‍ക്കുറപ്പാണോ?</translation>
 <translation id="2309047409763057870">ഇത് Google Chrome-ന്റെ ദ്വിതീയ ഇൻസ്‌റ്റലേഷനായതിനാൽ, നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറാക്കാൻ കഴിയില്ല.</translation>
@@ -91,6 +90,7 @@
 <translation id="3037838751736561277">Google Chrome ഒരു പശ്ചാത്തല മോഡിലാണ്.</translation>
 <translation id="3059710691562604940">സുരക്ഷിത ബ്രൗസിംഗ് ഓഫാണ്. ഇത് ഓണാക്കാൻ Chrome നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="3065168410429928842">Chrome ടാബ്</translation>
+<translation id="3069821012350118710">Chrome അടയ്‌ക്കുന്നതുവരെ നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റുകൾക്ക് നിങ്ങളുടെ വിവരങ്ങൾ ഓർമ്മിക്കാനാകും</translation>
 <translation id="3080151273017101988">Google Chrome അടച്ചാലും പശ്ചാത്തല ആപ്ലിക്കേഷനുകള്‍ പ്രവര്‍ത്തിപ്പിക്കുന്നത് തുടരുക</translation>
 <translation id="3089968997497233615">Google Chrome-ന്റെ പുതിയതും സുരക്ഷിതവുമായ പതിപ്പ് ലഭ്യമാണ്.</translation>
 <translation id="3100998948628680988">നിങ്ങളുടെ Chrome പ്രൊഫൈലിന് പേര് നൽകുക</translation>
@@ -194,6 +194,7 @@
 <translation id="5804318322022881572">Chrome ലോഞ്ച് ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="5867197326698922595">പാസ്‌വേഡുകൾ Google Chrome എഡിറ്റ് ചെയ്യാൻ ശ്രമിക്കുന്നു.</translation>
 <translation id="5895138241574237353">പുനരാരംഭിക്കുക</translation>
+<translation id="5901850848447342934">നിങ്ങൾ Chrome അടയ്ക്കുമ്പോൾ <ph name="BEGIN_BOLD" />മിക്ക സൈറ്റുകളിൽ നിന്നും സൈൻ ഔട്ട് ചെയ്യും<ph name="END_BOLD" />. സമന്വയിപ്പിക്കൽ ഓഫാണെങ്കിൽ, നിങ്ങളും<ph name="BEGIN_BOLD" />Google സേവനങ്ങളിൽ നിന്നും Chrome-ൽ നിന്നും സൈൻ ഔട്ട് ചെയ്യും<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - നെറ്റ്‌വർക്ക് സൈൻ ഇൻ</translation>
 <translation id="5940385492829620908">നിങ്ങളുടെ വെബും ബുക്ക്മാർക്കുകളും മറ്റ് Chrome ഫയലും ഇവിടെ തത്സമയമാണ്.</translation>
 <translation id="5941830788786076944">Google Chrome-നെ ഡിഫോൾട്ട് ബ്രൗസർ ആക്കുക</translation>
@@ -283,6 +284,7 @@
 <translation id="8614913330719544658">Google Chrome പ്രതികരിക്കുന്നില്ല. ഇപ്പോള്‍ വീണ്ടും സമാരംഭിക്കണോ?</translation>
 <translation id="861702415419836452">നിങ്ങളുടെ ചുറ്റുപാടിന്റെ 3D മാപ്പ് സൃഷ്ടിക്കുന്നതിന് നിങ്ങളുടെ ക്യാമറ ആക്സസ് ചെയ്യാൻ Chrome-ന് അനുമതി ആവശ്യമാണ്</translation>
 <translation id="8625237574518804553">{0,plural, =1{ഒരു മിനിറ്റിൽ Chrome വീണ്ടും സമാരംഭിക്കും}other{# മിനിറ്റിൽ Chrome വീണ്ടും സമാരംഭിക്കും}}</translation>
+<translation id="8629311577791198377">നിങ്ങൾ എല്ലാ Chrome വിൻഡോകളും അടയ്ക്കുമ്പോൾ, കുക്കികളും സൈറ്റ് ഡാറ്റയും സ്വയമേവ മായ്ക്കും</translation>
 <translation id="8641606876632989680">അപഹരിക്കപ്പെട്ട പാസ്‌വേഡ് ഉപയോഗിച്ച് നിങ്ങൾ സൈൻ ഇൻ ചെയ്യുമ്പോൾ Chrome നിങ്ങളെ അറിയിക്കും</translation>
 <translation id="8669527147644353129">Google Chrome സഹായി</translation>
 <translation id="8679801911857917785">നിങ്ങൾ Chrome ആരംഭിയ്ക്കുമ്പോൾ ഏത് പേജാണ് കാണിക്കേണ്ടതെന്നും അത് നിയന്ത്രിയ്ക്കുന്നു.</translation>

@@ -78,6 +78,18 @@
 <translation id="1069489575852947981">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa cihaz yerel hesabı sıfır gecikmeyle otomatik oturum açmaya ayarlanır. <ph name="PRODUCT_OS_NAME" />, otomatik oturum açmayı atlayıp oturum açma ekranını göstermek için Ctrl+Alt+S klavye kısayolunu kullanır.
 
       Politika Devre dışı değerine ayarlanırsa kullanıcılar sıfır gecikmeyle otomatik oturum açmayı (yapılandırılmışsa) atlayamaz.</translation>
+<translation id="1070656322814001059">Chrome, korumalı alana alınmış iframe içerisindeki harici protokollere
+      yönelik gezinmeleri engeller. https://chromestatus.com/features/5680742077038592 adresine bakın.
+
+      Politika, Doğru değerine ayarlandığında Chrome bu gezinmeleri engeller.
+
+      Politika, Yanlış değerine ayarlandığında Chrome'un bu gezinmeleri engellemesi önlenir.
+
+      Politika varsayılan olarak Doğru değerindeyse: Güvenlik özelliği etkindir.
+
+      Bu kısıtlamalardan etkilenen Kuruluş, kısıtlamaları geçici olarak kaldırmak için
+      bunu kullanabilir.
+      </translation>
 <translation id="1073983258515362346">Bir cihazın arka ışıkları ile ilgili bilgileri rapor edin.
 
       Bu politika false (yanlış) değerine ayarlanırsa veya ayarlanmadan bırakılırsa bilgi raporlanmaz.
@@ -1059,6 +1071,7 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 <translation id="2246011554082893079"><ph name="BOREALIS_NAME" /> politikasının bu cihaz için kullanılabilirliğini kontrol eder.
 
       Politika yanlış değerine ayarlanırsa <ph name="BOREALIS_NAME" /> bu cihazdaki kullanıcıların hiçbiri için kullanılamaz. Diğer hallerde (politika ayarlanmadığında veya doğru değerine ayarlandığında) <ph name="BOREALIS_NAME" />, yalnızca başka bir politika ya da ayar tarafından devre dışı bırakılmamışsa kullanılabilir.</translation>
+<translation id="2246621891161157804">Chrome'un, korumalı alana alınmış iframe'lerdeki harici protokollere yönelik gezinmeyi engellemesine izin ver</translation>
 <translation id="225340736558643885">Güvenli olmayan formlar için uyarıları etkinleştir</translation>
 <translation id="2258126710006312594">Uzaktan erişim kullanıcılarının ana makineye/ana makineden dosya aktarımı yapmalarına izin ver</translation>
 <translation id="2261648512244797294">Kullanımdan kaldırılan privet yazdırmayı devre dışı bırak</translation>
@@ -5267,6 +5280,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7313672174502374994">Duvar kağıdı resminin SHA-256 karması.</translation>
 <translation id="7322825363493984512">Uzak web proxy'sinde sistem hizmetlerinin kimliğini doğrulamak için kullanılan şifre.</translation>
 <translation id="7323896582714668701"><ph name="PRODUCT_NAME" /> için ek komut satırı parametreleri</translation>
+<translation id="7325801934761922681">Chrome'un, korumalı alana alınmış iframe içerisindeki harici protokollerde gezinmeyi engellemesini önle</translation>
 <translation id="7326394567531622570">Wipe (2 değeri) seçeneğine benzer, ancak kullanıcının tekrar oturum açmak zorunda kalmaması için giriş jetonlarını saklar.</translation>
 <translation id="7331962793961469250">True değerine ayarlandığında, Chrome Web Mağazası uygulamalarına ilişkin tanıtımlar yeni sekme sayfasında görünmez.
 
@@ -5407,6 +5421,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7544392541165889987">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />; <ph name="CLOUD_PRINT_NAME" /> ile makineye bağlı eski yazıcılar arasında bir proxy gibi çalışır. Kullanıcılar Google Hesapları ile kimlik doğrulama yaparak cloud print proxy'sini etkinleştirebilir.
 
       Politika, Devre Dışı değerine ayarlanırsa kullanıcılar proxy'yi etkinleştiremez ve makine kendi yazıcılarını <ph name="CLOUD_PRINT_NAME" /> ile paylaşamaz.</translation>
+<translation id="7546699946724795644">Chrome'un, korumalı alana alınmış iframe içerisindeki harici protokollerde gezinmeyi engellemesine izin ver</translation>
 <translation id="7547549430720182663">Birleştir</translation>
 <translation id="7553535237300701827">Bu politika ayarlandığında, ayarın değerine bağlı olarak giriş kimlik doğrulama akışında aşağıdaki yollardan biri kullanılır:
 

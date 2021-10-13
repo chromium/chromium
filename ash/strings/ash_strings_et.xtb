@@ -264,6 +264,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2996462380875591307">Dokitud luup on lubatud. Vajutage selle väljalülitamiseks klahvikombinatsiooni Ctrl + otsinguklahv + D.</translation>
 <translation id="3000461861112256445">Monoheli</translation>
 <translation id="3009178788565917040">Väljund</translation>
+<translation id="3009958530611748826">Valige kaust, kuhu salvestada</translation>
 <translation id="3017687597151988916">Valikualaks on määratud aken</translation>
 <translation id="3033545621352269033">Sees</translation>
 <translation id="3036649622769666520">Failide avamine</translation>
@@ -510,7 +511,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4667099493359681081">Faili <ph name="FILENAME" /> allalaadimine</translation>
 <translation id="4696813013609194136">Avage seade lapsevanema koodiga</translation>
 <translation id="4702647871202761252">Privaatsuskuva on väljas</translation>
-<translation id="4706121060329443414">Hiljem üritatakse uuesti alla laadida. Kõne saadetakse praegu töötlemiseks Google'ile.</translation>
 <translation id="4731797938093519117">Vanema juurdepääs</translation>
 <translation id="4734965478015604180">Horisontaalne</translation>
 <translation id="4735498845456076464">Klaviatuuri otseteed <ph name="LAUNCHER_KEY_NAME" /> + numbriklahv on muudetud. Funktsiooniklahvide kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + ülemise rea klahvi.</translation>
@@ -695,7 +695,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6062360702481658777">Teid logitakse automaatselt välja <ph name="LOGOUT_TIME_LEFT" /> pärast.</translation>
 <translation id="6073451960410192870">Peata salvestamine</translation>
 <translation id="607652042414456612">Lähedal olevad Bluetoothi seadmed saavad teie arvuti tuvastada ja see kuvatakse nimega „<ph name="NAME" />” ja aadressiga <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Administraatori eeskirjad keelavad ekraanikuva salvestamise, kui konfidentsiaalne sisu on nähtaval</translation>
 <translation id="6114505516289286752">Kõnefailid <ph name="LANGUAGE" /> keeles laaditi alla</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google'i assistent ei ole külastajaseansis saadaval.</translation>
@@ -1051,7 +1050,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="8876661425082386199">Kontrollige ühendust</translation>
 <translation id="8877788021141246043">Määra meeldetuletus</translation>
 <translation id="8878886163241303700">Ekraani laiendamine</translation>
-<translation id="8884537526797090108">Konfidentsiaalset sisu ei saa salvestada</translation>
 <translation id="890616557918890486">Vaheta allikat</translation>
 <translation id="8909138438987180327">Aku laetuse tase on <ph name="PERCENTAGE" /> protsenti.</translation>
 <translation id="8913384980486163186">Temaatiline (vaikimisi)</translation>

@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">Потребител</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" />.</translation>
+<translation id="1175951029573070619">Средна (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="1195447618553298278">Неизвестна грешка.</translation>
 <translation id="1204296502688602597">Забавяне на DNS</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422">Управлява се от <ph name="FIRST_MANAGER" /> и <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Сървъри за имена</translation>
 <translation id="1731082422893354635">Сензорен панел с Bluetooth</translation>
+<translation id="175763766237925754">Добра (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Сканирането се отменя</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">ПРОПУСНАТО</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Включете Bluetooth, за да бъдат открити устройствата в близост</translation>
+<translation id="2346474577291266260">Отлична (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">Премината</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Изпращане на сигнал с отзиви</translation>
@@ -340,8 +343,10 @@
 <translation id="6379086450106841622">Сензорен екран</translation>
 <translation id="6388847657025262518">Подавачът на документи на скенера е блокирал. Проверете го и опитайте отново.</translation>
 <translation id="6395640744968320699">През защитната стена не може да се установи връзка с уебсайтове, работещи с HTTP (порт 80)</translation>
+<translation id="6398765197997659313">Изход от цял екран</translation>
 <translation id="641081527798843608">Съвпадение на субекта</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">Слаба (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">Добър</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Да се сканира ли повторно страницата?}=1{Да се сканира ли повторно страница {PAGE_NUMBER}?}other{Да се сканира ли повторно страница {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Еднократна парола</translation>
@@ -444,7 +449,6 @@
 <translation id="7960831585769876809">Температура</translation>
 <translation id="7978412674231730200">Личен ключ</translation>
 <translation id="7994702968232966508">Метод с EAP</translation>
-<translation id="8020238979854764615">Възникна грешка. Моля, опитайте отново, като изберете други изображения.</translation>
 <translation id="802154636333426148">Изтеглянето не бе успешно</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Изпращане на отзивите</translation>

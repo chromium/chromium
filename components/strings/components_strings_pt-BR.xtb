@@ -214,6 +214,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="160851722280695521">Iniciar o jogo do Dinossauro do Chrome</translation>
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611101756749861742">Segundo rolo</translation>
+<translation id="1615402009686901181">A captura da tela é desativada pela política do administrador quando há conteúdo protegido visível</translation>
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1623104350909869708">Impedir que esta página crie caixas de diálogo adicionais</translation>
 <translation id="16338877384480380">Arch B</translation>
@@ -400,6 +401,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2241693394036365668">Um arquivo é transferido por download</translation>
 <translation id="2248949050832152960">Usar WebAuthn</translation>
 <translation id="2250931979407627383">Costura no lado esquerdo</translation>
+<translation id="2251943122176102076">Devido ao conteúdo confidencial capturado, o administrador não recomenda fazer gravações ou capturas de tela:</translation>
 <translation id="225207911366869382">Este valor está obsoleto para esta política.</translation>
 <translation id="2258928405015593961">Insira uma data de validade no futuro e tente novamente</translation>
 <translation id="225943865679747347">Código de erro: <ph name="ERROR_CODE" /></translation>
@@ -856,7 +858,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3781428340399460090">Rosa-escuro</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivos Bluetooth</translation>
-<translation id="3787675388804467730">Número do cartão virtual</translation>
 <translation id="3787705759683870569">Validade: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Tamanho 16</translation>
 <translation id="3789841737615482174">Instalar</translation>
@@ -1186,6 +1187,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
           <ph name="LIST_ITEM" />Provedores de acesso à Internet podem monitorar o tráfego na Internet<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Ativar avisos</translation>
+<translation id="4834718916855725099">Devido ao conteúdo confidencial exibido, o administrador não recomenda fazer gravações ou capturas de tela:</translation>
 <translation id="4838327282952368871">Sonho</translation>
 <translation id="4840250757394056958">Ver seu histórico do Chrome</translation>
 <translation id="484462545196658690">Automática</translation>
@@ -1560,6 +1562,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6080696365213338172">Você acessou conteúdo usando um certificado fornecido pelo administrador. Os dados fornecidos a <ph name="DOMAIN" /> podem ser interceptados por seu administrador.</translation>
 <translation id="6087312102907839798">Pesquisas relacionadas</translation>
 <translation id="6094273045989040137">Anotar</translation>
+<translation id="6094290315941448991">A gravação de tela é desativada pela política do administrador quando há conteúdo protegido visível</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Criar site</translation>
 <translation id="6106989379647458772">A página da Web no endereço <ph name="PAGE" /> pode estar temporariamente inativa ou pode ter sido transferida para um novo endereço.</translation>
@@ -2355,6 +2358,7 @@ Mais detalhes:
 <translation id="8870494189203302833">Mesma ordem virada para baixo</translation>
 <translation id="8871553383647848643">Personalizar a aparência do navegador</translation>
 <translation id="8874824191258364635">Informe um número de cartão válido</translation>
+<translation id="8884537526797090108">Não é possível gravar conteúdo confidencial</translation>
 <translation id="8891727572606052622">Modo de proxy inválido.</translation>
 <translation id="8894794286471754040">Borda grande primeiro</translation>
 <translation id="8903921497873541725">Aumentar zoom</translation>
@@ -2409,6 +2413,7 @@ Mais detalhes:
 <translation id="9050666287014529139">Senha</translation>
 <translation id="9056953843249698117">Loja</translation>
 <translation id="9062620674789239642">Talvez ele tenha sido movido, editado ou excluído.</translation>
+<translation id="9063800855227801443">Não é possível fazer a captura de conteúdo confidencial</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9065745800631924235">Pesquisa sobre <ph name="TEXT" /> no histórico</translation>
 <translation id="9069693763241529744">Bloqueada por uma extensão</translation>

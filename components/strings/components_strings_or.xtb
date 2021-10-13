@@ -214,6 +214,7 @@
 <translation id="160851722280695521">Chromeରେ Dino Run ଗେମ ଖେଳନ୍ତୁ</translation>
 <translation id="161042844686301425">ସାୟାନ୍</translation>
 <translation id="1611101756749861742">ଦ୍ୱିତୀୟ ରୋଲ୍</translation>
+<translation id="1615402009686901181">ଯେତେବେଳେ ଗୋପନୀୟ ବିଷୟବସ୍ତୁ ଦୃଶ୍ୟମାନ ହୁଏ, ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ସ୍କ୍ରିନ୍ କ୍ୟାପଚରକୁ ଅକ୍ଷମ କରିଦିଏ</translation>
 <translation id="1620510694547887537">କ୍ୟାମେରା</translation>
 <translation id="1623104350909869708">ଅତିରିକ୍ତ ସଂଳାପଗୁଡିକ ସୃଷ୍ଟି କରିବା କାର୍ଯ୍ୟରୁ ଏହି ପୃଷ୍ଠାକୁ ପ୍ରତିରୋଧ କରନ୍ତୁ</translation>
 <translation id="16338877384480380">ଆର୍କିଟେକ୍‌ଚର୍-B</translation>
@@ -853,7 +854,6 @@
 <translation id="3781428340399460090">ଅତ୍ୟଧିକ ଗୋଲାପି</translation>
 <translation id="3783418713923659662">MasterCard</translation>
 <translation id="3784372983762739446">ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକ</translation>
-<translation id="3787675388804467730">ଭର୍ଚୁଆଲ୍ କାର୍ଡ ନମ୍ବର</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" />ରେ ମିଆଦ ସମାପ୍ତ ହେବ</translation>
 <translation id="3789155188480882154">ଆକାର 16</translation>
 <translation id="3789841737615482174">ସଂସ୍ଥାପନ</translation>
@@ -1557,6 +1557,7 @@
 <translation id="6080696365213338172">ଆପଣ ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଥିବା ସାର୍ଟିଫିକେଟ୍‌ ବ୍ୟବହାର କରି ବିଷୟବସ୍ତୁ ଆକ୍ସେସ୍‌ କରିଛନ୍ତି। ଆପଣ <ph name="DOMAIN" />କୁ ପ୍ରଦାନ କରିଥିବା ଡାଟା ଆପଣଙ୍କ ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା ମଝିରେ ପ୍ରତିରୋଧ କରାଯାଇପାରେ।</translation>
 <translation id="6087312102907839798">ସମ୍ବନ୍ଧିତ ସନ୍ଧାନଗୁଡ଼ିକ</translation>
 <translation id="6094273045989040137">ବ୍ୟାଖ୍ୟା କରନ୍ତୁ</translation>
+<translation id="6094290315941448991">ଯେତେବେଳେ ଗୋପନୀୟ ବିଷୟବସ୍ତୁ ଦୃଶ୍ୟମାନ ହୁଏ, ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂକୁ ଅକ୍ଷମ କରିଦିଏ</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">ସାଇଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6106989379647458772"><ph name="PAGE" />ରେ ଥିବା ୱେବ୍‌ପୃଷ୍ଠାଟି ଅସ୍ଥାୟୀ ରୂପେ ଡାଉନ୍‌ ଥାଇପାରେ କିମ୍ବା ସ୍ଥାୟୀଭାବେ ଏକ ନୂତନ ୱେବ୍ ଠିକଣାକୁ ସ୍ଥାନାନ୍ତର ହୋଇପାରେ।</translation>
@@ -2350,6 +2351,7 @@
 <translation id="8870494189203302833">ସେହି ସମାନ ଅର୍ଡରରେ ଫେସ୍ ଡାଉନ୍</translation>
 <translation id="8871553383647848643">ଆପଣଙ୍କ ବ୍ରାଉଜରର ଲୁକ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
 <translation id="8874824191258364635">ଏକ ବୈଧ କାର୍ଡ ନମ୍ବର୍ ଲେଖନ୍ତୁ</translation>
+<translation id="8884537526797090108">ଗୋପନୀୟ ବିଷୟବସ୍ତୁକୁ ରେକର୍ଡ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="8891727572606052622">ଅବୈଧ ପ୍ରକ୍ସି ମୋଡ୍</translation>
 <translation id="8894794286471754040">ପ୍ରଥମେ ଲମ୍ବା ଏଡଜ୍</translation>
 <translation id="8903921497873541725">ଜୁମ୍ ବଢ଼ାନ୍ତୁ</translation>
@@ -2404,6 +2406,7 @@
 <translation id="9050666287014529139">ପାସ୍‌ଫ୍ରେଜ୍</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">ଏହା ମୁଭ୍, ଏଡିଟ୍ କିମ୍ବା ଡିଲିଟ୍ କରାଯାଇଥାଇପାରେ।</translation>
+<translation id="9063800855227801443">ଗୋପନୀୟ ବିଷୟବସ୍ତୁକୁ କ୍ୟାପଚର୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="9065203028668620118">ସମ୍ପାଦନ</translation>
 <translation id="9065745800631924235"><ph name="TEXT" /> ଇତିବୃତ୍ତିରେ ଖୋଜନ୍ତୁ</translation>
 <translation id="9069693763241529744">ଗୋଟିଏ ଏକ୍ସଟେନ୍‍ସନ୍ ଦ୍ଵାରା ବ୍ଲକ୍ କରାଯାଇଛି</translation>

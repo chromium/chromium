@@ -214,6 +214,7 @@
 <translation id="160851722280695521">Chrome-д Dino Run тоглоомыг тоглох</translation>
 <translation id="161042844686301425">Шар хөх өнгө</translation>
 <translation id="1611101756749861742">Хоёр дахь хуйлмал</translation>
+<translation id="1615402009686901181">Администраторын бодлого нь нууцлалтай контентыг харагдаж байх үед дэлгэцийн зураг авахыг идэвхгүй болгодог</translation>
 <translation id="1620510694547887537">Камер</translation>
 <translation id="1623104350909869708">Энэ хуудсыг нэмэлт хэлэлцүүлэг үүсгэхээс нь урьдчилан сэргийлэх</translation>
 <translation id="16338877384480380">Архитектур-B</translation>
@@ -865,7 +866,6 @@
 <translation id="3781428340399460090">Тод ягаан</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth төхөөрөмжүүд</translation>
-<translation id="3787675388804467730">Виртуал картын дугаар</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" />-д дуусна</translation>
 <translation id="3789155188480882154">Хэмжээ 16</translation>
 <translation id="3789841737615482174">Суулгах</translation>
@@ -1580,6 +1580,7 @@
 <translation id="6080696365213338172">Та админ-аас өгсөн гэрчилгээг ашиглан контент руу нэвтэрсэн байна. Таны <ph name="DOMAIN" /> руу оруулсан өгөгдлийг админаас хориглож болно.</translation>
 <translation id="6087312102907839798">Холбоотой хайлтууд</translation>
 <translation id="6094273045989040137">Тэмдэглэгээ хийх</translation>
+<translation id="6094290315941448991">Администраторын бодлого нь нууцлалтай контентыг харагдаж байх үед дэлгэцийн үйлдэл бичихийг идэвхгүй болгодог</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Сайт үүсгэх</translation>
 <translation id="6106989379647458772"><ph name="PAGE" />-ын веб хуудас түр хугацаанд ажиллахгүй, эсвэл шинэ хуудас болон бүрмөсөн солигдсон байж болзошгүй.</translation>
@@ -2379,6 +2380,7 @@
 <translation id="8870494189203302833">Нүүрээр нь доош харуулж, хуудасны дарааллын дагуу</translation>
 <translation id="8871553383647848643">Хөтчийнхөө харагдах байдлыг өөрчлөх</translation>
 <translation id="8874824191258364635">Зөв картны дугаар оруулна уу</translation>
+<translation id="8884537526797090108">Нууцлалтай контентыг бичих боломжгүй</translation>
 <translation id="8891727572606052622">Орлон ашиглах горим хүчингүй байна</translation>
 <translation id="8894794286471754040">Эхлээд урт зах</translation>
 <translation id="8903921497873541725">Томруулж харах</translation>
@@ -2433,6 +2435,7 @@
 <translation id="9050666287014529139">Нэвтрэх хэллэг</translation>
 <translation id="9056953843249698117">Дэлгүүр</translation>
 <translation id="9062620674789239642">Үүнийг зөөсөн, зассан эсвэл устгасан байж болзошгүй.</translation>
+<translation id="9063800855227801443">Нууцлалтай контентын зургийг авах боломжгүй</translation>
 <translation id="9065203028668620118">Засварлах</translation>
 <translation id="9065745800631924235">Түүх дэх <ph name="TEXT" />-н хайлт</translation>
 <translation id="9069693763241529744">Өргөтгөл блоклосон</translation>

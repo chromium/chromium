@@ -214,6 +214,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="160851722280695521">Juga al joc del dinosaure de Chrome</translation>
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611101756749861742">Segon corró</translation>
+<translation id="1615402009686901181">La política de l'administrador desactiva la captura de pantalla quan es mostra contingut confidencial</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1623104350909869708">Impedeix que aquesta pàgina creï quadres de diàleg addicionals</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -400,6 +401,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2241693394036365668">Es baixa un fitxer</translation>
 <translation id="2248949050832152960">Utilitza WebAuthn</translation>
 <translation id="2250931979407627383">Cosit de la vora a l'esquerra</translation>
+<translation id="2251943122176102076">L'administrador recomana que no es facin captures de pantalla ni gravacions perquè s'ha capturat contingut confidencial:</translation>
 <translation id="225207911366869382">El valor d'aquesta política és obsolet.</translation>
 <translation id="2258928405015593961">Introdueix una data de caducitat situada en el futur i torna-ho a provar</translation>
 <translation id="225943865679747347">Codi d'error: <ph name="ERROR_CODE" /></translation>
@@ -856,7 +858,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3781428340399460090">Rosa fúcsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositius Bluetooth</translation>
-<translation id="3787675388804467730">Número de targeta virtual</translation>
 <translation id="3787705759683870569">Data de caducitat: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Mida 16</translation>
 <translation id="3789841737615482174">Instal·la</translation>
@@ -1186,6 +1187,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
           <ph name="LIST_ITEM" />Els proveïdors d'Internet poden monitorar el trànsit web.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Activa els advertiments</translation>
+<translation id="4834718916855725099">L'administrador recomana que no es facin captures de pantalla ni gravacions perquè hi ha contingut confidencial a la pantalla:</translation>
 <translation id="4838327282952368871">Somiadora</translation>
 <translation id="4840250757394056958">Mostra l'historial de Chrome</translation>
 <translation id="484462545196658690">Automàtic</translation>
@@ -1560,6 +1562,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6080696365213338172">Has accedit a contingut mitjançant un certificat proporcionat per l'administrador. Per tant, l'administrador por interceptar les dades que proporcioneu a <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">Cerques relacionades</translation>
 <translation id="6094273045989040137">Anota</translation>
+<translation id="6094290315941448991">La política de l'administrador desactiva la gravació de pantalla quan es mostra contingut confidencial</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Crea un lloc web</translation>
 <translation id="6106989379647458772">És possible que la pàgina web <ph name="PAGE" /> estigui temporalment fora de servei o s'hagi traslladat permanentment a una adreça web nova.</translation>
@@ -2354,6 +2357,7 @@ Detalls addicionals:
 <translation id="8870494189203302833">Ordre idèntic de cara avall</translation>
 <translation id="8871553383647848643">Personalitza l'aspecte del teu navegador</translation>
 <translation id="8874824191258364635">Introdueix un número de targeta vàlid</translation>
+<translation id="8884537526797090108">No es pot gravar contingut confidencial</translation>
 <translation id="8891727572606052622">El mode de servidor intermediari no és vàlid.</translation>
 <translation id="8894794286471754040">La vora llarga primer</translation>
 <translation id="8903921497873541725">Amplia</translation>
@@ -2408,6 +2412,7 @@ Detalls addicionals:
 <translation id="9050666287014529139">Frase de contrasenya</translation>
 <translation id="9056953843249698117">Botiga</translation>
 <translation id="9062620674789239642">És possible que s'hagi mogut, editat o suprimit.</translation>
+<translation id="9063800855227801443">No es pot capturar contingut confidencial</translation>
 <translation id="9065203028668620118">Edita</translation>
 <translation id="9065745800631924235">Cerca de <ph name="TEXT" /> des de l'historial</translation>
 <translation id="9069693763241529744">Bloquejat per una extensió</translation>

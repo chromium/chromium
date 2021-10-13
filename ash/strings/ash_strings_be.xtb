@@ -261,6 +261,7 @@
 <translation id="2996462380875591307">Прыстыкаваная лупа ўключана. Каб выключыць яе, зноў націсніце Ctrl + Пошук + D.</translation>
 <translation id="3000461861112256445">Монафанія</translation>
 <translation id="3009178788565917040">Выхад</translation>
+<translation id="3009958530611748826">Выберыце папку для захавання</translation>
 <translation id="3017687597151988916">У якасці вобласці вылучэння выбрана акно</translation>
 <translation id="3033545621352269033">Уключана</translation>
 <translation id="3036649622769666520">Адкрыццё файлаў</translation>
@@ -504,7 +505,6 @@
 <translation id="4665114317261903604">Уключэнне рэжыму "Не турбаваць". <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Разблакіруйце прыладу бацькоўскім кодам</translation>
 <translation id="4702647871202761252">Экран прыватнасці выключаны</translation>
-<translation id="4706121060329443414">Спроба спампоўвання будзе зроблена пазней. Пакуль што аўдыяматэрыял будзе адпраўлены для апрацоўкі ў Google.</translation>
 <translation id="4731797938093519117">Бацькоўскі доступ</translation>
 <translation id="4734965478015604180">Гарызантальна</translation>
 <translation id="4735498845456076464">Змянілася прызначэнне спалучэння клавіш <ph name="LAUNCHER_KEY_NAME" /> + лічба. Каб выканаць дзеянне функцыянальнай клавішы, націсніце <ph name="LAUNCHER_KEY_NAME" /> + адну з клавіш верхняга рада.</translation>
@@ -688,7 +688,6 @@
 <translation id="6062360702481658777">Праз <ph name="LOGOUT_TIME_LEFT" /> будзе выкананы аўтаматычны выхад.</translation>
 <translation id="6073451960410192870">Спыніць запіс</translation>
 <translation id="607652042414456612">Ваш камп'ютар бачны для прылад Bluetooth паблізу, ён будзе адлюстроўвацца як "<ph name="NAME" />" з адрасам <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Палітыка, зададзеная адміністратарам, адключае запіс экрана, калі на ім паказваецца прыватнае змесціва</translation>
 <translation id="6114505516289286752">Спампаваны файлы для распазнавання маўлення на наступнай мове: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Памочнік Google недаступны ў гасцявым сеансе.</translation>
@@ -1043,7 +1042,6 @@
 <translation id="8876661425082386199">Праверце падключэнне</translation>
 <translation id="8877788021141246043">Задайце напамін</translation>
 <translation id="8878886163241303700">Экран пашыраецца</translation>
-<translation id="8884537526797090108">Немагчыма зрабіць запіс з-за наяўнасці на экране прыватнага змесціва</translation>
 <translation id="890616557918890486">Змяніць крыніцу</translation>
 <translation id="8909138438987180327">Узровень зараду: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8913384980486163186">З тэмай (стандартна)</translation>

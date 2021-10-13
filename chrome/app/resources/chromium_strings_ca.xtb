@@ -131,7 +131,6 @@
 <translation id="5386450000063123300">S'està actualitzant Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Permet l'inici de sessió a Chromium</translation>
 <translation id="5398878173008909840">Hi ha disponible una versió nova de Chromium.</translation>
-<translation id="5416696090975899932">Chromium no pot mostrar la previsualització d'impressió perquè falta el lector de PDF integrat.</translation>
 <translation id="5427571867875391349">Defineix Chromium com a navegador predeterminat</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5479196819031988440">Chromium OS no pot obrir aquesta pàgina.</translation>
@@ -209,6 +208,7 @@
 <translation id="718435575166326686">Chromium necessita permís d'accés a la càmera per a aquest lloc web</translation>
 <translation id="7196312274710523067">No s'ha pogut iniciar Chromium. Torna-ho a provar.</translation>
 <translation id="7197677400338048821">Chromium no pot comprovar les teves contrasenyes. Torna-ho a provar al cap de 24 hores.</translation>
+<translation id="7218568399872925918">Els llocs web que visites recorden la teva informació fins que tanques Chromium.</translation>
 <translation id="7223968959479464213">Gestor de tasques: Chromium</translation>
 <translation id="731795002583552498">S'està actualitzant Chromium</translation>
 <translation id="7318036098707714271">El fitxer de preferències està malmès o no és vàlid.
@@ -261,6 +261,8 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8621669128220841554">La instal·lació ha fallat a causa d'un error no especificat. Torneu a baixar Chromium.</translation>
 <translation id="8697124171261953979">També controla la pàgina que es mostra quan inicieu Chromium o quan feu una cerca des de l'omnibox.</translation>
 <translation id="8704119203788522458">Aquest és el vostre Chromium</translation>
+<translation id="8713679423359107094">Quan tanques totes les finestres de Chromium, les galetes i les dades de llocs web s'esborren automàticament.</translation>
+<translation id="8796443464227412154">Quan tanquis Chromium, se't <ph name="BEGIN_BOLD" />tancarà la sessió de la majoria de llocs web<ph name="END_BOLD" />. Si la sincronització està desactivada, també se't <ph name="BEGIN_BOLD" />tancarà la sessió de Chromium i dels serveis de Google<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Per visitar aquest lloc web, Chromium necessita permís per accedir a la càmera i al micròfon</translation>
 <translation id="8803635938069941624">Condicions de Chromium OS</translation>
 <translation id="8821041990367117597">Chromium no ha pogut sincronitzar les dades perquè la informació d'inici de sessió del vostre compte no està actualitzada.</translation>

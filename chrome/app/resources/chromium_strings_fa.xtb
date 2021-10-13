@@ -130,7 +130,6 @@
 <translation id="5386450000063123300">‏درحال به‌روزرسانی Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">‏مجاز کردن ورود به سیستم Chromium</translation>
 <translation id="5398878173008909840">‏نسخه جدیدی از Chromium موجود است.</translation>
-<translation id="5416696090975899932">‏وقتی نمایشگر داخلی PDF وجود نداشته باشد، Chromium نمی‌تواند پیش‌نمای چاپ را نشان دهد.</translation>
 <translation id="5427571867875391349">‏تنظیم Chromium به عنوان مرورگر پیش‌فرضتان</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5479196819031988440">‏Chromium OS نمی‌تواند این صفحه را باز کند.</translation>
@@ -208,6 +207,7 @@
 <translation id="718435575166326686">‏Chromium برای این سایت به اجازه دوربین نیاز دارد</translation>
 <translation id="7196312274710523067">‏Chromium راه‌اندازی نشد. دوباره امتحان کنید.</translation>
 <translation id="7197677400338048821">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند. بعد از ۲۴ ساعت دوباره امتحان کنید.</translation>
+<translation id="7218568399872925918">‏تا زمانی‌که Chromium بسته نشود، سایت‌هایی که بازدید می‌کنید اطلاعاتتان را به‌خاطر می‌سپارند</translation>
 <translation id="7223968959479464213">‏مدیر فعالیت‌ها - Chromium</translation>
 <translation id="731795002583552498">‏در حال به‌روزرسانی Chromium</translation>
 <translation id="7318036098707714271">‏فایل اولویت‌های شما خراب یا نامعتبر است. 
@@ -260,6 +260,8 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8621669128220841554">‏به دلیل خطای نامشخص، نصب ناموفق بود. لطفاً دوباره Chromium را بارگیری کنید.</translation>
 <translation id="8697124171261953979">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chromium یا جستجو از Omnibox نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="8704119203788522458">‏این Chromium شماست</translation>
+<translation id="8713679423359107094">‏با بستن همه پنجره‌های Chromium، کوکی‌ها و داده‌های سایت به‌طور خودکار پاک می‌شوند.</translation>
+<translation id="8796443464227412154">‏وقتی Chromium را می‌بندید، <ph name="BEGIN_BOLD" />از سیستم اکثر سایت‌ها خارج می‌شوید<ph name="END_BOLD" />. اگر همگام‌سازی خاموش باشد، از <ph name="BEGIN_BOLD" />از سیستم Chromium و سرویس‌های Google نیز خارج می‌شوید<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">‏Chromium به مجوز دسترسی به دوربین و میکروفون برای این سایت نیاز دارد</translation>
 <translation id="8803635938069941624">‏شرایط Chromium OS</translation>
 <translation id="8821041990367117597">‏Chromium قادر به همگام‌سازی داده‌های شما نبود زیرا جزئیات ورود به حساب شما به‌روز نیست.</translation>

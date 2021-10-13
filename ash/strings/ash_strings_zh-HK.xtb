@@ -264,6 +264,7 @@
 <translation id="2996462380875591307">已啟用固定的放大鏡。再次按下 Search+Shift+D 鍵即可停用。</translation>
 <translation id="3000461861112256445">單聲道音效</translation>
 <translation id="3009178788565917040">輸出</translation>
+<translation id="3009958530611748826">選取儲存的資料夾</translation>
 <translation id="3017687597151988916">揀咗視窗作為來源</translation>
 <translation id="3033545621352269033">已開啟</translation>
 <translation id="3036649622769666520">開啟檔案</translation>
@@ -509,7 +510,6 @@
 <translation id="4667099493359681081">下載緊 <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">使用家長存取碼解鎖裝置</translation>
 <translation id="4702647871202761252">已停用私隱保護畫面</translation>
-<translation id="4706121060329443414">系統稍後將再次嘗試下載，目前會暫時將語音傳送給 Google 處理。</translation>
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="4734965478015604180">橫向</translation>
 <translation id="4735498845456076464">「<ph name="LAUNCHER_KEY_NAME" />鍵 + 數字鍵」的鍵盤快速鍵已變更。如要使用功能鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 最上排的任一按鍵。</translation>
@@ -693,7 +693,6 @@
 <translation id="6062360702481658777">您將於 <ph name="LOGOUT_TIME_LEFT" />後自動登出。</translation>
 <translation id="6073451960410192870">停止錄影</translation>
 <translation id="607652042414456612">您的電腦已開放讓附近的藍牙裝置搜尋，顯示名稱為「<ph name="NAME" />」，地址則是 <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">當畫面上出現機密內容時，管理員政策就會停用螢幕錄影功能</translation>
 <translation id="6114505516289286752">已下載<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">「Google 助理」不適用於訪客工作階段。</translation>
@@ -1049,7 +1048,6 @@
 <translation id="8876661425082386199">請檢查連線</translation>
 <translation id="8877788021141246043">設定提醒</translation>
 <translation id="8878886163241303700">延伸螢幕</translation>
-<translation id="8884537526797090108">無法錄影機密內容</translation>
 <translation id="890616557918890486">變更來源</translation>
 <translation id="8909138438987180327">電量剩番 <ph name="PERCENTAGE" />%。</translation>
 <translation id="8913384980486163186">主題 (預設值)</translation>

@@ -222,7 +222,6 @@
 <translation id="1218015446623563536">‏מחיקת Linux</translation>
 <translation id="1218839827383191197">‏<ph name="BEGIN_PARAGRAPH1" />שירות המיקום של Google נעזר במקורות כגון Wi‑Fi, רשתות סלולריות וחיישנים כדי להעריך את מיקום המכשיר הזה.<ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />ניתן להשבית את ההעברה של נתוני מיקום על-ידי כיבוי של הגדרת המיקום הראשית במכשיר. אפשר גם להשבית את השימוש ב-Wi-Fi, ברשתות סלולריות ובחיישנים לאיתור המיקום בהגדרות המיקום.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">‏לא ניתן היה להוריד את קובצי הדיבור של <ph name="LANGUAGE" />. יתבצע ניסיון הורדה מאוחר יותר. בינתיים, קטעי הדיבור יישלחו אל Google לעיבוד.</translation>
 <translation id="122082903575839559">אלגוריתם חתימה של אישור </translation>
 <translation id="1221024147024329929">‏PKCS #1 MD2 עם הצפנת RSA</translation>
 <translation id="1221825588892235038">בחירה בלבד</translation>
@@ -310,6 +309,7 @@
 <translation id="1313660246522271310">המערכת תוציא אותך מכל האתרים, כולל בכרטיסיות הפתוחות.</translation>
 <translation id="1313705515580255288">‏הסימניות, ההיסטוריה והגדרות נוספות יסונכרנו עם חשבון Google שלך.</translation>
 <translation id="1316136264406804862">מתבצע חיפוש...</translation>
+<translation id="1316248800168909509">לא ניתן היה להתחבר אל <ph name="DEVICE" />. אפשר לנסות שוב.</translation>
 <translation id="1316495628809031177">הסנכרון הושהה</translation>
 <translation id="1317637799698924700">‏תחנת העגינה תעבוד במצב התואם ל-USB-C.</translation>
 <translation id="1319983966058170660">לחצן החזרה בדף המשנה <ph name="SUBPAGE_TITLE" /></translation>
@@ -591,6 +591,7 @@
 <translation id="1612019740169791082">‏הגדרות הקונטיינר אינן תומכות בשינוי גודל האחסון. כדי לשנות את גודל השטח שמוקצה מראש ל-Linux, יש לגבות את הנתונים ואז לשחזר אותם בקונטיינר חדש.</translation>
 <translation id="1614511179807650956">ייתכן שניצלת את כל חבילת הגלישה שלך. בפורטל ההפעלה של <ph name="NAME" /> ניתן לשלם על הרחבת החבילה</translation>
 <translation id="161460670679785907">לא ניתן לזהות את הטלפון שלך</translation>
+<translation id="1615337439947999338">‏שמירה בחשבון Google שלך (<ph name="EMAIL" />)</translation>
 <translation id="1615402009686901181">בהתאם למדיניות מנהל המערכת, צילום המסך מושבת כשמוצג תוכן סודי</translation>
 <translation id="1616206807336925449">אין צורך בהרשאות מיוחדות כדי להשתמש בתוסף זה.</translation>
 <translation id="1616298854599875024">לא ניתן לייבא את התוסף "<ph name="IMPORT_NAME" />" כי הוא לא מודול משותף</translation>
@@ -932,6 +933,7 @@
 <translation id="1929546189971853037">קריאת היסטוריית הגלישה שלך בכל המכשירים שאליהם נכנסת</translation>
 <translation id="1930879306590754738">‏הסיסמאות נמחקו מהמכשיר הזה ומחשבון Google שלך</translation>
 <translation id="1931152874660185993">לא מותקנים רכיבים.</translation>
+<translation id="1931410639376954712">ההתקנה של <ph name="DEVICE_OS" /> מתבצעת</translation>
 <translation id="1932098463447129402">לא לפני</translation>
 <translation id="1935303383381416800">מורשים לראות את המיקום</translation>
 <translation id="1936931585862840749">יש להזין מספר שמציין כמה עותקים יש להדפיס (1 עד <ph name="MAX_COPIES" />).</translation>
@@ -1064,6 +1066,7 @@
 <translation id="208586643495776849">יש לנסות שוב</translation>
 <translation id="208634871997892083">‏VPN מופעל תמיד</translation>
 <translation id="2087822576218954668">הדפסה: <ph name="PRINT_NAME" /></translation>
+<translation id="2088092308059522196">הרישום אפשרי רק לאחר התקנה של <ph name="DEVICE_OS" />.</translation>
 <translation id="208928984520943006">כדי לעבור למסך הבית בכל שלב, מחליקים כלפי מעלה מתחתית המסך.</translation>
 <translation id="2089566709556890888">‏גלישה בטוחה עם Google Chrome</translation>
 <translation id="2089795179672254991">יש לשאול כשאתר רוצה גישה אל טקסט ותמונות שהועתקו אל הלוח (מומלץ)</translation>
@@ -1186,8 +1189,10 @@
 <translation id="2200356397587687044">‏Chrome צריך הרשאה כדי להמשיך</translation>
 <translation id="2202898655984161076">היתה בעיה ברישום מדפסות. ייתכן שחלק מהמדפסות שלך לא נרשמו בהצלחה ב-<ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">שם יכול לכלול אותיות, ספרות ותווים מיוחדים</translation>
+<translation id="220321590587754225">לא ניתן היה להתחבר. אפשר לנסות שוב.</translation>
 <translation id="2204034823255629767">לקרוא ולשנות את כל מה שהקלדת</translation>
 <translation id="220858061631308971">יש להזין את קוד האימות הזה ב-"<ph name="DEVICE_NAME" />":</translation>
+<translation id="2210462644007531147">אי אפשר להשלים את ההתקנה</translation>
 <translation id="2212565012507486665">‏אישור קובצי cookie</translation>
 <translation id="2214018885812055163">תיקיות משותפות</translation>
 <translation id="2214884991347062907">סיסמה לא נכונה, צריך לנסות שוב</translation>
@@ -1244,6 +1249,8 @@
 <translation id="22665427234727190">‏צריך לבקש ממני אישור כשאתר רוצה לגשת למכשירי Bluetooth (מומלץ)</translation>
 <translation id="2266957463645820432">‏IPP בחיבור USB ‏(IPPUSB)</translation>
 <translation id="2270450558902169558">החלפת נתונים עם כל מכשיר בדומיין <ph name="DOMAIN" /></translation>
+<translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />ההתקנה <ph name="BEGIN_BOLD" />תוביל למחיקה של כל הכונן הקשיח<ph name="END_BOLD" />. חשוב להקפיד על גיבוי הנתונים שלך.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />אין אפשרות לבטל את ההתקנה לאחר שהחלה.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">החלפת נתונים עם כל מכשיר בדומיינים: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">הקצאת מתג לפעולה "בחירה"</translation>
 <translation id="2271469253353559191">תזמון מצב כהה</translation>
@@ -1507,6 +1514,7 @@
 <translation id="2521854691574443804">המערכת בודקת אם הקובץ <ph name="FILE_NAME" /> מציית למדיניות האבטחה של הארגון שלך...</translation>
 <translation id="252219247728877310">הרכיב לא עודכן</translation>
 <translation id="2523184218357549926">‏שליחת כתובות אתרים של דפים שבהם ביקרת ל-Google</translation>
+<translation id="252418934079508528">להתקנת <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">‏Chrome בודק את המחשב לאיתור תוכנות מזיקות…</translation>
 <translation id="2526590354069164005">שולחן עבודה</translation>
 <translation id="2526619973349913024">יש עדכון חדש?</translation>
@@ -1712,6 +1720,7 @@
 <translation id="2740531572673183784">אישור</translation>
 <translation id="2741713322780029189">פתיחת טרמינל שחזור</translation>
 <translation id="2741912629735277980">הצגת ממשק המשתמש במסך ההתחברות</translation>
+<translation id="2742448780373473567">התקנת <ph name="DEVICE_OS" /> תחליף את כל הנתונים שבמכשיר שלך.</translation>
 <translation id="274290345632688601">‏שחזור קבצים ואפליקציות של Linux</translation>
 <translation id="274318651891194348">המערכת מחפשת מקלדת</translation>
 <translation id="2743387203779672305">העתקה ללוח</translation>
@@ -2910,6 +2919,8 @@
 <translation id="3979748722126423326">יש להפעיל <ph name="NETWORKDEVICE" /></translation>
 <translation id="3981058120448670012">המכשיר גלוי למכשירים בקרבת מקום בתור <ph name="DEVICE_NAME" /> למשך <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">הוזן סוג שמירה לא חוקי.</translation>
+<translation id="3981828803725658123">‏<ph name="BEGIN_PARAGRAPH1" />משהו השתבש ולא ניתן היה להתקין את <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />עזרה נוספת זמינה בכתובת: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">אפשר להגדיר את הדפדפן בכמה שלבים פשוטים</translation>
 <translation id="3983400541576569538">ייתכן אובדן של נתונים מכמה אפליקציות</translation>
 <translation id="3983586614702900908">מכשירים מספק לא ידוע</translation>
@@ -2999,6 +3010,7 @@
 <translation id="4084835346725913160">סגירת <ph name="TAB_NAME" /></translation>
 <translation id="4085270836953633510">תוצג שאלה כשאתר רוצה לגשת אל יציאות טוריות</translation>
 <translation id="4085298594534903246">‏JavaScript נחסם בדף זה.</translation>
+<translation id="4085947337119280756">עוד תוספים</translation>
 <translation id="4087089424473531098">ההרחבה נוצרה על ידי:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -3305,6 +3317,7 @@
 <translation id="4449996769074858870">הכרטיסייה הזו מפעילה תוכן אודיו.</translation>
 <translation id="4450274068924249931">כאשר המסך לא פעיל, יוצגו בו תמונות, השעה הנוכחית, נתוני מזג האוויר ופרטי מדיה נוספים. הפעלת שומר מסך תשמור על התצוגה שלך בזמן טעינה.</translation>
 <translation id="4450974146388585462">אבחן</translation>
+<translation id="445099924538929605">‏מערכת <ph name="DEVICE_OS" /> זיהתה TPM פעיל שניתן לשמור בו את הנתונים שלך באופן מאובטח יותר.</translation>
 <translation id="4451479197788154834">‏הסיסמה שלך שמורה במכשיר הזה ובחשבון Google שלך</translation>
 <translation id="4451757071857432900">חסומות באתרים שמוצגות בהם מודעות מפריעות או מטעות (מומלץ)</translation>
 <translation id="4453946976636652378">אפשר לחפש ב-<ph name="SEARCH_ENGINE_NAME" /> או להקליד כתובת אתר</translation>
@@ -3808,6 +3821,9 @@
 <translation id="4992473555164495036">מנהל המערכת הגביל את שיטות הקלט הזמינות.</translation>
 <translation id="4994474651455208930">התרה לאתרים לבקש להפוך למטפלי ברירת המחדל עבור פרוטוקולים</translation>
 <translation id="4994754230098574403">בתהליך הגדרה</translation>
+<translation id="4995131849631312693">‏<ph name="BEGIN_PARAGRAPH1" />לפני ההרשמה צריך לנקות את ה-TPM‏ כדי שמערכת <ph name="DEVICE_OS" /> תוכל לתבוע בעלות על המכשיר.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />אפשר גם לכבות לגמרי את מכשיר ה-TPM. הנתונים שלך עדיין יישמרו באופן מאובטח באמצעות הצפנת תוכנה, אבל חלק מתכונות האבטחה, כמו אישורים בגיבוי חומרה, יושבתו.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />אפשר לשנות את הגדרות ה-TPM על ידי הפעלה מחדש וכניסה להגדרות ה-BIOS/UEFI של המערכת. השלבים משתנים בהתאם לדגם של המכשיר. למידע נוסף, עליך לפתוח את התיעוד לגבי <ph name="DEVICE_OS" /> במכשיר אחר לפני ההפעלה מחדש: [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{‏לא נמצאו מכונות VM מסוג <ph name="VM_TYPE" />}=1{‏נמצאה מכונת VM אחת מסוג <ph name="VM_TYPE" />: ‏<ph name="VM_NAME_LIST" />}two{‏נמצאו {NUM_VMS} מכונות VM מסוג <ph name="VM_TYPE" />: ‏<ph name="VM_NAME_LIST" />}many{‏נמצאו {NUM_VMS} מכונות VM מסוג <ph name="VM_TYPE" />: ‏<ph name="VM_NAME_LIST" />}other{‏נמצאו {NUM_VMS} מכונות VM מסוג <ph name="VM_TYPE" />: ‏<ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">אין חיבור לאינטרנט.</translation>
 <translation id="4998430619171209993">מופעל</translation>
@@ -3923,6 +3939,7 @@
 <translation id="5127620150973591153">מזהה חיבור בטוח: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">סנכרון כבוי</translation>
 <translation id="5127881134400491887">ניהול חיבורי רשת</translation>
+<translation id="5128774403617662387">‏לפני שמתחילים, צריך לוודא שיש גיבוי של הנתונים. התקנת <ph name="DEVICE_OS" /> תחליף את כל הנתונים שבכונן הקשיח שלך. מידע נוסף זמין בכתובת g.co/TBD.</translation>
 <translation id="512903556749061217">מחובר</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">לא ניתן היה להוריד את הפרופיל. יש לנסות שוב מאוחר יותר או לפנות לספק לקבלת עזרה.</translation>
@@ -4359,6 +4376,7 @@
 <translation id="5592595402373377407">אין עדיין מספיק נתונים זמינים.</translation>
 <translation id="5595485650161345191">עריכת כתובת</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
+<translation id="5600348067066185292">ההתקנה מתבצעת בכמה שלבים פשוטים. תהיה לך עוד הזדמנות לאשר לפני שיבוצעו שינויים במחשב שלך.</translation>
 <translation id="5600706100022181951">‏ההורדה של העדכון תנצל MB <ph name="UPDATE_SIZE_MB" /> מחבילת הגלישה. להמשיך?</translation>
 <translation id="5601503069213153581">קוד אימות</translation>
 <translation id="5601823921345337195">‏לא מורשים להתחבר אל מכשירי MIDI</translation>
@@ -4419,6 +4437,7 @@
 <translation id="5659593005791499971">אימייל</translation>
 <translation id="5659833766619490117">לא ניתן היה לתרגם את הדף הזה</translation>
 <translation id="5662513737565158057">‏שינוי אופן הפעולה של אפליקציות Linux.</translation>
+<translation id="5667490069342183561">‏Google לא אחראית לאובדן נתונים, וייתכן שמערכת <ph name="DEVICE_OS" /> לא תפעל בדגמים שלא אושרו. מידע נוסף זמין בכתובת g.co/TBD.</translation>
 <translation id="5667546120811588575">‏הגדרת Google Play מתבצעת...</translation>
 <translation id="5668351004957198136">כישלון</translation>
 <translation id="56702779821643359">שיתוף קבצים עם משתמשים בסביבה. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -4437,6 +4456,7 @@
 <translation id="5684181005476681636">‏פרטי Wi-Fi</translation>
 <translation id="5684661240348539843">מזהה נכסים</translation>
 <translation id="5687326903064479980">אזור זמן</translation>
+<translation id="5687935527303996204">צריך לוודא שהמכשיר מחובר ואין לכבות אותו. ייתכן שתהליך ההתקנה יימשך עד 20 דקות. המכשיר שלך ייכבה אוטומטית כשההתקנה תושלם.</translation>
 <translation id="5689516760719285838">מיקום</translation>
 <translation id="5689531695336322499">‏נראה שכבר התבצעה הגדרה של Voice Match ב-Assistant על ידי <ph name="SUPERVISED_USER_NAME" /> במכשיר אחר. במכשיר הזה נוצרה תבנית קול באמצעות ההקלטות הקודמות האלה.</translation>
 <translation id="56907980372820799">קישור נתונים</translation>
@@ -4922,7 +4942,6 @@
 <translation id="6232017090690406397">סוללה</translation>
 <translation id="6232116551750539448">החיבור אל <ph name="NAME" /> נותק</translation>
 <translation id="6233154960150021497">שימוש בקול במקום במקלדת כברירת מחדל</translation>
-<translation id="6233455992368963267">‏דיבור ב<ph name="LANGUAGE" /> נשלח אל Google לעיבוד.</translation>
 <translation id="6234108445915742946">‏התנאים וההגבלות של Chrome ישתנו ב-31 במרץ</translation>
 <translation id="6234474535228214774">ההתקנה בהמתנה</translation>
 <translation id="6235208551686043831">‏המצלמה של המכשיר פועלת. צריך למקם את קוד ה-QR של ה-eSIM מול המצלמה.</translation>
@@ -4959,6 +4978,7 @@
 <translation id="6263284346895336537">לא קריטי</translation>
 <translation id="6264365405983206840">בחירת &amp;הכול</translation>
 <translation id="6265687851677020761">הסרת היציאה</translation>
+<translation id="6266532094411434237">מתבצעת התחברות אל <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">יש לבחור אישור כדי לאמת את עצמך מול <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">פתיחה באמצעות <ph name="APP" /></translation>
 <translation id="6270391203985052864">אתרים יכולים לבקש לשלוח התראות</translation>
@@ -5782,6 +5802,7 @@
 <translation id="7139627972753429585">המיקרופון בשימוש על ידי <ph name="APP_NAME" /></translation>
 <translation id="7141105143012495934">הכניסה נכשלה מפני שלא ניתן היה לאחזר את פרטי החשבון. יש ליצור קשר עם מנהל המערכת או לנסות שוב.</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
+<translation id="7149839598364933473">אפשר להמיר את המכשיר הזה למכשיר <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">מהיום האחרון</translation>
 <translation id="7152478047064750137">אין צורך בהרשאות מיוחדות כדי להשתמש בתוסף זה</translation>
 <translation id="7154130902455071009">שינוי דף הפתיחה ל: <ph name="START_PAGE" /></translation>
@@ -5877,6 +5898,16 @@
 <translation id="7257666756905341374">קריאת נתונים שהועתקו והודבקו</translation>
 <translation id="7258225044283673131">האפליקציה לא מגיבה. כדי לסגור את האפליקציה, יש לבחור באפשרות "אילוץ סגירה".</translation>
 <translation id="7262004276116528033">שירות הכניסה הזה מתארח ב-<ph name="SAML_DOMAIN" />.</translation>
+<translation id="7264432249010320236">אתרים נוספים</translation>
+<translation id="7264564921322372728">‏<ph name="BEGIN_PARAGRAPH1" />מומלץ לפעול לפי השלבים הבאים לפתרון הבעיה:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />מוודאים שבמכשיר יש אחסון פנימי פעיל כמו HDD,‏ SSD או eMMC.
+    <ph name="LIST_ITEM" />בודקים שמכשיר האחסון הפנימי מכיל יותר מ-16GB.
+    <ph name="LIST_ITEM" />בודקים את החיבור לאחסון הפנימי (אם הוא נגיש פיזית).
+    <ph name="LIST_ITEM" />מוודאים שנעשה שימוש בדגם שקיבל אישור, ובודקים את נתוני ההתקנה.
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />עזרה נוספת זמינה בכתובת: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">לא ניתן להתקין את המכונה הווירטואלית. אפשר לנסות שוב או ליצור קשר עם מנהל המערכת. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">יש להרים את האצבע ולגעת בחיישן עם חלקים שונים של האצבע כדי להוסיף טביעת אצבע מלאה</translation>
 <translation id="7268127947535186412">ההגדרה הזו מנוהלת על ידי הבעלים של המכשיר.</translation>
@@ -6607,6 +6638,7 @@
 <translation id="7986295104073916105">קריאה ושינוי של הגדרות בשביל סיסמאות שמורות</translation>
 <translation id="7987814697832569482">‏החיבור יתבצע תמיד דרך ה-VPN הזה</translation>
 <translation id="7988355189918024273">יש להפעיל תכונות נגישות</translation>
+<translation id="7988805580376093356">‏מערכת ההפעלה שלך תמשיך לרוץ, ומערכת <ph name="DEVICE_OS" /> תרוץ מה-USB.</translation>
 <translation id="7991296728590311172">הגדרות גישה באמצעות מתג</translation>
 <translation id="7997826902155442747">עדיפות תהליך</translation>
 <translation id="7999229196265990314">יצר את הקבצים הבאים:
@@ -6717,6 +6749,7 @@
 <translation id="80974698889265265">קודי האימות אינם תואמים</translation>
 <translation id="809792523045608178">‏<ph name="IDS_SHORT_PRODUCT_NAME" /> משתמש בהגדרות שרת proxy שנקבעו על-ידי תוסף</translation>
 <translation id="8097959162767603171">‏מנהל המערכת צריך קודם לאשר את התנאים וההגבלות ברשימת מכשירי Chrome שבמסוף ה-Admin.</translation>
+<translation id="8098156986344908134">להתקין את <ph name="DEVICE_OS" /> ולמחוק את הכונן הקשיח?</translation>
 <translation id="8098616321286360457">נדרש חיבור לאינטרנט</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> נבחרה. כדי לבטל את הבחירה, יש ללחוץ על 'חיפוש' ועל מקש הרווח.</translation>
 <translation id="8100972288595615768">לנקות את הנתונים ואת ההרשאות לאתר <ph name="SITE_NAME" />?</translation>
@@ -6903,6 +6936,7 @@
 <translation id="8287902281644548111">‏חיפוש לפי קריאה ל-API/כתובת URL</translation>
 <translation id="8288032458496410887">הסרת <ph name="APP" />...</translation>
 <translation id="8289128870594824098">גודל כונן</translation>
+<translation id="8289509909262565712">ברוך בואך אל <ph name="DEVICE_OS" /></translation>
 <translation id="8293206222192510085">הוספת סימנייה</translation>
 <translation id="8294431847097064396">מקור</translation>
 <translation id="8298429963694909221">‏התראות שהתקבלו בטלפון שלך יופיעו עכשיו גם במכשיר <ph name="DEVICE_TYPE" />. סגירת התראות במכשיר <ph name="DEVICE_TYPE" /> תסגור אותן גם בטלפון שלך. יש לוודא שהטלפון נמצא בקרבת מקום ושה-Bluetooth וה-Wi-Fi פועלים.</translation>
@@ -7230,6 +7264,7 @@
 <translation id="867085395664725367">התרחשה שגיאת שרת זמנית.</translation>
 <translation id="8673026256276578048">חיפוש באינטרנט...</translation>
 <translation id="8673383193459449849">יש בעיה בשרת</translation>
+<translation id="8675704450909805533">מנהל ההתקנה לא מצא יעד תקין להתקנה של <ph name="DEVICE_OS" />.</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{סרטון}two{# סרטונים}many{# סרטונים}other{# סרטונים}}</translation>
 <translation id="8676313779986170923">תודה ששלחת משוב.</translation>
 <translation id="8676374126336081632">ניקוי קלט</translation>
@@ -7388,6 +7423,7 @@
 <translation id="8823559166155093873">‏חסימת קובצי cookie</translation>
 <translation id="8823704566850948458">הצעת סיסמה...</translation>
 <translation id="8824701697284169214">הוספת &amp;דף...</translation>
+<translation id="8826773185686617320">‏כדי להשתמש במערכת <ph name="DEVICE_OS" />, עליך להוציא את ה-USB ולהפעיל מחדש את המכשיר שלך. אחרת, המכשיר ייכבה בעוד <ph name="TIME_LEFT" />.</translation>
 <translation id="8827125715368568315">בוצעה חסימה להרשאות <ph name="PERMISSION" /> ועוד <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">הצמדת התוסף</translation>
 <translation id="8827752199525959199">עוד פעולות, הסיסמה של <ph name="USERNAME" /> ב-<ph name="DOMAIN" /></translation>
@@ -7523,6 +7559,7 @@
 <translation id="8962051932294470566">אפשר לשתף רק קובץ אחד בכל פעם. יש לנסות שוב כאשר ההעברה הנוכחית תסתיים.</translation>
 <translation id="8962083179518285172">הסתרת פרטים</translation>
 <translation id="8962918469425892674">האתר הזה משתמש בחיישני תנועה או תאורה.</translation>
+<translation id="8964943308070692533">אתרים נוספים שאינם פעילים</translation>
 <translation id="8965037249707889821">יש להזין את הסיסמה הישנה</translation>
 <translation id="89667524227025535">‏צריך לסרוק את קוד ה-QR באמצעות מצלמת המכשיר או להזין את קוד ההפעלה שקיבלת מהספק</translation>
 <translation id="8966809848145604011">פרופילים אחרים</translation>
@@ -7687,6 +7724,8 @@
 <translation id="9116465289595958864">שינוי אחרון</translation>
 <translation id="9116799625073598554">אפליקציה לרישום הערות</translation>
 <translation id="9117030152748022724">ניהול האפליקציות שלך</translation>
+<translation id="9120693811286642342">‏<ph name="BEGIN_PARAGRAPH1" />כדי ליהנות מהחוויה הכי טובה, צריך להתקין את <ph name="DEVICE_OS" /> בדיסק הפנימי. יש לך גם אפשרות להתקין בשלב מאוחר יותר ממסך ההתחברות.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />אם עדיין לא מתאים לך להתקין, אפשר להריץ את המערכת מ-USB ולנסות אותה. מערכת ההפעלה והנתונים הנוכחיים שלך ימשיכו לפעול, אבל ייתכן שיהיו מגבלות על נפח אחסון וביצועים.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">פתיחה ככרטיסייה מוצמדת</translation>
 <translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> הושהה</translation>
 <translation id="9124003689441359348">כאן יופיעו הסיסמאות ששמרת</translation>

@@ -214,6 +214,7 @@
 <translation id="160851722280695521">Chrome-এ ডাইনো রান গেম খেলুন</translation>
 <translation id="161042844686301425">নীলাভ</translation>
 <translation id="1611101756749861742">Second Roll</translation>
+<translation id="1615402009686901181">কোনও গোপনীয় কন্টেন্ট দেখা গেলে অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী স্ক্রিন ক্যাপচার করার সুবিধা বন্ধ করে দেওয়া হয়</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1623104350909869708">এই পৃষ্ঠাটিকে অতিরিক্ত কথোপকথন তৈরি করা থেকে বাধা দিন</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -861,7 +862,6 @@
 <translation id="3781428340399460090">হট গোলাপী</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">ব্লুটুথ ডিভাইস</translation>
-<translation id="3787675388804467730">ভার্চুয়াল কার্ডের সংখ্যা</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /> এ মেয়াদ শেষ হবে</translation>
 <translation id="3789155188480882154">সাইজ ১৬</translation>
 <translation id="3789841737615482174">ইনস্টল করুন</translation>
@@ -1570,6 +1570,7 @@
 <translation id="6080696365213338172">অ্যাডমিনিস্ট্রেটরের দ্বারা সরবরাহ করা সার্টিফিকেট ব্যবহার করে আপনি কন্টেন্ট ব্যবহার করেছেন৷ <ph name="DOMAIN" />-কে আপনি যে ডেটা সরবরাহ করেন তাতে আপনার অ্যাডমিনিস্ট্রেটর বাধা দিতে পারে৷</translation>
 <translation id="6087312102907839798">সম্পর্কিত সার্চ</translation>
 <translation id="6094273045989040137">ব্যাখ্যা করুন</translation>
+<translation id="6094290315941448991">কোনও গোপনীয় কন্টেন্ট দেখা গেলে অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী স্ক্রিন রেকর্ড করার সুবিধা বন্ধ করে দেওয়া হয়</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">সাইট তৈরি করুন</translation>
 <translation id="6106989379647458772"><ph name="PAGE" />-এ ওয়েবপৃষ্ঠাটি অস্থায়ীভাবে ডাউন হয়ে থাকতে পারে অথবা এটি হয়ত একটি নতুন ওয়েব ঠিকানায় স্থায়ীভাবে সরানো হয়েছে।</translation>
@@ -2363,6 +2364,7 @@
 <translation id="8870494189203302833">একই অর্ডার, সামনের দিক নীচে</translation>
 <translation id="8871553383647848643">আপনার ব্রাউজার কেমন দেখাবে তা কাস্টমাইজ করুন</translation>
 <translation id="8874824191258364635">একটি সঠিক কার্ড নম্বর লিখুন</translation>
+<translation id="8884537526797090108">গোপনীয় কন্টেন্ট রেকর্ড করা যাচ্ছে না</translation>
 <translation id="8891727572606052622">ভুল প্রক্সি মোড৷</translation>
 <translation id="8894794286471754040">আগে দীর্ঘ প্রান্ত</translation>
 <translation id="8903921497873541725">জুম বাড়ান</translation>
@@ -2417,6 +2419,7 @@
 <translation id="9050666287014529139">পাসফ্রেজ</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">এটি হয়ত সরানো, এডিট করা বা মুছে ফেলা হয়েছে।</translation>
+<translation id="9063800855227801443">গোপনীয় কন্টেন্ট ক্যাপচার করা যাবে না</translation>
 <translation id="9065203028668620118">সম্পাদনা</translation>
 <translation id="9065745800631924235">ইতিহাসে <ph name="TEXT" /> সার্চ</translation>
 <translation id="9069693763241529744">একটি এক্সটেনশন ব্লক করেছে</translation>

@@ -261,6 +261,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2996462380875591307">Vastgezet vergrootglas staat aan. Druk nogmaals op Ctrl+Zoeken+D om dit uit te zetten.</translation>
 <translation id="3000461861112256445">Monogeluid</translation>
 <translation id="3009178788565917040">Uitgang</translation>
+<translation id="3009958530611748826">Selecteer een map voor opslaan</translation>
 <translation id="3017687597151988916">Selectiegebied ingesteld op venster</translation>
 <translation id="3033545621352269033">Aan</translation>
 <translation id="3036649622769666520">Bestanden openen</translation>
@@ -504,7 +505,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4665114317261903604">Niet storen aan/uit. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Apparaat ontgrendelen met oudercode</translation>
 <translation id="4702647871202761252">Privacyscherm staat uit</translation>
-<translation id="4706121060329443414">Download wordt later geprobeerd. Voorlopig wordt spraak naar Google gestuurd voor verwerking.</translation>
 <translation id="4731797938093519117">Toegang door ouders</translation>
 <translation id="4734965478015604180">Horizontaal</translation>
 <translation id="4735498845456076464">De sneltoets <ph name="LAUNCHER_KEY_NAME" /> + cijfer is veranderd. Als je functietoetsen wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + een toets op de bovenste rij.</translation>
@@ -688,7 +688,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6062360702481658777">Je wordt automatisch uitgelogd over <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Opname stoppen</translation>
 <translation id="607652042414456612">Bluetooth-apparaten in de buurt kunnen je computer vinden als <ph name="NAME" /> met het adres <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Op basis van het beheerdersbeleid wordt schermopname uitgezet als er vertrouwelijke content zichtbaar is</translation>
 <translation id="6114505516289286752">Spraakbestanden in het <ph name="LANGUAGE" /> gedownload</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="612734058257491180">De Google Assistent is niet beschikbaar in een gastsessie.</translation>
@@ -1043,7 +1042,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8876661425082386199">Je verbinding checken</translation>
 <translation id="8877788021141246043">Stel een herinnering in</translation>
 <translation id="8878886163241303700">Uitgebreid scherm</translation>
-<translation id="8884537526797090108">Kan geen vertrouwelijke content opnemen</translation>
 <translation id="890616557918890486">Bron wijzigen</translation>
 <translation id="8909138438987180327">Batterij op <ph name="PERCENTAGE" /> procent.</translation>
 <translation id="8913384980486163186">Met een thema (standaard)</translation>

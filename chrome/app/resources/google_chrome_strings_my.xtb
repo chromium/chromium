@@ -52,7 +52,6 @@
 <translation id="2121284319307530122">&amp;Chrome အပ်ဒိတ်လုပ်ရန် ပြန်ဖွင့်ပါ</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />လက်ရှိဆက်တင်များ<ph name="END_LINK" />ကို အစီရင်ခံပေးခြင်းအားဖြင့် Chromium ကို ပိုကောင်းလာအောင် ကူညီပေးပါ</translation>
 <translation id="2151406531797534936">Chrome ကို ယခုပြန်စပါ</translation>
-<translation id="2246246234298806438">ထည့်သွင်းထားသည့် PDF ကြည့်ရှုမှုကို ရှာမရလျှင် Google Chrome က ပရင့်ထုတ်မှု အစမ်းကြည့်ကို ပြမပေးနိုင်ပါ။</translation>
 <translation id="2290014774651636340">Google API သော့များ မရှိပါ။ Google Chrome ၏ အချို့သော လုပ်ကိုင်နိုင်စွမ်းများမှာ ပိတ်ခံကြရမည်။</translation>
 <translation id="2290095356545025170">သင်သည် Google Chromeကို ဖြုတ်ချင်တာ သေချာလား?</translation>
 <translation id="2309047409763057870">ဤသည်မှာ Google Chrome ကို အရန်သဘော ထည့်သွင်းခြင်းဖြစ်ပြီး သင်၏မူရင်းဘရောင်ဇာအဖြစ် ၎င်းကို အသုံးပြု၍မရနိုင်ပါ။</translation>
@@ -91,6 +90,7 @@
 <translation id="3037838751736561277">Google Chrome သည် နောက်ခံ မုဒ်ထဲမျာ ရှိနေသည်။</translation>
 <translation id="3059710691562604940">'လုံခြုံစွာ ကြည့်ရှုခြင်း' ပိတ်ထားသည်။ ၎င်းကိုဖွင့်ရန် Chrome က အကြံပြုပါသည်။</translation>
 <translation id="3065168410429928842">Chrome တဘ်</translation>
+<translation id="3069821012350118710">Chromium ကို သင်မပိတ်ခင်အထိ ဝဘ်ဆိုက်များသည် သင့်အချက်အလက်များကို မှတ်ထားပါသည်</translation>
 <translation id="3080151273017101988">Google Chrome ကို ပိတ်လိုက်ချိန်မှာ နောက်ခံအက်ပ်များကို ဆက်ဖွင့် ထားရန်</translation>
 <translation id="3089968997497233615">ပိုသစ်သော၊ ပိုလုံခြုံသော Google Chrome ရနိုင်ပါသည်။</translation>
 <translation id="3100998948628680988">သင်၏ Chrome ပရိုဖိုင်ကို အမည်ပေးပါ</translation>
@@ -194,6 +194,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="5804318322022881572">Chrome ကို ဖွင့်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="5867197326698922595">Google Chrome က စကားဝှက်များ တည်းဖြတ်ရန် ကြိုးပမ်းနေသည်။</translation>
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>
+<translation id="5901850848447342934">Chromium ကို ပိတ်လိုက်ချိန်တွင် <ph name="BEGIN_BOLD" />ဝဘ်ဆိုက်အများစုမှ သင်ထွက်သွားလိမ့်မည်<ph name="END_BOLD" />။ စင့်ခ်လုပ်ခြင်း ပိတ်ထားလျှင်လည်း <ph name="BEGIN_BOLD" />Google ဝန်ဆောင်မှုများနှင့် Chromium မှ သင်ထွက်သွားလိမ့်မည်<ph name="END_BOLD" />။</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ကွန်ရက် လက်မှတ်ထိုးဝင်ခြင်း</translation>
 <translation id="5940385492829620908">သင်၏ ဝဘ်၊ စာညှပ်များ၊ နှင့် အခြားသော Chrome အရာများဟာ ဒီမှာ နေထိုင်ကြပါသည်။</translation>
 <translation id="5941830788786076944">Google Chrome ကို ပုံသေ ဘရောင်ဇာ ပြုလုပ်ပါ။</translation>
@@ -283,6 +284,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8614913330719544658">Google Chrome သည် မတုံ့ပြန်ပါ။ ယခု ပြန်ပြီးဖွင့်တင်ရမလား?</translation>
 <translation id="861702415419836452">သင့်ပတ်ဝန်းကျင်၏ 3D မြေပုံ ပြုလုပ်ရန် Chrome က သင့်ကင်မရာကို အသုံးပြုခွင့် လိုအပ်သည်</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ကို ၁ မိနစ်အကြာတွင် ပြန်လည်စတင်ပါမည်}other{Chrome ကို # မိနစ်အကြာတွင် ပြန်လည်စတင်ပါမည်}}</translation>
+<translation id="8629311577791198377">Chromium ဝင်းဒိုးများအားလုံးကို သင်ပိတ်လိုက်ချိန်တွင် ကွတ်ကီးနှင့် ဝဘ်ဆိုက် ဒေတာများသည် အလိုလို ရှင်းထုတ်ပြီးဖြစ်သည်</translation>
 <translation id="8641606876632989680">ကျိုးပေါက်ထားသည့် စကားဝှက်ဖြင့် လက်မှတ်ထိုးဝင်သည့်အခါ Chrome က သင့်ကို အကြောင်းကြားပါမည်</translation>
 <translation id="8669527147644353129">Google Chrome ကူညီပေးသူ</translation>
 <translation id="8679801911857917785">သင်က Chrome ကို စတင်စဉ် ဘယ်စာမျက်နှာ ပြကြောင်းကိုပါ ၎င်းက ထိန်းချုပ်ပါသည်။</translation>

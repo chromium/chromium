@@ -48,7 +48,6 @@
 <translation id="2121284319307530122">Päivitä &amp;Chrome käynnistämällä se uudelleen</translation>
 <translation id="2123055963409958220">Auta parantamaan Chromea ilmoittamalla <ph name="BEGIN_LINK" />nykyiset asetukset<ph name="END_LINK" />.</translation>
 <translation id="2151406531797534936">Käynnistä Chrome uudelleen nyt</translation>
-<translation id="2246246234298806438">Google Chrome ei voi näyttää tulostusesikatselua, koska PDF-katseluohjelma puuttuu.</translation>
 <translation id="2290014774651636340">Googlen sovellusliittymän avaimet puuttuvat. Jotkin Google Chromen toiminnoista poistetaan käytöstä.</translation>
 <translation id="2290095356545025170">Haluatko varmasti poistaa Google Chromen?</translation>
 <translation id="2309047409763057870">Tämä on Google Chromen toissijainen asennus, eikä sitä voi asettaa oletusselaimeksi.</translation>
@@ -87,6 +86,7 @@
 <translation id="3037838751736561277">Google Chrome on käynnissä taustalla.</translation>
 <translation id="3059710691562604940">Selaussuoja on pois päältä. Chrome suosittelee laittamaan sen päälle.</translation>
 <translation id="3065168410429928842">Chrome-välilehti</translation>
+<translation id="3069821012350118710">Avaamasi sivustot muistavat tietosi, kunnes suljet Chromen</translation>
 <translation id="3080151273017101988">Jätä taustaohjelmat käyntiin, kun Google Chrome suljetaan</translation>
 <translation id="3089968997497233615">Google Chromesta on saatavillaa uusi, turvallisempi versio.</translation>
 <translation id="3100998948628680988">Nimeä Chrome-profiilisi</translation>
@@ -186,6 +186,7 @@
 <translation id="5804318322022881572">Chromen käynnistäminen epäonnistui. Yritä uudelleen.</translation>
 <translation id="5867197326698922595">Google Chrome yrittää muuttaa salasanoja.</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
+<translation id="5901850848447342934">Kun suljet Chromen, sinut <ph name="BEGIN_BOLD" />kirjataan ulos useimmilta sivustoilta<ph name="END_BOLD" />. Jos synkronointi on pois päältä, sinut <ph name="BEGIN_BOLD" />kirjataan ulos myös Googlen palveluista ja Chromesta<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Kirjautuminen verkkoon</translation>
 <translation id="5940385492829620908">Tämä on verkkosi, kirjanmerkkiesi ja muun Chrome-sisältösi koti.</translation>
 <translation id="5941830788786076944">Tee Google Chromesta oletusselain</translation>
@@ -275,6 +276,7 @@
 <translation id="8614913330719544658">Google Chrome ei vastaa. Käynnistetäänkö uudelleen?</translation>
 <translation id="861702415419836452">Chrome tarvitsee luvan käyttää kameraasi ympäristön 3D-kartoittamiseen</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome käynnistetään uudelleen 1 minuutin kuluttua}other{Chrome käynnistetään uudelleen # minuutin kuluttua.}}</translation>
+<translation id="8629311577791198377">Kun suljet kaikki Chrome-ikkunat, evästeet ja sivustodata tyhjennetään automaattisesti</translation>
 <translation id="8641606876632989680">Chrome ilmoittaa, kun kirjaudut sisään vaarantuneella salasanalla</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Määrittää myös Chromen aloitussivun.</translation>

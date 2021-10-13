@@ -218,7 +218,6 @@
 <translation id="1218015446623563536">Eliminar Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />O servizo de localización de Google utiliza distintas fontes, como sensores e redes wifi ou de telefonía móbil, para calcular a localización deste dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para desactivar a localización, desactiva a opción principal de localización neste dispositivo. Tamén podes desactivar o uso de sensores e redes wifi ou de telefonía móbil para calcular a localización na configuración da localización.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Non se puideron descargar os ficheiros de voz en <ph name="LANGUAGE" />. Tentarase de novo máis tarde. De momento, o que se fala envíase a Google para que o procese.</translation>
 <translation id="122082903575839559">Algoritmo de sinatura do certificado</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 con cifrado RSA</translation>
 <translation id="1221825588892235038">Só selección</translation>
@@ -4906,7 +4905,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6232017090690406397">Batería</translation>
 <translation id="6232116551750539448">Perdeuse a conexión a <ph name="NAME" /></translation>
 <translation id="6233154960150021497">Uso predeterminado da voz en lugar do teclado</translation>
-<translation id="6233455992368963267">O que se fale nese idioma (<ph name="LANGUAGE" />) enviarase a Google para procesalo.</translation>
 <translation id="6234108445915742946">As Condicións de servizo de Chrome cambiarán o 31 de marzo</translation>
 <translation id="6234474535228214774">Pendente de instalación</translation>
 <translation id="6235208551686043831">Acendeuse a cámara do dispositivo. Coloca diante dela o código QR da eSIM.</translation>

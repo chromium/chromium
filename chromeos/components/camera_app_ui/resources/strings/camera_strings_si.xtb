@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="si">
+<translation id="1113173431709655881">කැමරා ප්‍රකාරය</translation>
 <translation id="1175958423215084756">සබැඳිය අනාවරණය කර ගන්නා ලදි. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">ගැලරි රූප</translation>
 <translation id="1300209025925956156">ඔබගේ ලේඛනය ස්කෑන් කරන්න</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">පටිගත කිරීම අරඹන්න</translation>
 <translation id="2599796128805996109">පිටුපස කැමරාව</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / ත<ph name="MAXIMAL" /></translation>
+<translation id="2761536921376153655">ස්කෑන් වර්ගය</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> පේනුගත කර ඇත.</translation>
 <translation id="2968794441791257519">කැමරාව සමඟින් ගත් ඡායාරූප සහ වීඩියෝ බාගැනීම් ෆෝල්ඩරයට ගෙන එනු ලැබේ. ඔබට ඒවාට ගොනු තුළ ප්‍රවේශ විය හැක.
 
@@ -99,9 +101,11 @@
 <translation id="698156982839284926">තත්පර 3ක්</translation>
 <translation id="712848772518857951">ඔබට සැබැවින්ම අයිතම <ph name="COUNT" />ක් ඉවත් කිරීමට අවශ්‍යද?</translation>
 <translation id="7134221860976209830">තත්පර 10 කාල ගණකය</translation>
+<translation id="7191890674911603392">පටිගත කිරීමේ වර්ගය</translation>
 <translation id="7243947652761655814">වීඩියෝ විභේදනය</translation>
 <translation id="7337660886763914220">ගොනු පද්ධති දෝෂ.</translation>
 <translation id="7450541714075000668">පෙළ පිටපත් කරන ලදී</translation>
+<translation id="7476762461674917065">GIF පටිගත කිරීමේ විකල්පය පෙන්වන්න</translation>
 <translation id="7488619942230388918">GIF වීඩියෝව පටිගත කරන්න</translation>
 <translation id="7557677699350329807">මීළඟ කැමරාවට මාරු වන්න</translation>
 <translation id="7607002721634913082">අත්හිටුවන ලදි</translation>

@@ -261,6 +261,7 @@
 <translation id="2996462380875591307">Бекітілген ұлғайтқыш қосылды. Оны өшіру үшін Ctrl+Search+D пернелер тіркесімін қайта басыңыз.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3009178788565917040">Шығыс</translation>
+<translation id="3009958530611748826">Сканерленген мазмұн сақталатын қалтаны таңдаңыз</translation>
 <translation id="3017687597151988916">Таңдау аймағы терезеге орнатылды.</translation>
 <translation id="3033545621352269033">Қосулы</translation>
 <translation id="3036649622769666520">Файлдарды ашу</translation>
@@ -504,7 +505,6 @@
 <translation id="4665114317261903604">Мазаламау режиміне ауысыңыз. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Құрылғының құлпын ата-ана кодымен ашыңыз</translation>
 <translation id="4702647871202761252">Құпиялылық экраны өшірулі.</translation>
-<translation id="4706121060329443414">Кейінірек жүктеп алынады. Айтылған сөз әзірше Google-дың өңдеуіне жіберіледі.</translation>
 <translation id="4731797938093519117">Ата-ананың кіру рұқсаты</translation>
 <translation id="4734965478015604180">Көлденең</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + сан пернелер тіркесімінің функциясы өзгерді. Функциялық пернелерді пайдалану үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + жоғарғы қатар пернесі тіркесімін басыңыз.</translation>
@@ -688,7 +688,6 @@
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> уақытта жүйеден автоматты түрде шығасыз.</translation>
 <translation id="6073451960410192870">Бейнеге түсіруді тоқтату</translation>
 <translation id="607652042414456612">Компьютеріңізді жақын жердегі Bluetooth құрылғылары анықтай алады. <ph name="ADDRESS" /> мекенжайымен және "<ph name="NAME" />" атауымен көрсетіледі</translation>
-<translation id="6094290315941448991">Құпия мазмұн көрініп тұрғанда, әкімші саясаты экранды жазу функциясын өшіреді.</translation>
 <translation id="6114505516289286752">Тіл файлдары (<ph name="LANGUAGE" />) жүктеп алынды</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistant қонақ сеансында жұмыс істемейді.</translation>
@@ -1043,7 +1042,6 @@
 <translation id="8876661425082386199">Интернет байланысын тексеріңіз.</translation>
 <translation id="8877788021141246043">Еске салғыш орнату</translation>
 <translation id="8878886163241303700">Экранды кеңейту</translation>
-<translation id="8884537526797090108">Құпия мазмұнды жазу мүмкін емес</translation>
 <translation id="890616557918890486">Дереккөзді өзгерту</translation>
 <translation id="8909138438987180327">Батарея қуаты: <ph name="PERCENTAGE" />.</translation>
 <translation id="8913384980486163186">Тақырыптық (әдепкі)</translation>

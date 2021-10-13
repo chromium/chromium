@@ -264,6 +264,7 @@
 <translation id="2996462380875591307">Овозможена е закотвената лупа. Притиснете Ctrl+Search+D повторно за да ја исклучите.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3009178788565917040">Излез</translation>
+<translation id="3009958530611748826">Изберете папка за зачувување</translation>
 <translation id="3017687597151988916">Областа за избор е прозорец</translation>
 <translation id="3033545621352269033">Вклучено</translation>
 <translation id="3036649622769666520">Отвори датотеки</translation>
@@ -510,7 +511,6 @@
 <translation id="4667099493359681081">Се презема <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Отклучете го уредот со код на родител</translation>
 <translation id="4702647871202761252">Исклучен е екранот за приватност</translation>
-<translation id="4706121060329443414">Подоцна ќе се изврши обид за преземање. Говорот ќе биде испратен до Google за обработка засега.</translation>
 <translation id="4731797938093519117">Пристап за родители</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="4735498845456076464">Кратенката од тастатура <ph name="LAUNCHER_KEY_NAME" /> + Број се промени. За да ги користите копчињата за функции, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Копче од горниот ред.</translation>
@@ -695,7 +695,6 @@
 <translation id="6062360702481658777">Автоматски ќе бидете одјавени за <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Сопри со снимање</translation>
 <translation id="607652042414456612">Уреди со Bluetooth во близина можат да го откријат вашиот уред, а тој ќе се појави како „<ph name="NAME" />“ со адреса <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Администраторското правило оневозможува снимање на екранот кога се видливи доверливи содржини</translation>
 <translation id="6114505516289286752">Датотеките за говор на <ph name="LANGUAGE" /> се преземени</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">„Помошникот на Google“ не е достапен во гостинска сесија.</translation>
@@ -1051,7 +1050,6 @@
 <translation id="8876661425082386199">Проверете ја врската</translation>
 <translation id="8877788021141246043">Потсетник</translation>
 <translation id="8878886163241303700">Проширување екран</translation>
-<translation id="8884537526797090108">Не може да се снимаат доверливи содржини</translation>
 <translation id="890616557918890486">Промени го изворот</translation>
 <translation id="8909138438987180327">Батеријата е на <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8913384980486163186">Тематски (стандарден)</translation>

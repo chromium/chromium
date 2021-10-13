@@ -261,6 +261,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2996462380875591307">Lente d'ingrandimento ancorata attivata. Premi di nuovo CTRL + tasto per la ricerca + D per disattivarla.</translation>
 <translation id="3000461861112256445">Audio in formato mono</translation>
 <translation id="3009178788565917040">Uscita</translation>
+<translation id="3009958530611748826">Seleziona una cartella in cui salvare i file</translation>
 <translation id="3017687597151988916">Area di selezione impostata su Finestra</translation>
 <translation id="3033545621352269033">On</translation>
 <translation id="3036649622769666520">Apri file</translation>
@@ -505,7 +506,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4665114317261903604">Attiva/disattiva Non disturbare. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Sblocca con codice genitore</translation>
 <translation id="4702647871202761252">Schermata sulla privacy non attiva</translation>
-<translation id="4706121060329443414">Verrà effettuato un tentativo di download in un secondo tempo. Per ora ciò che dici viene inviato a Google per l'elaborazione.</translation>
 <translation id="4731797938093519117">Accesso genitore</translation>
 <translation id="4734965478015604180">Orizzontale</translation>
 <translation id="4735498845456076464">La scorciatoia da tastiera <ph name="LAUNCHER_KEY_NAME" /> + Numero è cambiata. Per usare i tasti funzione, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + un tasto nella fila superiore.</translation>
@@ -689,7 +689,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6062360702481658777">Verrai disconnesso automaticamente tra <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Interrompi registrazione</translation>
 <translation id="607652042414456612">Il tuo computer è rilevabile per i dispositivi Bluetooth nelle vicinanze e verrà visualizzato come "<ph name="NAME" />" con l'indirizzo <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Il criterio dell'amministratore disattiva la funzionalità Registrazione dello schermo se sono visibili contenuti riservati</translation>
 <translation id="6114505516289286752">File di contenuti vocali scaricati per questa la lingua: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">L'Assistente Google non è disponibile in una sessione Ospite.</translation>
@@ -1044,7 +1043,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8876661425082386199">Controlla la connessione</translation>
 <translation id="8877788021141246043">Imposta un promemoria</translation>
 <translation id="8878886163241303700">Estensione schermo</translation>
-<translation id="8884537526797090108">Impossibile registrare contenuti riservati</translation>
 <translation id="890616557918890486">Cambia origine</translation>
 <translation id="8909138438987180327">Livello batteria: <ph name="PERCENTAGE" />%.</translation>
 <translation id="8913384980486163186">A tema (predefinita)</translation>

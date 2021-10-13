@@ -214,6 +214,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="160851722280695521">A Dino Run játék elindítása a Chrome-ban</translation>
 <translation id="161042844686301425">Cián</translation>
 <translation id="1611101756749861742">2. tekercs</translation>
+<translation id="1615402009686901181">Rendszergazdai házirend tiltja képernyőfelvétel készítését, ha bizalmas tartalom látható a képernyőn.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Akadályozza meg, hogy ez az oldal további párbeszédablakokat hozzon létre.</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -861,7 +862,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3781428340399460090">Élénk rózsaszín</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-eszközök</translation>
-<translation id="3787675388804467730">Virtuális kártya száma</translation>
 <translation id="3787705759683870569">Lejárat dátuma: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Méret: 16</translation>
 <translation id="3789841737615482174">Telepítés</translation>
@@ -1575,6 +1575,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6080696365213338172">A tartalmat egy rendszergazda által biztosított tanúsítványon keresztül érte el. A(z) <ph name="DOMAIN" /> számára megadott adatok a rendszergazda számára is elérhetők.</translation>
 <translation id="6087312102907839798">Kapcsolódó keresések</translation>
 <translation id="6094273045989040137">Jegyzetelés</translation>
+<translation id="6094290315941448991">Rendszergazdai házirend tiltja felvétel készítését a képernyőről, ha bizalmas tartalom látható rajta.</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Webhely létrehozása</translation>
 <translation id="6106989379647458772">Előfordulhat, hogy a(z) <ph name="PAGE" /> webhelyen található oldal ideiglenesen nem érhető el, vagy véglegesen új címre költözött.</translation>
@@ -2376,6 +2377,7 @@ További részletek:
 <translation id="8870494189203302833">Azonos sorrend, lefelé fordítva</translation>
 <translation id="8871553383647848643">Személyre szabhatja a böngésző megjelenését</translation>
 <translation id="8874824191258364635">Érvényes kártyaszámot adjon meg</translation>
+<translation id="8884537526797090108">Nem lehet rögzíteni bizalmas tartalmakat</translation>
 <translation id="8891727572606052622">Érvénytelen proxymód.</translation>
 <translation id="8894794286471754040">Hosszú él először</translation>
 <translation id="8903921497873541725">Nagyítás</translation>
@@ -2430,6 +2432,7 @@ További részletek:
 <translation id="9050666287014529139">Összetett jelszó</translation>
 <translation id="9056953843249698117">Áruház</translation>
 <translation id="9062620674789239642">Előfordulhat, hogy át lett helyezve, illetve szerkesztve vagy törölve lett</translation>
+<translation id="9063800855227801443">Nem lehet rögzíteni bizalmas tartalmakat</translation>
 <translation id="9065203028668620118">Szerkesztés</translation>
 <translation id="9065745800631924235"><ph name="TEXT" /> keresése az előzményekben</translation>
 <translation id="9069693763241529744">Bővítmény tiltja</translation>

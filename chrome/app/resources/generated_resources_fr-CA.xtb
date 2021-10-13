@@ -217,7 +217,6 @@
 <translation id="1218015446623563536">Supprimer Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Les services de localisation de Google utilisent des sources comme les réseaux Wi-Fi et cellulaires, ainsi que des capteurs, pour estimer la position de cet appareil.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez couper ce service en désactivant le paramètre de localisation principal de l'appareil. Vous pouvez également désactiver l'utilisation des réseaux Wi‑Fi, des réseaux cellulaires et des capteurs pour la localisation dans les paramètres de localisation.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Impossible de télécharger les fichiers de synthèse textuelle en <ph name="LANGUAGE" />. Une tentative de téléchargement aura lieu ultérieurement. Pour le moment, le fichier vocal est envoyé à Google pour y être traité.</translation>
 <translation id="122082903575839559">Algorithme de signature du certificat</translation>
 <translation id="1221024147024329929">Algorithme à clé publique PKCS #1 MD2 avec chiffrement RSA</translation>
 <translation id="1221825588892235038">Imprimer seulement la sélection</translation>
@@ -4882,7 +4881,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6232017090690406397">Pile</translation>
 <translation id="6232116551750539448">La connexion à <ph name="NAME" /> a été perdue</translation>
 <translation id="6233154960150021497">Utiliser la voix plutôt que le clavier par défaut</translation>
-<translation id="6233455992368963267">La parole en <ph name="LANGUAGE" /> est envoyée à Google à des fins de traitement.</translation>
 <translation id="6234108445915742946">Les conditions d'utilisation de Chrome changeront le 31 mars</translation>
 <translation id="6234474535228214774">Installation en attente…</translation>
 <translation id="6235208551686043831">L'appareil photo est activé. Veuillez placer le code QR de votre carte eSIM devant l'appareil photo.</translation>

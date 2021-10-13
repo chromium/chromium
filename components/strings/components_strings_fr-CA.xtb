@@ -214,6 +214,7 @@
 <translation id="160851722280695521">Jouer au jeu du dinosaure dans Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">Deuxième rouleau</translation>
+<translation id="1615402009686901181">La politique définie par l'administrateur désactive les captures d'écran lorsque du contenu confidentiel est visible</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1623104350909869708">Empêcher cette page de générer des boîtes de dialogue supplémentaires</translation>
 <translation id="16338877384480380">Architecture B</translation>
@@ -856,7 +857,6 @@
 <translation id="3781428340399460090">Rose indien</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Appareils Bluetooth</translation>
-<translation id="3787675388804467730">Numéro de carte virtuelle</translation>
 <translation id="3787705759683870569">Date d'expiration : <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Taille 16</translation>
 <translation id="3789841737615482174">Installer</translation>
@@ -1560,6 +1560,7 @@
 <translation id="6080696365213338172">Vous avez accédé à du contenu à l'aide d'un certificat fourni par l'administrateur. Les données que vous fournissez à <ph name="DOMAIN" /> peuvent être interceptées par votre administrateur.</translation>
 <translation id="6087312102907839798">Recherches connexes</translation>
 <translation id="6094273045989040137">Annoter</translation>
+<translation id="6094290315941448991">La politique définie par l'administrateur désactive l'enregistrement de l'écran lorsque du contenu confidentiel est visible</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Créer un site</translation>
 <translation id="6106989379647458772">Il se peut que la page Web à l'adresse <ph name="PAGE" /> soit temporairement inaccessible ou qu'elle ait été déplacée de façon permanente à une autre adresse Web.</translation>
@@ -2354,6 +2355,7 @@ Détails supplémentaires :
 <translation id="8870494189203302833">Même ordre, face vers le bas</translation>
 <translation id="8871553383647848643">Personnaliser le style de votre navigateur</translation>
 <translation id="8874824191258364635">Entrez un numéro de carte valide</translation>
+<translation id="8884537526797090108">Impossible d'enregistrer du contenu confidentiel</translation>
 <translation id="8891727572606052622">Mode mandataire non valide.</translation>
 <translation id="8894794286471754040">Bord long en premier</translation>
 <translation id="8903921497873541725">Zoom avant</translation>
@@ -2408,6 +2410,7 @@ Détails supplémentaires :
 <translation id="9050666287014529139">Phrase de passe</translation>
 <translation id="9056953843249698117">Boutique</translation>
 <translation id="9062620674789239642">Il a peut-être été déplacé, modifié ou supprimé.</translation>
+<translation id="9063800855227801443">Impossible de capturer le contenu confidentiel</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9065745800631924235">Recherche <ph name="TEXT" /> dans l'historique</translation>
 <translation id="9069693763241529744">Bloqué par une extension</translation>

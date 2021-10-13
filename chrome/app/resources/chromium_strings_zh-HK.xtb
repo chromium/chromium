@@ -133,7 +133,6 @@
 <translation id="5386450000063123300">正在更新 Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">允許登入 Chromium</translation>
 <translation id="5398878173008909840">新版 Chromium 現已推出。</translation>
-<translation id="5416696090975899932">缺少內置的 PDF 檢視器時，Chromium 無法顯示列印預覽畫面。</translation>
 <translation id="5427571867875391349">將 Chromium 設為預設瀏覽器</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta 版本</translation>
 <translation id="5479196819031988440">Chromium 作業系統無法開啟此網頁。</translation>
@@ -210,6 +209,7 @@
 <translation id="718435575166326686">Chromium 需要相機權限，才能執行此網站要求的功能</translation>
 <translation id="7196312274710523067">無法啟動 Chromium，請再試一次。</translation>
 <translation id="7197677400338048821">Chromium 無法檢查密碼，請於 24 小時後再試一次。</translation>
+<translation id="7218568399872925918">在 Chromium 關閉前，你造訪的網站會記住你的資訊</translation>
 <translation id="7223968959479464213">工作管理員 - Chromium</translation>
 <translation id="731795002583552498">正在更新 Chromium</translation>
 <translation id="7318036098707714271">您的偏好設定檔案已損毀或無效。
@@ -262,6 +262,8 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8621669128220841554">不明錯誤導致安裝失敗，請重新下載 Chromium。</translation>
 <translation id="8697124171261953979">這個擴充功能也會控管 Chromium 啟動時或您使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="8704119203788522458">這是您專屬的 Chromium</translation>
+<translation id="8713679423359107094">當你關閉所有 Chromium 視窗時，系統會自動清除 Cookie 和網站資料</translation>
+<translation id="8796443464227412154">關閉 Chromium 會導致你<ph name="BEGIN_BOLD" />從大部分的網站登出<ph name="END_BOLD" />。如果關閉同步處理功能，你也會<ph name="BEGIN_BOLD" />從 Google 服務和 Chromium 登出<ph name="END_BOLD" />。</translation>
 <translation id="8796602469536043152">Chromium 需要取得權限，才能讓這個網站存取您的相機和麥克風</translation>
 <translation id="8803635938069941624">Chromium 作業系統條款</translation>
 <translation id="8821041990367117597">您的帳戶登入詳細資料尚未更新，因此 Chromium 無法同步處理您的數據。</translation>

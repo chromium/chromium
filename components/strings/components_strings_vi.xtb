@@ -214,6 +214,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="160851722280695521">Chơi trò chơi khủng long trên Chrome</translation>
 <translation id="161042844686301425">Lục lam</translation>
 <translation id="1611101756749861742">Cuộn thứ hai</translation>
+<translation id="1615402009686901181">Theo chính sách của quản trị viên, tính năng chụp ảnh màn hình bị tắt khi có nội dung bí mật</translation>
 <translation id="1620510694547887537">Máy ảnh</translation>
 <translation id="1623104350909869708">Ngăn trang này tạo hộp thoại bổ sung</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -860,7 +861,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3781428340399460090">Hồng đậm</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Thiết bị Bluetooth</translation>
-<translation id="3787675388804467730">Số thẻ ảo</translation>
 <translation id="3787705759683870569">Ngày hết hạn <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Kích thước 16</translation>
 <translation id="3789841737615482174">Cài đặt</translation>
@@ -1569,6 +1569,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6080696365213338172">Bạn đã truy cập nội dung bằng chứng chỉ do quản trị viên cấp. Dữ liệu mà bạn cung cấp cho <ph name="DOMAIN" /> có thể bị quản trị viên của bạn chặn.</translation>
 <translation id="6087312102907839798">Nội dung tìm kiếm có liên quan</translation>
 <translation id="6094273045989040137">Chú thích</translation>
+<translation id="6094290315941448991">Theo chính sách của quản trị viên, khi màn hình có nội dung bí mật, tính năng ghi màn hình sẽ bị tắt.</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Tạo trang web</translation>
 <translation id="6106989379647458772">Trang web tại <ph name="PAGE" /> có thể tạm thời không hoạt động hoặc có thể đã được chuyển vĩnh viễn sang địa chỉ web mới.</translation>
@@ -2364,6 +2365,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8870494189203302833">Cùng thứ tự hướng xuống</translation>
 <translation id="8871553383647848643">Tùy chỉnh giao diện trình duyệt của bạn</translation>
 <translation id="8874824191258364635">Nhập số thẻ hợp lệ</translation>
+<translation id="8884537526797090108">Không thể ghi nội dung bí mật</translation>
 <translation id="8891727572606052622">Chế độ proxy không hợp lệ.</translation>
 <translation id="8894794286471754040">Cạnh dài trước</translation>
 <translation id="8903921497873541725">Phóng to</translation>
@@ -2418,6 +2420,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9050666287014529139">Cụm mật khẩu</translation>
 <translation id="9056953843249698117">Cửa hàng</translation>
 <translation id="9062620674789239642">Tệp này có thể đã bị di chuyển, chỉnh sửa hoặc xóa.</translation>
+<translation id="9063800855227801443">Không thể chụp nội dung bí mật</translation>
 <translation id="9065203028668620118">Chỉnh sửa</translation>
 <translation id="9065745800631924235">Cụm từ tìm kiếm <ph name="TEXT" /> từ lịch sử</translation>
 <translation id="9069693763241529744">Bị một tiện ích chặn</translation>

@@ -219,7 +219,6 @@
 <translation id="1218015446623563536">Șterge Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Serviciul de localizare Google folosește surse precum rețelele Wi-Fi și mobile și senzori pentru a ajuta la estimarea locației acestui dispozitiv.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Poți dezactiva Locația oprind setarea principală privind locația de pe acest dispozitiv. Poți dezactiva și folosirea Wi-Fi, a rețelelor mobile și a senzorilor pentru localizare din setările privind locația.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Nu s-au putut descărca fișierele de redare în scris a vorbirii în <ph name="LANGUAGE" />. Se va încerca descărcarea mai târziu. Momentan, fișierele de redare în scris a vorbirii vor fi trimise la Google pentru procesare.</translation>
 <translation id="122082903575839559">Algoritm de semnare a certificatului</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 cu criptare RSA</translation>
 <translation id="1221825588892235038">Numai elementele selectate</translation>
@@ -4928,7 +4927,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6232017090690406397">Baterie</translation>
 <translation id="6232116551750539448">S-a pierdut conexiunea la <ph name="NAME" /></translation>
 <translation id="6233154960150021497">Setarea prestabilită este de a folosi vocea în locul tastaturii</translation>
-<translation id="6233455992368963267">Vorbirea în <ph name="LANGUAGE" /> este trimisă către Google spre procesare.</translation>
 <translation id="6234108445915742946">Termenii și condițiile Chrome se modifică la 31 martie</translation>
 <translation id="6234474535228214774">Instalare în așteptare</translation>
 <translation id="6235208551686043831">Camera foto a dispozitivului a fost activată. Poziționează codul QR eSIM în fața camerei.</translation>

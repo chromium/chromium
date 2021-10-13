@@ -264,6 +264,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2996462380875591307">Umewasha Kikuzaji Kilichoambatishwa. Bonyeza Ctrl+Search+D tena ili ukizime.</translation>
 <translation id="3000461861112256445">Kipengele cha sauti moja</translation>
 <translation id="3009178788565917040">Towe</translation>
+<translation id="3009958530611748826">Chagua folda utakapohifadhi</translation>
 <translation id="3017687597151988916">Umeweka sehemu ya kuchagua iwe dirisha</translation>
 <translation id="3033545621352269033">Imewashwa</translation>
 <translation id="3036649622769666520">Fungua Mafaili</translation>
@@ -509,7 +510,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4667099493359681081">Inapakua <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Fungua kifaa ukitumia msimbo wa mzazi</translation>
 <translation id="4702647871202761252">Skrini ya faragha imezimwa</translation>
-<translation id="4706121060329443414">Itajaribu kupakua baadaye. Kwa sasa, matamshi yatatumwa kwa Google ili yachakatwe.</translation>
 <translation id="4731797938093519117">Idhini ya mzazi</translation>
 <translation id="4734965478015604180">Kimlalo</translation>
 <translation id="4735498845456076464">Mikato ya kibodi ya <ph name="LAUNCHER_KEY_NAME" /> + Nambari imebadilika. Ili utumie vitufe vya kukokotoa, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na kitufe kwenye safu mlalo ya juu.</translation>
@@ -694,7 +694,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="6062360702481658777">Utaondolewa kwenye akaunti kiotomatiki baada ya <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Acha kurekodi</translation>
 <translation id="607652042414456612">Kompyuta yako inaweza kutambuliwa na vifaa vyenye Bluetooth vilivyo karibu na itaonekana kama  "<ph name="NAME" />" ikiwa na anwani ya <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Sera ya msimamizi huzuia kurekodi skrini wakati maudhui ya siri yanaonekana</translation>
 <translation id="6114505516289286752">Faili za matamshi za <ph name="LANGUAGE" /> zimepakuliwa</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Programu ya Mratibu wa Google haipatikani katika kipindi cha mgeni.</translation>
@@ -1051,7 +1050,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8876661425082386199">Kagua muunganisho wako</translation>
 <translation id="8877788021141246043">Weka kikumbusho</translation>
 <translation id="8878886163241303700">Kuongeza skrini</translation>
-<translation id="8884537526797090108">Huwezi kurekodi maudhui ya siri</translation>
 <translation id="890616557918890486">Badilisha chanzo</translation>
 <translation id="8909138438987180327">Chaji ya betri imefika <ph name="PERCENTAGE" />.</translation>
 <translation id="8913384980486163186">Mandhari (chaguomsingi)</translation>

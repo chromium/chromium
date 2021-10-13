@@ -343,6 +343,7 @@
 <translation id="6379086450106841622">Додирни екран</translation>
 <translation id="6388847657025262518">Механизам за увлачење докумената на скенеру је заглављен. Проверите механизам и пробајте поново.</translation>
 <translation id="6395640744968320699">Повезивање са HTTP веб-сајтовима (порт 80) преко заштитног зида није могуће</translation>
+<translation id="6398765197997659313">Изађи из режима целог екрана</translation>
 <translation id="641081527798843608">Подударање наслова</translation>
 <translation id="6423239382391657905">Отворена VPN</translation>
 <translation id="6439505561246192797">Слаб (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,7 +449,6 @@
 <translation id="7960831585769876809">Температура</translation>
 <translation id="7978412674231730200">Приватни кључ</translation>
 <translation id="7994702968232966508">EAP метод</translation>
-<translation id="8020238979854764615">Дошло је до грешке. Пробајте поново тако што ћете одабрати друге слике.</translation>
 <translation id="802154636333426148">Преузимање није успело</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>

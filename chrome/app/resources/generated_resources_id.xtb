@@ -218,7 +218,6 @@
 <translation id="1218015446623563536">Hapus Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Layanan lokasi Google menggunakan sumber seperti Wi‑Fi, jaringan seluler, dan sensor untuk membantu memperkirakan lokasi perangkat ini.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Anda dapat menonaktifkan Lokasi dengan menonaktifkan setelan Lokasi utama di perangkat ini. Anda juga dapat menonaktifkan penggunaan Wi-Fi, jaringan seluler, dan sensor untuk lokasi di setelan lokasi.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Tidak dapat mendownload file ucapan bahasa <ph name="LANGUAGE" />. Download akan dicoba nanti. Untuk saat ini, ucapan akan dikirim ke Google untuk diproses.</translation>
 <translation id="122082903575839559">Algoritme Tanda Tangan Sertifikat</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 Dengan Enkripsi RSA</translation>
 <translation id="1221825588892235038">Khusus yang terpilih</translation>
@@ -4896,7 +4895,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6232017090690406397">Baterai</translation>
 <translation id="6232116551750539448">Sambungan ke <ph name="NAME" /> terputus</translation>
 <translation id="6233154960150021497">Default untuk menggunakan suara, bukan keyboard</translation>
-<translation id="6233455992368963267">Ucapan dalam bahasa <ph name="LANGUAGE" /> akan dikirim ke Google untuk diproses.</translation>
 <translation id="6234108445915742946">Persyaratan Layanan Chrome akan berubah pada 31 Maret</translation>
 <translation id="6234474535228214774">Penginstalan menunggu antrean</translation>
 <translation id="6235208551686043831">Kamera perangkat telah diaktifkan. Letakkan Kode QR eSIM Anda di depan kamera.</translation>

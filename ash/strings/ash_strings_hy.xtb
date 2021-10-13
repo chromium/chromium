@@ -264,6 +264,7 @@
 <translation id="2996462380875591307">Ամրացված խոշորացույցը միացավ: Այն անջատելու համար նորից սեղմեք Ctrl+Search+D:</translation>
 <translation id="3000461861112256445">Մոնո</translation>
 <translation id="3009178788565917040">Ելք</translation>
+<translation id="3009958530611748826">Ընտրեք պանակ, որում պետք է պահել</translation>
 <translation id="3017687597151988916">Ընտրված է ամբողջ պատուհանը</translation>
 <translation id="3033545621352269033">Միացված է</translation>
 <translation id="3036649622769666520">Ֆայլերի բացում</translation>
@@ -509,7 +510,6 @@
 <translation id="4667099493359681081">Ներբեռնում՝ <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Մուտքագրեք ծնողի մուտքի կոդը</translation>
 <translation id="4702647871202761252">Գաղտնիության էկրանն անջատված է</translation>
-<translation id="4706121060329443414">Ավելի ուշ մենք կփորձենք նորից ներբեռնել ֆայլերը։ Իսկ հիմա խոսքի ձայնագրությունը կփոխանցվի Google-ին՝ մշակման համար։</translation>
 <translation id="4731797938093519117">Ծնողի մուտք</translation>
 <translation id="4734965478015604180">Հորիզոնական</translation>
 <translation id="4735498845456076464">«<ph name="LAUNCHER_KEY_NAME" /> + թիվ» ստեղնային դյուրանցումը փոփոխվել է։ Գործառույթային ստեղների գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + ստեղն» դյուրանցումը վերևի շարքում։</translation>
@@ -694,7 +694,6 @@
 <translation id="6062360702481658777">Դուք ավտոմատ դուրս կգրվեք <ph name="LOGOUT_TIME_LEFT" />-ից:</translation>
 <translation id="6073451960410192870">Դադարեցնել տեսագրումը</translation>
 <translation id="607652042414456612">Ձեր համակարգիչը տեսանելի է մոտակայքի Bluetooth սարքերի համար: Այն երևում է «<ph name="NAME" />» անունով, <ph name="ADDRESS" /> հասցեով</translation>
-<translation id="6094290315941448991">Ըստ ադմինիստրատորի սահմանած կանոնի՝ էկրանի տեսագրման հնարավորությունն անջատվում է, երբ գաղտնի բովանդակություն է տեսանելի</translation>
 <translation id="6114505516289286752">Այս լեզվով (<ph name="LANGUAGE" />) խոսքի ճանաչման ֆայլերը ներբեռնվեցին</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />։ <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Օգնականը հասանելի չէ հյուրի աշխատաշրջանում:</translation>
@@ -1050,7 +1049,6 @@
 <translation id="8876661425082386199">Ստուգեք ձեր կապը</translation>
 <translation id="8877788021141246043">Ստեղծել հիշեցում</translation>
 <translation id="8878886163241303700">Էկրանի ընդարձակում</translation>
-<translation id="8884537526797090108">Հնարավոր չէ տեսագրել գաղտնի բովանդակությունը</translation>
 <translation id="890616557918890486">Փոխել աղբյուրը</translation>
 <translation id="8909138438987180327">Մարտկոցի լիցքը՝ <ph name="PERCENTAGE" />%</translation>
 <translation id="8913384980486163186">Թեմատիկ (կանխադրված)</translation>

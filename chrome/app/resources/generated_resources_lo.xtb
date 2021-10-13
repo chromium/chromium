@@ -220,7 +220,6 @@
 <translation id="1218015446623563536">ລຶບ Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />ການບໍລິການສະຖານທີ່ຂອງ Google ຈະໃຊ້ແຫລ່ງຂໍ້ມູນຕ່າງໆ ເຊັ່ນ: Wi‑Fi, ເຄືອຂ່າຍມືຖື ແລະ ເຊັນເຊີຕ່າງໆເພື່ອຊ່ວຍຄາດຄະເນສະຖານທີ່ຂອງອຸປະກອນນີ້.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ທ່ານສາມາດປິດສະຖານທີ່ໄດ້ໂດຍການປິດການຕັ້ງຄ່າສະຖານທີ່ຫຼັກຢູ່ໃນອຸປະກອນນີ້. ນອກຈາກທ່ານຍັງສາມາດປິດການໃຊ້ Wi‑Fi, ເຄືອຂ່າຍມືຖື ແລະ ເຊັນເຊີຕ່າງໆສຳລັບສະຖານທີ່ໄດ້ໃນການຕັ້ງຄ່າສະຖານທີ່.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ການເວົ້າ <ph name="LANGUAGE" /> ໄດ້. ຈະລອງດາວໂຫຼດໃໝ່ໃນພາຍຫຼັງ. ການເວົ້າຖືກສົ່ງໄປໃຫ້ Google ສຳລັບປະມວນຜົນໃນຕອນນີ້ແລ້ວ.</translation>
 <translation id="122082903575839559">ຂັ້ນຕອນການ​ລົງລາຍເຊັນໃບຢັ້ງຢືນ</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 ດ້ວຍການໃສ່ລະຫັດ RSA</translation>
 <translation id="1221825588892235038">ການເລືອກເທົ່ານັ້ນ</translation>
@@ -308,6 +307,7 @@
 <translation id="1313660246522271310">ທ່ານຈະຖືກນຳອອກຈາກລະບົບເວັບໄຊທັງໝົດ, ຮວມທັງໃນແຖບທີ່ເປີດຢູ່</translation>
 <translation id="1313705515580255288">ບຸກມາກສ໌, ປະຫວັດ, ແລະການຕັ້ງຄ່າອື່ນໆຂອງທ່ານຈະຖືກຊິງຄ໌ໄປຫາບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="1316136264406804862">ກຳລັງຊອກຫາ...</translation>
+<translation id="1316248800168909509">ບໍ່ສາມາດເຊື່ອມຕໍ່ຫາ <ph name="DEVICE" /> ໄດ້. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="1316495628809031177">ຢຸດການຊິ້ງຂໍ້ມູນໄວ້ຊົ່ວຄາວ</translation>
 <translation id="1317637799698924700">ແທ່ນວາງສາກຂອງທ່ານຈະເຮັດວຽກໃນໂໝດທີ່ເຂົ້າກັນໄດ້ກັບ USB Type-C.</translation>
 <translation id="1319983966058170660">ປຸ່ມກັບຄືນຂອງໜ້າຍ່ອຍ <ph name="SUBPAGE_TITLE" /></translation>
@@ -1187,6 +1187,7 @@
 <translation id="2200356397587687044">Chrome ຕ້ອງການມີການອະນຸຍາດເພື່ອສືບຕໍ່</translation>
 <translation id="2202898655984161076">ມີບັນຫາການເຮັດລາຍຊື່ເຄື່ອງພິມ. ບາງເຄື່ອງພິມອາດຈະບໍ່ໄດ້ລົງທະບຽນຢ່າງສໍາເລັດກັບ <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">ຊື່ສາມາດໃຊ້ຕົວອັກສອນ, ຕົວເລກ ແລະ ຕົວອັກສອນພິເສດໄດ້</translation>
+<translation id="220321590587754225">ບໍ່ສາມາດເຊື່ອມຕໍ່ໄດ້. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="2204034823255629767">ອ່ານ​ ແລະ​​ປ່ຽນອັນໃດໜຶ່ງທີ່​ທ່ານ​ພິມ</translation>
 <translation id="220858061631308971">ກະລຸນາໃສ່ PIN ນີ້ຢູ່ໃນ "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">ບໍ່ສາມາດຕິດຕັ້ງໃຫ້ສຳເລັດໄດ້</translation>
@@ -4937,7 +4938,6 @@
 <translation id="6232017090690406397">ແບັດເຕີຣີ</translation>
 <translation id="6232116551750539448">ການ​ເຊື່ອມ​ຕໍ່​ກັບ <ph name="NAME" /> ຖືກ​ຕັດ​ໄປ​ແລ້ວ</translation>
 <translation id="6233154960150021497">ເຮັດໃຫ້ການໃຊ້ສຽງແທນແປ້ນພິມເປັນຄ່າເລີ່ມຕົ້ນ</translation>
-<translation id="6233455992368963267">ຄຳເວົ້າໃນພາສາ <ph name="LANGUAGE" /> ແມ່ນຖືກສົ່ງໄປໃຫ້ Google ສຳລັບການປະມວນຜົນ.</translation>
 <translation id="6234108445915742946">ຂໍ້ກຳນົດບໍລິການຂອງ Chrome ຈະມີການປ່ຽນແປງໃນວັນທີ 31 ມີນາ</translation>
 <translation id="6234474535228214774">ລໍຖ້າການຕິດຕັ້ງ</translation>
 <translation id="6235208551686043831">ເປີດໃຊ້ກ້ອງຖ່າຍຮູບອຸປະກອນແລ້ວ. ກະລຸນາວາງລະຫັດ eSIM QR ຂອງທ່ານໄວ້ທາງໜ້າກ້ອງຖ່າຍຮູບ.</translation>
@@ -4974,6 +4974,7 @@
 <translation id="6263284346895336537">ບໍ່ສໍາຄັນ</translation>
 <translation id="6264365405983206840">ເລືອກ​ທັງ​ຫມົດ</translation>
 <translation id="6265687851677020761">ນຳຜອດອອກ</translation>
+<translation id="6266532094411434237">ກຳລັງເຊື່ອມຕໍ່ຫາ <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">ເລືອກໃບຢັ້ງຢືນເພື່ອຮັບຮອງຕົວທ່ານເອງໃຫ້ <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">ເປີດດ້ວຍ <ph name="APP" /></translation>
 <translation id="6270391203985052864">ເວັບໄຊສາມາດຂໍໃຫ້ສົ່ງການແຈ້ງເຕືອນໄດ້</translation>

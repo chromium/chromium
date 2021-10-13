@@ -216,7 +216,6 @@
 <translation id="1218015446623563536">Linux löschen</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Beim Standortdienst von Google werden Quellen wie WLANs, Mobilfunknetze und Sensoren genutzt, um den ungefähren Standort dieses Geräts zu ermitteln.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Sie können den Standortdienst deaktivieren, indem Sie die Haupteinstellung für den Standort auf dem Gerät ausschalten. In den Standorteinstellungen haben Sie auch die Möglichkeit, die Nutzung von WLANs, Mobilfunknetzen und Sensoren für die Standortbestimmung zu deaktivieren.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Sprachdateien auf <ph name="LANGUAGE" /> konnten nicht heruntergeladen werden. Der Download wird später versucht. Die Sprachdateien werden vorerst zur Verarbeitung an Google gesendet.</translation>
 <translation id="122082903575839559">Algorithmus für Zertifikatsignatur</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 mit RSA-Verschlüsselung</translation>
 <translation id="1221825588892235038">Nur Auswahl</translation>
@@ -4875,7 +4874,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6232116551750539448">Verbindung mit <ph name="NAME" /> wurde unterbrochen.</translation>
 <translation id="6233154960150021497">Standardmäßig Spracheingabe anstatt Tastatur verwenden</translation>
-<translation id="6233455992368963267">Sprachaufnahmen auf <ph name="LANGUAGE" /> werden zur Verarbeitung an Google gesendet.</translation>
 <translation id="6234108445915742946">Neue Nutzungsbedingungen für Chrome ab dem 31. März</translation>
 <translation id="6234474535228214774">Installation ausstehend</translation>
 <translation id="6235208551686043831">Die Gerätekamera wurde aktiviert. Bitte halten Sie Ihren eSIM-QR-Code in die Kamera.</translation>

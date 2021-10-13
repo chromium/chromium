@@ -264,6 +264,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2996462380875591307">Dokotās lupas režīms ir iespējots. Lai to izslēgtu, nospiediet taustiņu kombināciju Ctrl+Search+D.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3009178788565917040">Izvade</translation>
+<translation id="3009958530611748826">Atlasiet mapi, kurā saglabāt failus</translation>
 <translation id="3017687597151988916">Kā atlases apgabals ir iestatīts logs</translation>
 <translation id="3033545621352269033">Ieslēgts</translation>
 <translation id="3036649622769666520">Atvērt failus</translation>
@@ -509,7 +510,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4667099493359681081">Notiek faila <ph name="FILENAME" /> lejupielāde</translation>
 <translation id="4696813013609194136">Ierīces atbloķēšana, ievadot vecāku kodu</translation>
 <translation id="4702647871202761252">Konfidencialitātes ekrāns ir izslēgts</translation>
-<translation id="4706121060329443414">Tiks mēģināts veikt lejupielādi vēlāk. Pagaidām uzņēmumam Google tiks nosūtīta runa apstrādei.</translation>
 <translation id="4731797938093519117">Vecāku piekļuve</translation>
 <translation id="4734965478015604180">Horizontāli</translation>
 <translation id="4735498845456076464">Šis īsinājumtaustiņš ir mainījies: <ph name="LAUNCHER_KEY_NAME" /> + cipars. Lai izmantotu funkciju taustiņus, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + jebkurš augšējās rindas taustiņš.</translation>
@@ -694,7 +694,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6062360702481658777">Jūs tiksiet automātiski izrakstīts pēc šāda laika: <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Pārtraukt ierakstīšanu</translation>
 <translation id="607652042414456612">Tuvumā esošas Bluetooth ierīces var uztvert jūsu datoru; tā nosaukums ir “<ph name="NAME" />”, adrese — <ph name="ADDRESS" />.</translation>
-<translation id="6094290315941448991">Ja ekrānā ir redzams konfidenciāls saturs, administratora politika atspējo ekrāna ierakstīšanu</translation>
 <translation id="6114505516289286752">Lejupielādēti runas faili šādā valodā: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="612734058257491180">Google asistents nav pieejams viesa sesijā.</translation>
@@ -1050,7 +1049,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="8876661425082386199">Savienojuma pārbaude</translation>
 <translation id="8877788021141246043">Iestatīt atgādinājumu</translation>
 <translation id="8878886163241303700">Notiek ekrāna izvēršana</translation>
-<translation id="8884537526797090108">Konfidenciālu saturu nevar ierakstīt</translation>
 <translation id="890616557918890486">Mainīt avotu</translation>
 <translation id="8909138438987180327">Akumulatora uzlādes līmenis:<ph name="PERCENTAGE" />.</translation>
 <translation id="8913384980486163186">Motīva (noklusējuma)</translation>

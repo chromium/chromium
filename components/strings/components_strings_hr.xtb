@@ -214,6 +214,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="160851722280695521">Igrajte igru Dino Run u Chromeu</translation>
 <translation id="161042844686301425">Cijan</translation>
 <translation id="1611101756749861742">Drugi kolut</translation>
+<translation id="1615402009686901181">Administratorska pravila onemogućuju snimanje zaslona ako je vidljiv povjerljiv sadržaj</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
 <translation id="1623104350909869708">Spriječi da ova stranica stvori dodatne dijaloške okvire</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -406,6 +407,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2241693394036365668">Datoteka je preuzeta</translation>
 <translation id="2248949050832152960">Koristi WebAuthn</translation>
 <translation id="2250931979407627383">Rubni šav s lijeve strane</translation>
+<translation id="2251943122176102076">Administrator ne preporučuje izradu snimki zaslona ni snimanje zbog zabilježenog povjerljivog sadržaja:</translation>
 <translation id="225207911366869382">Ta je vrijednost obustavljena za to pravilo.</translation>
 <translation id="2258928405015593961">Unesite datum isteka u budućnosti i pokušajte ponovo</translation>
 <translation id="225943865679747347">Kôd pogreške: <ph name="ERROR_CODE" /></translation>
@@ -862,7 +864,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3781428340399460090">Jarko ružičasta</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth uređaji</translation>
-<translation id="3787675388804467730">Broj virtualne kartice</translation>
 <translation id="3787705759683870569">Istječe <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Veličina 16</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
@@ -1200,6 +1201,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
           <ph name="LIST_ITEM" />davatelji internetskih usluga mogu nadzirati web-promet<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Uključite upozorenja</translation>
+<translation id="4834718916855725099">Administrator ne preporučuje izradu snimki zaslona ni snimanje zbog povjerljivog sadržaja na zaslonu:</translation>
 <translation id="4838327282952368871">Sanjivo</translation>
 <translation id="4840250757394056958">Pregledaj povijest na Chromeu</translation>
 <translation id="484462545196658690">Automatski</translation>
@@ -1577,6 +1579,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6080696365213338172">Pristupili ste sadržaju pomoću certifikata koji je izdao administrator. Administrator može presresti podatke koje dostavljate domeni <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">Povezana pretraživanja</translation>
 <translation id="6094273045989040137">Dodaj bilješku</translation>
+<translation id="6094290315941448991">Administratorska pravila onemogućuju snimanje zaslona ako je vidljiv povjerljiv sadržaj</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Izradite web-lokaciju</translation>
 <translation id="6106989379647458772">Web-stranica na <ph name="PAGE" /> možda privremeno nije dostupna ili je trajno premještena na novu web-adresu.</translation>
@@ -2378,6 +2381,7 @@ Dodatne pojedinosti:
 <translation id="8870494189203302833">Istim redoslijedom prema dolje</translation>
 <translation id="8871553383647848643">Prilagodite izgled preglednika</translation>
 <translation id="8874824191258364635">Unesite važeći broj kreditne kartice</translation>
+<translation id="8884537526797090108">Snimanje povjerljivog sadržaja nije moguće</translation>
 <translation id="8891727572606052622">Nevažeći način proxy poslužitelja.</translation>
 <translation id="8894794286471754040">Najprije dugi rub</translation>
 <translation id="8903921497873541725">Povećaj</translation>
@@ -2432,6 +2436,7 @@ Dodatne pojedinosti:
 <translation id="9050666287014529139">Zaporka</translation>
 <translation id="9056953843249698117">Trgovina</translation>
 <translation id="9062620674789239642">Možda je premještena, uređena ili izbrisana.</translation>
+<translation id="9063800855227801443">Snimanje povjerljivog sadržaja nije moguće</translation>
 <translation id="9065203028668620118">Uredi</translation>
 <translation id="9065745800631924235">Pretraživanje <ph name="TEXT" /> iz povijesti</translation>
 <translation id="9069693763241529744">Blokiralo proširenje</translation>

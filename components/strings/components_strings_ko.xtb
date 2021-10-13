@@ -214,6 +214,7 @@
 <translation id="160851722280695521">Chrome 공룡 게임 플레이</translation>
 <translation id="161042844686301425">청록색</translation>
 <translation id="1611101756749861742">2번째 롤</translation>
+<translation id="1615402009686901181">기밀 콘텐츠가 보일 때 관리자 정책에서 화면 캡처를 사용 중지합니다.</translation>
 <translation id="1620510694547887537">카메라</translation>
 <translation id="1623104350909869708">이 페이지가 추가적인 대화를 생성하지 않도록 차단</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -856,7 +857,6 @@
 <translation id="3781428340399460090">진한 분홍색</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">블루투스 장치</translation>
-<translation id="3787675388804467730">가상 카드 번호</translation>
 <translation id="3787705759683870569">만료: <ph name="EXPIRATION_YEAR" />년 <ph name="EXPIRATION_MONTH" />월</translation>
 <translation id="3789155188480882154">크기 16</translation>
 <translation id="3789841737615482174">설치</translation>
@@ -1560,6 +1560,7 @@
 <translation id="6080696365213338172">관리자 제공 인증서를 사용하여 콘텐츠에 액세스했습니다. 사용자가 <ph name="DOMAIN" />에 제공한 데이터가 관리자에 의해 차단될 수 있습니다.</translation>
 <translation id="6087312102907839798">관련 검색어</translation>
 <translation id="6094273045989040137">주석 추가</translation>
+<translation id="6094290315941448991">기밀 콘텐츠가 화면에 표시되면 관리자 정책에서 화면 녹화를 사용 중지합니다.</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">사이트 만들기</translation>
 <translation id="6106989379647458772"><ph name="PAGE" />의 웹페이지가 일시적으로 다운되었거나 새 웹 주소로 완전히 이동했을 수 있습니다.</translation>
@@ -2353,6 +2354,7 @@
 <translation id="8870494189203302833">같은 순서로 인쇄면이 아래를 향하게</translation>
 <translation id="8871553383647848643">브라우저 테마 맞춤설정</translation>
 <translation id="8874824191258364635">올바른 카드 번호를 입력하세요.</translation>
+<translation id="8884537526797090108">기밀 콘텐츠는 녹화할 수 없음</translation>
 <translation id="8891727572606052622">프록시 모드가 잘못되었습니다.</translation>
 <translation id="8894794286471754040">긴쪽 먼저</translation>
 <translation id="8903921497873541725">확대</translation>
@@ -2407,6 +2409,7 @@
 <translation id="9050666287014529139">암호</translation>
 <translation id="9056953843249698117">스토어</translation>
 <translation id="9062620674789239642">이동, 수정 또는 삭제되었을 수 있습니다.</translation>
+<translation id="9063800855227801443">기밀 콘텐츠는 캡처할 수 없음</translation>
 <translation id="9065203028668620118">수정</translation>
 <translation id="9065745800631924235">검색기록에서 <ph name="TEXT" /> 검색</translation>
 <translation id="9069693763241529744">확장 프로그램에서 차단함</translation>

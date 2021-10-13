@@ -220,7 +220,6 @@
 <translation id="1218015446623563536">Slett Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Googles posisjonstjeneste bruker kilder som Wi-Fi, mobilnettverk og sensorer til å beregne enhetens posisjon.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan slå av Posisjon ved å slå av hovedinnstillingen for Posisjon på enheten. Du kan også slå av bruken av Wi-Fi, mobilnettverk og sensorer for posisjon fra posisjonsinnstillingene.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Kunne ikke laste ned talefiler for <ph name="LANGUAGE" />. Vi forsøker å laste ned filene senere. Inntil videre blir tale sendt til Google for behandling.</translation>
 <translation id="122082903575839559">Signaturalgoritme for sertifikat</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 med RSA-kryptering</translation>
 <translation id="1221825588892235038">Bare utvalg</translation>
@@ -308,6 +307,7 @@
 <translation id="1313660246522271310">Du blir logget av alle nettsteder, inkludert i åpne faner</translation>
 <translation id="1313705515580255288">Bokmerkene, loggen og andre innstillinger synkroniseres til Google-kontoen din.</translation>
 <translation id="1316136264406804862">Søker …</translation>
+<translation id="1316248800168909509">Kunne ikke koble til <ph name="DEVICE" />. Prøv på nytt.</translation>
 <translation id="1316495628809031177">Synkroniseringen er satt på pause</translation>
 <translation id="1317637799698924700">Dokkingstasjonen kjører i USB-C-kompatibel modus.</translation>
 <translation id="1319983966058170660">Tilbakeknapp for den underordnende <ph name="SUBPAGE_TITLE" />-siden</translation>
@@ -1184,6 +1184,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2200356397587687044">Chrome trenger tillatelse for å fortsette</translation>
 <translation id="2202898655984161076">Det oppstod et problem med oppføring av skrivere. Enkelte av skriverne dine er ikke registrert på <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Navnet kan inneholde bokstaver, tall og spesialtegn</translation>
+<translation id="220321590587754225">Kunne ikke koble til. Prøv på nytt.</translation>
 <translation id="2204034823255629767">lese og endre alt du skriver</translation>
 <translation id="220858061631308971">Skriv inn denne PIN-koden på «<ph name="DEVICE_NAME" />»:</translation>
 <translation id="2210462644007531147">Kunne ikke fullføre installasjonen</translation>
@@ -4931,7 +4932,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6232116551750539448">Tilkoblingen til <ph name="NAME" /> er brutt</translation>
 <translation id="6233154960150021497">Bruk stemme i stedet for tastatur som standard</translation>
-<translation id="6233455992368963267">Tale på <ph name="LANGUAGE" /> blir sendt til Google for behandling.</translation>
 <translation id="6234108445915742946">Vilkårene for bruk av Chrome endres 31. mars</translation>
 <translation id="6234474535228214774">Venter på installering</translation>
 <translation id="6235208551686043831">Enhetskameraet er slått på. Plassér QR-koden for e-SIM-kortet foran kameraet.</translation>
@@ -4968,6 +4968,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6263284346895336537">Ikke kritisk</translation>
 <translation id="6264365405983206840">Velg &amp;alle</translation>
 <translation id="6265687851677020761">Fjern porten</translation>
+<translation id="6266532094411434237">Kobler til <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Velg sertifikat for å autentisere deg selv til <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Åpne med <ph name="APP" /></translation>
 <translation id="6270391203985052864">Nettsteder kan be om å få sende deg varsler</translation>

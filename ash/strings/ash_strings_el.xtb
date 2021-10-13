@@ -264,6 +264,7 @@
 <translation id="2996462380875591307">Ο Μεγεθυντικός φακός σε παράθυρο ενεργοποιήθηκε. Πατήστε Ctrl+Αναζήτηση+D ξανά για να τον απενεργοποιήσετε.</translation>
 <translation id="3000461861112256445">Μονοφωνικός ήχος</translation>
 <translation id="3009178788565917040">Έξοδος</translation>
+<translation id="3009958530611748826">Επιλέξτε έναν φάκελο στον οποίο θέλετε να γίνεται αποθήκευση.</translation>
 <translation id="3017687597151988916">Η περιοχή επιλογής ορίστηκε στο παράθυρο.</translation>
 <translation id="3033545621352269033">Eνεργό</translation>
 <translation id="3036649622769666520">Άνοιγμα Αρχείων</translation>
@@ -509,7 +510,6 @@
 <translation id="4667099493359681081">Λήψη <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Ξεκλείδωμα συσκευής με κωδικό γονέα</translation>
 <translation id="4702647871202761252">Η οθόνη απορρήτου είναι απενεργοποιημένη.</translation>
-<translation id="4706121060329443414">Θα γίνει προσπάθεια για λήψη αργότερα. Προς το παρόν, η ομιλία θα σταλεί στην Google για επεξεργασία.</translation>
 <translation id="4731797938093519117">Γονική πρόσβαση</translation>
 <translation id="4734965478015604180">Οριζόντια περιστροφή</translation>
 <translation id="4735498845456076464">Η συντόμευση πληκτρολογίου <ph name="LAUNCHER_KEY_NAME" /> + Αριθμός άλλαξε. Για να χρησιμοποιήσετε τα πλήκτρα λειτουργιών, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + ένα πλήκτρο στην επάνω σειρά.</translation>
@@ -694,7 +694,6 @@
 <translation id="6062360702481658777">Θα αποσυνδεθείτε αυτόματα σε <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Διακοπή εγγραφής</translation>
 <translation id="607652042414456612">Ο υπολογιστής σας μπορεί να εντοπιστεί από κοντινές συσκευές Bluetooth και θα εμφανίζεται ως "<ph name="NAME" />" με διεύθυνση <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Η πολιτική διαχειριστή απενεργοποιεί την εγγραφή οθόνης όταν είναι ορατό εμπιστευτικό περιεχόμενο.</translation>
 <translation id="6114505516289286752">Έγινε λήψη των αρχείων ομιλίας στα <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="612734058257491180">Ο Βοηθός Google δεν είναι διαθέσιμος σε περιόδους σύνδεσης επισκέπτη.</translation>
@@ -1050,7 +1049,6 @@
 <translation id="8876661425082386199">Ελέγξτε τη σύνδεσή σας</translation>
 <translation id="8877788021141246043">Ορισμός υπενθύμισης</translation>
 <translation id="8878886163241303700">Επέκταση οθόνης</translation>
-<translation id="8884537526797090108">Δεν είναι δυνατή η εγγραφή εμπιστευτικού περιεχομένου</translation>
 <translation id="890616557918890486">Αλλαγή πηγής</translation>
 <translation id="8909138438987180327">Η μπαταρία βρίσκεται στο <ph name="PERCENTAGE" /> τοις εκατό.</translation>
 <translation id="8913384980486163186">Με θέμα (προεπιλογή)</translation>

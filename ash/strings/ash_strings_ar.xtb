@@ -264,6 +264,7 @@
 <translation id="2996462380875591307">‏تم تفعيل المكبّر. يمكنك إيقافه بالضغط على Ctrl+Search+D مرة أخرى.</translation>
 <translation id="3000461861112256445">صوت أحادي</translation>
 <translation id="3009178788565917040">الإخراج</translation>
+<translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
 <translation id="3017687597151988916">تم ضبط منطقة الاختيار على نافذة.</translation>
 <translation id="3033545621352269033">مُفعَّلة</translation>
 <translation id="3036649622769666520">فتح الملفات</translation>
@@ -509,7 +510,6 @@
 <translation id="4667099493359681081">جارٍ تنزيل <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">فتح قفل الجهاز باستخدام رمز الوالدين</translation>
 <translation id="4702647871202761252">تم إيقاف شاشة الخصوصية.</translation>
-<translation id="4706121060329443414">‏ستتم إعادة محاولة التنزيل لاحقًا. سيتم إرسال ملفات الكلام إلى Google لمعالجتها الآن.</translation>
 <translation id="4731797938093519117">وصول أحد الوالدين</translation>
 <translation id="4734965478015604180">أفقي</translation>
 <translation id="4735498845456076464">تم تغيير اختصارات لوحة المفاتيح "<ph name="LAUNCHER_KEY_NAME" /> + رقم". لاستخدام مفاتيح الوظائف، اضغط على المفتاح <ph name="LAUNCHER_KEY_NAME" /> مع الضغط على مفتاح في الصف العلوي.</translation>
@@ -694,7 +694,6 @@
 <translation id="6062360702481658777">سيتم تسجيل خروجك تلقائيًا في غضون <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">إيقاف التسجيل</translation>
 <translation id="607652042414456612">يمكن لأجهزة بلوتوث القريبة اكتشاف جهاز الكمبيوتر وسيظهر كـ "<ph name="NAME" />" بالعنوان <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">تحظر سياسة المشرف ميزة تسجيل الشاشة عند عرض محتوى سري.</translation>
 <translation id="6114505516289286752">تم تنزيل ملفات اللغة <ph name="LANGUAGE" /> في ميزة "التعرّف على الكلام"</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">‏لا يتوفر "مساعد Google" في جلسة ضيف.</translation>
@@ -1050,7 +1049,6 @@
 <translation id="8876661425082386199">التحقُّق من الاتصال</translation>
 <translation id="8877788021141246043">ضبط تذكير</translation>
 <translation id="8878886163241303700">توسيع الشاشة</translation>
-<translation id="8884537526797090108">لا يمكن تسجيل الشاشة بسبب المحتوى السري</translation>
 <translation id="890616557918890486">تغيير المصدر</translation>
 <translation id="8909138438987180327">مستوى طاقة البطارية عند <ph name="PERCENTAGE" /> في المئة.</translation>
 <translation id="8913384980486163186">المظهر (التلقائي)</translation>

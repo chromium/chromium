@@ -133,7 +133,6 @@
 <translation id="5386450000063123300">Chromium се ажурира (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Дозволете најавување на Chromium</translation>
 <translation id="5398878173008909840">Достапна е нова верзија на Chromium.</translation>
-<translation id="5416696090975899932">Chromium не може да прикаже преглед на печатење кога недостасува вградениот прегледувач на PDF.</translation>
 <translation id="5427571867875391349">Поставете го Chromium за стандарден прелистувач</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5479196819031988440">ОС на Chromium не може да ја отвори страницава.</translation>
@@ -211,6 +210,7 @@
 <translation id="718435575166326686">На Chromium му треба дозвола за камерата за сајтов</translation>
 <translation id="7196312274710523067">Не може да се стартува Chromium. Обидете се повторно.</translation>
 <translation id="7197677400338048821">Chromium не може да ги провери вашите лозинки. Обидете се пак по 24 часа.</translation>
+<translation id="7218568399872925918">Сајтовите што ги посетувате ги помнат вашите податоци сѐ додека не го затворите Chromium</translation>
 <translation id="7223968959479464213">Управник со задачи - Chromium</translation>
 <translation id="731795002583552498">Се ажурира Chromium</translation>
 <translation id="7318036098707714271">Вашата датотека со претпочитани вредности е оштетена или неважечка.
@@ -264,6 +264,8 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8621669128220841554">Инсталирањето не успеа поради неназначена грешка. Преземете го Chromium повторно.</translation>
 <translation id="8697124171261953979">Контролира и која страница се прикажува кога го стартувате Chromium или ако пребарувате од лентата за адреси.</translation>
 <translation id="8704119203788522458">Ова е вашиот Chromium</translation>
+<translation id="8713679423359107094">Кога ќе ги затворите сите прозорци на Chromium, колачињата и податоците од сајтовите автоматски се бришат</translation>
+<translation id="8796443464227412154">Ќе ве <ph name="BEGIN_BOLD" />одјавиме од повеќето сајтови<ph name="END_BOLD" /> кога ќе го затворите Chromium. Ако е исклучена синхронизацијата, ќе ве <ph name="BEGIN_BOLD" />одјавиме и од услигите на Google и Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">На Chromium му треба дозвола за да пристапи до камерата и микрофонот за сајтов</translation>
 <translation id="8803635938069941624">Услови на Chromium OS</translation>
 <translation id="8821041990367117597">Chromium не може да ги синхронизира вашите податоци бидејќи вашите информации за пријавување на сметката се застарени.</translation>

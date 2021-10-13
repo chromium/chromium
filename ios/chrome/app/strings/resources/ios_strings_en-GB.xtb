@@ -110,6 +110,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1941314575388338491">Double tap to copy.</translation>
 <translation id="1952172573699511566">Websites will show text in your preferred language, when possible.</translation>
 <translation id="1965935827552890526">Finish what you were doing in your other open Chrome window.</translation>
+<translation id="196896377990863006">Show link preview</translation>
 <translation id="1973912524893600642">Keep Data</translation>
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1989112275319619282">Browse</translation>
@@ -694,6 +695,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="750493650310597496">0 selected</translation>
 <translation id="7508728395076009983">To lock your incognito tabs, set up touch ID, face ID or a passcode.</translation>
 <translation id="7514365320538308">Download</translation>
+<translation id="753094929961314545">Hide link preview</translation>
 <translation id="7537586195939242955">Sorry, your Pass cannot be installed to Passbook at this time.</translation>
 <translation id="7554791636758816595">New Tab</translation>
 <translation id="7561196759112975576">Always</translation>

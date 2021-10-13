@@ -214,6 +214,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="160851722280695521">Hrať hru Dino Run v Chrome</translation>
 <translation id="161042844686301425">Azúrová</translation>
 <translation id="1611101756749861742">Druhý kotúč</translation>
+<translation id="1615402009686901181">Pravidlo správcu zakazuje snímanie obrazovky, keď je viditeľný dôverný obsah</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Zakázať tejto stránke otvárať ďalšie dialógové okná</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -852,7 +853,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3781428340399460090">Jasnoružová</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Zariadenia Bluetooth</translation>
-<translation id="3787675388804467730">Číslo virtuálnej karty</translation>
 <translation id="3787705759683870569">Platnosť vyprší <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Veľkosť 16</translation>
 <translation id="3789841737615482174">Inštalovať</translation>
@@ -1556,6 +1556,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6080696365213338172">K obsahu ste pristúpili pomocou certifikátu, ktorý poskytol správca. Údaje, ktoré poskytnete doméne <ph name="DOMAIN" /> môžu byť zachytené správcom.</translation>
 <translation id="6087312102907839798">Súvisiace vyhľadávania</translation>
 <translation id="6094273045989040137">Pridať anotáciu</translation>
+<translation id="6094290315941448991">Pravidlo správcu zakazuje nahrávanie obrazovky, keď je viditeľný dôverný obsah</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Vytvoriť web</translation>
 <translation id="6106989379647458772">Stránka <ph name="PAGE" /> je možno dočasne nedostupná, možno bola natrvalo presunutá na novú webovú adresu.</translation>
@@ -2350,6 +2351,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8870494189203302833">V rovnakom poradí lícom nadol</translation>
 <translation id="8871553383647848643">Prispôsobiť vzhľad prehliadača</translation>
 <translation id="8874824191258364635">Zadajte platné číslo karty</translation>
+<translation id="8884537526797090108">Nie je možné nahrať dôverný obsah</translation>
 <translation id="8891727572606052622">Neplatný režim proxy.</translation>
 <translation id="8894794286471754040">Dlhým okrajom</translation>
 <translation id="8903921497873541725">Priblížiť</translation>
@@ -2404,6 +2406,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="9050666287014529139">Prístupová fráza</translation>
 <translation id="9056953843249698117">Obchod</translation>
 <translation id="9062620674789239642">Mohol byť presunutý, upravený alebo odstránený.</translation>
+<translation id="9063800855227801443">Nie je možné nasnímať dôverný obsah</translation>
 <translation id="9065203028668620118">Upraviť</translation>
 <translation id="9065745800631924235">Vyhľadávanie <ph name="TEXT" /> z histórie</translation>
 <translation id="9069693763241529744">Blokované rozšírením</translation>

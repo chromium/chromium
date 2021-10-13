@@ -261,6 +261,7 @@
 <translation id="2996462380875591307">고정 돋보기가 사용 설정되었습니다. 사용 중지하려면 다시 Ctrl+Search+D를 누르세요.</translation>
 <translation id="3000461861112256445">모노 오디오</translation>
 <translation id="3009178788565917040">출력</translation>
+<translation id="3009958530611748826">저장 폴더 선택</translation>
 <translation id="3017687597151988916">선택 영역이 창으로 설정됨</translation>
 <translation id="3033545621352269033">사용</translation>
 <translation id="3036649622769666520">파일 열기</translation>
@@ -504,7 +505,6 @@
 <translation id="4665114317261903604">방해 금지 모드를 켜고 끕니다. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">부모 코드로 기기 잠금 해제</translation>
 <translation id="4702647871202761252">개인정보 보호 화면이 꺼져 있습니다</translation>
-<translation id="4706121060329443414">다운로드가 나중에 시도됩니다. 일단 처리를 위해 음성 파일이 Google로 전송됩니다.</translation>
 <translation id="4731797938093519117">부모 액세스</translation>
 <translation id="4734965478015604180">가로</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + 숫자 단축키가 변경되었습니다. 기능 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 맨 윗줄의 키를 누르세요.</translation>
@@ -688,7 +688,6 @@
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> 후 자동으로 로그아웃됩니다.</translation>
 <translation id="6073451960410192870">녹화 중지</translation>
 <translation id="607652042414456612">내 컴퓨터가 근처 블루투스 기기에서 검색할 수 있도록 설정되어 있으며 주소(<ph name="ADDRESS" />)와 함께 '<ph name="NAME" />'(으)로 표시됩니다.</translation>
-<translation id="6094290315941448991">기밀 콘텐츠가 화면에 표시되면 관리자 정책에서 화면 녹화를 사용 중지합니다.</translation>
 <translation id="6114505516289286752">음성 파일 <ph name="LANGUAGE" />개 다운로드됨</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />, <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">게스트 세션에서는 Google 어시스턴트를 사용할 수 없습니다.</translation>
@@ -1043,7 +1042,6 @@
 <translation id="8876661425082386199">연결 상태 확인</translation>
 <translation id="8877788021141246043">알림을 설정해 줘</translation>
 <translation id="8878886163241303700">화면 확대</translation>
-<translation id="8884537526797090108">기밀 콘텐츠는 녹화할 수 없음</translation>
 <translation id="890616557918890486">소스 변경</translation>
 <translation id="8909138438987180327">남은 배터리는 <ph name="PERCENTAGE" />%입니다.</translation>
 <translation id="8913384980486163186">테마 색상(기본값)</translation>

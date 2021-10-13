@@ -52,7 +52,6 @@
 <translation id="2121284319307530122">ເລີ່ມເປີດໃຊ້ໃໝ່ເພື່ອອັບເດດ &amp;Chrome</translation>
 <translation id="2123055963409958220">ຊ່ວຍເຮັດໃຫ້ Chrome ດີຂຶ້ນໂດຍການລາຍງານ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າປັດຈຸບັນ<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">ກະລຸນາປິດເປີດ Chrome ຄືນໃໝ່ຕອນນີ້ເລີຍ</translation>
-<translation id="2246246234298806438">Google Chrome ບໍ່ສາມາດສະແດງຕົວຢ່າງເບິ່ງກ່ອນພິມໄດ້ ເມື່ອຂາດຕົວເບິ່ງ PDF ມາກັບເຄື່ອງໄປ.</translation>
 <translation id="2290014774651636340">ລະຫັດ Google API ຫາຍໄປ. ການເຮັດໜ້າທີ່ບາງອັນຂອງ  Google Chrom ຈະປິດໃຊ້ງານ.</translation>
 <translation id="2290095356545025170">ທ່ານແນ່ໃຈບໍວ່າ ທ່ານຕ້ອງການຖອນຕິດຕັ້ງ Google Chrome?</translation>
 <translation id="2309047409763057870">ນີ້ແມ່ນການຕິດຕັ້ງສຳຮອງຂອງ Google Chrome ແລະ ບໍ່ສາມາດຕັ້ງໃຫ້ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານໄດ້.</translation>
@@ -91,6 +90,7 @@
 <translation id="3037838751736561277">Google Chrome ຢູ່ໃນໂໝດພື້ນຫຼັງ.</translation>
 <translation id="3059710691562604940">Safe Browsing ປິດຢູ່. Chrome ແນະນຳໃຫ້ເປີດມັນ.</translation>
 <translation id="3065168410429928842">ແຖບ Chrome</translation>
+<translation id="3069821012350118710">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງຈະຈື່ຂໍ້ມູນຂອງທ່ານໄວ້ຈົນກວ່າທ່ານຈະປິດ Chrome</translation>
 <translation id="3080151273017101988">ສືບຕໍ່ແລ່ນແອັບພື້ນຫຼັງ ເມື່ອ Google Chrome ປິດ</translation>
 <translation id="3089968997497233615">ມີ Google Chrome ລຸ້ນໃໝ່ປອດໄພກ່ວາຢູ່.</translation>
 <translation id="3100998948628680988">ຕັ້ງຊື່ໂປຣໄຟລ໌ Chrome ຂອງທ່ານ</translation>
@@ -194,6 +194,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="5804318322022881572">ບໍ່ສາມາດເປີດໃຊ້ Chrome. ກະລຸນາລອງອີກຄັ້ງ.</translation>
 <translation id="5867197326698922595">Google Chrome ກໍາລັງພະຍາຍາມແກ້ໄຂລະຫັດຜ່ານ.</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
+<translation id="5901850848447342934">ທ່ານຈະຖືກ <ph name="BEGIN_BOLD" />ພາອອກຈາກລະບົບຂອງເວັບໄຊສ່ວນໃຫຍ່<ph name="END_BOLD" /> ເມື່ອທ່ານປິດ Chrome. ຫາກປິດການຊິ້ງຂໍ້ມູນໄວ້, ທ່ານຈະຖືກ <ph name="BEGIN_BOLD" />ພາອອກຈາກລະບົບຂອງບໍລິການ Google ແລະ Chrome<ph name="END_BOLD" /> ນຳ.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ການເຂົ້າສູ່ລະບົບເຄືອຂ່າຍ</translation>
 <translation id="5940385492829620908">ເວັບຂອງທ່ານ, ບຸກມາກສ໌, ແລະ Chrome ອື່ນສົດຢູ່ທີ່ນີ້.</translation>
 <translation id="5941830788786076944">ເຮັດ Google Chrome ເປັນບຣາວເຊີມາດຕະຖານ</translation>
@@ -283,6 +284,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8614913330719544658">Google Chrome ບໍ່ຕອບຮັບ. ເລີ່ມເປີດໃຊ້ໃໝ່ດຽວນີ້ບໍ?</translation>
 <translation id="861702415419836452">Chrome ຕ້ອງການການອະນຸຍາດເພື່ອເຂົ້າເຖິງກ້ອງຂອງທ່ານເພື່ອສ້າງແຜນທີ່ 3 ມິຕິຂອງສະພາບແວດລ້ອມອ້ອມຂ້າງຂອງທ່ານ</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ຈະເປີດຄືນໃໝ່ໃນ 1 ນາທີ}other{Chrome ຈະເປີດຄືນໃໝ່ໃນ # ນາທີ}}</translation>
+<translation id="8629311577791198377">ເມື່ອທ່ານປິດໜ້າຈໍ Chrome ທັງໝົດ, ຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊຈະຖືກລຶບລ້າງໂດຍອັດຕະໂນມັດ</translation>
 <translation id="8641606876632989680">Chrome ຈະແຈ້ງບອກທ່ານເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍລະຫັດຜ່ານທີ່ຖືກລະເມີດ</translation>
 <translation id="8669527147644353129">ຕົວຊ່ວຍ Google Chrome</translation>
 <translation id="8679801911857917785">ມັນຍັງຄວບຄຸມວ່າຈະໃຫ້ສະແດງໜ້າໃດຂຶ້ນ ເມື່ອທ່ານເລີ່ມຕົ້ນເປີດ Chrome.</translation>

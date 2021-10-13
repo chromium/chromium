@@ -264,6 +264,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2996462380875591307">Kiinnitetty suurennus on käytössä. Poista se käytöstä painamalla uudelleen Ctrl + haku + D.</translation>
 <translation id="3000461861112256445">Monoääni</translation>
 <translation id="3009178788565917040">Äänentoisto</translation>
+<translation id="3009958530611748826">Valitse tallennuskansio</translation>
 <translation id="3017687597151988916">Lähteeksi on valittu ikkuna</translation>
 <translation id="3033545621352269033">Päällä</translation>
 <translation id="3036649622769666520">Avaa tiedostot</translation>
@@ -509,7 +510,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4667099493359681081">Ladataan: <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Avaa lukitus vanhemman koodilla</translation>
 <translation id="4702647871202761252">Näytönsuoja on pois päältä</translation>
-<translation id="4706121060329443414">Lataamista yritetään myöhemmin. Puhe lähetetään toistaiseksi Googlelle käsittelyyn.</translation>
 <translation id="4731797938093519117">Avaus vanhemmille</translation>
 <translation id="4734965478015604180">Vaakasuora</translation>
 <translation id="4735498845456076464">Pikanäppäinyhdistelmä <ph name="LAUNCHER_KEY_NAME" /> + numeronäppäin on muuttunut. Jos haluat käyttää toimintonäppäimiä, paina <ph name="LAUNCHER_KEY_NAME" /> + ylärivin näppäin.</translation>
@@ -694,7 +694,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6062360702481658777">Sinut kirjataan ulos automaattisesti, aikaa jäljellä <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Lopeta tallennus</translation>
 <translation id="607652042414456612">Lähellä olevat Bluetooth-laitteet voivat löytää tietokoneesi. Tietokoneesi nimi on <ph name="NAME" /> ja osoite <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Järjestelmänvalvojakäytäntö poistaa Näytön tallentajan käytöstä, kun näkyvissä on luottamuksellista sisältöä</translation>
 <translation id="6114505516289286752">Puhetiedostot (<ph name="LANGUAGE" />) ladattu</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistantia ei voi käyttää Vierailija-käyttökerralla.</translation>
@@ -1050,7 +1049,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8876661425082386199">Tarkista yhteys</translation>
 <translation id="8877788021141246043">Aseta muistutus</translation>
 <translation id="8878886163241303700">Laajennettu näyttö</translation>
-<translation id="8884537526797090108">Luottamuksellista sisältöä ei voi tallentaa</translation>
 <translation id="890616557918890486">Vaihda lähdettä</translation>
 <translation id="8909138438987180327">Akun varaus on <ph name="PERCENTAGE" /> prosenttia.</translation>
 <translation id="8913384980486163186">Teema (oletus)</translation>

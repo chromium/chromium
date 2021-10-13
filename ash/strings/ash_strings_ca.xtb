@@ -261,6 +261,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2996462380875591307">La lupa acoblada està activada. Torna a prémer Ctrl+Cerca+D per desactivar-la.</translation>
 <translation id="3000461861112256445">Àudio mono</translation>
 <translation id="3009178788565917040">Sortida</translation>
+<translation id="3009958530611748826">Selecciona en quina carpeta vols que es desi</translation>
 <translation id="3017687597151988916">S'ha establert la finestra com a àrea de selecció</translation>
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3036649622769666520">Obre fitxers</translation>
@@ -504,7 +505,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4665114317261903604">Activa o desactiva el mode No molestis. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Desbloqueja el dispositiu amb el codi parental</translation>
 <translation id="4702647871202761252">La pantalla de privadesa està desactivada</translation>
-<translation id="4706121060329443414">La baixada s'intentarà més tard. Per ara, la parla s'enviarà a Google perquè la processi.</translation>
 <translation id="4731797938093519117">Accés parental</translation>
 <translation id="4734965478015604180">Horitzontal</translation>
 <translation id="4735498845456076464">La tecla de drecera <ph name="LAUNCHER_KEY_NAME" />+número ha canviat. Per fer servir les tecles de funció, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+una tecla de la fila superior.</translation>
@@ -688,7 +688,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6062360702481658777">Es tancarà la sessió automàticament d'aquí a <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Atura la gravació</translation>
 <translation id="607652042414456612">El vostre ordinador està visible als dispositius Bluetooth propers i apareixerà com a "<ph name="NAME" />" amb l'adreça <ph name="ADDRESS" />.</translation>
-<translation id="6094290315941448991">La política de l'administrador desactiva la gravació de pantalla quan es mostra contingut confidencial</translation>
 <translation id="6114505516289286752">S'han baixat fitxers de veu en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="612734058257491180">L'Assistent de Google no està disponible a les sessions de convidat.</translation>
@@ -1043,7 +1042,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8876661425082386199">Comprova la connexió</translation>
 <translation id="8877788021141246043">Configura un recordatori</translation>
 <translation id="8878886163241303700">Ampliació de la pantalla</translation>
-<translation id="8884537526797090108">No es pot gravar contingut confidencial</translation>
 <translation id="890616557918890486">Canvia la font</translation>
 <translation id="8909138438987180327">La bateria està a un <ph name="PERCENTAGE" />%.</translation>
 <translation id="8913384980486163186">Amb temàtica (opció predeterminada)</translation>

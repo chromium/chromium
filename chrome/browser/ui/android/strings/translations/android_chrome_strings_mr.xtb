@@ -57,6 +57,7 @@
 <translation id="1310482092992808703">टॅबची गटामध्ये विभागणी करा</translation>
 <translation id="1311657260431405215">हा QR कोड म्हणजे URL नाही: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
+<translation id="1320912611264252795">बुकमार्क सेव्ह करा फ्लो फोल्डर पूर्ण उंचीवर उघडली आहेत</translation>
 <translation id="1327257854815634930">नेव्हिगेशन इतिहास उघडलेला आहे</translation>
 <translation id="1331212799747679585">Chrome अपडेट होऊ शकत नाही. आणखी पर्याय</translation>
 <translation id="1332501820983677155">Google Chrome वैशिष्ट्य शॉर्टकट</translation>
@@ -83,6 +84,7 @@
 <translation id="1466383950273130737">Chrome ची भाषा निवडा</translation>
 <translation id="147113415845704694">“आजचे हवामान कसे आहे?” असे म्हणून पहा</translation>
 <translation id="1477626028522505441">सर्व्हर समस्यांमुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
+<translation id="148482509007564431">बुकमार्क सेव्ह करा फ्लो</translation>
 <translation id="1492417797159476138">तुम्ही या साइटसाठी आधीच वापरकर्ता नाव सेव्ह केले आहे</translation>
 <translation id="1493287004536771723">तुम्ही <ph name="SITE_NAME" /> ला फॉलो करत आहात</translation>
 <translation id="1506061864768559482">शोध इंजीन</translation>
@@ -263,6 +265,7 @@
 <translation id="2631006050119455616">वाचवला</translation>
 <translation id="2645657967708199252">तुमच्या <ph name="CONNECTION_TYPE" /> कनेक्शनमुळे तुमच्या डाउनलोडचा वेग कमी होऊ शकतो</translation>
 <translation id="2647434099613338025">भाषा जोडा</translation>
+<translation id="2649068648233607930">तुमचा ब्राउझर <ph name="DOMAIN" /> द्वारे व्यवस्थापित केला जातो</translation>
 <translation id="2650751991977523696">फाइल पुन्हा डाउनलोड करायची?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ऑडिओ फाइल}other{# ऑडिओ फाइल}}</translation>
 <translation id="2656405586795711023">वेब अ‍ॅप्स</translation>
@@ -429,6 +432,7 @@
 <translation id="3602290021589620013">पूर्वावलोकन</translation>
 <translation id="3616113530831147358">ऑडिओ</translation>
 <translation id="3622349720008044802">विंडो व्यवस्थापित करा</translation>
+<translation id="3624977496395967031">क्रमवारी लावण्याचे पर्याय उघडण्यासाठी क्लिक करा</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> शी शेअर करत आहे</translation>
 <translation id="3632295766818638029">पासवर्ड पहा</translation>
 <translation id="363596933471559332">स्टोअर क्रेडेंशियल वापरून वेबसाइटवर आपोआप साइन इन करा. वैशिष्ट्य बंद असते तेव्हा, वेबसाइटवर साइन इन करण्यापूर्वी दरवेळी तुम्हाला पडताळणीसाठी विचारले जाईल.</translation>
@@ -498,6 +502,7 @@
 <translation id="4084682180776658562">बुकमार्क</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> कडून – <ph name="BEGIN_DEEMPHASIZED" />Google ने वितरित केले<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">ॲप डेटा हटवायचा?</translation>
+<translation id="4096227151372679484">बुकमार्क सेव्ह करा फ्लो अर्ध्या उंचीवर उघडला आहे</translation>
 <translation id="4099578267706723511">वापरविषयक आकडेवारी आणि क्रॅश अहवाल Google कडे पाठवून Chrome अधिक चांगले करण्यास मदत करा.</translation>
 <translation id="410351446219883937">ऑटोप्ले</translation>
 <translation id="4108314971463891922">फॉलो करा</translation>
@@ -607,6 +612,7 @@
 <translation id="4766678251456904326">डिव्हाइसवर खाते जोडा</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{एक डाउनलोड शेड्युल केलेले आहे.}other{# डाउनलोड शेड्युल केलेली आहेत.}}</translation>
 <translation id="4791358705705538979">तुम्हाला संपूर्ण वेबवर चेकआउटसारखी कार्ये पूर्ण करण्यात मदत करते</translation>
+<translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">पासफ्रेज एंक्रिप्शनमध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो.
 
 हे सेटिंग बदलण्यासाठी, <ph name="BEGIN_LINK" />सिंक रीसेट करा<ph name="END_LINK" /></translation>
@@ -630,6 +636,7 @@
 <translation id="4885273946141277891">Chrome उदाहरणांची असमर्थित संख्या.</translation>
 <translation id="4905823827770127520">पेजवर लिंकचा समावेश करा</translation>
 <translation id="4908869848243824489">Google चे Discover</translation>
+<translation id="4909709702739934280">तुमचा ब्राउझर तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केला जातो</translation>
 <translation id="4910889077668685004">पेमेंट ॲप्स</translation>
 <translation id="4912413785358399818">टॅब हलवा</translation>
 <translation id="4913161338056004800">आकडेवारी रीसेट करा</translation>
@@ -1155,6 +1162,7 @@
 <translation id="7926975587469166629">कार्डावरील टोपणनाव</translation>
 <translation id="7929962904089429003">मेनू उघडा</translation>
 <translation id="7930998711684428189">डेटा भंगामध्ये पासवर्ड उघड झाल्यास, तुम्हाला चेतावणी देतो.</translation>
+<translation id="7939485076072265087">हायलाइट वापरून स्टायलाइझ केलेले कार्ड तयार करा</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> कालबाह्य झाले आहे.</translation>
 <translation id="7944772052836377867">सिंकला हे तुम्हीच आहात याची पडताळणी करायची आहे</translation>
 <translation id="7947953824732555851">स्वीकार करा आणि साइन इन करा</translation>
@@ -1274,6 +1282,7 @@
 <translation id="8562452229998620586">सेव्ह केलेले पासवर्ड येथे दिसून येतील.</translation>
 <translation id="856481929701340285">डेस्कटॉप साइटची विनंती करा</translation>
 <translation id="8569404424186215731"><ph name="DATE" /> पासून</translation>
+<translation id="8570677896027847510">फाइल सुरक्षितपणे डाउनलोड केली जाऊ शकत नाही</translation>
 <translation id="8571213806525832805">मागील 4 आठवड्यांमधील</translation>
 <translation id="8572344201470131220">इमेज कॉपी केली</translation>
 <translation id="8583805026567836021">खाते डेटा साफ करत आहे</translation>
@@ -1326,6 +1335,7 @@
 <translation id="8912362522468806198">Google खाते</translation>
 <translation id="8920114477895755567">पालकांच्या तपशीलांसाठी प्रतीक्षा करत आहोत.</translation>
 <translation id="8922289737868596582">पेज ऑफलाइन वापरता येण्यासाठी ती अधिक पर्यायांमधून डाउनलोड करा</translation>
+<translation id="8924575305646776101"><ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> तयार आहे</translation>
 <translation id="8928626432984354940">अर्ध्या उंचीवर उघडलेल्या बुकमार्क फोल्डरची सूची</translation>
 <translation id="8937267401510745927">तुम्हाला टास्क पूर्ण करण्यात मदत करण्यासाठी, तुम्ही ज्या साइटवर Assistant वापरता त्यांच्या URL आणि आशय, तसेच तुम्ही Assistant द्वारे सबमिट करता ती माहिती Google मिळवेल. ही माहिती तुमच्या Google खात्यामध्ये स्टोअर केली जाऊ शकते. तुम्ही Chrome सेटिंग्जमध्ये Assistant बंद करू शकता.</translation>
@@ -1361,8 +1371,10 @@
 <translation id="9086455579313502267">नेटवर्क ॲक्सेस करण्यात अक्षम</translation>
 <translation id="9100505651305367705">सपोर्ट असताना सोप्या पद्धतीने लेख दाखवण्याची ऑफर</translation>
 <translation id="9100610230175265781">सांकेतिक पासफ्रेझ आवश्यक</translation>
+<translation id="9101137867221042551">व्यवस्थापन</translation>
 <translation id="9102803872260866941">पूर्वावलोकन टॅब उघडला आहे</translation>
 <translation id="9104217018994036254">टॅबसह शेअर करण्यासाठी डिव्हाइसची सूची.</translation>
+<translation id="9106148373857059373">बुकमार्क सेव्ह करा फ्लो बंद आहे</translation>
 <translation id="9108312223223904744">सिक्युरिटी की सपोर्ट म्हणून फोन वापरा</translation>
 <translation id="9108808586816295166">सुरक्षित DNS कदाचित प्रत्येक वेळी उपलब्ध नसेल</translation>
 <translation id="9133397713400217035">ऑफलाइन असताना एक्सप्लोर करा</translation>

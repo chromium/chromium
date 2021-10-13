@@ -220,7 +220,6 @@
 <translation id="1218015446623563536">Poista Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Googlen sijaintipalvelu pyrkii arvioimaan laitteen sijaintia esimerkiksi Wi-Fin, mobiiliverkkojen ja anturien avulla.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Voit poistaa palvelun käytöstä poistamalla laitteen sijainnin pääasetuksen käytöstä. Sijaintiasetuksissa voit myös estää Wi-Fin, mobiiliverkkojen ja anturien käytön sijainnin määrityksessä.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Puhetiedostojen (<ph name="LANGUAGE" />) lataaminen epäonnistui. Lataamista yritetään myöhemmin. Puhe lähetetään toistaiseksi Googlelle käsittelyyn.</translation>
 <translation id="122082903575839559">Varmenteen allekirjoitusalgoritmi</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 ja RSA-salaus</translation>
 <translation id="1221825588892235038">Vain valinta</translation>
@@ -308,6 +307,7 @@
 <translation id="1313660246522271310">Sinut kirjataan ulos kaikilta sivustoilta, myös avoimilta välilehdiltä.</translation>
 <translation id="1313705515580255288">Kirjanmerkkisi, historiasi ja muut asetukset synkronoidaan Google-tiliisi.</translation>
 <translation id="1316136264406804862">Haetaan...</translation>
+<translation id="1316248800168909509">Yhteyden muodostaminen ei onnistunut: <ph name="DEVICE" />. Yritä uudelleen.</translation>
 <translation id="1316495628809031177">Synkronointi on keskeytetty</translation>
 <translation id="1317637799698924700">Telineesi toimii USB Type-C ‑yhteensopivassa tilassa.</translation>
 <translation id="1319983966058170660">Alasivun <ph name="SUBPAGE_TITLE" /> takaisin-painike</translation>
@@ -1186,6 +1186,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2200356397587687044">Chrome tarvitsee luvan jatkamiseen</translation>
 <translation id="2202898655984161076">Tulostimien luetteloinnissa tapahtui virhe. Kaikkia tulostimiasi ei ole välttämättä rekisteröity palveluun <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Nimessä voi olla kirjaimia, numeroita ja erikoismerkkejä</translation>
+<translation id="220321590587754225">Yhdistäminen ei onnistunut. Yritä uudelleen.</translation>
 <translation id="2204034823255629767">Lukea ja muuttaa kaikkea kirjoittamaasi</translation>
 <translation id="220858061631308971">Syötä tämä PIN-koodi laitteella <ph name="DEVICE_NAME" />:</translation>
 <translation id="2212565012507486665">Salli evästeet</translation>
@@ -4918,7 +4919,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6232116551750539448">Yhteys kohteeseen <ph name="NAME" /> on katkennut.</translation>
 <translation id="6233154960150021497">Oletuksena puhe näppäimistön sijaan</translation>
-<translation id="6233455992368963267">Puhe (<ph name="LANGUAGE" />) lähetetään Googlelle käsiteltäväksi.</translation>
 <translation id="6234108445915742946">Chromen käyttöehdot muuttuvat 31.3.</translation>
 <translation id="6234474535228214774">Odottaa asennusta</translation>
 <translation id="6235208551686043831">Laitteen kamera on mennyt päälle. Aseta eSIMin QR-koodi kameran eteen.</translation>
@@ -4955,6 +4955,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6263284346895336537">Ei-kriittinen</translation>
 <translation id="6264365405983206840">Valitse k&amp;aikki</translation>
 <translation id="6265687851677020761">Poista portti</translation>
+<translation id="6266532094411434237">Yhdistetään: <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Valitse varmenne, jolla todennat itsesi kohteelle <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Avaa sovelluksella <ph name="APP" /></translation>
 <translation id="6270391203985052864">Sivustot saavat pyytää lupaa lähettää ilmoituksia</translation>

@@ -214,6 +214,7 @@
 <translation id="160851722280695521">Chrome で Dino Run ゲームをプレイします</translation>
 <translation id="161042844686301425">シアン</translation>
 <translation id="1611101756749861742">ロール 2</translation>
+<translation id="1615402009686901181">管理者のポリシーによって、機密コンテンツが表示されているときは、スクリーン キャプチャが無効になります</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1623104350909869708">このページで追加のダイアログが作成されないようにする</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -856,7 +857,6 @@
 <translation id="3781428340399460090">ホットピンク</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetoothデバイス</translation>
-<translation id="3787675388804467730">仮想カード番号</translation>
 <translation id="3787705759683870569">有効期限: <ph name="EXPIRATION_MONTH" /> / <ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">サイズ 16</translation>
 <translation id="3789841737615482174">インストール</translation>
@@ -1560,6 +1560,7 @@
 <translation id="6080696365213338172">管理者が提供する証明書を使用してコンテンツにアクセスしています。<ph name="DOMAIN" /> に提供するデータは管理者によって傍受される可能性があります。</translation>
 <translation id="6087312102907839798">他のキーワード</translation>
 <translation id="6094273045989040137">注釈を追加</translation>
+<translation id="6094290315941448991">管理者のポリシーによって、機密コンテンツが表示されているときは、画面の録画が無効になります</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">サイトを作成</translation>
 <translation id="6106989379647458772">ウェブページ（<ph name="PAGE" />）は一時的に利用できなくなっているか、新しいウェブアドレスに移動した可能性があります。</translation>
@@ -2355,6 +2356,7 @@
 <translation id="8870494189203302833">同じ順序（下向き）</translation>
 <translation id="8871553383647848643">ブラウザのデザインをカスタマイズ</translation>
 <translation id="8874824191258364635">有効なクレジット カード番号を入力してください</translation>
+<translation id="8884537526797090108">機密コンテンツは録画できません</translation>
 <translation id="8891727572606052622">プロキシ モードが無効です。</translation>
 <translation id="8894794286471754040">長辺から</translation>
 <translation id="8903921497873541725">拡大する</translation>
@@ -2409,6 +2411,7 @@
 <translation id="9050666287014529139">パスフレーズ</translation>
 <translation id="9056953843249698117">ストア</translation>
 <translation id="9062620674789239642">移動、編集、削除された可能性があります。</translation>
+<translation id="9063800855227801443">機密コンテンツはキャプチャできません</translation>
 <translation id="9065203028668620118">編集</translation>
 <translation id="9065745800631924235"><ph name="TEXT" /> を履歴から検索</translation>
 <translation id="9069693763241529744">拡張機能によってブロック</translation>

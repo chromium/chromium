@@ -217,7 +217,6 @@
 <translation id="1218015446623563536">Supprimer Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Le service de localisation de Google utilise des sources comme le Wi-Fi, les réseaux mobiles et les capteurs pour estimer la position de cet appareil.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Si cela ne vous convient pas, il vous suffit de désactiver le paramètre de localisation principal sur cet appareil. Vous pouvez également désactiver l'utilisation du Wi-Fi, des réseaux mobiles et des capteurs dans les paramètres de localisation.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Impossible de télécharger les fichiers vocaux en <ph name="LANGUAGE" />. Le téléchargement sera relancé ultérieurement. En attendant, les paroles sont envoyées à Google pour traitement.</translation>
 <translation id="122082903575839559">Algorithme de signature du certificat</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 avec chiffrement RSA</translation>
 <translation id="1221825588892235038">Sélection uniquement</translation>
@@ -304,6 +303,7 @@
 <translation id="1313660246522271310">Vous allez être déconnecté de tous les sites, y compris dans les onglets ouverts</translation>
 <translation id="1313705515580255288">Vos favoris, votre historique et d'autres paramètres seront synchronisés avec votre compte Google.</translation>
 <translation id="1316136264406804862">Recherche en cours…</translation>
+<translation id="1316248800168909509">Impossible de se connecter à <ph name="DEVICE" />. Réessayez.</translation>
 <translation id="1316495628809031177">Synchronisation en pause</translation>
 <translation id="1317637799698924700">Votre station d'accueil fonctionnera dans le mode compatible USB Type-C.</translation>
 <translation id="1319983966058170660">Bouton "Retour" de la sous-page "<ph name="SUBPAGE_TITLE" />"</translation>
@@ -1170,6 +1170,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2200356397587687044">Google Chrome a besoin de votre autorisation pour continuer</translation>
 <translation id="2202898655984161076">Un problème est survenu lors de l'affichage de la liste des imprimantes. Certaines de vos imprimantes ne sont peut-être pas correctement enregistrées dans <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Le nom peut contenir des lettres, des chiffres et des caractères spéciaux</translation>
+<translation id="220321590587754225">Impossible de se connecter. Réessayez.</translation>
 <translation id="2204034823255629767">Accéder au contenu que vous saisissez et le modifier</translation>
 <translation id="220858061631308971">Veuillez saisir le code d'accès de "<ph name="DEVICE_NAME" />" :</translation>
 <translation id="2212565012507486665">Autoriser les cookies</translation>
@@ -4882,7 +4883,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6232017090690406397">Batterie</translation>
 <translation id="6232116551750539448">La connexion à "<ph name="NAME" />" a été interrompue.</translation>
 <translation id="6233154960150021497">Utiliser par défaut les commandes vocales plutôt que le clavier</translation>
-<translation id="6233455992368963267">Les paroles en <ph name="LANGUAGE" /> sont envoyées à Google pour être traitées.</translation>
 <translation id="6234108445915742946">Les conditions d'utilisation de Chrome vont changer le 31 mars</translation>
 <translation id="6234474535228214774">Installation en attente</translation>
 <translation id="6235208551686043831">La caméra de l'appareil est activée. Veuillez placer le code QR de votre eSIM face à la caméra.</translation>
@@ -4919,6 +4919,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6263284346895336537">Non essentielle</translation>
 <translation id="6264365405983206840">Tout &amp;sélectionner</translation>
 <translation id="6265687851677020761">Supprimer le port</translation>
+<translation id="6266532094411434237">Connexion à <ph name="DEVICE" />…</translation>
 <translation id="6267166720438879315">Sélectionnez un certificat pour vous authentifier sur <ph name="HOST_NAME" />.</translation>
 <translation id="6268252012308737255">Ouvrir avec <ph name="APP" /></translation>
 <translation id="6270391203985052864">Les sites peuvent vous demander l'autorisation d'envoyer des notifications</translation>

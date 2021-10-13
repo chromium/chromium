@@ -220,7 +220,6 @@
 <translation id="1218015446623563536">Избришите Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Google услуга локације користи изворе као што су Wi‑Fi мреже, мобилне мреже и сензори да би одредила приближну локацију овог уређаја.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Локацију можете да искључите ако искључите главно подешавање Локација на овом уређају. У подешавањима локације можете да искључите и коришћење Wi‑Fi мрежа, мобилних мрежа и сензора за локацију.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Преузимање фајлова са говором на језику <ph name="LANGUAGE" /> није успело. Пробаћемо преузимање касније. Говор се за сада шаље Google-у ради обраде.</translation>
 <translation id="122082903575839559">Алгоритам потписа сертификата</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 са RSA шифровањем</translation>
 <translation id="1221825588892235038">Само изабрани садржај</translation>
@@ -2140,7 +2139,7 @@
 <translation id="3192947282887913208">Аудио датотеке</translation>
 <translation id="3197453258332670132">Када кликнете десним тастером на неку ставку или је дуго притиснете, приказују се релевантне информације за изабрани текст</translation>
 <translation id="3199127022143353223">Сервери</translation>
-<translation id="3200061262156232574">У вашим колицима за куповину</translation>
+<translation id="3200061262156232574">У вашој корпи за куповину</translation>
 <translation id="3201422919974259695">Доступни USB уређаји ће се приказивати овде.</translation>
 <translation id="3202131003361292969">Путања</translation>
 <translation id="3202173864863109533">Звук ове картице је искључен.</translation>
@@ -4926,7 +4925,6 @@
 <translation id="6232017090690406397">Батерија</translation>
 <translation id="6232116551750539448">Веза са мрежом <ph name="NAME" /> је прекинута</translation>
 <translation id="6233154960150021497">Враћа подразумевану употребу гласа уместо тастатуре</translation>
-<translation id="6233455992368963267">Говор (<ph name="LANGUAGE" />) се шаље Google-у ради обраде.</translation>
 <translation id="6234108445915742946">Chrome услови коришћења услуге се мењају 31. марта</translation>
 <translation id="6234474535228214774">Инсталирање је на чекању</translation>
 <translation id="6235208551686043831">Камера уређаја је укључена. Поставите eSIM QR кôд испред камере.</translation>

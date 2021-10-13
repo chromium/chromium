@@ -261,6 +261,7 @@
 <translation id="2996462380875591307">सामग्री को बड़ा दिखाने की डॉक की गई सुविधा चालू है. उसे बंद पर टॉगल करने के लिए Ctrl+Search+D फिर से दबाएं.</translation>
 <translation id="3000461861112256445">मोनो ऑडियो</translation>
 <translation id="3009178788565917040">आउटपुट</translation>
+<translation id="3009958530611748826">सेव करने के लिए कोई फ़ोल्डर चुनें</translation>
 <translation id="3017687597151988916">विंडो को सोर्स के तौर पर सेट किया गया</translation>
 <translation id="3033545621352269033">चालू है</translation>
 <translation id="3036649622769666520">फ़ाइलें खोलें</translation>
@@ -505,7 +506,6 @@
 <translation id="4665114317261903604">'परेशान न करें' को टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">माता-पिता के कोड से डिवाइस अनलॉक करें</translation>
 <translation id="4702647871202761252">निजता स्क्रीन बंद है</translation>
-<translation id="4706121060329443414">बाद में, डाउनलोड करने की कोशिश की जाएगी. अब स्पीच को प्रोसेस करने के लिए, Google को भेजा जाएगा.</translation>
 <translation id="4731797938093519117">अभिभावक ऐक्सेस</translation>
 <translation id="4734965478015604180">हॉरिजेंटल व्यू</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number कीबोर्ड शॉर्टकट बदल गया है. फ़ंक्शन बटन इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + सबसे ऊपर की लाइन का कोई एक बटन दबाएं.</translation>
@@ -689,7 +689,6 @@
 <translation id="6062360702481658777">आप <ph name="LOGOUT_TIME_LEFT" /> में अपने आप प्रस्थान कर जाएंगे.</translation>
 <translation id="6073451960410192870">रिकॉर्डिंग बंद करें</translation>
 <translation id="607652042414456612">आपका कंप्यूर आस-पास के ब्लूटूथ डिवाइस के लिए खोजे जाने योग्य है और वह "<ph name="NAME" />" के रूप में <ph name="ADDRESS" /> पते के साथ दिखाई देगा</translation>
-<translation id="6094290315941448991">एडमिन नीति के तहत, गोपनीय कॉन्टेंट दिखने पर स्क्रीन रिकॉर्डिंग की सुविधा बंद कर दी जाती है</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> स्पीच फ़ाइलें डाउनलोड हो गई हैं</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistant की सुविधा मेहमान के तौर पर ब्राउज़ करने के सेशन में उपलब्ध नहीं है.</translation>
@@ -1044,7 +1043,6 @@
 <translation id="8876661425082386199">अपने कनेक्शन की जांच करें</translation>
 <translation id="8877788021141246043">रिमाइंडर लगाओ</translation>
 <translation id="8878886163241303700">स्क्रीन का विस्तार करना</translation>
-<translation id="8884537526797090108">गोपनीय कॉन्टेंट को रिकॉर्ड नहीं किया जा सकता</translation>
 <translation id="890616557918890486">स्रोत बदलें</translation>
 <translation id="8909138438987180327"><ph name="PERCENTAGE" /> बैटरी बची है.</translation>
 <translation id="8913384980486163186">थीम (डिफ़ॉल्ट)</translation>

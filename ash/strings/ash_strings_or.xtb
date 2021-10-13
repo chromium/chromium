@@ -261,6 +261,7 @@
 <translation id="2996462380875591307">ଡକ୍‌ ହୋଇଥିବା ମ୍ୟାଗ୍ନିଫାୟର୍‌କୁ ସକ୍ଷମ କରାଯାଇଛି। ଏହାକୁ ବନ୍ଦରେ ଟଗଲ୍‌ କରିବାକୁ Ctrl+Search+D ଦବାନ୍ତୁ</translation>
 <translation id="3000461861112256445">ମୋନୋ ଅଡିଓ</translation>
 <translation id="3009178788565917040">ଆଉଟ୍‌ପୁଟ୍</translation>
+<translation id="3009958530611748826">ଏଥିରେ ସେଭ୍ କରିବାକୁ ଏକ ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3017687597151988916">ଚୟନ କ୍ଷେତ୍ର ୱିଣ୍ଡୋରେ ସେଟ୍ କରାଯାଇଛି</translation>
 <translation id="3033545621352269033">ଚାଲୁ</translation>
 <translation id="3036649622769666520">ଓପନ୍ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
@@ -504,7 +505,6 @@
 <translation id="4665114317261903604">'ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ' ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">ମାତାପିତାଙ୍କ କୋଡ୍‌ରେ ଡିଭାଇସ୍ ଅନଲକ୍ କରନ୍ତୁ</translation>
 <translation id="4702647871202761252">ଗୋପନୀୟତା ସ୍କ୍ରିନ୍ ବନ୍ଦ ଅଛି</translation>
-<translation id="4706121060329443414">ପରେ ଡାଉନଲୋଡ୍ କରିବା ପାଇଁ ଚେଷ୍ଟା କରାଯିବ। ସ୍ପିଚ୍ ବର୍ତ୍ତମାନ ପ୍ରକ୍ରିୟାନ୍ୱିତ ହେବା ପାଇଁ Googleକୁ ପଠାଯିବ।</translation>
 <translation id="4731797938093519117">ମାତା-ପିତାଙ୍କର ଆକ୍ସେସ୍</translation>
 <translation id="4734965478015604180">ଭୂସମାନ୍ତର</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number କୀବୋର୍ଡ ସର୍ଟକଟ୍ ବଦଳି ଯାଇଛି। ଫଙ୍କସନ୍ କୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, <ph name="LAUNCHER_KEY_NAME" /> କୀ + ଶୀର୍ଷ ଧାଡ଼ିରେ ଥିବା ଏକ କୀକୁ ଦବାନ୍ତୁ।</translation>
@@ -688,7 +688,6 @@
 <translation id="6062360702481658777">ଆପଣ ସ୍ଵଚାଳିତ ଭାବେ <ph name="LOGOUT_TIME_LEFT" />ରେ ସାଇନ୍ ଆଉଟ୍ କରିବେ।</translation>
 <translation id="6073451960410192870">ରେକର୍ଡିଂ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="607652042414456612">ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍ ନିକଟସ୍ଥ ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସ୍‌ଗୁଡ଼ିକରେ ଖୋଜିପାଇବାଯୋଗ୍ୟ ଅଟେ ଏବଂ ଠିକଣା <ph name="ADDRESS" /> ସହିତ " <ph name="NAME" />" ରୂପେ ଦେଖାଯିବ</translation>
-<translation id="6094290315941448991">ଯେତେବେଳେ ଗୋପନୀୟ ବିଷୟବସ୍ତୁ ଦୃଶ୍ୟମାନ ହୁଏ, ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂକୁ ଅକ୍ଷମ କରିଦିଏ</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> ସ୍ପିଚ୍ ଫାଇଲଗୁଡ଼ିକ ଡାଉନଲୋଡ୍ କରାଯାଇଛି</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">ଏକ ଅତିଥି ସମୟ ଅବଧିରେ Google Assistant ଉପଲବ୍ଧ ନାହିଁ।</translation>
@@ -1043,7 +1042,6 @@
 <translation id="8876661425082386199">ଆପଣଙ୍କର ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8877788021141246043">ଗୋଟିଏ ରିମାଇଣ୍ଡର୍‌କୁ ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="8878886163241303700">ସ୍କ୍ରିନ୍‍ର ବିସ୍ତାର କରନ୍ତୁ</translation>
-<translation id="8884537526797090108">ଗୋପନୀୟ ବିଷୟବସ୍ତୁକୁ ରେକର୍ଡ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="890616557918890486">ଉତ୍ସ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="8909138438987180327"><ph name="PERCENTAGE" /> ଶତକଡା ବ୍ୟାଟେରୀ ଅଛି।</translation>
 <translation id="8913384980486163186">ଥିମ୍ ଆଧାରିତ (ଡିଫଲ୍ଟ)</translation>

@@ -264,6 +264,7 @@
 <translation id="2996462380875591307">Монтирана лупа екрана је омогућена. Притисните Ctrl + тастер за претрагу + D поново да бисте је искључили.</translation>
 <translation id="3000461861112256445">Моно звук</translation>
 <translation id="3009178788565917040">Излаз</translation>
+<translation id="3009958530611748826">Изаберите фолдер за чување</translation>
 <translation id="3017687597151988916">Област за избор је подешена на прозор</translation>
 <translation id="3033545621352269033">Укључено</translation>
 <translation id="3036649622769666520">Отварање датотека</translation>
@@ -509,7 +510,6 @@
 <translation id="4667099493359681081">Преузима се фајл <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Откључајте уређај помоћу кода родитеља</translation>
 <translation id="4702647871202761252">Екран за приватност је искључен</translation>
-<translation id="4706121060329443414">Пробаћемо преузимање касније. Говор ће за сада бити послат Google-у ради обраде.</translation>
 <translation id="4731797938093519117">Родитељски приступ</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="4735498845456076464">Тастерска пречица <ph name="LAUNCHER_KEY_NAME" /> + број је промењена. Да бисте користили функцијске тастере, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + тастер у горњем реду.</translation>
@@ -694,7 +694,6 @@
 <translation id="6062360702481658777">Аутоматски ћете бити одјављени за <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Заустави снимање</translation>
 <translation id="607652042414456612">Оближњи Bluetooth уређаји могу да открију рачунар и он ће се приказивати као „<ph name="NAME" />“ са адресом <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Смернице администратора онемогућавају снимање екрана када је видљив поверљив садржај</translation>
 <translation id="6114505516289286752">Преузети су фајлови са говором на језику <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google помоћник није доступан у сесији госта.</translation>
@@ -1050,7 +1049,6 @@
 <translation id="8876661425082386199">Проверите везу</translation>
 <translation id="8877788021141246043">Подеси подсетник</translation>
 <translation id="8878886163241303700">Проширени екран</translation>
-<translation id="8884537526797090108">Снимање поверљивог садржаја није успело</translation>
 <translation id="890616557918890486">Промени извор</translation>
 <translation id="8909138438987180327">Батерија је на <ph name="PERCENTAGE" />%.</translation>
 <translation id="8913384980486163186">Тематски (подразумевано)</translation>

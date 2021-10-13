@@ -214,6 +214,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="160851722280695521">Speel de Dino Run-game in Chrome</translation>
 <translation id="161042844686301425">Cyaan</translation>
 <translation id="1611101756749861742">2e rol</translation>
+<translation id="1615402009686901181">Op basis van het beheerdersbeleid worden schermopnamen uitgezet als er vertrouwelijke content zichtbaar is</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1623104350909869708">Voorkomen dat deze pagina extra dialoogvensters toont</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -853,7 +854,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3781428340399460090">Felroze</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-apparaten</translation>
-<translation id="3787675388804467730">Virtueel kaartnummer</translation>
 <translation id="3787705759683870569">Verloopt: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Grootte 16</translation>
 <translation id="3789841737615482174">Installeren</translation>
@@ -1563,6 +1563,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6080696365213338172">Je hebt toegang tot content gekregen met behulp van een certificaat van je beheerder. Gegevens die je verstrekt aan <ph name="DOMAIN" />, kunnen door je beheerder worden onderschept.</translation>
 <translation id="6087312102907839798">Gerelateerde zoekopdrachten</translation>
 <translation id="6094273045989040137">Aantekeningen maken</translation>
+<translation id="6094290315941448991">Op basis van het beheerdersbeleid wordt schermopname uitgezet als er vertrouwelijke content zichtbaar is</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Site maken</translation>
 <translation id="6106989379647458772">De webpagina op <ph name="PAGE" /> is mogelijk tijdelijk niet beschikbaar of is permanent verplaatst naar een nieuw webadres.</translation>
@@ -2356,6 +2357,7 @@ Aanvullende informatie:
 <translation id="8870494189203302833">Dezelfde volgorde met de bedrukte zijde omlaag</translation>
 <translation id="8871553383647848643">Pas de vormgeving van je browser aan</translation>
 <translation id="8874824191258364635">Geef een geldig kaartnummer op</translation>
+<translation id="8884537526797090108">Kan geen vertrouwelijke content opnemen</translation>
 <translation id="8891727572606052622">Ongeldige proxymodus.</translation>
 <translation id="8894794286471754040">Lange zijde eerst</translation>
 <translation id="8903921497873541725">Inzoomen</translation>
@@ -2410,6 +2412,7 @@ Aanvullende informatie:
 <translation id="9050666287014529139">Wachtwoordzin</translation>
 <translation id="9056953843249698117">Winkel</translation>
 <translation id="9062620674789239642">Het bestand is mogelijk verplaatst, bewerkt of verwijderd.</translation>
+<translation id="9063800855227801443">Kan geen opname van vertrouwelijke content maken</translation>
 <translation id="9065203028668620118">Bewerken</translation>
 <translation id="9065745800631924235">Zoekopdracht <ph name="TEXT" /> in de geschiedenis</translation>
 <translation id="9069693763241529744">Geblokkeerd door een extensie</translation>

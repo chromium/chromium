@@ -216,7 +216,6 @@
 <translation id="1218015446623563536">Elimina Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Il servizio di geolocalizzazione di Google utilizza fonti quali reti mobili, Wi-Fi e sensori per stabilire la posizione del dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puoi disattivare la geolocalizzazione tramite la disattivazione dell'impostazione Posizione principale del dispositivo. Puoi anche disattivare l'uso di reti Wi-Fi e mobili e di sensori per la geolocalizzazione nelle impostazioni di geolocalizzazione.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Impossibile scaricare i file di contenuti vocali per la lingua <ph name="LANGUAGE" />. Verrà effettuato un tentativo di download in un secondo tempo. Per ora ciò che dici viene inviato a Google per l'elaborazione.</translation>
 <translation id="122082903575839559">Algoritmo di firma certificato</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 con crittografia RSA</translation>
 <translation id="1221825588892235038">Solo selezione</translation>
@@ -303,6 +302,7 @@
 <translation id="1313660246522271310">Uscirai da tutti i siti, schede aperte incluse</translation>
 <translation id="1313705515580255288">I Preferiti, la cronologia e le altre impostazioni verranno sincronizzati con il tuo Account Google.</translation>
 <translation id="1316136264406804862">Ricerca in corso...</translation>
+<translation id="1316248800168909509">Non è riuscito a connettersi a <ph name="DEVICE" />. Riprova.</translation>
 <translation id="1316495628809031177">Sincronizzazione in pausa</translation>
 <translation id="1317637799698924700">La dock station funzionerà alla modalità compatibile con USB Type-C.</translation>
 <translation id="1319983966058170660">Pulsante Indietro pagina secondaria <ph name="SUBPAGE_TITLE" /></translation>
@@ -1169,6 +1169,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2200356397587687044">Chrome ha bisogno dell'autorizzazione per continuare</translation>
 <translation id="2202898655984161076">Si è verificato un problema nella visualizzazione dell'elenco di stampanti. È possibile che alcune stampanti non siano state registrate correttamente con <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Il nome può contenere lettere, numeri e caratteri speciali</translation>
+<translation id="220321590587754225">Impossibile connettersi. Riprova.</translation>
 <translation id="2204034823255629767">Lettura e modifica del testo digitato</translation>
 <translation id="220858061631308971">Inserisci questo codice PIN su "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">Consenti cookie</translation>
@@ -4880,7 +4881,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6232017090690406397">Batteria</translation>
 <translation id="6232116551750539448">Connection a <ph name="NAME" /> interrotta</translation>
 <translation id="6233154960150021497">Imposta come predefinito l'uso della voce invece della tastiera</translation>
-<translation id="6233455992368963267">Il testo dettato in <ph name="LANGUAGE" /> viene inviato a Google per essere elaborato.</translation>
 <translation id="6234108445915742946">I Termini di servizio di Chrome cambieranno il 31 marzo</translation>
 <translation id="6234474535228214774">Installazione in attesa</translation>
 <translation id="6235208551686043831">Videocamera del dispositivo accesa. Posiziona il codice QR della eSIM di fronte alla videocamera.</translation>
@@ -4917,6 +4917,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6263284346895336537">Non critica</translation>
 <translation id="6264365405983206840">Seleziona &amp;tutto</translation>
 <translation id="6265687851677020761">Rimuovi porta</translation>
+<translation id="6266532094411434237">Connessione a <ph name="DEVICE" /> in corso…</translation>
 <translation id="6267166720438879315">Seleziona un certificato per autenticarti a <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Apri con <ph name="APP" /></translation>
 <translation id="6270391203985052864">I siti possono chiedere di inviare notifiche</translation>

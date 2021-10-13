@@ -220,7 +220,6 @@
 <translation id="1218015446623563536">Smazat Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Služby určování polohy Google používají zdroje, jako jsou sítě Wi-Fi, mobilní sítě a senzory, pomocí kterých se snaží odhadnout polohu tohoto zařízení.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Určování polohy můžete vypnout tím, že v zařízení deaktivujete hlavní nastavení polohy. V nastavení polohy můžete také vypnout používání sítí Wi-Fi, mobilních sítí a senzorů k určování polohy.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Řečové soubory pro jazyk <ph name="LANGUAGE" /> se nepodařilo stáhnout. Soubory zkusíme stáhnout později. Prozatím se řeč ke zpracování odesílá do Googlu.</translation>
 <translation id="122082903575839559">Algoritmus podpisu certifikátu</translation>
 <translation id="1221024147024329929">Šifrování PKCS #1 MD2 s RSA</translation>
 <translation id="1221825588892235038">Pouze výběr</translation>
@@ -308,6 +307,7 @@
 <translation id="1313660246522271310">Budete odhlášeni ze všech webů, včetně webů na otevřených kartách</translation>
 <translation id="1313705515580255288">Záložky, historie a další nastavení budou synchronizovány s účtem Google.</translation>
 <translation id="1316136264406804862">Vyhledávání...</translation>
+<translation id="1316248800168909509">K zařízení <ph name="DEVICE" /> se nepodařilo připojit Zkuste to znovu.</translation>
 <translation id="1316495628809031177">Synchronizace je pozastavena</translation>
 <translation id="1317637799698924700">Dokovací stanice bude fungovat v režimu kompatibilním s rozhraním USB Type-C.</translation>
 <translation id="1319983966058170660">Tlačítko zpět na podstránce <ph name="SUBPAGE_TITLE" /></translation>
@@ -1180,6 +1180,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2200356397587687044">Chrome k pokračování potřebuje oprávnění</translation>
 <translation id="2202898655984161076">Při vytváření seznamu tiskáren se vyskytla chyba. Některé vaše tiskárny možná nebyly ve službě <ph name="CLOUD_PRINT_NAME" /> úspěšně zaregistrovány.</translation>
 <translation id="2203088913459920044">V názvu lze použít písmena, číslice a zvláštní znaky</translation>
+<translation id="220321590587754225">Nepodařilo se připojit. Zkuste to znovu.</translation>
 <translation id="2204034823255629767">Číst a upravovat vše, co napíšete</translation>
 <translation id="220858061631308971">Zadejte prosím v zařízení <ph name="DEVICE_NAME" /> tento kód PIN:</translation>
 <translation id="2210462644007531147">Instalaci se nepodařilo dokončit</translation>
@@ -4925,7 +4926,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6232017090690406397">Baterie</translation>
 <translation id="6232116551750539448">Připojení k síti <ph name="NAME" /> bylo ztraceno</translation>
 <translation id="6233154960150021497">Ve výchozím nastavení používat místo klávesnice hlas</translation>
-<translation id="6233455992368963267">Řeč v jazyce <ph name="LANGUAGE" /> se odesílá do Googlu ke zpracování.</translation>
 <translation id="6234108445915742946">Smluvní podmínky prohlížeče Chrome se 31. března změní</translation>
 <translation id="6234474535228214774">Čeká se na instalaci</translation>
 <translation id="6235208551686043831">Byl zapnut fotoaparát zařízení. Umístěte před něj QR kód eSIM.</translation>
@@ -4962,6 +4962,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6263284346895336537">Nekritický</translation>
 <translation id="6264365405983206840">Vybr&amp;at vše</translation>
 <translation id="6265687851677020761">Odebrat port</translation>
+<translation id="6266532094411434237">Připojování k zařízení <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Vyberte certifikát pro ověření na serveru <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Otevřít v aplikaci <ph name="APP" /></translation>
 <translation id="6270391203985052864">Weby mohou žádat o oprávnění zasílat vám oznámení</translation>

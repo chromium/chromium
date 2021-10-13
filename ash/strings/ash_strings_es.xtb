@@ -23,6 +23,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1104621072296271835">Tus dispositivos funcionan aún mejor juntos</translation>
 <translation id="1119348796022671382">El modo de color mediante un tema usa colores extraídos de tu fondo de pantalla para colorear ligeramente la interfaz.</translation>
 <translation id="112308213915226829">Autoocultar estantería</translation>
+<translation id="1142002900084379065">Fotos recientes</translation>
 <translation id="1148499908455722006">Abre el cuadro de diálogo con información de <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendario</translation>
 <translation id="1153356358378277386">Dispositivos vinculados</translation>
@@ -179,6 +180,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2298170939937364391">Se ha habilitado la lupa de pantalla completa. Pulsa Ctrl + tecla de búsqueda + M de nuevo para desactivarla.</translation>
 <translation id="2302092602801625023">Esta cuenta se gestiona con Family Link</translation>
 <translation id="2303600792989757991">Activar vista general de ventanas</translation>
+<translation id="2318576281648121272">Hoy <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Retroceder por carácter</translation>
 <translation id="2339073806695260576">Toca el botón del lápiz óptico situado en la estantería para tomar una nota, hacer una captura de pantalla o utilizar el puntero láser o la lupa.</translation>
 <translation id="2341729377289034582">Bloqueada en vertical</translation>
@@ -200,6 +202,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="24452542372838207">Mostrar notificación</translation>
 <translation id="2450205753526923158">Modo de captura de pantalla</translation>
+<translation id="2456008742792828469">Calendario, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Confirma la resolución</translation>
 <translation id="2475982808118771221">Se ha producido un error.</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
@@ -261,6 +264,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2996462380875591307">Se ha habilitado la lupa fijada. Pulsa Ctrl + tecla de búsqueda + D de nuevo para desactivarla.</translation>
 <translation id="3000461861112256445">Audio en mono</translation>
 <translation id="3009178788565917040">Salida</translation>
+<translation id="3009958530611748826">Selecciona la carpeta donde quieras guardar</translation>
 <translation id="3017687597151988916">Área de selección establecida en ventana</translation>
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3036649622769666520">Abrir archivos</translation>
@@ -277,6 +281,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3100274880412651815">Cerrar el modo de captura</translation>
 <translation id="3105917916468784889">Hacer una captura de pantalla</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Eliminar sugerencia</translation>
 <translation id="3126069444801937830">Reinicia el sistema para actualizarlo.</translation>
 <translation id="3139942575505304791">Escritorio 1</translation>
 <translation id="315116470104423982">Redes móviles</translation>
@@ -503,9 +508,9 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4642092649622328492">Hacer una captura de pantalla parcial</translation>
 <translation id="4659419629803378708">ChromeVox habilitado</translation>
 <translation id="4665114317261903604">Activa o desactiva el modo No molestar. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Descargando <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Desbloquear con código parental</translation>
 <translation id="4702647871202761252">La pantalla de privacidad está desactivada</translation>
-<translation id="4706121060329443414">Se intentarán descargar más tarde. De momento, se enviará la voz a Google para procesarse.</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">La combinación de teclas <ph name="LAUNCHER_KEY_NAME" /> + número ha cambiado. Para usar las teclas de funciones, pulsa la tecla <ph name="LAUNCHER_KEY_NAME" /> + una tecla de la fila superior.</translation>
@@ -640,6 +645,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5744083938413354016">Tocar y arrastrar</translation>
 <translation id="5745612484876805746">La luz nocturna se activa automáticamente al anochecer</translation>
 <translation id="5750765938512549687">El Bluetooth está desactivado</translation>
+<translation id="576341972084747908">Descargando archivo peligroso <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Luz nocturna activada.</translation>
 <translation id="5769373120130404283">Pantalla de privacidad</translation>
 <translation id="5777841717266010279">¿Dejar de compartir la pantalla?</translation>
@@ -689,7 +695,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6062360702481658777">Tu sesión se cerrará automáticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Detener grabación</translation>
 <translation id="607652042414456612">Tu ordenador es visible para dispositivos Bluetooth cercanos y aparecerá como "<ph name="NAME" />" con la dirección <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">La política del administrador inhabilita la grabación de pantalla cuando se muestra contenido confidencial</translation>
 <translation id="6114505516289286752">Archivos de voz en <ph name="LANGUAGE" /> descargados</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">El Asistente de Google no está disponible en las sesiones de invitado.</translation>
@@ -779,6 +784,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6852052252232534364">Clic para activar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta 1 dígito}other{Faltan # dígitos}}</translation>
+<translation id="6867938213751067702">Descarga de <ph name="FILENAME" /> pausada</translation>
 <translation id="6878400149835617132">Combinación de teclas desactivada</translation>
 <translation id="6886172995547742638">Es posible que se reduzca el rendimiento de tu <ph name="DEVICE_TYPE" />. Usa un adaptador de corriente USB‑C certificado de <ph name="PREFERRED_MINIMUM_POWER" /> W o más.</translation>
 <translation id="688631446150864480">Pulsa la tecla de la flecha hacia abajo para cambiar de ventana</translation>
@@ -1044,7 +1050,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8876661425082386199">Comprobar tu conexión</translation>
 <translation id="8877788021141246043">Añadir un recordatorio</translation>
 <translation id="8878886163241303700">Ampliando pantalla</translation>
-<translation id="8884537526797090108">No se puede grabar contenido confidencial</translation>
 <translation id="890616557918890486">Cambiar fuente</translation>
 <translation id="8909138438987180327">La batería tiene un <ph name="PERCENTAGE" /> % de carga.</translation>
 <translation id="8913384980486163186">Tema (predeterminado)</translation>

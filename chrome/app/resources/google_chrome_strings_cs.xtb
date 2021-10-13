@@ -52,7 +52,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2121284319307530122">Znovu spustit a aktualizovat &amp;Chrome</translation>
 <translation id="2123055963409958220">Pomozte s vylepšováním prohlížeče Chrome tím, že nahlásíte <ph name="BEGIN_LINK" />aktuální nastavení<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Restartujte Chrome</translation>
-<translation id="2246246234298806438">Pokud chybí integrovaný program k zobrazení souborů PDF, nemůže Google Chrome zobrazit náhled tisku.</translation>
 <translation id="2290014774651636340">Chybí klíče rozhraní Google API. Některé funkce Google Chrome nebudou k dispozici.</translation>
 <translation id="2290095356545025170">Opravdu chcete odinstalovat Google Chrome?</translation>
 <translation id="2309047409763057870">Toto je druhá instalace prohlížeče Google Chrome. Tuto instalaci nelze nastavit jako výchozí prohlížeč.</translation>
@@ -91,6 +90,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3037838751736561277">Google Chrome je v režimu na pozadí.</translation>
 <translation id="3059710691562604940">Bezpečné prohlížení je vypnuté. Chrome ho doporučuje zapnout.</translation>
 <translation id="3065168410429928842">Karta prohlížeče Chrome</translation>
+<translation id="3069821012350118710">Navštívené weby si pamatují vaše údaje, dokud Chrome nezavřete</translation>
 <translation id="3080151273017101988">Po ukončení prohlížeče Google Chrome nechat aplikace na pozadí spuštěné</translation>
 <translation id="3089968997497233615">K dispozici je nová, bezpečnější verze prohlížeče Google Chrome.</translation>
 <translation id="3100998948628680988">Zadejte název profilu Chrome</translation>
@@ -193,6 +193,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="5804318322022881572">Chrome nelze spustit. Zkuste to znovu.</translation>
 <translation id="5867197326698922595">Google Chrome se pokouší upravit hesla.</translation>
 <translation id="5895138241574237353">Restartovat</translation>
+<translation id="5901850848447342934">Po zavření prohlížeče Chrome budete <ph name="BEGIN_BOLD" />odhlášeni z většiny webů<ph name="END_BOLD" />. Pokud je vypnutá synchronizace, budete také <ph name="BEGIN_BOLD" />odhlášeni ze služeb Google a z prohlížeče Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – přihlášení k síti</translation>
 <translation id="5940385492829620908">Zde jsou k dispozici vaše weby, záložky a další obsah Chromu.</translation>
 <translation id="5941830788786076944">Nastavit Google Chrome jako výchozí prohlížeč</translation>
@@ -282,6 +283,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="8614913330719544658">Google Chrome neodpovídá. Restartovat?</translation>
 <translation id="861702415419836452">Chrome potřebuje oprávnění k přístupu k fotoaparátu, aby mohl vytvořit 3D mapu vašeho okolí</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se za 1 minutu restartuje}few{Chrome se za # minut restartuje}many{Chrome se za # minuty restartuje}other{Chrome se za # minut restartuje}}</translation>
+<translation id="8629311577791198377">Když zavřete všechna okna prohlížeče Chrome, automaticky se vymažou soubory cookie a data webů</translation>
 <translation id="8641606876632989680">Pokud se přihlásíte pomocí prolomeného hesla, Chrome vám to oznámí</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Také řídí, která stránka se zobrazí při spuštění Chromu.</translation>

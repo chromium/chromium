@@ -220,7 +220,6 @@
 <translation id="1218015446623563536">Linuxని తొలగించండి</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />ఈ పరికర స్థానాన్ని అంచనా వేయడంలో సహాయపడటానికి Wi‑Fi, మొబైల్ నెట్‌వర్క్‌లు మరియు సెన్సార్‌ల వంటి మూలాధారాలను Google స్థాన సేవ ఉపయోగిస్తుంది.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />మీరు ఈ పరికరంలో ప్రధాన స్థాన సెట్టింగ్‌ని ఆఫ్ చేయడం ద్వారా స్థానాన్ని ఆఫ్ చేయవచ్చు. మీరు స్థాన సెట్టింగ్‌లలో స్థానం కోసం Wi‑Fi, మొబైల్ నెట్‌వర్క్‌లు మరియు సెన్సార్‌ల వినియోగాన్ని కూడా ఆఫ్ చేయవచ్చు.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247"><ph name="LANGUAGE" /> స్పీచ్ ఫైల్‌లను డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు. మీ డౌన్‌లోడ్ తర్వాత మళ్లీ ప్రారంభమవుతుంది. ప్రస్తుతానికి, ప్రాసెసింగ్ కోసం స్పీచ్ Googleకు పంపబడింది.</translation>
 <translation id="122082903575839559">సర్టిఫికెట్ సంతకం అల్గారిథమ్</translation>
 <translation id="1221024147024329929">RSA ఎన్‌క్రిప్షన్‌తో PKCS #1 MD2</translation>
 <translation id="1221825588892235038">ఎంపిక మాత్రమే</translation>
@@ -308,6 +307,7 @@
 <translation id="1313660246522271310">తెరిచిన ట్యాబ్‌లతో సహా, అన్ని సైట్‌ల నుండి మీరు సైన్ అవుట్ చేయబడతారు</translation>
 <translation id="1313705515580255288">మీ బుక్‌మార్క్‌లు, చరిత్ర, ఇతర సెట్టింగ్‌లు మీ Google ఖాతాకు సింక్ చేయ‌బ‌డ‌తాయి.</translation>
 <translation id="1316136264406804862">శోధిస్తోంది...</translation>
+<translation id="1316248800168909509"><ph name="DEVICE" />కు కనెక్ట్ చేయలేకపోయింది. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="1316495628809031177">సింక్‌ పాజ్ చేయబడింది</translation>
 <translation id="1317637799698924700">మీ డాకింగ్ స్టేషన్, USB టైప్-సి అనుకూలత మోడ్‌లో ఆపరేట్ చేయబడుతుంది.</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> సబ్‌పేజీ 'వెనుకకు' బటన్</translation>
@@ -1189,6 +1189,7 @@
 <translation id="2200356397587687044">కొనసాగడానికి Chromeకి అనుమతి అవసరం</translation>
 <translation id="2202898655984161076">ముద్రణలను లిస్ట్‌ చెయ్యడంలో సమస్య ఉంది. <ph name="CLOUD_PRINT_NAME" />తో మీ ముద్రణలలో కొన్ని విజయవంతంగా నమోదు చెయ్యబడకపోయి ఉండవచ్చు.</translation>
 <translation id="2203088913459920044">పేరులో అక్షరాలు, నంబర్‌లు, ప్రత్యేక అక్షరాలను ఉపయోగించవచ్చు</translation>
+<translation id="220321590587754225">కనెక్ట్ చేయడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2204034823255629767">మీరు టైప్ చేసేదాన్ని చదవడం మరియు మార్చడం</translation>
 <translation id="220858061631308971">దయచేసి ఈ PIN కోడ్‌ను "<ph name="DEVICE_NAME" />"లో నమోదు చేయండి:</translation>
 <translation id="2210462644007531147">ఇన్‌స్టాలేషన్‌ను పూర్తి చేయడం సాధ్యపడలేదు</translation>
@@ -4940,7 +4941,6 @@
 <translation id="6232017090690406397">బ్యాటరీ</translation>
 <translation id="6232116551750539448"><ph name="NAME" />కి కనెక్షన్ కోల్పోయింది</translation>
 <translation id="6233154960150021497">కీబోర్డ్ బదులుగా వాయిస్‌ను డిఫాల్ట్‌గా ఉపయోగించండి</translation>
-<translation id="6233455992368963267">ప్రాసెసింగ్ కోసం <ph name="LANGUAGE" /> స్పీచ్ Googleకు పంపబడింది.</translation>
 <translation id="6234108445915742946">మార్చి 31న Chrome సర్వీస్ నియమాలు మారుతున్నాయి</translation>
 <translation id="6234474535228214774">ఇన్‌స్టాల్ పెండింగ్‌లో ఉంది</translation>
 <translation id="6235208551686043831">పరికర కెమెరా ఆన్ చేయబడింది. మీ eSIM QR కోడ్‌ను దయచేసి కెమెరా ముందు ఉంచండి</translation>
@@ -4977,6 +4977,7 @@
 <translation id="6263284346895336537">క్లిష్టమైనది కాదు</translation>
 <translation id="6264365405983206840">&amp;అన్నీ ఎంచుకోండి</translation>
 <translation id="6265687851677020761">పోర్ట్‌ను తీసివేయండి</translation>
+<translation id="6266532094411434237"><ph name="DEVICE" />కు కనెక్ట్ అవుతోంది</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" />కు మిమ్మల్ని మీరు ప్రమాణీకరించడానికి ఒక సర్టిఫికెట్‌ను ఎంచుకోండి</translation>
 <translation id="6268252012308737255"><ph name="APP" />‌తో తెరవండి</translation>
 <translation id="6270391203985052864">నోటిఫికేషన్‌లను పంపడానికి సైట్‌లు అడుగగలవు</translation>

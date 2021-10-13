@@ -216,7 +216,6 @@
 <translation id="1218015446623563536">Borrar Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />El servicio de ubicación de Google usa fuentes como conexiones Wi-Fi, redes móviles y sensores para calcular la ubicación de este dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para inhabilitar la Ubicación, desactiva la configuración de la ubicación principal de este dispositivo. También puedes desactivar el uso de redes Wi-Fi, redes móviles y sensores para obtener la ubicación en la configuración de la ubicación.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">No se pudieron descargar los archivos de voz en <ph name="LANGUAGE" />. Se intentará completar la descarga más tarde. Por ahora, se enviará la voz a Google para su procesamiento.</translation>
 <translation id="122082903575839559">Algoritmo de firma del certificado</translation>
 <translation id="1221024147024329929">PKCS N. º 1 MD2 con encriptación RSA</translation>
 <translation id="1221825588892235038">Solo selección</translation>
@@ -303,6 +302,7 @@
 <translation id="1313660246522271310">Saldrás de todos los sitios, incluidos los de las pestañas abiertas</translation>
 <translation id="1313705515580255288">Los favoritos, el historial y demás parámetros de configuración se sincronizarán con tu cuenta de Google.</translation>
 <translation id="1316136264406804862">Buscando...</translation>
+<translation id="1316248800168909509">No se pudo establecer conexión con <ph name="DEVICE" />. Vuelve a intentarlo.</translation>
 <translation id="1316495628809031177">Se pausó la sincronización</translation>
 <translation id="1317637799698924700">La estación de conectores funcionará en modo compatible con USB tipo C.</translation>
 <translation id="1319983966058170660">Botón para volver de la subpágina <ph name="SUBPAGE_TITLE" /></translation>
@@ -1166,6 +1166,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2200356397587687044">Chrome necesita permiso para continuar</translation>
 <translation id="2202898655984161076">Hubo un problema al enumerar las impresoras. Algunas de tus impresoras pueden no haberse registrado con éxito con <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">El nombre puede incluir letras, números y caracteres especiales.</translation>
+<translation id="220321590587754225">No se pudo establecer la conexión. Vuelve a intentarlo.</translation>
 <translation id="2204034823255629767">Leer y cambiar todo lo que escribas</translation>
 <translation id="220858061631308971">Ingresa este código PIN en "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">Permitir cookies</translation>
@@ -4877,7 +4878,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6232017090690406397">Batería</translation>
 <translation id="6232116551750539448">Se perdió la conexión a <ph name="NAME" />.</translation>
 <translation id="6233154960150021497">Usar de forma predeterminada la voz en lugar del teclado</translation>
-<translation id="6233455992368963267">La enunciación en <ph name="LANGUAGE" /> se envía a Google para su procesamiento.</translation>
 <translation id="6234108445915742946">El 31 de marzo, cambiarán las Condiciones del Servicio de Chrome</translation>
 <translation id="6234474535228214774">Instalación pendiente</translation>
 <translation id="6235208551686043831">Se activó la cámara del dispositivo. Coloca el código QR de tu eSIM frente a la cámara.</translation>
@@ -4914,6 +4914,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6263284346895336537">No crítico</translation>
 <translation id="6264365405983206840">Seleccion&amp;ar todo</translation>
 <translation id="6265687851677020761">Quitar puerto</translation>
+<translation id="6266532094411434237">Conectando a <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Seleccionar un certificado para autenticarte como <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Abrir con <ph name="APP" /></translation>
 <translation id="6270391203985052864">Los sitios podrán preguntarte si quieres recibir notificaciones</translation>

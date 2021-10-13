@@ -214,6 +214,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="160851722280695521">Luaj lojën Dino Run në Chrome</translation>
 <translation id="161042844686301425">E bruztë</translation>
 <translation id="1611101756749861742">Ruli i dytë</translation>
+<translation id="1615402009686901181">Politika e administratorit çaktivizon regjistrimin e ekranit kur përmbajtja konfidenciale është e dukshme</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Parandalo krijimin e dialogëve shtesë nga kjo faqe</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -405,6 +406,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2241693394036365668">Skedari është shkarkuar</translation>
 <translation id="2248949050832152960">Përdor WebAuthn</translation>
 <translation id="2250931979407627383">Qepje anësore majtas</translation>
+<translation id="2251943122176102076">Administratori nuk rekomandon nxjerrjen e pamjeve të ekranit apo të regjistrimeve për shkak të përmbajtjes konfidenciale të regjistruar:</translation>
 <translation id="225207911366869382">Kjo vlerë është tërhequr për këtë politikë.</translation>
 <translation id="2258928405015593961">Fut një datë skadimi në të ardhmen dhe provo përsëri</translation>
 <translation id="225943865679747347">Kodi i gabimit: <ph name="ERROR_CODE" /></translation>
@@ -862,7 +864,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3781428340399460090">Rozë e ndezur</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Pajisjet me Bluetooth</translation>
-<translation id="3787675388804467730">Numri i kartës virtuale</translation>
 <translation id="3787705759683870569">Skadon më <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Madhësia 16</translation>
 <translation id="3789841737615482174">Instalo</translation>
@@ -1197,6 +1198,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
           <ph name="LIST_ITEM" />Ofruesit e shërbimit të internetit mund të monitorojnë trafikun e uebit<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Aktivizo paralajmërimet</translation>
+<translation id="4834718916855725099">Administratori nuk rekomandon nxjerrjen e pamjeve të ekranit apo të regjistrimeve për shkak të përmbajtjes konfidenciale në ekran:</translation>
 <translation id="4838327282952368871">Si në ëndërr</translation>
 <translation id="4840250757394056958">Shiko historikun tënd të Chrome</translation>
 <translation id="484462545196658690">Automatike</translation>
@@ -1574,6 +1576,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6080696365213338172">Je qasur në përmbajtje duke përdorur një certifikatë të dhënë nga administratori. Të dhënat që jep për <ph name="DOMAIN" /> mund të zbulohen nga administratori yt.</translation>
 <translation id="6087312102907839798">Kërkime të ngjashme</translation>
 <translation id="6094273045989040137">Shëno</translation>
+<translation id="6094290315941448991">Politika e administratorit çaktivizon regjistrimin e ekranit kur përmbajtja konfidenciale është e dukshme</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Krijo sajt</translation>
 <translation id="6106989379647458772">Faqja e uebit në <ph name="PAGE" /> mund të mos jetë përkohësisht në punë ose mund të jetë zhvendosur përgjithmonë në një adresë uebi të re.</translation>
@@ -2373,6 +2376,7 @@ Detaje shtesë:
 <translation id="8870494189203302833">E njëjta renditje e kthyer poshtë</translation>
 <translation id="8871553383647848643">Personalizo pamjen e shfletuesit tënd</translation>
 <translation id="8874824191258364635">Fut një numër të vlefshëm karte</translation>
+<translation id="8884537526797090108">Nuk mund të regjistrojë përmbajtje konfidenciale</translation>
 <translation id="8891727572606052622">Modalitet i pavlefshëm përfaqësuesi.</translation>
 <translation id="8894794286471754040">Ana e gjatë në fillim</translation>
 <translation id="8903921497873541725">Zmadho</translation>
@@ -2427,6 +2431,7 @@ Detaje shtesë:
 <translation id="9050666287014529139">Shprehje kalimi</translation>
 <translation id="9056953843249698117">Dyqani</translation>
 <translation id="9062620674789239642">Ai mund të jetë zhvendosur, modifikuar ose fshirë.</translation>
+<translation id="9063800855227801443">Nuk mund të regjistrojë përmbajtje konfidenciale</translation>
 <translation id="9065203028668620118">Redakto</translation>
 <translation id="9065745800631924235">Kërkimi <ph name="TEXT" /> nga historiku</translation>
 <translation id="9069693763241529744">Bllokuar nga një shtesë</translation>

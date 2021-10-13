@@ -261,6 +261,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2996462380875591307">Se habilitó la lupa con vista acoplada. Presiona Ctrl+Buscar+D de nuevo para desactivarla.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Salida</translation>
+<translation id="3009958530611748826">Seleccionar una carpeta de destino</translation>
 <translation id="3017687597151988916">Se estableció la ventana como área de selección</translation>
 <translation id="3033545621352269033">Sí</translation>
 <translation id="3036649622769666520">Abrir archivos</translation>
@@ -505,7 +506,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4665114317261903604">Activa o desactiva la función No interrumpir. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Desbloquea el dispositivo con el código parental</translation>
 <translation id="4702647871202761252">La pantalla de privacidad está desactivada</translation>
-<translation id="4706121060329443414">Se intentará completar la descarga más tarde. Por ahora, se enviará la voz a Google para su procesamiento.</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Se modificó la combinación de teclas <ph name="LAUNCHER_KEY_NAME" /> + un número. Para usar las teclas de función, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + una tecla de la fila superior.</translation>
@@ -689,7 +689,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6062360702481658777">Saldrás de la sesión automáticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Detener grabación</translation>
 <translation id="607652042414456612">La computadora es visible para dispositivos Bluetooth cercanos y aparecerá como "<ph name="NAME" />" con la dirección <ph name="ADDRESS" />.</translation>
-<translation id="6094290315941448991">La política del administrador inhabilita la grabación de pantalla cuando hay contenido confidencial a la vista.</translation>
 <translation id="6114505516289286752">Se descargaron los archivos de voz en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="612734058257491180">El Asistente de Google no está disponible en las sesiones de invitado.</translation>
@@ -1044,7 +1043,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8876661425082386199">Revisa tu conexión</translation>
 <translation id="8877788021141246043">Establecer un recordatorio</translation>
 <translation id="8878886163241303700">Ampliando pantalla</translation>
-<translation id="8884537526797090108">No se puede grabar contenido confidencial</translation>
 <translation id="890616557918890486">Cambiar la fuente</translation>
 <translation id="8909138438987180327">Batería al <ph name="PERCENTAGE" />%</translation>
 <translation id="8913384980486163186">Temático (predeterminado)</translation>

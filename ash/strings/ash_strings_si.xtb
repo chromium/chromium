@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">ඔබේ උපාංග එක්ව වඩා හොඳින් වැඩ කරයි</translation>
 <translation id="1119348796022671382">තේමා වර්ණ ප්‍රකාරය අතුරු මුහුණත ළාවට වර්ණ ගැන්වීම සඳහා ඔබේ වෝල්ලපේපරයෙන් නිස්සාරණය කළ වර්ණ භාවිත කරයි.</translation>
 <translation id="112308213915226829">ස්වයං සැඟවුම් රාක්කය</translation>
+<translation id="1142002900084379065">මෑත ඡායාරූප</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> සඳහා තතු සංවාදය විවෘත කරන්න</translation>
 <translation id="1150989369772528668">දින දර්ශනය</translation>
 <translation id="1153356358378277386">යුගලිත උපාංග</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">පූර්ණ තිර විශාලකය සබලයි. එය ක්‍රියාවිරහිත කිරීම ටොගල කිරීමට නැවත Ctrl+Search+H ඔබන්න.</translation>
 <translation id="2302092602801625023">මෙම ගිණුම Family Link විසින් කළමනා කෙරේ</translation>
 <translation id="2303600792989757991">ටොගල් කවුළු සමාලෝචනය</translation>
+<translation id="2318576281648121272">අද <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">අකුරෙන් ආපසු</translation>
 <translation id="2339073806695260576">සටහනක්, තිර රුවක් ගැනීමට, ලේසර් දර්ශකය හෝ විශාලක කදාව භාවිතා කිරීමට රක්කයේ පන්හිඳ බොත්තම තට්ටු කරන්න.</translation>
 <translation id="2341729377289034582">සිරසට අගුළු දමා ඇත</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">මුරපදය පෙන්වන්න</translation>
 <translation id="24452542372838207">දැනුම්දීම දිග හරින්න</translation>
 <translation id="2450205753526923158">තිර රූ ප්‍රකාරය</translation>
+<translation id="2456008742792828469"><ph name="CURRENT_MONTH_YEAR" />, දින දර්ශනය</translation>
 <translation id="2473177541599297363">විභේදනය තහවුරු කරන්න</translation>
 <translation id="2475982808118771221">දෝෂයක් සිදු විණි</translation>
 <translation id="2482878487686419369">දැනුම්දීම්</translation>
@@ -261,6 +264,7 @@
 <translation id="2996462380875591307">ඈඳන ලද විශාලකය සබලයි. එය ක්‍රියාවිරහිත කිරීම ටොගල කිරීමට නැවත Ctrl+Search+H ඔබන්න.</translation>
 <translation id="3000461861112256445">ඒකල ශ්‍රව්‍යය</translation>
 <translation id="3009178788565917040">ප්‍රතිදානය</translation>
+<translation id="3009958530611748826">සුරැකීමට ෆෝල්ඩරයක් තෝරන්න</translation>
 <translation id="3017687597151988916">තේරීම් ප්‍රදේශය කවුළුවට සකසන ලදි</translation>
 <translation id="3033545621352269033">සක්‍රියයි</translation>
 <translation id="3036649622769666520">ගොනුව විවෘත කරන්න</translation>
@@ -277,6 +281,7 @@
 <translation id="3100274880412651815">ග්‍රහණ ප්‍රකාරය ඉවත ලන්න</translation>
 <translation id="3105917916468784889">තිරපිටපත් ගන්න</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">යෝජනාව ඉවත් කරන්නද?</translation>
 <translation id="3126069444801937830">යාවත්කාලීන කිරීමට නැවත් පණගන්වන්න</translation>
 <translation id="3139942575505304791">1 වෙනි මේසය</translation>
 <translation id="315116470104423982">ජංගම දත්ත</translation>
@@ -502,9 +507,9 @@
 <translation id="4642092649622328492">අර්ධ තිර රුවක් ගන්න</translation>
 <translation id="4659419629803378708">ChromeVox සබලයි</translation>
 <translation id="4665114317261903604">බාධා නොකරන්න ටොගල් කරන්න. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081"><ph name="FILENAME" /> බාගනිමින්</translation>
 <translation id="4696813013609194136">මාපිය කේතය සමඟ උපාංගය අඟුලු අරින්න</translation>
 <translation id="4702647871202761252">පෞද්ගලිකත්ව තිරය අක්‍රියයි</translation>
-<translation id="4706121060329443414">බාගැනීම පසුව උත්සාහ කරනු ඇත. දැනට සැකසීම සඳහා කථනය Google වෙත යවනු ඇත.</translation>
 <translation id="4731797938093519117">මාපිය ප්‍රවේශය</translation>
 <translation id="4734965478015604180">තිරස්</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + අංකය යතුරු පුවරු කෙටි මග වෙනස් වී ඇත. කාර්ය යතුරු භාවිත කිරීමට, <ph name="LAUNCHER_KEY_NAME" /> යතුර + ඉහළම පේළියේ ඇති යතුරක් ඔබන්න.</translation>
@@ -639,6 +644,7 @@
 <translation id="5744083938413354016">ඇදගෙන යාම තට්ටු කරන්න</translation>
 <translation id="5745612484876805746">රාත්‍රී ආලෝකය හිරු බැස යන විට දී ස්වයංක්‍රීයව ක්‍රියාත්මක වේ</translation>
 <translation id="5750765938512549687">බ්ලූටූත් ක්‍රියා විරහිතයි</translation>
+<translation id="576341972084747908">හානිකර <ph name="FILENAME" /> බාගන්න</translation>
 <translation id="576453121877257266">රාත්‍රී ආලෝකය සක්‍රීයයි.</translation>
 <translation id="5769373120130404283">පෞද්ගලිකත්ව තිරය</translation>
 <translation id="5777841717266010279">තිර හවුල්කිරීම නවතන්නද?</translation>
@@ -688,7 +694,6 @@
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> තුළ ඔබව ස්වයංක්‍රියව වරනු ඇත.</translation>
 <translation id="6073451960410192870">පටිගත කිරීම නැවැත්වීම</translation>
 <translation id="607652042414456612">අවට ඇති Bluetooth උපාංග සඳහා ඔබේ පරිගණකය "<ph name="NAME" />" ලෙස <ph name="ADDRESS" /> ලිපිනය භාවිතයෙන් දිස්වනු ඇත</translation>
-<translation id="6094290315941448991">රහසිගත අන්තර්ගතය දෘශ්‍යමාන විට පරිපාලක ප්‍රතිපත්තිය තිර පටිගත කිරීම අබල කරයි</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> කථන ගොනු බාගන්නා ලදී</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">ආගන්තුක සැසියකදී Google සහකරු නොලැබේ.</translation>
@@ -778,6 +783,7 @@
 <translation id="6852052252232534364">සක්‍රිය ක්ලික්</translation>
 <translation id="6857725247182211756">තත් <ph name="SECONDS" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{එක් අංකයක් ඉතිරිය}one{අංක #ක් ඉතිරිය}other{අංක #ක් ඉතිරිය}}</translation>
+<translation id="6867938213751067702"><ph name="FILENAME" /> බාගැනීම විරාම කරන ලදි</translation>
 <translation id="6878400149835617132">කෙටිමඟ අක්‍රියයි</translation>
 <translation id="6886172995547742638">ඔබගේ <ph name="DEVICE_TYPE" /> අඩු ක්‍රියාකාරිත්වයක් අත්විඳිය හැකිය. සහතික කළ <ph name="PREFERRED_MINIMUM_POWER" />W හෝ වඩා ඉහළ USB-C බල ඇඩැප්ටරයක් භාවිත කරන්න.</translation>
 <translation id="688631446150864480">කවුළු මාරු කිරීමට පහළ ඊතල යතුර ඔබන්න</translation>
@@ -1043,7 +1049,6 @@
 <translation id="8876661425082386199">ඔබේ සම්බන්ධතාවය පරීක්ෂා කරන්න</translation>
 <translation id="8877788021141246043">මතක් කිරීමක් සකසන්න</translation>
 <translation id="8878886163241303700">තිරය දික් කරයි</translation>
-<translation id="8884537526797090108">රහසිගත අන්තර්ගතය පටිගත කළ නොහැකිය</translation>
 <translation id="890616557918890486">මූලාශ්‍රය වෙනස් කරන්න</translation>
 <translation id="8909138438987180327">බැටරි ප්‍රතිශතය <ph name="PERCENTAGE" /> කි.</translation>
 <translation id="8913384980486163186">තේමාව (පෙරනිමි)</translation>

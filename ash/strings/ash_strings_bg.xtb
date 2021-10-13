@@ -264,6 +264,7 @@
 <translation id="2996462380875591307">Лупата в прикрепен режим е активирана. За да я изключите, натиснете отново Ctrl + клавиш „Търсене“ + D.</translation>
 <translation id="3000461861112256445">Монозвук</translation>
 <translation id="3009178788565917040">Изход</translation>
+<translation id="3009958530611748826">Изберете папка, в която да запазите</translation>
 <translation id="3017687597151988916">Прозорецът е зададен като избрана област</translation>
 <translation id="3033545621352269033">Включено</translation>
 <translation id="3036649622769666520">Отваряне на файлове</translation>
@@ -509,7 +510,6 @@
 <translation id="4667099493359681081"><ph name="FILENAME" /> се изтегля</translation>
 <translation id="4696813013609194136">Отключване на устройството с код на родител</translation>
 <translation id="4702647871202761252">Екранът за поверителност е изключен</translation>
-<translation id="4706121060329443414">По-късно ще се направи опит за изтегляне. Засега говорът ще бъде изпратен до Google за обработка.</translation>
 <translation id="4731797938093519117">Достъп на родител</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="4735498845456076464">Клавишната комбинация клавиш „<ph name="LAUNCHER_KEY_NAME" />“ + цифра се промени. За да използвате функционалните клавиши, натиснете „<ph name="LAUNCHER_KEY_NAME" />“ + клавиш от най-горния ред.</translation>
@@ -694,7 +694,6 @@
 <translation id="6062360702481658777">Ще излезете автоматично след <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Спиране на записа</translation>
 <translation id="607652042414456612">Компютърът ви е откриваем за устройства с Bluetooth наблизо и ще се показва като „<ph name="NAME" />“ с адрес <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Записването на екрана, когато се вижда поверително съдържание, е деактивирано чрез администраторско правило</translation>
 <translation id="6114505516289286752">Файловете за говор на <ph name="LANGUAGE" /> бяха изтеглени</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Асистент не се поддържа по време на сесия като гост.</translation>
@@ -1050,7 +1049,6 @@
 <translation id="8876661425082386199">Проверка на връзката ви</translation>
 <translation id="8877788021141246043">„Set a reminder“ („Задай напомняне“)</translation>
 <translation id="8878886163241303700">Разгъване на екрана</translation>
-<translation id="8884537526797090108">Не е възможно записване на поверително съдържание</translation>
 <translation id="890616557918890486">Промяна на източника</translation>
 <translation id="8909138438987180327">Батерията е на <ph name="PERCENTAGE" /> процента.</translation>
 <translation id="8913384980486163186">Тематичен (по подразбиране)</translation>

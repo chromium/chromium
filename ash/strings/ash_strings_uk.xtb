@@ -261,6 +261,7 @@
 <translation id="2996462380875591307">Увімкнено закріплену лупу. Щоб вимкнути її, знову натисніть комбінацію Ctrl + клавіша пошуку + D.</translation>
 <translation id="3000461861112256445">Монофонічне аудіо</translation>
 <translation id="3009178788565917040">Вихід</translation>
+<translation id="3009958530611748826">Виберіть, у якій папці зберегти</translation>
 <translation id="3017687597151988916">Вибрано вікно</translation>
 <translation id="3033545621352269033">Увімкнено</translation>
 <translation id="3036649622769666520">Відкрити файли</translation>
@@ -504,7 +505,6 @@
 <translation id="4665114317261903604">Увімкнути/вимкнути режим "Не турбувати". <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Введіть код доступу батьків</translation>
 <translation id="4702647871202761252">Екран конфіденційності вимкнено</translation>
-<translation id="4706121060329443414">Спроба завантаження повториться пізніше. Наразі мовлення буде надіслано на сервери Google для обробки.</translation>
 <translation id="4731797938093519117">Батьківський доступ</translation>
 <translation id="4734965478015604180">Горизонтально</translation>
 <translation id="4735498845456076464">Комбінацію клавіш "<ph name="LAUNCHER_KEY_NAME" /> + цифра" змінено. Щоб скористатися функціональними клавішами, натисніть <ph name="LAUNCHER_KEY_NAME" /> + клавішу у верхньому рядку.</translation>
@@ -688,7 +688,6 @@
 <translation id="6062360702481658777">Ви автоматично вийдете за <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Припинити запис</translation>
 <translation id="607652042414456612">Ваш комп’ютер видимий для пристроїв Bluetooth поблизу та відображатиметься з назвою "<ph name="NAME" />" та адресою <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Адміністратор заборонив запис екрана, якщо видно конфіденційний контент</translation>
 <translation id="6114505516289286752">Файли живих субтитрів завантажено (<ph name="LANGUAGE" />)</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Асистент недоступний під час сеансу в режимі "Гість".</translation>
@@ -1043,7 +1042,6 @@
 <translation id="8876661425082386199">Перевірте з'єднання</translation>
 <translation id="8877788021141246043">Налаштуй нагадування</translation>
 <translation id="8878886163241303700">Розширення екрана</translation>
-<translation id="8884537526797090108">Не вдається записати конфіденційний контент</translation>
 <translation id="890616557918890486">Змінити джерело</translation>
 <translation id="8909138438987180327">Акумулятор заряджено на <ph name="PERCENTAGE" />.</translation>
 <translation id="8913384980486163186">Тематичні кольори (за умовчанням)</translation>

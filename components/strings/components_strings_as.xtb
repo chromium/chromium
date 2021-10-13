@@ -214,6 +214,7 @@
 <translation id="160851722280695521">Chromeত Dino Run গে’মটো খেলক</translation>
 <translation id="161042844686301425">চাইয়ান</translation>
 <translation id="1611101756749861742">দ্বিতীয় ৰোল</translation>
+<translation id="1615402009686901181">প্ৰশাসকৰ নীতিয়ে গোপনীয় সমল দৃশ্যমান হৈ থাকোঁতে স্ক্ৰীন কেপচাৰ অক্ষম কৰে</translation>
 <translation id="1620510694547887537">কেমেৰা</translation>
 <translation id="1623104350909869708">এই পৃষ্ঠাটোক অতিৰিক্ত ডায়ল’গ সৃষ্টি কৰিব নিদিব</translation>
 <translation id="16338877384480380">স্থাপত্য বিদ্যা-B</translation>
@@ -857,7 +858,6 @@
 <translation id="3781428340399460090">উজ্জ্বল গুলপীয়া</translation>
 <translation id="3783418713923659662">MasterCard গ্ৰহণ কৰে</translation>
 <translation id="3784372983762739446">ব্লুটুথ ডিভাইচসমূহ</translation>
-<translation id="3787675388804467730">ভাৰ্ছুৱেল কাৰ্ডৰ নম্বৰ</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" />ত ম্যাদ উকলিব</translation>
 <translation id="3789155188480882154">আকাৰ ১৬</translation>
 <translation id="3789841737615482174">ইনষ্টল কৰক</translation>
@@ -1565,6 +1565,7 @@
 <translation id="6080696365213338172">আপুনি প্ৰশাসকে প্ৰদান কৰা প্ৰমাণপত্ৰ ব্যৱহাৰ কৰি সমল এক্সেছ কৰিছে। আপুনি <ph name="DOMAIN" />ৰ যোগান ধৰা ডেটা আপোনাৰ প্ৰশাসকে অৱৰোধ কৰিব পাৰে।</translation>
 <translation id="6087312102907839798">সম্বন্ধীয় সন্ধানসমুহ</translation>
 <translation id="6094273045989040137">এন'টেট</translation>
+<translation id="6094290315941448991">প্ৰশাসকৰ নীতিয়ে গোপনীয় সমল দৃশ্যমান হৈ থাকোঁতে স্ক্ৰীন ৰেকৰ্ডিং অক্ষম কৰে</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">ছাইট সৃষ্টি কৰক</translation>
 <translation id="6106989379647458772"><ph name="PAGE" />ৰ ৱেবপৃষ্ঠাটো অস্থায়ীভাৱে ব্যৱহাৰযোগ্য হৈ নাথাকিব পাৰে বা ইয়াক কোনো নতুন ৱেব ঠিকনালৈ স্থায়ী ভাৱে নিয়া হ’ব পাৰে।</translation>
@@ -2358,6 +2359,7 @@
 <translation id="8870494189203302833">তলমুখীয়াকৈ একেই ক্ৰম</translation>
 <translation id="8871553383647848643">আপোনাৰ ব্ৰাউজাৰৰ ৰূপ কাষ্টমাইজ কৰক</translation>
 <translation id="8874824191258364635">কোনো মান্য কার্ড নম্বৰ দিয়ক</translation>
+<translation id="8884537526797090108">গোপনীয় সমল ৰেকৰ্ড কৰিব নোৱাৰি</translation>
 <translation id="8891727572606052622">প্ৰ’ক্সিৰ ম’ড অমান্য।</translation>
 <translation id="8894794286471754040">দীঘলীয়া কাষটো প্ৰথমে</translation>
 <translation id="8903921497873541725">জুম ইন কৰক</translation>
@@ -2412,6 +2414,7 @@
 <translation id="9050666287014529139">পাছফ্ৰেজ</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">ইয়াক হয়তো স্থানান্তৰ কৰা, সম্পাদনা কৰা অথবা মচা হৈছে।</translation>
+<translation id="9063800855227801443">গোপনীয় সমল কেপচাৰ কৰিব নোৱাৰি</translation>
 <translation id="9065203028668620118">সম্পাদনা কৰক</translation>
 <translation id="9065745800631924235">ইতিহাসৰ পৰা <ph name="TEXT" /> সন্ধান কৰক</translation>
 <translation id="9069693763241529744">এটা এক্সটেনশ্বনে অৱৰোধ কৰিছে</translation>

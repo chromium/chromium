@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">صارف</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> اس <ph name="DEVICE_TYPE" /> کا نظم کرتا ہے۔</translation>
+<translation id="1175951029573070619">اوسط (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="1195447618553298278">نامعلوم خرابی۔</translation>
 <translation id="1204296502688602597">‏DNS تاخیر</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> اور <ph name="SECOND_MANAGER" /> کے زیر انتظام ہے</translation>
 <translation id="1726100011689679555">نام سرورز</translation>
 <translation id="1731082422893354635">بلوٹوتھ ٹچ پیڈ</translation>
+<translation id="175763766237925754">اچھا (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">اسکین کا عمل منسوخ کیا جا رہا ہے</translation>
@@ -84,6 +86,7 @@
 <translation id="2323506179655536734">نظر انداز کردہ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">قریبی آلات دریافت کرنے کیلئے بلوٹوتھ آن کریں</translation>
+<translation id="2346474577291266260">عمدہ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">پاس ہو گیا</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">تاثرات کی رپورٹ بھیجیں</translation>
@@ -327,8 +330,10 @@
 <translation id="636850387210749493">انٹرپرائز اندراج</translation>
 <translation id="6379086450106841622">ٹچ اسکرین</translation>
 <translation id="6388847657025262518">اسکینر کا دستاویز فیڈر جام ہے۔ فیڈر چیک کریں اور دوبارہ کوشش کریں۔</translation>
+<translation id="6398765197997659313">پوری سکرین سے خارج ہوں</translation>
 <translation id="641081527798843608">موضوع کی مماثلت</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">کمزور (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">لطیف</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{صفحہ دوبارہ اسکین کریں؟}=1{{PAGE_NUMBER} صفحہ دوبارہ اسکین کریں؟}other{{PAGE_NUMBER} صفحہ دوبارہ اسکین کریں؟}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -429,7 +434,6 @@
 <translation id="7960831585769876809">درجہ حرارت</translation>
 <translation id="7978412674231730200">نجی کلید</translation>
 <translation id="7994702968232966508">‏EAP طریقہ</translation>
-<translation id="8020238979854764615">ایک خرابی پیش آ گئی۔ براہ کرم دوسری تصاویر منتخب کرکے دوبارہ کوشش کریں۔</translation>
 <translation id="802154636333426148">ڈاؤن لوڈ ناکام ہوگیا</translation>
 <translation id="8041089156583427627">تاثرات بھیجیں</translation>
 <translation id="8075838845814659848">باقی چارج</translation>

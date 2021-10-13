@@ -261,6 +261,7 @@
 <translation id="2996462380875591307">เปิดใช้แว่นขยายหน้าจอบางส่วนแล้ว กด Ctrl+Search+D อีกครั้งเพื่อสลับเป็นปิด</translation>
 <translation id="3000461861112256445">เสียงแบบโมโน</translation>
 <translation id="3009178788565917040">เอาต์พุต</translation>
+<translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
 <translation id="3017687597151988916">กำหนดพื้นที่สำหรับการเลือกเป็นหน้าต่าง</translation>
 <translation id="3033545621352269033">เปิด</translation>
 <translation id="3036649622769666520">เปิดไฟล์</translation>
@@ -504,7 +505,6 @@
 <translation id="4665114317261903604">เปิด/ปิด "ห้ามรบกวน" <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">ปลดล็อกอุปกรณ์ด้วยรหัสของผู้ปกครอง</translation>
 <translation id="4702647871202761252">หน้าจอส่วนตัวปิดอยู่</translation>
-<translation id="4706121060329443414">ระบบจะพยายามดาวน์โหลดภายหลัง โดยจะส่งคำพูดไปประมวลผลที่ Google ก่อนในขณะนี้</translation>
 <translation id="4731797938093519117">การเข้าถึงของผู้ปกครอง</translation>
 <translation id="4734965478015604180">แนวนอน</translation>
 <translation id="4735498845456076464">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด <ph name="LAUNCHER_KEY_NAME" /> + ตัวเลข หากต้องการใช้แป้นฟังก์ชัน ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + แป้นแถวบนสุด</translation>
@@ -688,7 +688,6 @@
 <translation id="6062360702481658777">คุณจะออกจากระบบโดยอัตโนมัติใน <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="6073451960410192870">หยุดบันทึก</translation>
 <translation id="607652042414456612">ค้นพบคอมพิวเตอร์ของคุณอยู่ใกล้กับอุปกรณ์บลูทูธและจะปรากฏเป็น "<ph name="NAME" />" พร้อมด้วยที่อยู่ <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">นโยบายของผู้ดูแลระบบปิดใช้การบันทึกหน้าจอเมื่อมีเนื้อหาที่เป็นความลับแสดงอยู่</translation>
 <translation id="6114505516289286752">ดาวน์โหลดไฟล์คำพูดภาษา<ph name="LANGUAGE" />แล้ว</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" /> <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">ใช้ Google Assistant ในเซสชันผู้เยี่ยมชมไม่ได้</translation>
@@ -1043,7 +1042,6 @@
 <translation id="8876661425082386199">ตรวจสอบการเชื่อมต่อของคุณ</translation>
 <translation id="8877788021141246043">ตั้งการช่วยเตือน</translation>
 <translation id="8878886163241303700">กำลังขยายหน้าจอ</translation>
-<translation id="8884537526797090108">บันทึกเนื้อหาที่เป็นความลับไม่ได้</translation>
 <translation id="890616557918890486">เปลี่ยนแหล่งที่มา</translation>
 <translation id="8909138438987180327">แบตเตอรี่เหลือ <ph name="PERCENTAGE" /> เปอร์เซ็นต์</translation>
 <translation id="8913384980486163186">มีธีม (ค่าเริ่มต้น)</translation>

@@ -264,6 +264,7 @@
 <translation id="2996462380875591307">የተተከለ ማጉያ ነቅቷል። እንደገና እንዲጠፋ አድርጎ ለመቀያየር Ctrl+ፍለጋ+D ይጫኑ።</translation>
 <translation id="3000461861112256445">ሞኖ ኦዲዮ</translation>
 <translation id="3009178788565917040">ውጽዓት</translation>
+<translation id="3009958530611748826">የሚያስቀምጡበትን አቃፊ ይምረጡ</translation>
 <translation id="3017687597151988916">የምርጫ ቦታ ወደ መስኮት ተቀናብሯል</translation>
 <translation id="3033545621352269033">አብራ</translation>
 <translation id="3036649622769666520">ፋይሎች ክፈት</translation>
@@ -509,7 +510,6 @@
 <translation id="4667099493359681081"><ph name="FILENAME" />ን በማውረድ ላይ</translation>
 <translation id="4696813013609194136">በወላጅ ኮድ መሣሪያን ክፈት</translation>
 <translation id="4702647871202761252">የግላዊነት ማያ ገጽ ጠፍቷል</translation>
-<translation id="4706121060329443414">ማውረድ በኋላ ላይ ይሞከራል። ለአሁን ንግግር ለመሰናዳት ወደ Google ይላካል።</translation>
 <translation id="4731797938093519117">የወላጅ መዳረሻ</translation>
 <translation id="4734965478015604180">አግድማዊ</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + የቁጥር የቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የተግባር ቁልፎችን ለመጠቀም በላይኛው ረድፍ ላይ የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + አንድ ቁልፍ ይጫኑ።</translation>
@@ -694,7 +694,6 @@
 <translation id="6062360702481658777">በ<ph name="LOGOUT_TIME_LEFT" /> ውስጥ በራስ-ሰር ዘግተው እንዲወጡ ይደረጋሉ።</translation>
 <translation id="6073451960410192870">መቅረጽ አቁም</translation>
 <translation id="607652042414456612">ኮምፒውተርዎ አቅራቢያ ባሉ የብሉቱዝ መሣሪያዎች ሊገኝ የሚችል ነው፣ እና በ<ph name="ADDRESS" /> አድራሻ እንደ «<ph name="NAME" />» ሆኖ ይታያል</translation>
-<translation id="6094290315941448991">ሚስጥራዊ ይዘት በሚታይበት ጊዜ የአስተዳዳሪ መመሪያ የማያ ገጽ ቀረጻን ያሰናክላል</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> የንግግር ፋይሎች ወርደዋል</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />። <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">የGoogle ረዳቱ በእንግዳ ክፍለ-ጊዜ ውስጥ አይገኝም።</translation>
@@ -1050,7 +1049,6 @@
 <translation id="8876661425082386199">ግንኙነትዎን ይፈትሹ</translation>
 <translation id="8877788021141246043">አስታዋሽ አዘጋጅ</translation>
 <translation id="8878886163241303700">ማያ ገጽ በማስቀጠል ላይ</translation>
-<translation id="8884537526797090108">ሚስጥራዊ ይዘት መቅረጽ አልተቻለም</translation>
 <translation id="890616557918890486">ምንጭ ይለውጡ</translation>
 <translation id="8909138438987180327">ባትሪ <ph name="PERCENTAGE" /> መቶኛ ላይ።</translation>
 <translation id="8913384980486163186">ገጽታ የተላበሰ (ነባሪ)</translation>

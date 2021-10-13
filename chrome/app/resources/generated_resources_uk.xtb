@@ -221,7 +221,6 @@
 <translation id="1218015446623563536">Видалення Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Служба локації Google використовує такі джерела, як Wi-Fi, мобільні мережі та датчики, щоб визначати місцезнаходження цього пристрою.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Щоб вимкнути її, дезактивуйте основну функцію "Доступ до моїх геоданих". Ви також можете вимкнути визначення місцезнаходження за допомогою Wi-Fi, мобільних мереж і датчиків у налаштуваннях функції "Доступ до моїх геоданих".<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Не вдалося завантажити файли живих субтитрів для такої мови: <ph name="LANGUAGE" />. Спроба завантаження повториться пізніше. Наразі мовлення буде надіслано на сервери Google для обробки.</translation>
 <translation id="122082903575839559">Алгоритм підпису сертифіката</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 із шифруванням RSA</translation>
 <translation id="1221825588892235038">Лише виділений фрагмент</translation>
@@ -308,6 +307,7 @@
 <translation id="1313660246522271310">Ви вийдете з облікового запису на всіх сайтах, зокрема у відкритих вкладках</translation>
 <translation id="1313705515580255288">Ваші закладки, історія й інші налаштування буде синхронізовано з обліковим записом Google.</translation>
 <translation id="1316136264406804862">Пошук...</translation>
+<translation id="1316248800168909509">Не вдалося підключитися до пристрою "<ph name="DEVICE" />". Повторіть спробу.</translation>
 <translation id="1316495628809031177">Синхронізацію призупинено</translation>
 <translation id="1317637799698924700">Док-станція працюватиме в режимі сумісності з USB Type-C.</translation>
 <translation id="1319983966058170660">Кнопка "Назад" на підсторінці "<ph name="SUBPAGE_TITLE" />"</translation>
@@ -1184,6 +1184,7 @@
 <translation id="2200356397587687044">Chrome потрібен дозвіл, щоб продовжити</translation>
 <translation id="2202898655984161076">Виникала проблема зі складенням списку принтерів. Можливо, деякі з ваших принтерів не зареєстровано в <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Назва може складатися з літер, цифр і спеціальних символів</translation>
+<translation id="220321590587754225">Не вдалося підключитися. Повторіть спробу.</translation>
 <translation id="2204034823255629767">Читати й змінювати весь введений вами текст</translation>
 <translation id="220858061631308971">Введіть цей PIN-код на пристрої "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">Дозволити файли cookie</translation>
@@ -4899,7 +4900,6 @@
 <translation id="6232017090690406397">Акумулятор</translation>
 <translation id="6232116551750539448">З’єднання з мережею "<ph name="NAME" />" утрачено</translation>
 <translation id="6233154960150021497">За умовчанням використовувати голосові команди замість клавіатури</translation>
-<translation id="6233455992368963267">Мовлення (<ph name="LANGUAGE" />) надсилається для обробки на сервери Google.</translation>
 <translation id="6234108445915742946">31 березня змінюються Умови використання Chrome</translation>
 <translation id="6234474535228214774">Очікується встановлення</translation>
 <translation id="6235208551686043831">Камеру пристрою ввімкнено. Наведіть її на QR-код eSIM-карти.</translation>
@@ -4936,6 +4936,7 @@
 <translation id="6263284346895336537">Не вирішальні</translation>
 <translation id="6264365405983206840">Вибрати &amp;всі</translation>
 <translation id="6265687851677020761">Вилучити порт</translation>
+<translation id="6266532094411434237">Підключення до пристрою "<ph name="DEVICE" />"</translation>
 <translation id="6267166720438879315">Виберіть сертифікат, щоб ідентифікувати себе на <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Відкрити за допомогою додатка <ph name="APP" /></translation>
 <translation id="6270391203985052864">Сайти можуть просити дозвіл надсилати сповіщення</translation>

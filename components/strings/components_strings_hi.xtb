@@ -214,6 +214,7 @@
 <translation id="160851722280695521">Chrome में Dino Run गेम चलाएं</translation>
 <translation id="161042844686301425">स्यान</translation>
 <translation id="1611101756749861742">दूसरा रोल</translation>
+<translation id="1615402009686901181">एडमिन नीति के तहत, गोपनीय कॉन्टेंट दिखने पर स्क्रीन कैप्चर की सुविधा बंद कर दी जाती है</translation>
 <translation id="1620510694547887537">कैमरा</translation>
 <translation id="1623104350909869708">इस पेज को अतिरिक्त डॉयलॉग बनाने से रोकें</translation>
 <translation id="16338877384480380">आर्किटेक्चर-बी</translation>
@@ -860,7 +861,6 @@
 <translation id="3781428340399460090">चमकीला गुलाबी</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">ब्लूटूथ डिवाइस</translation>
-<translation id="3787675388804467730">वर्चुअल कार्ड नंबर</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /> में खत्म होगा</translation>
 <translation id="3789155188480882154">आकार 16</translation>
 <translation id="3789841737615482174">इंस्‍टॉल करें</translation>
@@ -1569,6 +1569,7 @@
 <translation id="6080696365213338172">आपने व्यवस्थापक द्वारा दिए गए प्रमाणपत्र के उपयोग से सामग्री ऐक्सेस की है.   <ph name="DOMAIN" /> को दिया गया डेटा आपके व्यवस्थापक द्वारा बीच में रोका जा सकता है.</translation>
 <translation id="6087312102907839798">मिलती-जुलती खोजें</translation>
 <translation id="6094273045989040137">एनोटेट करें</translation>
+<translation id="6094290315941448991">एडमिन नीति के तहत, गोपनीय कॉन्टेंट दिखने पर स्क्रीन रिकॉर्डिंग की सुविधा बंद कर दी जाती है</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">साइट बनाएं</translation>
 <translation id="6106989379647458772">हो सकता है कि <ph name="PAGE" /> पर मौजूद वेबपेज अस्थायी रूप से काम नहीं कर रहा हो या उसे स्थायी रूप से किसी नए वेब पते पर ले जाया गया हो.</translation>
@@ -2364,6 +2365,7 @@
 <translation id="8870494189203302833">इसी तरह उलटा करके रखें</translation>
 <translation id="8871553383647848643">अपने ब्राउज़र का लुक पसंद के मुताबिक बनाएं</translation>
 <translation id="8874824191258364635">मान्य कार्ड संख्या डालें</translation>
+<translation id="8884537526797090108">गोपनीय कॉन्टेंट को रिकॉर्ड नहीं किया जा सकता</translation>
 <translation id="8891727572606052622">अमान्य प्रॉक्सी मोड.</translation>
 <translation id="8894794286471754040">लॉन्ग एज फ़र्स्ट</translation>
 <translation id="8903921497873541725">ज़ूम इन करें</translation>
@@ -2418,6 +2420,7 @@
 <translation id="9050666287014529139">पासफ़्रेज़ (लंबा पासवर्ड)</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">हो सकता है कि फ़ाइल को दूसरी जगह ले जाया गया हो, उसमें बदलाव किया गया हो या उसे मिटा दिया गया हो.</translation>
+<translation id="9063800855227801443">गोपनीय कॉन्टेंट को कैप्चर नहीं किया जा सकता</translation>
 <translation id="9065203028668620118">बदलाव करें</translation>
 <translation id="9065745800631924235"><ph name="TEXT" /> इतिहास में खोजें</translation>
 <translation id="9069693763241529744">किसी एक्सटेंशन से अवरोधित है</translation>

@@ -264,6 +264,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2996462380875591307">Penggadang Didok didayakan. Tekan Ctrl+Cari+D semula untuk mematikannya.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Output</translation>
+<translation id="3009958530611748826">Pilih folder untuk menyimpan imbasan</translation>
 <translation id="3017687597151988916">Kawasan pilihan ditetapkan kepada tetingkap</translation>
 <translation id="3033545621352269033">Dihidupkan</translation>
 <translation id="3036649622769666520">Buka Fail</translation>
@@ -510,7 +511,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4667099493359681081">Memuat turun <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Buka kunci peranti menggunakan kod ibu bapa</translation>
 <translation id="4702647871202761252">Skrin privasi dimatikan</translation>
-<translation id="4706121060329443414">Muat turun akan cuba dilakukan kemudian. Buat masa sekarang, pertuturan akan dihantar kepada Google untuk diproses.</translation>
 <translation id="4731797938093519117">Akses ibu bapa</translation>
 <translation id="4734965478015604180">Mendatar</translation>
 <translation id="4735498845456076464">Pintasan papan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Nombor telah berubah. Untuk menggunakan kekunci fungsi, tekan kekunci <ph name="LAUNCHER_KEY_NAME" /> + salah satu kekunci di baris atas.</translation>
@@ -695,7 +695,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6062360702481658777">Anda akan dilog keluar secara automatik dalam masa <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Hentikan rakaman</translation>
 <translation id="607652042414456612">Komputer anda boleh ditemui oleh peranti Bluetooth yang berdekatan sebagai "<ph name="NAME" />" dengan alamat <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Dasar pentadbir melumpuhkan rakaman skrin apabila kandungan sulit kelihatan</translation>
 <translation id="6114505516289286752">Fail pertuturan <ph name="LANGUAGE" /> dimuat turun</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistant tidak tersedia dalam sesi tetamu.</translation>
@@ -1051,7 +1050,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8876661425082386199">Semak sambungan anda</translation>
 <translation id="8877788021141246043">Tetapkan peringatan</translation>
 <translation id="8878886163241303700">Meluaskan skrin</translation>
-<translation id="8884537526797090108">Tidak dapat merakam kandungan sulit</translation>
 <translation id="890616557918890486">Tukar sumber</translation>
 <translation id="8909138438987180327">Kuasa bateri pada tahap <ph name="PERCENTAGE" /> peratus.</translation>
 <translation id="8913384980486163186">Bertema (lalai)</translation>

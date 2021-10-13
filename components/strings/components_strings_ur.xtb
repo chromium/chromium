@@ -214,6 +214,7 @@
 <translation id="160851722280695521">‏Chrome میں Dino Run گیم کھیلیں</translation>
 <translation id="161042844686301425">سیان</translation>
 <translation id="1611101756749861742">دوسرا رول</translation>
+<translation id="1615402009686901181">منتظم کی پالیسی کے تحت، رازدارانہ مواد کے مرئی ہونے پر اسکرین کیپچر کرنے کی سہولت غیر فعال ہو جاتی ہے</translation>
 <translation id="1620510694547887537">کیمرا</translation>
 <translation id="1623104350909869708">اس صفحہ کو اضافی ڈائیلاگز بنانے سے روکیں</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -404,6 +405,7 @@
 <translation id="2241693394036365668">فائل ڈاؤن لوڈ کی جاتی ہے</translation>
 <translation id="2248949050832152960">‏WebAuthn کا استعمال کریں</translation>
 <translation id="2250931979407627383">بائیں طرف کنارے کی سلائی</translation>
+<translation id="2251943122176102076">منتظم کیپچر کردہ رازدارانہ مواد کی وجہ سے اسکرین شاٹس یا ریکارڈنگز لینے کی تجویز نہیں کرتا ہے:</translation>
 <translation id="225207911366869382">یہ قدر اس پالیسی کیلئے فرسودہ ہے۔</translation>
 <translation id="2258928405015593961">مستقبل میں ختم ہونے والی تاریخ اختتام درج کریں اور دوبارہ کوشش کریں</translation>
 <translation id="225943865679747347">خرابی کا کوڈ: <ph name="ERROR_CODE" /></translation>
@@ -861,7 +863,6 @@
 <translation id="3781428340399460090">گہرا گلابی</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">بلوٹوتھ آلات</translation>
-<translation id="3787675388804467730">ورچوئل کارڈ نمبر</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /> کو میعاد ختم ہو رہی ہے</translation>
 <translation id="3789155188480882154">سائز 16</translation>
 <translation id="3789841737615482174">انسٹال کریں</translation>
@@ -1196,6 +1197,7 @@
           <ph name="LIST_ITEM" />انٹرنیٹ سروس پرووائیڈرز ویب ٹریفک کو مانیٹر کر سکتے ہیں<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">وارننگز کو آن کریں</translation>
+<translation id="4834718916855725099">منتظم اسکرین پر رازدارانہ مواد کی وجہ سے اسکرین شاٹس یا ریکارڈنگز لینے کی تجویز نہیں کرتا ہے:</translation>
 <translation id="4838327282952368871">خیالی</translation>
 <translation id="4840250757394056958">‏اپنے Chrome کی سرگزشت دیکھیں</translation>
 <translation id="484462545196658690">خودکار</translation>
@@ -1570,6 +1572,7 @@
 <translation id="6080696365213338172">آپ نے ایک منتظم کا فراہم کردہ سرٹیفکیٹ استعمال کرکے مواد تک رسائی حاصل کی ہے۔ <ph name="DOMAIN" /> کو آپ جو ڈیٹا فراہم کرتے ہیں اسے منتظم کے ذریعے روکا جا سکتا ہے۔</translation>
 <translation id="6087312102907839798">متعلقہ تلاشیں</translation>
 <translation id="6094273045989040137">تشریح کریں</translation>
+<translation id="6094290315941448991">منتظم کی پالیسی کے تحت، رازدارانہ مواد کے مرئی ہونے پر اسکرین ریکارڈ کرنے کی سہولت غیر فعال ہو جاتی ہے</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">سائٹ تخلیق کریں</translation>
 <translation id="6106989379647458772">ممکن ہے <ph name="PAGE" /> پر موجود ویب صفحہ عارضی طور پر ڈاؤن ہو یا ممکن ہے یہ مستقل طور پر ایک نئے ویب پتہ پر منتقل ہوگیا ہو۔</translation>
@@ -2365,6 +2368,7 @@
 <translation id="8870494189203302833">اسی ترتیب میں، صفحات کا رُخ نیچے کی جانب</translation>
 <translation id="8871553383647848643">اپنے براؤزر کی شکل کو حسب ضرورت بنائیں</translation>
 <translation id="8874824191258364635">ایک درست کارڈ نمبر درج کریں</translation>
+<translation id="8884537526797090108">رازدارانہ مواد کو ریکارڈ نہیں کیا جا سکتا</translation>
 <translation id="8891727572606052622">پراکسی کی غلط وضع۔</translation>
 <translation id="8894794286471754040">طویل کنارہ پہلے</translation>
 <translation id="8903921497873541725">زوم ان کریں</translation>
@@ -2419,6 +2423,7 @@
 <translation id="9050666287014529139">پاس فریز</translation>
 <translation id="9056953843249698117">اسٹور</translation>
 <translation id="9062620674789239642">ممکن ہے اسے منتقل، ترمیم یا حذف کر دیا گیا ہو۔</translation>
+<translation id="9063800855227801443">رازدارانہ مواد کو کیپچر نہیں کیا جا سکتا</translation>
 <translation id="9065203028668620118">تبدیل کریں</translation>
 <translation id="9065745800631924235">سرگزشت سے <ph name="TEXT" /> کی تلاش</translation>
 <translation id="9069693763241529744">ایک ایکسٹینشن کے ذریعے مسدود کردہ</translation>

@@ -220,7 +220,6 @@
 <translation id="1218015446623563536">Padamkan Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Perkhidmatan lokasi Google menggunakan sumber seperti Wi-Fi, rangkaian mudah alih dan penderia untuk menganggarkan lokasi peranti ini.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Anda boleh mematikan Lokasi dengan mematikan tetapan Lokasi utama pada peranti ini. Anda juga boleh mematikan penggunaan Wi-Fi, rangkaian mudah alih dan penderia untuk lokasi dalam tetapan lokasi.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Tidak dapat memuat turun fail pertuturan <ph name="LANGUAGE" />. Muat turun akan cuba dilakukan kemudian. Buat masa sekarang, pertuturan dihantar kepada Google untuk diproses.</translation>
 <translation id="122082903575839559">Algoritma Tandatangan Sijil</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 Dengan Penyulitan RSA</translation>
 <translation id="1221825588892235038">Pemilihan sahaja</translation>
@@ -308,6 +307,7 @@
 <translation id="1313660246522271310">Anda akan dilog keluar daripada semua tapak, termasuk dalam tab yang terbuka</translation>
 <translation id="1313705515580255288">Penanda halaman, sejarah dan tetapan anda yang lain akan disegerakkan ke Akaun Google anda.</translation>
 <translation id="1316136264406804862">Mencari...</translation>
+<translation id="1316248800168909509">Tidak dapat menyambung kepada <ph name="DEVICE" />. Cuba lagi.</translation>
 <translation id="1316495628809031177">Penyegerakan dijeda</translation>
 <translation id="1317637799698924700">Stesen dok anda akan beroperasi dalam mod serasi USB Jenis-C.</translation>
 <translation id="1319983966058170660">Butang kembali subhalaman <ph name="SUBPAGE_TITLE" /></translation>
@@ -1190,6 +1190,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2200356397587687044">Chrome memerlukan kebenaran untuk meneruskan</translation>
 <translation id="2202898655984161076">Terdapat masalah menyenaraikan pencetak. Beberapa pencetak anda mungkin tidak berjaya didaftarkan dengan <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Nama boleh menggunakan huruf, nombor dan aksara khas</translation>
+<translation id="220321590587754225">Tidak boleh menyambung. Cuba lagi.</translation>
 <translation id="2204034823255629767">Baca dan ubah apa sahaja yang anda taip</translation>
 <translation id="220858061631308971">Sila masukkan kod PIN ini pada "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Tidak dapat menyelesaikan pemasangan</translation>
@@ -4941,7 +4942,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6232017090690406397">Bateri</translation>
 <translation id="6232116551750539448">Sambungan ke <ph name="NAME" /> telah hilang</translation>
 <translation id="6233154960150021497">Gunakan pilihan lalai yang menggunakan suara dan bukannya papan kekunci</translation>
-<translation id="6233455992368963267">Pertuturan <ph name="LANGUAGE" /> dihantar kepada Google untuk diproses.</translation>
 <translation id="6234108445915742946">Syarat Perkhidmatan Chrome akan berubah pada 31 Mac</translation>
 <translation id="6234474535228214774">Pemasangan belum selesai</translation>
 <translation id="6235208551686043831">Kamera peranti telah dihidupkan. Sila letakkan Kod QR eSIM anda di hadapan kamera.</translation>
@@ -4978,6 +4978,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6263284346895336537">Tidak Kritikal</translation>
 <translation id="6264365405983206840">Pilih &amp;Semua</translation>
 <translation id="6265687851677020761">Alih keluar port</translation>
+<translation id="6266532094411434237">Menyambung kepada <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Pilih sijil untuk mengesahkan dengan sendiri pada <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Buka menggunakan <ph name="APP" /></translation>
 <translation id="6270391203985052864">Tapak boleh membuat permintaan untuk menghantar pemberitahuan</translation>

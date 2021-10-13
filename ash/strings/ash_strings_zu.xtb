@@ -264,6 +264,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2996462380875591307">Isikhulisi esidokhiwe sivunyelwe. Cindezela u-Ctrl+Search+D futhi ukuze uyivale.</translation>
 <translation id="3000461861112256445">Umsindo we-mono</translation>
 <translation id="3009178788565917040">Okukhiphayo</translation>
+<translation id="3009958530611748826">Khetha ifolda ozolondoloza kuyo</translation>
 <translation id="3017687597151988916">Indawo yokukhetha isethwe ewindini</translation>
 <translation id="3033545621352269033">Vuliwe</translation>
 <translation id="3036649622769666520">Vula amafayela</translation>
@@ -509,7 +510,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4667099493359681081">Idawuniloda i-<ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Vula idivayisi ngekhodi yomzali</translation>
 <translation id="4702647871202761252">Isikrini sobumfihlo sivaliwe</translation>
-<translation id="4706121060329443414">Ukudawuniloda kuzozanywa kamuva. Inkulumo izothunyelwa ku-Google ukuze icutshungulwe okwamanje.</translation>
 <translation id="4731797938093519117">Ukufinyelela komzali</translation>
 <translation id="4734965478015604180">Okuvundlile</translation>
 <translation id="4735498845456076464">Isinqamuleli sekhibhodi se-<ph name="LAUNCHER_KEY_NAME" /> + Inombolo sishintshile. Ukuze usebenzise okhiye bokukhethwayo, cindezela ukhiye we-<ph name="LAUNCHER_KEY_NAME" /> + ukhiye ophezulu emugqeni.</translation>
@@ -694,7 +694,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="6062360702481658777">Uzokhishwa ngemvume ngokuzenzakalela ku-<ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Misa ukurekhoda</translation>
 <translation id="607652042414456612">Ikhompyutha yakho iyatholakala kumadivayisi aseduze we-Bluetooth futhi izovela njenge-"<ph name="NAME" />" ngekheli elingu-<ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Inqubomgomo yomlawuli ikhubaza ukurekhoda isikrini lapho okuqukethwe okuyimfihlo kubonakala</translation>
 <translation id="6114505516289286752">Amafayela wenkulumo ye-<ph name="LANGUAGE" /> alandiwe</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Umsizi we-Google awutholakali kuseshini yesihambeli.</translation>
@@ -1050,7 +1049,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="8876661425082386199">Hlola uxhumano lwakho</translation>
 <translation id="8877788021141246043">Setha isikhumbuzi</translation>
 <translation id="8878886163241303700">Yandisa isikrini</translation>
-<translation id="8884537526797090108">Ayikwazi ukurekhoda okuqukethwe okuyimfihlo</translation>
 <translation id="890616557918890486">Guqula umthombo</translation>
 <translation id="8909138438987180327">Ibhethri ku-<ph name="PERCENTAGE" /> amaphesenti.</translation>
 <translation id="8913384980486163186">Kwenziwe itimu (ngokuzenzakalelayo)</translation>

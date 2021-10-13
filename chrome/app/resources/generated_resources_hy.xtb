@@ -219,7 +219,6 @@
 <translation id="1218015446623563536">Linux-ի ջնջում</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Google-ի տեղորոշման ծառայությունն օգտագործում է տարբեր աղբյուրներ, օրինակ, Wi-Fi և բջջային ցանցերը՝ այս սարքի գտնվելու վայրը որոշելու համար։<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Դուք կարող եք անջատել տեղորոշումը՝ այս սարքում անջատելով տեղորոշման հիմնական կարգավորումը: Ինչպես նաև տեղադրության կարգավորումներում կարող եք անջատել Wi-Fi-ի, բջջային ցանցերի ու տվիչների օգտագործումը տեղորոշման համար։<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Չհաջողվեց ներբեռնել <ph name="LANGUAGE" /> լեզվով խոսքի ճանաչման ֆայլերը։ Ավելի ուշ մենք կփորձենք նորից ներբեռնել ֆայլերը։ Խոսքի ձայնագրությունը մշակման համար ուղարկվում է Google-ին։</translation>
 <translation id="122082903575839559">Վկայագրի ստորագրության ալգորիթմ</translation>
 <translation id="1221024147024329929">PKCS #1 MD2` RSA գաղտնագրումով</translation>
 <translation id="1221825588892235038">Միայն ընտրվածը</translation>
@@ -308,6 +307,7 @@
 <translation id="1313660246522271310">Դուք դուրս կգաք հաշվից բոլոր կայքերում, այդ թվում բաց ներդիրներում։</translation>
 <translation id="1313705515580255288">Ձեր էջանիշները, պատմությունը և այլ կարգավորումները կհամաժամացվեն ձեր Google հաշվի հետ:</translation>
 <translation id="1316136264406804862">Որոնում...</translation>
+<translation id="1316248800168909509">Չհաջողվեց միանալ <ph name="DEVICE" /> սարքին։ Նորից փորձեք։</translation>
 <translation id="1316495628809031177">Համաժամացումն ընդհատված է</translation>
 <translation id="1317637799698924700">Ձեր դոկ-կայանը կաշխատի USB Type-C-ի հետ համատեղելի ռեժիմում:</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> ենթաէջի «Հետ» կոճակ</translation>
@@ -1180,6 +1180,7 @@
 <translation id="2200356397587687044">Շարունակելու համար Chrome-ին անհրաժեշտ է թույլտվություն</translation>
 <translation id="2202898655984161076">Տպիչների ցանկը կազմելիս խնդիր առաջացավ: Հնարավոր է, ձեր տպիչներից մի քանիսը բարեհաջող չեն գրանցվել <ph name="CLOUD_PRINT_NAME" />-ում:</translation>
 <translation id="2203088913459920044">Անվանման մեջ կարող են օգտագործվել տառեր, թվեր և հատուկ նշաններ</translation>
+<translation id="220321590587754225">Չհաջողվեց միանալ։ Նորից փորձեք։</translation>
 <translation id="2204034823255629767">Կարդալ և փոխել այն ամենն, ինչ դուք մուտքագրում եք</translation>
 <translation id="220858061631308971">Մուտքագրեք այս PIN կոդը «<ph name="DEVICE_NAME" />»-ում՝</translation>
 <translation id="2210462644007531147">Չհաջողվեց ավարտել տեղադրումը</translation>
@@ -4929,7 +4930,6 @@
 <translation id="6232017090690406397">Մարտկոց</translation>
 <translation id="6232116551750539448"><ph name="NAME" />-ի կապակցումը խափանվեց</translation>
 <translation id="6233154960150021497">Ըստ կանխադրման օգտագործվում է ձայնը՝ ստեղնաշարի փոխարեն</translation>
-<translation id="6233455992368963267">Այս լեզվով (<ph name="LANGUAGE" />) խոսքի ձայնագրությունը մշակման համար ուղարկվում է Google-ին։</translation>
 <translation id="6234108445915742946">Chrome-ի օգտագործման պայմանները կթարմացվեն մարտի 31-ին</translation>
 <translation id="6234474535228214774">Սպասում է տեղադրման</translation>
 <translation id="6235208551686043831">Սարքի տեսախցիկն անջատված է։ Պահեք ձեր eSIM-ի QR կոդը տեսախցիկի առջև։</translation>
@@ -4966,6 +4966,7 @@
 <translation id="6263284346895336537">Ոչ վճռական</translation>
 <translation id="6264365405983206840">Ընտրել &amp;բոլորը</translation>
 <translation id="6265687851677020761">Հեռացնել միացքը</translation>
+<translation id="6266532094411434237">Միացում <ph name="DEVICE" /> սարքին</translation>
 <translation id="6267166720438879315">Ընտրեք վկայագիր՝ <ph name="HOST_NAME" />-ում իսկորոշվելու համար</translation>
 <translation id="6268252012308737255">Բացել <ph name="APP" />-ով</translation>
 <translation id="6270391203985052864">Կայքերը կարող են խնդրել ծանուցումներ ուղարկել</translation>

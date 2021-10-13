@@ -131,7 +131,6 @@
 <translation id="5386450000063123300">Chromium оновлюється (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Дозволити вхід у Chromium</translation>
 <translation id="5398878173008909840">Доступна нова версія Chromium.</translation>
-<translation id="5416696090975899932">Chromium не може відобразити попередній перегляд друку, якщо немає вбудованого засобу для перегляду файлів PDF.</translation>
 <translation id="5427571867875391349">Зробити Chromium веб-переглядачем за умовчанням</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Бета-версія Chromium</translation>
 <translation id="5479196819031988440">Неможливо відкрити цю сторінку в ОС Chromium.</translation>
@@ -209,6 +208,7 @@
 <translation id="718435575166326686">Веб-переглядачу Chromium потрібен доступ до камери для цього сайту</translation>
 <translation id="7196312274710523067">Не вдалося запустити Chromium. Повторіть спробу.</translation>
 <translation id="7197677400338048821">Chromium не може перевірити паролі. Повторіть спробу через 24 години.</translation>
+<translation id="7218568399872925918">Ваші дані зберігатимуться на відвіданих сайтах, доки ви не закриєте Chromium</translation>
 <translation id="7223968959479464213">Диспетчер завдань – Chromium</translation>
 <translation id="731795002583552498">Оновлення Chromium</translation>
 <translation id="7318036098707714271">Ваш файл налаштувань пошкоджений або недійсний.
@@ -262,6 +262,8 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8621669128220841554">Не вдалося встановити через невизначену помилку. Завантажте Chromium ще раз.</translation>
 <translation id="8697124171261953979">Розширення також змінило сторінку, яка відкривається під час запуску Chromium або пошуку в універсальному вікні пошуку.</translation>
 <translation id="8704119203788522458">Це ваш Chromium</translation>
+<translation id="8713679423359107094">Коли ви закриєте всі вікна в Chromium, файли cookie й дані сайтів буде автоматично видалено</translation>
+<translation id="8796443464227412154">Ви <ph name="BEGIN_BOLD" />вийдете з облікового запису на більшості сайтів<ph name="END_BOLD" />, коли закриєте Chromium. Якщо синхронізацію вимкнено, вихід також буде виконано зі всіх <ph name="BEGIN_BOLD" />сервісів Google і з Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium потрібен дозвіл на використання камери й мікрофона, щоб надати цьому сайту доступ до них</translation>
 <translation id="8803635938069941624">Умови ОС Chromium</translation>
 <translation id="8821041990367117597">Chromium не вдалося синхронізувати ваші дані, оскільки дані для входу в обліковий запис застаріли.</translation>

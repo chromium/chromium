@@ -129,7 +129,6 @@
 <translation id="5386450000063123300">Chromium నవీకరించబడుతోంది (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium సైన్-ఇన్‌ని అనుమతించండి</translation>
 <translation id="5398878173008909840">కొత్త Chromium వెర్షన్ అందుబాటులో ఉంది.</translation>
-<translation id="5416696090975899932">అంతర్నిర్మిత PDF వ్యూయర్ లేనప్పుడు Chromium ముద్రణ ప్రివ్యూని చూపించదు.</translation>
 <translation id="5427571867875391349">Chromiumను మీ డిఫాల్ట్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium బీటా</translation>
 <translation id="5479196819031988440">Chromium OS ఈ పేజీని తెరవలేదు.</translation>
@@ -207,6 +206,7 @@
 <translation id="718435575166326686">ఈ సైట్ కోసం Chromiumకు కెమెరా అనుమతి అవసరం</translation>
 <translation id="7196312274710523067">Chromiumను ప్రారంభించడం సాధ్యపడలేదు. మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="7197677400338048821">Chromium మీ పాస్‌వర్డ్‌లను చెక్ చేయలేకపోయింది. 24 గంటల తర్వాత మళ్లీ ట్రై చేయండి.</translation>
+<translation id="7218568399872925918">మీరు సందర్శించే సైట్‌లు మీ సమాచారాన్ని మీరు Chromiumను మూసేవరకూ గుర్తు పెట్టుకుంటాయి</translation>
 <translation id="7223968959479464213">విధి నిర్వాహకుడు - Chromium</translation>
 <translation id="731795002583552498">Chromiumని నవీకరిస్తోంది</translation>
 <translation id="7318036098707714271">మీ ప్రాధాన్యతల ఫైల్ పాడైంది లేదా చెల్లదు. Chromium మీ సెట్టింగ్‌లను పునరుద్ధరించలేకపోయింది.</translation>
@@ -258,6 +258,8 @@
 <translation id="8621669128220841554">తెలియ‌ని ఎర్ర‌ర్‌ కారణంగా ఇన‌స్ట‌లేష‌న్‌ విఫలమైంది. దయచేసి Chromiumను మళ్లీ డౌన్‌లోడ్ చేయండి.</translation>
 <translation id="8697124171261953979">ఇది మీరు Chromiumను ప్రారంభించేటప్పుడు లేదా ఓమ్నిబాక్స్ నుండి వెతికేటప్పుడు చూపబడే పేజీని కూడా నియంత్రిస్తుంది.</translation>
 <translation id="8704119203788522458">ఇది మీ Chromium</translation>
+<translation id="8713679423359107094">మీరు Chromium విండోలన్నింటినీ మూసివేస్తే, కుక్కీలు, సైట్ డేటా ఆటోమేటిక్‌గా తొలగించబడతాయి</translation>
+<translation id="8796443464227412154">మీరు Chromiumను మూసివేసినప్పుడు మీరు <ph name="BEGIN_BOLD" />చాలా వరకు సైట్‌ల నుండి సైన్ అవుట్ అవుతారు.<ph name="END_BOLD" /> సింక్ ఆఫ్‌లో ఉంటే, మీరు <ph name="BEGIN_BOLD" />Google సర్వీస్‌లు, అలాగే Chromium నుండి కూడా సైన్ అవుట్ అవుతారు<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">ఈ సైట్ కోసం మీ కెమెరా మరియు మైక్రోఫోన్‌ను యాక్సెస్ చేయడానికి Chromiumకు అనుమతి అవసరం</translation>
 <translation id="8803635938069941624">Chromium OS నిబంధనలు</translation>
 <translation id="8821041990367117597">Chromium మీ డేటాను సింక్ చేయ‌లేకపోయింది ఎందుకంటే మీ ఖాతా సైన్-ఇన్ వివరాల గడువు ముగిసింది.</translation>

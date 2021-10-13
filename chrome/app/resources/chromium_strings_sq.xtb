@@ -133,7 +133,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="5386450000063123300">Po përditëson Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Lejo identifikimin në Chromium</translation>
 <translation id="5398878173008909840">Ofrohet një version i ri i Chromium.</translation>
-<translation id="5416696090975899932">Chromium nuk mund ta tregojë afishimin paraprak të printimit kur mungon shikuesi i integruar për PDF-të.</translation>
 <translation id="5427571867875391349">Caktoje Chromium si shfletuesin tënd të parazgjedhur</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5479196819031988440">Sistemi operativ Chromium nuk mund ta hapë këtë faqe.</translation>
@@ -210,6 +209,7 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili os
 <translation id="718435575166326686">Chromium ka nevojë për lejen e kamerës për këtë sajt</translation>
 <translation id="7196312274710523067">Chromium nuk mund të hapej. Provo përsëri.</translation>
 <translation id="7197677400338048821">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri pas 24 orësh.</translation>
+<translation id="7218568399872925918">Sajtet që ti viziton i kujtojnë informacionet e tua derisa ti mbyll Chromium</translation>
 <translation id="7223968959479464213">Menaxheri i detyrave - Chromium</translation>
 <translation id="731795002583552498">Po përditëson Chromium</translation>
 <translation id="7318036098707714271">Skedari i preferencave është i dëmtuar ose i pavlefshëm.
@@ -263,6 +263,8 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8621669128220841554">Instalimi dështoi për shkak të një gabimi të papërcaktuar. Shkarko përsëri Chromium.</translation>
 <translation id="8697124171261953979">Kontrollon po ashtu se cila faqe shfaqet kur nis Chromium ose kur kërkon nga Omnibox.</translation>
 <translation id="8704119203788522458">Ky është Chromium për ty</translation>
+<translation id="8713679423359107094">Kur të mbyllësh të gjitha dritaret e Chromium, kukit dhe të dhënat e sajtit do të pastrohen automatikisht</translation>
+<translation id="8796443464227412154">Do të <ph name="BEGIN_BOLD" />dalësh nga shumica e sajteve<ph name="END_BOLD" /> kur të mbyllësh Chromium. Nëse sinkronizimi është joaktiv, do të <ph name="BEGIN_BOLD" />dalësh gjithashtu nga shërbimet e Google dhe nga Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium ka nevojë për leje për t'u qasur te kamera dhe mikrofoni yt për këtë sajt</translation>
 <translation id="8803635938069941624">Kushtet e sistemit operativ Chromium</translation>
 <translation id="8821041990367117597">Chromium nuk mund të sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>

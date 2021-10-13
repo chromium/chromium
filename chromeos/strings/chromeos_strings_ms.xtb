@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ini diurus oleh <ph name="MANAGER" />.</translation>
+<translation id="1175951029573070619">Biasa (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
 <translation id="1195447618553298278">Ralat tidak diketahui.</translation>
 <translation id="1204296502688602597">Kependaman DNS</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422">Diurus oleh <ph name="FIRST_MANAGER" /> dan <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Pelayan nama</translation>
 <translation id="1731082422893354635">Pad sentuh Bluetooth</translation>
+<translation id="175763766237925754">Baik (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Membatalkan pengimbasan</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">DILANGKAU</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Hidupkan Bluetooth untuk menemui peranti berdekatan</translation>
+<translation id="2346474577291266260">Cemerlang (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">Lulus</translation>
 <translation id="2380886658946992094">Perundangan</translation>
 <translation id="2391082728065870591">Hantar Laporan Maklum balas</translation>
@@ -340,8 +343,10 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6379086450106841622">Skrin sentuh</translation>
 <translation id="6388847657025262518">Penyuap dokumen pengimbas tersekat. Semak penyuap dan cuba lagi.</translation>
 <translation id="6395640744968320699">Tidak dapat menyambung kepada laman web HTTP (port 80) melalui tembok api</translation>
+<translation id="6398765197997659313">Keluar daripada skrin penuh</translation>
 <translation id="641081527798843608">Padanan subjek</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">Lemah (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">Halus</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Imbas semula halaman?}=1{Imbas semula halaman {PAGE_NUMBER}?}other{Imbas semula halaman {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -444,7 +449,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7960831585769876809">Suhu</translation>
 <translation id="7978412674231730200">Kunci persendirian</translation>
 <translation id="7994702968232966508">Kaedah EAP</translation>
-<translation id="8020238979854764615">Terdapat ralat. Sila cuba lagi dengan memilih imej lain.</translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Hantar Maklum Balas</translation>

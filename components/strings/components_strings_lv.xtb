@@ -214,6 +214,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="160851722280695521">Spēlēt dinozaura skriešanas spēli pārlūkā Chrome</translation>
 <translation id="161042844686301425">Ciānzila</translation>
 <translation id="1611101756749861742">Otrais rullis</translation>
+<translation id="1615402009686901181">Ja ekrānā ir redzams konfidenciāls saturs, administratora politika atspējo ekrāna uzņemšanu</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Neļaut šai lapai veidot papildu dialoglodziņus</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -406,6 +407,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2241693394036365668">Fails tiek lejupielādēts</translation>
 <translation id="2248949050832152960">Izmantot WebAuthn</translation>
 <translation id="2250931979407627383">Malu sašuvums kreisajā pusē</translation>
+<translation id="2251943122176102076">Administrators neiesaka veidot ekrānuzņēmumus vai veikt ierakstīšanu, jo ekrānā ir attēlots konfidenciāls saturs.</translation>
 <translation id="225207911366869382">Šī vērtība vairs netiek atbalstīta šai politikai.</translation>
 <translation id="2258928405015593961">Ievadiet derīguma termiņu, kas ir nākotnē, un mēģiniet vēlreiz.</translation>
 <translation id="225943865679747347">Kļūdas kods: <ph name="ERROR_CODE" /></translation>
@@ -862,7 +864,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3781428340399460090">Spilgti rozā</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth ierīces</translation>
-<translation id="3787675388804467730">Virtuālās kartes numurs</translation>
 <translation id="3787705759683870569">Derīguma termiņš: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">16. izmērs</translation>
 <translation id="3789841737615482174">Instalēt</translation>
@@ -1199,6 +1200,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
           <ph name="LIST_ITEM" />Interneta pakalpojumu sniedzēji var uzraudzīt tīmekļa datplūsmu.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Ieslēgt brīdinājumus</translation>
+<translation id="4834718916855725099">Administrators neiesaka veidot ekrānuzņēmumus vai veikt ierakstīšanu, jo ekrānā ir redzams konfidenciāls saturs.</translation>
 <translation id="4838327282952368871">Mierīga</translation>
 <translation id="4840250757394056958">Skatīt Chrome vēsturi</translation>
 <translation id="484462545196658690">Autom.</translation>
@@ -1576,6 +1578,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6080696365213338172">Jūs esat piekļuvis saturam, izmantojot administratora izsniegtu sertifikātu. Datus, kurus sniedzat domēnā <ph name="DOMAIN" />, var pārtvert jūsu administrators.</translation>
 <translation id="6087312102907839798">Saistītie meklēšanas vaicājumi</translation>
 <translation id="6094273045989040137">Pievienot piezīmi</translation>
+<translation id="6094290315941448991">Ja ekrānā ir redzams konfidenciāls saturs, administratora politika atspējo ekrāna ierakstīšanu</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Izveidot vietni</translation>
 <translation id="6106989379647458772">Tīmekļa lapa <ph name="PAGE" /> var būt īslaicīgi nepieejama, vai tā var būt pārvietota uz jaunu tīmekļa adresi.</translation>
@@ -2377,6 +2380,7 @@ Papildu informācija:
 <translation id="8870494189203302833">Tāda pati secība, virspuse uz leju</translation>
 <translation id="8871553383647848643">Pielāgot pārlūka izskatu</translation>
 <translation id="8874824191258364635">Ievadiet derīgu kartes numuru</translation>
+<translation id="8884537526797090108">Konfidenciālu saturu nevar ierakstīt</translation>
 <translation id="8891727572606052622">Nederīgs starpniekservera režīms.</translation>
 <translation id="8894794286471754040">Vispirms garākā mala</translation>
 <translation id="8903921497873541725">Tuvināt</translation>
@@ -2431,6 +2435,7 @@ Papildu informācija:
 <translation id="9050666287014529139">Ieejas frāze</translation>
 <translation id="9056953843249698117">Veikals</translation>
 <translation id="9062620674789239642">Iespējams, tas ir pārvietots, rediģēts vai izdzēsts.</translation>
+<translation id="9063800855227801443">Nevar izveidot konfidenciāla satura ekrānuzņēmumu</translation>
 <translation id="9065203028668620118">Labot</translation>
 <translation id="9065745800631924235">Teksta “<ph name="TEXT" />” meklēšana no vēstures</translation>
 <translation id="9069693763241529744">Bloķēja paplašinājums</translation>

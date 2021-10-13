@@ -220,7 +220,6 @@
 <translation id="1218015446623563536">Vee Linux uit</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Google se liggingdiens gebruik bronne soos Wi-Fi, selnetwerke en sensors om hierdie toestel se ligging te help beraam.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Jy kan ligging afskakel deur die hoofligginginstelling op hierdie toestel af te skakel. Jy kan ook die gebruik van Wi-Fi, selnetwerke en sensors vir ligging in ligginginstellings afskakel.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Kon nie <ph name="LANGUAGE" />-spraaklêers aflaai nie. Sal later probeer aflaai. Spraak word vir eers na Google toe gestuur vir verwerking.</translation>
 <translation id="122082903575839559">Sertifikaatondertekening-algoritme</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 met RSA-enkripsie</translation>
 <translation id="1221825588892235038">Net seleksie</translation>
@@ -4944,7 +4943,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6232017090690406397">Battery</translation>
 <translation id="6232116551750539448">Verbinding aan <ph name="NAME" /> is verlore</translation>
 <translation id="6233154960150021497">Gaan na verstek om stem pleks van sleutelbord te gebruik</translation>
-<translation id="6233455992368963267"><ph name="LANGUAGE" />-spraak word vir verwerking na Google toe gestuur.</translation>
 <translation id="6234108445915742946">Chrome se diensbepalings verander op 31 Maart</translation>
 <translation id="6234474535228214774">Wag vir installering</translation>
 <translation id="6235208551686043831">Toestelkamera het aangeskakel. Plaas jou e-SIM se QR-kode voor die kamera.</translation>

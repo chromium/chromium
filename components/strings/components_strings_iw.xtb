@@ -214,6 +214,7 @@
 <translation id="160851722280695521">‏הפעלת המשחק Dino Run ב-Chrome</translation>
 <translation id="161042844686301425">ציאן</translation>
 <translation id="1611101756749861742">גליל שני</translation>
+<translation id="1615402009686901181">בהתאם למדיניות מנהל המערכת, צילום המסך מושבת כשמוצג תוכן סודי</translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1623104350909869708">אני רוצה למנוע מהדף זה ליצור תיבות דו-שיח נוספות</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -406,6 +407,7 @@
 <translation id="2241693394036365668">הורדת קובץ</translation>
 <translation id="2248949050832152960">‏שימוש ב-WebAuthn</translation>
 <translation id="2250931979407627383">הידוק קצוות בצד שמאל</translation>
+<translation id="2251943122176102076">מנהל המערכת לא ממליץ לבצע צילומי מסך או הקלטות כי יכול להיות שהם יכללו תוכן סודי:</translation>
 <translation id="225207911366869382">ערך זה הוצא משימוש עבור מדיניות זו.</translation>
 <translation id="2258928405015593961">צריך להזין תאריך תפוגה עתידי ולנסות שוב</translation>
 <translation id="225943865679747347">קוד שגיאה: <ph name="ERROR_CODE" /></translation>
@@ -863,7 +865,6 @@
 <translation id="3781428340399460090">ורוד בוהק</translation>
 <translation id="3783418713923659662">מאסטרקארד</translation>
 <translation id="3784372983762739446">‏מכשירי Bluetooth</translation>
-<translation id="3787675388804467730">מספר הכרטיס הווירטואלי</translation>
 <translation id="3787705759683870569">תאריך תפוגה: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">גודל 16</translation>
 <translation id="3789841737615482174">התקנה</translation>
@@ -1202,6 +1203,7 @@ Del</translation>
           <ph name="LIST_ITEM" />יכול להיות שספקי אינטרנט יעקבו אחר תנועת הגולשים<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">הפעלת האזהרות</translation>
+<translation id="4834718916855725099">מנהל המערכת לא ממליץ לבצע צילומי מסך או הקלטות כי במסך מופיע תוכן סודי:</translation>
 <translation id="4838327282952368871">חלומי</translation>
 <translation id="4840250757394056958">‏הצגת ההיסטוריה ב-Chrome</translation>
 <translation id="484462545196658690">אוטומטי</translation>
@@ -1580,6 +1582,7 @@ Del</translation>
 <translation id="6080696365213338172">ניגשת לתוכן באמצעות אישור שהוענק על ידי מנהל מערכת. מנהל המערכת שלך עשוי ליירט נתונים שיסופקו ל-<ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">חיפושים קשורים</translation>
 <translation id="6094273045989040137">הוספת הערה</translation>
+<translation id="6094290315941448991">בהתאם למדיניות מנהל המערכת, הקלטת המסך מושבתת כשמוצג תוכן סודי</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">יצירת אתר</translation>
 <translation id="6106989379647458772">ייתכן שדף האינטרנט בכתובת <ph name="PAGE" /> אינו פעיל זמנית, או שהוא הועבר לכתובת אינטרנט קבועה אחרת.</translation>
@@ -2380,6 +2383,7 @@ Del</translation>
 <translation id="8870494189203302833">באותו סדר עם הפנים כלפי מטה</translation>
 <translation id="8871553383647848643">התאמה אישית של מראה הדפדפן</translation>
 <translation id="8874824191258364635">עליך להזין מספר כרטיס חוקי</translation>
+<translation id="8884537526797090108">אי אפשר להקליט תוכן סודי</translation>
 <translation id="8891727572606052622">‏מצב שרת Proxy לא חוקי.</translation>
 <translation id="8894794286471754040">הקצה הארוך ראשון</translation>
 <translation id="8903921497873541725">התקרבות לתצוגה</translation>
@@ -2434,6 +2438,7 @@ Del</translation>
 <translation id="9050666287014529139">ביטוי סיסמה</translation>
 <translation id="9056953843249698117">חנות</translation>
 <translation id="9062620674789239642">ייתכן שהוא הועבר, עבר עריכה או נמחק.</translation>
+<translation id="9063800855227801443">לא ניתן לצלם תוכן סודי</translation>
 <translation id="9065203028668620118">עריכה</translation>
 <translation id="9065745800631924235"><ph name="TEXT" /> – חיפוש מההיסטוריה</translation>
 <translation id="9069693763241529744">נחסמה על-ידי תוסף</translation>

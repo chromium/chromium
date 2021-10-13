@@ -404,6 +404,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3429160811076349561">Các tính năng dùng thử đang tắt</translation>
 <translation id="3440975416244667276">Chạm và giữ để biết thêm thông tin liên quan</translation>
 <translation id="3443221991560634068">Tải lại trang hiện tại</translation>
+<translation id="3444179773590444986">Bạn có muốn chia sẻ ý kiến phản hồi về giao diện tối cho các trang web?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Đã lên lịch 1 quá trình tải xuống}other{Đã lên lịch # quá trình tải xuống}}</translation>
 <translation id="3478363558367712427">Bạn có thể chọn công cụ tìm kiếm theo ý mình</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /> về nội dung đề xuất</translation>
@@ -585,6 +586,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="4663499661119906179">Xem các trang web hàng đầu và tin nổi bật dành cho bạn</translation>
 <translation id="4663756553811254707">Đã xóa <ph name="NUMBER_OF_BOOKMARKS" /> dấu trang</translation>
 <translation id="4668347365065281350">Tất cả dữ liệu do các trang web lưu trữ, bao gồm cả cookie và dữ liệu khác lưu trữ trên máy</translation>
+<translation id="4678082183394354975">Đã bật giao diện tối cho các trang web trong Chrome</translation>
 <translation id="4684427112815847243">Đồng bộ hóa mọi thứ</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tùy chọn khác}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tùy chọn khác}}</translation>
 <translation id="4696983787092045100">Gửi văn bản đến các thiết bị của bạn</translation>
@@ -766,6 +768,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5754350196967618083">Không thể làm mới tính năng Khám phá</translation>
 <translation id="5763382633136178763">Thẻ ẩn danh</translation>
 <translation id="5763514718066511291">Nhấn để sao chép URL cho ứng dụng này</translation>
+<translation id="5765517223145864268">Cho chúng tôi biết về trải nghiệm của bạn. Hoặc <ph name="BEGIN_LINK" />thay đổi các chế độ cài đặt của bạn<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">Mô tả:</translation>
 <translation id="5767013862801005129">Đã khôi phục thẻ <ph name="TAB_TITLE" /></translation>
 <translation id="5776970333778123608">Dữ liệu không quan trọng</translation>
@@ -953,6 +956,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6738516213925468394">Dữ liệu của bạn đã được mã hóa bằng <ph name="BEGIN_LINK" />cụm mật khẩu đồng bộ hóa<ph name="END_LINK" /> vào <ph name="TIME" />. Hãy nhập cụm mật khẩu đó để bắt đầu đồng bộ hóa.</translation>
 <translation id="6738867403308150051">Đang tải xuống...</translation>
 <translation id="6751521182688001123">Mở nhanh một thẻ mới. Để chỉnh sửa lối tắt này, hãy chạm và giữ.</translation>
+<translation id="6756507620369789050">Chia sẻ ý kiến phản hồi</translation>
 <translation id="6767294960381293877">Danh sách các thiết bị mà bạn có thể chia sẻ một thẻ đã mở ở nửa dưới của màn hình.</translation>
 <translation id="6783942555455976443">Lưu trang này để đọc sau và nhận lời nhắc</translation>
 <translation id="6795633245022906657">Mở nhanh một thẻ mới. Để chỉnh sửa lối tắt này, hãy chuyển đến phần Cài đặt.</translation>
@@ -1044,6 +1048,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Chia sẻ 1 mục đã chọn}other{Chia sẻ # mục đã chọn}}</translation>
+<translation id="7356631068872238169">Xóa khỏi Danh sách đọc</translation>
 <translation id="7359002509206457351">Truy cập vào phương thức thanh toán</translation>
 <translation id="7375125077091615385">Loại:</translation>
 <translation id="7376560087009844242">Bạn có thể thấy kết quả phù hợp hơn khi dùng tính năng Chạm để tìm kiếm bằng cách bao gồm thêm nhiều văn bản của trang. Bạn có thể truy cập phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" /> để thay đổi lựa chọn này bất cứ lúc nào.</translation>
@@ -1214,6 +1219,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8266862848225348053">Vị trí tải xuống</translation>
 <translation id="8274165955039650276">Xem tệp đã tải xuống</translation>
 <translation id="8281886186245836920">Bỏ qua</translation>
+<translation id="8282297628636750033">Áp dụng giao diện tối khi có thể</translation>
 <translation id="8284326494547611709">Phụ đề</translation>
 <translation id="829672787777123339">Đang kết nối với thiết bị của bạn…</translation>
 <translation id="8310344678080805313">Thẻ chuẩn</translation>
@@ -1345,6 +1351,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9063523880881406963">Tắt Yêu cầu trang web cho máy tính</translation>
 <translation id="9065203028668620118">Chỉnh sửa</translation>
 <translation id="9065383040763568503">Dữ liệu lưu trữ mà Chrome cho là không quan trọng (ví dụ: những trang web không được lưu tùy chọn cài đặt hoặc những trang web mà bạn không truy cập thường xuyên)</translation>
+<translation id="906781307897697745">trong <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Bạn đã đọc hết các trang</translation>
 <translation id="9070377983101773829">Bắt đầu tìm kiếm bằng giọng nói</translation>
 <translation id="9074336505530349563">Để nhận nội dung do Google đề xuất riêng cho bạn, hãy đăng nhập và bật tính năng đồng bộ hóa</translation>

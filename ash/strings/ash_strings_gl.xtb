@@ -264,6 +264,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2996462380875591307">Activouse a Lupa ancorada. Preme Ctrl+Buscar+D de novo para desactivala.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Saída</translation>
+<translation id="3009958530611748826">Seleccionar un cartafol para gardar os ficheiros</translation>
 <translation id="3017687597151988916">Definiuse a ventá como área de selección</translation>
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3036649622769666520">Abrir ficheiros</translation>
@@ -510,7 +511,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4667099493359681081">Descargando <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Desbloquea o dispositivo co código parental</translation>
 <translation id="4702647871202761252">A pantalla de privacidade está desactivada</translation>
-<translation id="4706121060329443414">Tentarase descargar os ficheiros máis tarde. De momento, o que se fale enviarase a Google para que o procese.</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">O atallo de teclado <ph name="LAUNCHER_KEY_NAME" /> + número cambiou. Para usar as teclas de función, preme <ph name="LAUNCHER_KEY_NAME" /> + unha das teclas da fila superior.</translation>
@@ -695,7 +695,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6062360702481658777">A túa sesión pecharase automaticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Deter gravación</translation>
 <translation id="607652042414456612">Os dispositivos Bluetooth situados nas proximidades poderán detectar o teu dispositivo, que aparecerá como "<ph name="NAME" />" co enderezo <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">A política do administrador desactiva a gravación da pantalla cando nela se mostra contido confidencial</translation>
 <translation id="6114505516289286752">Descargáronse os ficheiros de voz en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">O Asistente de Google non está dispoñible cando se utiliza unha sesión de convidado.</translation>
@@ -1051,7 +1050,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8876661425082386199">Comproba a conexión</translation>
 <translation id="8877788021141246043">Definir un recordatorio</translation>
 <translation id="8878886163241303700">Ampliando a pantalla</translation>
-<translation id="8884537526797090108">Non se pode gravar contido confidencial</translation>
 <translation id="890616557918890486">Cambiar fonte</translation>
 <translation id="8909138438987180327">Nivel de batería: <ph name="PERCENTAGE" /> por cento.</translation>
 <translation id="8913384980486163186">Tema (opción predeterminada)</translation>

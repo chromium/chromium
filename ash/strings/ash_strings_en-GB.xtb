@@ -264,6 +264,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2996462380875591307">Docked Magnifier enabled. Press Ctrl+Search+D again to toggle it off.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3009178788565917040">Output</translation>
+<translation id="3009958530611748826">Select a folder to save to</translation>
 <translation id="3017687597151988916">Selection area set to window</translation>
 <translation id="3033545621352269033">On</translation>
 <translation id="3036649622769666520">Open Files</translation>
@@ -509,7 +510,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="4667099493359681081">Downloading <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Unlock device with parent code</translation>
 <translation id="4702647871202761252">Privacy screen is off</translation>
-<translation id="4706121060329443414">Download will be attempted later. Speech will be sent to Google for processing for now.</translation>
 <translation id="4731797938093519117">Parent access</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">The <ph name="LAUNCHER_KEY_NAME" /> + number keyboard shortcut has changed. To use function keys, press the <ph name="LAUNCHER_KEY_NAME" /> key + a key on the top row.</translation>
@@ -694,7 +694,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="6062360702481658777">You will automatically be signed out in <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Stop recording</translation>
 <translation id="607652042414456612">Your computer is discoverable to nearby Bluetooth devices and will appear as "<ph name="NAME" />" with address <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Administrator policy disables screen recording when confidential content is visible</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> speech files downloaded</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">The Google Assistant is not available in a guest session.</translation>
@@ -1050,7 +1049,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="8876661425082386199">Check your connection</translation>
 <translation id="8877788021141246043">Set a reminder</translation>
 <translation id="8878886163241303700">Extending screen</translation>
-<translation id="8884537526797090108">Can't record confidential content</translation>
 <translation id="890616557918890486">Change source</translation>
 <translation id="8909138438987180327">Battery at <ph name="PERCENTAGE" /> per cent.</translation>
 <translation id="8913384980486163186">Themed (default)</translation>

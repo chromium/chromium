@@ -129,7 +129,6 @@
 <translation id="5386450000063123300">Chromium yangilanmoqda (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium hisobiga kirishga ruxsat berish</translation>
 <translation id="5398878173008909840">Chromium brauzerining yangi versiyasi chiqdi.</translation>
-<translation id="5416696090975899932">PDF fayllarni ko‘rish vositasi oldindan o‘rnatilmagan bo‘lsa, Chromium bu formatdagi bosmalarni oldindan ko‘rsata olmaydi.</translation>
 <translation id="5427571867875391349">Chromium‘ni standart brauzer sifatida tayinlash.</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5479196819031988440">Chromium OS bu sahifani ocha olmaydi.</translation>
@@ -207,6 +206,7 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tay
 <translation id="718435575166326686">Chromium bu saytda kameradan foydalanishiga ruxsat kerak</translation>
 <translation id="7196312274710523067">Chromium ishga tushmadi. Qayta urining.</translation>
 <translation id="7197677400338048821">Chromium parollaringizni tekshira olmadi. 24 soatdan keyin qayta urining.</translation>
+<translation id="7218568399872925918">Siz ochgan saytlar maʼlumotlaringizni Chromium yopilmaguncha esda saqlaydi</translation>
 <translation id="7223968959479464213">Vazifalar menejeri – Chromium</translation>
 <translation id="731795002583552498">Chromium yangilanmoqda</translation>
 <translation id="7318036098707714271">Sozlamalaringiz saqlanadigan fayl noto‘g‘ri yoki yaroqsiz holatda.
@@ -260,6 +260,8 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8621669128220841554">O‘rnatish vaqtida kutilmagan xatolik yuz berdi. Chromium‘ni qaytadan yuklab oling.</translation>
 <translation id="8697124171261953979">Bundan tashqari kengaytma Chromium boshlash sahifasini va omniboksdagi so‘rovlar uchun foydalaniladigan birlamchi qidiruv tizimini o‘zgartirdi.</translation>
 <translation id="8704119203788522458">Bu sizning shaxsiy Chromium brauzeringiz</translation>
+<translation id="8713679423359107094">Barcha Chromium oynalari yopilganda, cookie fayllar va sayt maʼlumotlari avtomatik ravishda tozalanadi</translation>
+<translation id="8796443464227412154">Chromium yopilganda <ph name="BEGIN_BOLD" />aksar saytlardan chiqib ketasiz<ph name="END_BOLD" />. Agar sinxronizatsiya oʻchiq boʻlsa, <ph name="BEGIN_BOLD" />Google xizmatlari va Chromium hisobingizdan ham chiqib ketasiz<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Bu sayt kamera va mikrofoningizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>
 <translation id="8803635938069941624">Chromium OS shartlari</translation>
 <translation id="8821041990367117597">Chromium ma’lumotlaringizni sinxronlay olmadi, chunki hisobingiz haqidagi ma’lumotlar eskirgan.</translation>

@@ -214,6 +214,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="160851722280695521">Spill Dino Run-spillet i Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">Andre rull</translation>
+<translation id="1615402009686901181">På grunn av en administratorregel er skjermdumper deaktivert når konfidensielt innhold er synlig</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Hindre denne siden i å opprette flere dialogruter</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -406,6 +407,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2241693394036365668">Filer lastes ned</translation>
 <translation id="2248949050832152960">Bruk WebAuthn</translation>
 <translation id="2250931979407627383">Kantstifting venstre</translation>
+<translation id="2251943122176102076">Administratoren anbefaler ikke at du tar skjermdumper eller opptak, på grunn av at konfidensielt innhold er tatt bilde av eller filmet:</translation>
 <translation id="225207911366869382">Denne verdien er foreldet for denne innstillingen.</translation>
 <translation id="2258928405015593961">Oppgi en fremtidig utløpsdato, og prøv på nytt</translation>
 <translation id="225943865679747347">Feilkode: <ph name="ERROR_CODE" /></translation>
@@ -863,7 +865,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3781428340399460090">Knallrosa</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-enheter</translation>
-<translation id="3787675388804467730">Virtuelt kortnummer</translation>
 <translation id="3787705759683870569">Utløper <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Størrelse 16</translation>
 <translation id="3789841737615482174">Installer</translation>
@@ -1200,6 +1201,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
           <ph name="LIST_ITEM" />Internettleverandører kan overvåke nettrafikk.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Slå på varsler</translation>
+<translation id="4834718916855725099">Administratoren anbefaler ikke at du tar skjermdumper eller opptak, på grunn av konfidensielt innhold på skjermen:</translation>
 <translation id="4838327282952368871">Drømmende</translation>
 <translation id="4840250757394056958">Se Chrome-loggen din</translation>
 <translation id="484462545196658690">Auto</translation>
@@ -1577,6 +1579,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6080696365213338172">Du har åpnet innhold via et administratorlevert sertifikat. Data du sender til <ph name="DOMAIN" /> kan stoppes av administratoren din.</translation>
 <translation id="6087312102907839798">Relaterte søk</translation>
 <translation id="6094273045989040137">Annoter</translation>
+<translation id="6094290315941448991">På grunn av en administratorregel er skjermopptak deaktivert når konfidensielt innhold er synlig</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Opprett nettsted</translation>
 <translation id="6106989379647458772">Det kan hende at nettsiden på <ph name="PAGE" /> er midlertidig nede eller flyttet permanent til en ny nettadresse.</translation>
@@ -2376,6 +2379,7 @@ Mer informasjon:
 <translation id="8870494189203302833">Samme rekkefølge – forsiden ned</translation>
 <translation id="8871553383647848643">Tilpass nettleserens utseende</translation>
 <translation id="8874824191258364635">Angi et gyldig kortnummer</translation>
+<translation id="8884537526797090108">Kan ikke ta opp konfidensielt innhold</translation>
 <translation id="8891727572606052622">Ugyldig modus for proxy-tjener.</translation>
 <translation id="8894794286471754040">Langsiden først</translation>
 <translation id="8903921497873541725">Zoom inn</translation>
@@ -2430,6 +2434,7 @@ Mer informasjon:
 <translation id="9050666287014529139">Passordfrase</translation>
 <translation id="9056953843249698117">Butikk</translation>
 <translation id="9062620674789239642">Den kan ha blitt flyttet, redigert eller slettet.</translation>
+<translation id="9063800855227801443">Kan ikke ta bilde av konfidensielt innhold</translation>
 <translation id="9065203028668620118">Endre</translation>
 <translation id="9065745800631924235"><ph name="TEXT" />-søk fra loggen</translation>
 <translation id="9069693763241529744">Blokkert av en utvidelse</translation>

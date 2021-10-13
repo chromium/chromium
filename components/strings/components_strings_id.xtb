@@ -214,6 +214,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="160851722280695521">Mainkan game Dino Run di Chrome</translation>
 <translation id="161042844686301425">Sian</translation>
 <translation id="1611101756749861742">Rol Kedua</translation>
+<translation id="1615402009686901181">Kebijakan administrator akan menonaktifkan tangkapan layar saat konten rahasia terlihat</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Cegah dialog lain dari halaman ini.</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -412,7 +413,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2283340219607151381">Simpan dan isi alamat</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' dihapus</translation>
 <translation id="2288422996159078444">Apa pun yang Anda ketik, halaman mana pun yang Anda lihat, atau aktivitas lain di web sedang dipantau. Konten di situs dapat berubah tanpa pemberitahuan sebelumnya.</translation>
-<translation id="2289385804009217824">Trim</translation>
+<translation id="2289385804009217824">Pangkas</translation>
 <translation id="2292556288342944218">Akses Internet Anda diblokir</translation>
 <translation id="2293443924986248631">Jika diaktifkan, situs tidak dapat menggunakan cookie yang akan melacak Anda di seluruh web. Fitur di beberapa situs mungkin error.</translation>
 <translation id="2295290966866883927">URL halaman yang Anda kunjungi akan dikirimkan ke Google Cloud atau pihak ketiga untuk analisis. Misalnya, URL mungkin dipindai untuk mendeteksi situs yang tidak aman.</translation>
@@ -855,7 +856,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3781428340399460090">Merah Muda Terang</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Perangkat bluetooth</translation>
-<translation id="3787675388804467730">Nomor kartu virtual</translation>
 <translation id="3787705759683870569">Masa berlaku <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Ukuran 16</translation>
 <translation id="3789841737615482174">Instal</translation>
@@ -1559,6 +1559,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6080696365213338172">Anda telah mengakses konten menggunakan sertifikat yang diberikan oleh administrator. Data yang diberikan ke <ph name="DOMAIN" /> dapat dicegat oleh administrator Anda.</translation>
 <translation id="6087312102907839798">Penelusuran terkait</translation>
 <translation id="6094273045989040137">Anotasi</translation>
+<translation id="6094290315941448991">Kebijakan administrator akan menonaktifkan perekaman layar saat konten rahasia terlihat</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Buat situs</translation>
 <translation id="6106989379647458772">Halaman web di <ph name="PAGE" /> mungkin tidak aktif untuk sementara atau dipindahkan secara permanen ke alamat web baru.</translation>
@@ -2349,6 +2350,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8870494189203302833">Urutan yang sama menghadap ke bawah</translation>
 <translation id="8871553383647848643">Sesuaikan tampilan browser Anda</translation>
 <translation id="8874824191258364635">Masukkan nomor kartu yang valid</translation>
+<translation id="8884537526797090108">Tidak dapat merekam konten rahasia</translation>
 <translation id="8891727572606052622">Mode proxy tidak valid.</translation>
 <translation id="8894794286471754040">Tepi panjang lebih dulu</translation>
 <translation id="8903921497873541725">Perbesar</translation>
@@ -2403,6 +2405,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="9050666287014529139">Frasa sandi</translation>
 <translation id="9056953843249698117">Toko</translation>
 <translation id="9062620674789239642">File mungkin telah dipindahkan, diedit, atau dihapus.</translation>
+<translation id="9063800855227801443">Tidak dapat menangkap konten rahasia</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9065745800631924235">penelusuran <ph name="TEXT" /> dari histori</translation>
 <translation id="9069693763241529744">Diblokir oleh ekstensi</translation>

@@ -131,7 +131,6 @@
 <translation id="5386450000063123300">Mengemas kini Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Benarkan log masuk Chromium</translation>
 <translation id="5398878173008909840">Terdapat versi baharu Chromium tersedia.</translation>
-<translation id="5416696090975899932">Chromium tidak dapat memaparkan pratonton cetakan apabila alat lihat PDF terbina dalam tiada.</translation>
 <translation id="5427571867875391349">Tetapkan Chromium sebagai penyemak imbas lalai anda</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5479196819031988440">OS Chromium tidak boleh membuka halaman ini.</translation>
@@ -209,6 +208,7 @@ Beberapa ciri mungkin tidak tersedia. Sila nyatakan direktori profil yang berbez
 <translation id="718435575166326686">Chromium memerlukan kebenaran kamera untuk laman ini</translation>
 <translation id="7196312274710523067">Tidak dapat melancarkan Chromium. Cuba lagi.</translation>
 <translation id="7197677400338048821">Chromium tidak dapat menyemak kata laluan anda. Cuba lagi selepas 24 jam.</translation>
+<translation id="7218568399872925918">Laman yang anda lawati mengingati maklumat anda sehingga anda menutup Chromium</translation>
 <translation id="7223968959479464213">Pengurus Tugas - Chromium</translation>
 <translation id="731795002583552498">Mengemas kini Chromium</translation>
 <translation id="7318036098707714271">Fail pilihan anda rosak atau tidak sah.
@@ -262,6 +262,8 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8621669128220841554">Pemasangan gagal disebabkan ralat yang tidak dinyatakan. Sila muat turun semula Chromium.</translation>
 <translation id="8697124171261953979">Sambungan turut mengawal halaman yang ditunjukkan apabila anda memulakan Chromium atau membuat carian dari Kotak Omni.</translation>
 <translation id="8704119203788522458">Ini Chromium anda</translation>
+<translation id="8713679423359107094">Apabila anda menutup semua tetingkap Chromium, kuki dan data laman akan dikosongkan secara automatik</translation>
+<translation id="8796443464227412154">Anda akan <ph name="BEGIN_BOLD" />dilog keluar daripada kebanyakan laman<ph name="END_BOLD" /> apabila anda menutup Chromium. Jika penyegerakan dimatikan, anda juga akan <ph name="BEGIN_BOLD" />dilog keluar daripada perkhidmatan Google dan Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium memerlukan kebenaran untuk mengakses kamera dan mikrofon anda bagi tapak ini</translation>
 <translation id="8803635938069941624">Syarat Chromium OS</translation>
 <translation id="8821041990367117597">Chromium tidak dapat menyegerakkan data anda kerana butiran log masuk akaun anda sudah lapuk.</translation>

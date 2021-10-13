@@ -216,7 +216,6 @@
 <translation id="1218015446623563536">Linux の削除</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Google の位置情報サービスは、Wi‑Fi やモバイル ネットワーク、センサーなどのソースからこのデバイスの現在地を推定します。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />位置情報の使用を無効にするには、このデバイスでメインの位置情報の設定を無効にします。また、位置情報の設定で、Wi‑Fi、モバイル ネットワーク、センサーを現在地の特定に使用しないよう指定することもできます。<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247"><ph name="LANGUAGE" /> の音声ファイルをダウンロードできませんでした。ダウンロードは後で試行されます。音声は処理のためにひとまず Google に送信されます。</translation>
 <translation id="122082903575839559">証明書の署名アルゴリズム</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 with RSA 暗号化</translation>
 <translation id="1221825588892235038">選択したコンテンツのみ</translation>
@@ -4878,7 +4877,6 @@
 <translation id="6232017090690406397">バッテリー</translation>
 <translation id="6232116551750539448"><ph name="NAME" /> への接続が切断されました</translation>
 <translation id="6233154960150021497">キーボードではなく音声をデフォルトで使用します</translation>
-<translation id="6233455992368963267"><ph name="LANGUAGE" />の音声は Google に送信されて処理されます。</translation>
 <translation id="6234108445915742946">Chrome の利用規約が 3 月 31 日に更新されます</translation>
 <translation id="6234474535228214774">インストールを準備しています</translation>
 <translation id="6235208551686043831">デバイスのカメラはオンです。eSIM の QR コードをカメラの前にかざしてください。</translation>

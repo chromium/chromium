@@ -214,6 +214,7 @@
 <translation id="160851722280695521">Chromeமில் டைனோசர் கேமை விளையாடலாம்</translation>
 <translation id="161042844686301425">சியான்</translation>
 <translation id="1611101756749861742">ரோல் 2</translation>
+<translation id="1615402009686901181">ரகசியமான உள்ளடக்கம் காட்டப்படுவதால் திரையைப் படமெடுப்பதை நிர்வாகக் கொள்கை முடக்கிவிட்டது</translation>
 <translation id="1620510694547887537">கேமரா</translation>
 <translation id="1623104350909869708">கூடுதல் உரையாடல்களை உருவாக்குவதிலிருந்து இந்தப் பக்கத்தைத் தடு</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -856,7 +857,6 @@
 <translation id="3781428340399460090">ஹாட் பிங்க்</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">புளூடூத் சாதனங்கள்</translation>
-<translation id="3787675388804467730">விர்ச்சுவல் கார்டு எண்</translation>
 <translation id="3787705759683870569">காலாவதி: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">அளவு: 16</translation>
 <translation id="3789841737615482174">நிறுவுக</translation>
@@ -1565,6 +1565,7 @@
 <translation id="6080696365213338172">நிர்வாகி வழங்கிய சான்றிதழைப் பயன்படுத்தி உள்ளடக்கத்தை அணுகியுள்ளீர்கள். <ph name="DOMAIN" /> க்கு நீங்கள் வழங்கிய தரவானது உங்கள் நிர்வாகியால் இடைமறிக்கப்படலாம்.</translation>
 <translation id="6087312102907839798">தொடர்புடைய தேடல்கள்</translation>
 <translation id="6094273045989040137">விரிவுரைப் பயன்முறை</translation>
+<translation id="6094290315941448991">ரகசியமான உள்ளடக்கம் காட்டப்படுவதால் ஸ்கிரீன் ரெக்கார்டிங்கை நிர்வாகக் கொள்கை முடக்கிவிட்டது</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">தளத்தை உருவாக்கு</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> இல் உள்ள இணையப்பக்கம் தற்காலிகமாக இயங்கவில்லை அல்லது புதிய வலை முகவரிக்கு நிரந்தரமாக நகர்த்தப்பட்டிருக்கலாம்.</translation>
@@ -2358,6 +2359,7 @@
 <translation id="8870494189203302833">அதே வரிசையில் கீழ்நோக்கிய பாணி</translation>
 <translation id="8871553383647848643">உலாவியின் தோற்றத்தைப் பிரத்தியேகமாக்கும்</translation>
 <translation id="8874824191258364635">சரியான கார்டு எண்ணை உள்ளிடவும்</translation>
+<translation id="8884537526797090108">ரகசியமான உள்ளடக்கம் இருப்பதால் ரெக்கார்டு செய்ய முடியாது</translation>
 <translation id="8891727572606052622">தவறான ப்ராக்ஸி முறை.</translation>
 <translation id="8894794286471754040">நீளமான ஓரம் முதலில்</translation>
 <translation id="8903921497873541725">பெரிதாக்கு</translation>
@@ -2412,6 +2414,7 @@
 <translation id="9050666287014529139">கடவுச்சொற்றொடர்</translation>
 <translation id="9056953843249698117">ஸ்டோர்</translation>
 <translation id="9062620674789239642">அது நகர்த்தப்பட்டிருக்கலாம், திருத்தப்பட்டிருக்கலாம் அல்லது நீக்கப்பட்டிருக்கலாம்.</translation>
+<translation id="9063800855227801443">ரகசியமான உள்ளடக்கம் இருப்பதால் ஸ்கிரீன்ஷாட் எடுக்க முடியாது</translation>
 <translation id="9065203028668620118">திருத்து</translation>
 <translation id="9065745800631924235">வரலாற்றிலிருந்து <ph name="TEXT" /> பற்றிய தேடல்கள்</translation>
 <translation id="9069693763241529744">நீட்டிப்பு தடுத்துள்ளது</translation>

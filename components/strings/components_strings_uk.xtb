@@ -214,6 +214,7 @@
 <translation id="160851722280695521">Грайте в гру Dino Run у Chrome</translation>
 <translation id="161042844686301425">Бірюзовий</translation>
 <translation id="1611101756749861742">Другий рулон</translation>
+<translation id="1615402009686901181">Адміністратор заборонив запис екрана, якщо видно конфіденційний контент</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1623104350909869708">Заборонити цій сторінці створювати додаткові діалогові вікна</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -404,6 +405,7 @@
 <translation id="2241693394036365668">Завантажено файл</translation>
 <translation id="2248949050832152960">Використовувати веб-автентифікацію</translation>
 <translation id="2250931979407627383">Зшити вздовж лівого краю</translation>
+<translation id="2251943122176102076">Адміністратор не рекомендує робити знімки або здійснювати запис екрана, оскільки контент на ньому конфіденційний:</translation>
 <translation id="225207911366869382">Дію цього значення припинено для цього правила</translation>
 <translation id="2258928405015593961">Введіть майбутню дату закінчення терміну дії та повторіть спробу</translation>
 <translation id="225943865679747347">Код помилки: <ph name="ERROR_CODE" /></translation>
@@ -860,7 +862,6 @@
 <translation id="3781428340399460090">Яскраво-рожевий</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Пристрої Bluetooth</translation>
-<translation id="3787675388804467730">Номер віртуальної картки</translation>
 <translation id="3787705759683870569">Діє до <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Розмір 16</translation>
 <translation id="3789841737615482174">Установити</translation>
@@ -1195,6 +1196,7 @@
           <ph name="LIST_ITEM" />постачальники послуг Інтернету (ISP) можуть відстежувати веб-трафік.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Увімкнути попередження</translation>
+<translation id="4834718916855725099">Адміністратор не рекомендує робити знімки або здійснювати запис екрана, оскільки контент на ньому конфіденційний:</translation>
 <translation id="4838327282952368871">Мрійливий</translation>
 <translation id="4840250757394056958">Переглянути історію Chrome</translation>
 <translation id="484462545196658690">Автоматично</translation>
@@ -1569,6 +1571,7 @@
 <translation id="6080696365213338172">Ви отримали доступ до вмісту, використовуючи наданий адміністратором сертифікат. Адміністратор може перехоплювати дані, які ви надасте домену <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">Пов’язані пошукові запити</translation>
 <translation id="6094273045989040137">Додати примітку</translation>
+<translation id="6094290315941448991">Адміністратор заборонив запис екрана, якщо видно конфіденційний контент</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Створити сайт</translation>
 <translation id="6106989379647458772">Можливо, веб-сторінка <ph name="PAGE" /> тимчасово недоступна або її назавжди переміщено на нову веб-адресу.</translation>
@@ -2364,6 +2367,7 @@
 <translation id="8870494189203302833">Однаковий порядок лицевою стороною вниз</translation>
 <translation id="8871553383647848643">Налаштуйте вигляд веб-переглядача</translation>
 <translation id="8874824191258364635">Введіть дійсний номер картки</translation>
+<translation id="8884537526797090108">Не вдається записати конфіденційний контент</translation>
 <translation id="8891727572606052622">Недійсний режим проксі-сервера.</translation>
 <translation id="8894794286471754040">Спершу по довжині</translation>
 <translation id="8903921497873541725">Збільшити масштаб</translation>
@@ -2418,6 +2422,7 @@
 <translation id="9050666287014529139">Парольна фраза</translation>
 <translation id="9056953843249698117">Магазин</translation>
 <translation id="9062620674789239642">Можливо, його переміщено, змінено або видалено.</translation>
+<translation id="9063800855227801443">Не вдається зробити знімок конфіденційного контенту</translation>
 <translation id="9065203028668620118">Редагувати</translation>
 <translation id="9065745800631924235">Пошук в історії за запитом "<ph name="TEXT" />"</translation>
 <translation id="9069693763241529744">Заблоковано розширенням</translation>

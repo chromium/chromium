@@ -214,6 +214,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="160851722280695521">Chrome'da Dinazor oyununu oynayın</translation>
 <translation id="161042844686301425">Camgöbeği</translation>
 <translation id="1611101756749861742">İkinci Rulo</translation>
+<translation id="1615402009686901181">Yönetici politikası ekranda gizli içerik varken ekran görüntüsü almaya izin vermiyor</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Bu sayfanın daha fazla iletişim kutusu oluşturmasını önle</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -860,7 +861,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3781428340399460090">Canlı Pembe</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth cihazlar</translation>
-<translation id="3787675388804467730">Sanal kart numarası</translation>
 <translation id="3787705759683870569">Son kullanma tarihi: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Boyut 16</translation>
 <translation id="3789841737615482174">Yükle</translation>
@@ -1570,6 +1570,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6080696365213338172">Yönetici tarafından sağlanmış bir sertifika kullanan içeriğe eriştiniz. <ph name="DOMAIN" /> alan adına sağladığınız verileri yöneticiniz görebilir ve bunlara müdahale edebilir.</translation>
 <translation id="6087312102907839798">İlgili aramalar</translation>
 <translation id="6094273045989040137">Ek açıklama ekle</translation>
+<translation id="6094290315941448991">Yönetici politikası ekranda gizli içerik varken ekran kaydı almaya izin vermiyor</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Site oluştur</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> adresindeki web sayfası geçici olarak kullanılamıyor veya kalıcı olarak yeni bir web adresine taşınmış olabilir.</translation>
@@ -2371,6 +2372,7 @@ Ek ayrıntılar:
 <translation id="8870494189203302833">Aynı sırada ön yüz aşağı bakacak şekilde</translation>
 <translation id="8871553383647848643">Tarayıcınızın görünümünü özelleştirin</translation>
 <translation id="8874824191258364635">Geçerli bir kart numarası girin</translation>
+<translation id="8884537526797090108">Gizli içerik kaydedilemez</translation>
 <translation id="8891727572606052622">Geçersiz proxy modu.</translation>
 <translation id="8894794286471754040">Önce uzun kenar</translation>
 <translation id="8903921497873541725">Yakınlaştır</translation>
@@ -2425,6 +2427,7 @@ Ek ayrıntılar:
 <translation id="9050666287014529139">Parola</translation>
 <translation id="9056953843249698117">Mağaza</translation>
 <translation id="9062620674789239642">Taşınmış veya silinmiş olabilir.</translation>
+<translation id="9063800855227801443">Gizli içeriklerin ekran görüntüsü alınamaz</translation>
 <translation id="9065203028668620118">Düzenle</translation>
 <translation id="9065745800631924235">geçmişteki <ph name="TEXT" /> araması</translation>
 <translation id="9069693763241529744">Bir uzantı tarafından engellendi</translation>

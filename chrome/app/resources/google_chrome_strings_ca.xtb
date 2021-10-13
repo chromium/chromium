@@ -48,7 +48,6 @@
 <translation id="2121284319307530122">Reinicia per actualitzar &amp;Chrome</translation>
 <translation id="2123055963409958220">Informa de la <ph name="BEGIN_LINK" />configuració actual<ph name="END_LINK" /> per ajudar-nos a millorar Chrome</translation>
 <translation id="2151406531797534936">Reinicia Chrome ara</translation>
-<translation id="2246246234298806438">Google Chrome no pot mostrar la previsualització d'impressió perquè falta el lector de PDF incorporat.</translation>
 <translation id="2290014774651636340">Falten les claus de l'API de Google. Es desactivaran algunes de les funcionalitats de Google Chrome.</translation>
 <translation id="2290095356545025170">Confirmeu que voleu desinstal·lar Google Chrome?</translation>
 <translation id="2309047409763057870">Aquesta és una instal·lació secundària de Google Chrome i no pot definir-se com a navegador predeterminat.</translation>
@@ -87,6 +86,7 @@
 <translation id="3037838751736561277">Google Chrome està en mode de segon pla.</translation>
 <translation id="3059710691562604940">Navegació segura està desactivada. Chrome recomana activar-la.</translation>
 <translation id="3065168410429928842">Pestanya de Chrome</translation>
+<translation id="3069821012350118710">Els llocs web que visites recorden la teva informació fins que tanques Chrome.</translation>
 <translation id="3080151273017101988">Continua executant aplicacions de segon pla en tancar Google Chrome</translation>
 <translation id="3089968997497233615">Hi ha disponible una nova versió més segura de Google Chrome.</translation>
 <translation id="3100998948628680988">Posa nom al teu perfil de Chrome</translation>
@@ -185,6 +185,7 @@
 <translation id="5804318322022881572">No s'ha pogut iniciar Chrome. Torna-ho a provar.</translation>
 <translation id="5867197326698922595">Google Chrome està provant d'editar les contrasenyes.</translation>
 <translation id="5895138241574237353">Reinicia</translation>
+<translation id="5901850848447342934">Quan tanquis Chrome, se't <ph name="BEGIN_BOLD" />tancarà la sessió de la majoria de llocs web<ph name="END_BOLD" />. Si la sincronització està desactivada, també se't <ph name="BEGIN_BOLD" />tancarà la sessió de Chrome i dels serveis de Google<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Inici de sessió a la xarxa</translation>
 <translation id="5940385492829620908">El vostre web, les adreces d'interès i altres coses de Chrome resideixen aquí.</translation>
 <translation id="5941830788786076944">Estableix Google Chrome com el navegador predeterminat</translation>
@@ -274,6 +275,7 @@
 <translation id="8614913330719544658">Google Chrome no respon. Voleu tornar-lo a iniciar ara?</translation>
 <translation id="861702415419836452">Chrome necessita permís per accedir a la càmera i poder crear un mapa 3D del teu entorn</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome es reiniciarà d'aquí a 1 minut}other{Chrome es reiniciarà d'aquí a # minuts}}</translation>
+<translation id="8629311577791198377">Quan tanques totes les finestres de Chrome, les galetes i les dades de llocs web s'esborren automàticament.</translation>
 <translation id="8641606876632989680">Chrome t'enviarà una notificació quan iniciïs la sessió amb una contrasenya en perill</translation>
 <translation id="8669527147644353129">Aplicació d'ajuda de Google Chrome</translation>
 <translation id="8679801911857917785">També controla la pàgina que es mostra quan inicieu Chrome.</translation>

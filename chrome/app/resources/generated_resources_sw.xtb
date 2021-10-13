@@ -220,7 +220,6 @@
 <translation id="1218015446623563536">Futa Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Huduma ya Google ya utambuzi wa mahali hutumia vyanzo kama vile Wi-Fi, mitandao ya simu na vitambuzi vya mahali ili kusaidia kukadiria mahali kilipo kifaa hiki.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Unaweza kuzima huduma ya Mahali kwa kuzima mipangilio ya msingi ya Mahali kwenye kifaa hiki. Pia, unaweza kuzima utumiaji wa Wi-Fi, mitandao ya simu na vitambuzi vya mahali katika mipangilio ya mahali.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Imeshindwa kupakua faili za matamshi za <ph name="LANGUAGE" />. Itajaribu kupakua baadaye. Kwa sasa, matamshi yametumwa kwa Google ili yachakatwe.</translation>
 <translation id="122082903575839559">Kanuni ya Sahihi ya Cheti</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 Na Usimbaji wa RSA</translation>
 <translation id="1221825588892235038">Kuchagua pekee</translation>
@@ -308,6 +307,7 @@
 <translation id="1313660246522271310">Utaondolewa kwenye akaunti za tovuti zote, ikiwa ni pamoja na vichupo ulivyofungua</translation>
 <translation id="1313705515580255288">Alamisho, historia, na mipangilio yako mingine itasawazishwa na Akaunti yako ya Google.</translation>
 <translation id="1316136264406804862">Inatafuta...</translation>
+<translation id="1316248800168909509">Imeshindwa kuunganisha kwenye <ph name="DEVICE" />. Jaribu tena.</translation>
 <translation id="1316495628809031177">Imesitisha Usawazishaji</translation>
 <translation id="1317637799698924700">Sehemu ya kituo chako itatumia hali inayooana na USB Aina ya C.</translation>
 <translation id="1319983966058170660">Kitufe cha kurudi nyuma kwenye ukurasa mdogo wa <ph name="SUBPAGE_TITLE" /></translation>
@@ -1186,6 +1186,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2200356397587687044">Chrome inahitaji ruhusa ili iendelee</translation>
 <translation id="2202898655984161076">Kulikuwa na tatizo wakati wa kuongeza printa. Huenda baadhi ya printa zako hazikuweza kusajili kwenye <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2203088913459920044">Jina linaweza kuwa na herufi, nambari na herufi maalum</translation>
+<translation id="220321590587754225">Imeshindwa kuunganisha. Jaribu tena.</translation>
 <translation id="2204034823255629767">Kusoma na kubadilisha chochote unachocharaza</translation>
 <translation id="220858061631308971">Tafadhali weka nambari hii ya PIN kwenye "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Imeshindwa kukamilisha usakinishaji</translation>
@@ -4935,7 +4936,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6232017090690406397">Betri</translation>
 <translation id="6232116551750539448">Muunganisho kwenye <ph name="NAME" /> umepotea</translation>
 <translation id="6233154960150021497">Weka chaguomsingi iwe sauti badala ya kibodi</translation>
-<translation id="6233455992368963267">Matamshi katika lugha ya <ph name="LANGUAGE" /> hutumwa kwa Google ili yachakatwe.</translation>
 <translation id="6234108445915742946">Sheria na Masharti ya Chrome yatabadilika tarehe 31 Machi</translation>
 <translation id="6234474535228214774">Inasubiri kusakinisha</translation>
 <translation id="6235208551686043831">Kamera ya kifaa imewashwa. Tafadhali weka Msimbo wa QR wa eSIM yako mbele ya kamera.</translation>
@@ -4972,6 +4972,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6263284346895336537">Sio Muhimu</translation>
 <translation id="6264365405983206840">Chagua &amp;Zote</translation>
 <translation id="6265687851677020761">Ondoa mlango</translation>
+<translation id="6266532094411434237">Inaunganisha kwenye <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Chagua cheti cha kujithibitisha kwa <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Fungua kwa kutumia <ph name="APP" /></translation>
 <translation id="6270391203985052864">Tovuti zinaweza kukuuliza kutuma arifa</translation>

@@ -261,6 +261,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2996462380875591307">Lupa em área fixa ativada. Pressione Ctrl+Pesquisa+D novamente para desativá-la.</translation>
 <translation id="3000461861112256445">Áudio mono</translation>
 <translation id="3009178788565917040">Saída</translation>
+<translation id="3009958530611748826">Selecione em que pasta quer salvar</translation>
 <translation id="3017687597151988916">Área de seleção definida como janela</translation>
 <translation id="3033545621352269033">Ativada</translation>
 <translation id="3036649622769666520">Abrir arquivos</translation>
@@ -504,7 +505,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4665114317261903604">Alternar "Não perturbe". <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Desbloquear dispositivo usando o código de pai/mãe</translation>
 <translation id="4702647871202761252">A tela de privacidade está desativada</translation>
-<translation id="4706121060329443414">O download será feito mais tarde. Por enquanto, a fala será enviada ao Google para processamento.</translation>
 <translation id="4731797938093519117">Acesso do familiar responsável</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">O atalho de teclado <ph name="LAUNCHER_KEY_NAME" /> + tecla numérica mudou. Para usar as teclas de função, pressione <ph name="LAUNCHER_KEY_NAME" /> + uma tecla na linha superior.</translation>
@@ -688,7 +688,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="6062360702481658777">Você sairá automaticamente em <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Parar de gravar</translation>
 <translation id="607652042414456612">Seu computador pode ser detectado por dispositivos Bluetooth próximos e aparecerá como "<ph name="NAME" />", com o endereço <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">A gravação de tela é desativada pela política do administrador quando há conteúdo protegido visível</translation>
 <translation id="6114505516289286752">Download de arquivos de fala em <ph name="LANGUAGE" /> concluído</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">O Google Assistente não está disponível em uma sessão de visitante.</translation>
@@ -1043,7 +1042,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="8876661425082386199">Verifique sua conexão</translation>
 <translation id="8877788021141246043">Definir um lembrete</translation>
 <translation id="8878886163241303700">Tela ampla</translation>
-<translation id="8884537526797090108">Não é possível gravar conteúdo confidencial</translation>
 <translation id="890616557918890486">Alterar origem</translation>
 <translation id="8909138438987180327">Bateria em <ph name="PERCENTAGE" /> por cento.</translation>
 <translation id="8913384980486163186">Temático (padrão)</translation>

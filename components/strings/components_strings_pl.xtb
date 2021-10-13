@@ -214,6 +214,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="160851722280695521">Zagraj w grę Dino Run w Chrome</translation>
 <translation id="161042844686301425">Cyjan</translation>
 <translation id="1611101756749861742">Rolka 2</translation>
+<translation id="1615402009686901181">Zasada administratora wyłącza zrzut ekranu, gdy widoczne są treści poufne</translation>
 <translation id="1620510694547887537">Aparat</translation>
 <translation id="1623104350909869708">Zapobiegaj wyświetlaniu dodatkowych okien dialogowych na tej stronie</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -402,6 +403,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2241693394036365668">Pobrano plik</translation>
 <translation id="2248949050832152960">Używaj WebAuthn</translation>
 <translation id="2250931979407627383">Zszywanie wzdłuż lewej krawędzi</translation>
+<translation id="2251943122176102076">Administrator nie zaleca robienia zrzutów ani nagrań ekranu, bo są rejestrowane treści poufne:</translation>
 <translation id="225207911366869382">Ta wartość tej zasady została wycofana.</translation>
 <translation id="2258928405015593961">Wpisz datę ważności przypadającą w przyszłości i spróbuj jeszcze raz</translation>
 <translation id="225943865679747347">Kod błędu: <ph name="ERROR_CODE" /></translation>
@@ -859,7 +861,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3781428340399460090">Ciepłoróżowy</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Lista urządzeń</translation>
-<translation id="3787675388804467730">Numer karty wirtualnej</translation>
 <translation id="3787705759683870569">Wygasa: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Rozmiar 16</translation>
 <translation id="3789841737615482174">Zainstaluj</translation>
@@ -1191,6 +1192,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
           <ph name="LIST_ITEM" />Dostawcy usług internetowych mogą monitorować ruch w sieci.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Włącz ostrzeżenia</translation>
+<translation id="4834718916855725099">Administrator nie zaleca robienia zrzutów ani nagrań ekranu, bo są na nim treści poufne:</translation>
 <translation id="4838327282952368871">Uroczy</translation>
 <translation id="4840250757394056958">Wyświetl historię Chrome</translation>
 <translation id="484462545196658690">Automatycznie</translation>
@@ -1568,6 +1570,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6080696365213338172">Masz dostęp do treści dzięki certyfikatowi dostarczonemu przez administratora. Administrator może odczytać dane, jakie udostępnisz w <ph name="DOMAIN" />.</translation>
 <translation id="6087312102907839798">Podobne wyszukiwania</translation>
 <translation id="6094273045989040137">Dodaj adnotacje</translation>
+<translation id="6094290315941448991">Zasada administratora wyłącza nagrywanie ekranu, gdy widoczne są treści poufne</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Utwórz witrynę</translation>
 <translation id="6106989379647458772">Strona <ph name="PAGE" /> może być chwilowo niedostępna lub została przeniesiona pod nowy adres.</translation>
@@ -2368,6 +2371,7 @@ Dodatkowe informacje:
 <translation id="8870494189203302833">Ta sama kolejność, strona do drukowania skierowana w dół</translation>
 <translation id="8871553383647848643">Dostosuj wygląd przeglądarki</translation>
 <translation id="8874824191258364635">Wpisz prawidłowy numer karty</translation>
+<translation id="8884537526797090108">Nie można nagrywać treści poufnych</translation>
 <translation id="8891727572606052622">Nieprawidłowy tryb proxy</translation>
 <translation id="8894794286471754040">Najpierw dłuższa krawędź</translation>
 <translation id="8903921497873541725">Powiększ</translation>
@@ -2422,6 +2426,7 @@ Dodatkowe informacje:
 <translation id="9050666287014529139">Hasło</translation>
 <translation id="9056953843249698117">Sklep</translation>
 <translation id="9062620674789239642">Mógł zostać przeniesiony, edytowany lub usunięty.</translation>
+<translation id="9063800855227801443">Nie można przechwycić obrazu poufnej treści</translation>
 <translation id="9065203028668620118">Edytuj</translation>
 <translation id="9065745800631924235">Wyszukiwanie ciągu <ph name="TEXT" /> w historii</translation>
 <translation id="9069693763241529744">Zablokowane przez rozszerzenie</translation>

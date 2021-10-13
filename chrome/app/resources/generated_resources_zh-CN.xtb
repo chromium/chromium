@@ -216,7 +216,6 @@
 <translation id="1218015446623563536">删除 Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Google 的位置信息服务会使用 WLAN、移动网络和传感器等来源协助估测此设备所在的位置。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您可以通过关闭这部设备上的主要“位置信息”设置来关闭位置信息服务。此外，您还可以在“位置信息”设置中关闭那些使用 WLAN、移动网络和传感器来获取位置信息的功能。<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">无法下载<ph name="LANGUAGE" />语音识别结果文件。系统会在晚些时候尝试下载。目前，系统会将语音识别结果发送给 Google 进行处理。</translation>
 <translation id="122082903575839559">证书签名算法</translation>
 <translation id="1221024147024329929">PKCS #1，带有 RSA 加密的 MD2</translation>
 <translation id="1221825588892235038">仅限选定内容</translation>
@@ -4875,7 +4874,6 @@
 <translation id="6232017090690406397">电池</translation>
 <translation id="6232116551750539448">与“<ph name="NAME" />”的连接已中断</translation>
 <translation id="6233154960150021497">默认为使用语音（而非键盘）</translation>
-<translation id="6233455992368963267">系统会将<ph name="LANGUAGE" />语音发送给 Google 以供处理。</translation>
 <translation id="6234108445915742946">Chrome 的《服务条款》将于 3 月 31 日变更</translation>
 <translation id="6234474535228214774">正等待安装</translation>
 <translation id="6235208551686043831">设备的摄像头已开启。请将摄像头对准您的 eSIM 卡二维码。</translation>

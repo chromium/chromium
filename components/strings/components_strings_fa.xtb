@@ -214,6 +214,7 @@
 <translation id="160851722280695521">‏بازی کردن بازی دویدن دایناسور در Chrome</translation>
 <translation id="161042844686301425">فیروزه‌ای</translation>
 <translation id="1611101756749861742">رول دوم</translation>
+<translation id="1615402009686901181">خط‌مشی سرپرست ضبط صفحه‌نمایش را هنگامی که محتوای محرمانه نمایان باشد غیرفعال می‌کند</translation>
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="1623104350909869708">جلوگیری از ایجاد پنجره‌های اضافی توسط این صفحه</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -406,6 +407,7 @@
 <translation id="2241693394036365668">فایل بارگیری شده است</translation>
 <translation id="2248949050832152960">‏استفاده از WebAuthn</translation>
 <translation id="2250931979407627383">دوختن لبه از چپ</translation>
+<translation id="2251943122176102076">به‌دلیل وجود محتوای محرمانه‌ای که ثبت شده است، سرپرست توصیه می‌کند از صفحه‌نمایش نماگرفت نگیرید یا محتوای آن را ضبط نکنید:</translation>
 <translation id="225207911366869382">این مقدار برای این خط‌مشی منسوخ شده است؟</translation>
 <translation id="2258928405015593961">تاریخی را در آینده به‌عنوان تاریخ انقضا وارد کنید و دوباره امتحان کنید</translation>
 <translation id="225943865679747347">کد خطا: <ph name="ERROR_CODE" /></translation>
@@ -863,7 +865,6 @@
 <translation id="3781428340399460090">صورتی پررنگ</translation>
 <translation id="3783418713923659662">مسترکارت</translation>
 <translation id="3784372983762739446">دستگاه‌های بلوتوث</translation>
-<translation id="3787675388804467730">شماره کارت مجازی</translation>
 <translation id="3787705759683870569">تاریخ انقضا <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">اندازه ۱۶</translation>
 <translation id="3789841737615482174">نصب</translation>
@@ -1200,6 +1201,7 @@
           <ph name="LIST_ITEM" />«رسانندگان خدمات اینترنتی» می‌توانند ترافیک وب را پایش کنند<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">روشن کردن هشدارها</translation>
+<translation id="4834718916855725099">به‌دلیل محتوای محرمانه‌ای که روی صفحه وجود دارد، سرپرست توصیه می‌کند از صفحه‌نمایش نماگرفت نگیرید یا محتوای آن را ضبط نکنید:</translation>
 <translation id="4838327282952368871">رؤیایی</translation>
 <translation id="4840250757394056958">‏مشاهده سابقه Chrome</translation>
 <translation id="484462545196658690">خودکار</translation>
@@ -1577,6 +1579,7 @@
 <translation id="6080696365213338172">شما با استفاده از گواهی ارائه شده توسط سرپرست سیستم به محتوا دسترسی پیدا کرده‌اید. داده‌هایی که به <ph name="DOMAIN" /> ارائه می‌کنید ممکن است توسط سرپرست سیستم رهگیری شوند.</translation>
 <translation id="6087312102907839798">جستجوهای مربوط</translation>
 <translation id="6094273045989040137">حاشیه‌نویسی</translation>
+<translation id="6094290315941448991">خط‌مشی سرپرست ضبط صفحه‌نمایش را هنگامی که محتوای محرمانه نمایان باشد غیرفعال می‌کند</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">ایجاد سایت</translation>
 <translation id="6106989379647458772">شاید صفحه وب در <ph name="PAGE" /> موقتاً غیرفعال شده باشد یا شاید به‌طور دائم به آدرس وب جدیدی منتقل شده باشد.</translation>
@@ -2377,6 +2380,7 @@
 <translation id="8870494189203302833">ترتیب یکسان، روبه‌پایین</translation>
 <translation id="8871553383647848643">سفارشی کردن ظاهر مرورگر</translation>
 <translation id="8874824191258364635">شماره کارت معتبری وارد کنید</translation>
+<translation id="8884537526797090108">نمی‌توان محتوای محرمانه را ضبط کرد</translation>
 <translation id="8891727572606052622">حالت پروکسی نامعتبر است.</translation>
 <translation id="8894794286471754040">ابتدا لبه بلند</translation>
 <translation id="8903921497873541725">بزرگ‌نمایی</translation>
@@ -2431,6 +2435,7 @@
 <translation id="9050666287014529139">گذرعبارت</translation>
 <translation id="9056953843249698117">فروشگاه</translation>
 <translation id="9062620674789239642">ممکن است جابه‌جا، ویرایش، یا حذف شده باشد.</translation>
+<translation id="9063800855227801443">نمی‌توان محتوای محرمانه را ضبط کرد</translation>
 <translation id="9065203028668620118">ویرایش</translation>
 <translation id="9065745800631924235">جستجوی <ph name="TEXT" /> از سابقه</translation>
 <translation id="9069693763241529744">توسط افزونه مسدود شده است</translation>

@@ -220,7 +220,6 @@
 <translation id="1218015446623563536">Linuxi kustutamine</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Google'i asukohateenus kasutab selliseid allikaid nagu WiFi- ja mobiilsidevõrgud ning andurid, et aidata prognoosida seadme asukohta.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Funktsiooni Asukoht saab välja lülitada, kui lülitate välja seadme peamise asukohaseade. Asukohaseadetes võite välja lülitada ka WiFi- ja mobiilsidevõrkude ning andurite kasutamise asukoha määramiseks.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">Kõnefaile <ph name="LANGUAGE" /> keeles ei õnnestunud alla laadida. Hiljem üritatakse uuesti alla laadida. Kõne saadetakse praegu töötlemiseks Google'ile.</translation>
 <translation id="122082903575839559">Sertifikaadi allkirjaalgoritm</translation>
 <translation id="1221024147024329929">PKCS 1 MD2 koos RSA krüpteerimisega</translation>
 <translation id="1221825588892235038">Ainult valitud</translation>
@@ -308,6 +307,7 @@
 <translation id="1313660246522271310">Teid logitakse kõikidelt saitidelt (sh avatud vahelehtedel) välja</translation>
 <translation id="1313705515580255288">Teie järjehoidjaid, ajalugu ja muud seaded sünkroonitakse Google'i kontoga.</translation>
 <translation id="1316136264406804862">Otsimine ...</translation>
+<translation id="1316248800168909509">Seadmega <ph name="DEVICE" /> ei õnnestunud ühendust luua. Proovige uuesti.</translation>
 <translation id="1316495628809031177">Sünkroonimine on peatatud</translation>
 <translation id="1317637799698924700">Teie dokkimisjaam töötab C-tüüpi USB-ga ühilduvas režiimis.</translation>
 <translation id="1319983966058170660">Alamlehe <ph name="SUBPAGE_TITLE" /> tagasinupp</translation>
@@ -1181,6 +1181,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2200356397587687044">Chrome vajab jätkamiseks luba</translation>
 <translation id="2202898655984161076">Printerite kirjendamisel oli viga. Mõne printeri registreerimine rakendusega <ph name="CLOUD_PRINT_NAME" /> ei õnnestunud.</translation>
 <translation id="2203088913459920044">Nimes võib kasutada tähti, numbreid ja erimärke</translation>
+<translation id="220321590587754225">Ühenduse loomine ebaõnnestus. Proovige uuesti.</translation>
 <translation id="2204034823255629767">Sisestatava teksti lugemine ja muutmine</translation>
 <translation id="220858061631308971">Sisestage seadmes „<ph name="DEVICE_NAME" />” see PIN-kood:</translation>
 <translation id="2210462644007531147">Installimise lõpetamine ei õnnestunud</translation>
@@ -4931,7 +4932,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6232017090690406397">Aku</translation>
 <translation id="6232116551750539448">Ühendus üksusega <ph name="NAME" /> katkes</translation>
 <translation id="6233154960150021497">Kasuta vaikimisi häält, mitte klaviatuuri</translation>
-<translation id="6233455992368963267"><ph name="LANGUAGE" /> keeles olev kõne saadetakse töötlemiseks Google'ile.</translation>
 <translation id="6234108445915742946">Chrome'i teenusetingimused muutuvad 31. märtsil</translation>
 <translation id="6234474535228214774">Installimine on ootel</translation>
 <translation id="6235208551686043831">Seadme kaamera lülitati sisse. Asetage eSIM-i QR-kood kaamera ette.</translation>
@@ -4968,6 +4968,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6263284346895336537">Pole kriitiline</translation>
 <translation id="6264365405983206840">Vali &amp;kõik</translation>
 <translation id="6265687851677020761">Eemalda port</translation>
+<translation id="6266532094411434237">Ühendamine seadmega <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Valige sertifikaat, et tuvastada ennast hostile <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Ava rakendusega <ph name="APP" /></translation>
 <translation id="6270391203985052864">Saidid saavad küsida luba märguannete saatmiseks</translation>

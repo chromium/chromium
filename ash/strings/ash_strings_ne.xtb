@@ -261,6 +261,7 @@
 <translation id="2996462380875591307">डक गरिएको म्याग्निफायर सक्षम पारियो। यसलाई निष्क्रिय पार्न फेरि Ctrl+खोज+D कुञ्जी थिच्नुहोस्।</translation>
 <translation id="3000461861112256445">मोनो अडियो</translation>
 <translation id="3009178788565917040">निर्गत</translation>
+<translation id="3009958530611748826">सुरक्षित गर्न कुनै फोल्डर चयन गर्नुहोस्</translation>
 <translation id="3017687597151988916">स्रोतका रूपमा विन्डो चयन गरिएको छ</translation>
 <translation id="3033545621352269033">अन</translation>
 <translation id="3036649622769666520">खुल्ला फाइलहरू</translation>
@@ -504,7 +505,6 @@
 <translation id="4665114317261903604">बाधा नपुर्‍याउनुहोस् नामक मोड टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">अभिभावकको कोडमार्फत डिभाइस अनलक गर्नुहोस्</translation>
 <translation id="4702647871202761252">गोपनीयताको स्क्रिन निष्क्रिय छ</translation>
-<translation id="4706121060329443414">डाउनलोड गर्ने प्रयास पछि गरिने छ। बोलिएको कुरा प्रोसेस गर्नका निम्ति Google मा पठाइने छ।</translation>
 <translation id="4731797938093519117">अभिभावकको पहुँच</translation>
 <translation id="4734965478015604180">तेर्सो</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number किबोर्डका सर्टकट परिवर्तन गरिएको छ। फङ्सन की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + माथिल्लो रोमा भएको कुनै की थिच्नुहोस्।</translation>
@@ -688,7 +688,6 @@
 <translation id="6062360702481658777">तपाइँ <ph name="LOGOUT_TIME_LEFT" /> मा स्वचालित रूपमा साइन आउट हुनुहुनेछ।</translation>
 <translation id="6073451960410192870">रेकर्ड गर्न छाड्नुहोस्</translation>
 <translation id="607652042414456612">तपाइँको कम्प्युटर नजिकको ब्लुतुथ डिभाइसहरूको लागि दृश्य-योग्य छ र "<ph name="NAME" />" को रूपमा ठेगाना <ph name="ADDRESS" /> सँग देखा पर्नेछ</translation>
-<translation id="6094290315941448991">स्क्रिनमा गोप्य सामग्री देखिएका बेला एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन रेकर्ड गर्ने सुविधा अफ गरिन्छ</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> भाषाका वाक् पहिचानसम्बन्धी फाइलहरू डाउनलोड गरिएका छन्</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google सहायक अतिथिको सत्रमा उपलब्ध हुँदैन।</translation>
@@ -1043,7 +1042,6 @@
 <translation id="8876661425082386199">आफ्नो यन्त्रको ब्लुटुथ वा Wi-Fi कनेक्सन जाँच्नुहोस्</translation>
 <translation id="8877788021141246043">कुनै रिमाइन्डर सेट गर्नुहोस्</translation>
 <translation id="8878886163241303700">स्क्रिनलाई विस्तार गर्दै</translation>
-<translation id="8884537526797090108">गोप्य सामग्री रेकर्ड गर्न मिल्दैन</translation>
 <translation id="890616557918890486">स्रोत परिवर्तन गर्नुहोस्</translation>
 <translation id="8909138438987180327">ब्याट्री <ph name="PERCENTAGE" /> प्रतिशत छ।</translation>
 <translation id="8913384980486163186">थिम (डिफल्ट)</translation>

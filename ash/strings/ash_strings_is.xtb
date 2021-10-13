@@ -264,6 +264,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2996462380875591307">Kveikt á stækkunargleri í föstum glugga. Ýttu aftur á Ctrl+leitarhnappinn+D til að loka því.</translation>
 <translation id="3000461861112256445">Einóma hljóð</translation>
 <translation id="3009178788565917040">Úttak</translation>
+<translation id="3009958530611748826">Veldu möppu til að vista í</translation>
 <translation id="3017687597151988916">Valsvæði stillt á glugga</translation>
 <translation id="3033545621352269033">Kveikt</translation>
 <translation id="3036649622769666520">Opna skrár</translation>
@@ -509,7 +510,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4667099493359681081">Sækir <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Opna tæki með kóða foreldris</translation>
 <translation id="4702647871202761252">Slökkt er á persónuverndarskjá</translation>
-<translation id="4706121060329443414">Reynt verður að hlaða niður síðar. Tal verður sent til Google til úrvinnslu í millitíðinni.</translation>
 <translation id="4731797938093519117">Foreldraaðgangur</translation>
 <translation id="4734965478015604180">Lárétt</translation>
 <translation id="4735498845456076464">Flýtilyklinum „<ph name="LAUNCHER_KEY_NAME" /> + tölustafur“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + lykil í efstu röð til að nota aðgerðalyklana.</translation>
@@ -694,7 +694,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6062360702481658777">Þú verður skráð(ur) út sjálfkrafa eftir <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Stöðva upptöku</translation>
 <translation id="607652042414456612">Nálæg Bluetooth-tæki geta fundið tölvuna þína og hún birtist sem „<ph name="NAME" />“ með vistfangið <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Slökkt er á skjáupptöku þegar trúnaðarefni er sýnilegt vegna reglu kerfisstjóra</translation>
 <translation id="6114505516289286752">Talskrár sóttar fyrir: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google hjálparinn er ekki í boði í gestalotu.</translation>
@@ -1050,7 +1049,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8876661425082386199">Athugaðu tenginguna</translation>
 <translation id="8877788021141246043">Stilla áminningu</translation>
 <translation id="8878886163241303700">Framlengir skjá</translation>
-<translation id="8884537526797090108">Ekki hægt að taka upp trúnaðarefni</translation>
 <translation id="890616557918890486">Breyta uppruna</translation>
 <translation id="8909138438987180327">Rafhlaða í <ph name="PERCENTAGE" />%.</translation>
 <translation id="8913384980486163186">Þema (sjálfgefið)</translation>

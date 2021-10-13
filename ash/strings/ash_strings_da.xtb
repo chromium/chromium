@@ -264,6 +264,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2996462380875591307">Fastgjort lupvindue er aktiveret. Tryk på Ctrl+Søg+D igen for at deaktivere tilstanden.</translation>
 <translation id="3000461861112256445">Monolyd</translation>
 <translation id="3009178788565917040">Output</translation>
+<translation id="3009958530611748826">Vælg en mappe, du vil gemme i</translation>
 <translation id="3017687597151988916">Vinduet er valgt som kilde</translation>
 <translation id="3033545621352269033">Til</translation>
 <translation id="3036649622769666520">Åbn filer</translation>
@@ -509,7 +510,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4667099493359681081">Downloader <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Lås enheden op med forældrekode</translation>
 <translation id="4702647871202761252">Privatlivsskærmen er slået fra</translation>
-<translation id="4706121060329443414">Downloaden forsøges senere. Tale sendes i mellemtiden til behandling hos Google.</translation>
 <translation id="4731797938093519117">Forældreadgang</translation>
 <translation id="4734965478015604180">Vandret</translation>
 <translation id="4735498845456076464">Tastaturgenvejen <ph name="LAUNCHER_KEY_NAME" />+numerisk tast er blevet ændret. Hvis du vil bruge funktionstaster, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+en tast i øverste række.</translation>
@@ -694,7 +694,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6062360702481658777">Du bliver automatisk logget ud om <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Stop optagelse</translation>
 <translation id="607652042414456612">Din computer kan registreres af Bluetooth-enheder i nærheden, og den vil blive vist som "<ph name="NAME" />" med adressen <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">Administratorpolitikken deaktiverer skærmoptagelse, når fortroligt indhold er synligt</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> talefiler blev downloadet</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistent er ikke tilgængelig i en gæstesession.</translation>
@@ -1050,7 +1049,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="8876661425082386199">Tjek din forbindelse</translation>
 <translation id="8877788021141246043">Opret en påmindelse</translation>
 <translation id="8878886163241303700">Udvider skærm</translation>
-<translation id="8884537526797090108">Der kan ikke optages fortroligt indhold</translation>
 <translation id="890616557918890486">Skift kilde</translation>
 <translation id="8909138438987180327">Batteriet er på <ph name="PERCENTAGE" /> procent.</translation>
 <translation id="8913384980486163186">Med tema (standard)</translation>

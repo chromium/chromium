@@ -78,6 +78,16 @@
 <translation id="1069489575852947981">如果將這項政策設為啟用或不設定，系統會將裝置本機帳戶設為零延遲自動登入。<ph name="PRODUCT_OS_NAME" />會遵循用於略過自動登入並顯示登入畫面的鍵盤快速鍵 Ctrl + Alt + S 鍵。
 
       如果將這項政策設為停用，使用者無法略過零延遲自動登入 (如果已設定)。</translation>
+<translation id="1070656322814001059">Chrome 會封鎖在沙箱 iframe 中瀏覽外部通訊協定的作業，詳情請參閱 https://chromestatus.com/features/5680742077038592。
+
+      如果將這項政策設為 True，就代表允許 Chrome 封鎖這類瀏覽作業。
+
+      如果將這項政策設為 False，則表示禁止 Chrome 封鎖這類瀏覽作業。
+
+      本政策預設為 True，也就是啟用安全性功能。
+
+      如果企業會受到相關限制所影響，可透過此政策暫時解除封鎖。
+      </translation>
 <translation id="1073983258515362346">回報有關裝置背光的資訊。
 
       如果將這項政策設為 False 或未設定，系統將不會回報這項資訊。
@@ -1048,6 +1058,7 @@
 <translation id="2246011554082893079">這項政策可控管 <ph name="BOREALIS_NAME" /> 是否適用於這部裝置。
 
       如果將這項政策設為 False，<ph name="BOREALIS_NAME" /> 就不適用於此裝置的所有使用者。如果不設定這項政策或設為 True，<ph name="BOREALIS_NAME" /> 只要未遭到其他政策或設定所停用，便適用於這部裝置。</translation>
+<translation id="2246621891161157804">允許 Chrome 封鎖在沙箱 iframe 中瀏覽外部通訊協定的作業</translation>
 <translation id="225340736558643885">啟用不安全表單的警告功能</translation>
 <translation id="2258126710006312594">允許遠端存取使用者向主機傳輸檔案，或從主機接收檔案</translation>
 <translation id="2261648512244797294">停用已淘汰的 Privet 列印功能</translation>
@@ -5153,6 +5164,7 @@
 <translation id="7313672174502374994">桌布圖片的 SHA-256 雜湊值。</translation>
 <translation id="7322825363493984512">用於向遠端網路 Proxy 驗證系統服務的密碼。</translation>
 <translation id="7323896582714668701"><ph name="PRODUCT_NAME" /> 額外命令列參數</translation>
+<translation id="7325801934761922681">禁止 Chrome 封鎖在沙箱 iframe 中瀏覽外部通訊協定的作業</translation>
 <translation id="7326394567531622570">與 Wipe (值 2) 類似，但會嘗試保留登入憑證，因此使用者不必重新登入。</translation>
 <translation id="7331962793961469250">設為 True 時，新分頁上將不會顯示「Chrome 線上應用程式商店」應用程式的宣傳資訊。將這個選項設為 False 或不設定選項時，新分頁上會顯示「Chrome 線上應用程式商店」應用程式的宣傳資訊</translation>
 <translation id="7332963785317884918">這項政策已被取代。<ph name="PRODUCT_OS_NAME" /> 將一律使用「RemoveLRU」清理策略。
@@ -5291,6 +5303,7 @@
 <translation id="7544392541165889987">如果啟用這項政策或不去設定它，<ph name="PRODUCT_NAME" /> 將成為 <ph name="CLOUD_PRINT_NAME" />和連接到電腦的舊款印表機之間的 Proxy。使用者可透過 Google 帳戶驗證來啟用雲端列印 Proxy。
 
       如果停用這項政策，則使用者無法啟用 Proxy，電腦也無法與 <ph name="CLOUD_PRINT_NAME" />共用印表機。</translation>
+<translation id="7546699946724795644">允許 Chrome 封鎖在沙箱 iframe 中瀏覽外部通訊協定的作業</translation>
 <translation id="7547549430720182663">合併</translation>
 <translation id="7553535237300701827">設定這項政策後，系統會根據設定值採用下列其中一種登入驗證流程：
 

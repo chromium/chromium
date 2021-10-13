@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Vragen wanneer een site Bluetooth-apparaten in de buurt wilt detecteren (aanbevolen)</translation>
 <translation id="2315043854645842844">Certificaatselectie aan clientzijde wordt niet ondersteund door het besturingssysteem.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
+<translation id="2379925928934107488">Donker thema zo mogelijk toepassen op sites als Chrome het donkere thema gebruikt</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> toegestaan}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> toegestaan}}</translation>
 <translation id="2434158240863470628">Download voltooid <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Locatietoegang staat ook uit voor dit apparaat. Zet deze aan via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Uitgevouwen; klik om samen te vouwen.</translation>
 <translation id="2586657967955657006">Klembord</translation>
+<translation id="2597457036804169544">Donker thema niet toepassen op sites</translation>
 <translation id="2621115761605608342">JavaScript toestaan voor een specfieke site.</translation>
 <translation id="2653659639078652383">Verzenden</translation>
 <translation id="2677748264148917807">Verlaten</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Geluid uitzetten voor sites met geluid</translation>
 <translation id="3744111561329211289">Synchronisatie op de achtergrond</translation>
 <translation id="3763247130972274048">Dubbeltik links of rechts in de video om tien seconden te verspringen</translation>
+<translation id="3797520601150691162">Donker thema niet toepassen op een specifieke site</translation>
 <translation id="381841723434055211">Telefoonnummers</translation>
 <translation id="3835233591525155343">Je apparaatgebruik</translation>
 <translation id="385051799172605136">Terug</translation>
@@ -113,7 +116,6 @@
 <translation id="4008040567710660924">Cookies voor een specifieke site toestaan.</translation>
 <translation id="4046123991198612571">Volgend nummer</translation>
 <translation id="4165986682804962316">Site-instellingen</translation>
-<translation id="4176463684765177261">Uitgezet</translation>
 <translation id="4200726100658658164">Locatie-instellingen openen</translation>
 <translation id="4226663524361240545">Het apparaat kan trillen bij meldingen</translation>
 <translation id="4259722352634471385">Navigatie is geblokkeerd: <ph name="URL" /></translation>
@@ -181,7 +183,6 @@
 <translation id="5876056640971328065">Video pauzeren</translation>
 <translation id="5887687176710214216">Laatst bezocht: gisteren</translation>
 <translation id="5916664084637901428">Aan</translation>
-<translation id="59174027418879706">Aangezet</translation>
 <translation id="5922853908706496913">Je scherm delen</translation>
 <translation id="5939518447894949180">Resetten</translation>
 <translation id="5975083100439434680">Uitzoomen</translation>
@@ -244,6 +245,7 @@
 <translation id="7302486331832100261">Meestal blokkeer je meldingen. Tik op Details om meldingen toe te staan.</translation>
 <translation id="7423098979219808738">Eerst vragen</translation>
 <translation id="7423538860840206698">Lezen van het klembord geblokkeerd</translation>
+<translation id="7425915948813553151">Donker thema voor sites</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Een site gebruikt de microfoon</translation>
 <translation id="7561196759112975576">Altijd</translation>

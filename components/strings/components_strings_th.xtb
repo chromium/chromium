@@ -214,6 +214,7 @@
 <translation id="160851722280695521">เล่นเกมไดโนเสาร์วิ่งใน Chrome</translation>
 <translation id="161042844686301425">สีฟ้า</translation>
 <translation id="1611101756749861742">ม้วนกระดาษ 2</translation>
+<translation id="1615402009686901181">นโยบายของผู้ดูแลระบบปิดใช้การจับภาพหน้าจอเมื่อมีเนื้อหาที่เป็นความลับแสดงอยู่</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="1623104350909869708">ป้องกันหน้าเว็บนี้จากการสร้างการโต้ตอบเพิ่มเติม</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -855,7 +856,6 @@
 <translation id="3781428340399460090">ชมพูเจิดจ้า</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">อุปกรณ์บลูทูธ</translation>
-<translation id="3787675388804467730">หมายเลขบัตรเสมือน</translation>
 <translation id="3787705759683870569">หมดอายุ <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">ขนาด 16</translation>
 <translation id="3789841737615482174">ติดตั้ง</translation>
@@ -1559,6 +1559,7 @@
 <translation id="6080696365213338172">คุณเข้าถึงเนื้อหาโดยใช้ใบรับรองที่ผู้ดูแลระบบออกให้ ข้อมูลที่คุณให้กับ <ph name="DOMAIN" /> อาจถูกสกัดกั้นโดยผู้ดูแลระบบ</translation>
 <translation id="6087312102907839798">การค้นหาที่เกี่ยวข้อง</translation>
 <translation id="6094273045989040137">ใส่หมายเหตุ</translation>
+<translation id="6094290315941448991">นโยบายของผู้ดูแลระบบปิดใช้การบันทึกหน้าจอเมื่อมีเนื้อหาที่เป็นความลับแสดงอยู่</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">สร้างเว็บไซต์</translation>
 <translation id="6106989379647458772">หน้าเว็บที่ <ph name="PAGE" /> อาจใช้งานไม่ได้ชั่วคราวหรืออาจมีการย้ายไปยังที่อยู่เว็บใหม่อย่างถาวรแล้ว</translation>
@@ -2354,6 +2355,7 @@
 <translation id="8870494189203302833">ลำดับเดียวกันคว่ำหน้าลง</translation>
 <translation id="8871553383647848643">ปรับแต่งรูปลักษณ์ของเบราว์เซอร์</translation>
 <translation id="8874824191258364635">ป้อนหมายเลขบัตรที่ถูกต้อง</translation>
+<translation id="8884537526797090108">บันทึกเนื้อหาที่เป็นความลับไม่ได้</translation>
 <translation id="8891727572606052622">โหมดพร็อกซีไม่ถูกต้อง</translation>
 <translation id="8894794286471754040">ด้านขอบยาวก่อน</translation>
 <translation id="8903921497873541725">ขยาย</translation>
@@ -2408,6 +2410,7 @@
 <translation id="9050666287014529139">ข้อความรหัสผ่าน</translation>
 <translation id="9056953843249698117">ร้านค้า</translation>
 <translation id="9062620674789239642">ไฟล์อาจถูกย้าย แก้ไข หรือลบไปแล้ว</translation>
+<translation id="9063800855227801443">จับภาพเนื้อหาที่เป็นความลับไม่ได้</translation>
 <translation id="9065203028668620118">แก้ไข</translation>
 <translation id="9065745800631924235">การค้นหา <ph name="TEXT" /> จากประวัติ</translation>
 <translation id="9069693763241529744">ถูกบล็อกโดยส่วนขยาย</translation>

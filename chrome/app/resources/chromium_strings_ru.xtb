@@ -129,7 +129,6 @@
 <translation id="5386450000063123300">Обновление Chromium (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="538767207339317086">Разрешить вход в Chromium</translation>
 <translation id="5398878173008909840">Доступна новая версия Chromium.</translation>
-<translation id="5416696090975899932">Если отсутствует встроенная программа для работы с PDF-файлами, предварительный просмотр в Chromium невозможен.</translation>
 <translation id="5427571867875391349">Сделать Chromium браузером по умолчанию</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium (бета-версия)</translation>
 <translation id="5479196819031988440">Chromium OS не может открыть эту страницу</translation>
@@ -206,6 +205,7 @@
 <translation id="718435575166326686">Браузер Chromium запрашивает доступ к камере для этого сайта.</translation>
 <translation id="7196312274710523067">Не удалось запустить Chromium. Повторите попытку.</translation>
 <translation id="7197677400338048821">Не удается проверить пароли в Chromium. Повторите попытку через 24 часа.</translation>
+<translation id="7218568399872925918">Ваши данные сохраняются на посещенных сайтах, пока вы не закроете браузер Chromium.</translation>
 <translation id="7223968959479464213">Диспетчер задач – Chromium</translation>
 <translation id="731795002583552498">Обновление Chromium…</translation>
 <translation id="7318036098707714271">Файл настроек поврежден или недействителен. Chromium не может восстановить ваши параметры.</translation>
@@ -256,6 +256,8 @@
 <translation id="8621669128220841554">В процессе установки произошла неизвестная ошибка. Скачайте Chromium ещё раз.</translation>
 <translation id="8697124171261953979">Кроме того, расширение изменило стартовую страницу Chromium и поисковую систему, используемую по умолчанию при вводе запроса в омнибокс.</translation>
 <translation id="8704119203788522458">Ваш персональный Chromium</translation>
+<translation id="8713679423359107094">Когда вы закроете все окна браузера Chromium, файлы cookie и данные сайтов будут автоматически удалены.</translation>
+<translation id="8796443464227412154">Когда вы закроете Chromium, вы <ph name="BEGIN_BOLD" />выйдете с большинства сайтов<ph name="END_BOLD" />. Если синхронизация отключена, вы также <ph name="BEGIN_BOLD" />выйдете из сервисов Google и браузера Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Для этого сайта Chromium запрашивает доступ к камере и микрофону.</translation>
 <translation id="8803635938069941624">Условия использования Chromium OS</translation>
 <translation id="8821041990367117597">Chromium не удалось синхронизировать данные, поскольку ваши учетные сведения устарели.</translation>

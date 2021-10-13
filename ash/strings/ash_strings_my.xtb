@@ -261,6 +261,7 @@
 <translation id="2996462380875591307">နေရာချထားသည့် မှန်ဘီလူးကို ဖွင့်ထားပါသည်။ ၎င်းကို ပိတ်ရန် Ctrl+Search+D ကို ထပ်မံနှိပ်ပါ။</translation>
 <translation id="3000461861112256445">မိုနိုအသံ</translation>
 <translation id="3009178788565917040">အထွက်</translation>
+<translation id="3009958530611748826">သိမ်းရန် ဖိုင်တွဲကို ရွေးပါ</translation>
 <translation id="3017687597151988916">ရွေးချယ်ရန်နေရာအဖြစ် ဝင်းဒိုးကို သတ်မှတ်လိုက်သည်</translation>
 <translation id="3033545621352269033">ဖွင့်ရန်</translation>
 <translation id="3036649622769666520">ဖိုင်များ ဖွင့်ရန်</translation>
@@ -504,7 +505,6 @@
 <translation id="4665114317261903604">'မနှောင့်ယှက်ရ' ဖွင့်/ပိတ်ရန်။ <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">စက်ပစ္စည်းကို မိဘသုံးကုဒ်ဖြင့် ဖွင့်ပါ</translation>
 <translation id="4702647871202761252">ပုဂ္ဂိုလ်ရေးလုံခြုံမှု ဖန်သားပြင်ကို ပိတ်ထားသည်</translation>
-<translation id="4706121060329443414">နောင်တွင် ဒေါင်းလုဒ်လုပ်ပါမည်။ လောလောဆယ် လုပ်ဆောင်ရန် တိုက်ရိုက်စာတန်းကို Google သို့ ပို့ပါမည်။</translation>
 <translation id="4731797938093519117">မိဘ သုံးခွင့်</translation>
 <translation id="4734965478015604180">အလျားလိုက်</translation>
 <translation id="4735498845456076464">‘<ph name="LAUNCHER_KEY_NAME" /> + နံပါတ်’ လက်ကွက်ဖြတ်လမ်းများကို ပြောင်းထားသည်။ လုပ်ဆောင်ချက်ကီးများ သုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ထိပ်ဆုံးအတန်းရှိ ကီးကို နှိပ်ပါ။</translation>
@@ -688,7 +688,6 @@
 <translation id="6062360702481658777">သင်သည် <ph name="LOGOUT_TIME_LEFT" /> အကြာတွင် အလိုအလျောက် ထွက်ခွာမည်။</translation>
 <translation id="6073451960410192870">ကူးယူမှု ရပ်ရန်</translation>
 <translation id="607652042414456612">သင်၏ ကွန်ပျူတာမှာ အနီးအနားရှိ ဘလူးတုသ် ကိရိယာများမှာ ရှာတွေ့နိုင်ကာ "<ph name="NAME" />"အဖြစ် လိပ်စာ <ph name="ADDRESS" />ဖြင့် မြင်ရမည်။</translation>
-<translation id="6094290315941448991">လျှို့ဝှက်အကြောင်းအရာများကို မြင်နိုင်ချိန်တွင် ဖန်သားပြင်ရိုက်ကူးခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> တိုက်ရိုက်စာတန်းဖိုင်များ ဒေါင်းလုဒ်လုပ်ပြီးပြီ</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />။ <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">ဧည့်သည်စက်ရှင်တွင် Google Assistant ကို အသုံးပြု၍ မရပါ။</translation>
@@ -1043,7 +1042,6 @@
 <translation id="8876661425082386199">သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
 <translation id="8877788021141246043">သတိပေးချက် သတ်မှတ်ပါ</translation>
 <translation id="8878886163241303700">မျက်နှာပြင်ကို တိုးချဲ့နေ</translation>
-<translation id="8884537526797090108">လျှို့ဝှက်အကြောင်းအရာကို ရိုက်ကူး၍မရပါ</translation>
 <translation id="890616557918890486">အရင်းအမြစ် ပြောင်းရန်</translation>
 <translation id="8909138438987180327">ဘက်ထရီ <ph name="PERCENTAGE" /> ရာခိုင်နှုန်း ရှိပါသည်။</translation>
 <translation id="8913384980486163186">အပြင်အဆင် (မူရင်း)</translation>

@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">Korisnik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />.</translation>
+<translation id="1175951029573070619">Prosječan (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1195447618553298278">Nepoznata pogreška.</translation>
 <translation id="1204296502688602597">Latencija DNS-a</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422">Upravljaju <ph name="FIRST_MANAGER" /> i <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Poslužitelji naziva</translation>
 <translation id="1731082422893354635">Bluetooth dodirna podloga</translation>
+<translation id="175763766237925754">Dobar (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Otkazivanje skeniranja</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">PRESKOČENO</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da biste otkrili uređaje u blizini</translation>
+<translation id="2346474577291266260">Izvrstan (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">Uspješno</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Slanje izvješća s povratnim informacijama</translation>
@@ -340,8 +343,10 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="6379086450106841622">Dodirni zaslon</translation>
 <translation id="6388847657025262518">Ulagač dokumenata u skener je zaglavljen. Provjerite ulagač i pokušajte ponovo.</translation>
 <translation id="6395640744968320699">Povezivanje s HTTP web-lokacijama (priključak 80) putem vatrozida nije uspjelo</translation>
+<translation id="6398765197997659313">Izađi iz cijelog zaslona</translation>
 <translation id="641081527798843608">Podudaranje predmeta</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">Slab (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">Solidan</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Želite li ponovo skenirati stranicu?}=1{Želite li ponovo skenirati stranicu {PAGE_NUMBER}?}one{Želite li ponovo skenirati stranicu {PAGE_NUMBER}?}few{Želite li ponovo skenirati stranicu {PAGE_NUMBER}?}other{Želite li ponovo skenirati stranicu {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -444,7 +449,6 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7978412674231730200">Osobni ključ</translation>
 <translation id="7994702968232966508">EAP metoda</translation>
-<translation id="8020238979854764615">Došlo je do pogreške. Pokušajte ponovo kasnije odabirom drugih slika.</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Slanje povratnih informacija</translation>
