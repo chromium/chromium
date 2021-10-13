@@ -136,7 +136,7 @@ class DevToolsFileHelper {
                                   const base::FilePath& path,
                                   bool allowed);
   void FailedToAddFileSystem(const std::string& error);
-  void FileSystemPathsSettingChanged();
+  void FileSystemPathsSettingChangedOnUI();
   void FilePathsChanged(const std::vector<std::string>& changed_paths,
                         const std::vector<std::string>& added_paths,
                         const std::vector<std::string>& removed_paths);
