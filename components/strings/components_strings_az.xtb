@@ -407,6 +407,7 @@
 <translation id="2241693394036365668">Fayl endirilir</translation>
 <translation id="2248949050832152960">WebAuthn işlədin</translation>
 <translation id="2250931979407627383">Soldan kənarını tikin</translation>
+<translation id="2251943122176102076">Administrator məxfi məzmun çəkildiyinə görə skrinşot çəkmək və ya çəkiliş etməyi məsləhət görmür:</translation>
 <translation id="225207911366869382">Bu dəyər bu qayda üçün köhnəlib.</translation>
 <translation id="2258928405015593961">Gələcəkdə olan son tarix daxil edin və yenidən cəhd edin</translation>
 <translation id="225943865679747347">Xəta kodu: <ph name="ERROR_CODE" /></translation>
@@ -1195,6 +1196,7 @@
           <ph name="LIST_ITEM" />İnternet xidmət təminatçıları veb trafikini izləyə bilər<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Xəbərdarlıqları aktiv edin</translation>
+<translation id="4834718916855725099">Administrator ekranda məxfi məzmun olduğuna görə skrinşot çəkmək və ya çəkiliş etməyi məsləhət görmür:</translation>
 <translation id="4838327282952368871">Xəyali</translation>
 <translation id="4840250757394056958">Chrome tarixçənizə baxın</translation>
 <translation id="484462545196658690">Avtomatik</translation>

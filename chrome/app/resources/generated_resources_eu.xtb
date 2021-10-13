@@ -302,6 +302,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1313660246522271310">Webgune guztietan amaituko da saioa, baita irekita dauden fitxetan ere</translation>
 <translation id="1313705515580255288">Laster-markak, historia eta bestelako ezarpenak Google-ko kontuarekin sinkronizatuko dira.</translation>
 <translation id="1316136264406804862">Bilatzen…</translation>
+<translation id="1316248800168909509">Ezin izan da konektatu <ph name="DEVICE" /> gailura. Saiatu berriro.</translation>
 <translation id="1316495628809031177">Sinkronizazioa pausatuta dago</translation>
 <translation id="1317637799698924700">C motako USB egokigailuekiko (USB Type-C) bateragarritasun moduan funtzionatuko du oinarriak.</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> azpiorriko Atzera botoia</translation>
@@ -1168,6 +1169,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2200356397587687044">Chrome-k aurrera egiteko baimena behar du</translation>
 <translation id="2202898655984161076">Arazo bat izan da inprimagailuak zerrendatzean. Agian inprimagailuetako batzuk ez dira behar bezala erregistratu <ph name="CLOUD_PRINT_NAME" /> zerbitzuan.</translation>
 <translation id="2203088913459920044">Hizkiak, zenbakiak eta karaktere bereziak izan ditzake izenak</translation>
+<translation id="220321590587754225">Ezin izan da konektatu. Saiatu berriro.</translation>
 <translation id="2204034823255629767">Irakurri eta aldatu idazten duzuna</translation>
 <translation id="220858061631308971">Idatzi PIN kodea "<ph name="DEVICE_NAME" />" gailuan:</translation>
 <translation id="2212565012507486665">Onartu cookieak</translation>
@@ -4914,6 +4916,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6263284346895336537">Ez da kritikoa</translation>
 <translation id="6264365405983206840">Hautatu &amp;guztiak</translation>
 <translation id="6265687851677020761">Kendu ataka</translation>
+<translation id="6266532094411434237"><ph name="DEVICE" /> gailura konektatzen</translation>
 <translation id="6267166720438879315">Hautatu ziurtagiria zeure burua <ph name="HOST_NAME" /> ostalarian egiaztatzeko</translation>
 <translation id="6268252012308737255">Ireki <ph name="APP" /> aplikazioan</translation>
 <translation id="6270391203985052864">Webguneek jakinarazpenak bidaltzea eska dezakete</translation>

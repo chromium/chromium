@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">İstifadəçi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tərəfindən idarə olunur.</translation>
+<translation id="1175951029573070619">Orta (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Silin</translation>
 <translation id="1195447618553298278">Naməlum xəta.</translation>
 <translation id="1204296502688602597">DNS Gecikməsi</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> və <ph name="SECOND_MANAGER" /> tərəfindən idarə edilir</translation>
 <translation id="1726100011689679555">Ad serverləri</translation>
 <translation id="1731082422893354635">Bluetooth taçped</translation>
+<translation id="175763766237925754">Yaxşı (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Skanlama ləğv edilir</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">ÖTÜRÜLÜB</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yaxınlıqdakı cihazları tapmaq üçün Bluetooth'u aktiv edin</translation>
+<translation id="2346474577291266260">Əla (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">Keçdi</translation>
 <translation id="2380886658946992094">Hüquqi</translation>
 <translation id="2391082728065870591">Rəy Hesabatını Göndərin</translation>
@@ -342,6 +345,7 @@
 <translation id="6398765197997659313">Tam ekrandan çıxın</translation>
 <translation id="641081527798843608">Subyekt uyğunluğu</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">Zəif (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">Yaxşı</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Səhifə yenidən skanlansın?}=1{{PAGE_NUMBER} saylı səhifə yenidən skanlansın?}other{{PAGE_NUMBER} saylı səhifə yenidən skanlansın?}}</translation>
 <translation id="6472207088655375767">Birdəfəlik parol (OTP)</translation>

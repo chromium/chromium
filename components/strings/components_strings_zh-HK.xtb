@@ -403,7 +403,7 @@
 <translation id="2241693394036365668">已下載檔案</translation>
 <translation id="2248949050832152960">使用 WebAuthn</translation>
 <translation id="2250931979407627383">邊緣釘裝 (左側)</translation>
-<translation id="2251943122176102076">由於會有機密內容遭到擷取，系統管理員不建議擷取螢幕截圖或錄影：</translation>
+<translation id="2251943122176102076">由於螢幕上有機密內容，因此管理員不建議擷取螢幕截圖或錄影：</translation>
 <translation id="225207911366869382">這個政策值已不適用。</translation>
 <translation id="2258928405015593961">請將到期日設在未來，然後再試一次</translation>
 <translation id="225943865679747347">錯誤代碼：<ph name="ERROR_CODE" /></translation>
@@ -1191,7 +1191,7 @@
           <ph name="LIST_ITEM" />互聯網服務供應商可能會監察網絡流量<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">開啟警告</translation>
-<translation id="4834718916855725099">由於畫面上有機密內容，系統管理員不建議擷取螢幕截圖或錄影：</translation>
+<translation id="4834718916855725099">由於螢幕上有機密內容，因此管理員不建議擷取螢幕截圖或錄影：</translation>
 <translation id="4838327282952368871">夢幻</translation>
 <translation id="4840250757394056958">查看 Chrome 記錄</translation>
 <translation id="484462545196658690">自動</translation>

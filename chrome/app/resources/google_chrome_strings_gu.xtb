@@ -90,6 +90,7 @@
 <translation id="3037838751736561277">Google Chrome પૃષ્ઠભૂમિ મોડમાં છે.</translation>
 <translation id="3059710691562604940">Safe Browsingની સુવિધા બંધ છે. Chrome તેને ચાલુ રાખવાનો સુઝાવ આપે છે.</translation>
 <translation id="3065168410429928842">Chrome ટૅબ</translation>
+<translation id="3069821012350118710">તમે મુલાકાત લો છો એ બધી સાઇટ તમે Chrome બંધ કરો નહીં, ત્યાં સુધી તમારી માહિતી યાદ રાખે છે</translation>
 <translation id="3080151273017101988">જ્યારે Google Chrome બંધ થાય ત્યારે પૃષ્ઠભૂમિમાં  ઍપ્લિકેશનો ચલાવવાનું ચાલુ રાખો </translation>
 <translation id="3089968997497233615">Google Chromeનું નવું, સુરક્ષિત વર્ઝન ઉપલબ્ધ છે.</translation>
 <translation id="3100998948628680988">તમારી Chrome પ્રોફાઇલને નામ આપો</translation>
@@ -193,6 +194,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="5804318322022881572">Chrome લૉન્ચ કરી શકાયું નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="5867197326698922595">Google Chrome પાસવર્ડમાં ફેરફાર કરવાનો પ્રયાસ કરે છે.</translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
+<translation id="5901850848447342934">તમે Chrome બંધ કરશો, ત્યારે તમને <ph name="BEGIN_BOLD" />મોટાભાગની બધી સાઇટમાંથી સાઇન આઉટ<ph name="END_BOLD" /> કરવામાં આવશે. જો સિંક કરવાની સુવિધા બંધ હશે, તો તમને <ph name="BEGIN_BOLD" />Googleની સેવાઓ અને Chromeમાંથી પણ સાઇન આઉટ<ph name="END_BOLD" /> કરવામાં આવશે.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - નેટવર્ક સાઇન ઇન</translation>
 <translation id="5940385492829620908">તમારું વેબ, બુકમાર્ક્સ અને અન્ય Chrome સામગ્રી અહીં હોય છે.</translation>
 <translation id="5941830788786076944">Google Chrome ને ડિફૉલ્ટ બ્રાઉઝર બનાવો</translation>
@@ -282,6 +284,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8614913330719544658">Google Chrome પ્રતિસાદ આપતું નથી. હવે ફરીથી લોંચ કરીએ?</translation>
 <translation id="861702415419836452">તમારા આસપાસનો 3D નકશો બનાવવા માટે, Chromeને તમારા કૅમેરાના ઍક્સેસની પરવાનગી જરૂરી છે</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 મિનિટમાં ફરીથી લૉન્ચ થશે}one{Chrome # મિનિટમાં ફરીથી લૉન્ચ થશે}other{Chrome # મિનિટમાં ફરીથી લૉન્ચ થશે}}</translation>
+<translation id="8629311577791198377">જ્યારે તમે Chromeની બધી વિન્ડો બંધ કરશો, ત્યારે કુકી અને સાઇટનો ડેટા ઑટોમૅટિક રીતે સાફ થઈ જશે</translation>
 <translation id="8641606876632989680">જ્યારે તમે ચેડાં થયેલા પાસવર્ડ વડે સાઇન ઇન કરશો ત્યારે Chrome તમને સૂચિત કરશે</translation>
 <translation id="8669527147644353129">Google Chrome સહાયક</translation>
 <translation id="8679801911857917785">જ્યારે તમે Chrome શરૂ કરો ત્યારે કયું પૃષ્ઠ બતાવવામાં આવે તે તેનું પણ નિયંત્રણ કરે છે.</translation>

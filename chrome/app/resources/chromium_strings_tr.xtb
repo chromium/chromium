@@ -205,6 +205,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="718435575166326686">Bu site için Chromium'un kamera iznine ihtiyacı var</translation>
 <translation id="7196312274710523067">Chromium başlatılamadı. Tekrar deneyin.</translation>
 <translation id="7197677400338048821">Chromium, şifrelerinizi kontrol edemiyor. 24 saat sonra tekrar deneyin.</translation>
+<translation id="7218568399872925918">Ziyaret ettiğiniz siteler, Chromium'u kapatana kadar bilgilerinizi hatırlar</translation>
 <translation id="7223968959479464213">Görev Yöneticisi - Chromium</translation>
 <translation id="731795002583552498">Chromium güncelleniyor</translation>
 <translation id="7318036098707714271">Tercihler dosyanız bozuk veya geçersiz.
@@ -258,6 +259,8 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8621669128220841554">Yükleme belirtilmeyen bir hata nedeniyle başarısız oldu. Lütfen Chromium'u tekrar indirin.</translation>
 <translation id="8697124171261953979">Ayrıca Chromium'u başlattığınızda veya Çok Amaçlı Adres Çubuğu'ndan arama yaptığınızda gösterilecek sayfayı da denetler.</translation>
 <translation id="8704119203788522458">Bu sizin Chromium'unuz</translation>
+<translation id="8713679423359107094">Tüm Chromium pencerelerini kapattığınızda çerezler ve site verileri otomatik olarak silinir</translation>
+<translation id="8796443464227412154">Chromium'u kapattığınızda <ph name="BEGIN_BOLD" />çoğu sitede oturumunuz kapatılır<ph name="END_BOLD" />. Senkronizasyon kapalıysa <ph name="BEGIN_BOLD" />Google hizmetleri ve Chromium oturumunuz da kapatılır<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium'un bu sitede kameranıza ve mikrofonunuza erişmesi için izin gerekiyor</translation>
 <translation id="8803635938069941624">Chromium OS şartları</translation>
 <translation id="8821041990367117597">Hesap oturum açma ayrıntılarınız güncel olmadığından Chromium, verilerinizi senkronize edemedi.</translation>

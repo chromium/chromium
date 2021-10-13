@@ -307,7 +307,7 @@
 <translation id="1313660246522271310">您將會從所有網站 (包括已開啟的分頁) 登出</translation>
 <translation id="1313705515580255288">系統會將您的書籤、記錄和其他設定與您的 Google 帳戶同步處理。</translation>
 <translation id="1316136264406804862">搜尋中...</translation>
-<translation id="1316248800168909509">無法連線到 <ph name="DEVICE" />，請再試一次。</translation>
+<translation id="1316248800168909509">無法連接 <ph name="DEVICE" />。請再試一次。</translation>
 <translation id="1316495628809031177">已暫停同步處理</translation>
 <translation id="1317637799698924700">您的插座將以 USB-C 兼容模式執行。</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" />子頁面返回掣</translation>
@@ -1189,7 +1189,7 @@
 <translation id="2200356397587687044">Chrome 需要權限才能繼續</translation>
 <translation id="2202898655984161076">列出打印機清單時發生問題，您的部分打印機尚未在 <ph name="CLOUD_PRINT_NAME" /> 完成註冊。</translation>
 <translation id="2203088913459920044">名稱可以使用字母、數字和特殊字元</translation>
-<translation id="220321590587754225">無法連線，請再試一次。</translation>
+<translation id="220321590587754225">無法連接。請再試一次。</translation>
 <translation id="2204034823255629767">讀取及變更您輸入的任何設定</translation>
 <translation id="220858061631308971">請在「<ph name="DEVICE_NAME" />」上輸入以下 PIN：</translation>
 <translation id="2210462644007531147">無法完成安裝</translation>
@@ -4978,7 +4978,7 @@
 <translation id="6263284346895336537">非重要</translation>
 <translation id="6264365405983206840">全部選取(&amp;A)</translation>
 <translation id="6265687851677020761">移除連接埠</translation>
-<translation id="6266532094411434237">正在連線到 <ph name="DEVICE" /></translation>
+<translation id="6266532094411434237">正在連接 <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">請選取您在 <ph name="HOST_NAME" /> 的驗證憑證</translation>
 <translation id="6268252012308737255">使用 <ph name="APP" /> 開啟</translation>
 <translation id="6270391203985052864">網站將可以要求向您傳送通知</translation>

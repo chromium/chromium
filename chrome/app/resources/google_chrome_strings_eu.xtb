@@ -89,6 +89,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3037838751736561277">Google Chrome atzeko planoko moduan dago.</translation>
 <translation id="3059710691562604940">Arakatze segurua desaktibatuta dago. Aktibatzea gomendatzen du Chrome-k.</translation>
 <translation id="3065168410429928842">Chrome fitxa</translation>
+<translation id="3069821012350118710">Bisitatzen dituzun webguneek zure informazioa gogoratzen dute Chrome itxi arte</translation>
 <translation id="3080151273017101988">Mantendu atzeko planoko aplikazioak abian Google Chrome ixten denean</translation>
 <translation id="3089968997497233615">Google Chrome-ren bertsio berriagoa eta seguruagoa erabilgarri dago.</translation>
 <translation id="3100998948628680988">Eman izen bat Chrome-ko profilari</translation>
@@ -192,6 +193,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="5804318322022881572">Ezin izan da abiarazi Chrome. Saiatu berriro.</translation>
 <translation id="5867197326698922595">Pasahitzak editatzen saiatzen ari da Google Chrome.</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>
+<translation id="5901850848447342934"><ph name="BEGIN_BOLD" />Webgune gehienen saioa amaitu egingo da<ph name="END_BOLD" /> Chrome ixtean. Sinkronizazioa desaktibatuta badago, <ph name="BEGIN_BOLD" />Google-ren zerbitzuen eta Chrome-ren saioak ere amaituko<ph name="END_BOLD" /> dira.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Hasi saioa sarean</translation>
 <translation id="5940385492829620908">Zure weba, laster-markak eta Chrome-n dituzun beste gauzak hemen bizi dira.</translation>
 <translation id="5941830788786076944">Ezarri Google Chrome arakatzaile lehenetsi gisa</translation>
@@ -281,6 +283,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="8614913330719544658">Google Chrome-k ez du erantzuten. Berrabiarazi nahi duzu?</translation>
 <translation id="861702415419836452">Chrome-k kamera atzitzeko baimena behar du, ingurunearen hiru dimentsioko mapa bat sortzeko</translation>
 <translation id="8625237574518804553">{0,plural, =1{1 minutu barru berrabiaraziko da Chrome}other{# minutu barru berrabiaraziko da Chrome}}</translation>
+<translation id="8629311577791198377">Chrome-ko leiho guztiak ixten dituzunean, automatikoki garbituko dira cookieak eta webguneetako datuak</translation>
 <translation id="8641606876632989680">Chrome-k jakinarazpen bat bidaliko dizu arriskuan dagoen pasahitz batekin hasten duzunean saioa</translation>
 <translation id="8669527147644353129">Google Chrome laguntzailea</translation>
 <translation id="8679801911857917785">Chrome abiarazten duzunean erakusten den orria ere kontrolatzen du.</translation>

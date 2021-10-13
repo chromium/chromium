@@ -207,6 +207,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="718435575166326686">Chromium bu sayt üçün kamera icazəsi tələb edir</translation>
 <translation id="7196312274710523067">Chromium başlamadı. Yenidən sınayın.</translation>
 <translation id="7197677400338048821">Chromium parollarınızı yoxlaya bilmir. 24 saatdan sonra yenidən cəhd edin.</translation>
+<translation id="7218568399872925918">Ziyarət etdiyiniz saytlar Chromium'u bağlayana qədər məlumatlarınızı xatırlayır</translation>
 <translation id="7223968959479464213">Tapşırıq Meneceri - Chromium</translation>
 <translation id="731795002583552498">Chromium güncəlləşir</translation>
 <translation id="7318036098707714271">Tərcih faylınız zədələnib və ya yanlışdır.  Chromium ayarlarınızı bərpa edə bilmir.</translation>
@@ -258,6 +259,8 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8621669128220841554">Naməlum xəta üzündən quraşdırmaq alınmadı. Chromium'u yenidən endirin.</translation>
 <translation id="8697124171261953979">O, həmçinin Chromium'u başlatdığınız zaman və ya Omnibox'dan axtarış etdiyiniz zaman göstərilən səhifəyə nəzarət edir.</translation>
 <translation id="8704119203788522458">Bu, Sizin Chromium'dur</translation>
+<translation id="8713679423359107094">Bütün Chromium pəncərələrini bağladığınız zaman kukilər və sayt datası avtomatik olaraq silinir</translation>
+<translation id="8796443464227412154">Chromium'u bağladıqda <ph name="BEGIN_BOLD" />əksər saytlardan<ph name="END_BOLD" /> çıxacaqsınız. Sinxronizasiya deaktivdirsə <ph name="BEGIN_BOLD" />Google xidmətlərindən və Chromium'dan da çıxacaqsınız<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium bu sayt üçün kamera və mikrofona giriş icazəsi tələb edir</translation>
 <translation id="8803635938069941624">Chromium OS şərtləri</translation>
 <translation id="8821041990367117597">Chromium datanızı sinxronizasiya edə bilmir, çünki hesaba giriş məlumatlarınız köhnədir.</translation>

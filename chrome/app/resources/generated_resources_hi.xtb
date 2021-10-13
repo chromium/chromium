@@ -305,6 +305,7 @@
 <translation id="1313660246522271310">आप सभी साइटों और खुले हुए टैब से साइन आउट हो जाएंगे</translation>
 <translation id="1313705515580255288">आपके बुकमार्क, इतिहास, और अन्य सेटिंग को आपके Google खाते में समन्वयित किया जाएगा</translation>
 <translation id="1316136264406804862">खोज रहा है...</translation>
+<translation id="1316248800168909509"><ph name="DEVICE" /> से कनेक्ट नहीं किया जा सका. फिर से कोशिश करें.</translation>
 <translation id="1316495628809031177">सिंक रोका हुआ है</translation>
 <translation id="1317637799698924700">आपका डॉकिंग स्टेशन, यूएसबी टाइप-सी पर काम करने वाले मोड पर चलेगा.</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> सबपेज पर वापस जाने का बटन</translation>
@@ -1181,6 +1182,7 @@
 <translation id="2200356397587687044">जारी रखने के लिए Chrome को अनुमति चाहिए</translation>
 <translation id="2202898655984161076">प्रिंटरों को सूचीबद्ध करने में कोई समस्या थी. आपके प्रिंटरों में से कुछ <ph name="CLOUD_PRINT_NAME" /> के साथ सफलतापूर्वक पंजीकृत नहीं हो सके हैं.</translation>
 <translation id="2203088913459920044">नाम में अक्षर, संख्याएं, और विशेष वर्ण इस्तेमाल किए जा सकते हैं</translation>
+<translation id="220321590587754225">कनेक्ट नहीं किया जा सका. फिर से कोशिश करें.</translation>
 <translation id="2204034823255629767">आप जो कुछ भी लिखते हैं उसे पढ़ें और बदलें</translation>
 <translation id="220858061631308971">कृपया इस पिन कोड को "<ph name="DEVICE_NAME" />" पर दर्ज करें:</translation>
 <translation id="2212565012507486665">कुकी की अनुमति दें</translation>
@@ -4930,6 +4932,7 @@
 <translation id="6263284346895336537">महत्वपूर्ण नहीं</translation>
 <translation id="6264365405983206840">&amp;सभी को चुनें</translation>
 <translation id="6265687851677020761">पोर्ट हटाएं</translation>
+<translation id="6266532094411434237"><ph name="DEVICE" /> से कनेक्ट किया जा रहा है</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> पर अपना प्रमाणन करने के लिए किसी प्रमाणपत्र को चुनें</translation>
 <translation id="6268252012308737255"><ph name="APP" /> में खोलें</translation>
 <translation id="6270391203985052864">साइटें आपको सूचनाएं भेजने के लिए पूछ सकती हैं</translation>

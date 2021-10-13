@@ -303,6 +303,7 @@
 <translation id="1313660246522271310">Açıq tablardakılar daxil olmaqla, bütün saytlardan çıxacaqsınız</translation>
 <translation id="1313705515580255288">Əlfəcin, tarixçə və digər ayarlarınız Google Hesabınıza sinxronizasiya olunacaq.</translation>
 <translation id="1316136264406804862">Axtarılır...</translation>
+<translation id="1316248800168909509"><ph name="DEVICE" /> cihazına qoşulmaq alınmadı. Yenə cəhd edin.</translation>
 <translation id="1316495628809031177">Sinxronizasiya dayandırıldı</translation>
 <translation id="1317637799698924700">Dok stansiyası USB Type-C üçün uyğun rejimdə işləyəcək.</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> alt səhifəsinin geri düyməsi</translation>
@@ -1173,6 +1174,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2200356397587687044">Chrome davam etmək üçün icazə tələb edir</translation>
 <translation id="2202898655984161076">Printerlərin siyahısını tərtib edərkən xəta baş verdi. Bəzi printerləriniz <ph name="CLOUD_PRINT_NAME" /> ilə uğurla qeydiyyat olunmayıb..</translation>
 <translation id="2203088913459920044">Adda hərflər, rəqəmlər və xüsusi simvollar ola bilər</translation>
+<translation id="220321590587754225">Qoşulmaq mümkün olmadı. Yenə cəhd edin.</translation>
 <translation id="2204034823255629767">Oxuyun və yazdığınız istənilən şeyi dəyişin</translation>
 <translation id="220858061631308971">Bu PIN kodu "<ph name="DEVICE_NAME" />" cihazına daxil edin:</translation>
 <translation id="2210462644007531147">Quraşdırmanı tamamlamaq alınmadı</translation>
@@ -4954,6 +4956,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6263284346895336537">Əhəmiyyətli deyil</translation>
 <translation id="6264365405983206840">Hamısını seçin</translation>
 <translation id="6265687851677020761">Portu çıxarın</translation>
+<translation id="6266532094411434237"><ph name="DEVICE" /> cihazına qoşulur</translation>
 <translation id="6267166720438879315">Özünüzü <ph name="HOST_NAME" /> üzrə doğrulamaq üçün sertifikat seçin</translation>
 <translation id="6268252012308737255"><ph name="APP" /> ilə açın</translation>
 <translation id="6270391203985052864">Saytlar bildiriş göndərilməsini tələb edə bilər</translation>

@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">વપરાશકર્તા</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે.</translation>
+<translation id="1175951029573070619">સરેરાશ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
 <translation id="1195447618553298278">અજ્ઞાત ભૂલ.</translation>
 <translation id="1204296502688602597">DNS વિલંબતા</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> અને <ph name="SECOND_MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="1726100011689679555">નામ સર્વર</translation>
 <translation id="1731082422893354635">બ્લૂટૂથ ટચપૅડ</translation>
+<translation id="175763766237925754">સારું (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">સ્કૅન કરવાનું કાર્ય રદ કરી રહ્યાં છીએ</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">છોડ્યું</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">નજીકનાં ડિવાઇસ શોધવા માટે Bluetooth ચાલુ કરો</translation>
+<translation id="2346474577291266260">ઉત્તમ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">તપાસ પાર કરી</translation>
 <translation id="2380886658946992094">કાનૂની</translation>
 <translation id="2391082728065870591">પ્રતિસાદ રિપોર્ટ મોકલો</translation>
@@ -342,6 +345,7 @@
 <translation id="6398765197997659313">પૂર્ણ સ્ક્રીનથી બહાર નીકળો</translation>
 <translation id="641081527798843608">વિષય મેળ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">નબળું (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">સરસ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{પેજ ફરીથી સ્કૅન કરીએ?}=1{પેજ {PAGE_NUMBER} ફરીથી સ્કૅન કરીએ?}one{પેજ {PAGE_NUMBER} ફરીથી સ્કૅન કરીએ?}other{પેજ {PAGE_NUMBER} ફરીથી સ્કૅન કરીએ?}}</translation>
 <translation id="6472207088655375767">OTP</translation>

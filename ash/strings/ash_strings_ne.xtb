@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">तपाईंका यन्त्रहरूलाई सँगै प्रयोग गरेमा तिनले अझ राम्रो काम गर्छन्</translation>
 <translation id="1119348796022671382">'थिमको रङ' नामक मोडमा इन्टरफेसको हल्का रङ मिलाउन तपाईंको वालपेपरबाट निकालिएका रङ्गहरू प्रयोग गरिन्छ।</translation>
 <translation id="112308213915226829">तखता स्वत: लुकाउनुहोस्</translation>
+<translation id="1142002900084379065">हालसालै खिचिएका फोटोहरू</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> को जानकारीको डायलग खोल्नुहोस्</translation>
 <translation id="1150989369772528668">पात्रो</translation>
 <translation id="1153356358378277386">कनेक्ट गरिएका डिभाइस</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">फुल स्क्रिन म्याग्निफायर सक्षम पारियो। यसलाई निष्क्रिय पार्न फेरि Ctrl+Search+M थिच्नुहोस्।</translation>
 <translation id="2302092602801625023">यो खाता Family Link मार्फत व्यवस्थित गरिन्छ</translation>
 <translation id="2303600792989757991">सञ्झ्याल सिंहावलोकन टगल गर्नुहोस्</translation>
+<translation id="2318576281648121272">आज <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">कर्सरलाई एक अक्षर पछाडि लैजानुहोस्</translation>
 <translation id="2339073806695260576">टिपोट गर्न, स्क्रिनसट खिच्न, लेजर पोइन्टर वा म्याग्निफाइङ्ग ग्लासको प्रयोग गर्न सेल्फमा रहेको स्टाइलस बटनमा ट्याप गर्नुहोस्।</translation>
 <translation id="2341729377289034582">ठाडो अवस्थामा लक गरियो</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
 <translation id="24452542372838207">सूचना विस्तृत गर्नुहोस्‌</translation>
 <translation id="2450205753526923158">स्क्रिनसट मोड</translation>
+<translation id="2456008742792828469">पात्रो, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">रिजोल्युसन पुष्टि गर्नुहोस्</translation>
 <translation id="2475982808118771221">त्रुटि भयो</translation>
 <translation id="2482878487686419369">सूचनाहरू</translation>
@@ -278,6 +281,7 @@
 <translation id="3100274880412651815">क्याप्चर मोड खारेज गर्नुहोस्</translation>
 <translation id="3105917916468784889">स्क्रिनसट लिनुहोस्</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ब्लुटूथ)</translation>
+<translation id="3113926042639749131">सुझाव हटाउनुहोस्</translation>
 <translation id="3126069444801937830">अपडेट गर्न पुनः सुरु गर्नुहोस्</translation>
 <translation id="3139942575505304791">डेस्क १</translation>
 <translation id="315116470104423982">मोबाइल डाटा</translation>
@@ -503,6 +507,7 @@
 <translation id="4642092649622328492">आंशिक स्क्रिनसट लिनुहोस्</translation>
 <translation id="4659419629803378708">ChromeVox सक्षम पारियो</translation>
 <translation id="4665114317261903604">बाधा नपुर्‍याउनुहोस् नामक मोड टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081"><ph name="FILENAME" /> डाउनलोड गरिँदै छ</translation>
 <translation id="4696813013609194136">अभिभावकको कोडमार्फत डिभाइस अनलक गर्नुहोस्</translation>
 <translation id="4702647871202761252">गोपनीयताको स्क्रिन निष्क्रिय छ</translation>
 <translation id="4731797938093519117">अभिभावकको पहुँच</translation>
@@ -639,6 +644,7 @@
 <translation id="5744083938413354016">ड्र्याग गर्ने विकल्पमा ट्याप गर्नुहोस्</translation>
 <translation id="5745612484876805746">रात्रि प्रकाश सूर्यास्तको बेला स्वतः सक्रिय हुन्छ</translation>
 <translation id="5750765938512549687">ब्लुटुथ निष्क्रिय छ</translation>
+<translation id="576341972084747908">तपाईं <ph name="FILENAME" /> नामक जोखिमपूर्ण फाइल डाउनलोड गर्दै हुनुहुन्छ</translation>
 <translation id="576453121877257266">रात्रि प्रकाश सक्रिय छ।</translation>
 <translation id="5769373120130404283">गोपनीयताको स्क्रिन</translation>
 <translation id="5777841717266010279">स्क्रिन साझा गर्ने रोक्ने?</translation>
@@ -777,6 +783,7 @@
 <translation id="6852052252232534364">सक्रिय गर्न क्लिक गर्नुहोस्</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकेन्ड</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{एउटा अङ्क बाँकी छ}other{# वटा अङ्क बाँकी छन्}}</translation>
+<translation id="6867938213751067702"><ph name="FILENAME" /> डाउनलोड गर्ने कार्य केही समयका लागि रोकिएको छ</translation>
 <translation id="6878400149835617132">सर्टकट निष्क्रिय पारियो</translation>
 <translation id="6886172995547742638">तपाईंको <ph name="DEVICE_TYPE" /> को कार्यक्षमता घट्न सक्छ। <ph name="PREFERRED_MINIMUM_POWER" />W वा सोभन्दा बढी क्षमताको आधिकारिक USB-C पावर एड्याप्टर प्रयोग गर्नुहोस्।</translation>
 <translation id="688631446150864480">एउटा विन्डोबाट अर्को विन्डोमा जान डाउन एरो की थिच्नुहोस्</translation>

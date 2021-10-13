@@ -406,6 +406,7 @@
 <translation id="2241693394036365668">फ़ाइल डाउनलोड की गई</translation>
 <translation id="2248949050832152960">WebAuthn का इस्तेमाल करें</translation>
 <translation id="2250931979407627383">बाईं ओर एज़ स्टिच</translation>
+<translation id="2251943122176102076">गोपनीय कॉन्टेंट कैप्चर किए जाने की वजह से, एडमिन स्क्रीनशॉट लेने या रिकॉर्डिंग करने का सुझाव नहीं देता है:</translation>
 <translation id="225207911366869382">यह मान इस नीति के लिए हटा दिया गया है.</translation>
 <translation id="2258928405015593961">खत्म हाेने की तारीख डालें और फिर से काेशिश करें</translation>
 <translation id="225943865679747347">गड़बड़ी कोड: <ph name="ERROR_CODE" /></translation>
@@ -1195,6 +1196,7 @@
           <ph name="LIST_ITEM" />इंटरनेट सेवा देने वाली कंपनियां, वेब ट्रैफ़िक की निगरानी कर सकती हैं<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">सुरक्षा चेतावनियां चालू करें</translation>
+<translation id="4834718916855725099">स्क्रीन पर गोपनीय कॉन्टेंट होने की वजह से, एडमिन स्क्रीनशॉट लेने या रिकॉर्डिंग करने का सुझाव नहीं देता है:</translation>
 <translation id="4838327282952368871">ख्वाब जैसा</translation>
 <translation id="4840250757394056958">अपना 'Chrome इतिहास' देखें</translation>
 <translation id="484462545196658690">ऑटो</translation>

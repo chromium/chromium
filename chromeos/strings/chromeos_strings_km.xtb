@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">អ្នកប្រើ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> នេះស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="MANAGER" />។</translation>
+<translation id="1175951029573070619">មធ្យម (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ដកចេញ</translation>
 <translation id="1195447618553298278">កំហុសឆ្គងមិនស្គាល់។</translation>
 <translation id="1204296502688602597">ការពន្យារ DNS</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422">ស្ថិតក្រោមការគ្រប់គ្រងរបស់ <ph name="FIRST_MANAGER" /> និង <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">ដាក់​ឈ្មោះ​ឲ្យ​ម៉ាស៊ីន​មេ</translation>
 <translation id="1731082422893354635">ផ្ទាំងប៉ះ​ប៊្លូធូស</translation>
+<translation id="175763766237925754">ល្អ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">កំពុងបោះបង់ការស្កេន</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">បានរំលង</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">បើកប៊្លូធូស​ដើម្បី​ស្វែងរក​ឧបករណ៍​ដែល​នៅជិត</translation>
+<translation id="2346474577291266260">ល្អប្រសើរ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">ជាប់</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ផ្ញើ​របាយការណ៍អំពីមតិកែលម្អ</translation>
@@ -342,6 +345,7 @@
 <translation id="6398765197997659313">ចាកចេញពីអេក្រង់ពេញ</translation>
 <translation id="641081527798843608">ប្រធានបទ​ត្រូវគ្នា</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">ខ្សោយ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">ល្អ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ស្កេនទំព័រ​ឡើងវិញឬ?}=1{ស្កេនទំព័រទី {PAGE_NUMBER} ឡើងវិញឬ?}other{ស្កេនទំព័រទី {PAGE_NUMBER} ឡើងវិញឬ?}}</translation>
 <translation id="6472207088655375767">OTP</translation>

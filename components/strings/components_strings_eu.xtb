@@ -401,6 +401,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2241693394036365668">Fitxategi bat deskargatu da</translation>
 <translation id="2248949050832152960">Erabili WebAuthn</translation>
 <translation id="2250931979407627383">Ezkerreko ertza josita</translation>
+<translation id="2251943122176102076">Administratzaileak ez du gomendatzen pantaila-argazkirik edo -grabaketarik egitea, isilpeko edukia kapturatu delako:</translation>
 <translation id="225207911366869382">Balioa zaharregia da gidalerro honetarako.</translation>
 <translation id="2258928405015593961">Idatzi etorkizuneko iraungitze-data bat eta saiatu berriro</translation>
 <translation id="225943865679747347">Errore-kodea: <ph name="ERROR_CODE" /></translation>
@@ -1182,6 +1183,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
           <ph name="LIST_ITEM" />Baliteke Interneteko zerbitzu-hornitzaileek sareko trafikoa gainbegiratzea.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Aktibatu abisuak</translation>
+<translation id="4834718916855725099">Administratzaileak ez du gomendatzen pantaila-argazkirik edo -grabaketarik egitea, pantailan isilpeko edukia dagoelako:</translation>
 <translation id="4838327282952368871">Ametsezkoa</translation>
 <translation id="4840250757394056958">Ikusi Chrome-ko historia</translation>
 <translation id="484462545196658690">Automatikoa</translation>

@@ -407,6 +407,7 @@
 <translation id="2241693394036365668">ફાઇલ ડાઉનલોડ કરવામાં આવે ત્યારે</translation>
 <translation id="2248949050832152960">WebAuthnનો ઉપયોગ કરો</translation>
 <translation id="2250931979407627383">ડાબી બાજુએ કિનારી જોડવી</translation>
+<translation id="2251943122176102076">ગોપનીય કન્ટેન્ટ કૅપ્ચર થયું હોવાને કારણે વ્યવસ્થાપક, સ્ક્રીનશૉટ લેવાનો કે રેકોર્ડિંગ કરવાનો સુઝાવ આપતા નથી:</translation>
 <translation id="225207911366869382">આ પૉલિસી માટે આ મૂલ્યને નાપસંદ કરેલું છે.</translation>
 <translation id="2258928405015593961">ભવિષ્યની સમાપ્તિ તારીખ દાખલ કરો અને ફરી પ્રયાસ કરો</translation>
 <translation id="225943865679747347">ભૂલ કોડ: <ph name="ERROR_CODE" /></translation>
@@ -1199,6 +1200,7 @@
           <ph name="LIST_ITEM" />ઇન્ટરનેટ સેવા આપનાર કંપની વેબ ટ્રાફિક મૉનિટર કરી શકે છે<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">ચેતવણીઓ ચાલુ કરો</translation>
+<translation id="4834718916855725099">સ્ક્રીન પર ગોપનીય કન્ટેન્ટ હોવાને કારણે વ્યવસ્થાપક, સ્ક્રીનશૉટ લેવાનો કે રેકોર્ડિંગ કરવાનો સુઝાવ આપતા નથી:</translation>
 <translation id="4838327282952368871">સ્વપ્નશીલ</translation>
 <translation id="4840250757394056958">તમારો Chrome ઇતિહાસ જુઓ</translation>
 <translation id="484462545196658690">ઑટો</translation>

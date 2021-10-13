@@ -306,6 +306,7 @@
 <translation id="1313660246522271310">ખુલ્લી હોય તે ટૅબ સહિત, બધી સાઇટમાંથી તમને સાઇન આઉટ કરવામાં આવશે</translation>
 <translation id="1313705515580255288">તમારા બુકમાર્ક, ઇતિહાસ અને બીજા સેટિંગ તમારા Google એકાઉન્ટ સાથે સિંક કરવામાં આવશે.</translation>
 <translation id="1316136264406804862">શોધી રહ્યું છે ...</translation>
+<translation id="1316248800168909509"><ph name="DEVICE" /> સાથે કનેક્ટ શક્યા નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="1316495628809031177">સિંક થોભાવ્યું છે</translation>
 <translation id="1317637799698924700">તમારું ડૉકિંગ સ્ટેશન USB Type-C સુસંગત મોડમાં ઑપરેટ થશે.</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> સબપેજનું પાછળ જવા માટેનું બટન</translation>
@@ -1174,6 +1175,7 @@
 <translation id="2200356397587687044">Chromeને આગળ વધવા મંજૂરીની જરૂર છે</translation>
 <translation id="2202898655984161076">પિંટર્સની સૂચિ બનાવવામાં સમસ્યા આવી. તમારા કેટલાક પ્રિંટર્સ<ph name="CLOUD_PRINT_NAME" /> સાથે સફળતાપૂર્વક નોંધાઈ શક્યા નથી.</translation>
 <translation id="2203088913459920044">નામમાં અક્ષર, સંખ્યા અને વિશેષ વર્ણનો ઉપયોગ થઈ શકે છે</translation>
+<translation id="220321590587754225">કનેક્ટ કરી શકાયું નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="2204034823255629767">તમે જે કંઈ લખો છો તેને વાંચો અને બદલો</translation>
 <translation id="220858061631308971">કૃપા કરીને "<ph name="DEVICE_NAME" />" પર આ પિન કોડ દાખલ કરો:</translation>
 <translation id="2210462644007531147">ઇન્સ્ટૉલેશન પૂર્ણ કરી શકાયું નથી</translation>
@@ -4960,6 +4962,7 @@ USB ડિવાઇસ</translation>
 <translation id="6263284346895336537">મહત્વપૂર્ણ નથી</translation>
 <translation id="6264365405983206840">&amp;બધા પસંદ કરો</translation>
 <translation id="6265687851677020761">પોર્ટ કાઢી નાખો</translation>
+<translation id="6266532094411434237"><ph name="DEVICE" />થી કનેક્ટ કરી રહ્યાં છીએ</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> પર પોતાને પ્રમાણિત કરવા માટે એક પ્રમાણપત્ર પસંદ કરો</translation>
 <translation id="6268252012308737255"><ph name="APP" /> સાથે ખોલો</translation>
 <translation id="6270391203985052864">સાઇટ તમને નોટિફિકેશન મોકલવા માટે પૂછી શકે છે</translation>
