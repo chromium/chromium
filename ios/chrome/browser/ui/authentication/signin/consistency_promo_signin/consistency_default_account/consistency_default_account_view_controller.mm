@@ -164,8 +164,6 @@ constexpr CGFloat kContentSpacing = 16.;
   // Add IdentityButtonControl for the default identity.
   self.identityButtonControl =
       [[IdentityButtonControl alloc] initWithFrame:CGRectZero];
-  self.identityButtonControl.backgroundColor =
-      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   self.identityButtonControl.arrowDirection = IdentityButtonControlArrowRight;
   self.identityButtonControl.identityViewStyle = IdentityViewStyleConsistency;
   [self.identityButtonControl addTarget:self
