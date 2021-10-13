@@ -179,7 +179,7 @@ void ZeroStateFileProvider::AppendFakeSearchResults(Results* results) {
         base::FilePath(FILE_PATH_LITERAL(
             base::StrCat({"Fake-file-", base::NumberToString(i), ".png"}))),
         ash::AppListSearchResultType::kFileChip,
-        ash::SearchResultDisplayType::kChip, 0.1f, profile_));
+        ash::SearchResultDisplayType::kContinue, 0.1f, profile_));
   }
 }
 

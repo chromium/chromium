@@ -34,9 +34,7 @@ void AddSearchResult(const std::string& id, AppListSearchResultType type) {
   auto result = std::make_unique<TestSearchResult>();
   result->set_result_id(id);
   result->set_result_type(type);
-  // TODO(crbug.com/1216662): Replace with a real display type after the ML team
-  // gives us a way to query directly for recent apps.
-  result->set_display_type(SearchResultDisplayType::kChip);
+  result->set_display_type(SearchResultDisplayType::kContinue);
   Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
       std::move(result));
 }
@@ -97,20 +95,6 @@ TEST_F(ContinueSectionViewTest, CreatesViewsForTasks) {
 
   ContinueSectionView* view = GetContinueSectionView();
   EXPECT_EQ(view->GetTasksSuggestionsCount(), 2u);
-}
-
-TEST_F(ContinueSectionViewTest, DoesNotCreateViewsForNonTasks) {
-  AddSearchResult("id1", AppListSearchResultType::kInstalledApp);
-  AddSearchResult("id2", AppListSearchResultType::kPlayStoreApp);
-  AddSearchResult("id3", AppListSearchResultType::kInstantApp);
-  AddSearchResult("id4", AppListSearchResultType::kInternalApp);
-  AddSearchResult("id5", AppListSearchResultType::kAnswerCard);
-  AddSearchResult("id6", AppListSearchResultType::kAssistantText);
-
-  ShowAppList();
-
-  ContinueSectionView* view = GetContinueSectionView();
-  EXPECT_EQ(view->GetTasksSuggestionsCount(), 0u);
 }
 
 TEST_F(ContinueSectionViewTest, VerifyAddedViewsOrder) {

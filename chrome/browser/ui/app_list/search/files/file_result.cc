@@ -149,6 +149,7 @@ FileResult::FileResult(const std::string& schema,
                                ash::ColorProvider::Get()->IsDarkModeEnabled();
   switch (display_type) {
     case DisplayType::kChip:
+    case DisplayType::kContinue:
       SetChipIcon(ash::GetChipIconForPath(filepath, dark_background));
       break;
     case DisplayType::kList:
