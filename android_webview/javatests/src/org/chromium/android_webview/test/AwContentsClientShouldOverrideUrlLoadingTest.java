@@ -8,7 +8,6 @@ import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_T
 import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
 
 import android.annotation.SuppressLint;
-import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
 
@@ -30,7 +29,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHistory;
@@ -989,7 +987,6 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q, message = "https://crbug.com/1255944")
     public void testNullContentsClientOpenAboutUrlInWebView() throws Throwable {
         try {
             // If there's a bug in WebView, this may fire real intents through the test activity.
@@ -1010,7 +1007,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
 
             // Clicking on an about:blank link should always navigate to the page directly
             int currentCallCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
-            DOMUtils.clickNode(mAwContents.getWebContents(), "link");
+            JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "link");
             mContentsClient.getOnPageFinishedHelper().waitForCallback(
                     currentCallCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
@@ -1024,7 +1021,6 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q, message = "https://crbug.com/1255944")
     public void testNullContentsClientOpenLink() throws Throwable {
         try {
             // The test will fire real intents through the test activity.
@@ -1052,7 +1048,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
             Assert.assertNull(mActivityTestRule.getActivity().getLastSentIntent());
 
             // Clicking on a link should create an intent.
-            DOMUtils.clickNode(mAwContents.getWebContents(), "link");
+            JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "link");
             mActivityTestRule.pollUiThread(
                     () -> mActivityTestRule.getActivity().getLastSentIntent() != null);
             Assert.assertEquals(testUrl,
