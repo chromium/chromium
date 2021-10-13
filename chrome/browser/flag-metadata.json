@@ -1824,6 +1824,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "enable-device-trust-connector",
+    "owners": [ "rogerta", "seblalancette" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-disco-feed-endpoint",
     "owners": [ "adamta", "sczs" ],
     "expiry_milestone": 101
