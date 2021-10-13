@@ -5,6 +5,7 @@
 #include "chromeos/components/projector_app/projector_message_handler.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "base/bind.h"
@@ -13,11 +14,13 @@
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "content/public/browser/web_ui.h"
+#include "url/gurl.h"
 
 namespace chromeos {
 
 namespace {
 
+// Response keys.
 constexpr char kUserName[] = "name";
 constexpr char kUserEmail[] = "email";
 constexpr char kUserPictureURL[] = "pictureURL";
@@ -26,6 +29,11 @@ constexpr char kToken[] = "token";
 constexpr char kExpirationTime[] = "expirationTime";
 constexpr char kError[] = "error";
 constexpr char kOAuthTokenInfo[] = "oauthTokenInfo";
+constexpr char kXhrSuccess[] = "success";
+constexpr char kXhrResponseBody[] = "response";
+constexpr char kXhrError[] = "error";
+
+// Projector Error Strings.
 constexpr char kNoneStr[] = "NONE";
 constexpr char kOtherStr[] = "OTHER";
 constexpr char kTokenFetchFailureStr[] = "TOKEN_FETCH_FAILURE";
@@ -51,7 +59,9 @@ std::string ProjectorErrorToString(ProjectorError mode) {
 }  // namespace
 
 ProjectorMessageHandler::ProjectorMessageHandler()
-    : content::WebUIMessageHandler() {
+    : content::WebUIMessageHandler(),
+      xhr_sender_(std::make_unique<ProjectorXhrSender>(
+          chromeos::ProjectorAppClient::Get()->GetUrlLoaderFactory())) {
   ProjectorAppClient::Get()->AddObserver(this);
 }
 
@@ -85,6 +95,10 @@ void ProjectorMessageHandler::RegisterMessages() {
 
   web_ui()->RegisterDeprecatedMessageCallback(
       "onError", base::BindRepeating(&ProjectorMessageHandler::OnError,
+                                     base::Unretained(this)));
+
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "sendXhr", base::BindRepeating(&ProjectorMessageHandler::SendXhr,
                                      base::Unretained(this)));
 }
 
@@ -177,6 +191,34 @@ void ProjectorMessageHandler::GetOAuthTokenForAccount(
                      GetWeakPtr(), oauth_token_fetch_callback));
 }
 
+void ProjectorMessageHandler::SendXhr(const base::ListValue* args) {
+  // Two arguments. The first is callback id, and the second is the list
+  // containing function arguments for making the request.
+  DCHECK_EQ(args->GetList().size(), 2u);
+  const auto& callback_id = args->GetList()[0].GetString();
+
+  const auto& func_args = args->GetList()[1].GetList();
+  // Four function arguments:
+  // 1. The request URL.
+  // 2. The request method, for example: GET
+  // 3. The request body data.
+  // 4. A bool to indicate whether or not to use end user credential to
+  // authorize the request.
+  DCHECK_EQ(func_args.size(), 4u);
+
+  const auto& url = func_args[0].GetString();
+  const auto& method = func_args[1].GetString();
+  std::string request_body = func_args[2].GetString();
+  bool use_credentials = func_args[3].GetBool();
+  DCHECK(!url.empty());
+  DCHECK(!method.empty());
+
+  xhr_sender_->Send(
+      GURL(url), method, request_body, use_credentials,
+      base::BindOnce(&ProjectorMessageHandler::OnXhrRequestCompleted,
+                     GetWeakPtr(), callback_id));
+}
+
 void ProjectorMessageHandler::OnError(const base::ListValue* args) {
   // TODO(b/195113693): Get the SWA dialog associated with this WebUI and close
   // it.
@@ -201,8 +243,22 @@ void ProjectorMessageHandler::OnAccessTokenRequestCompleted(
     response.SetKey(kOAuthTokenInfo, AccessTokenInfoToValue(info));
   }
 
-  ResolveJavascriptCallback(base::Value(std::move(js_callback_id)),
-                            std::move(response));
+  ResolveJavascriptCallback(base::Value(js_callback_id), std::move(response));
+}
+
+void ProjectorMessageHandler::OnXhrRequestCompleted(
+    const std::string& js_callback_id,
+    bool success,
+    const std::string& response_body,
+    const std::string& error) {
+  AllowJavascript();
+
+  base::Value response(base::Value::Type::DICTIONARY);
+  response.SetBoolKey(kXhrSuccess, success);
+  response.SetStringKey(kXhrResponseBody, response_body);
+  response.SetStringKey(kXhrError, error);
+
+  ResolveJavascriptCallback(base::Value(js_callback_id), std::move(response));
 }
 
 }  // namespace chromeos

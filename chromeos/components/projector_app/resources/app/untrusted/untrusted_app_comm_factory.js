@@ -89,16 +89,13 @@ const CLIENT_DELEGATE = {
    * @param {string} method the request method.
    * @param {string=} requestBody the request body data.
    * @param {boolean=} useCredentials authorize the request with end user
-   *  credentials. Used for getting streaming URL.
+   *     credentials. Used for getting streaming URL.
    * @return {!Promise<!projectorApp.XhrResponse>}
    */
-  sendXhr (url, method, requestBody, useCredentials) {
-    // TODO(b/202074799): Wired this up with ProjectorMessageHandler.
-    return Promise.resolve({
-      success: true,
-      response: '',
-      error: ''
-    });
+  sendXhr(url, method, requestBody, useCredentials) {
+    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+        'sendXhr',
+        [url, method, requestBody ? requestBody : '', !!useCredentials]);
   },
 }
 

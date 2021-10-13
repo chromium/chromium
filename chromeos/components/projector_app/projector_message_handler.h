@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "chromeos/components/projector_app/projector_app_client.h"
 #include "chromeos/components/projector_app/projector_oauth_token_fetcher.h"
+#include "chromeos/components/projector_app/projector_xhr_sender.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
@@ -66,6 +67,9 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   // account email provided in the `args`.
   void GetOAuthTokenForAccount(const base::ListValue* args);
 
+  // Requested by the Projector SWA to send XHR request.
+  void SendXhr(const base::ListValue* args);
+
   // Called by the Projector SWA when an error occurred.
   void OnError(const base::ListValue* args);
 
@@ -78,7 +82,15 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
                                      GoogleServiceAuthError error,
                                      const signin::AccessTokenInfo& info);
 
+  // Called when the XHR request is completed. Resolves the javascript promise
+  // created by ProjectorBrowserProxy.sendXhr by calling the `js_callback_id`.
+  void OnXhrRequestCompleted(const std::string& js_callback_id,
+                             bool success,
+                             const std::string& response_body,
+                             const std::string& error);
+
   ProjectorOAuthTokenFetcher oauth_token_fetcher_;
+  std::unique_ptr<ProjectorXhrSender> xhr_sender_;
 
   base::WeakPtrFactory<ProjectorMessageHandler> weak_ptr_factory_{this};
 };

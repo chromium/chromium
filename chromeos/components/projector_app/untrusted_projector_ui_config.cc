@@ -47,8 +47,18 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
       "script-src 'self';");
 
   source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ImgSrc,
+      // Allows loading video file thumbnail.
+      "img-src https://*.googleusercontent.com;");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::MediaSrc,
+      // Allows streaming video.
+      "media-src https://*.drive.google.com;");
+
+  source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ConnectSrc,
-      "connect-src 'self' https://www.googleapis.com;");
+      "connect-src 'self' https://www.googleapis.com "
+      "https://drive.google.com;");
 
   // TODO(b/197120695): re-enable trusted type after fixing the issue that icon
   // template is setting innerHTML.
