@@ -753,16 +753,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
-// Disabled due to test failure. http://crbug.com/1249355
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_OfflineSetupFlowErrorPowerwashRequired \
-  DISABLED_OfflineSetupFlowErrorPowerwashRequired
-#else
-#define MAYBE_OfflineSetupFlowErrorPowerwashRequired \
-  OfflineSetupFlowErrorPowerwashRequired
-#endif
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       MAYBE_OfflineSetupFlowErrorPowerwashRequired) {
+                       OfflineSetupFlowErrorPowerwashRequired) {
   // Simulate offline setup failure.
   enrollment_helper_.ExpectOfflineEnrollmentError(
       policy::EnrollmentStatus::ForLockError(
@@ -860,13 +852,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   test::WaitForEulaScreen();
 }
 
-// Disabled due to test failure. http://crbug.com/1249355
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_BackOnNetworkScreen DISABLED_BackOnNetworkScreen
-#else
-#define MAYBE_BackOnNetworkScreen BackOnNetworkScreen
-#endif
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_BackOnNetworkScreen) {
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnNetworkScreen) {
   SimulateNetworkConnected();
   TriggerDemoModeOnWelcomeScreen();
   test::OobeJS().ClickOnPath(kDemoPreferencesNext);
@@ -967,16 +953,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_RetryOnErrorScreen) {
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
-// Disabled due to test failure. http://crbug.com/1249355
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_ShowOfflineSetupOptionOnNetworkList \
-  DISABLED_ShowOfflineSetupOptionOnNetworkList
-#else
-#define MAYBE_ShowOfflineSetupOptionOnNetworkList \
-  ShowOfflineSetupOptionOnNetworkList
-#endif
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       MAYBE_ShowOfflineSetupOptionOnNetworkList) {
+                       ShowOfflineSetupOptionOnNetworkList) {
   TriggerDemoModeOnWelcomeScreen();
 
   SimulateOfflineEnvironment();
