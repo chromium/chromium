@@ -91,7 +91,7 @@ public final class LaunchTest {
      * 2) That no activities have been enabled/disabled.
      */
     @Test
-    @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
+    @Config(sdk = Build.VERSION_CODES.M)
     public void testDeepLinkPreN() {
         registerWebApk(true /* isNewStyleWebApk */);
 
@@ -424,7 +424,7 @@ public final class LaunchTest {
      * - Android API level < N
      */
     @Test
-    @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
+    @Config(sdk = Build.VERSION_CODES.M)
     public void testCheckH2OOpaqueMainActivityEnabledPreN() {
         changeWebApkActivityEnabledSetting(mPackageManager, H2OOpaqueMainActivity.class,
                 PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
@@ -441,7 +441,7 @@ public final class LaunchTest {
      * - Android API level < N
      */
     @Test
-    @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
+    @Config(sdk = Build.VERSION_CODES.M)
     public void testCheckH2oMainActivityEnabledPreN() {
         changeWebApkActivityEnabledSetting(mPackageManager, H2OMainActivity.class,
                 PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
@@ -548,7 +548,7 @@ public final class LaunchTest {
 
     /** Tests that we do not attempt to add a shortcut on Android versions lower than N. */
     @Test
-    @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
+    @Config(sdk = Build.VERSION_CODES.M)
     public void testDoesNotAddSiteSettingsWhenSdkLow() {
         registerApkForSiteSettings(true /*enableInMetadata*/, true /*addCategory*/);
 

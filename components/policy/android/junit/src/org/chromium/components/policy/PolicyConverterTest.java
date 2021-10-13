@@ -24,7 +24,7 @@ import org.chromium.base.test.util.JniMocker;
  * Robolectric test for AbstractAppRestrictionsProvider.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.LOLLIPOP)
+@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.M)
 public class PolicyConverterTest {
     @Rule
     public JniMocker mocker = new JniMocker();

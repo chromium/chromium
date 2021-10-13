@@ -1535,7 +1535,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/robolectric',
-              'version': 'iC6RDM5EH3GEAzR-1shW_Mg0FeeNE5shq1okkFfuuNQC',
+              'version': 'Kdd6dNFAKqj9g9Bsfo2z1zQr52Vk60EL_wb9Bf2c8rcC',
           },
       ],
       'condition': 'checkout_android',
