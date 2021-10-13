@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/network_card.js';
 
-import {fakeCellularDisabledNetwork, fakeCellularNetwork, fakeCellularWithIpConfigNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled, fakeWifiNetworkInvalidNameServers, fakeWifiNetworkNoIpAddress} from 'chrome://diagnostics/fake_data.js';
+import {fakeCellularDisabledNetwork, fakeCellularDisconnectedNetwork, fakeCellularNetwork, fakeCellularWithIpConfigNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled, fakeWifiNetworkInvalidNameServers, fakeWifiNetworkNoIpAddress} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -62,6 +62,8 @@ export function networkCardTestSuite() {
         'cellularWithIpConfigGuid', [fakeCellularWithIpConfigNetwork]);
     provider.setFakeNetworkState(
         'cellularDisabledGuid', [fakeCellularDisabledNetwork]);
+    provider.setFakeNetworkState(
+        'cellularDisconnectedGuid', [fakeCellularDisconnectedNetwork]);
     // Add the network info to the DOM.
     networkCardElement = /** @type {!NetworkCardElement} */ (
         document.createElement('network-card'));
@@ -204,12 +206,19 @@ export function networkCardTestSuite() {
   });
 
   test('WifiDisconnectedShowTroubleShooting', () => {
+    const networkType = 'Wi-Fi';
     return initializeNetworkCard('wifiDisconnectedGuid').then(() => {
       dx_utils.assertElementContainsText(
-          networkCardElement.$$('#cardTitle'), 'Wi-Fi');
+          networkCardElement.$$('#cardTitle'), networkType);
       assertTrue(isVisible(getTroubleConnectingElement()));
       assertFalse(isVisible(getNetworkInfoElement()));
       assertFalse(isVisible(getIpConfigDrawerElement()));
+      assertEquals(
+          networkCardElement.i18n('troubleshootingText', networkType),
+          getTroubleshootingHeader());
+      assertEquals(
+          networkCardElement.i18n('troubleConnecting'),
+          getTroubleshootingLinkText());
     });
   });
 
@@ -238,13 +247,20 @@ export function networkCardTestSuite() {
   });
 
   test('EthernetDisconnectedShowTroubleShooting', () => {
+    const networkType = 'Ethernet';
     return initializeNetworkCard('ethernetDisconnectedGuid').then(() => {
       dx_utils.assertElementContainsText(
-          networkCardElement.$$('#cardTitle'), 'Ethernet');
+          networkCardElement.$$('#cardTitle'), networkType);
       assertTrue(isVisible(getNetworkIcon()));
       assertTrue(isVisible(getTroubleConnectingElement()));
       assertFalse(isVisible(getNetworkInfoElement()));
       assertFalse(isVisible(getIpConfigDrawerElement()));
+      assertEquals(
+          networkCardElement.i18n('troubleshootingText', networkType),
+          getTroubleshootingHeader());
+      assertEquals(
+          networkCardElement.i18n('troubleConnecting'),
+          getTroubleshootingLinkText());
     });
   });
 
@@ -346,6 +362,23 @@ export function networkCardTestSuite() {
       assertFalse(isVisible(getIpConfigDrawerElement()));
       assertEquals(
           networkCardElement.i18n('reconnectLinkText'),
+          getTroubleshootingLinkText());
+    });
+  });
+
+  test('CardTitleCellularDisconnectedInitializedCorrectly', () => {
+    const networkType = 'Mobile data';
+    return initializeNetworkCard('cellularDisconnectedGuid').then(() => {
+      dx_utils.assertElementContainsText(
+          networkCardElement.$$('#cardTitle'), networkType);
+      assertTrue(isVisible(getTroubleConnectingElement()));
+      assertFalse(isVisible(getNetworkInfoElement()));
+      assertFalse(isVisible(getIpConfigDrawerElement()));
+      assertEquals(
+          networkCardElement.i18n('troubleshootingText', networkType),
+          getTroubleshootingHeader());
+      assertEquals(
+          networkCardElement.i18n('troubleConnecting'),
           getTroubleshootingLinkText());
     });
   });

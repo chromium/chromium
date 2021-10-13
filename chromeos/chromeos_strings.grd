@@ -972,10 +972,10 @@ Try tapping the mic to ask me anything.
         For more accurate results, close all apps until the test is complete.
       </message>
       <message name="IDS_DIAGNOSTICS_TROUBLE_CONNECTING" desc="The label for the text link that leads to a help support article to learn more about connecting to Ethernet networks.">
-        Having trouble connecting?
+        Try troubleshooting steps
       </message>
       <message name="IDS_DIAGNOSTICS_TROUBLESHOOTING_TEXT" desc="The label for the text displayed when an internet network is not in a connected or connecting state.">
-        No <ph name="NETWORK_NAME">$1<ex>Ethernet</ex></ph> connection detected
+        No <ph name="NETWORK_NAME">$1<ex>Ethernet</ex></ph> network available
       </message>
       <message name="IDS_DIAGNOSTICS_SYSTEM" desc="The label for the system navigation panel item.">
         System

@@ -611,6 +611,15 @@ export let fakeCellularDisabledNetwork = {
   macAddress: '85:C5:A6:30:3F:31',
 };
 
+/** @type {!Network} */
+export let fakeCellularDisconnectedNetwork = {
+  state: NetworkState.kNotConnected,
+  type: NetworkType.kCellular,
+  observerGuid: 'cellularDisconnectedGuid',
+  name: 'cellularName',
+  macAddress: '85:C5:A6:30:3F:31',
+};
+
 /** @type {!Array<!KeyboardInfo>} */
 export let fakeKeyboards = [
   {
