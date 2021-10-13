@@ -661,9 +661,10 @@ FUCHSIA_PERF_FYI = PerfPlatform('fuchsia-perf-fyi',
 LINUX_PERF_CALIBRATION = PerfPlatform(
     'linux-perf-calibration',
     'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
-    _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS,
+    _LINUX_BENCHMARK_CONFIGS,
     28,
     'linux',
+    executables=_LINUX_EXECUTABLE_CONFIGS,
     is_calibration=True)
 
 ANDROID_PIXEL2_PERF_CALIBRATION = PerfPlatform(
