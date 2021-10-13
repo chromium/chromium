@@ -930,8 +930,6 @@ void CreditCardAccessManager::FetchVirtualCard() {
   virtual_card_unmask_request_details_.last_committed_url_origin =
       last_committed_url_origin;
   virtual_card_unmask_request_details_.card = *card_;
-  virtual_card_unmask_request_details_.reason =
-      AutofillClient::UnmaskCardReason::kAutofill;
   virtual_card_unmask_request_details_.billing_customer_number =
       payments::GetBillingCustomerId(personal_data_manager_);
 

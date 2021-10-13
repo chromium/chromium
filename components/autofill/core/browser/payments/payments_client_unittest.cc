@@ -13,7 +13,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -67,11 +66,6 @@ struct CardUnmaskOptions {
     return *this;
   }
 
-  CardUnmaskOptions& with_reason(AutofillClient::UnmaskCardReason r) {
-    reason = r;
-    return *this;
-  }
-
   CardUnmaskOptions& with_virtual_card() {
     virtual_card = true;
     return *this;
@@ -115,9 +109,6 @@ struct CardUnmaskOptions {
   bool virtual_card = false;
   // If true, set context_token in the request.
   bool set_context_token = true;
-  // The reason for unmasking this card.
-  AutofillClient::UnmaskCardReason reason =
-      AutofillClient::UnmaskCardReason::kAutofill;
 };
 
 }  // namespace
@@ -249,7 +240,6 @@ class PaymentsClientTest : public testing::Test {
   void StartUnmasking(CardUnmaskOptions options) {
     PaymentsClient::UnmaskRequestDetails request_details;
     request_details.billing_customer_number = 111222333444;
-    request_details.reason = options.reason;
 
     request_details.card = test::GetMaskedServerCard();
     request_details.risk_data = "some risk data";
@@ -858,41 +848,6 @@ TEST_F(PaymentsClientTest, UnmaskIncludesMerchantDomain) {
 
   // last_committed_url_origin was set.
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
-}
-
-TEST_F(PaymentsClientTest, UnmaskLogsCvcLengthForAutofill) {
-  base::HistogramTester histogram_tester;
-  StartUnmasking(CardUnmaskOptions()
-                     .with_reason(AutofillClient::UnmaskCardReason::kAutofill)
-                     .with_cvc("1234"));
-  IssueOAuthToken();
-
-  histogram_tester.ExpectBucketCount(
-      "Autofill.CardUnmask.CvcLength.ForAutofill", 4, 1);
-}
-
-TEST_F(PaymentsClientTest, UnmaskLogsCvcLengthForAutofillOnlyWhenCvcAuth) {
-  base::HistogramTester histogram_tester;
-  StartUnmasking(CardUnmaskOptions()
-                     .with_reason(AutofillClient::UnmaskCardReason::kAutofill)
-                     .with_fido());
-  IssueOAuthToken();
-
-  // The CvcLength histogram should never be logged for non-Cvc auth.
-  histogram_tester.ExpectTotalCount("Autofill.CardUnmask.CvcLength.ForAutofill",
-                                    0);
-}
-
-TEST_F(PaymentsClientTest, UnmaskLogsCvcLengthForPaymentRequest) {
-  base::HistogramTester histogram_tester;
-  StartUnmasking(
-      CardUnmaskOptions()
-          .with_reason(AutofillClient::UnmaskCardReason::kPaymentRequest)
-          .with_cvc("56789"));
-  IssueOAuthToken();
-
-  histogram_tester.ExpectBucketCount(
-      "Autofill.CardUnmask.CvcLength.ForPaymentRequest", 5, 1);
 }
 
 TEST_F(PaymentsClientTest, OptInSuccess) {

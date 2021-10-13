@@ -119,7 +119,6 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptAccepted(
   unmask_request_ =
       std::make_unique<payments::PaymentsClient::UnmaskRequestDetails>();
   unmask_request_->card = *card_;
-  unmask_request_->reason = AutofillClient::UnmaskCardReason::kAutofill;
   unmask_request_->billing_customer_number = billing_customer_number_;
   unmask_request_->context_token = context_token_;
   unmask_request_->otp = otp_;

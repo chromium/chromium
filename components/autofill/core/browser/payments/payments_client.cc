@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -870,7 +869,6 @@ PaymentsClient::UnmaskRequestDetails&
 PaymentsClient::UnmaskRequestDetails::operator=(
     const PaymentsClient::UnmaskRequestDetails& other) {
   billing_customer_number = other.billing_customer_number;
-  reason = other.reason;
   card = other.card;
   risk_data = other.risk_data;
   user_response = other.user_response;

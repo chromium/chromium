@@ -103,7 +103,6 @@ void FullCardRequest::GetFullCardImpl(
   result_delegate_ = result_delegate;
   request_ = std::make_unique<payments::PaymentsClient::UnmaskRequestDetails>();
   request_->card = card;
-  request_->reason = reason;
   request_->last_committed_url_origin = last_committed_url_origin;
   should_unmask_card_ = card.record_type() == CreditCard::MASKED_SERVER_CARD ||
                         card.record_type() == CreditCard::VIRTUAL_CARD ||

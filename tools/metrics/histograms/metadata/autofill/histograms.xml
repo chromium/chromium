@@ -687,7 +687,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.CardUnmask.CvcLength{AutofillCreditCardUnmaskReason}"
-    units="digits" expires_after="2022-06-01">
+    units="digits" expires_after="M96">
+  <obsolete>
+    Removed 10/2021 as analysis is complete.
+  </obsolete>
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
