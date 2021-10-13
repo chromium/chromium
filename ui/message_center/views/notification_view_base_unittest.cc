@@ -82,6 +82,7 @@ class TestNotificationView : public NotificationViewBase {
   void CreateOrUpdateTitleView(const Notification& notification) override {}
   gfx::Size GetIconViewSize() const override { return gfx::Size(); }
   void CreateOrUpdateSmallIconView(const Notification& notification) override {}
+  bool IsExpandable() const override { return true; }
 };
 
 class NotificationTestDelegate : public NotificationDelegate {

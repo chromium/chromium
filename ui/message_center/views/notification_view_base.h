@@ -237,15 +237,32 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
     return control_buttons_view_;
   }
   NotificationHeaderView* header_row() { return header_row_; }
+
+  views::View* content_row() { return content_row_; }
+  const views::View* content_row() const { return content_row_; }
+
   views::View* left_content() { return left_content_; }
+
   views::Label* message_view() { return message_view_; }
-  views::View* inline_settings_row() const { return settings_row_; }
+  const views::Label* message_view() const { return message_view_; }
+
+  views::View* inline_settings_row() { return settings_row_; }
+  const views::View* inline_settings_row() const { return settings_row_; }
+
   views::View* image_container_view() { return image_container_view_; }
+  const views::View* image_container_view() const {
+    return image_container_view_;
+  }
+
   views::View* action_buttons_row() { return action_buttons_row_; }
+  const views::View* action_buttons_row() const { return action_buttons_row_; }
+
+  const views::Label* status_view() const { return status_view_; }
+  const std::vector<views::View*> item_views() const { return item_views_; }
   views::RadioButton* block_all_button() { return block_all_button_; }
   bool inline_settings_enabled() const { return inline_settings_enabled_; }
 
-  bool IsExpandable() const;
+  virtual bool IsExpandable() const = 0;
 
   virtual void SetExpandButtonEnabled(bool enabled);
 

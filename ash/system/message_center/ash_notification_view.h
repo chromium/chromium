@@ -67,6 +67,7 @@ class ASH_EXPORT AshNotificationView
       const message_center::Notification& notification) override;
   bool IsIconViewShown() const override;
   void SetExpandButtonEnabled(bool enabled) override;
+  bool IsExpandable() const override;
   void UpdateCornerRadius(int top_radius, int bottom_radius) override;
   void SetDrawBackgroundAsActive(bool active) override;
   void OnThemeChanged() override;

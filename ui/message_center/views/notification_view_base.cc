@@ -1096,35 +1096,6 @@ void NotificationViewBase::SetExpandButtonEnabled(bool enabled) {
     header_row_->SetExpandButtonEnabled(enabled);
 }
 
-bool NotificationViewBase::IsExpandable() const {
-  // Inline settings can not be expanded.
-  if (GetMode() == Mode::SETTING)
-    return false;
-
-  // Expandable if the message exceeds one line.
-  if (message_view_ && message_view_->GetVisible() &&
-      message_view_->GetRequiredLines() > 1) {
-    return true;
-  }
-  // Expandable if there is at least one inline action.
-  if (!action_buttons_row_->children().empty())
-    return true;
-
-  // Expandable if the notification has image.
-  if (!image_container_view_->children().empty())
-    return true;
-
-  // Expandable if there are multiple list items.
-  if (item_views_.size() > 1)
-    return true;
-
-  // Expandable if both progress bar and status message exist.
-  if (status_view_)
-    return true;
-
-  return false;
-}
-
 void NotificationViewBase::ToggleExpanded() {
   SetExpanded(!expanded_);
 }

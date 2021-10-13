@@ -32,6 +32,7 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
   void OnThemeChanged() override;
   void UpdateCornerRadius(int top_radius, int bottom_radius) override;
   void ToggleInlineSettings(const ui::Event& event) override;
+  bool IsExpandable() const override;
 
   void UpdateHeaderViewBackgroundColor();
   SkColor GetNotificationHeaderViewBackgroundColor() const;

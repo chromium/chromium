@@ -519,7 +519,6 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
     message_view_in_expanded_state_->SetVisible(expanded);
   }
 
-  expand_button_->SetVisible(IsExpandable());
   expand_button_->SetExpanded(expanded);
 
   static_cast<views::BoxLayout*>(
@@ -620,6 +619,16 @@ void AshNotificationView::SetExpandButtonEnabled(bool enabled) {
   expand_button_->SetVisible(enabled);
 }
 
+bool AshNotificationView::IsExpandable() const {
+  // Inline settings can not be expanded.
+  if (GetMode() == Mode::SETTING)
+    return false;
+
+  // Notification should always be expandable since we hide `header_row()` in
+  // collapsed state.
+  return true;
+}
+
 void AshNotificationView::UpdateCornerRadius(int top_radius,
                                              int bottom_radius) {
   // Call parent's SetCornerRadius to update radius used for highlight path.
@@ -712,10 +721,8 @@ int AshNotificationView::GetContentRowWidth() {
 }
 
 int AshNotificationView::GetLeftContentWidth() {
-  int left_content_width = GetContentRowWidth();
-
-  if (expand_button_->GetVisible())
-    left_content_width -= kExpandButtonSize + kContentRowHorizontalSpacing;
+  int left_content_width =
+      GetContentRowWidth() - kExpandButtonSize - kContentRowHorizontalSpacing;
 
   if (IsIconViewShown())
     left_content_width -= kIconViewSize + kContentRowHorizontalSpacing;

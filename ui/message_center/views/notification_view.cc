@@ -251,6 +251,35 @@ void NotificationView::ToggleInlineSettings(const ui::Event& event) {
     MessageCenter::Get()->DisableNotification(notification_id());
 }
 
+bool NotificationView::IsExpandable() const {
+  // Inline settings can not be expanded.
+  if (GetMode() == Mode::SETTING)
+    return false;
+
+  // Expandable if the message exceeds one line.
+  if (message_view() && message_view()->GetVisible() &&
+      message_view()->GetRequiredLines() > 1) {
+    return true;
+  }
+  // Expandable if there is at least one inline action.
+  if (!action_buttons_row()->children().empty())
+    return true;
+
+  // Expandable if the notification has image.
+  if (!image_container_view()->children().empty())
+    return true;
+
+  // Expandable if there are multiple list items.
+  if (item_views().size() > 1)
+    return true;
+
+  // Expandable if both progress bar and status message exist.
+  if (status_view())
+    return true;
+
+  return false;
+}
+
 void NotificationView::UpdateHeaderViewBackgroundColor() {
   SkColor header_background_color = GetNotificationHeaderViewBackgroundColor();
   header_row()->SetBackgroundColor(header_background_color);
