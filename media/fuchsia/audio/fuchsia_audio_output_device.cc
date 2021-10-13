@@ -36,10 +36,9 @@ constexpr base::TimeDelta kLeadTimeExtra =
 class DefaultAudioThread {
  public:
   DefaultAudioThread() : thread_("FuchsiaAudioOutputDevice") {
-    // TODO(crbug.com/1153909): Consider applying media-specific scheduling
-    // policy to the thread.
-    thread_.StartWithOptions(
-        base::Thread::Options(base::MessagePumpType::IO, 0));
+    base::Thread::Options options(base::MessagePumpType::IO, 0);
+    options.priority = base::ThreadPriority::REALTIME_AUDIO;
+    thread_.StartWithOptions(std::move(options));
   }
   ~DefaultAudioThread() = default;
 

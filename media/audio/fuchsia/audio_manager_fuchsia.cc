@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/fuchsia/scheduler.h"
 #include "media/audio/fuchsia/audio_output_stream_fuchsia.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "media/base/media_switches.h"
 
 namespace media {
@@ -65,8 +67,11 @@ AudioParameters AudioManagerFuchsia::GetInputStreamParameters(
   // the default configuration used in the AudioCapturer implementation.
   // Assume that the system-provided AudioConsumer supports echo cancellation,
   // noise suppression and automatic gain control.
+  const size_t kSampleRate = 16000;
+  const size_t kPeriodSamples = AudioTimestampHelper::TimeToFrames(
+      base::kAudioSchedulingPeriod, kSampleRate);
   AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         CHANNEL_LAYOUT_MONO, 16000, 160);
+                         CHANNEL_LAYOUT_MONO, kSampleRate, kPeriodSamples);
   params.set_effects(AudioParameters::ECHO_CANCELLER |
                      AudioParameters::NOISE_SUPPRESSION |
                      AudioParameters::AUTOMATIC_GAIN_CONTROL);
@@ -80,8 +85,11 @@ AudioParameters AudioManagerFuchsia::GetPreferredOutputStreamParameters(
   // TODO(crbug.com/852834): Fuchsia currently doesn't provide an API to get
   // device configuration. Update this method when that functionality is
   // implemented.
+  const size_t kSampleRate = 48000;
+  const size_t kPeriodFrames = AudioTimestampHelper::TimeToFrames(
+      base::kAudioSchedulingPeriod, kSampleRate);
   return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         CHANNEL_LAYOUT_STEREO, 48000, 480);
+                         CHANNEL_LAYOUT_STEREO, kSampleRate, kPeriodFrames);
 }
 
 const char* AudioManagerFuchsia::GetName() {

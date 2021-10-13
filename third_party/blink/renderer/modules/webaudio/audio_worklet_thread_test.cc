@@ -417,10 +417,6 @@ class AudioWorkletThreadPriorityTest
     } else {
       EXPECT_EQ(actual_priority, expected_priority);
     }
-#elif defined(OS_FUCHSIA)
-    // The thread priority is no-op on Fuchsia. It's always NORMAL priority.
-    // See crbug.com/1090245.
-    EXPECT_EQ(actual_priority, base::ThreadPriority::NORMAL);
 #else
     EXPECT_EQ(actual_priority, expected_priority);
 #endif
