@@ -37,7 +37,9 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 @property(nonatomic, strong) OverflowMenuDestination* bookmarksDestination;
 @property(nonatomic, strong) OverflowMenuDestination* historyDestination;
 
+@property(nonatomic, strong) OverflowMenuAction* reloadAction;
 @property(nonatomic, strong) OverflowMenuAction* openIncognitoTabAction;
+@property(nonatomic, strong) OverflowMenuAction* bookmarkAction;
 
 @end
 
@@ -57,13 +59,34 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
       IDS_IOS_TOOLS_MENU_BOOKMARKS, @"overflow_menu_destination_bookmarks");
   self.historyDestination = CreateOverflowMenuDestination(
       IDS_IOS_TOOLS_MENU_HISTORY, @"overflow_menu_destination_history");
+
+  self.reloadAction = CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_RELOAD,
+                                               @"overflow_menu_action_reload");
   self.openIncognitoTabAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, @"popup_menu_new_incognito_tab");
+      IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, @"overflow_menu_action_incognito");
+
+  OverflowMenuActionGroup* appActionsGroup =
+      [[OverflowMenuActionGroup alloc] initWithGroupName:@"app_actions"
+                                                 actions:@[
+                                                   self.reloadAction,
+                                                   self.openIncognitoTabAction,
+                                                 ]];
+
+  self.bookmarkAction = CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, @"overflow_menu_action_bookmark");
+
+  OverflowMenuActionGroup* pageActionsGroup =
+      [[OverflowMenuActionGroup alloc] initWithGroupName:@"page_actions"
+                                                 actions:@[
+                                                   self.bookmarkAction,
+                                                 ]];
+
   return [[OverflowMenuModel alloc] initWithDestinations:@[
     self.bookmarksDestination, self.historyDestination
   ]
-                                                 actions:@[
-                                                   self.openIncognitoTabAction,
-                                                 ]];
+                                            actionGroups:@[
+                                              appActionsGroup,
+                                              pageActionsGroup,
+                                            ]];
 }
 @end

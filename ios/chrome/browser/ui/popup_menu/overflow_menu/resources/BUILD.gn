@@ -4,6 +4,30 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
+imageset("overflow_menu_action_bookmark") {
+  sources = [
+    "overflow_menu_action_bookmark.imageset/Contents.json",
+    "overflow_menu_action_bookmark.imageset/overflow_menu_action_bookmark@2x.png",
+    "overflow_menu_action_bookmark.imageset/overflow_menu_action_bookmark@3x.png",
+  ]
+}
+
+imageset("overflow_menu_action_incognito") {
+  sources = [
+    "overflow_menu_action_incognito.imageset/Contents.json",
+    "overflow_menu_action_incognito.imageset/overflow_menu_action_incognito@2x.png",
+    "overflow_menu_action_incognito.imageset/overflow_menu_action_incognito@3x.png",
+  ]
+}
+
+imageset("overflow_menu_action_reload") {
+  sources = [
+    "overflow_menu_action_reload.imageset/Contents.json",
+    "overflow_menu_action_reload.imageset/overflow_menu_action_reload@2x.png",
+    "overflow_menu_action_reload.imageset/overflow_menu_action_reload@3x.png",
+  ]
+}
+
 imageset("overflow_menu_destination_bookmarks") {
   sources = [
     "overflow_menu_destination_bookmarks.imageset/Contents.json",

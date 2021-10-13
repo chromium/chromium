@@ -12,6 +12,9 @@ source_set("overflow_menu") {
   ]
   deps = [
     ":overflow_menu_swift",
+    "resources:overflow_menu_action_bookmark",
+    "resources:overflow_menu_action_incognito",
+    "resources:overflow_menu_action_reload",
     "resources:overflow_menu_destination_bookmarks",
     "resources:overflow_menu_destination_history",
     "//ios/chrome/app/strings:ios_strings_grit",
@@ -23,8 +26,10 @@ source_set("overflow_menu") {
 swift_source_set("overflow_menu_swift") {
   sources = [
     "overflow_menu_action.swift",
+    "overflow_menu_action_group.swift",
     "overflow_menu_action_list.swift",
     "overflow_menu_action_row.swift",
+    "overflow_menu_action_section.swift",
     "overflow_menu_destination.swift",
     "overflow_menu_destination_list.swift",
     "overflow_menu_destination_view.swift",

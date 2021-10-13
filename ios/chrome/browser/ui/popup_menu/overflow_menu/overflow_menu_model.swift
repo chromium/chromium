@@ -9,14 +9,14 @@ import SwiftUI
   /// The destinations for the overflow menu.
   public var destinations: [OverflowMenuDestination]
 
-  /// The destinations for the overflow menu.
-  public var actions: [OverflowMenuAction]
+  /// The action groups for the overflow menu.
+  public var actionGroups: [OverflowMenuActionGroup]
 
   public init(
     destinations: [OverflowMenuDestination],
-    actions: [OverflowMenuAction]
+    actionGroups: [OverflowMenuActionGroup]
   ) {
     self.destinations = destinations
-    self.actions = actions
+    self.actionGroups = actionGroups
   }
 }

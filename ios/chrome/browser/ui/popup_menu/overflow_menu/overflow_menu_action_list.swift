@@ -6,14 +6,15 @@ import SwiftUI
 
 /// A view that displays a list of actions in the overflow menu.
 struct OverflowMenuActionList: View {
-  /// The list of actions for this view.
-  var actions: [OverflowMenuAction]
+  /// The list of action groups for this view.
+  var actionGroups: [OverflowMenuActionGroup]
 
   var body: some View {
     List {
-      ForEach(actions) { action in
-        OverflowMenuActionRow(action: action)
+      ForEach(actionGroups) { actionGroup in
+        OverflowMenuActionSection(actionGroup: actionGroup)
       }
     }
+    .listStyle(InsetGroupedListStyle())
   }
 }
