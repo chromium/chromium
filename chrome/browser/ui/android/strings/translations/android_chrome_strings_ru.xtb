@@ -404,6 +404,7 @@
 <translation id="3429160811076349561">Функции отключены</translation>
 <translation id="3440975416244667276">Нажмите и удерживайте для поиска информации</translation>
 <translation id="3443221991560634068">Обновить страницу</translation>
+<translation id="3444179773590444986">Отправить отзыв о тёмной теме для сайтов?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Запланировано 1 скачивание.}one{Запланировано # скачивание.}few{Запланировано # скачивания.}many{Запланировано # скачиваний.}other{Запланировано # скачивания.}}</translation>
 <translation id="3478363558367712427">Вы можете выбрать другую поисковую систему.</translation>
 <translation id="3493531032208478708">Подробнее <ph name="BEGIN_LINK" />о рекомендованном контенте<ph name="END_LINK" />…</translation>
@@ -585,6 +586,7 @@
 <translation id="4663499661119906179">Интересные сайты и новости для вас</translation>
 <translation id="4663756553811254707">Удалено закладок: <ph name="NUMBER_OF_BOOKMARKS" /></translation>
 <translation id="4668347365065281350">Все данные, хранимые на устройстве сайтами, включая файлы cookie.</translation>
+<translation id="4678082183394354975">Тёмная тема для сайтов включена в Chrome.</translation>
 <translation id="4684427112815847243">Синхронизировать все</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}one{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}few{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}many{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способов доставки}other{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}}</translation>
 <translation id="4696983787092045100">Отправить сообщения на свои устройства</translation>
@@ -766,6 +768,7 @@
 <translation id="5754350196967618083">Не удается обновить рекомендации</translation>
 <translation id="5763382633136178763">Вкладки в режиме инкогнито</translation>
 <translation id="5763514718066511291">Нажмите, чтобы скопировать URL этого приложения.</translation>
+<translation id="5765517223145864268">Поделитесь впечатлениями! Или <ph name="BEGIN_LINK" />измените настройки<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">Описание:</translation>
 <translation id="5767013862801005129">Восстановлена вкладка "<ph name="TAB_TITLE" />"</translation>
 <translation id="5776970333778123608">Маловажные данные</translation>
@@ -953,6 +956,7 @@
 <translation id="6738516213925468394">Данные были зашифрованы <ph name="TIME" /> с помощью <ph name="BEGIN_LINK" />кодовой фразы<ph name="END_LINK" />. Введите ее, чтобы начать синхронизацию.</translation>
 <translation id="6738867403308150051">Скачивание…</translation>
 <translation id="6751521182688001123">Открыть новую вкладку. Чтобы изменить функцию кнопки, нажмите и удерживайте ее.</translation>
+<translation id="6756507620369789050">Отправить отзыв</translation>
 <translation id="6767294960381293877">Список устройств для отправки вкладки развернут на половину экрана.</translation>
 <translation id="6783942555455976443">Сохранить эту страницу офлайн и отправить напоминание</translation>
 <translation id="6795633245022906657">Открыть новую вкладку. Чтобы изменить функцию кнопки, перейдите в настройки.</translation>
@@ -1044,6 +1048,7 @@
 <translation id="7352651011704765696">Ошибка</translation>
 <translation id="7352939065658542140">ВИДЕО</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Поделиться 1 выбранным объектом}one{Поделиться # выбранным объектом}few{Поделиться # выбранными объектами}many{Поделиться # выбранными объектами}other{Поделиться # выбранного объекта}}</translation>
+<translation id="7356631068872238169">Убрать из списка для чтения</translation>
 <translation id="7359002509206457351">Доступ к способам оплаты</translation>
 <translation id="7375125077091615385">Тип:</translation>
 <translation id="7376560087009844242">Благодаря этой функции при использовании быстрого поиска результаты могут стать точнее. Включить или отключить ее можно в любое время в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
@@ -1214,6 +1219,7 @@
 <translation id="8266862848225348053">Расположение скачиваемых файлов</translation>
 <translation id="8274165955039650276">Показать скачанные файлы</translation>
 <translation id="8281886186245836920">Пропустить</translation>
+<translation id="8282297628636750033">Использовать тёмную тему для сайтов, если возможно</translation>
 <translation id="8284326494547611709">Титры</translation>
 <translation id="829672787777123339">Подключение…</translation>
 <translation id="8310344678080805313">Обычные вкладки</translation>
@@ -1345,6 +1351,7 @@
 <translation id="9063523880881406963">Выключить полную версию сайта</translation>
 <translation id="9065203028668620118">Изменить</translation>
 <translation id="9065383040763568503">Маловажные данные, например относящиеся к сайтам, которые вы редко посещаете или на которых не сохранили настройки.</translation>
+<translation id="906781307897697745">(<ph name="PRODUCT_NAME" />)</translation>
 <translation id="9069999660519089861">Непрочитанных страниц не найдено</translation>
 <translation id="9070377983101773829">Голосовой поиск</translation>
 <translation id="9074336505530349563">Чтобы мы могли рекомендовать вам интересный контент, войдите в аккаунт и включите синхронизацию.</translation>

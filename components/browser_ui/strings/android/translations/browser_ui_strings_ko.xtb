@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">사이트가 주변 블루투스 기기를 조회하려고 할 때 확인(권장)</translation>
 <translation id="2315043854645842844">클라이언트측 인증서 선택이 운영체제에서 지원되지 않습니다.</translation>
 <translation id="2359808026110333948">계속</translation>
+<translation id="2379925928934107488">가능하면 Chrome에서 어두운 테마를 사용할 때 사이트에도 어두운 테마를 적용합니다.</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" />MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 허용됨}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 허용됨}}</translation>
 <translation id="2434158240863470628">다운로드 완료: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">이 기기의 위치 정보 액세스도 사용 중지되었습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 사용 설정하세요.</translation>
 <translation id="257931822824936280">펼쳐짐 - 접으려면 클릭</translation>
 <translation id="2586657967955657006">클립보드</translation>
+<translation id="2597457036804169544">사이트에 어두운 테마를 적용하지 마세요.</translation>
 <translation id="2621115761605608342">특정 사이트에서 자바스크립트를 허용합니다.</translation>
 <translation id="2653659639078652383">제출</translation>
 <translation id="2677748264148917807">나가기</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">소리를 재생하는 사이트 음소거</translation>
 <translation id="3744111561329211289">백그라운드 동기화</translation>
 <translation id="3763247130972274048">10초를 건너뛰려면 동영상 왼쪽이나 오른쪽을 두 번 탭하세요.</translation>
+<translation id="3797520601150691162">특정 사이트에 어두운 테마를 적용하지 마세요.</translation>
 <translation id="381841723434055211">전화번호</translation>
 <translation id="3835233591525155343">기기 사용 여부</translation>
 <translation id="385051799172605136">뒤로</translation>
@@ -244,6 +247,7 @@
 <translation id="7302486331832100261">기본적으로 알림을 차단하는 중입니다. 허용하려면 '세부정보'를 탭하세요.</translation>
 <translation id="7423098979219808738">우선 확인</translation>
 <translation id="7423538860840206698">클립보드 액세스가 차단됨</translation>
+<translation id="7425915948813553151">사이트에 어두운 테마 적용</translation>
 <translation id="7521387064766892559">자바스크립트</translation>
 <translation id="7554752735887601236">사이트에서 마이크를 사용 중입니다.</translation>
 <translation id="7561196759112975576">항상</translation>

@@ -57,6 +57,7 @@
 <translation id="1310482092992808703">Agrupar pestañas</translation>
 <translation id="1311657260431405215">Este código QR no es una URL: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
+<translation id="1320912611264252795">Flujo para guardar marcador abierto a altura completa</translation>
 <translation id="1327257854815634930">El historial de navegación está abierto</translation>
 <translation id="1331212799747679585">No se ha podido actualizar Chrome. Más opciones</translation>
 <translation id="1332501820983677155">Combinaciones de teclas de funciones de Google Chrome</translation>
@@ -83,6 +84,7 @@
 <translation id="1466383950273130737">Elegir idioma de Chrome</translation>
 <translation id="147113415845704694">Di "¿Qué tiempo hace hoy?"</translation>
 <translation id="1477626028522505441">No se ha podido descargar <ph name="FILE_NAME" /> debido a problemas con el servidor.</translation>
+<translation id="148482509007564431">Flujo para guardar marcador</translation>
 <translation id="1492417797159476138">Ya has guardado ese nombre de usuario en este sitio web</translation>
 <translation id="1493287004536771723">Estás siguiendo a <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">Buscador</translation>
@@ -263,6 +265,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="2631006050119455616">Ahorrados</translation>
 <translation id="2645657967708199252">Tu conexión <ph name="CONNECTION_TYPE" /> puede hacer que la descarga vaya más lenta.</translation>
 <translation id="2647434099613338025">Añadir idioma</translation>
+<translation id="2649068648233607930"><ph name="DOMAIN" /> gestiona tu navegador</translation>
 <translation id="2650751991977523696">¿Quieres descargar el archivo de nuevo?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# archivo de audio}other{# archivos de audio}}</translation>
 <translation id="2656405586795711023">Aplicaciones web</translation>
@@ -428,6 +431,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3602290021589620013">Vista previa</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Gestionar ventanas</translation>
+<translation id="3624977496395967031">Haz clic para abrir las opciones de orden</translation>
 <translation id="3631987586758005671">Compartiendo con <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Mostrar contraseña</translation>
 <translation id="363596933471559332">Permite iniciar sesión automáticamente en sitios web con credenciales almacenadas. Si esta función está desactivada, se solicitará la verificación cada vez que se intente iniciar sesión en un sitio web.</translation>
@@ -497,6 +501,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="4084682180776658562">Añadir a marcadores</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" /> (<ph name="BEGIN_DEEMPHASIZED" />ofrecida por Google<ph name="END_DEEMPHASIZED" />)</translation>
 <translation id="4095146165863963773">¿Eliminar datos de la aplicación?</translation>
+<translation id="4096227151372679484">Flujo para guardar marcador abierto a la mitad de altura</translation>
 <translation id="4099578267706723511">Ayudar a mejorar Chrome enviando estadísticas de uso e informes sobre fallos.</translation>
 <translation id="410351446219883937">Reproducción automática</translation>
 <translation id="4108314971463891922">Seguir</translation>
@@ -605,6 +610,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4766678251456904326">Añadir cuenta al dispositivo</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 descarga programada.}other{# descargas programadas.}}</translation>
 <translation id="4791358705705538979">Te ayuda a completar tareas en la Web, como la tramitación de compras</translation>
+<translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">El cifrado mediante frase de contraseña no incluye los métodos de pago ni las direcciones de Google Pay.
 
 Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" />.</translation>
@@ -628,6 +634,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="4885273946141277891">Número de instancias de Chrome no admitido.</translation>
 <translation id="4905823827770127520">Incluir un enlace a la página</translation>
 <translation id="4908869848243824489">Discover de Google</translation>
+<translation id="4909709702739934280">Tu administrador gestiona tu navegador</translation>
 <translation id="4910889077668685004">Aplicaciones para pagar</translation>
 <translation id="4912413785358399818">Mover pestaña</translation>
 <translation id="4913161338056004800">Borrar estadísticas</translation>
@@ -1150,6 +1157,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7926975587469166629">Nombre de la tarjeta</translation>
 <translation id="7929962904089429003">Abre el menú</translation>
 <translation id="7930998711684428189">Te avisa si tus contraseñas se ven expuestas en una quiebra de seguridad de datos.</translation>
+<translation id="7939485076072265087">Crear tarjeta estilizada con texto resaltado</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> está obsoleto.</translation>
 <translation id="7944772052836377867">Verifica tu identidad para usar la sincronización</translation>
 <translation id="7947953824732555851">Aceptar y acceder</translation>
@@ -1268,6 +1276,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8562452229998620586">Las contraseñas guardadas aparecerán aquí.</translation>
 <translation id="856481929701340285">Ver como ordenador</translation>
 <translation id="8569404424186215731">desde el <ph name="DATE" /></translation>
+<translation id="8570677896027847510">El archivo no se puede descargar de forma segura</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8572344201470131220">Imagen copiada</translation>
 <translation id="8583805026567836021">Borrando datos de cuenta</translation>
@@ -1320,6 +1329,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8912362522468806198">cuenta de Google</translation>
 <translation id="8920114477895755567">Esperando detalles de los padres.</translation>
 <translation id="8922289737868596582">Descarga páginas con el botón con el botón Más opciones para usarlas sin conexión</translation>
+<translation id="8924575305646776101"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">El <ph name="LANG" /> ya puede usarse</translation>
 <translation id="8928626432984354940">Lista de carpetas de marcadores abierta a la mitad de altura</translation>
 <translation id="8937267401510745927">Para ayudarte a completar tareas, Google recibirá las URL y los contenidos de los sitios en los que uses el Asistente, así como la información que envíes a través de este. Es posible que esta información se almacene en tu cuenta de Google. Puedes desactivar el Asistente en los ajustes de Chrome.</translation>
@@ -1354,8 +1364,10 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="9086455579313502267">No ha sido posible acceder a la red</translation>
 <translation id="9100505651305367705">Pregunta si quieres que los artículos se muestren en vista simplificada, si está disponible</translation>
 <translation id="9100610230175265781">La frase de contraseña es obligatoria</translation>
+<translation id="9101137867221042551">Gestión</translation>
 <translation id="9102803872260866941">La pestaña de vista previa está abierta</translation>
 <translation id="9104217018994036254">Lista de dispositivos con los que puedes compartir una pestaña.</translation>
+<translation id="9106148373857059373">Flujo para guardar marcador cerrado</translation>
 <translation id="9108312223223904744">Teléfono como llave de seguridad compatible</translation>
 <translation id="9108808586816295166">Es posible que no haya un DNS seguro disponible de forma ininterrumpida</translation>
 <translation id="9133397713400217035">Explorar sin conexión</translation>

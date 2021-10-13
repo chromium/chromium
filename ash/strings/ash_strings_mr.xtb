@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">तुमची डिव्हाइस एकत्र आणखी चांगले काम करतात</translation>
 <translation id="1119348796022671382">इंटरफेस हलकेसे रंगीत करण्यासाठी थीम असलेला रंग मोड तुमच्या वॉलपेपरमधून निवडलेल्या रंगांचा वापर करते.</translation>
 <translation id="112308213915226829">शेल्फ स्वयं लपवा</translation>
+<translation id="1142002900084379065">अलीकडील फोटो</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> साठी माहिती डायलॉग उघडा</translation>
 <translation id="1150989369772528668">कॅलेंडर</translation>
 <translation id="1153356358378277386">जोडलेली डिव्हाइस</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">फुल-स्क्रीन मॅग्निफायर सुरू केला आहे. तो टॉगल करून बंद करण्यासाठी पुन्हा Ctrl+Search+M दाबा.</translation>
 <translation id="2302092602801625023">हे खाते Family Link द्वारे व्यवस्थापित केले जाते</translation>
 <translation id="2303600792989757991">विंडो विहंगावलोकन टॉगल करा</translation>
+<translation id="2318576281648121272">आज <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">एक अक्षर मागे जा</translation>
 <translation id="2339073806695260576">नोट व स्क्रीनशॉट घेण्यासाठी, तसेच लेझर पॉइंटर किंवा भिंग वापरण्यासाठी शेल्फवरील स्टायलस बटणावर टॅप करा.</translation>
 <translation id="2341729377289034582">उभ्या दिशेने लॉक केले</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
 <translation id="24452542372838207">सूचना विस्तार करा</translation>
 <translation id="2450205753526923158">स्क्रीनशॉट मोड</translation>
+<translation id="2456008742792828469">कॅलेंडर, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">रेझोल्यूशनची खात्री करा</translation>
 <translation id="2475982808118771221">एक एरर आली आहे</translation>
 <translation id="2482878487686419369">सूचना</translation>
@@ -278,6 +281,7 @@
 <translation id="3100274880412651815">कॅप्चर मोड डिसमिस करा</translation>
 <translation id="3105917916468784889">स्क्रीनशॉट घ्या</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ब्लूटूथ)</translation>
+<translation id="3113926042639749131">सूचना काढून टाका</translation>
 <translation id="3126069444801937830">अपडेटासाठी पुनर्सुरू करा</translation>
 <translation id="3139942575505304791">डेस्‍क १</translation>
 <translation id="315116470104423982">मोबाइल डेटा</translation>
@@ -504,6 +508,7 @@
 <translation id="4642092649622328492">अर्धा स्क्रीनशॉट घ्या</translation>
 <translation id="4659419629803378708">ChromeVox सुरू केले</translation>
 <translation id="4665114317261903604">व्यत्यय आणू नका टॉगल करा. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081"><ph name="FILENAME" /> डाउनलोड करत आहे</translation>
 <translation id="4696813013609194136">पालक कोडने डिव्हाइस अनलॉक करा</translation>
 <translation id="4702647871202761252">गोपनीयता स्क्रीन बंद आहे</translation>
 <translation id="4706121060329443414">नंतर डाउनलोड करण्याचा प्रयत्न केला जाईल. सध्या प्रक्रिया करण्यासाठी स्पीच Google ला पाठवली जाईल.</translation>
@@ -641,6 +646,7 @@
 <translation id="5744083938413354016">टॅप ड्रॅगिंग</translation>
 <translation id="5745612484876805746">रात्रीचा प्रकाश सूर्यास्ताच्या वेळी आपोआप सुरू होतो</translation>
 <translation id="5750765938512549687">ब्लूटूथ बंद आहे</translation>
+<translation id="576341972084747908">धोकादायक <ph name="FILENAME" /> डाउनलोड करा</translation>
 <translation id="576453121877257266">रात्रीचा प्रकाश सुरू आहे.</translation>
 <translation id="5769373120130404283">गोपनीयता स्क्रीन</translation>
 <translation id="5777841717266010279">स्क्रीन सामायिकरण थांबवायचे?</translation>
@@ -782,6 +788,7 @@
 <translation id="6852052252232534364">अ‍ॅक्टिव्हेट करण्यासाठी क्लिक करा</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकंद</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{एक अंक शिल्लक आहे}other{# अंक शिल्लक आहेत}}</translation>
+<translation id="6867938213751067702"><ph name="FILENAME" /> चे डाउनलोड थांबले</translation>
 <translation id="6878400149835617132">शॉर्टकट बंद केला आहे</translation>
 <translation id="6886172995547742638">तुमच्या <ph name="DEVICE_TYPE" /> चा परफॉर्मन्स कमी होऊ शकतो. प्रमाणित <ph name="PREFERRED_MINIMUM_POWER" />W किंवा त्यावरील USB-C पॉवर अडॅप्टर वापरा.</translation>
 <translation id="688631446150864480">विंडो स्विच करण्यासाठी डाउन अ‍ॅरो की दाबा</translation>

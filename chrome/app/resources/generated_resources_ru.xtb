@@ -588,6 +588,7 @@
 <translation id="1612019740169791082">Контейнер не поддерживает изменение размера диска. Чтобы скорректировать объем хранилища, зарезервированного для Linux, выполните резервное копирование, а затем восстановите данные, используя новый контейнер.</translation>
 <translation id="1614511179807650956">Вероятно, вы израсходовали весь доступный мобильный трафик. Приобрести дополнительный объем трафика можно на портале активации <ph name="NAME" />.</translation>
 <translation id="161460670679785907">Не удалось обнаружить телефон</translation>
+<translation id="1615337439947999338">Сохранить в аккаунте Google (<ph name="EMAIL" />)</translation>
 <translation id="1615402009686901181">Администратор запретил запись экрана, когда видны конфиденциальные данные.</translation>
 <translation id="1616206807336925449">Расширению не требуются особые разрешения.</translation>
 <translation id="1616298854599875024">Не удалось импортировать расширение "<ph name="IMPORT_NAME" />", поскольку это не общий модуль</translation>
@@ -917,6 +918,7 @@
 <translation id="1929546189971853037">Чтение истории просмотров на всех устройствах, где вы используете этот аккаунт.</translation>
 <translation id="1930879306590754738">Пароль удален с устройства и из аккаунта Google.</translation>
 <translation id="1931152874660185993">Компоненты не установлены.</translation>
+<translation id="1931410639376954712">Установка <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Не ранее</translation>
 <translation id="1935303383381416800">Разрешить сайтам определять ваше местоположение</translation>
 <translation id="1936931585862840749">Укажите количество копий для печати, используя цифры (от 1 до <ph name="MAX_COPIES" />).</translation>
@@ -1049,6 +1051,7 @@
 <translation id="208586643495776849">Повторите попытку.</translation>
 <translation id="208634871997892083">Постоянная сеть VPN</translation>
 <translation id="2087822576218954668">Печать: <ph name="PRINT_NAME" /></translation>
+<translation id="2088092308059522196">Зарегистрироваться можно только после установки <ph name="DEVICE_OS" />.</translation>
 <translation id="208928984520943006">Чтобы вернуться на главный экран, проведите вверх от нижнего края экрана.</translation>
 <translation id="2089566709556890888">Безопасный браузер Google Chrome</translation>
 <translation id="2089795179672254991">Запрашивать мое разрешение на доступ сайтов к тексту и изображениям, скопированным в буфер обмена (рекомендуется)</translation>
@@ -1173,6 +1176,7 @@
 <translation id="2203088913459920044">В названии можно использовать буквы, цифры и специальные символы.</translation>
 <translation id="2204034823255629767">Просмотр и изменение вводимого текста</translation>
 <translation id="220858061631308971">Введите PIN-код для устройства "<ph name="DEVICE_NAME" />":</translation>
+<translation id="2210462644007531147">Установка не выполнена</translation>
 <translation id="2212565012507486665">Разрешить файлы cookie</translation>
 <translation id="2214018885812055163">Общие папки</translation>
 <translation id="2214884991347062907">Неверный пароль. Повторите попытку.</translation>
@@ -1226,6 +1230,8 @@
 <translation id="22665427234727190">Запрашивать разрешение на доступ сайтов к Bluetooth-устройствам (рекомендуется)</translation>
 <translation id="2266957463645820432">IPP через USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Обмен данными с любыми устройствами в домене <ph name="DOMAIN" /></translation>
+<translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />Установка <ph name="BEGIN_BOLD" />приведет к удалению всей информации с жесткого диска<ph name="END_BOLD" />. Рекомендуем создать резервную копию данных.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Установку нельзя будет отменить.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Обмен данными с любыми устройствами в доменах <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Назначьте переключатель для действия "Выбрать"</translation>
 <translation id="2271469253353559191">Расписание тёмной темы</translation>
@@ -1487,6 +1493,7 @@
 <translation id="2521854691574443804">Проверка файла <ph name="FILE_NAME" /> на соответствие правилам безопасности вашей организации…</translation>
 <translation id="252219247728877310">Компонент не обновлен</translation>
 <translation id="2523184218357549926">Отправлять URL посещенных страниц в Google</translation>
+<translation id="252418934079508528">Установить <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Браузер Chrome проверяет компьютер на наличие вредоносного ПО…</translation>
 <translation id="2526590354069164005">Рабочий стол</translation>
 <translation id="2526619973349913024">Проверить обновления</translation>
@@ -1690,6 +1697,7 @@
 <translation id="2740531572673183784">ОК</translation>
 <translation id="2741713322780029189">Открыть терминал для восстановления</translation>
 <translation id="2741912629735277980">Отображать интерфейс на экране входа в систему</translation>
+<translation id="2742448780373473567">При установке <ph name="DEVICE_OS" /> все данные на жестком диске будут перезаписаны.</translation>
 <translation id="274290345632688601">Восстановление приложений и файлов Linux…</translation>
 <translation id="274318651891194348">Поиск клавиатуры</translation>
 <translation id="2743387203779672305">Скопировать в буфер</translation>
@@ -2882,6 +2890,8 @@
 <translation id="3979748722126423326">Включить <ph name="NETWORKDEVICE" /></translation>
 <translation id="3981058120448670012">Отображается под названием "<ph name="DEVICE_NAME" />" для других устройств поблизости в течение <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">Введен недействительный тип сохранения.</translation>
+<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />Произошла ошибка. Не удалось установить <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Узнайте больше на странице g.co/xxxxx.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">Настройте браузер за несколько простых шагов.</translation>
 <translation id="3983400541576569538">Возможно, данные некоторых приложений были потеряны.</translation>
 <translation id="3983586614702900908">устройства от неизвестного поставщика</translation>
@@ -2969,6 +2979,7 @@
 <translation id="4084835346725913160">Закрыть вкладку "<ph name="TAB_NAME" />"</translation>
 <translation id="4085270836953633510">Запрашивать разрешение на доступ сайтов к последовательным портам</translation>
 <translation id="4085298594534903246">На этой странице произошло блокирование JavaScript.</translation>
+<translation id="4085947337119280756">Другие расширения</translation>
 <translation id="4087089424473531098">Создано расширение:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -3272,6 +3283,7 @@
 <translation id="4449996769074858870">На этой вкладке воспроизводится аудио</translation>
 <translation id="4450274068924249931">Показывает фото, время, погоду и новости, когда ваше устройство находится в режиме ожидания. Если включить заставку, экран устройства не будет выключаться во время зарядки.</translation>
 <translation id="4450974146388585462">Проверить подключение</translation>
+<translation id="445099924538929605">Операционная система <ph name="DEVICE_OS" /> обнаружила активный модуль TPM, который может повысить надежность хранения данных.</translation>
 <translation id="4451479197788154834">Пароль сохранен на этом устройстве и в вашем аккаунте Google.</translation>
 <translation id="4451757071857432900">Заблокированы на сайтах, которые показывают навязчивую или вводящую в заблуждение рекламу (рекомендуется)</translation>
 <translation id="4453946976636652378">Введите поисковый запрос в <ph name="SEARCH_ENGINE_NAME" /> или укажите URL</translation>
@@ -3773,6 +3785,9 @@
 <translation id="4992473555164495036">Администратор запретил некоторые способы ввода.</translation>
 <translation id="4994474651455208930">Разрешить запрашивать установку обработчиков протоколов для сайтов по умолчанию</translation>
 <translation id="4994754230098574403">Настройка</translation>
+<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />Перед регистрацией нужно очистить TPM, чтобы операционная система <ph name="DEVICE_OS" /> могла управлять устройством.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Вы также можете полностью отключить TPM на устройстве. В этом случае данные по-прежнему будут программно шифроваться во время хранения, но некоторые функции безопасности, например аппаратные сертификаты, станут недоступны.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Параметры TPM можно изменить в настройках BIOS/UEFI во время перезагрузки системы. Конкретные действия зависят от модели. Чтобы узнать больше, изучите документацию <ph name="DEVICE_OS" />: [URL link].<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Виртуальные машины "<ph name="VM_TYPE" />" не найдены}=1{Найдена 1 ВМ "<ph name="VM_TYPE" />": <ph name="VM_NAME_LIST" />}one{Найдена {NUM_VMS} ВМ "<ph name="VM_TYPE" />": <ph name="VM_NAME_LIST" />}few{Найдены {NUM_VMS} ВМ "<ph name="VM_TYPE" />": <ph name="VM_NAME_LIST" />}many{Найдено {NUM_VMS} ВМ "<ph name="VM_TYPE" />": <ph name="VM_NAME_LIST" />}other{Найдено {NUM_VMS} ВМ "<ph name="VM_TYPE" />": <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Нет подключения к Интернету.</translation>
 <translation id="4998430619171209993">Включено</translation>
@@ -3888,6 +3903,7 @@
 <translation id="5127620150973591153">Код безопасного подключения: <ph name="TOKEN" />.</translation>
 <translation id="5127805178023152808">Синхронизация выключена</translation>
 <translation id="5127881134400491887">Управление сетевыми подключениями</translation>
+<translation id="5128774403617662387">Прежде всего обязательно создайте резервную копию данных. При установке <ph name="DEVICE_OS" /> вся информация на жестком диске будет перезаписана. Подробные сведения доступны на странице g.co/TBD.</translation>
 <translation id="512903556749061217">подключено</translation>
 <translation id="5130080518784460891">Этен</translation>
 <translation id="5130675701626084557">Не удалось скачать профиль. Повторите попытку позже или обратитесь к оператору связи.</translation>
@@ -4322,6 +4338,7 @@
 <translation id="5592595402373377407">Недостаточно данных.</translation>
 <translation id="5595485650161345191">Изменить адрес</translation>
 <translation id="5596627076506792578">Ещё</translation>
+<translation id="5600348067066185292">Для установки нужно выполнить несколько простых действий. У вас будет ещё одна возможность подтвердить изменения, прежде чем они будут применены к компьютеру.</translation>
 <translation id="5600706100022181951">Чтобы скачать обновление, потребуется <ph name="UPDATE_SIZE_MB" /> МБ мобильного трафика. Продолжить?</translation>
 <translation id="5601503069213153581">PIN-код</translation>
 <translation id="5601823921345337195">Запретить сайтам подключаться к MIDI-устройствам</translation>
@@ -4381,6 +4398,7 @@
 <translation id="5659593005791499971">Эл. почта</translation>
 <translation id="5659833766619490117">Не удалось перевести страницу</translation>
 <translation id="5662513737565158057">Измените параметры работы приложений для Linux.</translation>
+<translation id="5667490069342183561">Google не несет ответственности за потерю данных. Операционная система <ph name="DEVICE_OS" /> может не работать на несертифицированных моделях устройств. Подробная информация доступна на странице g.co/TBD.</translation>
 <translation id="5667546120811588575">Настройка Google Play…</translation>
 <translation id="5668351004957198136">Сбой</translation>
 <translation id="56702779821643359">Делитесь файлами с пользователями поблизости. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -4399,6 +4417,7 @@
 <translation id="5684181005476681636">Сведения о сети Wi-Fi</translation>
 <translation id="5684661240348539843">Идентификатор объекта</translation>
 <translation id="5687326903064479980">Часовой пояс</translation>
+<translation id="5687935527303996204">Убедитесь, что устройство подключено к розетке, и не отключайте его. Установка занимает до 20 минут. Когда она закончится, устройство автоматически выключится.</translation>
 <translation id="5689516760719285838">Геоданные</translation>
 <translation id="5689531695336322499">Пользователь <ph name="SUPERVISED_USER_NAME" /> уже настроил Voice Match в Google Ассистенте на другом устройстве. Образец голоса ребенка был создан на основе предыдущих записей.</translation>
 <translation id="56907980372820799">Связать аккаунты</translation>
@@ -5737,6 +5756,7 @@
 <translation id="7139627972753429585">Приложение "<ph name="APP_NAME" />" использует микрофон</translation>
 <translation id="7141105143012495934">Ошибка входа: не удалось получить данные аккаунта. Обратитесь к администратору или повторите попытку.</translation>
 <translation id="7144878232160441200">Повторить</translation>
+<translation id="7149839598364933473">Установить <ph name="DEVICE_OS" /> на устройстве</translation>
 <translation id="7149893636342594995">Последние 24 часа</translation>
 <translation id="7152478047064750137">Расширению не требуются особые разрешения</translation>
 <translation id="7154130902455071009">Смена стартовой страницы на <ph name="START_PAGE" /></translation>
@@ -5831,6 +5851,16 @@
 <translation id="7257666756905341374">Доступ к копируемым и вставляемым данным</translation>
 <translation id="7258225044283673131">Приложение не отвечает. Чтобы выйти из него, нажмите "Закрыть принудительно".</translation>
 <translation id="7262004276116528033">Сервис входа размещен в домене <ph name="SAML_DOMAIN" /></translation>
+<translation id="7264432249010320236">Другие сайты</translation>
+<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Следуйте приведенным ниже инструкциям.
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Убедитесь, что устройство имеет исправное внутреннее хранилище, например HDD, SSD или eMMC.
+    <ph name="LIST_ITEM" />Убедитесь, что емкость этого хранилища превышает 16 ГБ.
+    <ph name="LIST_ITEM" />Проверьте подключение к нему, если это физически возможно.
+    <ph name="LIST_ITEM" />Убедитесь, что вы используете сертифицированную модель, и прочитайте примечания к установке.
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Более подробная информация доступна на странице g.co/xxxxx.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">Не удалось установить виртуальную машину. Повторите попытку или обратитесь к администратору. Код ошибки: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Немного перемещайте палец, чтобы отсканировать его полностью.</translation>
 <translation id="7268127947535186412">Этим параметром управляет владелец устройства.</translation>
@@ -6556,6 +6586,7 @@
 <translation id="7986295104073916105">Чтение и изменение настроек пароля</translation>
 <translation id="7987814697832569482">Всегда использовать эту VPN-сеть</translation>
 <translation id="7988355189918024273">Включить функции для людей с ограниченными возможностями</translation>
+<translation id="7988805580376093356">Оставить текущую ОС и запустить <ph name="DEVICE_OS" /> с USB-накопителя</translation>
 <translation id="7991296728590311172">Настройки функции Switch Access</translation>
 <translation id="7997826902155442747">Приоритет процессов</translation>
 <translation id="7999229196265990314">Созданы следующие файлы:
@@ -6664,6 +6695,7 @@
 <translation id="80974698889265265">PIN-коды не совпадают</translation>
 <translation id="809792523045608178">В <ph name="IDS_SHORT_PRODUCT_NAME" /> используются настройки прокси-сервера из расширения.</translation>
 <translation id="8097959162767603171">Сначала администратор должен принять Условия использования, которые можно найти на странице со списком устройств Chrome в консоли администратора.</translation>
+<translation id="8098156986344908134">Установить <ph name="DEVICE_OS" /> и стереть данные на жестком диске?</translation>
 <translation id="8098616321286360457">Нет подключения к Сети</translation>
 <translation id="810068641062493918">Выбранный язык: <ph name="LANGUAGE" />. Чтобы отменить выбор, нажмите клавиши Поиск + Пробел.</translation>
 <translation id="810185532889603849">Свои цвета</translation>
@@ -6848,6 +6880,7 @@
 <translation id="8287902281644548111">Поиск по URL или запросу к API</translation>
 <translation id="8288032458496410887">Удалить приложение "<ph name="APP" />"...</translation>
 <translation id="8289128870594824098">Размер диска</translation>
+<translation id="8289509909262565712">Представляем <ph name="DEVICE_OS" /></translation>
 <translation id="8293206222192510085">Добавление закладки</translation>
 <translation id="8294431847097064396">Источник</translation>
 <translation id="8298429963694909221">Теперь вы можете получать уведомления с телефона на устройстве <ph name="DEVICE_TYPE" />. Если вы скроете уведомление на <ph name="DEVICE_TYPE" />, оно будет скрыто и на телефоне. Убедитесь, что телефон находится рядом, он разблокирован и на нем включены Bluetooth и Wi-Fi.</translation>
@@ -7171,6 +7204,7 @@
 <translation id="867085395664725367">Произошла ошибка сервера.</translation>
 <translation id="8673026256276578048">Поиск в Интернете...</translation>
 <translation id="8673383193459449849">Неполадка сервера</translation>
+<translation id="8675704450909805533">Не удалось найти подходящее место назначения для установки <ph name="DEVICE_OS" />.</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{Видео}one{# видео}few{# видео}many{# видео}other{# видео}}</translation>
 <translation id="8676313779986170923">Благодарим за отзыв.</translation>
 <translation id="8676374126336081632">Очистить</translation>
@@ -7329,6 +7363,7 @@
 <translation id="8823559166155093873">Блокировать файлы cookie</translation>
 <translation id="8823704566850948458">Сгенерировать пароль</translation>
 <translation id="8824701697284169214">Добавить &amp;страницу</translation>
+<translation id="8826773185686617320">Чтобы начать работу с <ph name="DEVICE_OS" />, извлеките USB-накопитель и перезапустите устройство. В противном случае оно само выключится через <ph name="TIME_LEFT" />.</translation>
 <translation id="8827125715368568315">Отключено разрешение "<ph name="PERMISSION" />" и ещё <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Закрепить расширение</translation>
 <translation id="8827752199525959199">Пароль для аккаунта <ph name="USERNAME" /> на сайте <ph name="DOMAIN" /></translation>
@@ -7463,6 +7498,7 @@
 <translation id="8962051932294470566">За раз можно поделиться только одним файлом. Повторите попытку, когда завершится текущая передача данных.</translation>
 <translation id="8962083179518285172">Скрыть детали</translation>
 <translation id="8962918469425892674">Этот сайт использует датчики движения и освещенности</translation>
+<translation id="8964943308070692533">Другие неактивные сайты</translation>
 <translation id="8965037249707889821">Введите старый пароль</translation>
 <translation id="89667524227025535">Отсканируйте QR-код с помощью камеры устройства или введите код активации, предоставленный вашим оператором связи.</translation>
 <translation id="8966809848145604011">Другие профили</translation>
@@ -7625,6 +7661,8 @@
 <translation id="9116465289595958864">Последнее изменение</translation>
 <translation id="9116799625073598554">Приложение для заметок</translation>
 <translation id="9117030152748022724">Управление приложениями</translation>
+<translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Для оптимальной работы установите <ph name="DEVICE_OS" /> на внутренний накопитель. Это можно сделать позже на экране входа.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Если вы пока не хотите устанавливать систему, запустите ее с USB-накопителя и попробуйте в деле. Текущая ОС и данные на устройстве сохранятся, однако доступный объем хранилища и производительность могут снизиться.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Открыть в закрепленной вкладке</translation>
 <translation id="9122176249172999202">Работа приложения "<ph name="IDS_SHORT_PRODUCT_NAME" />" приостановлена</translation>
 <translation id="9124003689441359348">Здесь появятся сохраненные пароли</translation>

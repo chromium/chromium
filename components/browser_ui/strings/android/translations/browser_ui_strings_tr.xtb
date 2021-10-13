@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Bir site yakındaki Bluetooth cihazları bulmak istediğinde sor (önerilir)</translation>
 <translation id="2315043854645842844">İstemci tarafı sertifika seçimi, işletim sistemi tarafından desteklenmiyor.</translation>
 <translation id="2359808026110333948">Devam et</translation>
+<translation id="2379925928934107488">Mümkünse Chrome koyu tema kullandığında sitelere de koyu tema uygulayın</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tanesi için daha izin verildi}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tanesi için daha izin verildi}}</translation>
 <translation id="2434158240863470628">İndirme işlemi tamamlandı <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Konum erişimi bu cihaz için de kapalı. Konum erişimini <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'ndan açın.</translation>
 <translation id="257931822824936280">Genişletildi - Daraltmak için tıklayın.</translation>
 <translation id="2586657967955657006">Pano</translation>
+<translation id="2597457036804169544">Sitelere koyu tema uygulama</translation>
 <translation id="2621115761605608342">Belirli bir site için JavaScript'e izin verin.</translation>
 <translation id="2653659639078652383">Gönder</translation>
 <translation id="2677748264148917807">Çık</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Ses çalan sitelerin sesini kapat</translation>
 <translation id="3744111561329211289">Arka plan senkronizasyonu</translation>
 <translation id="3763247130972274048">10 sn. atlamak için videoda sola veya sağa iki kez dokunun</translation>
+<translation id="3797520601150691162">Belirli bir siteye koyu tema uygulama</translation>
 <translation id="381841723434055211">Telefon numaraları</translation>
 <translation id="3835233591525155343">Cihaz kullanımınız</translation>
 <translation id="385051799172605136">Geri</translation>
@@ -245,6 +248,7 @@
 <translation id="7302486331832100261">Genelde bildirimleri engelliyorsunuz. İzin vermek için Ayrıntılar'a dokunun.</translation>
 <translation id="7423098979219808738">Önce sor</translation>
 <translation id="7423538860840206698">Pano okuma engellendi</translation>
+<translation id="7425915948813553151">Siteler için koyu tema</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Bir site mikrofonunuzu kullanıyor</translation>
 <translation id="7561196759112975576">Her zaman</translation>

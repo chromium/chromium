@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">在網站要探索附近的藍牙裝置時詢問您 (建議)</translation>
 <translation id="2315043854645842844">作業系統不支援由客戶端選取憑證。</translation>
 <translation id="2359808026110333948">繼續</translation>
+<translation id="2379925928934107488">當 Chrome 採用深色主題背景時，盡可能對網站套用深色主題背景</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{已允許「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{已允許「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="2434158240863470628">下載完成 <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">此裝置的位置資訊存取權亦已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟。</translation>
 <translation id="257931822824936280">已展開 - 點擊即可收合。</translation>
 <translation id="2586657967955657006">剪貼簿</translation>
+<translation id="2597457036804169544">不要為網站套用深色主題背景</translation>
 <translation id="2621115761605608342">允許特定網站執行 JavaScript。</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2677748264148917807">離開</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">將播放音效的網站設為靜音</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3763247130972274048">輕按影片的左或右面兩下即可略過 10 秒</translation>
+<translation id="3797520601150691162">不要為特定網站套用深色主題背景</translation>
 <translation id="381841723434055211">電話號碼</translation>
 <translation id="3835233591525155343">您的裝置使用狀態</translation>
 <translation id="385051799172605136">返回</translation>
@@ -245,6 +248,7 @@
 <translation id="7302486331832100261">您通常會封鎖通知。如要允許，請輕按 [詳情]。</translation>
 <translation id="7423098979219808738">事先詢問</translation>
 <translation id="7423538860840206698">禁止讀取剪貼簿</translation>
+<translation id="7425915948813553151">網站深色主題背景</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">有網站正在使用您的麥克風</translation>
 <translation id="7561196759112975576">永遠使用</translation>

@@ -589,6 +589,7 @@
 <translation id="1612019740169791082">컨테이너가 디스크 크기 조정을 지원하도록 구성되지 않았습니다. Linux에 예약되는 공간 크기를 조정하려면 백업한 후 새로운 컨테이너로 복원하세요.</translation>
 <translation id="1614511179807650956">할당된 모바일 데이터를 모두 사용한 것 같습니다. 추가 데이터를 구입하려면 <ph name="NAME" /> 활성화 포털을 방문하세요.</translation>
 <translation id="161460670679785907">휴대전화를 인식할 수 없습니다</translation>
+<translation id="1615337439947999338">내 Google 계정(<ph name="EMAIL" />)에 저장</translation>
 <translation id="1615402009686901181">기밀 콘텐츠가 보일 때 관리자 정책에서 화면 캡처를 사용 중지합니다.</translation>
 <translation id="1616206807336925449">이 확장 프로그램은 특별한 권한이 필요하지 않습니다.</translation>
 <translation id="1616298854599875024">확장 프로그램 '<ph name="IMPORT_NAME" />'은(는) 공유 모듈이 아니므로 가져올 수 없습니다</translation>
@@ -927,6 +928,7 @@
 <translation id="1929546189971853037">로그인한 모든 기기의 인터넷 사용 기록 조회</translation>
 <translation id="1930879306590754738">이 기기와 내 Google 계정에서 비밀번호가 삭제되었습니다.</translation>
 <translation id="1931152874660185993">설치된 구성요소가 없습니다.</translation>
+<translation id="1931410639376954712"><ph name="DEVICE_OS" /> 설치 중</translation>
 <translation id="1932098463447129402">시작:</translation>
 <translation id="1935303383381416800">사용자 위치 확인이 허용됨</translation>
 <translation id="1936931585862840749">숫자로 인쇄 부수를 표시하세요(1부터 <ph name="MAX_COPIES" />까지).</translation>
@@ -1059,6 +1061,7 @@
 <translation id="208586643495776849">다시 시도해 주세요.</translation>
 <translation id="208634871997892083">연결 유지 VPN</translation>
 <translation id="2087822576218954668">인쇄: <ph name="PRINT_NAME" /></translation>
+<translation id="2088092308059522196">등록은 <ph name="DEVICE_OS" /> 설치 후에만 지원됩니다.</translation>
 <translation id="208928984520943006">언제든지 홈 화면으로 이동하려면 하단에서 위로 스와이프하세요.</translation>
 <translation id="2089566709556890888">Chrome으로 안전하게 탐색</translation>
 <translation id="2089795179672254991">사이트에서 클립보드에 복사된 텍스트 및 이미지를 보려는 경우 확인(권장)</translation>
@@ -1183,6 +1186,7 @@
 <translation id="2203088913459920044">이름에는 문자, 숫자, 특수문자를 사용할 수 있습니다</translation>
 <translation id="2204034823255629767">입력한 항목 조회 및 변경</translation>
 <translation id="220858061631308971">'<ph name="DEVICE_NAME" />'의 PIN 코드를 입력하세요:</translation>
+<translation id="2210462644007531147">설치를 완료할 수 없음</translation>
 <translation id="2212565012507486665">쿠키 허용</translation>
 <translation id="2214018885812055163">공유 폴더</translation>
 <translation id="2214884991347062907">잘못된 비밀번호입니다. 다시 시도하세요.</translation>
@@ -1239,6 +1243,8 @@
 <translation id="22665427234727190">사이트에서 블루투스 기기에 액세스하려고 할 때 확인(권장)</translation>
 <translation id="2266957463645820432">USB를 통한 IPP(IPPUSB)</translation>
 <translation id="2270450558902169558">도메인 <ph name="DOMAIN" />에 있는 모든 기기와 데이터 교환</translation>
+<translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />설치를 진행하면 <ph name="BEGIN_BOLD" />하드 드라이브 전체가 삭제됩니다<ph name="END_BOLD" />. 데이터가 백업되었는지 확인하세요.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />설치가 시작되면 취소할 수 없습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">도메인(<ph name="DOMAINS" />)에 있는 모든 기기와 데이터 교환</translation>
 <translation id="2270666014403455717">'선택'에 스위치 할당</translation>
 <translation id="2271469253353559191">어두운 모드 예약</translation>
@@ -1500,6 +1506,7 @@
 <translation id="2521854691574443804"><ph name="FILE_NAME" /> 파일이 조직 보안 정책을 준수하는지 확인하는 중입니다.</translation>
 <translation id="252219247728877310">구성요소가 업데이트되지 않음</translation>
 <translation id="2523184218357549926">방문한 페이지의 URL을 Google에 전송</translation>
+<translation id="252418934079508528"><ph name="DEVICE_OS" /> 설치</translation>
 <translation id="252502352004572774">Chrome이 컴퓨터에 유해 소프트웨어가 있는지 확인하고 있습니다...</translation>
 <translation id="2526590354069164005">데스크톱</translation>
 <translation id="2526619973349913024">업데이트 상태 확인</translation>
@@ -1704,6 +1711,7 @@
 <translation id="2740531572673183784">확인</translation>
 <translation id="2741713322780029189">복구 터미널 열기</translation>
 <translation id="2741912629735277980">로그인 화면에 UI 표시</translation>
+<translation id="2742448780373473567"><ph name="DEVICE_OS" />을 설치하면 기기의 모든 데이터를 덮어쓰게 됩니다</translation>
 <translation id="274290345632688601">Linux 앱 및 파일 복원 중</translation>
 <translation id="274318651891194348">키보드 검색 중</translation>
 <translation id="2743387203779672305">클립보드로 복사</translation>
@@ -2896,6 +2904,8 @@
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> 사용</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" /> 동안 주변 기기에 <ph name="DEVICE_NAME" />(으)로 표시됩니다.</translation>
 <translation id="3981760180856053153">잘못된 저장 유형을 입력했습니다.</translation>
+<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />문제가 발생하여 <ph name="DEVICE_OS" />을 설치할 수 없습니다.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />도움이 필요한 경우 g.co/xxxxx 페이지를 참고하세요<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">몇 단계 만에 간단하게 브라우저를 설정하세요.</translation>
 <translation id="3983400541576569538">일부 앱 데이터가 사라질 수 있습니다.</translation>
 <translation id="3983586614702900908">알 수 없는 공급업체의 기기</translation>
@@ -2983,6 +2993,7 @@
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> 닫기</translation>
 <translation id="4085270836953633510">사이트에서 직렬 포트에 액세스하려고 할 때 확인</translation>
 <translation id="4085298594534903246">이 페이지에서 자바스크립트가 차단되었습니다.</translation>
+<translation id="4085947337119280756">추가 확장 프로그램</translation>
 <translation id="4087089424473531098">확장 프로그램(파일: <ph name="EXTENSION_FILE" />)을 만들었습니다.</translation>
 <translation id="408721682677442104">MIDI 기기 전체 제어 거부됨</translation>
 <translation id="4089235344645910861">설정이 저장되었으며, 동기화가 시작되었습니다.</translation>
@@ -3284,6 +3295,7 @@
 <translation id="4449996769074858870">이 탭은 오디오를 재생합니다.</translation>
 <translation id="4450274068924249931">화면이 유휴 상태일 때 사진, 시간, 날씨, 미디어 정보를 표시합니다. 화면 보호기를 사용 설정하면 충전하는 동안에도 디스플레이가 켠 상태로 유지됩니다.</translation>
 <translation id="4450974146388585462">진단</translation>
+<translation id="445099924538929605"><ph name="DEVICE_OS" />에서 데이터를 더욱 안전하게 저장할 수 있는 활성 상태의 TPM을 감지했습니다.</translation>
 <translation id="4451479197788154834">비밀번호가 이 기기와 Google 계정에 저장되었습니다.</translation>
 <translation id="4451757071857432900">방해가 되거나 사용자를 현혹하는 광고를 표시하는 사이트에서 광고가 차단됨(권장)</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" />에서 검색하거나 URL을 입력하세요.</translation>
@@ -3785,6 +3797,9 @@
 <translation id="4992473555164495036">관리자가 사용 가능한 입력 방법을 제한했습니다.</translation>
 <translation id="4994474651455208930">사이트에서 프로토콜 기본 핸들러로 사용할지 여부를 묻도록 허용</translation>
 <translation id="4994754230098574403">설정 중입니다.</translation>
+<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />등록하기 전에 <ph name="DEVICE_OS" />에서 기기 소유권을 가질 수 있도록 TPM을 삭제해야 합니다.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />TPM 기기를 완전히 끌 수도 있습니다. 데이터는 소프트웨어 암호화를 통해 계속 안전하게 저장되지만 하드웨어 지원 인증서와 같은 특정 보안 기능은 중지됩니다.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />재부팅하고 시스템 BIOS/UEFI 설정을 입력하여 TPM 설정을 변경할 수 있습니다. 기기 모델에 따라 설정을 변경하는 단계가 다를 수 있습니다. 자세한 내용은 재부팅하기 전에 별도의 기기에서 <ph name="DEVICE_OS" /> 문서를 여세요. [URL 링크]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> VM 없음}=1{<ph name="VM_TYPE" /> VM 1개 발견됨: <ph name="VM_NAME_LIST" />}other{<ph name="VM_TYPE" /> VM {NUM_VMS}개 발견됨: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">인터넷에 연결되지 않았습니다.</translation>
 <translation id="4998430619171209993">사용</translation>
@@ -3900,6 +3915,7 @@
 <translation id="5127620150973591153">보안 연결 ID: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">동기화 사용 안함</translation>
 <translation id="5127881134400491887">네트워크 연결 관리</translation>
+<translation id="5128774403617662387">시작하기 전에 데이터 백업이 있는지 확인하세요. <ph name="DEVICE_OS" />을 설치하면 하드 드라이브가 덮어쓰기됩니다. g.co/TBD에서 자세히 알아보세요.</translation>
 <translation id="512903556749061217">첨부됨</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">프로필을 다운로드할 수 없습니다. 나중에 다시 시도하거나 이동통신사에 문의하세요.</translation>
@@ -4334,6 +4350,7 @@
 <translation id="5592595402373377407">아직 데이터가 충분하지 않습니다.</translation>
 <translation id="5595485650161345191">주소 수정</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
+<translation id="5600348067066185292">간단한 몇 단계면 설치가 완료됩니다. 컴퓨터를 변경하기 전에 한 번 더 확인할 기회가 있습니다.</translation>
 <translation id="5600706100022181951"><ph name="UPDATE_SIZE_MB" />MB의 모바일 데이터를 사용하여 업데이트를 다운로드합니다. 계속하시겠습니까?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">MIDI 기기 연결이 허용되지 않음</translation>
@@ -4393,6 +4410,7 @@
 <translation id="5659593005791499971">이메일</translation>
 <translation id="5659833766619490117">페이지를 번역할 수 없음</translation>
 <translation id="5662513737565158057">Linux 앱의 작동방식을 변경합니다.</translation>
+<translation id="5667490069342183561">Google에서는 데이터 손실에 대해 책임지지 않으며 <ph name="DEVICE_OS" />은 인증되지 않은 모델에서는 작동하지 않을 수 있습니다. g.co/TBD에서 자세히 알아보세요.</translation>
 <translation id="5667546120811588575">Google Play 설정 중...</translation>
 <translation id="5668351004957198136">실패</translation>
 <translation id="56702779821643359">주변의 사람들과 파일을 공유하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -4411,6 +4429,7 @@
 <translation id="5684181005476681636">Wi-Fi 세부정보</translation>
 <translation id="5684661240348539843">자산 식별자</translation>
 <translation id="5687326903064479980">시간대</translation>
+<translation id="5687935527303996204">기기가 연결되어 있는지 확인하고 끄지 마세요. 설치는 최대 20분이 소요될 수 있습니다. 설치가 완료되면 기기가 자동으로 종료됩니다</translation>
 <translation id="5689516760719285838">위치</translation>
 <translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" />님이 다른 기기의 어시스턴트에서 이미 Voice Match를 설정한 것 같습니다. 이전에 녹음된 음성을 사용하여 이 기기에서 음성 모델을 만들었습니다.</translation>
 <translation id="56907980372820799">데이터 연결</translation>
@@ -5749,6 +5768,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" />에서 마이크를 사용 중입니다.</translation>
 <translation id="7141105143012495934">계정 세부정보를 가져올 수 없어 로그인할 수 없습니다. 관리자에게 문의하거나 다시 시도해 주세요.</translation>
 <translation id="7144878232160441200">다시 시도</translation>
+<translation id="7149839598364933473">이 기기를 <ph name="DEVICE_OS" /> 기기로 전환합니다</translation>
 <translation id="7149893636342594995">지난 24시간</translation>
 <translation id="7152478047064750137">이 확장 프로그램에는 특별한 권한이 필요하지 않습니다</translation>
 <translation id="7154130902455071009">다음으로 시작 페이지 변경: <ph name="START_PAGE" /></translation>
@@ -5843,6 +5863,16 @@
 <translation id="7257666756905341374">복사하여 붙여넣은 데이터 조회</translation>
 <translation id="7258225044283673131">애플리케이션이 응답하지 않습니다. '강제 종료'를 선택하여 앱을 닫으세요.</translation>
 <translation id="7262004276116528033">이 로그인 서비스는 <ph name="SAML_DOMAIN" />에서 호스팅됩니다.</translation>
+<translation id="7264432249010320236">추가 사이트</translation>
+<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />다음 문제 해결 단계를 시도해 보세요.
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />기기에 HDD, SSD 또는 eMMC와 같은 내부 저장소가 설치되어 있고 정상 작동하는지 확인하세요.
+    <ph name="LIST_ITEM" />내부 저장소가 16GB 이상인지 확인하세요.
+    <ph name="LIST_ITEM" />내부 저장소 연결을 물리적으로 확인할 수 있으면 점검하세요.
+    <ph name="LIST_ITEM" />인증된 모델을 사용하고 있는지 확인하고 설치 노트를 확인하세요.
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />도움이 필요한 경우 g.co/xxxxx 페이지를 참고하세요.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">가상 머신을 설치할 수 없습니다. 다시 시도하거나 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="7267875682732693301">손가락을 뗀 후 다시 터치하여 지문의 다른 부분을 추가하세요.</translation>
 <translation id="7268127947535186412">기기 소유자가 관리하는 설정입니다.</translation>
@@ -6569,6 +6599,7 @@
 <translation id="7986295104073916105">저장된 비밀번호 설정 읽기 및 변경</translation>
 <translation id="7987814697832569482">항상 이 VPN을 통해 연결</translation>
 <translation id="7988355189918024273">접근성 기능 사용</translation>
+<translation id="7988805580376093356">OS는 그대로 두고 USB에서 <ph name="DEVICE_OS" />을 실행하세요</translation>
 <translation id="7991296728590311172">스위치 제어 설정</translation>
 <translation id="7997826902155442747">프로세스 우선순위</translation>
 <translation id="7999229196265990314">생성된 파일:
@@ -6677,6 +6708,7 @@
 <translation id="80974698889265265">PIN이 일치하지 않습니다.</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" />이(가) 확장 프로그램의 프록시 설정을 사용 중입니다.</translation>
 <translation id="8097959162767603171">관리자가 먼저 관리 콘솔의 Chrome 기기 목록에서 서비스 약관에 동의해야 합니다.</translation>
+<translation id="8098156986344908134"><ph name="DEVICE_OS" />을 설치하고 하드 드라이브를 삭제할까요?</translation>
 <translation id="8098616321286360457">네트워크 연결 필요</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" />가 선택되었습니다. Search와 Space 키를 눌러 선택 해제하세요.</translation>
 <translation id="810185532889603849">맞춤 색상</translation>
@@ -6861,6 +6893,7 @@
 <translation id="8287902281644548111">API 호출/URL로 검색</translation>
 <translation id="8288032458496410887"><ph name="APP" /> 제거...</translation>
 <translation id="8289128870594824098">디스크 크기</translation>
+<translation id="8289509909262565712"><ph name="DEVICE_OS" /> 시작하기</translation>
 <translation id="8293206222192510085">북마크 추가</translation>
 <translation id="8294431847097064396">출처</translation>
 <translation id="8298429963694909221">이제 <ph name="DEVICE_TYPE" />에서 휴대전화 알림을 받아 볼 수 있습니다. <ph name="DEVICE_TYPE" />에서 알림을 닫으면 휴대전화에서도 알림이 닫힙니다. 휴대전화가 근처에 있고 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
@@ -7184,6 +7217,7 @@
 <translation id="867085395664725367">일시적인 서버 오류가 발생했습니다.</translation>
 <translation id="8673026256276578048">웹 검색...</translation>
 <translation id="8673383193459449849">서버 문제</translation>
+<translation id="8675704450909805533">설치 프로그램이 <ph name="DEVICE_OS" /> 설치를 위한 유효한 위치를 찾을 수 없습니다</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{동영상}other{동영상 #개}}</translation>
 <translation id="8676313779986170923">의견을 보내 주셔서 감사합니다.</translation>
 <translation id="8676374126336081632">입력내용 지우기</translation>
@@ -7339,6 +7373,7 @@
 <translation id="8823559166155093873">쿠키 차단</translation>
 <translation id="8823704566850948458">비밀번호 추천...</translation>
 <translation id="8824701697284169214">페이지 추가(&amp;G)...</translation>
+<translation id="8826773185686617320"><ph name="DEVICE_OS" /> 사용을 시작하려면 USB를 제거하고 기기를 다시 시작하세요. 그러지 않으면 <ph name="TIME_LEFT" /> 후 기기가 종료됩니다</translation>
 <translation id="8827125715368568315"><ph name="PERMISSION" /> 외 <ph name="COUNT" />개 차단함</translation>
 <translation id="8827289157496676362">확장 프로그램 고정</translation>
 <translation id="8827752199525959199">추가 작업입니다. <ph name="DOMAIN" /> <ph name="USERNAME" />의 비밀번호입니다.</translation>
@@ -7473,6 +7508,7 @@
 <translation id="8962051932294470566">한 번에 하나의 파일만 공유할 수 있습니다. 현재 전송이 완료되면 다시 시도해 보세요.</translation>
 <translation id="8962083179518285172">세부정보 숨기기</translation>
 <translation id="8962918469425892674">사이트에서 모션 센서 또는 조도 센서를 사용 중입니다.</translation>
+<translation id="8964943308070692533">추가 비활성 사이트</translation>
 <translation id="8965037249707889821">이전 비밀번호 입력</translation>
 <translation id="89667524227025535">기기 카메라로 QR 코드를 스캔하거나 이동통신사에서 제공한 활성화 코드를 입력하세요.</translation>
 <translation id="8966809848145604011">기타 프로필</translation>
@@ -7635,6 +7671,8 @@
 <translation id="9116465289595958864">최종 수정 날짜</translation>
 <translation id="9116799625073598554">메모 앱</translation>
 <translation id="9117030152748022724">앱 관리</translation>
+<translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />최적의 환경에서 이용하려면 <ph name="DEVICE_OS" />을 내부 디스크에 설치하세요. 나중에 로그인 화면에서 설치할 수도 있습니다.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />아직 설치할 준비가 되지 않았다면 USB에서 실행하여 사용해 볼 수도 있습니다. 기존 OS와 데이터는 그대로 유지되지만 저장용량과 성능이 제한될 수 있습니다<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">고정 탭으로 열기</translation>
 <translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" />이(가) 일시중지됨</translation>
 <translation id="9124003689441359348">저장한 비밀번호가 여기에 표시됩니다.</translation>

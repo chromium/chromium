@@ -30,6 +30,7 @@
 <translation id="1710340000377843106">දැන්</translation>
 <translation id="1752946267035950200">{MINUTES,plural, =1{මිනිත්තු 1}one{මිනිත්තු #}other{මිනිත්තු #}}</translation>
 <translation id="1761785978543082658">බ <ph name="QUANTITY" /></translation>
+<translation id="1770726142253415363"><ph name="ROW_NUMBER" /> පේළිය, <ph name="COLUMN_NUMBER" /> තීරුව වෙත යන්න.</translation>
 <translation id="1801827354178857021">නැවතීමේ ලකුණ</translation>
 <translation id="1803208670097017349">{MONTHS,plural, =1{මාස 1}one{මාස #}other{මාස #}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/s</translation>

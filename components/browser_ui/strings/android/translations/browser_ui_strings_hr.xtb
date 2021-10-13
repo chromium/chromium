@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Prikaži upit kad web-lokacija želi tražiti Bluetooth uređaje u blizini (preporučeno)</translation>
 <translation id="2315043854645842844">Operativni sustav ne podržava odabir klijentskog certifikata.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
+<translation id="2379925928934107488">Primijeni tamnu temu na web-lokacije kad Chrome koristi tamnu temu, kad je moguće</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Preuzimanje je dovršeno: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Pristup lokaciji isključen je i za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Prošireno – kliknite za sažimanje.</translation>
 <translation id="2586657967955657006">Međuspremnik</translation>
+<translation id="2597457036804169544">Ne primjenjuj tamnu temu na web-lokacije</translation>
 <translation id="2621115761605608342">Dopuštanje JavaScripta za određenu web-lokaciju.</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2677748264148917807">Napusti</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Isključen je zvuk na web-lokacijama koje ga reproduciraju</translation>
 <translation id="3744111561329211289">Sinkronizacija u pozadini</translation>
 <translation id="3763247130972274048">Dvaput dodirnite videozapis lijevo ili desno da biste preskočili 10 s</translation>
+<translation id="3797520601150691162">Ne primjenjuj tamnu temu za određenu web-lokaciju</translation>
 <translation id="381841723434055211">Telefonski brojevi</translation>
 <translation id="3835233591525155343">Vaša upotreba uređaja</translation>
 <translation id="385051799172605136">Natrag</translation>
@@ -245,6 +248,7 @@
 <translation id="7302486331832100261">Uglavnom blokirate obavijesti. Da biste ih dopustili, kliknite Pojedinosti.</translation>
 <translation id="7423098979219808738">Prvo pitaj</translation>
 <translation id="7423538860840206698">Blokirano je čitanje međuspremnika</translation>
+<translation id="7425915948813553151">Tamna tema za web-lokacije</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Web-lokacija upotrebljava vaš mikrofon</translation>
 <translation id="7561196759112975576">Uvijek</translation>

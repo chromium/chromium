@@ -404,6 +404,7 @@
 <translation id="3429160811076349561">무료 체험 기능 사용 안함</translation>
 <translation id="3440975416244667276">길게 터치하면 관련 정보가 표시됩니다.</translation>
 <translation id="3443221991560634068">현재 페이지 새로고침</translation>
+<translation id="3444179773590444986">사이트의 어두운 테마에 관한 의견을 공유할까요?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{다운로드 1개 예약됨}other{다운로드 #개 예약됨}}</translation>
 <translation id="3478363558367712427">검색엔진을 선택할 수 있습니다.</translation>
 <translation id="3493531032208478708">추천 콘텐츠 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -585,6 +586,7 @@
 <translation id="4663499661119906179">맞춤 인기 사이트 및 뉴스 보기</translation>
 <translation id="4663756553811254707">북마크 <ph name="NUMBER_OF_BOOKMARKS" />개 삭제됨</translation>
 <translation id="4668347365065281350">쿠키 및 기타 로컬에 저장된 데이터 등 사이트에 저장된 모든 데이터</translation>
+<translation id="4678082183394354975">Chrome에서 사이트의 어두운 테마가 사용 설정되었습니다.</translation>
 <translation id="4684427112815847243">모두 동기화</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />개}other{<ph name="SHIPPING_OPTION_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />개}}</translation>
 <translation id="4696983787092045100">기기로 SMS 전송</translation>
@@ -766,6 +768,7 @@
 <translation id="5754350196967618083">디스커버를 새로고침할 수 없음</translation>
 <translation id="5763382633136178763">시크릿 탭</translation>
 <translation id="5763514718066511291">탭하여 이 앱의 URL 복사하기</translation>
+<translation id="5765517223145864268">사용 경험에 관해 알려주세요. 아니면 <ph name="BEGIN_LINK" />설정을 변경하세요<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">설명:</translation>
 <translation id="5767013862801005129"><ph name="TAB_TITLE" /> 탭 복원됨</translation>
 <translation id="5776970333778123608">중요하지 않은 데이터</translation>
@@ -953,6 +956,7 @@
 <translation id="6738516213925468394"><ph name="TIME" />자로 <ph name="BEGIN_LINK" />동기화 암호<ph name="END_LINK" />를 통해 데이터가 암호화되었습니다. 동기화를 시작하려면 암호를 입력하세요.</translation>
 <translation id="6738867403308150051">다운로드 중...</translation>
 <translation id="6751521182688001123">새 탭을 빠르게 엽니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
+<translation id="6756507620369789050">의견 공유</translation>
 <translation id="6767294960381293877">탭을 공유할 기기 목록이 절반 높이로 열렸습니다.</translation>
 <translation id="6783942555455976443">나중에 읽을 수 있게 페이지를 저장하여 알림을 받으세요.</translation>
 <translation id="6795633245022906657">새 탭을 빠르게 엽니다. 바로가기를 수정하려면 설정으로 이동하세요.</translation>
@@ -1044,6 +1048,7 @@
 <translation id="7352651011704765696">문제가 발생한 경우</translation>
 <translation id="7352939065658542140">동영상</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{선택한 1개 항목 공유}other{선택한 #개 항목 공유}}</translation>
+<translation id="7356631068872238169">읽기 목록에서 삭제</translation>
 <translation id="7359002509206457351">결제 수단 액세스</translation>
 <translation id="7375125077091615385">유형:</translation>
 <translation id="7376560087009844242">페이지 텍스트를 더 많이 포함하면 터치하여 검색 기능을 사용할 때 더 나은 검색결과를 확인할 수 있습니다. 이를 변경하려면 언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />을 방문하세요.</translation>
@@ -1214,6 +1219,7 @@
 <translation id="8266862848225348053">다운로드 위치</translation>
 <translation id="8274165955039650276">다운로드 항목 보기</translation>
 <translation id="8281886186245836920">건너뛰기</translation>
+<translation id="8282297628636750033">가능하면 사이트에 어두운 테마를 적용합니다</translation>
 <translation id="8284326494547611709">자막</translation>
 <translation id="829672787777123339">기기에 연결 중…</translation>
 <translation id="8310344678080805313">일반 탭</translation>
@@ -1345,6 +1351,7 @@
 <translation id="9063523880881406963">데스크톱 버전으로 보기 사용 중지</translation>
 <translation id="9065203028668620118">수정</translation>
 <translation id="9065383040763568503">Chrome에서 중요하다고 간주하지 않는 저장된 데이터(예: 저장된 설정이 없거나 사용자가 자주 방문하지 않는 사이트)</translation>
+<translation id="906781307897697745"><ph name="PRODUCT_NAME" />에서</translation>
 <translation id="9069999660519089861">읽지 않은 페이지 없음</translation>
 <translation id="9070377983101773829">음성 검색 시작</translation>
 <translation id="9074336505530349563">Google에서 추천하는 맞춤 콘텐츠를 보려면 로그인하고 동기화를 사용 설정하세요.</translation>

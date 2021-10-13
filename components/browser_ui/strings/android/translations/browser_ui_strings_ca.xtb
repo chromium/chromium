@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Pregunta'm quan un lloc web vulgui descobrir dispositius Bluetooth propers (opció recomanada)</translation>
 <translation id="2315043854645842844">El sistema operatiu no permet seleccionar el certificat del client.</translation>
 <translation id="2359808026110333948">Continua</translation>
+<translation id="2379925928934107488">Aplica el tema fosc als llocs web quan Chrome l'utilitzi i sigui possible</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{S'han permès <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}other{S'han permès <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}}</translation>
 <translation id="2434158240863470628">S'ha completat la baixada <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">L'accés a la ubicació també està desactivat en aquest dispositiu. Activa'l a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Vista desplegada (feu clic per replegar-la)</translation>
 <translation id="2586657967955657006">Porta-retalls</translation>
+<translation id="2597457036804169544">No apliquis el tema fosc als llocs web</translation>
 <translation id="2621115761605608342">Permet JavaScript en un lloc web concret.</translation>
 <translation id="2653659639078652383">Envia</translation>
 <translation id="2677748264148917807">Surt</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Silencia els llocs web que reprodueixen so</translation>
 <translation id="3744111561329211289">Sincronització en segon pla</translation>
 <translation id="3763247130972274048">Fes doble toc a l'esquerra o a la dreta del vídeo per saltar 10 s</translation>
+<translation id="3797520601150691162">No apliquis el tema fosc a un lloc web concret</translation>
 <translation id="381841723434055211">Números de telèfon</translation>
 <translation id="3835233591525155343">L'ús que fas del dispositiu</translation>
 <translation id="385051799172605136">Enrere</translation>
@@ -244,6 +247,7 @@
 <translation id="7302486331832100261">Normalment bloqueges les notificacions. Per permetre-les, toca Detalls.</translation>
 <translation id="7423098979219808738">Pregunta abans</translation>
 <translation id="7423538860840206698">L'accés de lectura al porta-retalls està bloquejat</translation>
+<translation id="7425915948813553151">Tema fosc per als llocs web</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Un lloc web està utilitzant el micròfon</translation>
 <translation id="7561196759112975576">Sempre</translation>

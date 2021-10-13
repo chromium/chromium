@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">ಸೈಟ್ ಯಾವಾಗ ಸಮೀಪದ ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು ಅನ್ವೇಷಿಸಲು ಬಯಸುತ್ತದೆಯೋ ಆಗ ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="2315043854645842844">ಕ್ಲೈಂಟ್‌ನ ಪ್ರಮಾಣಪತ್ರ ಆಯ್ಕೆಯನ್ನು ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಂನಿಂದ ಬೆಂಬಲಿಸಲಾಗಿಲ್ಲ.</translation>
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
+<translation id="2379925928934107488">ಡಾರ್ಕ್ ಥೀಮ್‌ ಅನ್ನು Chrome ಬಳಸುವಾಗ, ಸಾಧ್ಯವಾದರೆ ಡಾರ್ಕ್ ಥೀಮ್‌ ಅನ್ನು ಸೈಟ್‌ಗಳಿಗೆ ಅನ್ವಯಿಸಿ</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಸಂಗತಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಸಂಗತಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಸಂಗತಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ}}</translation>
 <translation id="2434158240863470628">ಡೌನ್‌ಲೋಡ್‌‌ ಪೂರ್ಣಗೊಂಡಿದೆ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">ಈ ಸಾಧನದ ಸ್ಥಳ ಪ್ರವೇಶ ಸಹ ಆಫ್ ಆಗಿದೆ. ಅದನ್ನು <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಆನ್ ಮಾಡಿ.</translation>
 <translation id="257931822824936280">ವಿಸ್ತರಿಸಲಾಗಿದೆ - ಕುಗ್ಗಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="2586657967955657006">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್</translation>
+<translation id="2597457036804169544">ಸೈಟ್‌ಗಳಿಗೆ ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ನು ಅನ್ವಯಿಸಬೇಡಿ</translation>
 <translation id="2621115761605608342">ನಿರ್ದಿಷ್ಟ ಸೈಟ್‌ಗೆ JavaScript ಅನ್ನು ಅನುಮತಿಸಿ.</translation>
 <translation id="2653659639078652383">ಸಲ್ಲಿಸಿ</translation>
 <translation id="2677748264148917807">ತೊರೆಯಿರಿ</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">ಕೆಲವು ಸೈಟ್‌ಗಳಲ್ಲಿ ಧ್ವನಿ ಪ್ಲೇ ಆಗುವುದನ್ನು ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="3744111561329211289">ಹಿನ್ನೆಲೆ ಸಿಂಕ್</translation>
 <translation id="3763247130972274048">10 ಸೆಕೆಂಡ್‌ಗಳಷ್ಟು ಸ್ಕಿಪ್ ಮಾಡಲು ವೀಡಿಯೊದ ಎಡ ಅಥವಾ ಬಲಭಾಗದಲ್ಲಿ ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
+<translation id="3797520601150691162">ನಿರ್ದಿಷ್ಟವಾದ ಸೈಟ್‌ಗೆ ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ನು ಅನ್ವಯಿಸಬೇಡಿ</translation>
 <translation id="381841723434055211">ಫೋನ್ ಸಂಖ್ಯೆಗಳು</translation>
 <translation id="3835233591525155343">ನಿಮ್ಮ ಸಾಧನದ ಬಳಕೆ</translation>
 <translation id="385051799172605136">ಹಿಂದೆ</translation>
@@ -244,6 +247,7 @@
 <translation id="7302486331832100261">ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸುತ್ತೀರಿ. ಅನುಮತಿಸಲು, ವಿವರಗಳನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="7423098979219808738">ಮೊದಲು ಕೇಳಿ</translation>
 <translation id="7423538860840206698">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಓದದಂತೆ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
+<translation id="7425915948813553151">ಸೈಟ್‌ಗಳಿಗಾಗಿ ಡಾರ್ಕ್ ಥೀಮ್</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">ಒಂದು ಸೈಟ್ ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="7561196759112975576">ಯಾವಾಗಲೂ</translation>

@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Hỏi khi một trang web muốn tìm các thiết bị Bluetooth ở gần (khuyên dùng)</translation>
 <translation id="2315043854645842844">Lựa chọn chứng chỉ phía ứng dụng khách không được hệ điều hành hỗ trợ.</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
+<translation id="2379925928934107488">Áp dụng giao diện tối cho các trang web khi Chrome sử dụng giao diện tối, nếu có thể</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Đã cho phép <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{Đã cho phép <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>
 <translation id="2434158240863470628">Quá trình tải xuống hoàn tất <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Quyền truy cập vị trí cũng đã bị tắt đối với thiết bị này. Hãy bật trong <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Đã mở rộng - nhấp để thu gọn.</translation>
 <translation id="2586657967955657006">Bảng nhớ tạm</translation>
+<translation id="2597457036804169544">Không áp dụng giao diện tối cho các trang web</translation>
 <translation id="2621115761605608342">Cho phép JavaScript cho trang web cụ thể.</translation>
 <translation id="2653659639078652383">Gửi</translation>
 <translation id="2677748264148917807">Rời khỏi</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Tắt tiếng trên các trang web phát âm thanh</translation>
 <translation id="3744111561329211289">Đồng bộ hóa dưới nền</translation>
 <translation id="3763247130972274048">Nhấn đúp vào bên trái hoặc bên phải của video để tua lại/tua đi 10 giây</translation>
+<translation id="3797520601150691162">Không áp dụng giao diện tối cho một trang web cụ thể</translation>
 <translation id="381841723434055211">Số điện thoại</translation>
 <translation id="3835233591525155343">Hoạt động dùng thiết bị của bạn</translation>
 <translation id="385051799172605136">Quay lại</translation>
@@ -244,6 +247,7 @@
 <translation id="7302486331832100261">Bạn thường chặn các thông báo. Để cho phép, hãy nhấn vào Chi tiết.</translation>
 <translation id="7423098979219808738">Hỏi trước</translation>
 <translation id="7423538860840206698">Đã chặn quyền đọc bảng nhớ tạm</translation>
+<translation id="7425915948813553151">Giao diện tối cho các trang web</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Một trang web đang sử dụng micrô của bạn</translation>
 <translation id="7561196759112975576">Luôn luôn</translation>

@@ -58,6 +58,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1881378885488531302">IP ලිපිනය ලබා ගත නොහැකිය</translation>
 <translation id="1887850431809612466">දෘඨාංග සංශෝධනය</translation>
+<translation id="1901646112321215184">DNS සේවාදායක වින්‍යාස කර නොමැත</translation>
 <translation id="1905710495812624430">ඉඩ දෙන උපරිම උත්සාහයන් ගණන ඉක්මවා ඇත.</translation>
 <translation id="1908234395526491708">UDP ඉල්ලීම් අසාර්ථක වීම්</translation>
 <translation id="1930797645656624981">Chrome OS ආදාන ක්‍රම සේවය</translation>
@@ -74,6 +75,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">පෙළ ගස්වන ලදි</translation>
 <translation id="2161394479394250669">මුද්‍රණ කාර්යය අවලංගු කරන්න</translation>
+<translation id="2180197493692062006">යම් දෙයක් වැරදිණි. යෙදුම නැවත විවෘත කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="2209788852729124853">තදබදය ගණනය කිරීම් යළි සකසන්න</translation>
 <translation id="2212733584906323460">විභේදනය නම් කරන්න</translation>
 <translation id="2217935453350629363">වත්මන් වේගය</translation>
@@ -89,6 +91,7 @@
 <translation id="2391082728065870591">ප්‍රතිපෝෂණ වාර්තාව යවන්න</translation>
 <translation id="2407209115954268704">SIM අගුලු තත්ත්වය</translation>
 <translation id="2418150275289244458">සැකසීම්වල විවෘත කරන්න</translation>
+<translation id="2421798028054665193">පිටු <ph name="TOTAL_PAGES" />කින් <ph name="CURRENT_PAGE" /> රූපය</translation>
 <translation id="2446553403094072641">පාවෙන ලක්ෂ්‍යය නිරවද්‍යතාව</translation>
 <translation id="2448312741937722512">වර්ගය</translation>
 <translation id="2461822463642141190">වත්මන්</translation>
@@ -107,11 +110,13 @@
 <translation id="2860473693272905224">ස්කෑනරය මත තව පිටුවක් තබන්න</translation>
 <translation id="2872961005593481000">වසන්න</translation>
 <translation id="2878387241690264070">තත්පර <ph name="NUM_SECONDS" />ක් තුළ <ph name="RATE" /> විසර්ජනය වේ.</translation>
+<translation id="2927511423571448384">Android වෙතින් HTTP (තොට 80) වෙබ් අඩවිවලට ෆයර්වෝලය හරහා සම්බන්ධ වීමට නොහැකිය</translation>
 <translation id="3008341117444806826">නැවුම් කරන්න</translation>
 <translation id="3009958530611748826">සුරැකීමට ෆෝල්ඩරයක් තෝරන්න</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">අන්ත ලක්ෂ්‍යය</translation>
 <translation id="3069085583900247081">පරීක්ෂණය අසාර්ථක විය</translation>
+<translation id="3076387335132326640">ඔබ විවෘත ජාලයක් භාවිත කරමින් සිටියි</translation>
 <translation id="3083667275341675831">සබැඳුම් හැකියා දෝෂ නිර්ණ</translation>
 <translation id="3091839911843451378">අසාර්ථක විය - නතර විය</translation>
 <translation id="3102119246920354026">හැඹිලිය</translation>
@@ -199,6 +204,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh බැටරිය</translation>
 <translation id="4561801978359312462">SIM අගුලු හරින ලදී</translation>
 <translation id="4562494484721939086">සේවාව නැත</translation>
+<translation id="4567024731344774461">Android වෙතින් DNS විසඳීමට නොහැකිය</translation>
 <translation id="458794348635939462">සියලු සත්කාරක විසඳීම අසාර්ථක විය</translation>
 <translation id="4593212453765072419">ප්‍රොක්සි සත්‍යාපනය අවශ්‍යයි</translation>
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" /> න් <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> මුද්‍රණ කාර්යය අවලංගු කිරීමට enter ඔබන්න.</translation>
@@ -223,6 +229,7 @@
 <translation id="484790837831576105">(Android) DNS විභේදනය</translation>
 <translation id="4848429997038228357">ධාවන වෙමින්</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> උත්සාහයන් {0}ක් ඉතිරිය}one{<ph name="ERROR_MESSAGE" /> උත්සාහයන් {0}ක් ඉතිරිය}other{<ph name="ERROR_MESSAGE" /> උත්සාහයන් {0}ක් ඉතිරිය}}</translation>
+<translation id="4871137769558798671">HTTPS (තොට 443) වෙබ් අඩවිවලට ෆයර්වෝලය හරහා සම්බන්ධ වීමට නොහැකිය</translation>
 <translation id="4880328057631981605">ප්‍රවේශ ලක්ෂ්‍යයේ නම</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">වහාම අලුත් එකක් තෝරන්න</translation>
@@ -258,6 +265,7 @@
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">අනුවාදය <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">කවුළුව ඩෙස්ක් වෙත ගෙන යන්න</translation>
+<translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">අනන්‍යතාවය</translation>
 <translation id="5317780077021120954">සුරකින්න</translation>
 <translation id="5318334351163689047">TCP ඉල්ලීම් අසාර්ථක වීම්</translation>
@@ -279,6 +287,8 @@
 <translation id="5502931783115429516">Android ධාවනය නොවේ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5546352997259770619">සංඥා ශක්තිය අඩුය, ප්‍රවේශ ස්ථානයට වඩා සමීප වීමට උත්සාහ කරන්න</translation>
+<translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">යළි ස්කෑන් කරන්න</translation>
 <translation id="5669267381087807207">සක්‍රීය වෙමින්...</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -319,6 +329,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">භාවිතය සමඟ බැටරි ධාරිතාව පහත වැටේ</translation>
 <translation id="6191293864534840972">විකෘති වූ නම් සේවාදායක</translation>
+<translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ස්කෑනර ලබා ගත නොහැකිය</translation>
 <translation id="6232017090690406397">බැටරිය</translation>
 <translation id="6243280677745499710">දැනට සකසා ඇත</translation>
@@ -328,6 +339,7 @@
 <translation id="636850387210749493">ව්‍යාපාරික බඳවාගැනීම</translation>
 <translation id="6379086450106841622">ස්පර්ශ තිරය</translation>
 <translation id="6388847657025262518">ස්කෑනරයේ ලේඛන සංග්‍රහය තදබදයට පත්ව ඇත. සංග්‍රහය පරීක්ෂා කර නැවත උත්සාහ කරන්න.</translation>
+<translation id="6395640744968320699">HTTP (තොට 80) වෙබ් අඩවිවලට ෆයර්වෝලය හරහා සම්බන්ධ වීමට නොහැකිය</translation>
 <translation id="641081527798843608">විෂය ගැළපුම</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">කදිමයි</translation>
@@ -335,6 +347,7 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> විසින් කළමනාකරණය කෙරේ</translation>
 <translation id="649050271426829538">නැවතිණි - කඩදාසි හිරවීම</translation>
+<translation id="6498608540383876992">වාහල සම්බන්ධ කර ගැනීමට නොහැකිය</translation>
 <translation id="6516990319416533844">බැටරිය ආරෝපණය වීමේ වේගය පරීක්ෂා කිරීමට, කෙටි කාලයක් සඳහා ඔබගේ බැටරිය බැස යාමට ඉඩ දෙන්න</translation>
 <translation id="6517239166834772319">ගවේෂණය</translation>
 <translation id="6527081081771465939">නොදන්නා Wi-Fi ආරක්ෂක ප්‍රොටොකෝලය</translation>
@@ -382,6 +395,7 @@
 <translation id="7271040990581020067">ස්කෑනරය දැනට භාවිතයේ ඇත. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">වෝල්පේපර එකතු</translation>
+<translation id="7292680402155138244">HTTPS (තොට 443) වෙබ් අඩවිවලට ඉහළ පමාව</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -432,12 +446,15 @@
 <translation id="7994702968232966508">EAP ආකාරය</translation>
 <translation id="8020238979854764615">දෝෂයක් සිදු විය. වෙනත් රූප තෝරා ගැනීමෙන් නැවත උත්සාහ කරන්න.</translation>
 <translation id="802154636333426148">බාගැනීම අසමත් විය</translation>
+<translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">ප්‍රතිපෝෂණ යවන්න</translation>
 <translation id="8075838845814659848">ඉතිරි ආරෝපණය</translation>
 <translation id="808894953321890993">මුරපදය වෙනස් කරන්න</translation>
 <translation id="811820734797650957">(Android) වාහල පින් කළ හැකිය</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">තදබදය ගණනය කිරීම් ඉල්ලන්න</translation>
+<translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8177708084858970226">DNS විසඳීමට නොහැකිය</translation>
 <translation id="8206859287963243715">සෙලියුලර්</translation>
 <translation id="8208861521865154048">අමතර වාසි</translation>
 <translation id="8230672074305416752">පෙරනිමි ජාල වාහල පින්ග් කිරීම අසාර්ථක විය</translation>
@@ -449,6 +466,7 @@
 <translation id="8297006494302853456">දුර්වලයි</translation>
 <translation id="8302368968391049045">HTTPS ෆයර්වෝලය</translation>
 <translation id="8318753676953949627">රූප නැත</translation>
+<translation id="8346875532700229909">Android වෙතින් වාහල සම්බන්ධ කර ගැනීමට නොහැකිය</translation>
 <translation id="8347227221149377169">මුද්‍රණ වැඩ</translation>
 <translation id="8352772353338965963">බහු පිවිසුම් සඳහා ගිනුමක් එක් කරන්න. සියළු පිවිසි ගිනුම් වෙත මුරපදයක් නොමැතිව පිවිසිය හැක. එම නිසා මෙම විශේෂාංගය භාවිත කළ යුත්තේ විශ්වාසී ගිනුම් සමඟ පමණි.</translation>
 <translation id="8364946094152050673">හිස් නම් සේවාදායක</translation>
@@ -480,6 +498,7 @@
 <translation id="8747900814994928677">වෙනස් කිරීම තහවුරු කරන්න</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="879568662008399081">මෙම ජාලයට පිවිසුම් දොරටුවක් තිබිය හැකිය</translation>
 <translation id="8798099450830957504">පෙරනිමි</translation>
 <translation id="8798441408945964110">සපයන්නාගේ නම</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
@@ -503,6 +522,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ස්කෑන් කරන්න}=1{පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන්න}one{පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන්න}other{පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන්න}}</translation>
 <translation id="9003704114456258138">සංඛ්‍යාතය</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9062831201344759865">DNS විභේදනයට ඉහළ පමාවක් ඇත</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">වත්මන් භාවිතය</translation>
