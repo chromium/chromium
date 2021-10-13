@@ -45,9 +45,14 @@ MediaNotificationService::MediaNotificationService(
     bool show_from_all_profiles) {
   item_manager_ = global_media_controls::MediaItemManager::Create();
 
+  absl::optional<base::UnguessableToken> source_id;
+  if (!show_from_all_profiles) {
+    source_id = content::MediaSession::GetSourceId(profile);
+  }
+
   media_session_notification_producer_ =
-      std::make_unique<MediaSessionNotificationProducer>(
-          item_manager_.get(), profile, show_from_all_profiles);
+      std::make_unique<MediaSessionNotificationProducer>(item_manager_.get(),
+                                                         source_id);
   item_manager_->AddItemProducer(media_session_notification_producer_.get());
 
   if (media_router::MediaRouterEnabled(profile)) {

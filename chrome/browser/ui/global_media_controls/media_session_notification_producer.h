@@ -32,8 +32,6 @@ class CastDialogController;
 class StartPresentationContext;
 }  // namespace media_router
 
-class Profile;
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class GlobalMediaControlsDismissReason {
@@ -51,10 +49,12 @@ class MediaSessionNotificationProducer
       public MediaItemUIDeviceSelectorDelegate,
       public global_media_controls::MediaItemUIObserver {
  public:
+  // When given a |source_id|, the MediaSessionNotificationProducer will only
+  // produce MediaItems for the given source (i.e. profile). When empty, it will
+  // produce MediaItems for the Media Sessions on all sources (profiles).
   MediaSessionNotificationProducer(
       global_media_controls::MediaItemManager* item_manager,
-      Profile* profile,
-      bool show_from_all_profiles);
+      absl::optional<base::UnguessableToken> source_id);
   ~MediaSessionNotificationProducer() override;
 
   // global_media_controls::MediaItemProducer:

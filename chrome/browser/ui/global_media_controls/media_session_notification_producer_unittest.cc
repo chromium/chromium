@@ -11,10 +11,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/test_helper.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/global_media_controls/public/test/mock_media_item_manager.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
@@ -43,7 +43,7 @@ class MediaSessionNotificationProducerTest : public testing::Test {
 
   void SetUp() override {
     producer_ = std::make_unique<MediaSessionNotificationProducer>(
-        &item_manager_, &profile_, true);
+        &item_manager_, absl::nullopt);
   }
 
   void TearDown() override { producer_.reset(); }
@@ -217,7 +217,6 @@ class MediaSessionNotificationProducerTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   global_media_controls::test::MockMediaItemManager item_manager_;
-  TestingProfile profile_;
   std::unique_ptr<MediaSessionNotificationProducer> producer_;
   base::HistogramTester histogram_tester_;
 };

@@ -292,8 +292,7 @@ void MediaSessionNotificationProducer::Session::MarkActiveIfNecessary() {
 
 MediaSessionNotificationProducer::MediaSessionNotificationProducer(
     global_media_controls::MediaItemManager* item_manager,
-    Profile* profile,
-    bool show_from_all_profiles)
+    absl::optional<base::UnguessableToken> source_id)
     : item_manager_(item_manager), item_ui_observer_set_(this) {
   // Connect to the controller manager so we can create media controllers for
   // media sessions.
@@ -304,25 +303,22 @@ MediaSessionNotificationProducer::MediaSessionNotificationProducer(
   content::GetMediaSessionService().BindAudioFocusManager(
       audio_focus_remote_.BindNewPipeAndPassReceiver());
 
-  if (show_from_all_profiles) {
+  if (source_id.has_value()) {
+    audio_focus_remote_->AddSourceObserver(
+        *source_id, audio_focus_observer_receiver_.BindNewPipeAndPassRemote());
+
+    audio_focus_remote_->GetSourceFocusRequests(
+        *source_id,
+        base::BindOnce(
+            &MediaSessionNotificationProducer::OnReceivedAudioFocusRequests,
+            weak_ptr_factory_.GetWeakPtr()));
+  } else {
     audio_focus_remote_->AddObserver(
         audio_focus_observer_receiver_.BindNewPipeAndPassRemote());
 
     audio_focus_remote_->GetFocusRequests(base::BindOnce(
         &MediaSessionNotificationProducer::OnReceivedAudioFocusRequests,
         weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    const base::UnguessableToken& source_id =
-        content::MediaSession::GetSourceId(profile);
-
-    audio_focus_remote_->AddSourceObserver(
-        source_id, audio_focus_observer_receiver_.BindNewPipeAndPassRemote());
-
-    audio_focus_remote_->GetSourceFocusRequests(
-        source_id,
-        base::BindOnce(
-            &MediaSessionNotificationProducer::OnReceivedAudioFocusRequests,
-            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
