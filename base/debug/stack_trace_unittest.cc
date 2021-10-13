@@ -387,6 +387,7 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGFPE) {
 
   EXPECT_EXIT(result = nominator / denominator,
               ::testing::KilledBySignal(SIGFPE), "");
+  ALLOW_UNUSED_LOCAL(result);
 }
 #endif  // !defined(ARCH_CPU_ARM_FAMILY)
 
