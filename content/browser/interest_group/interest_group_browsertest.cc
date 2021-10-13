@@ -1777,7 +1777,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, TopFrameHostname) {
 // Make sure correct topFrameHostname is passed in. Check auctions from top
 // frames, and iframes of various depth. Also test running auctions in
 // cross-site iframes, and loading them into those iframes' fenced frames.
-IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, TopFrameHostname) {
+//
+// TODO(https://crbug.com/1259733): Figure out why this is flaky and fix it.
+IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
+                       DISABLED_TopFrameHostname) {
   // Buyer, seller, and iframe all use the same host.
   const char kOtherHost[] = "b.test";
   // Top frame host is unique.
