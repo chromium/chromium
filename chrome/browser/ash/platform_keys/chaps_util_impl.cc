@@ -26,7 +26,7 @@
 #include "crypto/scoped_nss_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 namespace {
@@ -260,4 +260,4 @@ std::unique_ptr<ChapsSlotSession> ChapsUtilImpl::GetChapsSlotSessionForSlot(
 }
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

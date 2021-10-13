@@ -15,7 +15,7 @@ namespace content {
 class BrowserContext;
 }
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 class MockPlatformKeysService : public PlatformKeysService {
@@ -37,7 +37,7 @@ class MockPlatformKeysService : public PlatformKeysService {
 
   MOCK_METHOD(void,
               GenerateRSAKey,
-              (TokenId token_id,
+              (chromeos::platform_keys::TokenId token_id,
                unsigned int modulus_length_bits,
                bool sw_backed,
                GenerateKeyCallback callback),
@@ -45,23 +45,23 @@ class MockPlatformKeysService : public PlatformKeysService {
 
   MOCK_METHOD(void,
               GenerateECKey,
-              (TokenId token_id,
+              (chromeos::platform_keys::TokenId token_id,
                const std::string& named_curve,
                GenerateKeyCallback callback),
               (override));
 
   MOCK_METHOD(void,
               SignRSAPKCS1Digest,
-              (absl::optional<TokenId> token_id,
+              (absl::optional<chromeos::platform_keys::TokenId> token_id,
                const std::string& data,
                const std::string& public_key_spki_der,
-               HashAlgorithm hash_algorithm,
+               chromeos::platform_keys::HashAlgorithm hash_algorithm,
                SignCallback callback),
               (override));
 
   MOCK_METHOD(void,
               SignRSAPKCS1Raw,
-              (absl::optional<TokenId> token_id,
+              (absl::optional<chromeos::platform_keys::TokenId> token_id,
                const std::string& data,
                const std::string& public_key_spki_der,
                SignCallback callback),
@@ -69,10 +69,10 @@ class MockPlatformKeysService : public PlatformKeysService {
 
   MOCK_METHOD(void,
               SignECDSADigest,
-              (absl::optional<TokenId> token_id,
+              (absl::optional<chromeos::platform_keys::TokenId> token_id,
                const std::string& data,
                const std::string& public_key_spki_der,
-               HashAlgorithm hash_algorithm,
+               chromeos::platform_keys::HashAlgorithm hash_algorithm,
                SignCallback callback),
               (override));
 
@@ -84,31 +84,33 @@ class MockPlatformKeysService : public PlatformKeysService {
 
   MOCK_METHOD(void,
               GetCertificates,
-              (TokenId token_id, GetCertificatesCallback callback),
+              (chromeos::platform_keys::TokenId token_id,
+               GetCertificatesCallback callback),
               (override));
 
   MOCK_METHOD(void,
               GetAllKeys,
-              (TokenId token_id, GetAllKeysCallback callback),
+              (chromeos::platform_keys::TokenId token_id,
+               GetAllKeysCallback callback),
               (override));
 
   MOCK_METHOD(void,
               ImportCertificate,
-              (TokenId token_id,
+              (chromeos::platform_keys::TokenId token_id,
                const scoped_refptr<net::X509Certificate>& certificate,
                ImportCertificateCallback callback),
               (override));
 
   MOCK_METHOD(void,
               RemoveCertificate,
-              (TokenId token_id,
+              (chromeos::platform_keys::TokenId token_id,
                const scoped_refptr<net::X509Certificate>& certificate,
                RemoveCertificateCallback callback),
               (override));
 
   MOCK_METHOD(void,
               RemoveKey,
-              (TokenId token_id,
+              (chromeos::platform_keys::TokenId token_id,
                const std::string& public_key_spki_der,
                RemoveKeyCallback callback),
               (override));
@@ -123,24 +125,24 @@ class MockPlatformKeysService : public PlatformKeysService {
 
   MOCK_METHOD(void,
               SetAttributeForKey,
-              (TokenId token_id,
+              (chromeos::platform_keys::TokenId token_id,
                const std::string& public_key_spki_der,
-               KeyAttributeType attribute_type,
+               chromeos::platform_keys::KeyAttributeType attribute_type,
                const std::string& attribute_value,
                SetAttributeForKeyCallback callback),
               (override));
 
   MOCK_METHOD(void,
               GetAttributeForKey,
-              (TokenId token_id,
+              (chromeos::platform_keys::TokenId token_id,
                const std::string& public_key_spki_der,
-               KeyAttributeType attribute_type,
+               chromeos::platform_keys::KeyAttributeType attribute_type,
                GetAttributeForKeyCallback callback),
               (override));
 
   MOCK_METHOD(void,
               IsKeyOnToken,
-              (TokenId token_id,
+              (chromeos::platform_keys::TokenId token_id,
                const std::string& public_key_spki_der,
                IsKeyOnTokenCallback callback),
               (override));
@@ -154,15 +156,6 @@ class MockPlatformKeysService : public PlatformKeysService {
 std::unique_ptr<KeyedService> BuildMockPlatformKeysService(
     content::BrowserContext* context);
 
-}  // namespace platform_keys
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when
-// //chrome/browser/chromeos/platform_keys moved to ash
-namespace ash {
-namespace platform_keys {
-using ::chromeos::platform_keys::BuildMockPlatformKeysService;
-using ::chromeos::platform_keys::MockPlatformKeysService;
 }  // namespace platform_keys
 }  // namespace ash
 

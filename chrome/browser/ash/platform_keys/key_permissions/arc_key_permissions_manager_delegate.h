@@ -25,7 +25,7 @@ class PolicyChangeRegistrar;
 class PolicyService;
 }  // namespace policy
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 // ARC key permissions manager delegate (ArcKpmDelegate) instances observes
@@ -163,6 +163,6 @@ class SystemTokenArcKpmDelegate : public ArcKpmDelegate,
 };
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_ARC_KEY_PERMISSIONS_MANAGER_DELEGATE_H_

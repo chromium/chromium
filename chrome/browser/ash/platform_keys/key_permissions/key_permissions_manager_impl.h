@@ -24,7 +24,7 @@ class PrefRegistrySimple;
 class PrefService;
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 class PlatformKeysService;
@@ -61,21 +61,24 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
     // If the update operation has been done successfully, a success
     // |update_status| will be returned. An error |update_status| will be
     // returned otherwise.
-    using UpdateCallback = base::OnceCallback<void(Status update_status)>;
+    using UpdateCallback =
+        base::OnceCallback<void(chromeos::platform_keys::Status update_status)>;
     // Updates the key permissions in chaps according to |mode_|.
     void Update(UpdateCallback callback);
 
    private:
-    void UpdateWithAllKeys(std::vector<std::string> public_key_spki_der_list,
-                           Status keys_retrieval_status);
+    void UpdateWithAllKeys(
+        std::vector<std::string> public_key_spki_der_list,
+        chromeos::platform_keys::Status keys_retrieval_status);
     void UpdateNextKey();
     void OnUpdateFinished();
     void UpdatePermissionsForKey(const std::string& public_key_spki_der);
     void UpdatePermissionsForKeyWithCorporateFlag(
         const std::string& public_key_spki_der,
         absl::optional<bool> corporate_usage_allowed,
-        Status corporate_usage_retrieval_status);
-    void OnKeyPermissionsUpdated(Status permissions_update_status);
+        chromeos::platform_keys::Status corporate_usage_retrieval_status);
+    void OnKeyPermissionsUpdated(
+        chromeos::platform_keys::Status permissions_update_status);
 
     const Mode mode_;
     KeyPermissionsManagerImpl* const key_permissions_manager_;
@@ -125,7 +128,7 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
   // GetSystemTokenKeyPermissionsManager or
   // GetUserPrivateTokenKeyPermissionsManager instead.
   KeyPermissionsManagerImpl(
-      TokenId token_id,
+      chromeos::platform_keys::TokenId token_id,
       std::unique_ptr<ArcKpmDelegate> arc_usage_manager_delegate,
       PlatformKeysService* platform_keys_service,
       PrefService* pref_service);
@@ -148,26 +151,29 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
   // ArcKpmDelegate::Observer
   void OnArcUsageAllowanceForCorporateKeysChanged(bool allowed) override;
 
-  void OnGotTokens(std::unique_ptr<std::vector<TokenId>> token_ids,
-                   Status status);
+  void OnGotTokens(
+      std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>> token_ids,
+      chromeos::platform_keys::Status status);
 
   // Updates the permissions of the keys residing on |token_id| in chaps. If
   // this method is called while an update is already running, it will cancel
   // the running update and start a new one.
   void UpdateKeyPermissionsInChaps();
-  void OnKeyPermissionsInChapsUpdated(Status update_status);
+  void OnKeyPermissionsInChapsUpdated(
+      chromeos::platform_keys::Status update_status);
 
   void StartOneTimeMigration();
-  void OnOneTimeMigrationDone(Status migration_status);
+  void OnOneTimeMigrationDone(chromeos::platform_keys::Status migration_status);
 
   bool IsOneTimeMigrationDone() const;
 
   void MigrateFlagsWithAllKeys(
       std::vector<std::string> public_key_spki_der_list,
-      Status all_keys_retrieval_status);
+      chromeos::platform_keys::Status all_keys_retrieval_status);
   void MigrateFlagsWithQueueOfKeys(base::queue<std::string> queue);
-  void OnFlagsMigratedForKey(base::queue<std::string> queue,
-                             Status last_key_flags_migration_status);
+  void OnFlagsMigratedForKey(
+      base::queue<std::string> queue,
+      chromeos::platform_keys::Status last_key_flags_migration_status);
 
   void AllowKeyForCorporateUsage(AllowKeyForUsageCallback callback,
                                  const std::string& public_key_spki_der);
@@ -175,19 +181,19 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
   void OnKeyPermissionsRetrieved(
       IsKeyAllowedForUsageCallback callback,
       const absl::optional<std::string>& attribute_value,
-      Status status);
+      chromeos::platform_keys::Status status);
 
   void IsKeyAllowedForUsageWithPermissions(
       IsKeyAllowedForUsageCallback callback,
       KeyUsage usage,
       const absl::optional<std::string>& serialized_key_permissions,
-      Status key_attribute_retrieval_status);
+      chromeos::platform_keys::Status key_attribute_retrieval_status);
 
   // Called when the token is ready and the one-time migration is done.
   void OnReadyForQueries();
 
   // The token for which the key permissions manager instance is responsible.
-  const TokenId token_id_;
+  const chromeos::platform_keys::TokenId token_id_;
   // True if ARC usage is allowed for corporate keys according to
   // |arc_usage_manager_delegate_|.
   bool arc_usage_allowed_for_corporate_keys_ = false;
@@ -210,14 +216,6 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
   base::WeakPtrFactory<KeyPermissionsManagerImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace platform_keys
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when
-// //chrome/browser/chromeos/platform_keys moved to ash
-namespace ash {
-namespace platform_keys {
-using ::chromeos::platform_keys::KeyPermissionsManagerImpl;
 }  // namespace platform_keys
 }  // namespace ash
 

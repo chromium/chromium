@@ -249,7 +249,7 @@ void IsCertificateAllowed(IsCertificateAllowedCallback callback,
       chromeos::platform_keys::GetSubjectPublicKeyInfo(cert);
 
   // Check if the key is marked for corporate usage.
-  chromeos::platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(
+  ash::platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(
       context)
       ->IsCorporateKey(
           public_key_spki_der,

@@ -14,7 +14,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 using CanUserGrantPermissionForKeyCallback =
@@ -22,9 +22,11 @@ using CanUserGrantPermissionForKeyCallback =
 
 // If an error occurs, |corporate| will be a nullopt.
 using IsCorporateKeyCallback =
-    base::OnceCallback<void(absl::optional<bool> corporate, Status status)>;
+    base::OnceCallback<void(absl::optional<bool> corporate,
+                            chromeos::platform_keys::Status status)>;
 
-using SetCorporateKeyCallback = base::OnceCallback<void(Status status)>;
+using SetCorporateKeyCallback =
+    base::OnceCallback<void(chromeos::platform_keys::Status status)>;
 
 // ** KeyPermissionService Responsibility **
 // A KeyPermissionService instance is responsible for answering queries
@@ -66,6 +68,6 @@ class KeyPermissionsService : public KeyedService {
 };
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_SERVICE_H_

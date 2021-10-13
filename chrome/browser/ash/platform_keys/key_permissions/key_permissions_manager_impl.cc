@@ -35,16 +35,21 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace ash {
+namespace platform_keys {
+
 namespace {
+
+using ::chromeos::platform_keys::KeyAttributeType;
+using ::chromeos::platform_keys::Status;
+using ::chromeos::platform_keys::TokenId;
 
 bool g_one_time_migration_enabled_for_testing = true;
 
 // Owned by `ChromeBrowserMainPartsAsh`.
-chromeos::platform_keys::KeyPermissionsManager*
-    g_system_token_key_permissions_manager = nullptr;
+KeyPermissionsManager* g_system_token_key_permissions_manager = nullptr;
 
-chromeos::platform_keys::KeyPermissionsManager* g_system_token_kpm_for_testing =
-    nullptr;
+KeyPermissionsManager* g_system_token_kpm_for_testing = nullptr;
 
 // The name of the histogram that counts the number of times the migration
 // started as well as the number of times it succeeded and failed.
@@ -93,9 +98,6 @@ chaps::KeyPermissions CreateKeyPermissions(bool corporate_usage_allowed,
 }
 
 }  // namespace
-
-namespace chromeos {
-namespace platform_keys {
 
 KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
     KeyPermissionsInChapsUpdater(
@@ -575,4 +577,4 @@ void KeyPermissionsManagerImpl::OnReadyForQueries() {
 }
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

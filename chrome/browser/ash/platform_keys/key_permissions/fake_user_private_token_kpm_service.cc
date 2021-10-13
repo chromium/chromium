@@ -10,7 +10,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 FakeUserPrivateTokenKeyPermissionsManagerService::
@@ -39,4 +39,4 @@ BuildFakeUserPrivateTokenKeyPermissionsManagerService(
 }
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

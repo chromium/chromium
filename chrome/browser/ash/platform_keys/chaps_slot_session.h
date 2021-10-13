@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_PLATFORM_KEYS_CHAPS_SLOT_SESSION_H_
 #define CHROME_BROWSER_ASH_PLATFORM_KEYS_CHAPS_SLOT_SESSION_H_
 
-#include <memory>
-
 #include <pkcs11t.h>
 
-namespace chromeos {
+#include <memory>
+
+namespace ash {
 namespace platform_keys {
 
 // A PKCS#11 session for a slot provided by the chaps daemon.
@@ -72,6 +72,6 @@ class ChapsSlotSessionFactoryImpl : public ChapsSlotSessionFactory {
 };
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_CHAPS_SLOT_SESSION_H_

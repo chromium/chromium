@@ -16,7 +16,7 @@
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 // =============== PlatformKeysServiceImplDelegate =============================
@@ -82,4 +82,4 @@ void PlatformKeysServiceImpl::OnDelegateShutDown() {
 // resides in the platform_keys_service_nss.cc file.
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

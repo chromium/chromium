@@ -22,7 +22,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 namespace {
@@ -299,4 +299,4 @@ TEST_F(ArcKeyPermissionsManagerDelegateTest, NoPrimaryDelegate) {
 }
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

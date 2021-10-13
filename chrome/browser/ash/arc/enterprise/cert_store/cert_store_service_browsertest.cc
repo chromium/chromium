@@ -376,8 +376,8 @@ void CertStoreServiceTest::SetUpCommandLine(base::CommandLine* command_line) {
 
 void CertStoreServiceTest::SetUpInProcessBrowserTestFixture() {
   MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-  chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
-      ->SetTestingMode(true);
+  ash::platform_keys::PlatformKeysServiceFactory::GetInstance()->SetTestingMode(
+      true);
 
   // Set up a system slot so tests can access device certs.
   ASSERT_NO_FATAL_FAILURE(SetUpTestSystemSlot());
@@ -415,8 +415,8 @@ void CertStoreServiceTest::TearDownOnMainThread() {
 }
 
 void CertStoreServiceTest::TearDownInProcessBrowserTestFixture() {
-  chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
-      ->SetTestingMode(false);
+  ash::platform_keys::PlatformKeysServiceFactory::GetInstance()->SetTestingMode(
+      false);
   MixinBasedInProcessBrowserTest::TearDownInProcessBrowserTestFixture();
 }
 

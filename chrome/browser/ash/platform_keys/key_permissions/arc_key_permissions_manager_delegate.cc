@@ -22,16 +22,15 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 
+namespace ash {
+namespace platform_keys {
+
 namespace {
 
 // Owned by `ChromeBrowserMainPartsAsh`.
-chromeos::platform_keys::SystemTokenArcKpmDelegate*
-    g_system_token_arc_usage_manager_delegate = nullptr;
+SystemTokenArcKpmDelegate* g_system_token_arc_usage_manager_delegate = nullptr;
 
 }  // namespace
-
-namespace chromeos {
-namespace platform_keys {
 
 ArcKpmDelegate::Observer::Observer() = default;
 ArcKpmDelegate::Observer::~Observer() = default;
@@ -133,8 +132,8 @@ void UserPrivateTokenArcKpmDelegate::CheckArcKeyAvailibility() {
   }
 
   std::vector<std::string> corporate_key_usage_allowed_app_ids =
-      ExtensionKeyPermissionsService::GetCorporateKeyUsageAllowedAppIds(
-          policy_service_);
+      chromeos::platform_keys::ExtensionKeyPermissionsService::
+          GetCorporateKeyUsageAllowedAppIds(policy_service_);
 
   for (const auto& package_name : corporate_key_usage_allowed_app_ids) {
     auto* arc_app_list_prefs = ArcAppListPrefs::Get(profile_);
@@ -255,4 +254,4 @@ void SystemTokenArcKpmDelegate::OnArcUsageAllowanceForCorporateKeysChanged(
 }
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

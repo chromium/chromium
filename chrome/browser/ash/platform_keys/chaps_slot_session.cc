@@ -16,7 +16,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 namespace {
@@ -215,4 +215,4 @@ ChapsSlotSessionFactoryImpl::CreateChapsSlotSession(CK_SLOT_ID slot_id) {
 }
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

@@ -15,7 +15,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 UserPrivateTokenKeyPermissionsManagerService::
@@ -26,7 +26,8 @@ UserPrivateTokenKeyPermissionsManagerService::
       std::make_unique<UserPrivateTokenArcKpmDelegate>(profile);
 
   key_permissions_manager_ = std::make_unique<KeyPermissionsManagerImpl>(
-      TokenId::kUser, std::move(arc_usage_manager_delegate),
+      chromeos::platform_keys::TokenId::kUser,
+      std::move(arc_usage_manager_delegate),
       PlatformKeysServiceFactory::GetInstance()->GetForBrowserContext(profile),
       profile->GetPrefs());
 }
@@ -101,4 +102,4 @@ void UserPrivateTokenKeyPermissionsManagerServiceFactory::RegisterProfilePrefs(
 }
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

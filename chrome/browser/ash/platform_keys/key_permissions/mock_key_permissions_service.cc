@@ -8,7 +8,7 @@
 
 #include "content/public/browser/browser_context.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 MockKeyPermissionsService::MockKeyPermissionsService() = default;
@@ -21,4 +21,4 @@ std::unique_ptr<KeyedService> BuildMockKeyPermissionsService(
 }
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

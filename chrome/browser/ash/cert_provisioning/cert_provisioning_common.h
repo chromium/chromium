@@ -11,23 +11,23 @@
 #include "base/callback_forward.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-// TODO(https://crbug.com/1164001): forward declare KeyPermissionsManager
-// after //chrom/browser/chromeos/platform_keys is moved to ash.
-#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager.h"
-// TODO(https://crbug.com/1164001): forward declare PlatformKeysService
-// after //chrom/browser/chromeos/platform_keys is moved to ash.
-#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/cert/x509_certificate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class Profile;
 
 namespace ash {
+
+namespace platform_keys {
+class KeyPermissionsManager;
+class PlatformKeysService;
+}  // namespace platform_keys
+
 namespace cert_provisioning {
 
 // Used for both DeleteVaKey and DeleteVaKeysByPrefix

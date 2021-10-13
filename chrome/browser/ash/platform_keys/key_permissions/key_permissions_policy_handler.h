@@ -12,7 +12,7 @@ namespace policy {
 class Schema;
 }
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 class KeyPermissionsPolicyHandler
@@ -30,6 +30,6 @@ class KeyPermissionsPolicyHandler
 };
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_POLICY_HANDLER_H_

@@ -9,7 +9,7 @@
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 // Note: Functions in this namespace are meant for internal use by key
@@ -31,6 +31,6 @@ void MarkUserKeyCorporateInPref(const std::string& public_key_spki_der,
 
 }  // namespace internal
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_PREF_UTIL_H_

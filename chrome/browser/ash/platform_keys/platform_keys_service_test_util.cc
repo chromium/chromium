@@ -7,9 +7,12 @@
 #include "chrome/browser/ash/platform_keys/chaps_util.h"
 #include "crypto/nss_key_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 namespace test_util {
+
+using ::chromeos::platform_keys::Status;
+using ::chromeos::platform_keys::TokenId;
 
 Status StatusWaiter::status() {
   return Get();
@@ -142,4 +145,4 @@ void ScopedChapsUtilOverride::OnKeyGenerated(const std::string& spki) {
 
 }  // namespace test_util
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

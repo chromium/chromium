@@ -16,7 +16,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 // static
@@ -63,4 +63,4 @@ void KeyPermissionsServiceFactory::RegisterProfilePrefs(
 }
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

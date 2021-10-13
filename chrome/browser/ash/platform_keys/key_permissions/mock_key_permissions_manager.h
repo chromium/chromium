@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 class MockKeyPermissionsManager : public KeyPermissionsManager {
@@ -41,14 +41,6 @@ class MockKeyPermissionsManager : public KeyPermissionsManager {
   MOCK_METHOD(void, Shutdown, (), (override));
 };
 
-}  // namespace platform_keys
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when
-// //chromeos/browser/chromeos/platform_keys moved to ash
-namespace ash {
-namespace platform_keys {
-using ::chromeos::platform_keys::MockKeyPermissionsManager;
 }  // namespace platform_keys
 }  // namespace ash
 

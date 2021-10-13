@@ -260,7 +260,7 @@ class EnterprisePlatformKeysTest
   // Allows tests to generate software-backed keys by configuring fake ChapsUtil
   // instances to be created in its constructor (and undoing the change in its
   // destructor).
-  chromeos::platform_keys::test_util::ScopedChapsUtilOverride
+  ash::platform_keys::test_util::ScopedChapsUtilOverride
       scoped_chaps_util_override_;
 };
 
@@ -351,7 +351,7 @@ class EnterprisePlatformKeysLoginScreenTest
 
  private:
   void SetUp() override {
-    chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
+    ash::platform_keys::PlatformKeysServiceFactory::GetInstance()
         ->SetTestingMode(true);
 
     MixinBasedInProcessBrowserTest::SetUp();
@@ -382,7 +382,7 @@ class EnterprisePlatformKeysLoginScreenTest
   // Allows tests to generate software-backed keys by configuring fake ChapsUtil
   // instances to be created in its constructor (and undoing the change in its
   // destructor).
-  chromeos::platform_keys::test_util::ScopedChapsUtilOverride
+  ash::platform_keys::test_util::ScopedChapsUtilOverride
       scoped_chaps_util_override_;
 };
 

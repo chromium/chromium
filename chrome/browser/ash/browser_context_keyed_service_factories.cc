@@ -92,8 +92,8 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   nearby::NearbyProcessManagerFactory::GetInstance();
   OwnerSettingsServiceAshFactory::GetInstance();
   phonehub::PhoneHubManagerFactory::GetInstance();
-  platform_keys::KeyPermissionsServiceFactory::GetInstance();
-  platform_keys::UserPrivateTokenKeyPermissionsManagerServiceFactory::
+  ash::platform_keys::KeyPermissionsServiceFactory::GetInstance();
+  ash::platform_keys::UserPrivateTokenKeyPermissionsManagerServiceFactory::
       GetInstance();
   plugin_vm::PluginVmEngagementMetricsService::Factory::GetInstance();
   policy::DlpRulesManagerFactory::GetInstance();

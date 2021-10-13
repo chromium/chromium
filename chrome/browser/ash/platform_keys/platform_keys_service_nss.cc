@@ -55,21 +55,23 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
 
-using content::BrowserContext;
-using content::BrowserThread;
-
-namespace {
-// The current maximal RSA modulus length that ChromeOS's TPM supports for key
-// generation.
-const unsigned int kMaxRSAModulusLengthBits = 2048;
-}  // namespace
-
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 namespace {
 
-using ServiceWeakPtr = base::WeakPtr<PlatformKeysServiceImpl>;
+using ServiceWeakPtr = ::base::WeakPtr<PlatformKeysServiceImpl>;
+using ::chromeos::platform_keys::HashAlgorithm;
+using ::chromeos::platform_keys::KeyAttributeType;
+using ::chromeos::platform_keys::KeyType;
+using ::chromeos::platform_keys::Status;
+using ::chromeos::platform_keys::TokenId;
+using ::content::BrowserContext;
+using ::content::BrowserThread;
+
+// The current maximal RSA modulus length that ChromeOS's TPM supports for key
+// generation.
+const unsigned int kMaxRSAModulusLengthBits = 2048;
 
 // Base class to store state that is common to all NSS database operations and
 // to provide convenience methods to call back.
@@ -906,19 +908,19 @@ void SignRSAOnWorkerThread(std::unique_ptr<SignState> state) {
 
   SECOidTag sign_alg_tag = SEC_OID_UNKNOWN;
   switch (state->hash_algorithm_) {
-    case HASH_ALGORITHM_SHA1:
+    case HashAlgorithm::HASH_ALGORITHM_SHA1:
       sign_alg_tag = SEC_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION;
       break;
-    case HASH_ALGORITHM_SHA256:
+    case HashAlgorithm::HASH_ALGORITHM_SHA256:
       sign_alg_tag = SEC_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION;
       break;
-    case HASH_ALGORITHM_SHA384:
+    case HashAlgorithm::HASH_ALGORITHM_SHA384:
       sign_alg_tag = SEC_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION;
       break;
-    case HASH_ALGORITHM_SHA512:
+    case HashAlgorithm::HASH_ALGORITHM_SHA512:
       sign_alg_tag = SEC_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION;
       break;
-    case HASH_ALGORITHM_NONE:
+    case HashAlgorithm::HASH_ALGORITHM_NONE:
       NOTREACHED();
       break;
   }
@@ -952,7 +954,7 @@ void SignECOnWorkerThread(std::unique_ptr<SignState> state) {
   DCHECK(state->hash_algorithm_ != HashAlgorithm::HASH_ALGORITHM_NONE);
 
   // Only SHA-256 algorithm is supported for ECDSA.
-  if (state->hash_algorithm_ != HASH_ALGORITHM_SHA256) {
+  if (state->hash_algorithm_ != HashAlgorithm::HASH_ALGORITHM_SHA256) {
     state->OnError(FROM_HERE, Status::kErrorAlgorithmNotSupported);
     return;
   }
@@ -1567,7 +1569,7 @@ void PlatformKeysServiceImpl::SignRSAPKCS1Raw(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto state = std::make_unique<SignState>(
       weak_factory_.GetWeakPtr(), data, public_key_spki_der,
-      HASH_ALGORITHM_NONE, /*key_type=*/KeyType::kRsassaPkcs1V15,
+      HashAlgorithm::HASH_ALGORITHM_NONE, /*key_type=*/KeyType::kRsassaPkcs1V15,
       std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
@@ -1874,4 +1876,4 @@ bool PlatformKeysServiceImpl::IsSetMapToSoftokenAttrsForTesting() {
 }
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

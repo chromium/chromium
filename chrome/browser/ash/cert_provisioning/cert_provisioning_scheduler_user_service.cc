@@ -48,7 +48,7 @@ CertProvisioningSchedulerUserServiceFactory::
     : BrowserContextKeyedServiceFactory(
           "CertProvisioningSchedulerUserService",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance());
+  DependsOn(platform_keys::PlatformKeysServiceFactory::GetInstance());
   DependsOn(invalidation::ProfileInvalidationProviderFactory::GetInstance());
 }
 

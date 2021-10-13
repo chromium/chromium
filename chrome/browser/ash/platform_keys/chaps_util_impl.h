@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/platform_keys/chaps_util.h"
 #include "crypto/scoped_nss_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 // Default implementation of the ChapsUtil class. Communicates with the chapsd
@@ -46,6 +46,6 @@ class ChapsUtilImpl : public ChapsUtil {
 };
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_CHAPS_UTIL_IMPL_H_

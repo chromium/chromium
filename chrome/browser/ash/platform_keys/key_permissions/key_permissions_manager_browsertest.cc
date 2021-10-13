@@ -34,10 +34,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 namespace {
+
+using ::chromeos::platform_keys::KeyAttributeType;
+using ::chromeos::platform_keys::Status;
+using ::chromeos::platform_keys::TokenId;
 
 constexpr char kTestUserEmail[] = "test@example.com";
 
@@ -760,4 +764,4 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

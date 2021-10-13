@@ -16,7 +16,7 @@
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 class PlatformKeysService;
@@ -25,48 +25,56 @@ namespace test_util {
 
 // A helper that waits until execution of an asynchronous PlatformKeysService
 // operation that only passes a |status| field to the callback.
-class StatusWaiter : public base::test::TestFuture<Status> {
+class StatusWaiter
+    : public base::test::TestFuture<chromeos::platform_keys::Status> {
  public:
-  Status status();
+  chromeos::platform_keys::Status status();
 };
 
 // Supports waiting for the result of PlatformKeysService::GetTokens.
 class GetTokensExecutionWaiter
-    : public base::test::TestFuture<std::unique_ptr<std::vector<TokenId>>,
-                                    Status> {
+    : public base::test::TestFuture<
+          std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>>,
+          chromeos::platform_keys::Status> {
  public:
-  const std::unique_ptr<std::vector<TokenId>>& token_ids();
-  Status status();
+  const std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>>&
+  token_ids();
+  chromeos::platform_keys::Status status();
 };
 
 // Supports waiting for the result of the PlatformKeysService::GenerateKey*
 // function family.
 class GenerateKeyExecutionWaiter
-    : public base::test::TestFuture<std::string, Status> {
+    : public base::test::TestFuture<std::string,
+                                    chromeos::platform_keys::Status> {
  public:
   const std::string& public_key_spki_der();
-  Status status();
+  chromeos::platform_keys::Status status();
 
-  base::OnceCallback<void(const std::string&, Status)> GetCallback();
+  base::OnceCallback<void(const std::string&, chromeos::platform_keys::Status)>
+  GetCallback();
 };
 
 // Supports waiting for the result of the PlatformKeysService::Sign* function
 // family.
-class SignExecutionWaiter : public base::test::TestFuture<std::string, Status> {
+class SignExecutionWaiter
+    : public base::test::TestFuture<std::string,
+                                    chromeos::platform_keys::Status> {
  public:
   const std::string& signature();
-  Status status();
+  chromeos::platform_keys::Status status();
 
-  base::OnceCallback<void(const std::string&, Status)> GetCallback();
+  base::OnceCallback<void(const std::string&, chromeos::platform_keys::Status)>
+  GetCallback();
 };
 
 // Supports waiting for the result of the PlatformKeysService::GetCertificates.
 class GetCertificatesExecutionWaiter
     : public base::test::TestFuture<std::unique_ptr<net::CertificateList>,
-                                    Status> {
+                                    chromeos::platform_keys::Status> {
  public:
   const net::CertificateList& matches();
-  Status status();
+  chromeos::platform_keys::Status status();
 };
 
 // Supports waiting for the result of the
@@ -76,12 +84,14 @@ using SetAttributeForKeyExecutionWaiter = StatusWaiter;
 // Supports waiting for the result of the
 // PlatformKeysService::GetAttributeForKey.
 class GetAttributeForKeyExecutionWaiter
-    : public base::test::TestFuture<absl::optional<std::string>, Status> {
+    : public base::test::TestFuture<absl::optional<std::string>,
+                                    chromeos::platform_keys::Status> {
  public:
   const absl::optional<std::string>& attribute_value();
-  Status status();
+  chromeos::platform_keys::Status status();
 
-  base::OnceCallback<void(const absl::optional<std::string>&, Status)>
+  base::OnceCallback<void(const absl::optional<std::string>&,
+                          chromeos::platform_keys::Status)>
   GetCallback();
 };
 
@@ -89,26 +99,32 @@ class GetAttributeForKeyExecutionWaiter
 using RemoveKeyExecutionWaiter = StatusWaiter;
 
 class GetAllKeysExecutionWaiter
-    : public base::test::TestFuture<std::vector<std::string>, Status> {
+    : public base::test::TestFuture<std::vector<std::string>,
+                                    chromeos::platform_keys::Status> {
  public:
   const std::vector<std::string>& public_keys();
-  Status status();
+  chromeos::platform_keys::Status status();
 };
 
 class IsKeyOnTokenExecutionWaiter
-    : public base::test::TestFuture<absl::optional<bool>, Status> {
+    : public base::test::TestFuture<absl::optional<bool>,
+                                    chromeos::platform_keys::Status> {
  public:
   absl::optional<bool> on_slot();
-  Status status();
+  chromeos::platform_keys::Status status();
 };
 
 class GetKeyLocationsExecutionWaiter
-    : public base::test::TestFuture<std::vector<TokenId>, Status> {
+    : public base::test::TestFuture<
+          std::vector<chromeos::platform_keys::TokenId>,
+          chromeos::platform_keys::Status> {
  public:
-  const std::vector<TokenId>& key_locations();
-  Status status();
+  const std::vector<chromeos::platform_keys::TokenId>& key_locations();
+  chromeos::platform_keys::Status status();
 
-  base::OnceCallback<void(const std::vector<TokenId>&, Status)> GetCallback();
+  base::OnceCallback<void(const std::vector<chromeos::platform_keys::TokenId>&,
+                          chromeos::platform_keys::Status)>
+  GetCallback();
 };
 
 // A fake implementation of ChapsUtil which actually just generates a key pair
@@ -164,6 +180,6 @@ class ScopedChapsUtilOverride {
 
 }  // namespace test_util
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_PLATFORM_KEYS_SERVICE_TEST_UTIL_H_

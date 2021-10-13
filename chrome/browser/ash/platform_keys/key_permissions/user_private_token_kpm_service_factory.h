@@ -18,7 +18,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 // This is a service which holds the user-specific KeyPermissionsManager for a
@@ -73,15 +73,6 @@ class UserPrivateTokenKeyPermissionsManagerServiceFactory
       user_prefs::PrefRegistrySyncable* registry) override;
 };
 
-}  // namespace platform_keys
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when
-// //chromeos/browser/chromeos/platform_keys moved to ash
-namespace ash {
-namespace platform_keys {
-using ::chromeos::platform_keys::
-    UserPrivateTokenKeyPermissionsManagerServiceFactory;
 }  // namespace platform_keys
 }  // namespace ash
 

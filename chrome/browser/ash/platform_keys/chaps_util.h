@@ -12,7 +12,7 @@
 #include "base/callback_forward.h"
 #include "crypto/scoped_nss_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 // Utility to perform operations on the chapsd daemon in a way that is
@@ -46,6 +46,6 @@ class ChapsUtil {
 };
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_CHAPS_UTIL_H_

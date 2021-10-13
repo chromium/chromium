@@ -28,8 +28,11 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
+
+using ::chromeos::platform_keys::Status;
+using ::chromeos::platform_keys::TokenId;
 
 KeyPermissionsServiceImpl::KeyPermissionsServiceImpl(
     bool is_regular_user_profile,
@@ -221,4 +224,4 @@ void KeyPermissionsServiceImpl::SetCorporateKeyWithLocations(
 }
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

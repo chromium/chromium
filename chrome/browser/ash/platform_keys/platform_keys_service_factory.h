@@ -12,7 +12,7 @@ template <typename T>
 struct DefaultSingletonTraits;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 class PlatformKeysService;
@@ -79,14 +79,6 @@ class PlatformKeysServiceFactory : public BrowserContextKeyedServiceFactory {
 
   bool map_to_softoken_attrs_for_testing_ = false;
 };
-}  // namespace platform_keys
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when
-// //chrome/browser/chromeos/platform_keys moved to ash
-namespace ash {
-namespace platform_keys {
-using ::chromeos::platform_keys::PlatformKeysServiceFactory;
 }  // namespace platform_keys
 }  // namespace ash
 

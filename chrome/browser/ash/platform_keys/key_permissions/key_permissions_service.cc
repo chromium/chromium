@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 KeyPermissionsService::KeyPermissionsService() = default;
@@ -12,4 +12,4 @@ KeyPermissionsService::KeyPermissionsService() = default;
 KeyPermissionsService::~KeyPermissionsService() = default;
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

@@ -12,6 +12,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
+namespace ash {
+namespace platform_keys {
+namespace internal {
+
 namespace {
 // The profile pref prefs::kPlatformKeys stores a dictionary mapping from
 // public key (base64 encoding of an DER-encoded SPKI) to key properties. The
@@ -45,10 +49,6 @@ const base::Value* GetPrefsEntry(const std::string& public_key_spki_der_b64,
 
 }  // namespace
 
-namespace chromeos {
-namespace platform_keys {
-namespace internal {
-
 bool IsUserKeyMarkedCorporateInPref(const std::string& public_key_spki_der,
                                     PrefService* profile_prefs) {
   std::string public_key_spki_der_b64;
@@ -81,4 +81,4 @@ void MarkUserKeyCorporateInPref(const std::string& public_key_spki_der,
 
 }  // namespace internal
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/platform_keys/chaps_slot_session.h"
 #include "chrome/browser/ash/platform_keys/chaps_util_impl.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 namespace {
@@ -39,4 +39,4 @@ void ChapsUtil::SetFactoryForTesting(const FactoryCallback& factory) {
 }
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

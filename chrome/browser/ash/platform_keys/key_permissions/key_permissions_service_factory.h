@@ -17,7 +17,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 class KeyPermissionsService;
@@ -47,6 +47,6 @@ class KeyPermissionsServiceFactory : public BrowserContextKeyedServiceFactory {
 };
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_SERVICE_FACTORY_H_

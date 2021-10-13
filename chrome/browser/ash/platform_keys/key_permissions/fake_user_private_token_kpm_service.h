@@ -15,7 +15,7 @@ namespace content {
 class BrowserContext;
 }
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 class KeyPermissionsManager;
@@ -45,15 +45,6 @@ BuildFakeUserPrivateTokenKeyPermissionsManagerService(
     platform_keys::KeyPermissionsManager* key_permissions_manager,
     content::BrowserContext* browser_context);
 
-}  // namespace platform_keys
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when
-// //chromeos/browser/chromeos/platform_keys moved to ash
-namespace ash {
-namespace platform_keys {
-using ::chromeos::platform_keys::
-    BuildFakeUserPrivateTokenKeyPermissionsManagerService;
 }  // namespace platform_keys
 }  // namespace ash
 

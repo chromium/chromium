@@ -70,8 +70,8 @@ void PlatformKeysTestBase::SetUp() {
   // allowed while spawning sandbox host process. See crbug.com/322732.
   ASSERT_TRUE(gaia_server_.InitializeAndListen());
 
-  chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
-      ->SetTestingMode(true);
+  ash::platform_keys::PlatformKeysServiceFactory::GetInstance()->SetTestingMode(
+      true);
 
   if (system_token_status() == SystemTokenStatus::EXISTS) {
     CreateTestSystemSlot();
@@ -181,8 +181,8 @@ void PlatformKeysTestBase::SetUpOnMainThread() {
 void PlatformKeysTestBase::TearDownOnMainThread() {
   extensions::MixinBasedExtensionApiTest::TearDownOnMainThread();
 
-  chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
-      ->SetTestingMode(false);
+  ash::platform_keys::PlatformKeysServiceFactory::GetInstance()->SetTestingMode(
+      false);
 
   if (system_token_status() == SystemTokenStatus::EXISTS) {
     base::RunLoop loop;

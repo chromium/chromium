@@ -7,7 +7,7 @@
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 KeyPermissionsPolicyHandler::KeyPermissionsPolicyHandler(
@@ -22,4 +22,4 @@ void KeyPermissionsPolicyHandler::ApplyPolicySettings(
     PrefValueMap* /* prefs */) {}
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

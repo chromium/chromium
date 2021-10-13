@@ -45,9 +45,8 @@ KeystoreServiceFactoryAsh::KeystoreServiceFactoryAsh()
     : BrowserContextKeyedServiceFactory(
           "KeystoreServiceFactoryAsh",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance());
-  DependsOn(
-      chromeos::platform_keys::KeyPermissionsServiceFactory::GetInstance());
+  DependsOn(ash::platform_keys::PlatformKeysServiceFactory::GetInstance());
+  DependsOn(ash::platform_keys::KeyPermissionsServiceFactory::GetInstance());
 }
 
 KeyedService* KeystoreServiceFactoryAsh::BuildServiceInstanceFor(

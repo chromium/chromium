@@ -40,21 +40,20 @@
 namespace crosapi {
 namespace {
 
-using base::test::RunOnceCallback;
-using chromeos::platform_keys::BuildMockPlatformKeysService;
-using chromeos::platform_keys::HashAlgorithm;
-using chromeos::platform_keys::MockKeyPermissionsService;
-using chromeos::platform_keys::MockPlatformKeysService;
-using chromeos::platform_keys::Status;
-using chromeos::platform_keys::TokenId;
-using crosapi::keystore_service_util::MakeEcKeystoreSigningAlgorithm;
-using crosapi::keystore_service_util::MakeRsaKeystoreSigningAlgorithm;
-using testing::_;
-using testing::DoAll;
-using testing::ElementsAre;
-using testing::StrictMock;
-using testing::UnorderedElementsAre;
-using testing::WithArg;
+using ::ash::platform_keys::MockKeyPermissionsService;
+using ::ash::platform_keys::MockPlatformKeysService;
+using ::base::test::RunOnceCallback;
+using ::chromeos::platform_keys::HashAlgorithm;
+using ::chromeos::platform_keys::Status;
+using ::chromeos::platform_keys::TokenId;
+using ::crosapi::keystore_service_util::MakeEcKeystoreSigningAlgorithm;
+using ::crosapi::keystore_service_util::MakeRsaKeystoreSigningAlgorithm;
+using ::testing::_;
+using ::testing::DoAll;
+using ::testing::ElementsAre;
+using ::testing::StrictMock;
+using ::testing::UnorderedElementsAre;
+using ::testing::WithArg;
 
 constexpr char kData[] = "\1\2\3\4\5\6\7";
 

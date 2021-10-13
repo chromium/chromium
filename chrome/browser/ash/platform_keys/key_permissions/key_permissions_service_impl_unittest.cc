@@ -22,11 +22,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using ::testing::_;
-
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 namespace {
+
+using ::chromeos::platform_keys::Status;
+using ::chromeos::platform_keys::TokenId;
+using ::testing::_;
 
 // Supports waiting for the result of KeyPermissionsService::IsCorporateKey.
 class IsCorporateKeyExecutionWaiter
@@ -153,4 +155,4 @@ TEST_F(KeyPermissionsServiceImplTest, CorporateRoundTrip) {
 }
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

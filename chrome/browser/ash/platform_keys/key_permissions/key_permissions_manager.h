@@ -11,7 +11,7 @@
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 enum class KeyUsage { kArc, kCorporate };
@@ -19,14 +19,16 @@ enum class KeyUsage { kArc, kCorporate };
 // If the process of updating the key permissions has been done successfully, a
 // success |status| will be returned. If an error has occurred, an error
 // |status| will be returned.
-using AllowKeyForUsageCallback = base::OnceCallback<void(Status status)>;
+using AllowKeyForUsageCallback =
+    base::OnceCallback<void(chromeos::platform_keys::Status status)>;
 
 // If the key usage allowance has been retrieved successfully, |allowed| will be
 // set to the result and a success |status| will be returned. If an error
 // has occurred, an error |status| will be returned and |allowed| will be
 // nullopt.
 using IsKeyAllowedForUsageCallback =
-    base::OnceCallback<void(absl::optional<bool> allowed, Status status)>;
+    base::OnceCallback<void(absl::optional<bool> allowed,
+                            chromeos::platform_keys::Status status)>;
 
 // ** KeyPermissionsManager (KPM) instances **
 // Every KPM instance is responsible for managing key permissions of keys
@@ -94,15 +96,6 @@ class KeyPermissionsManager {
   virtual void Shutdown() = 0;
 };
 
-}  // namespace platform_keys
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when
-// //chrome/browser/chromeos/platform_keys moved to ash
-namespace ash {
-namespace platform_keys {
-using ::chromeos::platform_keys::KeyPermissionsManager;
-using ::chromeos::platform_keys::KeyUsage;
 }  // namespace platform_keys
 }  // namespace ash
 

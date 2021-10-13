@@ -20,11 +20,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using ::testing::Optional;
-
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 namespace {
+
+using ::testing::Optional;
 
 const size_t kKeySizeBits = 2048;
 
@@ -494,4 +494,4 @@ TEST_F(ChapsUtilImplTest, HandlesInvalidSessionHandle_ReopenFails) {
 
 }  // namespace
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

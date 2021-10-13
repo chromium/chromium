@@ -59,9 +59,14 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 namespace {
+
+using ::chromeos::platform_keys::HashAlgorithm;
+using ::chromeos::platform_keys::KeyAttributeType;
+using ::chromeos::platform_keys::Status;
+using ::chromeos::platform_keys::TokenId;
 
 constexpr char kTestUserEmail[] = "test@example.com";
 constexpr char kTestAffiliationId[] = "test_affiliation_id";
@@ -421,7 +426,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
                        GenerateRsaAndSign) {
   const std::string kDataToSign = "test";
   const unsigned int kKeySize = 2048;
-  const HashAlgorithm kHashAlgorithm = HASH_ALGORITHM_SHA256;
+  const HashAlgorithm kHashAlgorithm = HashAlgorithm::HASH_ALGORITHM_SHA256;
   const crypto::SignatureVerifier::SignatureAlgorithm kSignatureAlgorithm =
       crypto::SignatureVerifier::RSA_PKCS1_SHA256;
 
@@ -818,4 +823,4 @@ INSTANTIATE_TEST_SUITE_P(
                       TestConfigPerToken{ProfileToUse::kUnaffiliatedUserProfile,
                                          TokenId::kSystem}));
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

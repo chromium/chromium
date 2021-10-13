@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/platform_keys/mock_platform_keys_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 MockPlatformKeysService::MockPlatformKeysService() = default;
@@ -16,4 +16,4 @@ std::unique_ptr<KeyedService> BuildMockPlatformKeysService(
 }
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash

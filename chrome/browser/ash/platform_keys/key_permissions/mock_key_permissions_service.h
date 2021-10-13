@@ -18,7 +18,7 @@ namespace content {
 class BrowserContext;
 }
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 class MockKeyPermissionsService : public KeyPermissionsService {
@@ -49,6 +49,6 @@ std::unique_ptr<KeyedService> BuildMockKeyPermissionsService(
     content::BrowserContext* browser_context);
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_MOCK_KEY_PERMISSIONS_SERVICE_H_

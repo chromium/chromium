@@ -102,8 +102,7 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   std::unique_ptr<KeyedService> CreateKeyPermissionsManagerService(
       content::BrowserContext* context) {
     return std::make_unique<
-        chromeos::platform_keys::
-            FakeUserPrivateTokenKeyPermissionsManagerService>(
+        ash::platform_keys::FakeUserPrivateTokenKeyPermissionsManagerService>(
         &key_permissions_manager_);
   }
 
@@ -152,7 +151,7 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   // fake_user_manager_ is owned by user_manager_enabler_.
   ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
   user_manager::ScopedUserManager user_manager_enabler_;
-  chromeos::platform_keys::MockKeyPermissionsManager key_permissions_manager_;
+  ash::platform_keys::MockKeyPermissionsManager key_permissions_manager_;
   PrefService* prefs_ = nullptr;
   ash::attestation::MockTpmChallengeKey* mock_tpm_challenge_key_ = nullptr;
 };

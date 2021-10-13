@@ -25,10 +25,13 @@
 #include "content/public/browser/resource_context.h"
 #include "net/cert/nss_cert_database.h"
 
-namespace chromeos {
+namespace ash {
 namespace platform_keys {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to ash.
+using ::chromeos::ClientCertStoreAsh;
 
 // Invoked on the IO thread when a NSSCertDatabase is available, delegates back
 // to origin thread.
@@ -76,9 +79,8 @@ class DelegateForUser : public PlatformKeysServiceImplDelegate {
   }
 
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
-    const user_manager::User* user =
-        chromeos::ProfileHelper::Get()->GetUserByProfile(
-            Profile::FromBrowserContext(browser_context_));
+    const user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(
+        Profile::FromBrowserContext(browser_context_));
 
     // Use the device-wide system key slot only if the user is affiliated on the
     // device.
@@ -209,4 +211,4 @@ content::BrowserContext* PlatformKeysServiceFactory::GetBrowserContextToUse(
 }
 
 }  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace ash
