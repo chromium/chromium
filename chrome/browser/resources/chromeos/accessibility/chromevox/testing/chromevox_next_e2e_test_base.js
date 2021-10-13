@@ -29,9 +29,9 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
     DesktopAutomationHandler.announceActions = true;
 
     this.originalOutputContextValues_ = {};
-    for (const role in Output.ROLE_INFO) {
+    for (const role in OutputRoleInfo) {
       this.originalOutputContextValues_[role] =
-          Output.ROLE_INFO[role]['contextOrder'];
+          OutputRoleInfo[role]['contextOrder'];
     }
   }
 
@@ -126,8 +126,8 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
    * rebaselining when changing context ordering for a specific role.
    */
   forceContextualLastOutput() {
-    for (const role in Output.ROLE_INFO) {
-      Output.ROLE_INFO[role]['contextOrder'] = OutputContextOrder.LAST;
+    for (const role in OutputRoleInfo) {
+      OutputRoleInfo[role]['contextOrder'] = OutputContextOrder.LAST;
     }
   }
 
@@ -135,15 +135,15 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
    * Forces output to place context utterances at the beginning of output.
    */
   forceContextualFirstOutput() {
-    for (const role in Output.ROLE_INFO) {
-      Output.ROLE_INFO[role]['contextOrder'] = OutputContextOrder.FIRST;
+    for (const role in OutputRoleInfo) {
+      OutputRoleInfo[role]['contextOrder'] = OutputContextOrder.FIRST;
     }
   }
 
   /** Resets contextual output values to their defaults. */
   resetContextualOutput() {
-    for (const role in Output.ROLE_INFO) {
-      Output.ROLE_INFO[role]['contextOrder'] =
+    for (const role in OutputRoleInfo) {
+      OutputRoleInfo[role]['contextOrder'] =
           this.originalOutputContextValues_[role];
     }
   }

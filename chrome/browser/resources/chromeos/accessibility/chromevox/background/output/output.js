@@ -16,12 +16,14 @@ goog.require('LocaleOutputHelper');
 goog.require('LogStore');
 goog.require('NavBraille');
 goog.require('OutputAction');
+goog.require('OutputAncestryInfo');
 goog.require('OutputContextOrder');
 goog.require('OutputEarconAction');
 goog.require('OutputEventType');
 goog.require('OutputFormatParser');
 goog.require('OutputFormatTree');
 goog.require('OutputNodeSpan');
+goog.require('OutputRoleInfo');
 goog.require('OutputRulesStr');
 goog.require('OutputSelectionSpan');
 goog.require('OutputSpeechProperties');
@@ -646,10 +648,10 @@ Output = class {
       if (parent.role === RoleType.WINDOW) {
         break;
       }
-      if (Output.ROLE_INFO[parent.role] &&
-          Output.ROLE_INFO[parent.role].contextOrder) {
+      if (OutputRoleInfo[parent.role] &&
+          OutputRoleInfo[parent.role].contextOrder) {
         this.contextOrder_ =
-            Output.ROLE_INFO[parent.role].contextOrder || this.contextOrder_;
+            OutputRoleInfo[parent.role].contextOrder || this.contextOrder_;
         break;
       }
     }
@@ -1195,7 +1197,7 @@ Output = class {
   formatRole_(node, token, buff, options, ruleStr) {
     options.annotation.push(token);
     let msg = node.role;
-    const info = Output.ROLE_INFO[node.role];
+    const info = OutputRoleInfo[node.role];
     if (node.roleDescription) {
       msg = node.roleDescription;
     } else if (info) {
@@ -1709,47 +1711,23 @@ Output = class {
       return;
     }
 
-    if (Output.ROLE_INFO[node.role] &&
-        Output.ROLE_INFO[node.role].ignoreAncestry) {
+    if (OutputRoleInfo[node.role] && OutputRoleInfo[node.role].ignoreAncestry) {
       return;
     }
 
-    // Expects |ancestors| to be ordered from root down to leaf. Outputs in
-    // reverse; place context first nodes at the end.
-    function byContextFirst(ancestors) {
-      let contextFirst = [];
-      let rest = [];
-      for (let i = 0; i < ancestors.length - 1; i++) {
-        const node = ancestors[i];
-        // Discard ancestors of deepest window.
-        if (node.role === RoleType.WINDOW) {
-          contextFirst = [];
-          rest = [];
-        }
-        if ((Output.ROLE_INFO[node.role] || {}).contextOrder ===
-            OutputContextOrder.FIRST) {
-          contextFirst.push(node);
-        } else {
-          rest.push(node);
-        }
-      }
-      return rest.concat(contextFirst.reverse());
-    }
+    const info = new OutputAncestryInfo(
+        node, prevNode, !!optionalArgs.suppressStartEndAncestry);
 
     // Enter, leave ancestry.
-    const leaveAncestors =
-        byContextFirst(AutomationUtil.getUniqueAncestors(node, prevNode));
-    const enterAncestors =
-        byContextFirst(AutomationUtil.getUniqueAncestors(prevNode, node));
     this.ancestryHelper_({
       node,
       prevNode,
       buff,
       ruleStr,
       type,
-      ancestors: enterAncestors,
+      ancestors: info.enterAncestors,
       formatName: 'enter',
-      secondaryAncestors: leaveAncestors,
+      secondaryAncestors: info.leaveAncestors,
       secondaryFormatName: 'leave'
     });
 
@@ -1758,53 +1736,15 @@ Output = class {
     }
 
     // Start of, end of ancestry.
-    let afterEndNode = AutomationUtil.findNextNode(
-        node, Dir.FORWARD, AutomationPredicate.leafOrStaticText,
-        {skipInitialSubtree: true});
-    if (!afterEndNode) {
-      afterEndNode = AutomationUtil.getTopLevelRoot(node) || node.root;
-    }
-    let afterEndAncestors = [];
-    if (afterEndNode) {
-      afterEndAncestors =
-          byContextFirst(AutomationUtil.getUniqueAncestors(afterEndNode, node));
-    }
-
-    let beforeStartNode = AutomationUtil.findNextNode(
-        node, Dir.BACKWARD, AutomationPredicate.leafOrStaticText,
-        {skipInitialAncestry: true});
-    if (!beforeStartNode) {
-      beforeStartNode = AutomationUtil.getTopLevelRoot(node) || node.root;
-    }
-    let beforeStartAncestors = [];
-    if (beforeStartNode) {
-      beforeStartAncestors = byContextFirst(
-          AutomationUtil.getUniqueAncestors(beforeStartNode, node));
-    }
-
-    // If there are these types of ancestors, we need to prefer the before start
-    // ancestors.
-    if (beforeStartAncestors.length > 0 && afterEndAncestors.length > 0) {
-      const set = new WeakSet();
-      for (let i = 0, item; item = beforeStartAncestors[i]; i++) {
-        set.add(item);
-      }
-
-      for (let i = 0, item; item = afterEndAncestors[i]; i++) {
-        if (set.has(item)) {
-          afterEndAncestors.splice(i, 1);
-        }
-      }
-    }
     this.ancestryHelper_({
       node,
       prevNode,
       buff,
       ruleStr,
       type,
-      ancestors: beforeStartAncestors,
+      ancestors: info.startAncestors,
       formatName: 'startOf',
-      secondaryAncestors: afterEndAncestors,
+      secondaryAncestors: info.endAncestors,
       secondaryFormatName: 'endOf'
     });
   }
@@ -1860,7 +1800,7 @@ Output = class {
 
       const secondaryRole = secondaryFormatNode.role;
       const parentRole =
-          (Output.ROLE_INFO[secondaryFormatNode.role] || {}).inherits;
+          (OutputRoleInfo[secondaryFormatNode.role] || {}).inherits;
       if (secondaryRole && eventBlock[secondaryRole] &&
           eventBlock[secondaryRole][secondaryFormatName]) {
         rule.role = secondaryRole;
@@ -1897,7 +1837,7 @@ Output = class {
         continue;
       }
 
-      const parentRole = (Output.ROLE_INFO[formatNode.role] || {}).inherits;
+      const parentRole = (OutputRoleInfo[formatNode.role] || {}).inherits;
       if (eventBlock[formatNode.role] &&
           eventBlock[formatNode.role][formatName]) {
         rule.role = formatNode.role;
@@ -1963,7 +1903,7 @@ Output = class {
     // Navigate is the default event.
     rule.event = Output.RULES[type] ? type : 'navigate';
     const eventBlock = Output.RULES[rule.event];
-    const parentRole = (Output.ROLE_INFO[node.role] || {}).inherits || '';
+    const parentRole = (OutputRoleInfo[node.role] || {}).inherits || '';
     /**
      * Use Output.RULES for node.role if exists.
      * If not, use Output.RULES for parentRole if exists.
@@ -2451,7 +2391,7 @@ Output = class {
       }
 
       while (earconFinder = ancestors.pop()) {
-        const info = Output.ROLE_INFO[earconFinder.role];
+        const info = OutputRoleInfo[earconFinder.role];
         if (info && info.earconId) {
           return new OutputEarconAction(
               info.earconId, node.location || undefined);
@@ -2526,209 +2466,6 @@ Output = class {
  * @type {string}
  */
 Output.SPACE = ' ';
-
-/**
- * Metadata about supported automation roles.
- * @const {Object<{msgId: string,
- *                 earconId: (string|undefined),
- *                 inherits: (string|undefined),
- *                 contextOrder: (OutputContextOrder|undefined),
- *                 ignoreAncestry: (boolean|undefined)}>}
- * msgId: the message id of the role. Each role used requires a speech entry in
- *        chromevox_strings.grd + an optional Braille entry (with _BRL suffix).
- * earconId: an optional earcon to play when encountering the role.
- * inherits: inherits rules from this role.
- * contextOrder: where to place the context output.
- * ignoreAncestry: ignores ancestry (context) output for this role.
- */
-Output.ROLE_INFO = {
-  abbr: {msgId: 'tag_abbr', inherits: 'abstractContainer'},
-  alert: {msgId: 'role_alert'},
-  alertDialog:
-      {msgId: 'role_alertdialog', contextOrder: OutputContextOrder.FIRST},
-  article: {msgId: 'role_article', inherits: 'abstractItem'},
-  application: {msgId: 'role_application', inherits: 'abstractContainer'},
-  audio: {msgId: 'tag_audio', inherits: 'abstractContainer'},
-  banner: {msgId: 'role_banner', inherits: 'abstractContainer'},
-  button: {msgId: 'role_button', earconId: 'BUTTON'},
-  buttonDropDown: {msgId: 'role_button', earconId: 'BUTTON'},
-  checkBox: {msgId: 'role_checkbox'},
-  columnHeader: {msgId: 'role_columnheader', inherits: 'cell'},
-  comboBoxMenuButton: {msgId: 'role_combobox', earconId: 'LISTBOX'},
-  complementary: {msgId: 'role_complementary', inherits: 'abstractContainer'},
-  comment: {msgId: 'role_comment', inherits: 'abstractSpan'},
-  contentDeletion: {
-    msgId: 'role_content_deletion',
-    inherits: 'abstractSpan',
-    contextOrder: OutputContextOrder.FIRST
-  },
-  contentInsertion: {
-    msgId: 'role_content_insertion',
-    inherits: 'abstractSpan',
-    contextOrder: OutputContextOrder.FIRST
-  },
-  contentInfo: {msgId: 'role_contentinfo', inherits: 'abstractContainer'},
-  date: {msgId: 'input_type_date', inherits: 'abstractContainer'},
-  definition: {msgId: 'role_definition', inherits: 'abstractContainer'},
-  descriptionList: {msgId: 'role_description_list', inherits: 'abstractList'},
-  descriptionListDetail:
-      {msgId: 'role_description_list_detail', inherits: 'abstractItem'},
-  dialog: {
-    msgId: 'role_dialog',
-    contextOrder: OutputContextOrder.DIRECTED,
-    ignoreAncestry: true
-  },
-  directory: {msgId: 'role_directory', inherits: 'abstractContainer'},
-  docAbstract: {msgId: 'role_doc_abstract', inherits: 'abstractSpan'},
-  docAcknowledgments:
-      {msgId: 'role_doc_acknowledgments', inherits: 'abstractSpan'},
-  docAfterword: {msgId: 'role_doc_afterword', inherits: 'abstractContainer'},
-  docAppendix: {msgId: 'role_doc_appendix', inherits: 'abstractSpan'},
-  docBackLink:
-      {msgId: 'role_doc_back_link', earconId: 'LINK', inherits: 'link'},
-  docBiblioEntry: {
-    msgId: 'role_doc_biblio_entry',
-    earconId: 'LIST_ITEM',
-    inherits: 'abstractItem'
-  },
-  docBibliography: {msgId: 'role_doc_bibliography', inherits: 'abstractSpan'},
-  docBiblioRef:
-      {msgId: 'role_doc_biblio_ref', earconId: 'LINK', inherits: 'link'},
-  docChapter: {msgId: 'role_doc_chapter', inherits: 'abstractSpan'},
-  docColophon: {msgId: 'role_doc_colophon', inherits: 'abstractSpan'},
-  docConclusion: {msgId: 'role_doc_conclusion', inherits: 'abstractSpan'},
-  docCover: {msgId: 'role_doc_cover', inherits: 'image'},
-  docCredit: {msgId: 'role_doc_credit', inherits: 'abstractSpan'},
-  docCredits: {msgId: 'role_doc_credits', inherits: 'abstractSpan'},
-  docDedication: {msgId: 'role_doc_dedication', inherits: 'abstractSpan'},
-  docEndnote: {
-    msgId: 'role_doc_endnote',
-    earconId: 'LIST_ITEM',
-    inherits: 'abstractItem'
-  },
-  docEndnotes:
-      {msgId: 'role_doc_endnotes', earconId: 'LISTBOX', inherits: 'list'},
-  docEpigraph: {msgId: 'role_doc_epigraph', inherits: 'abstractSpan'},
-  docEpilogue: {msgId: 'role_doc_epilogue', inherits: 'abstractSpan'},
-  docErrata: {msgId: 'role_doc_errata', inherits: 'abstractSpan'},
-  docExample: {msgId: 'role_doc_example', inherits: 'abstractSpan'},
-  docFootnote: {
-    msgId: 'role_doc_footnote',
-    earconId: 'LIST_ITEM',
-    inherits: 'abstractItem'
-  },
-  docForeword: {msgId: 'role_doc_foreword', inherits: 'abstractSpan'},
-  docGlossary: {msgId: 'role_doc_glossary', inherits: 'abstractSpan'},
-  docGlossRef:
-      {msgId: 'role_doc_gloss_ref', earconId: 'LINK', inherits: 'link'},
-  docIndex: {msgId: 'role_doc_index', inherits: 'abstractSpan'},
-  docIntroduction: {msgId: 'role_doc_introduction', inherits: 'abstractSpan'},
-  docNoteRef: {msgId: 'role_doc_note_ref', earconId: 'LINK', inherits: 'link'},
-  docNotice: {msgId: 'role_doc_notice', inherits: 'abstractSpan'},
-  docPageBreak: {msgId: 'role_doc_page_break', inherits: 'abstractSpan'},
-  docPageFooter: {msgId: 'role_doc_page_footer', inherits: 'abstractSpan'},
-  docPageHeader: {msgId: 'role_doc_page_header', inherits: 'abstractSpan'},
-  docPageList: {msgId: 'role_doc_page_list', inherits: 'abstractSpan'},
-  docPart: {msgId: 'role_doc_part', inherits: 'abstractSpan'},
-  docPreface: {msgId: 'role_doc_preface', inherits: 'abstractSpan'},
-  docPrologue: {msgId: 'role_doc_prologue', inherits: 'abstractSpan'},
-  docPullquote: {msgId: 'role_doc_pullquote', inherits: 'abstractSpan'},
-  docQna: {msgId: 'role_doc_qna', inherits: 'abstractSpan'},
-  docSubtitle: {msgId: 'role_doc_subtitle', inherits: 'heading'},
-  docTip: {msgId: 'role_doc_tip', inherits: 'abstractSpan'},
-  docToc: {msgId: 'role_doc_toc', inherits: 'abstractSpan'},
-  document: {msgId: 'role_document', inherits: 'abstractContainer'},
-  form: {msgId: 'role_form', inherits: 'abstractContainer'},
-  graphicsDocument:
-      {msgId: 'role_graphics_document', inherits: 'abstractContainer'},
-  graphicsObject:
-      {msgId: 'role_graphics_object', inherits: 'abstractContainer'},
-  graphicsSymbol: {msgId: 'role_graphics_symbol', inherits: 'image'},
-  grid: {msgId: 'role_grid', inherits: 'table'},
-  group: {msgId: 'role_group', inherits: 'abstractContainer'},
-  heading: {
-    msgId: 'role_heading',
-  },
-  image: {
-    msgId: 'role_img',
-  },
-  imeCandidate: {msgId: 'ime_candidate', ignoreAncestry: true},
-  inputTime: {msgId: 'input_type_time', inherits: 'abstractContainer'},
-  link: {msgId: 'role_link', earconId: 'LINK'},
-  list: {msgId: 'role_list', inherits: 'abstractList'},
-  listBox:
-      {msgId: 'role_listbox', earconId: 'LISTBOX', inherits: 'abstractList'},
-  listBoxOption: {msgId: 'role_listitem', earconId: 'LIST_ITEM'},
-  listGrid: {msgId: 'role_list_grid', inherits: 'table'},
-  listItem:
-      {msgId: 'role_listitem', earconId: 'LIST_ITEM', inherits: 'abstractItem'},
-  log: {msgId: 'role_log', inherits: 'abstractNameFromContents'},
-  main: {msgId: 'role_main', inherits: 'abstractContainer'},
-  mark: {msgId: 'role_mark', inherits: 'abstractSpan'},
-  marquee: {msgId: 'role_marquee', inherits: 'abstractNameFromContents'},
-  math: {msgId: 'role_math', inherits: 'abstractContainer'},
-  menu: {
-    msgId: 'role_menu',
-    contextOrder: OutputContextOrder.FIRST,
-    ignoreAncestry: true
-  },
-  menuBar: {
-    msgId: 'role_menubar',
-  },
-  menuItem: {msgId: 'role_menuitem'},
-  menuItemCheckBox: {msgId: 'role_menuitemcheckbox'},
-  menuItemRadio: {msgId: 'role_menuitemradio'},
-  menuListOption: {msgId: 'role_menuitem'},
-  menuListPopup: {msgId: 'role_menu'},
-  meter: {msgId: 'role_meter', inherits: 'abstractRange'},
-  navigation: {msgId: 'role_navigation', inherits: 'abstractContainer'},
-  note: {msgId: 'role_note', inherits: 'abstractContainer'},
-  progressIndicator:
-      {msgId: 'role_progress_indicator', inherits: 'abstractRange'},
-  popUpButton: {
-    msgId: 'role_button',
-    earconId: 'POP_UP_BUTTON',
-    inherits: 'comboBoxMenuButton'
-  },
-  radioButton: {msgId: 'role_radio'},
-  radioGroup: {msgId: 'role_radiogroup', inherits: 'abstractContainer'},
-  region: {msgId: 'role_region', inherits: 'abstractContainer'},
-  row: {msgId: 'role_row'},
-  rowHeader: {msgId: 'role_rowheader', inherits: 'cell'},
-  scrollBar: {msgId: 'role_scrollbar', inherits: 'abstractRange'},
-  section: {msgId: 'role_region', inherits: 'abstractContainer'},
-  search: {msgId: 'role_search', inherits: 'abstractContainer'},
-  separator: {msgId: 'role_separator', inherits: 'abstractContainer'},
-  slider: {msgId: 'role_slider', inherits: 'abstractRange', earconId: 'SLIDER'},
-  spinButton: {
-    msgId: 'role_spinbutton',
-    inherits: 'abstractRange',
-    earconId: 'LISTBOX'
-  },
-  splitter: {msgId: 'role_separator', inherits: 'abstractSpan'},
-  status: {msgId: 'role_status', inherits: 'abstractNameFromContents'},
-  subscript: {msgId: 'role_subscript', inherits: 'abstractSpan'},
-  suggestion: {
-    msgId: 'role_suggestion',
-    inherits: 'abstractSpan',
-    contextOrder: OutputContextOrder.FIRST
-  },
-  superscript: {msgId: 'role_superscript', inherits: 'abstractSpan'},
-  tab: {msgId: 'role_tab'},
-  tabList: {msgId: 'role_tablist', inherits: 'abstractContainer'},
-  tabPanel: {msgId: 'role_tabpanel'},
-  searchBox: {msgId: 'role_search', earconId: 'EDITABLE_TEXT'},
-  textField: {msgId: 'input_type_text', earconId: 'EDITABLE_TEXT'},
-  textFieldWithComboBox: {msgId: 'role_combobox', earconId: 'EDITABLE_TEXT'},
-  time: {msgId: 'tag_time', inherits: 'abstractContainer'},
-  timer: {msgId: 'role_timer', inherits: 'abstractNameFromContents'},
-  toolbar: {msgId: 'role_toolbar', ignoreAncestry: true},
-  toggleButton: {msgId: 'role_toggle_button', inherits: 'checkBox'},
-  tree: {msgId: 'role_tree'},
-  treeItem: {msgId: 'role_treeitem'},
-  video: {msgId: 'tag_video', inherits: 'abstractContainer'},
-  window: {ignoreAncestry: true}
-};
 
 /**
  * Metadata about supported automation states.

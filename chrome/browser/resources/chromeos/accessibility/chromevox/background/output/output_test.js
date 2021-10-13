@@ -627,8 +627,8 @@ SYNC_TEST_F('ChromeVoxOutputE2ETest', 'MessageIdAndEarconValidity', function() {
     'graphicsSymbol',
     'suggestion',
   ]);
-  for (const key in Output.ROLE_INFO) {
-    const value = Output.ROLE_INFO[key];
+  for (const key in OutputRoleInfo) {
+    const value = OutputRoleInfo[key];
     if (value.msgId) {
       Msgs.getMsg(value.msgId);
       if (!kNoBrailleMessageRequired.has(key)) {

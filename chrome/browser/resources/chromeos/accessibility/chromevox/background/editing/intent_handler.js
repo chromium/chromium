@@ -104,7 +104,7 @@ IntentHandler = class {
           const ancestors = enteredAncestors.concat(exitedAncestors);
           while ((ancestor = ancestors.pop()) &&
                  !AutomationPredicate.rootOrEditableRoot(ancestor)) {
-            const roleInfo = Output.ROLE_INFO[ancestor.role];
+            const roleInfo = OutputRoleInfo[ancestor.role];
             if (roleInfo && roleInfo['inherits'] === 'abstractSpan') {
               // Let the caller handle this case.
               return false;
