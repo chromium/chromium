@@ -287,8 +287,7 @@ TEST_F(IndexedDBDispatcherHostTest, CloseConnectionBeforeUpgrade) {
   loop2.Run();
 }
 
-// Flaky on multiple platforms.  http://crbug.com/1001265
-TEST_F(IndexedDBDispatcherHostTest, DISABLED_CloseAfterUpgrade) {
+TEST_F(IndexedDBDispatcherHostTest, CloseAfterUpgrade) {
   const int64_t kDBVersion = 1;
   const int64_t kTransactionId = 1;
   const int64_t kObjectStoreId = 10;
@@ -356,8 +355,7 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_CloseAfterUpgrade) {
   loop3.Run();
 }
 
-// TODO(https://crbug.com/995716) Test is flaky on multiple platforms.
-TEST_F(IndexedDBDispatcherHostTest, DISABLED_OpenNewConnectionWhileUpgrading) {
+TEST_F(IndexedDBDispatcherHostTest, OpenNewConnectionWhileUpgrading) {
   const int64_t kDBVersion = 1;
   const int64_t kTransactionId = 1;
   const int64_t kObjectStoreId = 10;
