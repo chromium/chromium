@@ -612,6 +612,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SBClientPhishing.ClientModelVersionFetched" units="version"
     expires_after="2021-11-21">
+  <obsolete>
+    Removed 10-2021 since models are no longer fetched by this mechanism.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
