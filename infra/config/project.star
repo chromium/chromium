@@ -45,9 +45,9 @@ def _project_settings(
 
 settings = _project_settings(
     # Set this to the name of the milestone's project
-    project = "chromium-m90",
+    project = "chromium-m92",
     # Set this to how the branch should be referred to in console titles
-    project_title = "Chromium M90",
+    project_title = "Chromium M92",
     # Set this to False for branches
     is_main = False,
     # Set this to True for LTC/LTS branches
