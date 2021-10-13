@@ -159,6 +159,13 @@ void InputMethodAsh::ProcessKeyEventDone(ui::KeyEvent* event, bool is_handled) {
       // If IME does not handle key event, passes keyevent to character composer
       // to be able to compose complex characters.
       is_handled = ExecuteCharacterComposer(*event);
+
+      if (!is_handled) {
+        // If the character composer didn't handle it either, then confirm any
+        // composition text before forwarding the key event.
+        ConfirmCompositionText(/* reset_engine */ true,
+                               /* keep_selection */ true);
+      }
     }
   }
   if (event->type() == ET_KEY_PRESSED || event->type() == ET_KEY_RELEASED) {
