@@ -203,3 +203,53 @@ grit("file_manager_swa_resources") {
   ]
   output_dir = target_gen_dir
 }
+
+generated_untrusted_grd = "$target_gen_dir/file_manager_untrusted_resources.grd"
+
+generate_grd("build_file_manager_untrusted_grd") {
+  grd_prefix = "file_manager_untrusted"
+  out_grd = generated_untrusted_grd
+
+  input_files_base_dir =
+      rebase_path("//ui/file_manager/file_manager/foreground/elements/", "//")
+  input_files = [
+    "files_quick_view.css",
+    "sandboxed/files_audio_content.css",
+    "sandboxed/files_audio_content.html",
+    "sandboxed/files_text_content.css",
+    "sandboxed/files_text_content.html",
+    "sandboxed/files_img_content.css",
+    "sandboxed/files_img_content.html",
+    "sandboxed/files_media_content.js",
+    "sandboxed/files_video_content.css",
+    "sandboxed/files_video_content.html",
+  ]
+  resource_path_rewrites = [
+    "sandboxed/files_audio_content.css|files_audio_content.css",
+    "sandboxed/files_audio_content.html|files_audio_content.html",
+    "sandboxed/files_text_content.css|files_text_content.css",
+    "sandboxed/files_text_content.html|files_text_content.html",
+    "sandboxed/files_img_content.css|files_img_content.css",
+    "sandboxed/files_img_content.html|files_img_content.html",
+    "sandboxed/files_media_content.js|files_media_content.js",
+    "sandboxed/files_video_content.css|files_video_content.css",
+    "sandboxed/files_video_content.html|files_video_content.html",
+  ]
+}
+
+# Resources used by chrome-untrusted://file-manager.
+grit("file_manager_untrusted_resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+
+  source = generated_untrusted_grd
+  deps = [ ":build_file_manager_untrusted_grd" ]
+
+  outputs = [
+    "grit/file_manager_untrusted_resources.h",
+    "grit/file_manager_untrusted_resources_map.cc",
+    "grit/file_manager_untrusted_resources_map.h",
+    "file_manager_untrusted_resources.pak",
+  ]
+  output_dir = target_gen_dir
+}

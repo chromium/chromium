@@ -19,7 +19,7 @@ static_library("file_manager_untrusted_ui") {
     "url_constants.h",
   ]
   deps = [
-    "//ash/webui/file_manager/untrusted_resources:file_manager_untrusted_resources",
+    "//ash/webui/file_manager/resources:file_manager_untrusted_resources",
     "//base",
     "//content/public/browser",
     "//content/public/common",

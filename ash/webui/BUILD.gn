@@ -50,7 +50,6 @@ group("closure_compile") {
   deps = [
     "//ash/webui/diagnostics_ui:closure_compile",
     "//ash/webui/file_manager/resources:closure_compile",
-    "//ash/webui/file_manager/untrusted_resources:closure_compile",
     "//ash/webui/help_app_ui:closure_compile",
     "//ash/webui/media_app_ui:closure_compile",
     "//ash/webui/os_feedback_ui:closure_compile",

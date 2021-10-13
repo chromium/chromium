@@ -428,7 +428,7 @@
     "META": {"sizes": {"includes": [100]}},
     "includes": [3000],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/file_manager/untrusted_resources/file_manager_untrusted_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/file_manager/resources/file_manager_untrusted_resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [3020],
   },

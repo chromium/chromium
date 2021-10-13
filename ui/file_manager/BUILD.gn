@@ -41,6 +41,7 @@ group("closure_compile") {
     "file_manager/background/js:closure_compile",
     "file_manager/common/js:closure_compile",
     "file_manager/foreground/elements:closure_compile",
+    "file_manager/foreground/elements/sandboxed:closure_compile",
     "file_manager/foreground/js:closure_compile",
     "file_manager/foreground/js/metadata:closure_compile",
     "file_manager/foreground/js/ui:closure_compile",

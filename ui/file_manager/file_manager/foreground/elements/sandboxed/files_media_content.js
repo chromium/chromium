@@ -121,4 +121,4 @@ window.onload = () => {
 };
 
 // clang-format off
-//# sourceURL=//ash/webui/file_manager/untrusted_resources/files_media_content.js
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/sandboxed/files_media_content.js

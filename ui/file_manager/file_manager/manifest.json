@@ -48,11 +48,11 @@
     "partitions": [{
       "name": "trusted",
       "accessible_resources": [
-        "untrusted_resources/files_audio_content.*",
-        "untrusted_resources/files_img_content.*",
-        "untrusted_resources/files_media_content.js",
-        "untrusted_resources/files_text_content.*",
-        "untrusted_resources/files_video_content.*"
+        "foreground/elements/sandboxed/files_audio_content.*",
+        "foreground/elements/sandboxed/files_img_content.*",
+        "foreground/elements/sandboxed/files_media_content.js",
+        "foreground/elements/sandboxed/files_text_content.*",
+        "foreground/elements/sandboxed/files_video_content.*"
       ]
     }]
   },
