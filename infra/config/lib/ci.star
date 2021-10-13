@@ -207,6 +207,7 @@ def android_fyi_builder(*, name, **kwargs):
     kwargs.setdefault("os", os.LINUX_BIONIC_REMOVE)
     return ci_builder(
         name = name,
+        bootstrap = True,
         builder_group = "chromium.android.fyi",
         goma_backend = builders.goma.backend.RBE_PROD,
         **kwargs
