@@ -100,7 +100,6 @@ void HTMLDetailsElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   root.AppendChild(summary_slot_);
 
   content_slot_ = MakeGarbageCollected<HTMLSlotElement>(GetDocument());
-  HTMLSlotElement::CreateUserAgentDefaultSlot(GetDocument());
   content_slot_->SetIdAttribute(shadow_element_names::kIdDetailsContent);
   if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled()) {
     content_slot_->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,

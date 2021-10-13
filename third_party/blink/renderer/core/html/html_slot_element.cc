@@ -55,20 +55,6 @@ namespace {
 constexpr size_t kLCSTableSizeLimit = 16;
 }
 
-HTMLSlotElement* HTMLSlotElement::CreateUserAgentDefaultSlot(
-    Document& document) {
-  HTMLSlotElement* slot = MakeGarbageCollected<HTMLSlotElement>(document);
-  slot->setAttribute(html_names::kNameAttr, UserAgentDefaultSlotName());
-  return slot;
-}
-
-HTMLSlotElement* HTMLSlotElement::CreateUserAgentCustomAssignSlot(
-    Document& document) {
-  HTMLSlotElement* slot = MakeGarbageCollected<HTMLSlotElement>(document);
-  slot->setAttribute(html_names::kNameAttr, UserAgentCustomAssignSlotName());
-  return slot;
-}
-
 HTMLSlotElement::HTMLSlotElement(Document& document)
     : HTMLElement(html_names::kSlotTag, document) {
   UseCounter::Count(document, WebFeature::kHTMLSlotElement);

@@ -65,7 +65,6 @@ class SlotAssignment final : public GarbageCollected<SlotAssignment> {
   };
 
   HTMLSlotElement* FindSlotInManualSlotting(Node&);
-  HTMLSlotElement* FindSlotInUserAgentShadow(const Node&) const;
 
   void CollectSlots();
   HTMLSlotElement* GetCachedFirstSlotWithoutAccessingNodeTree(

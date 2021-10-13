@@ -43,9 +43,6 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static HTMLSlotElement* CreateUserAgentDefaultSlot(Document&);
-  static HTMLSlotElement* CreateUserAgentCustomAssignSlot(Document&);
-
   HTMLSlotElement(Document&);
 
   const HeapVector<Member<Node>>& AssignedNodes() const;

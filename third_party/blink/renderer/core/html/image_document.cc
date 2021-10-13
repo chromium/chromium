@@ -258,7 +258,7 @@ void ImageDocument::CreateDocumentStructure(
                                "min-width: min-content;"
                                "height: 100%;"
                                "width: 100%;");
-    HTMLSlotElement* slot = HTMLSlotElement::CreateUserAgentDefaultSlot(*this);
+    HTMLSlotElement* slot = MakeGarbageCollected<HTMLSlotElement>(*this);
     div_element_->AppendChild(slot);
 
     // Adding a UA shadow root here is because the container <div> should be
@@ -266,6 +266,7 @@ void ImageDocument::CreateDocumentStructure(
     // according to the spec:
     // https://html.spec.whatwg.org/C/#read-media
     ShadowRoot& shadow_root = body->EnsureUserAgentShadowRoot();
+    shadow_root.EnableNameBasedSlotAssignment();
     shadow_root.AppendChild(div_element_);
   } else {
     body->setAttribute(html_names::kStyleAttr, "margin: 0px; height: 100%");
