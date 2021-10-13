@@ -82,7 +82,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"boardAndVersionInfo", IDS_DIAGNOSTICS_DEVICE_INFO_TEXT},
       {"captivePortalFailedText", IDS_DIAGNOSTICS_CAPTIVE_PORTAL_FAILED_TEXT},
       {"captivePortalRoutineText", IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL},
-      {"cellularLabel", IDS_NETWORK_TYPE_CELLULAR},
+      {"cellularLabel", IDS_DIAGNOSTICS_NETWORK_TYPE_CELLULAR},
       {"chargeTestResultText", IDS_CHARGE_TEST_RESULT},
       {"connectivityText", IDS_DIAGNOSTICS_CONNECTIVITY},
       {"cpuBannerMessage", IDS_DIAGNOSTICS_CPU_BANNER_MESSAGE},

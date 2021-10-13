@@ -575,6 +575,34 @@ export let fakeCellularNetwork = {
 };
 
 /** @type {!Network} */
+export let fakeCellularWithIpConfigNetwork = {
+  state: NetworkState.kConnected,
+  type: NetworkType.kCellular,
+  typeProperties: {
+    cellular: {
+      networkTechnology: 'LTE',
+      roaming: true,
+      roamingState: RoamingState.kRoaming,
+      signalStrength: 55,
+      iccid: '83948080007483825411',
+      eid: '82099038007008862600508229159883',
+      simLocked: true,
+      lockType: LockType.kSimPin,
+      simAbsent: false,
+    },
+  },
+  observerGuid: 'cellularWithIpConfigGuid',
+  name: 'cellularName',
+  macAddress: '85:C5:A6:30:3F:31',
+  ipConfig: {
+    ipAddress: '192.168.86.197',
+    gateway: '192.168.86.1',
+    nameServers: ['192.168.86.1'],
+    routingPrefix: 24,
+  },
+};
+
+/** @type {!Network} */
 export let fakeCellularDisabledNetwork = {
   state: NetworkState.kDisabled,
   type: NetworkType.kCellular,

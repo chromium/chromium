@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/network_card.js';
 
-import {fakeCellularNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled, fakeWifiNetworkInvalidNameServers, fakeWifiNetworkNoIpAddress} from 'chrome://diagnostics/fake_data.js';
+import {fakeCellularNetwork, fakeCellularWithIpConfigNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled, fakeWifiNetworkInvalidNameServers, fakeWifiNetworkNoIpAddress} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -58,6 +58,8 @@ export function networkCardTestSuite() {
         'wifiGuidInvalidNameServers', [fakeWifiNetworkInvalidNameServers]);
     provider.setFakeNetworkState(
         'wifiGuidNoIpAddress', [fakeWifiNetworkNoIpAddress]);
+    provider.setFakeNetworkState(
+        'cellularWithIpConfigGuid', [fakeCellularWithIpConfigNetwork]);
     // Add the network info to the DOM.
     networkCardElement = /** @type {!NetworkCardElement} */ (
         document.createElement('network-card'));
@@ -109,6 +111,14 @@ export function networkCardTestSuite() {
     assertTrue(!!networkCardElement);
 
     return /** @type {!Element} */ (networkCardElement.$$('#icon'));
+  }
+
+  /** @return {!Element} */
+  function getCellularInfoElement() {
+    const networkInfoElement = getNetworkInfoElement();
+    assertTrue(!!networkInfoElement);
+
+    return dx_utils.getCellularInfoElement(networkInfoElement);
   }
 
   /** @return {!Element} */
@@ -309,5 +319,16 @@ export function networkCardTestSuite() {
           // and reset.
           assertTrue(getTimerId() === -1);
         });
+  });
+
+  test('CardTitleCellularConnectedInitializedCorrectly', () => {
+    return initializeNetworkCard('cellularWithIpConfigGuid').then(() => {
+      dx_utils.assertElementContainsText(
+          networkCardElement.$$('#cardTitle'), 'Mobile data');
+      assertTrue(isVisible(getNetworkIcon()));
+      assertFalse(isVisible(getTroubleConnectingElement()));
+      assertTrue(isVisible(getCellularInfoElement()));
+      assertTrue(isVisible(getIpConfigDrawerElement()));
+    });
   });
 }
