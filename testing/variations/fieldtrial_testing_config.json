@@ -1129,34 +1129,6 @@
             ]
         }
     ],
-    "AutofillMerchantBoundVirtualCards": [
-        {
-            "platforms": [
-                "android",
-                "mac",
-                "windows",
-                "chromeos",
-                "chromeos_lacros",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:keyboard_accessory_payment_virtual_card_iph_trigger;comparator:<3;window:90;storage:360",
-                        "event_used": "name:keyboard_accessory_payment_suggestion_accepted;comparator:<2;window:90;storage:360",
-                        "session_rate": "any",
-                        "session_rate_impact": "IPH_KeyboardAccessoryBarSwiping"
-                    },
-                    "enable_features": [
-                        "AutofillEnableMerchantBoundVirtualCards",
-                        "IPH_KeyboardAccessoryPaymentVirtualCard"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillNameSectionsWithRendererIds": [
         {
             "platforms": [

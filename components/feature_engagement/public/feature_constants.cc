@@ -135,7 +135,7 @@ const base::Feature kIPHKeyboardAccessoryPaymentOfferFeature{
     "IPH_KeyboardAccessoryPaymentOffer", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHKeyboardAccessoryPaymentVirtualCardFeature{
     "IPH_KeyboardAccessoryPaymentVirtualCard",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHNewTabPageHomeButtonFeature{
     "IPH_NewTabPageHomeButton", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHMicToolbarFeature{"IPH_MicToolbar",

@@ -516,6 +516,30 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                                k10YearsInDays, k10YearsInDays);
     return config;
   }
+
+  if (kIPHKeyboardAccessoryPaymentVirtualCardFeature.name == feature->name) {
+    // A config that allows the virtual card IPH to be shown when a user
+    // interacts with the payment form and triggers the credit card suggestion
+    // list.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger =
+        EventConfig("keyboard_accessory_payment_virtual_card_iph_trigger",
+                    Comparator(LESS_THAN, 3), 90, 360);
+    config->used = EventConfig("keyboard_accessory_payment_suggestion_accepted",
+                               Comparator(LESS_THAN, 2), 90, 360);
+
+    SessionRateImpact session_rate_impact;
+    session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
+    std::vector<std::string> affected_features;
+    affected_features.push_back("IPH_KeyboardAccessoryBarSwiping");
+    session_rate_impact.affected_features = affected_features;
+    config->session_rate_impact = session_rate_impact;
+    return config;
+  }
+
 #endif  // defined(OS_ANDROID)
 
   if (kIPHDummyFeature.name == feature->name) {

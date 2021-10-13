@@ -62,7 +62,7 @@ const base::Feature kAutofillEnableGoogleIssuedCard{
 // interact with a payment form.
 const base::Feature kAutofillEnableMerchantBoundVirtualCards{
     "AutofillEnableMerchantBoundVirtualCards",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, a notification will be displayed on page navigation if the
 // domain has an eligible credit card linked offer or reward.
