@@ -9188,6 +9188,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Layout.MicroSecondsPerComplexText" units="microseconds"
     expires_after="M85">
+  <obsolete>
+    Removed in M86.
+  </obsolete>
   <owner>benjhayden@chromium.org</owner>
   <summary>
     For layouts that considered at least 100 nodes, at least half of which were
@@ -9204,6 +9207,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Layout.MicroSecondsPerFloat" units="microseconds"
     expires_after="M85">
+  <obsolete>
+    Removed in M86.
+  </obsolete>
   <owner>benjhayden@chromium.org</owner>
   <summary>
     For layouts that considered at least 100 nodes, at least half of which were
@@ -9219,6 +9225,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Layout.MicroSecondsPerNode" units="microseconds"
     expires_after="M85">
+  <obsolete>
+    Removed in M86.
+  </obsolete>
   <owner>benjhayden@chromium.org</owner>
   <summary>
     For layouts that considered at least 100 nodes, the average number of
@@ -9234,6 +9243,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Layout.MicroSecondsPerPositioned" units="microseconds"
     expires_after="M85">
+  <obsolete>
+    Removed in M86.
+  </obsolete>
   <owner>benjhayden@chromium.org</owner>
   <summary>
     For layouts that considered at least 100 nodes, at least half of which were
@@ -9250,6 +9262,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Layout.MicroSecondsPerSimpleText" units="microseconds"
     expires_after="M85">
+  <obsolete>
+    Removed in M86.
+  </obsolete>
   <owner>benjhayden@chromium.org</owner>
   <summary>
     For layouts that considered at least 100 nodes, at least half of which were
@@ -9266,6 +9281,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Layout.MicroSecondsPerTD" units="microseconds"
     expires_after="M85">
+  <obsolete>
+    Removed in M86.
+  </obsolete>
   <owner>benjhayden@chromium.org</owner>
   <summary>
     For layouts that considered at least 100 nodes, at least half of which were
