@@ -126,4 +126,41 @@ static_assert(sizeof(void*) != 8, "");
 // builds (e.g. Windows).
 // #define PA_COUNT_SYSCALL_TIME
 
+// On Windows, |thread_local| variables cannot be marked "dllexport", see
+// compiler error C2492 at
+// https://docs.microsoft.com/en-us/cpp/error-messages/compiler-errors-1/compiler-error-c2492?view=msvc-160.
+// Don't use it there.
+//
+// On macOS and iOS with PartitionAlloc-Everywhere enabled, thread_local
+// allocates memory and it causes an infinite loop of ThreadCache::Get() ->
+// malloc_zone_malloc -> ShimMalloc -> ThreadCache::Get() -> ...
+// Exact stack trace is:
+//   libsystem_malloc.dylib`_malloc_zone_malloc
+//   libdyld.dylib`tlv_allocate_and_initialize_for_key
+//   libdyld.dylib`tlv_get_addr
+//   libbase.dylib`thread-local wrapper routine for
+//       base::internal::g_thread_cache
+//   libbase.dylib`base::internal::ThreadCache::Get()
+// where tlv_allocate_and_initialize_for_key performs memory allocation.
+//
+// Finally, we have crashes with component builds on macOS,
+// see crbug.com/1243375.
+#if !(defined(OS_WIN) && defined(COMPONENT_BUILD)) && \
+    !(defined(OS_APPLE) &&                            \
+      (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || defined(COMPONENT_BUILD)))
+#define PA_THREAD_LOCAL_TLS
+#endif
+
+// When PartitionAlloc is malloc(), detect malloc() becoming re-entrant by
+// calling malloc() again.
+//
+// Limitations:
+// - DCHECK_IS_ON() due to runtime cost
+// - thread_local TLS to simplify the implementation
+// - Not on Android due to bot failures
+#if DCHECK_IS_ON() && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    defined(PA_THREAD_LOCAL_TLS) && !defined(OS_ANDROID)
+#define PA_HAS_ALLOCATION_GUARD
+#endif
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_

@@ -1901,6 +1901,8 @@ component("base") {
         "allocator/partition_allocator/address_pool_manager_types.h",
         "allocator/partition_allocator/address_space_randomization.cc",
         "allocator/partition_allocator/address_space_randomization.h",
+        "allocator/partition_allocator/allocation_guard.cc",
+        "allocator/partition_allocator/allocation_guard.h",
         "allocator/partition_allocator/extended_api.cc",
         "allocator/partition_allocator/extended_api.h",
         "allocator/partition_allocator/memory_reclaimer.cc",

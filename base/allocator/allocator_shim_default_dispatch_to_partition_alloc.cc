@@ -9,6 +9,7 @@
 
 #include "base/allocator/allocator_shim_internals.h"
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
@@ -258,6 +259,7 @@ namespace base {
 namespace internal {
 
 void* PartitionMalloc(const AllocatorDispatch*, size_t size, void* context) {
+  ScopedDisallowAllocations guard{};
   return Allocator()->AllocFlagsNoHooks(0, MaybeAdjustSize(size),
                                         PartitionPageSize());
 }
@@ -265,6 +267,7 @@ void* PartitionMalloc(const AllocatorDispatch*, size_t size, void* context) {
 void* PartitionMallocUnchecked(const AllocatorDispatch*,
                                size_t size,
                                void* context) {
+  ScopedDisallowAllocations guard{};
   return Allocator()->AllocFlagsNoHooks(base::PartitionAllocReturnNull,
                                         MaybeAdjustSize(size),
                                         PartitionPageSize());
@@ -274,6 +277,7 @@ void* PartitionCalloc(const AllocatorDispatch*,
                       size_t n,
                       size_t size,
                       void* context) {
+  ScopedDisallowAllocations guard{};
   const size_t total = base::CheckMul(n, MaybeAdjustSize(size)).ValueOrDie();
   return Allocator()->AllocFlagsNoHooks(base::PartitionAllocZeroFill, total,
                                         PartitionPageSize());
@@ -283,6 +287,7 @@ void* PartitionMemalign(const AllocatorDispatch*,
                         size_t alignment,
                         size_t size,
                         void* context) {
+  ScopedDisallowAllocations guard{};
   return AllocateAlignedMemory(alignment, size);
 }
 
@@ -290,6 +295,7 @@ void* PartitionAlignedAlloc(const AllocatorDispatch* dispatch,
                             size_t size,
                             size_t alignment,
                             void* context) {
+  ScopedDisallowAllocations guard{};
   return AllocateAlignedMemory(alignment, size);
 }
 
@@ -305,6 +311,7 @@ void* PartitionAlignedRealloc(const AllocatorDispatch* dispatch,
                               size_t size,
                               size_t alignment,
                               void* context) {
+  ScopedDisallowAllocations guard{};
   void* new_ptr = nullptr;
   if (size > 0) {
     size = MaybeAdjustSize(size);
@@ -333,6 +340,7 @@ void* PartitionRealloc(const AllocatorDispatch*,
                        void* address,
                        size_t size,
                        void* context) {
+  ScopedDisallowAllocations guard{};
 #if defined(OS_APPLE)
   if (UNLIKELY(!base::IsManagedByPartitionAlloc(address) && address)) {
     // A memory region allocated by the system allocator is passed in this
@@ -347,6 +355,7 @@ void* PartitionRealloc(const AllocatorDispatch*,
 }
 
 void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
+  ScopedDisallowAllocations guard{};
 #if defined(OS_APPLE)
   if (UNLIKELY(!base::IsManagedByPartitionAlloc(address) && address)) {
     // A memory region allocated by the system allocator is passed in this

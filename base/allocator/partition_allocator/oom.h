@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 
@@ -19,9 +20,11 @@
 // exception on Windows to signal this is OOM and not a normal assert.
 // OOM_CRASH(size) is called by users of PageAllocator (including
 // PartitionAlloc) to signify an allocation failure from the platform.
-#define OOM_CRASH(size) \
-  do {                  \
-    OnNoMemory(size);   \
+#define OOM_CRASH(size)                                     \
+  do {                                                      \
+    /* Raising an exception might allocate, allow that.  */ \
+    base::internal::ScopedAllowAllocations guard{};         \
+    OnNoMemory(size);                                       \
   } while (0)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_OOM_H_

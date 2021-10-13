@@ -35,6 +35,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
+#include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
@@ -1424,8 +1425,9 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
 
   const bool is_quarantine_enabled = IsQuarantineEnabled();
   // PCScan safepoint. Call before trying to allocate from cache.
-  if (is_quarantine_enabled)
+  if (is_quarantine_enabled) {
     PCScan::JoinScanIfNeeded();
+  }
 
   // !thread_safe => !with_thread_cache, but adding the condition allows the
   // compiler to statically remove this branch for the thread-unsafe variant.

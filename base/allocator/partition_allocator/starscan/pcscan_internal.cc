@@ -59,7 +59,7 @@ namespace internal {
 
 namespace {
 
-#if DCHECK_IS_ON() && defined(OS_LINUX)
+#if defined(PA_HAS_ALLOCATION_GUARD)
 // Currently, check reentracy only on Linux. On Android TLS is emulated by the
 // runtime lib, which can allocate and therefore cause reentrancy.
 struct ReentrantScannerGuard final {
@@ -78,7 +78,7 @@ struct ReentrantScannerGuard final {
 thread_local size_t ReentrantScannerGuard::guard_ = 0;
 #else
 struct [[maybe_unused]] ReentrantScannerGuard final{};
-#endif
+#endif  // defined(PA_HAS_ALLOCATION_GUARD)
 
 #if PA_STARSCAN_USE_CARD_TABLE
 // Bytemap that represent regions (cards) that contain quarantined objects.
@@ -1117,13 +1117,16 @@ class PCScan::PCScanThread final {
   friend class base::NoDestructor<PCScanThread>;
 
   PCScanThread() {
-    std::thread{[this] {
-      static constexpr const char* kThreadName = "PCScan";
-      // Ideally we should avoid mixing base:: and std:: API for threading, but
-      // this is useful for visualizing the pcscan thread in chrome://tracing.
-      base::PlatformThread::SetName(kThreadName);
-      TaskLoop();
-    }}.detach();
+    std::thread{[](PCScanThread* instance) {
+                  static constexpr const char* kThreadName = "PCScan";
+                  // Ideally we should avoid mixing base:: and std:: API for
+                  // threading, but this is useful for visualizing the pcscan
+                  // thread in chrome://tracing.
+                  base::PlatformThread::SetName(kThreadName);
+                  instance->TaskLoop();
+                },
+                this}
+        .detach();
   }
 
   // Waits and returns whether the delay should be recomputed.
@@ -1211,6 +1214,9 @@ void PCScanInternal::Initialize(PCScan::InitConfig config) {
   }
   scannable_roots_ = RootsMap();
   nonscannable_roots_ = RootsMap();
+  // The thread constructor allocates, make sure it is not running from within
+  // the allocator, e.g. when starting the first scan in free().
+  PCScan::PCScanThread::Instance();
   is_initialized_ = true;
 }
 
