@@ -1142,6 +1142,9 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       case ax::mojom::DescriptionFrom::kSummary:
         from = "summary";
         break;
+      case ax::mojom::DescriptionFrom::kSvgDescElement:
+        from = "svg-desc-element";
+        break;
       case ax::mojom::DescriptionFrom::kTableCaption:
         from = "table-caption";
         break;

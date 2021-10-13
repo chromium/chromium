@@ -1530,6 +1530,8 @@ const char* ToString(ax::mojom::DescriptionFrom description_from) {
       return "relatedElement";
     case ax::mojom::DescriptionFrom::kRubyAnnotation:
       return "rubyAnnotation";
+    case ax::mojom::DescriptionFrom::kSvgDescElement:
+      return "svgDescElement";
     case ax::mojom::DescriptionFrom::kSummary:
       return "summary";
     case ax::mojom::DescriptionFrom::kTableCaption:

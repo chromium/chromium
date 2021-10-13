@@ -109,6 +109,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/svg/svg_desc_element.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_symbol_element.h"
 #include "third_party/blink/renderer/core/svg/svg_title_element.h"
@@ -5046,38 +5047,32 @@ String AXNodeObject::NativeTextAlternative(
     if (name_sources) {
       name_sources->push_back(NameSource(*found_text_alternative));
       name_sources->back().type = name_from;
-      name_sources->back().native_source = kAXTextFromNativeHTMLTitleElement;
+      name_sources->back().native_source = kAXTextFromNativeTitleElement;
     }
     auto* container_node = To<ContainerNode>(GetNode());
     Element* title = ElementTraversal::FirstChild(
         *container_node, HasTagName(svg_names::kTitleTag));
 
     if (title) {
-      // TODO(accessibility): In the case of a use element, creation will fail
-      // because |AXObject::ComputeNonARIAParent| returns null because the use
-      // element's subtree isn't visited by LayoutTreeBuilderTraversal. We can
-      // solve this by including the parent when calling |GetOrCreate|. But we
-      // need to be sure that |ClearChildren| will clear title_ax_object if the
-      // use element is removed.
-      AXObject* title_ax_object = AXObjectCache().GetOrCreate(title);
-      if (title_ax_object && !visited.Contains(title_ax_object)) {
-        text_alternative =
-            RecursiveTextAlternative(*title_ax_object, nullptr, visited);
-        if (related_objects) {
-          local_related_objects.push_back(
-              MakeGarbageCollected<NameSourceRelatedObject>(title_ax_object,
-                                                            text_alternative));
-          *related_objects = local_related_objects;
-          local_related_objects.clear();
+      // TODO(accessibility): In most cases <desc> and <title> can participate
+      // in the recursive text alternative calculation. However when the <desc>
+      // or <title> is the child of a <use>, |AXObjectCache::GetOrCreate| will
+      // fail when |AXObject::ComputeNonARIAParent| returns null because the
+      // <use> element's subtree isn't visited by LayoutTreeBuilderTraversal. In
+      // addition, while aria-label and other text alternative sources are are
+      // technically valid on SVG <desc> and <title>, it is not clear if user
+      // agents must expose their values. Therefore until we hear otherwise,
+      // just use the inner text. See https://github.com/w3c/svgwg/issues/867
+      text_alternative = title->GetInnerTextWithoutUpdate();
+      if (!text_alternative.IsEmpty()) {
+        if (name_sources) {
+          NameSource& source = name_sources->back();
+          source.text = text_alternative;
+          source.related_objects = *related_objects;
+          *found_text_alternative = true;
+        } else {
+          return text_alternative;
         }
-      }
-      if (name_sources) {
-        NameSource& source = name_sources->back();
-        source.text = text_alternative;
-        source.related_objects = *related_objects;
-        *found_text_alternative = true;
-      } else {
-        return text_alternative;
       }
     }
     // The SVG-AAM says that the xlink:title participates as a name source
@@ -5184,7 +5179,7 @@ String AXNodeObject::NativeTextAlternative(
         name_sources->push_back(NameSource(*found_text_alternative));
         NameSource& source = name_sources->back();
         source.type = name_from;
-        source.native_source = kAXTextFromNativeHTMLTitleElement;
+        source.native_source = kAXTextFromNativeTitleElement;
         source.text = text_alternative;
         *found_text_alternative = true;
       } else {
@@ -5321,6 +5316,13 @@ String AXNodeObject::Description(
     } else {
       return description;
     }
+  }
+
+  // SVG-AAM specifies additional description sources when ARIA sources have not
+  // been found. https://w3c.github.io/svg-aam/#mapping_additional_nd
+  if (IsA<SVGElement>(GetNode())) {
+    return SVGDescription(name_from, description_from, description_sources,
+                          related_objects);
   }
 
   const auto* input_element = DynamicTo<HTMLInputElement>(GetNode());
@@ -5479,6 +5481,102 @@ String AXNodeObject::Description(
     }
   }
 
+  return String();
+}
+
+String AXNodeObject::SVGDescription(
+    ax::mojom::blink::NameFrom name_from,
+    ax::mojom::blink::DescriptionFrom& description_from,
+    DescriptionSources* description_sources,
+    AXRelatedObjectVector* related_objects) const {
+  DCHECK(IsA<SVGElement>(GetNode()));
+  String description;
+  bool found_description = false;
+  Element* element = GetElement();
+
+  description_from = ax::mojom::blink::DescriptionFrom::kSvgDescElement;
+  if (description_sources) {
+    description_sources->push_back(DescriptionSource(found_description));
+    description_sources->back().type = description_from;
+    description_sources->back().native_source = kAXTextFromNativeSVGDescElement;
+  }
+  if (Element* desc = ElementTraversal::FirstChild(
+          *element, HasTagName(svg_names::kDescTag))) {
+    // TODO(accessibility): In most cases <desc> and <title> can participate in
+    // the recursive text alternative calculation. However when the <desc> or
+    // <title> is the child of a <use>, |AXObjectCache::GetOrCreate| will fail
+    // when |AXObject::ComputeNonARIAParent| returns null because the <use>
+    // element's subtree isn't visited by LayoutTreeBuilderTraversal. In
+    // addition, while aria-label and other text alternative sources are are
+    // technically valid on SVG <desc> and <title>, it is not clear if user
+    // agents must expose their values. Therefore until we hear otherwise, just
+    // use the inner text. See https://github.com/w3c/svgwg/issues/867
+    description = desc->GetInnerTextWithoutUpdate();
+    if (!description.IsEmpty()) {
+      if (description_sources) {
+        DescriptionSource& source = description_sources->back();
+        source.related_objects = *related_objects;
+        source.text = description;
+        found_description = true;
+      } else {
+        return description;
+      }
+    }
+  }
+
+  // If we haven't found a description source yet and the title is present,
+  // SVG-AAM states to use the <title> if ARIA label attributes are used to
+  // provide the accessible name.
+  if (IsNameFromAriaAttribute(element)) {
+    description_from = ax::mojom::blink::DescriptionFrom::kTitle;
+    if (description_sources) {
+      description_sources->push_back(DescriptionSource(found_description));
+      description_sources->back().type = description_from;
+      description_sources->back().native_source = kAXTextFromNativeTitleElement;
+    }
+    if (Element* title = ElementTraversal::FirstChild(
+            *element, HasTagName(svg_names::kTitleTag))) {
+      // TODO(accessibility): In most cases <desc> and <title> can participate
+      // in the recursive text alternative calculation. However when the <desc>
+      // or <title> is the child of a <use>, |AXObjectCache::GetOrCreate| will
+      // fail when |AXObject::ComputeNonARIAParent| returns null because the
+      // <use> element's subtree isn't visited by LayoutTreeBuilderTraversal. In
+      // addition, while aria-label and other text alternative sources are are
+      // technically valid on SVG <desc> and <title>, it is not clear if user
+      // agents must expose their values. Therefore until we hear otherwise,
+      // just use the inner text. See https://github.com/w3c/svgwg/issues/867
+      description = title->GetInnerTextWithoutUpdate();
+      if (!description.IsEmpty()) {
+        if (description_sources) {
+          DescriptionSource& source = description_sources->back();
+          source.related_objects = *related_objects;
+          source.text = description;
+          found_description = true;
+        } else {
+          return description;
+        }
+      }
+    }
+  }
+
+  // In the case of an SVG <a>, the last description source is the xlink:title
+  // attribute, if it didn't serve as the name source.
+  if (IsA<SVGAElement>(GetNode()) &&
+      name_from != ax::mojom::blink::NameFrom::kAttribute) {
+    description_from = ax::mojom::blink::DescriptionFrom::kTitle;
+    const AtomicString& title_attr =
+        DynamicTo<Element>(GetNode())->FastGetAttribute(
+            xlink_names::kTitleAttr);
+    if (!title_attr.IsEmpty()) {
+      description = title_attr;
+      if (description_sources) {
+        found_description = true;
+        description_sources->back().text = description;
+      } else {
+        return description;
+      }
+    }
+  }
   return String();
 }
 

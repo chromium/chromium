@@ -3178,6 +3178,10 @@ bool AXObject::IsHiddenForTextAlternativeCalculation() const {
   if (IsA<SVGTitleElement>(node))
     return false;
 
+  // Always contribute SVG <desc> despite it having a hidden style by default.
+  if (IsA<SVGDescElement>(node))
+    return false;
+
   // If this is hidden but its parent isn't, then it appears the hiding style
   // targeted this node directly. Do not recurse into it for name from contents.
   return IsHiddenViaStyle() &&

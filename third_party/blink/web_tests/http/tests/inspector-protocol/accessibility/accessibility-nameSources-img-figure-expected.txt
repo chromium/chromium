@@ -631,15 +631,6 @@ Tests name sources in images and figures.
             }
             [2] : {
                 nativeSource : title
-                nativeSourceValue : {
-                    relatedNodes : [
-                        [0] : {
-                            backendDOMNodeId : <number>
-                            text : svg1-title
-                        }
-                    ]
-                    type : nodeList
-                }
                 type : relatedElement
                 value : {
                     type : computedString
@@ -657,18 +648,6 @@ Tests name sources in images and figures.
     }
     nodeId : <string>
     properties : [
-        [0] : {
-            name : labelledby
-            value : {
-                relatedNodes : [
-                    [0] : {
-                        nodeResult : title
-                        text : svg1-title
-                    }
-                ]
-                type : nodeList
-            }
-        }
     ]
     role : {
         type : role

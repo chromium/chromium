@@ -182,10 +182,12 @@ String ValueSourceType(ax::mojom::NameFrom name_from) {
   }
 }
 
-String NativeSourceType(AXTextFromNativeHTML native_source) {
+String NativeSourceType(AXTextSource native_source) {
   namespace SourceType = protocol::Accessibility::AXValueNativeSourceTypeEnum;
 
   switch (native_source) {
+    case kAXTextFromNativeSVGDescElement:
+      return SourceType::Description;
     case kAXTextFromNativeHTMLFigcaption:
       return SourceType::Figcaption;
     case kAXTextFromNativeHTMLLabel:
@@ -200,7 +202,7 @@ String NativeSourceType(AXTextFromNativeHTML native_source) {
       return SourceType::Tablecaption;
     case kAXTextFromNativeHTMLLegend:
       return SourceType::Legend;
-    case kAXTextFromNativeHTMLTitleElement:
+    case kAXTextFromNativeTitleElement:
       return SourceType::Title;
     default:
       return SourceType::Other;
@@ -236,7 +238,7 @@ std::unique_ptr<AXValueSource> CreateValueSource(NameSource& name_source) {
     value_source->setSuperseded(true);
   if (name_source.invalid)
     value_source->setInvalid(true);
-  if (name_source.native_source != kAXTextFromNativeHTMLUninitialized)
+  if (name_source.native_source != kAXTextFromNativeSourceUninitialized)
     value_source->setNativeSource(NativeSourceType(name_source.native_source));
   return value_source;
 }

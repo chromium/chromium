@@ -126,7 +126,7 @@ class NameSource {
   ax::mojom::blink::NameFrom type = ax::mojom::blink::NameFrom::kUninitialized;
   const QualifiedName& attribute;
   AtomicString attribute_value;
-  AXTextFromNativeHTML native_source = kAXTextFromNativeHTMLUninitialized;
+  AXTextSource native_source = kAXTextFromNativeSourceUninitialized;
   AXRelatedObjectVector related_objects;
 
   NameSource(bool superseded, const QualifiedName& attr)
@@ -149,7 +149,7 @@ class DescriptionSource {
       ax::mojom::blink::DescriptionFrom::kNone;
   const QualifiedName& attribute;
   AtomicString attribute_value;
-  AXTextFromNativeHTML native_source = kAXTextFromNativeHTMLUninitialized;
+  AXTextSource native_source = kAXTextFromNativeSourceUninitialized;
   AXRelatedObjectVector related_objects;
 
   DescriptionSource(bool superseded, const QualifiedName& attr)

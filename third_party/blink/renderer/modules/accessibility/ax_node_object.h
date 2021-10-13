@@ -211,6 +211,10 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
                      ax::mojom::blink::DescriptionFrom&,
                      DescriptionSources*,
                      AXRelatedObjectVector*) const override;
+  String SVGDescription(ax::mojom::blink::NameFrom,
+                        ax::mojom::blink::DescriptionFrom&,
+                        DescriptionSources*,
+                        AXRelatedObjectVector*) const;
   String Placeholder(ax::mojom::blink::NameFrom) const override;
   String Title(ax::mojom::blink::NameFrom) const override;
 

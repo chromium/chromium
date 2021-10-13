@@ -26,8 +26,8 @@
 ++++++[section] tag:text
 ++++++++[static] name='Hey!'
 ++++[image] name='view should not be exposed' tag:svg
-++++[image] name='desc should not be exposed as accessible object' tag:svg
-++++[image] name='title should not be exposed as accessible object' tag:svg
+++++[image] name='desc should not be exposed as accessible object' description='abc' description-from:svg-desc-element tag:svg
+++++[image] name='title should not be exposed as accessible object' description='abc' description-from:tooltip tag:svg
 ++++[image] name='circle which lacks criteria for inclusion should not be exposed' tag:svg
 ++++[image] name='ellipse which lacks criteria for inclusion should not be exposed' tag:svg
 ++++[document frame] name='foreignObject which lacks criteria for inclusion should not be exposed' tag:svg

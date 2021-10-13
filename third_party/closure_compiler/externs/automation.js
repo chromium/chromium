@@ -443,6 +443,7 @@ chrome.automation.DescriptionFromType = {
   RELATED_ELEMENT: 'relatedElement',
   RUBY_ANNOTATION: 'rubyAnnotation',
   SUMMARY: 'summary',
+  SVG_DESC_ELEMENT: 'svgDescElement',
   TABLE_CAPTION: 'tableCaption',
   TITLE: 'title',
 };

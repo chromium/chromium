@@ -1680,6 +1680,8 @@ std::string WebAXObjectProxy::DescriptionFrom() {
       return "rubyAnnotation";
     case ax::mojom::DescriptionFrom::kSummary:
       return "summary";
+    case ax::mojom::DescriptionFrom::kSvgDescElement:
+      return "svgDescElement";
     case ax::mojom::DescriptionFrom::kTableCaption:
       return "tableCaption";
     case ax::mojom::DescriptionFrom::kTitle:

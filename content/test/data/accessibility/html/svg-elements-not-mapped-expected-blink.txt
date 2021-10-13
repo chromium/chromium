@@ -33,8 +33,8 @@ rootWebArea htmlTag='#document'
 ++++++image htmlTag='svg' name='view should not be exposed'
 ++++++++genericContainer ignored invisible htmlTag='view'
 ++++++++genericContainer ignored invisible htmlTag='view'
-++++++image htmlTag='svg' name='desc should not be exposed as accessible object'
-++++++image htmlTag='svg' name='title should not be exposed as accessible object'
+++++++image description='abc' htmlTag='svg' name='desc should not be exposed as accessible object' descriptionFrom=svgDescElement
+++++++image description='abc' htmlTag='svg' name='title should not be exposed as accessible object' descriptionFrom=title
 ++++++image htmlTag='svg' name='circle which lacks criteria for inclusion should not be exposed'
 ++++++image htmlTag='svg' name='ellipse which lacks criteria for inclusion should not be exposed'
 ++++++svgRoot htmlTag='svg' name='foreignObject which lacks criteria for inclusion should not be exposed'

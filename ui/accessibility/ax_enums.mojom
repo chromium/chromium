@@ -1155,6 +1155,7 @@ enum DescriptionFrom {
   kRelatedElement,
   kRubyAnnotation,
   kSummary,  // HTML-AAM 5.8.2
+  kSvgDescElement,
   kTableCaption,  // HTML-AAM 5.9.2
   kTitle
 };
