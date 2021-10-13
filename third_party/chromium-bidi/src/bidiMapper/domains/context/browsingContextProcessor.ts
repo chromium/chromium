@@ -18,7 +18,7 @@
 import { log } from '../../../utils/log';
 import { CdpConnection } from '../../../cdp';
 import { Context } from './context';
-import { Script } from '../../bidiProtocolTypes';
+import { BrowsingContext, Script } from '../../bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
 
 const logContext = log('context');
@@ -122,7 +122,10 @@ export class BrowsingContextProcessor {
     }
   }
 
-  async process_createContext(params: any): Promise<any> {
+  async process_createContext(
+    commandData: BrowsingContext.BrowsingContextCreateCommand
+  ): Promise<BrowsingContext.BrowsingContextCreateResult> {
+    const params = commandData.params;
     return new Promise(async (resolve) => {
       let targetId: string;
 
@@ -147,15 +150,16 @@ export class BrowsingContextProcessor {
       browserCdpClient.Target.on('attachedToTarget', onAttachedToTarget);
 
       const result = await browserCdpClient.Target.createTarget({
-        url: params.url,
+        url: 'about:blank',
       });
       targetId = result.targetId;
     });
   }
 
   async process_script_evaluate(
-    params: Script.ScriptEvaluateParameters
+    commandData: Script.ScriptEvaluateCommand
   ): Promise<Script.ScriptEvaluateResult> {
+    const params = commandData.params;
     const context = this._getKnownContext(
       (params.target as Script.ContextTarget).context
     );
@@ -166,8 +170,9 @@ export class BrowsingContextProcessor {
   }
 
   async process_PROTO_script_invoke(
-    params: Script.PROTO.ScriptInvokeParameters
+    commandData: Script.PROTO.ScriptInvokeCommand
   ): Promise<Script.PROTO.ScriptInvokeResult> {
+    const params = commandData.params;
     const context = this._getKnownContext(
       (params.target as Script.ContextTarget).context
     );

@@ -153,9 +153,20 @@ async def test_getTree_contextReturned(websocket):
         "result": {
             "contexts": [{
                     "context": contextID,
-                    "parent": None,
+                    "children": [],
                     "url": "about:blank"}]}}
 
+@pytest.mark.asyncio
+# Not implemented yet.
+async def ignore_test_getTreeWithGivenParent_contextReturned(websocket):
+    ignore = True
+    # TODO sadym: implement
+
+@pytest.mark.asyncio
+# Not implemented yet.
+async def ignore_test_getTreeWithNestedContexts_contextReturned(websocket):
+    ignore = True
+    # TODO sadym: implement
 
 @pytest.mark.asyncio
 # Not implemented yet.
@@ -163,9 +174,8 @@ async def _ignore_test_createContext_eventContextCreatedEmittedAndContextCreated
     # Send command.
     command = {
         "id": 9,
-        "method": "PROTO.browsingContext.createContext",
-        "params": {
-            "url": "data:text/html,<h2>test</h2>"}}
+        "method": "browsingContext.create",
+        "params": {}}
     await send_JSON_command(websocket, command)
 
     # Assert "browsingContext.contextCreated" event emitted.
@@ -176,7 +186,7 @@ async def _ignore_test_createContext_eventContextCreatedEmittedAndContextCreated
         "params": {
             "context":contextID,
             "parent": None,
-            "url": "data:text/html,<h2>test</h2>"}}
+            "url": ""}}
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -185,7 +195,7 @@ async def _ignore_test_createContext_eventContextCreatedEmittedAndContextCreated
         "result": {
             "context": contextID,
             "parent": None,
-            "url": "data:text/html,<h2>test</h2>"}}
+            "url": ""}}
 
 @pytest.mark.asyncio
 # Not implemented yet.

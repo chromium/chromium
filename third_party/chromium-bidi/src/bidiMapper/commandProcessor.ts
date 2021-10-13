@@ -20,7 +20,7 @@ import { BrowsingContextProcessor } from './domains/context/browsingContextProce
 import { Context } from './domains/context/context';
 import { Protocol } from 'devtools-protocol';
 import { BidiCommandMessage, IBidiServer } from './utils/bidiServer';
-import { Script } from './bidiProtocolTypes';
+import { BrowsingContext, Script, Session } from './bidiProtocolTypes';
 
 export class CommandProcessor {
   private _browserCdpClient: CdpClient;
@@ -114,16 +114,25 @@ export class CommandProcessor {
     this._bidiServer.sendMessage(errorResponse);
   }
 
-  private _targetToContext(target: Protocol.Target.TargetInfo) {
+  private _targetToContext(
+    target: Protocol.Target.TargetInfo
+  ): BrowsingContext.BrowsingContextInfo {
     return {
       context: target.targetId,
-      parent: target.openerId ? target.openerId : null,
+      parent: target.openerId ? target.openerId : undefined,
       url: target.url,
+      // TODO sadym: implement.
+      children: [],
     };
   }
 
-  private async _process_browsingContext_getTree(params: object) {
+  private async _process_browsingContext_getTree(
+    commandData: BrowsingContext.BrowsingContextGetTreeCommand
+  ): Promise<BrowsingContext.BrowsingContextGetTreeResult> {
     const { targetInfos } = await this._browserCdpClient.Target.getTargets();
+    // TODO sadym: implement.
+    if (commandData.params.maxDepth || commandData.params.parent)
+      throw new Error('not implemented yet');
     const contexts = targetInfos
       // Don't expose any information about the tab with Mapper running.
       .filter(this._isValidTarget)
@@ -138,7 +147,9 @@ export class CommandProcessor {
     return {};
   }
 
-  private _process_session_status = async function (params: object) {
+  private _process_session_status = async function (
+    commandData: Session.SessionStatusCommand
+  ): Promise<Session.SessionStatusResult> {
     return { ready: true, message: 'ready' };
   };
 
@@ -148,6 +159,7 @@ export class CommandProcessor {
       params: context.toBidi(),
     });
   }
+
   private async _onContextDestroyed(context: Context) {
     await this._bidiServer.sendMessage({
       method: 'browsingContext.contextDestroyed',
@@ -158,21 +170,25 @@ export class CommandProcessor {
   private async _processCommand(commandData: BidiCommandMessage) {
     switch (commandData.method) {
       case 'session.status':
-        return await this._process_session_status(commandData.params);
+        return await this._process_session_status(
+          commandData as Session.SessionStatusCommand
+        );
       case 'browsingContext.getTree':
-        return await this._process_browsingContext_getTree(commandData.params);
+        return await this._process_browsingContext_getTree(
+          commandData as BrowsingContext.BrowsingContextGetTreeCommand
+        );
       case 'script.evaluate':
         return await this._contextProcessor.process_script_evaluate(
-          commandData.params as Script.ScriptEvaluateParameters
+          commandData as Script.ScriptEvaluateCommand
+        );
+      case 'browsingContext.create':
+        return await this._contextProcessor.process_createContext(
+          commandData as BrowsingContext.BrowsingContextCreateCommand
         );
 
       case 'PROTO.script.invoke':
         return await this._contextProcessor.process_PROTO_script_invoke(
-          commandData.params as Script.PROTO.ScriptInvokeParameters
-        );
-      case 'PROTO.browsingContext.createContext':
-        return await this._contextProcessor.process_createContext(
-          commandData.params
+          commandData as Script.PROTO.ScriptInvokeCommand
         );
 
       case 'DEBUG.Page.close':
@@ -193,9 +209,10 @@ export class CommandProcessor {
       };
 
       this._bidiServer.sendMessage(response);
-    } catch (e: any) {
-      console.error(e);
-      this._respondWithError(message, 'unknown error', e.message);
+    } catch (e) {
+      const error = e as Error;
+      console.error(error);
+      this._respondWithError(message, 'unknown error', error.message);
     }
   };
 }
