@@ -56,8 +56,8 @@ class ASH_EXPORT TabDragDropDelegate {
 
   // Must be called on drop if it was not accepted by the drop target. After
   // calling this, this delegate must not be used.
-  void Drop(const gfx::Point& location_in_screen,
-            const ui::OSExchangeData& drop_data);
+  void DropAndDeleteSelf(const gfx::Point& location_in_screen,
+                         const ui::OSExchangeData& drop_data);
 
  private:
   // Scales or transforms the source window if appropriate for this drag.
@@ -70,8 +70,8 @@ class ASH_EXPORT TabDragDropDelegate {
   // Puts the source window back into its original position.
   void RestoreSourceWindowBounds();
 
-  // Effectively handles the new window creation in Drop(). This method can be
-  // called asynchronously in case of Lacros.
+  // Effectively handles the new window creation in DropAndDeleteSelf(). This
+  // method can be called asynchronously in case of Lacros.
   void OnNewBrowserWindowCreated(const gfx::Point& location_in_screen,
                                  aura::Window* new_window);
 
