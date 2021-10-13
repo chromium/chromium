@@ -65,6 +65,17 @@ const char kFakeLongLatencyICMPOutput[] = R"(
         "dev": 0.197000 }
     })";
 
+const char kFakeNoReplyICMPOutput[] = R"(
+    { "4.3.2.1":
+      { "sent": 1,
+        "recvd": 0,
+        "time": 0,
+        "min": 0.000000,
+        "avg": 0.000000,
+        "max": 0.000000,
+        "dev": 0.000000 }
+    })";
+
 // This fakes a DebugDaemonClient by serving fake ICMP results when the
 // DebugDaemonClient calls TestICMP().
 class FakeDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
@@ -282,6 +293,19 @@ TEST_F(GatewayCanBePingedRoutineTest, TestDefaultNetworkAboveLatencyThreshold) {
   SetUpWiFi(shill::kStateOnline);
   std::vector<mojom::GatewayCanBePingedProblem> expected_problems = {
       mojom::GatewayCanBePingedProblem::kDefaultNetworkAboveLatencyThreshold};
+  gateway_can_be_pinged_routine()->RunRoutine(
+      base::BindOnce(&GatewayCanBePingedRoutineTest::CompareResult, weak_ptr(),
+                     mojom::RoutineVerdict::kProblem, expected_problems));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(GatewayCanBePingedRoutineTest, TestDefaultNetworkNoReply) {
+  // Use |kFakeLongLatencyICMPOutput| to handle the scenario where the ICMP
+  // result for the default network is above the threshold.
+  SetUpRoutine(kFakeNoReplyICMPOutput);
+  SetUpWiFi(shill::kStateOnline);
+  std::vector<mojom::GatewayCanBePingedProblem> expected_problems = {
+      mojom::GatewayCanBePingedProblem::kFailedToPingDefaultNetwork};
   gateway_can_be_pinged_routine()->RunRoutine(
       base::BindOnce(&GatewayCanBePingedRoutineTest::CompareResult, weak_ptr(),
                      mojom::RoutineVerdict::kProblem, expected_problems));
