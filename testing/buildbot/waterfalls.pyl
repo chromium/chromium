@@ -3627,11 +3627,11 @@
       },
       'win-backuprefptr-x86-fyi-rel': {
         'test_suites': {
-          'gtest_tests': 'win7_32_bit_gtests',
+          'gtest_tests': 'chromium_win_gtests',
         },
         'mixins': [
-          'win7',
-          'x86-32',
+          'win10',
+          'x86-64',
         ],
       },
       'win-pixel-tester-rel': {
