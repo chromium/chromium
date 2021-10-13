@@ -64,6 +64,8 @@ class VaapiVideoEncoderDelegate {
     // reference picture list 1 (top 16 bits).
     size_t max_num_ref_frames;
 
+    bool native_input_mode = false;
+
     BitrateControl bitrate_control = BitrateControl::kConstantBitrate;
   };
 
@@ -131,6 +133,8 @@ class VaapiVideoEncoderDelegate {
 
     // Returns the timestamp associated with this job.
     base::TimeDelta timestamp() const { return timestamp_; }
+
+    const scoped_refptr<VideoFrame>& input_frame() const;
 
     // VA-API specific methods.
     VABufferID coded_buffer_id() const;
@@ -242,6 +246,8 @@ class VaapiVideoEncoderDelegate {
   const scoped_refptr<VaapiWrapper> vaapi_wrapper_;
 
   base::RepeatingClosure error_cb_;
+
+  bool native_input_mode_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

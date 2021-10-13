@@ -56,8 +56,10 @@ constexpr uint8_t kTemporalLayerPattern[][4] = {
 };
 
 VaapiVideoEncoderDelegate::Config kDefaultVaapiVideoEncoderDelegateConfig{
-    kDefaultMaxNumRefFrames,
-    VaapiVideoEncoderDelegate::BitrateControl::kConstantQuantizationParameter};
+    .max_num_ref_frames = kDefaultMaxNumRefFrames,
+    .native_input_mode = false,
+    .bitrate_control = VaapiVideoEncoderDelegate::BitrateControl::
+        kConstantQuantizationParameter};
 
 VideoEncodeAccelerator::Config kDefaultVideoEncodeAcceleratorConfig(
     PIXEL_FORMAT_I420,

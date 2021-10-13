@@ -164,11 +164,6 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // able to create new EncodeJobs.
   void EncodePendingInputs();
 
-  // Uploads image data from |frame| to |va_surface_id|.
-  void UploadFrame(scoped_refptr<VideoFrame> frame,
-                   VASurfaceID va_surface_id,
-                   const gfx::Size& va_surface_size);
-
   // Executes encode in hardware. This does not block and may return before
   // the job is finished.
   void ExecuteEncode(VASurfaceID va_surface_id);

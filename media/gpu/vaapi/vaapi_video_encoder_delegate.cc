@@ -83,6 +83,11 @@ void VaapiVideoEncoderDelegate::EncodeJob::Execute() {
   }
 }
 
+const scoped_refptr<VideoFrame>&
+VaapiVideoEncoderDelegate::EncodeJob::input_frame() const {
+  return input_frame_;
+}
+
 VABufferID VaapiVideoEncoderDelegate::EncodeJob::coded_buffer_id() const {
   return coded_buffer_->id();
 }
@@ -155,6 +160,14 @@ std::unique_ptr<VaapiVideoEncoderDelegate::EncodeResult>
 VaapiVideoEncoderDelegate::Encode(std::unique_ptr<EncodeJob> encode_job) {
   if (!PrepareEncodeJob(*encode_job)) {
     VLOGF(1) << "Failed preparing an encode job";
+    return nullptr;
+  }
+
+  if (!native_input_mode_ &&
+      !vaapi_wrapper_->UploadVideoFrameToSurface(
+          *encode_job->input_frame(), encode_job->input_surface()->id(),
+          encode_job->input_surface()->size())) {
+    VLOGF(1) << "Failed to upload frame";
     return nullptr;
   }
 

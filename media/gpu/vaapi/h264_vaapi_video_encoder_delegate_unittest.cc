@@ -21,7 +21,12 @@ using ::testing::Return;
 namespace media {
 namespace {
 
-VaapiVideoEncoderDelegate::Config kDefaultVEADelegateConfig{4};
+VaapiVideoEncoderDelegate::Config kDefaultVEADelegateConfig{
+    .max_num_ref_frames = 4,
+    .native_input_mode = false,
+    .bitrate_control =
+        VaapiVideoEncoderDelegate::BitrateControl::kConstantBitrate,
+};
 
 VideoEncodeAccelerator::Config kDefaultVEAConfig(
     PIXEL_FORMAT_I420,
