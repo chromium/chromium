@@ -16016,7 +16016,7 @@ should be kept until we remove incident reporting. -->
   </token>
 </histogram>
 
-<histogram name="SiteIsolation.OutOfProcessIframes" units="units"
+<histogram name="SiteIsolation.OutOfProcessIframes" units="oopifs"
     expires_after="2022-04-10">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -16027,7 +16027,19 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="SiteIsolation.ProxyCount" units="units"
+<histogram name="SiteIsolation.OutOfProcessInnerFrameTrees" units="frame trees"
+    expires_after="2022-04-10">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <owner>nasko@chromium.org</owner>
+  <summary>
+    The count of all out-of-process inner frame trees. Recorded once per UMA
+    ping.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.ProxyCount" units="proxies"
     expires_after="2022-02-06">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>

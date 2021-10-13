@@ -217,7 +217,7 @@ void MetricsMemoryDetails::UpdateSiteIsolationMetrics() {
 
     // The rest of this block will happen only once per WebContents.
     SiteData& site_data = site_data_map[contents->GetBrowserContext()];
-    SiteDetails::CollectSiteInfo(contents, &site_data);
+    SiteDetails::CollectSiteInfo(contents->GetPrimaryPage(), &site_data);
   }
   SiteDetails::UpdateHistograms(site_data_map);
 }

@@ -81,6 +81,13 @@ class TestMemoryDetails : public MetricsMemoryDetails {
     return buckets[0].min;
   }
 
+  int GetOutOfProcessInnerFrameTreesCount() {
+    std::vector<Bucket> buckets =
+        uma_->GetAllSamples("SiteIsolation.OutOfProcessInnerFrameTrees");
+    CHECK_EQ(1U, buckets.size());
+    return buckets[0].min;
+  }
+
   size_t CountPageTitles() {
     size_t count = 0;
     for (const ProcessMemoryInformation& process : ChromeBrowser()->processes) {
@@ -890,7 +897,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameSiteDetailsBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Load a fenced frame.
-  GURL fenced_frame_url = embedded_test_server()->GetURL("/title2.html");
+  GURL fenced_frame_url = embedded_test_server()->GetURL("/iframe.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
           web_contents()->GetMainFrame(), fenced_frame_url);
@@ -900,6 +907,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameSiteDetailsBrowserTest,
   details->StartFetchAndWait();
   // Currently we don't collect the title of the fenced frame.
   EXPECT_EQ(1U, details->CountPageTitles());
+
+  // Expect we encountered one fenced frame.
+  EXPECT_EQ(1, details->GetOutOfProcessInnerFrameTreesCount());
 }
 
 class BackForwardCacheSiteDetailsBrowserTest : public InProcessBrowserTest {
