@@ -9,7 +9,7 @@
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/conversion_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -85,7 +85,7 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
   }
 
  protected:
-  ConversionDisallowingContentBrowserClient disallowed_browser_client_;
+  AttributionDisallowingContentBrowserClient disallowed_browser_client_;
 };
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
@@ -188,11 +188,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   TestAttributionManager manager;
   manager.SetActiveImpressionsForWebUI(
-      {ImpressionBuilder(base::Time::Now())
+      {SourceBuilder(base::Time::Now())
            .SetData(std::numeric_limits<uint64_t>::max())
            .SetAttributionLogic(StorableSource::AttributionLogic::kNever)
            .Build(),
-       ImpressionBuilder(base::Time::Now())
+       SourceBuilder(base::Time::Now())
            .SetSourceType(StorableSource::SourceType::kEvent)
            .SetPriority(std::numeric_limits<int64_t>::max())
            .SetDedupKeys({13, 17})
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   TestAttributionManager manager;
   manager.GetSessionStorage().AddSentReport(SentReportInfo(
-      AttributionReport(ImpressionBuilder(now).SetData(100).Build(),
+      AttributionReport(SourceBuilder(now).SetData(100).Build(),
                         /*conversion_data=*/5,
                         /*conversion_time=*/now,
                         /*report_time=*/now + base::Hours(3),
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       SentReportInfo::Status::kSent,
       /*http_response_code=*/200));
   manager.SetReportsForWebUI({AttributionReport(
-      ImpressionBuilder(now)
+      SourceBuilder(now)
           .SetData(200)
           .SetSourceType(StorableSource::SourceType::kEvent)
           .SetAttributionLogic(StorableSource::AttributionLogic::kFalsely)
@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   manager.GetSessionStorage().AddDroppedReport(
       AttributionStorage::CreateReportResult(
           CreateReportStatus::kPriorityTooLow,
-          AttributionReport(ImpressionBuilder(now).Build(),
+          AttributionReport(SourceBuilder(now).Build(),
                             /*conversion_data=*/8,
                             /*conversion_time=*/now,
                             /*report_time=*/now + base::Hours(1),
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   manager.GetSessionStorage().AddDroppedReport(
       AttributionStorage::CreateReportResult(
           CreateReportStatus::kDroppedForNoise,
-          AttributionReport(ImpressionBuilder(now).Build(),
+          AttributionReport(SourceBuilder(now).Build(),
                             /*conversion_data=*/9,
                             /*conversion_time=*/now,
                             /*report_time=*/now + base::Hours(2),
@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   const base::Time now = base::Time::Now();
 
   TestAttributionManager manager;
-  AttributionReport report(ImpressionBuilder(now).SetData(100).Build(),
+  AttributionReport report(SourceBuilder(now).SetData(100).Build(),
                            /*conversion_data=*/0, /*conversion_time=*/now,
                            /*report_time=*/now, /*priority=*/7,
                            AttributionReport::Id(1));
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   TestAttributionManager manager;
   AttributionReport report(
-      ImpressionBuilder(base::Time::Now()).SetData(100).Build(),
+      SourceBuilder(base::Time::Now()).SetData(100).Build(),
       /*conversion_data=*/0, /*conversion_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now(), /*priority=*/7,
       AttributionReport::Id(1));

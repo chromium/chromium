@@ -31,7 +31,7 @@
 #include "components/services/storage/dom_storage/local_storage_database.pb.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
-#include "content/browser/attribution_reporting/conversion_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
@@ -1923,9 +1923,9 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
       partition->GetAttributionManager();
 
   base::Time now = base::Time::Now();
-  auto impression = ImpressionBuilder(now).SetExpiry(base::Days(2)).Build();
+  auto impression = SourceBuilder(now).SetExpiry(base::Days(2)).Build();
   attribution_manager->HandleImpression(impression);
-  attribution_manager->HandleConversion(DefaultConversion());
+  attribution_manager->HandleConversion(DefaultTrigger());
 
   base::RunLoop run_loop;
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_CONVERSIONS, 0,
@@ -1946,9 +1946,9 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataWrongMask) {
       partition->GetAttributionManager();
 
   base::Time now = base::Time::Now();
-  auto impression = ImpressionBuilder(now).SetExpiry(base::Days(2)).Build();
+  auto impression = SourceBuilder(now).SetExpiry(base::Days(2)).Build();
   attribution_manager->HandleImpression(impression);
-  attribution_manager->HandleConversion(DefaultConversion());
+  attribution_manager->HandleConversion(DefaultTrigger());
 
   EXPECT_FALSE(
       GetConversionsToReportForTesting(attribution_manager, base::Time::Max())
@@ -1976,7 +1976,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearAllData) {
   for (int i = 0; i < 20; i++) {
     auto origin = url::Origin::Create(
         GURL(base::StringPrintf("https://www.%d.test/", i)));
-    auto impression = ImpressionBuilder(now)
+    auto impression = SourceBuilder(now)
                           .SetExpiry(base::Days(2))
                           .SetImpressionOrigin(origin)
                           .SetReportingOrigin(origin)
@@ -2009,7 +2009,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
         GURL(base::StringPrintf("https://reporter-%d.com/", i)));
     auto conv = url::Origin::Create(
         GURL(base::StringPrintf("https://conv-%d.com/", i)));
-    attribution_manager->HandleImpression(ImpressionBuilder(now)
+    attribution_manager->HandleImpression(SourceBuilder(now)
                                               .SetImpressionOrigin(impression)
                                               .SetReportingOrigin(reporter)
                                               .SetConversionOrigin(conv)

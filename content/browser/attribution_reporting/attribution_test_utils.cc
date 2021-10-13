@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/conversion_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
 
 #include <limits.h>
 #include <algorithm>
@@ -29,8 +29,8 @@ using CreateReportStatus =
     ::content::AttributionStorage::CreateReportResult::Status;
 
 const char kDefaultImpressionOrigin[] = "https://impression.test/";
-const char kDefaultConversionOrigin[] = "https://sub.conversion.test/";
-const char kDefaultConversionDestination[] = "https://conversion.test/";
+const char kDefaultTriggerOrigin[] = "https://sub.conversion.test/";
+const char kDefaultTriggerDestination[] = "https://conversion.test/";
 const char kDefaultReportOrigin[] = "https://report.test/";
 
 // Default expiry time for impressions for testing.
@@ -38,7 +38,7 @@ const int64_t kExpiryTime = 30;
 
 }  // namespace
 
-bool ConversionDisallowingContentBrowserClient::
+bool AttributionDisallowingContentBrowserClient::
     IsConversionMeasurementOperationAllowed(
         content::BrowserContext* browser_context,
         ConversionMeasurementOperation operation,
@@ -48,12 +48,12 @@ bool ConversionDisallowingContentBrowserClient::
   return false;
 }
 
-ConfigurableConversionTestBrowserClient::
-    ConfigurableConversionTestBrowserClient() = default;
-ConfigurableConversionTestBrowserClient::
-    ~ConfigurableConversionTestBrowserClient() = default;
+ConfigurableAttributionTestBrowserClient::
+    ConfigurableAttributionTestBrowserClient() = default;
+ConfigurableAttributionTestBrowserClient::
+    ~ConfigurableAttributionTestBrowserClient() = default;
 
-bool ConfigurableConversionTestBrowserClient::
+bool ConfigurableAttributionTestBrowserClient::
     IsConversionMeasurementOperationAllowed(
         content::BrowserContext* browser_context,
         ConversionMeasurementOperation operation,
@@ -78,7 +78,7 @@ bool ConfigurableConversionTestBrowserClient::
   return false;
 }
 
-void ConfigurableConversionTestBrowserClient::
+void ConfigurableAttributionTestBrowserClient::
     BlockConversionMeasurementInContext(
         absl::optional<url::Origin> impression_origin,
         absl::optional<url::Origin> conversion_origin,
@@ -214,74 +214,73 @@ void TestAttributionManager::Reset() {
 
 // Builds an impression with default values. This is done as a builder because
 // all values needed to be provided at construction time.
-ImpressionBuilder::ImpressionBuilder(base::Time time)
+SourceBuilder::SourceBuilder(base::Time time)
     : impression_data_(123),
       impression_time_(time),
       expiry_(base::Milliseconds(kExpiryTime)),
       impression_origin_(url::Origin::Create(GURL(kDefaultImpressionOrigin))),
-      conversion_origin_(url::Origin::Create(GURL(kDefaultConversionOrigin))),
+      conversion_origin_(url::Origin::Create(GURL(kDefaultTriggerOrigin))),
       reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))),
       source_type_(StorableSource::SourceType::kNavigation),
       priority_(0),
       attribution_logic_(StorableSource::AttributionLogic::kTruthfully) {}
 
-ImpressionBuilder::~ImpressionBuilder() = default;
+SourceBuilder::~SourceBuilder() = default;
 
-ImpressionBuilder& ImpressionBuilder::SetExpiry(base::TimeDelta delta) {
+SourceBuilder& SourceBuilder::SetExpiry(base::TimeDelta delta) {
   expiry_ = delta;
   return *this;
 }
 
-ImpressionBuilder& ImpressionBuilder::SetData(uint64_t data) {
+SourceBuilder& SourceBuilder::SetData(uint64_t data) {
   impression_data_ = data;
   return *this;
 }
 
-ImpressionBuilder& ImpressionBuilder::SetImpressionOrigin(url::Origin origin) {
+SourceBuilder& SourceBuilder::SetImpressionOrigin(url::Origin origin) {
   impression_origin_ = std::move(origin);
   return *this;
 }
 
-ImpressionBuilder& ImpressionBuilder::SetConversionOrigin(url::Origin origin) {
+SourceBuilder& SourceBuilder::SetConversionOrigin(url::Origin origin) {
   conversion_origin_ = std::move(origin);
   return *this;
 }
 
-ImpressionBuilder& ImpressionBuilder::SetReportingOrigin(url::Origin origin) {
+SourceBuilder& SourceBuilder::SetReportingOrigin(url::Origin origin) {
   reporting_origin_ = std::move(origin);
   return *this;
 }
 
-ImpressionBuilder& ImpressionBuilder::SetSourceType(
+SourceBuilder& SourceBuilder::SetSourceType(
     StorableSource::SourceType source_type) {
   source_type_ = source_type;
   return *this;
 }
 
-ImpressionBuilder& ImpressionBuilder::SetPriority(int64_t priority) {
+SourceBuilder& SourceBuilder::SetPriority(int64_t priority) {
   priority_ = priority;
   return *this;
 }
 
-ImpressionBuilder& ImpressionBuilder::SetAttributionLogic(
+SourceBuilder& SourceBuilder::SetAttributionLogic(
     StorableSource::AttributionLogic attribution_logic) {
   attribution_logic_ = attribution_logic;
   return *this;
 }
 
-ImpressionBuilder& ImpressionBuilder::SetImpressionId(
+SourceBuilder& SourceBuilder::SetImpressionId(
     absl::optional<StorableSource::Id> impression_id) {
   impression_id_ = impression_id;
   return *this;
 }
 
-ImpressionBuilder& ImpressionBuilder::SetDedupKeys(
-    std::vector<int64_t> dedup_keys) {
+SourceBuilder& SourceBuilder::SetDedupKeys(std::vector<int64_t> dedup_keys) {
   dedup_keys_ = std::move(dedup_keys);
   return *this;
 }
 
-StorableSource ImpressionBuilder::Build() const {
+StorableSource SourceBuilder::Build() const {
   StorableSource impression(
       impression_data_, impression_origin_, conversion_origin_,
       reporting_origin_, impression_time_,
@@ -291,13 +290,13 @@ StorableSource ImpressionBuilder::Build() const {
   return impression;
 }
 
-StorableTrigger DefaultConversion() {
+StorableTrigger DefaultTrigger() {
   return TriggerBuilder().Build();
 }
 
 TriggerBuilder::TriggerBuilder()
     : conversion_destination_(
-          net::SchemefulSite(GURL(kDefaultConversionDestination))),
+          net::SchemefulSite(GURL(kDefaultTriggerDestination))),
       reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))) {}
 
 TriggerBuilder::~TriggerBuilder() = default;

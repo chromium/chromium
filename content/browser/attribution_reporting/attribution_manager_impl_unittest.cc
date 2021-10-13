@@ -23,7 +23,7 @@
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/conversion_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/storable_trigger.h"
@@ -205,7 +205,7 @@ class AttributionManagerImplTest : public testing::Test {
 };
 
 TEST_F(AttributionManagerImplTest, ImpressionRegistered_ReturnedToWebUI) {
-  auto impression = ImpressionBuilder(clock().Now())
+  auto impression = SourceBuilder(clock().Now())
                         .SetExpiry(kImpressionExpiry)
                         .SetData(100)
                         .Build();
@@ -223,7 +223,7 @@ TEST_F(AttributionManagerImplTest, ImpressionRegistered_ReturnedToWebUI) {
 }
 
 TEST_F(AttributionManagerImplTest, ExpiredImpression_NotReturnedToWebUI) {
-  attribution_manager_->HandleImpression(ImpressionBuilder(clock().Now())
+  attribution_manager_->HandleImpression(SourceBuilder(clock().Now())
                                              .SetExpiry(kImpressionExpiry)
                                              .SetData(100)
                                              .Build());
@@ -241,13 +241,13 @@ TEST_F(AttributionManagerImplTest, ExpiredImpression_NotReturnedToWebUI) {
 }
 
 TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
-  auto impression = ImpressionBuilder(clock().Now())
+  auto impression = SourceBuilder(clock().Now())
                         .SetExpiry(kImpressionExpiry)
                         .SetData(100)
                         .Build();
   attribution_manager_->HandleImpression(impression);
 
-  auto conversion = DefaultConversion();
+  auto conversion = DefaultTrigger();
   attribution_manager_->HandleConversion(conversion);
 
   AttributionReport expected_report(
@@ -270,8 +270,8 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
 
 TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportQueued) {
   attribution_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleConversion(DefaultTrigger());
 
   // Reports are queued in intervals ahead of when they should be
   // sent. Make sure the report is not queued earlier than this.
@@ -286,8 +286,8 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportQueued) {
 
 TEST_F(AttributionManagerImplTest, QueuedReportNotSent_QueuedAgain) {
   attribution_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleConversion(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
   EXPECT_EQ(1u, test_reporter_->num_reports());
@@ -305,8 +305,8 @@ TEST_F(AttributionManagerImplTest,
       SentReportInfo::Status::kTransientFailure);
 
   attribution_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleConversion(DefaultTrigger());
 
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
@@ -325,8 +325,8 @@ TEST_F(AttributionManagerImplTest,
   test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kFailure);
 
   attribution_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleConversion(DefaultTrigger());
 
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
@@ -347,8 +347,8 @@ TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
       SentReportInfo::Status::kTransientFailure);
 
   attribution_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleConversion(DefaultTrigger());
 
   base::Time expected_report_time = clock().Now() + kFirstReportingWindow;
 
@@ -406,8 +406,8 @@ TEST_F(AttributionManagerImplTest, QueuedReportOffline_NoFailureIncrement) {
       SentReportInfo::Status::kTransientFailure);
 
   attribution_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleConversion(DefaultTrigger());
 
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
@@ -428,8 +428,8 @@ TEST_F(AttributionManagerImplTest, QueuedReportOffline_NoFailureIncrement) {
 
 TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
   attribution_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleConversion(DefaultTrigger());
 
   // Simulate shutdown.
   attribution_manager_.reset();
@@ -449,8 +449,8 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_NotQueuedAgain) {
   base::HistogramTester histograms;
   test_reporter_->ShouldRunReportSentCallbacks(true);
   attribution_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleConversion(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
   EXPECT_EQ(1u, test_reporter_->num_reports());
@@ -468,41 +468,41 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
   test_reporter_->ShouldRunReportSentCallbacks(true);
 
   test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kSent);
-  attribution_manager_->HandleImpression(ImpressionBuilder(clock().Now())
+  attribution_manager_->HandleImpression(SourceBuilder(clock().Now())
                                              .SetData(1)
                                              .SetExpiry(kImpressionExpiry)
                                              .Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+  attribution_manager_->HandleConversion(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
 
   // This one shouldn't be stored, as its status is `kDropped`.
   test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kDropped);
-  attribution_manager_->HandleImpression(ImpressionBuilder(clock().Now())
+  attribution_manager_->HandleImpression(SourceBuilder(clock().Now())
                                              .SetData(2)
                                              .SetExpiry(kImpressionExpiry)
                                              .Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+  attribution_manager_->HandleConversion(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
 
   test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kSent);
-  attribution_manager_->HandleImpression(ImpressionBuilder(clock().Now())
+  attribution_manager_->HandleImpression(SourceBuilder(clock().Now())
                                              .SetData(3)
                                              .SetExpiry(kImpressionExpiry)
                                              .Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+  attribution_manager_->HandleConversion(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
 
   // This one shouldn't be stored, as it will be retried.
   test_reporter_->SetSentReportInfoStatus(
       SentReportInfo::Status::kTransientFailure);
-  attribution_manager_->HandleImpression(ImpressionBuilder(clock().Now())
+  attribution_manager_->HandleImpression(SourceBuilder(clock().Now())
                                              .SetData(4)
                                              .SetExpiry(kImpressionExpiry)
                                              .Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+  attribution_manager_->HandleConversion(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
 
@@ -525,11 +525,11 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_StoresLastN) {
 
   // Process |kMaxSentReportsToStore + 1| reports.
   for (uint64_t i = 1; i <= 4; i++) {
-    attribution_manager_->HandleImpression(ImpressionBuilder(clock().Now())
+    attribution_manager_->HandleImpression(SourceBuilder(clock().Now())
                                                .SetData(i)
                                                .SetExpiry(kImpressionExpiry)
                                                .Build());
-    attribution_manager_->HandleConversion(DefaultConversion());
+    attribution_manager_->HandleConversion(DefaultTrigger());
     task_environment_.FastForwardBy(kFirstReportingWindow -
                                     kAttributionManagerQueueReportsInterval);
   }
@@ -545,7 +545,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_StoresLastN) {
 
 TEST_F(AttributionManagerImplTest, DroppedReport_StoresLastN) {
   attribution_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
   ExpectNumStoredImpressions(1);
 
   // `kNavigation` sources can have 3 reports, so none of these should result in
@@ -616,15 +616,15 @@ TEST_F(AttributionManagerImplTest, DroppedReport_StoresLastN) {
 TEST_F(AttributionManagerImplTest, ExpiredReportsAtStartup_Queued) {
   // Create a report that will be reported at t= 2 days.
   attribution_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleConversion(DefaultTrigger());
 
   // Create another conversion that will be reported at t=
   // (kFirstReportingWindow + 2 * kAttributionManagerQueueReportsInterval).
   task_environment_.FastForwardBy(2 * kAttributionManagerQueueReportsInterval);
   attribution_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleConversion(DefaultTrigger());
 
   EXPECT_EQ(0u, test_reporter_->num_reports());
 
@@ -654,8 +654,8 @@ TEST_F(AttributionManagerImplTest, ClearData) {
   for (bool match_url : {true, false}) {
     base::Time start = clock().Now();
     attribution_manager_->HandleImpression(
-        ImpressionBuilder(start).SetExpiry(kImpressionExpiry).Build());
-    attribution_manager_->HandleConversion(DefaultConversion());
+        SourceBuilder(start).SetExpiry(kImpressionExpiry).Build());
+    attribution_manager_->HandleConversion(DefaultTrigger());
 
     base::RunLoop run_loop;
     attribution_manager_->ClearData(
@@ -676,8 +676,8 @@ TEST_F(AttributionManagerImplTest, ClearData_ClearsSentReports) {
   test_reporter_->ShouldRunReportSentCallbacks(true);
 
   attribution_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleConversion(DefaultTrigger());
 
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
@@ -692,8 +692,8 @@ TEST_F(AttributionManagerImplTest, ClearData_ClearsSentReports) {
 
 TEST_F(AttributionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
   attribution_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleConversion(DefaultTrigger());
   EXPECT_EQ(0u, test_reporter_->num_reports());
 
   attribution_manager_->SendReportsForWebUI(base::DoNothing());
@@ -712,8 +712,8 @@ TEST_F(AttributionManagerImplTest, MAYBE_ExpiredReportsAtStartup_Delayed) {
   // Create a report that will be reported at t= 2 days.
   base::Time start_time = clock().Now();
   attribution_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleConversion(DefaultTrigger());
   EXPECT_EQ(0u, test_reporter_->num_reports());
 
   // Reset the manager to simulate shutdown.
@@ -738,8 +738,8 @@ TEST_F(AttributionManagerImplTest,
   // Create a report that will be reported at t= 2 days.
   base::Time start_time = clock().Now();
   attribution_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleConversion(DefaultTrigger());
   EXPECT_EQ(0u, test_reporter_->num_reports());
 
   // Reset the manager to simulate shutdown.
@@ -759,14 +759,14 @@ TEST_F(AttributionManagerImplTest,
 TEST_F(AttributionManagerImplTest, SessionOnlyOrigins_DataDeletedAtShutdown) {
   GURL session_only_origin("https://sessiononly.example");
   auto impression =
-      ImpressionBuilder(clock().Now())
+      SourceBuilder(clock().Now())
           .SetImpressionOrigin(url::Origin::Create(session_only_origin))
           .Build();
 
   mock_storage_policy_->AddSessionOnly(session_only_origin);
 
   attribution_manager_->HandleImpression(impression);
-  attribution_manager_->HandleConversion(DefaultConversion());
+  attribution_manager_->HandleConversion(DefaultTrigger());
 
   ExpectNumStoredImpressions(1u);
   ExpectNumStoredReports(1u);
@@ -785,18 +785,18 @@ TEST_F(AttributionManagerImplTest,
       url::Origin::Create(GURL("https://sessiononly.example"));
   // Create impressions which each have the session only origin as one of
   // impression/conversion/reporting origin.
-  auto impression1 = ImpressionBuilder(clock().Now())
+  auto impression1 = SourceBuilder(clock().Now())
                          .SetImpressionOrigin(session_only_origin)
                          .Build();
-  auto impression2 = ImpressionBuilder(clock().Now())
+  auto impression2 = SourceBuilder(clock().Now())
                          .SetReportingOrigin(session_only_origin)
                          .Build();
-  auto impression3 = ImpressionBuilder(clock().Now())
+  auto impression3 = SourceBuilder(clock().Now())
                          .SetConversionOrigin(session_only_origin)
                          .Build();
 
   // Create one  impression which is not session only.
-  auto impression4 = ImpressionBuilder(clock().Now()).Build();
+  auto impression4 = SourceBuilder(clock().Now()).Build();
 
   mock_storage_policy_->AddSessionOnly(session_only_origin.GetURL());
 
@@ -824,7 +824,7 @@ TEST_F(AttributionManagerImplTest,
 TEST_F(AttributionManagerImplTest, ConversionPrioritization_OneReportSent) {
   test_reporter_->ShouldRunReportSentCallbacks(true);
   attribution_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).SetExpiry(base::Days(7)).Build());
+      SourceBuilder(clock().Now()).SetExpiry(base::Days(7)).Build());
   ExpectNumStoredImpressions(1u);
 
   attribution_manager_->HandleConversion(
@@ -847,7 +847,7 @@ TEST_F(AttributionManagerImplTest, ConversionPrioritization_OneReportSent) {
 
 TEST_F(AttributionManagerImplTest, HandleConversion_RecordsMetric) {
   base::HistogramTester histograms;
-  attribution_manager_->HandleConversion(DefaultConversion());
+  attribution_manager_->HandleConversion(DefaultTrigger());
   ExpectNumStoredReports(0);
   histograms.ExpectUniqueSample(
       "Conversions.CreateReportStatus",
@@ -858,9 +858,8 @@ TEST_F(AttributionManagerImplTest, HandleConversion_RecordsMetric) {
 TEST_F(AttributionManagerImplTest, OnReportSent_RecordsDeleteEventMetric) {
   test_reporter_->ShouldRunReportSentCallbacks(true);
   base::HistogramTester histograms;
-  attribution_manager_->HandleImpression(
-      ImpressionBuilder(clock().Now()).Build());
-  attribution_manager_->HandleConversion(DefaultConversion());
+  attribution_manager_->HandleImpression(SourceBuilder(clock().Now()).Build());
+  attribution_manager_->HandleConversion(DefaultTrigger());
   ExpectNumStoredReports(1);
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
@@ -878,14 +877,14 @@ TEST_F(AttributionManagerImplTest, ClearData_RequeuesReports) {
   const auto origin_a = url::Origin::Create(GURL("https://a.example/"));
   const auto origin_b = url::Origin::Create(GURL("https://b.example/"));
 
-  attribution_manager_->HandleImpression(ImpressionBuilder(clock().Now())
+  attribution_manager_->HandleImpression(SourceBuilder(clock().Now())
                                              .SetExpiry(kImpressionExpiry)
                                              .SetReportingOrigin(origin_a)
                                              .Build());
   attribution_manager_->HandleConversion(
       TriggerBuilder().SetReportingOrigin(origin_a).Build());
 
-  attribution_manager_->HandleImpression(ImpressionBuilder(clock().Now())
+  attribution_manager_->HandleImpression(SourceBuilder(clock().Now())
                                              .SetExpiry(kImpressionExpiry)
                                              .SetReportingOrigin(origin_b)
                                              .Build());
@@ -914,7 +913,7 @@ TEST_F(AttributionManagerImplTest, ClearData_NoDeleteForRemovedFromQueue) {
   const auto origin_a = url::Origin::Create(GURL("https://a.example/"));
   const auto origin_b = url::Origin::Create(GURL("https://b.example/"));
 
-  attribution_manager_->HandleImpression(ImpressionBuilder(clock().Now())
+  attribution_manager_->HandleImpression(SourceBuilder(clock().Now())
                                              .SetExpiry(kImpressionExpiry)
                                              .SetReportingOrigin(origin_a)
                                              .Build());

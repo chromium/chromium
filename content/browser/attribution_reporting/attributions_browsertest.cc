@@ -9,7 +9,7 @@
 #include "base/task/sequenced_task_runner_forward.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
-#include "content/browser/attribution_reporting/conversion_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -123,7 +123,7 @@ class AttributionsBrowserTest : public ContentBrowserTest {
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
  protected:
-  ConversionDisallowingContentBrowserClient disallowed_browser_client_;
+  AttributionDisallowingContentBrowserClient disallowed_browser_client_;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;

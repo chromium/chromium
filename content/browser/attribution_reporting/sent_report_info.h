@@ -47,7 +47,7 @@ struct CONTENT_EXPORT SentReportInfo {
   int http_response_code;
 
   // When adding new members, the corresponding `operator==()` definition in
-  // `conversion_test_utils.h` should also be updated.
+  // `attribution_test_utils.h` should also be updated.
 };
 
 }  // namespace content

@@ -5,7 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_reporter_android.h"
 
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/conversion_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/url_utils.h"
 #include "content/public/common/content_client.h"
@@ -54,7 +54,7 @@ TEST_F(AttributionReporterTest, ValidImpression_Allowed) {
 }
 
 TEST_F(AttributionReporterTest, ValidImpression_Disallowed) {
-  ConversionDisallowingContentBrowserClient browser_client;
+  AttributionDisallowingContentBrowserClient browser_client;
 
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&browser_client);

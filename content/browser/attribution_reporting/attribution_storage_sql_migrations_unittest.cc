@@ -14,7 +14,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/conversion_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
@@ -113,7 +113,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateEmptyToCurrent) {
     // We need to perform an operation that is non-trivial on an empty database
     // to force initialization.
     static_cast<AttributionStorage*>(&storage)->StoreImpression(
-        ImpressionBuilder(base::Time::Min()).Build());
+        SourceBuilder(base::Time::Min()).Build());
   }
 
   // Verify schema is current.

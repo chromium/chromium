@@ -15,7 +15,7 @@
 #include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
-#include "content/browser/attribution_reporting/conversion_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -45,7 +45,7 @@ const char kReportUrl[] =
 // are all the same.
 AttributionReport GetReport(int64_t conversion_id) {
   return AttributionReport(
-      ImpressionBuilder(base::Time()).SetData(conversion_id).Build(),
+      SourceBuilder(base::Time()).SetData(conversion_id).Build(),
       /*conversion_data=*/conversion_id,
       /*conversion_time=*/base::Time(),
       /*report_time=*/base::Time(), /*priority=*/0,
@@ -146,7 +146,7 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
   };
 
   for (const auto& test_case : kTestCases) {
-    auto impression = ImpressionBuilder(base::Time())
+    auto impression = SourceBuilder(base::Time())
                           .SetData(100)
                           .SetSourceType(test_case.source_type)
                           .Build();
@@ -169,7 +169,7 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
 
 TEST_F(AttributionNetworkSenderTest, ReportSent_RequestAttributesSet) {
   auto impression =
-      ImpressionBuilder(base::Time())
+      SourceBuilder(base::Time())
           .SetData(1)
           .SetReportingOrigin(url::Origin::Create(GURL("https://a.com")))
           .SetConversionOrigin(url::Origin::Create(GURL("https://sub.b.com")))

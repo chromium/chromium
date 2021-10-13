@@ -6,7 +6,7 @@
 
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/conversion_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,7 +22,7 @@ AttributionReport GetReport(base::Time impression_time,
                             StorableSource::SourceType source_type =
                                 StorableSource::SourceType::kNavigation) {
   base::Time report_time = conversion_time;
-  return AttributionReport(ImpressionBuilder(impression_time)
+  return AttributionReport(SourceBuilder(impression_time)
                                .SetExpiry(expiry)
                                .SetSourceType(source_type)
                                .Build(),

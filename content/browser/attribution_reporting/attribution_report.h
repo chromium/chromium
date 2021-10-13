@@ -69,7 +69,7 @@ struct CONTENT_EXPORT AttributionReport {
   int failed_send_attempts = 0;
 
   // When adding new members, the corresponding `operator==()` definition in
-  // `conversion_test_utils.h` should also be updated.
+  // `attribution_test_utils.h` should also be updated.
 };
 
 }  // namespace content

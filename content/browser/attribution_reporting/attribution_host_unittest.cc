@@ -9,7 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/conversion_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
@@ -194,7 +194,7 @@ TEST_F(AttributionHostTest,
   // Verifies that conversions from subframes use the correct origins when
   // checking if the operation is allowed by the embedded.
 
-  ConfigurableConversionTestBrowserClient browser_client;
+  ConfigurableAttributionTestBrowserClient browser_client;
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&browser_client);
 
@@ -305,7 +305,7 @@ TEST_F(AttributionHostTest, ValidConversion_NoBadMessage) {
 }
 
 TEST_F(AttributionHostTest, ValidConversionWithEmbedderDisable_NoConversion) {
-  ConversionDisallowingContentBrowserClient disallowed_browser_client;
+  AttributionDisallowingContentBrowserClient disallowed_browser_client;
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&disallowed_browser_client);
 
@@ -323,7 +323,7 @@ TEST_F(AttributionHostTest, ValidConversionWithEmbedderDisable_NoConversion) {
 }
 
 TEST_F(AttributionHostTest, EmbedderDisabledContext_ConversionDisallowed) {
-  ConfigurableConversionTestBrowserClient browser_client;
+  ConfigurableAttributionTestBrowserClient browser_client;
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&browser_client);
 
@@ -363,7 +363,7 @@ TEST_F(AttributionHostTest, EmbedderDisabledContext_ConversionDisallowed) {
 }
 
 TEST_F(AttributionHostTest, EmbedderDisabledContext_ImpressionDisallowed) {
-  ConfigurableConversionTestBrowserClient browser_client;
+  ConfigurableAttributionTestBrowserClient browser_client;
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&browser_client);
 
@@ -408,7 +408,7 @@ TEST_F(AttributionHostTest, EmbedderDisabledContext_ImpressionDisallowed) {
 }
 
 TEST_F(AttributionHostTest, ValidImpressionWithEmbedderDisable_NoImpression) {
-  ConversionDisallowingContentBrowserClient disallowed_browser_client;
+  AttributionDisallowingContentBrowserClient disallowed_browser_client;
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&disallowed_browser_client);
 
@@ -823,8 +823,8 @@ TEST_F(AttributionHostTest, RegisterImpression_RecordsAllowedMetric) {
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
 
-  ConversionDisallowingContentBrowserClient disallowed_browser_client;
-  ConfigurableConversionTestBrowserClient allowed_browser_client;
+  AttributionDisallowingContentBrowserClient disallowed_browser_client;
+  ConfigurableAttributionTestBrowserClient allowed_browser_client;
 
   const struct {
     TestContentBrowserClient* browser_client;
@@ -852,8 +852,8 @@ TEST_F(AttributionHostTest, RegisterConversion_RecordsAllowedMetric) {
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
 
-  ConversionDisallowingContentBrowserClient disallowed_browser_client;
-  ConfigurableConversionTestBrowserClient allowed_browser_client;
+  AttributionDisallowingContentBrowserClient disallowed_browser_client;
+  ConfigurableAttributionTestBrowserClient allowed_browser_client;
 
   const struct {
     TestContentBrowserClient* browser_client;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_TEST_UTILS_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_TEST_UTILS_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_TEST_UTILS_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_TEST_UTILS_H_
 
 #include <stdint.h>
 
@@ -32,11 +32,11 @@ namespace content {
 
 class StorableTrigger;
 
-class ConversionDisallowingContentBrowserClient
+class AttributionDisallowingContentBrowserClient
     : public TestContentBrowserClient {
  public:
-  ConversionDisallowingContentBrowserClient() = default;
-  ~ConversionDisallowingContentBrowserClient() override = default;
+  AttributionDisallowingContentBrowserClient() = default;
+  ~AttributionDisallowingContentBrowserClient() override = default;
 
   // ContentBrowserClient:
   bool IsConversionMeasurementOperationAllowed(
@@ -49,11 +49,11 @@ class ConversionDisallowingContentBrowserClient
 
 // Configurable browser client capable of blocking conversion operations in a
 // single embedded context.
-class ConfigurableConversionTestBrowserClient
+class ConfigurableAttributionTestBrowserClient
     : public TestContentBrowserClient {
  public:
-  ConfigurableConversionTestBrowserClient();
-  ~ConfigurableConversionTestBrowserClient() override;
+  ConfigurableAttributionTestBrowserClient();
+  ~ConfigurableAttributionTestBrowserClient() override;
 
   // ContentBrowserClient:
   bool IsConversionMeasurementOperationAllowed(
@@ -229,33 +229,33 @@ class TestAttributionManager : public AttributionManager {
 // Helper class to construct a StorableSource for tests using default data.
 // StorableSource members are not mutable after construction requiring a
 // builder pattern.
-class ImpressionBuilder {
+class SourceBuilder {
  public:
-  explicit ImpressionBuilder(base::Time time);
-  ~ImpressionBuilder();
+  explicit SourceBuilder(base::Time time);
+  ~SourceBuilder();
 
-  ImpressionBuilder& SetExpiry(base::TimeDelta delta) WARN_UNUSED_RESULT;
+  SourceBuilder& SetExpiry(base::TimeDelta delta) WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetData(uint64_t data) WARN_UNUSED_RESULT;
+  SourceBuilder& SetData(uint64_t data) WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetImpressionOrigin(url::Origin origin) WARN_UNUSED_RESULT;
+  SourceBuilder& SetImpressionOrigin(url::Origin origin) WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetConversionOrigin(url::Origin domain) WARN_UNUSED_RESULT;
+  SourceBuilder& SetConversionOrigin(url::Origin domain) WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetReportingOrigin(url::Origin origin) WARN_UNUSED_RESULT;
+  SourceBuilder& SetReportingOrigin(url::Origin origin) WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetSourceType(StorableSource::SourceType source_type)
+  SourceBuilder& SetSourceType(StorableSource::SourceType source_type)
       WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetPriority(int64_t priority) WARN_UNUSED_RESULT;
+  SourceBuilder& SetPriority(int64_t priority) WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetAttributionLogic(
+  SourceBuilder& SetAttributionLogic(
       StorableSource::AttributionLogic attribution_logic) WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetImpressionId(
+  SourceBuilder& SetImpressionId(
       absl::optional<StorableSource::Id> impression_id) WARN_UNUSED_RESULT;
 
-  ImpressionBuilder& SetDedupKeys(std::vector<int64_t> dedup_keys)
+  SourceBuilder& SetDedupKeys(std::vector<int64_t> dedup_keys)
       WARN_UNUSED_RESULT;
 
   StorableSource Build() const WARN_UNUSED_RESULT;
@@ -275,8 +275,8 @@ class ImpressionBuilder {
 };
 
 // Returns a StorableTrigger with default data which matches the default
-// impressions created by ImpressionBuilder.
-StorableTrigger DefaultConversion() WARN_UNUSED_RESULT;
+// impressions created by SourceBuilder.
+StorableTrigger DefaultTrigger() WARN_UNUSED_RESULT;
 
 // Helper class to construct a StorableTrigger for tests using default data.
 // StorableTrigger members are not mutable after construction requiring a
@@ -348,4 +348,4 @@ std::vector<AttributionReport> GetConversionsToReportForTesting(
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_TEST_UTILS_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_TEST_UTILS_H_

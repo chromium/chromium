@@ -14,7 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/conversion_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -37,7 +37,7 @@ AttributionReport GetReport(base::Time conversion_time,
                             AttributionReport::Id conversion_id) {
   // Construct impressions with a null impression time as it is not used for
   // reporting.
-  return AttributionReport(ImpressionBuilder(base::Time()).Build(),
+  return AttributionReport(SourceBuilder(base::Time()).Build(),
                            /*conversion_data=*/0, conversion_time, report_time,
                            /*priority=*/0, conversion_id);
 }
@@ -247,7 +247,7 @@ TEST_F(AttributionReporterImplTest, ManyReportsAddedSeparately_SentInOrder) {
 
 TEST_F(AttributionReporterImplTest,
        EmbedderDisallowsConversions_ReportNotSent) {
-  ConversionDisallowingContentBrowserClient disallowed_browser_client;
+  AttributionDisallowingContentBrowserClient disallowed_browser_client;
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&disallowed_browser_client);
   reporter_->AddReportsToQueue(
@@ -264,7 +264,7 @@ TEST_F(AttributionReporterImplTest,
 }
 
 TEST_F(AttributionReporterImplTest, EmbedderDisallowedContext_ReportNotSent) {
-  ConfigurableConversionTestBrowserClient browser_client;
+  ConfigurableAttributionTestBrowserClient browser_client;
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&browser_client);
 
@@ -292,7 +292,7 @@ TEST_F(AttributionReporterImplTest, EmbedderDisallowedContext_ReportNotSent) {
 
   for (const auto& test_case : kTestCases) {
     auto impression =
-        ImpressionBuilder(base::Time())
+        SourceBuilder(base::Time())
             .SetImpressionOrigin(
                 url::Origin::Create(test_case.impression_origin))
             .SetConversionOrigin(
