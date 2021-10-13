@@ -493,6 +493,14 @@ breaking as seen in [this bug][misconfigured builder bug].
 [GPU FYI Win Builder]:   https://ci.chromium.org/p/chromium/builders/luci.chromium.ci/GPU%20FYI%20Win%20Builder
 [misconfigured builder bug]: https://bugs.chromium.org/p/chromium/issues/detail?id=1163657
 
+### How to remove an existing bot from the chromium.gpu.fyi waterfall
+
+Basically, one needs to follow
+[How to add a new tester bot to the chromium.gpu.fyi waterfall](#how-to-add-a-new-tester-bot-to-the-chromium_gpu_fyi-waterfall)
+step in reverse.
+To prevent bot failures during deletion process, pause the bot on
+https://luci-scheduler.appspot.com/.
+
 ### How to start running tests on a new GPU type on an existing try bot
 
 Let's say that you want to cause the `win10_chromium_x64_rel_ng` try bot to run
