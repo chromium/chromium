@@ -185,8 +185,6 @@ class ChromeContentRendererClient
       int64_t service_worker_version_id,
       const GURL& service_worker_scope,
       const GURL& script_url) override;
-  bool IsExcludedHeaderForServiceWorkerFetchEvent(
-      const std::string& header_name) override;
   bool ShouldEnforceWebRTCRoutingPreferences() override;
   GURL OverrideFlashEmbedWithHTML(const GURL& url) override;
   std::unique_ptr<blink::URLLoaderThrottleProvider>

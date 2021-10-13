@@ -342,13 +342,6 @@ class CONTENT_EXPORT ContentRendererClient {
       const GURL& service_worker_scope,
       const GURL& script_url) {}
 
-  // Asks the embedder whether to exclude the given header from service worker
-  // fetch events. This is useful if the embedder injects headers that it wants
-  // to go to network but not to the service worker. This function is called
-  // from the worker thread.
-  virtual bool IsExcludedHeaderForServiceWorkerFetchEvent(
-      const std::string& header_name);
-
   // Whether this renderer should enforce preferences related to the WebRTC
   // routing logic, i.e. allowing multiple routes and non-proxied UDP.
   virtual bool ShouldEnforceWebRTCRoutingPreferences();

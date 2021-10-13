@@ -727,10 +727,6 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel() {
     return ProtocolHandlerSecurityLevel::kStrict;
   }
-  virtual bool IsExcludedHeaderForServiceWorkerFetchEvent(
-      const WebString& header_name) {
-    return false;
-  }
 
   // Returns true if the origin can register a service worker. Scheme must be
   // http (localhost only), https, or a custom-set secure scheme.

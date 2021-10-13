@@ -258,6 +258,19 @@ class VariationsHttpHeadersBrowserTest : public IdentityBrowserTestBase {
                               base::StrCat({"fetch_from_page('",
                                             GetExampleUrl().spec(), "');"})));
     EXPECT_FALSE(HasReceivedHeader(GetExampleUrl(), "X-Client-Data"));
+
+    // Navigate to a Google URL which causes redirects.
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GetGoogleRedirectUrl1()));
+
+    // Verify redirect requests from google domains.
+    // Redirect to google domains.
+    EXPECT_TRUE(HasReceivedHeader(GetGoogleRedirectUrl1(), "X-Client-Data"));
+    EXPECT_TRUE(HasReceivedHeader(GetGoogleRedirectUrl2(), "X-Client-Data"));
+
+    // Redirect to non-google domains.
+    EXPECT_TRUE(HasReceivedHeader(GetExampleUrl(), "Host"));
+    EXPECT_FALSE(HasReceivedHeader(GetExampleUrl(), "X-Client-Data"));
   }
 
   // Creates a worker and tests that the main script and import scripts have
@@ -772,6 +785,13 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
                        ServiceWorkerNetworkFallback) {
   ServiceWorkerTest("/service_worker/network_fallback_worker.js");
+}
+
+// Verify in an integration test that the variations header (X-Client-Data) is
+// not exposed in the service worker fetch event.
+IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
+                       ServiceWorkerDoesNotSeeHeader) {
+  ServiceWorkerTest("/service_worker/fail_on_variations_header_worker.js");
 }
 
 // Verify in an integration test that the variations header (X-Client-Data) is

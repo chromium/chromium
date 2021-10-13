@@ -59,11 +59,6 @@ bool IsExcludedHeaderForServiceWorkerFetchEvent(const String& header_name) {
     return true;
   }
 
-  if (Platform::Current()->IsExcludedHeaderForServiceWorkerFetchEvent(
-          header_name)) {
-    return true;
-  }
-
   return false;
 }
 

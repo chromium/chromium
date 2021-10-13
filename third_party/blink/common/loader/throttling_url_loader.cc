@@ -4,6 +4,8 @@
 
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 
+#include <vector>
+
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
@@ -317,11 +319,13 @@ ThrottlingURLLoader::~ThrottlingURLLoader() {
 }
 
 void ThrottlingURLLoader::FollowRedirectForcingRestart() {
-  ResetForFollowRedirect();
+  url_loader_.ResetWithReason(
+      network::mojom::URLLoader::kClientDisconnectReason,
+      kFollowRedirectReason);
   client_receiver_.reset();
   CHECK(throttle_will_redirect_redirect_url_.is_empty());
 
-  UpdateRequestHeaders();
+  UpdateRequestHeaders(start_info_->url_request);
 
   removed_headers_.clear();
   modified_headers_.Clear();
@@ -330,7 +334,17 @@ void ThrottlingURLLoader::FollowRedirectForcingRestart() {
   StartNow();
 }
 
-void ThrottlingURLLoader::ResetForFollowRedirect() {
+void ThrottlingURLLoader::ResetForFollowRedirect(
+    network::ResourceRequest& resource_request,
+    const std::vector<std::string>& removed_headers,
+    const net::HttpRequestHeaders& modified_headers,
+    const net::HttpRequestHeaders& modified_cors_exempt_headers) {
+  MergeRemovedHeaders(&removed_headers_, removed_headers);
+  modified_headers_.MergeFrom(modified_headers);
+  modified_cors_exempt_headers_.MergeFrom(modified_cors_exempt_headers);
+  // Call UpdateRequestHeaders() after headers are merged.
+  UpdateRequestHeaders(resource_request);
+
   url_loader_.ResetWithReason(
       network::mojom::URLLoader::kClientDisconnectReason,
       kFollowRedirectReason);
@@ -359,7 +373,7 @@ void ThrottlingURLLoader::FollowRedirect(
   if (!throttle_will_start_redirect_url_.is_empty()) {
     throttle_will_start_redirect_url_ = GURL();
     // This is a synthesized redirect, so no need to tell the URLLoader.
-    UpdateRequestHeaders();
+    UpdateRequestHeaders(start_info_->url_request);
     StartNow();
     return;
   }
@@ -964,14 +978,14 @@ void ThrottlingURLLoader::UpdateDeferredRequestHeaders(
   }
 }
 
-void ThrottlingURLLoader::UpdateRequestHeaders() {
+void ThrottlingURLLoader::UpdateRequestHeaders(
+    network::ResourceRequest& resource_request) {
   for (const std::string& header : removed_headers_) {
-    start_info_->url_request.headers.RemoveHeader(header);
-    start_info_->url_request.cors_exempt_headers.RemoveHeader(header);
+    resource_request.headers.RemoveHeader(header);
+    resource_request.cors_exempt_headers.RemoveHeader(header);
   }
-  start_info_->url_request.headers.MergeFrom(modified_headers_);
-  start_info_->url_request.cors_exempt_headers.MergeFrom(
-      modified_cors_exempt_headers_);
+  resource_request.headers.MergeFrom(modified_headers_);
+  resource_request.cors_exempt_headers.MergeFrom(modified_cors_exempt_headers_);
 }
 
 void ThrottlingURLLoader::UpdateDeferredResponseHead(

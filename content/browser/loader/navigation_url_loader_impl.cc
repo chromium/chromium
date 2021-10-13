@@ -515,8 +515,15 @@ void NavigationURLLoaderImpl::Restart() {
                                     url_chain_[url_chain_.size() - 1]) !=
                                     network::IsURLHandledByNetworkService(
                                         url_chain_[url_chain_.size() - 2]))) {
-    if (url_loader_)
-      url_loader_->ResetForFollowRedirect();
+    if (url_loader_) {
+      url_loader_->ResetForFollowRedirect(
+          *resource_request_.get(), url_loader_removed_headers_,
+          url_loader_modified_headers_,
+          url_loader_modified_cors_exempt_headers_);
+      url_loader_removed_headers_.clear();
+      url_loader_modified_headers_.Clear();
+      url_loader_modified_cors_exempt_headers_.Clear();
+    }
     url_loader_.reset();
   }
   interceptor_index_ = 0;
@@ -548,8 +555,16 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
     // If `url_loader_` already exists, this means we are following a redirect
     // using an interceptor. In this case we should make sure to reset the
     // loader, similar to what is done in Restart().
-    if (url_loader_)
-      url_loader_->ResetForFollowRedirect();
+    if (url_loader_) {
+      url_loader_->ResetForFollowRedirect(
+          *resource_request_.get(), url_loader_removed_headers_,
+          url_loader_modified_headers_,
+          url_loader_modified_cors_exempt_headers_);
+      url_loader_removed_headers_.clear();
+      url_loader_modified_headers_.Clear();
+      url_loader_modified_cors_exempt_headers_.Clear();
+    }
+
     url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
         std::move(single_request_factory), std::move(throttles),
         global_request_id_.request_id, network::mojom::kURLLoadOptionNone,

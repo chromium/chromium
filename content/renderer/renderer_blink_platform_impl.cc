@@ -945,13 +945,6 @@ RendererBlinkPlatformImpl::GetProtocolHandlerSecurityLevel() {
   return GetContentClient()->renderer()->GetProtocolHandlerSecurityLevel();
 }
 
-bool RendererBlinkPlatformImpl::IsExcludedHeaderForServiceWorkerFetchEvent(
-    const blink::WebString& header_name) {
-  return GetContentClient()
-      ->renderer()
-      ->IsExcludedHeaderForServiceWorkerFetchEvent(header_name.Ascii());
-}
-
 bool RendererBlinkPlatformImpl::OriginCanAccessServiceWorkers(
     const blink::WebURL& url) {
   return content::OriginCanAccessServiceWorkers(url);
