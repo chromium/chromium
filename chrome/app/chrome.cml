@@ -34,6 +34,7 @@
                 "fuchsia.fonts.Provider",
                 "fuchsia.input.virtualkeyboard.ControllerCreator",
                 "fuchsia.intl.PropertyProvider",
+                "fuchsia.media.Audio",
                 "fuchsia.media.ProfileProvider",
                 "fuchsia.memorypressure.Provider",
                 "fuchsia.net.interfaces.State",

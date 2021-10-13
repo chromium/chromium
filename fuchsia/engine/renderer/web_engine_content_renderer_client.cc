@@ -16,6 +16,7 @@
 #include "content/public/renderer/render_view.h"
 #include "fuchsia/engine/common/cast_streaming.h"
 #include "fuchsia/engine/features.h"
+#include "fuchsia/engine/renderer/web_engine_media_renderer_factory.h"
 #include "fuchsia/engine/renderer/web_engine_url_loader_throttle_provider.h"
 #include "fuchsia/engine/switches.h"
 #include "media/base/demuxer.h"
@@ -261,6 +262,18 @@ WebEngineContentRendererClient::OverrideDemuxerForUrl(
 
   return cast_streaming_demuxer_provider_.OverrideDemuxerForUrl(
       render_frame, url, std::move(media_task_runner));
+}
+
+std::unique_ptr<media::RendererFactory>
+WebEngineContentRendererClient::GetBaseRendererFactory(
+    content::RenderFrame* render_frame,
+    media::MediaLog* media_log,
+    media::DecoderFactory* decoder_factory,
+    base::RepeatingCallback<media::GpuVideoAcceleratorFactories*()>
+        get_gpu_factories_cb) {
+  return std::make_unique<WebEngineMediaRendererFactory>(
+      media_log, decoder_factory, std::move(get_gpu_factories_cb),
+      render_frame->GetBrowserInterfaceBroker());
 }
 
 bool WebEngineContentRendererClient::RunClosureWhenInForeground(

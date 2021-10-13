@@ -266,8 +266,12 @@ component("web_engine_core") {
     "context_provider_main.h",
     "renderer/url_request_rules_receiver.cc",
     "renderer/url_request_rules_receiver.h",
+    "renderer/web_engine_audio_renderer.cc",
+    "renderer/web_engine_audio_renderer.h",
     "renderer/web_engine_content_renderer_client.cc",
     "renderer/web_engine_content_renderer_client.h",
+    "renderer/web_engine_media_renderer_factory.cc",
+    "renderer/web_engine_media_renderer_factory.h",
     "renderer/web_engine_render_frame_observer.cc",
     "renderer/web_engine_render_frame_observer.h",
     "renderer/web_engine_url_loader_throttle_provider.cc",
@@ -558,6 +562,7 @@ test("web_engine_unittests") {
     "context_provider_impl_unittest.cc",
     "fake_context.cc",
     "fake_context.h",
+    "renderer/web_engine_audio_renderer_test.cc",
     "test/run_all_unittests.cc",
   ]
   deps = [

@@ -22,8 +22,6 @@ source_set("audio") {
     "fuchsia_audio_capturer_source.h",
     "fuchsia_audio_output_device.cc",
     "fuchsia_audio_output_device.h",
-    "fuchsia_audio_renderer.cc",
-    "fuchsia_audio_renderer.h",
   ]
 }
 
@@ -56,6 +54,5 @@ source_set("unittests") {
   sources = [
     "fuchsia_audio_capturer_source_test.cc",
     "fuchsia_audio_output_device_test.cc",
-    "fuchsia_audio_renderer_test.cc",
   ]
 }

@@ -281,12 +281,12 @@ struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
         return media::mojom::RendererType::kCast;
       case ::media::RendererType::kMediaFoundation:
         return media::mojom::RendererType::kMediaFoundation;
-      case ::media::RendererType::kFuchsia:
-        return media::mojom::RendererType::kFuchsia;
       case ::media::RendererType::kRemoting:
         return media::mojom::RendererType::kRemoting;
       case ::media::RendererType::kCastStreaming:
         return media::mojom::RendererType::kCastStreaming;
+      case ::media::RendererType::kContentEmbedderDefined:
+        return media::mojom::RendererType::kContentEmbedderDefined;
     }
 
     NOTREACHED();
@@ -319,14 +319,14 @@ struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
       case media::mojom::RendererType::kMediaFoundation:
         *output = ::media::RendererType::kMediaFoundation;
         return true;
-      case media::mojom::RendererType::kFuchsia:
-        *output = ::media::RendererType::kFuchsia;
-        return true;
       case media::mojom::RendererType::kRemoting:
         *output = ::media::RendererType::kRemoting;
         return true;
       case media::mojom::RendererType::kCastStreaming:
         *output = ::media::RendererType::kCastStreaming;
+        return true;
+      case media::mojom::RendererType::kContentEmbedderDefined:
+        *output = ::media::RendererType::kContentEmbedderDefined;
         return true;
     }
 

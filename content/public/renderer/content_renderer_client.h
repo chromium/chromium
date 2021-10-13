@@ -58,8 +58,12 @@ enum class ProtocolHandlerSecurityLevel;
 }  // namespace blink
 
 namespace media {
+class DecoderFactory;
 class Demuxer;
+class GpuVideoAcceleratorFactories;
 class KeySystemProperties;
+class MediaLog;
+class RendererFactory;
 }
 
 namespace mojo {
@@ -390,6 +394,16 @@ class CONTENT_EXPORT ContentRendererClient {
   virtual void AppendContentSecurityPolicy(
       const blink::WebURL& url,
       blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp);
+
+  // Returns a RendererFactory to use as the "base" for a
+  // RendererFactorySelector. Returns `nullptr` to get the default behaviour.
+  // The arguments will outlive the returned factory.
+  virtual std::unique_ptr<media::RendererFactory> GetBaseRendererFactory(
+      content::RenderFrame* render_frame,
+      media::MediaLog* media_log,
+      media::DecoderFactory* decoder_factory,
+      base::RepeatingCallback<media::GpuVideoAcceleratorFactories*()>
+          get_gpu_factories_cb);
 };
 
 }  // namespace content

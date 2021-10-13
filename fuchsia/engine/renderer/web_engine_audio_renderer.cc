@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/fuchsia/audio/fuchsia_audio_renderer.h"
+#include "fuchsia/engine/renderer/web_engine_audio_renderer.h"
 
 #include <lib/sys/cpp/component_context.h>
 
@@ -19,32 +19,30 @@
 #include "media/fuchsia/common/decrypting_sysmem_buffer_stream.h"
 #include "media/fuchsia/common/passthrough_sysmem_buffer_stream.h"
 
-namespace media {
-
 namespace {
 
 // nullopt is returned in case the codec is not supported. nullptr is returned
 // for uncompressed PCM streams.
 absl::optional<std::unique_ptr<fuchsia::media::Compression>>
-GetFuchsiaCompressionFromDecoderConfig(AudioDecoderConfig config) {
+GetFuchsiaCompressionFromDecoderConfig(media::AudioDecoderConfig config) {
   auto compression = std::make_unique<fuchsia::media::Compression>();
   switch (config.codec()) {
-    case AudioCodec::kAAC:
+    case media::AudioCodec::kAAC:
       compression->type = fuchsia::media::AUDIO_ENCODING_AAC;
       break;
-    case AudioCodec::kMP3:
+    case media::AudioCodec::kMP3:
       compression->type = fuchsia::media::AUDIO_ENCODING_MP3;
       break;
-    case AudioCodec::kVorbis:
+    case media::AudioCodec::kVorbis:
       compression->type = fuchsia::media::AUDIO_ENCODING_VORBIS;
       break;
-    case AudioCodec::kOpus:
+    case media::AudioCodec::kOpus:
       compression->type = fuchsia::media::AUDIO_ENCODING_OPUS;
       break;
-    case AudioCodec::kFLAC:
+    case media::AudioCodec::kFLAC:
       compression->type = fuchsia::media::AUDIO_ENCODING_FLAC;
       break;
-    case AudioCodec::kPCM:
+    case media::AudioCodec::kPCM:
       compression.reset();
       break;
 
@@ -60,15 +58,15 @@ GetFuchsiaCompressionFromDecoderConfig(AudioDecoderConfig config) {
 }
 
 absl::optional<fuchsia::media::AudioSampleFormat>
-GetFuchsiaSampleFormatFromSampleFormat(SampleFormat sample_format) {
+GetFuchsiaSampleFormatFromSampleFormat(media::SampleFormat sample_format) {
   switch (sample_format) {
-    case kSampleFormatU8:
+    case media::kSampleFormatU8:
       return fuchsia::media::AudioSampleFormat::UNSIGNED_8;
-    case kSampleFormatS16:
+    case media::kSampleFormatS16:
       return fuchsia::media::AudioSampleFormat::SIGNED_16;
-    case kSampleFormatS24:
+    case media::kSampleFormatS24:
       return fuchsia::media::AudioSampleFormat::SIGNED_24_IN_32;
-    case kSampleFormatF32:
+    case media::kSampleFormatF32:
       return fuchsia::media::AudioSampleFormat::FLOAT;
 
     default:
@@ -114,21 +112,21 @@ constexpr size_t kBufferSize = 100 * 1024;
 // Total number of buffers. 16 is the maximum allowed by AudioConsumer.
 constexpr size_t kNumBuffers = 16;
 
-FuchsiaAudioRenderer::FuchsiaAudioRenderer(
-    MediaLog* media_log,
+WebEngineAudioRenderer::WebEngineAudioRenderer(
+    media::MediaLog* media_log,
     fidl::InterfaceHandle<fuchsia::media::AudioConsumer> audio_consumer_handle)
     : audio_consumer_handle_(std::move(audio_consumer_handle)) {
   DETACH_FROM_THREAD(thread_checker_);
 }
 
-FuchsiaAudioRenderer::~FuchsiaAudioRenderer() {
+WebEngineAudioRenderer::~WebEngineAudioRenderer() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-void FuchsiaAudioRenderer::Initialize(DemuxerStream* stream,
-                                      CdmContext* cdm_context,
-                                      RendererClient* client,
-                                      PipelineStatusCallback init_cb) {
+void WebEngineAudioRenderer::Initialize(media::DemuxerStream* stream,
+                                        media::CdmContext* cdm_context,
+                                        media::RendererClient* client,
+                                        media::PipelineStatusCallback init_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!demuxer_stream_);
 
@@ -141,7 +139,7 @@ void FuchsiaAudioRenderer::Initialize(DemuxerStream* stream,
   audio_consumer_.Bind(std::move(audio_consumer_handle_));
   audio_consumer_.set_error_handler([this](zx_status_t status) {
     ZX_LOG(ERROR, status) << "AudioConsumer disconnected.";
-    OnError(AUDIO_RENDERER_ERROR);
+    OnError(media::AUDIO_RENDERER_ERROR);
   });
 
   UpdateVolume();
@@ -153,36 +151,38 @@ void FuchsiaAudioRenderer::Initialize(DemuxerStream* stream,
   // produce decoded stream without ADTS headers which are required for AAC
   // streams in AudioConsumer.
   // TODO(crbug.com/1120095): Reconsider this logic.
-  if (stream->audio_decoder_config().codec() == AudioCodec::kAAC) {
+  if (stream->audio_decoder_config().codec() == media::AudioCodec::kAAC) {
     stream->EnableBitstreamConverter();
   }
 
   if (stream->audio_decoder_config().is_encrypted()) {
     if (!cdm_context) {
       DLOG(ERROR) << "No cdm context for encrypted stream.";
-      OnError(AUDIO_RENDERER_ERROR);
+      OnError(media::AUDIO_RENDERER_ERROR);
       return;
     }
 
-    FuchsiaCdmContext* fuchsia_cdm = cdm_context->GetFuchsiaCdmContext();
+    media::FuchsiaCdmContext* fuchsia_cdm = cdm_context->GetFuchsiaCdmContext();
     if (fuchsia_cdm) {
       sysmem_buffer_stream_ = fuchsia_cdm->CreateStreamDecryptor(false);
     } else {
-      sysmem_buffer_stream_ = std::make_unique<DecryptingSysmemBufferStream>(
-          &sysmem_allocator_, cdm_context, Decryptor::kAudio);
+      sysmem_buffer_stream_ =
+          std::make_unique<media::DecryptingSysmemBufferStream>(
+              &sysmem_allocator_, cdm_context, media::Decryptor::kAudio);
     }
 
   } else {
     sysmem_buffer_stream_ =
-        std::make_unique<PassthroughSysmemBufferStream>(&sysmem_allocator_);
+        std::make_unique<media::PassthroughSysmemBufferStream>(
+            &sysmem_allocator_);
   }
 
   sysmem_buffer_stream_->Initialize(this, kBufferSize, kNumBuffers);
 
-  std::move(init_cb_).Run(PIPELINE_OK);
+  std::move(init_cb_).Run(media::PIPELINE_OK);
 }
 
-void FuchsiaAudioRenderer::UpdateVolume() {
+void WebEngineAudioRenderer::UpdateVolume() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(audio_consumer_);
   if (!volume_control_) {
@@ -194,8 +194,8 @@ void FuchsiaAudioRenderer::UpdateVolume() {
   volume_control_->SetVolume(volume_);
 }
 
-void FuchsiaAudioRenderer::OnBuffersAcquired(
-    std::vector<VmoBuffer> buffers,
+void WebEngineAudioRenderer::OnBuffersAcquired(
+    std::vector<media::VmoBuffer> buffers,
     const fuchsia::sysmem::SingleBufferSettings&) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -213,14 +213,14 @@ void FuchsiaAudioRenderer::OnBuffersAcquired(
   }
 }
 
-void FuchsiaAudioRenderer::InitializeStreamSink() {
+void WebEngineAudioRenderer::InitializeStreamSink() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!stream_sink_);
 
   // Clone |buffers| to pass to StreamSink.
   std::vector<zx::vmo> vmos_for_stream_sink;
   vmos_for_stream_sink.reserve(input_buffers_.size());
-  for (VmoBuffer& buffer : input_buffers_) {
+  for (media::VmoBuffer& buffer : input_buffers_) {
     vmos_for_stream_sink.push_back(buffer.Duplicate(/*writable=*/false));
   }
 
@@ -228,7 +228,7 @@ void FuchsiaAudioRenderer::InitializeStreamSink() {
   auto compression = GetFuchsiaCompressionFromDecoderConfig(config);
   if (!compression) {
     LOG(ERROR) << "Unsupported audio codec: " << GetCodecName(config.codec());
-    OnError(AUDIO_RENDERER_ERROR);
+    OnError(media::AUDIO_RENDERER_ERROR);
     return;
   }
 
@@ -243,7 +243,7 @@ void FuchsiaAudioRenderer::InitializeStreamSink() {
     if (!sample_format) {
       LOG(ERROR) << "Unsupported sample format: "
                  << SampleFormatToString(config.sample_format());
-      OnError(AUDIO_RENDERER_ERROR);
+      OnError(media::AUDIO_RENDERER_ERROR);
       return;
     }
     stream_type.sample_format = sample_format.value();
@@ -263,11 +263,11 @@ void FuchsiaAudioRenderer::InitializeStreamSink() {
   ScheduleReadDemuxerStream();
 }
 
-TimeSource* FuchsiaAudioRenderer::GetTimeSource() {
+media::TimeSource* WebEngineAudioRenderer::GetTimeSource() {
   return this;
 }
 
-void FuchsiaAudioRenderer::Flush(base::OnceClosure callback) {
+void WebEngineAudioRenderer::Flush(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   FlushInternal();
@@ -276,31 +276,31 @@ void FuchsiaAudioRenderer::Flush(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-void FuchsiaAudioRenderer::StartPlaying() {
+void WebEngineAudioRenderer::StartPlaying() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   renderer_started_ = true;
   ScheduleReadDemuxerStream();
 }
 
-void FuchsiaAudioRenderer::SetVolume(float volume) {
+void WebEngineAudioRenderer::SetVolume(float volume) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   volume_ = volume;
   if (audio_consumer_)
     UpdateVolume();
 }
 
-void FuchsiaAudioRenderer::SetLatencyHint(
+void WebEngineAudioRenderer::SetLatencyHint(
     absl::optional<base::TimeDelta> latency_hint) {
   // TODO(crbug.com/1131116): Implement at some later date after we've vetted
   // the API shape and usefulness outside of fuchsia.
 }
 
-void FuchsiaAudioRenderer::SetPreservesPitch(bool preserves_pitch) {}
+void WebEngineAudioRenderer::SetPreservesPitch(bool preserves_pitch) {}
 
-void FuchsiaAudioRenderer::SetAutoplayInitiated(bool autoplay_initiated) {}
+void WebEngineAudioRenderer::SetAutoplayInitiated(bool autoplay_initiated) {}
 
-void FuchsiaAudioRenderer::StartTicking() {
+void WebEngineAudioRenderer::StartTicking() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // If StreamSink hasn't been created yet, then delay starting AudioConsumer
@@ -314,11 +314,11 @@ void FuchsiaAudioRenderer::StartTicking() {
   StartAudioConsumer();
 }
 
-void FuchsiaAudioRenderer::StartAudioConsumer() {
+void WebEngineAudioRenderer::StartAudioConsumer() {
   DCHECK(stream_sink_);
 
   fuchsia::media::AudioConsumerStartFlags flags{};
-  if (demuxer_stream_->liveness() == DemuxerStream::LIVENESS_LIVE) {
+  if (demuxer_stream_->liveness() == media::DemuxerStream::LIVENESS_LIVE) {
     flags = fuchsia::media::AudioConsumerStartFlags::LOW_LATENCY;
   }
 
@@ -345,7 +345,7 @@ void FuchsiaAudioRenderer::StartAudioConsumer() {
                          media_pos.ToZxDuration());
 }
 
-void FuchsiaAudioRenderer::StopTicking() {
+void WebEngineAudioRenderer::StopTicking() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(GetPlaybackState() != PlaybackState::kStopped);
 
@@ -356,7 +356,7 @@ void FuchsiaAudioRenderer::StopTicking() {
   SetPlaybackState(PlaybackState::kStopped);
 }
 
-void FuchsiaAudioRenderer::SetPlaybackRate(double playback_rate) {
+void WebEngineAudioRenderer::SetPlaybackRate(double playback_rate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   audio_consumer_->SetRate(playback_rate);
@@ -375,7 +375,7 @@ void FuchsiaAudioRenderer::SetPlaybackRate(double playback_rate) {
   }
 }
 
-void FuchsiaAudioRenderer::SetMediaTime(base::TimeDelta time) {
+void WebEngineAudioRenderer::SetMediaTime(base::TimeDelta time) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(GetPlaybackState() == PlaybackState::kStopped);
 
@@ -394,7 +394,7 @@ void FuchsiaAudioRenderer::SetMediaTime(base::TimeDelta time) {
   ScheduleReadDemuxerStream();
 }
 
-base::TimeDelta FuchsiaAudioRenderer::CurrentMediaTime() {
+base::TimeDelta WebEngineAudioRenderer::CurrentMediaTime() {
   base::AutoLock lock(timeline_lock_);
   if (!IsTimeMoving())
     return media_pos_;
@@ -402,7 +402,7 @@ base::TimeDelta FuchsiaAudioRenderer::CurrentMediaTime() {
   return CurrentMediaTimeLocked();
 }
 
-bool FuchsiaAudioRenderer::GetWallClockTimes(
+bool WebEngineAudioRenderer::GetWallClockTimes(
     const std::vector<base::TimeDelta>& media_timestamps,
     std::vector<base::TimeTicks>* wall_clock_times) {
   wall_clock_times->reserve(media_timestamps.size());
@@ -434,17 +434,18 @@ bool FuchsiaAudioRenderer::GetWallClockTimes(
   return is_time_moving;
 }
 
-FuchsiaAudioRenderer::PlaybackState FuchsiaAudioRenderer::GetPlaybackState() {
+WebEngineAudioRenderer::PlaybackState
+WebEngineAudioRenderer::GetPlaybackState() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return state_;
 }
 
-void FuchsiaAudioRenderer::SetPlaybackState(PlaybackState state) {
+void WebEngineAudioRenderer::SetPlaybackState(PlaybackState state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   state_ = state;
 }
 
-void FuchsiaAudioRenderer::OnError(PipelineStatus status) {
+void WebEngineAudioRenderer::OnError(media::PipelineStatus status) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   audio_consumer_.Unbind();
@@ -462,19 +463,19 @@ void FuchsiaAudioRenderer::OnError(PipelineStatus status) {
   }
 }
 
-void FuchsiaAudioRenderer::RequestAudioConsumerStatus() {
+void WebEngineAudioRenderer::RequestAudioConsumerStatus() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   audio_consumer_->WatchStatus(fit::bind_member(
-      this, &FuchsiaAudioRenderer::OnAudioConsumerStatusChanged));
+      this, &WebEngineAudioRenderer::OnAudioConsumerStatusChanged));
 }
 
-void FuchsiaAudioRenderer::OnAudioConsumerStatusChanged(
+void WebEngineAudioRenderer::OnAudioConsumerStatusChanged(
     fuchsia::media::AudioConsumerStatus status) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (status.has_error()) {
     LOG(ERROR) << "fuchsia::media::AudioConsumer reported an error";
-    OnError(AUDIO_RENDERER_ERROR);
+    OnError(media::AUDIO_RENDERER_ERROR);
     return;
   }
 
@@ -524,7 +525,7 @@ void FuchsiaAudioRenderer::OnAudioConsumerStatusChanged(
   RequestAudioConsumerStatus();
 }
 
-void FuchsiaAudioRenderer::ScheduleReadDemuxerStream() {
+void WebEngineAudioRenderer::ScheduleReadDemuxerStream() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!renderer_started_ || !demuxer_stream_ || read_timer_.IsRunning() ||
@@ -553,24 +554,24 @@ void FuchsiaAudioRenderer::ScheduleReadDemuxerStream() {
   }
 
   read_timer_.Start(FROM_HERE, next_read_delay,
-                    base::BindOnce(&FuchsiaAudioRenderer::ReadDemuxerStream,
+                    base::BindOnce(&WebEngineAudioRenderer::ReadDemuxerStream,
                                    base::Unretained(this)));
 }
 
-void FuchsiaAudioRenderer::ReadDemuxerStream() {
+void WebEngineAudioRenderer::ReadDemuxerStream() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(demuxer_stream_);
   DCHECK(!is_demuxer_read_pending_);
 
   is_demuxer_read_pending_ = true;
   demuxer_stream_->Read(
-      base::BindOnce(&FuchsiaAudioRenderer::OnDemuxerStreamReadDone,
+      base::BindOnce(&WebEngineAudioRenderer::OnDemuxerStreamReadDone,
                      weak_factory_.GetWeakPtr()));
 }
 
-void FuchsiaAudioRenderer::OnDemuxerStreamReadDone(
-    DemuxerStream::Status read_status,
-    scoped_refptr<DecoderBuffer> buffer) {
+void WebEngineAudioRenderer::OnDemuxerStreamReadDone(
+    media::DemuxerStream::Status read_status,
+    scoped_refptr<media::DecoderBuffer> buffer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(is_demuxer_read_pending_);
 
@@ -582,17 +583,17 @@ void FuchsiaAudioRenderer::OnDemuxerStreamReadDone(
     return;
   }
 
-  if (read_status != DemuxerStream::kOk) {
-    if (read_status == DemuxerStream::kError) {
-      OnError(PIPELINE_ERROR_READ);
-    } else if (read_status == DemuxerStream::kConfigChanged) {
+  if (read_status != media::DemuxerStream::kOk) {
+    if (read_status == media::DemuxerStream::kError) {
+      OnError(media::PIPELINE_ERROR_READ);
+    } else if (read_status == media::DemuxerStream::kConfigChanged) {
       stream_sink_.Unbind();
       sysmem_buffer_stream_->Reset();
 
       InitializeStreamSink();
       client_->OnAudioConfigChange(demuxer_stream_->audio_decoder_config());
     } else {
-      DCHECK_EQ(read_status, DemuxerStream::kAborted);
+      DCHECK_EQ(read_status, media::DemuxerStream::kAborted);
     }
     return;
   }
@@ -603,20 +604,21 @@ void FuchsiaAudioRenderer::OnDemuxerStreamReadDone(
     if (buffer->data_size() > kBufferSize) {
       DLOG(ERROR) << "Demuxer returned buffer that is too big: "
                   << buffer->data_size();
-      OnError(AUDIO_RENDERER_ERROR);
+      OnError(media::AUDIO_RENDERER_ERROR);
       return;
     }
 
     last_packet_timestamp_ = buffer->timestamp();
-    if (buffer->duration() != kNoTimestamp)
+    if (buffer->duration() != media::kNoTimestamp)
       last_packet_timestamp_ += buffer->duration();
   }
 
   // Update layout for 24-bit PCM streams.
   if (!buffer->end_of_stream() &&
-      demuxer_stream_->audio_decoder_config().codec() == AudioCodec::kPCM &&
+      demuxer_stream_->audio_decoder_config().codec() ==
+          media::AudioCodec::kPCM &&
       demuxer_stream_->audio_decoder_config().sample_format() ==
-          kSampleFormatS24) {
+          media::kSampleFormatS24) {
     buffer = PreparePcm24Buffer(std::move(buffer));
   }
 
@@ -625,8 +627,8 @@ void FuchsiaAudioRenderer::OnDemuxerStreamReadDone(
   ScheduleReadDemuxerStream();
 }
 
-void FuchsiaAudioRenderer::SendInputPacket(
-    StreamProcessorHelper::IoPacket packet) {
+void WebEngineAudioRenderer::SendInputPacket(
+    media::StreamProcessorHelper::IoPacket packet) {
   fuchsia::media::StreamPacket stream_packet;
   stream_packet.payload_buffer_id = packet.buffer_index();
   stream_packet.pts = packet.timestamp().ToZxDuration();
@@ -635,7 +637,7 @@ void FuchsiaAudioRenderer::SendInputPacket(
 
   stream_sink_->SendPacket(
       std::move(stream_packet),
-      [this, packet = std::make_unique<StreamProcessorHelper::IoPacket>(
+      [this, packet = std::make_unique<media::StreamProcessorHelper::IoPacket>(
                  std::move(packet))]() mutable {
         OnStreamSendDone(std::move(packet));
       });
@@ -643,45 +645,46 @@ void FuchsiaAudioRenderer::SendInputPacket(
   // AudioConsumer doesn't report exact time when the data is decoded, but it's
   // safe to report it as decoded right away since the packet is expected to be
   // decoded soon after AudioConsumer receives it.
-  PipelineStatistics stats;
+  media::PipelineStatistics stats;
   stats.audio_bytes_decoded = packet.size();
   client_->OnStatisticsUpdate(stats);
 }
 
-void FuchsiaAudioRenderer::OnStreamSendDone(
-    std::unique_ptr<StreamProcessorHelper::IoPacket> packet) {
+void WebEngineAudioRenderer::OnStreamSendDone(
+    std::unique_ptr<media::StreamProcessorHelper::IoPacket> packet) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Check if we need to update buffering state after sending more than
   // |min_lead_time_| to the AudioConsumer.
-  if (buffer_state_ == BUFFERING_HAVE_NOTHING) {
+  if (buffer_state_ == media::BUFFERING_HAVE_NOTHING) {
     std::vector<base::TimeTicks> wall_clock_times;
     GetWallClockTimes({packet->timestamp()}, &wall_clock_times);
     base::TimeDelta relative_buffer_pos =
         wall_clock_times[0] - base::TimeTicks::Now();
     if (relative_buffer_pos >= min_lead_time_)
-      SetBufferState(BUFFERING_HAVE_ENOUGH);
+      SetBufferState(media::BUFFERING_HAVE_ENOUGH);
   }
 
   ScheduleReadDemuxerStream();
 }
 
-void FuchsiaAudioRenderer::SetBufferState(BufferingState buffer_state) {
+void WebEngineAudioRenderer::SetBufferState(
+    media::BufferingState buffer_state) {
   if (buffer_state != buffer_state_) {
     buffer_state_ = buffer_state;
     client_->OnBufferingStateChange(buffer_state_,
-                                    BUFFERING_CHANGE_REASON_UNKNOWN);
+                                    media::BUFFERING_CHANGE_REASON_UNKNOWN);
   }
 }
 
-void FuchsiaAudioRenderer::FlushInternal() {
+void WebEngineAudioRenderer::FlushInternal() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(GetPlaybackState() == PlaybackState::kStopped || is_at_end_of_stream_);
 
   if (stream_sink_)
     stream_sink_->DiscardAllPacketsNoReply();
 
-  SetBufferState(BUFFERING_HAVE_NOTHING);
+  SetBufferState(media::BUFFERING_HAVE_NOTHING);
   last_packet_timestamp_ = base::TimeDelta::Min();
   read_timer_.Stop();
   is_at_end_of_stream_ = false;
@@ -691,16 +694,16 @@ void FuchsiaAudioRenderer::FlushInternal() {
   }
 }
 
-void FuchsiaAudioRenderer::OnEndOfStream() {
+void WebEngineAudioRenderer::OnEndOfStream() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   client_->OnEnded();
 }
 
-bool FuchsiaAudioRenderer::IsTimeMoving() {
+bool WebEngineAudioRenderer::IsTimeMoving() {
   return state_ == PlaybackState::kPlaying && media_delta_ > 0;
 }
 
-void FuchsiaAudioRenderer::UpdateTimelineOnStop() {
+void WebEngineAudioRenderer::UpdateTimelineOnStop() {
   if (!IsTimeMoving())
     return;
 
@@ -709,7 +712,7 @@ void FuchsiaAudioRenderer::UpdateTimelineOnStop() {
   media_delta_ = 0;
 }
 
-base::TimeDelta FuchsiaAudioRenderer::CurrentMediaTimeLocked() {
+base::TimeDelta WebEngineAudioRenderer::CurrentMediaTimeLocked() {
   DCHECK(IsTimeMoving());
 
   // Calculate media position using formula specified by the TimelineFunction.
@@ -718,7 +721,7 @@ base::TimeDelta FuchsiaAudioRenderer::CurrentMediaTimeLocked() {
                           media_delta_ / reference_delta_;
 }
 
-void FuchsiaAudioRenderer::OnSysmemBufferStreamBufferCollectionToken(
+void WebEngineAudioRenderer::OnSysmemBufferStreamBufferCollectionToken(
     fuchsia::sysmem::BufferCollectionTokenPtr token) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -730,16 +733,16 @@ void FuchsiaAudioRenderer::OnSysmemBufferStreamBufferCollectionToken(
   input_buffer_collection_ =
       sysmem_allocator_.BindSharedCollection(std::move(token));
   fuchsia::sysmem::BufferCollectionConstraints buffer_constraints =
-      VmoBuffer::GetRecommendedConstraints(kNumBuffers, kBufferSize,
-                                           /*writable=*/false);
+      media::VmoBuffer::GetRecommendedConstraints(kNumBuffers, kBufferSize,
+                                                  /*writable=*/false);
   input_buffer_collection_->Initialize(std::move(buffer_constraints),
                                        "CrAudioRenderer");
   input_buffer_collection_->AcquireBuffers(base::BindOnce(
-      &FuchsiaAudioRenderer::OnBuffersAcquired, base::Unretained(this)));
+      &WebEngineAudioRenderer::OnBuffersAcquired, base::Unretained(this)));
 }
 
-void FuchsiaAudioRenderer::OnSysmemBufferStreamOutputPacket(
-    StreamProcessorHelper::IoPacket packet) {
+void WebEngineAudioRenderer::OnSysmemBufferStreamOutputPacket(
+    media::StreamProcessorHelper::IoPacket packet) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (stream_sink_) {
@@ -752,7 +755,7 @@ void FuchsiaAudioRenderer::OnSysmemBufferStreamOutputPacket(
   ScheduleReadDemuxerStream();
 }
 
-void FuchsiaAudioRenderer::OnSysmemBufferStreamEndOfStream() {
+void WebEngineAudioRenderer::OnSysmemBufferStreamEndOfStream() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(is_at_end_of_stream_);
 
@@ -765,17 +768,15 @@ void FuchsiaAudioRenderer::OnSysmemBufferStreamEndOfStream() {
   // No more data is going to be buffered. Update buffering state to ensure
   // RendererImpl starts playback in case it was waiting for buffering to
   // finish.
-  SetBufferState(BUFFERING_HAVE_ENOUGH);
+  SetBufferState(media::BUFFERING_HAVE_ENOUGH);
 }
 
-void FuchsiaAudioRenderer::OnSysmemBufferStreamError() {
+void WebEngineAudioRenderer::OnSysmemBufferStreamError() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  OnError(AUDIO_RENDERER_ERROR);
+  OnError(media::AUDIO_RENDERER_ERROR);
 }
 
-void FuchsiaAudioRenderer::OnSysmemBufferStreamNoKey() {
+void WebEngineAudioRenderer::OnSysmemBufferStreamNoKey() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  client_->OnWaiting(WaitingReason::kNoDecryptionKey);
+  client_->OnWaiting(media::WaitingReason::kNoDecryptionKey);
 }
-
-}  // namespace media

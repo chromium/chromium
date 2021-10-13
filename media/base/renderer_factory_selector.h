@@ -27,10 +27,11 @@ enum class RendererType {
   kFlinging = 4,         // FlingingRendererClientFactory
   kCast = 5,             // CastRendererClientFactory
   kMediaFoundation = 6,  // MediaFoundationRendererClientFactory
-  kFuchsia = 7,          // FuchsiaRendererFactory
-  kRemoting = 8,         // RemotingRendererFactory for remoting::Receiver
-  kCastStreaming = 9,    // CastStreamingRendererFactory
-  kMaxValue = kCastStreaming,
+  // kFuchsia = 7,       // Deprecated
+  kRemoting = 8,       // RemotingRendererFactory for remoting::Receiver
+  kCastStreaming = 9,  // CastStreamingRendererFactory
+  kContentEmbedderDefined = 10,  // Defined by the content embedder
+  kMaxValue = kContentEmbedderDefined,
 };
 
 // Get the name of the Renderer for `renderer_type`. The returned name could be

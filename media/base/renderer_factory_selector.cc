@@ -26,12 +26,12 @@ std::string GetRendererName(RendererType renderer_type) {
       return "CastRenderer";
     case RendererType::kMediaFoundation:
       return "MediaFoundationRenderer";
-    case RendererType::kFuchsia:
-      return "FuchsiaRenderer";  // RendererImpl by FuchsiaRendererFactory.
     case RendererType::kRemoting:
       return "RemotingRenderer";  // media::remoting::Receiver
     case RendererType::kCastStreaming:
       return "CastStreamingRenderer";
+    case RendererType::kContentEmbedderDefined:
+      return "EmbedderDefined";
     default:
       NOTREACHED();
       return "RendererType created through invalid static_cast";

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FUCHSIA_AUDIO_FUCHSIA_AUDIO_RENDERER_H_
-#define MEDIA_FUCHSIA_AUDIO_FUCHSIA_AUDIO_RENDERER_H_
+#ifndef FUCHSIA_ENGINE_RENDERER_WEB_ENGINE_AUDIO_RENDERER_H_
+#define FUCHSIA_ENGINE_RENDERER_WEB_ENGINE_AUDIO_RENDERER_H_
 
 #include <fuchsia/media/cpp/fidl.h>
 
@@ -14,10 +14,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
+#include "fuchsia/engine/web_engine_export.h"
 #include "media/base/audio_renderer.h"
 #include "media/base/buffering_state.h"
 #include "media/base/demuxer_stream.h"
-#include "media/base/media_export.h"
 #include "media/base/time_source.h"
 #include "media/fuchsia/common/sysmem_buffer_stream.h"
 #include "media/fuchsia/common/sysmem_client.h"
@@ -26,25 +26,26 @@
 namespace media {
 
 class MediaLog;
+}
 
 // AudioRenderer implementation that output audio to AudioConsumer interface on
 // Fuchsia. Unlike the default AudioRendererImpl it doesn't decode audio and
 // sends encoded stream directly to AudioConsumer provided by the platform.
-class MEDIA_EXPORT FuchsiaAudioRenderer final
-    : public AudioRenderer,
-      public TimeSource,
-      public SysmemBufferStream::Sink {
+class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
+    : public media::AudioRenderer,
+      public media::TimeSource,
+      public media::SysmemBufferStream::Sink {
  public:
-  FuchsiaAudioRenderer(MediaLog* media_log,
-                       fidl::InterfaceHandle<fuchsia::media::AudioConsumer>
-                           audio_consumer_handle);
-  ~FuchsiaAudioRenderer() override;
+  WebEngineAudioRenderer(media::MediaLog* media_log,
+                         fidl::InterfaceHandle<fuchsia::media::AudioConsumer>
+                             audio_consumer_handle);
+  ~WebEngineAudioRenderer() override;
 
   // AudioRenderer implementation.
-  void Initialize(DemuxerStream* stream,
-                  CdmContext* cdm_context,
-                  RendererClient* client,
-                  PipelineStatusCallback init_cb) override;
+  void Initialize(media::DemuxerStream* stream,
+                  media::CdmContext* cdm_context,
+                  media::RendererClient* client,
+                  media::PipelineStatusCallback init_cb) override;
   TimeSource* GetTimeSource() override;
   void Flush(base::OnceClosure callback) override;
   void StartPlaying() override;
@@ -93,7 +94,7 @@ class MEDIA_EXPORT FuchsiaAudioRenderer final
       EXCLUSIVE_LOCKS_REQUIRED(timeline_lock_);
 
   // Resets AudioConsumer and reports error to the |client_|.
-  void OnError(PipelineStatus Status);
+  void OnError(media::PipelineStatus Status);
 
   // Connects |volume_control_|, if it hasn't been connected, and then sets
   // |volume_|.
@@ -101,7 +102,7 @@ class MEDIA_EXPORT FuchsiaAudioRenderer final
 
   // Callback for input_buffer_collection_.AcquireBuffers().
   void OnBuffersAcquired(
-      std::vector<VmoBuffer> buffers,
+      std::vector<media::VmoBuffer> buffers,
       const fuchsia::sysmem::SingleBufferSettings& buffer_settings);
 
   // Initializes |stream_sink_|. Called during initialization and every time
@@ -115,18 +116,18 @@ class MEDIA_EXPORT FuchsiaAudioRenderer final
   // Helpers to pump data from |demuxer_stream_| to |stream_sink_|.
   void ScheduleReadDemuxerStream();
   void ReadDemuxerStream();
-  void OnDemuxerStreamReadDone(DemuxerStream::Status status,
-                               scoped_refptr<DecoderBuffer> buffer);
+  void OnDemuxerStreamReadDone(media::DemuxerStream::Status status,
+                               scoped_refptr<media::DecoderBuffer> buffer);
 
   // Sends the specified packet to |stream_sink_|.
-  void SendInputPacket(StreamProcessorHelper::IoPacket packet);
+  void SendInputPacket(media::StreamProcessorHelper::IoPacket packet);
 
   // Result handler for StreamSink::SendPacket().
   void OnStreamSendDone(
-      std::unique_ptr<StreamProcessorHelper::IoPacket> packet);
+      std::unique_ptr<media::StreamProcessorHelper::IoPacket> packet);
 
   // Updates buffer state and notifies the |client_| if necessary.
-  void SetBufferState(BufferingState buffer_state);
+  void SetBufferState(media::BufferingState buffer_state);
 
   // Discards all pending packets.
   void FlushInternal();
@@ -153,7 +154,7 @@ class MEDIA_EXPORT FuchsiaAudioRenderer final
   void OnSysmemBufferStreamBufferCollectionToken(
       fuchsia::sysmem::BufferCollectionTokenPtr token) override;
   void OnSysmemBufferStreamOutputPacket(
-      StreamProcessorHelper::IoPacket packet) override;
+      media::StreamProcessorHelper::IoPacket packet) override;
   void OnSysmemBufferStreamEndOfStream() override;
   void OnSysmemBufferStreamError() override;
   void OnSysmemBufferStreamNoKey() override;
@@ -168,36 +169,36 @@ class MEDIA_EXPORT FuchsiaAudioRenderer final
 
   float volume_ = 1.0;
 
-  DemuxerStream* demuxer_stream_ = nullptr;
+  media::DemuxerStream* demuxer_stream_ = nullptr;
   bool is_demuxer_read_pending_ = false;
   bool drop_next_demuxer_read_result_ = false;
 
-  RendererClient* client_ = nullptr;
+  media::RendererClient* client_ = nullptr;
 
   // Initialize() completion callback.
-  PipelineStatusCallback init_cb_;
+  media::PipelineStatusCallback init_cb_;
 
   // Indicates that StartPlaying() has been called. Note that playback doesn't
   // start until TimeSource::StartTicking() is called.
   bool renderer_started_ = false;
 
-  BufferingState buffer_state_ = BUFFERING_HAVE_NOTHING;
+  media::BufferingState buffer_state_ = media::BUFFERING_HAVE_NOTHING;
 
   base::TimeDelta last_packet_timestamp_ = base::TimeDelta::Min();
   base::OneShotTimer read_timer_;
 
-  SysmemAllocatorClient sysmem_allocator_{"CrFuchsiaAudioRenderer"};
-  std::unique_ptr<SysmemCollectionClient> input_buffer_collection_;
+  media::SysmemAllocatorClient sysmem_allocator_{"WebEngineAudioRenderer"};
+  std::unique_ptr<media::SysmemCollectionClient> input_buffer_collection_;
 
-  std::unique_ptr<SysmemBufferStream> sysmem_buffer_stream_;
+  std::unique_ptr<media::SysmemBufferStream> sysmem_buffer_stream_;
 
   // VmoBuffers for the buffers |input_buffer_collection_|.
-  std::vector<VmoBuffer> input_buffers_;
+  std::vector<media::VmoBuffer> input_buffers_;
 
   // Packets produced before the |stream_sink_| is connected. They are sent as
   // soon as input buffers are acquired and |stream_sink_| is connected in
   // OnBuffersAcquired().
-  std::list<StreamProcessorHelper::IoPacket> delayed_packets_;
+  std::list<media::StreamProcessorHelper::IoPacket> delayed_packets_;
 
   // Lead time range requested by the |audio_consumer_|. Initialized to  the
   // [100ms, 500ms] until the initial AudioConsumerStatus is received.
@@ -226,9 +227,7 @@ class MEDIA_EXPORT FuchsiaAudioRenderer final
 
   THREAD_CHECKER(thread_checker_);
 
-  base::WeakPtrFactory<FuchsiaAudioRenderer> weak_factory_{this};
+  base::WeakPtrFactory<WebEngineAudioRenderer> weak_factory_{this};
 };
 
-}  // namespace media
-
-#endif  // MEDIA_FUCHSIA_AUDIO_FUCHSIA_AUDIO_RENDERER_H_
+#endif  // FUCHSIA_ENGINE_RENDERER_WEB_ENGINE_AUDIO_RENDERER_H_

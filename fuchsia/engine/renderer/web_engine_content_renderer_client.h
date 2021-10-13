@@ -53,6 +53,12 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
       content::RenderFrame* render_frame,
       const GURL& url,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner) override;
+  std::unique_ptr<media::RendererFactory> GetBaseRendererFactory(
+      content::RenderFrame* render_frame,
+      media::MediaLog* media_log,
+      media::DecoderFactory* decoder_factory,
+      base::RepeatingCallback<media::GpuVideoAcceleratorFactories*()>
+          get_gpu_factories_cb) override;
 
   bool RunClosureWhenInForeground(content::RenderFrame* render_frame,
                                   base::OnceClosure closure);
