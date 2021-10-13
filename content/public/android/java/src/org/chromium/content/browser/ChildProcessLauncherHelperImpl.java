@@ -251,14 +251,6 @@ public final class ChildProcessLauncherHelperImpl {
         Log.d(TAG, "Encountered the first usable RELRO bundle.");
         sZygotePid = connection.getZygotePid();
         sZygoteBundle = zygoteBundle;
-
-        // Use the RELRO FD in the current process. Some nontrivial CPU cycles are consumed because
-        // it needs an mmap+memcmp(5 megs)+mmap+munmap. This happens on the process launcher thread,
-        // will work correctly on any thread.
-        LibraryLoader.getInstance().getMediator().takeSharedRelrosFromBundle(zygoteBundle);
-
-        // Use the RELRO FD for all processes launched up to now. Non-blocking 'oneway' IPCs are
-        // used. The CPU time costs in the child process are the same.
         sendPreviouslySeenZygoteBundleToExistingConnections(connection.getPid());
     }
 
