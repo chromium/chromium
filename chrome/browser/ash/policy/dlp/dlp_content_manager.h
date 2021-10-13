@@ -246,9 +246,11 @@ class DlpContentManager : public DlpContentObserver,
   void MaybeReportEvent(const RestrictionLevelAndUrl& restriction_info,
                         DlpRulesManager::Restriction restriction);
 
-  // Called back as part of the warning dialogs "Accept" callback, to save the
-  // user's response.
-  void OnScreenCaptureUserAllowed();
+  // Called back from Screen Capture warning dialogs. Saves the user's response
+  // and passes it along to |callback| which handles continuing or cancelling
+  // the action based on this response.
+  void OnScreenCaptureReply(OnDlpRestrictionChecked callback,
+                            bool should_proceed);
 
   // Map from currently known confidential WebContents to the restrictions.
   base::flat_map<content::WebContents*, DlpContentRestrictionSet>

@@ -194,13 +194,13 @@ void DlpContentManager::CheckStoppedVideoCapture(
   if (!running_video_capture_info_.has_value())
     return;
 
-  if (running_video_capture_info_->confidential_content_observed_) {
-    // TODO(crbug.com/1254312): Simplify creating the dialog
+  // If some confidential content was shown during the recording, but not
+  // before, warn the user before saving the file.
+  if (!user_allowed_screen_capture_ &&
+      running_video_capture_info_->confidential_content_observed_) {
     // TODO(crbug.com/1253800): Pass all the confidential content to the dialog
-    auto split = base::SplitOnceCallback(std::move(callback));
     DlpWarnDialog::ShowDlpVideoCaptureWarningDialog(
-        base::BindOnce(std::move(split.first), true),
-        base::BindOnce(std::move(split.second), false),
+        std::move(callback),
         /*confidential_contents=*/{});
   }
   running_video_capture_info_.reset();
@@ -672,16 +672,11 @@ void DlpContentManager::CheckScreenCaptureRestriction(
     if (user_allowed_screen_capture_) {
       std::move(callback).Run(true);
     } else {
-      // TODO(crbug.com/1254312): Simplify creating the dialog
       // TODO(crbug.com/1253800): Pass all the confidential content to the
       // dialog
-      auto split = base::SplitOnceCallback(std::move(callback));
       DlpWarnDialog::ShowDlpScreenCaptureWarningDialog(
-          base::BindOnce(std::move(split.first), true)
-              .Then(
-                  base::BindOnce(&DlpContentManager::OnScreenCaptureUserAllowed,
-                                 base::Unretained(this))),
-          base::BindOnce(std::move(split.second), false),
+          base::BindOnce(&DlpContentManager::OnScreenCaptureReply,
+                         base::Unretained(this), std::move(callback)),
           /*confidential_contents=*/{});
     }
   } else {
@@ -700,8 +695,10 @@ void DlpContentManager::MaybeReportEvent(
   }
 }
 
-void DlpContentManager::OnScreenCaptureUserAllowed() {
-  user_allowed_screen_capture_ = true;
+void DlpContentManager::OnScreenCaptureReply(OnDlpRestrictionChecked callback,
+                                             bool should_proceed) {
+  user_allowed_screen_capture_ = should_proceed;
+  std::move(callback).Run(should_proceed);
 }
 
 // ScopedDlpContentManagerForTesting

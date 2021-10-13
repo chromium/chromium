@@ -12,6 +12,8 @@
 
 namespace policy {
 
+using OnDlpRestrictionChecked = base::OnceCallback<void(bool should_proceed)>;
+
 // DlpWarnDialog is a system modal dialog shown when Data Leak Protection on
 // screen restriction (Screen Capture, Printing, Screen Share) level is set to
 // WARN.
@@ -24,30 +26,23 @@ class DlpWarnDialog : public views::DialogDelegateView {
   enum class Restriction { kScreenCapture, kVideoCapture, kPrinting };
 
   // Shows a warning dialog that informs the user that printing is not
-  // recommended. Calls one of |accept_callback| or |cancel_callback| based on
-  // the user's choice whether to proceed or not.
-  static void ShowDlpPrintWarningDialog(base::OnceClosure accept_callback,
-                                        base::OnceClosure cancel_callback);
+  // recommended. Calls |callback| and passes user's choice of whether to
+  // proceed or not.
+  static void ShowDlpPrintWarningDialog(OnDlpRestrictionChecked callback);
 
   // Shows a warning dialog that informs the user that screen capture is not
-  // recommended due to |confidential_contents| visible. Calls one of
-  // |accept_callback| or |cancel_callback| based on the user's choice whether
-  // to proceed or not.
+  // recommended due to |confidential_contents| visible. Calls |callback| and
+  // passes user's choice of whether to proceed or not.
   static void ShowDlpScreenCaptureWarningDialog(
-      base::OnceClosure accept_callback,
-      base::OnceClosure cancel_callback,
+      OnDlpRestrictionChecked callback,
       const DlpConfidentialContents& confidential_contents);
 
   // Shows a warning dialog that informs the user that video capture is not
-  // recommended due to |confidential_contents| visible. Calls one of
-  // |accept_callback| or |cancel_callback| based on the user's choice whether
-  // to proceed or not.
+  // recommended due to |confidential_contents| visible. Calls |callback| and
+  // passes user's choice of whether to proceed or not.
   static void ShowDlpVideoCaptureWarningDialog(
-      base::OnceClosure accept_callback,
-      base::OnceClosure cancel_callback,
+      OnDlpRestrictionChecked callback,
       const DlpConfidentialContents& confidential_contents);
-
-  DlpWarnDialog(const DlpWarnDialog&) = delete;
   DlpWarnDialog& operator=(const DlpWarnDialog&) = delete;
   ~DlpWarnDialog() override = default;
 
@@ -55,13 +50,11 @@ class DlpWarnDialog : public views::DialogDelegateView {
   // Helper method to create and show a warning dialog for a given
   // |restriction|.
   static void ShowDlpWarningDialog(
-      base::OnceClosure accept_callback,
-      base::OnceClosure cancel_callback,
+      OnDlpRestrictionChecked callback,
       Restriction restriction,
       const DlpConfidentialContents& confidential_contents);
 
-  DlpWarnDialog(base::OnceClosure accept_callback,
-                base::OnceClosure cancel_callback,
+  DlpWarnDialog(OnDlpRestrictionChecked callback,
                 Restriction restriction,
                 const DlpConfidentialContents& confidential_contents);
 };

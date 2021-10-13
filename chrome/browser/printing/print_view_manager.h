@@ -108,19 +108,21 @@ class PrintViewManager : public PrintViewManagerBase,
 
   void OnScriptedPrintPreviewReply(SetupScriptedPrintPreviewCallback callback);
 
-  // Helper method for ShowScriptedPrintPreview(). To be called after
-  // RejectPrintPreviewRequestIfRestricted(), in case the request is not
-  // rejected.
-  void OnScriptedPrintPreviewAllowed(bool source_is_modifiable,
-                                     int render_process_id,
-                                     int render_frame_id);
+  // Helper method for ShowScriptedPrintPreview(), called from
+  // RejectPrintPreviewRequestIfRestricted(). Based on value of
+  // |should_proceed|, continues to show the print preview or cancels it.
+  void OnScriptedPrintPreviewCallback(bool source_is_modifiable,
+                                      int render_process_id,
+                                      int render_frame_id,
+                                      bool should_proceed);
 
-  // Helper method for RequestPrintPreview(). To be called after
-  // RejectPrintPreviewRequestIfRestricted(), in case the request is not
-  // rejected.
-  void OnRequestPrintPreviewAllowed(mojom::RequestPrintPreviewParamsPtr params,
-                                    int render_process_id,
-                                    int render_frame_id);
+  // Helper method for RequestPrintPreview(), called from
+  // RejectPrintPreviewRequestIfRestricted(). Based on value of
+  // |should_proceed|, continues to show the print preview or cancels it.
+  void OnRequestPrintPreviewCallback(mojom::RequestPrintPreviewParamsPtr params,
+                                     int render_process_id,
+                                     int render_frame_id,
+                                     bool should_proceed);
 
   void MaybeUnblockScriptedPreviewRPH();
 
@@ -132,24 +134,19 @@ class PrintViewManager : public PrintViewManagerBase,
   // Virtual to allow tests to override.
   virtual bool ShouldWarnBeforePrinting() const;
 
-  // On ChromeOS, shows a warning dialog that will invoke one of
-  // |on_print_preview_allowed_cb| or |on_print_preview_rejected_cb| based on
-  // user input. Virtual to allow tests to override.
+  // On ChromeOS, shows a warning dialog that will invoke |callback| and pass to
+  // it the user's response. Virtual to allow tests to override.
   virtual void ShowWarning(
-      base::OnceClosure on_print_preview_allowed_cb,
-      base::OnceClosure on_print_preview_rejected_cb) const;
+      base::OnceCallback<void(bool should_proceed)> callback) const;
 
   // On ChromeOS, shows a notification that the printing is blocked.
   void ShowBlockedNotification() const;
 
   // Checks whether printing is currently restricted and aborts print preview if
-  // needed. There are cases when this check is performed asynchronously, so in
-  // order to continue or abort the print preview, one of
-  // |on_print_preview_allowed_cb| or |on_print_preview_rejected_cb| will be
-  // invoked.
+  // needed. Since this check is performed asynchronously, invokes |callback|
+  // with an indicator whether to proceed or not.
   void RejectPrintPreviewRequestIfRestricted(
-      base::OnceClosure on_print_preview_allowed_cb,
-      base::OnceClosure on_print_preview_rejected_cb);
+      base::OnceCallback<void(bool should_proceed)> callback);
 
   // Helper method for RejectPrintPreviewRequestIfRestricted(). Handles any
   // tasks that need to be done when the request is rejected due to

@@ -442,13 +442,11 @@ class TestPrintViewManagerForDLP : public TestPrintViewManager {
            restriction_level_ == RestrictionLevel::kWarnCancel;
   }
 
-  void ShowWarning(
-      base::OnceClosure on_print_preview_allowed_cb,
-      base::OnceClosure on_print_preview_rejected_cb) const override {
+  void ShowWarning(base::OnceCallback<void(bool)> callback) const override {
     if (restriction_level_ == RestrictionLevel::kWarnAllow) {
-      std::move(on_print_preview_allowed_cb).Run();
+      std::move(callback).Run(true);
     } else if (restriction_level_ == RestrictionLevel::kWarnCancel) {
-      std::move(on_print_preview_rejected_cb).Run();
+      std::move(callback).Run(false);
     }
   }
 

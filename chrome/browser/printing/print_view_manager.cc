@@ -213,16 +213,14 @@ void PrintViewManager::PrintPreviewDone() {
 }
 
 void PrintViewManager::RejectPrintPreviewRequestIfRestricted(
-    base::OnceClosure on_print_preview_allowed_cb,
-    base::OnceClosure on_print_preview_rejected_cb) {
+    base::OnceCallback<void(bool should_proceed)> callback) {
   if (IsPrintingRestricted()) {
     ShowBlockedNotification();
-    std::move(on_print_preview_rejected_cb).Run();
+    std::move(callback).Run(false);
   } else if (ShouldWarnBeforePrinting()) {
-    ShowWarning(std::move(on_print_preview_allowed_cb),
-                std::move(on_print_preview_rejected_cb));
+    ShowWarning(std::move(callback));
   } else {
-    std::move(on_print_preview_allowed_cb).Run();
+    std::move(callback).Run(true);
   }
 }
 
@@ -347,17 +345,20 @@ void PrintViewManager::ShowScriptedPrintPreview(bool source_is_modifiable) {
   int render_frame_id = print_preview_rfh_->GetRoutingID();
 
   RejectPrintPreviewRequestIfRestricted(
-      base::BindOnce(&PrintViewManager::OnScriptedPrintPreviewAllowed,
+      base::BindOnce(&PrintViewManager::OnScriptedPrintPreviewCallback,
                      weak_factory_.GetWeakPtr(), source_is_modifiable,
-                     render_process_id, render_frame_id),
-      base::BindOnce(&PrintViewManager::OnPrintPreviewRequestRejected,
-                     weak_factory_.GetWeakPtr(), render_process_id,
-                     render_frame_id));
+                     render_process_id, render_frame_id));
 }
 
-void PrintViewManager::OnScriptedPrintPreviewAllowed(bool source_is_modifiable,
-                                                     int render_process_id,
-                                                     int render_frame_id) {
+void PrintViewManager::OnScriptedPrintPreviewCallback(bool source_is_modifiable,
+                                                      int render_process_id,
+                                                      int render_frame_id,
+                                                      bool should_proceed) {
+  if (!should_proceed) {
+    OnPrintPreviewRequestRejected(render_process_id, render_frame_id);
+    return;
+  }
+
   if (print_preview_state_ != SCRIPTED_PREVIEW)
     return;
 
@@ -395,20 +396,21 @@ void PrintViewManager::RequestPrintPreview(
   content::RenderProcessHost* render_process_host =
       render_frame_host->GetProcess();
 
-  RejectPrintPreviewRequestIfRestricted(
-      base::BindOnce(&PrintViewManager::OnRequestPrintPreviewAllowed,
-                     weak_factory_.GetWeakPtr(), std::move(params),
-                     render_process_host->GetID(),
-                     render_frame_host->GetRoutingID()),
-      base::BindOnce(&PrintViewManager::OnPrintPreviewRequestRejected,
-                     weak_factory_.GetWeakPtr(), render_process_host->GetID(),
-                     render_frame_host->GetRoutingID()));
+  RejectPrintPreviewRequestIfRestricted(base::BindOnce(
+      &PrintViewManager::OnRequestPrintPreviewCallback,
+      weak_factory_.GetWeakPtr(), std::move(params),
+      render_process_host->GetID(), render_frame_host->GetRoutingID()));
 }
 
-void PrintViewManager::OnRequestPrintPreviewAllowed(
+void PrintViewManager::OnRequestPrintPreviewCallback(
     mojom::RequestPrintPreviewParamsPtr params,
     int render_process_id,
-    int render_frame_id) {
+    int render_frame_id,
+    bool should_proceed) {
+  if (!should_proceed) {
+    OnPrintPreviewRequestRejected(render_process_id, render_frame_id);
+    return;
+  }
   auto* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
   if (!render_frame_host) {
@@ -462,12 +464,9 @@ bool PrintViewManager::ShouldWarnBeforePrinting() const {
 }
 
 void PrintViewManager::ShowWarning(
-    base::OnceClosure on_print_preview_allowed_cb,
-    base::OnceClosure on_print_preview_rejected_cb) const {
+    base::OnceCallback<void(bool should_proceed)> callback) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::DlpWarnDialog::ShowDlpPrintWarningDialog(
-      std::move(on_print_preview_allowed_cb),
-      std::move(on_print_preview_rejected_cb));
+  policy::DlpWarnDialog::ShowDlpPrintWarningDialog(std::move(callback));
 #else
   NOTREACHED();
 #endif

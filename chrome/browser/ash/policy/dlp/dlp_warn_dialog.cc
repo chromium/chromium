@@ -255,51 +255,46 @@ void AddBody(views::GridLayout* layout,
 
 // static
 void DlpWarnDialog::ShowDlpPrintWarningDialog(
-    base::OnceClosure accept_callback,
-    base::OnceClosure cancel_callback) {
-  ShowDlpWarningDialog(std::move(accept_callback), std::move(cancel_callback),
-                       Restriction::kPrinting,
+    OnDlpRestrictionChecked callback) {
+  ShowDlpWarningDialog(std::move(callback), Restriction::kPrinting,
                        /*confidential_contents=*/{});
 }
 
 // static
 void DlpWarnDialog::ShowDlpScreenCaptureWarningDialog(
-    base::OnceClosure accept_callback,
-    base::OnceClosure cancel_callback,
+    OnDlpRestrictionChecked callback,
     const DlpConfidentialContents& confidential_contents) {
-  ShowDlpWarningDialog(std::move(accept_callback), std::move(cancel_callback),
-                       Restriction::kScreenCapture, confidential_contents);
+  ShowDlpWarningDialog(std::move(callback), Restriction::kScreenCapture,
+                       confidential_contents);
 }
 
 // static
 void DlpWarnDialog::ShowDlpVideoCaptureWarningDialog(
-    base::OnceClosure accept_callback,
-    base::OnceClosure cancel_callback,
+    OnDlpRestrictionChecked callback,
     const DlpConfidentialContents& confidential_contents) {
-  ShowDlpWarningDialog(std::move(accept_callback), std::move(cancel_callback),
-                       Restriction::kVideoCapture, confidential_contents);
+  ShowDlpWarningDialog(std::move(callback), Restriction::kVideoCapture,
+                       confidential_contents);
 }
 
 // static
 void DlpWarnDialog::ShowDlpWarningDialog(
-    base::OnceClosure accept_callback,
-    base::OnceClosure cancel_callback,
+    OnDlpRestrictionChecked callback,
     Restriction restriction,
     const DlpConfidentialContents& confidential_contents) {
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-      new DlpWarnDialog(std::move(accept_callback), std::move(cancel_callback),
-                        restriction, confidential_contents),
+      new DlpWarnDialog(std::move(callback), restriction,
+                        confidential_contents),
       /*context=*/nullptr, /*parent=*/nullptr);
   widget->Show();
 }
 
 DlpWarnDialog::DlpWarnDialog(
-    base::OnceClosure accept_callback,
-    base::OnceClosure cancel_callback,
+    OnDlpRestrictionChecked callback,
     Restriction restriction,
     const DlpConfidentialContents& confidential_contents) {
-  SetAcceptCallback(std::move(accept_callback));
-  SetCancelCallback(std::move(cancel_callback));
+  auto split = base::SplitOnceCallback(std::move(callback));
+  SetAcceptCallback(base::BindOnce(std::move(split.first), true));
+  SetCancelCallback(base::BindOnce(std::move(split.second), false));
 
   SetModalType(ui::MODAL_TYPE_SYSTEM);
 
