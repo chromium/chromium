@@ -53,7 +53,7 @@ class CastContentWindowAura : public CastContentWindow,
   // content::WebContentsObserver implementation:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void MainFrameWasResized(bool width_changed) override;
+  void PrimaryMainFrameWasResized(bool width_changed) override;
 
   // aura::WindowObserver implementation:
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;

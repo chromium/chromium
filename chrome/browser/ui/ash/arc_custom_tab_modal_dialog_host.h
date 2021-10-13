@@ -48,7 +48,7 @@ class ArcCustomTabModalDialogHost
   ~ArcCustomTabModalDialogHost() override = 0;
 
   // content::WebContentsObserver:
-  void MainFrameWasResized(bool width_changed) override;
+  void PrimaryMainFrameWasResized(bool width_changed) override;
 
   // web_modal::WebContentsModalDialogManagerDelegate:
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()

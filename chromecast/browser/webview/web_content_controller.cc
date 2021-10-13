@@ -590,7 +590,7 @@ void WebContentController::OnSurfaceDestroying(exo::Surface* surface) {
   surface_ = nullptr;
 }
 
-void WebContentController::MainFrameWasResized(bool width_changed) {
+void WebContentController::PrimaryMainFrameWasResized(bool width_changed) {
   // The surface ID may have changed, so trigger a new commit to re-issue the
   // draw quad.
   if (surface_) {

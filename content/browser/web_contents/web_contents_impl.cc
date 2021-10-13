@@ -3102,7 +3102,7 @@ void WebContentsImpl::RenderWidgetWasResized(
   if (!rfh || render_widget_host != rfh->GetRenderWidgetHost())
     return;
 
-  observers_.NotifyObservers(&WebContentsObserver::MainFrameWasResized,
+  observers_.NotifyObservers(&WebContentsObserver::PrimaryMainFrameWasResized,
                              width_changed);
 }
 

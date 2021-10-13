@@ -103,7 +103,7 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
     guest_->EmbedderFullscreenToggled(is_fullscreen_);
   }
 
-  void MainFrameWasResized(bool width_changed) override {
+  void PrimaryMainFrameWasResized(bool width_changed) override {
     if (destroyed_ || !web_contents()->GetDelegate())
       return;
 

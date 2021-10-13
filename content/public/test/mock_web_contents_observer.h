@@ -174,7 +174,10 @@ class MockWebContentsObserver : public WebContentsObserver {
               (override));
   MOCK_METHOD(void, DidGetIgnoredUIEvent, (), (override));
   MOCK_METHOD(void, OnVisibilityChanged, (Visibility visibility), (override));
-  MOCK_METHOD(void, MainFrameWasResized, (bool width_changed), (override));
+  MOCK_METHOD(void,
+              PrimaryMainFrameWasResized,
+              (bool width_changed),
+              (override));
   MOCK_METHOD(void,
               FrameNameChanged,
               (RenderFrameHost* render_frame_host, const std::string& name),

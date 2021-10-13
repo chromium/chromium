@@ -484,8 +484,8 @@ class CONTENT_EXPORT WebContentsObserver {
   // Invoked every time the WebContents changes visibility.
   virtual void OnVisibilityChanged(Visibility visibility) {}
 
-  // Invoked when the main frame changes size.
-  virtual void MainFrameWasResized(bool width_changed) {}
+  // Invoked when the primary main frame changes size.
+  virtual void PrimaryMainFrameWasResized(bool width_changed) {}
 
   // Invoked when the given frame changes its window.name property.
   virtual void FrameNameChanged(RenderFrameHost* render_frame_host,

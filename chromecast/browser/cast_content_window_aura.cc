@@ -206,7 +206,7 @@ void CastContentWindowAura::DidStartNavigation(
   SetFullWindowBounds();
 }
 
-void CastContentWindowAura::MainFrameWasResized(bool width_changed) {
+void CastContentWindowAura::PrimaryMainFrameWasResized(bool width_changed) {
   if (!web_contents())
     return;
   if (media_controls_) {

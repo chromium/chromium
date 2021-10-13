@@ -183,7 +183,7 @@ class ChromeAutofillClient
       base::OnceCallback<void(const std::string&)> callback) override;
 
   // content::WebContentsObserver implementation.
-  void MainFrameWasResized(bool width_changed) override;
+  void PrimaryMainFrameWasResized(bool width_changed) override;
   void WebContentsDestroyed() override;
   void OnWebContentsFocused(
       content::RenderWidgetHost* render_widget_host) override;

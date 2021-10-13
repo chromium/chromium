@@ -581,7 +581,7 @@ class MainFrameSizeWaiter : public content::WebContentsObserver {
     return web_contents()->GetContainerBounds().size();
   }
 
-  void MainFrameWasResized(bool width_changed) override {
+  void PrimaryMainFrameWasResized(bool width_changed) override {
     if (current_size() == size_to_wait_for_)
       run_loop_.Quit();
   }

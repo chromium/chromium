@@ -868,7 +868,7 @@ void ChromeAutofillClient::LoadRiskData(
   risk_util::LoadRiskData(0, web_contents(), std::move(callback));
 }
 
-void ChromeAutofillClient::MainFrameWasResized(bool width_changed) {
+void ChromeAutofillClient::PrimaryMainFrameWasResized(bool width_changed) {
 #if defined(OS_ANDROID)
   // Ignore virtual keyboard showing and hiding a strip of suggestions.
   if (!width_changed)
