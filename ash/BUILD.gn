@@ -2388,6 +2388,7 @@ test("ash_unittests") {
     "shelf/test/widget_animation_smoothness_inspector.cc",
     "shelf/test/widget_animation_smoothness_inspector.h",
     "shell_unittest.cc",
+    "style/ash_color_provider_unittests.cc",
     "system/accessibility/accessibility_feature_pod_controller_unittest.cc",
     "system/accessibility/autoclick_menu_bubble_controller_unittest.cc",
     "system/accessibility/dictation_button_tray_unittest.cc",

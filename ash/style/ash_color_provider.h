@@ -66,6 +66,7 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
       SkColor bg_color = gfx::kPlaceholderColor) const override;
   void AddObserver(ColorModeObserver* observer) override;
   void RemoveObserver(ColorModeObserver* observer) override;
+  // TODO(minch): Rename to ShouldUseDarkColors.
   bool IsDarkModeEnabled() const override;
 
   // Gets the color of |type| of the corresponding layer based on the current
