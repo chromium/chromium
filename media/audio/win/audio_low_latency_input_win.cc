@@ -387,20 +387,23 @@ AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
     return OpenOutcome::kFailed;
   }
 
-#ifndef NDEBUG
-  // Retrieve the stream format which the audio engine uses for its internal
-  // processing/mixing of shared-mode streams. This function call is for
-  // diagnostic purposes only and only in debug mode.
-  hr = GetAudioEngineStreamFormat();
-#endif
+  // Raw audio capture suppresses processing that down mixes e.g. a microphone
+  // array into a supported format and instead exposes the device's native
+  // format. Chrome only supports a maximum number of input channels given by
+  // media::kMaxConcurrentChannels. Therefore, one additional test is needed
+  // before stating that raw audio processing can be supported.
+  // Failure will not prevent opening but the method must succeed to be able to
+  // select raw input capture mode.
+  WORD audio_engine_channels = 0;
+  hr = GetAudioEngineNumChannels(&audio_engine_channels);
 
   // Attempt to enable communications category and raw capture mode on the audio
   // stream. Ignoring return value since the method logs its own error messages
   // and it should be OK to continue opening the stream even after a failure.
   if (base::FeatureList::IsEnabled(media::kWasapiRawAudioCapture) &&
       raw_processing_supported_ &&
-      !AudioDeviceDescription::IsLoopbackDevice(device_id_)) {
-    SetCommunicationsCategoryAndRawCaptureMode();
+      !AudioDeviceDescription::IsLoopbackDevice(device_id_) && SUCCEEDED(hr)) {
+    SetCommunicationsCategoryAndMaybeRawCaptureMode(audio_engine_channels);
   }
 
   // Verify that the selected audio endpoint supports the specified format
@@ -700,7 +703,6 @@ void WASAPIAudioInputStream::SendLogMessage(const char* format, ...) {
   va_start(args, format);
   std::string msg("WAIS::" + base::StringPrintV(format, args));
   log_callback_.Run(msg);
-  DVLOG(1) << msg;
   va_end(args);
 }
 
@@ -1052,18 +1054,6 @@ HRESULT WASAPIAudioInputStream::SetCaptureDevice() {
   return hr;
 }
 
-HRESULT WASAPIAudioInputStream::GetAudioEngineStreamFormat() {
-  HRESULT hr = S_OK;
-#ifndef NDEBUG
-  base::win::ScopedCoMem<WAVEFORMATEX> format;
-  hr = audio_client_->GetMixFormat(&format);
-  if (FAILED(hr))
-    return hr;
-  DVLOG(1) << CoreAudioUtil::WaveFormatToString(format.get());
-#endif
-  return hr;
-}
-
 bool WASAPIAudioInputStream::RawProcessingSupported() {
   DCHECK(endpoint_device_.Get());
   // Check if System.Devices.AudioDevice.RawProcessingSupported can be found
@@ -1275,11 +1265,30 @@ HRESULT WASAPIAudioInputStream::GetAudioCaptureEffects(
   return hr;
 }
 
-HRESULT WASAPIAudioInputStream::SetCommunicationsCategoryAndRawCaptureMode() {
+HRESULT WASAPIAudioInputStream::GetAudioEngineNumChannels(WORD* channels) {
+  DCHECK(audio_client_.Get());
+  SendLogMessage("%s()", __func__);
+  WAVEFORMATEXTENSIBLE mix_format;
+  // Retrieve the stream format that the audio engine uses for its internal
+  // processing of shared-mode streams.
+  HRESULT hr =
+      CoreAudioUtil::GetSharedModeMixFormat(audio_client_.Get(), &mix_format);
+  if (SUCCEEDED(hr)) {
+    // Return the native number of supported audio channels.
+    CoreAudioUtil::WaveFormatWrapper wformat(&mix_format);
+    *channels = wformat->nChannels;
+    SendLogMessage("%s => (native channels=[%d])", __func__, *channels);
+  }
+  return hr;
+}
+
+HRESULT
+WASAPIAudioInputStream::SetCommunicationsCategoryAndMaybeRawCaptureMode(
+    WORD channels) {
   DCHECK(audio_client_.Get());
   DCHECK(!AudioDeviceDescription::IsLoopbackDevice(device_id_));
   DCHECK(raw_processing_supported_);
-  SendLogMessage("%s()", __func__);
+  SendLogMessage("%s({channels=%d})", __func__, channels);
 
   Microsoft::WRL::ComPtr<IAudioClient2> audio_client2;
   HRESULT hr = audio_client_.As(&audio_client2);
@@ -1300,7 +1309,11 @@ HRESULT WASAPIAudioInputStream::SetCommunicationsCategoryAndRawCaptureMode() {
     // The audio stream is a 'raw' stream that bypasses all signal processing
     // except for endpoint specific, always-on processing in the Audio
     // Processing Object (APO), driver, and hardware.
-    audio_props.Options = AUDCLNT_STREAMOPTIONS_RAW;
+    // See https://crbug.com/1257662 for details on why we avoid using raw
+    // capture mode on devices with more than eight input channels.
+    if (channels > 0 && channels <= media::kMaxConcurrentChannels) {
+      audio_props.Options = AUDCLNT_STREAMOPTIONS_RAW;
+    }
     hr = audio_client2->SetClientProperties(&audio_props);
     if (FAILED(hr)) {
       SendLogMessage("%s => (ERROR: IAudioClient2::SetClientProperties=[%s])",
@@ -1329,7 +1342,6 @@ bool WASAPIAudioInputStream::DesiredFormatIsSupported(HRESULT* hr) {
     SendLogMessage("%s => (ERROR: IAudioClient::IsFormatSupported=[%s])",
                    __func__, ErrorToString(hresult).c_str());
   }
-
   if (hresult == S_FALSE) {
     SendLogMessage(
         "%s => (WARNING: Format is not supported but a closest match exists)",

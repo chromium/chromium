@@ -174,8 +174,14 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // For the selected |uwp_device_id|, generate two lists of enabled audio
   // effects and store them in |default_effect_types_| and |raw_effect_types_|.
   HRESULT GetAudioCaptureEffects(const std::string& uwp_device_id);
-  HRESULT SetCommunicationsCategoryAndRawCaptureMode();
-  HRESULT GetAudioEngineStreamFormat();
+  // Returns the native number of channels that the audio engine uses for its
+  // internal processing of shared-mode streams.
+  HRESULT GetAudioEngineNumChannels(WORD* channels);
+  // Sets communications policy and excludes any built-in audio processing,
+  // i.e., activates raw capture mode.
+  // Raw capture mode is only enabled if the native number of input channels is
+  // less than |media::kMaxConcurrentChannels| (8).
+  HRESULT SetCommunicationsCategoryAndMaybeRawCaptureMode(WORD channels);
   // Returns whether the desired format is supported or not and writes the
   // result of a failing system call to |*hr|, or S_OK if successful. If this
   // function returns false with |*hr| == S_FALSE, the OS supports a closest
