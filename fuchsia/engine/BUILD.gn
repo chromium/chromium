@@ -479,6 +479,7 @@ test("web_engine_browsertests") {
     "browser/mock_virtual_keyboard.h",
     "browser/navigation_policy_browsertest.cc",
     "browser/permissions_browsertest.cc",
+    "browser/post_message_browsertest.cc",
     "browser/theme_manager_browsertest.cc",
     "browser/virtual_keyboard_browsertest.cc",
   ]
