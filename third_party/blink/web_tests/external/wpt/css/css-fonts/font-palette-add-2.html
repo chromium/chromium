@@ -12,7 +12,7 @@
     src: url("resources/COLR-palettes-test-font.ttf") format("truetype");
 }
 
-@font-palette-values MyPalette {
+@font-palette-values --MyPalette {
     font-family: "COLR-test-font";
     base-palette: 1;
 }
@@ -24,7 +24,7 @@
 let count = 0;
 function tick() {
     if (count > 3) {
-        document.getElementById("target").style.setProperty("font-palette", "MyPalette");
+        document.getElementById("target").style.setProperty("font-palette", "--MyPalette");
         document.documentElement.classList.remove("reftest-wait");
     } else {
         ++count;

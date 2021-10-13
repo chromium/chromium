@@ -3422,7 +3422,6 @@ crbug.com/626703 external/wpt/websockets/stream/tentative/close.any.html?wpt_fla
 crbug.com/626703 external/wpt/websockets/stream/tentative/close.any.sharedworker.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 external/wpt/websockets/stream/tentative/close.any.serviceworker.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/selection/contenteditable/modifying-selection-with-primary-mouse-button.tentative.html [ Crash Failure ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/streams/readable-streams/tee.any.html [ Crash Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/streams/readable-streams/tee.any.worker.html [ Failure ]
 crbug.com/1191547 external/wpt/html/semantics/forms/the-label-element/proxy-modifier-click-to-associated-element.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/websockets/cookies/001.html?wss&wpt_flags=https [ Failure ]

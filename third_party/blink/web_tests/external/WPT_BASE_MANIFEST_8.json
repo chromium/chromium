@@ -103683,6 +103683,45 @@
        {}
       ]
      ],
+     "font-palette-32.html": [
+      "af6f62d485e5f6693eec682dbc5391088268b960",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-32-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-33.html": [
+      "afd094458cc14869bd84de528d81b24b10ed2557",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-33-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-34.html": [
+      "ebc80d780cf2ac7d87ad80f120b9ec5f70b93ee5",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-34-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "font-palette-4.html": [
       "540ba2542190205fbebc43b3b90381ab19a07b5e",
       [
@@ -103762,7 +103801,7 @@
       ]
      ],
      "font-palette-add-2.html": [
-      "f0ea1b1f8850bc156c7304ec586c4d3eb1cd7e29",
+      "1a9b00eaf1e33d7dee910c3f839c49632795a5c3",
       [
        null,
        [
@@ -103775,7 +103814,7 @@
       ]
      ],
      "font-palette-add.html": [
-      "8e175078928f506f999e69511f08855b54a7a49a",
+      "a38c619097ed446e5c44ed2bf47b3beb5590613d",
       [
        null,
        [
@@ -103788,7 +103827,7 @@
       ]
      ],
      "font-palette-empty-font-family.html": [
-      "9aca16e79a24bbb483d5f4e3261e2c6df1daac34",
+      "8b52bf04d0f2d58fa5fe5f9fd56f0fe22d3eef63",
       [
        null,
        [
@@ -103801,7 +103840,7 @@
       ]
      ],
      "font-palette-modify-2.html": [
-      "1a0d44cda97b03cc89036045ca8baed866dbb4cf",
+      "7a19924192c7f39191391c06485ccd8ff93ba2b9",
       [
        null,
        [
@@ -103814,7 +103853,7 @@
       ]
      ],
      "font-palette-modify.html": [
-      "b29345866efb209be4d9d14b7682d1934520206c",
+      "0b5ac99c9ac924f26f3301307773fbfff2725ee9",
       [
        null,
        [
@@ -103827,7 +103866,7 @@
       ]
      ],
      "font-palette-remove-2.html": [
-      "141448a4ee1f7a4136eabb6ed228691550d7a2d5",
+      "2cdb070a2cd38561c5ee6ec54f42605fbe38feb9",
       [
        null,
        [
@@ -103840,7 +103879,7 @@
       ]
      ],
      "font-palette-remove.html": [
-      "7270f98de623725be3ab6aa61c3b28ac489aa163",
+      "16b5acaec58094dad5fd79985e1ccede639dc8f4",
       [
        null,
        [
@@ -105616,7 +105655,7 @@
       ]
      ],
      "palette-values-rule-add-2.html": [
-      "918e5565be7d562db8899bf66559ba2e5255c88c",
+      "25859a7e4ba07b069dd06a28d1fe31861ec68aa0",
       [
        null,
        [
@@ -105629,7 +105668,7 @@
       ]
      ],
      "palette-values-rule-add.html": [
-      "19cef74f09c8d99d6e7e0bc263b8d088f781baf0",
+      "51dbfbe730c699879636aa0419fff14b2b925298",
       [
        null,
        [
@@ -105642,7 +105681,7 @@
       ]
      ],
      "palette-values-rule-delete-2.html": [
-      "9687302ca58764039667d4fbbe2d30ce78be59a8",
+      "4e65142ff8da909485aeb149bf459928299eb5dd",
       [
        null,
        [
@@ -105655,7 +105694,7 @@
       ]
      ],
      "palette-values-rule-delete.html": [
-      "d675ca82d30804492e9c60ba779d21a8e71bc055",
+      "e2d7b53e1db5cf3d4af6e7fc3333a5a180d88c47",
       [
        null,
        [
@@ -147475,6 +147514,23 @@
          ],
          [
           "/css/css-text/hyphens/reference/hyphens-auto-last-word-001-ref2.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "hyphens-auto-min-content.html": [
+       "b3f7c316239162e2d43a9bd3db87e9765b669261",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hyphens/hyphens-auto-min-content-ref-1.html",
+          "=="
+         ],
+         [
+          "/css/css-text/hyphens/hyphens-auto-min-content-ref-2.html",
           "=="
          ]
         ],
@@ -235046,6 +235102,18 @@
       "2475be9769521a55163dce285c08481c0701c14f",
       []
      ],
+     "font-palette-32-ref.html": [
+      "2c1f2a7faae65986ecac0bf35d8eab4a239dd8c3",
+      []
+     ],
+     "font-palette-33-ref.html": [
+      "2c1f2a7faae65986ecac0bf35d8eab4a239dd8c3",
+      []
+     ],
+     "font-palette-34-ref.html": [
+      "4fe9d815f8c5faf3c3f5027f22e50ea10ae8e5aa",
+      []
+     ],
      "font-palette-4-notref.html": [
       "31dbd232efb041c11d6188a4e152a2f545dff870",
       []
@@ -235071,7 +235139,7 @@
       []
      ],
      "font-palette-add-2-ref.html": [
-      "de7443bea4a2bdc34d09a14b05725421bff96122",
+      "8dee069b3a76f97efcf4809323d71edc63e301ef",
       []
      ],
      "font-palette-add-notref.html": [
@@ -235083,7 +235151,7 @@
       []
      ],
      "font-palette-modify-2-ref.html": [
-      "0f4eeaac43d7c1407cc0641f36fcc5c24b03609d",
+      "5573fad683fee4df87ebcc52bcb80ac10dbcf21f",
       []
      ],
      "font-palette-modify-notref.html": [
@@ -235095,7 +235163,7 @@
       []
      ],
      "font-palette-remove-2-ref.html": [
-      "4baf8126134af634371d7bda6045556c2a3f4076",
+      "feb80c31d3bd209c5bd3e786fe2469ef4aefa1aa",
       []
      ],
      "font-palette-remove-notref.html": [
@@ -235605,7 +235673,7 @@
       []
      ],
      "palette-values-rule-add-2-ref.html": [
-      "c00669b71015275c4623ad40f536131f98a8df6c",
+      "325cea54d5b6eba0c8ec9dca5cecf358e502e558",
       []
      ],
      "palette-values-rule-add-notref.html": [
@@ -235613,7 +235681,7 @@
       []
      ],
      "palette-values-rule-delete-2-ref.html": [
-      "35608d6ef017ee74489515e19b1eec4d2fb3a668",
+      "8b170c84134964febda47f78e131d131bf915c46",
       []
      ],
      "palette-values-rule-delete-notref.html": [
@@ -235630,19 +235698,19 @@
        []
       ],
       "font-palette-computed-expected.txt": [
-       "cb95d39877d98351ba2554847535f893422bc1c9",
+       "2caa16c96b806731f27163006adbb04d0a6bac22",
        []
       ],
       "font-palette-valid-expected.txt": [
-       "a500af93d356c334ca369067255a7fa117740f8b",
+       "f32b8649fb8b63831ba8141d958991d913206d5f",
        []
       ],
       "font-palette-values-invalid-expected.txt": [
-       "cbece0683191fcc3894963c0a1c8c9ff32e3f888",
+       "37a55182405409757aca99c829f218b3749a9a0a",
        []
       ],
       "font-palette-values-valid-expected.txt": [
-       "b679d437bd7d2827f9781c910bbce3f48e59e6ec",
+       "0d122263fe10524fc377b8ea899df3ecc2fafb4f",
        []
       ],
       "font-size-adjust-computed-expected.txt": [
@@ -250865,6 +250933,14 @@
       }
      },
      "hyphens": {
+      "hyphens-auto-min-content-ref-1.html": [
+       "5a4bca4fe612192fb83de4b8cd377df996016eda",
+       []
+      ],
+      "hyphens-auto-min-content-ref-2.html": [
+       "2acdeab1b888e7e8f40ae334ff4a18c12cbea689",
+       []
+      ],
       "reference": {
        "hyphens-auto-001-ref.html": [
         "c1355d0abba28491a126533c24039cffc6ee4eb0",
@@ -274594,7 +274670,7 @@
        []
       ],
       "navigate-none.sub.html": [
-       "f2fc38ff14532c4189339353cd667d2e9045785f",
+       "f1437ba90a0b684c3b3f2e2472c9837c70d0cecb",
        []
       ],
       "navigate-require-corp-same-site.sub.html": [
@@ -298840,22 +298916,6 @@
      []
     ],
     "readable-byte-streams": {
-     "bad-buffers-and-views.any-expected.txt": [
-      "7824e1ec8b0f947893f4e9038c1000e8ef5492ab",
-      []
-     ],
-     "bad-buffers-and-views.any.serviceworker-expected.txt": [
-      "7824e1ec8b0f947893f4e9038c1000e8ef5492ab",
-      []
-     ],
-     "bad-buffers-and-views.any.sharedworker-expected.txt": [
-      "7824e1ec8b0f947893f4e9038c1000e8ef5492ab",
-      []
-     ],
-     "bad-buffers-and-views.any.worker-expected.txt": [
-      "7824e1ec8b0f947893f4e9038c1000e8ef5492ab",
-      []
-     ],
      "tee.any-expected.txt": [
       "a804638a686da4e7bbf52fb3e49a65ce1f7c4bf8",
       []
@@ -345056,35 +345116,35 @@
        ]
       ],
       "font-palette-computed.html": [
-       "b73013c14756e302ef8de59344a70f4a07a2c7df",
+       "1de3364979616f1833103720867a77e01942527b",
        [
         null,
         {}
        ]
       ],
       "font-palette-invalid.html": [
-       "1944831bf30448cfc2e70521f1ba7ab0a420b9ef",
+       "d9c9b1adbf59e0ed118a450d7c2c4230e1f28ad6",
        [
         null,
         {}
        ]
       ],
       "font-palette-valid.html": [
-       "68636ece472fd745ba8153ce6f1d1b49fa1eb6e7",
+       "516da172ee67ebf307c904ca2c211d065799e8df",
        [
         null,
         {}
        ]
       ],
       "font-palette-values-invalid.html": [
-       "3a2f044f18849bd08659e5693b7e440f4947a0a1",
+       "d439f6440fc6246c23db5d01c010f7702a629a8e",
        [
         null,
         {}
        ]
       ],
       "font-palette-values-valid.html": [
-       "6ac58a08ee9274c14112d1f56bc69f7ee44bbd42",
+       "972fd43883db15428ac3eaf1fb9c9097b5dfd264",
        [
         null,
         {}
@@ -348834,6 +348894,13 @@
      ],
      "Highlight-setlike.html": [
       "0093f9be232b5544c635ee343e660c4ee4b489e8",
+      [
+       null,
+       {}
+      ]
+     ],
+     "Highlight-type-attribute.tentative.html": [
+      "97e3aaa3ca95f59fac5cb1014e7283d0c8767bfe",
       [
        null,
        {}
@@ -423333,7 +423400,7 @@
        ]
       ],
       "require-corp-embed-anonymous-iframe.tentative.https.html": [
-       "902d91f778f0d3a7c86ce7cbdf23717508c6575c",
+       "4618b7468e8a101d5f51430ff003914e3657a59c",
        [
         null,
         {}

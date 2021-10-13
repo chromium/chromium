@@ -14,7 +14,7 @@
 </style>
 </head>
 <body>
-<div style="font: 48px 'COLR-test-font'; font-palette: MyPalette;">A</div>
+<div style="font: 48px 'COLR-test-font'; font-palette: --MyPalette;">A</div>
 <script>
 let count = 0;
 function tick() {
@@ -22,7 +22,7 @@ function tick() {
         let style = document.createElement("style");
         document.head.appendChild(style);
         style.sheet.insertRule(`
-            @font-palette-values MyPalette {
+            @font-palette-values --MyPalette {
                 font-family: "COLR-test-font";
                 base-palette: 1;
             }`);

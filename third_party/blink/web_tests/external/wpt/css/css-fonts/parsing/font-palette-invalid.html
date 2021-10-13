@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>CSS Fonts Module Level 4: parsing font-palette with invalid values</title>
 <link rel="help" href="https://drafts.csswg.org/css-fonts/#font-palette-prop">
-<meta name="assert" content="font-palette supports only the grammar 'none | normal | light | dark | <palette-identifier>'.">
+<meta name="assert" content="font-palette supports only the grammar 'normal | light | dark | <palette-identifier>'.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/parsing-testcommon.js"></script>
@@ -13,6 +13,7 @@
 <script>
 test_invalid_value('font-palette', 'normal none');
 test_invalid_value('font-palette', 'none, light');
+test_invalid_value('font-palette', 'A');
 test_invalid_value('font-palette', 'none');
 </script>
 </body>
