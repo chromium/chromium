@@ -389,32 +389,39 @@ void NavigationURLLoaderImpl::StartImpl(
       net::HttpRequestHeaders::kAccept,
       FrameAcceptHeaderValue(/*allow_sxg_responses=*/true, browser_context_));
 
-  // Requests to WebUI scheme won't get redirected to/from other schemes
-  // or be intercepted, so we just let it go here.
-  if (factory_for_webui.is_valid()) {
-    url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
-        base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
-            std::move(factory_for_webui)),
-        CreateURLLoaderThrottles(), global_request_id_.request_id,
-        network::mojom::kURLLoadOptionNone, resource_request_.get(), this,
-        kNavigationUrlLoaderTrafficAnnotation,
-        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
-    return;
-  }
+  // If not performing a PDF navigation, allow certain schemes to create loaders
+  // directly, bypassing interceptors. (In the case of PDF navigation,
+  // interception is required, but these loaders are not; see crbug.com/1253314
+  // and crbug.com/1253984.)
+  //
+  // TODO(crbug.com/1255181): Consider getting rid of these exceptions.
+  if (!request_info_->is_pdf) {
+    // Requests to WebUI scheme won't get redirected to/from other schemes
+    // or be intercepted, so we just let it go here.
+    if (factory_for_webui.is_valid()) {
+      url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
+          base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
+              std::move(factory_for_webui)),
+          CreateURLLoaderThrottles(), global_request_id_.request_id,
+          network::mojom::kURLLoadOptionNone, resource_request_.get(), this,
+          kNavigationUrlLoaderTrafficAnnotation,
+          GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+      return;
+    }
 
-  // Requests to Blob scheme won't get redirected to/from other schemes or be
-  // intercepted, so we just let it go here. PDF content is exempted to allow
-  // `PdfURLLoaderRequestInterceptor` to run (see crbug.com/1253314).
-  if (request_info_->common_params->url.SchemeIsBlob() &&
-      request_info_->blob_url_loader_factory && !request_info_->is_pdf) {
-    url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
-        network::SharedURLLoaderFactory::Create(
-            std::move(request_info_->blob_url_loader_factory)),
-        CreateURLLoaderThrottles(), global_request_id_.request_id,
-        network::mojom::kURLLoadOptionNone, resource_request_.get(), this,
-        kNavigationUrlLoaderTrafficAnnotation,
-        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
-    return;
+    // Requests to Blob scheme won't get redirected to/from other schemes or be
+    // intercepted, so we just let it go here.
+    if (request_info_->common_params->url.SchemeIsBlob() &&
+        request_info_->blob_url_loader_factory) {
+      url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
+          network::SharedURLLoaderFactory::Create(
+              std::move(request_info_->blob_url_loader_factory)),
+          CreateURLLoaderThrottles(), global_request_id_.request_id,
+          network::mojom::kURLLoadOptionNone, resource_request_.get(), this,
+          kNavigationUrlLoaderTrafficAnnotation,
+          GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+      return;
+    }
   }
 
   CreateInterceptors(appcache_handle, prefetched_signed_exchange_cache,
