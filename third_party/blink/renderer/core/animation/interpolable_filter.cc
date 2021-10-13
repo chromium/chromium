@@ -190,7 +190,7 @@ FilterOperation* InterpolableFilter::CreateFilterOperation(
 
     case FilterOperation::BLUR: {
       Length std_deviation = To<InterpolableLength>(*value_).CreateLength(
-          state.CssToLengthConversionData(), kValueRangeNonNegative);
+          state.CssToLengthConversionData(), Length::ValueRange::kNonNegative);
       return MakeGarbageCollected<BlurFilterOperation>(std_deviation);
     }
 

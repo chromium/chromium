@@ -295,19 +295,19 @@ static CSSValue* ConsumeSingleViewportDescriptor(
     case CSSPropertyID::kMaxHeight:
       if (id == CSSValueID::kAuto || id == CSSValueID::kInternalExtendToZoom)
         return ConsumeIdent(range);
-      return css_parsing_utils::ConsumeLengthOrPercent(range, context,
-                                                       kValueRangeNonNegative);
+      return css_parsing_utils::ConsumeLengthOrPercent(
+          range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
     case CSSPropertyID::kMinZoom:
     case CSSPropertyID::kMaxZoom:
     case CSSPropertyID::kZoom: {
       if (id == CSSValueID::kAuto)
         return ConsumeIdent(range);
       CSSValue* parsed_value = css_parsing_utils::ConsumeNumber(
-          range, context, kValueRangeNonNegative);
+          range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
       if (parsed_value)
         return parsed_value;
-      return css_parsing_utils::ConsumePercent(range, context,
-                                               kValueRangeNonNegative);
+      return css_parsing_utils::ConsumePercent(
+          range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
     }
     case CSSPropertyID::kUserZoom:
       return ConsumeIdent<CSSValueID::kZoom, CSSValueID::kFixed>(range);

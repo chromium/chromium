@@ -112,7 +112,7 @@ BasicShapeCenterCoordinate CreateCoordinate(
   return BasicShapeCenterCoordinate(
       BasicShapeCenterCoordinate::kTopLeft,
       To<InterpolableLength>(interpolable_value)
-          .CreateLength(conversion_data, kValueRangeAll));
+          .CreateLength(conversion_data, Length::ValueRange::kAll));
 }
 
 std::unique_ptr<InterpolableValue> ConvertCSSRadius(const CSSValue* radius) {
@@ -137,7 +137,7 @@ BasicShapeRadius CreateRadius(
     const CSSToLengthConversionData& conversion_data) {
   return BasicShapeRadius(
       To<InterpolableLength>(interpolable_value)
-          .CreateLength(conversion_data, kValueRangeNonNegative));
+          .CreateLength(conversion_data, Length::ValueRange::kNonNegative));
 }
 
 std::unique_ptr<InterpolableValue> ConvertCSSLength(const CSSValue* length) {
@@ -166,9 +166,9 @@ LengthSize CreateBorderRadius(
     const InterpolableValue& height,
     const CSSToLengthConversionData& conversion_data) {
   return LengthSize(To<InterpolableLength>(width).CreateLength(
-                        conversion_data, kValueRangeNonNegative),
+                        conversion_data, Length::ValueRange::kNonNegative),
                     To<InterpolableLength>(height).CreateLength(
-                        conversion_data, kValueRangeNonNegative));
+                        conversion_data, Length::ValueRange::kNonNegative));
 }
 
 namespace circle_functions {
@@ -418,13 +418,14 @@ scoped_refptr<BasicShape> CreateBasicShape(
   scoped_refptr<BasicShapeInset> inset = BasicShapeInset::Create();
   const auto& list = To<InterpolableList>(interpolable_value);
   inset->SetTop(To<InterpolableLength>(*list.Get(kInsetTopIndex))
-                    .CreateLength(conversion_data, kValueRangeAll));
+                    .CreateLength(conversion_data, Length::ValueRange::kAll));
   inset->SetRight(To<InterpolableLength>(*list.Get(kInsetRightIndex))
-                      .CreateLength(conversion_data, kValueRangeAll));
-  inset->SetBottom(To<InterpolableLength>(*list.Get(kInsetBottomIndex))
-                       .CreateLength(conversion_data, kValueRangeAll));
+                      .CreateLength(conversion_data, Length::ValueRange::kAll));
+  inset->SetBottom(
+      To<InterpolableLength>(*list.Get(kInsetBottomIndex))
+          .CreateLength(conversion_data, Length::ValueRange::kAll));
   inset->SetLeft(To<InterpolableLength>(*list.Get(kInsetLeftIndex))
-                     .CreateLength(conversion_data, kValueRangeAll));
+                     .CreateLength(conversion_data, Length::ValueRange::kAll));
 
   inset->SetTopLeftRadius(CreateBorderRadius(
       *list.Get(kInsetBorderTopLeftWidthIndex),
@@ -486,10 +487,11 @@ scoped_refptr<BasicShape> CreateBasicShape(
   DCHECK_EQ(list.length(), size);
   DCHECK_EQ(size % 2, 0U);
   for (wtf_size_t i = 0; i < size; i += 2) {
-    polygon->AppendPoint(To<InterpolableLength>(*list.Get(i))
-                             .CreateLength(conversion_data, kValueRangeAll),
-                         To<InterpolableLength>(*list.Get(i + 1))
-                             .CreateLength(conversion_data, kValueRangeAll));
+    polygon->AppendPoint(
+        To<InterpolableLength>(*list.Get(i))
+            .CreateLength(conversion_data, Length::ValueRange::kAll),
+        To<InterpolableLength>(*list.Get(i + 1))
+            .CreateLength(conversion_data, Length::ValueRange::kAll));
   }
   return polygon;
 }

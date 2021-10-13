@@ -41,14 +41,15 @@ CSSValue* ConsumeAnimationValue(CSSPropertyID property,
                                 bool use_legacy_parsing) {
   switch (property) {
     case CSSPropertyID::kAnimationDelay:
-      return css_parsing_utils::ConsumeTime(range, context, kValueRangeAll);
+      return css_parsing_utils::ConsumeTime(
+          range, context, CSSPrimitiveValue::ValueRange::kAll);
     case CSSPropertyID::kAnimationDirection:
       return css_parsing_utils::ConsumeIdent<
           CSSValueID::kNormal, CSSValueID::kAlternate, CSSValueID::kReverse,
           CSSValueID::kAlternateReverse>(range);
     case CSSPropertyID::kAnimationDuration:
-      return css_parsing_utils::ConsumeTime(range, context,
-                                            kValueRangeNonNegative);
+      return css_parsing_utils::ConsumeTime(
+          range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
     case CSSPropertyID::kAnimationFillMode:
       return css_parsing_utils::ConsumeIdent<
           CSSValueID::kNone, CSSValueID::kForwards, CSSValueID::kBackwards,
@@ -725,14 +726,15 @@ bool BorderSpacing::ParseShorthand(
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 256>& properties) const {
   CSSValue* horizontal_spacing =
-      ConsumeLength(range, context, kValueRangeNonNegative,
+      ConsumeLength(range, context, CSSPrimitiveValue::ValueRange::kNonNegative,
                     css_parsing_utils::UnitlessQuirk::kAllow);
   if (!horizontal_spacing)
     return false;
   CSSValue* vertical_spacing = horizontal_spacing;
   if (!range.AtEnd()) {
-    vertical_spacing = ConsumeLength(range, context, kValueRangeNonNegative,
-                                     css_parsing_utils::UnitlessQuirk::kAllow);
+    vertical_spacing = ConsumeLength(
+        range, context, CSSPrimitiveValue::ValueRange::kNonNegative,
+        css_parsing_utils::UnitlessQuirk::kAllow);
   }
   if (!vertical_spacing || !range.AtEnd())
     return false;
@@ -976,7 +978,7 @@ bool Flex::ParseShorthand(bool important,
         }
         if (!flex_basis) {
           flex_basis = css_parsing_utils::ConsumeLengthOrPercent(
-              range, context, kValueRangeNonNegative);
+              range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
         }
         if (index == 2 && !range.AtEnd())
           return false;
@@ -2143,12 +2145,12 @@ bool Offset::ParseShorthand(
   const CSSValue* offset_distance = nullptr;
   const CSSValue* offset_rotate = nullptr;
   if (offset_path) {
-    offset_distance = css_parsing_utils::ConsumeLengthOrPercent(range, context,
-                                                                kValueRangeAll);
+    offset_distance = css_parsing_utils::ConsumeLengthOrPercent(
+        range, context, CSSPrimitiveValue::ValueRange::kAll);
     offset_rotate = css_parsing_utils::ConsumeOffsetRotate(range, context);
     if (offset_rotate && !offset_distance) {
       offset_distance = css_parsing_utils::ConsumeLengthOrPercent(
-          range, context, kValueRangeAll);
+          range, context, CSSPrimitiveValue::ValueRange::kAll);
     }
   }
   const CSSValue* offset_anchor = nullptr;
@@ -2751,10 +2753,11 @@ CSSValue* ConsumeTransitionValue(CSSPropertyID property,
                                  bool use_legacy_parsing) {
   switch (property) {
     case CSSPropertyID::kTransitionDelay:
-      return css_parsing_utils::ConsumeTime(range, context, kValueRangeAll);
+      return css_parsing_utils::ConsumeTime(
+          range, context, CSSPrimitiveValue::ValueRange::kAll);
     case CSSPropertyID::kTransitionDuration:
-      return css_parsing_utils::ConsumeTime(range, context,
-                                            kValueRangeNonNegative);
+      return css_parsing_utils::ConsumeTime(
+          range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
     case CSSPropertyID::kTransitionProperty:
       return css_parsing_utils::ConsumeTransitionProperty(range, context);
     case CSSPropertyID::kTransitionTimingFunction:

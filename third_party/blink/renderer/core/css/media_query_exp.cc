@@ -347,12 +347,12 @@ MediaQueryExp MediaQueryExp::Create(const String& media_feature,
       css_parsing_utils::ConsumeInteger(range, context, 0);
   if (!value && !FeatureExpectingPositiveInteger(lower_media_feature) &&
       !FeatureWithAspectRatio(lower_media_feature)) {
-    value = css_parsing_utils::ConsumeNumber(range, context,
-                                             kValueRangeNonNegative);
+    value = css_parsing_utils::ConsumeNumber(
+        range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
   }
   if (!value) {
-    value = css_parsing_utils::ConsumeLength(range, context,
-                                             kValueRangeNonNegative);
+    value = css_parsing_utils::ConsumeLength(
+        range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
   }
   if (!value)
     value = css_parsing_utils::ConsumeResolution(range);

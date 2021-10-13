@@ -161,8 +161,8 @@ TEST(CSSCalculationValue, AccumulatePixelsAndPercent) {
 }
 
 TEST(CSSCalculationValue, RefCount) {
-  scoped_refptr<const CalculationValue> calc =
-      CalculationValue::Create(PixelsAndPercent(1, 2), kValueRangeAll);
+  scoped_refptr<const CalculationValue> calc = CalculationValue::Create(
+      PixelsAndPercent(1, 2), Length::ValueRange::kAll);
 
   // FIXME: Test the Length construction without using the ref count value.
 
@@ -177,8 +177,8 @@ TEST(CSSCalculationValue, RefCount) {
     Length length_c(calc);
     length_c = length_a;
 
-    Length length_d(
-        CalculationValue::Create(PixelsAndPercent(1, 2), kValueRangeAll));
+    Length length_d(CalculationValue::Create(PixelsAndPercent(1, 2),
+                                             Length::ValueRange::kAll));
     length_d = length_a;
   }
   EXPECT_TRUE(calc->HasOneRef());

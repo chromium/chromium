@@ -18,7 +18,7 @@ class LengthListPropertyFunctions {
   STATIC_ONLY(LengthListPropertyFunctions);
 
  public:
-  static ValueRange GetValueRange(const CSSProperty&);
+  static Length::ValueRange GetValueRange(const CSSProperty&);
   static bool GetInitialLengthList(const CSSProperty&,
                                    const ComputedStyle& initial_style,
                                    Vector<Length>& result);

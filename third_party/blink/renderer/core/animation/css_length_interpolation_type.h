@@ -45,7 +45,7 @@ class CORE_EXPORT CSSLengthInterpolationType : public CSSInterpolationType {
                                  const NonInterpolableValue*,
                                  const StyleResolverState&) const final;
 
-  const ValueRange value_range_;
+  const Length::ValueRange value_range_;
 };
 
 }  // namespace blink

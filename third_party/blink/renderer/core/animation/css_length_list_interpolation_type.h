@@ -40,7 +40,7 @@ class CSSLengthListInterpolationType : public CSSInterpolationType {
       InterpolationValue&& start,
       InterpolationValue&& end) const final;
 
-  const ValueRange value_range_;
+  const Length::ValueRange value_range_;
 };
 
 }  // namespace blink

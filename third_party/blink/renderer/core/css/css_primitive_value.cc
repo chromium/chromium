@@ -65,6 +65,30 @@ float CSSPrimitiveValue::ClampToCSSLengthRange(double value) {
   return ClampTo<float>(value, kMinValueForCssLength, kMaxValueForCssLength);
 }
 
+Length::ValueRange CSSPrimitiveValue::ConversionToLengthValueRange(
+    ValueRange range) {
+  switch (range) {
+    case ValueRange::kNonNegative:
+      return Length::ValueRange::kNonNegative;
+    case ValueRange::kAll:
+      return Length::ValueRange::kAll;
+    default:
+      NOTREACHED();
+  }
+}
+
+CSSPrimitiveValue::ValueRange CSSPrimitiveValue::ValueRangeForLengthValueRange(
+    Length::ValueRange range) {
+  switch (range) {
+    case Length::ValueRange::kNonNegative:
+      return ValueRange::kNonNegative;
+    case Length::ValueRange::kAll:
+      return ValueRange::kAll;
+    default:
+      NOTREACHED();
+  }
+}
+
 CSSPrimitiveValue::UnitCategory CSSPrimitiveValue::UnitTypeToUnitCategory(
     UnitType type) {
   switch (type) {

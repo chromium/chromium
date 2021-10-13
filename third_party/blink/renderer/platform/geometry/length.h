@@ -33,8 +33,6 @@
 
 namespace blink {
 
-enum ValueRange { kValueRangeAll, kValueRangeNonNegative };
-
 struct PixelsAndPercent {
   DISALLOW_NEW();
   PixelsAndPercent(float pixels, float percent)
@@ -49,6 +47,8 @@ class PLATFORM_EXPORT Length {
   DISALLOW_NEW();
 
  public:
+  enum class ValueRange { kAll, kNonNegative };
+
   // FIXME: This enum makes it hard to tell in general what values may be
   // appropriate for any given Length.
   enum Type : unsigned char {

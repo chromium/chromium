@@ -17,7 +17,7 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
  public:
   static CSSMathFunctionValue* Create(const Length&, float zoom);
   static CSSMathFunctionValue* Create(const CSSMathExpressionNode*,
-                                      ValueRange = kValueRangeAll);
+                                      ValueRange = ValueRange::kAll);
 
   CSSMathFunctionValue(const CSSMathExpressionNode* expression,
                        ValueRange range);
@@ -41,7 +41,7 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
   bool IsInt() const { return expression_->IsInteger(); }
   bool IsNegative() const { return expression_->DoubleValue() < 0; }
   ValueRange PermittedValueRange() const {
-    return IsNonNegative() ? kValueRangeNonNegative : kValueRangeAll;
+    return IsNonNegative() ? ValueRange::kNonNegative : ValueRange::kAll;
   }
 
   // When |false|, comparisons between percentage values can be resolved without

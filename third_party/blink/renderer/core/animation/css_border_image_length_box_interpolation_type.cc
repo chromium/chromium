@@ -400,7 +400,7 @@ void CSSBorderImageLengthBoxInterpolationType::ApplyStandardPropertyValue(
       case SideType::kLength:
         return To<InterpolableLength>(*list.Get(index))
             .CreateLength(state.CssToLengthConversionData(),
-                          kValueRangeNonNegative);
+                          Length::ValueRange::kNonNegative);
       default:
         NOTREACHED();
         return Length::Auto();

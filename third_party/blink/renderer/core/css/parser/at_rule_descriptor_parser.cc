@@ -197,8 +197,8 @@ CSSValue* ConsumeFontMetricOverride(CSSParserTokenRange& range,
           css_parsing_utils::ConsumeIdent<CSSValueID::kNormal>(range)) {
     return normal;
   }
-  return css_parsing_utils::ConsumePercent(range, context,
-                                           kValueRangeNonNegative);
+  return css_parsing_utils::ConsumePercent(
+      range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
 }
 
 }  // namespace
@@ -263,7 +263,7 @@ CSSValue* AtRuleDescriptorParser::ParseFontFaceDescriptor(
     case AtRuleDescriptorID::SizeAdjust:
       if (RuntimeEnabledFeatures::CSSFontFaceSizeAdjustEnabled()) {
         parsed_value = css_parsing_utils::ConsumePercent(
-            range, context, kValueRangeNonNegative);
+            range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
       }
       break;
     default:

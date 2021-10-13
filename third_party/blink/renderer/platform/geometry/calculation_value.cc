@@ -21,7 +21,7 @@ CalculationValue::DataUnion::~DataUnion() {
 // static
 scoped_refptr<const CalculationValue> CalculationValue::CreateSimplified(
     scoped_refptr<const CalculationExpressionNode> expression,
-    ValueRange range) {
+    Length::ValueRange range) {
   if (expression->IsLeaf()) {
     return Create(
         To<CalculationExpressionLeafNode>(*expression).GetPixelsAndPercent(),
@@ -32,10 +32,10 @@ scoped_refptr<const CalculationValue> CalculationValue::CreateSimplified(
 
 CalculationValue::CalculationValue(
     scoped_refptr<const CalculationExpressionNode> expression,
-    ValueRange range)
+    Length::ValueRange range)
     : data_(std::move(expression)),
       is_expression_(true),
-      is_non_negative_(range == kValueRangeNonNegative) {}
+      is_non_negative_(range == Length::ValueRange::kNonNegative) {}
 
 CalculationValue::~CalculationValue() {
   if (is_expression_)
@@ -69,7 +69,7 @@ CalculationValue::GetOrCreateExpression() const {
 scoped_refptr<const CalculationValue> CalculationValue::Blend(
     const CalculationValue& from,
     double progress,
-    ValueRange range) const {
+    Length::ValueRange range) const {
   if (!IsExpression() && !from.IsExpression()) {
     PixelsAndPercent from_pixels_and_percent = from.GetPixelsAndPercent();
     PixelsAndPercent to_pixels_and_percent = GetPixelsAndPercent();
@@ -94,14 +94,15 @@ scoped_refptr<const CalculationValue>
 CalculationValue::SubtractFromOneHundredPercent() const {
   if (!IsExpression()) {
     PixelsAndPercent result(-Pixels(), 100 - Percent());
-    return Create(result, kValueRangeAll);
+    return Create(result, Length::ValueRange::kAll);
   }
   auto hundred_percent = base::MakeRefCounted<CalculationExpressionLeafNode>(
       PixelsAndPercent(0, 100));
   auto result_expression = CalculationExpressionAdditiveNode::CreateSimplified(
       std::move(hundred_percent), GetOrCreateExpression(),
       CalculationExpressionAdditiveNode::Type::kSubtract);
-  return CreateSimplified(std::move(result_expression), kValueRangeAll);
+  return CreateSimplified(std::move(result_expression),
+                          Length::ValueRange::kAll);
 }
 
 scoped_refptr<const CalculationValue> CalculationValue::Zoom(

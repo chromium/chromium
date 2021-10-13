@@ -25,15 +25,16 @@ void CSSMathFunctionValue::TraceAfterDispatch(blink::Visitor* visitor) const {
 
 CSSMathFunctionValue::CSSMathFunctionValue(
     const CSSMathExpressionNode* expression,
-    ValueRange range)
+    CSSPrimitiveValue::ValueRange range)
     : CSSPrimitiveValue(kMathFunctionClass), expression_(expression) {
-  is_non_negative_math_function_ = range == kValueRangeNonNegative;
+  is_non_negative_math_function_ =
+      range == CSSPrimitiveValue::ValueRange::kNonNegative;
 }
 
 // static
 CSSMathFunctionValue* CSSMathFunctionValue::Create(
     const CSSMathExpressionNode* expression,
-    ValueRange range) {
+    CSSPrimitiveValue::ValueRange range) {
   if (!expression)
     return nullptr;
   return MakeGarbageCollected<CSSMathFunctionValue>(expression, range);
@@ -44,7 +45,9 @@ CSSMathFunctionValue* CSSMathFunctionValue::Create(const Length& length,
                                                    float zoom) {
   DCHECK(length.IsCalculated());
   auto calc = length.GetCalculationValue().Zoom(1.0 / zoom);
-  return Create(CSSMathExpressionNode::Create(*calc), calc->GetValueRange());
+  return Create(
+      CSSMathExpressionNode::Create(*calc),
+      CSSPrimitiveValue::ValueRangeForLengthValueRange(calc->GetValueRange()));
 }
 
 bool CSSMathFunctionValue::MayHaveRelativeUnit() const {
@@ -140,8 +143,10 @@ bool CSSMathFunctionValue::IsComputationallyIndependent() const {
 
 scoped_refptr<const CalculationValue> CSSMathFunctionValue::ToCalcValue(
     const CSSToLengthConversionData& conversion_data) const {
-  return expression_->ToCalcValue(conversion_data, PermittedValueRange(),
-                                  AllowsNegativePercentageReference());
+  return expression_->ToCalcValue(
+      conversion_data,
+      CSSPrimitiveValue::ConversionToLengthValueRange(PermittedValueRange()),
+      AllowsNegativePercentageReference());
 }
 
 }  // namespace blink

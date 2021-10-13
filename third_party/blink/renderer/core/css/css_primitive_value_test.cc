@@ -45,7 +45,7 @@ CSSPrimitiveValue* CreateNonNegativeSubtraction(UnitValue a, UnitValue b) {
           CSSMathExpressionNumericLiteral::Create(Create(a)),
           CSSMathExpressionNumericLiteral::Create(Create(b)),
           CSSMathOperator::kSubtract),
-      kValueRangeNonNegative);
+      CSSPrimitiveValue::ValueRange::kNonNegative);
 }
 
 TEST_F(CSSPrimitiveValueTest, IsTime) {

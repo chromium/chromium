@@ -44,7 +44,7 @@ bool IsValueOutOfRangeForProperty(CSSPropertyID property_id,
   // FIXME: Avoid this CSSProperty::Get call as it can be costly.
   // The caller often has a CSSProperty already, so we can just pass it here.
   if (LengthPropertyFunctions::GetValueRange(CSSProperty::Get(property_id)) ==
-          kValueRangeNonNegative &&
+          Length::ValueRange::kNonNegative &&
       value < 0)
     return true;
 

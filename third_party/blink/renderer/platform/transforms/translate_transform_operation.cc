@@ -37,7 +37,7 @@ Length AddLengths(const Length& lhs, const Length& rhs) {
     return Length(result.pixels, Length::kFixed);
   if (result.pixels == 0)
     return Length(result.percent, Length::kPercent);
-  return Length(CalculationValue::Create(result, kValueRangeAll));
+  return Length(CalculationValue::Create(result, Length::ValueRange::kAll));
 }
 
 TransformOperation::OperationType GetTypeForTranslate(const Length& x,
@@ -79,8 +79,8 @@ scoped_refptr<TransformOperation> TranslateTransformOperation::Blend(
   const Length zero_length = Length::Fixed(0);
   if (blend_to_identity) {
     return TranslateTransformOperation::Create(
-        zero_length.Blend(x_, progress, kValueRangeAll),
-        zero_length.Blend(y_, progress, kValueRangeAll),
+        zero_length.Blend(x_, progress, Length::ValueRange::kAll),
+        zero_length.Blend(y_, progress, Length::ValueRange::kAll),
         blink::Blend(z_, 0., progress), type_);
   }
 
@@ -93,8 +93,8 @@ scoped_refptr<TransformOperation> TranslateTransformOperation::Blend(
   CommonPrimitiveForInterpolation(from, type);
 
   return TranslateTransformOperation::Create(
-      x_.Blend(from_x, progress, kValueRangeAll),
-      y_.Blend(from_y, progress, kValueRangeAll),
+      x_.Blend(from_x, progress, Length::ValueRange::kAll),
+      y_.Blend(from_y, progress, Length::ValueRange::kAll),
       blink::Blend(from_z, z_, progress), type);
 }
 

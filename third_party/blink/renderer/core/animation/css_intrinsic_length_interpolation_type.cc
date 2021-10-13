@@ -203,7 +203,7 @@ void CSSIntrinsicLengthInterpolationType::ApplyStandardPropertyValue(
         StyleIntrinsicLength(
             non_interpolable->HasAuto(),
             interpolable.CreateLength(state.CssToLengthConversionData(),
-                                      kValueRangeNonNegative)));
+                                      Length::ValueRange::kNonNegative)));
   }
 }
 void CSSIntrinsicLengthInterpolationType::Composite(

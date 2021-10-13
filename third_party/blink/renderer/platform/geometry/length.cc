@@ -110,7 +110,7 @@ Length Length::BlendSameTypes(const Length& from,
     result_type = from.GetType();
 
   float blended_value = blink::Blend(from.Value(), Value(), progress);
-  if (range == kValueRangeNonNegative)
+  if (range == ValueRange::kNonNegative)
     blended_value = ClampTo<float>(blended_value, 0);
   return Length(blended_value, result_type);
 }
@@ -132,7 +132,7 @@ PixelsAndPercent Length::GetPixelsAndPercent() const {
 scoped_refptr<const CalculationValue> Length::AsCalculationValue() const {
   if (IsCalculated())
     return &GetCalculationValue();
-  return CalculationValue::Create(GetPixelsAndPercent(), kValueRangeAll);
+  return CalculationValue::Create(GetPixelsAndPercent(), ValueRange::kAll);
 }
 
 Length Length::SubtractFromOneHundredPercent() const {

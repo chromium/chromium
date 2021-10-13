@@ -81,9 +81,10 @@ class AnimationKeyframeEffectModel : public PageTestBase {
         To<InterpolableLength>(typed_value->GetInterpolableValue());
     // Lengths are computed in logical units, which are quantized to 64ths of
     // a pixel.
-    EXPECT_NEAR(expected_value,
-                length.CreateCSSValue(kValueRangeAll)->GetDoubleValue(),
-                /*abs_error=*/0.02);
+    EXPECT_NEAR(
+        expected_value,
+        length.CreateCSSValue(Length::ValueRange::kAll)->GetDoubleValue(),
+        /*abs_error=*/0.02);
   }
 
   void ExpectNonInterpolableValue(const String& expected_value,

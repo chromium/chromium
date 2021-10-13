@@ -1302,7 +1302,7 @@ class CSSMathExpressionNodeParser {
 
 scoped_refptr<const CalculationValue> CSSMathExpressionNode::ToCalcValue(
     const CSSToLengthConversionData& conversion_data,
-    ValueRange range,
+    Length::ValueRange range,
     bool allows_negative_percentage_reference) const {
   if (auto maybe_pixels_and_percent = ToPixelsAndPercent(conversion_data)) {
     // Clamping if pixels + percent could result in NaN. In special case,

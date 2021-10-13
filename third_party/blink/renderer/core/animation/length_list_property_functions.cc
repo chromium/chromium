@@ -74,7 +74,7 @@ struct FillLayerMethods {
 
 }  // namespace
 
-ValueRange LengthListPropertyFunctions::GetValueRange(
+Length::ValueRange LengthListPropertyFunctions::GetValueRange(
     const CSSProperty& property) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kBackgroundPositionX:
@@ -86,18 +86,18 @@ ValueRange LengthListPropertyFunctions::GetValueRange(
     case CSSPropertyID::kTransformOrigin:
     case CSSPropertyID::kWebkitMaskPositionX:
     case CSSPropertyID::kWebkitMaskPositionY:
-      return kValueRangeAll;
+      return Length::ValueRange::kAll;
 
     case CSSPropertyID::kBorderBottomLeftRadius:
     case CSSPropertyID::kBorderBottomRightRadius:
     case CSSPropertyID::kBorderTopLeftRadius:
     case CSSPropertyID::kBorderTopRightRadius:
     case CSSPropertyID::kStrokeDasharray:
-      return kValueRangeNonNegative;
+      return Length::ValueRange::kNonNegative;
 
     default:
       NOTREACHED();
-      return kValueRangeAll;
+      return Length::ValueRange::kAll;
   }
 }
 
