@@ -50,10 +50,10 @@ class SettingsSearchEngineEntryElement extends
         computed: 'computeIsDefault_(engine)'
       },
 
-      showMenuButton: {
+      disableMenuButton: {
         reflectToAttribute: true,
         type: Boolean,
-        computed: 'computeShowMenuButton_(engine)'
+        computed: 'computeDisableMenuButton_(engine)'
       },
 
     };
@@ -64,7 +64,7 @@ class SettingsSearchEngineEntryElement extends
   showQueryUrl: boolean;
   isActiveSearchEnginesFlagEnabled: boolean;
   isDefault: boolean;
-  showMenuButton: boolean;
+  disableMenuButton: boolean;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 
@@ -76,8 +76,8 @@ class SettingsSearchEngineEntryElement extends
     return this.engine.default;
   }
 
-  private computeShowMenuButton_(): boolean {
-    return !this.isActiveSearchEnginesFlagEnabled || !this.engine.default;
+  private computeDisableMenuButton_(): boolean {
+    return this.isActiveSearchEnginesFlagEnabled && this.engine.default;
   }
 
   private onDeleteTap_() {
