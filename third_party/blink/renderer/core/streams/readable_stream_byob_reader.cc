@@ -89,7 +89,16 @@ ScriptPromise ReadableStreamBYOBReader::read(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  // 3. If this.[[stream]] is undefined, return a promise rejected with a
+  // 3. If ! IsDetachedBuffer(view.[[ViewedArrayBuffer]]) is true, return a
+  // promise rejected with a TypeError exception.
+  if (view->buffer()->IsDetached()) {
+    exception_state.ThrowTypeError(
+        "This readable stream reader cannot be used to read as the viewed "
+        "array buffer is detached");
+    return ScriptPromise();
+  }
+
+  // 4. If this.[[stream]] is undefined, return a promise rejected with a
   // TypeError exception.
   if (!owner_readable_stream_) {
     exception_state.ThrowTypeError(
@@ -98,10 +107,10 @@ ScriptPromise ReadableStreamBYOBReader::read(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  // 4. Let promise be a new promise.
+  // 5. Let promise be a new promise.
   auto* promise = MakeGarbageCollected<StreamPromiseResolver>(script_state);
 
-  // 5. Let readIntoRequest be a new read-into request with the following items:
+  // 6. Let readIntoRequest be a new read-into request with the following items:
   //    chunk steps, given chunk
   //      1. Resolve promise with «[ "value" → chunk, "done" → false ]».
   //    close steps, given chunk
@@ -110,9 +119,9 @@ ScriptPromise ReadableStreamBYOBReader::read(ScriptState* script_state,
   //      1. Reject promise with e.
   auto* read_into_request = MakeGarbageCollected<ReadIntoRequest>(promise);
 
-  // 6. Perform ! ReadableStreamBYOBReaderRead(this, view, readIntoRequest).
+  // 7. Perform ! ReadableStreamBYOBReaderRead(this, view, readIntoRequest).
   Read(script_state, this, view, read_into_request, exception_state);
-  // 7. Return promise.
+  // 8. Return promise.
   return promise->GetScriptPromise(script_state);
 }
 

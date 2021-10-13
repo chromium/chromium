@@ -33,7 +33,7 @@ void ReadableStreamBYOBRequest::respond(ScriptState* script_state,
         "Cannot respond to an invalidated ReadableStreamBYOBRequest");
     return;
   }
-  // 2. If IsDetachedBuffer(this.[[view]].[[ArrayBuffer]]) is true, throw a
+  // 2. If ! IsDetachedBuffer(this.[[view]].[[ArrayBuffer]]) is true, throw a
   // TypeError exception.
   if (view_->buffer()->IsDetached()) {
     exception_state.ThrowTypeError("ArrayBufferView is detached");
@@ -55,24 +55,19 @@ void ReadableStreamBYOBRequest::respondWithNewView(
     NotShared<DOMArrayBufferView> view,
     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#rs-byob-request-respond-with-new-view
-  // 1. If view.[[ByteLength]] is 0, throw a TypeError exception.
-  if (view->byteLength() == 0) {
-    exception_state.ThrowTypeError("ArrayBufferView is empty");
-    return;
-  }
-  // 2. If view.[[ViewedArrayBuffer]].[[ArrayBufferByteLength]] is 0, throw a
-  // TypeError exception.
-  if (view->buffer()->ByteLength() == 0) {
-    exception_state.ThrowTypeError("ArrayBuffer is empty");
-    return;
-  }
-  // 3. If this.[[controller]] is undefined, throw a TypeError exception.
+  // 1. If this.[[controller]] is undefined, throw a TypeError exception.
   if (!controller_) {
     exception_state.ThrowTypeError(
         "Cannot respond to an invalidated ReadableStreamBYOBRequest");
     return;
   }
-  // 4. Return ?
+  // 2. If ! IsDetachedBuffer(view.[[ViewedArrayBuffer]]) is true, throw a
+  // TypeError exception.
+  if (view->buffer()->IsDetached()) {
+    exception_state.ThrowTypeError("ViewedArrayBuffer is detached");
+    return;
+  }
+  // 3. Return ?
   // ReadableByteStreamControllerRespondWithNewView(this.[[controller]], view).
   ReadableByteStreamController::RespondWithNewView(script_state, controller_,
                                                    view, exception_state);

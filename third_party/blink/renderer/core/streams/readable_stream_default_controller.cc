@@ -290,7 +290,7 @@ v8::Local<v8::Promise> ReadableStreamDefaultController::CancelSteps(
 StreamPromiseResolver* ReadableStreamDefaultController::PullSteps(
     ScriptState* script_state) {
   // https://streams.spec.whatwg.org/#rs-default-controller-private-pull
-  // 1. Let stream be this.[[controlledReadableStream]].
+  // 1. Let stream be this.[[stream]].
   ReadableStream* stream = controlled_readable_stream_;
 
   // 2. If this.[[queue]] is not empty,

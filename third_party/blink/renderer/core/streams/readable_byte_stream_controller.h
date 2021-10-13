@@ -90,6 +90,7 @@ class ReadableByteStreamController : public ReadableStreamController {
                                                         size_t);
 
     explicit PullIntoDescriptor(DOMArrayBuffer* buffer,
+                                size_t buffer_byte_length,
                                 size_t byte_offset,
                                 size_t byte_length,
                                 size_t bytes_filled,
@@ -98,6 +99,7 @@ class ReadableByteStreamController : public ReadableStreamController {
                                 ReaderType reader_type);
 
     Member<DOMArrayBuffer> buffer;
+    const size_t buffer_byte_length;
     size_t byte_offset;
     const size_t byte_length;
     size_t bytes_filled;
@@ -131,7 +133,8 @@ class ReadableByteStreamController : public ReadableStreamController {
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-process-pull-into-descriptors-using-queue
   static void ProcessPullIntoDescriptorsUsingQueue(
       ScriptState*,
-      ReadableByteStreamController*);
+      ReadableByteStreamController*,
+      ExceptionState&);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-call-pull-if-needed
   static void CallPullIfNeeded(ScriptState*, ReadableByteStreamController*);
@@ -146,10 +149,13 @@ class ReadableByteStreamController : public ReadableStreamController {
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-commit-pull-into-descriptor
   static void CommitPullIntoDescriptor(ScriptState*,
                                        ReadableStream*,
-                                       PullIntoDescriptor*);
+                                       PullIntoDescriptor*,
+                                       ExceptionState&);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-convert-pull-into-descriptor
-  static DOMArrayBufferView* ConvertPullIntoDescriptor(PullIntoDescriptor*);
+  static DOMArrayBufferView* ConvertPullIntoDescriptor(ScriptState*,
+                                                       PullIntoDescriptor*,
+                                                       ExceptionState&);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-clear-pending-pull-intos
   static void ClearPendingPullIntos(ReadableByteStreamController*);
@@ -232,6 +238,9 @@ class ReadableByteStreamController : public ReadableStreamController {
                                  ReadableByteStreamController*,
                                  NotShared<DOMArrayBufferView> view,
                                  ExceptionState&);
+
+  // https://streams.spec.whatwg.org/#can-transfer-array-buffer
+  static bool CanTransferArrayBuffer(DOMArrayBuffer* buffer);
 
   // https://streams.spec.whatwg.org/#transfer-array-buffer
   static DOMArrayBuffer* TransferArrayBuffer(ScriptState*,
