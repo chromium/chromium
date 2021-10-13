@@ -16,6 +16,11 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/event_device_util.h"
+#include "ui/events/ozone/evdev/numberpad_metrics.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/events/ozone/evdev/numberpad_metrics.h"
+#endif
 
 namespace ui {
 
@@ -49,13 +54,23 @@ EventConverterEvdevImpl::EventConverterEvdevImpl(
       input_device_fd_(std::move(fd)),
       has_keyboard_(devinfo.HasKeyboard()),
       has_touchpad_(devinfo.HasTouchpad()),
+      has_numberpad_(devinfo.HasNumberpad()),
       has_stylus_switch_(devinfo.HasStylusSwitch()),
       has_caps_lock_led_(devinfo.HasLedEvent(LED_CAPSL)),
       controller_(FROM_HERE),
       cursor_(cursor),
-      dispatcher_(dispatcher) {}
+      dispatcher_(dispatcher) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (has_numberpad_)
+    NumberpadMetricsRecorder::GetInstance()->AddDevice(input_device_);
+#endif
+}
 
 EventConverterEvdevImpl::~EventConverterEvdevImpl() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (has_numberpad_)
+    NumberpadMetricsRecorder::GetInstance()->RemoveDevice(input_device_);
+#endif
 }
 
 void EventConverterEvdevImpl::OnFileCanReadWithoutBlocking(int fd) {
@@ -216,9 +231,19 @@ void EventConverterEvdevImpl::OnKeyChange(unsigned int key,
   // State transition: !(down) -> (down)
   key_state_.set(key, down);
 
+  GenerateKeyMetrics(key, down);
+
   dispatcher_->DispatchKeyEvent(
       KeyEventParams(input_device_.id, ui::EF_NONE, key, last_scan_code_, down,
                      false /* suppress_auto_repeat */, timestamp));
+}
+
+void EventConverterEvdevImpl::GenerateKeyMetrics(unsigned int key, bool down) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!has_numberpad_)
+    return;
+  NumberpadMetricsRecorder::GetInstance()->ProcessKey(key, down, input_device_);
+#endif
 }
 
 void EventConverterEvdevImpl::ReleaseKeys() {
