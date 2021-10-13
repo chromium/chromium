@@ -657,7 +657,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     An enum representing the sync status of all opened profiles during one UMA
     session.
 
-    Reported incorrect data on ChromeOS before M80.
+    Reported incorrect data on ChromeOS before M80. Removed from ChromeOS in
+    M97.
   </summary>
 </histogram>
 
