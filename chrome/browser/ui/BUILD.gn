@@ -5058,6 +5058,8 @@ static_library("ui") {
     sources += [
       "webui/print_preview/cloud_print_signin.cc",
       "webui/print_preview/cloud_print_signin.h",
+      "webui/print_preview/data_request_filter.cc",
+      "webui/print_preview/data_request_filter.h",
       "webui/print_preview/extension_printer_handler.cc",
       "webui/print_preview/extension_printer_handler.h",
       "webui/print_preview/pdf_printer_handler.cc",
@@ -5070,6 +5072,8 @@ static_library("ui") {
       "webui/print_preview/print_preview_metrics.h",
       "webui/print_preview/print_preview_ui.cc",
       "webui/print_preview/print_preview_ui.h",
+      "webui/print_preview/print_preview_ui_untrusted.cc",
+      "webui/print_preview/print_preview_ui_untrusted.h",
       "webui/print_preview/print_preview_utils.cc",
       "webui/print_preview/print_preview_utils.h",
       "webui/print_preview/printer_handler.cc",

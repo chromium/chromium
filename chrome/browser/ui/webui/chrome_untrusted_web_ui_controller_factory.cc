@@ -13,8 +13,13 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/url_constants.h"
+#include "printing/buildflags/buildflags.h"
 #include "ui/webui/webui_config.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#include "chrome/browser/ui/webui/print_preview/print_preview_ui_untrusted.h"
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/ui/webui/video_tutorials/video_player_ui.h"
@@ -57,6 +62,10 @@ WebUIConfigList CreateConfigs() {
   ALLOW_UNUSED_LOCAL(register_config);
 
   // Register WebUIConfigs below.
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  register_config(std::make_unique<printing::PrintPreviewUIUntrustedConfig>());
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
 #if defined(OS_ANDROID)
   register_config(std::make_unique<video_tutorials::VideoPlayerUIConfig>());
 #endif  // defined(OS_ANDROID)

@@ -187,6 +187,7 @@ const char kChromeUIThemeURL[] = "chrome://theme/";
 const char kChromeUITopChromeDomain[] = "top-chrome";
 const char kChromeUIUntrustedImageEditorURL[] =
     "chrome-untrusted://image-editor/";
+const char kChromeUIUntrustedPrintURL[] = "chrome-untrusted://print/";
 const char kChromeUIUntrustedThemeURL[] = "chrome-untrusted://theme/";
 const char kChromeUIThumbnailHost2[] = "thumb2";
 const char kChromeUIThumbnailHost[] = "thumb";
