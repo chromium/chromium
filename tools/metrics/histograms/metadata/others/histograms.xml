@@ -11087,18 +11087,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Mouse scroll sensitivity value. Only reported on Chrome OS.</summary>
 </histogram>
 
-<histogram name="MPArch.ChildProcessLaunchFirst" units="units"
+<histogram name="MPArch.ChildProcessLaunchFirst" units="ms"
     expires_after="2022-05-01">
-  <owner>ppi@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
   <summary>
     The time it takes to spawn the first child subprocess (including sandbox
     init).
   </summary>
 </histogram>
 
-<histogram name="MPArch.ChildProcessLaunchSubsequent" units="units"
+<histogram name="MPArch.ChildProcessLaunchSubsequent" units="ms"
     expires_after="2022-04-24">
-  <owner>ppi@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
   <summary>
     The time it takes to spawn child sub processes not counting the first one.
   </summary>
