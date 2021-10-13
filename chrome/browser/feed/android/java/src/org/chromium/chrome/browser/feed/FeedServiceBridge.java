@@ -51,7 +51,8 @@ public final class FeedServiceBridge {
     }
 
     public static ProcessScope xSurfaceProcessScope() {
-        return sDelegate.getProcessScope();
+        ProcessScope ps = sDelegate.getProcessScope();
+        return ps;
     }
     public static boolean isEnabled() {
         return FeedServiceBridgeJni.get().isEnabled();

@@ -14,7 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.chromium.chrome.browser.feed.webfeed.R;
+import org.chromium.chrome.browser.feed.R;
 
 /**
  * View class for the individual line items in the following management activity.

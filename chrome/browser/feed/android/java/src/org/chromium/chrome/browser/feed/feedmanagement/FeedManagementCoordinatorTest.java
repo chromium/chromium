@@ -25,7 +25,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
-import org.chromium.chrome.browser.feed.webfeed.R;
+import org.chromium.chrome.browser.feed.R;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**

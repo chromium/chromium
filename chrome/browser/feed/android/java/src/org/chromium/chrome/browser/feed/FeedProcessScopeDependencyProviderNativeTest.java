@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.feed.v2;
+package org.chromium.chrome.browser.feed;
 
 import androidx.test.filters.MediumTest;
 
@@ -57,7 +57,7 @@ public class FeedProcessScopeDependencyProviderNativeTest {
     @Feature({"Feed"})
     public void testPersistentKeyValueCachePutAndLookup() {
         FeedProcessScopeDependencyProvider dependencyProvider =
-                new FeedProcessScopeDependencyProvider();
+                new FeedProcessScopeDependencyProvider("key", null);
         ArrayList<String> calls = new ArrayList<String>();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -77,7 +77,7 @@ public class FeedProcessScopeDependencyProviderNativeTest {
     @Feature({"Feed"})
     public void testPersistentKeyValueCacheEvict() {
         FeedProcessScopeDependencyProvider dependencyProvider =
-                new FeedProcessScopeDependencyProvider();
+                new FeedProcessScopeDependencyProvider("key", null);
         ArrayList<String> calls = new ArrayList<String>();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -99,7 +99,7 @@ public class FeedProcessScopeDependencyProviderNativeTest {
     public void testPersistentKeyValueCacheNullRunnables() {
         // Verify put() and evict() accept null runnables.
         FeedProcessScopeDependencyProvider dependencyProvider =
-                new FeedProcessScopeDependencyProvider();
+                new FeedProcessScopeDependencyProvider("key", null);
         ArrayList<String> calls = new ArrayList<String>();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {

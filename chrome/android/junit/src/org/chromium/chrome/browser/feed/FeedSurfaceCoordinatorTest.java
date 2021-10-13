@@ -45,8 +45,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.v2.FakeLinearLayoutManager;
-import org.chromium.chrome.browser.feed.v2.FeedProcessScopeDependencyProvider;
-import org.chromium.chrome.browser.feed.v2.FeedProcessScopeDependencyProviderJni;
 import org.chromium.chrome.browser.feed.v2.FeedStream;
 import org.chromium.chrome.browser.feed.v2.FeedStreamJni;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;

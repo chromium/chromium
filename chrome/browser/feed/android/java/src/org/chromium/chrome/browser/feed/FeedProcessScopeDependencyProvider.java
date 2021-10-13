@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.feed.v2;
+package org.chromium.chrome.browser.feed;
 
 import android.content.Context;
 
@@ -17,14 +17,9 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.GoogleAPIKeys;
 import org.chromium.chrome.browser.base.SplitCompatUtils;
-import org.chromium.chrome.browser.feed.FeedImageFetchClient;
-import org.chromium.chrome.browser.feed.FeedPersistentKeyValueCache;
-import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
@@ -46,14 +41,16 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     private ImageFetchClient mImageFetchClient;
     private FeedPersistentKeyValueCache mPersistentKeyValueCache;
     private LibraryResolver mLibraryResolver;
+    private PrivacyPreferencesManager mPrivacyPreferencesManager;
+    private String mApiKey;
 
-    @VisibleForTesting
-    static PrivacyPreferencesManager sPrivacyPreferencesManagerForTest;
-
-    public FeedProcessScopeDependencyProvider() {
+    public FeedProcessScopeDependencyProvider(
+            String apiKey, PrivacyPreferencesManager privacyPreferencesManager) {
         mContext = createFeedContext(ContextUtils.getApplicationContext());
         mImageFetchClient = new FeedImageFetchClient();
         mPersistentKeyValueCache = new FeedPersistentKeyValueCache();
+        mPrivacyPreferencesManager = privacyPreferencesManager;
+        mApiKey = apiKey;
         if (BundleUtils.isIsolatedSplitInstalled(mContext, FEED_SPLIT_NAME)) {
             mLibraryResolver = (libName) -> {
                 return BundleUtils.getNativeLibraryPath(libName, FEED_SPLIT_NAME);
@@ -110,12 +107,8 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
 
     @Override
     public boolean isXsurfaceUsageAndCrashReportingEnabled() {
-        PrivacyPreferencesManager manager = sPrivacyPreferencesManagerForTest;
-        if (manager == null) {
-            manager = PrivacyPreferencesManagerImpl.getInstance();
-        }
         return ChromeFeatureList.isEnabled(ChromeFeatureList.XSURFACE_METRICS_REPORTING)
-                && manager.isMetricsReportingEnabled();
+                && mPrivacyPreferencesManager.isMetricsReportingEnabled();
     }
 
     public static Context createFeedContext(Context context) {
@@ -129,7 +122,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
 
     @Override
     public String getGoogleApiKey() {
-        return GoogleAPIKeys.GOOGLE_API_KEY;
+        return mApiKey;
     }
 
     @Override

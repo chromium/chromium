@@ -6,6 +6,7 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
 import("//chrome/browser/buildflags.gni")
+import("//chrome/browser/feed/buildflags.gni")
 
 android_library("java") {
   sources = [
@@ -15,9 +16,11 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/FeedImageFetchClient.java",
     "java/src/org/chromium/chrome/browser/feed/FeedPersistentKeyValueCache.java",
     "java/src/org/chromium/chrome/browser/feed/FeedPlaceholderLayout.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedProcessScopeDependencyProvider.java",
     "java/src/org/chromium/chrome/browser/feed/FeedReliabilityLoggingBridge.java",
     "java/src/org/chromium/chrome/browser/feed/FeedServiceBridge.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSliceViewTracker.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedSurfaceScopeDependencyProvider.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSurfaceTracker.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSwipeRefreshLayout.java",
     "java/src/org/chromium/chrome/browser/feed/FeedUma.java",
@@ -38,6 +41,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementItemView.java",
     "java/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementItemViewBinder.java",
     "java/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementMediator.java",
+    "java/src/org/chromium/chrome/browser/feed/hooks/FeedHooks.java",
+    "java/src/org/chromium/chrome/browser/feed/hooks/FeedHooksImpl.java",
     "java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragment.java",
     "java/src/org/chromium/chrome/browser/feed/settings/RadioButtonGroupVideoPreviewsPreference.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/ShadowedClickableTextBubble.java",
@@ -56,13 +61,17 @@ android_library("java") {
   deps = [
     ":feed_java_resources",
     "//base:base_java",
+    "//chrome/android:base_module_java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/privacy:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/appmenu:java",
+    "//chrome/browser/ui/android/toolbar:java_resources",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/user_education:java",
     "//chrome/browser/util:java",
@@ -77,8 +86,10 @@ android_library("java") {
     "//components/feed/core/v2:feedv2_core_java",
     "//components/image_fetcher:java",
     "//components/prefs/android:java",
+    "//components/signin/public/android:java",
     "//components/url_formatter/android:url_formatter_java",
     "//components/user_prefs/android:java",
+    "//components/version_info/android:version_constants_java",
     "//content/public/android:content_main_dex_java",
     "//third_party/android_swipe_refresh:android_swipe_refresh_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -93,8 +104,23 @@ android_library("java") {
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
   ]
+
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-  resources_package = "org.chromium.chrome.browser.feed.webfeed"
+  resources_package = "org.chromium.chrome.browser.feed"
+
+  if (enable_new_feed_hooks) {
+    # Add the actual implementation where necessary so that downstream targets
+    # can provide their own implementations.
+    jar_excluded_patterns = [ "*/FeedHooksImpl*.class" ]
+  }
+}
+
+if (enable_new_feed_hooks) {
+  android_library("hooks_public_impl_java") {
+    sources =
+        [ "java/src/org/chromium/chrome/browser/feed/hooks/FeedHooksImpl.java" ]
+    deps = [ ":java" ]
+  }
 }
 
 android_resources("feed_java_resources") {
@@ -139,6 +165,7 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/feed/FeedImageFetchClient.java",
     "java/src/org/chromium/chrome/browser/feed/FeedPersistentKeyValueCache.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedProcessScopeDependencyProvider.java",
     "java/src/org/chromium/chrome/browser/feed/FeedReliabilityLoggingBridge.java",
     "java/src/org/chromium/chrome/browser/feed/FeedServiceBridge.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedBridge.java",
@@ -150,6 +177,7 @@ android_library("javatests") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/feed/BackToTopBubbleScrollListenerTest.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedProcessScopeDependencyProviderNativeTest.java",
     "java/src/org/chromium/chrome/browser/feed/HeaderIphScrollListenerTest.java",
     "java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragmentTest.java",
   ]
@@ -167,6 +195,7 @@ android_library("javatests") {
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/messages/android:java",
+    "//chrome/browser/xsurface:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
@@ -181,6 +210,7 @@ android_library("javatests") {
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
@@ -196,6 +226,7 @@ android_library("junit") {
   bypass_platform_checks = true
 
   sources = [
+    "java/src/org/chromium/chrome/browser/feed/FeedProcessScopeDependencyProviderTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSliceViewTrackerTest.java",
     "java/src/org/chromium/chrome/browser/feed/NativeViewListRendererTest.java",
     "java/src/org/chromium/chrome/browser/feed/NtpListContentManagerTest.java",
@@ -220,6 +251,7 @@ android_library("junit") {
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/privacy:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:test_support_java",
     "//chrome/browser/tab:java",

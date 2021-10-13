@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.feed.v2;
+package org.chromium.chrome.browser.feed;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -86,9 +86,7 @@ public final class FeedProcessScopeDependencyProviderTest {
 
     @Before
     public void setUp() {
-        FeedProcessScopeDependencyProvider.sPrivacyPreferencesManagerForTest =
-                mStubPrivacyPrefsManager;
-        mProvider = new FeedProcessScopeDependencyProvider();
+        mProvider = new FeedProcessScopeDependencyProvider("key", mStubPrivacyPrefsManager);
     }
 
     @Test

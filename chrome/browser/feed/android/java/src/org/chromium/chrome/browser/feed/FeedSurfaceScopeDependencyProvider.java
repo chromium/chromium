@@ -13,9 +13,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.ScrollListener.ScrollState;
-import org.chromium.chrome.browser.feed.v2.FeedProcessScopeDependencyProvider;
 import org.chromium.chrome.browser.xsurface.SurfaceHeaderOffsetObserver;
 import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
 

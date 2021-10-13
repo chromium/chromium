@@ -12,6 +12,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.chrome.browser.feed.R;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.ui.widget.RectProvider;

@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.view.View;
 
+import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;

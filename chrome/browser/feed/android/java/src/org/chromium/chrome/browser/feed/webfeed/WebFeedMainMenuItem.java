@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 
+import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.tab.Tab;
