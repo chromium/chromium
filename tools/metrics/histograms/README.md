@@ -413,16 +413,19 @@ Here are some guidelines for common scenarios:
 *   If the histogram is not in use now, but might be useful in the far future,
     remove it.
 *   If the histogram is not in use now, but might be useful in the near
-    future, pick ~3 months or ~2 milestones ahead.
+    future, pick ~3 months (also ~3 milestones) ahead.
 *   If the histogram is actively in use now and is useful in the short term,
-    pick 3-6 months or 2-4 milestones ahead.
+    pick 3-6 months (3-6 milestones) ahead.
 *   If the histogram is actively in use and seems useful for an indefinite time,
     pick 1 year.
 
-We also have a tool that automatically extends expiry dates. The 80% more
-frequently accessed histograms are pushed out every Tuesday, to 6 months from
-the date of the run. Googlers can view the [design
-doc](https://docs.google.com/document/d/1IEAeBF9UnYQMDfyh2gdvE7WlUKsfIXIZUw7qNoU89A4).
+We also have a tool that automatically extends expiry dates. The most frequently
+accessed histograms, currently 99%, have their expirations automatically
+extended every Tuesday to 6 months from the date of the run. Googlers can view
+the [design
+doc](https://docs.google.com/document/d/1IEAeBF9UnYQMDfyh2gdvE7WlUKsfIXIZUw7qNoU89A4)
+of the program that does this.  The bottom line is: If the histogram is being
+checked, it should be extended without developer interaction.
 
 #### How to extend an expired histogram {#extending}
 
