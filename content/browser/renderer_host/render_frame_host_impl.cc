@@ -7171,7 +7171,8 @@ void RenderFrameHostImpl::ResetWaitingState() {
 CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
     const url::Origin& origin,
     const GURL& url,
-    bool is_same_document_navigation) {
+    bool is_same_document_navigation,
+    bool is_pdf) {
   // Note that callers are responsible for avoiding this function in modes that
   // can bypass these rules, such as --disable-web-security or certain Android
   // WebView features like universal access from file URLs.
@@ -7187,7 +7188,7 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   // set OriginIsolationRequest to kNone (this is implicitly done by the
   // UrlInfoInit constructor).
   if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
-          this, UrlInfo(UrlInfoInit(url).WithOrigin(origin)),
+          this, UrlInfo(UrlInfoInit(url).WithOrigin(origin).WithIsPdf(is_pdf)),
           /*is_renderer_initiated_check=*/true)) {
     return CanCommitStatus::CANNOT_COMMIT_URL;
   }
@@ -10071,10 +10072,17 @@ bool RenderFrameHostImpl::ValidateURLAndOrigin(
     bool is_same_document_navigation,
     NavigationRequest* navigation_request) {
   RenderProcessHost* process = GetProcess();
+
+  // Use the value of `is_pdf` from `navigation_request` (if provided). This may
+  // be needed to verify the process lock in `CanCommitOriginAndUrl()`, but
+  // cannot be derived from the URL and origin alone.
+  bool is_pdf = navigation_request && navigation_request->GetUrlInfo().is_pdf;
+
   // Attempts to commit certain off-limits URL should be caught more strictly
   // than our FilterURL checks.  If a renderer violates this policy, it
   // should be killed.
-  switch (CanCommitOriginAndUrl(origin, url, is_same_document_navigation)) {
+  switch (
+      CanCommitOriginAndUrl(origin, url, is_same_document_navigation, is_pdf)) {
     case CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL:
       // The origin and URL are safe to commit.
       break;
