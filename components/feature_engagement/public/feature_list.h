@@ -152,6 +152,8 @@ DEFINE_VARIATION_PARAM(kIPHVideoTutorialNTPVoiceSearchFeature,
                        "IPH_VideoTutorial_NTP_VoiceSearch");
 DEFINE_VARIATION_PARAM(kIPHVideoTutorialNTPSummaryFeature,
                        "IPH_VideoTutorial_NTP_Summary");
+DEFINE_VARIATION_PARAM(kIPHVideoTutorialTryNowFeature,
+                       "IPH_VideoTutorial_TryNow");
 DEFINE_VARIATION_PARAM(kIPHExploreSitesTileFeature, "IPH_ExploreSitesTile");
 DEFINE_VARIATION_PARAM(kIPHFeedHeaderMenuFeature, "IPH_FeedHeaderMenu");
 DEFINE_VARIATION_PARAM(kIPHFeedSwipeRefresh, "IPH_FeedSwipeRefresh");
@@ -287,6 +289,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHVideoTutorialNTPSearchFeature),
         VARIATION_ENTRY(kIPHVideoTutorialNTPVoiceSearchFeature),
         VARIATION_ENTRY(kIPHVideoTutorialNTPSummaryFeature),
+        VARIATION_ENTRY(kIPHVideoTutorialTryNowFeature),
         VARIATION_ENTRY(kIPHExploreSitesTileFeature),
         VARIATION_ENTRY(kIPHFeedHeaderMenuFeature),
         VARIATION_ENTRY(kIPHShareScreenshotFeature),

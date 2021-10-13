@@ -68,6 +68,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.vr.VrModeObserver;
@@ -945,7 +946,6 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         if (getToolbarTransitionPercentage() > 0f) return;
         VideoTutorialTryNowTracker tryNowTracker = VideoTutorialServiceFactory.getTryNowTracker();
         UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, new Handler());
-        // TODO(shaktisahu): Determine if there is conflict with another IPH.
         if (tryNowTracker.didClickTryNowButton(FeatureType.SEARCH)) {
             IPHCommandBuilder iphCommandBuilder = createIPHCommandBuilder(mActivity.getResources(),
                     R.string.video_tutorials_iph_tap_here_to_start,
@@ -968,8 +968,8 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     private static IPHCommandBuilder createIPHCommandBuilder(Resources resources,
             @StringRes int stringId, @StringRes int accessibilityStringId, View anchorView,
             boolean showHighlight) {
-        IPHCommandBuilder iphCommandBuilder =
-                new IPHCommandBuilder(resources, null, stringId, accessibilityStringId);
+        IPHCommandBuilder iphCommandBuilder = new IPHCommandBuilder(resources,
+                FeatureConstants.VIDEO_TUTORIAL_TRY_NOW_FEATURE, stringId, accessibilityStringId);
         iphCommandBuilder.setAnchorView(anchorView);
         int yInsetPx = resources.getDimensionPixelOffset(
                 R.dimen.video_tutorial_try_now_iph_ntp_searchbox_y_inset);
