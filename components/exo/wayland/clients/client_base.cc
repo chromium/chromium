@@ -31,6 +31,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
 #include "skia/ext/legacy_display_globals.h"
@@ -509,12 +510,16 @@ bool ClientBase::Init(const InitParams& params) {
       base::ScopedFD drm_fd(open(dri_render_node.c_str(), O_RDWR));
       if (drm_fd.get() < 0)
         continue;
+
       drmVersionPtr drm_version = drmGetVersion(drm_fd.get());
       if (!drm_version) {
         LOG(ERROR) << "Can't get version for device: '" << dri_render_node
                    << "'";
         return false;
       }
+      // We can't actually use the virtual GEM, so discard it like we do in CrOS
+      if (base::LowerCaseEqualsASCII("vgem", drm_version->name))
+        continue;
       if (strstr(drm_version->name, params.use_drm_value.c_str())) {
         drm_fd_ = std::move(drm_fd);
         break;
