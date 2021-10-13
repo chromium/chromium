@@ -302,7 +302,6 @@ class WebrtcTransport::PeerConnectionWrapper
         webrtc::CreateModularPeerConnectionFactory(std::move(pcf_deps));
 
     webrtc::PeerConnectionInterface::RTCConfiguration rtc_config;
-    rtc_config.enable_dtls_srtp = true;
 
     // Set bundle_policy and rtcp_mux_policy to ensure that all channels are
     // multiplexed over a single channel.

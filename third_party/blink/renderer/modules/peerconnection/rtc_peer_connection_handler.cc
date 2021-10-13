@@ -215,8 +215,6 @@ void CopyConstraintsIntoRtcConfiguration(
   configuration->combined_audio_video_bwe = ConstraintToOptional(
       constraints,
       &MediaTrackConstraintSetPlatform::goog_combined_audio_video_bwe);
-  configuration->enable_dtls_srtp = ConstraintToOptional(
-      constraints, &MediaTrackConstraintSetPlatform::enable_dtls_srtp);
 }
 
 // Class mapping responses from calls to libjingle CreateOffer/Answer and

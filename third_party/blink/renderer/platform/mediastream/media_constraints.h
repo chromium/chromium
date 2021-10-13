@@ -269,7 +269,6 @@ struct MediaTrackConstraintSetPlatform {
   BooleanConstraint voice_activity_detection;
   BooleanConstraint ice_restart;
   BooleanConstraint goog_use_rtp_mux;
-  BooleanConstraint enable_dtls_srtp;
   BooleanConstraint enable_rtp_data_channels;
   BooleanConstraint enable_dscp;
   BooleanConstraint enable_i_pv6;
