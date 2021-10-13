@@ -1821,7 +1821,7 @@
   {
     "name": "enable-desktop-pwas-window-controls-overlay",
     "owners": [ "ambake@microsoft.com", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 99
   },
   {
     "name": "enable-disco-feed-endpoint",
