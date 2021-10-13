@@ -1298,8 +1298,12 @@ void DevToolsUIBindings::GetSyncInformation(DispatchCallback callback) {
       sync_service->GetActiveDataTypes().Has(syncer::ModelType::PREFERENCES));
 
   CoreAccountInfo account_info = sync_service->GetAuthenticatedAccountInfo();
-  if (!account_info.IsEmpty())
-    result.SetStringKey("accountEmail", account_info.email);
+  if (account_info.IsEmpty()) {
+    std::move(callback).Run(&result);
+    return;
+  }
+
+  result.SetStringKey("accountEmail", account_info.email);
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
