@@ -32,14 +32,7 @@ TEST(BuildTime, DateLooksValid) {
 #endif
 }
 
-#if defined(OS_FUCHSIA)
-// TODO(https://crbug.com/1060357): Enable when RTC flake is fixed.
-#define MAYBE_InThePast DISABLED_InThePast
-#else
-#define MAYBE_InThePast InThePast
-#endif
-
-TEST(BuildTime, MAYBE_InThePast) {
+TEST(BuildTime, InThePast) {
   EXPECT_LT(base::GetBuildTime(), base::Time::Now());
   EXPECT_LT(base::GetBuildTime(), base::Time::NowFromSystemTime());
 }
