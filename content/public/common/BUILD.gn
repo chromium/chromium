@@ -88,7 +88,10 @@ source_set("static_features") {
     "//content/common:buildflags",
   ]
 
-  public_configs = [ ":static_switches_defines" ]
+  public_configs = [
+    ":static_switches_defines",
+    "//tools/v8_context_snapshot:use_v8_context_snapshot",
+  ]
 
   if (is_chromeos_ash) {
     public_deps += [ "//media/capture/video/chromeos/public" ]
@@ -190,7 +193,10 @@ source_set("common_sources") {
     "//content:content_implementation",
   ]
 
-  public_configs = [ "//v8:external_startup_data" ]
+  public_configs = [
+    "//v8:external_startup_data",
+    "//tools/v8_context_snapshot:use_v8_context_snapshot",
+  ]
 
   public_deps = [
     ":interfaces",

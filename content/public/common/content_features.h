@@ -228,6 +228,9 @@ CONTENT_EXPORT extern const base::Feature kTouchpadAsyncPinchEvents;
 CONTENT_EXPORT extern const base::Feature kTouchpadOverscrollHistoryNavigation;
 CONTENT_EXPORT extern const base::Feature kTrustedDOMTypes;
 CONTENT_EXPORT extern const base::Feature kUnrestrictedSharedArrayBuffer;
+#if defined(OS_ANDROID) && defined(INCLUDE_BOTH_V8_SNAPSHOTS)
+CONTENT_EXPORT extern const base::Feature kUseContextSnapshot;
+#endif
 CONTENT_EXPORT extern const base::Feature kUserActivationSameOriginVisibility;
 CONTENT_EXPORT extern const base::Feature kVerifyDidCommitParams;
 CONTENT_EXPORT extern const base::Feature kVideoPlaybackQuality;

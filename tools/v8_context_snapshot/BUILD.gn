@@ -27,9 +27,16 @@ group("v8_context_snapshot") {
 }
 
 config("use_v8_context_snapshot") {
+  defines = []
+  if (include_both_v8_snapshots) {
+    defines += [ "INCLUDE_BOTH_V8_SNAPSHOTS" ]
+  }
   if (use_v8_context_snapshot) {
-    defines = [
+    defines += [
       "USE_V8_CONTEXT_SNAPSHOT",
+
+      # NOTE: android builds may include both 64 and 32 bit snapshot files. For
+      # this reason, android code generally does not use this define.
       "V8_CONTEXT_SNAPSHOT_FILENAME=\"$v8_context_snapshot_filename\"",
     ]
   }
@@ -75,6 +82,9 @@ if (use_v8_context_snapshot) {
       deps = [ ":v8_context_snapshot_generator" ]
 
       # TODO(sky): figure out why this doesn't work on android cross compile.
+      # In the case of compiling for the snapshot `shlib_extension` is ".so"
+      # (which is expected), but on disk ".cr.so" is generate, which ends up
+      # causing gn to fail.
       if (is_component_build && target_os != "android") {
         # In the component build mode, the snapshot should be updated when any
         # of the generator executable or the shared libraries get updated. Note

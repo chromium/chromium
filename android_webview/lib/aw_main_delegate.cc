@@ -166,18 +166,16 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
     if (AwDrawFnImpl::IsUsingVulkan())
       cl->AppendSwitch(switches::kWebViewDrawFunctorUsesVulkan);
 
-#if defined(USE_V8_CONTEXT_SNAPSHOT)
-    gin::V8SnapshotFileType file_type =
-        gin::V8SnapshotFileType::kWithAdditionalContext;
-#else
-    gin::V8SnapshotFileType file_type = gin::V8SnapshotFileType::kDefault;
-#endif
+#if !defined(USE_V8_CONTEXT_SNAPSHOT) || defined(INCLUDE_BOTH_V8_SNAPSHOTS)
+    // The snapshot for USE_V8_CONTEXT_SNAPSHOT is handled in the renderer.
+    const gin::V8SnapshotFileType file_type = gin::V8SnapshotFileType::kDefault;
     base::android::RegisterApkAssetWithFileDescriptorStore(
         content::kV8Snapshot32DataDescriptor,
         gin::V8Initializer::GetSnapshotFilePath(true, file_type));
     base::android::RegisterApkAssetWithFileDescriptorStore(
         content::kV8Snapshot64DataDescriptor,
         gin::V8Initializer::GetSnapshotFilePath(false, file_type));
+#endif
   }
 
   if (cl->HasSwitch(switches::kWebViewSandboxedRenderer)) {

@@ -164,7 +164,8 @@ android_assets("webview_instrumentation_apk_assets") {
 
   if (use_v8_context_snapshot) {
     deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-  } else {
+  }
+  if (!use_v8_context_snapshot || include_both_v8_snapshots) {
     deps += [ "//v8:v8_external_startup_data_assets" ]
   }
 }
@@ -590,7 +591,8 @@ test("android_webview_unittests") {
 
   if (use_v8_context_snapshot) {
     deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-  } else {
+  }
+  if (!use_v8_context_snapshot || include_both_v8_snapshots) {
     deps += [ "//v8:v8_external_startup_data_assets" ]
   }
 }
