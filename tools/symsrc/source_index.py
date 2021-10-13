@@ -489,10 +489,10 @@ def UpdatePDB(pdb_filename, verbose=True, build_dir=None, toolchain_dir=None,
     'SRCSRV: variables ------------------------------------------',
     'SRC_EXTRACT_TARGET_DIR=%targ%\\%fnbksl%(%var2%)\\%var3%',
     'SRC_EXTRACT_TARGET=%SRC_EXTRACT_TARGET_DIR%\\%fnfile%(%var1%)',
-    'SRC_EXTRACT_CMD=cmd /c "mkdir "%SRC_EXTRACT_TARGET_DIR%" & python -c '
-        '"import urllib2, base64;'
+    'SRC_EXTRACT_CMD=cmd /c "mkdir "%SRC_EXTRACT_TARGET_DIR%" & python3 -c '
+        '"import urllib.request, base64;'
         'url = \\\"%var4%\\\";'
-        'u = urllib2.urlopen(url);'
+        'u = urllib.request.urlopen(url);'
         'open(r\\\"%SRC_EXTRACT_TARGET%\\\", \\\"wb\\\").write(%var5%('
             'u.read()))"',
     'SRCSRVTRG=%SRC_EXTRACT_TARGET%',
