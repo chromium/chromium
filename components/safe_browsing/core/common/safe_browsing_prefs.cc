@@ -106,7 +106,7 @@ const char kSafeBrowsingMetricsLastLogTime[] =
     "safebrowsing.metrics_last_log_time";
 const char kSafeBrowsingEventTimestamps[] = "safebrowsing.event_timestamps";
 const char kAccountTailoredSecurityUpdateTimestamp[] =
-    "safebrowsing.aesb_update_timestamp";
+    "safebrowsing.aesb_update_time_unix_epoch_micros";
 
 }  // namespace prefs
 
