@@ -69,7 +69,20 @@ export class FakeShimlessRmaService {
      */
     this.osCanUpdate_ = false;
 
+    /**
+     * Both abortRma and forward state transitions can have significant delays
+     * that are useful to fake for manual testing.
+     * Defaults to no delay for unit tests.
+     * @private {number}
+     */
+    this.resolveMethodDelayMs_ = 0;
+
     this.reset();
+  }
+
+  /** @param {number} delayMs */
+  setAsyncOperationDelayMs(delayMs) {
+    this.resolveMethodDelayMs_ = delayMs;
   }
 
   /**
@@ -137,7 +150,8 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{error: !RmadErrorCode}>}
    */
   abortRma() {
-    return this.methods_.resolveMethod('abortRma');
+    return this.methods_.resolveMethodWithDelay(
+        'abortRma', this.resolveMethodDelayMs_);
   }
 
   /**
@@ -1094,7 +1108,8 @@ export class FakeShimlessRmaService {
       this.setFakeStateForMethod_(
           method, state.state, state.canCancel, state.canGoBack, state.error);
     }
-    return this.methods_.resolveMethod(method);
+    return this.methods_.resolveMethodWithDelay(
+        method, this.resolveMethodDelayMs_);
   }
 
   /**

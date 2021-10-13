@@ -6,12 +6,20 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ReimagingCalibrationRunPageElement} from 'chrome://shimless-rma/reimaging_calibration_run_page.js';
+import {ShimlessRmaElement} from 'chrome://shimless-rma/shimless_rma.js';
 import {CalibrationOverallStatus, CalibrationStatus, ComponentType} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
 export function reimagingCalibrationRunPageTest() {
+  /**
+   * ShimlessRmaElement is needed to handle the 'transition-state' event used
+   * when handling calibration overall progress signals.
+   * @type {?ShimlessRmaElement}
+   */
+  let shimless_rma_component = null;
+
   /** @type {?ReimagingCalibrationRunPageElement} */
   let component = null;
 
@@ -30,6 +38,8 @@ export function reimagingCalibrationRunPageTest() {
   teardown(() => {
     component.remove();
     component = null;
+    shimless_rma_component.remove();
+    shimless_rma_component = null;
     service.reset();
   });
 
@@ -38,6 +48,11 @@ export function reimagingCalibrationRunPageTest() {
    */
   function initializeCalibrationRunPage() {
     assertFalse(!!component);
+
+    shimless_rma_component = /** @type {!ShimlessRmaElement} */ (
+        document.createElement('shimless-rma'));
+    assertTrue(!!shimless_rma_component);
+    document.body.appendChild(shimless_rma_component);
 
     component = /** @type {!ReimagingCalibrationRunPageElement} */ (
         document.createElement('reimaging-calibration-run-page'));

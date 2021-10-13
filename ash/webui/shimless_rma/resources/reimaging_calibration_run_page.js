@@ -94,11 +94,16 @@ export class ReimagingCalibrationRunPageElement extends PolymerElement {
       case CalibrationOverallStatus.kCalibrationOverallCurrentRoundComplete:
       case CalibrationOverallStatus.kCalibrationOverallCurrentRoundFailed:
       case CalibrationOverallStatus.kCalibrationOverallInitializationFailed:
-        this.shimlessRmaService_.continueCalibration().then(
-            (state) => this.dispatchEvent(new CustomEvent(
-                'load-next-state',
-                {bubbles: true, composed: true, detail: state},
-                )));
+        this.dispatchEvent(new CustomEvent(
+            'transition-state',
+            {
+              bubbles: true,
+              composed: true,
+              detail: (() => {
+                return this.shimlessRmaService_.continueCalibration();
+              })
+            },
+            ));
         break;
     }
   }

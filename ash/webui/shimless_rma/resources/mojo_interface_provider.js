@@ -40,6 +40,8 @@ function setupFakeShimlessRmaService_() {
 
   service.setStates(fakeStates);
 
+  service.setAsyncOperationDelayMs(500);
+
   service.setAbortRmaResult(RmadErrorCode.kOk);
 
   service.setGetCurrentOsVersionResult(fakeChromeVersion[0]);

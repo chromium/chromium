@@ -105,10 +105,12 @@ js_library("shimless_rma") {
     ":onboarding_enter_rsu_wp_disable_code_page",
     ":onboarding_landing_page",
 
-    # TODO(gavindodd): This causes closure errors in browser tests code for
-    # chrome/test/data/webui/chromeos/shimless_rma
-    # it causes onc_mojo.js to error that assert is an expression.
-    ":onboarding_network_page",
+    # TODO(gavindodd): A dependency on ":onboarding_network_page" causes closure
+    # errors in browser tests targets that depend on this target.
+    # Error:
+    # onc_mojo.js:492:4: ERROR - [JSC_NOT_FUNCTION_TYPE]
+    # expressions are not callable
+    # 492|     assert(source !== undefined, 'OncSource undefined');
     ":onboarding_select_components_page",
     ":onboarding_update_page",
     ":onboarding_wait_for_manual_wp_disable_page",

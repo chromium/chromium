@@ -229,19 +229,21 @@ export class ShimlessRmaElement extends PolymerElement {
         value: {},
       },
 
-      /**
-       * Initial state to cancel to
-       * @private {?RmaState}
-       */
-      initialState_: {
-        type: Object,
-        value: null,
-      },
-
       /** @protected {string} */
       errorMessage_: {
         type: String,
         value: '',
+      },
+
+      /**
+       * Used to disable all buttons while waiting for long running mojo API
+       * calls to complete.
+       * TODO(gavindodd): Handle disabling per page buttons.
+       * @protected
+       */
+      allButtonsDisabled_: {
+        type: Boolean,
+        value: true,
       }
     };
   }
@@ -251,12 +253,13 @@ export class ShimlessRmaElement extends PolymerElement {
     super();
 
     /**
-     * The loadNextState callback is used by page elements to trigger loading
-     * the next page without using the 'Next' button.
+     * transitionState_ is used by page elements to trigger state transition
+     * functions and switching to the next page without using the 'Next' button.
      * @private {?Function}
      */
-    this.loadNextStateCallback_ = (e) => {
-      this.processStateResult_(e.detail)
+    this.transitionState_ = (e) => {
+      this.allButtonsDisabled_ = true;
+      e.detail().then((stateResult) => this.processStateResult_(stateResult));
     };
 
     /**
@@ -275,8 +278,7 @@ export class ShimlessRmaElement extends PolymerElement {
   /** @override */
   connectedCallback() {
     super.connectedCallback();
-
-    window.addEventListener('load-next-state', this.loadNextStateCallback_);
+    window.addEventListener('transition-state', this.transitionState_);
     window.addEventListener(
         'disable-next-button', this.disableNextButtonCallback_);
   }
@@ -284,8 +286,7 @@ export class ShimlessRmaElement extends PolymerElement {
   /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
-
-    window.removeEventListener('load-next-state', this.loadNextStateCallback_);
+    window.removeEventListener('transition-state', this.transitionState_);
     window.removeEventListener(
         'disable-next-button', this.disableNextButtonCallback_);
   }
@@ -297,7 +298,6 @@ export class ShimlessRmaElement extends PolymerElement {
 
     // Get the initial state.
     this.fetchState_().then((stateResult) => {
-      this.initialState_ = stateResult.state;
       this.processStateResult_(stateResult);
     });
   }
@@ -340,7 +340,7 @@ export class ShimlessRmaElement extends PolymerElement {
   showState_(state, canCancel, canGoBack) {
     const pageInfo = StateComponentMapping[state];
     assert(pageInfo);
-
+    this.allButtonsDisabled_ = false;
     pageInfo.buttonCancel =
         canCancel ? ButtonState.VISIBLE : ButtonState.HIDDEN;
     pageInfo.buttonBack = canGoBack ? ButtonState.VISIBLE : ButtonState.HIDDEN;
@@ -400,9 +400,12 @@ export class ShimlessRmaElement extends PolymerElement {
     return button === ButtonState.HIDDEN;
   }
 
-  /** @protected */
+  /**
+   * @protected
+   * @param {ButtonState} button
+   */
   isButtonDisabled_(button) {
-    return button === ButtonState.DISABLED;
+    return (button === ButtonState.DISABLED) || this.allButtonsDisabled_;
   }
 
   /**
@@ -416,6 +419,7 @@ export class ShimlessRmaElement extends PolymerElement {
 
   /** @protected */
   onBackButtonClicked_() {
+    this.allButtonsDisabled_ = true;
     this.fetchPrevState_().then(
         (stateResult) => this.processStateResult_(stateResult));
   }
@@ -431,7 +435,7 @@ export class ShimlessRmaElement extends PolymerElement {
         typeof page.onNextButtonClick === 'function',
         'onNextButtonClick not a function for ' +
             this.currentPage_.componentIs);
-
+    this.allButtonsDisabled_ = true;
     page.onNextButtonClick()
         .then((stateResult) => this.processStateResult_(stateResult))
         .catch((err) => void 0);
@@ -439,6 +443,7 @@ export class ShimlessRmaElement extends PolymerElement {
 
   /** @protected */
   onCancelButtonClicked_() {
+    this.allButtonsDisabled_ = true;
     this.shimlessRmaService_.abortRma().then(
         (result) => this.handleError_(result.error));
   }
