@@ -119,7 +119,7 @@
         </settings-bluetooth-page>
       </template>
       <template is="dom-if" if="[[isBluetoothRevampEnabled_]]" restamp>
-        <os-settings-bluetooth-page>
+        <os-settings-bluetooth-page prefs="{{prefs}}">
         </os-settings-bluetooth-page>
       </template>
     </settings-section>

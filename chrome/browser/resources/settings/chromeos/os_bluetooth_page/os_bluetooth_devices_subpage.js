@@ -9,10 +9,12 @@
 
 import '../../settings_shared_css.js';
 import './os_paired_bluetooth_list.js';
+import './settings_fast_pair_toggle.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 const mojom = chromeos.bluetoothConfig.mojom;
 
@@ -37,6 +39,12 @@ class SettingsBluetoothDevicesSubpageElement extends
 
   static get properties() {
     return {
+      /** Preferences state. */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
       /**
        * @type {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
        */
@@ -54,6 +62,18 @@ class SettingsBluetoothDevicesSubpageElement extends
       isBluetoothToggleOn_: {
         type: Boolean,
         observer: 'onBluetoothToggleChanged_',
+      },
+
+      /**
+       * Whether or not the fast pair feature flag is enabled which controls if
+       * the fast pair toggle shows up.
+       * @private {boolean}
+       */
+      isFastPairAllowed_: {
+        type: Boolean,
+        value: function() {
+          return loadTimeData.getBoolean('enableFastPairFlag');
+        }
       },
 
       /**

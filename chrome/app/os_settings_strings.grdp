@@ -2178,6 +2178,13 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BLUETOOTH_MANAGED" desc="Tooltip description for icon notifying user that the Bluetooth device is managed by an enterprise policy and may have restricted functionality.">
     Your administrator has blocked some functionality for this device
   </message>
+  <message name="IDS_BLUETOOTH_ENABLE_FAST_PAIR_LABEL" desc="Label for the toggle that enables Fast Pair on the Bluetooth settings page.">
+    Scan for new devices
+  </message>
+  <message name="IDS_BLUETOOTH_ENABLE_FAST_PAIR_SUBTITLE" desc="Subtitle that describes the toggle that enables Fast Pair on the Bluetooth settings page.">
+    Easily connect and set up devices close by
+  </message>
+
 
   <!-- Parental Controls -->
   <message name="IDS_SETTINGS_PARENTAL_CONTROLS_PAGE_TITLE" desc="Name of the settings page which manages ChromeOS's parental controls.">

@@ -18,6 +18,7 @@ js_type_check("closure_compile_module") {
     ":os_bluetooth_summary",
     ":os_paired_bluetooth_list",
     ":os_paired_bluetooth_list_item",
+    ":settings_fast_pair_toggle",
   ]
 }
 
@@ -35,6 +36,7 @@ js_library("os_bluetooth_page") {
 js_library("os_bluetooth_devices_subpage") {
   deps = [
     ":os_paired_bluetooth_list",
+    ":settings_fast_pair_toggle",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:cros_bluetooth_config",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -102,6 +104,12 @@ js_library("os_bluetooth_pairing_dialog") {
   ]
 }
 
+js_library("settings_fast_pair_toggle") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 html_to_js("web_components") {
   js_files = [
     "os_paired_bluetooth_list_item.js",
@@ -112,5 +120,6 @@ html_to_js("web_components") {
     "os_bluetooth_device_detail_subpage.js",
     "os_bluetooth_change_device_name_dialog.js",
     "os_bluetooth_pairing_dialog.js",
+    "settings_fast_pair_toggle.js",
   ]
 }

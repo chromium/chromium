@@ -64,3 +64,6 @@
     </div>
   </template>
 </div>
+<template is="dom-if" if="[[isFastPairAllowed_]]">
+  <settings-fast-pair-toggle prefs="{{prefs}}"></settings-fast-pair-toggle>
+</template>

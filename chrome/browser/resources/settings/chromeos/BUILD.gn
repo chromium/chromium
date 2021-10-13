@@ -448,6 +448,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_bluetooth_page/os_bluetooth_summary.js",
     "chromeos/os_bluetooth_page/os_paired_bluetooth_list_item.js",
     "chromeos/os_bluetooth_page/os_paired_bluetooth_list.js",
+    "chromeos/os_bluetooth_page/settings_fast_pair_toggle.js",
     "chromeos/os_a11y_page/change_dictation_locale_dialog.js",
     "chromeos/os_a11y_page/manage_a11y_page.js",
     "chromeos/os_a11y_page/os_a11y_page.js",

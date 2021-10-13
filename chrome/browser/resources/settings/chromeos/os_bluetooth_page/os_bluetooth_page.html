@@ -10,6 +10,7 @@
   <template is="dom-if" route-path="/bluetoothDevices">
     <settings-subpage page-title="$i18n{bluetoothPageTitle}">
       <os-settings-bluetooth-devices-subpage
+          prefs="{{prefs}}"
           system-properties="[[systemProperties_]]">
       </os-settings-bluetooth-devices-subpage>
     </settings-subpage>
