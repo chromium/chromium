@@ -863,7 +863,9 @@ void XkbKeyboardLayoutEngine::SetKeymap(xkb_keymap* keymap) {
                {ui::EF_NUM_LOCK_ON, XKB_MOD_NAME_NUM}};
   xkb_flag_map_.clear();
   xkb_flag_map_.reserve(base::size(flags));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   xkb_mod_mask_t num_lock_mask = 0;
+#endif
   for (size_t i = 0; i < base::size(flags); ++i) {
     xkb_mod_index_t index = xkb_keymap_mod_get_index(keymap, flags[i].xkb_name);
     if (index == XKB_MOD_INVALID) {
@@ -872,8 +874,10 @@ void XkbKeyboardLayoutEngine::SetKeymap(xkb_keymap* keymap) {
       xkb_mod_mask_t flag = static_cast<xkb_mod_mask_t>(1) << index;
       XkbFlagMapEntry e = {flags[i].ui_flag, flag, index};
       xkb_flag_map_.push_back(e);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       if (flags[i].ui_flag == EF_NUM_LOCK_ON)
         num_lock_mask = flag;
+#endif
     }
   }
 
