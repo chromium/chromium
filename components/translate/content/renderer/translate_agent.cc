@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/json/string_escape.h"
 #include "base/location.h"
@@ -23,10 +24,12 @@
 #include "components/translate/content/renderer/isolated_world_util.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_metrics.h"
+#include "components/translate/core/common/translate_switches.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
 #include "components/translate/core/language_detection/language_detection_util.h"
 #include "content/public/common/content_constants.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -143,6 +146,11 @@ void TranslateAgent::WasShown() {
   GetTranslateHandler()->GetLanguageDetectionModel(
       base::BindOnce(&TranslateAgent::UpdateLanguageDetectionModel,
                      weak_pointer_factory_.GetWeakPtr()));
+}
+
+void TranslateAgent::SeedLanguageDetectionModelForTesting(
+    base::File model_file) {
+  UpdateLanguageDetectionModel(std::move(model_file));
 }
 
 void TranslateAgent::PrepareForUrl(const GURL& url) {
@@ -569,8 +577,18 @@ TranslateAgent::GetTranslateHandler() {
   if (!translate_handler_) {
     render_frame()->GetBrowserInterfaceBroker()->GetInterface(
         translate_handler_.BindNewPipeAndPassReceiver());
+    return translate_handler_;
   }
 
+  // The translate handler can become unbound or disconnected in testing
+  // so this catches that case and reconnects so `this` can connect to
+  // the driver in the browser.
+  if (translate_handler_.is_bound() && translate_handler_.is_connected())
+    return translate_handler_;
+
+  translate_handler_.reset();
+  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+      translate_handler_.BindNewPipeAndPassReceiver());
   return translate_handler_;
 }
 

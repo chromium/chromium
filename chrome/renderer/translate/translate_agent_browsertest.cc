@@ -4,15 +4,22 @@
 
 #include <tuple>
 
+#include "base/base_paths.h"
 #include "base/bind.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/macros.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/translate/content/common/translate.mojom.h"
 #include "components/translate/content/renderer/translate_agent.h"
 #include "components/translate/core/common/translate_constants.h"
+#include "components/translate/core/common/translate_util.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
@@ -74,6 +81,25 @@ class FakeContentTranslateDriver
  private:
   mojo::ReceiverSet<translate::mojom::ContentTranslateDriver> receivers_;
 };
+
+// Load the model file at the provided file path.
+base::File LoadModelFile(const base::FilePath& model_file_path) {
+  if (!base::PathExists(model_file_path))
+    return base::File();
+
+  return base::File(model_file_path,
+                    base::File::FLAG_OPEN | base::File::FLAG_READ);
+}
+
+base::FilePath model_file_path() {
+  base::FilePath source_root_dir;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+  return source_root_dir.AppendASCII("components")
+      .AppendASCII("test")
+      .AppendASCII("data")
+      .AppendASCII("translate")
+      .AppendASCII("valid_model.tflite");
+}
 
 }  // namespace
 
@@ -167,12 +193,17 @@ class TranslateAgentBrowserTest : public ChromeRenderViewTest {
  protected:
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        translate::kTFLiteLanguageDetectionEnabled);
     translate_agent_ = new TestTranslateAgent(GetMainRenderFrame());
 
     GetMainRenderFrame()->GetBrowserInterfaceBroker()->SetBinderForTesting(
         translate::mojom::ContentTranslateDriver::Name_,
         base::BindRepeating(&FakeContentTranslateDriver::BindHandle,
                             base::Unretained(&fake_translate_driver_)));
+    base::File model_file = LoadModelFile(model_file_path());
+    translate_agent_->SeedLanguageDetectionModelForTesting(
+        std::move(model_file));
   }
 
   void TearDown() override {
@@ -185,6 +216,7 @@ class TranslateAgentBrowserTest : public ChromeRenderViewTest {
 
   TestTranslateAgent* translate_agent_;
   FakeContentTranslateDriver fake_translate_driver_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the browser gets notified of the translation failure if the
@@ -447,7 +479,8 @@ TEST_F(TranslateAgentBrowserTest, TranslatablePage) {
 TEST_F(TranslateAgentBrowserTest, LanguageMetaTag) {
   LoadHTML(
       "<html><head><meta http-equiv=\"content-language\" content=\"es\">"
-      "</head><body>A random page with random content.</body></html>");
+      "</head><body>A</body></html>");
+  //   "</head><body>Esta página está en español.</body></html>");
 
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(fake_translate_driver_.called_new_page_);
@@ -458,7 +491,7 @@ TEST_F(TranslateAgentBrowserTest, LanguageMetaTag) {
   LoadHTML(
       "<html><head><meta http-equiv=\"content-language\" "
       "content=\" fr , es,en \">"
-      "</head><body>A random page with random content.</body></html>");
+      "</head><body>Cette page est en français.</body></html>");
 
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(fake_translate_driver_.called_new_page_);
@@ -470,7 +503,7 @@ TEST_F(TranslateAgentBrowserTest, LanguageMetaTag) {
 TEST_F(TranslateAgentBrowserTest, LanguageMetaTagCase) {
   LoadHTML(
       "<html><head><meta http-equiv=\"Content-Language\" content=\"es\">"
-      "</head><body>A random page with random content.</body></html>");
+      "</head><body>E</body></html>");
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(fake_translate_driver_.called_new_page_);
   EXPECT_EQ("es", fake_translate_driver_.details_->adopted_language);
@@ -480,7 +513,7 @@ TEST_F(TranslateAgentBrowserTest, LanguageMetaTagCase) {
   LoadHTML(
       "<html><head><meta http-equiv=\"Content-Language\" "
       "content=\" fr , es,en \">"
-      "</head><body>A random page with random content.</body></html>");
+      "</head><body>Cette page est en français.</body></html>");
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(fake_translate_driver_.called_new_page_);
   EXPECT_EQ("fr", fake_translate_driver_.details_->adopted_language);
@@ -500,7 +533,7 @@ TEST_F(TranslateAgentBrowserTest, LanguageCommonMistakesAreCorrected) {
 
   LoadHTML(
       "<html><head><meta http-equiv='Content-Language' content='ZH_tw'>"
-      "</head><body>A random page with random content.</body></html>");
+      "</head><body>A</body></html>");
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(fake_translate_driver_.called_new_page_);
   EXPECT_EQ("zh-TW", fake_translate_driver_.details_->adopted_language);
@@ -510,7 +543,7 @@ TEST_F(TranslateAgentBrowserTest, LanguageCommonMistakesAreCorrected) {
 TEST_F(TranslateAgentBrowserTest, BackToTranslatablePage) {
   LoadHTML(
       "<html><head><meta http-equiv=\"content-language\" content=\"es\">"
-      "</head><body>This page is in Spanish.</body></html>");
+      "</head><body>E</body></html>");
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(fake_translate_driver_.called_new_page_);
   EXPECT_EQ("es", fake_translate_driver_.details_->adopted_language);
@@ -520,7 +553,7 @@ TEST_F(TranslateAgentBrowserTest, BackToTranslatablePage) {
 
   LoadHTML(
       "<html><head><meta http-equiv=\"content-language\" content=\"fr\">"
-      "</head><body>This page is in French.</body></html>");
+      "</head><body>E</body></html>");
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(fake_translate_driver_.called_new_page_);
   EXPECT_EQ("fr", fake_translate_driver_.details_->adopted_language);
@@ -528,7 +561,7 @@ TEST_F(TranslateAgentBrowserTest, BackToTranslatablePage) {
 
   GoBack(GURL("data:text/html;charset=utf-8,<html><head>"
               "<meta http-equiv=\"content-language\" content=\"es\">"
-              "</head><body>This page is in Spanish.</body></html>"),
+              "</head><body>E</body></html>"),
          back_state);
 
   base::RunLoop().RunUntilIdle();
