@@ -81,7 +81,7 @@ directory_test(async (t, root) => {
   // Cannot rename handle with an active writable.
   const stream = await handle.createWritable();
   await promise_rejects_dom(
-      t, 'InvalidStateError', handle.rename('file-after'));
+      t, 'NoModificationAllowedError', handle.rename('file-after'));
 
   // Can move handle once the writable is closed.
   await stream.close();
@@ -97,7 +97,7 @@ directory_test(async (t, root) => {
   // Cannot overwrite a handle with an active writable.
   const stream = await handle_dest.createWritable();
   await promise_rejects_dom(
-      t, 'InvalidStateError', handle.rename('file-after'));
+      t, 'NoModificationAllowedError', handle.rename('file-after'));
 
   // Can move handle once the writable is closed.
   await stream.close();

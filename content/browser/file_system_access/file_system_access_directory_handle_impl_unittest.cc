@@ -370,15 +370,16 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
     EXPECT_TRUE(write_lock.has_value());
 
     base::RunLoop loop;
-    handle->RemoveEntry(
-        base_name,
-        /*recurse=*/false,
-        base::BindLambdaForTesting([&](blink::mojom::FileSystemAccessErrorPtr
-                                           result) {
-          EXPECT_EQ(result->status,
-                    blink::mojom::FileSystemAccessStatus::kOperationAborted);
-          EXPECT_TRUE(base::PathExists(file));
-        }).Then(loop.QuitClosure()));
+    handle->RemoveEntry(base_name,
+                        /*recurse=*/false,
+                        base::BindLambdaForTesting(
+                            [&](blink::mojom::FileSystemAccessErrorPtr result) {
+                              EXPECT_EQ(result->status,
+                                        blink::mojom::FileSystemAccessStatus::
+                                            kNoModificationAllowedError);
+                              EXPECT_TRUE(base::PathExists(file));
+                            })
+                            .Then(loop.QuitClosure()));
     loop.Run();
   }
 

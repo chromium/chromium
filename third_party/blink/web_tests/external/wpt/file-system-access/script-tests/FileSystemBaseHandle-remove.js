@@ -80,7 +80,7 @@ directory_test(async (t, root) => {
   await createFileWithContents(t, 'file-to-keep', 'abc', root);
 
   const writable = await handle.createWritable();
-  await promise_rejects_dom(t, 'AbortError', handle.remove());
+  await promise_rejects_dom(t, 'NoModificationAllowedError', handle.remove());
 
   await writable.close();
   assert_array_equals(

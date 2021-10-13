@@ -162,7 +162,7 @@ directory_test(async (t, root) => {
 
   // Cannot move handle with an active writable.
   const stream = await file.createWritable();
-  await promise_rejects_dom(t, 'InvalidStateError', file.move(dir_dest));
+  await promise_rejects_dom(t, 'NoModificationAllowedError', file.move(dir_dest));
 
   assert_array_equals(
       await getSortedDirectoryEntries(root), ['dir-dest/', 'dir-src/']);
@@ -185,7 +185,7 @@ directory_test(async (t, root) => {
 
   // Cannot move handle with an active writable.
   const stream = await file.createWritable();
-  await promise_rejects_dom(t, 'InvalidStateError', file.move(dir_dest));
+  await promise_rejects_dom(t, 'NoModificationAllowedError', file.move(dir_dest));
 
   assert_array_equals(
       await getSortedDirectoryEntries(root), ['dir-dest/', 'dir-src/']);
@@ -210,7 +210,7 @@ directory_test(async (t, root) => {
 
   // Cannot overwrite handle with an active writable.
   const stream = await file_dest.createWritable();
-  await promise_rejects_dom(t, 'InvalidStateError', file.move(dir_dest));
+  await promise_rejects_dom(t, 'NoModificationAllowedError', file.move(dir_dest));
 
   assert_array_equals(
       await getSortedDirectoryEntries(root), ['dir-dest/', 'dir-src/']);
@@ -238,7 +238,7 @@ directory_test(async (t, root) => {
   // Cannot overwrite handle with an active writable.
   const stream = await file_dest.createWritable();
   await promise_rejects_dom(
-      t, 'InvalidStateError', file.move(dir_dest, 'file-dest'));
+      t, 'NoModificationAllowedError', file.move(dir_dest, 'file-dest'));
 
   assert_array_equals(
       await getSortedDirectoryEntries(root), ['dir-dest/', 'dir-src/']);

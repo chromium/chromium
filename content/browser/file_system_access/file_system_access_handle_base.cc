@@ -334,7 +334,7 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
       manager()->TakeWriteLock(url(), WriteLockType::kExclusive);
   if (!source_write_lock.has_value()) {
     std::move(callback).Run(file_system_access_error::FromStatus(
-        blink::mojom::FileSystemAccessStatus::kInvalidState));
+        blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError));
     return;
   }
   locks.emplace_back(std::move(source_write_lock.value()));
@@ -346,7 +346,7 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
         manager()->TakeWriteLock(dest_url, WriteLockType::kExclusive);
     if (!dest_write_lock.has_value()) {
       std::move(callback).Run(file_system_access_error::FromStatus(
-          blink::mojom::FileSystemAccessStatus::kInvalidState));
+          blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError));
       return;
     }
     locks.emplace_back(std::move(dest_write_lock.value()));
@@ -398,7 +398,7 @@ void FileSystemAccessHandleBase::DoRemove(
   auto write_lock = manager()->TakeWriteLock(url, lock_type);
   if (!write_lock.has_value()) {
     std::move(callback).Run(file_system_access_error::FromStatus(
-        blink::mojom::FileSystemAccessStatus::kOperationAborted));
+        blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError));
     return;
   }
   write_locks.push_back(std::move(write_lock.value()));
