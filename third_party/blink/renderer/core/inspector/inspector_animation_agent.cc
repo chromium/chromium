@@ -355,7 +355,7 @@ Response InspectorAnimationAgent::seekAnimations(
     if (!clone->Paused())
       clone->play();
     clone->SetCurrentTimeInternal(
-        AnimationTimeDelta::FromMillisecondsD(current_time));
+        ANIMATION_TIME_DELTA_FROM_MILLISECONDS(current_time));
   }
   return Response::Success();
 }

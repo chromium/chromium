@@ -361,7 +361,7 @@ TEST_F(AnimationDocumentTimelineTest, PlaybackRateFastWithOriginTime) {
 }
 
 TEST_F(AnimationDocumentTimelineTest, PauseForTesting) {
-  AnimationTimeDelta seek_time = AnimationTimeDelta::FromSecondsD(1);
+  AnimationTimeDelta seek_time = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
   timing.fill_mode = Timing::FillMode::FORWARDS;
   auto* anim1 = MakeGarbageCollected<KeyframeEffect>(
       element.Get(), CreateEmptyEffectModel(), timing);
@@ -380,8 +380,8 @@ TEST_F(AnimationDocumentTimelineTest, PauseForTesting) {
 }
 
 TEST_F(AnimationDocumentTimelineTest, DelayBeforeAnimationStart) {
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(2);
-  timing.start_delay = AnimationTimeDelta::FromSecondsD(5);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(2);
+  timing.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(5);
 
   auto* keyframe_effect = MakeGarbageCollected<KeyframeEffect>(
       element.Get(), CreateEmptyEffectModel(), timing);
@@ -416,8 +416,8 @@ TEST_F(AnimationDocumentTimelineTest, UseAnimationAfterTimelineDeref) {
 }
 
 TEST_F(AnimationDocumentTimelineTest, PlayAfterDocumentDeref) {
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(2);
-  timing.start_delay = AnimationTimeDelta::FromSecondsD(5);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(2);
+  timing.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(5);
 
   DocumentTimeline* timeline = &document->Timeline();
   document = nullptr;

@@ -54,7 +54,7 @@ static inline double TimingCalculationEpsilon() {
 }
 
 static inline AnimationTimeDelta TimeTolerance() {
-  return AnimationTimeDelta::FromSecondsD(0.000001 /*one microsecond*/);
+  return ANIMATION_TIME_DELTA_FROM_SECONDS(0.000001 /*one microsecond*/);
 }
 
 static inline bool IsWithinAnimationTimeEpsilon(double a, double b) {
@@ -427,7 +427,7 @@ static inline absl::optional<AnimationTimeDelta> CalculateIterationTime(
     return absl::make_optional(iteration_duration);
 
   DCHECK(!offset_active_time->is_max());
-  AnimationTimeDelta iteration_time = AnimationTimeDelta::FromSecondsD(
+  AnimationTimeDelta iteration_time = ANIMATION_TIME_DELTA_FROM_SECONDS(
       fmod(offset_active_time->InSecondsF(), iteration_duration.InSecondsF()));
 
   // This implements step 3 of

@@ -32,7 +32,7 @@ Timing::PlaybackDirection ConvertPlaybackDirection(const String& direction) {
 absl::optional<AnimationTimeDelta> ConvertIterationDuration(
     const V8UnionCSSNumericValueOrStringOrUnrestrictedDouble* duration) {
   if (duration->IsUnrestrictedDouble()) {
-    return AnimationTimeDelta::FromMillisecondsD(
+    return ANIMATION_TIME_DELTA_FROM_MILLISECONDS(
         duration->GetAsUnrestrictedDouble());
   }
   return absl::nullopt;
@@ -194,14 +194,14 @@ bool TimingInput::Update(Timing& timing,
     DCHECK(std::isfinite(input->delay()));
     changed |= UpdateValueIfChanged(
         timing.start_delay,
-        AnimationTimeDelta::FromMillisecondsD(input->delay()));
+        ANIMATION_TIME_DELTA_FROM_MILLISECONDS(input->delay()));
     timing.SetTimingOverride(Timing::kOverrideStartDelay);
   }
   if (input->hasEndDelay()) {
     DCHECK(std::isfinite(input->endDelay()));
     changed |= UpdateValueIfChanged(
         timing.end_delay,
-        AnimationTimeDelta::FromMillisecondsD(input->endDelay()));
+        ANIMATION_TIME_DELTA_FROM_MILLISECONDS(input->endDelay()));
     timing.SetTimingOverride(Timing::kOverrideEndDelay);
   }
   if (input->hasFill()) {

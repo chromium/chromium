@@ -396,7 +396,7 @@ bool Animation::ConvertCSSNumberishToTime(
         CSSPrimitiveValue::UnitType::kNumber);
     if (numberish_as_number) {
       time =
-          AnimationTimeDelta::FromMillisecondsD(numberish_as_number->value());
+          ANIMATION_TIME_DELTA_FROM_MILLISECONDS(numberish_as_number->value());
       return true;
     }
 
@@ -404,7 +404,7 @@ bool Animation::ConvertCSSNumberishToTime(
         numberish->GetAsCSSNumericValue()->to(
             CSSPrimitiveValue::UnitType::kMilliseconds);
     if (numberish_as_milliseconds) {
-      time = AnimationTimeDelta::FromMillisecondsD(
+      time = ANIMATION_TIME_DELTA_FROM_MILLISECONDS(
           numberish_as_milliseconds->value());
       return true;
     }
@@ -412,7 +412,7 @@ bool Animation::ConvertCSSNumberishToTime(
     CSSUnitValue* numberish_as_seconds = numberish->GetAsCSSNumericValue()->to(
         CSSPrimitiveValue::UnitType::kSeconds);
     if (numberish_as_seconds) {
-      time = AnimationTimeDelta::FromSecondsD(numberish_as_seconds->value());
+      time = ANIMATION_TIME_DELTA_FROM_SECONDS(numberish_as_seconds->value());
       return true;
     }
 
@@ -426,7 +426,7 @@ bool Animation::ConvertCSSNumberishToTime(
     return false;
   }
 
-  time = AnimationTimeDelta::FromMillisecondsD(numberish->GetAsDouble());
+  time = ANIMATION_TIME_DELTA_FROM_MILLISECONDS(numberish->GetAsDouble());
   return true;
 }
 
@@ -2256,7 +2256,7 @@ bool Animation::Update(TimingUpdateReason reason) {
       inherited_time = CurrentTimeInternal();
       // Special case for end-exclusivity when playing backwards.
       if (inherited_time == AnimationTimeDelta() && EffectivePlaybackRate() < 0)
-        inherited_time = AnimationTimeDelta::FromSecondsD(-1);
+        inherited_time = ANIMATION_TIME_DELTA_FROM_SECONDS(-1);
 
       inherited_phase = CurrentPhaseInternal();
     }

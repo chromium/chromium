@@ -1576,7 +1576,7 @@ scoped_refptr<const ComputedStyle> CSSAnimations::CalculateBeforeChangeStyle(
       DCHECK(!current_time_numberish->IsCSSNumericValue());
 
       absl::optional<AnimationTimeDelta> current_time =
-          AnimationTimeDelta::FromMillisecondsD(
+          ANIMATION_TIME_DELTA_FROM_MILLISECONDS(
               current_time_numberish->GetAsDouble());
 
       auto* effect = DynamicTo<KeyframeEffect>(animation->effect());

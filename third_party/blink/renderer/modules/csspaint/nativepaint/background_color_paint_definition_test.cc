@@ -48,7 +48,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, SimpleBGColorAnimationNotFallback) {
   )HTML");
 
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
 
   CSSPropertyID property_id = CSSPropertyID::kBackgroundColor;
   Persistent<StringKeyframe> start_keyframe =
@@ -113,7 +113,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, NoBGColorAnimationFallback) {
   )HTML");
 
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
 
   CSSPropertyID property_id = CSSPropertyID::kColor;
   Persistent<StringKeyframe> start_keyframe =
@@ -162,7 +162,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainCompositeAccumulate) {
   )HTML");
 
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
 
   CSSPropertyID property_id = CSSPropertyID::kBackgroundColor;
   Persistent<StringKeyframe> start_keyframe =
@@ -208,7 +208,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, MultipleAnimationsFallback) {
   )HTML");
 
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
 
   CSSPropertyID property_id = CSSPropertyID::kBackgroundColor;
   Persistent<StringKeyframe> start_keyframe =
@@ -270,7 +270,7 @@ TEST_F(BackgroundColorPaintDefinitionTest,
   )HTML");
 
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
 
   CSSPropertyID property_id = CSSPropertyID::kBackgroundColor;
   Persistent<StringKeyframe> start_keyframe =
@@ -345,7 +345,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, TriggerRepaintChangedKeyframe) {
   )HTML");
 
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
 
   CSSPropertyID property_id = CSSPropertyID::kBackgroundColor;
   Persistent<StringKeyframe> start_keyframe =
@@ -413,7 +413,7 @@ TEST_F(BackgroundColorPaintDefinitionTest,
   ASSERT_TRUE(element);
 
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
 
   CSSPropertyID property_id = CSSPropertyID::kBackgroundColor;
   Persistent<StringKeyframe> start_keyframe =

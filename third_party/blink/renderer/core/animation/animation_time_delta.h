@@ -41,14 +41,11 @@ class CORE_EXPORT AnimationTimeDelta {
   constexpr explicit AnimationTimeDelta(base::TimeDelta time_delta)
       : delta_(time_delta.InSecondsF()) {}
 
-  static AnimationTimeDelta FromSecondsD(double time_s) {
-    DCHECK(!std::isnan(time_s));
-    return AnimationTimeDelta(time_s);
-  }
-  static AnimationTimeDelta FromMillisecondsD(double time_ms) {
-    DCHECK(!std::isnan(time_ms));
-    return AnimationTimeDelta(time_ms / 1000);
-  }
+  // Do not use this directly -- use the macros below.
+  constexpr explicit AnimationTimeDelta(double delta) : delta_(delta) {}
+
+#define ANIMATION_TIME_DELTA_FROM_SECONDS(x) AnimationTimeDelta(x)
+#define ANIMATION_TIME_DELTA_FROM_MILLISECONDS(x) AnimationTimeDelta(x / 1000.0)
 
   static constexpr AnimationTimeDelta Max() {
     return AnimationTimeDelta(std::numeric_limits<double>::infinity());
@@ -98,8 +95,6 @@ class CORE_EXPORT AnimationTimeDelta {
   }
 
  protected:
-  constexpr explicit AnimationTimeDelta(double delta) : delta_(delta) {}
-
   // The time delta represented by this |AnimationTimeDelta|, in seconds. May be
   // negative, in which case the end of the delta is before the start.
   double delta_;
@@ -133,6 +128,9 @@ CORE_EXPORT std::ostream& operator<<(std::ostream& os,
 // When compiling in TimeDelta-based mode, AnimationTimeDelta is equivalent to
 // base::TimeDelta.
 using AnimationTimeDelta = base::TimeDelta;
+
+#define ANIMATION_TIME_DELTA_FROM_SECONDS(x) base::Seconds(x)
+#define ANIMATION_TIME_DELTA_FROM_MILLISECONDS(x) base::Milliseconds(x)
 
 #endif
 

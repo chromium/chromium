@@ -127,7 +127,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // Used to convert time values to proportional values.
   absl::optional<AnimationTimeDelta> GetDuration() const override {
     // Any arbitrary value should be able to be used here.
-    return absl::make_optional(AnimationTimeDelta::FromSecondsD(100));
+    return absl::make_optional(ANIMATION_TIME_DELTA_FROM_SECONDS(100));
   }
 
  protected:

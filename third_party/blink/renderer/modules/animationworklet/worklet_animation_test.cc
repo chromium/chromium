@@ -57,7 +57,7 @@ KeyframeEffectModelBase* CreateEffectModel() {
 
 KeyframeEffect* CreateKeyframeEffect(Element* element) {
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
   return MakeGarbageCollected<KeyframeEffect>(element, CreateEffectModel(),
                                               timing);
 }

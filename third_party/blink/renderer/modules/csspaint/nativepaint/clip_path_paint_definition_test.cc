@@ -31,7 +31,7 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationNotFallback) {
   )HTML");
 
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
 
   CSSPropertyID property_id = CSSPropertyID::kClipPath;
   Persistent<StringKeyframe> start_keyframe =

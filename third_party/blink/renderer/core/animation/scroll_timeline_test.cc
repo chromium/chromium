@@ -58,7 +58,7 @@ HeapVector<Member<ScrollTimelineOffset>> CreateScrollOffsets(
 
 Animation* CreateTestAnimation(AnimationTimeline* timeline) {
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(0.1);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(0.1);
   return Animation::Create(MakeGarbageCollected<KeyframeEffect>(
                                nullptr,
                                MakeGarbageCollected<StringKeyframeEffectModel>(
@@ -366,7 +366,7 @@ TEST_F(ScrollTimelineTest, AttachOrDetachAnimationWithNullScrollSource) {
 
   NonThrowableExceptionState exception_state;
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
   Animation* animation =
       Animation::Create(MakeGarbageCollected<KeyframeEffect>(
                             nullptr,
@@ -399,7 +399,7 @@ TEST_F(ScrollTimelineTest, AnimationIsGarbageCollectedWhenScrollerIsRemoved) {
                                                GetElementById("scroller"));
   NonThrowableExceptionState exception_state;
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
   Animation* animation =
       Animation::Create(MakeGarbageCollected<KeyframeEffect>(
                             nullptr,
@@ -558,7 +558,7 @@ TEST_F(ScrollTimelineTest, ScheduleFrameOnlyWhenScrollOffsetChanges) {
 
   NonThrowableExceptionState exception_state;
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
   Animation* scroll_animation =
       Animation::Create(MakeGarbageCollected<KeyframeEffect>(
                             nullptr,
@@ -611,7 +611,7 @@ TEST_F(ScrollTimelineTest, ScheduleFrameWhenScrollerLayoutChanges) {
                               MakeGarbageCollected<ScrollTimelineOffset>()));
   NonThrowableExceptionState exception_state;
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
   Animation* scroll_animation =
       Animation::Create(MakeGarbageCollected<KeyframeEffect>(
                             nullptr,
@@ -657,7 +657,7 @@ TEST_F(ScrollTimelineTest,
                               MakeGarbageCollected<ScrollTimelineOffset>()));
   NonThrowableExceptionState exception_state;
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
   Animation* scroll_animation =
       Animation::Create(MakeGarbageCollected<KeyframeEffect>(
                             nullptr,
@@ -737,7 +737,7 @@ TEST_F(ScrollTimelineTest, FinishedAnimationPlaysOnReversedScrolling) {
                                                scroller_element);
   NonThrowableExceptionState exception_state;
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(0.1);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(0.1);
   Animation* scroll_animation =
       Animation::Create(MakeGarbageCollected<KeyframeEffect>(
                             nullptr,
@@ -781,7 +781,7 @@ TEST_F(ScrollTimelineTest, CancelledAnimationDetachedFromTimeline) {
                                                GetElementById("scroller"));
   NonThrowableExceptionState exception_state;
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(0.1);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(0.1);
   Animation* scroll_animation =
       Animation::Create(MakeGarbageCollected<KeyframeEffect>(
                             nullptr,
@@ -834,7 +834,7 @@ TEST_F(ScrollTimelineTest,
                                                GetElementById("scroller"));
   NonThrowableExceptionState exception_state;
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(0.1);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(0.1);
   Animation* scroll_animation =
       Animation::Create(MakeGarbageCollected<KeyframeEffect>(
                             nullptr,

@@ -20,7 +20,7 @@ TEST(InertEffectTest, IsCurrent) {
 
   {
     Timing timing;
-    timing.iteration_duration = AnimationTimeDelta::FromSecondsD(1000);
+    timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1000);
 
     auto* inert_effect = MakeGarbageCollected<InertEffect>(
         opacity_model, timing, /* paused */ false, AnimationTimeDelta(),
@@ -35,8 +35,8 @@ TEST(InertEffectTest, IsCurrent) {
 
   {
     Timing timing;
-    timing.iteration_duration = AnimationTimeDelta::FromSecondsD(1000);
-    timing.start_delay = AnimationTimeDelta::FromSecondsD(500);
+    timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1000);
+    timing.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(500);
 
     auto* inert_effect = MakeGarbageCollected<InertEffect>(
         opacity_model, timing, /* paused */ false, AnimationTimeDelta(),
@@ -51,8 +51,8 @@ TEST(InertEffectTest, IsCurrent) {
 
   {
     Timing timing;
-    timing.iteration_duration = AnimationTimeDelta::FromSecondsD(1000);
-    timing.start_delay = AnimationTimeDelta::FromSecondsD(500);
+    timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1000);
+    timing.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(500);
 
     auto* inert_effect = MakeGarbageCollected<InertEffect>(
         opacity_model, timing, /* paused */ false, AnimationTimeDelta(),

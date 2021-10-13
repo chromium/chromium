@@ -51,7 +51,7 @@ KeyframeEffect* CreateSimpleKeyframeEffectForTest(Element* target,
                                                   String value_start,
                                                   String value_end) {
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(1000);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1000);
 
   auto* model =
       CreateSimpleKeyframeEffectModelForTest(property, value_start, value_end);

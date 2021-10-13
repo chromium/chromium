@@ -306,7 +306,7 @@ TEST_F(AnimationTimingInputTest, TimingInputIterationDuration) {
   V8TestingScope scope;
   bool success;
   EXPECT_EQ(
-      AnimationTimeDelta::FromSecondsD(1.1),
+      ANIMATION_TIME_DELTA_FROM_SECONDS(1.1),
       ApplyTimingInputNumber(scope.GetIsolate(), "duration", 1100, success)
           .iteration_duration);
   EXPECT_TRUE(success);

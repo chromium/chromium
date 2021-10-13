@@ -972,7 +972,7 @@ void Internals::pauseAnimations(double pause_time,
 
   GetFrame()->View()->UpdateAllLifecyclePhasesForTest();
   GetFrame()->GetDocument()->Timeline().PauseAnimationsForTesting(
-      AnimationTimeDelta::FromSecondsD(pause_time));
+      ANIMATION_TIME_DELTA_FROM_SECONDS(pause_time));
 }
 
 bool Internals::isCompositedAnimation(Animation* animation) {
