@@ -1732,7 +1732,25 @@ v8::Local<v8::Promise> ReadableStream::Cancel(ScriptState* script_state,
   // 4. Perform ! ReadableStreamClose(stream).
   Close(script_state, stream);
 
-  // 5. Let sourceCancelPromise be ! stream.[[readableStreamController]].
+  // 5. Let reader be stream.[[reader]].
+  ReadableStreamGenericReader* reader = stream->reader_;
+
+  // 6. If reader is not undefined and reader implements
+  // ReadableStreamBYOBReader,
+  if (reader && reader->IsBYOBReader()) {
+    //   a. For each readIntoRequest of reader.[[readIntoRequests]],
+    ReadableStreamBYOBReader* byob_reader =
+        To<ReadableStreamBYOBReader>(reader);
+    for (ReadableStreamBYOBReader::ReadIntoRequest* request :
+         byob_reader->read_into_requests_) {
+      //     i. Perform readIntoRequest's close steps, given undefined.
+      request->CloseSteps(script_state, nullptr);
+    }
+    //   b. Set reader.[[readIntoRequests]] to an empty list.
+    byob_reader->read_into_requests_.clear();
+  }
+
+  // 7. Let sourceCancelPromise be ! stream.[[readableStreamController]].
   //    [[CancelSteps]](reason).
   v8::Local<v8::Promise> source_cancel_promise =
       stream->readable_stream_controller_->CancelSteps(script_state, reason);
@@ -1747,7 +1765,7 @@ v8::Local<v8::Promise> ReadableStream::Cancel(ScriptState* script_state,
     void CallWithLocal(v8::Local<v8::Value>) override {}
   };
 
-  // 6. Return the result of transforming sourceCancelPromise with a
+  // 8. Return the result of transforming sourceCancelPromise with a
   //    fulfillment handler that returns undefined.
   return StreamThenPromise(
       script_state->GetContext(), source_cancel_promise,

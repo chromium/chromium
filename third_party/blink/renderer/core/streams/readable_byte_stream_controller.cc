@@ -1442,13 +1442,8 @@ v8::Local<v8::Promise> ReadableByteStreamController::CancelSteps(
     ScriptState* script_state,
     v8::Local<v8::Value> reason) {
   // https://streams.spec.whatwg.org/#rbs-controller-private-cancel
-  // 1. If this.[[pendingPullIntos]] is not empty,
-  if (!pending_pull_intos_.IsEmpty()) {
-    //   a. Let firstDescriptor be this.[[pendingPullIntos]][0].
-    PullIntoDescriptor* first_descriptor = pending_pull_intos_[0];
-    //   b. Set firstDescriptor’s bytes filled to 0.
-    first_descriptor->bytes_filled = 0;
-  }
+  // 1. Perform ! ReadableByteStreamControllerClearPendingPullIntos(this).
+  ClearPendingPullIntos(this);
   // 2. Perform ! ResetQueue(this).
   ResetQueue(this);
   // 3. Let result be the result of performing this.[[cancelAlgorithm]], passing

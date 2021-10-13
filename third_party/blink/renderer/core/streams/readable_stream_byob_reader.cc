@@ -33,7 +33,11 @@ void ReadableStreamBYOBReader::ReadIntoRequest::CloseSteps(
     DOMArrayBufferView* chunk) const {
   resolver_->Resolve(script_state,
                      ReadableStream::CreateReadResult(
-                         script_state, ToV8(chunk, script_state), true, true));
+                         script_state,
+                         chunk ? ToV8(chunk, script_state)
+                               : static_cast<v8::Local<v8::Value>>(
+                                     v8::Undefined(script_state->GetIsolate())),
+                         true, true));
 }
 
 void ReadableStreamBYOBReader::ReadIntoRequest::ErrorSteps(
