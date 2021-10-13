@@ -173,7 +173,12 @@ using signin_metrics::PromoAction;
 
   if (signinResult == SigninCoordinatorResultSuccess &&
       !self.accountManagerService->IsValidIdentity(identity)) {
-    [self presentSignInWithRestrictedAccountAlert];
+    __weak __typeof(self) weakSelf = self;
+    // A dispatch is needed to ensure that the alert is displayed after
+    // dismissing the signin view.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSelf presentSignInWithRestrictedAccountAlert];
+    });
     return;
   }
 
