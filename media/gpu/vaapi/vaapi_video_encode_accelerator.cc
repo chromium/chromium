@@ -885,20 +885,14 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
     }
 
     for (auto&& job : jobs) {
-      if (!encoder_->PrepareEncodeJob(*job.get())) {
-        NOTIFY_ERROR(kPlatformFailureError, "Failed preparing an encode job.");
+      TRACE_EVENT0("media,gpu", "VAVEA::FromEncodeToReturn");
+      std::unique_ptr<EncodeResult> result = encoder_->Encode(std::move(job));
+      if (!result) {
+        NOTIFY_ERROR(kPlatformFailureError, "Failed encoding job");
         return;
       }
 
-      TRACE_EVENT0("media,gpu", "VAVEA::FromExecuteToReturn");
-      {
-        TRACE_EVENT0("media,gpu", "VAVEA::Execute");
-        job->Execute();
-      }
-
-      auto metadata = encoder_->GetMetadata(*job, 0u);
-      pending_encode_results_.push(
-          std::make_unique<EncodeResult>(std::move(job), metadata));
+      pending_encode_results_.push(std::move(result));
       TryToReturnBitstreamBuffer();
     }
 

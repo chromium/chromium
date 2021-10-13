@@ -71,14 +71,15 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   gfx::Size GetCodedSize() const override;
   size_t GetMaxNumOfRefFrames() const override;
   std::vector<gfx::Size> GetSVCLayerResolutions() override;
-  bool PrepareEncodeJob(EncodeJob& encode_job) override;
-  BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
-                                      size_t payload_size) override;
 
  private:
   class TemporalLayers;
 
   friend class H264VaapiVideoEncoderDelegateTest;
+
+  bool PrepareEncodeJob(EncodeJob& encode_job) override;
+  BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
+                                      size_t payload_size) override;
 
   // Fill current_sps_ and current_pps_ with current encoding state parameters.
   void UpdateSPS();

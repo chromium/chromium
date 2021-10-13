@@ -213,18 +213,14 @@ class VaapiVideoEncoderDelegate {
   // at least this many frames simultaneously for encode to make progress.
   virtual size_t GetMaxNumOfRefFrames() const = 0;
 
-  // Prepares a new |encode_job| to be executed in Accelerator and returns true
-  // on success. The caller may then call Execute() on the job to run it.
-  virtual bool PrepareEncodeJob(EncodeJob& encode_job) = 0;
-
   // Notifies the encoded chunk size in bytes to update a bitrate controller in
   // VaapiVideoEncoderDelegate. This should be called only if
   // VaapiVideoEncoderDelegate is configured with
   // BitrateControl::kConstantQuantizationParameter.
   virtual void BitrateControlUpdate(uint64_t encoded_chunk_size_bytes);
 
-  virtual BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
-                                              size_t payload_size);
+  virtual std::unique_ptr<EncodeResult> Encode(
+      std::unique_ptr<EncodeJob> encode_job);
 
   // Gets the active spatial layer resolutions for K-SVC encoding, VaapiVEA
   // can get this info from the encoder delegate. Returns empty vector on
@@ -240,13 +236,20 @@ class VaapiVideoEncoderDelegate {
                                   scoped_refptr<base::RefCountedBytes> buffer);
 
  protected:
+  virtual BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
+                                              size_t payload_size);
+
   const scoped_refptr<VaapiWrapper> vaapi_wrapper_;
 
   base::RepeatingClosure error_cb_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-};
 
+ private:
+  // Prepares a new |encode_job| to be executed in Accelerator and returns true
+  // on success. The caller may then call Execute() on the job to run it.
+  virtual bool PrepareEncodeJob(EncodeJob& encode_job) = 0;
+};
 }  // namespace media
 
 #endif  // MEDIA_GPU_VAAPI_VAAPI_VIDEO_ENCODER_DELEGATE_H_

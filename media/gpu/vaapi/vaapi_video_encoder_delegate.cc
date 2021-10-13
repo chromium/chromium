@@ -10,6 +10,7 @@
 #include "media/base/video_frame.h"
 #include "media/gpu/codec_picture.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
+#include "media/gpu/macros.h"
 #include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -148,6 +149,20 @@ BitstreamBufferMetadata VaapiVideoEncoderDelegate::GetMetadata(
 
   return BitstreamBufferMetadata(payload_size, encode_job.IsKeyframeRequested(),
                                  encode_job.timestamp());
+}
+
+std::unique_ptr<VaapiVideoEncoderDelegate::EncodeResult>
+VaapiVideoEncoderDelegate::Encode(std::unique_ptr<EncodeJob> encode_job) {
+  if (!PrepareEncodeJob(*encode_job)) {
+    VLOGF(1) << "Failed preparing an encode job";
+    return nullptr;
+  }
+
+  encode_job->Execute();
+
+  auto metadata = GetMetadata(*encode_job, 0u);
+
+  return std::make_unique<EncodeResult>(std::move(encode_job), metadata);
 }
 
 void VaapiVideoEncoderDelegate::SubmitBuffer(

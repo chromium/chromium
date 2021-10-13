@@ -67,10 +67,7 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
                    uint32_t framerate) override;
   gfx::Size GetCodedSize() const override;
   size_t GetMaxNumOfRefFrames() const override;
-  bool PrepareEncodeJob(EncodeJob& encode_job) override;
   void BitrateControlUpdate(uint64_t encoded_chunk_size_bytes) override;
-  BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
-                                      size_t payload_size) override;
   std::vector<gfx::Size> GetSVCLayerResolutions() override;
 
  private:
@@ -83,6 +80,10 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   void set_rate_ctrl_for_testing(std::unique_ptr<VP9RateControl> rate_ctrl);
 
   bool ApplyPendingUpdateRates();
+
+  bool PrepareEncodeJob(EncodeJob& encode_job) override;
+  BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
+                                      size_t payload_size) override;
 
   Vp9FrameHeader GetDefaultFrameHeader(const bool keyframe) const;
   void SetFrameHeader(bool keyframe,
