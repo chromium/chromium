@@ -27,10 +27,6 @@
 #include "ui/gfx/x/keysyms/keysyms.h"
 #include "ui/gfx/x/xproto.h"
 
-#if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
-#endif
-
 namespace ui {
 
 namespace {
@@ -63,11 +59,9 @@ TEST(XEventTranslationTest, KeyEventDomKeyExtraction) {
   EXPECT_EQ(13, keyev->GetCharacter());
   EXPECT_EQ("Enter", keyev->GetCodeString());
 
-#if defined(USE_OZONE)
   KeyEvent copy(keyev.get());
   EXPECT_EQ(ui::DomKey::ENTER, KeyEventTestApi(&copy).dom_key());
   EXPECT_EQ(ui::DomKey::ENTER, copy.GetDomKey());
-#endif
 }
 
 // Ensure KeyEvent::Properties is properly set regardless X11 build config is

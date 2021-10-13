@@ -6,7 +6,7 @@ import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
-assert(use_x11 || ozone_platform_x11)
+assert(ozone_platform_x11)
 
 component("x11") {
   output_name = "x11_window"
@@ -86,16 +86,13 @@ test("x11_unittests") {
     "//ui/gfx:test_support",
     "//ui/gfx/x",
     "//ui/gfx/x:unit_test",
+    "//ui/ozone",
     "//ui/platform_window",
   ]
 
   if (!is_chromeos && !is_chromeos_ash && !is_chromeos_lacros) {
     sources += [ "test/os_exchange_data_provider_x11_unittest.cc" ]
     deps += [ "//ui/base/clipboard:clipboard_types" ]
-  }
-
-  if (use_ozone) {
-    deps += [ "//ui/ozone" ]
   }
 
   configs += [ "//build/config:precompiled_headers" ]
