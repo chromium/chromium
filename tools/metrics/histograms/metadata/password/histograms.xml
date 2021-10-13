@@ -2903,8 +2903,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordProtection.RequestNetworkDuration" units="ms"
-    expires_after="2021-10-10">
-  <owner>vakh@chromium.org</owner>
+    expires_after="2022-10-10">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The time it takes for PasswordProtectionService request. It is not recorded
