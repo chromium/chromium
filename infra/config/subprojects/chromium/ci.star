@@ -16,7 +16,6 @@ def main_console_if_on_branch():
 ci.defaults.set(
     bucket = "ci",
     build_numbers = True,
-    configure_kitchen = True,
     cores = 8,
     cpu = cpu.X86_64,
     executable = "recipe:chromium",
@@ -25,7 +24,6 @@ ci.defaults.set(
     pool = "luci.chromium.ci",
     project_trigger_overrides = {"chromium": settings.project} if not settings.is_main else None,
     service_account = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
-    swarming_tags = ["vpython:native-python-wrapper"],
     triggered_by = ["chromium-gitiles-trigger"],
     # TODO(crbug.com/1129723): set default goma_backend here.
 )
@@ -1084,8 +1082,6 @@ ci.android_fyi_builder(
     execution_timeout = 5 * time.hour,
     main_console_view = main_console_if_on_branch(),
     reclient_instance = rbe_instance.DEFAULT,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     schedule = "triggered",  # triggered manually via Scheduler UI
 )
@@ -1101,8 +1097,6 @@ ci.android_fyi_builder(
     execution_timeout = 4 * time.hour,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = 150,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     schedule = "triggered",  # triggered manually via Scheduler UI
 )
@@ -4129,8 +4123,6 @@ ci.fyi_builder(
     reclient_cache_silo = "Comparison Linux - cache siloed",
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = 250,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
@@ -4152,8 +4144,6 @@ ci.fyi_builder(
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = 500,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
@@ -4169,8 +4159,6 @@ ci.fyi_builder(
     },
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = 500,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     schedule = "triggered",
 )
@@ -4184,8 +4172,6 @@ ci.fyi_builder(
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = 500,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     schedule = "triggered",
 )
@@ -4202,8 +4188,6 @@ ci.fyi_builder(
     },
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = 500,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     schedule = "triggered",
 )
@@ -4217,8 +4201,6 @@ ci.fyi_builder(
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_rewrapper_env = {"RBE_cache_silo": "Linux TSan Builder (reclient)"},
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
@@ -4235,8 +4217,6 @@ ci.fyi_builder(
     reclient_jobs = 250,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_rewrapper_env = {"RBE_cache_silo": "Linux TSan Builder (reclient)"},
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
@@ -4252,8 +4232,6 @@ ci.fyi_builder(
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_rewrapper_env = {"RBE_cache_silo": "TSAN Release (deps-cache) (reclient)"},
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
@@ -4267,8 +4245,6 @@ ci.fyi_builder(
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = 250,
     reclient_rewrapper_env = {"RBE_cache_silo": "Linux TSan Builder (reclient)"},
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     schedule = "triggered",  # triggered manually via Scheduler UI
 )
@@ -4285,8 +4261,6 @@ ci.fyi_builder(
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_rewrapper_env = {"RBE_cache_silo": "Linux TSan Builder (reclient)"},
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
@@ -4302,8 +4276,6 @@ ci.fyi_builder(
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_rewrapper_env = {"RBE_cache_silo": "Linux TSan Builder (reclient)"},
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
@@ -4319,8 +4291,6 @@ ci.fyi_builder(
     goma_backend = None,
     reclient_jobs = 250,
     reclient_instance = rbe_instance.DEFAULT,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
@@ -4336,8 +4306,6 @@ ci.fyi_builder(
     goma_backend = None,
     reclient_jobs = 250,
     reclient_instance = rbe_instance.DEFAULT,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
@@ -4353,8 +4321,6 @@ ci.fyi_builder(
     goma_backend = None,
     reclient_jobs = 250,
     reclient_instance = rbe_instance.DEFAULT,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
@@ -4370,8 +4336,6 @@ ci.fyi_builder(
     goma_backend = None,
     reclient_jobs = 250,
     reclient_instance = rbe_instance.DEFAULT,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
@@ -4387,8 +4351,6 @@ ci.fyi_builder(
     goma_backend = None,
     reclient_jobs = 250,
     reclient_instance = rbe_instance.DEFAULT,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
@@ -4404,8 +4366,6 @@ ci.fyi_builder(
     goma_backend = None,
     reclient_jobs = 250,
     reclient_instance = rbe_instance.DEFAULT,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
@@ -4421,8 +4381,6 @@ ci.fyi_builder(
     goma_backend = None,
     reclient_jobs = 250,
     reclient_instance = rbe_instance.DEFAULT,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
 )
 
 ci.fyi_builder(
@@ -4435,8 +4393,6 @@ ci.fyi_builder(
     goma_backend = None,
     reclient_jobs = 250,
     reclient_instance = rbe_instance.DEFAULT,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
@@ -4449,8 +4405,6 @@ ci.fyi_windows_builder(
     ),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.WINDOWS_DEFAULT,
 )
 
@@ -4465,8 +4419,6 @@ ci.fyi_windows_builder(
     reclient_instance = rbe_instance.DEFAULT,
     reclient_profiler_service = "reclient-win",
     reclient_publish_trace = True,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.WINDOWS_DEFAULT,
 )
 
@@ -4480,8 +4432,6 @@ ci.fyi_mac_builder(
     ),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     description_html = "experiment reclient on mac. removed after the migration. crbug.com/1244441",
 )
 
@@ -4498,8 +4448,6 @@ ci.fyi_mac_builder(
     ),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     description_html = "experiment reclient on mac-arm. removed after the migration. crbug.com/1252626",
 )
 
@@ -4519,8 +4467,6 @@ ci.fyi_builder(
     ),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_REMOVE,
     reclient_rewrapper_env = {"RBE_cache_silo": "chromeos-amd64-generic-rel (reclient)"},
 )
@@ -4534,8 +4480,6 @@ ci.fyi_builder(
     ),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_REMOVE,
     reclient_rewrapper_env = {"RBE_compare": "true"},
     reclient_ensure_verified = True,
@@ -4558,8 +4502,6 @@ ci.fyi_builder(
     ),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_REMOVE,
     reclient_rewrapper_env = {"RBE_cache_silo": "lacros-amd64-generic-rel (reclient)"},
 )
@@ -4580,8 +4522,6 @@ ci.fyi_builder(
     ),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_REMOVE,
     reclient_rewrapper_env = {"RBE_cache_silo": "linux-lacros-builder-rel (reclient)"},
 )
@@ -4756,8 +4696,6 @@ ci.fyi_ios_builder(
     ),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
     description_html = "experiment reclient for ios. remove after the migration. crbug.com/1254986",
 )
 

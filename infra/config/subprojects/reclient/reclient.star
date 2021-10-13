@@ -29,19 +29,16 @@ ci.defaults.set(
     bucket = "reclient",
     build_numbers = True,
     builder_group = "chromium.reclient.fyi",
-    configure_kitchen = True,
     cores = 8,
     cpu = cpu.X86_64,
     executable = "recipe:chromium",
     execution_timeout = 3 * time.hour,
     goma_backend = None,
-    kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,
     pool = "luci.chromium.ci",
     service_account = (
         "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com"
     ),
-    swarming_tags = ["vpython:native-python-wrapper"],
     triggered_by = ["chromium-gitiles-trigger"],
 )
 

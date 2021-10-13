@@ -24,7 +24,6 @@ luci.bucket(
 
 defaults.bucket.set("goma")
 defaults.build_numbers.set(True)
-defaults.configure_kitchen.set(True)
 defaults.cores.set(8)
 defaults.cpu.set(cpu.X86_64)
 defaults.executable.set("recipe:chromium")
@@ -34,7 +33,6 @@ defaults.pool.set("luci.chromium.ci")
 defaults.service_account.set(
     "goma-release-testing@chops-service-accounts.iam.gserviceaccount.com",
 )
-defaults.swarming_tags.set(["vpython:native-python-wrapper"])
 defaults.triggered_by.set(["chromium-gitiles-trigger"])
 
 # Builders appear after the function used to define them, with all builders

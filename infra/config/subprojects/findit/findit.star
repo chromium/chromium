@@ -36,11 +36,9 @@ defaults.bucket.set("findit")
 defaults.build_numbers.set(True)
 defaults.builderless.set(True)
 defaults.ssd.set(True)
-defaults.configure_kitchen.set(True)
 defaults.execution_timeout.set(8 * time.hour)
 defaults.pool.set("luci.chromium.findit")
 defaults.service_account.set("findit-builder@chops-service-accounts.iam.gserviceaccount.com")
-defaults.swarming_tags.set(["vpython:native-python-wrapper"])
 
 defaults.caches.set([
     swarming.cache(

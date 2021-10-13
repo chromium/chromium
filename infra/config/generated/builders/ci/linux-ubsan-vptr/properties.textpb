@@ -6,10 +6,6 @@
     "server_host": "goma.chromium.org",
     "use_luci_auth": true
   },
-  "$kitchen": {
-    "devshell": true,
-    "git_auth": true
-  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [

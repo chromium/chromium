@@ -7,11 +7,6 @@
       "RBE_cache_silo": "Linux TSan Builder (reclient)"
     }
   },
-  "$kitchen": {
-    "devshell": true,
-    "emulate_gce": true,
-    "git_auth": true
-  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [

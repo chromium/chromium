@@ -35,7 +35,6 @@ defaults.executable.set("recipe:chromium")
 defaults.execution_timeout.set(2 * time.hour)
 defaults.os.set(os.LINUX_XENIAL_OR_BIONIC_REMOVE)
 defaults.service_account.set("chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com")
-defaults.swarming_tags.set(["vpython:native-python-wrapper"])
 defaults.triggered_by.set(["chromium-gitiles-trigger"])
 
 defaults.properties.set({

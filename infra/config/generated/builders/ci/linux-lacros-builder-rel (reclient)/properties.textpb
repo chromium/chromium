@@ -6,11 +6,6 @@
       "RBE_cache_silo": "linux-lacros-builder-rel (reclient)"
     }
   },
-  "$kitchen": {
-    "devshell": true,
-    "emulate_gce": true,
-    "git_auth": true
-  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [
