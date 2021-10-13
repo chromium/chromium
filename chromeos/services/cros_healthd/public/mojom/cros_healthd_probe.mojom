@@ -76,22 +76,25 @@ struct ProbeError {
 };
 
 // An enumeration of states a process can be in.
+//
+// NextMinVersion: 1, NextIndex: 8
 [Extensible]
 enum ProcessState {
+  [Default] kUnknown = 7,
   // The process is running.
-  kRunning,
+  kRunning = 0,
   // The process is sleeping in an interruptible wait.
-  kSleeping,
+  kSleeping = 1,
   // The process is waiting in an uninterruptible disk sleep.
-  kWaiting,
+  kWaiting = 2,
   // The process is a zombie.
-  kZombie,
+  kZombie = 3,
   // The process is stopped on a signal.
-  kStopped,
+  kStopped = 4,
   // The process is stopped by tracing.
-  kTracingStop,
+  kTracingStop = 5,
   // The process is dead.
-  kDead,
+  kDead = 6,
 };
 
 // Process probe result. Can either be populated with the ProcessInfo or an
