@@ -23,7 +23,9 @@ class BrowserAppInstanceForwarder
     : public apps::BrowserAppInstanceObserver,
       public crosapi::mojom::BrowserAppInstanceController {
  public:
-  explicit BrowserAppInstanceForwarder(BrowserAppInstanceTracker& tracker);
+  BrowserAppInstanceForwarder(
+      BrowserAppInstanceTracker& tracker,
+      mojo::Remote<crosapi::mojom::BrowserAppInstanceRegistry>& registry);
   ~BrowserAppInstanceForwarder() override;
 
   BrowserAppInstanceForwarder(const BrowserAppInstanceForwarder&) = delete;
