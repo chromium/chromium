@@ -556,8 +556,17 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
       -1);
 }
 
+#if defined(OS_MAC)
+// Flaky on Mac: https://crbug.com/1259680
+#define MAYBE_OfflineItemCollection_SingleFileMetadata \
+  DISABLED_OfflineItemCollection_SingleFileMetadata
+#else
+#define MAYBE_OfflineItemCollection_SingleFileMetadata \
+  OfflineItemCollection_SingleFileMetadata
+#endif
+
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
-                       OfflineItemCollection_SingleFileMetadata) {
+                       MAYBE_OfflineItemCollection_SingleFileMetadata) {
   // Starts a Background Fetch for a single to-be-downloaded file and waits for
   // the fetch to be registered with the offline items collection. We then
   // verify that all the appropriate values have been set.
