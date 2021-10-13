@@ -29,6 +29,7 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -45,6 +46,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.UiDisableIf;
 
 /**
  * Tests different scenarios when the bookmark personalized signin promo is not shown.
@@ -114,6 +116,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1258657
     public void testPromoImpressionCountIncrementAfterDisplayingSigninPromo() {
         Assert.assertEquals(0,
                 SharedPreferencesManager.getInstance().readInt(
