@@ -129,6 +129,7 @@ const base::Feature kSupportForAddPasswordsInSettings = {
 const base::Feature kTreatNewPasswordHeuristicsAsReliable = {
     "TreatNewPasswordHeuristicsAsReliable", base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if defined(OS_ANDROID)
 // Enables use of Google Mobile Services for password storage. Chrome's local
 // database will be unused but kept in sync for local passwords.
 const base::Feature kUnifiedPasswordManagerAndroid{
@@ -139,6 +140,7 @@ const base::Feature kUnifiedPasswordManagerAndroid{
 // source of truth.
 const base::Feature kUnifiedPasswordManagerShadowAndroid{
     "UnifiedPasswordManagerShadowAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
 // Enables support of sending votes on username first flow. The votes are sent
 // on single username forms and are based on user interaction with the save

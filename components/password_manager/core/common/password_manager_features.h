@@ -9,6 +9,7 @@
 // module.
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 
 namespace password_manager {
 
@@ -39,8 +40,10 @@ extern const base::Feature kReparseServerPredictionsFollowingFormChange;
 extern const base::Feature kSecondaryServerFieldPredictions;
 extern const base::Feature kSupportForAddPasswordsInSettings;
 extern const base::Feature kTreatNewPasswordHeuristicsAsReliable;
+#if defined(OS_ANDROID)
 extern const base::Feature kUnifiedPasswordManagerAndroid;
 extern const base::Feature kUnifiedPasswordManagerShadowAndroid;
+#endif
 extern const base::Feature kUsernameFirstFlow;
 extern const base::Feature kUsernameFirstFlowFilling;
 extern const base::Feature kUsernameFirstFlowFallbackCrowdsourcing;
