@@ -12,8 +12,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingBottom="8dp"
-    android:paddingTop="8dp"
-    app:animatePaddingWhenDisabled="true" >
+    android:paddingTop="8dp" >
   <LinearLayout
       android:id="@+id/main_content"
       android:layout_width="match_parent"

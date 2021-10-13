@@ -134,7 +134,6 @@ public class SectionHeaderView extends LinearLayout {
     private ListMenuButton mMenuView;
 
     private @Nullable SectionHeaderTabListener mTabListener;
-    private boolean mAnimatePaddingWhenDisabled;
     private @Nullable View mDivider;
     private LinearLayout mContent;
     private @Nullable FrameLayout mOptionsPanel;
@@ -149,13 +148,6 @@ public class SectionHeaderView extends LinearLayout {
         super(context, attrs);
         TypedArray attrArray = context.getTheme().obtainStyledAttributes(
                 attrs, R.styleable.SectionHeaderView, 0, 0);
-
-        try {
-            mAnimatePaddingWhenDisabled = attrArray.getBoolean(
-                    R.styleable.SectionHeaderView_animatePaddingWhenDisabled, false);
-        } finally {
-            attrArray.recycle();
-        }
     }
 
     @Override
@@ -181,14 +173,8 @@ public class SectionHeaderView extends LinearLayout {
                     ChromeColors.getSurfaceColor(getContext(), R.dimen.card_elevation));
         }
 
-        int touchSize;
-        // If we are animating padding, add additional touch area around the menu.
-        if (mAnimatePaddingWhenDisabled) {
-            touchSize =
-                    getResources().getDimensionPixelSize(R.dimen.feed_v2_header_menu_touch_size);
-        } else {
-            touchSize = 0;
-        }
+        int touchSize =
+                getResources().getDimensionPixelSize(R.dimen.feed_v2_header_menu_touch_size);
 
         // #getHitRect() will not be valid until the first layout pass completes. Additionally, if
         // the header's enabled state changes, |mMenuView| will move slightly sideways, and the
@@ -328,72 +314,64 @@ public class SectionHeaderView extends LinearLayout {
 
     /** Expand the header to indicate the section has been enabled. */
     void expandHeader() {
-        if (mAnimatePaddingWhenDisabled) {
-            int finalHorizontalPadding = 0;
-            setBackground(false);
+        int finalHorizontalPadding = 0;
+        setBackground(false);
 
-            if (mTabLayout != null) {
-                // Re-enable indicator to cached indicator.
-                mTabLayout.setSelectedTabIndicator(mEnabledIndicatorDrawable);
-                setTextsEnabled(true);
-            }
-
-            if (mDivider != null) {
-                mDivider.setVisibility(VISIBLE);
-            }
-
-            ValueAnimator animator = ValueAnimator.ofInt(getPaddingLeft(), finalHorizontalPadding);
-            animator.addUpdateListener((ValueAnimator animation) -> {
-                int horizontalPadding = (Integer) animation.getAnimatedValue();
-                setPadding(/*left*/ horizontalPadding, getPaddingTop(),
-                        /*right*/ horizontalPadding, getPaddingBottom());
-            });
-            animator.setDuration(ANIMATION_DURATION_MS);
-            animator.start();
-        } else {
-            setBackground(false);
+        if (mTabLayout != null) {
+            // Re-enable indicator to cached indicator.
+            mTabLayout.setSelectedTabIndicator(mEnabledIndicatorDrawable);
+            setTextsEnabled(true);
         }
+
+        if (mDivider != null) {
+            mDivider.setVisibility(VISIBLE);
+        }
+
+        ValueAnimator animator = ValueAnimator.ofInt(getPaddingLeft(), finalHorizontalPadding);
+        animator.addUpdateListener((ValueAnimator animation) -> {
+            int horizontalPadding = (Integer) animation.getAnimatedValue();
+            setPadding(/*left*/ horizontalPadding, getPaddingTop(),
+                    /*right*/ horizontalPadding, getPaddingBottom());
+        });
+        animator.setDuration(ANIMATION_DURATION_MS);
+        animator.start();
     }
 
     /** Collapse the header to indicate the section has been disabled. */
     void collapseHeader() {
-        if (mAnimatePaddingWhenDisabled) {
-            int finalHorizontalPadding =
-                    getResources().getDimensionPixelSize(R.dimen.feed_v2_header_disabled_padding);
-            ValueAnimator animator = ValueAnimator.ofInt(getPaddingLeft(), finalHorizontalPadding);
-            animator.addUpdateListener((ValueAnimator animation) -> {
-                int horizontalPadding = (Integer) animation.getAnimatedValue();
-                setPadding(/*left*/ horizontalPadding, getPaddingTop(),
-                        /*right*/ horizontalPadding, getPaddingBottom());
-            });
-            animator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    // Add the card background after animation.
-                    setBackground(true);
-                    if (mTabLayout != null) {
-                        // Don't show the selected tab indicator if feed is off.
-                        // We use a TRANSPARENT drawable because setting indicator to null defaults
-                        // to drawable provided by TabLayout, and setting the indicatorColor to
-                        // TRANSPARENT will just use colors provided by the original drawable.
-                        if (mNoIndicatorDrawable == null) {
-                            mNoIndicatorDrawable = new ColorDrawable(Color.TRANSPARENT);
-                        }
-                        mTabLayout.setSelectedTabIndicator(mNoIndicatorDrawable);
-                        setTextsEnabled(false);
+        int finalHorizontalPadding =
+                getResources().getDimensionPixelSize(R.dimen.feed_v2_header_disabled_padding);
+        ValueAnimator animator = ValueAnimator.ofInt(getPaddingLeft(), finalHorizontalPadding);
+        animator.addUpdateListener((ValueAnimator animation) -> {
+            int horizontalPadding = (Integer) animation.getAnimatedValue();
+            setPadding(/*left*/ horizontalPadding, getPaddingTop(),
+                    /*right*/ horizontalPadding, getPaddingBottom());
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                // Add the card background after animation.
+                setBackground(true);
+                if (mTabLayout != null) {
+                    // Don't show the selected tab indicator if feed is off.
+                    // We use a TRANSPARENT drawable because setting indicator to null defaults
+                    // to drawable provided by TabLayout, and setting the indicatorColor to
+                    // TRANSPARENT will just use colors provided by the original drawable.
+                    if (mNoIndicatorDrawable == null) {
+                        mNoIndicatorDrawable = new ColorDrawable(Color.TRANSPARENT);
                     }
-                    if (mDivider != null) {
-                        mDivider.setVisibility(INVISIBLE);
-                    }
+                    mTabLayout.setSelectedTabIndicator(mNoIndicatorDrawable);
+                    setTextsEnabled(false);
                 }
-            });
-            animator.setDuration(ANIMATION_DURATION_MS);
-            animator.start();
-            if (mOptionsPanel != null && mOptionsPanel.getVisibility() == VISIBLE) {
-                collapseOptionsPanel();
+                if (mDivider != null) {
+                    mDivider.setVisibility(INVISIBLE);
+                }
             }
-        } else {
-            setBackground(true);
+        });
+        animator.setDuration(ANIMATION_DURATION_MS);
+        animator.start();
+        if (mOptionsPanel != null && mOptionsPanel.getVisibility() == VISIBLE) {
+            collapseOptionsPanel();
         }
     }
 

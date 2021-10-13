@@ -14,8 +14,7 @@
     android:minHeight="@dimen/snippets_article_header_height"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:layoutDirection="locale"
-    app:animatePaddingWhenDisabled="true">
+    android:layoutDirection="locale">
 
     <!-- Note: Setting textDirection to "locale" makes sure that a non-translated English word in
          the title text view is aligned based on the device locale and not the text content.

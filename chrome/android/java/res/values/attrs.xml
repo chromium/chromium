@@ -22,7 +22,6 @@
     </declare-styleable>
 
     <declare-styleable name="SectionHeaderView">
-       <attr name="animatePaddingWhenDisabled" format="boolean"/>
        <!-- This is used by the BadgeDrawable used by this view, declared here
        because its attr definition is not part of the official Material
        library release yet (1.4.0). This will be unread in public Chromium, but
