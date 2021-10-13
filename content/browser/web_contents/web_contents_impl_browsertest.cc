@@ -913,8 +913,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                    ->network_info->always_access_network);
 }
 
+// Flaky on all platforms: https://crbug.com/1259766
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       ResourceLoadCompleteIsMainFrame) {
+                       DISABLED_ResourceLoadCompleteIsMainFrame) {
   ResourceLoadObserver observer(shell());
   ASSERT_TRUE(embedded_test_server()->Start());
 
