@@ -15,6 +15,7 @@ static_library("phonehub") {
     "browser_tabs_model_controller.h",
     "browser_tabs_model_provider.cc",
     "browser_tabs_model_provider.h",
+    "camera_roll_download_manager.h",
     "camera_roll_item.cc",
     "camera_roll_item.h",
     "camera_roll_manager.cc",
