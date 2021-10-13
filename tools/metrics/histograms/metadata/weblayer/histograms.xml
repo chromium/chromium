@@ -31,34 +31,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="WebLayer.Startup.ClassLoaderCreationTime" units="ms"
-    expires_after="M98">
+<histogram name="WebLayer.Startup.{Component}CreationTime" units="ms"
+    expires_after="2022-10-13">
   <owner>cduvall@chromium.org</owner>
   <owner>src/weblayer/OWNERS</owner>
   <summary>
-    The time it takes for the WebLayer class loader to be created. Recorded at
+    The time it takes for the WebLayer {Component} to be created. Recorded at
     WebLayer startup.
   </summary>
-</histogram>
-
-<histogram name="WebLayer.Startup.ContextCreationTime" units="ms"
-    expires_after="M98">
-  <owner>cduvall@chromium.org</owner>
-  <owner>src/weblayer/OWNERS</owner>
-  <summary>
-    The time it takes for the WebLayer context to be created. Recorded at
-    WebLayer startup.
-  </summary>
-</histogram>
-
-<histogram name="WebLayer.Startup.WebLayerLoaderCreationTime" units="ms"
-    expires_after="M98">
-  <owner>cduvall@chromium.org</owner>
-  <owner>src/weblayer/OWNERS</owner>
-  <summary>
-    The time it takes for the WebLayer loader to be created. Recorded at
-    WebLayer startup.
-  </summary>
+  <token key="Component">
+    <variant name="ClassLoader" summary="class loader"/>
+    <variant name="Context" summary="context"/>
+    <variant name="WebLayerLoader" summary="loader"/>
+  </token>
 </histogram>
 
 </histograms>
