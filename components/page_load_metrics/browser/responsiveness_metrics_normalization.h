@@ -11,6 +11,7 @@
 
 namespace page_load_metrics {
 
+constexpr uint64_t kHighPercentileUpdateFrequency = 50;
 // The struct that stores normalized user interactions latencies.
 struct NormalizedInteractionLatencies {
   // The maximum value of user interaction latencies.
@@ -20,9 +21,18 @@ struct NormalizedInteractionLatencies {
   // worst(maximum), the sum, the second worst and an approximation of high
   // quantile.
   base::TimeDelta worst_latency_over_budget;
-  base::TimeDelta total_latency_over_budget;
+  base::TimeDelta sum_of_latency_over_budget;
   base::TimeDelta pseudo_second_worst_latency_over_budget;
   base::TimeDelta high_percentile_latency_over_budget;
+
+  // A min priority queue. The top is the smallest base::TimeDelta in the queue.
+  std::priority_queue<base::TimeDelta,
+                      std::vector<base::TimeDelta>,
+                      std::greater<>>
+      worst_ten_latencies_over_budget;
+
+  NormalizedInteractionLatencies();
+  ~NormalizedInteractionLatencies();
 };
 
 // The struct that stores all normalization results for a page load.
