@@ -67,7 +67,7 @@ class BASE_EXPORT SupportsUserData {
   // Externally-defined data accessible by key.
   DataMap user_data_;
   // Guards usage of |user_data_|
-  SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 // Adapter class that releases a refcounted object when the
