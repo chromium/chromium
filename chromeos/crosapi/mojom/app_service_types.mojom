@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 9
+// Next MinVersion: 10
 
 module crosapi.mojom;
 
@@ -374,11 +374,13 @@ struct Permission {
 // The types of permissions in App Service.
 [Stable, Extensible]
 enum PermissionType {
-  kUnknown         = 0,
-  kCamera          = 1,
-  kLocation        = 2,
-  kMicrophone      = 3,
-  kNotifications   = 4,
+  [Default] kUnknown              = 0,
+  kCamera                         = 1,
+  kLocation                       = 2,
+  kMicrophone                     = 3,
+  kNotifications                  = 4,
+  [MinVersion=9] kContacts        = 5,
+  [MinVersion=9] kStorage         = 6,
 };
 
 [Stable]

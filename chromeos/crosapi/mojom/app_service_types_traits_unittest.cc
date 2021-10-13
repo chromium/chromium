@@ -1077,4 +1077,30 @@ TEST(AppServiceTypesTraitsTest, RoundTripPermissions) {
     EXPECT_EQ(permission->value, output->value);
     EXPECT_EQ(permission->is_managed, output->is_managed);
   }
+  {
+    auto permission = apps::mojom::Permission::New();
+    permission->permission_type = apps::mojom::PermissionType::kContacts;
+    permission->value = apps::mojom::PermissionValue::New();
+    permission->value->set_tristate_value(apps::mojom::TriState::kAllow);
+    permission->is_managed = true;
+    apps::mojom::PermissionPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
+        permission, output));
+    EXPECT_EQ(permission->permission_type, output->permission_type);
+    EXPECT_EQ(permission->value, output->value);
+    EXPECT_EQ(permission->is_managed, output->is_managed);
+  }
+  {
+    auto permission = apps::mojom::Permission::New();
+    permission->permission_type = apps::mojom::PermissionType::kStorage;
+    permission->value = apps::mojom::PermissionValue::New();
+    permission->value->set_tristate_value(apps::mojom::TriState::kBlock);
+    permission->is_managed = false;
+    apps::mojom::PermissionPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
+        permission, output));
+    EXPECT_EQ(permission->permission_type, output->permission_type);
+    EXPECT_EQ(permission->value, output->value);
+    EXPECT_EQ(permission->is_managed, output->is_managed);
+  }
 }
