@@ -337,8 +337,8 @@ TEST_P(WaylandWindowTest, ApplyPendingStatesAndCommit) {
   EXPECT_CALL(*mock_surface, SetBufferScale(2)).Times(0);
 
   std::vector<gfx::Rect> region_px = {gfx::Rect{0, 0, 500, 300}};
-  window_->root_surface()->SetOpaqueRegion(region_px);
-  window_->root_surface()->SetInputRegion(region_px.back());
+  window_->root_surface()->SetOpaqueRegion(&region_px);
+  window_->root_surface()->SetInputRegion(&region_px.back());
   window_->root_surface()->SetSurfaceBufferScale(2);
 
   Sync();
@@ -389,7 +389,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
               SetWindowGeometry(bounds_with_insets.x(), bounds_with_insets.y(),
                                 bounds_with_insets.width(),
                                 bounds_with_insets.height()));
-  window_->SetDecorationInsets(kDecorationInsets);
+  window_->SetDecorationInsets(&kDecorationInsets);
   // Setting the decoration insets does not trigger the immediate update of the
   // window geometry.  Emulate updating the visual size (sending the frame
   // update) for that.
@@ -420,7 +420,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
               SetWindowGeometry(bounds_with_insets.x(), bounds_with_insets.y(),
                                 bounds_with_insets.width(),
                                 bounds_with_insets.height()));
-  window_->SetDecorationInsets(kDecorationInsets_2x);
+  window_->SetDecorationInsets(&kDecorationInsets_2x);
   // Setting the decoration insets does not trigger the immediate update of the
   // window geometry.  Emulate updating the visual size (sending the frame
   // update) for that.

@@ -185,28 +185,34 @@ void WaylandSurface::SetSurfaceBufferScale(int32_t scale) {
   }
 }
 
-void WaylandSurface::SetOpaqueRegion(const std::vector<gfx::Rect>& region_px) {
-  pending_state_.opaque_region_px.clear();
-  for (const auto& rect : region_px)
-    pending_state_.opaque_region_px.push_back(rect);
+void WaylandSurface::SetOpaqueRegion(const std::vector<gfx::Rect>* region_px) {
+  if (region_px)
+    pending_state_.opaque_region_px = *region_px;
+  else
+    pending_state_.opaque_region_px = absl::nullopt;
 
   if (apply_state_immediately_) {
     state_.opaque_region_px.swap(pending_state_.opaque_region_px);
     wl_surface_set_opaque_region(
         surface_.get(),
-        CreateAndAddRegion(region_px, state_.buffer_scale).get());
+        region_px ? CreateAndAddRegion(*region_px, state_.buffer_scale).get()
+                  : nullptr);
   }
 }
 
-void WaylandSurface::SetInputRegion(const gfx::Rect& region_px) {
-  pending_state_.input_region_px = region_px;
+void WaylandSurface::SetInputRegion(const gfx::Rect* region_px) {
+  if (region_px)
+    pending_state_.input_region_px = *region_px;
+  else
+    pending_state_.input_region_px = absl::nullopt;
 
   if (apply_state_immediately_ && root_window_ &&
       root_window_->ShouldUseNativeFrame()) {
-    state_.input_region_px = region_px;
+    state_.input_region_px = pending_state_.input_region_px;
     wl_surface_set_opaque_region(
         surface_.get(),
-        CreateAndAddRegion({region_px}, state_.buffer_scale).get());
+        region_px ? CreateAndAddRegion({*region_px}, state_.buffer_scale).get()
+                  : nullptr);
   }
 }
 
@@ -366,9 +372,12 @@ void WaylandSurface::ApplyPendingState() {
     // for the compositor to ignore the parts of the input region that fall
     // outside of the surface.
     wl_surface_set_input_region(
-        surface_.get(), CreateAndAddRegion({pending_state_.input_region_px},
-                                           pending_state_.buffer_scale)
-                            .get());
+        surface_.get(),
+        pending_state_.input_region_px
+            ? CreateAndAddRegion({*pending_state_.input_region_px},
+                                 pending_state_.buffer_scale)
+                  .get()
+            : nullptr);
   }
 
   // It's important to set opaque region for opaque windows (provides
@@ -377,9 +386,12 @@ void WaylandSurface::ApplyPendingState() {
       (pending_state_.opaque_region_px != state_.opaque_region_px ||
        pending_state_.buffer_scale != state_.buffer_scale)) {
     wl_surface_set_opaque_region(
-        surface_.get(), CreateAndAddRegion(pending_state_.opaque_region_px,
-                                           pending_state_.buffer_scale)
-                            .get());
+        surface_.get(),
+        pending_state_.opaque_region_px
+            ? CreateAndAddRegion(*pending_state_.opaque_region_px,
+                                 pending_state_.buffer_scale)
+                  .get()
+            : nullptr);
   }
 
   // Buffer-local coordinates are in pixels, surface coordinates are in DIP.
@@ -517,9 +529,7 @@ WaylandSurface::State::~State() = default;
 
 WaylandSurface::State& WaylandSurface::State::operator=(
     WaylandSurface::State& other) {
-  opaque_region_px.clear();
-  for (const auto& rect : other.opaque_region_px)
-    opaque_region_px.push_back(rect);
+  opaque_region_px = other.opaque_region_px;
   input_region_px = other.input_region_px;
   acquire_fence = std::move(other.acquire_fence);
   buffer_id = other.buffer_id;

@@ -376,10 +376,15 @@ bool WaylandWindow::IsTranslucentWindowOpacitySupported() const {
   return true;
 }
 
-void WaylandWindow::SetDecorationInsets(gfx::Insets insets_px) {
-  if (frame_insets_px_ == insets_px)
+void WaylandWindow::SetDecorationInsets(const gfx::Insets* insets_px) {
+  if ((!frame_insets_px_ && !insets_px) ||
+      (frame_insets_px_ && insets_px && *frame_insets_px_ == *insets_px)) {
     return;
-  frame_insets_px_ = insets_px;
+  }
+  if (insets_px)
+    frame_insets_px_ = *insets_px;
+  else
+    frame_insets_px_ = absl::nullopt;
   UpdateDecorations();
   connection_->ScheduleFlush();
 }
@@ -487,7 +492,8 @@ absl::optional<std::vector<gfx::Rect>> WaylandWindow::GetWindowShape() const {
 
 void WaylandWindow::UpdateWindowMask() {
   UpdateWindowShape();
-  root_surface_->SetOpaqueRegion({gfx::Rect(visual_size_px())});
+  std::vector<gfx::Rect> region{gfx::Rect{visual_size_px()}};
+  root_surface_->SetOpaqueRegion(&region);
 }
 
 void WaylandWindow::UpdateWindowShape() {}
@@ -587,7 +593,8 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   PlatformEventSource::GetInstance()->AddPlatformEventDispatcher(this);
   delegate_->OnAcceleratedWidgetAvailable(GetWidget());
 
-  root_surface_->SetOpaqueRegion({gfx::Rect(bounds_px_.size())});
+  std::vector<gfx::Rect> region{gfx::Rect{bounds_px_.size()}};
+  root_surface_->SetOpaqueRegion(&region);
   root_surface_->ApplyPendingState();
   connection_->ScheduleFlush();
 
@@ -817,7 +824,8 @@ bool WaylandWindow::CommitOverlays(
             (*overlay_iter)->enable_blend
                 ? gfx::Rect()
                 : gfx::Rect((*overlay_iter)->bounds_rect.size());
-        (*iter)->wayland_surface()->SetOpaqueRegion({region_px});
+        std::vector<gfx::Rect> opaque_region{region_px};
+        (*iter)->wayland_surface()->SetOpaqueRegion(&opaque_region);
         (*iter)->wayland_surface()->SetOpacity((*overlay_iter)->opacity);
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id,
@@ -865,7 +873,8 @@ bool WaylandWindow::CommitOverlays(
             (*overlay_iter)->enable_blend
                 ? gfx::Rect()
                 : gfx::Rect((*overlay_iter)->bounds_rect.size());
-        (*iter)->wayland_surface()->SetOpaqueRegion({region_px});
+        std::vector<gfx::Rect> opaque_region{region_px};
+        (*iter)->wayland_surface()->SetOpaqueRegion(&opaque_region);
         (*iter)->wayland_surface()->SetOpacity((*overlay_iter)->opacity);
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id,
@@ -923,7 +932,8 @@ bool WaylandWindow::CommitOverlays(
     gfx::Rect region_px = (*split)->enable_blend
                               ? gfx::Rect()
                               : gfx::Rect((*split)->bounds_rect.size());
-    primary_subsurface_->wayland_surface()->SetOpaqueRegion({region_px});
+    std::vector<gfx::Rect> opaque_region{region_px};
+    primary_subsurface_->wayland_surface()->SetOpaqueRegion(&opaque_region);
     primary_subsurface_->wayland_surface()->SetOpacity((*split)->opacity);
     connection_->buffer_manager_host()->CommitBufferInternal(
         primary_subsurface_->wayland_surface(), (*split)->buffer_id,
