@@ -1032,7 +1032,7 @@ void NearbyNotificationManager::OnNearbyDeviceTryingToShareClicked() {
 
   std::string path =
       std::string(chromeos::settings::mojom::kNearbyShareSubpagePath) +
-      "?receive";
+      "?receive&entrypoint=notification";
   settings_opener_->ShowSettingsPage(profile_, path);
 }
 

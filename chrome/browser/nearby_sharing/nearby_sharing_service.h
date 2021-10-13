@@ -173,6 +173,11 @@ class NearbySharingService : public KeyedService {
   virtual NearbyNotificationDelegate* GetNotificationDelegate(
       const std::string& notification_id) = 0;
 
+  // Records via Standard Feature Usage Logging whether or not advertising
+  // successfully starts when the user clicks the "Device nearby is sharing"
+  // notification.
+  virtual void RecordFastInitiationNotificationUsage(bool success) = 0;
+
   virtual NearbyShareSettings* GetSettings() = 0;
   virtual NearbyShareHttpNotifier* GetHttpNotifier() = 0;
   virtual NearbyShareLocalDeviceDataManager* GetLocalDeviceDataManager() = 0;

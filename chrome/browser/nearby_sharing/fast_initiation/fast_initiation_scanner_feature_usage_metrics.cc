@@ -46,3 +46,7 @@ void FastInitiationScannerFeatureUsageMetrics::SetBluetoothAdapter(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   bluetooth_adapter_ = std::move(adapter);
 }
+
+void FastInitiationScannerFeatureUsageMetrics::RecordUsage(bool success) {
+  feature_usage_metrics_.RecordUsage(success);
+}

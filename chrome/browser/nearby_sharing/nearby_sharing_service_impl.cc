@@ -967,6 +967,11 @@ NearbyNotificationDelegate* NearbySharingServiceImpl::GetNotificationDelegate(
   return nearby_notification_manager_->GetNotificationDelegate(notification_id);
 }
 
+void NearbySharingServiceImpl::RecordFastInitiationNotificationUsage(
+    bool success) {
+  fast_initiation_scanning_metrics_->RecordUsage(success);
+}
+
 NearbyShareSettings* NearbySharingServiceImpl::GetSettings() {
   return &settings_;
 }

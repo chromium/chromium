@@ -142,6 +142,21 @@ Polymer({
   },
 
   /**
+   * Records via Standard Feature Usage Logging whether or not advertising
+   * successfully starts when the user clicks the "Device nearby is sharing"
+   * notification.
+   * @param {boolean} success
+   * @private
+   */
+  recordFastInitiationNotificationUsage_(success) {
+    const url = new URL(document.URL);
+    const urlParams = new URLSearchParams(url.search);
+    if (urlParams.get('entrypoint') === 'notification') {
+      this.receiveManager_.recordFastInitiationNotificationUsage(success);
+    }
+  },
+
+  /**
    * Mojo callback when high visibility changes. If high visibility is false
    * due to a user cancel, we force this dialog to close as well.
    * @param {boolean} inHighVisibility
@@ -162,6 +177,7 @@ Polymer({
     if (inHighVisibility) {
       this.startAdvertisingFailed_ = false;
       this.nearbyProcessStopped_ = false;
+      this.recordFastInitiationNotificationUsage_(/*success=*/ true);
     }
   },
 
@@ -194,6 +210,7 @@ Polymer({
    */
   onStartAdvertisingFailure() {
     this.startAdvertisingFailed_ = true;
+    this.recordFastInitiationNotificationUsage_(/*success=*/ false);
   },
 
   /**

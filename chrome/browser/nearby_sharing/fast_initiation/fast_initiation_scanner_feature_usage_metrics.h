@@ -28,6 +28,7 @@ class FastInitiationScannerFeatureUsageMetrics final
   bool IsEnabled() const override;
 
   void SetBluetoothAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
+  void RecordUsage(bool success);
 
  private:
   PrefService* pref_service_;

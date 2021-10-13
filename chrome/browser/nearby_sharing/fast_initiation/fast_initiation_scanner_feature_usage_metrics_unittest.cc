@@ -139,3 +139,33 @@ TEST_F(FastInitiationScannerFeatureUsageMetricsTest, NotEnabled_Managed) {
   EXPECT_FALSE(feature_usage_metrics.IsEnabled());
   ExpectBucketCounts(/*is_eligible=*/true, /*is_enabled=*/false);
 }
+
+TEST_F(FastInitiationScannerFeatureUsageMetricsTest, RecordUsage) {
+  FastInitiationScannerFeatureUsageMetrics feature_usage_metrics(
+      &pref_service_);
+  feature_usage_metrics.SetBluetoothAdapter(mock_bluetooth_adapter_);
+
+  base::HistogramTester histograms;
+  histograms.ExpectBucketCount(
+      kHistogramName,
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 0);
+  histograms.ExpectBucketCount(
+      kHistogramName,
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure, 0);
+
+  feature_usage_metrics.RecordUsage(/*success=*/true);
+  histograms.ExpectBucketCount(
+      kHistogramName,
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
+  histograms.ExpectBucketCount(
+      kHistogramName,
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure, 0);
+
+  feature_usage_metrics.RecordUsage(/*success=*/false);
+  histograms.ExpectBucketCount(
+      kHistogramName,
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
+  histograms.ExpectBucketCount(
+      kHistogramName,
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure, 1);
+}

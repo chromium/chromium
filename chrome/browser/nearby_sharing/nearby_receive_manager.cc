@@ -124,6 +124,10 @@ void NearbyReceiveManager::Reject(const base::UnguessableToken& share_target_id,
                         std::move(callback)));
 }
 
+void NearbyReceiveManager::RecordFastInitiationNotificationUsage(bool success) {
+  nearby_sharing_service_->RecordFastInitiationNotificationUsage(success);
+}
+
 void NearbyReceiveManager::OnHighVisibilityChanged(bool in_high_visibility) {
   for (auto& remote : observers_set_) {
     remote->OnHighVisibilityChanged(in_high_visibility);
