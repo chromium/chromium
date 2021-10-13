@@ -82,17 +82,8 @@ PasswordStoreFactory::BuildServiceInstanceFor(
 #if defined(OS_WIN) || defined(OS_ANDROID) || defined(OS_MAC) || \
     defined(USE_OZONE)
 
-  // TODO(crbug.com/1217071): Remove feature-guard once PasswordStoreImpl does
-  // not implement the PasswordStore abstract class anymore.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerAndroid)) {
-    ps = new password_manager::PasswordStore(
-        password_manager::PasswordStoreBackend::Create(std::move(login_db)));
-  } else {
-    ps = new password_manager::PasswordStore(
-        std::make_unique<password_manager::PasswordStoreImpl>(
-            std::move(login_db)));
-  }
+  ps = new password_manager::PasswordStore(
+      password_manager::PasswordStoreBackend::Create(std::move(login_db)));
 #else
   NOTIMPLEMENTED();
 #endif
