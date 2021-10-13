@@ -36,9 +36,8 @@ _AAPT_PATH = lazy.WeakConstant(lambda: build_tools.GetPath('aapt'))
 _ANDROID_UTILS_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT, 'build',
                                    'android', 'gyp')
 _BUILD_UTILS_PATH = os.path.join(host_paths.BUILD_PATH, 'util')
-
-with host_paths.SysPath(os.path.join(host_paths.DIR_SOURCE_ROOT, 'build')):
-  import gn_helpers  # pylint: disable=import-error
+_READOBJ_PATH = os.path.join(constants.ANDROID_NDK_ROOT, 'toolchains', 'llvm',
+                             'prebuilt', 'linux-x86_64', 'bin', 'llvm-readobj')
 
 with host_paths.SysPath(host_paths.BUILD_COMMON_PATH):
   import perf_tests_results_helper  # pylint: disable=import-error
@@ -171,18 +170,16 @@ def _MeasureApkSignatureBlock(zip_file):
   return start_of_central_directory - end_of_last_file
 
 
-def _RunReadelf(so_path, options, tool_prefix=''):
-  return cmd_helper.GetCmdOutput([
-      tool_prefix + 'readobj',
-      '--elf-output-style=GNU',
-  ] + options + [so_path])
+def _RunReadobj(so_path, options):
+  return cmd_helper.GetCmdOutput([_READOBJ_PATH, '--elf-output-style=GNU'] +
+                                 options + [so_path])
 
 
-def _ExtractLibSectionSizesFromApk(apk_path, lib_path, tool_prefix):
+def _ExtractLibSectionSizesFromApk(apk_path, lib_path):
   with Unzip(apk_path, filename=lib_path) as extracted_lib_path:
     grouped_section_sizes = collections.defaultdict(int)
     no_bits_section_sizes, section_sizes = _CreateSectionNameSizeMap(
-        extracted_lib_path, tool_prefix)
+        extracted_lib_path)
     for group_name, section_names in _READELF_SIZES_METRICS.items():
       for section_name in section_names:
         if section_name in section_sizes:
@@ -199,8 +196,8 @@ def _ExtractLibSectionSizesFromApk(apk_path, lib_path, tool_prefix):
     return grouped_section_sizes
 
 
-def _CreateSectionNameSizeMap(so_path, tool_prefix):
-  stdout = _RunReadelf(so_path, ['-S', '--wide'], tool_prefix)
+def _CreateSectionNameSizeMap(so_path):
+  stdout = _RunReadobj(so_path, ['-S', '--wide'])
   section_sizes = {}
   no_bits_section_sizes = {}
   # Matches  [ 2] .hash HASH 00000000006681f0 0001f0 003154 04   A  3   0  8
@@ -347,7 +344,6 @@ def _AnalyzeInternal(apk_path,
                      report_func,
                      dex_stats_collector,
                      out_dir,
-                     tool_prefix,
                      apks_path=None,
                      split_name=None):
   """Analyse APK to determine size contributions of different file classes.
@@ -534,8 +530,7 @@ def _AnalyzeInternal(apk_path,
   main_lib_info = native_code.FindLargest()
   native_code_unaligned_size = 0
   for lib_info in native_code.AllEntries():
-    section_sizes = _ExtractLibSectionSizesFromApk(apk_path, lib_info.filename,
-                                                   tool_prefix)
+    section_sizes = _ExtractLibSectionSizesFromApk(apk_path, lib_info.filename)
     native_code_unaligned_size += sum(v for k, v in section_sizes.items()
                                       if k != 'bss')
     # Size of main .so vs remaining.
@@ -657,7 +652,7 @@ def Unzip(zip_file, filename=None):
     yield unzipped_files[0]
 
 
-def _ConfigOutDirAndToolsPrefix(out_dir):
+def _ConfigOutDir(out_dir):
   if out_dir:
     constants.SetOutputDirectory(out_dir)
   else:
@@ -666,10 +661,8 @@ def _ConfigOutDirAndToolsPrefix(out_dir):
       constants.CheckOutputDirectory()
       out_dir = constants.GetOutDirectory()
     except Exception:  # pylint: disable=broad-except
-      return out_dir, ''
-  build_vars = gn_helpers.ReadBuildVars(out_dir)
-  tool_prefix = os.path.join(out_dir, build_vars['android_tool_prefix'])
-  return out_dir, tool_prefix
+      pass
+  return out_dir
 
 
 def _IterSplits(namelist):
@@ -691,16 +684,15 @@ def _ExtractToTempFile(zip_obj, subpath, temp_file):
   temp_file.flush()
 
 
-def _AnalyzeApkOrApks(report_func, apk_path, args):
+def _AnalyzeApkOrApks(report_func, apk_path, out_dir):
   # Create DexStatsCollector here to track unique methods across base & chrome
   # modules.
   dex_stats_collector = method_count.DexStatsCollector()
-  out_dir, tool_prefix = _ConfigOutDirAndToolsPrefix(args.out_dir)
 
   if apk_path.endswith('.apk'):
     sdk_version, _, _ = _ParseManifestAttributes(apk_path)
     _AnalyzeInternal(apk_path, sdk_version, report_func, dex_stats_collector,
-                     out_dir, tool_prefix)
+                     out_dir)
   elif apk_path.endswith('.apks'):
     with tempfile.NamedTemporaryFile(suffix='.apk') as f:
       with zipfile.ZipFile(apk_path) as z:
@@ -731,7 +723,6 @@ def _AnalyzeApkOrApks(report_func, apk_path, args):
                                   inner_report_func,
                                   inner_dex_stats_collector,
                                   out_dir,
-                                  tool_prefix,
                                   apks_path=apk_path,
                                   split_name=split_name)
           report_func('DFM_' + split_name, 'Size with hindi', size, 'bytes')
@@ -777,13 +768,14 @@ def _ResourceSizes(args):
   for prefix, path in specs:
     if path:
       reporter.trace_title_prefix = prefix
-      child_dex_stats_collector = _AnalyzeApkOrApks(reporter, path, args)
+      child_dex_stats_collector = _AnalyzeApkOrApks(reporter, path,
+                                                    args.out_dir)
       dex_stats_collector.MergeFrom(prefix, child_dex_stats_collector)
 
   if any(path for _, path in specs):
     reporter.SynthesizeTotals(dex_stats_collector.GetUniqueMethodCount())
   else:
-    _AnalyzeApkOrApks(reporter, args.input, args)
+    _AnalyzeApkOrApks(reporter, args.input, args.out_dir)
 
   if chartjson:
     _DumpChartJson(args, chartjson)
@@ -881,6 +873,7 @@ def main():
       '--trichrome-library', help='Path to Trichrome Library .apk')
   args = argparser.parse_args()
 
+  args.out_dir = _ConfigOutDir(args.out_dir)
   devil_chromium.Initialize(output_directory=args.out_dir)
 
   # TODO(bsheedy): Remove this once uses of --chartjson have been removed.
