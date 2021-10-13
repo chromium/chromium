@@ -125,7 +125,7 @@ export function createRoutine(routine, blocking) {
 export function getRoutineGroups(type, isArcEnabled) {
   let localNetworkGroup = new RoutineGroup(
       [
-        createRoutine(RoutineType.kGatewayCanBePinged, true),
+        createRoutine(RoutineType.kGatewayCanBePinged, false),
         createRoutine(RoutineType.kLanConnectivity, true),
       ],
       'localNetworkGroupLabel');
@@ -157,8 +157,7 @@ export function getRoutineGroups(type, isArcEnabled) {
     // Add ARC routines to their corresponding groups.
     nameResolutionGroup.addRoutine(
         (createRoutine(RoutineType.kArcDnsResolution, false)));
-    internetConnectivityGroup.addRoutine(
-        (createRoutine(RoutineType.kArcPing, false)));
+    localNetworkGroup.addRoutine((createRoutine(RoutineType.kArcPing, false)));
     internetConnectivityGroup.addRoutine(
         (createRoutine(RoutineType.kArcHttp, false)));
   }

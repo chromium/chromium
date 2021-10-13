@@ -64,23 +64,26 @@ export function diagnosticsUtilsTestSuite() {
     loadTimeData.overrideValues({enableArcNetworkDiagnostics: true});
     let isArcEnabled = loadTimeData.getBoolean('enableArcNetworkDiagnostics');
     let routineGroups = getRoutineGroups(NetworkType.kWiFi, isArcEnabled);
+    let [
+      localNetworkGroup,
+       nameResolutionGroup,
+       wifiGroup,
+       internetConnectivityGroup,
+      ]
+      = routineGroups;
 
     // All groups should be present.
     assertEquals(routineGroups.length, 4);
 
     // WiFi group should exist and all three WiFi routines should be present.
-    let wifiGroup = routineGroups[2];
     assertEquals(wifiGroup.routines.length, 3);
     assertEquals(wifiGroup.groupName, 'wifiGroupLabel');
 
     // ARC routines should be present in their categories.
-    let nameResolutionGroup = routineGroups[1];
     assertTrue(
         nameResolutionGroup.routines.includes(RoutineType.kArcDnsResolution));
 
-    let internetConnectivityGroup = routineGroups[3];
-    assertTrue(
-        internetConnectivityGroup.routines.includes(RoutineType.kArcPing));
+    assertTrue(localNetworkGroup.routines.includes(RoutineType.kArcPing));
     assertTrue(
         internetConnectivityGroup.routines.includes(RoutineType.kArcHttp));
   });
@@ -98,14 +101,12 @@ export function diagnosticsUtilsTestSuite() {
     loadTimeData.overrideValues({enableArcNetworkDiagnostics: false});
     let isArcEnabled = loadTimeData.getBoolean('enableArcNetworkDiagnostics');
     let routineGroups = getRoutineGroups(NetworkType.kEthernet, isArcEnabled);
-
-    let nameResolutionGroup = routineGroups[1];
+    let [localNetworkGroup, nameResolutionGroup, internetConnectivityGroup] =
+        routineGroups;
     assertFalse(
         nameResolutionGroup.routines.includes(RoutineType.kArcDnsResolution));
 
-    let internetConnectivityGroup = routineGroups[2];
-    assertFalse(
-        internetConnectivityGroup.routines.includes(RoutineType.kArcPing));
+    assertFalse(localNetworkGroup.routines.includes(RoutineType.kArcPing));
     assertFalse(
         internetConnectivityGroup.routines.includes(RoutineType.kArcHttp));
   });
