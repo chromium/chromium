@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 
+#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
@@ -129,7 +131,13 @@ void SideSearchTabContentsHelper::CreateSidePanelContents() {
           web_contents()->GetBrowserContext(), nullptr));
   task_manager::WebContentsTags::CreateForTabContents(
       side_panel_contents_.get());
+
+  // Sets helpers required for the side contents.
   PrefsTabHelper::CreateForWebContents(side_panel_contents_.get());
+  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
+      side_panel_contents_.get());
+  extensions::TabHelper::CreateForWebContents(side_panel_contents_.get());
+
   SideSearchSideContentsHelper::CreateForWebContents(
       side_panel_contents_.get());
   GetSideContentsHelper()->SetDelegate(this);

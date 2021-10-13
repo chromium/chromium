@@ -5,9 +5,11 @@
 #include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
 
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
@@ -25,6 +27,11 @@
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
+#include "extensions/common/manifest.h"
+#include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "ui/views/controls/button/image_button.h"
@@ -475,6 +482,195 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   NotifyButtonClick(browser());
   EXPECT_TRUE(side_panel->GetVisible());
   EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 0));
+}
+
+// Base class for Extensions API tests for the side panel WebContents.
+class SideSearchExtensionsTest : public SideSearchBrowserControllerTest {
+ public:
+  void SetUpOnMainThread() override {
+    SideSearchBrowserControllerTest::SetUpOnMainThread();
+    // We want all navigations to be routed through the side panel for the
+    // purposes of testing extension support.
+    auto* config = SideSearchConfig::Get(browser()->profile());
+    config->SetShouldNavigateInSidePanelCalback(
+        base::BindRepeating([](const GURL& url) { return true; }));
+    config->SetCanShowSidePanelForURLCallback(
+        base::BindRepeating([](const GURL& url) { return true; }));
+
+    // Navigate to the first URL and open the side panel. This should create and
+    // initiate a navigation in the side panel WebContents.
+    NavigateActiveTab(browser(),
+                      embedded_test_server()->GetURL("initial.example", "/"));
+    NotifyButtonClick(browser());
+    EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+    EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+
+    // Wait for the side panel to finish loading the test URL.
+    content::WebContents* side_contents = GetSidePanelContentsFor(browser(), 0);
+    EXPECT_TRUE(content::WaitForLoadStop(side_contents));
+  }
+
+  void NavigateInSideContents(const GURL& navigation_url,
+                              const GURL& expected_url) {
+    content::WebContents* side_contents = GetSidePanelContentsFor(browser(), 0);
+
+    content::TestNavigationObserver nav_observer(side_contents);
+    side_contents->GetController().LoadURLWithParams(
+        content::NavigationController::LoadURLParams(navigation_url));
+    nav_observer.Wait();
+
+    EXPECT_EQ(expected_url, side_contents->GetLastCommittedURL());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SideSearchExtensionsTest,
+                       ContentScriptsExecuteInSidePanel) {
+  const GURL first_url = embedded_test_server()->GetURL("first.example", "/");
+  const GURL second_url = embedded_test_server()->GetURL("second.example", "/");
+  const GURL third_url = embedded_test_server()->GetURL("third.example", "/");
+  constexpr char kManifest[] = R"(
+      {
+        "name": "Side Search Content Script Test",
+        "manifest_version": 2,
+        "version": "0.1",
+        "content_scripts": [{
+          "matches": ["*://*.second.example/*"],
+          "js": ["script.js"],
+          "run_at": "document_end"
+        }]
+      }
+  )";
+  constexpr char kContentScript[] =
+      "document.body.innerText = 'content script has run';";
+  extensions::TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("script.js"), kContentScript);
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ChromeTestExtensionLoader(browser()->profile())
+          .LoadExtension(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  content::WebContents* side_contents = GetSidePanelContentsFor(browser(), 0);
+
+  // The extension should not run for the first URL.
+  NavigateInSideContents(first_url, first_url);
+  EXPECT_EQ("", content::EvalJs(side_contents, "document.body.innerText;"));
+
+  // The extension should run for the second URL.
+  NavigateInSideContents(second_url, second_url);
+  EXPECT_EQ("content script has run",
+            content::EvalJs(side_contents, "document.body.innerText;"));
+
+  // The extension should not run for the third URL.
+  NavigateInSideContents(third_url, third_url);
+  EXPECT_EQ("", content::EvalJs(side_contents, "document.body.innerText;"));
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchExtensionsTest,
+                       WebRequestInterceptsSidePanelNavigations) {
+  const GURL first_url = embedded_test_server()->GetURL("first.example", "/");
+  const GURL second_url = embedded_test_server()->GetURL("second.example", "/");
+  const GURL third_url = embedded_test_server()->GetURL("third.example", "/");
+  const GURL redirect_url =
+      embedded_test_server()->GetURL("example.redirect", "/");
+  constexpr char kManifest[] = R"(
+      {
+        "name": "WebRequest Test Extension",
+        "version": "0.1",
+        "manifest_version": 2,
+        "background": {
+          "scripts": ["background.js"]
+        },
+        "permissions": [
+          "webRequest",
+          "webRequestBlocking",
+          "*://first.example/*",
+          "*://second.example/*"
+        ]
+      }
+  )";
+  constexpr char kRulesScriptTemplate[] = R"(
+      chrome.webRequest.onBeforeRequest.addListener(function(d) {
+          return {redirectUrl: $1};
+        }, {urls: ["*://*.second.example/*"]}, ["blocking"]);
+  )";
+  extensions::TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile(
+      FILE_PATH_LITERAL("background.js"),
+      content::JsReplace(kRulesScriptTemplate, redirect_url));
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ChromeTestExtensionLoader(browser()->profile())
+          .LoadExtension(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Navigation to the first URL should be initiated in the side panel as
+  // expected.
+  NavigateInSideContents(first_url, first_url);
+
+  // Navigation to the second URL should be redirected by the webRequest API.
+  NavigateInSideContents(second_url, redirect_url);
+
+  // Navigation to the third URL should proceed as expected.
+  NavigateInSideContents(third_url, third_url);
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchExtensionsTest,
+                       DeclarativeNetRequestInterceptsSidePanelNavigations) {
+  const GURL first_url = embedded_test_server()->GetURL("first.example", "/");
+  const GURL second_url = embedded_test_server()->GetURL("second.example", "/");
+  const GURL third_url = embedded_test_server()->GetURL("third.example", "/");
+  const GURL redirect_url =
+      embedded_test_server()->GetURL("example.redirect", "/");
+  constexpr char kManifest[] = R"(
+      {
+        "name": "WebRequest Test Extension",
+        "version": "0.1",
+        "manifest_version": 2,
+        "declarative_net_request": {
+          "rule_resources": [{
+            "id": "ruleset_1",
+            "enabled": true,
+            "path": "rules.json"
+          }]
+        },
+        "permissions": [
+          "declarativeNetRequest",
+          "*://first.example/*",
+          "*://second.example/*"
+        ]
+      }
+  )";
+  constexpr char kRulesJsonTemplate[] = R"(
+    [{
+      "id": 1,
+      "priority": 1,
+      "action": {
+        "type": "redirect",
+        "redirect": { "url": $1 } },
+      "condition": {
+        "urlFilter": "*second.example*",
+        "resourceTypes": ["main_frame"]
+      }
+    }]
+  )";
+  extensions::TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("rules.json"),
+                          content::JsReplace(kRulesJsonTemplate, redirect_url));
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ChromeTestExtensionLoader(browser()->profile())
+          .LoadExtension(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Navigation to the first URL should proceed as expected.
+  NavigateInSideContents(first_url, first_url);
+
+  // Navigation to the secind URL should be redirected by the netRequest API.
+  NavigateInSideContents(second_url, redirect_url);
+
+  // Navigation to the third URL should proceed as expected.
+  NavigateInSideContents(third_url, third_url);
 }
 
 class SideSearchStatePerTabBrowserControllerTest
