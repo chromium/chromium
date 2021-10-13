@@ -1839,6 +1839,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.SpeedLimit" units="%"
+    expires_after="2022-10-07">
+  <owner>handellm@google.com</owner>
+  <owner>hbos@chromium.org</owner>
+  <summary>
+    Measures computer speed limit state, sampled every 60s when a PeerConnection
+    is open. The value indicates the current operating point in percent of the
+    nominal capacity of the CPUs. The computer decreases the capacity during
+    thermal overload events.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.SrtcpUnprotectError"
     enum="SrtpErrorCode" expires_after="never">
 <!-- expires-never: Needed for long-term tracking of the ecosystem. -->
@@ -1899,6 +1911,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     open with a video sender. Most quick toggles between thermal states are thus
     not sampled, but thermal states are generally stable so these toggles should
     be rare.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.PeerConnection.ThermalThrottling" units="boolean"
+    expires_after="2022-10-07">
+  <owner>handellm@google.com</owner>
+  <owner>hbos@chromium.org</owner>
+  <summary>
+    Sampled every 60s when the peer connection is open. True when the computer's
+    speed limit is between 0 and 99 inclusively, false otherwise.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.PeerConnection.ThermalThrottlingEpisodes" units="count"
+    expires_after="2022-10-07">
+  <owner>handellm@google.com</owner>
+  <owner>hbos@chromium.org</owner>
+  <summary>
+    The number of thermal throttling episodes the peer connection encountered.
+    Reported when the peer connection is torn down if the peer connection had at
+    least one track.
   </summary>
 </histogram>
 

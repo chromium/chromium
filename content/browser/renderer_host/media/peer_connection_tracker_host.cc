@@ -187,6 +187,11 @@ void PeerConnectionTrackerHost::OnThermalStateChange(
       static_cast<blink::mojom::DeviceThermalState>(new_state));
 }
 
+void PeerConnectionTrackerHost::OnSpeedLimitChange(int new_limit) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  tracker_->OnSpeedLimitChange(new_limit);
+}
+
 void PeerConnectionTrackerHost::StartEventLog(int lid, int output_period_ms) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   tracker_->StartEventLog(lid, output_period_ms);

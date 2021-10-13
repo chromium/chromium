@@ -779,6 +779,14 @@ void PeerConnectionTracker::OnThermalStateChange(
   }
 }
 
+void PeerConnectionTracker::OnSpeedLimitChange(int32_t speed_limit) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
+  current_speed_limit_ = speed_limit;
+  for (auto& entry : peer_connection_local_id_map_) {
+    entry.key->OnSpeedLimitChange(speed_limit);
+  }
+}
+
 void PeerConnectionTracker::StartEventLog(int peer_connection_local_id,
                                           int output_period_ms) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);

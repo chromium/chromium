@@ -301,6 +301,7 @@ class RTCPeerConnectionHandlerUnderTest : public RTCPeerConnectionHandler {
   }
 
   bool HasThermalUmaListener() const { return thermal_uma_listener(); }
+  bool HasSpeedLimitUmaListener() const { return speed_limit_uma_listener(); }
 };
 
 class RTCPeerConnectionHandlerTest : public SimTest {
@@ -1382,6 +1383,15 @@ TEST_F(RTCPeerConnectionHandlerTest,
   MediaStreamDescriptor* local_stream = CreateLocalMediaStream("local_stream");
   EXPECT_TRUE(AddStream(local_stream));
   EXPECT_TRUE(pc_handler_->HasThermalUmaListener());
+}
+
+TEST_F(RTCPeerConnectionHandlerTest,
+       SpeedLimitUmaListenerCreatedWhenStreamAdded) {
+  base::HistogramTester histogram;
+  EXPECT_FALSE(pc_handler_->HasSpeedLimitUmaListener());
+  MediaStreamDescriptor* local_stream = CreateLocalMediaStream("local_stream");
+  EXPECT_TRUE(AddStream(local_stream));
+  EXPECT_TRUE(pc_handler_->HasSpeedLimitUmaListener());
 }
 
 }  // namespace blink
