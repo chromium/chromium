@@ -187,6 +187,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(ContentFeatures.USER_MEDIA_CAPTURE_ON_FOCUS,
                     "Enables GetUserMedia API will only resolve when the document calling it has"
                             + "focus"),
+            Flag.baseFeature(ContentFeatures.COMPOSITE_BG_COLOR_ANIMATION,
+                    "When enabled, the background-color animation runs on the compositor thread."),
             Flag.baseFeature(AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE,
                     "Upload UMA metrics logs through MetricsUploadService not via GMS-core"
                             + " directly."),

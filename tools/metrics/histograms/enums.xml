@@ -48813,6 +48813,7 @@ from previous Chrome versions.
       label="DesktopPWAsMigrationUserDisplayModeCleanUp:enabled"/>
   <int value="-1408869905"
       label="AutofillEnforceMinRequiredFieldsForQuery:disabled"/>
+  <int value="-1408696172" label="CompositeBGColorAnimation:enabled"/>
   <int value="-1408370474" label="AssistantRoutines:enabled"/>
   <int value="-1408288176" label="enable-account-consistency"/>
   <int value="-1405349891" label="PictureInPictureAPI:enabled"/>
@@ -49251,6 +49252,7 @@ from previous Chrome versions.
   <int value="-1086656172"
       label="PrefetchNotificationSchedulingIntegration:disabled"/>
   <int value="-1085492638" label="FetchKeepaliveTimeoutSetting:enabled"/>
+  <int value="-1084618227" label="CompositeBGColorAnimation:disabled"/>
   <int value="-1084055006" label="disable-web-notification-custom-layouts"/>
   <int value="-1083736482" label="OmniboxCompactSuggestions:enabled"/>
   <int value="-1083547717" label="NotificationExpansionAnimation:disabled"/>
