@@ -183,12 +183,6 @@ std::ostream& operator<<(std::ostream& out, const TestCase& test_case) {
   return out << test_case.options;
 }
 
-// TODO(crbug.com/1240426) Remove this function.
-TestCase ZipCase(const char* const name) {
-  TestCase test_case(name);
-  return test_case;
-}
-
 // FilesApp browser test.
 class FilesAppBrowserTest : public FileManagerBrowserTestBase,
                             public ::testing::WithParamInterface<TestCase> {
@@ -371,23 +365,18 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("textOpenDrive"),
                       TestCase("textOpenDrive").FilesSwa()));
 
-// TODO(crbug.com/1240426) Make these tests work with the new ZIP systems.
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
-    DISABLED_ZipFiles, /* zip_files.js */
+    ZipFiles, /* zip_files.js */
     FilesAppBrowserTest,
-    ::testing::Values(ZipCase("zipFileOpenDownloads").InGuestMode(),
-                      ZipCase("zipFileOpenDownloads"),
-                      ZipCase("zipNotifyFileTasks"),
-                      ZipCase("zipFileOpenDownloadsShiftJIS"),
-                      ZipCase("zipFileOpenDownloadsMacOs"),
-                      ZipCase("zipFileOpenDownloadsWithAbsolutePaths"),
-                      ZipCase("zipFileOpenDownloadsEncryptedCancelPassphrase"),
-                      ZipCase("zipFileOpenDrive"),
-                      ZipCase("zipFileOpenUsb"),
-                      ZipCase("zipCreateFileDownloads").InGuestMode(),
-                      ZipCase("zipCreateFileDownloads"),
-                      ZipCase("zipCreateFileDrive"),
-                      ZipCase("zipCreateFileUsb")));
+    ::testing::Values(TestCase("zipFileOpenDownloads").InGuestMode(),
+                      TestCase("zipFileOpenDownloads"),
+                      TestCase("zipFileOpenDrive"),
+                      TestCase("zipFileOpenUsb"),
+                      TestCase("zipNotifyFileTasks"),
+                      TestCase("zipCreateFileDownloads").InGuestMode(),
+                      TestCase("zipCreateFileDownloads"),
+                      TestCase("zipCreateFileDrive"),
+                      TestCase("zipCreateFileUsb")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     CreateNewFolder, /* create_new_folder.js */
@@ -649,12 +638,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dirCreateWithKeyboard"),
         TestCase("dirCreateWithoutChangingCurrent"),
         TestCase("dirCreateMultipleFolders"),
-
-        // TODO(crbug.com/1240426) Make these tests work with the new ZIP
-        // systems.
-        ZipCase("DISABLED_dirContextMenuZip"),
-        ZipCase("DISABLED_dirEjectContextMenuZip"),
-
+        TestCase("dirContextMenuZip"),
+        TestCase("dirContextMenuZipEject"),
         TestCase("dirContextMenuRecent"),
         TestCase("dirContextMenuMyFiles"),
         TestCase("dirContextMenuMyFiles").EnableTrash(),

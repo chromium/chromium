@@ -2223,11 +2223,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
-  // TODO(crbug.com/1240426) Remove that.
-  if (name == "zipArchiverLoaded") {
-    return;
-  }
-
   if (name == "getRootPaths") {
     // Obtain the root paths.
     const auto downloads_root =
