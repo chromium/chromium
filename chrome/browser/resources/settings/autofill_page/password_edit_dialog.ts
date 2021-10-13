@@ -30,8 +30,9 @@ import {PasswordManagerImpl} from './password_manager_proxy.js';
 interface PasswordEditDialogElement {
   $: {
     dialog: CrDialogElement,
-    usernameInput: CrInputElement,
     passwordInput: CrInputElement,
+    usernameInput: CrInputElement,
+    websiteInput: CrInputElement,
   };
 }
 
@@ -110,14 +111,29 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       },
 
       /**
-       * Whether the username input is invalid.
+       * Has value if entered website is a valid url.
        */
-      usernameInputInvalid_: Boolean,
+      websiteUrls_: {type: Object, value: null},
 
       /**
-       * Whether the password input is invalid.
+       * Whether the website input is invalid.
        */
-      passwordInputInvalid_: Boolean,
+      websiteInputInvalid_: {type: Boolean, value: false},
+
+      /**
+       * Error message if the website input is invalid.
+       */
+      websiteInputErrorMessage_: {type: String, value: null},
+
+      /**
+       * Whether the username input is invalid.
+       */
+      usernameInputInvalid_: {type: Boolean, value: false},
+
+      /**
+       * Current value in password input.
+       */
+      password_: {type: String, value: ''},
 
       /**
        * If either username or password entered incorrectly the save button will
@@ -126,9 +142,8 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       isSaveButtonDisabled_: {
         type: Boolean,
         computed:
-            'computeIsSaveButtonDisabled_(usernameInputInvalid_, passwordInputInvalid_)'
+            'computeIsSaveButtonDisabled_(websiteUrls_, usernameInputInvalid_, password_)'
       }
-
     };
   }
 
@@ -140,14 +155,19 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   private dialogMode_: PasswordDialogMode;
   private isInViewMode_: boolean;
   private isPasswordVisible_: boolean;
+  private websiteUrls_: chrome.passwordsPrivate.UrlCollection|null;
+  private websiteInputInvalid_: boolean;
+  private websiteInputErrorMessage_: string|null;
   private usernameInputInvalid_: boolean;
-  private passwordInputInvalid_: boolean;
+  private password_: string;
   private isSaveButtonDisabled_: boolean;
 
   connectedCallback() {
     super.connectedCallback();
-
-    this.$.dialog.showModal();
+    if (this.existingEntry) {
+      this.websiteUrls_ = this.existingEntry.urls;
+    }
+    this.password_ = this.getPassword_();
     if (this.dialogMode_ === PasswordDialogMode.EDIT) {
       this.usernamesForSameOrigin_ = new Set(
           this.savedPasswords
@@ -177,6 +197,11 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
   private computeIsInViewMode_(): boolean {
     return this.dialogMode_ === PasswordDialogMode.VIEW;
+  }
+
+  private computeIsSaveButtonDisabled_(): boolean {
+    return !this.websiteUrls_ || this.usernameInputInvalid_ ||
+        !this.password_.length;
   }
 
   /**
@@ -368,11 +393,36 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         this.i18n('editPasswordFootnote', this.existingEntry!.urls.shown);
   }
 
+  private getClassForWebsiteInput_(): string {
+    // If website input is empty, it is invalid, but has no error message.
+    // To handle this, the error is shown only if 'has-error-message' is set.
+    return this.websiteInputErrorMessage_ ? 'has-error-message' : '';
+  }
+
   /**
-   * Helper function that checks if save button should be disabled.
+   * Helper function that checks whether the entered url is valid.
    */
-  private computeIsSaveButtonDisabled_(): boolean {
-    return this.usernameInputInvalid_ || this.passwordInputInvalid_;
+  private validateWebsite_() {
+    assert(this.dialogMode_ === PasswordDialogMode.ADD);
+    if (!this.$.websiteInput.value.length) {
+      this.websiteUrls_ = null;
+      this.websiteInputErrorMessage_ = null;
+      this.websiteInputInvalid_ = true;
+      return;
+    }
+    PasswordManagerImpl.getInstance()
+        .checkUrlValid(this.$.websiteInput.value)
+        .then(urlCollection => {
+          if (urlCollection) {
+            this.websiteUrls_ = urlCollection;
+            this.websiteInputErrorMessage_ = null;
+            this.websiteInputInvalid_ = false;
+          } else {
+            this.websiteUrls_ = null;
+            this.websiteInputErrorMessage_ = this.i18n('notValidWebAddress');
+            this.websiteInputInvalid_ = true;
+          }
+        });
   }
 
   /**

@@ -180,6 +180,7 @@ function assertEditDialogParts(passwordDialog) {
   assertEquals(
       passwordDialog.i18n('save'),
       passwordDialog.$.actionButton.textContent.trim());
+  assertFalse(passwordDialog.$.actionButton.disabled);
 }
 
 /**
@@ -201,6 +202,7 @@ function assertDetailsDialogParts(passwordDialog) {
   assertEquals(
       passwordDialog.i18n('done'),
       passwordDialog.$.actionButton.textContent.trim());
+  assertFalse(passwordDialog.$.actionButton.disabled);
 }
 
 /**
@@ -221,6 +223,33 @@ function assertAddDialogParts(passwordDialog) {
   assertEquals(
       passwordDialog.i18n('save'),
       passwordDialog.$.actionButton.textContent.trim());
+  assertTrue(passwordDialog.$.actionButton.disabled);
+}
+
+/**
+ * Helper function to update website input and trigger validation.
+ */
+async function updateWebsiteInput(
+    dialog, passwordManager, newValue, isValid = true) {
+  const shouldCheckUrlValid = !!newValue.length;
+  if (shouldCheckUrlValid) {
+    passwordManager.resetResolver('checkUrlValid');
+    passwordManager.setCheckUrlValidResponse(
+        isValid ? {
+          origin: newValue + '-origin',
+          shown: newValue + '-shown',
+          link: newValue + '-link',
+        } :
+                  null);
+  }
+
+  dialog.$.websiteInput.value = newValue;
+  dialog.$.websiteInput.dispatchEvent(new CustomEvent('input'));
+
+  if (shouldCheckUrlValid) {
+    const url = await passwordManager.whenCalled('checkUrlValid');
+    assertEquals(newValue, url);
+  }
 }
 
 /**
@@ -2189,4 +2218,39 @@ suite('PasswordsSection', function() {
             addDialog.i18n('addPasswordStoreOptionDevice'),
             picker.options[1].textContent.trim());
       });
+
+  test('editDialogWhenAddPasswordChecksRequiredFields', async function() {
+    const addDialog = elementFactory.createPasswordEditDialog();
+    await updateWebsiteInput(addDialog, passwordManager, 'url');
+    addDialog.$.passwordInput.value = 'password';
+    assertFalse(addDialog.$.websiteInput.invalid);
+    assertFalse(addDialog.$.passwordInput.invalid);
+    assertFalse(addDialog.$.actionButton.disabled);
+
+    // Website is required.
+    await updateWebsiteInput(addDialog, passwordManager, '');
+    assertTrue(addDialog.$.websiteInput.invalid);
+    assertTrue(addDialog.$.actionButton.disabled);
+
+    await updateWebsiteInput(addDialog, passwordManager, 'url');
+    assertFalse(addDialog.$.websiteInput.invalid);
+    assertFalse(addDialog.$.actionButton.disabled);
+
+    // Password is required.
+    addDialog.$.passwordInput.value = '';
+    assertTrue(addDialog.$.passwordInput.invalid);
+    assertTrue(addDialog.$.actionButton.disabled);
+  });
+
+  test('editDialogWhenAddPasswordValidatesWebsite', async function() {
+    const addDialog = elementFactory.createPasswordEditDialog();
+    await updateWebsiteInput(addDialog, passwordManager, 'valid url', true);
+    addDialog.$.passwordInput.value = 'password';
+    assertFalse(addDialog.$.websiteInput.invalid);
+    assertFalse(addDialog.$.actionButton.disabled);
+
+    await updateWebsiteInput(addDialog, passwordManager, 'invalid url', false);
+    assertTrue(addDialog.$.websiteInput.invalid);
+    assertTrue(addDialog.$.actionButton.disabled);
+  });
 });
