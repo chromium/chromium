@@ -33,7 +33,6 @@ InstallIndexHelper::Result CombineResults(
   InstallIndexHelper::Result total_result;
   total_result.ruleset_install_prefs.reserve(results.size());
   bool any_ruleset_indexed_successfully = false;
-  size_t total_rules_count = 0;
   size_t enabled_rules_count = 0;
   size_t enabled_regex_rules_count = 0;
   base::TimeDelta total_index_and_persist_time;
@@ -81,7 +80,6 @@ InstallIndexHelper::Result CombineResults(
           false /* ignored */);
 
       total_index_and_persist_time += index_result.index_and_persist_time;
-      total_rules_count += index_result.rules_count;
 
       if (source->enabled_by_default()) {
         enabled_rules_count += index_result.rules_count;

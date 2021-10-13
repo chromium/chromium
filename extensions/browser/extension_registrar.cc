@@ -57,13 +57,11 @@ void ExtensionRegistrar::AddExtension(
     scoped_refptr<const Extension> extension) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  bool is_extension_upgrade = false;
   bool is_extension_loaded = false;
   const Extension* old = registry_->GetInstalledExtension(extension->id());
   if (old) {
     is_extension_loaded = true;
     int version_compare_result = extension->version().CompareTo(old->version());
-    is_extension_upgrade = version_compare_result > 0;
     // Other than for unpacked extensions, we should not be downgrading.
     if (!Manifest::IsUnpackedLocation(extension->location()) &&
         version_compare_result < 0) {
