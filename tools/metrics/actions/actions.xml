@@ -14630,6 +14630,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileFre.SignInShown">
+  <obsolete>
+    Deprecated 10/2021 since this is already recorded as part of the histogram
+    MobileFre.Progress.*.
+  </obsolete>
   <owner>aruslan@chromium.org</owner>
   <description>
     User was presented with the sign-in dialog during the First Run Experience.

@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.signin.SyncConsentFragmentBase;
@@ -47,7 +46,6 @@ public class SyncConsentFirstRunFragment
         // Records if there are {0, 1, 2+} accounts on device for default/non-default flows.
         RecordHistogram.recordCountHistogram(
                 "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", Math.min(accounts.size(), 2));
-        RecordUserAction.record("MobileFre.SignInShown");
     }
 
     @Override
