@@ -735,7 +735,7 @@ CHAR_LIMIT guidelines:
       <message name="IDS_THEMES_SYSTEM_DEFAULT_SUMMARY_API_29" desc="Summary for the System Default option (Android Q+).">
         Turn on dark theme when your device's dark theme or Battery Saver is on
       </message>
-      <message name="IDS_DARKEN_WEBSITES" desc="Title for the Darken websites option. [CHAR_LIMIT=32]">
+      <message name="IDS_DARKEN_WEBSITES" desc="Title for the option to apply auto-darken to websites. If a website has opt-out from auto-darken, the content will stay the same.">
         Apply dark theme to sites, when possible
       </message>
 
