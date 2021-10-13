@@ -193,7 +193,7 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
       base::BindRepeating(
           &GetCommandBufferStub, gpu_task_runner_, media_gpu_channel_manager_,
           command_buffer_id->channel_token, command_buffer_id->route_id),
-      std::move(android_overlay_factory_cb_));
+      android_overlay_factory_cb_);
 
   return platform_->CreateVideoDecoder(traits);
 }
