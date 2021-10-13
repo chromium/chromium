@@ -1,0 +1,61 @@
+{
+	"archive_datas": [
+        {
+            "dirs": ["Chromium.app"],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "experimental/Mac/{%position%}/chrome-mac.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP"
+        },
+        {
+            "files": [
+                "chromedriver"
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "experimental/Mac/{%position%}/chromedriver_mac64.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP"
+        },
+        {
+            "files": [
+                "blink_deprecated_test_plugin.plugin",
+                "blink_test_plugin.plugin",
+                "Content Shell.app",
+                "content_shell.pak",
+                "icudtl.dat"
+            ],
+            "dirs": ["resources"],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "experimental/Mac/{%position%}/content-shell.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP"
+        },
+        {
+            "dirs": ["gen/third_party/devtools-frontend/src/front_end"],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "experimental/Mact/{%position%}/devtools-frontend.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP"
+        },
+        {
+            "dirs": ["pnacl"],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "experimental/Mac/{%position%}/pncal.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP"
+        },
+        {
+            "files": [
+                "remoting-me2me-host-mac.zip"
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "experimental/Mac/{%position%}",
+            "archive_type": "ARCHIVE_TYPE_FILES"
+        },
+        {
+            "files": [
+                "ChromiumUpdater.app",
+                "chrome/updater/.install"
+            ],
+            "dirs": ["Updater Packaging"],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "experimental/Mac/{%position%}/updater.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP"
+        }
+    ]
+}
