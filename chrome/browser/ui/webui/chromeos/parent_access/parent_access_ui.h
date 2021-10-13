@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom-forward.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui_handler_impl.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "url/gurl.h"
@@ -25,11 +26,16 @@ class ParentAccessUI : public ui::MojoWebUIController {
 
   ~ParentAccessUI() override;
 
+  static void SetUpForTest(signin::IdentityManager* identity_manager);
+
   // Instantiates the implementor of the mojom::ParentAccessUIHandler mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<parent_access_ui::mojom::ParentAccessUIHandler>
           receiver);
+
+  const GURL GetWebContentURLForTesting();
+  parent_access_ui::mojom::ParentAccessUIHandler* GetHandlerForTest();
 
  private:
   void SetUpResources();
@@ -40,6 +46,8 @@ class ParentAccessUI : public ui::MojoWebUIController {
   // The URL for the remote web content embedded in the WebUI's webview (not to
   // be confused with the chrome:// URL for the WebUI itself).
   GURL web_content_url_;
+
+  static signin::IdentityManager* test_identity_manager_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

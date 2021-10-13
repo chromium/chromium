@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.h"
 
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -20,6 +21,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "url/gurl.h"
 
 namespace chromeos {
 
@@ -31,7 +33,9 @@ const char kParentAccessSwitch[] = "parent-access-url";
 
 // Returns the URL of the Parent Access flow from the command-line switch,
 // or the default value if it's not defined.
-GURL GetParentAccessURL() {
+GURL GetParentAccessURL(std::string caller_id,
+                        std::string platform_version,
+                        std::string language_code) {
   std::string url;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(kParentAccessSwitch)) {
@@ -42,9 +46,10 @@ GURL GetParentAccessURL() {
   }
   const GURL base_url(url);
   GURL::Replacements replacements;
-  // TODO(b/200853161): Set caller id from params.
   std::string query_string = base::StringPrintf(
-      "callerid=2fdd8d6e&cros-origin=chrome://parent-access");
+      "callerid=%s&hl=%s&platform_version=%s&cros-origin=chrome://"
+      "parent-access",
+      caller_id.c_str(), language_code.c_str(), platform_version.c_str());
   replacements.SetQueryStr(query_string);
   const GURL result = base_url.ReplaceComponents(replacements);
   DCHECK(result.is_valid()) << "Invalid URL \"" << url << "\" for switch \""
@@ -54,6 +59,9 @@ GURL GetParentAccessURL() {
 
 }  // namespace
 
+// static
+signin::IdentityManager* ParentAccessUI::test_identity_manager_ = nullptr;
+
 ParentAccessUI::ParentAccessUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   // Set up the basic page framework.
@@ -62,14 +70,30 @@ ParentAccessUI::ParentAccessUI(content::WebUI* web_ui)
 
 ParentAccessUI::~ParentAccessUI() = default;
 
+// static
+void ParentAccessUI::SetUpForTest(signin::IdentityManager* identity_manager) {
+  test_identity_manager_ = identity_manager;
+}
+
 void ParentAccessUI::BindInterface(
     mojo::PendingReceiver<parent_access_ui::mojom::ParentAccessUIHandler>
         receiver) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()));
+      test_identity_manager_
+          ? test_identity_manager_
+          : IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()));
 
   mojo_api_handler_ = std::make_unique<ParentAccessUIHandlerImpl>(
       std::move(receiver), web_ui(), identity_manager);
+}
+
+const GURL ParentAccessUI::GetWebContentURLForTesting() {
+  return web_content_url_;
+}
+
+parent_access_ui::mojom::ParentAccessUIHandler*
+ParentAccessUI::GetHandlerForTest() {
+  return mojo_api_handler_.get();
 }
 
 void ParentAccessUI::SetUpResources() {
@@ -77,8 +101,11 @@ void ParentAccessUI::SetUpResources() {
   std::unique_ptr<content::WebUIDataSource> source(
       content::WebUIDataSource::Create(chrome::kChromeUIParentAccessHost));
 
-  // Initialize parent access URL from the command-line arguments (if provided).
-  web_content_url_ = GetParentAccessURL();
+  web_content_url_ = GetParentAccessURL(
+      "39454505", /* TODO(b/200853161): Set caller id from params. */
+      base::SysInfo::OperatingSystemVersion(),
+      google_util::GetGoogleLocale(g_browser_process->GetApplicationLocale()));
+
   // The Polymer JS bundle requires this at the moment because it sets innerHTML
   // on an element, which violates the Trusted Types CSP.
   source->DisableTrustedTypesCSP();
@@ -95,12 +122,6 @@ void ParentAccessUI::SetUpResources() {
   source->SetDefaultResource(IDR_PARENT_ACCESS_HTML);
   source->AddString("webviewUrl", web_content_url_.spec());
   source->AddString("eventOriginFilter", web_content_url_.GetOrigin().spec());
-  source->AddString("platformVersion", base::SysInfo::OperatingSystemVersion());
-
-  // Forward the browser language code.
-  source->AddString(
-      "languageCode",
-      google_util::GetGoogleLocale(g_browser_process->GetApplicationLocale()));
 
   content::WebUIDataSource::Add(profile, source.release());
 }
