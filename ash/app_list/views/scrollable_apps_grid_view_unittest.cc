@@ -18,6 +18,7 @@
 #include "ash/app_list/paged_view_structure.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/test_app_list_client.h"
+#include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/search_box_view.h"
@@ -86,6 +87,10 @@ class ScrollableAppsGridViewTest : public AshTestBase {
 
   void PopulateApps(int n) { app_list_test_model_->PopulateApps(n); }
 
+  AppListFolderItem* CreateAndPopulateFolderWithApps(int n) {
+    return app_list_test_model_->CreateAndPopulateFolderWithApps(n);
+  }
+
   void SimulateKeyPress(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
     GetEventGenerator()->PressKey(key_code, flags);
   }
@@ -108,6 +113,28 @@ class ScrollableAppsGridViewTest : public AshTestBase {
     generator->PressLeftButton();
     item->FireMouseDragTimerForTest();
     return item;
+  }
+
+  AppListItemView* StartDragOnItemInFolderAt(int item_index) {
+    DCHECK(GetAppListTestHelper()->IsInFolderView());
+    auto* folder_view = GetAppListTestHelper()->GetBubbleFolderView();
+    AppListItemView* item =
+        folder_view->items_grid_view()->GetItemViewAt(item_index);
+    auto* generator = GetEventGenerator();
+    generator->MoveMouseTo(item->GetBoundsInScreen().CenterPoint());
+    generator->PressLeftButton();
+    item->FireMouseDragTimerForTest();
+    return item;
+  }
+
+  void DragItemOutOfFolder() {
+    ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+    auto* folder_view = GetAppListTestHelper()->GetBubbleFolderView();
+    ASSERT_TRUE(folder_view->items_grid_view()->has_dragged_item());
+    gfx::Point outside_view =
+        folder_view->GetBoundsInScreen().bottom_right() + gfx::Vector2d(10, 10);
+    GetEventGenerator()->MoveMouseTo(outside_view);
+    folder_view->items_grid_view()->FireFolderItemReparentTimerForTest();
   }
 
   ScrollableAppsGridView* GetScrollableAppsGridView() {
@@ -158,6 +185,7 @@ TEST_F(ScrollableAppsGridViewTest, ClickOnApp) {
 }
 
 TEST_F(ScrollableAppsGridViewTest, DragApp) {
+  base::HistogramTester histogram_tester;
   AddAppListItem("id1");
   AddAppListItem("id2");
   ShowAppList();
@@ -180,6 +208,10 @@ TEST_F(ScrollableAppsGridViewTest, DragApp) {
   ASSERT_EQ(2u, item_list->item_count());
   EXPECT_EQ("id2", item_list->item_at(0)->id());
   EXPECT_EQ("id1", item_list->item_at(1)->id());
+
+  // Reordering apps is recorded in the histogram tester.
+  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
+                                     kReorderByDragInTopLevel, 1);
 }
 
 TEST_F(ScrollableAppsGridViewTest, SearchBoxHasFocusAfterDrag) {
@@ -415,6 +447,126 @@ TEST_F(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenBelowWidget) {
   EXPECT_FALSE(apps_grid_view_->auto_scroll_timer_for_test()->IsRunning());
 }
 
+TEST_F(ScrollableAppsGridViewTest, DragItemToReorderInFolderRecordsHistogram) {
+  base::HistogramTester histogram_tester;
+  // Create a folder with 3 apps.
+  AppListFolderItem* folder_item = CreateAndPopulateFolderWithApps(3);
+  ShowAppList();
+
+  // Enter the folder view.
+  auto* generator = GetEventGenerator();
+  SimulateMouseClickAt(generator, apps_grid_view_->GetItemViewAt(0));
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+
+  // Drag the first app in the folder.
+  AppListItemView* item_view = StartDragOnItemInFolderAt(0);
+
+  // Drag the item to the third position in the folder.
+  gfx::Size tile_size = apps_grid_view_->GetTileViewSize();
+  generator->MoveMouseBy(0, tile_size.height());
+  generator->ReleaseLeftButton();
+
+  // The item is now reordered in the folder and the reordering is recorded.
+  EXPECT_EQ(3u, folder_item->ChildItemCount());
+  EXPECT_EQ(folder_item->item_list()->item_at(2)->id(),
+            item_view->item()->id());
+  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
+                                     kReorderByDragInFolder, 1);
+}
+
+TEST_F(ScrollableAppsGridViewTest, DragItemIntoFolderRecordsHistogram) {
+  base::HistogramTester histogram_tester;
+  // Create a folder and an app.
+  AppListFolderItem* folder_item = CreateAndPopulateFolderWithApps(3);
+  AddAppListItem("dragged_item");
+  ShowAppList();
+
+  // Drag the app in the top level app list into the folder.
+  StartDragOnItemViewAt(1);
+  ASSERT_TRUE(apps_grid_view_->GetItemViewAt(0)->item()->is_folder());
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo(
+      apps_grid_view_->GetItemViewAt(0)->GetBoundsInScreen().CenterPoint());
+  generator->ReleaseLeftButton();
+
+  // The dragged app is now in the folder and the reordering is recorded.
+  EXPECT_EQ(4u, folder_item->ChildItemCount());
+  EXPECT_EQ(folder_item->item_list()->item_at(3)->id(), "dragged_item");
+  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
+                                     kMoveByDragIntoFolder, 1);
+}
+
+TEST_F(ScrollableAppsGridViewTest, DragItemOutOfFolderRecordsHistogram) {
+  base::HistogramTester histogram_tester;
+  // Create a folder with 3 apps.
+  AppListFolderItem* folder_item = CreateAndPopulateFolderWithApps(3);
+  ShowAppList();
+
+  // Enter the folder view.
+  auto* generator = GetEventGenerator();
+  SimulateMouseClickAt(generator, apps_grid_view_->GetItemViewAt(0));
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+
+  // Drag the first app in the folder and move it out of the folder.
+  AppListItemView* item_view = StartDragOnItemInFolderAt(0);
+  std::string item_id = item_view->item()->id();
+  DragItemOutOfFolder();
+
+  // Drag the app item to near the expected end position and end the drag.
+  generator->MoveMouseTo(
+      apps_grid_view_->GetItemViewAt(0)->GetBoundsInScreen().right_center() +
+      gfx::Vector2d(20, 0));
+  generator->ReleaseLeftButton();
+
+  // The folder view should be closed and invisible after releasing the drag.
+  EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
+  EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+
+  // The dragged item is now in the top level item list and the reordering is
+  // recorded.
+  AppListItemList* item_list =
+      Shell::Get()->app_list_controller()->GetModel()->top_level_item_list();
+  EXPECT_EQ(2u, item_list->item_count());
+  EXPECT_EQ(item_list->item_at(1)->id(), item_id);
+  EXPECT_EQ(2u, folder_item->item_list()->item_count());
+  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
+                                     kMoveByDragOutOfFolder, 1);
+}
+
+TEST_F(ScrollableAppsGridViewTest,
+       DragItemFromOneFolderToAnotherRecordsHistogram) {
+  base::HistogramTester histogram_tester;
+  // Create two folders.
+  AppListFolderItem* folder_item_1 = CreateAndPopulateFolderWithApps(3);
+  AppListFolderItem* folder_item_2 = CreateAndPopulateFolderWithApps(2);
+  ShowAppList();
+
+  // Enter the view of the first folder.
+  auto* generator = GetEventGenerator();
+  SimulateMouseClickAt(generator, apps_grid_view_->GetItemViewAt(0));
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+
+  // Drag the first app in the folder and move it out of the folder.
+  StartDragOnItemInFolderAt(0);
+  DragItemOutOfFolder();
+
+  // Move the app item into the other folder and end the drag.
+  generator->MoveMouseTo(
+      apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen().CenterPoint());
+  generator->ReleaseLeftButton();
+
+  // No folder view is showing now.
+  EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
+  EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+
+  // The dragged item was moved to another folder and the reordering is
+  // recorded.
+  EXPECT_EQ(2u, folder_item_1->item_list()->item_count());
+  EXPECT_EQ(3u, folder_item_2->item_list()->item_count());
+  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
+                                     kMoveIntoAnotherFolder, 1);
+}
+
 TEST_F(ScrollableAppsGridViewTest, LeftAndRightArrowKeysMoveSelection) {
   PopulateApps(2);
   ShowAppList();
@@ -518,7 +670,7 @@ TEST_F(ScrollableAppsGridViewTest,
   AppListItemView* moving_item = apps_grid_view->GetItemViewAt(0);
   apps_grid_view->GetFocusManager()->SetFocusedView(moving_item);
 
-  // Make 2 no-op moves and one successful move from 0,0 ane expect a histogram
+  // Make 2 no-op moves and one successful move from 0,0 and expect a histogram
   // is recorded only once.
   SimulateKeyPress(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN);
   SimulateKeyReleased(ui::VKEY_LEFT, ui::EF_NONE);
@@ -531,6 +683,98 @@ TEST_F(ScrollableAppsGridViewTest,
 
   histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
                                      kReorderByKeyboardInTopLevel, 1);
+}
+
+// Tests that histograms are recorded in folder view when apps are moved with
+// control+arrow.
+TEST_F(ScrollableAppsGridViewTest, ControlArrowRecordsHistogramInFolderBasic) {
+  base::HistogramTester histogram_tester;
+  CreateAndPopulateFolderWithApps(4);
+  ShowAppList();
+  ScrollableAppsGridView* apps_grid_view = GetScrollableAppsGridView();
+
+  // Select the folder item in the grid.
+  AppListItemView* folder_item_view = apps_grid_view->GetItemViewAt(0);
+  EXPECT_TRUE(folder_item_view->item()->is_folder());
+
+  // Enter the folder view.
+  apps_grid_view->GetFocusManager()->SetFocusedView(folder_item_view);
+  SimulateKeyPress(ui::VKEY_RETURN);
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+
+  // If the folder view is entered by pressing return key while the focus is on
+  // the folder, the focus will move to the first item inside the folder view.
+  AppsGridView* folder_grid_view =
+      GetAppListTestHelper()->GetBubbleFolderView()->items_grid_view();
+  EXPECT_EQ(apps_grid_view->GetFocusManager()->GetFocusedView(),
+            folder_grid_view->GetItemViewAt(0));
+
+  // Make one move right and expect a histogram is recorded.
+  SimulateKeyPress(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN);
+  SimulateKeyReleased(ui::VKEY_RIGHT, ui::EF_NONE);
+  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
+                                     kReorderByKeyboardInFolder, 1);
+
+  // Make one move down and expect a histogram is recorded.
+  SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN);
+  SimulateKeyReleased(ui::VKEY_DOWN, ui::EF_NONE);
+  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
+                                     kReorderByKeyboardInFolder, 2);
+
+  // Make one move left and expect a histogram is recorded.
+  SimulateKeyPress(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN);
+  SimulateKeyReleased(ui::VKEY_LEFT, ui::EF_NONE);
+  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
+                                     kReorderByKeyboardInFolder, 3);
+
+  // Make one move up and expect a histogram is recorded.
+  SimulateKeyPress(ui::VKEY_UP, ui::EF_CONTROL_DOWN);
+  SimulateKeyReleased(ui::VKEY_UP, ui::EF_NONE);
+  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
+                                     kReorderByKeyboardInFolder, 4);
+}
+
+// Tests that histograms do not record when the keyboard move is a no-op in the
+// folder view.
+TEST_F(ScrollableAppsGridViewTest,
+       ControlArrowDoesNotRecordHistogramWithNoOpMoveInFolder) {
+  base::HistogramTester histogram_tester;
+  CreateAndPopulateFolderWithApps(4);
+  ShowAppList();
+  ScrollableAppsGridView* apps_grid_view = GetScrollableAppsGridView();
+
+  // Select the folder item in the grid.
+  AppListItemView* folder_item_view = apps_grid_view->GetItemViewAt(0);
+  EXPECT_TRUE(folder_item_view->item()->is_folder());
+
+  // Enter the folder view.
+  apps_grid_view->GetFocusManager()->SetFocusedView(folder_item_view);
+  SimulateKeyPress(ui::VKEY_RETURN);
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+
+  // If the folder view is entered by pressing return key while the focus is on
+  // the folder, the focus will move to the first item inside the folder view.
+  AppsGridView* folder_grid_view =
+      GetAppListTestHelper()->GetBubbleFolderView()->items_grid_view();
+  EXPECT_EQ(apps_grid_view->GetFocusManager()->GetFocusedView(),
+            folder_grid_view->GetItemViewAt(0));
+
+  // Make 2 no-op moves and one successful move from 0,0 and expect a histogram
+  // is recorded only once.
+  SimulateKeyPress(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN);
+  SimulateKeyReleased(ui::VKEY_LEFT, ui::EF_NONE);
+
+  SimulateKeyPress(ui::VKEY_UP, ui::EF_CONTROL_DOWN);
+  SimulateKeyReleased(ui::VKEY_UP, ui::EF_NONE);
+
+  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
+                                     kReorderByKeyboardInFolder, 0);
+
+  SimulateKeyPress(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN);
+  SimulateKeyReleased(ui::VKEY_RIGHT, ui::EF_NONE);
+
+  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
+                                     kReorderByKeyboardInFolder, 1);
 }
 
 // Tests that control + shift + arrow puts selected item into a folder or
@@ -600,6 +844,61 @@ TEST_F(ScrollableAppsGridViewTest, ControlShiftArrowFoldersItem) {
   EXPECT_EQ(5u, folder_item->ChildItemCount());
   histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
                                      kMoveByKeyboardIntoFolder, 4);
+}
+
+// Tests that control + shift + arrow moves selected item out of a folder.
+TEST_F(ScrollableAppsGridViewTest, ControlShiftArrowMovesItemOutOfFolder) {
+  base::HistogramTester histogram_tester;
+  AppListFolderItem* folder_item = CreateAndPopulateFolderWithApps(5);
+  ShowAppList();
+  ScrollableAppsGridView* apps_grid_view = GetScrollableAppsGridView();
+
+  // Select the folder item in the grid.
+  AppListItemView* folder_item_view = apps_grid_view->GetItemViewAt(0);
+  EXPECT_TRUE(folder_item_view->item()->is_folder());
+
+  // Enter the folder view and move the item out of and to the left of the
+  // folder.
+  apps_grid_view->GetFocusManager()->SetFocusedView(folder_item_view);
+  SimulateKeyPress(ui::VKEY_RETURN);
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+  SimulateKeyPress(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(apps_grid_view->selected_view(), apps_grid_view->GetItemViewAt(0));
+  EXPECT_EQ(4u, folder_item->ChildItemCount());
+  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
+                                     kMoveByKeyboardOutOfFolder, 1);
+
+  // Enter the folder view and move the item out of and to the right of the
+  // folder.
+  apps_grid_view->GetFocusManager()->SetFocusedView(folder_item_view);
+  SimulateKeyPress(ui::VKEY_RETURN);
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+  SimulateKeyPress(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(apps_grid_view->selected_view(), apps_grid_view->GetItemViewAt(2));
+  EXPECT_EQ(3u, folder_item->ChildItemCount());
+  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
+                                     kMoveByKeyboardOutOfFolder, 2);
+
+  // Enter the folder view and move the item out of and to the above of the
+  // folder.
+  apps_grid_view->GetFocusManager()->SetFocusedView(folder_item_view);
+  SimulateKeyPress(ui::VKEY_RETURN);
+  SimulateKeyPress(ui::VKEY_UP, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(apps_grid_view->selected_view(), apps_grid_view->GetItemViewAt(1));
+  EXPECT_EQ(2u, folder_item->ChildItemCount());
+  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
+                                     kMoveByKeyboardOutOfFolder, 3);
+
+  // Enter the folder view and move the item out of and to the below of the
+  // folder.
+  apps_grid_view->GetFocusManager()->SetFocusedView(folder_item_view);
+  SimulateKeyPress(ui::VKEY_RETURN);
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+  SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(apps_grid_view->selected_view(), apps_grid_view->GetItemViewAt(3));
+  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
+                                     kMoveByKeyboardOutOfFolder, 4);
+  EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
 }
 
 }  // namespace ash
