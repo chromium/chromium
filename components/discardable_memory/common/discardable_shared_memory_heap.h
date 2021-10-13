@@ -29,8 +29,6 @@ namespace discardable_memory {
 DISCARDABLE_MEMORY_EXPORT extern const base::Feature
     kReleaseDiscardableFreeListPages;
 
-DISCARDABLE_MEMORY_EXPORT extern bool ReleaseDiscardableFreeListPages();
-
 // Implements a heap of discardable shared memory. An array of free lists
 // is used to keep track of free blocks.
 class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
@@ -91,8 +89,6 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
       size_t size,
       int32_t id,
       base::OnceClosure deleted_callback);
-
-  static void ReleaseMemoryIfPossible(Span* span);
 
   // Merge |span| into the free lists. This will coalesce |span| with
   // neighboring free spans when possible.
