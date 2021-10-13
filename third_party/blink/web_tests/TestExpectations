@@ -2025,7 +2025,6 @@ crbug.com/867532 [ Linux ] http/tests/workers/worker-usecounter.html [ Pass Time
 crbug.com/1002377 external/wpt/service-workers/service-worker/update-bytecheck.https.html [ Pass Skip Timeout ]
 crbug.com/1002377 external/wpt/service-workers/service-worker/update-bytecheck-cors-import.https.html [ Pass Skip Timeout ]
 crbug.com/805756 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Pass Skip Timeout ]
-crbug.com/666993 [ Debug ] external/wpt/requestidlecallback/callback-idle-periods.html [ Pass Skip Timeout ]
 
 # crbug.com/1218716: These fail when TrustTokenOriginTrial is enabled.
 crbug.com/1218716 external/wpt/trust-tokens/trust-token-parameter-validation-xhr.tentative.https.html [ Failure ]
@@ -2496,6 +2495,10 @@ crbug.com/1040611 external/wpt/uievents/order-of-events/mouse-events/wheel-scrol
 # isInputPending requires threaded compositing and layerized iframes
 crbug.com/910421 external/wpt/is-input-pending/* [ Skip ]
 crbug.com/910421 virtual/threaded-composited-iframes/external/wpt/is-input-pending/* [ Pass ]
+
+# requestIdleCallback requires threaded compositing
+crbug.com/1259718 external/wpt/requestidlecallback/* [ Skip ]
+crbug.com/1259718 virtual/threaded/external/wpt/requestidlecallback/* [ Pass ]
 
 # WebVTT is off because additional padding
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/2_cues_overlapping_completely_move_up.html [ Failure ]
@@ -3816,8 +3819,6 @@ crbug.com/626703 external/wpt/acid/acid2/reftest.html [ Failure Pass ]
 crbug.com/626703 external/wpt/acid/acid3/test.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-ui/cursor-auto-006.html [ Skip ]
 crbug.com/626703 external/wpt/css/css-ui/cursor-auto-007.html [ Skip ]
-crbug.com/626703 external/wpt/requestidlecallback/callback-timeout-when-busy.html [ Skip Timeout ]
-crbug.com/810669 external/wpt/requestidlecallback/callback-removed-frame.html [ Skip ]
 crbug.com/626703 external/wpt/compat/webkit-text-fill-color-property-005.html [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/text/text-decoration-va-length-001.xht [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/text/text-decoration-va-length-002.xht [ Failure ]
@@ -3834,8 +3835,6 @@ crbug.com/626703 external/wpt/media-source/mediasource-avtracks.html [ Crash Fai
 crbug.com/626703 external/wpt/media-source/mediasource-getvideoplaybackquality.html [ Failure Skip Timeout ]
 crbug.com/626703 external/wpt/pointerevents/pointerevent_disabled_form_control-manual.html [ Pass Timeout ]
 crbug.com/958104 external/wpt/presentation-api/controlling-ua/getAvailability.https.html [ Failure ]
-crbug.com/626703 external/wpt/requestidlecallback/callback-timeout.html [ Skip Timeout ]
-crbug.com/626703 external/wpt/requestidlecallback/callback-xhr-sync.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/screen-orientation/onchange-event-subframe.html [ Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/xhr/event-readystatechange-loaded.htm [ Failure Timeout ]
 crbug.com/626703 external/wpt/html/dom/elements/global-attributes/dir_auto-N-EN-ref.html [ Failure ]
@@ -4742,10 +4741,6 @@ crbug.com/861682 [ Win ] external/wpt/css/mediaqueries/device-aspect-ratio-003.h
 
 # S13N Sheriff 2018-7-11
 crbug.com/862643 http/tests/serviceworker/navigation_preload/use-counter.html [ Failure Pass ]
-
-# Sheriff 2018-07-26
-crbug.com/867982 [ Debug ] external/wpt/requestidlecallback/basic.html [ Pass Timeout ]
-crbug.com/882756 [ Debug ] external/wpt/requestidlecallback/cancel-invoked.html [ Pass Timeout ]
 
 # Sheriff 2018-07-30
 crbug.com/868706 external/wpt/css/css-layout-api/auto-block-size-inflow.https.html [ Failure Pass ]
@@ -5972,9 +5967,6 @@ crbug.com/1154940 [ Win7 ] inspector-protocol/overlay/overlay-persistent-overlay
 # DevTools roll
 crbug.com/1144171 http/tests/devtools/report-API-errors.js [ Skip ]
 
-# Sheriff 2020-12-07
-crbug.com/1156175 external/wpt/requestidlecallback/callback-iframe.html [ Pass Skip Timeout ]
-
 # Sheriff 2020-12-11
 # Flaking on Linux Trusty
 crbug.com/1157849 [ Linux Release ] external/wpt/webrtc/RTCPeerConnection-iceConnectionState.https.html [ Pass Skip Timeout ]
@@ -6297,7 +6289,6 @@ crbug.com/1203963 [ Mac10.14 ] external/wpt/webusb/idlharness.https.any.html [ F
 crbug.com/1203963 [ Mac10.14 ] external/wpt/xhr/idlharness.any.sharedworker.html [ Failure Pass Skip Timeout ]
 crbug.com/1198443 [ Mac10.14 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/request-upload.any.html [ Failure Pass Timeout ]
 crbug.com/1198443 [ Mac10.14 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/request-upload.any.worker.html [ Failure Pass Timeout ]
-crbug.com/1204086 external/wpt/requestidlecallback/callback-invoked.html [ Failure Pass Skip Timeout ]
 
 # Sheriff 2021-04-30
 crbug.com/1204498 [ Linux ] virtual/scroll-unification/fast/events/hit-test-cache-iframes.html [ Failure Pass ]
@@ -7158,7 +7149,6 @@ crbug.com/1254163 [ Mac ] virtual/scroll-unification/ietestcenter/css3/bordersba
 # Sheriff 2021-10-01
 crbug.com/1255014 [ Linux ] virtual/scroll-unification-overlay-scrollbar/plugin-overlay-scrollbar-mouse-capture.html [ Failure Pass ]
 crbug.com/1254963 [ Win ] external/wpt/mathml/presentation-markup/mrow/inferred-mrow-stretchy.html [ Crash Pass ]
-crbug.com/1255210 external/wpt/requestidlecallback/callback-exception.html [ Pass Timeout ]
 crbug.com/1255221 http/tests/devtools/elements/styles-4/svg-style.js [ Failure Pass ]
 
 # Sheriff 2021-10-04
