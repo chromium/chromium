@@ -84,6 +84,8 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   bool dragged_item_over_bar() const { return dragged_item_over_bar_; }
 
+  OverviewGrid* overview_grid() const { return overview_grid_; }
+
   void set_should_name_nudge(bool should_name_nudge) {
     should_name_nudge_ = should_name_nudge;
   }
@@ -184,6 +186,13 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   void OnNewDeskButtonPressed(
       DesksCreationRemovalSource desks_creation_removal_source);
+
+  // If in expanded state, updates the border color of the
+  // `expanded_state_desks_templates_button_` and the active desk's mini view
+  // after the desk templates grid has been shown. If not in expanded state,
+  // updates the background color of the `zero_state_desks_templates_button_`
+  // and the `zero_state_default_desk_button_`.
+  void UpdateButtonsAfterShowingDesksTemplatesGrid();
 
  private:
   friend class DesksBarScrollViewLayout;

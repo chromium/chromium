@@ -659,16 +659,6 @@ void DesksBarView::EndDragDesk(DeskMiniView* mini_view, bool end_by_user) {
   }
 }
 
-void DesksBarView::OnNewDeskButtonPressed(
-    DesksCreationRemovalSource desks_creation_removal_source) {
-  auto* controller = DesksController::Get();
-  if (!controller->CanCreateDesks())
-    return;
-  set_should_name_nudge(true);
-  controller->NewDesk(desks_creation_removal_source);
-  expanded_state_new_desk_button_->UpdateButtonState();
-}
-
 void DesksBarView::FinalizeDragDesk() {
   if (drag_view_) {
     drag_view_->layer()->SetOpacity(1.0f);
@@ -954,6 +944,30 @@ void DesksBarView::ScrollToShowMiniViewIfNecessary(
   }
 }
 
+void DesksBarView::OnNewDeskButtonPressed(
+    DesksCreationRemovalSource desks_creation_removal_source) {
+  auto* controller = DesksController::Get();
+  if (!controller->CanCreateDesks())
+    return;
+  set_should_name_nudge(true);
+  controller->NewDesk(desks_creation_removal_source);
+  expanded_state_new_desk_button_->UpdateButtonState();
+}
+
+void DesksBarView::UpdateButtonsAfterShowingDesksTemplatesGrid() {
+  // TODO(chinsenj): When the grid is shown, we should expand the zero state
+  // desks bar so `IsZeroState()` should never be true here. Currently the
+  // aforementioned behavior is WIP so leave this as an early return for now to
+  // satisfy tests.
+  if (IsZeroState())
+    return;
+
+  FindMiniViewForDesk(Shell::Get()->desks_controller()->active_desk())
+      ->UpdateBorderColor();
+  expanded_state_desks_templates_button_->set_active(true);
+  expanded_state_desks_templates_button_->UpdateBorderColor();
+}
+
 int DesksBarView::DetermineMoveIndex(int location_screen_x) const {
   const int views_size = static_cast<int>(mini_views_.size());
 
@@ -1151,6 +1165,7 @@ int DesksBarView::GetAdjustedUncroppedScrollPosition(int position) const {
 }
 
 void DesksBarView::OnDesksTemplatesButtonPressed() {
+  // TODO(chinsenj): Expand out of zero state if we are in it.
   // TODO(sammiequon): The button might be changed to be a toggle and this
   // callback will need to be updated to reflect that.
   overview_grid_->overview_session()->ShowDesksTemplatesGrids();

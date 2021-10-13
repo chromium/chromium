@@ -40,6 +40,8 @@ class ExpandedDesksBarButton : public views::View {
 
   DeskButtonBase* inner_button() { return inner_button_; }
 
+  void set_active(bool active) { active_ = active; }
+
   // Updates `inner_button_`'s state on current desks state.
   void UpdateButtonState();
 
@@ -49,7 +51,7 @@ class ExpandedDesksBarButton : public views::View {
   bool IsPointOnButton(const gfx::Point& screen_location) const;
 
   // Updates the border color of the ExpandedDesksBarButton based on
-  // the dragged item's position.
+  // the dragged item's position and `active_`.
   void UpdateBorderColor() const;
 
   // views::View:
@@ -61,6 +63,10 @@ class ExpandedDesksBarButton : public views::View {
   const std::u16string button_label_;
   DeskButtonBase* inner_button_;
   views::Label* label_;
+
+  // If `active_` is true, then the border of `inner_button_` will be
+  // highlighted if it's not already focused.
+  bool active_ = false;
 };
 
 }  // namespace ash

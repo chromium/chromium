@@ -864,6 +864,7 @@ void OverviewGrid::ShowDesksTemplatesGrid() {
   }
 
   desks_templates_grid_widget_->Show();
+  desks_bar_view_->UpdateButtonsAfterShowingDesksTemplatesGrid();
 }
 
 bool OverviewGrid::IsShowingDesksTemplatesGrid() const {

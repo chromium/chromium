@@ -18,6 +18,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
@@ -147,7 +148,8 @@ void DeskMiniView::UpdateBorderColor() {
       IsViewHighlighted()) {
     desk_preview_->SetBorderColor(color_provider->GetControlsLayerColor(
         AshColorProvider::ControlsLayerType::kFocusRingColor));
-  } else if (!desk_->is_active()) {
+  } else if (!desk_->is_active() ||
+             owner_bar_->overview_grid()->IsShowingDesksTemplatesGrid()) {
     desk_preview_->SetBorderColor(SK_ColorTRANSPARENT);
   } else {
     desk_preview_->SetBorderColor(color_provider->GetContentLayerColor(

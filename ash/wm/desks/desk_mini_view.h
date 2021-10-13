@@ -83,7 +83,8 @@ class ASH_EXPORT DeskMiniView
   void OnWidgetGestureTap(const gfx::Rect& screen_rect, bool is_long_gesture);
 
   // Updates the border color of the DeskPreviewView based on the activation
-  // state of the corresponding desk.
+  // state of the corresponding desk and whether the desks template grid is
+  // visible.
   void UpdateBorderColor();
 
   // Gets the preview border's insets.

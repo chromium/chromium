@@ -149,7 +149,17 @@ void ExpandedDesksBarButton::UpdateBorderColor() const {
   const bool focused =
       bar_view_->dragged_item_over_bar() &&
       IsPointOnButton(bar_view_->last_dragged_item_screen_location());
-  if (inner_button_->border_ptr()->SetFocused(focused))
+  bool should_paint = inner_button_->border_ptr()->SetFocused(focused);
+  // Focus takes priority.
+  if (!focused) {
+    inner_button_->border_ptr()->set_color(
+        active_ ? AshColorProvider::Get()->GetContentLayerColor(
+                      AshColorProvider::ContentLayerType::kCurrentDeskColor)
+                : SK_ColorTRANSPARENT);
+    should_paint = true;
+  }
+
+  if (should_paint)
     inner_button_->SchedulePaint();
 }
 
