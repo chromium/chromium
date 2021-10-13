@@ -344,7 +344,8 @@ void CopyPasswordDetailWithID(int detail_id) {
       [self isRunningTest:@selector(testNoAddButtonInEditMode)] ||
       [self isRunningTest:@selector(testAddNewPasswordCredential)] ||
       [self isRunningTest:@selector(testAutoScroll)] ||
-      [self isRunningTest:@selector(testAddNewDuplicatedPasswordCredential)]) {
+      [self isRunningTest:@selector(testAddNewDuplicatedPasswordCredential)] ||
+      [self isRunningTest:@selector(testTLDMissingMessage)]) {
     config.features_enabled.push_back(
         password_manager::features::kSupportForAddPasswordsInSettings);
   }
@@ -1897,6 +1898,50 @@ void CopyPasswordDetailWithID(int detail_id) {
                                           nullptr)] performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:grey_textFieldValue(@"concrete password")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the error message is shown when the top-level domain is missing
+// when adding a new credential.
+- (void)testTLDMissingMessage {
+  OpenPasswordSettings();
+  [PasswordSettingsAppInterface setUpMockReauthenticationModuleForExport];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  BOOL isSwitchEnabled =
+      [PasswordSettingsAppInterface isCredentialsServiceEnabled];
+
+  // Enable switch if it is disabled.
+  if (!isSwitchEnabled) {
+    [GetInteractionForListItem(
+        chrome_test_util::SettingsSwitchCell(kSavePasswordSwitchTableViewId,
+                                             isSwitchEnabled),
+        kGREYDirectionUp) performAction:TurnSettingsSwitchOn(!isSwitchEnabled)];
+
+    // Check that the switch has been modified.
+    [GetInteractionForListItem(
+        chrome_test_util::SettingsSwitchCell(kSavePasswordSwitchTableViewId,
+                                             !isSwitchEnabled),
+        kGREYDirectionUp) assertWithMatcher:grey_sufficientlyVisible()];
+  }
+
+  // Press "Add".
+  [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
+      performAction:grey_tap()];
+
+  // Fill form.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailWebsite()]
+      performAction:grey_replaceText(@"example")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      performAction:grey_replaceText(@"password")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+      performAction:grey_replaceText(@"concrete username")];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
+                                          @"Did you mean website.com?")]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

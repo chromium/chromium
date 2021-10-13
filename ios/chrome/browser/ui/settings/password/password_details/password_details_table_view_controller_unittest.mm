@@ -121,6 +121,10 @@ constexpr char kPassword[] = "test";
   return YES;
 }
 
+- (BOOL)isTLDMissing {
+  return NO;
+}
+
 @end
 
 @interface FakeSnackbarImplementation : NSObject <SnackbarCommands>
@@ -592,9 +596,10 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestSectionsInEdit) {
       password_manager::features::kSupportForAddPasswordsInSettings);
 
   SetPassword();
-  EXPECT_EQ(2, NumberOfSections());
+  EXPECT_EQ(3, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(0));
-  EXPECT_EQ(2, NumberOfItemsInSection(1));
+  EXPECT_EQ(0, NumberOfItemsInSection(1));
+  EXPECT_EQ(2, NumberOfItemsInSection(2));
 }
 
 // Tests the layout of the view controller when adding a new credential.
@@ -607,12 +612,13 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestSectionsInAdd) {
       static_cast<PasswordDetailsTableViewController*>(controller());
   [passwords_controller loadModel];
 
-  EXPECT_EQ(3, NumberOfSections());
+  EXPECT_EQ(4, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(0));
-  EXPECT_EQ(2, NumberOfItemsInSection(1));
+  EXPECT_EQ(0, NumberOfItemsInSection(1));
+  EXPECT_EQ(2, NumberOfItemsInSection(2));
   // TODO(crbug.com/1226006): Use i18n string.
   CheckSectionFooter(
-      @"Make sure you're saving your current password for this site", 2);
+      @"Make sure you're saving your current password for this site", 3);
 }
 
 // Tests the layout of the view controller when adding a new credential with
@@ -629,12 +635,13 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestSectionsInAddDuplicated) {
   [passwords_controller loadModel];
 
   SetEditCellText(@"http://www.example.com/", 0, 0);
-  SetEditCellText(@"test@egmail.com", 1, 0);
+  SetEditCellText(@"test@egmail.com", 2, 0);
 
   [passwords_controller onDuplicateCheckCompletion:YES];
 
-  EXPECT_EQ(4, NumberOfSections());
+  EXPECT_EQ(5, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(0));
-  EXPECT_EQ(2, NumberOfItemsInSection(1));
+  EXPECT_EQ(0, NumberOfItemsInSection(1));
   EXPECT_EQ(2, NumberOfItemsInSection(2));
+  EXPECT_EQ(2, NumberOfItemsInSection(3));
 }

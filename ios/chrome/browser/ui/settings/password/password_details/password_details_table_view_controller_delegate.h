@@ -38,6 +38,9 @@
 // Returns whether the website URL has http(s) scheme and is valid or not.
 - (BOOL)isURLValid;
 
+// Called to check if the url is missing the top-level domain.
+- (BOOL)isTLDMissing;
+
 // Checks if the username is reused for the same domain.
 - (BOOL)isUsernameReused:(NSString*)newUsername;
 

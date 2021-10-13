@@ -183,6 +183,11 @@ bool CheckForDuplicates(
   return self.URL.is_valid() && self.URL.SchemeIsHTTPOrHTTPS();
 }
 
+- (BOOL)isTLDMissing {
+  std::string hostname = self.URL.host();
+  return hostname.find('.') == std::string::npos;
+}
+
 - (BOOL)isUsernameReused:(NSString*)newUsername {
   return NO;
 }

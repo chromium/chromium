@@ -57,7 +57,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSite,
   SectionIdentifierCompromisedInfo,
   SectionIdentifierDuplicate,
-  SectionIdentifierFooter
+  SectionIdentifierFooter,
+  SectionIdentifierTLDFooter
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -114,6 +115,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 // duplicate credential exists or not.
 @property(nonatomic, assign) BOOL shouldEnableSave;
 
+// Yes, when the message for top-level domain missing is shown.
+@property(nonatomic, assign) BOOL isTLDMissingMessageShown;
+
 @end
 
 @implementation PasswordDetailsTableViewController
@@ -126,6 +130,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     _credentialType = credentialType;
     _isDuplicatedCredential = NO;
     _shouldEnableSave = NO;
+    _isTLDMissingMessageShown = NO;
   }
   return self;
 }
@@ -231,6 +236,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
     [model addItem:self.websiteTextItem
         toSectionWithIdentifier:SectionIdentifierSite];
+
+    [model addSectionWithIdentifier:SectionIdentifierTLDFooter];
   }
 
   [model addSectionWithIdentifier:SectionIdentifierPassword];
@@ -433,6 +440,14 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   return item;
 }
 
+- (TableViewLinkHeaderFooterItem*)TLDMessageFooterItem {
+  TableViewLinkHeaderFooterItem* item =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
+  // TODO(crbug.com/1226006): Use i18n string.
+  item.text = @"Did you mean website.com?";
+  return item;
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -540,7 +555,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     heightForHeaderInSection:(NSInteger)section {
   NSInteger sectionIdentifier =
       [self.tableViewModel sectionIdentifierForSection:section];
-  if (sectionIdentifier == SectionIdentifierFooter) {
+
+  if (sectionIdentifier == SectionIdentifierFooter ||
+      sectionIdentifier == SectionIdentifierTLDFooter) {
     return 0;
   }
   return [super tableView:tableView heightForHeaderInSection:section];
@@ -550,6 +567,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     heightForFooterInSection:(NSInteger)section {
   NSInteger sectionIdentifier =
       [self.tableViewModel sectionIdentifierForSection:section];
+  if (sectionIdentifier == SectionIdentifierSite) {
+    return 0;
+  }
   if ((sectionIdentifier == SectionIdentifierPassword &&
        !self.isDuplicatedCredential) ||
       sectionIdentifier == SectionIdentifierDuplicate) {
@@ -634,21 +654,22 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 #pragma mark - AddPasswordDetailsConsumer
 
 - (void)onDuplicateCheckCompletion:(BOOL)duplicateFound {
-  self.navigationItem.rightBarButtonItem.enabled =
-      !duplicateFound && self.shouldEnableSave && [self.delegate isURLValid];
   if (duplicateFound == self.isDuplicatedCredential) {
     return;
   }
 
   self.isDuplicatedCredential = duplicateFound;
+  [self toggleNavigationBarRightButtonItem];
   TableViewModel* model = self.tableViewModel;
   if (duplicateFound) {
     [self
         performBatchTableViewUpdates:^{
+          NSUInteger indexForInsertion = self.isTLDMissingMessageShown ? 3 : 2;
           [model insertSectionWithIdentifier:SectionIdentifierDuplicate
-                                     atIndex:2];
-          [self.tableView insertSections:[NSIndexSet indexSetWithIndex:2]
-                        withRowAnimation:UITableViewRowAnimationTop];
+                                     atIndex:indexForInsertion];
+          [self.tableView
+                insertSections:[NSIndexSet indexSetWithIndex:indexForInsertion]
+              withRowAnimation:UITableViewRowAnimationTop];
           [model addItem:[self duplicatePasswordMessageItem]
               toSectionWithIdentifier:SectionIdentifierDuplicate];
           [model addItem:[self duplicatePasswordViewButtonItem]
@@ -694,14 +715,25 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   if (tableViewItem == self.websiteTextItem &&
       self.credentialType == CredentialTypeNew) {
     [self.delegate setWebsiteURL:self.websiteTextItem.textFieldValue];
+    if (self.isTLDMissingMessageShown) {
+      self.isTLDMissingMessageShown = NO;
+      [self
+          performBatchTableViewUpdates:^{
+            [self.tableViewModel setFooter:nil
+                  forSectionWithIdentifier:SectionIdentifierTLDFooter];
+            NSUInteger index = [self.tableViewModel
+                sectionForSectionIdentifier:SectionIdentifierTLDFooter];
+            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
+                          withRowAnimation:UITableViewRowAnimationNone];
+          }
+                            completion:nil];
+    }
   }
 
   self.shouldEnableSave = [self checkIfValidSite] &
                           [self checkIfValidUsername] &
                           [self checkIfValidPassword];
-  self.navigationItem.rightBarButtonItem.enabled =
-      !self.isDuplicatedCredential && self.shouldEnableSave &&
-      [self.delegate isURLValid];
+  [self toggleNavigationBarRightButtonItem];
 
   if (self.credentialType == CredentialTypeNew) {
     [self.delegate checkForDuplicates:self.usernameTextItem.textFieldValue];
@@ -712,6 +744,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   // Check if the item is equal to the current username or password item as when
   // editing finished reloadData is called.
   if (tableViewItem == self.websiteTextItem) {
+    if ([self.delegate isTLDMissing]) {
+      [self showTLDMissingSection];
+    }
     [self reconfigureCellsForItems:@[ self.websiteTextItem ]];
   } else if (tableViewItem == self.usernameTextItem) {
     [self reconfigureCellsForItems:@[ self.usernameTextItem ]];
@@ -729,6 +764,10 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 // Handles Save button tap on adding new credentials.
 - (void)didTapSaveButton:(id)sender {
+  if ([self.delegate isTLDMissing]) {
+    [self showTLDMissingSection];
+    return;
+  }
   [self.delegate
       passwordDetailsViewController:self
               didAddPasswordDetails:self.usernameTextItem.textFieldValue
@@ -969,6 +1008,33 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     DCHECK(self.addPasswordHandler);
     [self.addPasswordHandler showPasscodeDialog];
   }
+}
+
+// Enables/Disables the right bar button item in the navigation bar.
+- (void)toggleNavigationBarRightButtonItem {
+  self.navigationItem.rightBarButtonItem.enabled =
+      !self.isDuplicatedCredential && self.shouldEnableSave &&
+      [self.delegate isURLValid];
+}
+
+// Shows the section with the error message for top-level domain missing.
+- (void)showTLDMissingSection {
+  if (self.isTLDMissingMessageShown) {
+    return;
+  }
+
+  self.navigationItem.rightBarButtonItem.enabled = NO;
+  self.isTLDMissingMessageShown = YES;
+  [self
+      performBatchTableViewUpdates:^{
+        [self.tableViewModel setFooter:[self TLDMessageFooterItem]
+              forSectionWithIdentifier:SectionIdentifierTLDFooter];
+        NSUInteger index = [self.tableViewModel
+            sectionForSectionIdentifier:SectionIdentifierTLDFooter];
+        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
+                      withRowAnimation:UITableViewRowAnimationNone];
+      }
+                        completion:nil];
 }
 
 #pragma mark - Actions
