@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import * as animate from '../../animation.js';
-import {assertString} from '../../chrome_util.js';
 // eslint-disable-next-line no-unused-vars
 import {Camera3DeviceInfo} from '../../device/camera3_device_info.js';
 // eslint-disable-next-line no-unused-vars
@@ -83,7 +82,7 @@ export class Options {
     this.audioTrack_ = null;
 
     dom.get('#switch-device', HTMLButtonElement)
-        .addEventListener('click', () => this.switchDevice(undefined));
+        .addEventListener('click', () => this.switchDevice_());
     dom.get('#open-settings', HTMLButtonElement)
         .addEventListener('click', () => nav.open(ViewName.SETTINGS));
 
@@ -116,28 +115,25 @@ export class Options {
   }
 
   /**
-   * Switches to specified or the next available camera device.
-   * @param {(string|undefined)} deviceId The target device id to switch to.
-   *     Sets to undefined for switching to next camera device in order.
+   * Switches to the next available camera device.
+   * @private
    */
-  async switchDevice(deviceId) {
+  async switchDevice_() {
     if (!state.get(state.State.STREAMING) || state.get(state.State.TAKING)) {
       return;
     }
     state.set(PerfEvent.CAMERA_SWITCHING, true);
-    if (deviceId === undefined) {
-      const devices = this.infoUpdater_.getDevicesInfo();
-      let index =
-          devices.findIndex((entry) => entry.deviceId === this.videoDeviceId_);
-      if (index === -1) {
-        index = 0;
-      } else {
-        index = (index + 1) % devices.length;
-        deviceId = devices[index].deviceId;
-      }
-    }
-    this.videoDeviceId_ = assertString(deviceId);
+    const devices = await this.infoUpdater_.getDevicesInfo();
     animate.play(dom.get('#switch-device', HTMLElement));
+    let index =
+        devices.findIndex((entry) => entry.deviceId === this.videoDeviceId_);
+    if (index === -1) {
+      index = 0;
+    }
+    if (devices.length > 0) {
+      index = (index + 1) % devices.length;
+      this.videoDeviceId_ = devices[index].deviceId;
+    }
     const isSuccess = await this.doSwitchDevice_();
     state.set(PerfEvent.CAMERA_SWITCHING, false, {hasError: !isSuccess});
   }

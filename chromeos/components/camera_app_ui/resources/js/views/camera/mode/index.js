@@ -323,7 +323,7 @@ export class Modes {
         getCaptureFactory: () => new ScanFactory(
             getNonNullConstraints(), this.captureParams_.captureResolution,
             scanHandler),
-        isSupported: async (deviceId) => state.get(state.State.SHOW_SCAN_MODE),
+        isSupported: async () => state.get(state.State.SHOW_SCAN_MODE),
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
             constraints, resolution, CaptureIntent.DOCUMENT),

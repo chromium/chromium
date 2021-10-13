@@ -9,7 +9,6 @@ import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
 import * as dom from '../../dom.js';
 import {sendBarcodeEnabledEvent} from '../../metrics.js';
 import {BarcodeScanner} from '../../models/barcode.js';
-import {ChromeHelper} from '../../mojo/chrome_helper.js';
 import * as state from '../../state.js';
 import {Mode} from '../../type.js';
 
@@ -52,22 +51,15 @@ export class ScanOptions {
   /**
    * @param {{
    *   doReconfigure: function(): !Promise,
-   *   doSwitchDevice: function(string): !Promise,
    *   infoUpdater: !DeviceInfoUpdater,
    * }} params
    */
-  constructor({doReconfigure, doSwitchDevice, infoUpdater}) {
+  constructor({doReconfigure, infoUpdater}) {
     /**
      * @type {function(): !Promise}
      * @private
      */
     this.doReconfigure_ = doReconfigure;
-
-    /**
-     * @type {function(string): !Promise}
-     * @private
-     */
-    this.doSwitchDevice_ = doSwitchDevice;
 
     /**
      * Togglable barcode option in photo mode.
@@ -106,45 +98,11 @@ export class ScanOptions {
     this.documentCornerOverylay_ = new DocumentCornerOverlay();
 
     /**
-     * List of device ids of devices supporting document mode.
-     * @type {!Array<string>}
-     * @private
-     */
-    this.docModeDevices_ = [];
-
-    /**
      * Called when scan option changed.
      * @type {function(): void}
      * @public
      */
     this.onChange = () => {};
-
-    const updateShowScanMode = async () => {
-      const isPlatformSupport =
-          await ChromeHelper.getInstance().isDocumentModeSupported();
-      state.set(
-          state.State.SHOW_SCAN_MODE,
-          isPlatformSupport &&
-              (this.docModeDevices_.length > 0 ||
-               state.get(state.State.ENABLE_DOCUMENT_MODE_ON_ALL_CAMERAS)));
-    };
-    state.addObserver(state.State.ENABLE_DOCUMENT_MODE_ON_ALL_CAMERAS, () => {
-      this.doReconfigure_();
-      updateShowScanMode();
-    });
-    infoUpdater.addDeviceChangeListener(() => {
-      const devicesInfo = infoUpdater.getCamera3DevicesInfo();
-      if (devicesInfo === null) {
-        return;
-      }
-      this.docModeDevices_ = [];
-      for (const {supportDocumentScan, deviceId} of devicesInfo) {
-        if (supportDocumentScan) {
-          this.docModeDevices_.push(deviceId);
-        }
-      }
-      updateShowScanMode();
-    });
 
     [this.photoBarcodeOption_, ...this.scanOptions_].forEach((opt) => {
       opt.addEventListener('click', (evt) => {
@@ -177,17 +135,6 @@ export class ScanOptions {
   }
 
   /**
-   * @param {string} deviceId
-   * @return {boolean}
-   */
-  canScanDocument_(deviceId) {
-    if (state.get(state.State.ENABLE_DOCUMENT_MODE_ON_ALL_CAMERAS)) {
-      return true;
-    }
-    return this.docModeDevices_.includes(deviceId);
-  }
-
-  /**
    * Attaches to preview video as source of frames to be scanned.
    * @param {!HTMLVideoElement} video
    * @return {!Promise}
@@ -202,16 +149,7 @@ export class ScanOptions {
                            .getSettings();
     this.documentCornerOverylay_.attach(deviceId);
     this.previewAttached_ = true;
-    const scanType = (() => {
-      if (!state.get(Mode.SCAN)) {
-        return null;
-      }
-      const type = this.getToggledScanOption_();
-      if (type === ScanType.DOCUMENT && !this.canScanDocument_(deviceId)) {
-        return ScanType.BARCODE;
-      }
-      return type;
-    })();
+    const scanType = state.get(Mode.SCAN) ? this.getToggledScanOption_() : null;
     await this.updateOption_(scanType);
   }
 
@@ -244,11 +182,6 @@ export class ScanOptions {
     }
 
     if (state.get(Mode.SCAN) && scanType === ScanType.DOCUMENT) {
-      const currentDeviceId = this.documentCornerOverylay_.getDeviceId();
-      if (!this.canScanDocument_(currentDeviceId)) {
-        this.doSwitchDevice_(this.docModeDevices_[0]);
-        return;
-      }
       await this.documentCornerOverylay_.start();
     } else {
       await this.documentCornerOverylay_.stop();

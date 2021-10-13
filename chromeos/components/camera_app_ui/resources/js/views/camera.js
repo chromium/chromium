@@ -159,7 +159,6 @@ export class Camera extends View {
      */
     this.scanOptions_ = new ScanOptions({
       doReconfigure: () => this.start(),
-      doSwitchDevice: (deviceId) => this.options_.switchDevice(deviceId),
       infoUpdater: this.infoUpdater_,
     });
 
@@ -471,37 +470,28 @@ export class Camera extends View {
    * @private
    */
   async initScanMode_() {
-    const helper = await ChromeHelper.getInstance();
-    const isPlatformSupport = await helper.isDocumentModeSupported();
-    state.set(state.State.PLATFORM_SUPPORT_SCAN_DOCUMENT, isPlatformSupport);
+    const isPlatformSupport =
+        await ChromeHelper.getInstance().isDocumentModeSupported();
+    state.set(state.State.SHOW_SCAN_MODE, isPlatformSupport);
     if (!isPlatformSupport) {
       return;
     }
 
-    const scanModeBtn = dom.get('input[data-mode="scan"]', HTMLInputElement);
-
+    // Check show toast.
     const docModeToastKey = 'isDocModeToastShown';
-    const checkShowToast = () => {
-      state.removeObserver(state.State.SHOW_SCAN_MODE, checkShowToast);
-      if (state.get(state.State.IS_NEW_FEATURE_TOAST_SHOWN) ||
-          localStorage.getBool(docModeToastKey)) {
-        return;
-      }
+    if (!state.get(state.State.IS_NEW_FEATURE_TOAST_SHOWN) &&
+        !localStorage.getBool(docModeToastKey)) {
       state.set(state.State.IS_NEW_FEATURE_TOAST_SHOWN, true);
       localStorage.set(docModeToastKey, true);
       // aria-owns don't work on HTMLInputElement, show toast on parent div
       // instead.
+      const scanModeBtn = dom.get('input[data-mode="scan"]', HTMLInputElement);
       const scanModeItem =
           assertInstanceof(scanModeBtn.parentElement, HTMLDivElement);
       newFeatureToast.show(scanModeItem);
       scanModeBtn.addEventListener('click', () => {
         newFeatureToast.hide();
       });
-    };
-    if (state.get(state.State.SHOW_SCAN_MODE)) {
-      checkShowToast();
-    } else {
-      state.addObserver(state.State.SHOW_SCAN_MODE, checkShowToast);
     }
 
     const docModeDialogKey = 'isDocModeDialogShown';

@@ -25,11 +25,9 @@ export class Camera3DeviceInfo {
    *     resolutions and maximal capture fps of the video device.
    * @param {!FpsRangeList} fpsRanges Supported fps ranges of the video device.
    * @param {boolean} supportPTZ Is supported PTZ controls.
-   * @param {boolean} supportDocumentScan Is supported document scanning.
    */
   constructor(
-      deviceInfo, facing, photoResols, videoResolFpses, fpsRanges, supportPTZ,
-      supportDocumentScan) {
+      deviceInfo, facing, photoResols, videoResolFpses, fpsRanges, supportPTZ) {
     /**
      * @const {string}
      * @public
@@ -72,12 +70,6 @@ export class Camera3DeviceInfo {
      */
     this.supportPTZ = supportPTZ;
 
-    /**
-     * @const {boolean}
-     * @public
-     */
-    this.supportDocumentScan = supportDocumentScan;
-
     videoResolFpses.filter(({maxFps}) => maxFps >= 24)
         .forEach(({width, height, maxFps}) => {
           const r = new Resolution(width, height);
@@ -112,10 +104,9 @@ export class Camera3DeviceInfo {
     const filteredVideoConfigs = videoConfigs.filter(videoConfigFilter);
     const supportedFpsRanges =
         await deviceOperator.getSupportedFpsRanges(deviceId);
-    const supportDocumentScan = true;
 
     return new Camera3DeviceInfo(
         deviceInfo, facing, photoResolution, filteredVideoConfigs,
-        supportedFpsRanges, supportPTZ, supportDocumentScan);
+        supportedFpsRanges, supportPTZ);
   }
 }

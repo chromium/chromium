@@ -228,13 +228,6 @@ export class DocumentCornerOverlay {
   }
 
   /**
-   * @return {string}
-   */
-  getDeviceId() {
-    return assertString(this.deviceId_);
-  }
-
-  /**
    * Attaches to camera with specified device id.
    * @param {string} deviceId
    */
