@@ -113,12 +113,10 @@ void SetContentsBorderVisible(WebContents* contents, bool visible) {
 }
 
 std::u16string GetTabName(WebContents* tab) {
-  const GURL& url = tab->GetLastCommittedURL();
-  const std::u16string tab_name =
-      network::IsUrlPotentiallyTrustworthy(url)
-          ? base::UTF8ToUTF16(net::GetHostAndOptionalPort(url))
-          : url_formatter::FormatUrlForSecurityDisplay(url.GetOrigin());
-  return tab_name.empty() ? tab->GetTitle() : tab_name;
+  const std::u16string formatted_origin =
+      url_formatter::FormatOriginForSecurityDisplay(
+          tab->GetMainFrame()->GetLastCommittedOrigin());
+  return formatted_origin.empty() ? tab->GetTitle() : formatted_origin;
 }
 
 GlobalRenderFrameHostId GetGlobalId(WebContents* web_contents) {

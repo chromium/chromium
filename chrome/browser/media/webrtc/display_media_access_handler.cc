@@ -286,7 +286,7 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
   picker_params.context = parent_window;
   picker_params.parent = parent_window;
   picker_params.app_name = url_formatter::FormatOriginForSecurityDisplay(
-      url::Origin::Create(web_contents->GetLastCommittedURL()),
+      web_contents->GetMainFrame()->GetLastCommittedOrigin(),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
   picker_params.target_name = picker_params.app_name;
   picker_params.request_audio =
@@ -351,8 +351,8 @@ void DisplayMediaAccessHandler::OnPickerDialogResults(
     }
 #endif
     if (request_result == blink::mojom::MediaStreamRequestResult::OK) {
-      const auto& visible_url = url_formatter::FormatUrlForSecurityDisplay(
-          web_contents->GetLastCommittedURL(),
+      const auto& visible_url = url_formatter::FormatOriginForSecurityDisplay(
+          web_contents->GetMainFrame()->GetLastCommittedOrigin(),
           url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
       const bool disable_local_echo =
           (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) &&

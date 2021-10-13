@@ -32,6 +32,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_streams_registry.h"
@@ -45,7 +46,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/switches.h"
-#include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
@@ -74,16 +74,12 @@ std::u16string GetApplicationTitle(content::WebContents* web_contents,
                                    const extensions::Extension* extension) {
   // Use extension name as title for extensions and host/origin for drive-by
   // web.
-  std::string title;
-  if (extension) {
-    title = extension->name();
-    return base::UTF8ToUTF16(title);
-  }
-  GURL url = web_contents->GetURL();
-  title = network::IsUrlPotentiallyTrustworthy(url)
-              ? net::GetHostAndOptionalPort(url)
-              : url.GetOrigin().spec();
-  return base::UTF8ToUTF16(title);
+  if (extension)
+    return base::UTF8ToUTF16(extension->name());
+
+  return url_formatter::FormatOriginForSecurityDisplay(
+      web_contents->GetMainFrame()->GetLastCommittedOrigin(),
+      url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 }
 
 // Returns whether an on-screen notification should appear after desktop capture

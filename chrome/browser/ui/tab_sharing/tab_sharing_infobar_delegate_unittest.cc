@@ -90,11 +90,8 @@ class TabSharingInfoBarDelegateTest
   std::u16string GetExpectedSwitchToMessageForTargetTab(int tab) {
     return l10n_util::GetStringFUTF16(
         IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
-        url_formatter::FormatUrlForSecurityDisplay(
-            GetWebContents(tab)
-                ->GetMainFrame()
-                ->GetLastCommittedURL()
-                .GetOrigin(),
+        url_formatter::FormatOriginForSecurityDisplay(
+            GetWebContents(tab)->GetMainFrame()->GetLastCommittedOrigin(),
             url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
   }
 

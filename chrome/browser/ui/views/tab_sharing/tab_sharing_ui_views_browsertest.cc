@@ -83,8 +83,8 @@ std::u16string GetExpectedSwitchToMessage(Browser* browser, int tab) {
       GetWebContents(browser, tab)->GetMainFrame();
   return l10n_util::GetStringFUTF16(
       IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
-      url_formatter::FormatUrlForSecurityDisplay(
-          rfh->GetLastCommittedURL().GetOrigin(),
+      url_formatter::FormatOriginForSecurityDisplay(
+          rfh->GetLastCommittedOrigin(),
           url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
 }
 
@@ -513,7 +513,7 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
 
   CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab);
   ASSERT_THAT(base::UTF16ToUTF8(GetInfobarMessageText(browser(), 0)),
-              ::testing::HasSubstr(chrome::kChromeUINewTabHost));
+              ::testing::HasSubstr(chrome::kChromeUINewTabPageHost));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIVersionURL)));
