@@ -24,6 +24,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "services/audio/concurrent_stream_metric_reporter.h"
+#include "services/audio/device_listener_output_stream.h"
 #include "services/audio/stream_monitor.h"
 
 
@@ -207,7 +208,7 @@ void OutputController::RecreateStream(OutputController::RecreateReason reason) {
   if (state_ == kClosed)
     return;
 
-  StopCloseAndClearStream();  // Calls RemoveOutputDeviceChangeListener().
+  StopCloseAndClearStream();
   DCHECK_EQ(kEmpty, state_);
 
   if (disable_local_output_) {
@@ -223,8 +224,15 @@ void OutputController::RecreateStream(OutputController::RecreateReason reason) {
         mute_params, std::string(),
         /*log_callback, not used*/ base::DoNothing());
   } else {
-    stream_ =
+    media::AudioOutputStream* stream =
         audio_manager_->MakeAudioOutputStreamProxy(params_, output_device_id_);
+    if (stream) {
+      // ProcessDeviceChange must close |stream_|.
+      stream_ = new DeviceListenerOutputStream(
+          audio_manager_, stream,
+          base::BindRepeating(&OutputController::ProcessDeviceChange,
+                              base::Unretained(this)));
+    }
   }
 
   if (!stream_) {
@@ -235,7 +243,6 @@ void OutputController::RecreateStream(OutputController::RecreateReason reason) {
     return;
   }
 
-  weak_this_for_stream_ = weak_factory_for_stream_.GetWeakPtr();
   if (!stream_->Open()) {
     SendLogMessage("%s => (ERROR: failed to open the created output stream)",
                    __func__);
@@ -246,7 +253,6 @@ void OutputController::RecreateStream(OutputController::RecreateReason reason) {
     return;
   }
 
-
   // Finally set the state to kCreated. Note that, it is possible that the
   // stream is fake in this state due to the fallback mechanism in the audio
   // output dispatcher which falls back to a fake stream if audio parameters
@@ -256,8 +262,6 @@ void OutputController::RecreateStream(OutputController::RecreateReason reason) {
 
   // We have successfully opened the stream. Set the initial volume.
   stream_->SetVolume(volume_);
-
-  audio_manager_->AddOutputDeviceChangeListener(this);
 }
 
 void OutputController::Play() {
@@ -387,18 +391,6 @@ void OutputController::SetVolume(double volume) {
   }
 }
 
-void OutputController::ReportError() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  TRACE_EVENT0("audio", "OutputController::ReportError");
-  DLOG(ERROR) << "OutputController::ReportError";
-  SendLogMessage("%s([state=%s])", __func__, StateToString(state_));
-  if (state_ != kClosed) {
-    if (stats_tracker_)
-      stats_tracker_->RegisterError();
-    handler_->OnControllerError();
-  }
-}
-
 int OutputController::OnMoreData(base::TimeDelta delay,
                                  base::TimeTicks delay_timestamp,
                                  int prior_frames_skipped,
@@ -470,26 +462,21 @@ void OutputController::LogAudioPowerLevel(const char* call_name) {
 }
 
 bool OutputController::StreamIsActive() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
   return (state_ == kPlaying) && !disable_local_output_;
 }
 
 void OutputController::OnError(ErrorType type) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
   SendLogMessage("%s({type=%s} [state=%s])", __func__, ErrorTypeToString(type),
                  StateToString(state_));
-  if (type == ErrorType::kDeviceChange) {
-    task_runner_->PostTask(FROM_HERE,
-                           base::BindOnce(&OutputController::OnDeviceChange,
-                                          weak_this_for_stream_));
-    return;
+  TRACE_EVENT0("audio", "OutputController::OnError");
+  DLOG(ERROR) << "OutputController::OnError";
+  if (state_ != kClosed) {
+    if (stats_tracker_)
+      stats_tracker_->RegisterError();
+    handler_->OnControllerError();
   }
-
-  // Handle error on the audio controller thread.  We defer errors for one
-  // second in case they are the result of a device change; delay chosen to
-  // exceed duration of device changes which take a few hundred milliseconds.
-  task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&OutputController::ReportError, weak_this_for_stream_),
-      base::Seconds(1));
 }
 
 void OutputController::StopCloseAndClearStream() {
@@ -497,17 +484,8 @@ void OutputController::StopCloseAndClearStream() {
 
   // Allow calling unconditionally and bail if we don't have a stream_ to close.
   if (stream_) {
-    // Ensure any pending tasks, specific to the stream_, are canceled.
-    weak_factory_for_stream_.InvalidateWeakPtrs();
-
-    // De-register from state change callbacks if stream_ was created via
-    // AudioManager.
-    audio_manager_->RemoveOutputDeviceChangeListener(this);
-
     StopStream();
     stream_->Close();
-    stats_tracker_.reset();
-
     stream_ = nullptr;
   }
 
@@ -583,14 +561,12 @@ void OutputController::ToggleLocalOutput() {
   }
 }
 
-void OutputController::OnDeviceChange() {
+void OutputController::ProcessDeviceChange() {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  TRACE_EVENT0("audio", "OutputController::OnDeviceChange");
-
-  if (disable_local_output_)
-    return;  // No actions need to be taken while local output is disabled.
-
   SendLogMessage("%s([state=%s])", __func__, StateToString(state_));
+  TRACE_EVENT0("audio", "OutputController::ProcessDeviceChange");
+
+  DCHECK(!disable_local_output_);
 
   // TODO(dalecurtis): Notify the renderer side that a device change has
   // occurred.  Currently querying the hardware information here will lead to
