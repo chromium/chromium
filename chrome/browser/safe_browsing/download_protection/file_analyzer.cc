@@ -137,7 +137,6 @@ void FileAnalyzer::StartExtractFileFeatures() {
 
 void FileAnalyzer::OnFileAnalysisFinished(FileAnalyzer::Results results) {
   results.type = download_type_util::GetDownloadType(target_path_);
-  results.archive_is_valid = ArchiveValid::UNSET;
   std::move(callback_).Run(results);
 }
 
