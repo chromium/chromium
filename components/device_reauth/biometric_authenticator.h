@@ -59,7 +59,11 @@ enum class BiometricAuthRequester {
   // starting automated password change.
   kPasswordCheckAutoPwdChange = 5,
 
-  kMaxValue = kPasswordCheckAutoPwdChange,
+  // The dialog displayed to access existing Incognito tabs if the Incognito
+  // lock setting in on and Chrome came to foreground.
+  kIncognitoReauthPage = 6,
+
+  kMaxValue = kIncognitoReauthPage,
 };
 
 // The result of the biometric authentication.

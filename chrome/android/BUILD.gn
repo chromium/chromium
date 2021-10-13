@@ -957,6 +957,7 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/gsa:java",
     "//chrome/browser/image_descriptions:java",
     "//chrome/browser/image_editor/public:java",
+    "//chrome/browser/incognito:incognito_junit_tests",
     "//chrome/browser/incognito:java",
     "//chrome/browser/lens:delegate_public_impl_java",
     "//chrome/browser/lens:java",

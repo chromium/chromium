@@ -6,17 +6,68 @@ package org.chromium.chrome.browser.incognito.reauth;
 
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.device_reauth.BiometricAuthRequester;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /**
- * This class is responsible for managing the reauthentication flow when the Incognito session is
- * locked.
+ * This class is responsible for managing the Incognito re-authentication flow.
  */
 public class IncognitoReauthManager {
     private static Boolean sIsIncognitoReauthFeatureAvailableForTesting;
+    private ReauthenticatorBridge mReauthenticatorBridge;
 
+    /**
+     * A callback interface which is used for re-authentication in {@link
+     * IncognitoReauthManager#startReauthenticationFlow(IncognitoReauthCallback)}.
+     */
+    public interface IncognitoReauthCallback {
+        // This is invoked when either the Incognito re-authentication feature is not available or
+        // the device screen lock is not setup or there's an authentication already in progress.
+        void onIncognitoReauthNotPossible();
+        // This is invoked when the Incognito re-authentication resulted in success.
+        void onIncognitoReauthSuccess();
+        // This is invoked when the Incognito re-authentication resulted in failure.
+        void onIncognitoReauthFailure();
+    }
+
+    /**
+     * Constructor for {@link IncognitoReauthManager}. Initialises |mReauthenticatorBridge|.
+     */
+    public IncognitoReauthManager() {
+        mReauthenticatorBridge =
+                new ReauthenticatorBridge(BiometricAuthRequester.INCOGNITO_REAUTH_PAGE);
+    }
+
+    @VisibleForTesting
+    public IncognitoReauthManager(ReauthenticatorBridge reauthenticatorBridge) {
+        mReauthenticatorBridge = reauthenticatorBridge;
+    }
+
+    /**
+     * Starts the authentication flow. This is an asynchronous method call which would invoke the
+     * passed {@link IncognitoReauthCallback} parameter once executed.
+     *
+     * @param incognitoReauthCallback A {@link IncognitoReauthCallback} callback that
+     *         would be run once the authentication is executed.
+     */
+    public void startReauthenticationFlow(
+            @NonNull IncognitoReauthCallback incognitoReauthCallback) {
+        if (!isIncognitoReauthFeatureAvailable()
+                || !mReauthenticatorBridge.canUseAuthentication()) {
+            incognitoReauthCallback.onIncognitoReauthNotPossible();
+        }
+        mReauthenticatorBridge.reauthenticate(success -> {
+            if (success) {
+                incognitoReauthCallback.onIncognitoReauthSuccess();
+            } else {
+                incognitoReauthCallback.onIncognitoReauthFailure();
+            }
+        });
+    }
     /**
      * @return A boolean indicating if the Incognito re-authentication feature is available.
      */
