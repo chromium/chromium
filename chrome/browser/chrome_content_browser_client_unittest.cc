@@ -602,7 +602,8 @@ namespace {
 constexpr char kEmail[] = "test@test.com";
 std::unique_ptr<KeyedService> CreateTestPolicyCertService(
     content::BrowserContext* context) {
-  return policy::PolicyCertService::CreateForTesting(kEmail);
+  return policy::PolicyCertService::CreateForTesting(
+      Profile::FromBrowserContext(context), kEmail);
 }
 }  // namespace
 
@@ -643,10 +644,11 @@ class ChromeContentSettingsPolicyTrustAnchor
 
 TEST_F(ChromeContentSettingsPolicyTrustAnchor, PolicyTrustAnchor) {
   ChromeContentBrowserClient client;
-  EXPECT_FALSE(
-      policy::PolicyCertServiceFactory::UsedPolicyCertificates(kEmail));
+  EXPECT_FALSE(policy::PolicyCertServiceFactory::GetForProfile(&profile_)
+                   ->UsedPolicyCertificates());
   client.OnTrustAnchorUsed(&profile_);
-  EXPECT_TRUE(policy::PolicyCertServiceFactory::UsedPolicyCertificates(kEmail));
+  EXPECT_TRUE(policy::PolicyCertServiceFactory::GetForProfile(&profile_)
+                  ->UsedPolicyCertificates());
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -17,7 +17,6 @@ template <typename T>
 struct DefaultSingletonTraits;
 }  // namespace base
 
-class PrefRegistrySimple;
 class Profile;
 
 namespace policy {
@@ -46,13 +45,21 @@ class PolicyCertServiceFactory : public BrowserContextKeyedServiceFactory {
   PolicyCertServiceFactory(const PolicyCertServiceFactory&) = delete;
   PolicyCertServiceFactory& operator=(const PolicyCertServiceFactory&) = delete;
 
-  // Used to mark or clear |user_email| as having used certificates pushed by
-  // policy before.
-  static void SetUsedPolicyCertificates(const std::string& user_email);
-  static void ClearUsedPolicyCertificates(const std::string& user_email);
-  static bool UsedPolicyCertificates(const std::string& user_email);
-
-  static void RegisterPrefs(PrefRegistrySimple* local_state);
+  // Migrates the `prefs::kUsedPolicyCertificates` preference from local state
+  // into per-profile pref storage. Returns true if the local pref was present
+  // and was successfully migrated.
+  // TODO(b/202492163): The migration started in October 2021. According to
+  // chrome/browser/prefs/README.md it should go for at least a year. Also note
+  // that Lacros-Chrome can never have this preference in local state.
+  static bool MigrateLocalStatePrefIntoProfilePref(
+      const std::string& user_email,
+      Profile* profile);
+  // Used to clear |user_email| as having used certificates pushed by
+  // policy before. Returns true if the flag was present and was successfully
+  // cleared.
+  // TODO(b/202492163) This can be deleted after the local state -> profile pref
+  // migration is finished.
+  static bool ClearUsedPolicyCertificates(const std::string& user_email);
 
  private:
   friend struct base::DefaultSingletonTraits<PolicyCertServiceFactory>;

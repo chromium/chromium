@@ -49,7 +49,8 @@ constexpr char kUserGaiaId[] = "0123456789";
 
 std::unique_ptr<KeyedService> CreateTestPolicyCertService(
     content::BrowserContext* context) {
-  return policy::PolicyCertService::CreateForTesting(kUser);
+  return policy::PolicyCertService::CreateForTesting(
+      Profile::FromBrowserContext(context), kUser);
 }
 
 // A user manager that does not set profiles as loaded and notifies observers
@@ -316,7 +317,7 @@ TEST_F(SessionControllerClientImplTest,
 // policy-provided trust anchors.
 TEST_F(SessionControllerClientImplTest,
        MultiProfileAllowedWithPolicyCertificates) {
-  InitForMultiProfile();
+  TestingProfile* user_profile = InitForMultiProfile();
   user_manager()->AddUser(
       AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
 
@@ -325,8 +326,13 @@ TEST_F(SessionControllerClientImplTest,
   user_manager()->LoginUser(account_id);
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
-  policy::PolicyCertServiceFactory::SetUsedPolicyCertificates(
-      account_id.GetUserEmail());
+
+  ASSERT_TRUE(
+      policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          user_profile, base::BindRepeating(&CreateTestPolicyCertService)));
+  policy::PolicyCertServiceFactory::GetForProfile(user_profile)
+      ->SetUsedPolicyCertificates();
+
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 

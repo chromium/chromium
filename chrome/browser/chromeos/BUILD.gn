@@ -4257,6 +4257,7 @@ source_set("unit_tests") {
     "../ash/policy/networking/fake_network_roaming_state_migration_handler.h",
     "../ash/policy/networking/network_configuration_updater_unittest.cc",
     "../ash/policy/networking/network_roaming_state_migration_handler_unittest.cc",
+    "../ash/policy/networking/policy_cert_service_factory_unittest.cc",
     "../ash/policy/networking/roaming_configuration_migration_handler_unittest.cc",
     "../ash/policy/off_hours/device_off_hours_controller_unittest.cc",
     "../ash/policy/off_hours/off_hours_policy_applier_unittest.cc",

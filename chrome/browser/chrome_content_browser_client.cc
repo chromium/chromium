@@ -349,6 +349,7 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
+#include "chrome/browser/ash/policy/networking/policy_cert_service.h"
 #include "chrome/browser/ash/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/fileapi/smbfs_file_system_backend_delegate.h"
@@ -2805,16 +2806,14 @@ bool ChromeContentBrowserClient::IsConversionMeasurementOperationAllowed(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ChromeContentBrowserClient::OnTrustAnchorUsed(
     content::BrowserContext* browser_context) {
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (user_manager) {
-    const user_manager::User* user =
-        chromeos::ProfileHelper::Get()->GetUserByProfile(
-            Profile::FromBrowserContext(browser_context));
-    if (user && !user->username_hash().empty()) {
-      policy::PolicyCertServiceFactory::SetUsedPolicyCertificates(
-          user->GetAccountId().GetUserEmail());
-    }
+  policy::PolicyCertService* service =
+      policy::PolicyCertServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context));
+  if (!service) {
+    NOTREACHED();
+    return;
   }
+  service->SetUsedPolicyCertificates();
 }
 #endif
 

@@ -17,13 +17,17 @@
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/network/onc/certificate_scope.h"
 #include "chromeos/network/policy_certificate_provider.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/extension_util.h"
 #include "net/cert/x509_certificate.h"
+#include "policy_cert_service.h"
 #include "services/network/nss_temp_certs_cache_chromeos.h"
 #include "url/gurl.h"
 
@@ -44,6 +48,7 @@ PolicyCertService::PolicyCertService(
       may_use_profile_wide_trust_anchors_(may_use_profile_wide_trust_anchors),
       user_id_(user_id) {
   DCHECK(policy_certificate_provider_);
+  DCHECK(profile_);
 
   // Only allow using profile-wide trust anchors if a user is associated with
   // this Profile. Profiles without a user would be e.g. the sign-in screen
@@ -57,8 +62,9 @@ PolicyCertService::PolicyCertService(
   profile_wide_trust_anchors_ = GetAllowedProfileWideTrustAnchors();
 }
 
-PolicyCertService::PolicyCertService(const std::string& user_id)
-    : profile_(nullptr),
+PolicyCertService::PolicyCertService(Profile* profile,
+                                     const std::string& user_id)
+    : profile_(profile),
       policy_certificate_provider_(nullptr),
       may_use_profile_wide_trust_anchors_(true),
       user_id_(user_id) {}
@@ -170,7 +176,11 @@ bool PolicyCertService::UsedPolicyCertificates() const {
   if (user_id_.empty())
     return false;
 
-  return PolicyCertServiceFactory::UsedPolicyCertificates(user_id_);
+  return profile_->GetPrefs()->GetBoolean(prefs::kUsedPolicyCertificates);
+}
+
+void PolicyCertService::SetUsedPolicyCertificates() {
+  profile_->GetPrefs()->SetBoolean(prefs::kUsedPolicyCertificates, true);
 }
 
 net::CertificateList PolicyCertService::GetAllowedProfileWideTrustAnchors() {
@@ -181,17 +191,22 @@ net::CertificateList PolicyCertService::GetAllowedProfileWideTrustAnchors() {
       chromeos::onc::CertificateScope::Default());
 }
 
+//  static
+void PolicyCertService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kUsedPolicyCertificates, false);
+}
+
 // static
 std::unique_ptr<PolicyCertService> PolicyCertService::CreateForTesting(
+    Profile* profile,
     const std::string& user_id) {
-  return base::WrapUnique(new PolicyCertService(user_id));
+  return base::WrapUnique(new PolicyCertService(profile, user_id));
 }
 
 void PolicyCertService::SetPolicyTrustAnchorsForTesting(
     const net::CertificateList& trust_anchors) {
   // Only allow this call in an instance that has been created through
   // PolicyCertService::CreateForTesting.
-  CHECK_EQ(nullptr, profile_);
   CHECK_EQ(nullptr, policy_certificate_provider_);
 
   profile_wide_all_server_and_authority_certs_ = trust_anchors;

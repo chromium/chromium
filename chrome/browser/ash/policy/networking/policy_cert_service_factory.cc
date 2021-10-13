@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
 #include "services/network/cert_verifier_with_trust_anchors.h"
@@ -61,39 +60,30 @@ PolicyCertServiceFactory* PolicyCertServiceFactory::GetInstance() {
 }
 
 // static
-void PolicyCertServiceFactory::SetUsedPolicyCertificates(
-    const std::string& user_email) {
-  if (UsedPolicyCertificates(user_email))
-    return;
-  ListPrefUpdate update(g_browser_process->local_state(),
-                        prefs::kUsedPolicyCertificates);
-  update->Append(user_email);
-}
-
-// static
-void PolicyCertServiceFactory::ClearUsedPolicyCertificates(
-    const std::string& user_email) {
-  ListPrefUpdate update(g_browser_process->local_state(),
-                        prefs::kUsedPolicyCertificates);
-  update->EraseListValue(base::Value(user_email));
-}
-
-// static
-bool PolicyCertServiceFactory::UsedPolicyCertificates(
-    const std::string& user_email) {
-  base::Value value(user_email);
+bool PolicyCertServiceFactory::MigrateLocalStatePrefIntoProfilePref(
+    const std::string& user_email,
+    Profile* profile) {
+  base::Value user_email_value(user_email);
   const base::ListValue* list =
       g_browser_process->local_state()->GetList(prefs::kUsedPolicyCertificates);
   if (!list) {
     NOTREACHED();
     return false;
   }
-  return base::Contains(list->GetList(), value);
+
+  if (base::Contains(list->GetList(), user_email_value)) {
+    profile->GetPrefs()->SetBoolean(prefs::kUsedPolicyCertificates, true);
+    return PolicyCertServiceFactory::ClearUsedPolicyCertificates(user_email);
+  }
+  return false;
 }
 
 // static
-void PolicyCertServiceFactory::RegisterPrefs(PrefRegistrySimple* local_state) {
-  local_state->RegisterListPref(prefs::kUsedPolicyCertificates);
+bool PolicyCertServiceFactory::ClearUsedPolicyCertificates(
+    const std::string& user_email) {
+  ListPrefUpdate update(g_browser_process->local_state(),
+                        prefs::kUsedPolicyCertificates);
+  return (update->EraseListValue(base::Value(user_email)) > 0);
 }
 
 PolicyCertServiceFactory::PolicyCertServiceFactory()
@@ -126,6 +116,9 @@ KeyedService* PolicyCertServiceFactory::BuildServiceInstanceFor(
           profile->GetOriginalProfile());
   if (!user)
     return nullptr;
+
+  MigrateLocalStatePrefIntoProfilePref(user->GetAccountId().GetUserEmail(),
+                                       profile);
 
   bool may_use_profile_wide_trust_anchors =
       user == user_manager->GetPrimaryUser() &&

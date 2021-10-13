@@ -17,6 +17,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
+class PrefRegistrySimple;
 
 namespace base {
 class FilePath;
@@ -65,6 +66,10 @@ class PolicyCertService : public KeyedService,
   // that it may have cached content from an untrusted source.
   bool UsedPolicyCertificates() const;
 
+  // Sets the flag that the current profile used certificates pushed by policy
+  // before.
+  void SetUsedPolicyCertificates();
+
   // Returns true if the profile that owns this service has at least one
   // policy-provided trust anchor configured.
   bool has_policy_certificates() const {
@@ -83,7 +88,10 @@ class PolicyCertService : public KeyedService,
       net::CertificateList* out_all_server_and_authority_certificates,
       net::CertificateList* out_trust_anchors) const;
 
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   static std::unique_ptr<PolicyCertService> CreateForTesting(
+      Profile* profile,
       const std::string& user_id);
 
   // Sets the profile-wide policy-provided trust anchors reported by this
@@ -94,7 +102,7 @@ class PolicyCertService : public KeyedService,
 
  private:
   // Constructor used by CreateForTesting.
-  explicit PolicyCertService(const std::string& user_id);
+  PolicyCertService(Profile* profile, const std::string& user_id);
 
   // Returns all allowed policy-provided certificates that have requested "Web"
   // trust and have profile-wide scope. If |may_use_profile_wide_trust_anchors_|

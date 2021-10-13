@@ -2402,8 +2402,16 @@ const char kHelpAppShouldShowParentalControl[] =
 // the OOBE.
 const char kHelpAppTabletModeDuringOobe[] = "help_app.tablet_mode_during_oobe";
 
-// List of usernames that used certificates pushed by policy before.
-// This is used to prevent these users from joining multiprofile sessions.
+// This pref is used in two contexts:
+// In Profile prefs, it is a bool pref which encodes whether the Profile has
+// used a policy-provided trusted CA certificate. This is used to display the
+// "enterprise icon" security indicator in the URL bar.
+//
+// Legacy usage: In Local State prefs, it is a list of usernames encoding the
+// same thing for the Profile associated with the user name.
+//
+// There is code migrating from the legacy Local State pref to the Profile pref
+// in policy_cert_service_factory.cc::MigrateLocalPrefIntoProfilePref .
 const char kUsedPolicyCertificates[] = "policy.used_policy_certificates";
 
 // A dictionary containing server-provided device state pulled form the cloud
