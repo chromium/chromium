@@ -529,6 +529,16 @@ TEST_F(RedactionToolTest, RedactBlockDevices) {
       {"LABEL=\"ntfs\"", "LABEL=\"<Volume Label: 1>\""},
       {"PARTLABEL=\"SD Card\"", "PARTLABEL=\"<Volume Label: 2>\""},
 
+      // LVM UUIDd.
+      {"{\"pv_fmt\":\"lvm2\", "
+       "\"pv_uuid\":\"duD18x-P7QE-sTya-SaeO-aq07-YgEq-xj8UEz\", "
+       "\"dev_size\":\"230.33g\"}",
+       "{\"pv_fmt\":\"lvm2\", \"pv_uuid\":\"<UUID: 4>\", "
+       "\"dev_size\":\"230.33g\"}"},
+      {"{\"lv_uuid\":\"lKYORl-TWDP-OFLT-yDnB-jlQ7-aQrE-AwA8Oa\", "
+       "\"lv_name\":\"[thinpool_tdata]\"",
+       "{\"lv_uuid\":\"<UUID: 5>\", \"lv_name\":\"[thinpool_tdata]\""},
+
       // Removable media paths.
       {"/media/removable/SD Card/", "/media/removable/<Volume Label: 2>/"},
       {"'/media/removable/My Secret Volume Name' don't redact this",
