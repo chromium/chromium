@@ -76,7 +76,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
       IdentityRequestDialogController::UserApproval approval);
   void OnAccountsResponseReceived(
       IdpNetworkRequestManager::AccountsResponse status,
-      IdpNetworkRequestManager::AccountList accounts);
+      IdpNetworkRequestManager::AccountList accounts,
+      content::IdentityProviderMetadata idp_metadata);
   void OnAccountSelected(const std::string& account_id);
   void OnTokenResponseReceived(IdpNetworkRequestManager::TokenResponse status,
                                const std::string& id_token);

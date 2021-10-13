@@ -43,6 +43,11 @@ ClientIdData::ClientIdData(const GURL& terms_of_service_url,
     : terms_of_service_url{terms_of_service_url},
       privacy_policy_url(privacy_policy_url) {}
 
+IdentityProviderMetadata::IdentityProviderMetadata() = default;
+IdentityProviderMetadata::~IdentityProviderMetadata() = default;
+IdentityProviderMetadata::IdentityProviderMetadata(
+    const IdentityProviderMetadata& other) = default;
+
 void IdentityRequestDialogController::ShowInitialPermissionDialog(
     WebContents* rp_web_contents,
     const GURL& idp_url,

@@ -20,6 +20,7 @@ import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.view.View;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreator;
@@ -97,6 +99,8 @@ public class AccountSelectionIntegrationTest {
     private static final Account BOB =
             new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, TEST_URL_2, false);
 
+    private static final IdentityProviderMetadata IDP_METADATA =
+            new IdentityProviderMetadata(Color.BLACK, Color.BLACK);
     private static final ClientIdMetadata CLIENT_ID_METADATA =
             new ClientIdMetadata(TEST_URL_TERMS_OF_SERVICE, TEST_URL_PRIVACY_POLICY);
 
@@ -129,7 +133,7 @@ public class AccountSelectionIntegrationTest {
     public void testBackDismissesAndCallsCallback() {
         runOnUiThreadBlocking(() -> {
             mAccountSelection.showAccounts(
-                    EXAMPLE_URL, Arrays.asList(ANA, BOB), CLIENT_ID_METADATA, false);
+                    EXAMPLE_URL, Arrays.asList(ANA, BOB), IDP_METADATA, CLIENT_ID_METADATA, false);
         });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -144,7 +148,7 @@ public class AccountSelectionIntegrationTest {
     public void testClickConsentLinks() {
         runOnUiThreadBlocking(() -> {
             mAccountSelection.showAccounts(
-                    EXAMPLE_URL, Arrays.asList(BOB), CLIENT_ID_METADATA, false);
+                    EXAMPLE_URL, Arrays.asList(BOB), IDP_METADATA, CLIENT_ID_METADATA, false);
         });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -188,7 +192,7 @@ public class AccountSelectionIntegrationTest {
 
         runOnUiThreadBlocking(() -> {
             mAccountSelection.showAccounts(
-                    EXAMPLE_URL, Arrays.asList(ANA, BOB), CLIENT_ID_METADATA, false);
+                    EXAMPLE_URL, Arrays.asList(ANA, BOB), IDP_METADATA, CLIENT_ID_METADATA, false);
         });
         waitForEvent(mMockBridge).onDismissed();
         verify(mMockBridge, never()).onAccountSelected(any());

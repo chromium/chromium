@@ -387,7 +387,8 @@ void FederatedAuthRequestImpl::OnTokenProvisionApproved(
 
 void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     IdpNetworkRequestManager::AccountsResponse status,
-    IdpNetworkRequestManager::AccountList accounts) {
+    IdpNetworkRequestManager::AccountList accounts,
+    content::IdentityProviderMetadata idp_metadata) {
   switch (status) {
     case IdpNetworkRequestManager::AccountsResponse::kNetError: {
       CompleteRequest(RequestIdTokenStatus::kError, "");
@@ -431,7 +432,8 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
                         endpoints_.client_id_metadata.Resolve(
                             client_id_metadata_.privacy_policy_url)};
       request_dialog_controller_->ShowAccountsDialog(
-          rp_web_contents, idp_web_contents_.get(), provider_, accounts, data,
+          rp_web_contents, idp_web_contents_.get(), provider_, accounts,
+          idp_metadata, data,
           is_auto_sign_in ? SignInMode::kAuto : SignInMode::kExplicit,
           base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                          weak_ptr_factory_.GetWeakPtr()));

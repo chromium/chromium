@@ -27,6 +27,7 @@ android_library("java") {
     "//components/favicon/android:java",
     "//components/image_fetcher:java",
     "//components/url_formatter/android:url_formatter_java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_java",

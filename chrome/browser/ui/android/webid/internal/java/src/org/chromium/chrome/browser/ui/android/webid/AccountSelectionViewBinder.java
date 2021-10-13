@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -23,6 +25,8 @@ import android.widget.TextView;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.android.material.color.MaterialColors;
+
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
@@ -32,6 +36,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.C
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
@@ -39,12 +44,16 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.util.ColorUtils;
+import org.chromium.ui.widget.ButtonCompat;
 
 /**
  * Provides functions that map {@link AccountSelectionProperties} changes in a {@link PropertyModel}
  * to the suitable method in {@link AccountSelectionView}.
  */
 class AccountSelectionViewBinder {
+    private static final String TAG = "AccountSelectionView";
+
     private static TabCreator sTabCreatorForTesting;
 
     @VisibleForTesting
@@ -202,20 +211,44 @@ class AccountSelectionViewBinder {
      * @param view The view to be bound.
      * @param key The key of the property to be bound.
      */
+    @SuppressWarnings("checkstyle:SetTextColorAndSetTextSizeCheck")
     static void bindContinueButtonView(PropertyModel model, View view, PropertyKey key) {
-        if (key == ContinueButtonProperties.ON_CLICK_LISTENER
-                || key == ContinueButtonProperties.ACCOUNT) {
+        Context context = view.getContext();
+        if (key == ContinueButtonProperties.IDP_METADATA) {
+            if (!ColorUtils.inNightMode(context)) {
+                IdentityProviderMetadata idpMetadata =
+                        model.get(ContinueButtonProperties.IDP_METADATA);
+                ButtonCompat button = view.findViewById(R.id.account_selection_continue_btn);
+
+                Integer backgroundColor = idpMetadata.getBrandBackgroundColor();
+                if (backgroundColor != null) {
+                    button.setButtonColor(ColorStateList.valueOf(backgroundColor));
+
+                    Integer textColor = idpMetadata.getBrandTextColor();
+                    if (textColor == null) {
+                        textColor = MaterialColors.getColor(context,
+                                ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor)
+                                        ? R.attr.colorOnPrimary
+                                        : R.attr.colorOnSurface,
+                                TAG);
+                    }
+                    button.setTextColor(textColor);
+                }
+            }
+        } else if (key == ContinueButtonProperties.ACCOUNT) {
             Account account = model.get(ContinueButtonProperties.ACCOUNT);
-            view.setOnClickListener(clickedView -> {
-                model.get(ContinueButtonProperties.ON_CLICK_LISTENER).onResult(account);
-            });
             // Prefers to use given name if it is provided otherwise falls back to using the name.
             String name =
                     account.getGivenName() != null ? account.getGivenName() : account.getName();
-            String btnText = String.format(
-                    view.getContext().getString(R.string.account_selection_continue), name);
+            String btnText =
+                    String.format(context.getString(R.string.account_selection_continue), name);
             Button button = view.findViewById(R.id.account_selection_continue_btn);
             button.setText(btnText);
+        } else if (key == ContinueButtonProperties.ON_CLICK_LISTENER) {
+            view.setOnClickListener(clickedView -> {
+                Account account = model.get(ContinueButtonProperties.ACCOUNT);
+                model.get(ContinueButtonProperties.ON_CLICK_LISTENER).onResult(account);
+            });
         } else {
             assert false : "Unhandled update to property:" + key;
         }

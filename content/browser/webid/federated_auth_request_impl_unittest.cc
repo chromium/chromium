@@ -525,7 +525,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
           .WillOnce(Invoke(
               [&](const GURL&,
                   IdpNetworkRequestManager::AccountsRequestCallback callback) {
-                std::move(callback).Run(*conf.accounts_response, conf.accounts);
+                std::move(callback).Run(*conf.accounts_response, conf.accounts,
+                                        IdentityProviderMetadata());
               }));
     }
 
@@ -536,11 +537,12 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
       // e.g. for sign up flow, multiple accounts, user opt-out etc. In this
       // case, it's up to the test to expect this mock function call.
       EXPECT_CALL(*mock_dialog_controller_,
-                  ShowAccountsDialog(_, _, _, _, _, _, _))
+                  ShowAccountsDialog(_, _, _, _, _, _, _, _))
           .WillOnce(Invoke(
               [&](content::WebContents* rp_web_contents,
                   content::WebContents* idp_web_contents,
                   const GURL& idp_signin_url, AccountList accounts,
+                  const IdentityProviderMetadata& idp_metadata,
                   const ClientIdData& client_id_data, SignInMode sign_in_mode,
                   IdentityRequestDialogController::AccountSelectionCallback
                       on_selected) {
@@ -902,11 +904,12 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
       .WillOnce(Return(true));
 
   EXPECT_CALL(*mock_dialog_controller(),
-              ShowAccountsDialog(_, _, _, _, _, _, _))
+              ShowAccountsDialog(_, _, _, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents,
               content::WebContents* idp_web_contents,
               const GURL& idp_signin_url, AccountList accounts,
+              const IdentityProviderMetadata& idp_metadata,
               const ClientIdData& client_id_data, SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
                   on_selected) {
@@ -930,11 +933,12 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
   const auto& test_case = kSuccessfulMediatedAutoSignInTestCase;
   CreateAuthRequest(GURL(test_case.inputs.provider));
   EXPECT_CALL(*mock_dialog_controller(),
-              ShowAccountsDialog(_, _, _, _, _, _, _))
+              ShowAccountsDialog(_, _, _, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents,
               content::WebContents* idp_web_contents,
               const GURL& idp_signin_url, AccountList accounts,
+              const IdentityProviderMetadata& idp_metadata,
               const ClientIdData& client_id_data, SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
                   on_selected) {
@@ -977,11 +981,12 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
       .WillOnce(Return(true));
 
   EXPECT_CALL(*mock_dialog_controller(),
-              ShowAccountsDialog(_, _, _, _, _, _, _))
+              ShowAccountsDialog(_, _, _, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents,
               content::WebContents* idp_web_contents,
               const GURL& idp_signin_url, AccountList accounts,
+              const IdentityProviderMetadata& idp_metadata,
               const ClientIdData& client_id_data, SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
                   on_selected) {

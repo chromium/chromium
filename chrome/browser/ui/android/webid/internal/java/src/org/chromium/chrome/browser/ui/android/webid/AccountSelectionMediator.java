@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.H
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemType;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -121,7 +122,8 @@ class AccountSelectionMediator {
         }
     }
 
-    void addButtons(List<Account> accounts, ClientIdMetadata metadata, boolean isAutoSignIn) {
+    void addButtons(List<Account> accounts, IdentityProviderMetadata idpMetadata,
+            ClientIdMetadata clientMetadata, boolean isAutoSignIn) {
         if (accounts.size() != 1) return;
 
         Account account = accounts.get(0);
@@ -136,7 +138,7 @@ class AccountSelectionMediator {
         }
 
         // Shows the continue button for both sign-up and non auto-sign-in.
-        final PropertyModel continueBtnModel = createContinueBtnItem(account);
+        final PropertyModel continueBtnModel = createContinueBtnItem(account, idpMetadata);
         mSheetItems.add(new ListItem(ItemType.CONTINUE_BUTTON, continueBtnModel));
 
         // Only show the user data sharing consent text for sign up.
@@ -144,16 +146,16 @@ class AccountSelectionMediator {
             String provider_url = UrlFormatter.formatUrlForSecurityDisplay(
                     account.getOriginUrl(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
             mSheetItems.add(new ListItem(ItemType.DATA_SHARING_CONSENT,
-                    createDataSharingConsentItem(provider_url, metadata)));
+                    createDataSharingConsentItem(provider_url, clientMetadata)));
         }
     }
 
-    void showAccounts(
-            String url, List<Account> accounts, ClientIdMetadata metadata, boolean isAutoSignIn) {
+    void showAccounts(String url, List<Account> accounts, IdentityProviderMetadata idpMetadata,
+            ClientIdMetadata clientMetadata, boolean isAutoSignIn) {
         mSheetItems.clear();
         addHeader(url, accounts);
         addAccounts(accounts);
-        addButtons(accounts, metadata, isAutoSignIn);
+        addButtons(accounts, idpMetadata, clientMetadata, isAutoSignIn);
 
         showContent();
     }
@@ -239,8 +241,10 @@ class AccountSelectionMediator {
                 .build();
     }
 
-    private PropertyModel createContinueBtnItem(Account account) {
+    private PropertyModel createContinueBtnItem(
+            Account account, IdentityProviderMetadata idpMetadata) {
         return new PropertyModel.Builder(ContinueButtonProperties.ALL_KEYS)
+                .with(ContinueButtonProperties.IDP_METADATA, idpMetadata)
                 .with(ContinueButtonProperties.ACCOUNT, account)
                 .with(ContinueButtonProperties.ON_CLICK_LISTENER, this::onAccountSelected)
                 .build();
@@ -253,13 +257,14 @@ class AccountSelectionMediator {
                 .build();
     }
 
-    private PropertyModel createDataSharingConsentItem(String provider, ClientIdMetadata metadata) {
+    private PropertyModel createDataSharingConsentItem(
+            String provider, ClientIdMetadata clientMetadata) {
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                 .with(DataSharingConsentProperties.PROVIDER_URL, provider)
                 .with(DataSharingConsentProperties.TERMS_OF_SERVICE_URL,
-                        metadata.getTermsOfServiceUrl().getValidSpecOrEmpty())
+                        clientMetadata.getTermsOfServiceUrl().getValidSpecOrEmpty())
                 .with(DataSharingConsentProperties.PRIVACY_POLICY_URL,
-                        metadata.getPrivacyPolicyUrl().getValidSpecOrEmpty())
+                        clientMetadata.getPrivacyPolicyUrl().getValidSpecOrEmpty())
                 .build();
     }
 }

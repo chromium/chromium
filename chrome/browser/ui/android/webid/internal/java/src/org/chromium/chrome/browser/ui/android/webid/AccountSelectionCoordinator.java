@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
@@ -131,8 +132,9 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
     }
 
     @Override
-    public void showAccounts(
-            String url, List<Account> accounts, ClientIdMetadata metadata, boolean isAutoSignIn) {
-        mMediator.showAccounts(url, accounts, metadata, isAutoSignIn);
+    public void showAccounts(String url, List<Account> accounts,
+            IdentityProviderMetadata idpMetadata, ClientIdMetadata clientMetadata,
+            boolean isAutoSignIn) {
+        mMediator.showAccounts(url, accounts, idpMetadata, clientMetadata, isAutoSignIn);
     }
 }

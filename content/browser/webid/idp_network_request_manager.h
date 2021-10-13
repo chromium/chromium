@@ -112,8 +112,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       base::OnceCallback<void(FetchStatus, ClientIdMetadata)>;
   using SigninRequestCallback =
       base::OnceCallback<void(SigninResponse, const std::string&)>;
-  using AccountsRequestCallback =
-      base::OnceCallback<void(AccountsResponse, AccountList)>;
+  using AccountsRequestCallback = base::OnceCallback<
+      void(AccountsResponse, AccountList, IdentityProviderMetadata)>;
   using TokenRequestCallback =
       base::OnceCallback<void(TokenResponse, const std::string&)>;
   using LogoutCallback = base::OnceCallback<void()>;

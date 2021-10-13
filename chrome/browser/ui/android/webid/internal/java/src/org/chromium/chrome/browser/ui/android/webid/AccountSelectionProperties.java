@@ -11,8 +11,10 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -54,15 +56,14 @@ class AccountSelectionProperties {
             }
         }
 
-        static final PropertyModel.WritableObjectPropertyKey<Avatar> AVATAR =
-                new PropertyModel.WritableObjectPropertyKey<>("avatar");
-        static final PropertyModel
-                .WritableObjectPropertyKey<FaviconOrFallback> FAVICON_OR_FALLBACK =
-                new PropertyModel.WritableObjectPropertyKey<>("favicon");
-        static final PropertyModel.ReadableObjectPropertyKey<Account> ACCOUNT =
-                new PropertyModel.ReadableObjectPropertyKey<>("account");
-        static final PropertyModel.ReadableObjectPropertyKey<Callback<Account>> ON_CLICK_LISTENER =
-                new PropertyModel.ReadableObjectPropertyKey<>("on_click_listener");
+        static final WritableObjectPropertyKey<Avatar> AVATAR =
+                new WritableObjectPropertyKey<>("avatar");
+        static final WritableObjectPropertyKey<FaviconOrFallback> FAVICON_OR_FALLBACK =
+                new WritableObjectPropertyKey<>("favicon");
+        static final ReadableObjectPropertyKey<Account> ACCOUNT =
+                new ReadableObjectPropertyKey<>("account");
+        static final ReadableObjectPropertyKey<Callback<Account>> ON_CLICK_LISTENER =
+                new ReadableObjectPropertyKey<>("on_click_listener");
 
         static final PropertyKey[] ALL_KEYS = {
                 AVATAR, FAVICON_OR_FALLBACK, ACCOUNT, ON_CLICK_LISTENER};
@@ -76,10 +77,10 @@ class AccountSelectionProperties {
      */
     static class HeaderProperties {
         public enum HeaderType { SINGLE_ACCOUNT, MULTIPLE_ACCOUNT, SIGN_IN }
-        static final PropertyModel.ReadableObjectPropertyKey<HeaderType> TYPE =
-                new PropertyModel.ReadableObjectPropertyKey<>("type");
-        static final PropertyModel.ReadableObjectPropertyKey<String> FORMATTED_URL =
-                new PropertyModel.ReadableObjectPropertyKey<>("formatted_url");
+        static final ReadableObjectPropertyKey<HeaderType> TYPE =
+                new ReadableObjectPropertyKey<>("type");
+        static final ReadableObjectPropertyKey<String> FORMATTED_URL =
+                new ReadableObjectPropertyKey<>("formatted_url");
 
         static final PropertyKey[] ALL_KEYS = {TYPE, FORMATTED_URL};
 
@@ -91,12 +92,12 @@ class AccountSelectionProperties {
      * sheet.
      */
     static class DataSharingConsentProperties {
-        static final PropertyModel.ReadableObjectPropertyKey<String> PROVIDER_URL =
-                new PropertyModel.ReadableObjectPropertyKey<>("provider_url");
-        static final PropertyModel.ReadableObjectPropertyKey<String> TERMS_OF_SERVICE_URL =
-                new PropertyModel.ReadableObjectPropertyKey<>("terms_of_service_url");
-        static final PropertyModel.ReadableObjectPropertyKey<String> PRIVACY_POLICY_URL =
-                new PropertyModel.ReadableObjectPropertyKey<>("privacy_policy_url");
+        static final ReadableObjectPropertyKey<String> PROVIDER_URL =
+                new ReadableObjectPropertyKey<>("provider_url");
+        static final ReadableObjectPropertyKey<String> TERMS_OF_SERVICE_URL =
+                new ReadableObjectPropertyKey<>("terms_of_service_url");
+        static final ReadableObjectPropertyKey<String> PRIVACY_POLICY_URL =
+                new ReadableObjectPropertyKey<>("privacy_policy_url");
 
         static final PropertyKey[] ALL_KEYS = {
                 PROVIDER_URL, TERMS_OF_SERVICE_URL, PRIVACY_POLICY_URL};
@@ -109,12 +110,14 @@ class AccountSelectionProperties {
      * sheet.
      */
     static class ContinueButtonProperties {
-        static final PropertyModel.ReadableObjectPropertyKey<Account> ACCOUNT =
-                new PropertyModel.ReadableObjectPropertyKey<>("account");
-        static final PropertyModel.ReadableObjectPropertyKey<Callback<Account>> ON_CLICK_LISTENER =
-                new PropertyModel.ReadableObjectPropertyKey<>("on_click_listener");
+        static final ReadableObjectPropertyKey<Account> ACCOUNT =
+                new ReadableObjectPropertyKey<>("account");
+        static final ReadableObjectPropertyKey<IdentityProviderMetadata> IDP_METADATA =
+                new ReadableObjectPropertyKey<>("idp_metadata");
+        static final ReadableObjectPropertyKey<Callback<Account>> ON_CLICK_LISTENER =
+                new ReadableObjectPropertyKey<>("on_click_listener");
 
-        static final PropertyKey[] ALL_KEYS = {ACCOUNT, ON_CLICK_LISTENER};
+        static final PropertyKey[] ALL_KEYS = {ACCOUNT, IDP_METADATA, ON_CLICK_LISTENER};
 
         private ContinueButtonProperties() {}
     }
@@ -123,8 +126,8 @@ class AccountSelectionProperties {
      * Properties defined here reflect the state of the cancel button used for auto sign in.
      */
     static class AutoSignInCancelButtonProperties {
-        static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK_LISTENER =
-                new PropertyModel.ReadableObjectPropertyKey<>("on_click_listener");
+        static final ReadableObjectPropertyKey<Runnable> ON_CLICK_LISTENER =
+                new ReadableObjectPropertyKey<>("on_click_listener");
 
         static final PropertyKey[] ALL_KEYS = {ON_CLICK_LISTENER};
 

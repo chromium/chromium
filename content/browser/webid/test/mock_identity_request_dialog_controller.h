@@ -38,11 +38,12 @@ class MockIdentityRequestDialogController
                void(content::WebContents*,
                     const GURL&,
                     TokenExchangeApprovalCallback));
-  MOCK_METHOD7(ShowAccountsDialog,
+  MOCK_METHOD8(ShowAccountsDialog,
                void(WebContents*,
                     WebContents*,
                     const GURL&,
                     AccountList,
+                    const IdentityProviderMetadata&,
                     const ClientIdData&,
                     IdentityRequestAccount::SignInMode,
                     AccountSelectionCallback));

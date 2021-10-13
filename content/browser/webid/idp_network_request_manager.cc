@@ -10,6 +10,7 @@
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/color_parser.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/escape.h"
 #include "net/base/isolation_info.h"
@@ -21,6 +22,8 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/color_utils.h"
 #include "url/origin.h"
 
 namespace content {
@@ -39,12 +42,15 @@ constexpr char kClientIdMetadataEndpointKey[] = "client_id_metadata_endpoint";
 constexpr char kPrivacyPolicyKey[] = "privacy_policy_url";
 constexpr char kTermsOfServiceKey[] = "terms_of_service_url";
 
+// Accounts endpoint response keys.
+constexpr char kAccountsKey[] = "accounts";
+constexpr char kIdpBrandingKey[] = "branding";
+
 // Sign-in request response keys.
 // TODO(majidvp): For consistency rename to signin_endpoint and move into
 // `.well-known`.
 constexpr char kSigninUrlKey[] = "signin_url";
 constexpr char kIdTokenKey[] = "id_token";
-constexpr char kAccountsKey[] = "accounts";
 
 // Token request body keys
 constexpr char kAccountKey[] = "sub";
@@ -148,6 +154,38 @@ bool ParseAccounts(const base::Value* accounts,
       account_list.push_back(parsed_account.value());
   }
   return true;
+}
+
+absl::optional<SkColor> ParseCssColor(const std::string* value) {
+  if (value == nullptr)
+    return absl::nullopt;
+
+  SkColor color;
+  if (!content::ParseCssColorString(*value, &color))
+    return absl::nullopt;
+
+  return SkColorSetA(color, 0xff);
+}
+
+// Parse IdentityProviderMetadata from given value. Overwrites |idp_metadata|
+// with the parsed value.
+void ParseIdentityProviderMetadata(const base::Value& idp_metadata_value,
+                                   IdentityProviderMetadata& idp_metadata) {
+  if (!idp_metadata_value.is_dict())
+    return;
+
+  idp_metadata.brand_background_color =
+      ParseCssColor(idp_metadata_value.FindStringKey("background_color"));
+  if (idp_metadata.brand_background_color) {
+    idp_metadata.brand_text_color =
+        ParseCssColor(idp_metadata_value.FindStringKey("foreground_color"));
+    if (idp_metadata.brand_text_color) {
+      float text_contrast_ratio = color_utils::GetContrastRatio(
+          *idp_metadata.brand_background_color, *idp_metadata.brand_text_color);
+      if (text_contrast_ratio < color_utils::kMinimumReadableContrastRatio)
+        idp_metadata.brand_text_color = absl::nullopt;
+    }
+  }
 }
 
 }  // namespace
@@ -463,7 +501,8 @@ void IdpNetworkRequestManager::OnAccountsRequestResponse(
 
   if (!response_body) {
     std::move(accounts_request_callback_)
-        .Run(AccountsResponse::kNetError, AccountList());
+        .Run(AccountsResponse::kNetError, AccountList(),
+             IdentityProviderMetadata());
     return;
   }
 
@@ -477,7 +516,8 @@ void IdpNetworkRequestManager::OnAccountsRequestParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   auto Fail = [&]() {
     std::move(accounts_request_callback_)
-        .Run(AccountsResponse::kInvalidResponseError, AccountList());
+        .Run(AccountsResponse::kInvalidResponseError, AccountList(),
+             IdentityProviderMetadata());
   };
 
   if (!result.value) {
@@ -498,8 +538,15 @@ void IdpNetworkRequestManager::OnAccountsRequestParsed(
     Fail();
     return;
   }
+
+  IdentityProviderMetadata idp_metadata;
+  const base::Value* idp_metadata_value = response.FindKey(kIdpBrandingKey);
+  if (idp_metadata_value)
+    ParseIdentityProviderMetadata(*idp_metadata_value, idp_metadata);
+
   std::move(accounts_request_callback_)
-      .Run(AccountsResponse::kSuccess, std::move(account_list));
+      .Run(AccountsResponse::kSuccess, std::move(account_list),
+           std::move(idp_metadata));
 }
 
 void IdpNetworkRequestManager::OnTokenRequestResponse(

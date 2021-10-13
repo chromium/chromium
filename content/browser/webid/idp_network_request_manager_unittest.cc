@@ -41,7 +41,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
 
   void TearDown() override { manager_.reset(); }
 
-  std::tuple<AccountsResponse, AccountList>
+  std::tuple<AccountsResponse, AccountList, IdentityProviderMetadata>
   SendAccountsRequestAndWaitForResponse(const char* test_accounts) {
     GURL accounts_endpoint(kTestAccountsEndpoint);
     test_url_loader_factory().AddResponse(accounts_endpoint.spec(),
@@ -50,16 +50,20 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
     base::RunLoop run_loop;
     AccountsResponse parsed_accounts_response;
     AccountList parsed_accounts;
+    IdentityProviderMetadata parsed_idp_metadata;
     auto callback = base::BindLambdaForTesting(
-        [&](AccountsResponse response, AccountList accounts) {
+        [&](AccountsResponse response, AccountList accounts,
+            IdentityProviderMetadata idp_metadata) {
           parsed_accounts_response = response;
           parsed_accounts = accounts;
+          parsed_idp_metadata = std::move(idp_metadata);
           run_loop.Quit();
         });
     manager().SendAccountsRequest(accounts_endpoint, std::move(callback));
     run_loop.Run();
 
-    return {parsed_accounts_response, parsed_accounts};
+    return {parsed_accounts_response, parsed_accounts,
+            std::move(parsed_idp_metadata)};
   }
 
   IdpNetworkRequestManager& manager() { return *manager_; }
@@ -82,7 +86,8 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountEmpty) {
 
   AccountsResponse accounts_response;
   AccountList accounts;
-  std::tie(accounts_response, accounts) =
+  IdentityProviderMetadata idp_metadata;
+  std::tie(accounts_response, accounts, idp_metadata) =
       SendAccountsRequestAndWaitForResponse(test_empty_account_json);
 
   EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
@@ -104,7 +109,8 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountSingle) {
 
   AccountsResponse accounts_response;
   AccountList accounts;
-  std::tie(accounts_response, accounts) =
+  IdentityProviderMetadata idp_metadata;
+  std::tie(accounts_response, accounts, idp_metadata) =
       SendAccountsRequestAndWaitForResponse(test_single_account_json);
 
   EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
@@ -133,7 +139,8 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountMultiple) {
   })";
   AccountsResponse accounts_response;
   AccountList accounts;
-  std::tie(accounts_response, accounts) =
+  IdentityProviderMetadata idp_metadata;
+  std::tie(accounts_response, accounts, idp_metadata) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
   EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
@@ -156,7 +163,8 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountOptionalFields) {
 
   AccountsResponse accounts_response;
   AccountList accounts;
-  std::tie(accounts_response, accounts) =
+  IdentityProviderMetadata idp_metadata;
+  std::tie(accounts_response, accounts, idp_metadata) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
   EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
@@ -171,7 +179,8 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
     }]})";
     AccountsResponse accounts_response;
     AccountList accounts;
-    std::tie(accounts_response, accounts) =
+    IdentityProviderMetadata idp_metadata;
+    std::tie(accounts_response, accounts, idp_metadata) =
         SendAccountsRequestAndWaitForResponse(test_accounts_missing_sub_json);
 
     EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
@@ -184,7 +193,8 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
     }]})";
     AccountsResponse accounts_response;
     AccountList accounts;
-    std::tie(accounts_response, accounts) =
+    IdentityProviderMetadata idp_metadata;
+    std::tie(accounts_response, accounts, idp_metadata) =
         SendAccountsRequestAndWaitForResponse(test_accounts_missing_email_json);
 
     EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
@@ -197,7 +207,8 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
     }]})";
     AccountsResponse accounts_response;
     AccountList accounts;
-    std::tie(accounts_response, accounts) =
+    IdentityProviderMetadata idp_metadata;
+    std::tie(accounts_response, accounts, idp_metadata) =
         SendAccountsRequestAndWaitForResponse(test_accounts_missing_name_json);
 
     EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
@@ -225,7 +236,8 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountPictureUrl) {
 
   AccountsResponse accounts_response;
   AccountList accounts;
-  std::tie(accounts_response, accounts) =
+  IdentityProviderMetadata idp_metadata;
+  std::tie(accounts_response, accounts, idp_metadata) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
   EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
@@ -256,7 +268,8 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountUnicode) {
 
     AccountsResponse accounts_response;
     AccountList accounts;
-    std::tie(accounts_response, accounts) =
+    IdentityProviderMetadata idp_metadata;
+    std::tie(accounts_response, accounts, idp_metadata) =
         SendAccountsRequestAndWaitForResponse(accounts_json.c_str());
 
     EXPECT_EQ(1UL, accounts.size());
@@ -269,7 +282,8 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountInvalid) {
 
   AccountsResponse accounts_response;
   AccountList accounts;
-  std::tie(accounts_response, accounts) =
+  IdentityProviderMetadata idp_metadata;
+  std::tie(accounts_response, accounts, idp_metadata) =
       SendAccountsRequestAndWaitForResponse(test_invalid_account_json);
 
   EXPECT_EQ(AccountsResponse::kInvalidResponseError, accounts_response);
@@ -281,11 +295,142 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountMalformed) {
 
   AccountsResponse accounts_response;
   AccountList accounts;
-  std::tie(accounts_response, accounts) =
+  IdentityProviderMetadata idp_metadata;
+  std::tie(accounts_response, accounts, idp_metadata) =
       SendAccountsRequestAndWaitForResponse(test_invalid_account_json);
 
   EXPECT_EQ(AccountsResponse::kInvalidResponseError, accounts_response);
   EXPECT_TRUE(accounts.empty());
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountBranding) {
+  const char test_accounts_json[] = R"({
+  "accounts" : [
+    {
+      "sub" : "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example"
+    }
+  ],
+  "branding" : {
+    "foreground_color": "blue",
+    "background_color": "#f0e0d0"
+  }
+  })";
+
+  AccountsResponse accounts_response;
+  AccountList accounts;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(accounts_response, accounts, idp_metadata) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
+  EXPECT_EQ(SK_ColorBLUE, idp_metadata.brand_text_color);
+  EXPECT_EQ(SkColorSetRGB(0xf0, 0xe0, 0xd0),
+            idp_metadata.brand_background_color);
+}
+
+// Test that the "alpha" value in the "branding" JSON is ignored.
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountBrandingRemoveAlpha) {
+  const char test_accounts_json[] = R"({
+  "accounts" : [
+    {
+      "sub" : "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example"
+    }
+  ],
+  "branding" : {
+    "background_color": "#20202020"
+  }
+  })";
+
+  AccountsResponse accounts_response;
+  AccountList accounts;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(accounts_response, accounts, idp_metadata) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
+  EXPECT_EQ(SkColorSetARGB(0xff, 0x20, 0x20, 0x20),
+            idp_metadata.brand_background_color);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountBrandingInvalidColor) {
+  const char test_accounts_json[] = R"({
+  "accounts" : [
+    {
+      "sub" : "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example"
+    }
+  ],
+  "branding" : {
+    "background_color": "fake_color"
+  }
+  })";
+
+  AccountsResponse accounts_response;
+  AccountList accounts;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(accounts_response, accounts, idp_metadata) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
+  EXPECT_EQ(absl::nullopt, idp_metadata.brand_background_color);
+}
+
+TEST_F(IdpNetworkRequestManagerTest,
+       ParseAccountBrandingIgnoreInsufficientContrastTextColor) {
+  const char test_accounts_json[] = R"({
+  "accounts" : [
+    {
+      "sub" : "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example"
+    }
+  ],
+  "branding" : {
+    "background_color": "#000000",
+    "foreground_color": "#010101"
+  }
+  })";
+
+  AccountsResponse accounts_response;
+  AccountList accounts;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(accounts_response, accounts, idp_metadata) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
+  EXPECT_EQ(SkColorSetRGB(0, 0, 0), idp_metadata.brand_background_color);
+  EXPECT_EQ(absl::nullopt, idp_metadata.brand_text_color);
+}
+
+TEST_F(IdpNetworkRequestManagerTest,
+       ParseAccountBrandingIgnoreCustomTextColorNoCustomBackgroundColor) {
+  const char test_accounts_json[] = R"({
+  "accounts" : [
+    {
+      "sub" : "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example"
+    }
+  ],
+  "branding" : {
+    "foreground_color": "blue"
+  }
+  })";
+
+  AccountsResponse accounts_response;
+  AccountList accounts;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(accounts_response, accounts, idp_metadata) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
+  EXPECT_EQ(absl::nullopt, idp_metadata.brand_background_color);
+  EXPECT_EQ(absl::nullopt, idp_metadata.brand_text_color);
 }
 
 }  // namespace

@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.util.List;
@@ -52,8 +53,10 @@ public interface AccountSelectionComponent {
      * Displays the given accounts in a new bottom sheet.
      * @param url A {@link String} that contains the URL to display accounts for.
      * @param accounts A list of {@link Account}s that will be displayed.
+     * @param idpMetadata Metadata related to identity provider.
+     * @param clientMetadata Metadata related to relying party.
      * @param isAutoSignIn A {@link boolean} that represents whether this is an auto sign in flow.
      */
-    void showAccounts(
-            String url, List<Account> accounts, ClientIdMetadata metadata, boolean isAutoSignIn);
+    void showAccounts(String url, List<Account> accounts, IdentityProviderMetadata idpMetadata,
+            ClientIdMetadata clientMetadata, boolean isAutoSignIn);
 }
