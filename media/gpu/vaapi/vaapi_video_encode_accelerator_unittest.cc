@@ -376,9 +376,8 @@ class VaapiVideoEncodeAcceleratorTest
         }));
 
     EXPECT_CALL(*mock_encoder_, PrepareEncodeJob(_))
-        .WillOnce(WithArgs<0>([encoder = encoder_.get(), kCodedBufferId,
-                               use_temporal_layer_encoding,
-                               va_surface_id = kInputSurfaceId](
+        .WillOnce(WithArgs<0>([encoder = encoder_.get(),
+                               use_temporal_layer_encoding](
                                   VaapiVideoEncoderDelegate::EncodeJob& job) {
           if (use_temporal_layer_encoding) {
             // Set Vp9Metadata on temporal layer encoding.
@@ -386,13 +385,6 @@ class VaapiVideoEncodeAcceleratorTest
             reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding =
                 Vp9Metadata();
           }
-          auto* vaapi_encoder =
-              reinterpret_cast<VaapiVideoEncodeAccelerator*>(encoder);
-          job.AddPostExecuteCallback(base::BindOnce(
-              &VP9VaapiVideoEncoderDelegate::NotifyEncodedChunkSize,
-              base::Unretained(reinterpret_cast<VP9VaapiVideoEncoderDelegate*>(
-                  vaapi_encoder->encoder_.get())),
-              kCodedBufferId, va_surface_id));
           return true;
         }));
     EXPECT_CALL(
@@ -586,27 +578,15 @@ class VaapiVideoEncodeAcceleratorTest
 
     for (size_t i = 0; i < num_spatial_layers; ++i) {
       const VABufferID kCodedBufferId = kCodedBufferIds[i];
-      const VASurfaceID input_surface_id =
-          i < num_spatial_layers - 1 ? kVppDestSurfaceIds[i] : kSourceSurfaceId;
-
       EXPECT_CALL(*mock_encoder_, PrepareEncodeJob(_))
-          .WillOnce(WithArgs<0>(
-              [encoder = encoder_.get(), kCodedBufferId,
-               input_surface_id](VaapiVideoEncoderDelegate::EncodeJob& job) {
-                // Set Vp9Metadata on spatial layer encoding.
-                CodecPicture* picture = job.picture().get();
-                reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding =
-                    Vp9Metadata();
-                auto* vaapi_encoder =
-                    reinterpret_cast<VaapiVideoEncodeAccelerator*>(encoder);
-                job.AddPostExecuteCallback(base::BindOnce(
-                    &VP9VaapiVideoEncoderDelegate::NotifyEncodedChunkSize,
-                    base::Unretained(
-                        reinterpret_cast<VP9VaapiVideoEncoderDelegate*>(
-                            vaapi_encoder->encoder_.get())),
-                    kCodedBufferId, input_surface_id));
-                return true;
-              }));
+          .WillOnce(WithArgs<0>([encoder = encoder_.get()](
+                                    VaapiVideoEncoderDelegate::EncodeJob& job) {
+            // Set Vp9Metadata on spatial layer encoding.
+            CodecPicture* picture = job.picture().get();
+            reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding =
+                Vp9Metadata();
+            return true;
+          }));
       EXPECT_CALL(*mock_vaapi_wrapper_, ExecuteAndDestroyPendingBuffers(_))
           .WillOnce(Return(true));
 

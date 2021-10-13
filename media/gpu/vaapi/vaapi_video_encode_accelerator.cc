@@ -473,7 +473,7 @@ void VaapiVideoEncodeAccelerator::ReturnBitstreamBuffer(
   }
 
   auto metadata = encode_result->metadata();
-  metadata.payload_size_bytes = data_size;
+  DCHECK_NE(metadata.payload_size_bytes, 0u);
   encode_result.reset();
 
   DVLOGF(4) << "Returning bitstream buffer "

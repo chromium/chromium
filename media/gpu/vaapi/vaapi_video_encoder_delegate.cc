@@ -57,12 +57,6 @@ void VaapiVideoEncoderDelegate::EncodeJob::AddSetupCallback(
   setup_callbacks_.push(std::move(cb));
 }
 
-void VaapiVideoEncoderDelegate::EncodeJob::AddPostExecuteCallback(
-    base::OnceClosure cb) {
-  DCHECK(!cb.is_null());
-  post_execute_callbacks_.push(std::move(cb));
-}
-
 void VaapiVideoEncoderDelegate::EncodeJob::AddReferencePicture(
     scoped_refptr<CodecPicture> ref_pic) {
   DCHECK(ref_pic);
@@ -76,11 +70,6 @@ void VaapiVideoEncoderDelegate::EncodeJob::Execute() {
   }
 
   std::move(execute_callback_).Run();
-
-  while (!post_execute_callbacks_.empty()) {
-    std::move(post_execute_callbacks_.front()).Run();
-    post_execute_callbacks_.pop();
-  }
 }
 
 const scoped_refptr<VideoFrame>&
@@ -140,11 +129,6 @@ size_t VaapiVideoEncoderDelegate::GetBitstreamBufferSize() const {
 void VaapiVideoEncoderDelegate::BitrateControlUpdate(
     uint64_t encoded_chunk_size_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  NOTREACHED()
-      << __func__ << "() is called to on an"
-      << "VaapiVideoEncoderDelegate that doesn't support BitrateControl"
-      << "::kConstantQuantizationParameter";
 }
 
 BitstreamBufferMetadata VaapiVideoEncoderDelegate::GetMetadata(
@@ -173,8 +157,16 @@ VaapiVideoEncoderDelegate::Encode(std::unique_ptr<EncodeJob> encode_job) {
 
   encode_job->Execute();
 
-  auto metadata = GetMetadata(*encode_job, 0u);
+  const uint64_t encoded_chunk_size = vaapi_wrapper_->GetEncodedChunkSize(
+      encode_job->coded_buffer_id(), encode_job->input_surface()->id());
+  if (encoded_chunk_size == 0) {
+    VLOGF(1) << "Invalid encoded chunk size";
+    return nullptr;
+  }
 
+  BitrateControlUpdate(encoded_chunk_size);
+
+  auto metadata = GetMetadata(*encode_job, encoded_chunk_size);
   return std::make_unique<EncodeResult>(std::move(encode_job), metadata);
 }
 

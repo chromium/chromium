@@ -67,7 +67,6 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
                    uint32_t framerate) override;
   gfx::Size GetCodedSize() const override;
   size_t GetMaxNumOfRefFrames() const override;
-  void BitrateControlUpdate(uint64_t encoded_chunk_size_bytes) override;
   std::vector<gfx::Size> GetSVCLayerResolutions() override;
 
  private:
@@ -84,17 +83,13 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   bool PrepareEncodeJob(EncodeJob& encode_job) override;
   BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
                                       size_t payload_size) override;
+  void BitrateControlUpdate(uint64_t encoded_chunk_size_bytes) override;
 
   Vp9FrameHeader GetDefaultFrameHeader(const bool keyframe) const;
   void SetFrameHeader(bool keyframe,
                       VP9Picture* picture,
                       std::array<bool, kVp9NumRefsPerFrame>* ref_frames_used);
   void UpdateReferenceFrames(scoped_refptr<VP9Picture> picture);
-
-  // Gets the encoded chunk size whose id is |buffer_id| and updates the bitrate
-  // control.
-  void NotifyEncodedChunkSize(VABufferID buffer_id,
-                              VASurfaceID sync_surface_id);
 
   bool SubmitFrameParameters(
       EncodeJob& job,

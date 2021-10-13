@@ -103,12 +103,6 @@ class VaapiVideoEncoderDelegate {
     // is executed.
     void AddSetupCallback(base::OnceClosure cb);
 
-    // Schedules a callback to be run immediately after this job is executed.
-    // Can be called multiple times to schedule multiple callbacks, and all
-    // of them will be run, in order added. Callbacks can be used to e.g. get
-    // the encoded buffer linear size.
-    void AddPostExecuteCallback(base::OnceClosure cb);
-
     // Adds |ref_pic| to the list of pictures to be used as reference pictures
     // for this frame, to ensure they remain valid until the job is executed
     // (or discarded).
@@ -162,10 +156,6 @@ class VaapiVideoEncoderDelegate {
     // calls) to set up the job.
     base::queue<base::OnceClosure> setup_callbacks_;
 
-    // Callbacks to be run (in the same order as the order of
-    // AddPostExecuteCallback() calls) to do post processing after execute.
-    base::queue<base::OnceClosure> post_execute_callbacks_;
-
     // Callback to be run to execute this job.
     base::OnceClosure execute_callback_;
 
@@ -217,12 +207,6 @@ class VaapiVideoEncoderDelegate {
   // at least this many frames simultaneously for encode to make progress.
   virtual size_t GetMaxNumOfRefFrames() const = 0;
 
-  // Notifies the encoded chunk size in bytes to update a bitrate controller in
-  // VaapiVideoEncoderDelegate. This should be called only if
-  // VaapiVideoEncoderDelegate is configured with
-  // BitrateControl::kConstantQuantizationParameter.
-  virtual void BitrateControlUpdate(uint64_t encoded_chunk_size_bytes);
-
   virtual std::unique_ptr<EncodeResult> Encode(
       std::unique_ptr<EncodeJob> encode_job);
 
@@ -255,6 +239,12 @@ class VaapiVideoEncoderDelegate {
   // Prepares a new |encode_job| to be executed in Accelerator and returns true
   // on success. The caller may then call Execute() on the job to run it.
   virtual bool PrepareEncodeJob(EncodeJob& encode_job) = 0;
+
+  // Notifies the encoded chunk size in bytes to update a bitrate controller in
+  // VaapiVideoEncoderDelegate. This should be called only if
+  // VaapiVideoEncoderDelegate is configured with
+  // BitrateControl::kConstantQuantizationParameter.
+  virtual void BitrateControlUpdate(uint64_t encoded_chunk_size_bytes);
 };
 }  // namespace media
 

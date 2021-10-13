@@ -362,18 +362,6 @@ void VP8VaapiVideoEncoderDelegate::UpdateReferenceFrames(
   reference_frames_.Refresh(picture);
 }
 
-void VP8VaapiVideoEncoderDelegate::NotifyEncodedChunkSize(
-    VABufferID buffer_id,
-    VASurfaceID sync_surface_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const uint64_t encoded_chunk_size =
-      vaapi_wrapper_->GetEncodedChunkSize(buffer_id, sync_surface_id);
-  if (encoded_chunk_size == 0)
-    error_cb_.Run();
-
-  BitrateControlUpdate(encoded_chunk_size);
-}
-
 bool VP8VaapiVideoEncoderDelegate::SubmitFrameParameters(
     EncodeJob& job,
     const EncodeParams& encode_params,
@@ -508,11 +496,6 @@ bool VP8VaapiVideoEncoderDelegate::SubmitFrameParameters(
       base::BindOnce(&VaapiVideoEncoderDelegate::SubmitBuffer,
                      base::Unretained(this), VAQMatrixBufferType,
                      MakeRefCountedBytes(&qmatrix_buf, sizeof(qmatrix_buf))));
-
-  job.AddPostExecuteCallback(
-      base::BindOnce(&VP8VaapiVideoEncoderDelegate::NotifyEncodedChunkSize,
-                     base::Unretained(this), job.coded_buffer_id(),
-                     job.input_surface()->id()));
 
   return true;
 }
