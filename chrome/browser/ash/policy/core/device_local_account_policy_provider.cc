@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/policy/external_data/device_local_account_external_data_manager.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ui/webui/certificates_handler.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
@@ -187,8 +188,11 @@ void DeviceLocalAccountPolicyProvider::
       {key::kCrostiniAllowed, base::Value(false)},
       {key::kUserPluginVmAllowed, base::Value(false)},
       {key::kNetworkFileSharesAllowed, base::Value(false)},
-      {key::kCACertificateManagementAllowed, base::Value(false)},
-      {key::kClientCertificateManagementAllowed, base::Value(false)},
+      {key::kCACertificateManagementAllowed,
+       base::Value(static_cast<int>(CACertificateManagementPermission::kNone))},
+      {key::kClientCertificateManagementAllowed,
+       base::Value(
+           static_cast<int>(ClientCertificateManagementPermission::kNone))},
       {key::kEnableMediaRouter, base::Value(false)},
       {key::kScreenCaptureAllowed, base::Value(false)},
       {key::kKerberosEnabled, base::Value(false)},
