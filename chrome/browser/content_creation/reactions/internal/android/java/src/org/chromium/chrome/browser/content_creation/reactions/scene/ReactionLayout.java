@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.content_creation.reactions.scene;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -18,6 +21,7 @@ import org.chromium.ui.widget.ChromeImageButton;
 
 class ReactionLayout extends RelativeLayout {
     private final int mReactionPadding;
+    private final Context mContext;
 
     private ChromeImageButton mCopyButton;
     private ChromeImageButton mDeleteButton;
@@ -29,7 +33,8 @@ class ReactionLayout extends RelativeLayout {
 
     public ReactionLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mReactionPadding = context.getResources().getDimensionPixelSize(R.dimen.reaction_padding);
+        mContext = context;
+        mReactionPadding = mContext.getResources().getDimensionPixelSize(R.dimen.reaction_padding);
     }
 
     /**
@@ -42,10 +47,6 @@ class ReactionLayout extends RelativeLayout {
         mSceneEditorDelegate = sceneEditorDelegate;
         mIsActive = true;
         setUpReactionView();
-    }
-
-    Drawable getReaction() {
-        return mDrawable;
     }
 
     @Override
@@ -74,10 +75,49 @@ class ReactionLayout extends RelativeLayout {
         }
     }
 
+    Drawable getReaction() {
+        return mDrawable;
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
     private void setUpReactionView() {
         mReaction.setImageDrawable(mDrawable);
-        mReaction.setOnClickListener(
-                view -> mSceneEditorDelegate.markActiveStatus(this, !mIsActive));
+        GestureDetector gestureDetector =
+                new GestureDetector(mContext, new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onSingleTapUp(MotionEvent event) {
+                        mSceneEditorDelegate.markActiveStatus(ReactionLayout.this, !mIsActive);
+                        return true;
+                    }
+                });
+        mReaction.setOnTouchListener(new OnTouchListener() {
+            private float mBaseX;
+            private float mBaseY;
+
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (gestureDetector.onTouchEvent(motionEvent)) {
+                    return true;
+                }
+                if (!mIsActive) {
+                    return true;
+                }
+                RelativeLayout.LayoutParams layoutParams =
+                        (RelativeLayout.LayoutParams) ReactionLayout.this.getLayoutParams();
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mBaseX = motionEvent.getRawX() - layoutParams.leftMargin;
+                        mBaseY = motionEvent.getRawY() - layoutParams.topMargin;
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        layoutParams.leftMargin = (int) (motionEvent.getRawX() - mBaseX);
+                        layoutParams.topMargin = (int) (motionEvent.getRawY() - mBaseY);
+                        ReactionLayout.this.setLayoutParams(layoutParams);
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     private void setUpCopyButton() {
