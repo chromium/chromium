@@ -99,8 +99,6 @@ presets:
           - Vietnamnet_warm
           - Vnexpress_cold
           - Vnexpress_warm
-          - Walgreens_cold
-          - Walgreens_warm
           - Yandex_cold
           - Yandex_warm
           - amazon.co.jp_cold
@@ -196,7 +194,6 @@ presets:
           - Ruten_cold
           - Ruten_warm
           - Vietnamnet_cold
-          - Walgreens_warm
           - yahoo.co.jp_cold
           - yahoo.co.jp_warm
       - benchmark: loading.mobile
