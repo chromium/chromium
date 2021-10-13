@@ -2480,8 +2480,7 @@ void WallpaperControllerImpl::SetDailyRefreshCollectionId(
   // If Daily Refresh is disabled without selecting another wallpaper, we should
   // keep the current wallpaper and change to type `WallpaperType::kOnline`, so
   // daily refreshes stop.
-  if (collection_id.empty()) {
-    DCHECK(info.type == WallpaperType::kDaily);
+  if (collection_id.empty() && info.type == WallpaperType::kDaily) {
     info.type = WallpaperType::kOnline;
   }
   SetUserWallpaperInfo(account_id, info);

@@ -3664,4 +3664,25 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
             controller_->GetDailyRefreshCollectionId(account_id_1));
 }
 
+// WallpaperType should not change with an empty collection id if the previous
+// WallpaperType isn't |WallpaperType::kDaily|.
+TEST_F(WallpaperControllerWallpaperWebUiTest,
+       SetDailyRefreshCollectionId_Empty_NotTypeDaily) {
+  controller_->SetUserWallpaperInfo(
+      account_id_1,
+      WallpaperInfo(std::string(), absl::nullopt, std::string(),
+                    WALLPAPER_LAYOUT_CENTER, WallpaperType::kCustomized,
+                    DayBeforeYesterdayish()));
+
+  controller_->SetDailyRefreshCollectionId(account_id_1, std::string());
+  WallpaperInfo expected = WallpaperInfo(
+      std::string(), absl::nullopt, std::string(), WALLPAPER_LAYOUT_CENTER,
+      WallpaperType::kCustomized, DayBeforeYesterdayish());
+
+  WallpaperInfo actual;
+  controller_->GetUserWallpaperInfo(account_id_1, &actual);
+  EXPECT_EQ(expected, actual);
+  EXPECT_EQ(std::string(),
+            controller_->GetDailyRefreshCollectionId(account_id_1));
+}
 }  // namespace ash
