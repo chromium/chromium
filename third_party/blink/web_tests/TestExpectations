@@ -7217,3 +7217,8 @@ crbug.com/1259167 [ Mac ] virtual/threaded/external/wpt/scroll-animations/scroll
 crbug.com/1259188 [ Mac10.14 ] virtual/gpu-rasterization/images/color-profile-animate.html [ Failure Pass ]
 crbug.com/1197465 [ Win7 ] virtual/scroll-unification/fast/events/mouse-cursor-no-mousemove.html [ Failure Pass ]
 crbug.com/1259277 [ Debug Linux ] virtual/scroll-unification/fast/events/message-port-multi.html [ Failure Pass ]
+
+# Sheriff 2021-10-13
+crbug.com/1259652 [ Mac10.13 ] external/wpt/streams/readable-streams/tee.any.html [ Failure Pass ]
+crbug.com/1259652 [ Mac10.13 ] external/wpt/streams/readable-streams/tee.any.serviceworker.html [ Failure Pass ]
+crbug.com/1259652 [ Mac10.13 ] external/wpt/streams/readable-streams/tee.any.sharedworker.html [ Failure Pass ]
