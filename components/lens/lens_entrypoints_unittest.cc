@@ -4,7 +4,12 @@
 
 #include "components/lens/lens_entrypoints.h"
 
+#include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::MatchesRegex;
 
 namespace lens {
 
@@ -13,7 +18,7 @@ TEST(LensEntryPointsTest, GetRegionSearchNewTabQueryParameterTest) {
       lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
   std::string query_param = lens::GetQueryParametersForLensRequest(
       lens_region_search_ep, /*is_side_panel_request=*/false);
-  EXPECT_EQ(query_param, "ep=crs");
+  EXPECT_THAT(query_param, MatchesRegex("ep=crs&st=\\d+"));
 }
 
 TEST(LensEntryPointsTest, GetImageSearchNewTabQueryParameterTest) {
@@ -21,7 +26,7 @@ TEST(LensEntryPointsTest, GetImageSearchNewTabQueryParameterTest) {
       lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM;
   std::string query_param = lens::GetQueryParametersForLensRequest(
       lens_image_search_ep, /*is_side_panel_request=*/false);
-  EXPECT_EQ(query_param, "ep=ccm");
+  EXPECT_THAT(query_param, MatchesRegex("ep=ccm&st=\\d+"));
 }
 
 TEST(LensEntryPointsTest, GetRegionSearchSidePanelQueryParameterTest) {
@@ -29,7 +34,7 @@ TEST(LensEntryPointsTest, GetRegionSearchSidePanelQueryParameterTest) {
       lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
   std::string query_param = lens::GetQueryParametersForLensRequest(
       lens_region_search_ep, /*is_side_panel_request=*/true);
-  EXPECT_EQ(query_param, "ep=crs&s=csp");
+  EXPECT_THAT(query_param, MatchesRegex("ep=crs&s=csp&st=\\d+"));
 }
 
 TEST(LensEntryPointsTest, GetImageSearchSidePanelQueryParameterTest) {
@@ -37,7 +42,7 @@ TEST(LensEntryPointsTest, GetImageSearchSidePanelQueryParameterTest) {
       lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM;
   std::string query_param = lens::GetQueryParametersForLensRequest(
       lens_image_search_ep, /*is_side_panel_request=*/true);
-  EXPECT_EQ(query_param, "ep=ccm&s=csp");
+  EXPECT_THAT(query_param, MatchesRegex("ep=ccm&s=csp&st=\\d+"));
 }
 
 TEST(LensEntryPointsTest, GetOpenNewTabSidePanelParameterTest) {
@@ -45,19 +50,19 @@ TEST(LensEntryPointsTest, GetOpenNewTabSidePanelParameterTest) {
       lens::EntryPoint::CHROME_OPEN_NEW_TAB_SIDE_PANEL;
   std::string query_param = lens::GetQueryParametersForLensRequest(
       lens_open_new_tab_side_panel_ep, /*is_side_panel_request=*/false);
-  EXPECT_EQ(query_param, "ep=cnts");
+  EXPECT_THAT(query_param, MatchesRegex("ep=cnts&st=\\d+"));
 }
 
 TEST(LensEntryPointsTest, GetUnknownEntryPointTest) {
   std::string query_param = lens::GetQueryParametersForLensRequest(
       lens::EntryPoint::UNKNOWN, /*is_side_panel_request=*/false);
-  EXPECT_EQ(query_param, "");
+  EXPECT_THAT(query_param, MatchesRegex("st=\\d+"));
 }
 
 TEST(LensEntryPointsTest, GetUnknownEntryPointSidePanelTest) {
   std::string query_param = lens::GetQueryParametersForLensRequest(
       lens::EntryPoint::UNKNOWN, /*is_side_panel_request=*/true);
-  EXPECT_EQ(query_param, "s=csp");
+  EXPECT_THAT(query_param, MatchesRegex("s=csp&st=\\d+"));
 }
 
 }  // namespace lens
