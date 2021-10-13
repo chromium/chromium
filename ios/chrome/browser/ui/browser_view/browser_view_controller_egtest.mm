@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #import "base/ios/ios_util.h"
+#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
@@ -52,8 +53,7 @@
                                                             block:^BOOL {
                                                               return NO;
                                                             }];
-    BOOL success = [myCondition waitWithTimeout:0.05];
-    success = NO;
+    ignore_result([myCondition waitWithTimeout:0.05]);
 
     [ChromeEarlGrey openNewTab];
   }  // End of the sync disabler scope.
