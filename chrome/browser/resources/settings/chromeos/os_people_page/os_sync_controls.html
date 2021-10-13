@@ -41,8 +41,9 @@
       /* Similar to browser settings-sync-account-control styling. */
       #syncIconContainer {
         align-items: center;
-        background: var(--google-green-700);
-        border: var(--sync-icon-border-size) solid white;
+        background: var(--cros-icon-color-positive);
+        border: var(--sync-icon-border-size) solid
+            var(--cros-bg-color-elevation-1);
         border-radius: 50%;
         display: flex;
         height: var(--sync-icon-size);
@@ -59,19 +60,19 @@
       }
 
       #syncIconContainer.sync-problem {
-        background: var(--settings-error-color);
+        background: var(--cros-icon-color-alert);
       }
 
       #syncIconContainer.sync-paused {
-        background: var(--google-blue-500);
+        background: var(--cros-icon-color-prominent);
       }
 
       #syncIconContainer.sync-disabled {
-        background: var(--google-grey-400);
+        background: var(--cros-icon-color-disabled);
       }
 
       #syncIconContainer iron-icon {
-        fill: white;
+        fill: var(--cros-bg-color-elevation-1);
         height: 12px;
         margin: auto;
         width: 12px;
