@@ -14587,79 +14587,13 @@
     ]
   },
   "DefaultFileHandlingGuardSetting": {
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultFileHandlingGuardSetting": 2
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.file_handling_guard": {
-            "value": 2
-          }
-        }
-      },
-      {
-        "policies": {
-          "DefaultFileHandlingGuardSetting": 3
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.file_handling_guard": {
-            "value": 3
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "FileHandlingAllowedForUrls": {
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros"
-    ],
-    "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "FileHandlingAllowedForUrls": [
-            "[*.].com"
-          ]
-        },
-        "prefs": {
-          "profile.managed_file_handling_allowed_for_urls": {}
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "FileHandlingBlockedForUrls": {
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros"
-    ],
-    "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "FileHandlingBlockedForUrls": [
-            "[*.]google.com"
-          ]
-        },
-        "prefs": {
-          "profile.managed_file_handling_blocked_for_urls": {}
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "LensRegionSearchEnabled": {
     "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros"],

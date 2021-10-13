@@ -7113,7 +7113,8 @@
           'caption': '''Allow web apps to ask the user to grant access to file types via the File Handling API''',
         },
       ],
-      'supported_on': ['chrome_os:91-', 'chrome.*:91-'],
+      'supported_on': ['chrome_os:91-96', 'chrome.*:91-96'],
+      'deprecated': True,
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7135,7 +7136,8 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'supported_on': ['chrome_os:91-', 'chrome.*:91-'],
+      'supported_on': ['chrome_os:91-96', 'chrome.*:91-96'],
+      'deprecated': True,
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7162,7 +7164,8 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'supported_on': ['chrome_os:91-', 'chrome.*:91-'],
+      'supported_on': ['chrome_os:91-96', 'chrome.*:91-96'],
+      'deprecated': True,
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
