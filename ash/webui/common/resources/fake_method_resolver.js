@@ -32,6 +32,19 @@ class FakeMethodState {
   }
 
   /**
+   * Resolve the method with the supplied result after delayMs.
+   * @param {number} delayMs
+   * @return {!Promise}
+   */
+   resolveMethodWithDelay(delayMs) {
+    let resolver = new PromiseResolver();
+    setTimeout(() => {
+      resolver.resolve(this.result_);
+    }, delayMs);
+    return resolver.promise;
+  }
+
+  /**
    * Set the result for this method.
    * @param {T} result
    */
@@ -76,6 +89,16 @@ export class FakeMethodResolver {
    */
   resolveMethod(methodName) {
     return this.getState_(methodName).resolveMethod();
+  }
+
+  /**
+   * Causes the promise for methodName to resolve after delayMs.
+   * @param {string} methodName
+   * @param {number} delayMs
+   * @return {!Promise}
+   */
+  resolveMethodWithDelay(methodName, delayMs) {
+    return this.getState_(methodName).resolveMethodWithDelay(delayMs);
   }
 
   /**
