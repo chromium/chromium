@@ -5,7 +5,7 @@
 create {
   source {
     script { name: "fetch.py" }
-    patch_version: "cr1"
+    subdir: "lib"
   }
 }
 

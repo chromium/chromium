@@ -9,25 +9,26 @@ import argparse
 import json
 import os
 
-_LATEST_VERSION = '11-robolectric-6757853'
+_PATCH = 'cr3'
+_LATEST_VERSION = '11-robolectric-6757853.' + _PATCH
 _ROBO_URL_FILES = {
-    'android-all-11-robolectric-6757853':
+    'android-all-11-robolectric-6757853.jar':
         'https://repo.maven.apache.org/maven2/org/robolectric/android-all/11-robolectric-6757853/android-all-11-robolectric-6757853.jar',
-    'android-all-10-robolectric-5803371':
+    'android-all-10-robolectric-5803371.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all/10-robolectric-5803371/android-all-10-robolectric-5803371.jar',
-    'android-all-9-robolectric-4913185-2':
+    'android-all-9-robolectric-4913185-2.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all/9-robolectric-4913185-2/android-all-9-robolectric-4913185-2.jar',
-    'android-all-8.1.0-robolectric-4611349':
+    'android-all-8.1.0-robolectric-4611349.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all/8.1.0-robolectric-4611349/android-all-8.1.0-robolectric-4611349.jar',
-    'android-all-8.0.0_r4-robolectric-r1':
+    'android-all-8.0.0_r4-robolectric-r1.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all/8.0.0_r4-robolectric-r1/android-all-8.0.0_r4-robolectric-r1.jar',
-    'android-all-7.1.0_r7-robolectric-r1':
+    'android-all-7.1.0_r7-robolectric-r1.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all/7.1.0_r7-robolectric-r1/android-all-7.1.0_r7-robolectric-r1.jar',
-    'android-all-6.0.1_r3-robolectric-r1':
+    'android-all-6.0.1_r3-robolectric-r1.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all/6.0.1_r3-robolectric-r1/android-all-6.0.1_r3-robolectric-r1.jar',
-    'android-all-5.0.2_r3-robolectric-r0':
+    'android-all-5.0.2_r3-robolectric-r0.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all/5.0.2_r3-robolectric-r0/android-all-5.0.2_r3-robolectric-r0.jar',
-    'android-all-4.4_r1-robolectric-r2':
+    'android-all-4.4_r1-robolectric-r2.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all/4.4_r1-robolectric-r2/android-all-4.4_r1-robolectric-r2.jar',
 }
 
