@@ -312,6 +312,13 @@
         {}
        ]
       ],
+      "content-visibility-hit-test-contents-crash.html": [
+       "737d2af5d86ede73008233fc97253c491520535a",
+       [
+        null,
+        {}
+       ]
+      ],
       "content-visibility-in-svg-000-crash.html": [
        "d1084f7216510386f159033e2f7b0e3966bd2758",
        [
@@ -291518,20 +291525,8 @@
      "bd152e973e8fd520460a325d47beab8c25f45d31",
      []
     ],
-    "idlharness.any-expected.txt": [
-     "1da992c621c452b736bb4ceab6969e0898ec303c",
-     []
-    ],
-    "idlharness.any.worker-expected.txt": [
-     "8fff624a9d37a94e64cbd9dba3a6cd3b6bda285a",
-     []
-    ],
     "permissions-query-feature-policy-attribute.https.sub-expected.txt": [
      "b3a521320e8acb70c2f2199d608d4bd3379934e0",
-     []
-    ],
-    "permissionsstatus-name-expected.txt": [
-     "94dd7854162c1b0a606755a610a74c9a088cce89",
      []
     ]
    },
@@ -298862,19 +298857,19 @@
       []
      ],
      "tee.any-expected.txt": [
-      "1f96021cb3f9619067f5916419832422555b5d8c",
+      "a804638a686da4e7bbf52fb3e49a65ce1f7c4bf8",
       []
      ],
      "tee.any.serviceworker-expected.txt": [
-      "1f96021cb3f9619067f5916419832422555b5d8c",
+      "a804638a686da4e7bbf52fb3e49a65ce1f7c4bf8",
       []
      ],
      "tee.any.sharedworker-expected.txt": [
-      "1f96021cb3f9619067f5916419832422555b5d8c",
+      "a804638a686da4e7bbf52fb3e49a65ce1f7c4bf8",
       []
      ],
      "tee.any.worker-expected.txt": [
-      "1f96021cb3f9619067f5916419832422555b5d8c",
+      "a804638a686da4e7bbf52fb3e49a65ce1f7c4bf8",
       []
      ]
     },
@@ -298928,19 +298923,19 @@
       []
      ],
      "tee.any-expected.txt": [
-      "1c3ffa7490074d2df9fcf02fccf448e94992e9b4",
+      "852f5d01860c2d0cc47ad4a08bc1e0063a00db83",
       []
      ],
      "tee.any.serviceworker-expected.txt": [
-      "1c3ffa7490074d2df9fcf02fccf448e94992e9b4",
+      "852f5d01860c2d0cc47ad4a08bc1e0063a00db83",
       []
      ],
      "tee.any.sharedworker-expected.txt": [
-      "1c3ffa7490074d2df9fcf02fccf448e94992e9b4",
+      "852f5d01860c2d0cc47ad4a08bc1e0063a00db83",
       []
      ],
      "tee.any.worker-expected.txt": [
-      "1c3ffa7490074d2df9fcf02fccf448e94992e9b4",
+      "852f5d01860c2d0cc47ad4a08bc1e0063a00db83",
       []
      ]
     },
@@ -402550,7 +402545,7 @@
        ],
        "getter-special-cases": {
         "cross-origin-isolated.sub.https.html": [
-         "e10d3452b91db3dc6a188bf4113833b699224ff1",
+         "a521934cc9e5582d6086e219863e51d1bd9b5127",
          [
           null,
           {}
@@ -483398,7 +483393,7 @@
       ]
      ],
      "general.any.js": [
-      "9aa508225865c89ddde4aeeeb817c4db8b4ceb33",
+      "23691bb56b32ef3265f167491c146354948600a4",
       [
        null,
        {
@@ -483615,7 +483610,7 @@
       ]
      ],
      "tee.any.js": [
-      "3ea5f6bb9cb5e0e93984479e748265dec534a01c",
+      "be1da13861ef7143299c549b2dcb0a5d80cebdf6",
       [
        null,
        {
@@ -484704,7 +484699,7 @@
       ]
      ],
      "tee.any.js": [
-      "14c447be7296eaec984b7cfd45b58d2a5ae9a57a",
+      "d6f506120e1b5c4a3847ca7002a1d2ac315ec825",
       [
        null,
        {

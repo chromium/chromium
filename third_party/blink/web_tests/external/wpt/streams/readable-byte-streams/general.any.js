@@ -2334,3 +2334,62 @@ promise_test(async t => {
 
 }, 'ReadableStream with byte source: respondWithNewView() with a transferred zero-length view ' +
    '(in the closed state)');
+
+promise_test(async t => {
+  let controller;
+  let pullCount = 0;
+  const rs = new ReadableStream({
+    type: 'bytes',
+    autoAllocateChunkSize: 10,
+    start: t.step_func((c) => {
+      controller = c;
+    }),
+    pull: t.step_func(() => {
+      ++pullCount;
+    })
+  });
+
+  await flushAsyncEvents();
+  assert_equals(pullCount, 0, 'pull() must not have been invoked yet');
+
+  const reader1 = rs.getReader();
+  const read1 = reader1.read();
+  assert_equals(pullCount, 1, 'pull() must have been invoked once');
+  const byobRequest1 = controller.byobRequest;
+  assert_equals(byobRequest1.view.byteLength, 10, 'first byobRequest.view.byteLength');
+
+  // enqueue() must discard the auto-allocated BYOB request
+  controller.enqueue(new Uint8Array([1, 2, 3]));
+  assert_equals(byobRequest1.view, null, 'first byobRequest must be invalidated after enqueue()');
+
+  const result1 = await read1;
+  assert_equals(result1.done, false, 'first result.done');
+  const view1 = result1.value;
+  assert_equals(view1.byteOffset, 0, 'first result.value.byteOffset');
+  assert_equals(view1.byteLength, 3, 'first result.value.byteLength');
+  assert_array_equals([...new Uint8Array(view1.buffer)], [1, 2, 3], 'first result.value.buffer');
+
+  reader1.releaseLock();
+
+  // read(view) should work after discarding the auto-allocated BYOB request
+  const reader2 = rs.getReader({ mode: 'byob' });
+  const read2 = reader2.read(new Uint8Array([4, 5, 6]));
+  assert_equals(pullCount, 2, 'pull() must have been invoked twice');
+  const byobRequest2 = controller.byobRequest;
+  assert_equals(byobRequest2.view.byteOffset, 0, 'second byobRequest.view.byteOffset');
+  assert_equals(byobRequest2.view.byteLength, 3, 'second byobRequest.view.byteLength');
+  assert_array_equals([...new Uint8Array(byobRequest2.view.buffer)], [4, 5, 6], 'second byobRequest.view.buffer');
+
+  byobRequest2.respond(3);
+  assert_equals(byobRequest2.view, null, 'second byobRequest must be invalidated after respond()');
+
+  const result2 = await read2;
+  assert_equals(result2.done, false, 'second result.done');
+  const view2 = result2.value;
+  assert_equals(view2.byteOffset, 0, 'second result.value.byteOffset');
+  assert_equals(view2.byteLength, 3, 'second result.value.byteLength');
+  assert_array_equals([...new Uint8Array(view2.buffer)], [4, 5, 6], 'second result.value.buffer');
+
+  reader2.releaseLock();
+  assert_equals(pullCount, 2, 'pull() must only have been invoked twice');
+}, 'ReadableStream with byte source: enqueue() discards auto-allocated BYOB request');

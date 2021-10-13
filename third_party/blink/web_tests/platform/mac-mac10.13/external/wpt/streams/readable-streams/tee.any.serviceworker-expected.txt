@@ -5,6 +5,7 @@ PASS ReadableStream teeing: values should be equal across each branch
 PASS ReadableStream teeing: errors in the source should propagate to both branches
 PASS ReadableStream teeing: canceling branch1 should not impact branch2
 PASS ReadableStream teeing: canceling branch2 should not impact branch1
+PASS Running templatedRSTeeCancel with ReadableStream teeing
 PASS ReadableStream teeing: canceling both branches should aggregate the cancel reasons into an array
 PASS ReadableStream teeing: canceling both branches in reverse order should aggregate the cancel reasons into an array
 PASS ReadableStream teeing: failing to cancel the original stream should cause cancel() to reject on branches
