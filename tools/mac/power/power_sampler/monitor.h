@@ -33,6 +33,8 @@ using DataRow = base::flat_map<DataColumnKey, double>;
 // Concrete monitor classes override this interface.
 class Monitor {
  public:
+  using DataColumnKeyUnits = base::flat_map<DataColumnKey, std::string>;
+
   Monitor() = default;
   virtual ~Monitor() = 0;
 
@@ -45,8 +47,7 @@ class Monitor {
   // Called once before any OnSample calls are made.
   // Can be used to e.g. open a file, output a file header or other
   // one-time setup.
-  virtual void OnStartSession(
-      const base::flat_map<DataColumnKey, std::string>& data_columns_units) = 0;
+  virtual void OnStartSession(const DataColumnKeyUnits& data_columns_units) = 0;
 
   // Called each time a new set of |samples| has been acquired. The
   // |sample_time| is the time when the acquisition of |samples| started.
