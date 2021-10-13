@@ -44,7 +44,10 @@ public class DangerousDownloadDialogBridge {
     public void showDialog(WindowAndroid windowAndroid, String guid, String fileName,
             long totalBytes, int iconId) {
         Activity activity = windowAndroid.getActivity().get();
-        if (activity == null) onCancel(guid);
+        if (activity == null) {
+            onCancel(guid);
+            return;
+        }
 
         new DangerousDownloadDialog().show(activity,
                 ((ModalDialogManagerHolder) activity).getModalDialogManager(), fileName, totalBytes,
