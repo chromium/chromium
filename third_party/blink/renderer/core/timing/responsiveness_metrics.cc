@@ -3,13 +3,18 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
+#include <memory>
 
 #include "base/rand_util.h"
+#include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 
 namespace blink {
 
@@ -53,6 +58,34 @@ base::TimeDelta TotalEventDuration(
   return total_duration;
 }
 
+WTF::String InteractionTypeToString(UserInteractionType interaction_type) {
+  switch (interaction_type) {
+    case UserInteractionType::kDrag:
+      return "drag";
+    case UserInteractionType::kKeyboard:
+      return "keyboard";
+    case UserInteractionType::kTapOrClick:
+      return "tapOrClick";
+    default:
+      NOTREACHED();
+      return "";
+  }
+}
+
+std::unique_ptr<TracedValue> UserInteractionTraceData(
+    base::TimeDelta max_duration,
+    base::TimeDelta total_duration,
+    UserInteractionType interaction_type) {
+  auto traced_value = std::make_unique<TracedValue>();
+  traced_value->SetInteger("maxDuration",
+                           static_cast<int>(max_duration.InMilliseconds()));
+  traced_value->SetInteger("totalDuration",
+                           static_cast<int>(total_duration.InMilliseconds()));
+  traced_value->SetString("interactionType",
+                          InteractionTypeToString(interaction_type));
+  return traced_value;
+}
+
 }  // namespace
 
 ResponsivenessMetrics::ResponsivenessMetrics() = default;
@@ -80,6 +113,11 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
     window->GetFrame()->Client()->DidObserveUserInteraction(
         max_event_duration, total_event_duration, interaction_type);
   }
+  TRACE_EVENT2("devtools.timeline", "Responsiveness.Renderer.UserInteraction",
+               "data",
+               UserInteractionTraceData(max_event_duration,
+                                        total_event_duration, interaction_type),
+               "frame", ToTraceValue(window->GetFrame()));
 
   ukm::UkmRecorder* ukm_recorder = window->UkmRecorder();
   ukm::SourceId source_id = window->UkmSourceID();
