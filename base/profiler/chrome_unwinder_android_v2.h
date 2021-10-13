@@ -94,21 +94,21 @@ GetFirstUnwindInstructionIndexFromFunctionOffsetTableEntry(
     const uint8_t* function_offset_table_entry,
     int instruction_offset_from_function_start);
 
-// Given an instruction_offset_from_text_section_start, finds the corresponding
-// `FunctionOffsetTableIndex`.
+// Given an instruction_byte_offset_from_text_section_start, finds the
+// corresponding `FunctionOffsetTableIndex`.
 //
 // Arguments:
 //  page_start_instructions: A list of page_numbers. See
 //    `ChromeUnwindInfoAndroid::page_table` for details.
 //  function_offsets_table_indices: A list of `FunctionTableEntry`. See
 //    `ChromeUnwindInfoAndroid::function_table` for details.
-//  instruction_offset_from_text_section_start: The distance in bytes between
-//    the instruction of interest and text section start.
+//  instruction_byte_offset_from_text_section_start: The distance in bytes
+//    between the instruction of interest and text section start.
 BASE_EXPORT const absl::optional<FunctionOffsetTableIndex>
 GetFunctionTableIndexFromInstructionOffset(
     span<const uint32_t> page_start_instructions,
     span<const FunctionTableEntry> function_offset_table_indices,
-    uint32_t instruction_offset_from_text_section_start);
+    uint32_t instruction_byte_offset_from_text_section_start);
 
 }  // namespace base
 

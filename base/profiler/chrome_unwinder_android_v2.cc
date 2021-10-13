@@ -89,13 +89,13 @@ UnwindResult ChromeUnwinderAndroidV2::TryUnwind(
   DCHECK(CanUnwindFrom(stack->back()));
   do {
     const uintptr_t pc = RegisterContextInstructionPointer(thread_context);
-    const uintptr_t instruction_offset_from_text_section_start =
+    const uintptr_t instruction_byte_offset_from_text_section_start =
         pc - text_section_start_address_;
 
     const absl::optional<FunctionOffsetTableIndex> function_offset_table_index =
         GetFunctionTableIndexFromInstructionOffset(
             unwind_info_.page_table, unwind_info_.function_table,
-            instruction_offset_from_text_section_start);
+            instruction_byte_offset_from_text_section_start);
 
     if (!function_offset_table_index) {
       return UnwindResult::ABORTED;
@@ -267,7 +267,7 @@ const absl::optional<FunctionOffsetTableIndex>
 GetFunctionTableIndexFromInstructionOffset(
     span<const uint32_t> page_start_instructions,
     span<const FunctionTableEntry> function_offset_table_indices,
-    uint32_t instruction_offset_from_text_section_start) {
+    uint32_t instruction_byte_offset_from_text_section_start) {
   DCHECK(!page_start_instructions.empty());
   DCHECK(!function_offset_table_indices.empty());
   // First function on first page should always start from 0 offset.
@@ -275,12 +275,14 @@ GetFunctionTableIndexFromInstructionOffset(
                 .function_start_address_page_instruction_offset,
             0ul);
 
-  const uint16_t page_number = instruction_offset_from_text_section_start >> 17;
+  const uint16_t page_number =
+      instruction_byte_offset_from_text_section_start >> 17;
   const uint16_t page_instruction_offset =
-      (instruction_offset_from_text_section_start >> 1) & 0xffff;  // 16 bits.
+      (instruction_byte_offset_from_text_section_start >> 1) &
+      0xffff;  // 16 bits.
 
-  // Invalid instruction_offset_from_text_section_start:
-  // instruction_offset_from_text_section_start falls after the last page.
+  // Invalid instruction_byte_offset_from_text_section_start:
+  // instruction_byte_offset_from_text_section_start falls after the last page.
   if (page_number >= page_start_instructions.size()) {
     return absl::nullopt;
   }
@@ -359,7 +361,7 @@ GetFunctionTableIndexFromInstructionOffset(
       entry_location->function_start_address_page_instruction_offset;
 
   const int instruction_offset_from_function_start =
-      (instruction_offset_from_text_section_start >> 1) -
+      (instruction_byte_offset_from_text_section_start >> 1) -
       function_start_address_instruction_offset;
 
   DCHECK_GE(instruction_offset_from_function_start, 0);
