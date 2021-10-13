@@ -225,6 +225,12 @@ void LacrosExtensionAppsController::StopApp(const std::string& app_id) {
   }
 }
 
+void LacrosExtensionAppsController::SetPermission(
+    const std::string& app_id,
+    apps::mojom::PermissionPtr permission) {
+  NOTIMPLEMENTED();
+}
+
 void LacrosExtensionAppsController::FinishedEnableFlow(
     crosapi::mojom::LaunchParamsPtr launch_params,
     LaunchCallback callback,

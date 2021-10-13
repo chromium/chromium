@@ -307,6 +307,15 @@ void WebAppsCrosapi::ExecuteContextMenuCommand(const std::string& app_id,
                                          base::DoNothing());
 }
 
+void WebAppsCrosapi::SetPermission(const std::string& app_id,
+                                   apps::mojom::PermissionPtr permission) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
+  controller_->SetPermission(app_id, std::move(permission));
+}
+
 void WebAppsCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas) {
   if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi))
     return;

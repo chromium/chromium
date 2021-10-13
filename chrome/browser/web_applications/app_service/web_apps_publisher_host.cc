@@ -197,12 +197,6 @@ content::WebContents* WebAppsPublisherHost::LaunchAppWithIntent(
       std::move(window_info));
 }
 
-void WebAppsPublisherHost::SetPermission(
-    const std::string& app_id,
-    apps::mojom::PermissionPtr permission) {
-  publisher_helper().SetPermission(app_id, std::move(permission));
-}
-
 void WebAppsPublisherHost::OpenNativeSettings(const std::string& app_id) {
   publisher_helper().OpenNativeSettings(app_id);
 }
@@ -244,6 +238,12 @@ void WebAppsPublisherHost::ExecuteContextMenuCommand(
 
 void WebAppsPublisherHost::StopApp(const std::string& app_id) {
   publisher_helper().StopApp(app_id);
+}
+
+void WebAppsPublisherHost::SetPermission(
+    const std::string& app_id,
+    apps::mojom::PermissionPtr permission) {
+  publisher_helper().SetPermission(app_id, std::move(permission));
 }
 
 // TODO(crbug.com/1144877): Clean up the multiple launch interfaces and remove

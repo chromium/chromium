@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 14
+// Next MinVersion: 15
 
 module crosapi.mojom;
 
@@ -122,6 +122,12 @@ interface AppController {
   // Close all instances of the given |app_id|.
   [MinVersion=13]
   StopApp@10(string app_id);
+
+  // Change permission setting for the app with |app_id|.
+  [MinVersion=14]
+  SetPermission@11(
+      string app_id,
+      Permission permission);
 };
 
 // Interacts with the app service. Implemented in ash-chrome and called in

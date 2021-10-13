@@ -61,6 +61,8 @@ class LacrosExtensionAppsController : public crosapi::mojom::AppController {
       const std::string& id,
       ExecuteContextMenuCommandCallback callback) override;
   void StopApp(const std::string& app_id) override;
+  void SetPermission(const std::string& app_id,
+                     apps::mojom::PermissionPtr permission) override;
 
  private:
   // Called when the enable flow has finished. |success| indicates whether the
