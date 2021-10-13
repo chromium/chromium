@@ -22,6 +22,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if defined(OS_WIN) || defined(OS_MAC) || \
@@ -103,6 +104,10 @@ gfx::NativeWindow ShowWebDialog(gfx::NativeView parent,
                                 content::BrowserContext* context,
                                 ui::WebDialogDelegate* delegate,
                                 bool show = true);
+
+// Show `dialog_model` as a modal dialog to `browser`.
+void ShowBrowserModal(Browser* browser,
+                      std::unique_ptr<ui::DialogModel> dialog_model);
 
 // Shows the create chrome app shortcut dialog box.
 // |close_callback| may be null.
@@ -485,8 +490,8 @@ bool IsDeviceChooserShowingForTesting(Browser* browser);
 // Show the prompt to set a window name for browser's window, optionally with
 // the given context.
 void ShowWindowNamePrompt(Browser* browser);
-void ShowWindowNamePromptForTesting(Browser* browser,
-                                    gfx::NativeWindow context);
+std::unique_ptr<ui::DialogModel> CreateWindowNamePromptDialogModelForTesting(
+    Browser* browser);
 
 // Callback used to indicate whether Direct Sockets connection dialog is
 // accepted or not. If accepted, the remote address and port number are

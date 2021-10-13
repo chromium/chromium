@@ -4640,7 +4640,6 @@ static_library("ui") {
       "views/webid/webid_permission_view.h",
       "views/webid/webid_signin_page_view.cc",
       "views/webid/webid_signin_page_view.h",
-      "views/window_name_prompt.cc",
       "webauthn/account_hover_list_model.cc",
       "webauthn/account_hover_list_model.h",
       "webauthn/authenticator_request_sheet_model.cc",
@@ -4654,6 +4653,7 @@ static_library("ui") {
       "webauthn/transport_hover_list_model.h",
       "webauthn/webauthn_ui_helpers.cc",
       "webauthn/webauthn_ui_helpers.h",
+      "window_name_prompt/window_name_prompt.cc",
     ]
 
     deps += [

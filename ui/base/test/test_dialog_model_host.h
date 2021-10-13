@@ -11,6 +11,12 @@ namespace ui {
 
 class TestDialogModelHost : public DialogModelHost {
  public:
+  // TODO(pbos): Flesh out more of DialogModelHost public test APIs to enable
+  // hosting a DialogModel, then try to make this private again. Right now
+  // unittests inline OnDialogCancelled(ui::TestDialogModelHost::GetPassKey())
+  // instead of having TestDialogModelHost manage user flows by methods such as
+  // TestDialogModelHost::Cancel() and the destructor of TestDialogModelHost
+  // call OnDialogDestroying().
   using DialogModelHost::GetPassKey;
 };
 

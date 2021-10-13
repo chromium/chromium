@@ -13,6 +13,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/label_button_border.h"
@@ -505,6 +506,12 @@ void BubbleDialogModelHost::AddOrUpdateTextfield(
   // TODO(pbos): Support updates to the existing model.
 
   auto textfield = std::make_unique<Textfield>();
+  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+  // able to submit accessibility checks, but this focusable View needs to
+  // add a name so that the screen reader knows what to announce. The
+  // placeholder name may need to be pushed into DialogModel, unless we can tie
+  // this to the label. Maybe SetAssociatedField on Textfield is sufficient?
+  textfield->SetProperty(views::kSkipAccessibilityPaintChecks, true);
   textfield->SetAccessibleName(
       model_field->accessible_name(GetPassKey()).empty()
           ? model_field->label(GetPassKey())

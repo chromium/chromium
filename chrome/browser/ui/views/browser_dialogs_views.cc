@@ -11,11 +11,14 @@
 #include "chrome/browser/extensions/chrome_extension_chooser_dialog.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_editor_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/task_manager_view.h"
 #include "components/permissions/chooser_controller.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 
 // This file provides definitions of desktop browser dialog-creation methods for
 // all toolkit-views platforms.
+
 // static
 std::unique_ptr<LoginHandler> LoginHandler::Create(
     const net::AuthChallengeInfo& auth_info,
@@ -56,5 +59,21 @@ void HideTaskManager() {
   task_manager::TaskManagerView::Hide();
 }
 #endif
+
+// TODO(pbos): Find where this should live before checking stuff in.
+void ShowBrowserModal(Browser* browser,
+                      std::unique_ptr<ui::DialogModel> dialog_model) {
+  const gfx::NativeView anchor = BrowserView::GetBrowserViewForBrowser(browser)
+                                     ->GetWidget()
+                                     ->GetNativeView();
+  // It's fine to pass in a null context, since it will be inferred from the
+  // non-null anchor.
+  auto bubble = views::BubbleDialogModelHost::CreateModal(
+      std::move(dialog_model), ui::MODAL_TYPE_WINDOW);
+  bubble->SetOwnedByWidget(true);
+  views::DialogDelegate::CreateDialogWidget(std::move(bubble),
+                                            gfx::kNullNativeWindow, anchor)
+      ->Show();
+}
 
 }  // namespace chrome
