@@ -1280,18 +1280,12 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
   // Linux are checked with cmt-device path, and can include DT_CMT_SCROLL_
   // data. See more discussion in https://crrev.com/c/853953
   UpdateWMUserTime(event);
-  bool event_dispatched = false;
 #if defined(USE_OZONE)
   if (features::IsUsingOzonePlatform()) {
-    event_dispatched = true;
     DispatchEventFromNativeUiEvent(
         event, base::BindOnce(&PlatformWindowDelegate::DispatchEvent,
                               base::Unretained(platform_window_delegate())));
   }
-#endif
-#if defined(USE_X11)
-  if (!event_dispatched)
-    platform_window_delegate_->DispatchEvent(event);
 #endif
 }
 
