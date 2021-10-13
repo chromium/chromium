@@ -86,10 +86,11 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   // nullptr. Notification instance is owned by this list.
   virtual Notification* FindNotificationById(const std::string& id) = 0;
 
-  // Find the oldest notification by the corresponding notifier id. Returns
-  // nullptr if not found. The returned instance is owned by the message center.
-  virtual Notification* FindOldestNotificationByNotiferId(
-      const NotifierId& notifier_id) = 0;
+  // Find the parent notification for the corresponding url. This is the
+  // oldest notification with the given url. Returns nullptr if not found.
+  // The returned instance is owned by the message center.
+  virtual Notification* FindParentNotificationForOriginUrl(
+      const GURL& origin_url) = 0;
 
   virtual Notification* FindPopupNotificationById(const std::string& id) = 0;
 

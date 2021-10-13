@@ -298,8 +298,8 @@ void NotificationGroupingController::OnNotificationAdded(
     return;
 
   Notification* parent_notification =
-      message_center->FindOldestNotificationByNotiferId(
-          notification->notifier_id());
+      message_center->FindParentNotificationForOriginUrl(
+          notification->origin_url());
   std::string parent_id = parent_notification->id();
 
   // If we are creating a new notification group for this `notifier_id`,

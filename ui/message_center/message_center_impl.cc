@@ -156,10 +156,13 @@ Notification* MessageCenterImpl::FindNotificationById(const std::string& id) {
   return notification_list_->GetNotificationById(id);
 }
 
-Notification* MessageCenterImpl::FindOldestNotificationByNotiferId(
-    const NotifierId& notifier_id) {
+Notification* MessageCenterImpl::FindParentNotificationForOriginUrl(
+    const GURL& origin_url) {
+  if (origin_url.is_empty())
+    return nullptr;
+
   NotificationList::Notifications notifications =
-      notification_list_->GetNotificationsByNotifierId(notifier_id);
+      notification_list_->GetNotificationsByOriginUrl(origin_url);
 
   if (notifications.size())
     return *std::prev(notifications.end());
@@ -236,7 +239,7 @@ void MessageCenterImpl::AddNotification(
     return;
   }
 
-  auto* parent = FindOldestNotificationByNotiferId(notification->notifier_id());
+  auto* parent = FindParentNotificationForOriginUrl(notification->origin_url());
   if (notification->allow_group() && parent) {
     parent->SetGroupParent();
     notification->SetGroupChild();

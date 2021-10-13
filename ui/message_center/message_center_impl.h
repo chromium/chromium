@@ -56,8 +56,8 @@ class MessageCenterImpl : public MessageCenter,
   bool IsQuietMode() const override;
   bool IsSpokenFeedbackEnabled() const override;
   Notification* FindNotificationById(const std::string& id) override;
-  Notification* FindOldestNotificationByNotiferId(
-      const NotifierId& notifier_id) override;
+  Notification* FindParentNotificationForOriginUrl(
+      const GURL& origin_url) override;
   Notification* FindPopupNotificationById(const std::string& id) override;
   Notification* FindVisibleNotificationById(const std::string& id) override;
   NotificationList::Notifications FindNotificationsByAppId(
