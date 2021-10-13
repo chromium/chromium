@@ -2090,8 +2090,8 @@ void RenderWidgetHostImpl::NotifyScreenInfoChanged() {
   SynchronizeVisualPropertiesIgnoringPendingAck();
 
   // The device scale factor will be same for all the views contained by the
-  // MainFrame, so just set it once.
-  if (delegate_ && !delegate_->IsWidgetForMainFrame(this))
+  // primary main frame, so just set it once.
+  if (delegate_ && !delegate_->IsWidgetForPrimaryMainFrame(this))
     return;
 
   // The delegate may not have an input event router in tests.

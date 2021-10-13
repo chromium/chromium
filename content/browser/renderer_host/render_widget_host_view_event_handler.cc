@@ -904,7 +904,7 @@ bool RenderWidgetHostViewEventHandler::ShouldRouteEvents() const {
   // Do not route events that are currently targeted to page popups such as
   // <select> element drop-downs, since these cannot contain cross-process
   // frames.
-  if (!host_->delegate()->IsWidgetForMainFrame(host_))
+  if (!host_->delegate()->IsWidgetForPrimaryMainFrame(host_))
     return false;
 
   return !!host_->delegate()->GetInputEventRouter();

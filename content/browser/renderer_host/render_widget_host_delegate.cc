@@ -121,7 +121,8 @@ RenderViewHostDelegateView* RenderWidgetHostDelegate::GetDelegateView() {
   return nullptr;
 }
 
-bool RenderWidgetHostDelegate::IsWidgetForMainFrame(RenderWidgetHostImpl*) {
+bool RenderWidgetHostDelegate::IsWidgetForPrimaryMainFrame(
+    RenderWidgetHostImpl*) {
   return false;
 }
 

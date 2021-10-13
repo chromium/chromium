@@ -81,7 +81,7 @@ void SyntheticGestureTargetBase::DispatchInputEventToPlatform(
       // RenderWidgetHostInputEventRouter attached to the RenderWidgetHostImpl.
 
       DCHECK(host_->delegate());
-      DCHECK(host_->delegate()->IsWidgetForMainFrame(host_));
+      DCHECK(host_->delegate()->IsWidgetForPrimaryMainFrame(host_));
       DCHECK(host_->delegate()->GetInputEventRouter());
 
       std::unique_ptr<WebInputEvent> wheel_evt_ptr = web_wheel.Clone();

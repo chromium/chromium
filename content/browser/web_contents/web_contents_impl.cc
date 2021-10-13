@@ -4296,7 +4296,7 @@ TextInputManager* WebContentsImpl::GetTextInputManager() {
   return text_input_manager_.get();
 }
 
-bool WebContentsImpl::IsWidgetForMainFrame(
+bool WebContentsImpl::IsWidgetForPrimaryMainFrame(
     RenderWidgetHostImpl* render_widget_host) {
   return render_widget_host == GetMainFrame()->GetRenderWidgetHost();
 }

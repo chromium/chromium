@@ -248,8 +248,8 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   virtual RenderViewHostDelegateView* GetDelegateView();
 
   // Returns true if the provided RenderWidgetHostImpl matches the current
-  // RenderWidgetHost on the main frame, and false otherwise.
-  virtual bool IsWidgetForMainFrame(RenderWidgetHostImpl*);
+  // RenderWidgetHost on the primary main frame, and false otherwise.
+  virtual bool IsWidgetForPrimaryMainFrame(RenderWidgetHostImpl*);
 
   // Inner WebContents Helpers -------------------------------------------------
   //

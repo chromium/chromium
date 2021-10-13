@@ -946,7 +946,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       blink::mojom::FrameVisibility visibility) override;
   void SendScreenRects() override;
   TextInputManager* GetTextInputManager() override;
-  bool IsWidgetForMainFrame(RenderWidgetHostImpl* render_widget_host) override;
+  bool IsWidgetForPrimaryMainFrame(
+      RenderWidgetHostImpl* render_widget_host) override;
   bool IsShowingContextMenuOnPage() const override;
   void DidChangeScreenOrientation() override;
   gfx::Rect GetWindowsControlsOverlayRect() const override;
