@@ -7181,3 +7181,4 @@ crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/jpeg-with-
 
 # Sheriff 2021-10-13
 crbug.com/1259167 [ Mac ] virtual/threaded/external/wpt/scroll-animations/scroll-timelines/scroll-animation-inactive-timeline.html [ Failure Pass ]
+crbug.com/1259188 [ Mac10.14 ] virtual/gpu-rasterization/images/color-profile-animate.html [ Failure Pass ]
