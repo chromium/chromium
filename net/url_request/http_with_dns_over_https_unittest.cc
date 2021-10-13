@@ -5,18 +5,23 @@
 #include "base/big_endian.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/test/scoped_feature_list.h"
+#include "net/base/features.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_server.h"
-#include "net/cert/mock_cert_verifier.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_client.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_query.h"
+#include "net/dns/dns_test_util.h"
 #include "net/dns/dns_transaction.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/host_resolver_proc.h"
+#include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -26,6 +31,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/gtest_util.h"
+#include "net/test/test_doh_server.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
@@ -34,11 +41,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 namespace net {
 namespace {
 
-const size_t kHeaderSize = sizeof(dns_protocol::Header);
+using net::test::IsOk;
+
+const char kDohHostname[] = "doh-server.example";
+const char kHostname[] = "bar.example.com";
 const char kTestBody[] = "<html><body>TEST RESPONSE</body></html>";
 
 class TestHostResolverProc : public HostResolverProc {
@@ -66,118 +77,69 @@ class TestHostResolverProc : public HostResolverProc {
 class HttpWithDnsOverHttpsTest : public TestWithTaskEnvironment {
  public:
   HttpWithDnsOverHttpsTest()
-      : resolver_(HostResolver::CreateStandaloneContextResolver(nullptr)),
-        host_resolver_proc_(new TestHostResolverProc()),
-        cert_verifier_(std::make_unique<MockCertVerifier>()),
+      : host_resolver_proc_(new TestHostResolverProc()),
         request_context_(true),
-        doh_server_(EmbeddedTestServer::Type::TYPE_HTTPS),
         test_server_(EmbeddedTestServer::Type::TYPE_HTTPS),
-        fail_doh_requests_(false),
-        doh_queries_served_(0),
         test_https_requests_served_(0) {
-    doh_server_.RegisterRequestHandler(
-        base::BindRepeating(&HttpWithDnsOverHttpsTest::HandleDefaultConnect,
-                            base::Unretained(this)));
+    EmbeddedTestServer::ServerCertificateConfig cert_config;
+    cert_config.dns_names = {kHostname};
+    test_server_.SetSSLConfig(cert_config);
     test_server_.RegisterRequestHandler(
-        base::BindRepeating(&HttpWithDnsOverHttpsTest::HandleDefaultConnect,
+        base::BindRepeating(&HttpWithDnsOverHttpsTest::HandleDefaultRequest,
                             base::Unretained(this)));
+    doh_server_.SetHostname(kDohHostname);
+    doh_server_.AddAddressRecord(kHostname, IPAddress(127, 0, 0, 1));
     EXPECT_TRUE(doh_server_.Start());
     EXPECT_TRUE(test_server_.Start());
-    GURL url(doh_server_.GetURL("doh-server.com", "/dns_query"));
-    std::unique_ptr<DnsClient> dns_client(DnsClient::CreateClient(nullptr));
 
-    DnsConfig config;
-    config.nameservers.push_back(IPEndPoint());
-    EXPECT_TRUE(config.IsValid());
-    dns_client->SetSystemConfig(std::move(config));
+    // TODO(crbug.com/1252155): Simplify this.
+    HostResolver::ManagerOptions manager_options;
+    // Without a DnsConfig, HostResolverManager will not use DoH, even in
+    // kSecure mode. See https://crbug.com/1251715. However,
+    // DnsClient::BuildEffectiveConfig special-cases overrides that override
+    // everything, so that gets around it. Ideally, we would instead mock out a
+    // system DnsConfig via the usual pathway.
+    manager_options.dns_config_overrides =
+        DnsConfigOverrides::CreateOverridingEverythingWithDefaults();
+    manager_options.dns_config_overrides.secure_dns_mode =
+        SecureDnsMode::kSecure;
+    manager_options.dns_config_overrides.dns_over_https_servers = {
+        {doh_server_.GetPostOnlyTemplate(), /*use_post=*/true}};
+    manager_options.dns_config_overrides.use_local_ipv6 = true;
+    resolver_ = HostResolver::CreateStandaloneContextResolver(
+        /*net_log=*/nullptr, manager_options);
 
-    resolver_->SetRequestContext(&request_context_);
+    // Configure `resolver_` to use `host_resolver_proc_` to resolve
+    // `doh_server_` itself. Additionally, without an explicit HostResolverProc,
+    // HostResolverManager::HaveTestProcOverride disables the built-in DNS
+    // client.
     resolver_->SetProcParamsForTesting(
         ProcTaskParams(host_resolver_proc_.get(), 1));
-    resolver_->GetManagerForTesting()->SetDnsClientForTesting(
-        std::move(dns_client));
 
-    DnsConfigOverrides overrides;
-    overrides.dns_over_https_servers.emplace(
-        {DnsOverHttpsServerConfig(url.spec(), true /* use_post */)});
-    overrides.secure_dns_mode = SecureDnsMode::kSecure;
-    overrides.use_local_ipv6 = true;
-    resolver_->GetManagerForTesting()->SetDnsConfigOverrides(
-        std::move(overrides));
+    resolver_->SetRequestContext(&request_context_);
     request_context_.set_host_resolver(resolver_.get());
-
-    cert_verifier_->set_default_result(net::OK);
-    request_context_.set_cert_verifier(cert_verifier_.get());
 
     request_context_.Init();
   }
 
   URLRequestContext* context() { return &request_context_; }
 
-  std::unique_ptr<test_server::HttpResponse> HandleDefaultConnect(
+  std::unique_ptr<test_server::HttpResponse> HandleDefaultRequest(
       const test_server::HttpRequest& request) {
     std::unique_ptr<test_server::BasicHttpResponse> http_response(
         new test_server::BasicHttpResponse);
-    if (request.relative_url.compare("/dns_query") == 0) {
-      doh_queries_served_++;
-      if (fail_doh_requests_) {
-        http_response->set_code(HTTP_NOT_FOUND);
-        return std::move(http_response);
-      }
-
-      // Parse request content as a DnsQuery to access the question.
-      auto request_buffer =
-          base::MakeRefCounted<IOBufferWithSize>(request.content.size());
-      memcpy(request_buffer->data(), request.content.data(),
-             request.content.size());
-      DnsQuery query(std::move(request_buffer));
-      EXPECT_TRUE(query.Parse(request.content.size()));
-
-      char header_data[kHeaderSize];
-      base::BigEndianWriter header_writer(header_data, kHeaderSize);
-      header_writer.WriteU16(query.id());  // Same ID as before
-      uint8_t flags[] = {0x81, 0x80};
-      header_writer.WriteBytes(reinterpret_cast<char*>(flags), 2);
-      header_writer.WriteU16(1);  // 1 question
-      header_writer.WriteU16(1);  // 1 answer
-      header_writer.WriteU16(0);  // No authority records
-      header_writer.WriteU16(0);  // No additional records
-
-      const uint8_t answer_data[]{0xC0, 0x0C,  // - NAME
-                                  0x00, 0x01,  // - TYPE
-                                  0x00, 0x01,  // - CLASS
-                                  0x00, 0x00,  //
-                                  0x18, 0x4C,  // - TTL
-                                  0x00, 0x04,  // - RDLENGTH = 4 bytes
-                                  0x7f, 0x00,  // - RDDATA, IP is 127.0.0.1
-                                  0x00, 0x01};
-      http_response->set_content(
-          std::string(header_data, sizeof(header_data)) +
-          std::string(query.question()) +
-          std::string((char*)answer_data, sizeof(answer_data)));
-      http_response->set_content_type("application/dns-message");
-      return std::move(http_response);
-    } else {
-      test_https_requests_served_++;
-      http_response->set_content(kTestBody);
-      http_response->set_content_type("text/html");
-      return std::move(http_response);
-    }
+    test_https_requests_served_++;
+    http_response->set_content(kTestBody);
+    http_response->set_content_type("text/html");
+    return std::move(http_response);
   }
 
  protected:
-  void set_fail_doh_requests(bool fail_doh_requests) {
-    fail_doh_requests_ = fail_doh_requests;
-  }
-
   std::unique_ptr<ContextHostResolver> resolver_;
   scoped_refptr<net::TestHostResolverProc> host_resolver_proc_;
-  std::unique_ptr<MockCertVerifier> cert_verifier_;
   TestURLRequestContext request_context_;
-  EmbeddedTestServer doh_server_;
+  TestDohServer doh_server_;
   EmbeddedTestServer test_server_;
-  bool fail_doh_requests_;
-  uint32_t doh_queries_served_;
   uint32_t test_https_requests_served_;
 };
 
@@ -233,7 +195,7 @@ TEST_F(HttpWithDnsOverHttpsTest, EndToEnd) {
   // Create and start http server.
   EmbeddedTestServer http_server(EmbeddedTestServer::Type::TYPE_HTTP);
   http_server.RegisterRequestHandler(base::BindRepeating(
-      &HttpWithDnsOverHttpsTest::HandleDefaultConnect, base::Unretained(this)));
+      &HttpWithDnsOverHttpsTest::HandleDefaultRequest, base::Unretained(this)));
   EXPECT_TRUE(http_server.Start());
 
   // Set up an idle socket.
@@ -265,15 +227,14 @@ TEST_F(HttpWithDnsOverHttpsTest, EndToEnd) {
 
   // The domain "localhost" is resolved locally, so no DNS lookups should have
   // occurred.
-  EXPECT_EQ(doh_queries_served_, 0u);
+  EXPECT_EQ(doh_server_.QueriesServed(), 0);
   EXPECT_EQ(host_resolver_proc_->insecure_queries_served(), 0u);
   // A stream was established, but no HTTPS request has been made yet.
   EXPECT_EQ(test_https_requests_served_, 0u);
 
   // Make a request that will trigger a DoH query as well.
   TestDelegate d;
-  d.set_allow_certificate_errors(true);
-  GURL main_url = test_server_.GetURL("bar.example.com", "/test");
+  GURL main_url = test_server_.GetURL(kHostname, "/test");
   std::unique_ptr<URLRequest> req(context()->CreateRequest(
       main_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
   req->Start();
@@ -282,14 +243,13 @@ TEST_F(HttpWithDnsOverHttpsTest, EndToEnd) {
   EXPECT_TRUE(http_server.ShutdownAndWaitUntilComplete());
   EXPECT_TRUE(doh_server_.ShutdownAndWaitUntilComplete());
 
-  // There should be two DoH lookups for "bar.example.com" (both A and AAAA
-  // records are queried).
-  EXPECT_EQ(doh_queries_served_, 2u);
+  // There should be two DoH lookups for kHostname (both A and AAAA records are
+  // queried).
+  EXPECT_EQ(doh_server_.QueriesServed(), 2);
   // The requests to the DoH server are pooled, so there should only be one
   // insecure lookup for the DoH server hostname.
   EXPECT_EQ(host_resolver_proc_->insecure_queries_served(), 1u);
-  // There should be one non-DoH HTTPS request for the connection to
-  // "bar.example.com".
+  // There should be one non-DoH HTTPS request for the connection to kHostname.
   EXPECT_EQ(test_https_requests_served_, 1u);
 
   EXPECT_TRUE(d.response_completed());
@@ -299,11 +259,11 @@ TEST_F(HttpWithDnsOverHttpsTest, EndToEnd) {
 
 TEST_F(HttpWithDnsOverHttpsTest, EndToEndFail) {
   // Fail all DoH requests.
-  set_fail_doh_requests(true);
+  doh_server_.SetFailRequests(true);
 
   // Make a request that will trigger a DoH query.
   TestDelegate d;
-  GURL main_url = test_server_.GetURL("fail.example.com", "/test");
+  GURL main_url = test_server_.GetURL(kHostname, "/test");
   std::unique_ptr<URLRequest> req(context()->CreateRequest(
       main_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
   req->Start();
@@ -321,6 +281,49 @@ TEST_F(HttpWithDnsOverHttpsTest, EndToEndFail) {
   const auto& resolve_error_info = req->response_info().resolve_error_info;
   EXPECT_TRUE(resolve_error_info.is_secure_network_error);
   EXPECT_EQ(resolve_error_info.error, net::ERR_DNS_MALFORMED_RESPONSE);
+}
+
+std::string MakeHttpsRecordQname(const GURL& url) {
+  DCHECK(url.SchemeIs(url::kHttpsScheme));
+  int port = url.EffectiveIntPort();
+  if (port == 443) {
+    return url.host();
+  }
+  return base::StrCat(
+      {"_", base::NumberToString(port), "._https.", url.host_piece()});
+}
+
+// An end-to-end test of the HTTPS upgrade behavior.
+TEST_F(HttpWithDnsOverHttpsTest, HttpsUpgrade) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+
+  GURL https_url = test_server_.GetURL(kHostname, "/test");
+  EXPECT_TRUE(https_url.SchemeIs(url::kHttpsScheme));
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(url::kHttpScheme);
+  GURL http_url = https_url.ReplaceComponents(replacements);
+
+  doh_server_.AddRecord(BuildTestHttpsServiceRecord(
+      MakeHttpsRecordQname(https_url),
+      /*priority=*/1, /*service_name=*/".", /*params=*/{}));
+
+  // Fetch the http URL.
+  TestDelegate d;
+  std::unique_ptr<URLRequest> req(context()->CreateRequest(
+      http_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  base::RunLoop().Run();
+  ASSERT_THAT(d.request_status(), IsOk());
+
+  // The request should have been redirected to https.
+  EXPECT_EQ(d.received_redirect_count(), 1);
+  EXPECT_EQ(req->url(), https_url);
+
+  EXPECT_TRUE(d.response_completed());
+  EXPECT_EQ(d.request_status(), 0);
+  EXPECT_EQ(d.data_received(), kTestBody);
 }
 
 }  // namespace
