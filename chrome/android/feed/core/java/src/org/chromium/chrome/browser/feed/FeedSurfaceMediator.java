@@ -1033,7 +1033,8 @@ public class FeedSurfaceMediator
     @Override
     public boolean isScrollViewInitialized() {
         if (mFeedEnabled) {
-            return mCoordinator.getRecyclerView().getHeight() > 0;
+            RecyclerView recyclerView = mCoordinator.getRecyclerView();
+            return recyclerView != null && recyclerView.getHeight() > 0;
         } else {
             ScrollView scrollView = mCoordinator.getScrollViewForPolicy();
             return scrollView != null && scrollView.getHeight() > 0;
@@ -1091,7 +1092,8 @@ public class FeedSurfaceMediator
             ScrollView scrollView = mCoordinator.getScrollViewForPolicy();
             Rect rect = new Rect();
             scrollView.getHitRect(rect);
-            return scrollView.getChildAt(position).getLocalVisibleRect(rect);
+            View child = scrollView.getChildAt(position);
+            return child != null && child.getLocalVisibleRect(rect);
         }
     }
 
