@@ -36,18 +36,14 @@ TEST_F(ForceDarkTest, ForcedColorScheme) {
     <div id="t8" style="color-scheme:inherit"><span></span></div>
   )HTML");
 
-  struct {
+  struct TestCase {
     const char* id;
     bool expected_dark;
     bool expected_forced;
-  } test_cases[] = {
-      {"t1", true, true},  {"t2", true, true},   {"t3", true, false},
-      {"t4", true, false}, {"t5", false, false}, {"t6", true, false},
-      {"t7", true, false}, {"t8", true, true},
   };
 
-  for (const auto& test_case : test_cases) {
-    auto* element = GetDocument().getElementById(test_case.id);
+  auto run_test = [&document = GetDocument()](const TestCase& test_case) {
+    auto* element = document.getElementById(test_case.id);
     ASSERT_TRUE(element);
 
     const auto* style = element->GetComputedStyle();
@@ -63,7 +59,29 @@ TEST_F(ForceDarkTest, ForcedColorScheme) {
         << "Element #" << test_case.id << " > span";
     EXPECT_EQ(test_case.expected_forced, child_style->ColorSchemeForced())
         << "Element #" << test_case.id << " > span";
-  }
+  };
+
+  TestCase test_cases_preferred_dark[] = {
+      {"t1", true, true},  {"t2", true, true},   {"t3", true, false},
+      {"t4", true, false}, {"t5", false, false}, {"t6", true, false},
+      {"t7", true, false}, {"t8", true, true},
+  };
+
+  for (const auto& test_case : test_cases_preferred_dark)
+    run_test(test_case);
+
+  GetDocument().GetSettings()->SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kLight);
+  UpdateAllLifecyclePhasesForTest();
+
+  TestCase test_cases_preferred_light[] = {
+      {"t1", true, true}, {"t2", true, true}, {"t3", true, true},
+      {"t4", true, true}, {"t5", true, true}, {"t6", true, true},
+      {"t7", true, true}, {"t8", true, true},
+  };
+
+  for (const auto& test_case : test_cases_preferred_light)
+    run_test(test_case);
 }
 
 TEST_F(ForceDarkTest, ForcedColorSchemeInvalidation) {
