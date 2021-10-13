@@ -302,6 +302,8 @@ void SyncLoadContext::OnBodyReadable(MojoResult,
 
 void SyncLoadContext::OnAbort(base::WaitableEvent* event) {
   DCHECK(!Completed());
+  body_handle_.reset();
+  body_watcher_.Cancel();
   response_->error_code = net::ERR_ABORTED;
   CompleteRequest();
 }
@@ -310,6 +312,8 @@ void SyncLoadContext::OnTimeout() {
   // OnTimeout() must not be called after CompleteRequest() was called, because
   // the OneShotTimer must have been stopped.
   DCHECK(!Completed());
+  body_handle_.reset();
+  body_watcher_.Cancel();
   response_->error_code = net::ERR_TIMED_OUT;
   CompleteRequest();
 }
