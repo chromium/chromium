@@ -53,6 +53,9 @@ class PartitionAllocPCScanTest : public testing::Test {
                      PartitionOptions::Cookie::kDisallowed,
                      PartitionOptions::BackupRefPtr::kDisabled,
                      PartitionOptions::UseConfigurablePool::kNo});
+
+    allocator_.root()->UncapEmptySlotSpanMemoryForTesting();
+
     PCScan::RegisterScannableRoot(allocator_.root());
   }
   ~PartitionAllocPCScanTest() override {
@@ -448,6 +451,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingInterPartitionReference) {
        PartitionOptions::Cookie::kAllowed,
        PartitionOptions::BackupRefPtr::kDisabled,
        PartitionOptions::UseConfigurablePool::kNo});
+  source_root.UncapEmptySlotSpanMemoryForTesting();
   ThreadSafePartitionRoot value_root(
       {PartitionOptions::AlignedAlloc::kDisallowed,
        PartitionOptions::ThreadCache::kDisabled,
@@ -455,6 +459,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingInterPartitionReference) {
        PartitionOptions::Cookie::kAllowed,
        PartitionOptions::BackupRefPtr::kDisabled,
        PartitionOptions::UseConfigurablePool::kNo});
+  value_root.UncapEmptySlotSpanMemoryForTesting();
 
   PCScan::RegisterScannableRoot(&source_root);
   PCScan::RegisterScannableRoot(&value_root);
@@ -477,6 +482,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceToNonScannablePartition) {
        PartitionOptions::Cookie::kAllowed,
        PartitionOptions::BackupRefPtr::kDisabled,
        PartitionOptions::UseConfigurablePool::kNo});
+  source_root.UncapEmptySlotSpanMemoryForTesting();
   ThreadSafePartitionRoot value_root(
       {PartitionOptions::AlignedAlloc::kDisallowed,
        PartitionOptions::ThreadCache::kDisabled,
@@ -484,6 +490,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceToNonScannablePartition) {
        PartitionOptions::Cookie::kAllowed,
        PartitionOptions::BackupRefPtr::kDisabled,
        PartitionOptions::UseConfigurablePool::kNo});
+  value_root.UncapEmptySlotSpanMemoryForTesting();
 
   PCScan::RegisterScannableRoot(&source_root);
   PCScan::RegisterNonScannableRoot(&value_root);
@@ -506,6 +513,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromNonScannablePartition) {
        PartitionOptions::Cookie::kAllowed,
        PartitionOptions::BackupRefPtr::kDisabled,
        PartitionOptions::UseConfigurablePool::kNo});
+  source_root.UncapEmptySlotSpanMemoryForTesting();
   ThreadSafePartitionRoot value_root(
       {PartitionOptions::AlignedAlloc::kDisallowed,
        PartitionOptions::ThreadCache::kDisabled,
@@ -513,6 +521,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromNonScannablePartition) {
        PartitionOptions::Cookie::kAllowed,
        PartitionOptions::BackupRefPtr::kDisabled,
        PartitionOptions::UseConfigurablePool::kNo});
+  value_root.UncapEmptySlotSpanMemoryForTesting();
 
   PCScan::RegisterNonScannableRoot(&source_root);
   PCScan::RegisterScannableRoot(&value_root);

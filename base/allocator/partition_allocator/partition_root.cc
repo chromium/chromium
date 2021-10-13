@@ -503,11 +503,7 @@ template <bool thread_safe>
 
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::DecommitEmptySlotSpans() {
-  for (SlotSpan*& slot_span : global_empty_slot_span_ring) {
-    if (slot_span)
-      slot_span->DecommitIfPossible(this);
-    slot_span = nullptr;
-  }
+  ShrinkEmptySlotSpansRing(0);
   // Just decommitted everything, and holding the lock, should be exactly 0.
   PA_DCHECK(empty_slot_spans_dirty_bytes == 0);
 }
@@ -964,6 +960,31 @@ void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
         if (bucket.slot_size >= SystemPageSize())
           internal::PartitionPurgeBucket(&bucket);
       }
+    }
+  }
+}
+
+template <bool thread_safe>
+void PartitionRoot<thread_safe>::ShrinkEmptySlotSpansRing(size_t limit) {
+  int16_t index = global_empty_slot_span_ring_index;
+  int16_t starting_index = index;
+  while (empty_slot_spans_dirty_bytes > limit) {
+    SlotSpan* slot_span = global_empty_slot_span_ring[index];
+    // The ring is not always full, may be nullptr.
+    if (slot_span) {
+      slot_span->DecommitIfPossible(this);
+      global_empty_slot_span_ring[index] = nullptr;
+    }
+    index += 1;
+    if (index == kMaxFreeableSpans)
+      index = 0;
+
+    // Went around the whole ring, since this is locked,
+    // empty_slot_spans_dirty_bytes should be exactly 0.
+    if (index == starting_index) {
+      PA_DCHECK(empty_slot_spans_dirty_bytes == 0);
+      // Metrics issue, don't crash, return.
+      break;
     }
   }
 }

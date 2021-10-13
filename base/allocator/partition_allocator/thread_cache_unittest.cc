@@ -82,6 +82,8 @@ ThreadSafePartitionRoot* CreatePartitionRoot() {
         PartitionOptions::UseConfigurablePool::kNo
   });
 
+  root->UncapEmptySlotSpanMemoryForTesting();
+
   // We do this here instead of in SetUp()/TearDown() because we need this to
   // run before the task environment (which creates threads and hence is racy
   // with attempting to disable the thread cache).
