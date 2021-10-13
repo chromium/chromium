@@ -19,14 +19,14 @@ ASH_EXPORT constexpr float kHighlightScreenEdgePaddingDp = 8;
 
 // The amount of inset to be applied on a split view label. Here horizontal and
 // vertical apply to the orientation before rotation (if there is rotation).
-constexpr int kSplitviewLabelHorizontalInsetDp = 12;
-constexpr int kSplitviewLabelVerticalInsetDp = 4;
+constexpr int kSplitviewLabelHorizontalInsetDp = 16;
+constexpr int kSplitviewLabelVerticalInsetDp = 8;
 
 // The preferred height of a split view label.
-constexpr int kSplitviewLabelPreferredHeightDp = 24;
+constexpr int kSplitviewLabelPreferredHeightDp = 36;
 
 // The amount of round applied to the corners of a split view label.
-constexpr int kSplitviewLabelRoundRectRadiusDp = 12;
+constexpr int kSplitviewLabelRoundRectRadiusDp = 18;
 
 // The thickness of the divider when it is not being dragged.
 constexpr int kSplitviewDividerShortSideLength = 8;

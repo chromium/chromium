@@ -34,16 +34,23 @@ class ASH_EXPORT PhantomWindowController {
   // Hides the phantom window without any animation.
   ~PhantomWindowController();
 
-  // Shows the phantom window and animates shrinking it to |bounds_in_screen|.
-  void Show(const gfx::Rect& bounds_in_screen);
+  // Shows the phantom window and animates expanding from
+  // |kScrimStartBoundsRatio| of the full size to the full size which is
+  // `snap_window_bounds_in_screen.Insets(kPhantomWindowInsets)`.
+  void Show(const gfx::Rect& window_bounds_in_screen);
   void HideMaximizeCue();
   void ShowMaximizeCue();
 
+  // Transforms the phantom widget from top-snapped to maximized phantom for
+  // the target maximized window bounds |window_bounds_in_screen|.
+  void TransformPhantomWidgetFromSnapTopToMaximize(
+      const gfx::Rect& window_bounds_in_screen);
+
   aura::Window* window() { return window_; }
 
-  const gfx::Rect& GetTargetBoundsForTesting() const {
-    return target_bounds_in_screen_;
-  }
+  // Returns the target snapped or maximized window bounds which is the phantom
+  // bounds |target_bounds_in_screen_| with offsets |kPhantomWindowInsets|.
+  gfx::Rect GetTargetWindowBoundsForTesting() const;
 
  private:
   // Creates, shows and returns a phantom widget at |bounds|
@@ -56,11 +63,14 @@ class ASH_EXPORT PhantomWindowController {
   // |kShellWindowId_OverlayContainer| in a given |root_window|.
   std::unique_ptr<views::Widget> CreateMaximizeCue(aura::Window* root_window);
 
+  // Show phantom widget animating from the current widget size to
+  // |target_bounds_in_screen| and animating to full opacity.
+  void ShowPhantomWidget();
+
   // Window that the phantom window is stacked above.
   aura::Window* window_;
 
-  // Target bounds (including the shadows if any) of the animation in screen
-  // coordinates.
+  // Target bounds of |phantom_widget_| in screen coordinates for animation.
   gfx::Rect target_bounds_in_screen_;
 
   // Phantom representation of the window.

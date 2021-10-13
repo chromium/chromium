@@ -45,6 +45,7 @@
 #include "ui/base/class_property.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/transform.h"
@@ -495,6 +496,22 @@ void CrossFadeAnimation(aura::Window* window,
   CrossFadeAnimationAnimateNewLayerOnly(
       window, target_bounds, kCrossFadeDuration, gfx::Tween::LINEAR,
       maximize ? kDragMaximizeSmoothness : kDragUnmaximizeSmoothness);
+}
+
+bool IsTransitionFromTopToMaximize(WorkspaceWindowResizer::SnapType from_type,
+                                   WorkspaceWindowResizer::SnapType to_type,
+                                   const display::Display& display) {
+  if (to_type != WorkspaceWindowResizer::SnapType::kMaximize)
+    return false;
+
+  const chromeos::OrientationType orientation =
+      GetSnapDisplayOrientation(display);
+  if (chromeos::IsLandscapeOrientation(orientation))
+    return false;
+
+  const bool is_primary = chromeos::IsPrimaryOrientation(orientation);
+  return is_primary ? from_type == WorkspaceWindowResizer::SnapType::kPrimary
+                    : from_type == WorkspaceWindowResizer::SnapType::kSecondary;
 }
 
 }  // namespace
@@ -1462,13 +1479,21 @@ void WorkspaceWindowResizer::UpdateSnapPhantomWindow(
   SnapType last_type = snap_type_;
   snap_type_ = target_snap_type;
 
-  // Reset the controller if no snap or switching snap types. The latter is so
-  // that we can have a fade in show animation when switching snap types.
-  if (snap_type_ == SnapType::kNone || snap_type_ != last_type) {
+  // Reset the controller if no snap.
+  if (snap_type_ == SnapType::kNone) {
+    // TODO(crbug/1258197): Don't destroy phantom controller and add exit
+    // animation.
     snap_phantom_window_controller_.reset();
-    if (snap_type_ == SnapType::kNone)
-      return;
+    return;
   }
+
+  const bool is_top_to_maximize =
+      IsTransitionFromTopToMaximize(last_type, snap_type_, GetDisplay());
+  // Reset the controller if switching snap types unless we want to transform
+  // snap top to maximize so that we can have a fade in show animation when
+  // switching to the new snap type.
+  if (snap_type_ != last_type && !is_top_to_maximize)
+    snap_phantom_window_controller_.reset();
 
   // Update phantom window with snapped guide bounds.
   if (!snap_phantom_window_controller_) {
@@ -1498,7 +1523,12 @@ void WorkspaceWindowResizer::UpdateSnapPhantomWindow(
       break;
   }
 
-  snap_phantom_window_controller_->Show(phantom_bounds);
+  if (is_top_to_maximize) {
+    snap_phantom_window_controller_
+        ->TransformPhantomWidgetFromSnapTopToMaximize(phantom_bounds);
+  } else {
+    snap_phantom_window_controller_->Show(phantom_bounds);
+  }
 }
 
 void WorkspaceWindowResizer::RestackWindows() {

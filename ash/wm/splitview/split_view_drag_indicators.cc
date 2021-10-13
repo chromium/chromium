@@ -142,6 +142,8 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
 
     label_ = label_parent_->AddChildView(std::make_unique<views::Label>(
         std::u16string(), views::style::CONTEXT_LABEL));
+    label_->SetFontList(views::Label::GetDefaultFontList().Derive(
+        2, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
   }
 
   RotatedImageLabelView(const RotatedImageLabelView&) = delete;
@@ -212,16 +214,19 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
     label_parent_->SetBackground(views::CreateRoundedRectBackground(
-        DeprecatedGetBaseLayerColor(
-            AshColorProvider::BaseLayerType::kTransparent80,
-            kSplitviewLabelBackgroundColor),
+        AshColorProvider::Get()->GetBaseLayerColor(
+            AshColorProvider::BaseLayerType::kTransparent80),
         kSplitviewLabelRoundRectRadiusDp));
+    // TODO(crbug/1258983): Add blur background. This requires fixing a bug
+    // that `SetRoundedCornerRadius()` does not work with transform or find a
+    // solution to work around.
     label_->SetEnabledColor(DeprecatedGetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary,
         kSplitviewLabelEnabledColor));
-    label_->SetBackgroundColor(DeprecatedGetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kTransparent80,
-        kSplitviewLabelBackgroundColor));
+    label_->SetBackgroundColor(AshColorProvider::Get()->GetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kTransparent80));
+    label_->SetFontList(views::Label::GetDefaultFontList().Derive(
+        2, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
   }
 
  protected:
