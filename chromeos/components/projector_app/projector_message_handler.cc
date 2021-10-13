@@ -154,7 +154,7 @@ void ProjectorMessageHandler::StartProjectorSession(
     return;
   }
 
-  controller->StartProjectorSession(args->GetList()[0].GetString());
+  controller->StartProjectorSession(func_args.GetList()[0].GetString());
   ResolveJavascriptCallback(args->GetList()[0], base::Value(true));
 }
 

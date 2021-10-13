@@ -144,6 +144,9 @@ TEST_P(ProjectorSessionStartUnitTest, ProjectorSessionTest) {
   ON_CALL(controller(), CanStartNewSession)
       .WillByDefault(testing::Return(success));
 
+  EXPECT_CALL(controller(), StartProjectorSession("folderId"))
+      .Times(success ? 1 : 0);
+
   base::ListValue list_args;
   list_args.Append(kStartProjectorSessionCallback);
   base::ListValue args;
