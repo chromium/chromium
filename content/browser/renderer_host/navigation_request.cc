@@ -3729,7 +3729,29 @@ void NavigationRequest::OnStartChecksComplete(
       // soon be restarted as a normal history navigation.
       return;
     }
-    CHECK(rfh_restored_from_back_forward_cache_);
+    if (!rfh_restored_from_back_forward_cache_ ||
+        rfh_restored_from_back_forward_cache_
+            ->is_evicted_from_back_forward_cache()) {
+      // We might also get here when the navigation is not marked as being
+      // restarted yet, but the RFH being restored is gone or is already marked
+      // as evicted. Do not continue the navigation, and trigger uploading of
+      // debug information to understand what led to this case, since it's still
+      // unknown.
+      // See https://crbug.com/1258523.
+      SCOPED_CRASH_KEY_BOOL("NoRestoredRFH", "rfh_exists",
+                            !!rfh_restored_from_back_forward_cache_);
+      SCOPED_CRASH_KEY_BOOL("NoRestoredRFH", "is_main_frame",
+                            frame_tree_node_->IsMainFrame());
+      SCOPED_CRASH_KEY_BOOL("NoRestoredRFH", "is_ftn_nav_req",
+                            (frame_tree_node_->navigation_request() == this));
+      BackForwardCacheImpl& back_forward_cache =
+          frame_tree_node_->frame_tree()->controller().GetBackForwardCache();
+      SCOPED_CRASH_KEY_NUMBER("NoRestoredRFH", "bfcache_entries_size",
+                              back_forward_cache.GetEntries().size());
+      CaptureTraceForNavigationDebugScenario(
+          DebugScenario::kDebugNoRestoredRFHOnNonRestartedNavigation);
+      return;
+    }
     loader_type = NavigationURLLoader::LoaderType::kNoopForBackForwardCache;
     cached_response_head =
         rfh_restored_from_back_forward_cache_->last_response_head()->Clone();
