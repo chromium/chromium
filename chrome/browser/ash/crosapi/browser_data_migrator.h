@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_BROWSER_DATA_MIGRATOR_H_
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_DATA_MIGRATOR_H_
 
+#include <atomic>
+#include <memory>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/version.h"
 #include "components/account_id/account_id.h"
@@ -22,6 +25,10 @@ namespace ash {
 constexpr char kLacrosDir[] = "lacros";
 // Profile data directory name for lacros.
 constexpr char kLacrosProfilePath[] = "Default";
+// The name of temporary directory that will store copies of files from the
+// original user data directory. At the end of the migration, it will be moved
+// to the appropriate destination.
+constexpr char kTmpDir[] = "browser_data_migrator";
 // The following are UMA names.
 constexpr char kFinalStatus[] = "Ash.BrowserDataMigrator.FinalStatus";
 constexpr char kCopiedDataSize[] = "Ash.BrowserDataMigrator.CopiedDataSizeMB";
@@ -43,6 +50,23 @@ constexpr char kCreateDirectoryFail[] =
 // 3. Restart ash to run migration.
 // 4. Restart ash again to show the home screen.
 constexpr char kMigrationStep[] = "ash.browser_data_migrator.migration_step";
+
+// CancelFlag
+class CancelFlag : public base::RefCountedThreadSafe<CancelFlag> {
+ public:
+  CancelFlag();
+  CancelFlag(const CancelFlag&) = delete;
+  CancelFlag& operator=(const CancelFlag&) = delete;
+
+  void Set() { cancelled_ = true; }
+  bool IsSet() const { return cancelled_; }
+
+ private:
+  friend base::RefCountedThreadSafe<CancelFlag>;
+
+  ~CancelFlag();
+  std::atomic_bool cancelled_;
+};
 
 // BrowserDataMigrator is responsible for one time browser data migration from
 // ash-chrome to lacros-chrome.
@@ -102,7 +126,8 @@ class BrowserDataMigrator {
     kMoveFailed = 6,
     kDataWipeFailed = 7,
     kSizeLimitExceeded = 8,
-    kMaxValue = kSizeLimitExceeded
+    kCancelled = 9,
+    kMaxValue = kCancelled
   };
 
   // The value for `kMigrationStep`.
@@ -113,11 +138,7 @@ class BrowserDataMigrator {
     kEnded = 3  // Migration ended. It was either skipped, failed or succeeded.
   };
 
-  enum class ResultValue {
-    kSkipped,
-    kSucceeded,
-    kFailed,
-  };
+  enum class ResultValue { kSkipped, kSucceeded, kFailed, kCancelled };
 
   // Return value of `MigrateInternal()`.
   struct MigrationResult {
@@ -134,10 +155,11 @@ class BrowserDataMigrator {
                                     const std::string& user_id_hash);
 
   // The method needs to be called on UI thread. It posts `MigrateInternal()` on
-  // a worker thread with `callback` which will be called on the original thread
-  // once migration has completed or failed.
-  static void Migrate(const std::string& user_id_hash,
-                      base::OnceClosure callback);
+  // a worker thread and returns a callback which can be used to cancel
+  // migration mid way. The `callback` passed as an argument will be called on
+  // the original thread once migration has completed or failed.
+  static base::OnceClosure Migrate(const std::string& user_id_hash,
+                                   base::OnceClosure callback);
 
   // Registers boolean pref `kCheckForMigrationOnRestart` with default as false.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -150,6 +172,8 @@ class BrowserDataMigrator {
                            IsMigrationRequiredOnWorker);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, GetTargetInfo);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, CopyDirectory);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, SetupTmpDir);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, CancelSetupTmpDir);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, RecordStatus);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, Migrate);
 
@@ -166,7 +190,8 @@ class BrowserDataMigrator {
   // Handles the migration on a worker thread. Returns the end status of data
   // wipe and migration.
   static MigrationResult MigrateInternal(
-      const base::FilePath& original_user_dir);
+      const base::FilePath& original_user_dir,
+      scoped_refptr<CancelFlag> cancel_flag);
 
   // This will be posted with `IsMigrationRequiredOnWorker()` as the reply on UI
   // thread or called directly from `MaybeRestartToMigrate()`.
@@ -196,21 +221,25 @@ class BrowserDataMigrator {
   // Set up the temporary directory `tmp_dir` by copying items into it.
   static bool SetupTmpDir(const TargetInfo& target_info,
                           const base::FilePath& from_dir,
-                          const base::FilePath& tmp_dir);
+                          const base::FilePath& tmp_dir,
+                          CancelFlag* cancel_flag);
   // Copies `items` to `to_dir`. `items_size` and `category_name` are used for
   // logging.
   static bool CopyTargetItems(const base::FilePath& to_dir,
                               const std::vector<TargetItem>& items,
+                              CancelFlag* cancel_flag,
                               int64_t items_size,
                               base::StringPiece category_name);
   // Copies `item` to location pointed by `dest`. Returns true on success and
   // false on failure.
-  static bool CopyTargetItem(const TargetItem& item,
-                             const base::FilePath& dest);
+  static bool CopyTargetItem(const BrowserDataMigrator::TargetItem& item,
+                             const base::FilePath& dest,
+                             CancelFlag* cancel_flag);
   // Copies the contents of `from_path` to `to_path` recursively. Unlike
   // `base::CopyDirectory()` it skips symlinks.
   static bool CopyDirectory(const base::FilePath& from_path,
-                            const base::FilePath& to_path);
+                            const base::FilePath& to_path,
+                            CancelFlag* cancel_flag);
 };
 
 }  // namespace ash

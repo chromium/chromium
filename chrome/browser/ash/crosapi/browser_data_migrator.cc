@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
@@ -36,10 +37,6 @@
 
 namespace ash {
 namespace {
-// The name of temporary directory that will store copies of files from the
-// original user data directory. At the end of the migration, it will be moved
-// to the appropriate destination.
-constexpr char kTmpDir[] = "browser_data_migrator";
 // The base names of files and directories directly under the original profile
 // data directory that does not need to be copied nor need to remain in ash e.g.
 // cache data.
@@ -202,6 +199,9 @@ base::span<const char* const> GetLacrosDataPaths() {
 }
 }  // namespace
 
+CancelFlag::CancelFlag() : cancelled_(false) {}
+CancelFlag::~CancelFlag() = default;
+
 BrowserDataMigrator::TargetInfo::TargetInfo()
     : ash_data_size(0),
       no_copy_data_size(0),
@@ -320,8 +320,8 @@ bool BrowserDataMigrator::IsMigrationRequiredOnWorker(
 }
 
 // static
-void BrowserDataMigrator::Migrate(const std::string& user_id_hash,
-                                  base::OnceClosure callback) {
+base::OnceClosure BrowserDataMigrator::Migrate(const std::string& user_id_hash,
+                                               base::OnceClosure callback) {
   DCHECK(GetMigrationStep(g_browser_process->local_state()) ==
          MigrationStep::kRestartCalled);
   SetMigrationStep(g_browser_process->local_state(), MigrationStep::kStarted);
@@ -331,17 +331,28 @@ void BrowserDataMigrator::Migrate(const std::string& user_id_hash,
         << "Could not get the original user data dir path. Aborting migration.";
     RecordStatus(FinalStatus::kGetPathFailed);
     std::move(callback).Run();
-    return;
+    return base::DoNothing();
   }
+
+  // The pointer will be shared by `cancel_callback` and `MigrateInternal()`.
+  scoped_refptr<CancelFlag> cancel_flag = base::MakeRefCounted<CancelFlag>();
+  // Create a callback that can be called to cancel the migration.
+  base::OnceClosure cancel_callback = base::BindOnce(
+      [](scoped_refptr<CancelFlag> cancel_flag) { cancel_flag->Set(); },
+      cancel_flag);
+
   base::FilePath profile_data_dir =
       user_data_dir.Append(ProfileHelper::GetUserProfileDir(user_id_hash));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(&BrowserDataMigrator::MigrateInternal, profile_data_dir),
+      base::BindOnce(&BrowserDataMigrator::MigrateInternal, profile_data_dir,
+                     cancel_flag),
       base::BindOnce(&BrowserDataMigrator::MigrateInternalFinishedUIThread,
                      std::move(callback), user_id_hash));
+
+  return cancel_callback;
 }
 
 // static
@@ -381,7 +392,8 @@ void BrowserDataMigrator::RecordStatus(const FinalStatus& final_status,
 // Note that during testing phase we are copying files and leaving files in
 // original location intact. We will allow these two states to diverge.
 BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal(
-    const base::FilePath& original_user_dir) {
+    const base::FilePath& original_user_dir,
+    scoped_refptr<CancelFlag> cancel_flag) {
   ResultValue data_wipe_result = ResultValue::kSkipped;
 
   const base::FilePath tmp_dir = original_user_dir.Append(kTmpDir);
@@ -421,10 +433,16 @@ BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal(
   }
 
   // Copy files to `tmp_dir`.
-  if (!SetupTmpDir(target_info, original_user_dir, tmp_dir)) {
+  if (!SetupTmpDir(target_info, original_user_dir, tmp_dir,
+                   cancel_flag.get())) {
     if (base::PathExists(tmp_dir)) {
       base::DeletePathRecursively(tmp_dir);
     }
+    if (cancel_flag->IsSet()) {
+      RecordStatus(FinalStatus::kCancelled, &target_info);
+      return {data_wipe_result, ResultValue::kCancelled};
+    }
+
     RecordStatus(FinalStatus::kCopyFailed, &target_info);
     return {data_wipe_result, ResultValue::kFailed};
   }
@@ -481,9 +499,13 @@ void BrowserDataMigrator::MigrateInternalFinishedUIThread(
 // false on failure.
 bool BrowserDataMigrator::CopyTargetItem(
     const BrowserDataMigrator::TargetItem& item,
-    const base::FilePath& dest) {
+    const base::FilePath& dest,
+    CancelFlag* cancel_flag) {
+  if (cancel_flag->IsSet())
+    return false;
+
   if (item.is_directory) {
-    if (CopyDirectory(item.path, dest))
+    if (CopyDirectory(item.path, dest, cancel_flag))
       return true;
   } else {
     if (base::CopyFile(item.path, dest))
@@ -575,7 +597,11 @@ bool BrowserDataMigrator::IsMigrationSmallEnough(
 
 // static
 bool BrowserDataMigrator::CopyDirectory(const base::FilePath& from_path,
-                                        const base::FilePath& to_path) {
+                                        const base::FilePath& to_path,
+                                        CancelFlag* cancel_flag) {
+  if (cancel_flag->IsSet())
+    return false;
+
   if (!base::PathExists(to_path) && !base::CreateDirectory(to_path)) {
     PLOG(ERROR) << "CreateDirectory() failed for " << to_path.value();
     return false;
@@ -587,6 +613,9 @@ bool BrowserDataMigrator::CopyDirectory(const base::FilePath& from_path,
                                       base::FileEnumerator::SHOW_SYM_LINKS);
   for (base::FilePath entry = enumerator.Next(); !entry.empty();
        entry = enumerator.Next()) {
+    if (cancel_flag->IsSet())
+      return false;
+
     const base::FileEnumerator::FileInfo& info = enumerator.GetInfo();
 
     // Only copy a file or a dir i.e. skip other types like symlink since
@@ -595,7 +624,7 @@ bool BrowserDataMigrator::CopyDirectory(const base::FilePath& from_path,
       if (!base::CopyFile(entry, to_path.Append(entry.BaseName())))
         return false;
     } else if (S_ISDIR(info.stat().st_mode)) {
-      if (!CopyDirectory(entry, to_path.Append(entry.BaseName())))
+      if (!CopyDirectory(entry, to_path.Append(entry.BaseName()), cancel_flag))
         return false;
     }
   }
@@ -605,11 +634,15 @@ bool BrowserDataMigrator::CopyDirectory(const base::FilePath& from_path,
 
 bool BrowserDataMigrator::CopyTargetItems(const base::FilePath& to_dir,
                                           const std::vector<TargetItem>& items,
+                                          CancelFlag* cancel_flag,
                                           int64_t items_size,
                                           base::StringPiece category_name) {
   base::ElapsedTimer timer;
   for (const auto& item : items) {
-    if (!CopyTargetItem(item, to_dir.Append(item.path.BaseName())))
+    if (cancel_flag->IsSet())
+      return false;
+
+    if (!CopyTargetItem(item, to_dir.Append(item.path.BaseName()), cancel_flag))
       return false;
   }
   base::TimeDelta elapsed_time = timer.Elapsed();
@@ -633,7 +666,8 @@ bool BrowserDataMigrator::CopyTargetItems(const base::FilePath& to_dir,
 // static
 bool BrowserDataMigrator::SetupTmpDir(const TargetInfo& target_info,
                                       const base::FilePath& from_dir,
-                                      const base::FilePath& tmp_dir) {
+                                      const base::FilePath& tmp_dir,
+                                      CancelFlag* cancel_flag) {
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(tmp_dir.Append(kLacrosProfilePath),
                                         &error)) {
@@ -646,12 +680,12 @@ bool BrowserDataMigrator::SetupTmpDir(const TargetInfo& target_info,
 
   // Copy lacros items.
   if (!CopyTargetItems(tmp_dir.Append(kLacrosProfilePath),
-                       target_info.lacros_data_items,
+                       target_info.lacros_data_items, cancel_flag,
                        target_info.lacros_data_size, kLacrosCategory))
     return false;
   // Copy common items.
   if (!CopyTargetItems(tmp_dir.Append(kLacrosProfilePath),
-                       target_info.common_data_items,
+                       target_info.common_data_items, cancel_flag,
                        target_info.common_data_size, kCommonCategory))
     return false;
 

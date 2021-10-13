@@ -10,6 +10,9 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 
 namespace ash {
+namespace {
+constexpr char kUserActionCancel[] = "cancel";
+}
 
 LacrosDataMigrationScreen::LacrosDataMigrationScreen(
     LacrosDataMigrationScreenView* view)
@@ -39,12 +42,24 @@ void LacrosDataMigrationScreen::ShowImpl() {
   const std::string user_id_hash =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kBrowserDataMigrationForUser);
+  // TODO(crbug.com/1178702): Hide skip button and only show it after 10s.
   // Start browser data migration.
-  BrowserDataMigrator::Migrate(user_id_hash,
-                               base::BindOnce(&chrome::AttemptRestart));
+  cancel_callback_ = BrowserDataMigrator::Migrate(
+      user_id_hash, base::BindOnce(&chrome::AttemptRestart));
 
   // Show the screen.
   view_->Show();
+}
+
+void LacrosDataMigrationScreen::OnUserAction(const std::string& action_id) {
+  if (action_id == kUserActionCancel) {
+    if (cancel_callback_) {
+      LOG(WARNING) << "User has cancelled the migration.";
+      std::move(cancel_callback_).Run();
+    }
+  } else {
+    BaseScreen::OnUserAction(action_id);
+  }
 }
 
 void LacrosDataMigrationScreen::HideImpl() {}

@@ -188,7 +188,9 @@ TEST_F(BrowserDataMigratorTest, CopyDirectory) {
   base::CreateSymbolicLink(user_data_dir_.GetPath().Append(kFirstRun),
                            copy_from.Append(kFirstRun));
 
-  ASSERT_TRUE(BrowserDataMigrator::CopyDirectory(copy_from, copy_to));
+  scoped_refptr<CancelFlag> cancelled = base::MakeRefCounted<CancelFlag>();
+  ASSERT_TRUE(
+      BrowserDataMigrator::CopyDirectory(copy_from, copy_to, cancelled.get()));
 
   // Setup `copy_from` as below.
   // |- copy_from/
@@ -268,11 +270,56 @@ TEST_F(BrowserDataMigratorTest, RecordStatus) {
   }
 }
 
+TEST_F(BrowserDataMigratorTest, SetupTmpDir) {
+  base::FilePath tmp_dir = from_dir_.Append(kTmpDir);
+  scoped_refptr<CancelFlag> cancel_flag = base::MakeRefCounted<CancelFlag>();
+  BrowserDataMigrator::TargetInfo target_info =
+      BrowserDataMigrator::GetTargetInfo(from_dir_);
+
+  EXPECT_TRUE(BrowserDataMigrator::SetupTmpDir(target_info, from_dir_, tmp_dir,
+                                               cancel_flag.get()));
+
+  EXPECT_TRUE(base::PathExists(tmp_dir));
+  EXPECT_TRUE(base::PathExists(tmp_dir.Append(kFirstRun)));
+  EXPECT_TRUE(base::PathExists(tmp_dir.Append(kLacrosProfilePath)));
+  EXPECT_TRUE(
+      base::PathExists(tmp_dir.Append(kLacrosProfilePath).Append(kBookmarks)));
+  EXPECT_TRUE(
+      base::PathExists(tmp_dir.Append(kLacrosProfilePath).Append(kCookies)));
+  EXPECT_TRUE(base::PathExists(
+      tmp_dir.Append(kLacrosProfilePath).Append(kAffiliationDatabase)));
+  EXPECT_TRUE(base::PathExists(tmp_dir.Append(kLacrosProfilePath)
+                                   .Append(kAffiliationDatabase)
+                                   .Append(kDataFile)));
+  EXPECT_TRUE(base::PathExists(tmp_dir.Append(kLacrosProfilePath)
+                                   .Append(kAffiliationDatabase)
+                                   .Append(kDownloads)
+                                   .Append(kDataFile)));
+}
+
+TEST_F(BrowserDataMigratorTest, CancelSetupTmpDir) {
+  base::FilePath tmp_dir = from_dir_.Append(kTmpDir);
+  scoped_refptr<CancelFlag> cancel_flag = base::MakeRefCounted<CancelFlag>();
+  BrowserDataMigrator::TargetInfo target_info =
+      BrowserDataMigrator::GetTargetInfo(from_dir_);
+
+  // Set cancel_flag to cancel migrationl.
+  cancel_flag->Set();
+  EXPECT_FALSE(BrowserDataMigrator::SetupTmpDir(
+      target_info, user_data_dir_.GetPath(), tmp_dir, cancel_flag.get()));
+
+  // These files should not exist.
+  EXPECT_FALSE(base::PathExists(tmp_dir.Append(kFirstRun)));
+  EXPECT_FALSE(
+      base::PathExists(tmp_dir.Append(kLacrosProfilePath).Append(kBookmarks)));
+}
+
 TEST_F(BrowserDataMigratorTest, Migrate) {
   base::HistogramTester histogram_tester;
 
   {
-    BrowserDataMigrator::MigrateInternal(from_dir_);
+    scoped_refptr<CancelFlag> cancelled = base::MakeRefCounted<CancelFlag>();
+    BrowserDataMigrator::MigrateInternal(from_dir_, cancelled);
 
     // Expected dir structure after migration.
     // ./                             /* user_data_dir_ */

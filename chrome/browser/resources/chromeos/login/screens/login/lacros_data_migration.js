@@ -33,6 +33,10 @@ class LacrosDataMigrationScreen extends LacrosDataMigrationScreenElementBase {
       resetAllowed: false,
     });
   }
+
+  onCancelButtonClicked_() {
+    this.userActed('cancel');
+  }
 }
 
 customElements.define(LacrosDataMigrationScreen.is, LacrosDataMigrationScreen);

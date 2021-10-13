@@ -13,7 +13,8 @@
 
 <dom-module id="lacros-data-migration-element">
   <template>
-    <oobe-loading-dialog title-key="lacrosDataMigrationTitle"
+    <oobe-loading-dialog title-key="lacrosDataMigrationTitle" can-cancel
+        on-cancel-loading="onCancelButtonClicked_"
         subtitle-key="lacrosDataMigrationSubtitle">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
     </oobe-loading-dialog>
