@@ -135,6 +135,8 @@ static_library("devtools") {
       "//components/pref_registry",
       "//components/prefs",
       "//components/sessions",
+      "//components/signin/public/identity_manager:identity_manager",
+      "//components/sync/driver:driver",
       "//components/sync_preferences",
       "//components/viz/host",
       "//components/web_modal",

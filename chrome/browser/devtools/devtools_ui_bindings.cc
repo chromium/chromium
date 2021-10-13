@@ -37,6 +37,8 @@
 #include "chrome/browser/devtools/url_constants.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -49,6 +51,9 @@
 #include "chrome/common/url_constants.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/zoom/page_zoom.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -1274,6 +1279,40 @@ void DevToolsUIBindings::RemovePreference(const std::string& name) {
 
 void DevToolsUIBindings::ClearPreferences() {
   settings_.Clear();
+}
+
+void DevToolsUIBindings::GetSyncInformation(DispatchCallback callback) {
+  base::Value result(base::Value::Type::DICTIONARY);
+
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile_);
+  if (!sync_service) {
+    result.SetBoolKey("isSyncActive", false);
+    std::move(callback).Run(&result);
+    return;
+  }
+
+  result.SetBoolKey("isSyncActive", sync_service->IsSyncFeatureActive());
+  result.SetBoolKey(
+      "arePreferencesSynced",
+      sync_service->GetActiveDataTypes().Has(syncer::ModelType::PREFERENCES));
+
+  CoreAccountInfo account_info = sync_service->GetAuthenticatedAccountInfo();
+  if (!account_info.IsEmpty())
+    result.SetStringKey("accountEmail", account_info.email);
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  AccountInfo extended_info =
+      identity_manager->FindExtendedAccountInfo(account_info);
+  if (!extended_info.IsEmpty()) {
+    scoped_refptr<base::RefCountedMemory> png_bytes =
+        extended_info.account_image.As1xPNGBytes();
+    if (png_bytes->size() > 0)
+      result.SetStringKey("accountImage", base::Base64Encode(*png_bytes));
+  }
+
+  std::move(callback).Run(&result);
 }
 
 void DevToolsUIBindings::Reattach(DispatchCallback callback) {

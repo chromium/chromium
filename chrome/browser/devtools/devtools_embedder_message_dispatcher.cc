@@ -252,6 +252,8 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
                      &Delegate::RemovePreference, delegate);
   d->RegisterHandler("clearPreferences",
                      &Delegate::ClearPreferences, delegate);
+  d->RegisterHandlerWithCallback("getSyncInformation",
+                                 &Delegate::GetSyncInformation, delegate);
   d->RegisterHandlerWithCallback("reattach",
                                  &Delegate::Reattach, delegate);
   d->RegisterHandler("readyForTest",
