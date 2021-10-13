@@ -388,6 +388,13 @@ BLINK_COMMON_EXPORT extern const base::Feature
 //
 // Backend storage + kill switch for Interest Group API  origin trials.
 BLINK_COMMON_EXPORT extern const base::Feature kInterestGroupStorage;
+//
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kInterestGroupStorageMaxOwners;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kInterestGroupStorageMaxGroupsPerOwner;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kInterestGroupStorageMaxOpsBeforeMaintenance;
 // Interest Group JS API/runtimeflag.
 BLINK_COMMON_EXPORT extern const base::Feature kAdInterestGroupAPI;
 // PARAKEET ad serving runtime flag/JS API.

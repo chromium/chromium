@@ -28,6 +28,7 @@
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/origin.h"
 
@@ -1298,7 +1299,9 @@ bool DeleteOldWins(sql::Database& db, base::Time cutoff) {
   return true;
 }
 
-bool ClearExcessInterestGroups(sql::Database& db) {
+bool ClearExcessInterestGroups(sql::Database& db,
+                               size_t max_owners,
+                               size_t max_owner_interest_groups) {
   const base::Time distant_past = base::Time::Min();
   const absl::optional<std::vector<url::Origin>> maybe_all_origins =
       DoGetAllInterestGroupOwners(db, distant_past);
@@ -1312,8 +1315,8 @@ bool ClearExcessInterestGroups(sql::Database& db) {
             DoGetInterestGroupsForOwner(db, affected_origin, distant_past);
     if (!maybe_interest_groups)
       return false;
-    size_t first_idx = InterestGroupStorage::kMaxOwnerInterestGroups;
-    if (owner_idx >= InterestGroupStorage::kMaxOwners)
+    size_t first_idx = max_owner_interest_groups;
+    if (owner_idx >= max_owners)
       first_idx = 0;
     for (size_t group_idx = first_idx;
          group_idx < maybe_interest_groups.value().size(); group_idx++) {
@@ -1376,12 +1379,15 @@ bool ClearExpiredKAnon(sql::Database& db, base::Time cutoff) {
   return expired_kanon.Run();
 }
 
-bool DoPerformDatabaseMaintenance(sql::Database& db, base::Time now) {
+bool DoPerformDatabaseMaintenance(sql::Database& db,
+                                  base::Time now,
+                                  size_t max_owners,
+                                  size_t max_owner_interest_groups) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Storage.InterestGroup.DBMaintenanceTime");
   sql::Transaction transaction(&db);
   if (!transaction.Begin())
     return false;
-  if (!ClearExcessInterestGroups(db))
+  if (!ClearExcessInterestGroups(db, max_owners, max_owner_interest_groups))
     return false;
   if (!ClearExpiredInterestGroups(db, now))
     return false;
@@ -1409,12 +1415,14 @@ constexpr base::TimeDelta InterestGroupStorage::kMaintenanceInterval;
 constexpr base::TimeDelta InterestGroupStorage::kIdlePeriod;
 constexpr base::TimeDelta InterestGroupStorage::kUpdateSucceededBackoffPeriod;
 constexpr base::TimeDelta InterestGroupStorage::kUpdateFailedBackoffPeriod;
-const size_t InterestGroupStorage::kMaxOwners;
-const size_t InterestGroupStorage::kMaxOwnerInterestGroups;
-const size_t InterestGroupStorage::kMaxOpsBeforeMaintenance;
 
 InterestGroupStorage::InterestGroupStorage(const base::FilePath& path)
     : path_to_database_(DBPath(path)),
+      max_owners_(blink::features::kInterestGroupStorageMaxOwners.Get()),
+      max_owner_interest_groups_(
+          blink::features::kInterestGroupStorageMaxGroupsPerOwner.Get()),
+      max_ops_before_maintenance_(
+          blink::features::kInterestGroupStorageMaxOpsBeforeMaintenance.Get()),
       db_(std::make_unique<sql::Database>(sql::DatabaseOptions{})),
       db_maintenance_timer_(FROM_HERE,
                             kIdlePeriod,
@@ -1437,7 +1445,7 @@ bool InterestGroupStorage::EnsureDBInitialized() {
   }
   // Force maintenance even if we're busy if the database may have changed too
   // much.
-  if (ops_since_last_maintenance_++ > kMaxOpsBeforeMaintenance)
+  if (ops_since_last_maintenance_++ > max_ops_before_maintenance_)
     PerformDBMaintenance();
 
   last_access_time_ = now;
@@ -1704,7 +1712,9 @@ void InterestGroupStorage::PerformDBMaintenance() {
   last_maintenance_time_ = base::Time::Now();
   ops_since_last_maintenance_ = 0;
   if (EnsureDBInitialized()) {
-    DoPerformDatabaseMaintenance(*db_, last_maintenance_time_);
+    DoPerformDatabaseMaintenance(
+        *db_, last_maintenance_time_, /*max_owners=*/max_owners_,
+        /*max_owner_interest_groups=*/max_owner_interest_groups_);
   }
 }
 

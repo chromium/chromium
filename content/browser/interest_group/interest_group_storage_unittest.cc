@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -24,6 +25,7 @@
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/origin.h"
@@ -37,7 +39,14 @@ class InterestGroupStorageTest : public testing::Test {
  public:
   InterestGroupStorageTest() = default;
 
-  void SetUp() override { ASSERT_TRUE(temp_directory_.CreateUniqueTempDir()); }
+  void SetUp() override {
+    ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kInterestGroupStorage,
+        {{"max_owners", "10"},
+         {"max_groups_per_owner", "10"},
+         {"max_ops_before_maintenance", "100"}});
+  }
 
   std::unique_ptr<InterestGroupStorage> CreateStorage() {
     return std::make_unique<InterestGroupStorage>(temp_directory_.GetPath());
@@ -61,6 +70,7 @@ class InterestGroupStorageTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_directory_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -682,8 +692,9 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupNames) {
   const size_t kExcessOwners = 10;
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
-  const size_t num_groups =
-      InterestGroupStorage::kMaxOwnerInterestGroups + kExcessOwners;
+  const size_t max_groups_per_owner =
+      blink::features::kInterestGroupStorageMaxGroupsPerOwner.Get();
+  const size_t num_groups = max_groups_per_owner + kExcessOwners;
   std::vector<std::string> added_groups;
 
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
@@ -711,8 +722,7 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupNames) {
                                    base::Seconds(1));
 
   interest_groups = storage->GetInterestGroupsForOwner(test_origin);
-  ASSERT_EQ(InterestGroupStorage::kMaxOwnerInterestGroups,
-            interest_groups.size());
+  ASSERT_EQ(max_groups_per_owner, interest_groups.size());
 
   std::vector<std::string> remaining_groups;
   for (const auto& group : interest_groups) {
@@ -725,9 +735,15 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupNames) {
 }
 
 // Excess group owners should have their groups pruned by maintenance.
+// In this test we trigger maintenance by having too many operations in a short
+// period to test max_ops_before_maintenance_.
 TEST_F(InterestGroupStorageTest, JoinTooManyGroupOwners) {
   const size_t kExcessGroups = 10;
-  const size_t num_groups = InterestGroupStorage::kMaxOwners + kExcessGroups;
+  const size_t max_owners =
+      blink::features::kInterestGroupStorageMaxOwners.Get();
+  const size_t max_ops =
+      blink::features::kInterestGroupStorageMaxOpsBeforeMaintenance.Get();
+  const size_t num_groups = max_owners + kExcessGroups;
   std::vector<url::Origin> added_origins;
 
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
@@ -748,9 +764,11 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupOwners) {
   std::vector<url::Origin> origins = storage->GetAllInterestGroupOwners();
   EXPECT_THAT(origins, UnorderedElementsAreArray(added_origins));
 
-  // Allow enough idle time to trigger maintenance.
-  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod +
-                                   base::Seconds(1));
+  // Perform enough operations to trigger maintenance, without passing time.
+  for (size_t i = 0; i < max_ops; i++) {
+    // Any read-only operation will work here. This one should be fast.
+    origins = storage->GetAllInterestGroupOwners();
+  }
 
   // The oldest few interest groups should have been cleared during maintenance.
   origins = storage->GetAllInterestGroupOwners();

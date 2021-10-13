@@ -937,6 +937,13 @@ const base::Feature kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes{
 // API exposure will be disabled regardless of the OT config.
 const base::Feature kInterestGroupStorage{"InterestGroupStorage",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
+// TODO(crbug.com/1197209): Adjust these limits in response to usage.
+const base::FeatureParam<int> kInterestGroupStorageMaxOwners{
+    &kInterestGroupStorage, "max_owners", 1000};
+const base::FeatureParam<int> kInterestGroupStorageMaxGroupsPerOwner{
+    &kInterestGroupStorage, "max_groups_per_owner", 1000};
+const base::FeatureParam<int> kInterestGroupStorageMaxOpsBeforeMaintenance{
+    &kInterestGroupStorage, "max_ops_before_maintenance", 1000000};
 
 // Enable the availability of the ad interest group API as part of the
 // origin trial for FLEDGE or PARAKEET.

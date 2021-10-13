@@ -43,16 +43,6 @@ class CONTENT_EXPORT InterestGroupStorage {
   // kUpdateFailedBackoffPeriod time has passed.
   static constexpr base::TimeDelta kUpdateFailedBackoffPeriod = base::Hours(1);
 
-  // Maximum number of interest groups, or interest group owners to keep in the
-  // database.
-  // TODO(crbug.com/1197209): Adjust these limits in response to usage.
-  static const size_t kMaxOwners = 1000;
-  static const size_t kMaxOwnerInterestGroups = 1000;
-
-  // Maximum number of operations allowed between maintenance calls.
-  // TODO(crbug.com/1257634): Add unit test to verify this count is respected.
-  static const size_t kMaxOpsBeforeMaintenance = 1000000;
-
   // Constructs an interest group storage based on a SQLite database in the
   // `path`/InterestGroups file. If the path passed in is empty, then the
   // database is instead stored in memory and not persisted to disk.
@@ -134,6 +124,17 @@ class CONTENT_EXPORT InterestGroupStorage {
   void DatabaseErrorCallback(int extended_error, sql::Statement* stmt);
 
   const base::FilePath path_to_database_;
+  // Maximum number of interest groups, or interest group owners to keep in the
+  // database.
+  // Set by the related blink::feature parameters kInterestGroupStorageMaxOwners
+  // and kInterestGroupStorageMaxGroupsPerOwner.
+  const size_t max_owners_;
+  const size_t max_owner_interest_groups_;
+
+  // Maximum number of operations allowed between maintenance calls.
+  // Set by the related blink::feature parameter
+  // kInterestGroupStorageMaxOpsBeforeMaintenance.
+  const size_t max_ops_before_maintenance_;
 
   std::unique_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::DelayTimer db_maintenance_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
