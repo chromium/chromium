@@ -1,7 +1,7 @@
-From 4ab201427d83f47fda9dba7b6ef79b9cef6d7c2c Mon Sep 17 00:00:00 2001
+From 9782d6c423cb8d79e6b8361f4d778098aa79b314 Mon Sep 17 00:00:00 2001
 From: Andrew Grieve <agrieve@chromium.org>
 Date: Wed, 21 Oct 2020 10:59:42 -0400
-Subject: [PATCH 2/4] Allow access modification everywhere
+Subject: [PATCH 2/3] Allow access modification everywhere
 
 Chrome does not need need -keep to maintain original visibility.
 Loosening this constraint allows for better optimization, and is easier
@@ -11,10 +11,10 @@ than adding ",allowaccessmodification" to every single -keep rule.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/main/java/com/android/tools/r8/shaking/AppInfoWithLiveness.java b/src/main/java/com/android/tools/r8/shaking/AppInfoWithLiveness.java
-index 2ff90085c..0e0acd581 100644
+index 91289b7c0..de309b8be 100644
 --- a/src/main/java/com/android/tools/r8/shaking/AppInfoWithLiveness.java
 +++ b/src/main/java/com/android/tools/r8/shaking/AppInfoWithLiveness.java
-@@ -953,7 +953,7 @@ public class AppInfoWithLiveness extends AppInfoWithClassHierarchy
+@@ -975,7 +975,7 @@ public class AppInfoWithLiveness extends AppInfoWithClassHierarchy
  
    public boolean isAccessModificationAllowed(DexReference reference) {
      assert options().getProguardConfiguration().isAccessModificationAllowed();
@@ -22,7 +22,7 @@ index 2ff90085c..0e0acd581 100644
 +    return true;
    }
  
-   public boolean isRepackagingAllowed(DexProgramClass clazz) {
+   public boolean isRepackagingAllowed(DexProgramClass clazz, AppView<?> appView) {
 -- 
-2.32.0.288.g62a8d224e6-goog
+2.33.0.882.g93a45727a2-goog
 
