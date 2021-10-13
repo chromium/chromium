@@ -846,8 +846,6 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
   if (third_party_cookie_blocking_enabled) {
     builder.SetThirdPartyCookieBlockingEnabledForSite(
         third_party_cookie_blocking_enabled.value());
-    UMA_HISTOGRAM_BOOLEAN("Privacy.ThirdPartyCookieBlockingEnabledForSite",
-                          third_party_cookie_blocking_enabled.value());
   }
 
   absl::optional<base::TimeDelta> foreground_duration =

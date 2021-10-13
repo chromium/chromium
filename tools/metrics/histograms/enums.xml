@@ -82621,6 +82621,12 @@ would be helpful to identify which type is being sent.
   <int value="3" label="3-Critical"/>
 </enum>
 
+<enum name="ThirdPartyCookieBlockState">
+  <int value="0" label="Cookies allowed"/>
+  <int value="1" label="Third-party cookies blocked"/>
+  <int value="2" label="Third-party cookie blocking disabled for site"/>
+</enum>
+
 <enum name="ThirdPartyStatus">
   <int value="0" label="Success"/>
   <int value="1" label="FilePathNotFoundInRegistry"/>

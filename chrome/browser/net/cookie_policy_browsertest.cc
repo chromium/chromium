@@ -8,15 +8,18 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/net/storage_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_contents/navigation_metrics_recorder.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -100,6 +103,10 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
+  content_settings::CookieSettings* cookie_settings() {
+    return CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+  }
+
   void NavigateFrameTo(const std::string& host, const std::string& path) {
     GURL page = https_server_.GetURL(host, path);
     content::WebContents* web_contents =
@@ -163,26 +170,24 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
     ExpectStorage(test_type, GetFrame(), false);
 
     // Allow all requests to b.test to access storage.
-    auto cookie_settings =
-        CookieSettingsFactory::GetForProfile(browser()->profile());
     GURL a_url = https_server_.GetURL(kHostA, "/");
     GURL b_url = https_server_.GetURL(kHostB, "/");
-    cookie_settings->SetCookieSetting(b_url,
-                                      ContentSetting::CONTENT_SETTING_ALLOW);
+    cookie_settings()->SetCookieSetting(b_url,
+                                        ContentSetting::CONTENT_SETTING_ALLOW);
 
     NavigateToPageWithFrame(kHostA);
     NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
     ExpectStorage(test_type, GetFrame(), true);
 
     // Remove ALLOW setting.
-    cookie_settings->ResetCookieSetting(b_url);
+    cookie_settings()->ResetCookieSetting(b_url);
 
     NavigateToPageWithFrame(kHostA);
     NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
     ExpectStorage(test_type, GetFrame(), false);
 
     // Allow all third-parties on a.test to access storage.
-    cookie_settings->SetThirdPartyCookieSetting(
+    cookie_settings()->SetThirdPartyCookieSetting(
         a_url, ContentSetting::CONTENT_SETTING_ALLOW);
 
     NavigateToPageWithFrame(kHostA);
@@ -207,12 +212,10 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
     ExpectStorage(test_type, GetNestedFrame(), false);
 
     // Allow all requests to b.test to access storage.
-    auto cookie_settings =
-        CookieSettingsFactory::GetForProfile(browser()->profile());
     GURL a_url = https_server_.GetURL(kHostA, "/");
     GURL c_url = https_server_.GetURL(kHostC, "/");
-    cookie_settings->SetCookieSetting(c_url,
-                                      ContentSetting::CONTENT_SETTING_ALLOW);
+    cookie_settings()->SetCookieSetting(c_url,
+                                        ContentSetting::CONTENT_SETTING_ALLOW);
 
     NavigateToPageWithFrame(kHostA);
     NavigateFrameTo(kHostB, "/iframe.html");
@@ -220,7 +223,7 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
     ExpectStorage(test_type, GetNestedFrame(), true);
 
     // Remove ALLOW setting.
-    cookie_settings->ResetCookieSetting(c_url);
+    cookie_settings()->ResetCookieSetting(c_url);
 
     NavigateToPageWithFrame(kHostA);
     NavigateFrameTo(kHostB, "/iframe.html");
@@ -228,7 +231,7 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
     ExpectStorage(test_type, GetNestedFrame(), false);
 
     // Allow all third-parties on a.test to access storage.
-    cookie_settings->SetThirdPartyCookieSetting(
+    cookie_settings()->SetThirdPartyCookieSetting(
         a_url, ContentSetting::CONTENT_SETTING_ALLOW);
 
     NavigateToPageWithFrame(kHostA);
@@ -254,11 +257,9 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
     ExpectStorage(test_type, GetNestedFrame(), false);
 
     // Allow all requests to b.test to access storage.
-    auto cookie_settings =
-        CookieSettingsFactory::GetForProfile(browser()->profile());
     GURL a_url = https_server_.GetURL(kHostA, "/");
-    cookie_settings->SetCookieSetting(a_url,
-                                      ContentSetting::CONTENT_SETTING_ALLOW);
+    cookie_settings()->SetCookieSetting(a_url,
+                                        ContentSetting::CONTENT_SETTING_ALLOW);
 
     NavigateToPageWithFrame(kHostA);
     NavigateFrameTo(kHostB, "/iframe.html");
@@ -266,7 +267,7 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
     ExpectStorage(test_type, GetNestedFrame(), true);
 
     // Remove ALLOW setting.
-    cookie_settings->ResetCookieSetting(a_url);
+    cookie_settings()->ResetCookieSetting(a_url);
 
     NavigateToPageWithFrame(kHostA);
     NavigateFrameTo(kHostB, "/iframe.html");
@@ -274,7 +275,7 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
     ExpectStorage(test_type, GetNestedFrame(), false);
 
     // Allow all third-parties on a.test to access storage.
-    cookie_settings->SetThirdPartyCookieSetting(
+    cookie_settings()->SetThirdPartyCookieSetting(
         a_url, ContentSetting::CONTENT_SETTING_ALLOW);
 
     NavigateToPageWithFrame(kHostA);
@@ -502,10 +503,9 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
 
   // Allow all requests to b.test to have cookies.
   // On the other hand, d.test does not have an exception set for it.
-  auto cookie_settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile());
   GURL url = https_server_.GetURL(kHostB, "/");
-  cookie_settings->SetCookieSetting(url, ContentSetting::CONTENT_SETTING_ALLOW);
+  cookie_settings()->SetCookieSetting(url,
+                                      ContentSetting::CONTENT_SETTING_ALLOW);
 
   NavigateToPageWithFrame(kHostA);
 
@@ -551,10 +551,8 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
                                      "thirdparty=1");
 
   // Allow all requests on the top frame domain a.test to have cookies.
-  auto cookie_settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile());
   GURL url = https_server_.GetURL(kHostA, "/");
-  cookie_settings->SetThirdPartyCookieSetting(
+  cookie_settings()->SetThirdPartyCookieSetting(
       url, ContentSetting::CONTENT_SETTING_ALLOW);
 
   NavigateToPageWithFrame(kHostA);
@@ -654,26 +652,24 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest, MultiTabTest) {
   storage::test::ExpectCrossTabInfoForFrame(GetFrame(), false);
 
   // Allow all requests to b.test to access cookies.
-  auto cookie_settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile());
   GURL a_url = https_server_.GetURL(kHostA, "/");
   GURL b_url = https_server_.GetURL(kHostB, "/");
-  cookie_settings->SetCookieSetting(b_url,
-                                    ContentSetting::CONTENT_SETTING_ALLOW);
+  cookie_settings()->SetCookieSetting(b_url,
+                                      ContentSetting::CONTENT_SETTING_ALLOW);
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
   storage::test::ExpectCrossTabInfoForFrame(GetFrame(), true);
 
   // Remove ALLOW setting.
-  cookie_settings->ResetCookieSetting(b_url);
+  cookie_settings()->ResetCookieSetting(b_url);
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
   storage::test::ExpectCrossTabInfoForFrame(GetFrame(), false);
 
   // Allow all third-parties on a.test to access cookies.
-  cookie_settings->SetThirdPartyCookieSetting(
+  cookie_settings()->SetThirdPartyCookieSetting(
       a_url, ContentSetting::CONTENT_SETTING_ALLOW);
 
   NavigateToPageWithFrame(kHostA);
@@ -707,11 +703,9 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest, MultiTabNestedTest) {
   storage::test::ExpectCrossTabInfoForFrame(GetNestedFrame(), false);
 
   // Allow all requests to a.test to access cookies.
-  auto cookie_settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile());
   GURL a_url = https_server_.GetURL(kHostA, "/");
-  cookie_settings->SetCookieSetting(a_url,
-                                    ContentSetting::CONTENT_SETTING_ALLOW);
+  cookie_settings()->SetCookieSetting(a_url,
+                                      ContentSetting::CONTENT_SETTING_ALLOW);
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/iframe.html");
@@ -719,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest, MultiTabNestedTest) {
   storage::test::ExpectCrossTabInfoForFrame(GetNestedFrame(), true);
 
   // Remove ALLOW setting.
-  cookie_settings->ResetCookieSetting(a_url);
+  cookie_settings()->ResetCookieSetting(a_url);
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/iframe.html");
@@ -727,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest, MultiTabNestedTest) {
   storage::test::ExpectCrossTabInfoForFrame(GetNestedFrame(), false);
 
   // Allow all third-parties on a.test to access cookies.
-  cookie_settings->SetThirdPartyCookieSetting(
+  cookie_settings()->SetThirdPartyCookieSetting(
       a_url, ContentSetting::CONTENT_SETTING_ALLOW);
 
   NavigateToPageWithFrame(kHostA);
@@ -915,6 +909,30 @@ IN_PROC_BROWSER_TEST_P(SamePartyIsFirstPartyCookiePolicyBrowserTest, Read_JS) {
   NavigateFrameTo(kHostA, "/iframe.html");
   NavigateNestedFrameTo(kHostB, "/empty.html");
   EXPECT_EQ(ExpectedCrossPartyCookies(), GetCookieViaJS(GetNestedFrame()));
+}
+
+IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest, ThirdPartyCookieHistogram) {
+  base::HistogramTester tester;
+  const char* histogram =
+      "Navigation.MainFrame.ThirdPartyCookieBlockingEnabled";
+  NavigateToPageWithFrame(kHostA);
+  tester.ExpectTotalCount(histogram, 1);
+  tester.ExpectBucketCount(histogram,
+                           ThirdPartyCookieBlockState::kCookiesAllowed, 1);
+
+  SetBlockThirdPartyCookies(true);
+  NavigateToPageWithFrame(kHostA);
+  tester.ExpectTotalCount(histogram, 2);
+  tester.ExpectBucketCount(
+      histogram, ThirdPartyCookieBlockState::kThirdPartyCookiesBlocked, 1);
+
+  GURL url = https_server_.GetURL(kHostA, "/");
+  cookie_settings()->SetThirdPartyCookieSetting(url, CONTENT_SETTING_ALLOW);
+  NavigateToPageWithFrame(kHostA);
+  tester.ExpectTotalCount(histogram, 3);
+  tester.ExpectBucketCount(
+      histogram,
+      ThirdPartyCookieBlockState::kThirdPartyCookieBlockingDisabledForSite, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SamePartyIsFirstPartyCookiePolicyBrowserTest,
