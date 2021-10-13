@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "absl/base/internal/periodic_sampler.h"
+#include "absl/profiling/internal/periodic_sampler.h"
 
 #include <thread>  // NOLINT(build/c++11)
 
@@ -23,7 +23,7 @@
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
-namespace base_internal {
+namespace profiling_internal {
 namespace {
 
 using testing::Eq;
@@ -172,6 +172,6 @@ TEST(PeriodicSamplerTest, SetGlobalPeriod) {
 }
 
 }  // namespace
-}  // namespace base_internal
+}  // namespace profiling_internal
 ABSL_NAMESPACE_END
 }  // namespace absl

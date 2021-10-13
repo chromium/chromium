@@ -37,3 +37,57 @@ absl_cc_test(
     GTest::gmock_main
 )
 
+absl_cc_library(
+  NAME
+    exponential_biased
+  SRCS
+    "internal/exponential_biased.cc"
+  HDRS
+    "internal/exponential_biased.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::config
+    absl::core_headers
+)
+
+absl_cc_test(
+  NAME
+    exponential_biased_test
+  SRCS
+    "internal/exponential_biased_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::exponential_biased
+    absl::strings
+    GTest::gmock_main
+)
+
+absl_cc_library(
+  NAME
+    periodic_sampler
+  SRCS
+    "internal/periodic_sampler.cc"
+  HDRS
+    "internal/periodic_sampler.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::core_headers
+    absl::exponential_biased
+)
+
+absl_cc_test(
+  NAME
+    periodic_sampler_test
+  SRCS
+    "internal/periodic_sampler_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::core_headers
+    absl::periodic_sampler
+    GTest::gmock_main
+)
+

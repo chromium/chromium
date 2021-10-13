@@ -494,7 +494,7 @@ class Status final {
   // Returns the error message associated with this error code, if available.
   // Note that this message rarely describes the error code.  It is not unusual
   // for the error message to be the empty string. As a result, prefer
-  // `Status::ToString()` for debug logging.
+  // `operator<<` or `Status::ToString()` for debug logging.
   absl::string_view message() const;
 
   friend bool operator==(const Status&, const Status&);

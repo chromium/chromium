@@ -156,7 +156,7 @@ absl_source_set("cord_internal") {
 
 absl_source_set("cord_rep_btree_test") {
   testonly = true
-  sources = ["internal/cord_rep_btree_test.cc"]
+  sources = [ "internal/cord_rep_btree_test.cc" ]
   deps = [
     ":cord_internal",
     ":cord_rep_test_util",
@@ -171,7 +171,7 @@ absl_source_set("cord_rep_btree_test") {
 
 absl_source_set("cord_rep_btree_reader_test") {
   testonly = true
-  sources = ["internal/cord_rep_btree_reader_test.cc"]
+  sources = [ "internal/cord_rep_btree_reader_test.cc" ]
   deps = [
     ":cord",
     ":cord_internal",
@@ -185,14 +185,14 @@ absl_source_set("cord_rep_btree_reader_test") {
 }
 
 absl_source_set("cordz_update_tracker") {
-  public = ["internal/cordz_update_tracker.h"]
+  public = [ "internal/cordz_update_tracker.h" ]
   visibility = [ "//third_party/abseil-cpp/*" ]
-  deps = ["//third_party/abseil-cpp/absl/base:config"]
+  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
 }
 
 absl_source_set("cordz_update_tracker_test") {
   testonly = true
-  sources = ["internal/cordz_update_tracker_test.cc"]
+  sources = [ "internal/cordz_update_tracker_test.cc" ]
   deps = [
     ":cordz_update_tracker",
     "//third_party/abseil-cpp/absl/base:config",
@@ -230,8 +230,8 @@ absl_source_set("cord") {
 }
 
 absl_source_set("cordz_handle") {
-  sources = ["internal/cordz_handle.cc"]
-  public = ["internal/cordz_handle.h"]
+  sources = [ "internal/cordz_handle.cc" ]
+  public = [ "internal/cordz_handle.h" ]
   visibility = [ "//third_party/abseil-cpp/*" ]
   deps = [
     "//third_party/abseil-cpp/absl/base",
@@ -242,8 +242,8 @@ absl_source_set("cordz_handle") {
 }
 
 absl_source_set("cordz_info") {
-  sources = ["internal/cordz_info.cc"]
-  public = ["internal/cordz_info.h"]
+  sources = [ "internal/cordz_info.cc" ]
+  public = [ "internal/cordz_info.h" ]
   visibility = [ "//third_party/abseil-cpp/*" ]
   deps = [
     ":cord_internal",
@@ -263,7 +263,7 @@ absl_source_set("cordz_info") {
 }
 
 absl_source_set("cordz_update_scope") {
-  public = ["internal/cordz_update_scope.h"]
+  public = [ "internal/cordz_update_scope.h" ]
   visibility = [ "//third_party/abseil-cpp/*" ]
   deps = [
     ":cord_internal",
@@ -276,7 +276,7 @@ absl_source_set("cordz_update_scope") {
 
 absl_source_set("cordz_update_scope_test") {
   testonly = true
-  sources = ["internal/cordz_update_scope_test.cc"]
+  sources = [ "internal/cordz_update_scope_test.cc" ]
   deps = [
     ":cord_internal",
     ":cordz_info",
@@ -290,8 +290,8 @@ absl_source_set("cordz_update_scope_test") {
 }
 
 absl_source_set("cordz_sample_token") {
-  sources = ["internal/cordz_sample_token.cc"]
-  public = ["internal/cordz_sample_token.h"]
+  sources = [ "internal/cordz_sample_token.cc" ]
+  public = [ "internal/cordz_sample_token.h" ]
   visibility = [ "//third_party/abseil-cpp/*" ]
   deps = [
     ":cordz_handle",
@@ -301,19 +301,19 @@ absl_source_set("cordz_sample_token") {
 }
 
 absl_source_set("cordz_functions") {
-  sources = ["internal/cordz_functions.cc"]
-  public = ["internal/cordz_functions.h"]
+  sources = [ "internal/cordz_functions.cc" ]
+  public = [ "internal/cordz_functions.h" ]
   visibility = [ "//third_party/abseil-cpp/*" ]
   deps = [
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
-    "//third_party/abseil-cpp/absl/base:exponential_biased",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
+    "//third_party/abseil-cpp/absl/profiling:exponential_biased",
   ]
 }
 
 absl_source_set("cordz_statistics") {
-  public = ["internal/cordz_statistics.h"]
+  public = [ "internal/cordz_statistics.h" ]
   visibility = [ "//third_party/abseil-cpp/*" ]
   deps = [
     ":cordz_update_tracker",
@@ -424,7 +424,7 @@ absl_source_set("cord_test_helpers") {
 
 absl_source_set("cord_rep_test_util") {
   testonly = true
-  public = ["internal/cord_rep_test_util.h"]
+  public = [ "internal/cord_rep_test_util.h" ]
   deps = [
     ":cord_internal",
     ":strings",
@@ -435,7 +435,7 @@ absl_source_set("cord_rep_test_util") {
 
 absl_source_set("cordz_test_helpers") {
   testonly = true
-  public = ["cordz_test_helpers.h"]
+  public = [ "cordz_test_helpers.h" ]
   deps = [
     ":cord",
     ":cord_internal",
@@ -452,7 +452,7 @@ absl_source_set("cordz_test_helpers") {
 
 absl_source_set("cordz_test") {
   testonly = true
-  sources = ["cordz_test.cc"]
+  sources = [ "cordz_test.cc" ]
   deps = [
     ":cord",
     ":cord_test_helpers",
@@ -473,7 +473,7 @@ absl_source_set("cordz_test") {
 
 absl_source_set("cord_rep_consume_test") {
   testonly = true
-  sources = ["internal/cord_rep_consume_test.cc"]
+  sources = [ "internal/cord_rep_consume_test.cc" ]
   deps = [
     ":cord_internal",
     ":strings",

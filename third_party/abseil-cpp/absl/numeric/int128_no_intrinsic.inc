@@ -279,7 +279,7 @@ constexpr int128 operator^(int128 lhs, int128 rhs) {
 }
 
 constexpr int128 operator<<(int128 lhs, int amount) {
-  // uint64_t shifts of >= 64 are undefined, so we need some special-casing.
+  // int64_t shifts of >= 64 are undefined, so we need some special-casing.
   return amount >= 64
              ? MakeInt128(
                    static_cast<int64_t>(Int128Low64(lhs) << (amount - 64)), 0)
@@ -292,10 +292,16 @@ constexpr int128 operator<<(int128 lhs, int amount) {
 }
 
 constexpr int128 operator>>(int128 lhs, int amount) {
-  // uint64_t shifts of >= 64 are undefined, so we need some special-casing.
+  // int64_t shifts of >= 64 are undefined, so we need some special-casing.
+  // The (Int128High64(lhs) >> 32) >> 32 "trick" causes the the most significant
+  // int64 to be inititialized with all zeros or all ones correctly. It takes
+  // into account whether the number is negative or positive, and whether the
+  // current architecture does arithmetic or logical right shifts for negative
+  // numbers.
   return amount >= 64
              ? MakeInt128(
-                   0, static_cast<uint64_t>(Int128High64(lhs) >> (amount - 64)))
+                   (Int128High64(lhs) >> 32) >> 32,
+                   static_cast<uint64_t>(Int128High64(lhs) >> (amount - 64)))
          : amount == 0
              ? lhs
              : MakeInt128(Int128High64(lhs) >> amount,

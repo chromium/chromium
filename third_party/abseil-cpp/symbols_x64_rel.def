@@ -455,7 +455,7 @@ EXPORTS
     ?GetPayload@Status@absl@@QEBA?AV?$optional@VCord@absl@@@2@Vstring_view@2@@Z
     ?GetPrependBuffer@CordRepRing@cord_internal@absl@@QEAA?AV?$Span@D@3@_K@Z
     ?GetProgramCounter@debugging_internal@absl@@YAPEAXPEAX@Z
-    ?GetSkipCount@ExponentialBiased@base_internal@absl@@QEAA_J_J@Z
+    ?GetSkipCount@ExponentialBiased@profiling_internal@absl@@QEAA_J_J@Z
     ?GetStack@CordzInfo@cord_internal@absl@@QEBA?AV?$Span@QEAX@3@XZ
     ?GetStackFrames@absl@@YAHPEAPEAXPEAHHH@Z
     ?GetStackFramesWithContext@absl@@YAHPEAPEAXPEAHHHPEBX1@Z
@@ -463,7 +463,7 @@ EXPORTS
     ?GetStackTrace@absl@@YAHPEAPEAXHH@Z
     ?GetStackTraceWithContext@absl@@YAHPEAPEAXHHPEBXPEAH@Z
     ?GetStatusPayloadPrinter@status_internal@absl@@YAP6A?AV?$optional@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@2@Vstring_view@2@AEBVCord@2@@ZXZ
-    ?GetStride@ExponentialBiased@base_internal@absl@@QEAA_J_J@Z
+    ?GetStride@ExponentialBiased@profiling_internal@absl@@QEAA_J_J@Z
     ?GetTID@base_internal@absl@@YAIXZ
     ?GetThreadBlockedCounter@PerThreadSem@synchronization_internal@absl@@SAPEAU?$atomic@H@__1@std@@XZ
     ?GetTransitionType@TimeZoneInfo@cctz@time_internal@absl@@AEAA_NH_NAEBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@PEAE@Z
@@ -484,7 +484,7 @@ EXPORTS
     ?Init@PerThreadSem@synchronization_internal@absl@@CAXPEAUThreadIdentity@base_internal@3@@Z
     ?InitFrom@?$Storage@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@inlined_vector_internal@absl@@QEAAXAEBV123@@Z
     ?InitWhat@BadStatusOrAccess@absl@@AEBAXXZ
-    ?Initialize@ExponentialBiased@base_internal@absl@@AEAAXXZ
+    ?Initialize@ExponentialBiased@profiling_internal@absl@@AEAAXXZ
     ?InitializeCordRepExternal@cord_internal@absl@@YAXVstring_view@2@PEAUCordRepExternal@12@@Z
     ?InitializeSymbolizer@absl@@YAXPEBD@Z
     ?InsertEdge@GraphCycles@synchronization_internal@absl@@QEAA_NUGraphId@23@0@Z

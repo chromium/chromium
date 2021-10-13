@@ -21,10 +21,10 @@
 #include <limits>
 
 #include "absl/base/attributes.h"
-#include "absl/base/internal/exponential_biased.h"
 #include "absl/container/internal/have_sse.h"
 #include "absl/debugging/stacktrace.h"
 #include "absl/memory/memory.h"
+#include "absl/profiling/internal/exponential_biased.h"
 #include "absl/profiling/internal/sample_recorder.h"
 #include "absl/synchronization/mutex.h"
 
@@ -40,7 +40,7 @@ ABSL_CONST_INIT std::atomic<bool> g_hashtablez_enabled{
 ABSL_CONST_INIT std::atomic<int32_t> g_hashtablez_sample_parameter{1 << 10};
 
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
-ABSL_PER_THREAD_TLS_KEYWORD absl::base_internal::ExponentialBiased
+ABSL_PER_THREAD_TLS_KEYWORD absl::profiling_internal::ExponentialBiased
     g_exponential_biased_generator;
 #endif
 

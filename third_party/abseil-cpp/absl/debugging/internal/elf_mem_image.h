@@ -40,6 +40,10 @@
 
 #include <link.h>  // for ElfW
 
+#if defined(__FreeBSD__) && !defined(ElfW)
+#define ElfW(x) __ElfN(x)
+#endif
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace debugging_internal {

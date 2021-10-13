@@ -508,8 +508,8 @@ cc_library(
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",
-        "//absl/base:exponential_biased",
         "//absl/base:raw_logging_internal",
+        "//absl/profiling:exponential_biased",
     ],
 )
 

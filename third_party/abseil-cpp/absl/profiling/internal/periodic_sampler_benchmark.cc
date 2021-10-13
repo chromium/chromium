@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "absl/profiling/internal/periodic_sampler.h"
 #include "benchmark/benchmark.h"
-#include "absl/base/internal/periodic_sampler.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
-namespace base_internal {
+namespace profiling_internal {
 namespace {
 
 template <typename Sampler>
@@ -74,6 +74,6 @@ void BM_PeriodicSampler_Disabled(benchmark::State& state) {
 BENCHMARK(BM_PeriodicSampler_Disabled);
 
 }  // namespace
-}  // namespace base_internal
+}  // namespace profiling_internal
 ABSL_NAMESPACE_END
 }  // namespace absl
