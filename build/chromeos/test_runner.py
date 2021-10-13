@@ -36,10 +36,9 @@ from pylib.results import json_results  # pylint: disable=import-error
 sys.path.insert(0, os.path.join(CHROMIUM_SRC_PATH, 'build', 'util'))
 from lib.results import result_sink  # pylint: disable=import-error
 
-if six.PY2:
-  import subprocess32 as subprocess  # pylint: disable=import-error
-else:
-  import subprocess  # pylint: disable=import-error,wrong-import-order
+assert not six.PY2, 'Py2 not supported for this file.'
+
+import subprocess  # pylint: disable=import-error,wrong-import-order
 
 DEFAULT_CROS_CACHE = os.path.abspath(
     os.path.join(CHROMIUM_SRC_PATH, 'build', 'cros_cache'))
