@@ -77,15 +77,6 @@ void CategoryUsageRanker::Start(const std::u16string& query) {
   // Retrieve all category scores, sorted low-to-high.
   const auto category_scores = category_ranker_->RankSorted();
 
-  // TODO(crbug.com/1199206): Remove this debug output once we no longer need to
-  // inspect launcher scores so closely, and before the categorical search flag
-  // is enabled for any users.
-  LOG(ERROR) << "(categorical search) category scores are:";
-  for (const auto& category_score : category_scores) {
-    LOG(ERROR) << "(categorical search) - " << category_score.first << " : "
-               << category_score.second;
-  }
-
   // Convert the scores into ranks.
   category_ranks_.clear();
   for (int i = 0; i < category_scores.size(); ++i) {

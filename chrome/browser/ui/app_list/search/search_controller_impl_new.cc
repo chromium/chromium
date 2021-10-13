@@ -163,7 +163,7 @@ void SearchControllerImplNew::SetResults(
 
   results_[provider_type] = std::move(results);
 
-  // Update ranking of all results.
+  // Update ranking of all results and categories.
   ranker_->Rank(results_, categories_, provider_type);
 
   // Compile a single list of results and sort by their relevance.

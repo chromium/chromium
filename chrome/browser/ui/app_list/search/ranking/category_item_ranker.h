@@ -16,27 +16,16 @@ namespace app_list {
 // providers.
 class CategoryItemRanker : public Ranker {
  public:
-  CategoryItemRanker();
-  ~CategoryItemRanker() override;
+  CategoryItemRanker() = default;
+  ~CategoryItemRanker() override = default;
 
   CategoryItemRanker(const CategoryItemRanker&) = delete;
   CategoryItemRanker& operator=(const CategoryItemRanker&) = delete;
 
   // Ranker:
-  void Start(const std::u16string& query) override;
   void Rank(ResultsMap& results,
             CategoriesMap& categories,
             ProviderType provider) override;
-
- private:
-  // Updates the score of |provider|'s category in |category_scores_|.
-  void UpdateCategoryScore(ResultsMap& results, ProviderType provider);
-
-  // Rescores all current |results| to order them into their categories based on
-  // |category_scores_|.
-  void RescoreResults(ResultsMap& results);
-
-  std::map<Category, double> category_scores_;
 };
 
 }  // namespace app_list

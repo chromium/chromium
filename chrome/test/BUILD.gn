@@ -6448,6 +6448,7 @@ test("unit_tests") {
       "../browser/ui/app_list/search/help_app_provider_unittest.cc",
       "../browser/ui/app_list/search/mixer_unittest.cc",
       "../browser/ui/app_list/search/omnibox_result_unittest.cc",
+      "../browser/ui/app_list/search/ranking/category_item_ranker_unittest.cc",
       "../browser/ui/app_list/search/ranking/mrfu_cache_unittest.cc",
       "../browser/ui/app_list/search/ranking/persistent_proto_unittest.cc",
       "../browser/ui/app_list/search/ranking/score_normalizer_unittest.cc",
