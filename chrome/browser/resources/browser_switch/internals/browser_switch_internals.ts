@@ -103,10 +103,13 @@ function updateTables(rulesets: RuleSetList) {
 }
 
 function checkUrl() {
-  const url = ($('url-checker-input') as HTMLInputElement).value;
+  let url = ($('url-checker-input') as HTMLInputElement).value;
   if (!url) {
     $('output').innerText = '';
     return;
+  }
+  if (!/^http[s]?:\/\//g.test(url)) {
+    url = 'http://' + url;
   }
   sendWithPromise('getDecision', url)
       .then(decision => {
