@@ -37,7 +37,9 @@ class FakeScreenOrientationDelegate : public ScreenOrientationDelegate {
     return full_screen_required_;
   }
 
-  bool ScreenOrientationProviderSupported() override { return supported_; }
+  bool ScreenOrientationProviderSupported(WebContents* web_contents) override {
+    return supported_;
+  }
 
   void Lock(
       WebContents* web_contents,

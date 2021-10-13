@@ -14,6 +14,7 @@ kDefaultWaylandProtocols = [
   "//third_party/wayland/src/protocol/wayland.xml",
   "//third_party/wayland-protocols/src/stable/presentation-time/presentation-time.xml",
   "//third_party/wayland-protocols/src/stable/viewporter/viewporter.xml",
+  "//third_party/wayland-protocols/src/stable/xdg-shell/xdg-shell.xml",
   "//third_party/wayland-protocols/src/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml",
   "//third_party/wayland-protocols/src/unstable/input-timestamps/input-timestamps-unstable-v1.xml",
   "//third_party/wayland-protocols/src/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml",

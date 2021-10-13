@@ -277,6 +277,10 @@ class WaylandToplevel : public aura::WindowObserver {
       shell_surface_data_->shell_surface->OnSetFrame(type);
   }
 
+  ShellSurfaceBase* GetShellSurface() {
+    return shell_surface_data_->shell_surface.get();
+  }
+
  private:
   void OnClose() {
     xdg_toplevel_send_close(resource_);
@@ -798,6 +802,11 @@ void bind_xdg_shell(wl_client* client,
 
   wl_resource_set_implementation(resource, &xdg_wm_base_implementation, data,
                                  nullptr);
+}
+
+ShellSurfaceBase* GetShellSurfaceFromToplevelResource(wl_resource* resource) {
+  auto* toplevel = GetUserDataAs<WaylandToplevel>(resource);
+  return toplevel->GetShellSurface();
 }
 
 }  // namespace wayland

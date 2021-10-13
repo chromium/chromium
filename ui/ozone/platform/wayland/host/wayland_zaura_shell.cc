@@ -18,7 +18,7 @@
 namespace ui {
 
 namespace {
-constexpr uint32_t kMaxAuraShellVersion = 26;
+constexpr uint32_t kMaxAuraShellVersion = 27;
 }
 
 // static
@@ -86,7 +86,8 @@ void WaylandZAuraShell::OnLayoutMode(void* data,
                                      struct zaura_shell* zaura_shell,
                                      uint32_t layout_mode) {
   auto* self = static_cast<WaylandZAuraShell*>(data);
-  auto* screen = self->connection_->wayland_output_manager()->wayland_screen();
+  auto* connection = self->connection_;
+  auto* screen = connection->wayland_output_manager()->wayland_screen();
   // |screen| is null in some unit test suites.
   if (!screen)
     return;
@@ -94,9 +95,12 @@ void WaylandZAuraShell::OnLayoutMode(void* data,
   switch (layout_mode) {
     case ZAURA_SHELL_LAYOUT_MODE_WINDOWED:
       screen->OnTabletStateChanged(display::TabletState::kInClamshellMode);
+      connection->set_tablet_layout_state(
+          display::TabletState::kInClamshellMode);
       return;
     case ZAURA_SHELL_LAYOUT_MODE_TABLET:
       screen->OnTabletStateChanged(display::TabletState::kInTabletMode);
+      connection->set_tablet_layout_state(display::TabletState::kInTabletMode);
       return;
   }
 }

@@ -12,6 +12,7 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"
@@ -169,6 +170,12 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void RemoveOverlay();
 
   bool HasOverlay() const { return !!overlay_widget_; }
+
+  // Set specific orientation lock for this surface. When this surface is in
+  // foreground and the display can be rotated (e.g. tablet mode), apply the
+  // behavior defined by |orientation_lock|. See more details in
+  // //ash/display/screen_orientation_controller.h.
+  void SetOrientationLock(chromeos::OrientationType orientation_lock);
 
   // SurfaceDelegate:
   void OnSurfaceCommit() override;
@@ -342,6 +349,12 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool is_popup_ = false;
   bool has_grab_ = false;
   bool server_side_resize_ = false;
+
+  // The orientation to be applied when widget is being created. Only set when
+  // widget is not created yet orientation lock is being set. This is currently
+  // only used by ClientControlledShellSurface.
+  chromeos::OrientationType initial_orientation_lock_ =
+      chromeos::OrientationType::kAny;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ShellSurfaceTest,

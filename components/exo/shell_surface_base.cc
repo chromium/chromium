@@ -75,6 +75,10 @@
 #include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/display/screen_orientation_controller.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace exo {
 namespace {
 
@@ -1570,6 +1574,25 @@ bool ShellSurfaceBase::IsFrameDecorationSupported(SurfaceFrameType frame_type) {
   // Popup doesn't support frame types other than NONE/SHADOW.
   return frame_type == SurfaceFrameType::SHADOW ||
          frame_type == SurfaceFrameType::NONE;
+}
+
+void ShellSurfaceBase::SetOrientationLock(
+    chromeos::OrientationType orientation_lock) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  TRACE_EVENT1("exo", "ShellSurfaceBase::SetOrientationLock",
+               "orientation_lock", static_cast<int>(orientation_lock));
+
+  if (!widget_) {
+    initial_orientation_lock_ = orientation_lock;
+    return;
+  }
+
+  ash::Shell* shell = ash::Shell::Get();
+  shell->screen_orientation_controller()->LockOrientationForWindow(
+      widget_->GetNativeWindow(), orientation_lock);
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace exo

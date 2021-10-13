@@ -25,6 +25,10 @@ class TaskManagerLacros;
 class WebPageInfoProviderLacros;
 }  // namespace crosapi
 
+namespace content {
+class ScreenOrientationDelegate;
+}  // namespace content
+
 // Browser initialization for Lacros.
 class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
  public:
@@ -74,6 +78,10 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Shows a butter bar on the first window.
   std::unique_ptr<LacrosButterBar> butter_bar_;
+
+  // Receives orientation lock data.
+  std::unique_ptr<content::ScreenOrientationDelegate>
+      screen_orientation_delegate_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_

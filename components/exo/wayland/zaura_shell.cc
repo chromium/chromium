@@ -19,6 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/display.h"
+#include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_observer.h"
@@ -36,12 +37,15 @@
 #include "ui/wm/public/activation_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/display/display_util.h"
+#include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/exo/wayland/xdg_shell.h"
 #include "components/exo/wm_helper_chromeos.h"
 #include "ui/aura/client/aura_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -284,7 +288,8 @@ const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_move_to_desk,
     aura_surface_set_initial_workspace,
     aura_surface_set_pin,
-    aura_surface_unset_pin};
+    aura_surface_unset_pin,
+};
 
 }  // namespace
 
@@ -600,6 +605,44 @@ void AuraSurface::Unpin() {
   surface_->Unpin();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+chromeos::OrientationType OrientationLock(uint32_t orientation_lock) {
+  switch (orientation_lock) {
+    case ZAURA_TOPLEVEL_ORIENTATION_LOCK_NONE:
+      return chromeos::OrientationType::kAny;
+    case ZAURA_TOPLEVEL_ORIENTATION_LOCK_CURRENT:
+      return chromeos::OrientationType::kCurrent;
+    case ZAURA_TOPLEVEL_ORIENTATION_LOCK_PORTRAIT:
+      return chromeos::OrientationType::kPortrait;
+    case ZAURA_TOPLEVEL_ORIENTATION_LOCK_LANDSCAPE:
+      return chromeos::OrientationType::kLandscape;
+    case ZAURA_TOPLEVEL_ORIENTATION_LOCK_PORTRAIT_PRIMARY:
+      return chromeos::OrientationType::kPortraitPrimary;
+    case ZAURA_TOPLEVEL_ORIENTATION_LOCK_LANDSCAPE_PRIMARY:
+      return chromeos::OrientationType::kLandscapePrimary;
+    case ZAURA_TOPLEVEL_ORIENTATION_LOCK_PORTRAIT_SECONDARY:
+      return chromeos::OrientationType::kPortraitSecondary;
+    case ZAURA_TOPLEVEL_ORIENTATION_LOCK_LANDSCAPE_SECONDARY:
+      return chromeos::OrientationType::kLandscapeSecondary;
+  }
+  VLOG(2) << "Unexpected value of orientation_lock: " << orientation_lock;
+  return chromeos::OrientationType::kAny;
+}
+
+AuraToplevel::AuraToplevel(ShellSurfaceBase* shell_surface)
+    : shell_surface_(shell_surface) {
+  DCHECK(shell_surface);
+}
+
+AuraToplevel::~AuraToplevel() = default;
+
+void AuraToplevel::SetOrientationLock(uint32_t lock_type) {
+  shell_surface_->SetOrientationLock(OrientationLock(lock_type));
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -836,6 +879,41 @@ class WaylandAuraShell : public ash::DesksController::Observer,
 
   base::WeakPtrFactory<WaylandAuraShell> weak_ptr_factory_{this};
 };
+
+////////////////////////////////////////////////////////////////////////////////
+// aura_toplevel_interface:
+
+void aura_toplevel_set_orientation_lock(wl_client* client,
+                                        wl_resource* resource,
+                                        uint32_t orientation_lock) {
+  GetUserDataAs<AuraToplevel>(resource)->SetOrientationLock(orientation_lock);
+}
+
+const struct zaura_toplevel_interface aura_toplevel_implementation = {
+    aura_toplevel_set_orientation_lock,
+};
+
+void aura_shell_get_aura_toplevel(wl_client* client,
+                                  wl_resource* resource,
+                                  uint32_t id,
+                                  wl_resource* surface_resource) {
+  ShellSurfaceBase* shell_surface =
+      GetShellSurfaceFromToplevelResource(surface_resource);
+  wl_resource* aura_toplevel_resource = wl_resource_create(
+      client, &zaura_toplevel_interface, wl_resource_get_version(resource), id);
+
+  SetImplementation(aura_toplevel_resource, &aura_toplevel_implementation,
+                    std::make_unique<AuraToplevel>(shell_surface));
+}
+
+#else
+void aura_shell_get_aura_toplevel(wl_client* client,
+                                  wl_resource* resource,
+                                  uint32_t id,
+                                  wl_resource* surface_resource) {
+  NOTREACHED();
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH))
 
 void aura_shell_get_aura_surface(wl_client* client,
@@ -891,8 +969,11 @@ void aura_shell_surface_submission_in_pixel_coordinates(wl_client* client,
 }
 
 const struct zaura_shell_interface aura_shell_implementation = {
-    aura_shell_get_aura_surface, aura_shell_get_aura_output,
-    aura_shell_surface_submission_in_pixel_coordinates};
+    aura_shell_get_aura_surface,
+    aura_shell_get_aura_output,
+    aura_shell_surface_submission_in_pixel_coordinates,
+    aura_shell_get_aura_toplevel,
+};
 }  // namespace
 
 void bind_aura_shell(wl_client* client,

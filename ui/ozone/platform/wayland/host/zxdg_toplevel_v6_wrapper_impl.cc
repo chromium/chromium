@@ -186,4 +186,8 @@ ZXDGSurfaceV6WrapperImpl* ZXDGToplevelV6WrapperImpl::zxdg_surface_v6_wrapper()
   return zxdg_surface_v6_wrapper_.get();
 }
 
+void ZXDGToplevelV6WrapperImpl::Lock(WaylandOrientationLockType lock_type) {}
+
+void ZXDGToplevelV6WrapperImpl::Unlock() {}
+
 }  // namespace ui

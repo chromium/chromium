@@ -10,9 +10,11 @@
 #include "base/macros.h"
 
 struct wl_client;
+struct wl_resource;
 
 namespace exo {
 class Display;
+class ShellSurfaceBase;
 
 namespace wayland {
 class SerialTracker;
@@ -35,6 +37,9 @@ void bind_xdg_shell(wl_client* client,
                     void* data,
                     uint32_t version,
                     uint32_t id);
+
+ShellSurfaceBase* GetShellSurfaceFromToplevelResource(
+    wl_resource* surface_resource);
 
 }  // namespace wayland
 }  // namespace exo

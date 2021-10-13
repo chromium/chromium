@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="26">
+  <interface name="zaura_shell" version="27">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -126,6 +126,15 @@
         scale via vp_viewporter. Instead the server should apply an appropriate
         scale transform to have the submitted buffers composited correctly.
       </description>
+    </request>
+
+    <request name="get_aura_toplevel_for_xdg_toplevel" since="27">
+      <description summary="get aura toplevel">
+  Retrieve the aura toplevel interface for a given xdg toplevel interface
+      </description>
+      <arg name="id" type="new_id" interface="zaura_toplevel"
+	   summary="the new aura toplevel interface id"/>
+      <arg name="toplevel" type="object" interface="xdg_toplevel"/>
     </request>
   </interface>
 
@@ -480,7 +489,6 @@
   the window was locked with the trusted state or not.
       </description>
     </request>
-
   </interface>
 
   <interface name="zaura_output" version="6">
@@ -587,4 +595,31 @@
     </event>
  </interface>
 
+  <interface name="zaura_toplevel" version="26">
+    <description summary="aura shell interface to the toplevel shell">
+      An interface to the toplevel shell, which allows the
+      client to access shell specific functionality.
+    </description>
+
+    <enum name="orientation_lock">
+      <description summary="orientation lock request">
+  Defines orientation request when a surface is in fullscreen.
+      </description>
+      <entry name="none" value="1" summary="no orientation lock"/>
+      <entry name="portrait" value="2" summary="primary or secondary portrait"/>
+      <entry name="landscape" value="3" summary="primary or secondary landscape"/>
+      <entry name="current" value="4" summary="keep current orientation"/>
+      <entry name="portrait_primary" value="5" summary="primary portrait"/>
+      <entry name="landscape_primary" value="6" summary="primary landscape"/>
+      <entry name="portrait_secondary" value="7" summary="secondary portrait"/>
+      <entry name="landscape_secondary" value="8" summary="secondary landscape"/>
+    </enum>
+
+    <request name="set_orientation_lock" since="26">
+      <description summary="set orientation lock for a remote surface">
+  Request a specific orientation behavior when this surface is in fullscreen.
+      </description>
+      <arg name="orientation_lock" type="uint" enum="orientation_lock"/>
+    </request>
+  </interface>
 </protocol>

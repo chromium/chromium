@@ -1,26 +1,23 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_SCREEN_ORIENTATION_DELEGATE_CHROMEOS_H_
-#define CHROME_BROWSER_UI_ASH_SCREEN_ORIENTATION_DELEGATE_CHROMEOS_H_
+#ifndef CHROME_BROWSER_LACROS_SCREEN_ORIENTATION_DELEGATE_LACROS_H_
+#define CHROME_BROWSER_LACROS_SCREEN_ORIENTATION_DELEGATE_LACROS_H_
 
 #include "content/public/browser/screen_orientation_delegate.h"
 
 // Chrome OS implementation for screen orientation JS api.
-class ScreenOrientationDelegateChromeos
+class ScreenOrientationDelegateLacros
     : public content::ScreenOrientationDelegate {
  public:
-  ScreenOrientationDelegateChromeos();
-
-  ScreenOrientationDelegateChromeos(const ScreenOrientationDelegateChromeos&) =
+  ScreenOrientationDelegateLacros();
+  ScreenOrientationDelegateLacros(const ScreenOrientationDelegateLacros&) =
       delete;
-  ScreenOrientationDelegateChromeos& operator=(
-      const ScreenOrientationDelegateChromeos&) = delete;
+  ScreenOrientationDelegateLacros& operator=(
+      const ScreenOrientationDelegateLacros&) = delete;
+  ~ScreenOrientationDelegateLacros() override;
 
-  ~ScreenOrientationDelegateChromeos() override;
-
- private:
   // content::ScreenOrientationDelegate:
   bool FullScreenRequired(content::WebContents* web_contents) override;
   void Lock(content::WebContents* web_contents,
@@ -30,4 +27,4 @@ class ScreenOrientationDelegateChromeos
   void Unlock(content::WebContents* web_contents) override;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_SCREEN_ORIENTATION_DELEGATE_CHROMEOS_H_
+#endif  // CHROME_BROWSER_LACROS_SCREEN_ORIENTATION_DELEGATE_LACROS_H_

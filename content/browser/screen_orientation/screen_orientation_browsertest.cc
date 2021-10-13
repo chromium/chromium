@@ -462,7 +462,9 @@ class FakeScreenOrientationDelegate : public ScreenOrientationDelegate {
   bool FullScreenRequired(WebContents* web_contents) override {
     return full_screen_required_;
   }
-  bool ScreenOrientationProviderSupported() override { return true; }
+  bool ScreenOrientationProviderSupported(WebContents* web_contents) override {
+    return true;
+  }
   void Lock(
       WebContents* web_contents,
       device::mojom::ScreenOrientationLockType lock_orientation) override {

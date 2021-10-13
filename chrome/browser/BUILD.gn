@@ -5068,6 +5068,8 @@ static_library("browser") {
       "lacros/net/proxy_config_service_lacros.h",
       "lacros/prefs_ash_observer.cc",
       "lacros/prefs_ash_observer.h",
+      "lacros/screen_orientation_delegate_lacros.cc",
+      "lacros/screen_orientation_delegate_lacros.h",
       "lacros/snap_controller_lacros.cc",
       "lacros/snap_controller_lacros.h",
       "lacros/system_logs/lacros_system_log_fetcher.cc",

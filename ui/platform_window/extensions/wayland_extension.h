@@ -17,6 +17,17 @@ enum class WaylandWindowSnapDirection {
   kSecondary,
 };
 
+enum class WaylandOrientationLockType {
+  kAny,
+  kNatural,
+  kPortrait,
+  kLandscape,
+  kPortraitPrimary,
+  kLandscapePrimary,
+  kPortraitSecondary,
+  kLandscapeSecondary,
+};
+
 class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
  public:
   // Starts a window dragging session for the owning platform window, if
@@ -51,6 +62,13 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
   // Whether or not the underlying platform supports native pointer locking.
   virtual bool SupportsPointerLock() = 0;
   virtual void LockPointer(bool enabled) = 0;
+
+  // Lock and unlock the window rotation.
+  virtual void Lock(WaylandOrientationLockType lock_Type) = 0;
+  virtual void Unlock() = 0;
+
+  // Retrieve current layout state.
+  virtual bool GetTabletMode() = 0;
 
  protected:
   virtual ~WaylandExtension();

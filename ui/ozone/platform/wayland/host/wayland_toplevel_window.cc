@@ -645,6 +645,14 @@ void WaylandToplevelWindow::SetPip() {
   }
 }
 
+void WaylandToplevelWindow::Lock(WaylandOrientationLockType lock_type) {
+  shell_toplevel_->Lock(lock_type);
+}
+
+void WaylandToplevelWindow::Unlock() {
+  shell_toplevel_->Unlock();
+}
+
 bool WaylandToplevelWindow::SupportsPointerLock() {
   return !!connection()->wayland_zwp_pointer_constraints() &&
          !!connection()->wayland_zwp_relative_pointer_manager();
@@ -800,7 +808,6 @@ void WaylandToplevelWindow::SetOrResetRestoredBounds() {
 void WaylandToplevelWindow::SetUpShellIntegration() {
   // This method should be called after the XDG surface is initialized.
   DCHECK(shell_toplevel_);
-
   if (connection()->zaura_shell() && !aura_surface_) {
     static constexpr zaura_surface_listener zaura_surface_listener = {
         &OcclusionChanged,
@@ -811,7 +818,6 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
     };
     aura_surface_.reset(zaura_shell_get_aura_surface(
         connection()->zaura_shell()->wl_object(), root_surface()->surface()));
-
     zaura_surface_add_listener(aura_surface_.get(), &zaura_surface_listener,
                                this);
     zaura_surface_set_occlusion_tracking(aura_surface_.get());
@@ -893,6 +899,10 @@ void WaylandToplevelWindow::UpdateWindowShape() {
   SkPath window_mask_in_dips =
       wl::ConvertPathToDIP(window_mask_in_pixels, window_scale());
   window_shape_in_dips_ = wl::CreateRectsFromSkPath(window_mask_in_dips);
+}
+
+bool WaylandToplevelWindow::GetTabletMode() {
+  return connection()->GetTabletMode();
 }
 
 }  // namespace ui

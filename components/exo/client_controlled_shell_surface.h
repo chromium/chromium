@@ -170,12 +170,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Set the extra title for the surface.
   void SetExtraTitle(const std::u16string& extra_title);
 
-  // Set specific orientation lock for this surface. When this surface is in
-  // foreground and the display can be rotated (e.g. tablet mode), apply the
-  // behavior defined by |orientation_lock|. See more details in
-  // //ash/display/screen_orientation_controller.h.
-  void SetOrientationLock(chromeos::OrientationType orientation_lock);
-
   // Set the accessibility ID provided by client for the surface. If
   // |accessibility_id| is negative value, it will unset the ID.
   void SetClientAccessibilityId(int32_t accessibility_id);
@@ -334,10 +328,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   std::unique_ptr<ui::CompositorLock> orientation_compositor_lock_;
 
-  // The orientation to be applied when widget is being created. Only set when
-  // widget is not created yet orientation lock is being set.
-  chromeos::OrientationType initial_orientation_lock_ =
-      chromeos::OrientationType::kAny;
   // The extra title to be applied when widget is being created.
   std::u16string initial_extra_title_ = std::u16string();
 

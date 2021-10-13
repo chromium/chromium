@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/display/tablet_state.h"
 #include "ui/events/event.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
@@ -280,6 +281,14 @@ class WaylandConnection {
   }
   wl::SerialTracker& serial_tracker() { return serial_tracker_; }
 
+  void set_tablet_layout_state(display::TabletState tablet_layout_state) {
+    tablet_layout_state_ = tablet_layout_state;
+  }
+  bool GetTabletMode() {
+    return tablet_layout_state_ == display::TabletState::kInTabletMode ||
+           tablet_layout_state_ == display::TabletState::kEnteringTabletMode;
+  }
+
  private:
   friend class WaylandConnectionTestApi;
 
@@ -424,6 +433,10 @@ class WaylandConnection {
   WaylandWindowManager wayland_window_manager_;
 
   WaylandCursorBufferListener* listener_ = nullptr;
+
+  // The current window table mode layout state.
+  display::TabletState tablet_layout_state_ =
+      display::TabletState::kInClamshellMode;
 
   bool scheduled_flush_ = false;
 

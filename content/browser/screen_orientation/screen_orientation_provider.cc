@@ -42,7 +42,8 @@ void ScreenOrientationProvider::LockOrientation(
   // Record new pending lock request.
   pending_callback_ = std::move(callback);
 
-  if (!delegate_ || !delegate_->ScreenOrientationProviderSupported()) {
+  if (!delegate_ ||
+      !delegate_->ScreenOrientationProviderSupported(web_contents())) {
     NotifyLockResult(ScreenOrientationLockResult::
                          SCREEN_ORIENTATION_LOCK_RESULT_ERROR_NOT_AVAILABLE);
     return;
