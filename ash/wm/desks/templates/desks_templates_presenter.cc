@@ -44,6 +44,10 @@ DesksTemplatesPresenter::DesksTemplatesPresenter(
 
 DesksTemplatesPresenter::~DesksTemplatesPresenter() = default;
 
+void DesksTemplatesPresenter::OnDeskModelDestroying() {
+  desk_model_observation_.Reset();
+}
+
 void DesksTemplatesPresenter::OnGetAllEntries(
     desks_storage::DeskModel::GetAllEntriesStatus status,
     std::vector<DeskTemplate*> entries) {

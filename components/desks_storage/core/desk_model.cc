@@ -14,7 +14,10 @@ namespace desks_storage {
 
 DeskModel::DeskModel() = default;
 
-DeskModel::~DeskModel() = default;
+DeskModel::~DeskModel() {
+  for (DeskModelObserver& observer : observers_)
+    observer.OnDeskModelDestroying();
+}
 
 void DeskModel::AddObserver(DeskModelObserver* observer) {
   DCHECK(observer);

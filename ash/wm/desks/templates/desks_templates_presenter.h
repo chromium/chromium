@@ -34,6 +34,7 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   // TODO(sammiequon): Implement these once the model starts sending these
   // messages.
   void DeskModelLoaded() override {}
+  void OnDeskModelDestroying() override;
   void EntriesAddedOrUpdatedRemotely(
       const std::vector<const ash::DeskTemplate*>& new_entries) override {}
   void EntriesRemovedRemotely(const std::vector<std::string>& uuids) override {}
