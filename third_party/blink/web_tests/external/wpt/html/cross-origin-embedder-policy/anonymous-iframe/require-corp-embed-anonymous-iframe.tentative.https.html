@@ -6,12 +6,13 @@
 <script>
 
 promise_test(async t => {
-  let iframe_allowed = (iframe, bc) => new Promise(async resolve => {
-    bc.onmessage = t.step_func(event => {
-      assert_equals(event.data, "loaded",
+  let iframe_allowed = (iframe) => new Promise(async resolve => {
+    window.addEventListener("message", t.step_func(msg => {
+      if (msg.source !== iframe.contentWindow) return;
+      assert_equals(msg.data, "loaded",
                     "Unexpected message from broadcast channel.");
       resolve(true);
-    });
+    }));
 
     // To see whether the iframe was blocked, we check whether it
     // becomes cross-origin (since error pages are loaded cross-origin).
@@ -32,25 +33,23 @@ promise_test(async t => {
   child.anonymous = true;
   t.add_cleanup(() => child.remove());
 
-  const bc_child = new BroadcastChannel(token());
   child.src =
-    `../resources/navigate-none.sub.html?channelName=${bc_child.name}`;
+    "../resources/navigate-none.sub.html?postMessageTo=top";
   document.body.append(child);
 
-  assert_true(await iframe_allowed(child, bc_child),
+  assert_true(await iframe_allowed(child),
               "The anonymous iframe should be allowed.");
 
   // Create a child of the anonymous iframe. Even if the grandchild
   // does not have the 'anonymous' attribute set, it inherits the
   // anonymous property from the parent.
   const grandchild = child.contentDocument.createElement("iframe");
-  const bc_grandchild = new BroadcastChannel(token());
 
   grandchild.src =
-    `../resources/navigate-none.sub.html?channelName=${bc_grandchild.name}`;
+    `../resources/navigate-none.sub.html?postMessageTo=top`;
   child.contentDocument.body.append(grandchild);
 
-  assert_true(await iframe_allowed(grandchild, bc_grandchild),
+  assert_true(await iframe_allowed(grandchild),
              "The child of the anonymous iframe should be allowed.");
 }, 'Loading an anonymous iframe with COEP: require-corp is allowed.');
 
