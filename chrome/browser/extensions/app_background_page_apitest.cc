@@ -5,12 +5,14 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner_forward.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
@@ -79,6 +81,34 @@ class BackgroundContentsCreationObserver
  private:
   // The number of background contents that have been opened since creation.
   int opens_ = 0;
+
+  base::ScopedObservation<BackgroundContentsService,
+                          BackgroundContentsServiceObserver>
+      observation_{this};
+};
+
+class BackgroundContentsClosedObserver
+    : protected BackgroundContentsServiceObserver {
+ public:
+  explicit BackgroundContentsClosedObserver(Profile* profile) {
+    observation_.Observe(
+        BackgroundContentsServiceFactory::GetForProfile(profile));
+  }
+
+  BackgroundContentsClosedObserver(const BackgroundContentsClosedObserver&) =
+      delete;
+  BackgroundContentsClosedObserver& operator=(
+      const BackgroundContentsClosedObserver&) = delete;
+
+  ~BackgroundContentsClosedObserver() override = default;
+
+  void Wait() { run_loop_.Run(); }
+
+ protected:
+  void OnBackgroundContentsClosed() override { run_loop_.Quit(); }
+
+ private:
+  base::RunLoop run_loop_;
 
   base::ScopedObservation<BackgroundContentsService,
                           BackgroundContentsServiceObserver>
@@ -179,16 +209,9 @@ class AppBackgroundPageNaClTest : public AppBackgroundPageApiTest {
 
 }  // namespace
 
-// Flaky test disabled on Mac (http://crbug.com/95139), Windows
-// and Linux (http://crbug.com/1044265).
-#if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
-#define MAYBE_Basic DISABLED_Basic
-#else
-#define MAYBE_Basic Basic
-#endif
-
-IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_Basic) {
+// This test is meaningless if background mode is not enabled.
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
+IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, Basic) {
   std::string app_manifest = base::StringPrintf(
       "{"
       "  \"name\": \"App\","
@@ -207,6 +230,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_Basic) {
       embedded_test_server()->port());
 
   base::FilePath app_dir;
+  BackgroundContentsClosedObserver closed_observer(browser()->profile());
   ASSERT_TRUE(CreateApp(app_manifest, &app_dir));
   ASSERT_TRUE(LoadExtension(app_dir));
   // Background mode should not be active until a background page is created.
@@ -214,8 +238,10 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_Basic) {
   ASSERT_TRUE(RunExtensionTest("app_background_page/basic")) << message_;
   // The test closes the background contents, so we should fall back to no
   // background mode at the end.
-  ASSERT_TRUE(VerifyBackgroundMode(false));
+  closed_observer.Wait();
+  EXPECT_TRUE(VerifyBackgroundMode(false));
 }
+#endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 
 IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, LacksPermission) {
   std::string app_manifest = base::StringPrintf(

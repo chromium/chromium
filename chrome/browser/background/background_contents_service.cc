@@ -754,6 +754,8 @@ void BackgroundContentsService::OnBackgroundContentsClosed(
   DCHECK(IsTracked(contents));
   UnregisterBackgroundContents(contents);
   DeleteBackgroundContents(contents);
+  for (auto& observer : observers_)
+    observer.OnBackgroundContentsClosed();
 }
 
 void BackgroundContentsService::Shutdown() {
