@@ -62,6 +62,7 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   void SetTouchEventLoggingEnabled(bool enabled) override;
   void SetTouchpadSensitivity(int value) override;
   void SetTouchpadScrollSensitivity(int value) override;
+  void SetTouchpadHapticFeedback(bool enabled) override;
   void SetTapToClick(bool enabled) override;
   void SetThreeFingerClick(bool enabled) override;
   void SetTapDragging(bool enabled) override;

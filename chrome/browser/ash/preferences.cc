@@ -214,6 +214,9 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       ::prefs::kTouchpadScrollAcceleration, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
+  registry->RegisterBooleanPref(
+      ::prefs::kTouchpadHapticFeedback, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterBooleanPref(::prefs::kLabsMediaplayerEnabled, false);
   registry->RegisterBooleanPref(::prefs::kLabsAdvancedFilesystemEnabled, false);
   registry->RegisterBooleanPref(::prefs::kAppReinstallRecommendationEnabled,
@@ -518,6 +521,8 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
   touchpad_acceleration_.Init(::prefs::kTouchpadAcceleration, prefs, callback);
   touchpad_scroll_acceleration_.Init(::prefs::kTouchpadScrollAcceleration,
                                      prefs, callback);
+  touchpad_haptic_feedback_.Init(::prefs::kTouchpadHapticFeedback, prefs,
+                                 callback);
   download_default_directory_.Init(::prefs::kDownloadDefaultDirectory, prefs,
                                    callback);
   preload_engines_.Init(::prefs::kLanguagePreloadEngines, prefs, callback);
@@ -874,6 +879,14 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     ReportBooleanPrefApplication(reason, "Touchpad.ScrollAcceleration.Changed",
                                  "Touchpad.ScrollAcceleration.Started",
                                  enabled);
+  }
+  if (reason != REASON_PREF_CHANGED ||
+      pref_name == ::prefs::kTouchpadHapticFeedback) {
+    const bool enabled = touchpad_haptic_feedback_.GetValue();
+    if (user_is_active)
+      touchpad_settings.SetHapticFeedback(enabled);
+    ReportBooleanPrefApplication(reason, "Touchpad.HapticFeedback.Changed",
+                                 "Touchpad.HapticFeedback.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kDownloadDefaultDirectory) {

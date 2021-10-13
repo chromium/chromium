@@ -32,6 +32,7 @@ struct InputDeviceSettingsEvdev {
   bool pointing_stick_acceleration_enabled = true;
   bool touchpad_acceleration_enabled = true;
   bool touchpad_scroll_acceleration_enabled = true;
+  bool touchpad_haptic_feedback_enabled = true;
 
   int touchpad_sensitivity = kDefaultSensitivity;
   int touchpad_scroll_sensitivity = kDefaultSensitivity;

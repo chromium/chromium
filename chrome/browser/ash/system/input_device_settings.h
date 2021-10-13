@@ -68,6 +68,10 @@ class TouchpadSettings {
   bool GetScrollAcceleration() const;
   bool IsScrollAccelerationSet() const;
 
+  void SetHapticFeedback(bool enabled);
+  bool GetHapticFeedback() const;
+  bool IsHapticFeedbackSet() const;
+
   // Updates |this| with |settings|. If at least one setting was updated returns
   // true.
   bool Update(const TouchpadSettings& settings);
@@ -78,6 +82,7 @@ class TouchpadSettings {
 
  private:
   absl::optional<bool> acceleration_;
+  absl::optional<bool> haptic_feedback_;
   absl::optional<bool> natural_scroll_;
   absl::optional<int> sensitivity_;
   absl::optional<bool> scroll_acceleration_;
@@ -221,6 +226,9 @@ class InputDeviceSettings {
   // Sets the touchpad scroll sensitivity in the range [kMinPointerSensitivity,
   // kMaxPointerSensitivity].
   virtual void SetTouchpadScrollSensitivity(int value) = 0;
+
+  // Turns touchpad haptic feedback on/off.
+  virtual void SetTouchpadHapticFeedback(bool enabled) = 0;
 
   // Turns tap to click on/off.
   virtual void SetTapToClick(bool enabled) = 0;
