@@ -298,6 +298,11 @@ bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(
   if (!server_requests_prompt)
     return false;
 
+  // Too large uploads would fail immediately, so don't prompt in this case.
+  if (static_cast<size_t>(item_->GetTotalBytes()) >=
+      BinaryUploadService::kMaxUploadSizeBytes)
+    return false;
+
   Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
   if (profile && IsEnhancedProtectionEnabled(*profile->GetPrefs()))
     return true;

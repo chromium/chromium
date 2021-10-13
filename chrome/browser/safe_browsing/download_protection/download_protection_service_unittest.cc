@@ -4632,6 +4632,41 @@ TEST_F(DownloadProtectionServiceTest, ESBRequestScanFalse) {
   EXPECT_TRUE(IsResult(DownloadCheckResult::UNCOMMON));
 }
 
+TEST_F(DownloadProtectionServiceTest, ESBRequestScanFalseWhenTooLarge) {
+  PrepareResponse(ClientDownloadResponse::UNCOMMON, net::HTTP_OK, net::OK,
+                  /*upload_requested=*/true, /*request_deep_scan=*/true);
+  NiceMockDownloadItem item;
+  PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
+                           "http://www.google.com/",              // referrer
+                           FILE_PATH_LITERAL("a.tmp"),            // tmp_path
+                           FILE_PATH_LITERAL("a.exe"));           // final_path
+
+  EXPECT_CALL(item, GetTotalBytes()).WillRepeatedly(Return(51 * 1024 * 1024));
+
+  EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
+      .Times(1);
+  EXPECT_CALL(*sb_service_->mock_database_manager(),
+              MatchDownloadAllowlistUrl(_))
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*binary_feature_extractor_.get(),
+              ExtractImageFeatures(
+                  tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
+
+  // Testing Scenario with request_deep_scan response is true and
+  // user is enrolled in the Enhanced Protection Program.
+  safe_browsing::SetEnhancedProtectionPrefForTests(profile()->GetPrefs(),
+                                                   /*value*/ true);
+
+  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
+  RunLoop run_loop;
+  download_service_->CheckClientDownload(
+      &item,
+      base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
+                          base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_TRUE(IsResult(DownloadCheckResult::UNCOMMON));
+}
+
 // Test fixture with the enterprise CSD checks either enabled or disabled.
 class EnterpriseCsdDownloadTest : public DownloadProtectionServiceTestBase,
                                   public ::testing::WithParamInterface<bool> {
