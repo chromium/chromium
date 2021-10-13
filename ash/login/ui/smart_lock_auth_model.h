@@ -39,6 +39,7 @@ class ASH_EXPORT SmartLockAuthModel : public AuthFactorModel {
   bool ShouldAnnounceLabel() override;
   int GetAccessibleNameId() override;
   void UpdateIcon(AuthIconView* icon_view) override;
+  void OnTapOrClickEvent() override;
 
   SmartLockState state_ = SmartLockState::kInactive;
   absl::optional<bool> auth_result_;

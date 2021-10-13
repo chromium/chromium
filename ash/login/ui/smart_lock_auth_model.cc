@@ -185,4 +185,9 @@ void SmartLockAuthModel::UpdateIcon(AuthIconView* icon_view) {
       gfx::CreateVectorIcon(*icon, kSmartLockIconSizeDp, icon_color));
 }
 
+void SmartLockAuthModel::OnTapOrClickEvent() {
+  // TODO(crbug.com/1233614): If Smart Lock is not available because of an error
+  // and the icon is pressed, show the particular error message.
+}
+
 }  // namespace ash

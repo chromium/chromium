@@ -74,8 +74,8 @@ class ASH_EXPORT AuthFactorModel {
   // Should call SetIcon() or set up an animation.
   virtual void UpdateIcon(AuthIconView* icon_view) = 0;
 
-  // This will be called when the auth factor view is tapped.
-  virtual void OnTapEvent() {}
+  // This will be called when the auth factor's icon is tapped or clicked.
+  virtual void OnTapOrClickEvent() = 0;
 
   // Set a callback that will be called by the AuthFactorModel whenever its
   // internal state changes. Used by LoginAuthFactorsView to determine when it

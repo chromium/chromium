@@ -6,6 +6,7 @@
 #define ASH_LOGIN_UI_AUTH_ICON_VIEW_H_
 
 #include "ash/login/ui/animated_rounded_image_view.h"
+#include "base/callback.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -26,6 +27,17 @@ class AuthIconView : public AnimatedRoundedImageView {
 
   // Show a static icon.
   void SetIcon(const gfx::VectorIcon& icon);
+
+  void set_on_tap_or_click_callback(base::RepeatingClosure on_tap_or_click) {
+    on_tap_or_click_callback_ = on_tap_or_click;
+  }
+
+  // views::View:
+  void OnGestureEvent(ui::GestureEvent* event) override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+
+ private:
+  base::RepeatingClosure on_tap_or_click_callback_;
 };
 
 }  // namespace ash

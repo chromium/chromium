@@ -166,7 +166,7 @@ void FingerprintAuthModel::UpdateIcon(AuthIconView* icon_view) {
   }
 }
 
-void FingerprintAuthModel::OnTapEvent() {
+void FingerprintAuthModel::OnTapOrClickEvent() {
   if (state_ == FingerprintState::AVAILABLE_DEFAULT ||
       state_ == FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING) {
     SetFingerprintState(FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING);

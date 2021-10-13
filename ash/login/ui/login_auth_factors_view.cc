@@ -109,6 +109,15 @@ void LoginAuthFactorsView::AddAuthFactor(
     std::unique_ptr<AuthFactorModel> auth_factor) {
   auth_factor->SetOnStateChangedCallback(base::BindRepeating(
       &LoginAuthFactorsView::UpdateState, base::Unretained(this)));
+  // Associate the tap or click callback to the newly added auth factor iff
+  // there was no prior auth factor in the model.
+  if (auth_factors_.empty()) {
+    // TODO(crbug.com/1233614): Associate auth factor model with correct icon
+    // when showing multiple icons.
+    icon_->set_on_tap_or_click_callback(
+        base::BindRepeating(&AuthFactorModel::OnTapOrClickEvent,
+                            base::Unretained(auth_factor.get())));
+  }
   auth_factors_.push_back(std::move(auth_factor));
   UpdateState();
 }
@@ -151,18 +160,6 @@ gfx::Size LoginAuthFactorsView::CalculatePreferredSize() const {
   gfx::Size size = views::View::CalculatePreferredSize();
   size.set_width(kAuthFactorsViewWidthDp);
   return size;
-}
-
-// views::View:
-void LoginAuthFactorsView::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() != ui::ET_GESTURE_TAP &&
-      event->type() != ui::ET_GESTURE_TAP_DOWN)
-    return;
-
-  // TODO(crbug.com/1233614) Route tap events from respective icons instead.
-  for (const auto& factor : auth_factors_) {
-    factor->OnTapEvent();
-  }
 }
 
 // views::View:

@@ -34,7 +34,7 @@ class FingerprintAuthModel : public AuthFactorModel {
   bool ShouldAnnounceLabel() override;
   int GetAccessibleNameId() override;
   void UpdateIcon(AuthIconView* icon_view) override;
-  void OnTapEvent() override;
+  void OnTapOrClickEvent() override;
 
  private:
   void OnResetState();

@@ -30,7 +30,6 @@ class LoginAuthFactorsView : public views::View {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
   void OnThemeChanged() override;
 
   // TODO(crbug.com/1233614): Many more methods will be added here to facilitate
