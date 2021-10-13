@@ -481,6 +481,7 @@ test("web_engine_browsertests") {
     "browser/permissions_browsertest.cc",
     "browser/popup_browsertest.cc",
     "browser/post_message_browsertest.cc",
+    "browser/request_monitoring_browsertest.cc",
     "browser/theme_manager_browsertest.cc",
     "browser/virtual_keyboard_browsertest.cc",
   ]
