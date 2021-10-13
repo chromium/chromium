@@ -8,6 +8,8 @@
 #include <numeric>
 #include <tuple>
 
+#include <va/va.h>
+
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
@@ -256,9 +258,15 @@ MATCHER_P3(MatchFrameParam,
          arg.spatial_layer_id == spatial_layer_id;
 }
 
+MATCHER_P2(MatchVABufferDescriptor, va_buffer_type, va_buffer_size, "") {
+  return arg.type == va_buffer_type && arg.size == va_buffer_size &&
+         arg.data != nullptr;
+}
+
 class MockVaapiWrapper : public VaapiWrapper {
  public:
   MockVaapiWrapper() : VaapiWrapper(kEncodeConstantQuantizationParameter) {}
+  MOCK_METHOD1(SubmitBuffer_Locked, bool(const VABufferDescriptor&));
 
  protected:
   ~MockVaapiWrapper() override = default;
@@ -441,7 +449,16 @@ void VP9VaapiVideoEncoderDelegateTest::
   EXPECT_CALL(*mock_rate_ctrl_, GetLoopfilterLevel())
       .WillOnce(Return(kDefaultLoopFilterLevel));
 
-  // TODO(mcasas): Consider setting expectations on MockVaapiWrapper calls.
+  EXPECT_CALL(*mock_vaapi_wrapper_,
+              SubmitBuffer_Locked(MatchVABufferDescriptor(
+                  VAEncSequenceParameterBufferType,
+                  sizeof(VAEncSequenceParameterBufferVP9))))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_vaapi_wrapper_,
+              SubmitBuffer_Locked(MatchVABufferDescriptor(
+                  VAEncPictureParameterBufferType,
+                  sizeof(VAEncPictureParameterBufferVP9))))
+      .WillOnce(Return(true));
 
   EXPECT_TRUE(encoder_->PrepareEncodeJob(*encode_job.get()));
 

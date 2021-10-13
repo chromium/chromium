@@ -174,12 +174,6 @@ libvpx::VP9RateControlRtcConfig CreateRateControlConfig(
   return rc_cfg;
 }
 
-static scoped_refptr<base::RefCountedBytes> MakeRefCountedBytes(void* ptr,
-                                                                size_t size) {
-  return base::MakeRefCounted<base::RefCountedBytes>(
-      reinterpret_cast<uint8_t*>(ptr), size);
-}
-
 scoped_refptr<VP9Picture> GetVP9Picture(
     const VaapiVideoEncoderDelegate::EncodeJob& job) {
   return base::WrapRefCounted(
@@ -614,17 +608,10 @@ bool VP9VaapiVideoEncoderDelegate::SubmitFrameParameters(
   pic_param.log2_tile_rows = frame_header->tile_rows_log2;
   pic_param.log2_tile_columns = frame_header->tile_cols_log2;
 
-  job.AddSetupCallback(
-      base::BindOnce(&VaapiVideoEncoderDelegate::SubmitBuffer,
-                     base::Unretained(this), VAEncSequenceParameterBufferType,
-                     MakeRefCountedBytes(&seq_param, sizeof(seq_param))));
-
-  job.AddSetupCallback(
-      base::BindOnce(&VaapiVideoEncoderDelegate::SubmitBuffer,
-                     base::Unretained(this), VAEncPictureParameterBufferType,
-                     MakeRefCountedBytes(&pic_param, sizeof(pic_param))));
-
-  return true;
+  return vaapi_wrapper_->SubmitBuffer(VAEncSequenceParameterBufferType,
+                                      &seq_param) &&
+         vaapi_wrapper_->SubmitBuffer(VAEncPictureParameterBufferType,
+                                      &pic_param);
 }
 
 }  // namespace media
