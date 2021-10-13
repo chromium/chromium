@@ -6533,10 +6533,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kScanAppStickySettings)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"color-provider-redirection",
-     flag_descriptions::kColorProviderRedirectionName,
-     flag_descriptions::kColorProviderRedirectionDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kColorProviderRedirection)},
+    {"color-provider-redirection-for-theme-provider",
+     flag_descriptions::kColorProviderRedirectionForThemeProviderName,
+     flag_descriptions::kColorProviderRedirectionForThemeProviderDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kColorProviderRedirectionForThemeProvider)},
 
     {"trust-tokens", flag_descriptions::kTrustTokensName,
      flag_descriptions::kTrustTokensDescription, kOsAll,

@@ -941,10 +941,6 @@
     "script": "//testing/scripts/run_isolated_script_test.py",
     "type": "script",
   },
-  "gtk_unittests": {
-    "label": "//ui/gtk:gtk_unittests",
-    "type": "windowed_test_launcher",
-  },
   "gwp_asan_unittests": {
     "label": "//components/gwp_asan:gwp_asan_unittests",
     "type": "console_test_launcher",

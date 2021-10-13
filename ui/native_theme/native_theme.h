@@ -17,6 +17,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/menu_separator_types.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -388,6 +389,11 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kMaxValue = kWindowText,
   };
 
+  // Returns the key corresponding to this native theme object.
+  ColorProviderManager::Key GetColorProviderKey(
+      scoped_refptr<ColorProviderManager::InitializerSupplier> custom_theme)
+      const;
+
   // Returns a color from the system theme.
   SkColor GetSystemColor(
       ColorId color_id,
@@ -431,7 +437,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // Returns whether we are in forced colors mode, controlled by system
   // accessibility settings. Currently, Windows high contrast is the only system
   // setting that triggers forced colors mode.
-  virtual bool InForcedColorsMode() const;
+  bool InForcedColorsMode() const;
 
   // Returns the PlatformHighContrastColorScheme used by the OS. Returns a value
   // other than kNone only if the default system color scheme is
@@ -565,6 +571,10 @@ class NATIVE_THEME_EXPORT NativeTheme {
   mutable std::map<SystemThemeColor, SkColor> system_colors_;
 
  private:
+  ColorProviderManager::Key GetColorProviderKeyForColorScheme(
+      scoped_refptr<ColorProviderManager::InitializerSupplier> custom_theme,
+      ColorScheme color_scheme) const;
+
   SkColor GetSystemColorCommon(ColorId color_id,
                                ColorScheme color_scheme,
                                bool apply_processing) const;

@@ -19,6 +19,12 @@ namespace features {
 const base::Feature kClosedTabCache{"ClosedTabCache",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Whether or not to delegate color queries from the ThemeProvider to the
+// ColorProvider.
+const base::Feature kColorProviderRedirectionForThemeProvider = {
+    "ColorProviderRedirectionForThemeProvider",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Destroy profiles when their last browser window is closed, instead of when
 // the browser exits.
 const base::Feature kDestroyProfileOnBrowserClose{

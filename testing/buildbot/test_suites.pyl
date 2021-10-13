@@ -1004,7 +1004,6 @@
     },
 
     'chromium_gtests_for_linux_only': {
-      'gtk_unittests': {},
       'ozone_x11_unittests': {},
       'x11_unittests': {},
     },

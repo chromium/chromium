@@ -1751,19 +1751,7 @@ const ui::ColorProvider* Widget::GetColorProvider() const {
 }
 
 ui::ColorProviderManager::Key Widget::GetColorProviderKey() const {
-  const auto* native_theme = GetNativeTheme();
-  const auto color_scheme = native_theme->GetDefaultSystemColorScheme();
-  return ui::ColorProviderManager::Key(
-      (color_scheme == ui::NativeTheme::ColorScheme::kDark)
-          ? ui::ColorProviderManager::ColorMode::kDark
-          : ui::ColorProviderManager::ColorMode::kLight,
-      (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
-          ? ui::ColorProviderManager::ContrastMode::kHigh
-          : ui::ColorProviderManager::ContrastMode::kNormal,
-      native_theme->is_custom_system_theme()
-          ? ui::ColorProviderManager::SystemTheme::kCustom
-          : ui::ColorProviderManager::SystemTheme::kDefault,
-      GetCustomTheme());
+  return GetNativeTheme()->GetColorProviderKey(GetCustomTheme());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

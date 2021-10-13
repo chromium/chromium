@@ -115,8 +115,6 @@ source_set("test_support") {
   ]
 
   sources = [
-    "test/color_utils.cc",
-    "test/color_utils.h",
     "test_native_theme.cc",
     "test_native_theme.h",
   ]
@@ -125,10 +123,7 @@ source_set("test_support") {
 test("native_theme_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
-  sources = [
-    "native_theme_unittest.cc",
-    "themed_vector_icon_unittest.cc",
-  ]
+  sources = [ "themed_vector_icon_unittest.cc" ]
 
   if (use_aura) {
     sources += [ "native_theme_aura_unittest.cc" ]

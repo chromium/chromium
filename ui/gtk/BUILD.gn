@@ -154,19 +154,3 @@ component("gtk") {
     deps += [ "//ui/ozone" ]
   }
 }
-
-test("gtk_unittests") {
-  sources = [ "native_theme_gtk_unittest.cc" ]
-
-  deps = [
-    ":gtk",
-    "//base/test:run_all_unittests",
-    "//base/test:test_support",
-    "//testing/gtest",
-    "//ui/base:features",
-    "//ui/native_theme",
-    "//ui/native_theme:test_support",
-    "//ui/ozone",
-    "//ui/views",
-  ]
-}

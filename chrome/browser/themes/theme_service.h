@@ -229,6 +229,7 @@ class ThemeService : public KeyedService,
         ui::ResourceScaleFactor scale_factor) const override;
 
    private:
+    absl::optional<SkColor> GetColorProviderColor(int id) const;
     CustomThemeSupplier* GetThemeSupplier() const;
 
     const ThemeHelper& theme_helper_;

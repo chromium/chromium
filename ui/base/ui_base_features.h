@@ -16,8 +16,6 @@ namespace features {
 // Keep sorted!
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const base::Feature kColorProviderRedirection;
-COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kCompositorThreadedScrollbarScrolling;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kExperimentalFlingAnimation;

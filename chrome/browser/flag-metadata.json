@@ -751,9 +751,9 @@
     "expiry_milestone": 99
   },
   {
-    "name": "color-provider-redirection",
+    "name": "color-provider-redirection-for-theme-provider",
     "owners": [ "//ui/color/OWNERS" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 102
   },
   {
     "name": "colr-v1-fonts",

@@ -55,10 +55,6 @@ const char kWin11StyleMenuAllWindowsVersionsName[] = "All Windows Versions";
 
 #endif  // defined(OS_WIN)
 
-// Whether or not to delegate color queries to the color provider.
-const base::Feature kColorProviderRedirection = {
-    "ColorProviderRedirection", base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Integrate input method specific settings to Chrome OS settings page.
 // https://crbug.com/895886.
