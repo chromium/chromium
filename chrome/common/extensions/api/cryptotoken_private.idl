@@ -19,9 +19,12 @@ namespace cryptotokenPrivate {
     DOMString appId;
     // The origin of the caller.
     DOMString origin;
-    // Identifies the tab in which the registration is occuring so that any
+    // Identifies the tab in which the request is occuring so that any
     // permissions prompt is correctly located.
     long tabId;
+    // Identifies the frame in which the frame is occuring. Required
+    // but ignored for `canAppIdGetAttestation`.
+    long frameId;
   };
 
   interface Functions {

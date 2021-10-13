@@ -290,7 +290,8 @@ CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
     return RespondNow(Error("cannot find specified tab"));
   }
 
-  content::RenderFrameHost* frame = web_contents->GetMainFrame();
+  content::RenderFrameHost* frame = RenderFrameHostForTabAndFrameId(
+      browser_context(), params->options.tab_id, params->options.frame_id);
   if (!frame) {
     return RespondNow(Error("cannot find frame"));
   }

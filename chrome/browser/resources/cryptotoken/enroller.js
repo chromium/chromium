@@ -417,6 +417,7 @@ function handleU2fEnrollRequest(messageSender, request, sendResponse) {
             {
               'appId': appId,
               'tabId': messageSender.tab.id,
+              'frameId': 0,  // ignored
               'origin': sender.origin,
             },
             resolve);
@@ -897,7 +898,12 @@ Enroller.prototype.doRegisterWebAuthn_ = function(appId, challenge, request) {
 Enroller.prototype.checkU2fApiPermission_ = function(
     appId, challenge, request, attestationMode) {
   chrome.cryptotokenPrivate.canMakeU2fApiRequest(
-      {tabId: this.sender_.tabId, origin: this.sender_.origin, appId: appId},
+      {
+        tabId: this.sender_.tabId,
+        frameId: this.sender_.frameId,
+        origin: this.sender_.origin,
+        appId: appId
+      },
       (result) => {
         if (!result) {
           this.notifyError_({
