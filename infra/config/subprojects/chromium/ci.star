@@ -1745,6 +1745,17 @@ ci.chromium_builder(
     main_console_view = "main",
     cores = 12,
     os = os.MAC_DEFAULT,
+    properties = {
+        # The format of these properties is defined at archive/properties.proto
+        "$build/archive": {
+            "source_side_spec_path": [
+                "src",
+                "infra",
+                "archive_config",
+                "mac-arm64-archive-rel.json",
+            ],
+        },
+    },
 )
 
 ci.chromium_builder(
