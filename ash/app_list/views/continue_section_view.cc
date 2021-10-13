@@ -50,7 +50,8 @@ std::unique_ptr<views::Label> CreateContinueLabel(const std::u16string& text) {
 }  // namespace
 
 ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
-                                         int columns)
+                                         int columns,
+                                         bool tablet_mode)
     : view_delegate_(view_delegate) {
   DCHECK(view_delegate);
 
@@ -64,17 +65,20 @@ ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
 
   // TODO(https://crbug.com/1204551): Localized strings.
   // TODO(https://crbug.com/1204551): Styling.
-  auto* continue_label = AddChildView(CreateContinueLabel(u"Continue"));
-  continue_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  continue_label->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(0, kHeaderHorizontalPadding)));
+  if (!tablet_mode) {
+    auto* continue_label = AddChildView(CreateContinueLabel(u"Continue"));
+    continue_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    continue_label->SetBorder(
+        views::CreateEmptyBorder(gfx::Insets(0, kHeaderHorizontalPadding)));
+  }
 
   suggestions_container_ =
       AddChildView(std::make_unique<ContinueTaskContainerView>(
           view_delegate, columns,
           base::BindRepeating(
               &ContinueSectionView::OnSearchResultContainerResultsChanged,
-              base::Unretained(this))));
+              base::Unretained(this)),
+          tablet_mode));
 }
 
 ContinueSectionView::~ContinueSectionView() = default;

@@ -34,7 +34,8 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
 
   ContinueTaskContainerView(AppListViewDelegate* view_delegate,
                             int columns,
-                            OnResultsChanged update_callback);
+                            OnResultsChanged update_callback,
+                            bool tablet_mode);
   ContinueTaskContainerView(const ContinueTaskContainerView&) = delete;
   ContinueTaskContainerView& operator=(const ContinueTaskContainerView&) =
       delete;

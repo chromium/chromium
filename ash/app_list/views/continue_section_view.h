@@ -21,7 +21,9 @@ class ASH_EXPORT ContinueSectionView : public views::View {
  public:
   METADATA_HEADER(ContinueSectionView);
 
-  ContinueSectionView(AppListViewDelegate* view_delegate, int columns);
+  ContinueSectionView(AppListViewDelegate* view_delegate,
+                      int columns,
+                      bool tablet_mode);
   ContinueSectionView(const ContinueSectionView&) = delete;
   ContinueSectionView& operator=(const ContinueSectionView&) = delete;
   ~ContinueSectionView() override;

@@ -93,9 +93,9 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
 
   // Continue section row.
-  continue_section_ =
-      scroll_contents->AddChildView(std::make_unique<ContinueSectionView>(
-          view_delegate, kContinueColumnCount));
+  continue_section_ = scroll_contents->AddChildView(
+      std::make_unique<ContinueSectionView>(view_delegate, kContinueColumnCount,
+                                            /*tablet_mode=*/false));
 
   // Recent apps row.
   recent_apps_ = scroll_contents->AddChildView(

@@ -42,9 +42,11 @@ constexpr int kIconSize = 20;
 constexpr int kCircleRadius = 18;
 
 constexpr int kBetweenChildPadding = 16;
-constexpr gfx::Insets kInteriorMargin(7, 8, 7, 16);
+constexpr gfx::Insets kInteriorMarginClamshell(7, 8, 7, 16);
+constexpr gfx::Insets kInteriorMarginTablet(13, 16, 13, 20);
 
-constexpr int kViewCornerRadius = 8;
+constexpr int kViewCornerRadiusClamshell = 8;
+constexpr int kViewCornerRadiusTablet = 20;
 
 gfx::ImageSkia CreateIconWithCircleBackground(const gfx::ImageSkia& icon) {
   // The icon with circular background should only be styled when dark light
@@ -58,16 +60,21 @@ gfx::ImageSkia CreateIconWithCircleBackground(const gfx::ImageSkia& icon) {
       icon);
 }
 
+int GetCornerRadius(bool tablet_mode) {
+  return tablet_mode ? kViewCornerRadiusTablet : kViewCornerRadiusClamshell;
+}
+
 }  // namespace
 
-ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate)
+ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
+                                   bool tablet_mode)
     : view_delegate_(view_delegate) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetCallback(base::BindRepeating(&ContinueTaskView::OnButtonPressed,
                                   base::Unretained(this)));
   auto ink_drop_highlight_path =
       std::make_unique<views::RoundRectHighlightPathGenerator>(
-          gfx::Insets(), kViewCornerRadius);
+          gfx::Insets(), GetCornerRadius(tablet_mode));
   ink_drop_highlight_path->set_use_contents_bounds(true);
   ink_drop_highlight_path->set_use_mirrored_rect(true);
   views::HighlightPathGenerator::Install(this,
@@ -85,10 +92,17 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate)
   views::InkDrop::Get(this)->SetBaseColor(ripple_attributes.base_color);
   views::InkDrop::Get(this)->SetVisibleOpacity(
       ripple_attributes.inkdrop_opacity);
+  if (tablet_mode) {
+    SetBackground(views::CreateRoundedRectBackground(
+        ColorProvider::Get()->GetBaseLayerColor(
+            ColorProvider::BaseLayerType::kTransparent80),
+        GetCornerRadius(/*tablet_mode=*/true)));
+  }
 
   views::BoxLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, kInteriorMargin,
+          views::BoxLayout::Orientation::kHorizontal,
+          tablet_mode ? kInteriorMarginTablet : kInteriorMarginClamshell,
           kBetweenChildPadding));
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);

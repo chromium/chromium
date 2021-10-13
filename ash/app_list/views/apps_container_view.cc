@@ -264,7 +264,7 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
 
     auto* continue_section =
         continue_container_->AddChildView(std::make_unique<ContinueSectionView>(
-            view_delegate, kContinueColumnCount));
+            view_delegate, kContinueColumnCount, /*tablet_mode=*/true));
     continue_section->SetPaintToLayer();
     continue_section->layer()->SetFillsBoundsOpaquely(false);
     continue_section->UpdateSuggestionTasks();

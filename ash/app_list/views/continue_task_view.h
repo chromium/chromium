@@ -38,7 +38,7 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
  public:
   METADATA_HEADER(ContinueTaskView);
 
-  explicit ContinueTaskView(AppListViewDelegate* view_delegate);
+  ContinueTaskView(AppListViewDelegate* view_delegate, bool tablet_mode);
   ContinueTaskView(const ContinueTaskView&) = delete;
   ContinueTaskView& operator=(const ContinueTaskView&) = delete;
   ~ContinueTaskView() override;
