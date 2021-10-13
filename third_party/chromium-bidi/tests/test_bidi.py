@@ -828,6 +828,37 @@ async def test_scriptEvaluateDontWaitPromise_promiseReturned(websocket):
         }, resp["result"]["result"], ["objectId"])
 
 @pytest.mark.asyncio
+async def test_scriptEvaluateThenableAndWaitPromise_thenableReturned(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 460,
+        "method": "script.evaluate",
+        "params": {
+            "expression": "{then: (r)=>{r('SOME_RESULT');}}",
+            "awaitPromise": True,
+            "target": {"context": contextID}}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 460
+
+    # Compare ignoring `objectId`.
+    recursiveCompare({
+        "id": 460,
+        "result": {
+            "result": {
+            "objectId": "6648989764296027.141631980526024.9376085393313653",
+            "type": "object",
+            "value": [[
+                "then", {
+                    "objectId": "02303443180265008.08175681580349026.8281562053772789",
+                    "type": "function"}]]}}},
+        resp,
+        ["objectId"])
+
+@pytest.mark.asyncio
 async def test_scriptEvaluateWaitPromise_resultReturned(websocket):
     contextID = await get_open_context_id(websocket)
 
@@ -888,6 +919,144 @@ async def test_scriptEvaluateChangingObject_resultObjectDidNotChange(websocket):
             }]],
         "objectId": "__any_value__"
         }, resp["result"]["result"], ["objectId"])
+
+@pytest.mark.asyncio
+async def test_PROTO_scriptInvokeWithArgs_invokeResultReturn(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 48,
+        "method": "PROTO.script.invoke",
+        "params": {
+            "functionDeclaration": "(...args)=>{return Promise.resolve(args);}",
+            "args": [{
+                "type": "string",
+                "value": "ARGUMENT_STRING_VALUE"
+            },{
+                "type": "number",
+                "value": 42
+            }],
+            "target": {"context": contextID}}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 48
+
+    recursiveCompare({
+        "type": "array",
+        "value": [{
+            'type': 'string',
+            'value': 'ARGUMENT_STRING_VALUE'
+        }, {
+            'type': 'number',
+            'value': 42}],
+        "objectId": "__any_value__"
+        }, resp["result"]["result"], ["objectId"])
+
+@pytest.mark.asyncio
+async def test_PROTO_scriptInvokeWithThenableArgsAndAwaitParam_thenableReturn(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 49,
+        "method": "PROTO.script.invoke",
+        "params": {
+            "functionDeclaration": "(...args)=>({then: (r)=>{r(args);}})",
+            "args": [{
+                "type": "string",
+                "value": "ARGUMENT_STRING_VALUE"
+            },{
+                "type": "number",
+                "value": 42
+            }],
+            "awaitPromise": True,
+            "target": {"context": contextID}}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 49
+
+    recursiveCompare({
+        "id": 49,
+        "result": {
+            "result": {
+            "objectId": "0017540866018586065.8588900581845549.5556004446288361",
+            "type": "object",
+            "value": [[
+                "then", {
+                    "objectId": "27880276111744884.36134691065868907.6435355839204784",
+                    "type": "function" }]]}}},
+        resp,
+        ["objectId"])
+
+@pytest.mark.asyncio
+async def test_PROTO_scriptInvokeWithArgsAndDoNotAwaitPromise_promiseReturn(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 49,
+        "method": "PROTO.script.invoke",
+        "params": {
+            "functionDeclaration": "(...args)=>{return Promise.resolve(args);}",
+            "args": [{
+                "type": "string",
+                "value": "ARGUMENT_STRING_VALUE"
+            },{
+                "type": "number",
+                "value": 42
+            }],
+            "awaitPromise": False,
+            "target": {"context": contextID}}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 49
+
+    recursiveCompare({
+            "type":"promise",
+            "objectId": "__any_value__"
+        }, resp["result"]["result"], ["objectId"])
+
+@pytest.mark.asyncio
+async def test_PROTO_scriptInvokeWithRemoteValueArgument_resultReturn(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 50,
+        "method": "script.evaluate",
+        "params": {
+            "expression": "{SOME_PROPERTY:'SOME_VALUE'}",
+            "awaitPromise": True,
+            "target": {"context": contextID}}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 50
+
+    objectId = resp["result"]["result"]["objectId"]
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 51,
+        "method": "PROTO.script.invoke",
+        "params": {
+            "functionDeclaration": "(obj)=>{return obj.SOME_PROPERTY;}",
+            "args": [{
+                "objectId": objectId
+            }],
+            "target": {"context": contextID}}})
+
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "id": 51,
+        "result": {
+            "result": {
+                "type": "string",
+                "value": "SOME_VALUE"}}}
 
 # Testing serialization.
 async def assertSerialization(jsStrObject, expectedSerializedObject, websocket):

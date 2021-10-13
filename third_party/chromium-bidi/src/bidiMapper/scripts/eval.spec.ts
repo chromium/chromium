@@ -246,4 +246,47 @@ describe('Evaluator', function () {
             );
         });
     });
+    describe('deserialize', function () {
+        it('array + nested object', function () {
+            const deserializedOrigianlObj = EVALUATOR.deserialize({
+                type: "array",
+                value: [{
+                    type: "number",
+                    value: 1
+                }, {
+                    type: "string",
+                    value: "a"
+                }, {
+                    type: "object",
+                    value: [[
+                        "foo", {
+                            type: "string",
+                            value: "bar"
+                        }]]
+                }, {
+                    type: "array",
+                    value: [
+                        {
+                            type: "number",
+                            value: 2
+                        }, {
+                            type: "array",
+                            value: [
+                                {
+                                    type: "number",
+                                    value: 3
+                                }, {
+                                    type: "number",
+                                    value: 4
+                                },]
+                        },]
+                }]
+            });
+
+            chai.assert.deepEqual(
+                deserializedOrigianlObj,
+                [1, 'a', { foo: 'bar' }, [2, [3, 4]]]
+            );
+        });
+    });
 });

@@ -101,8 +101,22 @@
     }
   }
 
-  function deserialize(value) {
-    switch (value.type) {
+  function deserialize(serializedValue) {
+    if (serializedValue.hasOwnProperty('objectId')) {
+      const weakRef = objectCache._idToObject.get(serializedValue.objectId);
+      if (!weakRef) {
+        throw new Error('unknown object reference');
+      }
+
+      const obj = weakRef.deref();
+      if (!obj) {
+        throw new Error('stale object reference');
+      }
+
+      return obj;
+    }
+
+    switch (serializedValue.type) {
       case 'undefined': {
         return undefined;
       }
@@ -110,42 +124,44 @@
         return null;
       }
       case 'string': {
-        return value.value;
+        return serializedValue.value;
       }
       case 'number': {
-        if (value.value === 'NaN') {
+        if (serializedValue.value === 'NaN') {
           return NaN;
-        } else if (value.value === '-0') {
+        } else if (serializedValue.value === '-0') {
           return -0;
-        } else if (value.value === '+Infinity') {
+        } else if (serializedValue.value === '+Infinity') {
           return +Infinity;
-        } else if (value.value === '-Infinity') {
+        } else if (serializedValue.value === '-Infinity') {
           return -Infinity;
         } else {
-          return value.value;
+          return Number(serializedValue.value);
         }
       }
       case 'boolean': {
-        return value.value;
+        return serializedValue.value;
+      }
+      case 'array': {
+        const result = [];
+        for (let val of serializedValue.value) {
+          result.push(deserialize(val));
+        }
+        return result;
+      }
+      case 'object': {
+        const result = {};
+        for (let val of serializedValue.value) {
+          // TODO sadym: implement key deserialization.
+          result[val[0]] = deserialize(val[1]);
+        }
+        return result;
       }
       case 'promise':
-      case 'array':
       case 'function':
-      case 'object': {
-        const weakRef = objectCache._idToObject.get(value.objectId);
-        if (!weakRef) {
-          throw new Error('unknown object reference');
-        }
-
-        const obj = weakRef.deref();
-        if (!obj) {
-          throw new Error('stable object reference');
-        }
-
-        return obj;
-      }
+        throw new Error(`type ${serializedValue.type} cannot be deserialized`);
       default:
-        throw new Error('not yet implemented');
+        throw new Error(`deserialization of ${serializedValue.type} is not yet implemented`);
 
     }
   }

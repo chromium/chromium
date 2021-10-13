@@ -29,21 +29,50 @@ export namespace Script {
   }
   export type Target = ContextTarget | RealTarget;
 
+  export interface ScriptExceptionResult {
+    exceptionDetails: CommonDataTypes.ExceptionDetails;
+  }
+
   export type ScriptEvaluateResult =
     | ScriptEvaluateSuccessResult
-    | ScriptEvaluateExceptionResult;
+    | ScriptExceptionResult;
 
   export interface ScriptEvaluateSuccessResult {
     result: CommonDataTypes.RemoteValue;
-  }
-  export interface ScriptEvaluateExceptionResult {
-    exceptionDetails: CommonDataTypes.ExceptionDetails;
   }
 
   export interface ScriptEvaluateParameters {
     expression: string;
     awaitPromise?: boolean;
     target: Target;
+  }
+
+  export namespace PROTO {
+    export interface ScriptInvokeParameters {
+      functionDeclaration: string;
+      args: InvokeArgument[];
+      awaitPromise?: boolean;
+      target: Target;
+    }
+
+    export type ScriptInvokeResult =
+      | ScriptInvokeSuccessResult
+      | ScriptExceptionResult;
+
+    export interface ScriptInvokeSuccessResult {
+      result: CommonDataTypes.RemoteValue;
+    }
+
+    export type InvokeArgument = RemoteValueArgument | LocalValueArgument;
+
+    export interface RemoteValueArgument {
+      objectId: string;
+    }
+
+    export interface LocalValueArgument {
+      type: string;
+      value: any;
+    }
   }
 }
 

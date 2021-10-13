@@ -29,6 +29,7 @@ export class Context {
   // As `script.evaluate` wraps call into serialization script, `lineNumber`
   // should be adjusted.
   private _evaluateStacktraceLineOffset = 1;
+  private _invokeStacktraceLineOffset = 1;
 
   private constructor(
     private _contextId: string,
@@ -104,7 +105,8 @@ export class Context {
   }
 
   private async _serializeCdpExceptionDetails(
-    cdpExceptionDetails: Protocol.Runtime.ExceptionDetails
+    cdpExceptionDetails: Protocol.Runtime.ExceptionDetails,
+    lineOffset: number
   ) {
     const callFrames = cdpExceptionDetails.stackTrace?.callFrames.map(
       (frame) => ({
@@ -112,7 +114,7 @@ export class Context {
         functionName: frame.functionName,
         // As `script.evaluate` wraps call into serialization script, so
         // `lineNumber` should be adjusted.
-        lineNumber: frame.lineNumber - this._evaluateStacktraceLineOffset,
+        lineNumber: frame.lineNumber - lineOffset,
         columnNumber: frame.columnNumber,
       })
     );
@@ -127,8 +129,7 @@ export class Context {
         columnNumber: cdpExceptionDetails.columnNumber,
         // As `script.evaluate` wraps call into serialization script, so
         // `lineNumber` should be adjusted.
-        lineNumber:
-          cdpExceptionDetails.lineNumber - this._evaluateStacktraceLineOffset,
+        lineNumber: cdpExceptionDetails.lineNumber - lineOffset,
         stackTrace: {
           callFrames: callFrames || [],
         },
@@ -145,10 +146,16 @@ export class Context {
     // on the`EVALUATOR_SCRIPT` length in case of exception. Based on
     // `awaitPromise`, `_serialize` function will wait for the result, or
     // serialize promise as-is.
+    // TODO sadym: add error handling for serialization errors.
+    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/57
     const evalAndSerializeScript = `_serialize(\n${expression}\n);
       async function _serialize(value){
+        if(${awaitPromise ? 'true' : 'false'}
+            && value instanceof Promise) {
+          value = await value;
+        }
         return (${EVALUATOR_SCRIPT})
-          .serialize.apply(null, [${awaitPromise ? 'await' : ''} value])
+          .serialize.apply(null, [value])
       }`;
 
     const cdpEvaluateResult = await this._cdpClient.Runtime.evaluate({
@@ -161,12 +168,53 @@ export class Context {
     if (cdpEvaluateResult.exceptionDetails) {
       // Serialize exception details.
       return await this._serializeCdpExceptionDetails(
-        cdpEvaluateResult.exceptionDetails
+        cdpEvaluateResult.exceptionDetails,
+        this._evaluateStacktraceLineOffset
       );
     }
 
     return {
       result: cdpEvaluateResult.result.value!,
+    };
+  }
+
+  public async PROTO_scriptInvoke(
+    functionDeclaration: string,
+    args: Script.PROTO.InvokeArgument[],
+    awaitPromise: boolean
+  ): Promise<Script.PROTO.ScriptInvokeResult> {
+    // TODO sadym: add error handling for serialization/deserialization errors.
+    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/57
+    const invokeAndSerializeScript = `async (...serializedArgs)=>{ return _invoke(\n${functionDeclaration}\n, serializedArgs);
+      async function _invoke(f, serializedArgs) {
+        const evaluator = (${EVALUATOR_SCRIPT});
+        const deserializedArgs = serializedArgs.map(evaluator.deserialize);
+        let resultValue = f.apply(this, deserializedArgs);
+        if(${awaitPromise ? 'true' : 'false'}
+            && resultValue instanceof Promise) {
+          resultValue = await resultValue;
+        }
+        return evaluator.serialize(resultValue);
+      }}`;
+
+    const cdpInvokeResult = await this._cdpClient.Runtime.callFunctionOn({
+      functionDeclaration: invokeAndSerializeScript,
+      arguments: args.map((a) => ({ value: a })),
+      awaitPromise: true,
+      returnByValue: true,
+      objectId: this._dummyContextObjectId,
+    });
+
+    if (cdpInvokeResult.exceptionDetails) {
+      // Serialize exception details.
+      return await this._serializeCdpExceptionDetails(
+        cdpInvokeResult.exceptionDetails,
+        this._invokeStacktraceLineOffset
+      );
+    }
+
+    return {
+      result: cdpInvokeResult.result.value,
     };
   }
 }
