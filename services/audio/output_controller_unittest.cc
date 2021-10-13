@@ -311,8 +311,6 @@ class AudioManagerForControllerTest final : public media::FakeAudioManager {
     return last_created_stream_;
   }
 
-  void SimulateDeviceChange() { NotifyAllOutputDeviceChangeListeners(); }
-
  private:
   void SetLastClosedStream(MockAudioOutputStream* stream) {
     last_closed_stream_ = stream;
@@ -398,23 +396,16 @@ class OutputControllerTest : public ::testing::Test {
     Mock::VerifyAndClearExpectations(&mock_event_handler_);
   }
 
-  void ChangeDevice(bool expect_play_event = true) {
-    // If the stream was already playing before the device change, expect the
-    // event handler to receive one OnControllerPaying() call.
-    if (expect_play_event) {
-      EXPECT_CALL(mock_event_handler_, OnControllerPlaying());
-    } else {
-      EXPECT_CALL(mock_event_handler_, OnControllerPlaying()).Times(0);
-    }
-
-    // Never expect a OnControllerPaused() call.
+  void ChangeDevice() {
+    // Expect the event handler to receive one OnControllerPaying() call and no
+    // OnControllerPaused() call.
+    EXPECT_CALL(mock_event_handler_, OnControllerPlaying());
     EXPECT_CALL(mock_event_handler_, OnControllerPaused()).Times(0);
 
     // Simulate a device change event to OutputController from the AudioManager.
     audio_manager_.GetTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AudioManagerForControllerTest::SimulateDeviceChange,
-                       base::Unretained(&audio_manager_)));
+        FROM_HERE, base::BindOnce(&OutputController::OnDeviceChange,
+                                  base::Unretained(&(*controller_))));
 
     // Wait for device change to take effect.
     base::RunLoop loop;
@@ -471,6 +462,32 @@ class OutputControllerTest : public ::testing::Test {
 
   void Flush() { controller_->Flush(); }
 
+  void SimulateErrorThenDeviceChange() {
+    audio_manager_.GetTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&OutputControllerTest::TriggerErrorThenDeviceChange,
+                       base::Unretained(this)));
+
+    base::RunLoop loop;
+    audio_manager_.GetTaskRunner()->PostTask(FROM_HERE, loop.QuitClosure());
+    loop.Run();
+  }
+
+  void TriggerErrorThenDeviceChange() {
+    DCHECK(audio_manager_.GetTaskRunner()->BelongsToCurrentThread());
+
+    // Errors should be deferred; the device change should ensure it's dropped.
+    EXPECT_CALL(mock_event_handler_, OnControllerError()).Times(0);
+    controller_->OnError(
+        media::AudioOutputStream::AudioSourceCallback::ErrorType::kUnknown);
+
+    EXPECT_CALL(mock_event_handler_, OnControllerPlaying());
+    EXPECT_CALL(mock_event_handler_, OnControllerPaused()).Times(0);
+    controller_->OnDeviceChange();
+
+    Mock::VerifyAndClearExpectations(&mock_event_handler_);
+  }
+
   StrictMock<MockOutputControllerEventHandler> mock_event_handler_;
   StrictMock<MockOutputStreamActivityMonitor> mock_stream_activity_monitor_;
 
@@ -526,34 +543,13 @@ TEST_F(OutputControllerTest, PlayDeviceChangeClose) {
   Close();
 }
 
-TEST_F(OutputControllerTest, PlayDeviceChangeDeviceChangeClose) {
+TEST_F(OutputControllerTest, PlayDeviceChangeError) {
   EXPECT_CALL(mock_stream_activity_monitor_, OnOutputStreamActive()).Times(1);
   EXPECT_CALL(mock_stream_activity_monitor_, OnOutputStreamInactive()).Times(1);
 
   Create();
   Play();
-  ChangeDevice();
-  ChangeDevice();
-  Close();
-}
-
-TEST_F(OutputControllerTest, PlayPauseDeviceChangeClose) {
-  EXPECT_CALL(mock_stream_activity_monitor_, OnOutputStreamActive()).Times(1);
-  EXPECT_CALL(mock_stream_activity_monitor_, OnOutputStreamInactive()).Times(1);
-
-  Create();
-  Play();
-  Pause();
-  ChangeDevice(/*expect_play_event=*/false);
-  Close();
-}
-
-TEST_F(OutputControllerTest, CreateDeviceChangeClose) {
-  EXPECT_CALL(mock_stream_activity_monitor_, OnOutputStreamActive()).Times(0);
-  EXPECT_CALL(mock_stream_activity_monitor_, OnOutputStreamInactive()).Times(0);
-
-  Create();
-  ChangeDevice(/*expect_play_event=*/false);
+  SimulateErrorThenDeviceChange();
   Close();
 }
 
@@ -773,20 +769,6 @@ TEST_F(OutputControllerTest, FlushesWhenStreamIsNotPlaying) {
   Create();
   Play();
   Pause();
-
-  MockAudioOutputStream* const mock_stream = last_created_stream();
-  EXPECT_CALL(*mock_stream, DidFlush()).Times(1);
-  Flush();
-
-  Close();
-}
-
-TEST_F(OutputControllerTest, FlushesAfterDeviceChange) {
-  EXPECT_CALL(mock_stream_activity_monitor_, OnOutputStreamActive()).Times(0);
-  EXPECT_CALL(mock_stream_activity_monitor_, OnOutputStreamInactive()).Times(0);
-
-  Create();
-  ChangeDevice(/*expect_play_event=*/false);
 
   MockAudioOutputStream* const mock_stream = last_created_stream();
   EXPECT_CALL(*mock_stream, DidFlush()).Times(1);
