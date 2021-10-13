@@ -67,6 +67,12 @@ void CardUnmaskOtpInputDialogViews::ShowPendingState() {
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
 }
 
+void CardUnmaskOtpInputDialogViews::ShowErrorMessage(
+    const std::u16string error_message) {
+  // TODO(crbug.com/1196021): Show error message when OTP verification fails.
+  NOTIMPLEMENTED();
+}
+
 void CardUnmaskOtpInputDialogViews::OnControllerDestroying() {
   controller_ = nullptr;
   GetWidget()->Close();

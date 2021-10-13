@@ -52,6 +52,12 @@ CardUnmaskOtpInputDialogControllerImpl::GetTextfieldPlaceholderText() const {
       base::NumberToString16(otp_length_));
 }
 
+#if defined(OS_ANDROID)
+int CardUnmaskOtpInputDialogControllerImpl::GetExpectedOtpLength() const {
+  return otp_length_;
+}
+#endif  // OS_ANDROID
+
 bool CardUnmaskOtpInputDialogControllerImpl::IsValidOtp(
     const std::u16string& otp) const {
   return otp.length() == otp_length_ &&
