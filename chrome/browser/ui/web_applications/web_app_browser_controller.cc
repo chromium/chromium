@@ -246,6 +246,15 @@ absl::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
   if (auto color = AppBrowserController::GetBackgroundColor())
     return color;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsDarkLightModeEnabled()) {
+    absl::optional<SkColor> dark_mode_color =
+        registrar().GetAppDarkModeBackgroundColor(app_id());
+    if (ash::ColorProvider::Get()->IsDarkModeEnabled() && dark_mode_color) {
+      return dark_mode_color;
+    }
+  }
+#endif
   return registrar().GetAppBackgroundColor(app_id());
 }
 

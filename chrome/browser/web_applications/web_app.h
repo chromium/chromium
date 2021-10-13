@@ -56,13 +56,16 @@ class WebApp {
   const GURL& scope() const { return scope_; }
 
   const absl::optional<SkColor>& theme_color() const { return theme_color_; }
-
   const absl::optional<SkColor>& dark_mode_theme_color() const {
     return dark_mode_theme_color_;
   }
 
   const absl::optional<SkColor>& background_color() const {
     return background_color_;
+  }
+
+  const absl::optional<SkColor>& dark_mode_background_color() const {
+    return dark_mode_background_color_;
   }
 
   DisplayMode display_mode() const { return display_mode_; }
@@ -258,8 +261,9 @@ class WebApp {
   void SetLaunchQueryParams(absl::optional<std::string> launch_query_params);
   void SetScope(const GURL& scope);
   void SetThemeColor(absl::optional<SkColor> theme_color);
-  void SetDarkModeThemeColor(absl::optional<SkColor> background_color);
+  void SetDarkModeThemeColor(absl::optional<SkColor> theme_color);
   void SetBackgroundColor(absl::optional<SkColor> background_color);
+  void SetDarkModeBackgroundColor(absl::optional<SkColor> background_color);
   void SetDisplayMode(DisplayMode display_mode);
   void SetUserDisplayMode(DisplayMode user_display_mode);
   void SetDisplayModeOverride(std::vector<DisplayMode> display_mode_override);
@@ -331,6 +335,7 @@ class WebApp {
   absl::optional<SkColor> theme_color_;
   absl::optional<SkColor> dark_mode_theme_color_;
   absl::optional<SkColor> background_color_;
+  absl::optional<SkColor> dark_mode_background_color_;
   DisplayMode display_mode_;
   DisplayMode user_display_mode_;
   std::vector<DisplayMode> display_mode_override_;

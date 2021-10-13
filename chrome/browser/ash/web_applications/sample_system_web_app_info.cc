@@ -31,8 +31,10 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForSampleSystemWebApp() {
   info->background_color = 0xFFFFFFFF;
   // Bright green in dark mode to be able to see it flicker.
   // This should match up with the dark theme background color to prevent
-  // flickering.
+  // flickering. But for the sample app, we use different, garish colors
+  // to make sure we can see it working.
   info->dark_mode_theme_color = 0xFF11ff00;
+  info->dark_mode_background_color = 0xFFff8888;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 

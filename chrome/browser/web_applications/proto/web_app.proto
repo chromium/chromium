@@ -121,7 +121,6 @@ message WebAppProto {
 
   // A list of icon sizes we successfully downloaded to store on disk, for icons
   // that are suitable for any purpose (ie. IconPurpose::ANY). See also:
-  // |downloaded_icon_sizes_purpose_maskable|,
   // |downloaded_icon_sizes_purpose_monochrome|.
   repeated int32 downloaded_icon_sizes_purpose_any = 11;
 
@@ -236,7 +235,7 @@ message WebAppProto {
   // allow these protocols be launched in the web app.
   repeated string disallowed_launch_protocols = 40;
 
-  // A background color to be used when the app is opened in dark mode.
+  // A theme color to be used when the app is opened in dark mode.
   optional uint32 dark_mode_theme_color = 41;
 
   // Should be kept in sync with `ApiApprovalState` in web_app_constants.h.
@@ -251,4 +250,8 @@ message WebAppProto {
   // For apps installed via the SubApp API, ID of the parent app that installed
   // the Sub-app.
   optional string parent_app_id = 43;
+  
+  // A background color to be used when the app is opened in dark mode.
+  optional uint32 dark_mode_background_color = 44;
+
 }

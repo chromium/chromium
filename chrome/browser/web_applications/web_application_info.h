@@ -240,6 +240,10 @@ struct WebApplicationInfo {
   // https://www.w3.org/TR/appmanifest/#background_color-member
   absl::optional<SkColor> background_color;
 
+  // The color to use for the background when
+  // launched in dark mode. This doesn't yet have manifest support.
+  absl::optional<SkColor> dark_mode_background_color;
+
   // App preference regarding whether the app should be opened in a tab,
   // in a window (with or without minimal-ui buttons), or full screen. Defaults
   // to browser display mode as specified in

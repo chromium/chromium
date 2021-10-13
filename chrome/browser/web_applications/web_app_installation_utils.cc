@@ -79,13 +79,19 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
   DCHECK(!web_app_info.theme_color.has_value() ||
          SkColorGetA(*web_app_info.theme_color) == SK_AlphaOPAQUE);
   web_app.SetThemeColor(web_app_info.theme_color);
-  DCHECK(!web_app_info.background_color.has_value() ||
-         SkColorGetA(*web_app_info.background_color) == SK_AlphaOPAQUE);
-  web_app.SetBackgroundColor(web_app_info.background_color);
 
   DCHECK(!web_app_info.dark_mode_theme_color.has_value() ||
          SkColorGetA(*web_app_info.dark_mode_theme_color) == SK_AlphaOPAQUE);
   web_app.SetDarkModeThemeColor(web_app_info.dark_mode_theme_color);
+
+  DCHECK(!web_app_info.background_color.has_value() ||
+         SkColorGetA(*web_app_info.background_color) == SK_AlphaOPAQUE);
+  web_app.SetBackgroundColor(web_app_info.background_color);
+
+  DCHECK(!web_app_info.dark_mode_background_color.has_value() ||
+         SkColorGetA(*web_app_info.dark_mode_background_color) ==
+             SK_AlphaOPAQUE);
+  web_app.SetDarkModeBackgroundColor(web_app_info.dark_mode_background_color);
 
   WebApp::SyncFallbackData sync_fallback_data;
   sync_fallback_data.name = base::UTF16ToUTF8(web_app_info.title);

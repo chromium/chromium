@@ -165,13 +165,18 @@ void WebApp::SetThemeColor(absl::optional<SkColor> theme_color) {
   theme_color_ = theme_color;
 }
 
+void WebApp::SetDarkModeThemeColor(
+    absl::optional<SkColor> dark_mode_theme_color) {
+  dark_mode_theme_color_ = dark_mode_theme_color;
+}
+
 void WebApp::SetBackgroundColor(absl::optional<SkColor> background_color) {
   background_color_ = background_color;
 }
 
-void WebApp::SetDarkModeThemeColor(
-    absl::optional<SkColor> dark_mode_theme_color) {
-  dark_mode_theme_color_ = dark_mode_theme_color;
+void WebApp::SetDarkModeBackgroundColor(
+    absl::optional<SkColor> dark_mode_background_color) {
+  dark_mode_background_color_ = dark_mode_background_color;
 }
 
 void WebApp::SetDisplayMode(DisplayMode display_mode) {
@@ -415,8 +420,9 @@ bool WebApp::operator==(const WebApp& other) const {
         app.launch_query_params_,
         app.scope_,
         app.theme_color_,
-        app.background_color_,
         app.dark_mode_theme_color_,
+        app.background_color_,
+        app.dark_mode_background_color_,
         app.display_mode_,
         app.user_display_mode_,
         app.display_mode_override_,
@@ -514,6 +520,9 @@ base::Value WebApp::AsDebugValue() const {
 
   root.SetStringKey("dark_mode_theme_color",
                     ColorToString(dark_mode_theme_color_));
+
+  root.SetStringKey("dark_mode_background_color",
+                    ColorToString(dark_mode_background_color_));
 
   root.SetStringKey("capture_links", ConvertToString(capture_links_));
 

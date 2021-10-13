@@ -38,8 +38,9 @@ TEST(WebAppInstallationUtils, SetWebAppManifestFields_Summary) {
   web_app_info.title = u"App Name";
   web_app_info.description = u"App Description";
   web_app_info.theme_color = SK_ColorCYAN;
-  web_app_info.background_color = SK_ColorMAGENTA;
   web_app_info.dark_mode_theme_color = SK_ColorBLACK;
+  web_app_info.background_color = SK_ColorMAGENTA;
+  web_app_info.dark_mode_background_color = SK_ColorBLACK;
 
   const AppId app_id =
       GenerateAppId(/*manifest_id=*/absl::nullopt, web_app_info.start_url);
@@ -51,18 +52,22 @@ TEST(WebAppInstallationUtils, SetWebAppManifestFields_Summary) {
   EXPECT_EQ(web_app->description(), "App Description");
   EXPECT_TRUE(web_app->theme_color().has_value());
   EXPECT_EQ(*web_app->theme_color(), SK_ColorCYAN);
-  EXPECT_TRUE(web_app->background_color().has_value());
   EXPECT_TRUE(web_app->dark_mode_theme_color().has_value());
-  EXPECT_EQ(*web_app->background_color(), SK_ColorMAGENTA);
   EXPECT_EQ(*web_app->dark_mode_theme_color(), SK_ColorBLACK);
+  EXPECT_TRUE(web_app->background_color().has_value());
+  EXPECT_EQ(*web_app->background_color(), SK_ColorMAGENTA);
+  EXPECT_TRUE(web_app->dark_mode_background_color().has_value());
+  EXPECT_EQ(*web_app->dark_mode_background_color(), SK_ColorBLACK);
 
   web_app_info.theme_color = absl::nullopt;
-  web_app_info.background_color = absl::nullopt;
   web_app_info.dark_mode_theme_color = absl::nullopt;
+  web_app_info.background_color = absl::nullopt;
+  web_app_info.dark_mode_background_color = absl::nullopt;
   SetWebAppManifestFields(web_app_info, *web_app);
   EXPECT_FALSE(web_app->theme_color().has_value());
-  EXPECT_FALSE(web_app->background_color().has_value());
   EXPECT_FALSE(web_app->dark_mode_theme_color().has_value());
+  EXPECT_FALSE(web_app->background_color().has_value());
+  EXPECT_FALSE(web_app->dark_mode_background_color().has_value());
 }
 
 TEST(WebAppInstallationUtils, SetWebAppManifestFields_ShareTarget) {

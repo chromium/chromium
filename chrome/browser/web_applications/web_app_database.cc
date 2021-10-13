@@ -283,11 +283,15 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     local_data->set_scope(web_app.scope().spec());
   if (web_app.theme_color().has_value())
     local_data->set_theme_color(web_app.theme_color().value());
-  if (web_app.background_color().has_value())
-    local_data->set_background_color(web_app.background_color().value());
   if (web_app.dark_mode_theme_color().has_value())
     local_data->set_dark_mode_theme_color(
         web_app.dark_mode_theme_color().value());
+  if (web_app.background_color().has_value())
+    local_data->set_background_color(web_app.background_color().value());
+  if (web_app.dark_mode_background_color().has_value()) {
+    local_data->set_dark_mode_background_color(
+        web_app.dark_mode_background_color().value());
+  }
   if (!web_app.last_badging_time().is_null()) {
     local_data->set_last_badging_time(
         syncer::TimeToProtoTime(web_app.last_badging_time()));
@@ -669,8 +673,14 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     web_app->SetDarkModeThemeColor(local_data.dark_mode_theme_color());
   }
 
-  if (local_data.has_background_color())
+  if (local_data.has_background_color()) {
     web_app->SetBackgroundColor(local_data.background_color());
+  }
+
+  if (local_data.has_dark_mode_background_color()) {
+    web_app->SetDarkModeBackgroundColor(
+        local_data.dark_mode_background_color());
+  }
 
   if (local_data.has_is_from_sync_and_pending_installation())
     web_app->SetIsFromSyncAndPendingInstallation(

@@ -377,6 +377,11 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
     return true;
   }
 
+  if (web_application_info_->dark_mode_background_color !=
+      app->dark_mode_background_color()) {
+    return true;
+  }
+
   if (web_application_info_->manifest_url != app->manifest_url())
     return true;
 

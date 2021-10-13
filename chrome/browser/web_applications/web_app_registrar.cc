@@ -518,16 +518,22 @@ absl::optional<SkColor> WebAppRegistrar::GetAppThemeColor(
   return web_app ? web_app->theme_color() : absl::nullopt;
 }
 
+absl::optional<SkColor> WebAppRegistrar::GetAppDarkModeThemeColor(
+    const AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? web_app->dark_mode_theme_color() : absl::nullopt;
+}
+
 absl::optional<SkColor> WebAppRegistrar::GetAppBackgroundColor(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   return web_app ? web_app->background_color() : absl::nullopt;
 }
 
-absl::optional<SkColor> WebAppRegistrar::GetAppDarkModeThemeColor(
+absl::optional<SkColor> WebAppRegistrar::GetAppDarkModeBackgroundColor(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->dark_mode_theme_color() : absl::nullopt;
+  return web_app ? web_app->dark_mode_background_color() : absl::nullopt;
 }
 
 const GURL& WebAppRegistrar::GetAppStartUrl(const AppId& app_id) const {
