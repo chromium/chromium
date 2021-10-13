@@ -76,6 +76,15 @@ const base::Feature kBackgroundFetch{"BackgroundFetch",
 const base::Feature kBackForwardCache{"BackForwardCache",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Allows pages with a media play to stay eligible the back/forward cache.
+const base::Feature kBackForwardCacheMediaPlay{
+    "BackForwardCacheMediaPlay", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Allows pages that created a MediaSession service to stay eligible for the
+// back/forward cache.
+const base::Feature kBackForwardCacheMediaSessionService{
+    "BackForwardCacheMediaSessionService", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable same-site back-forward cache for trybots. This is here because of
 // https://crbug.com/1211818 and should only used for trybots. For normal use
 // cases, please set BackForwardCache's enable_same_site param to true.

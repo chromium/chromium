@@ -140,6 +140,10 @@ class MediaSessionImpl : public MediaSession,
       RenderFrameHost* rfh,
       const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
   void MediaPictureInPictureChanged(bool is_picture_in_picture) override;
+  void RenderFrameHostStateChanged(
+      RenderFrameHost* host,
+      RenderFrameHost::LifecycleState old_state,
+      RenderFrameHost::LifecycleState new_state) override;
 
   // MediaSessionService-related methods
 
@@ -481,6 +485,11 @@ class MediaSessionImpl : public MediaSession,
   // Players that are playing in the web contents but we cannot control (e.g.
   // WebAudio or MediaStream).
   base::flat_set<PlayerIdentifier> one_shot_players_;
+
+  // Players that are removed from |normal_players_| temporarily when the page
+  // goes to back-forward cache. When the page is restored from the cache, these
+  // players are also restored to |normal_players_|.
+  base::flat_set<PlayerIdentifier> hidden_players_;
 
   State audio_focus_state_ = State::INACTIVE;
   MediaSession::SuspendType suspend_type_;

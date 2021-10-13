@@ -7924,7 +7924,7 @@ class BackForwardCacheBrowserTestWithMediaPlay
     : public BackForwardCacheBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(kBackForwardCacheMediaPlay, "", "");
+    EnableFeatureAndSetParams(features::kBackForwardCacheMediaPlay, "", "");
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 };
@@ -11743,7 +11743,7 @@ class BackForwardCacheBrowserTestWithMediaSessionPlaybackStateChangeSupported
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EnableFeatureAndSetParams(kBackForwardCacheMediaSessionPlaybackStateChange,
                               "", "");
-    EnableFeatureAndSetParams(kBackForwardCacheMediaPlay, "", "");
+    EnableFeatureAndSetParams(features::kBackForwardCacheMediaPlay, "", "");
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 

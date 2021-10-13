@@ -7,6 +7,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/new_badge_label.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -32,9 +34,12 @@
 #include "components/soda/constants.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/media_start_stop_observer.h"
 #include "media/base/media_switches.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -89,7 +94,11 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
     MaybeStopWaiting();
   }
 
-  void OnMediaButtonHidden() override {}
+  void OnMediaButtonHidden() override {
+    waiting_for_button_hidden_ = false;
+    MaybeStopWaiting();
+  }
+
   void OnMediaButtonEnabled() override {}
   void OnMediaButtonDisabled() override {}
 
@@ -107,6 +116,14 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
     waiting_for_button_shown_ = true;
     Wait();
     return button_->GetVisible();
+  }
+
+  WARN_UNUSED_RESULT bool WaitForButtonHidden() {
+    if (!button_->GetVisible())
+      return true;
+    waiting_for_button_hidden_ = true;
+    Wait();
+    return !button_->GetVisible();
   }
 
   void WaitForDialogToContainText(const std::u16string& text) {
@@ -233,6 +250,7 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
 
   bool waiting_for_dialog_opened_ = false;
   bool waiting_for_button_shown_ = false;
+  bool waiting_for_button_hidden_ = false;
   bool waiting_for_item_count_ = false;
   bool waiting_for_pip_visibility_changed_ = false;
 
@@ -387,6 +405,10 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
   WARN_UNUSED_RESULT bool WaitForToolbarIconShown() {
     return MediaToolbarButtonWatcher(GetToolbarIcon()).WaitForButtonShown();
+  }
+
+  WARN_UNUSED_RESULT bool WaitForToolbarIconHidden() {
+    return MediaToolbarButtonWatcher(GetToolbarIcon()).WaitForButtonHidden();
   }
 
   void OpenTestURL() {
@@ -1037,6 +1059,140 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   OnSodaInstalled();
   EXPECT_EQ("Live Caption (English only)",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+}
+
+class MediaDialogViewWithBackForwardCacheBrowserTest
+    : public MediaDialogViewBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MediaDialogViewBrowserTest::SetUpCommandLine(command_line);
+
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+        enabled_features;
+    std::map<std::string, std::string> params;
+#if defined(OS_ANDROID)
+    params["process_binding_strength"] = "NORMAL";
+#endif
+    enabled_features.emplace_back(features::kBackForwardCache, params);
+    enabled_features.emplace_back(features::kBackForwardCacheMediaPlay,
+                                  std::map<std::string, std::string>{});
+    enabled_features.emplace_back(
+        features::kBackForwardCacheMediaSessionService,
+        std::map<std::string, std::string>{});
+
+    std::vector<base::Feature> disabled_features = {
+        features::kBackForwardCacheMemoryControls,
+    };
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+  void SetUpOnMainThread() override {
+    embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    MediaDialogViewBrowserTest::SetUpOnMainThread();
+  }
+
+  content::RenderFrameHost* GetMainFrame() {
+    return GetActiveWebContents()->GetMainFrame();
+  }
+
+ protected:
+  base::FilePath GetTestDataDirectory() {
+    base::FilePath test_file_directory;
+    base::PathService::Get(chrome::DIR_TEST_DATA, &test_file_directory);
+    return test_file_directory;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
+                       PlayAndCache) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url1(embedded_test_server()->GetURL(
+      "a.test", "/media/session/video-with-metadata.html"));
+  GURL url2(embedded_test_server()->GetURL("b.test", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  content::RenderFrameHost* rfh = GetMainFrame();
+
+  StartPlayback();
+  WaitForStart();
+
+  // Open the media dialog.
+  EXPECT_TRUE(WaitForToolbarIconShown());
+  ClickToolbarIcon();
+  EXPECT_TRUE(WaitForDialogOpened());
+  EXPECT_TRUE(IsDialogVisible());
+
+  // Navigate to another page. The original page is cached.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
+  EXPECT_EQ(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
+            rfh->GetLifecycleState());
+  EXPECT_TRUE(WaitForToolbarIconHidden());
+  EXPECT_FALSE(IsDialogVisible());
+
+  // Go back to the original page. The original page is restored from the cache.
+  GetActiveWebContents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(GetActiveWebContents()));
+  EXPECT_NE(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
+            rfh->GetLifecycleState());
+  EXPECT_FALSE(IsDialogVisible());
+
+  EXPECT_TRUE(WaitForToolbarIconShown());
+  ClickToolbarIcon();
+  EXPECT_TRUE(WaitForDialogOpened());
+  EXPECT_TRUE(IsDialogVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
+                       PauseAndCache) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url1(embedded_test_server()->GetURL(
+      "a.test", "/media/session/video-with-metadata.html"));
+  GURL url2(embedded_test_server()->GetURL("b.test", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  content::RenderFrameHost* rfh = GetMainFrame();
+
+  StartPlayback();
+  WaitForStart();
+
+  // Open the media dialog.
+  EXPECT_TRUE(WaitForToolbarIconShown());
+  ClickToolbarIcon();
+  EXPECT_TRUE(WaitForDialogOpened());
+  EXPECT_TRUE(IsDialogVisible());
+
+  // Pause the media.
+  ClickPauseButtonOnDialog();
+  WaitForStop();
+  EXPECT_TRUE(IsDialogVisible());
+
+  // Close the dialog.
+  ClickToolbarIcon();
+  EXPECT_FALSE(IsDialogVisible());
+
+  // Navigate to another page. The original page is cached.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
+  EXPECT_EQ(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
+            rfh->GetLifecycleState());
+  EXPECT_TRUE(WaitForToolbarIconHidden());
+  EXPECT_FALSE(IsDialogVisible());
+
+  // Go back to the original page. The original page is restored from the cache.
+  GetActiveWebContents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(GetActiveWebContents()));
+  EXPECT_NE(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
+            rfh->GetLifecycleState());
+  EXPECT_FALSE(IsDialogVisible());
+
+  EXPECT_TRUE(WaitForToolbarIconShown());
+  ClickToolbarIcon();
+  EXPECT_TRUE(WaitForDialogOpened());
+  EXPECT_TRUE(IsDialogVisible());
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

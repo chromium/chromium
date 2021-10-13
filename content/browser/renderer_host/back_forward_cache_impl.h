@@ -67,15 +67,6 @@ const base::Feature kBackForwardCacheMediaSessionPlaybackStateChange{
     "BackForwardCacheMediaSessionPlaybackStateChange",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Allows pages that created a MediaSession service to stay eligible for the
-// back/forward cache.
-const base::Feature kBackForwardCacheMediaSessionService{
-    "BackForwardCacheMediaSessionService", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Allows pages with a media play to stay eligible the back/forward cache.
-constexpr base::Feature kBackForwardCacheMediaPlay{
-    "BackForwardCacheMediaPlay", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // BackForwardCache:
 //
 // After the user navigates away from a document, the old one goes into the

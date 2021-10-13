@@ -1325,11 +1325,12 @@ bool BackForwardCacheImpl::IsMediaSessionPlaybackStateChangedAllowed() {
 }
 
 bool BackForwardCacheImpl::IsMediaSessionServiceAllowed() {
-  return base::FeatureList::IsEnabled(kBackForwardCacheMediaSessionService);
+  return base::FeatureList::IsEnabled(
+      features::kBackForwardCacheMediaSessionService);
 }
 
 bool BackForwardCacheImpl::IsMediaPlayAllowed() {
-  return base::FeatureList::IsEnabled(kBackForwardCacheMediaPlay);
+  return base::FeatureList::IsEnabled(features::kBackForwardCacheMediaPlay);
 }
 
 bool BackForwardCache::DisabledReason::operator<(
