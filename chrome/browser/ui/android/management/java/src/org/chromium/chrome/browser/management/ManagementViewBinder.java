@@ -18,8 +18,8 @@ class ManagementViewBinder {
      * @param propertyKey Specific model attribute that changed on this event.
      */
     public static void bind(PropertyModel model, ManagementView view, PropertyKey propertyKey) {
-        if (ManagementProperties.ACCOUNT_IS_MANAGED == propertyKey) {
-            view.setManaged(model.get(ManagementProperties.ACCOUNT_IS_MANAGED));
+        if (ManagementProperties.BROWSER_IS_MANAGED == propertyKey) {
+            view.setManaged(model.get(ManagementProperties.BROWSER_IS_MANAGED));
         } else if (ManagementProperties.ACCOUNT_MANAGER_NAME == propertyKey) {
             view.setManagerName(model.get(ManagementProperties.ACCOUNT_MANAGER_NAME));
         }

@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.enterprise.util;
 
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
  * Util methods for interacting with managed browser (enterprise) state.
  */
+@JNINamespace("chrome::enterprise_util")
 public class ManagedBrowserUtils {
     /**
      * Wrapper around native call to determine if policies have been applied for this browser.
@@ -18,18 +20,14 @@ public class ManagedBrowserUtils {
         return ManagedBrowserUtilsJni.get().hasBrowserPoliciesApplied(profile);
     }
 
-    public static boolean isAccountManaged(Profile profile) {
-        // TODO(https://crbug.com/1121153): return true if the account is managed
-        return false;
-    }
-
+    /** Wrapper around native call to get profile manager's representation string. */
     public static String getAccountManagerName(Profile profile) {
-        // TODO(https://crbug.com/1121153): if known, return the account name
-        return "";
+        return (profile != null) ? ManagedBrowserUtilsJni.get().getAccountManagerName(profile) : "";
     }
 
     @NativeMethods
     public interface Natives {
         boolean hasBrowserPoliciesApplied(Profile profile);
+        String getAccountManagerName(Profile profile);
     }
 }

@@ -10,7 +10,6 @@
 
 #include "base/notreached.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -34,9 +33,11 @@
 #if defined(OS_ANDROID)
 #include <jni.h>
 
+#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/enterprise/util/jni_headers/ManagedBrowserUtils_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/ui/managed_ui.h"
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -158,7 +159,7 @@ bool HasBrowserPoliciesApplied(Profile* profile) {
   // Registry), or with machine level user cloud policies.
   auto* browser_connector = g_browser_process->browser_policy_connector();
   return browser_connector && browser_connector->HasMachineLevelPolicies();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 std::string GetDomainFromEmail(const std::string& email) {
@@ -235,17 +236,33 @@ bool ProfileCanBeManaged(Profile* profile) {
   return entry && entry->CanBeManaged();
 }
 
-}  // namespace enterprise_util
-}  // namespace chrome
-
 #if defined(OS_ANDROID)
+
+std::string GetAccountManagerName(Profile* profile) {
+  DCHECK(profile);
+
+  // @TODO(https://crbug.com/1227786): There are some use-cases where the
+  // expected behavior of chrome://management is to show more than one domain.
+  return GetAccountManagerIdentity(profile).value_or(std::string());
+}
 
 // static
 jboolean JNI_ManagedBrowserUtils_HasBrowserPoliciesApplied(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& profile) {
-  return chrome::enterprise_util::HasBrowserPoliciesApplied(
-      ProfileAndroid::FromProfileAndroid(profile));
+  return HasBrowserPoliciesApplied(ProfileAndroid::FromProfileAndroid(profile));
+}
+
+// static
+base::android::ScopedJavaLocalRef<jstring>
+JNI_ManagedBrowserUtils_GetAccountManagerName(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& profile) {
+  return base::android::ConvertUTF8ToJavaString(
+      env, GetAccountManagerName(ProfileAndroid::FromProfileAndroid(profile)));
 }
 
 #endif  // defined(OS_ANDROID)
+
+}  // namespace enterprise_util
+}  // namespace chrome

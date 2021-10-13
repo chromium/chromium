@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "net/ssl/client_cert_identity.h"
 
 class GURL;
@@ -55,6 +56,14 @@ bool UserAcceptedAccountManagement(Profile* profile);
 // Returns true if the user has consented to sync or has accepted account
 // management through the enterprise account confirmation dialog.
 bool ProfileCanBeManaged(Profile* profile);
+
+#if defined(OS_ANDROID)
+
+// Returns the UTF8-encoded string representation of the entity that manages
+// `profile` or nullopt if unmanaged. `profile` must be not-null.
+std::string GetAccountManagerName(Profile* profile);
+
+#endif  // defined(OS_ANDROID)
 
 }  // namespace enterprise_util
 }  // namespace chrome

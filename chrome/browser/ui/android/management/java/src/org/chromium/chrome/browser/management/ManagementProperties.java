@@ -11,11 +11,11 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Associated properties for ManagementPage's view.
  */
 class ManagementProperties {
-    public static final PropertyModel.WritableBooleanPropertyKey ACCOUNT_IS_MANAGED =
+    public static final PropertyModel.WritableBooleanPropertyKey BROWSER_IS_MANAGED =
             new PropertyModel.WritableBooleanPropertyKey();
 
     public static final PropertyModel.WritableObjectPropertyKey<String> ACCOUNT_MANAGER_NAME =
             new PropertyModel.WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = {ACCOUNT_IS_MANAGED, ACCOUNT_MANAGER_NAME};
+    public static final PropertyKey[] ALL_KEYS = {BROWSER_IS_MANAGED, ACCOUNT_MANAGER_NAME};
 }
