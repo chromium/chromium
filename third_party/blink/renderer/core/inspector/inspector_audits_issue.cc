@@ -393,6 +393,9 @@ protocol::Audits::ContentSecurityPolicyViolationType CSPViolationTypeToProtocol(
     case ContentSecurityPolicyViolationType::kEvalViolation:
       return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
           KEvalViolation;
+    case ContentSecurityPolicyViolationType::kWasmEvalViolation:
+      return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
+          KWasmEvalViolation;
     case ContentSecurityPolicyViolationType::kInlineViolation:
       return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
           KInlineViolation;

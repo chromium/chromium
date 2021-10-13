@@ -92,6 +92,7 @@ enum ContentSecurityPolicyViolationType {
     kURLViolation,
     kTrustedTypesSinkViolation,
     kTrustedTypesPolicyViolation,
+    kWasmEvalViolation,
 };
 
 struct ContentSecurityPolicyIssueDetails {

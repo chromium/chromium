@@ -283,6 +283,10 @@ protocol::String BuildViolationType(
         kEvalViolation:
       return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
           KEvalViolation;
+    case blink::mojom::blink::ContentSecurityPolicyViolationType::
+        kWasmEvalViolation:
+      return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
+          KWasmEvalViolation;
     case blink::mojom::blink::ContentSecurityPolicyViolationType::kURLViolation:
       return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
           KURLViolation;

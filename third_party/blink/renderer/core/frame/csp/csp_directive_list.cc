@@ -250,6 +250,35 @@ void ReportEvalViolation(
                           RedirectStatus::kNoRedirect, nullptr, content);
 }
 
+void ReportWasmEvalViolation(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    ContentSecurityPolicy* policy,
+    const String& directive_text,
+    CSPDirectiveName effective_type,
+    const String& message,
+    const KURL& blocked_url,
+    const ContentSecurityPolicy::ExceptionStatus exception_status,
+    const String& content) {
+  String report_message =
+      CSPDirectiveListIsReportOnly(csp) ? "[Report Only] " + message : message;
+  // Print a console message if it won't be redundant with a JavaScript
+  // exception that the caller will throw. Exceptions will never get thrown in
+  // report-only mode because the caller won't see a violation.
+  if (CSPDirectiveListIsReportOnly(csp) ||
+      exception_status == ContentSecurityPolicy::kWillNotThrowException) {
+    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError, report_message);
+    policy->LogToConsole(console_message);
+  }
+  policy->ReportViolation(
+      directive_text, effective_type, message, blocked_url,
+      csp.report_endpoints, csp.use_reporting_api, csp.header->header_value,
+      csp.header->type, ContentSecurityPolicyViolationType::kWasmEvalViolation,
+      std::unique_ptr<SourceLocation>(), nullptr, RedirectStatus::kNoRedirect,
+      nullptr, content);
+}
+
 bool CheckEval(const network::mojom::blink::CSPSourceList* directive) {
   return !directive || directive->allow_eval;
 }
@@ -400,7 +429,7 @@ bool CheckWasmEvalAndReportViolation(
 
   String raw_directive =
       GetRawDirectiveForMessage(csp.raw_directives, directive.type);
-  ReportEvalViolation(
+  ReportWasmEvalViolation(
       csp, policy, raw_directive, CSPDirectiveName::ScriptSrc,
       console_message + "\"" + raw_directive + "\"." + suffix + "\n", KURL(),
       exception_status,

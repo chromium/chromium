@@ -877,6 +877,9 @@ std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
       case ContentSecurityPolicyViolationType::kEvalViolation:
         init->setBlockedURI("eval");
         break;
+      case ContentSecurityPolicyViolationType::kWasmEvalViolation:
+        init->setBlockedURI("wasm-eval");
+        break;
       case ContentSecurityPolicyViolationType::kURLViolation:
         // We pass RedirectStatus::kNoRedirect so that StripURLForUseInReport
         // does not strip path and query from the URL. This is safe since
@@ -1162,6 +1165,9 @@ ContentSecurityPolicy::BuildCSPViolationType(
   switch (violation_type) {
     case blink::ContentSecurityPolicyViolationType::kEvalViolation:
       return mojom::blink::ContentSecurityPolicyViolationType::kEvalViolation;
+    case blink::ContentSecurityPolicyViolationType::kWasmEvalViolation:
+      return mojom::blink::ContentSecurityPolicyViolationType::
+          kWasmEvalViolation;
     case blink::ContentSecurityPolicyViolationType::kInlineViolation:
       return mojom::blink::ContentSecurityPolicyViolationType::kInlineViolation;
     case blink::ContentSecurityPolicyViolationType::

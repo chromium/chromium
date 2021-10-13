@@ -18,7 +18,8 @@ enum ContentSecurityPolicyViolationType {
   kEvalViolation,
   kURLViolation,
   kTrustedTypesSinkViolation,
-  kTrustedTypesPolicyViolation
+  kTrustedTypesPolicyViolation,
+  kWasmEvalViolation
 };
 }  // namespace blink
 
