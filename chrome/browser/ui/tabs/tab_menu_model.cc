@@ -49,7 +49,8 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
 
   int num_tabs = indices.size();
   AddItemWithStringId(TabStripModel::CommandNewTabToRight,
-                      IDS_TAB_CXMENU_NEWTABTORIGHT);
+                      base::i18n::IsRTL() ? IDS_TAB_CXMENU_NEWTABTOLEFT
+                                          : IDS_TAB_CXMENU_NEWTABTORIGHT);
   if (reading_list::switches::IsReadingListEnabled() &&
       !tab_strip->profile()->IsGuestSession()) {
     AddItem(

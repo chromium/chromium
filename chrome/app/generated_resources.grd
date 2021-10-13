@@ -7224,6 +7224,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_TAB_CXMENU_NEWTABTORIGHT" desc="The label of the 'New Tab to the Right' Tab context menu item.">
           New tab to the right
         </message>
+        <message name="IDS_TAB_CXMENU_NEWTABTOLEFT" desc="The label of the 'New Tab to the Left' Tab context menu item.">
+          New tab to the left
+        </message>
         <message name="IDS_TAB_CXMENU_RELOAD" desc="The label of the 'Reload' Tab context menu item.">
           Reload
         </message>
@@ -7306,6 +7309,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <if expr="use_titlecase">
         <message name="IDS_TAB_CXMENU_NEWTABTORIGHT" desc="In Title Case: The label of the 'New Tab to the Right' Tab context menu item.">
           New Tab to the Right
+        </message>
+        <message name="IDS_TAB_CXMENU_NEWTABTOLEFT" desc="In Title Case: The label of the 'New Tab to the Left' Tab context menu item.">
+          New Tab to the Left
         </message>
         <message name="IDS_TAB_CXMENU_RELOAD" desc="In Title Case: The label of the 'Reload' Tab context menu item.">
           Reload
