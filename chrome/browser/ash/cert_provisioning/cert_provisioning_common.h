@@ -14,11 +14,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): forward declare KeyPermissionsManager
 // after //chrom/browser/chromeos/platform_keys is moved to ash.
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
-#include "chrome/browser/platform_keys/platform_keys.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager.h"
 // TODO(https://crbug.com/1164001): forward declare PlatformKeysService
 // after //chrom/browser/chromeos/platform_keys is moved to ash.
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
+#include "chrome/browser/platform_keys/platform_keys.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"

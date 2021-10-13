@@ -13,7 +13,7 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"

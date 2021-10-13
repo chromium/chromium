@@ -17,8 +17,8 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/platform_keys/extension_key_permissions_service_factory.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
