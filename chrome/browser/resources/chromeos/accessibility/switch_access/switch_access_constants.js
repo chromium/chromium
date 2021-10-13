@@ -84,7 +84,12 @@ export const SAConstants = {
    * @enum {number}
    * @const
    */
-  MenuType: {MAIN_MENU: 0, TEXT_NAVIGATION: 1, POINT_SCAN_MENU: 2},
+  MenuType: {
+    MAIN_MENU: 0,
+    TEXT_NAVIGATION: 1,
+    POINT_SCAN_MENU: 2,
+    QUICK_COMMANDS_MENU: 3
+  },
 
   /**
    * The modes of interaction the user can select for how to interact with the

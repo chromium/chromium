@@ -145,6 +145,7 @@ chrome.accessibilityPrivate.SwitchAccessMenuAction = {
   SELECT: 'select',
   SETTINGS: 'settings',
   START_TEXT_SELECTION: 'startTextSelection',
+  QUICK_COMMANDS: 'quickCommands',
 };
 
 /**

@@ -255,6 +255,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "switch_access_move_up_one_line_of_text.icon",
     "switch_access_paste.icon",
     "switch_access_point_scan.icon",
+    "switch_access_quick_commands.icon",
     "switch_access_right_click.icon",
     "switch_access_scroll_down.icon",
     "switch_access_scroll_left.icon",
