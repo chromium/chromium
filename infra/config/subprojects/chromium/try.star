@@ -1036,7 +1036,7 @@ try_.chromium_linux_builder(
 
 try_.chromium_linux_builder(
     name = "chromium_presubmit",
-    branch_selector = branches.ALL_BRANCHES,
+    # branch_selector = branches.ALL_BRANCHES,
     executable = "recipe:presubmit",
     goma_backend = None,
     main_list_view = "try",

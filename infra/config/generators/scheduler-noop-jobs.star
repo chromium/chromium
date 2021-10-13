@@ -15,7 +15,6 @@ without error.
 # Don't make a habit of this - it isn't public API
 load("@stdlib//internal/luci/proto.star", "scheduler_pb")
 load("//lib/branches.star", "branches")
-load("//project.star", "settings")
 
 _NON_BRANCHED_TESTERS = {
     # This tester is triggered by 'Mac Builder', but it is an FYI builder and
@@ -59,7 +58,7 @@ _TESTER_NOOP_JOBS = [scheduler_pb.Job(
 ) for builder, selector in _NON_BRANCHED_TESTERS.items() if branches.matches(selector)]
 
 def _add_noop_jobs(ctx):
-    if settings.is_main:
+    if branches.matches(branches.MAIN):
         return
     cfg = ctx.output["luci/luci-scheduler.cfg"]
     for j in _TESTER_NOOP_JOBS:

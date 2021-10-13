@@ -264,7 +264,7 @@ HEADER = headers.header(
                 ),
                 headers.link(
                     text = "linux",
-                    branch_selector = branches.STANDARD_MILESTONE,
+                    branch_selector = branches.FUCHSIA_MILESTONE,
                     url = "/p/{}/g/tryserver.chromium.linux/builders".format(settings.project),
                     alt = "Linux",
                 ),
@@ -346,9 +346,9 @@ HEADER = headers.header(
             ]],
         ),
         headers.console_group(
-            branch_selector = branches.LTS_BRANCHES,
+            branch_selector = branches.FUCHSIA_BRANCHES,
             console_ids = ["{}/{}".format(settings.project, c) for c in [
-                "chromium.chromiumos",
+                "chromium.linux",
             ]],
         ),
     ],

@@ -19,6 +19,8 @@ the category of the branch:
 * LTS_BRANCHES - The resource is defined only for the long-term support branches
     (LTC and LTR).
     [`not settings.is_main and settings.is_lts_branch`]
+* FUCHSIA_BRANCHES - The resource is defined only for the fuchsia long-term
+    support branches.
 
 The `branch_selector` argument can also be one of the following constants
 composing multiple categories:
@@ -26,6 +28,9 @@ composing multiple categories:
     the standad release channels: trunk -> beta -> stable.
 * LTS_MILESTONE - The resource is defined for a branch as it move through the
     long-term suport release channels: trunk -> beta -> stable -> LTC -> LTR.
+* FUCHSIA_MILESTONE - The resource is defined for a branch as it moves
+  the release channels, including the one-off branch for the initial fuchsia
+  release: trunk -> beta -> stable -> fuchsia one-off 
 * ALL_BRANCHES - The resource is defined for all branches and main/master/trunk.
 * NOT_MAIN - The resource is defined for all branches, but not for
     main/master/trunk.
@@ -49,8 +54,9 @@ def _branch_selector(tag):
 MAIN = _branch_selector("MAIN")
 STANDARD_BRANCHES = _branch_selector("STANDARD_BRANCHES")
 LTS_BRANCHES = _branch_selector("LTS_BRANCHES")
+FUCHSIA_BRANCHES = _branch_selector("FUCHSIA_BRANCHES")
 
-_BRANCH_SELECTORS = (MAIN, STANDARD_BRANCHES, LTS_BRANCHES)
+_BRANCH_SELECTORS = (MAIN, STANDARD_BRANCHES, LTS_BRANCHES, FUCHSIA_BRANCHES)
 
 def _matches(branch_selector):
     """Returns whether `branch_selector` matches the project settings."""
@@ -63,10 +69,13 @@ def _matches(branch_selector):
             if settings.is_main:
                 return True
         elif b == STANDARD_BRANCHES:
-            if not settings.is_main and not settings.is_lts_branch:
+            if not settings.is_main and not (settings.is_lts_branch or settings.is_fuchsia_branch):
                 return True
         elif b == LTS_BRANCHES:
             if settings.is_lts_branch:
+                return True
+        elif b == FUCHSIA_BRANCHES:
+            if settings.is_fuchsia_branch:
                 return True
         else:
             fail("elements of branch_selectors must be one of {}, got {!r}"
@@ -108,10 +117,12 @@ branches = struct(
     MAIN = MAIN,
     STANDARD_BRANCHES = STANDARD_BRANCHES,
     LTS_BRANCHES = LTS_BRANCHES,
+    FUCHSIA_BRANCHES = FUCHSIA_BRANCHES,
 
     # Branch selectors for tracking milestones through release channels
     STANDARD_MILESTONE = (MAIN, STANDARD_BRANCHES),
     LTS_MILESTONE = (MAIN, STANDARD_BRANCHES, LTS_BRANCHES),
+    FUCHSIA_MILESTONE = (MAIN, STANDARD_BRANCHES, FUCHSIA_BRANCHES),
 
     # Branch selectors to apply widely to branches
     ALL_BRANCHES = _BRANCH_SELECTORS,

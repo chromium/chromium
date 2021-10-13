@@ -8,8 +8,12 @@ def _project_settings(
         project_title,
         is_main,
         is_lts_branch,
+        is_fuchsia_branch,
         chrome_project,
-        ref):
+        ref,
+        cq_ref_regexp,
+        try_triggering_projects,
+        tree_status_host):
     """Declare settings for the project.
 
     This provides the central location for what must be modified when
@@ -23,20 +27,42 @@ def _project_settings(
         titles of consoles).
       * is_main - Whether this branch is main/master/trunk.
       * is_lts_branch - Whether this branch is in the LTS channel.
+      * is_fuchsia_branch - Whether this branch is the initial fuchsia one-off
+        branch.
       * ref - The git ref containing the code for this branch.
     """
-    if is_main and is_lts_branch:
+    if is_main and (is_lts_branch or is_fuchsia_branch):
         fail("is_main and is_lts_branch can't both be True")
     return struct(
         project = project,
         project_title = project_title,
         is_main = is_main,
         is_lts_branch = is_lts_branch,
+        is_fuchsia_branch = is_fuchsia_branch,
         ref = ref,
         chrome_project = chrome_project,
     )
 
-settings = _project_settings(**json.decode(io.read_file("./settings.json")))
+settings = _project_settings(
+    # Set this to the name of the milestone's project
+    project = "chromium-m90",
+    # Set this to how the branch should be referred to in console titles
+    project_title = "Chromium M90",
+    # Set this to False for branches
+    is_main = False,
+    # Set this to True for LTC/LTS branches
+    is_lts_branch = False,
+    is_fuchsia_branch = True,
+    # Set this to the branch ref for branches
+    ref = "refs/branch-heads/4515",
+    chrome_project = "chrome-m92",
+    # Set this to the branch ref for branches
+    cq_ref_regexp = "refs/branch-heads/4515",
+    # Set this to None for branches
+    try_triggering_projects = None,
+    # Set this to None for branches
+    tree_status_host = None,
+)
 
 def _generate_project_pyl(ctx):
     ctx.output["project.pyl"] = "\n".join([
