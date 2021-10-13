@@ -8,6 +8,7 @@
 #include <set>
 #include <vector>
 
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -75,9 +76,8 @@ class WebAppFileHandlerManager {
   // Disables file handlers for all OSs and unregisters OS specific file
   // handlers for OSs that need them. On Chrome OS file handlers are registered
   // separately but they are still enabled and disabled here.
-  void DisableAndUnregisterOsFileHandlers(
-      const AppId& app_id,
-      base::OnceCallback<void(bool)> callback);
+  void DisableAndUnregisterOsFileHandlers(const AppId& app_id,
+                                          ResultCallback callback);
 
   // Updates the file handling origin trial expiry timer based on a currently
   // open instance of the site. This will not update the expiry timer if

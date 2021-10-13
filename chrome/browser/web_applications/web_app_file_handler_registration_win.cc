@@ -16,6 +16,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_handler_registration_utils_win.h"
 #include "chrome/installer/util/shell_util.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -98,7 +99,7 @@ void DeleteAppLauncher(const base::FilePath& launcher_path) {
 
 void UnregisterFileHandlersWithOs(const AppId& app_id,
                                   Profile* profile,
-                                  base::OnceCallback<void(bool)> callback) {
+                                  ResultCallback callback) {
   // The app-specific-launcher file name must be calculated before cleaning up
   // the registry, since the app-specific-launcher path is retrieved from the
   // registry.

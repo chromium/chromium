@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace web_app {
@@ -31,19 +32,16 @@ class MockOsIntegrationManager : public OsIntegrationManager {
 
   MOCK_METHOD(void,
               RegisterFileHandlers,
-              (const AppId& app_id,
-               base::OnceCallback<void(bool success)> callback),
+              (const AppId& app_id, ResultCallback callback),
               (override));
 
   MOCK_METHOD(void,
               RegisterProtocolHandlers,
-              (const AppId& app_id,
-               base::OnceCallback<void(bool success)> callback),
+              (const AppId& app_id, ResultCallback callback),
               (override));
   MOCK_METHOD(void,
               RegisterUrlHandlers,
-              (const AppId& app_id,
-               base::OnceCallback<void(bool success)> callback),
+              (const AppId& app_id, ResultCallback callback),
               (override));
   MOCK_METHOD(void,
               RegisterShortcutsMenu,
@@ -51,13 +49,12 @@ class MockOsIntegrationManager : public OsIntegrationManager {
                const std::vector<WebApplicationShortcutsMenuItemInfo>&
                    shortcuts_menu_item_infos,
                const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
-               base::OnceCallback<void(bool success)> callback),
+               ResultCallback callback),
               (override));
 
   MOCK_METHOD(void,
               ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu,
-              (const AppId& app_id,
-               base::OnceCallback<void(bool success)> callback),
+              (const AppId& app_id, ResultCallback callback),
               (override));
 
   MOCK_METHOD(void,
@@ -95,15 +92,15 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               (const AppId& app_id,
                const base::FilePath& shortcuts_data_dir,
                std::unique_ptr<ShortcutInfo> shortcut_info,
-               DeleteShortcutsCallback callback),
+               ResultCallback callback),
               (override));
   MOCK_METHOD(void,
               UnregisterFileHandlers,
-              (const AppId& app_id, base::OnceCallback<void(bool)> callback),
+              (const AppId& app_id, ResultCallback callback),
               (override));
   MOCK_METHOD(void,
               UnregisterProtocolHandlers,
-              (const AppId& app_id, base::OnceCallback<void(bool)> callback),
+              (const AppId& app_id, ResultCallback callback),
               (override));
   MOCK_METHOD(void, UnregisterUrlHandlers, (const AppId& app_id), (override));
   MOCK_METHOD(void,

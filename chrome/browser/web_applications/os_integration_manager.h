@@ -221,24 +221,21 @@ class OsIntegrationManager {
                                CreateShortcutsCallback callback);
 
   // Installation:
-  virtual void RegisterFileHandlers(
-      const AppId& app_id,
-      base::OnceCallback<void(bool success)> callback);
-  virtual void RegisterProtocolHandlers(
-      const AppId& app_id,
-      base::OnceCallback<void(bool success)> callback);
-  virtual void RegisterUrlHandlers(
-      const AppId& app_id,
-      base::OnceCallback<void(bool success)> callback);
+  virtual void RegisterFileHandlers(const AppId& app_id,
+                                    ResultCallback callback);
+  virtual void RegisterProtocolHandlers(const AppId& app_id,
+                                        ResultCallback callback);
+  virtual void RegisterUrlHandlers(const AppId& app_id,
+                                   ResultCallback callback);
   virtual void RegisterShortcutsMenu(
       const AppId& app_id,
       const std::vector<WebApplicationShortcutsMenuItemInfo>&
           shortcuts_menu_item_infos,
       const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
-      base::OnceCallback<void(bool success)> callback);
+      ResultCallback callback);
   virtual void ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
       const AppId& app_id,
-      base::OnceCallback<void(bool success)> callback);
+      ResultCallback callback);
   virtual void RegisterRunOnOsLogin(const AppId& app_id,
                                     RegisterRunOnOsLoginCallback callback);
   virtual void MacAppShimOnAppInstalledForProfile(const AppId& app_id);
@@ -255,12 +252,11 @@ class OsIntegrationManager {
   virtual void DeleteShortcuts(const AppId& app_id,
                                const base::FilePath& shortcuts_data_dir,
                                std::unique_ptr<ShortcutInfo> shortcut_info,
-                               DeleteShortcutsCallback callback);
+                               ResultCallback callback);
   virtual void UnregisterFileHandlers(const AppId& app_id,
-                                      base::OnceCallback<void(bool)> callback);
-  virtual void UnregisterProtocolHandlers(
-      const AppId& app_id,
-      base::OnceCallback<void(bool)> callback);
+                                      ResultCallback callback);
+  virtual void UnregisterProtocolHandlers(const AppId& app_id,
+                                          ResultCallback callback);
   virtual void UnregisterUrlHandlers(const AppId& app_id);
   virtual void UnregisterWebAppOsUninstallation(const AppId& app_id);
 
@@ -284,8 +280,8 @@ class OsIntegrationManager {
                           bool shortcuts_created);
 
   void OnShortcutsDeleted(const AppId& app_id,
-                          DeleteShortcutsCallback callback,
-                          bool shortcuts_deleted);
+                          ResultCallback callback,
+                          Result result);
 
   void OnShortcutInfoRetrievedRegisterRunOnOsLogin(
       RegisterRunOnOsLoginCallback callback,

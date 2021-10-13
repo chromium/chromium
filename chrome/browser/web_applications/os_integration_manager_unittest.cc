@@ -114,7 +114,7 @@ TEST_F(OsIntegrationManagerTest, InstallOsHooksEverything) {
   EXPECT_CALL(manager, AddAppToQuickLaunchBar(app_id)).Times(1);
   EXPECT_CALL(manager, ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
                            app_id, testing::_))
-      .WillOnce(base::test::RunOnceCallback<1>(true));
+      .WillOnce(base::test::RunOnceCallback<1>(Result::kOk));
   EXPECT_CALL(manager, RegisterRunOnOsLogin(app_id, testing::_)).Times(1);
 
   InstallOsHooksOptions options;
@@ -159,7 +159,7 @@ TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
           testing::Return(testing::ByMove(CreateTestShorcutInfo(app_id))));
   EXPECT_CALL(manager, DeleteShortcuts(app_id, kExpectedShortcutPath,
                                        testing::_, testing::_))
-      .WillOnce(base::test::RunOnceCallback<3>(true));
+      .WillOnce(base::test::RunOnceCallback<3>(Result::kOk));
   EXPECT_CALL(manager, UnregisterFileHandlers(app_id, testing::_)).Times(1);
   EXPECT_CALL(manager, UnregisterProtocolHandlers(app_id, testing::_)).Times(1);
   EXPECT_CALL(manager, UnregisterUrlHandlers(app_id)).Times(1);
@@ -231,16 +231,16 @@ TEST_F(OsIntegrationManagerTest, UpdateProtocolHandlers) {
 #endif
 
   EXPECT_CALL(manager, UnregisterProtocolHandlers(app_id, testing::_))
-      .WillOnce([](const AppId& app_id,
-                   base::OnceCallback<void(bool)> update_finished_callback) {
-        std::move(update_finished_callback).Run(true);
-      });
+      .WillOnce(
+          [](const AppId& app_id, ResultCallback update_finished_callback) {
+            std::move(update_finished_callback).Run(Result::kOk);
+          });
 
   EXPECT_CALL(manager, RegisterProtocolHandlers(app_id, testing::_))
-      .WillOnce([](const AppId& app_id,
-                   base::OnceCallback<void(bool)> update_finished_callback) {
-        std::move(update_finished_callback).Run(true);
-      });
+      .WillOnce(
+          [](const AppId& app_id, ResultCallback update_finished_callback) {
+            std::move(update_finished_callback).Run(Result::kOk);
+          });
 
   auto update_finished_callback =
       base::BindLambdaForTesting([&]() { run_loop.Quit(); });

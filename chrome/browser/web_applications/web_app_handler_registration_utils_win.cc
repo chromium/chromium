@@ -89,14 +89,14 @@ std::wstring GetAppNameExtensionForProfile(const base::FilePath& profile_path) {
   return app_name_extension;
 }
 
-bool UpdateAppRegistration(const AppId& app_id,
-                           const std::wstring& app_name,
-                           const base::FilePath& profile_path,
-                           const std::wstring& prog_id,
-                           const std::wstring& app_name_extension) {
+Result UpdateAppRegistration(const AppId& app_id,
+                             const std::wstring& app_name,
+                             const base::FilePath& profile_path,
+                             const std::wstring& prog_id,
+                             const std::wstring& app_name_extension) {
   if (!base::DeleteFile(ShellUtil::GetApplicationPathForProgId(prog_id))) {
     RecordRegistration(RegistrationResult::kFailToDeleteExistingRegistration);
-    return false;
+    return Result::kError;
   }
 
   std::wstring user_visible_app_name(app_name);
@@ -107,7 +107,7 @@ bool UpdateAppRegistration(const AppId& app_id,
   absl::optional<base::FilePath> app_launcher_path =
       CreateAppLauncherFile(app_name, app_name_extension, web_app_path);
   if (!app_launcher_path) {
-    return false;
+    return Result::kError;
   }
 
   base::CommandLine app_launch_cmd =
@@ -117,7 +117,7 @@ bool UpdateAppRegistration(const AppId& app_id,
 
   ShellUtil::AddApplicationClass(prog_id, app_launch_cmd, user_visible_app_name,
                                  app_name, icon_path);
-  return true;
+  return Result::kOk;
 }
 
 bool AppNameHasProfileExtension(const std::wstring& app_name,
@@ -274,10 +274,9 @@ absl::optional<base::FilePath> CreateAppLauncherFile(
   return app_specific_launcher_path;
 }
 
-void CheckAndUpdateExternalInstallations(
-    const base::FilePath& cur_profile_path,
-    const AppId& app_id,
-    base::OnceCallback<void(bool)> callback) {
+void CheckAndUpdateExternalInstallations(const base::FilePath& cur_profile_path,
+                                         const AppId& app_id,
+                                         ResultCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::wstring prog_id = GetProgIdForApp(cur_profile_path, app_id);
@@ -290,9 +289,9 @@ void CheckAndUpdateExternalInstallations(
 
   // Naming updates are only required if a single external installation exists.
   if (external_installation_profile_path.empty()) {
-    // This bool signals if there was not an error. Exiting early here is WAI,
-    // so this is a success.
-    std::move(callback).Run(true);
+    // This enumeration signals if there was not an error. Exiting early here is
+    // WAI, so this is a success.
+    std::move(callback).Run(Result::kOk);
     return;
   }
 
@@ -311,9 +310,9 @@ void CheckAndUpdateExternalInstallations(
     // profile-specific name.
     if (AppNameHasProfileExtension(external_installation_name,
                                    external_installation_profile_path)) {
-      // This bool signals if there was not an error. Exiting early here is WAI,
-      // so this is a success.
-      std::move(callback).Run(true);
+      // This enumeration signals if there was not an error. Exiting early here
+      // is WAI, so this is a success.
+      std::move(callback).Run(Result::kOk);
       return;
     }
 
@@ -325,9 +324,9 @@ void CheckAndUpdateExternalInstallations(
     // profile-specific name.
     if (!AppNameHasProfileExtension(external_installation_name,
                                     external_installation_profile_path)) {
-      // This bool signals if there was not an error. Exiting early here is WAI,
-      // so this is a success.
-      std::move(callback).Run(true);
+      // This enumeration signals if there was not an error. Exiting early here
+      // is WAI, so this is a success.
+      std::move(callback).Run(Result::kOk);
       return;
     }
 

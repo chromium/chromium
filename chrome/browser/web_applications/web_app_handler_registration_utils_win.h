@@ -7,6 +7,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_shortcut_win.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -56,10 +57,9 @@ absl::optional<base::FilePath> CreateAppLauncherFile(
 
 // Checks if there is an installation of this app in another profile that needs
 // to be updated with a profile specific name and executes required update.
-void CheckAndUpdateExternalInstallations(
-    const base::FilePath& cur_profile_path,
-    const AppId& app_id,
-    base::OnceCallback<void(bool)> callback);
+void CheckAndUpdateExternalInstallations(const base::FilePath& cur_profile_path,
+                                         const AppId& app_id,
+                                         ResultCallback callback);
 
 // Result of file handler registration process.
 // These values are persisted to logs. Entries should not be renumbered and

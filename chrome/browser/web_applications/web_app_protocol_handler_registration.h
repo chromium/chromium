@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 
@@ -21,11 +22,11 @@ void RegisterProtocolHandlersWithOs(
     const std::string& app_name,
     Profile* profile,
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
-    base::OnceCallback<void(bool)> callback);
+    ResultCallback callback);
 
 void UnregisterProtocolHandlersWithOs(const AppId& app_id,
                                       Profile* profile,
-                                      base::OnceCallback<void(bool)> callback);
+                                      ResultCallback callback);
 
 }  // namespace web_app
 

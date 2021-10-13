@@ -78,13 +78,12 @@ std::vector<UrlHandlerLaunchParams> UrlHandlerManagerImpl::GetUrlHandlerMatches(
   return url_handler_prefs::FindMatchingUrlHandlers(local_state, url);
 }
 
-void UrlHandlerManagerImpl::RegisterUrlHandlers(
-    const AppId& app_id,
-    base::OnceCallback<void(bool success)> callback) {
+void UrlHandlerManagerImpl::RegisterUrlHandlers(const AppId& app_id,
+                                                ResultCallback callback) {
   auto url_handlers = registrar()->GetAppUrlHandlers(app_id);
   // TODO(crbug/1072058): Only get associations for user-enabled url handlers.
   if (url_handlers.empty()) {
-    std::move(callback).Run(true);
+    std::move(callback).Run(Result::kOk);
     return;
   }
 
@@ -97,13 +96,13 @@ void UrlHandlerManagerImpl::RegisterUrlHandlers(
 
 void UrlHandlerManagerImpl::OnDidGetAssociationsAtInstall(
     const AppId& app_id,
-    base::OnceCallback<void(bool success)> callback,
+    ResultCallback callback,
     apps::UrlHandlers url_handlers) {
   if (!url_handlers.empty()) {
     url_handler_prefs::AddWebApp(g_browser_process->local_state(), app_id,
                                  profile()->GetPath(), std::move(url_handlers));
   }
-  std::move(callback).Run(true);
+  std::move(callback).Run(Result::kOk);
 }
 
 bool UrlHandlerManagerImpl::UnregisterUrlHandlers(const AppId& app_id) {

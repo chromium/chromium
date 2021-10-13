@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/files/file_util.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_shortcut_win.h"
 
@@ -24,14 +25,14 @@ bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
                                  SHORTCUT_CREATION_AUTOMATED, shortcut_info);
 }
 
-bool UnregisterRunOnOsLogin(const std::string& app_id,
-                            const base::FilePath& profile_path,
-                            const std::u16string& shortcut_title) {
+Result UnregisterRunOnOsLogin(const std::string& app_id,
+                              const base::FilePath& profile_path,
+                              const std::u16string& shortcut_title) {
   ShortcutLocations all_shortcut_locations;
   all_shortcut_locations.in_startup = true;
   std::vector<base::FilePath> all_paths =
       GetShortcutPaths(all_shortcut_locations);
-  bool result = true;
+  Result result = Result::kOk;
   // Only Startup folder is the expected path to be returned in all_paths.
   for (const auto& path : all_paths) {
     // Find all app's shortcuts in Startup folder to delete.
@@ -39,7 +40,7 @@ bool UnregisterRunOnOsLogin(const std::string& app_id,
         FindAppShortcutsByProfileAndTitle(path, profile_path, shortcut_title);
     for (const auto& shortcut_file : shortcut_files) {
       if (!base::DeleteFile(shortcut_file))
-        result = false;
+        result = Result::kError;
     }
   }
   return result;

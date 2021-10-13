@@ -17,17 +17,17 @@ void RegisterProtocolHandlersWithOs(
     const std::string& app_name,
     Profile* profile,
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
-    base::OnceCallback<void(bool)> callback) {
+    ResultCallback callback) {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true));
+      FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
 }
 
 // Unregisters protocol handlers for a web app with the OS.
 void UnregisterProtocolHandlersWithOs(const AppId& app_id,
                                       Profile* profile,
-                                      base::OnceCallback<void(bool)> callback) {
+                                      ResultCallback callback) {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true));
+      FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
 }
 #endif
 

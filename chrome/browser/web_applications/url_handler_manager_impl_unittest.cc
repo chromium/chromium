@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/url_handler_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -108,8 +109,8 @@ class UrlHandlerManagerImplTest : public WebAppTest {
 
     base::RunLoop run_loop;
     url_handler_manager().RegisterUrlHandlers(
-        app_id, base::BindLambdaForTesting([&](bool success) {
-          EXPECT_TRUE(success);
+        app_id, base::BindLambdaForTesting([&](Result result) {
+          EXPECT_EQ(Result::kOk, result);
           run_loop.Quit();
         }));
     run_loop.Run();

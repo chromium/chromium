@@ -151,7 +151,7 @@ void WebAppShortcutManager::DeleteShortcuts(
     const AppId& app_id,
     const base::FilePath& shortcuts_data_dir,
     std::unique_ptr<ShortcutInfo> shortcut_info,
-    DeleteShortcutsCallback callback) {
+    ResultCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(CanCreateShortcuts());
 
@@ -217,11 +217,11 @@ void WebAppShortcutManager::OnShortcutsCreated(const AppId& app_id,
 }
 
 void WebAppShortcutManager::OnShortcutsDeleted(const AppId& app_id,
-                                               DeleteShortcutsCallback callback,
+                                               ResultCallback callback,
                                                bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::move(callback).Run(success);
+  std::move(callback).Run(success ? Result::kOk : Result::kError);
 }
 
 void WebAppShortcutManager::OnShortcutInfoRetrievedCreateShortcuts(
@@ -260,7 +260,7 @@ void WebAppShortcutManager::OnShortcutsMenuIconsReadRegisterShortcutsMenu(
                                 shortcuts_menu_icon_bitmaps);
   }
 
-  std::move(callback).Run(/*shortcuts_menu_registered=*/true);
+  std::move(callback).Run(Result::kOk);
 }
 
 void WebAppShortcutManager::OnShortcutInfoRetrievedUpdateShortcuts(

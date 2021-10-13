@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/web_app_run_on_os_login.h"
 
+#include "chrome/browser/web_applications/web_app_constants.h"
+
 namespace web_app {
 
 namespace internals {
@@ -16,10 +18,10 @@ bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
 
 // This boilerplate function is used for platforms that don't support Run On OS
 // Login.
-bool UnregisterRunOnOsLogin(const std::string& app_id,
-                            const base::FilePath& profile_path,
-                            const std::u16string& shortcut_title) {
-  return true;
+Result UnregisterRunOnOsLogin(const std::string& app_id,
+                              const base::FilePath& profile_path,
+                              const std::u16string& shortcut_title) {
+  return Result::kOk;
 }
 
 }  // namespace internals

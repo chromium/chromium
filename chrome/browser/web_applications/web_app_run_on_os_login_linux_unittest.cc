@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_shortcut_linux.h"
 #include "chrome/browser/web_applications/web_application_info.h"
@@ -75,9 +76,9 @@ TEST_F(WebAppRunOnOsLoginLinuxTest, Unregister) {
   EXPECT_TRUE(result);
   EXPECT_TRUE(base::PathExists(GetPathToAutoStartFile()));
 
-  result = internals::UnregisterRunOnOsLogin(shortcut_info->extension_id,
-                                             profile()->GetPath(), kAppTitle);
-  EXPECT_TRUE(result);
+  EXPECT_EQ(Result::kOk,
+            internals::UnregisterRunOnOsLogin(shortcut_info->extension_id,
+                                              profile()->GetPath(), kAppTitle));
   EXPECT_FALSE(base::PathExists(GetPathToAutoStartFile()));
 }
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_run_on_os_login.h"
 
+#include "chrome/browser/web_applications/web_app_constants.h"
 #import "chrome/browser/web_applications/web_app_shortcut_mac.h"
 
 namespace web_app {
@@ -20,11 +21,11 @@ bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
                                  SHORTCUT_CREATION_AUTOMATED, shortcut_info);
 }
 
-bool UnregisterRunOnOsLogin(const std::string& app_id,
-                            const base::FilePath& profile_path,
-                            const std::u16string& shortcut_title) {
+Result UnregisterRunOnOsLogin(const std::string& app_id,
+                              const base::FilePath& profile_path,
+                              const std::u16string& shortcut_title) {
   RemoveAppShimFromLoginItems(app_id);
-  return true;
+  return Result::kOk;
 }
 
 }  // namespace internals

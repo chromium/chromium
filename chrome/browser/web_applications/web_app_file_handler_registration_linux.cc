@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_shortcut.h"
@@ -62,21 +63,20 @@ void RecordRegistration(RegistrationResult result, bool install) {
       result);
 }
 
-void OnCreateShortcut(base::OnceCallback<void(bool)> callback,
-                      bool shortcut_created) {
+void OnCreateShortcut(ResultCallback callback, bool shortcut_created) {
   UMA_HISTOGRAM_ENUMERATION(
       kRecreateShortcutResultMetric,
       shortcut_created ? RecreateShortcutResult::kSuccess
                        : RecreateShortcutResult::kFailToCreateShortcut);
-  std::move(callback).Run(shortcut_created);
+  std::move(callback).Run(shortcut_created ? Result::kOk : Result::kError);
 }
 
-void OnShortcutInfoReceived(base::OnceCallback<void(bool)> callback,
+void OnShortcutInfoReceived(ResultCallback callback,
                             std::unique_ptr<ShortcutInfo> info) {
   if (!info) {
     UMA_HISTOGRAM_ENUMERATION(kRecreateShortcutResultMetric,
                               RecreateShortcutResult::kFailToCreateShortcut);
-    std::move(callback).Run(false);
+    std::move(callback).Run(Result::kError);
     return;
   }
 
@@ -91,10 +91,9 @@ void OnShortcutInfoReceived(base::OnceCallback<void(bool)> callback,
       base::BindOnce(OnCreateShortcut, std::move(callback)));
 }
 
-void UpdateFileHandlerRegistrationInOs(
-    const AppId& app_id,
-    Profile* profile,
-    base::OnceCallback<void(bool)> callback) {
+void UpdateFileHandlerRegistrationInOs(const AppId& app_id,
+                                       Profile* profile,
+                                       ResultCallback callback) {
   // On Linux, file associations are managed through shortcuts in the app menu,
   // so after enabling or disabling file handling for an app its shortcuts
   // need to be recreated.
@@ -200,7 +199,7 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
 
 void UnregisterFileHandlersWithOs(const AppId& app_id,
                                   Profile* profile,
-                                  base::OnceCallback<void(bool)> callback) {
+                                  ResultCallback callback) {
   UninstallMimeInfoOnLinux(app_id, profile);
 
   // If this was triggered as part of the uninstallation process, nothing more
@@ -209,7 +208,7 @@ void UnregisterFileHandlersWithOs(const AppId& app_id,
   auto* provider = WebAppProvider::GetForWebApps(profile);
   DCHECK(provider->registrar().IsInstalled(app_id));
   if (provider->registrar().IsUninstalling(app_id)) {
-    std::move(callback).Run(true);
+    std::move(callback).Run(Result::kOk);
     return;
   }
 

@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_shortcuts_menu.h"
@@ -65,7 +66,7 @@ class WebAppShortcutManager {
   void DeleteShortcuts(const AppId& app_id,
                        const base::FilePath& shortcuts_data_dir,
                        std::unique_ptr<ShortcutInfo> shortcut_info,
-                       DeleteShortcutsCallback callback);
+                       ResultCallback callback);
 
   // Posts a task on the IO thread to gather existing shortcut locations
   // according to |shortcut_info|. The result will be passed into |callback|.
@@ -76,7 +77,7 @@ class WebAppShortcutManager {
 
   // TODO(crbug.com/1098471): Move this into web_app_shortcuts_menu_win.cc when
   // a callback is integrated into the Shortcuts Menu registration flow.
-  using RegisterShortcutsMenuCallback = base::OnceCallback<void(bool success)>;
+  using RegisterShortcutsMenuCallback = base::OnceCallback<void(Result result)>;
   // Registers a shortcuts menu for a web app after reading its shortcuts menu
   // icons from disk.
   //
@@ -127,7 +128,7 @@ class WebAppShortcutManager {
                           CreateShortcutsCallback callback,
                           bool success);
   void OnShortcutsDeleted(const AppId& app_id,
-                          DeleteShortcutsCallback callback,
+                          ResultCallback callback,
                           bool success);
 
   void OnShortcutInfoRetrievedCreateShortcuts(

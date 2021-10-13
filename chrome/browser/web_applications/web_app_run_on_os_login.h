@@ -18,16 +18,17 @@ class FilePath;
 
 namespace web_app {
 
+enum class Result;
 struct ShortcutInfo;
 
 // Callback made when RegisterRunOnOsLogin has finished trying to register the
 // app to the OS Startup indicating whether or not it was successfully
 // registered.
-using RegisterRunOnOsLoginCallback = base::OnceCallback<void(bool success)>;
+using RegisterRunOnOsLoginCallback = base::OnceCallback<void(Result result)>;
 
 // Callback made when UnregisterRunOnOslogin has finished indicating whether or
 // not it was successfully unregistered.
-using UnregisterRunOnOsLoginCallback = base::OnceCallback<void(bool success)>;
+using UnregisterRunOnOsLoginCallback = base::OnceCallback<void(Result result)>;
 
 namespace internals {
 
@@ -39,9 +40,9 @@ bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info);
 // Unregisters the app with the OS from running on startup. Platform specific
 // implementations are required for this.
 // See web_app_run_on_os_login_win.cc for Windows implementation as example.
-bool UnregisterRunOnOsLogin(const std::string& app_id,
-                            const base::FilePath& profile_path,
-                            const std::u16string& shortcut_title);
+Result UnregisterRunOnOsLogin(const std::string& app_id,
+                              const base::FilePath& profile_path,
+                              const std::u16string& shortcut_title);
 
 }  // namespace internals
 

@@ -119,7 +119,7 @@ void WebAppFileHandlerManager::EnableAndRegisterOsFileHandlers(
 
 void WebAppFileHandlerManager::DisableAndUnregisterOsFileHandlers(
     const AppId& app_id,
-    base::OnceCallback<void(bool)> callback) {
+    ResultCallback callback) {
   // Updating prefs must be done on the UI Thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   UpdateBoolWebAppPref(profile_->GetPrefs(), app_id, kFileHandlersEnabled,
@@ -132,9 +132,9 @@ void WebAppFileHandlerManager::DisableAndUnregisterOsFileHandlers(
 
   if (!ShouldRegisterFileHandlersWithOs() || !file_handlers ||
       disable_os_integration_for_testing_) {
-    // This bool signals if there was not an error. Exiting early here is WAI,
-    // so this is a success.
-    std::move(callback).Run(true);
+    // This enumeration signals if there was not an error. Exiting early here is
+    // WAI, so this is a success.
+    std::move(callback).Run(Result::kOk);
     return;
   }
 
@@ -147,7 +147,7 @@ void WebAppFileHandlerManager::DisableAndUnregisterOsFileHandlers(
   // the new file handlers. It is therefore important that |callback| not be
   // dropped on the floor.
   // https://crbug.com/1201993
-  std::move(callback).Run(true);
+  std::move(callback).Run(Result::kOk);
 #else
   UnregisterFileHandlersWithOs(app_id, profile_, std::move(callback));
 #endif

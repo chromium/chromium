@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_handler_registration_utils_win.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/install_static/install_util.h"
@@ -116,8 +117,8 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
     base::RunLoop run_loop;
     RegisterProtocolHandlersWithOs(
         app_id, app_name, profile, {handler1_info, handler2_info},
-        base::BindLambdaForTesting([&](bool success) {
-          EXPECT_TRUE(success);
+        base::BindLambdaForTesting([&](Result result) {
+          EXPECT_EQ(Result::kOk, result);
           run_loop.Quit();
         }));
     run_loop.Run();
@@ -255,8 +256,8 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest,
 
   base::RunLoop run_loop;
   UnregisterProtocolHandlersWithOs(
-      kApp1Id, GetProfile(), base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
+      kApp1Id, GetProfile(), base::BindLambdaForTesting([&](Result result) {
+        EXPECT_EQ(Result::kOk, result);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -303,8 +304,8 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest,
 
   base::RunLoop run_loop;
   UnregisterProtocolHandlersWithOs(
-      kApp1Id, GetProfile(), base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
+      kApp1Id, GetProfile(), base::BindLambdaForTesting([&](Result result) {
+        EXPECT_EQ(Result::kOk, result);
         run_loop.Quit();
       }));
   run_loop.Run();

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/web_app_file_handler_registration.h"
 
+#include "chrome/browser/web_applications/web_app_constants.h"
+
 namespace web_app {
 
 bool ShouldRegisterFileHandlersWithOs() {
@@ -27,12 +29,12 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
 
 void UnregisterFileHandlersWithOs(const AppId& app_id,
                                   Profile* profile,
-                                  base::OnceCallback<void(bool)> callback) {
+                                  ResultCallback callback) {
   // On MacOS, file associations are managed through app shims in the
   // Applications directory. File handler unregistration is handled via
   // shortcuts deletion on MacOS.
   NOTREACHED();
-  std::move(callback).Run(true);
+  std::move(callback).Run(Result::kOk);
 }
 
 }  // namespace web_app

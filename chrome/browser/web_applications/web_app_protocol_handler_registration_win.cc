@@ -24,6 +24,7 @@
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/chrome_pwa_launcher_util.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_handler_registration_utils_win.h"
 #include "chrome/browser/web_applications/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_shortcut_win.h"
@@ -117,7 +118,7 @@ void RegisterProtocolHandlersWithOs(
     const std::string& app_name,
     Profile* profile,
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
-    base::OnceCallback<void(bool)> callback) {
+    ResultCallback callback) {
   if (protocol_handlers.empty())
     return;
 
@@ -136,7 +137,7 @@ void RegisterProtocolHandlersWithOs(
 
 void UnregisterProtocolHandlersWithOs(const AppId& app_id,
                                       Profile* profile,
-                                      base::OnceCallback<void(bool)> callback) {
+                                      ResultCallback callback) {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},

@@ -18,6 +18,7 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_shortcut_mac.h"
 #include "chrome/common/chrome_paths.h"
@@ -162,8 +163,9 @@ TEST_F(WebAppRunOnOsLoginMacTest, Unregister) {
   EXPECT_EQ(auto_login_util_mock_->GetRemoveFromLoginItemsCalledCount(), 0);
 
   auto_login_util_mock_->ResetCounts();
-  EXPECT_TRUE(internals::UnregisterRunOnOsLogin(
-      info_->extension_id, info_->profile_path, info_->title));
+  EXPECT_EQ(Result::kOk,
+            internals::UnregisterRunOnOsLogin(
+                info_->extension_id, info_->profile_path, info_->title));
   EXPECT_EQ(auto_login_util_mock_->GetRemoveFromLoginItemsCalledCount(), 1);
   EXPECT_TRUE(base::PathExists(shim_path_));
   EXPECT_TRUE(base::DeletePathRecursively(shim_path_));

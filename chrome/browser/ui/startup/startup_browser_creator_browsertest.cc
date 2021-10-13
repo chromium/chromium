@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -2380,8 +2381,8 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
 
     base::RunLoop run_loop;
     protocol_handler_manager.RegisterOsProtocolHandlers(
-        app_id, base::BindLambdaForTesting([&](bool success) {
-          EXPECT_TRUE(success);
+        app_id, base::BindLambdaForTesting([&](web_app::Result result) {
+          EXPECT_EQ(web_app::Result::kOk, result);
           run_loop.Quit();
         }));
     run_loop.Run();

@@ -298,6 +298,18 @@ enum class IconsDownloadedResult {
   kCancelled,
 };
 
+// Generic result enumeration to be used for operations that can fail. If more
+// information is needed in a return value, we can move to something similar to
+// `base::FileErrorOr` in the future.
+enum class Result {
+  // No errors have occurred. This generally means the operation was either
+  // completed successfully or possibly intentionally skipped.
+  kOk,
+  kError
+};
+
+using ResultCallback = base::OnceCallback<void(Result)>;
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_CONSTANTS_H_

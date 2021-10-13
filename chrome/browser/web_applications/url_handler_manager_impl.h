@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/url_handler_launch_params.h"
 #include "chrome/browser/web_applications/url_handler_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -48,9 +49,8 @@ class UrlHandlerManagerImpl : public UrlHandlerManager {
   static std::vector<UrlHandlerLaunchParams> GetUrlHandlerMatches(
       const GURL& url);
 
-  void RegisterUrlHandlers(
-      const AppId& app_id,
-      base::OnceCallback<void(bool success)> callback) override;
+  void RegisterUrlHandlers(const AppId& app_id,
+                           ResultCallback callback) override;
 
   bool UnregisterUrlHandlers(const AppId& app_id) override;
 
@@ -60,10 +60,9 @@ class UrlHandlerManagerImpl : public UrlHandlerManager {
       base::OnceCallback<void(bool success)> callback) override;
 
  private:
-  void OnDidGetAssociationsAtInstall(
-      const AppId& app_id,
-      base::OnceCallback<void(bool success)> callback,
-      apps::UrlHandlers url_handlers);
+  void OnDidGetAssociationsAtInstall(const AppId& app_id,
+                                     ResultCallback callback,
+                                     apps::UrlHandlers url_handlers);
   void OnDidGetAssociationsAtUpdate(
       const AppId& app_id,
       base::OnceCallback<void(bool success)> callback,

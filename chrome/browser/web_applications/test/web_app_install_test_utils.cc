@@ -140,8 +140,8 @@ AppId InstallWebAppWithUrlHandlers(
 
   base::RunLoop run_loop;
   url_handler_manager.RegisterUrlHandlers(
-      app_id, base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
+      app_id, base::BindLambdaForTesting([&](Result result) {
+        EXPECT_EQ(Result::kOk, result);
         run_loop.Quit();
       }));
   run_loop.Run();

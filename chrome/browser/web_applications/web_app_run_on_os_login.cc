@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_shortcut.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -23,8 +24,9 @@ void RegisterRunOnOsLoginAndPostCallback(RegisterRunOnOsLoginCallback callback,
   bool run_on_os_login_registered =
       internals::RegisterRunOnOsLogin(shortcut_info);
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_on_os_login_registered));
+      FROM_HERE, base::BindOnce(std::move(callback), run_on_os_login_registered
+                                                         ? Result::kOk
+                                                         : Result::kError));
 }
 
 }  // namespace

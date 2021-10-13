@@ -85,12 +85,11 @@ void DeletePlatformShortcutsAndPostCallback(
                                      std::move(callback));
 }
 
-void DeleteMultiProfileShortcutsForAppAndPostCallback(
-    const std::string& app_id,
-    DeleteShortcutsCallback callback) {
+void DeleteMultiProfileShortcutsForAppAndPostCallback(const std::string& app_id,
+                                                      ResultCallback callback) {
   internals::DeleteMultiProfileShortcutsForApp(app_id);
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
+      FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
 }
 
 absl::optional<ScopedShortcutOverrideForTesting*>&
@@ -278,9 +277,8 @@ void ScheduleDeletePlatformShortcuts(
                      std::move(shortcut_info));
 }
 
-void ScheduleDeleteMultiProfileShortcutsForApp(
-    const std::string& app_id,
-    DeleteShortcutsCallback callback) {
+void ScheduleDeleteMultiProfileShortcutsForApp(const std::string& app_id,
+                                               ResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   GetShortcutIOTaskRunner()->PostTask(
