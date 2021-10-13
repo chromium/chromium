@@ -2514,6 +2514,9 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
 
   const gfx::Rect& monitor_bounds = state_.monitor_bounds;
 
+  const bool is_win11_menu =
+      menu_config.win11_style_menus && menu_config.CornerRadiusForMenu(this);
+
   if (!item->GetParentMenuItem()) {
     // This is a top-level menu, position it relative to the anchor bounds.
     const gfx::Rect& anchor_bounds = state_.initial_bounds;
@@ -2526,7 +2529,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
       int max_height = monitor_bounds.height();
       // In case of bubbles, the maximum width is limited by the space
       // between the display corner and the target area + the tip size.
-      if (is_bubble ||
+      if (is_bubble || is_win11_menu ||
           item->actual_menu_position() == MenuPosition::kAboveBounds) {
         // Don't consider |border_and_shadow_insets| because when the max size
         // is enforced, the scroll view is shown and the md shadows are not
@@ -2534,7 +2537,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
         max_height =
             std::max(anchor_bounds.y() - monitor_bounds.y(),
                      monitor_bounds.bottom() - anchor_bounds.bottom()) -
-            menu_config.touchable_anchor_offset;
+            (is_win11_menu ? 0 : menu_config.touchable_anchor_offset);
       }
       // The menu should always have a non-empty available area.
       DCHECK_GE(max_width, kBubbleTipSizeLeftRight);
@@ -2680,8 +2683,16 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
     const bool layout_is_rtl = base::i18n::IsRTL();
     const bool create_on_right = prefer_leading != layout_is_rtl;
 
+    // Don't let the menu get too wide if Win11 menus are on.
+    if (is_win11_menu) {
+      menu_size.set_width(std::min(
+          menu_size.width(), item->GetDelegate()->GetMaxWidthForMenu(item)));
+    }
+
     const int width_with_right_inset =
-        menu_config.touchable_menu_min_width + border_and_shadow_insets.right();
+        is_win11_menu ? (menu_size.width() - border_and_shadow_insets.right())
+                      : (menu_config.touchable_menu_min_width +
+                         border_and_shadow_insets.right());
     const int x_max = monitor_bounds.right() - width_with_right_inset;
     const int x_left = item_bounds.x() - width_with_right_inset;
     const int x_right = item_bounds.right() - border_and_shadow_insets.left();
@@ -2711,11 +2722,25 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
         x = monitor_bounds.x();
       }
     }
-    y = item_bounds.y() - border_and_shadow_insets.top() -
-        menu_config.vertical_touchable_menu_item_padding;
-    y = base::clamp(y, monitor_bounds.y() - border_and_shadow_insets.top(),
-                    monitor_bounds.bottom() - menu_size.height() +
-                        border_and_shadow_insets.top());
+
+    if (is_win11_menu) {
+      // Make sure the menu doesn't exceed the monitor bounds while cancelling
+      // out the border and shadow at the top and bottom.
+      menu_size.set_height(std::min(
+          menu_size.height(),
+          monitor_bounds.height() + border_and_shadow_insets.height()));
+      y = item_bounds.y() - border_and_shadow_insets.top();
+      y = base::clamp(y, monitor_bounds.y() - border_and_shadow_insets.top(),
+                      monitor_bounds.bottom() +
+                          border_and_shadow_insets.bottom() -
+                          menu_size.height());
+    } else {
+      y = item_bounds.y() - border_and_shadow_insets.top() -
+          menu_config.vertical_touchable_menu_item_padding;
+      y = base::clamp(y, monitor_bounds.y() - border_and_shadow_insets.top(),
+                      monitor_bounds.bottom() - menu_size.height() +
+                          border_and_shadow_insets.top());
+    }
   }
 
   auto menu_bounds = gfx::Rect(x, y, menu_size.width(), menu_size.height());
