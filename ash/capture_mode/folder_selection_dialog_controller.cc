@@ -59,13 +59,14 @@ FolderSelectionDialogController::FolderSelectionDialogController(
   DCHECK(root);
   DCHECK(root->IsRootWindow());
 
-  window_observation_.Observe(wm::TransientWindowManager::GetOrCreate(
-      dialog_background_dimmer_.window()));
+  auto* owner = dialog_background_dimmer_.window();
+  owner->SetId(kShellWindowId_CaptureModeFolderSelectionDialogOwner);
+  window_observation_.Observe(wm::TransientWindowManager::GetOrCreate(owner));
 
   dialog_background_dimmer_.SetDimColor(
       AshColorProvider::Get()->GetShieldLayerColor(
           AshColorProvider::ShieldLayerType::kShield40));
-  dialog_background_dimmer_.window()->Show();
+  owner->Show();
 
   select_folder_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_FOLDER,
@@ -74,7 +75,7 @@ FolderSelectionDialogController::FolderSelectionDialogController(
       /*file_types=*/nullptr,
       /*file_type_index=*/0,
       /*default_extension=*/base::FilePath::StringType(),
-      /*owning_window=*/dialog_background_dimmer_.window(),
+      /*owning_window=*/owner,
       /*params=*/nullptr);
 }
 
@@ -104,7 +105,6 @@ void FolderSelectionDialogController::OnTransientChildAdded(
   DCHECK(!dialog_window_);
 
   dialog_window_ = transient;
-  dialog_window_->SetId(kShellWindowId_CaptureModeFolderSelectionDialog);
 
   // The dialog should never resize, minimize or maximize.
   auto* widget = views::Widget::GetWidgetForNativeWindow(dialog_window_);
@@ -114,6 +114,9 @@ void FolderSelectionDialogController::OnTransientChildAdded(
   widget_delegate->SetCanResize(false);
   widget_delegate->SetCanMinimize(false);
   widget_delegate->SetCanMaximize(false);
+
+  if (on_dialog_window_added_callback_for_test_)
+    std::move(on_dialog_window_added_callback_for_test_).Run();
 }
 
 void FolderSelectionDialogController::OnTransientChildRemoved(

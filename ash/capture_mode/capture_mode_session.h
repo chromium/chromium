@@ -172,6 +172,7 @@ class ASH_EXPORT CaptureModeSession
   friend class CaptureModeAdvancedSettingsTestApi;
   friend class CaptureModeSessionFocusCycler;
   friend class CaptureModeSessionTestApi;
+  friend class CaptureModeTestApi;
   class CursorSetter;
   class ScopedA11yOverrideWindowSetter;
 

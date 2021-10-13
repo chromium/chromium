@@ -14,9 +14,6 @@ namespace ash {
 // Note: this won't start a capture mode session.
 void ASH_EXPORT CaptureScreenshotsOfAllDisplays();
 
-// Returns true if a capture mode session is currently active.
-bool ASH_EXPORT IsCaptureModeSessionActive();
-
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_API_H_

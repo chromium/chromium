@@ -6,10 +6,12 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
+#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/video_recording_watcher.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/run_loop.h"
 
 namespace ash {
 
@@ -90,6 +92,32 @@ CaptureModeTestApi::GetRecordingOverlayController() {
   DCHECK(controller_->video_recording_watcher_->is_in_projector_mode());
   return controller_->video_recording_watcher_->recording_overlay_controller_
       .get();
+}
+
+void CaptureModeTestApi::SimulateOpeningFolderSelectionDialog() {
+  DCHECK(controller_->IsActive());
+  auto* session = controller_->capture_mode_session();
+  DCHECK(!session->capture_mode_settings_widget_);
+  session->SetSettingsMenuShown(true);
+  DCHECK(session->capture_mode_settings_widget_);
+  session->OpenFolderSelectionDialog();
+
+  // In browser tests, the dialog creation is asynchronous, so we'll need to
+  // wait for it.
+  if (GetFolderSelectionDialogWindow())
+    return;
+
+  base::RunLoop loop;
+  session->folder_selection_dialog_controller_
+      ->on_dialog_window_added_callback_for_test_ = loop.QuitClosure();
+  loop.Run();
+}
+
+aura::Window* CaptureModeTestApi::GetFolderSelectionDialogWindow() {
+  DCHECK(controller_->IsActive());
+  auto* session = controller_->capture_mode_session();
+  auto* dialog_controller = session->folder_selection_dialog_controller_.get();
+  return dialog_controller ? dialog_controller->dialog_window() : nullptr;
 }
 
 void CaptureModeTestApi::SetType(bool for_video) {

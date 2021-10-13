@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_FOLDER_SELECTION_DIALOG_CONTROLLER_H_
 
 #include "ash/wm/window_dimmer.h"
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
@@ -67,6 +68,8 @@ class FolderSelectionDialogController : public ui::SelectFileDialog::Listener,
                                aura::Window* transient) override;
 
  private:
+  friend class CaptureModeTestApi;
+
   Delegate* const delegate_;
 
   // Dims everything behind the dialog (including the capture bar, the settings
@@ -80,6 +83,9 @@ class FolderSelectionDialogController : public ui::SelectFileDialog::Listener,
   // This is the window of the dialog that gets created by
   // |select_folder_dialog_| as a transient child of the dimming window.
   aura::Window* dialog_window_ = nullptr;
+
+  // An optional callback that will be invoked when |dialog_window_| gets added.
+  base::OnceClosure on_dialog_window_added_callback_for_test_;
 
   // We observe the transient window manager of the dimming window to know when
   // the dialog window is added or removed.

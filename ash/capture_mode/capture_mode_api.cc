@@ -12,8 +12,4 @@ void CaptureScreenshotsOfAllDisplays() {
   CaptureModeController::Get()->CaptureScreenshotsOfAllDisplays();
 }
 
-bool IsCaptureModeSessionActive() {
-  return CaptureModeController::Get()->IsActive();
-}
-
 }  // namespace ash

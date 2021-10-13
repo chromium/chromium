@@ -9,6 +9,10 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace gfx {
 class Rect;
 }  // namespace gfx
@@ -71,6 +75,14 @@ class ASH_EXPORT CaptureModeTestApi {
   // Returns the |RecordingOverlayController| which hosts the overlay widget.
   // Can only be called while recording is in progress for a Projector session.
   RecordingOverlayController* GetRecordingOverlayController();
+
+  // Simulates the flow taken by users to open the folder selection dialog from
+  // the settings menu, and waits until this dialog gets added.
+  void SimulateOpeningFolderSelectionDialog();
+
+  // Returns a pointer to the folder selection dialog window or nullptr if no
+  // such window exists.
+  aura::Window* GetFolderSelectionDialogWindow();
 
  private:
   // Sets the capture mode type to a video capture if |for_video| is true, or
