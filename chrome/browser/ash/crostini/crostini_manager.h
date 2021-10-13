@@ -625,7 +625,6 @@ class CrostiniManager : public KeyedService,
   bool IsContainerUpgradeable(const ContainerId& container_id) const;
   bool ShouldPromptContainerUpgrade(const ContainerId& container_id) const;
   void UpgradePromptShown(const ContainerId& container_id);
-  void EnsureVmRunning(const ContainerId& key, CrostiniResultCallback callback);
   bool IsUncleanStartup() const;
   void SetUncleanStartupForTesting(bool is_unclean_startup);
   void RemoveUncleanSshfsMounts();
