@@ -4,12 +4,21 @@
 
 #include "chromecast/media/audio/net/audio_socket_service.h"
 
+#include <unistd.h>
+
+#include <cstring>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/logging.h"
+#include "base/posix/eintr_wrapper.h"
+#include "base/posix/safe_strerror.h"
+#include "base/posix/unix_domain_socket.h"
 #include "base/task/sequenced_task_runner_forward.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chromecast/net/socket_util.h"
 #include "net/base/net_errors.h"
 #include "net/socket/stream_socket.h"
 #include "net/socket/unix_domain_client_socket_posix.h"
@@ -20,6 +29,13 @@ namespace media {
 
 namespace {
 constexpr int kListenBacklog = 10;
+constexpr char kSocketMsg[] = "socket-handle";
+
+void CloseSocket(int fd) {
+  int rv = IGNORE_EINTR(close(fd));
+  DCHECK_EQ(rv, 0) << "Error closing socket: " << base::safe_strerror(errno);
+}
+
 }  // namespace
 
 // static
@@ -33,8 +49,10 @@ std::unique_ptr<net::StreamSocket> AudioSocketService::Connect(
 AudioSocketService::AudioSocketService(const std::string& endpoint,
                                        int port,
                                        int max_accept_loop,
-                                       Delegate* delegate)
+                                       Delegate* delegate,
+                                       bool use_socket_descriptor)
     : max_accept_loop_(max_accept_loop),
+      use_socket_descriptor_(use_socket_descriptor),
       delegate_(delegate),
       task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK_GT(max_accept_loop_, 0);
@@ -54,6 +72,66 @@ AudioSocketService::AudioSocketService(const std::string& endpoint,
   if (result != net::OK) {
     LOG(ERROR) << "Listen failed: " << net::ErrorToString(result);
     listen_socket_.reset();
+  }
+}
+
+int AudioSocketService::AcceptOne() {
+  DCHECK(listen_socket_);
+
+  if (use_socket_descriptor_) {
+    return static_cast<net::UnixDomainServerSocket*>(listen_socket_.get())
+        ->AcceptSocketDescriptor(
+            &accepted_descriptor_,
+            base::BindOnce(&AudioSocketService::OnAsyncAcceptComplete,
+                           base::Unretained(this)));
+  }
+  return listen_socket_->Accept(
+      &accepted_socket_,
+      base::BindOnce(&AudioSocketService::OnAsyncAcceptComplete,
+                     base::Unretained(this)));
+}
+
+void AudioSocketService::OnAcceptSuccess() {
+  if (!use_socket_descriptor_) {
+    delegate_->HandleAcceptedSocket(std::move(accepted_socket_));
+    return;
+  }
+
+  if (accepted_descriptor_ == net::kInvalidSocket) {
+    LOG(ERROR) << "Accepted socket descriptor is invalid.";
+    return;
+  }
+  fd_watcher_controllers_.emplace(
+      accepted_descriptor_,
+      base::FileDescriptorWatcher::WatchReadable(
+          accepted_descriptor_,
+          base::BindRepeating(&AudioSocketService::ReceiveFdFromSocket,
+                              base::Unretained(this), accepted_descriptor_)));
+  accepted_descriptor_ = net::kInvalidSocket;
+}
+
+void AudioSocketService::ReceiveFdFromSocket(int socket_fd) {
+  fd_watcher_controllers_.erase(socket_fd);
+
+  char buffer[sizeof(kSocketMsg)];
+  std::vector<base::ScopedFD> fds;
+  ssize_t res =
+      base::UnixDomainSocket::RecvMsg(socket_fd, buffer, sizeof(buffer), &fds);
+  CloseSocket(socket_fd);
+  if (res != sizeof(kSocketMsg)) {
+    LOG(ERROR) << "Failed to receive message from the descriptor " << socket_fd;
+    return;
+  }
+  if (memcmp(buffer, kSocketMsg, sizeof(kSocketMsg)) != 0) {
+    LOG(ERROR) << "Received invalid message.";
+    return;
+  }
+  if (fds.empty()) {
+    LOG(ERROR) << "No socket descriptors received.";
+    return;
+  }
+  for (auto& fd : fds) {
+    delegate_->HandleAcceptedSocket(AdoptUnnamedSocketHandle(std::move(fd)));
   }
 }
 

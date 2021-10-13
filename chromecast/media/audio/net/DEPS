@@ -5,6 +5,7 @@ include_rules = [
   "+net/base/ip_endpoint.h",
   "+net/log/net_log_source.h",
   "+net/socket/server_socket.h",
+  "+net/socket/socket_descriptor.h",
   "+net/socket/tcp_client_socket.h",
   "+net/socket/tcp_server_socket.h",
   "+net/socket/unix_domain_client_socket_posix.h",

@@ -26,9 +26,7 @@ void AudioSocketService::Accept() {
   }
 
   for (int i = 0; i < max_accept_loop_; ++i) {
-    int result = listen_socket_->Accept(
-        &accepted_socket_, base::BindRepeating(&AudioSocketService::OnAccept,
-                                               base::Unretained(this)));
+    int result = AcceptOne();
     // If the result is ERR_IO_PENDING, OnAccept() will eventually be
     // called; it will resume the accept loop.
     if (result == net::ERR_IO_PENDING || !HandleAcceptResult(result)) {
@@ -36,10 +34,10 @@ void AudioSocketService::Accept() {
     }
   }
   task_runner_->PostTask(FROM_HERE, base::BindOnce(&AudioSocketService::Accept,
-                                                   base::Unretained(this)));
+                                                   weak_factory_.GetWeakPtr()));
 }
 
-void AudioSocketService::OnAccept(int result) {
+void AudioSocketService::OnAsyncAcceptComplete(int result) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (HandleAcceptResult(result)) {
     Accept();
@@ -51,7 +49,7 @@ bool AudioSocketService::HandleAcceptResult(int result) {
     LOG(ERROR) << "Accept failed: " << net::ErrorToString(result);
     return false;
   }
-  delegate_->HandleAcceptedSocket(std::move(accepted_socket_));
+  OnAcceptSuccess();
   return true;
 }
 

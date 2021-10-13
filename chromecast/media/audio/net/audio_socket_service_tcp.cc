@@ -5,6 +5,7 @@
 #include "chromecast/media/audio/net/audio_socket_service.h"
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner_forward.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/address_list.h"
@@ -36,8 +37,10 @@ std::unique_ptr<net::StreamSocket> AudioSocketService::Connect(
 AudioSocketService::AudioSocketService(const std::string& endpoint,
                                        int port,
                                        int max_accept_loop,
-                                       Delegate* delegate)
+                                       Delegate* delegate,
+                                       bool /* use_socket_descriptor */)
     : max_accept_loop_(max_accept_loop),
+      use_socket_descriptor_(false),
       delegate_(delegate),
       task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK_GT(max_accept_loop_, 0);
@@ -54,6 +57,22 @@ AudioSocketService::AudioSocketService(const std::string& endpoint,
     LOG(ERROR) << "Listen failed: " << net::ErrorToString(result);
     listen_socket_.reset();
   }
+}
+
+int AudioSocketService::AcceptOne() {
+  DCHECK(listen_socket_);
+  return listen_socket_->Accept(
+      &accepted_socket_,
+      base::BindOnce(&AudioSocketService::OnAsyncAcceptComplete,
+                     base::Unretained(this)));
+}
+
+void AudioSocketService::OnAcceptSuccess() {
+  delegate_->HandleAcceptedSocket(std::move(accepted_socket_));
+}
+
+void AudioSocketService::ReceiveFdFromSocket(int socket_fd) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace media

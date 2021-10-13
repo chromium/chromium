@@ -8,7 +8,12 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_map.h"
+#include "base/files/file_descriptor_watcher_posix.h"
+#include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "net/socket/socket_descriptor.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -37,10 +42,17 @@ class AudioSocketService {
     virtual ~Delegate() = default;
   };
 
+  // When |use_socket_descriptor| is true, AudioSocketService will receive a
+  // socket descriptor from the connection created through |listen_socket_|, and
+  // then use the received socket descriptor to create the real socket for
+  // transferring data. This is useful when the actual client of the service is
+  // not able to create a socket themselves but instead needs a brokered socket
+  // descriptor (created with socketpair()) to connect.
   AudioSocketService(const std::string& endpoint,
                      int port,
                      int max_accept_loop,
-                     Delegate* delegate);
+                     Delegate* delegate,
+                     bool use_socket_descriptor = false);
   AudioSocketService(const AudioSocketService&) = delete;
   AudioSocketService& operator=(const AudioSocketService&) = delete;
   ~AudioSocketService();
@@ -55,16 +67,27 @@ class AudioSocketService {
                                                     int port);
 
  private:
-  void OnAccept(int result);
+  void OnAsyncAcceptComplete(int result);
   bool HandleAcceptResult(int result);
 
+  // The following methods are implemented in audio_socket_service_{uds|tcp}.cc.
+  int AcceptOne();
+  void OnAcceptSuccess();
+  void ReceiveFdFromSocket(int socket_fd);
+
   const int max_accept_loop_;
+  const bool use_socket_descriptor_;
   Delegate* const delegate_;  // Not owned.
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   std::unique_ptr<net::ServerSocket> listen_socket_;
   std::unique_ptr<net::StreamSocket> accepted_socket_;
+  net::SocketDescriptor accepted_descriptor_ = net::kInvalidSocket;
+  base::flat_map<int /* fd */,
+                 std::unique_ptr<base::FileDescriptorWatcher::Controller>>
+      fd_watcher_controllers_;
+  base::WeakPtrFactory<AudioSocketService> weak_factory_{this};
 };
 
 }  // namespace media
