@@ -214,15 +214,6 @@ void CastWMHelper::SetDefaultScaleCancellation(
   NOTIMPLEMENTED();
 }
 
-void CastWMHelper::SetImeBlocked(aura::Window* window, bool ime_blocked) {
-  NOTIMPLEMENTED();
-}
-
-bool CastWMHelper::IsImeBlocked(aura::Window* window) const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 WMHelper::LifetimeManager* CastWMHelper::GetLifetimeManager() {
   return &lifetime_manager_;
 }

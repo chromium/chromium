@@ -457,17 +457,6 @@ void ClientControlledShellSurface::SetAlwaysOnTop(bool always_on_top) {
   pending_always_on_top_ = always_on_top;
 }
 
-void ClientControlledShellSurface::SetImeBlocked(bool ime_blocked) {
-  TRACE_EVENT1("exo", "ClientControlledShellSurface::SetImeBlocked",
-               "ime_blocked", ime_blocked);
-
-  if (!widget_)
-    CreateShellSurfaceWidget(ui::SHOW_STATE_NORMAL);
-
-  WMHelper::GetInstance()->SetImeBlocked(widget_->GetNativeWindow(),
-                                         ime_blocked);
-}
-
 void ClientControlledShellSurface::SetOrientation(Orientation orientation) {
   TRACE_EVENT1("exo", "ClientControlledShellSurface::SetOrientation",
                "orientation",

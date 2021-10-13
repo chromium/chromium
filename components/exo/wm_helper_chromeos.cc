@@ -31,9 +31,6 @@ aura::Window* GetPrimaryRoot() {
   return ash::Shell::Get()->GetPrimaryRootWindow();
 }
 
-// A property key to store whether IME should be blocked for the surface.
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kImeBlockedKey, false)
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -267,15 +264,6 @@ double WMHelperChromeOS::GetDeviceScaleFactorForWindow(
 void WMHelperChromeOS::SetDefaultScaleCancellation(
     bool default_scale_cancellation) {
   default_scale_cancellation_ = default_scale_cancellation;
-}
-
-void WMHelperChromeOS::SetImeBlocked(aura::Window* window, bool ime_blocked) {
-  DCHECK_EQ(window, window->GetToplevelWindow());
-  window->SetProperty(kImeBlockedKey, ime_blocked);
-}
-
-bool WMHelperChromeOS::IsImeBlocked(aura::Window* window) const {
-  return window && window->GetToplevelWindow()->GetProperty(kImeBlockedKey);
 }
 
 WMHelper::LifetimeManager* WMHelperChromeOS::GetLifetimeManager() {

@@ -111,9 +111,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Sets the surface to be on top of all other windows.
   void SetAlwaysOnTop(bool always_on_top);
 
-  // Sets the IME to be blocked so that all events are forwarded by Exo.
-  void SetImeBlocked(bool ime_blocked);
-
   // Controls the visibility of the system UI when this surface is active.
   void SetSystemUiVisibility(bool autohide);
 

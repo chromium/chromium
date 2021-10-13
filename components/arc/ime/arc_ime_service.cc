@@ -124,13 +124,6 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
     return window->GetHost()->GetInputMethod();
   }
 
-  bool IsImeBlocked(aura::Window* window) const override {
-    // WMHelper is not craeted in browser_tests.
-    if (!exo::WMHelper::HasInstance())
-      return false;
-    return exo::WMHelper::GetInstance()->IsImeBlocked(window);
-  }
-
  private:
   ArcImeService* const ime_service_;
 };
@@ -260,30 +253,6 @@ void ArcImeService::OnWindowRemovingFromRootWindow(aura::Window* window,
   // IMEs are associated with root windows, hence we may need to detach/attach.
   if (window == focused_arc_window_)
     ReattachInputMethod(focused_arc_window_, new_root);
-}
-
-void ArcImeService::OnWindowPropertyChanged(aura::Window* window,
-                                            const void* key,
-                                            intptr_t old) {
-  if (window == focused_arc_window_)
-    return;
-
-  bool ime_blocked = arc_window_delegate_->IsImeBlocked(focused_arc_window_);
-  if (last_ime_blocked_ == ime_blocked)
-    return;
-  last_ime_blocked_ = ime_blocked;
-
-  // IME blocking has changed.
-  ui::InputMethod* const input_method = GetInputMethod();
-  if (input_method) {
-    if (has_composition_text_) {
-      // If it has composition text, clear both ARC's current composition text
-      // and Chrome IME's one.
-      ClearCompositionText();
-      input_method->CancelComposition(this);
-    }
-    input_method->OnTextInputTypeChanged(this);
-  }
 }
 
 void ArcImeService::OnWindowRemoved(aura::Window* removed_window) {
@@ -475,10 +444,6 @@ void ArcImeService::InsertText(const std::u16string& text,
 }
 
 void ArcImeService::InsertChar(const ui::KeyEvent& event) {
-  // When IME is blocked for the window, let Exo handle the event.
-  if (arc_window_delegate_->IsImeBlocked(focused_arc_window_))
-    return;
-
   // According to the document in text_input_client.h, InsertChar() is called
   // even when the text editing is not available. We ignore such events, since
   // for ARC we are only interested in the event as a method of text input.
@@ -495,8 +460,6 @@ void ArcImeService::InsertChar(const ui::KeyEvent& event) {
 }
 
 ui::TextInputType ArcImeService::GetTextInputType() const {
-  if (arc_window_delegate_->IsImeBlocked(focused_arc_window_))
-    return ui::TEXT_INPUT_TYPE_NONE;
   return ime_type_;
 }
 

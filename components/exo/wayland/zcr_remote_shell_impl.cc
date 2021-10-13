@@ -1343,11 +1343,11 @@ void remote_surface_set_bounds(wl_client* client,
 }
 
 void remote_surface_block_ime(wl_client* client, wl_resource* resource) {
-  GetUserDataAs<ClientControlledShellSurface>(resource)->SetImeBlocked(true);
+  NOTIMPLEMENTED();
 }
 
 void remote_surface_unblock_ime(wl_client* client, wl_resource* resource) {
-  GetUserDataAs<ClientControlledShellSurface>(resource)->SetImeBlocked(false);
+  NOTIMPLEMENTED();
 }
 
 void remote_surface_set_accessibility_id(wl_client* client,

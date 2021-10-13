@@ -308,10 +308,6 @@ bool HasPermissionToActivate(aura::Window* window) {
 }
 
 bool ConsumedByIme(aura::Window* window, const ui::KeyEvent& event) {
-  // When IME is blocked, Exo can handle any key events.
-  if (WMHelper::GetInstance()->IsImeBlocked(window))
-    return false;
-
   // Check if IME consumed the event, to avoid it to be doubly processed.
   // First let us see whether IME is active and is in text input mode.
   views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(window);

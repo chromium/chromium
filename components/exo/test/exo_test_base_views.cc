@@ -81,8 +81,6 @@ class WMHelperTester : public WMHelper, public VSyncTimingManager::Delegate {
     return 1.0;
   }
   void SetDefaultScaleCancellation(bool default_scale_cancellation) override {}
-  void SetImeBlocked(aura::Window* window, bool ime_blocked) override {}
-  bool IsImeBlocked(aura::Window* window) const override { return false; }
 
   LifetimeManager* GetLifetimeManager() override { return &lifetime_manager_; }
   aura::client::CaptureClient* GetCaptureClient() override { return nullptr; }
