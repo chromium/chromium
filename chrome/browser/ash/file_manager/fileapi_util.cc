@@ -11,8 +11,10 @@
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/bind.h"
 #include "base/files/file.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
@@ -35,6 +37,7 @@
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -447,6 +450,57 @@ void GetMetadataForPathOnIoThread(
                                                        std::move(callback));
 }
 
+// Helper struct used to store the current file url being checked when trying to
+// find an unused filename.
+struct GenerateUnusedFilenameState {
+  scoped_refptr<storage::FileSystemContext> file_system_context;
+  storage::FileSystemURL destination_folder;
+
+  // The filename without the counter and extension.
+  std::string prefix;
+
+  // The number to check.
+  int counter = 0;
+
+  // The extension of the given filename, including the "." at the start.
+  std::string extension;
+};
+
+// Helper callback function for GetUnusedFilename().
+void GenerateUnusedFilenameOnGotMetadata(
+    storage::FileSystemURL trial_url,
+    GenerateUnusedFilenameState state,
+    base::OnceCallback<void(base::FileErrorOr<storage::FileSystemURL>)>
+        callback,
+    base::File::Error error,
+    const base::File::Info& file_info) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  if (error == base::File::FILE_ERROR_NOT_FOUND) {
+    std::move(callback).Run(std::move(trial_url));
+    return;
+  } else if (error != base::File::FILE_OK) {
+    std::move(callback).Run(error);
+    return;
+  }
+
+  // File at |trial_url| exists, so try the next number up.
+  auto file_system_context = state.file_system_context;
+  state.counter++;
+  std::string filename =
+      base::StringPrintf("%s (%d)%s", state.prefix.c_str(), state.counter,
+                         state.extension.c_str());
+  auto filesystem_url = state.file_system_context->CreateCrackedFileSystemURL(
+      state.destination_folder.storage_key(),
+      state.destination_folder.mount_type(),
+      state.destination_folder.virtual_path().Append(
+          base::FilePath::FromUTF8Unsafe(filename)));
+  GetMetadataForPathOnIoThread(
+      state.file_system_context, filesystem_url,
+      storage::FileSystemOperation::GET_METADATA_FIELD_NONE,
+      base::BindOnce(&GenerateUnusedFilenameOnGotMetadata, filesystem_url,
+                     std::move(state), std::move(callback)));
+}
+
 }  // namespace
 
 EntryDefinition::EntryDefinition() = default;
@@ -633,6 +687,42 @@ FileSystemURLAndHandle CreateIsolatedURLFromVirtualPath(
       storage::kFileSystemTypeIsolated,
       base::FilePath(file_system.id()).Append(register_name));
   return {isolated_url, file_system};
+}
+
+void GenerateUnusedFilename(
+    storage::FileSystemURL destination_folder,
+    base::FilePath filename,
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    base::OnceCallback<void(base::FileErrorOr<storage::FileSystemURL>)>
+        callback) {
+  if (filename.empty() || filename != filename.BaseName()) {
+    std::move(callback).Run(base::File::FILE_ERROR_INVALID_OPERATION);
+    return;
+  }
+
+  auto trial_url = file_system_context->CreateCrackedFileSystemURL(
+      destination_folder.storage_key(), destination_folder.mount_type(),
+      destination_folder.virtual_path().Append(filename));
+
+  GenerateUnusedFilenameState state;
+  state.destination_folder = std::move(destination_folder);
+  state.file_system_context = file_system_context;
+  state.extension = filename.Extension();
+  // Extracts the filename without extension or existing counter.
+  // E.g. "foo (3).txt" -> "foo".
+  bool res = RE2::FullMatch(filename.RemoveExtension().value(),
+                            R"((.*?)(?: \(\d+\))?)", &state.prefix);
+  DCHECK(res);
+
+  auto get_metadata_callback = base::BindOnce(
+      &GenerateUnusedFilenameOnGotMetadata, trial_url, std::move(state),
+      google_apis::CreateRelayCallback(std::move(callback)));
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GetMetadataForPathOnIoThread, file_system_context,
+                     std::move(trial_url),
+                     storage::FileSystemOperation::GET_METADATA_FIELD_NONE,
+                     std::move(get_metadata_callback)));
 }
 
 }  // namespace util

@@ -13,6 +13,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/isolated_context.h"
@@ -196,6 +197,17 @@ FileSystemURLAndHandle CreateIsolatedURLFromVirtualPath(
     const storage::FileSystemContext& context,
     const GURL& origin,
     const base::FilePath& virtual_path);
+
+// Given a |destination_folder| and a |filename|, returns a suitable path inside
+// folder that does not already exist. First it checks whether |filename| exists
+// inside |destination_folder|. If it does, it adds a parenthesised number (e.g.
+// " (1)" before the extension to deduplicate the filename.
+void GenerateUnusedFilename(
+    storage::FileSystemURL destination_folder,
+    base::FilePath filename,
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    base::OnceCallback<void(base::FileErrorOr<storage::FileSystemURL>)>
+        callback);
 
 }  // namespace util
 }  // namespace file_manager

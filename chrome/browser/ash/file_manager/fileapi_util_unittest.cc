@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
@@ -75,6 +76,12 @@ class TempFileSystem {
   // For the given FileSystemURL creates a file.
   base::File::Error CreateFile(const storage::FileSystemURL& url) {
     return storage::AsyncFileTestHelper::CreateFile(file_system_context_, url);
+  }
+
+  // For the given FileSystemURL creates a directory.
+  base::File::Error CreateDirectory(const storage::FileSystemURL& url) {
+    return storage::AsyncFileTestHelper::CreateDirectory(file_system_context_,
+                                                         url);
   }
 
   // Creates an external file system URL for the given path.
@@ -184,6 +191,10 @@ class FileManagerFileAPIUtilTest
         url::Origin::Create(appURL), file_definitions, std::move(callback));
     run_loop.Run();
   }
+
+  void TestGenerateUnusedFilename(std::vector<std::string> existing_files,
+                                  std::string target_filename,
+                                  base::FileErrorOr<std::string> expected);
 
   const std::string file_system_id_ = "test-filesystem";
 
@@ -392,6 +403,108 @@ TEST_P(FileManagerFileAPIUtilTest, IsFileManagerURL) {
       GURL("chrome-extension://iamnotafilemanagerextensionid")));
   EXPECT_FALSE(IsFileManagerURL(
       GURL("chrome-extension://iamnotafilemanagerextensionid/")));
+}
+
+void FileManagerFileAPIUtilTest::TestGenerateUnusedFilename(
+    std::vector<std::string> existing_files,
+    std::string target_filename,
+    base::FileErrorOr<std::string> expected) {
+  const GURL appURL("chrome-extension://abc/");
+  auto temp_file_system =
+      std::make_unique<TempFileSystem>(GetProfile(), appURL);
+  ASSERT_TRUE(temp_file_system->SetUp());
+  storage::FileSystemURL root_url = temp_file_system->CreateFileSystemURL("");
+  scoped_refptr<storage::FileSystemContext> file_system_context =
+      GetFileSystemContextForSourceURL(GetProfile(), appURL);
+
+  for (const std::string& file : existing_files) {
+    if (file.back() == '/') {
+      temp_file_system->CreateDirectory(
+          temp_file_system->CreateFileSystemURL(file));
+    } else {
+      temp_file_system->CreateFile(temp_file_system->CreateFileSystemURL(file));
+    }
+  }
+
+  base::RunLoop run_loop;
+  GenerateUnusedFilename(
+      root_url, base::FilePath(target_filename), file_system_context,
+      base::BindLambdaForTesting(
+          [&](base::FileErrorOr<storage::FileSystemURL> result) {
+            if (expected.is_error()) {
+              EXPECT_TRUE(result.is_error())
+                  << "Unexpected result " << result->ToGURL();
+              EXPECT_EQ(expected.error(), result.error());
+            } else {
+              EXPECT_FALSE(result.is_error())
+                  << "Unexpected error " << result.error();
+              EXPECT_EQ(temp_file_system->CreateFileSystemURL(expected.value())
+                            .ToGURL(),
+                        result->ToGURL());
+            }
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameBasic) {
+  TestGenerateUnusedFilename({}, "foo.bar", {"foo.bar"});
+  TestGenerateUnusedFilename({"foo.bar"}, "foo.bar", {"foo (1).bar"});
+  TestGenerateUnusedFilename({"foo.bar/"}, "foo.bar", {"foo (1).bar"});
+  TestGenerateUnusedFilename({"foo (1).bar"}, "foo.bar", {"foo.bar"});
+  TestGenerateUnusedFilename({"foo.bar", "foo (1).bar"}, "foo.bar",
+                             {"foo (2).bar"});
+  TestGenerateUnusedFilename({"foo.bar", "foo (1).bar/"}, "foo.bar",
+                             {"foo (2).bar"});
+  TestGenerateUnusedFilename({"foo.bar", "foo (2).bar"}, "foo.bar",
+                             {"foo (1).bar"});
+  TestGenerateUnusedFilename({"foo.bar/", "foo (1).bar"}, "foo (1).bar",
+                             {"foo (2).bar"});
+  TestGenerateUnusedFilename({"foo (3).bar"}, "foo (3).bar", {"foo (1).bar"});
+  TestGenerateUnusedFilename({"foo (2).bar"}, "foo (1).bar", {"foo (1).bar"});
+  TestGenerateUnusedFilename({"foo (2) (1).bar"}, "foo (2) (1).bar",
+                             {"foo (2) (2).bar"});
+  TestGenerateUnusedFilename({"foo (2) (2).bar"}, "foo (2) (2).bar",
+                             {"foo (2) (1).bar"});
+  TestGenerateUnusedFilename({}, " foo.bar", {" foo.bar"});
+  TestGenerateUnusedFilename({" foo.bar"}, " foo.bar", {" foo (1).bar"});
+  TestGenerateUnusedFilename({"foo.bar"}, " foo.bar", {" foo.bar"});
+}
+
+TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameUnicode) {
+  TestGenerateUnusedFilename({}, "é è ê ô œ.txt€", {"é è ê ô œ.txt€"});
+  TestGenerateUnusedFilename({"é è ê ô œ.txt€"}, "é è ê ô œ.txt€",
+                             {"é è ê ô œ (1).txt€"});
+}
+
+TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameNoExtension) {
+  TestGenerateUnusedFilename({}, "no-ext", {"no-ext"});
+  TestGenerateUnusedFilename({"no-ext"}, "no-ext", {"no-ext (1)"});
+  TestGenerateUnusedFilename({"no-ext/"}, "no-ext", {"no-ext (1)"});
+  TestGenerateUnusedFilename({"no-ext (1)"}, "no-ext (1)", {"no-ext (2)"});
+
+  TestGenerateUnusedFilename({}, "a", {"a"});
+  TestGenerateUnusedFilename({"a"}, "a", {"a (1)"});
+  TestGenerateUnusedFilename({"a/"}, "a", {"a (1)"});
+}
+
+TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameDoubleExtension) {
+  TestGenerateUnusedFilename({}, "double.ext.10.13.txt",
+                             {"double.ext.10.13.txt"});
+  TestGenerateUnusedFilename({"double.ext.10.13.txt"}, "double.ext.10.13.txt",
+                             {"double.ext.10.13 (1).txt"});
+  TestGenerateUnusedFilename({"double.ext.10.13.txt/"}, "double.ext.10.13.txt",
+                             {"double.ext.10.13 (1).txt"});
+
+  TestGenerateUnusedFilename({}, "archive.tar.gz", {"archive.tar.gz"});
+  TestGenerateUnusedFilename({"archive.tar.gz"}, "archive.tar.gz",
+                             {"archive (1).tar.gz"});
+}
+
+TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameInvalidFilename) {
+  TestGenerateUnusedFilename({}, "", base::File::FILE_ERROR_INVALID_OPERATION);
+  TestGenerateUnusedFilename({}, "path/with/slashes",
+                             base::File::FILE_ERROR_INVALID_OPERATION);
 }
 
 INSTANTIATE_TEST_SUITE_P(FilesAppMode,
