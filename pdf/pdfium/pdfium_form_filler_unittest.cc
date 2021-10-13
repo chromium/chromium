@@ -28,7 +28,6 @@ namespace {
 
 using ::testing::Contains;
 using ::testing::InSequence;
-using ::testing::Not;
 using ::testing::Return;
 
 class FormFillerTestClient : public TestClient {
@@ -234,16 +233,13 @@ TEST_F(FormFillerJavaScriptTest, GetFilePath) {
   EXPECT_CALL(client, GetURL).Times(2).WillRepeatedly(Return(kTestPath));
   PDFiumEngine engine(&client, PDFiumFormFiller::ScriptOption::kJavaScript);
 
-  // TODO(dhoss): The return value should be `kTestPathSize`.
   EXPECT_EQ(TriggerGetFilePath(engine, /*file_path=*/nullptr, /*length=*/0),
-            kTestPathSize - 1);
+            kTestPathSize);
 
   std::vector<char> buffer(kTestPathSize, 'X');
   EXPECT_EQ(TriggerGetFilePath(engine, buffer.data(), buffer.size()),
-            kTestPathSize - 1);
-
-  // TODO(dhoss): `buffer.data()` should be null terminated.
-  EXPECT_STRNE(buffer.data(), kTestPath);
+            kTestPathSize);
+  EXPECT_STREQ(buffer.data(), kTestPath);
 }
 
 TEST_F(FormFillerJavaScriptTest, GetFilePathEmpty) {
@@ -251,15 +247,13 @@ TEST_F(FormFillerJavaScriptTest, GetFilePathEmpty) {
   EXPECT_CALL(client, GetURL).Times(2).WillRepeatedly(Return(std::string()));
   PDFiumEngine engine(&client, PDFiumFormFiller::ScriptOption::kJavaScript);
 
-  // TODO(dhoss): The return value should be 1.
-  EXPECT_EQ(TriggerGetFilePath(engine, /*file_path=*/nullptr, /*length=*/0), 0);
+  EXPECT_EQ(TriggerGetFilePath(engine, /*file_path=*/nullptr, /*length=*/0), 1);
 
   char buffer[] = "buffer";
-  EXPECT_EQ(TriggerGetFilePath(engine, buffer, /*length=*/1), 0);
+  EXPECT_EQ(TriggerGetFilePath(engine, buffer, /*length=*/1), 1);
 
-  // TODO(dhoss): `buffer` should be "" (i.e., its first character should be a
-  // null terminator).
-  EXPECT_STRNE(buffer, "");
+  // The trailing null should be copied over.
+  EXPECT_STREQ(buffer, "");
 }
 
 TEST_F(FormFillerJavaScriptTest, GetFilePathShortBuffer) {
@@ -271,14 +265,12 @@ TEST_F(FormFillerJavaScriptTest, GetFilePathShortBuffer) {
   PDFiumEngine engine(&client, PDFiumFormFiller::ScriptOption::kJavaScript);
 
   std::vector<char> buffer(kTestPathSize - 1, 'X');
-
-  // TODO(dhoss): The return value should be `kTestPathSize`.
   EXPECT_EQ(TriggerGetFilePath(engine, buffer.data(), buffer.size()),
-            kTestPathSize - 1);
+            kTestPathSize);
 
-  // TODO(dhoss): Nothing should be copied over. The buffer size is too small to
-  // contain a trailing null.
-  EXPECT_THAT(buffer, Not(Contains('X').Times(buffer.size())));
+  // Nothing should be copied over. The buffer size is too small to contain a
+  // trailing null.
+  EXPECT_THAT(buffer, Contains('X').Times(buffer.size()));
 }
 #endif  // defined(PDF_ENABLE_V8)
 
