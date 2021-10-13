@@ -262,7 +262,11 @@ class ShelfPlatformAppBrowserTest : public extensions::PlatformAppBrowserTest {
 
 class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
  protected:
-  ShelfAppBrowserTest() = default;
+  ShelfAppBrowserTest() {
+    // TODO(crbug.com/1258445): Update expectations to support Lacros.
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kLacrosSupport);
+  }
   ShelfAppBrowserTest(const ShelfAppBrowserTest&) = delete;
   ShelfAppBrowserTest& operator=(const ShelfAppBrowserTest&) = delete;
   ~ShelfAppBrowserTest() override {}
@@ -396,6 +400,9 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   ChromeShelfController* controller_ = nullptr;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class ShelfAppBrowserTestNoDefaultBrowser : public ShelfAppBrowserTest {
