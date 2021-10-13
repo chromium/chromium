@@ -1572,6 +1572,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.D3D11.AV1Status" enum="MediaStatusCode"
     expires_after="2021-06-13">
+  <obsolete>
+    Deprecated as of 2021/10.
+  </obsolete>
   <owner>liberato@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
   <summary>
@@ -1593,6 +1596,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.D3D11.H264Status" enum="MediaStatusCode"
     expires_after="2022-05-01">
+  <obsolete>
+    Deprecated as of 2021/10.
+  </obsolete>
   <owner>liberato@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
   <summary>
@@ -1615,6 +1621,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.D3D11.VP9Status" enum="MediaStatusCode"
     expires_after="2022-01-02">
+  <obsolete>
+    Deprecated as of 2021/10.
+  </obsolete>
   <owner>liberato@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
   <summary>

@@ -622,7 +622,6 @@ void D3D11H264Accelerator::RecordFailure(const std::string& reason,
 
   DLOG(ERROR) << reason << hr_string;
   MEDIA_LOG(ERROR, media_log_) << hr_string << ": " << reason;
-  base::UmaHistogramSparse("Media.D3D11.H264Status", static_cast<int>(code));
 }
 
 void D3D11H264Accelerator::RecordFailure(D3D11Status error) const {

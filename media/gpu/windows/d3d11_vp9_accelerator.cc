@@ -65,7 +65,6 @@ void D3D11VP9Accelerator::RecordFailure(const std::string& fail_type,
                                         D3D11Status::Codes code) {
   MEDIA_LOG(ERROR, media_log_)
       << "DX11VP9Failure(" << fail_type << ")=" << reason;
-  base::UmaHistogramSparse("Media.D3D11.VP9Status", static_cast<int>(code));
 }
 
 scoped_refptr<VP9Picture> D3D11VP9Accelerator::CreateVP9Picture() {

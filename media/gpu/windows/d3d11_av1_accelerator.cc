@@ -406,7 +406,6 @@ void D3D11AV1Accelerator::RecordFailure(const std::string& fail_type,
                                         D3D11Status::Codes reason) {
   MEDIA_LOG(ERROR, media_log_)
       << "DX11AV1Failure(" << fail_type << ")=" << message;
-  base::UmaHistogramSparse("Media.D3D11.AV1Status", static_cast<int>(reason));
 }
 
 scoped_refptr<AV1Picture> D3D11AV1Accelerator::CreateAV1Picture(
