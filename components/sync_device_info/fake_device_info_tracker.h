@@ -42,6 +42,10 @@ class FakeDeviceInfoTracker : public DeviceInfoTracker {
   // Adds a new DeviceInfo entry to |devices_|.
   void Add(const DeviceInfo* device);
 
+  // Replaces |old_device| with |new_device|. |old_device| must be present in
+  // the tracker.
+  void Replace(const DeviceInfo* old_device, const DeviceInfo* new_device);
+
   // Overrides the result of CountActiveDevices() to |count| instead of the
   // actual number of devices in |devices_|.
   void OverrideActiveDeviceCount(int count);

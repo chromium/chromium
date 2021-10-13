@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
@@ -24,7 +25,6 @@
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/local_device_info_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -99,6 +99,9 @@ SendTabToSelfBridge::SendTabToSelfBridge(
   if (history_service) {
     history_service_observation_.Observe(history_service);
   }
+  device_info_tracker_observation_.Observe(device_info_tracker);
+
+  ComputeTargetDeviceInfoSortedList();
 
   std::move(create_store_callback)
       .Run(syncer::SEND_TAB_TO_SELF,
@@ -433,23 +436,33 @@ void SendTabToSelfBridge::OnURLsDeleted(
   DeleteAllEntries();
 }
 
+void SendTabToSelfBridge::OnDeviceInfoChange() {
+  ComputeTargetDeviceInfoSortedList();
+}
+
 bool SendTabToSelfBridge::IsReady() {
   return change_processor()->IsTrackingMetadata();
 }
 
 bool SendTabToSelfBridge::HasValidTargetDevice() {
-  if (ShouldUpdateTargetDeviceInfoList()) {
-    SetTargetDeviceInfoList();
-  }
-  return target_device_name_to_cache_info_.size() > 0;
+  return GetTargetDeviceInfoSortedList().size() > 0;
 }
 
 std::vector<TargetDeviceInfo>
 SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
-  if (ShouldUpdateTargetDeviceInfoList()) {
-    SetTargetDeviceInfoList();
-  }
-  return target_device_name_to_cache_info_;
+  // Filter expired devices (some timestamps in the cached list may now be too
+  // old). |target_device_name_to_cache_info_| is copied here to avoid mutations
+  // inside a getter.
+  // TODO(crbug.com/1257573): Consider having a timer that fires on the next
+  // expiry and removes the corresponding device(s) then.
+  std::vector<TargetDeviceInfo> non_expired_devices =
+      target_device_name_to_cache_info_;
+  const base::Time now = clock_->Now();
+  base::EraseIf(non_expired_devices, [now](const TargetDeviceInfo& device) {
+    return now - device.last_updated_timestamp > kDeviceExpiration;
+  });
+
+  return non_expired_devices;
 }
 
 // static
@@ -457,10 +470,6 @@ std::unique_ptr<syncer::ModelTypeStore>
 SendTabToSelfBridge::DestroyAndStealStoreForTest(
     std::unique_ptr<SendTabToSelfBridge> bridge) {
   return std::move(bridge->store_);
-}
-
-bool SendTabToSelfBridge::ShouldUpdateTargetDeviceInfoListForTest() {
-  return ShouldUpdateTargetDeviceInfoList();
 }
 
 void SendTabToSelfBridge::SetLocalDeviceNameForTest(
@@ -618,28 +627,13 @@ void SendTabToSelfBridge::DoGarbageCollection() {
   NotifyRemoteSendTabToSelfEntryDeleted(removed);
 }
 
-bool SendTabToSelfBridge::ShouldUpdateTargetDeviceInfoList() const {
+void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
   if (!device_info_tracker_->IsSyncing()) {
-    return false;
+    return;
   }
-
-  // The vector should be updated if any of these is true:
-  //   * The vector is empty.
-  //   * The number of total devices changed.
-  //   * The oldest non-expired entry in the vector is now expired.
-  return target_device_name_to_cache_info_.empty() ||
-         device_info_tracker_->GetAllDeviceInfo().size() !=
-             number_of_devices_ ||
-         clock_->Now() - oldest_non_expired_device_timestamp_ >
-             kDeviceExpiration;
-}
-
-void SendTabToSelfBridge::SetTargetDeviceInfoList() {
-  DCHECK(device_info_tracker_->IsSyncing());
 
   std::vector<std::unique_ptr<syncer::DeviceInfo>> all_devices =
       device_info_tracker_->GetAllDeviceInfo();
-  number_of_devices_ = all_devices.size();
 
   // Sort the DeviceInfo vector so the most recently modified devices are first.
   std::stable_sort(all_devices.begin(), all_devices.end(),
@@ -687,7 +681,6 @@ void SendTabToSelfBridge::SetTargetDeviceInfoList() {
           device_names.full_name, device_names.short_name, device->guid(),
           device->device_type(), device->last_updated_timestamp());
       target_device_name_to_cache_info_.push_back(target_device_info);
-      oldest_non_expired_device_timestamp_ = device->last_updated_timestamp();
 
       short_names_counter[device_names.short_name]++;
     }

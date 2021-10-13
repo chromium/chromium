@@ -4,6 +4,8 @@
 
 #include "components/sync_device_info/fake_device_info_tracker.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "components/sync_device_info/device_info.h"
@@ -81,6 +83,16 @@ bool FakeDeviceInfoTracker::IsRecentLocalCacheGuid(
 
 void FakeDeviceInfoTracker::Add(const DeviceInfo* device) {
   devices_.push_back(device);
+  for (auto& observer : observers_)
+    observer.OnDeviceInfoChange();
+}
+
+void FakeDeviceInfoTracker::Replace(const DeviceInfo* old_device,
+                                    const DeviceInfo* new_device) {
+  std::vector<const DeviceInfo*>::iterator it =
+      std::find(devices_.begin(), devices_.end(), old_device);
+  DCHECK(devices_.end() != it) << "Tracker doesn't contain device";
+  *it = new_device;
   for (auto& observer : observers_)
     observer.OnDeviceInfoChange();
 }
