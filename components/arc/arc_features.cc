@@ -177,16 +177,16 @@ const base::FeatureParam<int> kVmBalloonPolicyModerateKiB{&kVmBalloonPolicy,
                                                           "moderate_kib", 0};
 
 // The maximum amount of kernel page cache ARCVM can have when ChromeOS is under
-// critical memory pressure. 0 for no limit. The default value of 184320KiB
+// critical memory pressure. 0 for no limit. The default value of 322560KiB
 // corresponds to the level LMKD will start to kill the lowest priority cached
 // app.
 const base::FeatureParam<int> kVmBalloonPolicyCriticalKiB{
-    &kVmBalloonPolicy, "critical_kib", 184320};
+    &kVmBalloonPolicy, "critical_kib", 322560};
 
 // The maximum amount of kernel page cache ARCVM can have when ChromeOS is
-// reclaiming. 0 for no limit. The default value of 184320KiB corresponds to the
+// reclaiming. 0 for no limit. The default value of 322560KiB corresponds to the
 // level LMKD will start to kill the lowest priority cached app.
 const base::FeatureParam<int> kVmBalloonPolicyReclaimKiB{&kVmBalloonPolicy,
-                                                         "reclaim_kib", 184320};
+                                                         "reclaim_kib", 322560};
 
 }  // namespace arc
