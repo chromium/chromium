@@ -235,6 +235,14 @@ luci.notifier(
     on_new_status = ["FAILURE"],
 )
 
+luci.notifier(
+    name = "headless-owners",
+    notify_emails = [
+        "headless-owners@chromium.org",
+    ],
+    on_new_status = ["FAILURE"],
+)
+
 tree_closure_notifier(
     name = "chromium.linux",
     notify_emails = [

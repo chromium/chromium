@@ -3755,6 +3755,7 @@ ci.fyi_builder(
         category = "linux",
         short_name = "hdls",
     ),
+    notifies = ["headless-owners"],
 )
 
 ci.updater_builder(
