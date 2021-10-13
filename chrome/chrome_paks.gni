@@ -207,7 +207,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/ash/ash_shortcut_customization_app_resources.pak",
         "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",
         "$root_gen_dir/ash/webui/file_manager/resources/file_manager_swa_resources.pak",
-        "$root_gen_dir/ash/webui/file_manager/resources/file_manager_untrusted_resources.pak",
+        "$root_gen_dir/ash/webui/file_manager/untrusted_resources/file_manager_untrusted_resources.pak",
         "$root_gen_dir/chrome/audio_resources.pak",
         "$root_gen_dir/chrome/bluetooth_pairing_dialog_resources.pak",
         "$root_gen_dir/chrome/browser/supervised_user/supervised_user_unscaled_resources.pak",
@@ -243,7 +243,7 @@ template("chrome_extra_paks") {
       deps += [
         "//ash/public/cpp/resources:ash_public_unscaled_resources",
         "//ash/webui/file_manager/resources:file_manager_swa_resources",
-        "//ash/webui/file_manager/resources:file_manager_untrusted_resources",
+        "//ash/webui/file_manager/untrusted_resources:file_manager_untrusted_resources",
         "//ash/webui/resources:diagnostics_app_resources",
         "//ash/webui/resources:help_app_bundle_resources",
         "//ash/webui/resources:help_app_kids_magazine_bundle_resources",

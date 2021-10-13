@@ -109,7 +109,7 @@ export const FilesQuickView = Polymer({
 
     const webview = /** @type {WebView} */ (e.target);
     webview.insertCSS({
-      'file': 'foreground/elements/sandboxed/files_text_content.css',
+      'file': 'untrusted_resources/files_text_content.css',
     });
   },
 

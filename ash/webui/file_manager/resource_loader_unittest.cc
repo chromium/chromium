@@ -32,8 +32,8 @@ TEST_F(ResourceLoaderTest, AddFilesAppResources) {
   const webui::ResourcePath kTestResources[] = {
       {"file_manager/images/icon192.png", 8},
       {"file_manager_fakes.js", 9},
-      {"file_manager/sandboxed_files_img_content.css", 10},
-      {"file_manager/sandboxed/files_img_content.css", 11},
+      {"file_manager/untrusted_resources_files_img_content.css", 10},
+      {"file_manager/untrusted_resources/files_img_content.css", 11},
   };
 
   const size_t kTestResourcesSize = base::size(kTestResources);
@@ -43,10 +43,10 @@ TEST_F(ResourceLoaderTest, AddFilesAppResources) {
 
   EXPECT_EQ(8, source()->PathToIdrOrDefault("images/icon192.png"));
   EXPECT_EQ(-1, source()->PathToIdrOrDefault("file_manager_fakes.js"));
-  EXPECT_EQ(10,
-            source()->PathToIdrOrDefault("sandboxed_files_img_content.css"));
-  EXPECT_EQ(-1,
-            source()->PathToIdrOrDefault("sandboxed/files_img_content.css"));
+  EXPECT_EQ(10, source()->PathToIdrOrDefault(
+                    "untrusted_resources_files_img_content.css"));
+  EXPECT_EQ(-1, source()->PathToIdrOrDefault(
+                    "untrusted_resources/files_img_content.css"));
 }
 
 }  // namespace file_manager
