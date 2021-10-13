@@ -55,9 +55,8 @@ bool AdminPolicyIsModifiable(const Extension* source_extension,
 }  // namespace
 
 StandardManagementPolicyProvider::StandardManagementPolicyProvider(
-    const ExtensionManagement* settings)
-    : settings_(settings) {
-}
+    ExtensionManagement* settings)
+    : settings_(settings) {}
 
 StandardManagementPolicyProvider::~StandardManagementPolicyProvider() {
 }

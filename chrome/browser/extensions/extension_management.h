@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "base/macros.h"
@@ -111,12 +112,12 @@ class ExtensionManagement : public KeyedService {
   bool BlocklistedByDefault() const;
 
   // Returns installation mode for an extension.
-  InstallationMode GetInstallationMode(const Extension* extension) const;
+  InstallationMode GetInstallationMode(const Extension* extension);
 
   // Returns installation mode for an extension with id |extension_id| and
   // updated with |update_url|.
   InstallationMode GetInstallationMode(const ExtensionId& extension_id,
-                                       const std::string& update_url) const;
+                                       const std::string& update_url);
 
   // Returns the force install list, in format specified by
   // ExternalPolicyLoader::AddExtension().
@@ -128,26 +129,26 @@ class ExtensionManagement : public KeyedService {
   // Returns |true| if there is at least one extension with
   // |INSTALLATION_ALLOWED| as installation mode. This excludes force installed
   // extensions.
-  bool HasAllowlistedExtension() const;
+  bool HasAllowlistedExtension();
 
   // Returns if an extension with |id| is force installed and the update URL is
   // overridden by policy.
-  bool IsUpdateUrlOverridden(const ExtensionId& id) const;
+  bool IsUpdateUrlOverridden(const ExtensionId& id);
 
   // Get the effective update URL for the extension. Normally this URL comes
   // from the extension manifest, but may be overridden by policies.
-  GURL GetEffectiveUpdateURL(const Extension& extension) const;
+  GURL GetEffectiveUpdateURL(const Extension& extension);
 
   // Returns true if this extension's update URL is from webstore.
-  bool UpdatesFromWebstore(const Extension& extension) const;
+  bool UpdatesFromWebstore(const Extension& extension);
 
   // Returns if an extension with id |id| is explicitly allowed by enterprise
   // policy or not.
-  bool IsInstallationExplicitlyAllowed(const ExtensionId& id) const;
+  bool IsInstallationExplicitlyAllowed(const ExtensionId& id);
 
   // Returns if an extension with id |id| is explicitly blocked by enterprise
   // policy or not.
-  bool IsInstallationExplicitlyBlocked(const ExtensionId& id) const;
+  bool IsInstallationExplicitlyBlocked(const ExtensionId& id);
 
   // Returns true if an extension download should be allowed to proceed.
   bool IsOffstoreInstallAllowed(const GURL& url,
@@ -159,20 +160,19 @@ class ExtensionManagement : public KeyedService {
                              const std::string& extension_id) const;
 
   // Returns the list of blocked API permissions for |extension|.
-  APIPermissionSet GetBlockedAPIPermissions(const Extension* extension) const;
+  APIPermissionSet GetBlockedAPIPermissions(const Extension* extension);
 
   // Returns the list of blocked API permissions for an extension with id
   // |extension_id| and updated with |update_url|.
-  APIPermissionSet GetBlockedAPIPermissions(
-      const ExtensionId& extension_id,
-      const std::string& update_url) const;
+  APIPermissionSet GetBlockedAPIPermissions(const ExtensionId& extension_id,
+                                            const std::string& update_url);
 
   // Returns the list of hosts blocked by policy for |extension|.
-  const URLPatternSet& GetPolicyBlockedHosts(const Extension* extension) const;
+  const URLPatternSet& GetPolicyBlockedHosts(const Extension* extension);
 
   // Returns the hosts exempted by policy from the PolicyBlockedHosts for
   // |extension|.
-  const URLPatternSet& GetPolicyAllowedHosts(const Extension* extension) const;
+  const URLPatternSet& GetPolicyAllowedHosts(const Extension* extension);
 
   // Returns the list of hosts blocked by policy for Default scope. This can be
   // overridden by an individual scope which is queried via
@@ -189,40 +189,41 @@ class ExtensionManagement : public KeyedService {
   // runtime_allowed_hosts defined in the individual scope of the
   // ExtensionSettings policy.
   // Returns false if an individual scoped setting isn't defined.
-  bool UsesDefaultPolicyHostRestrictions(const Extension* extension) const;
+  bool UsesDefaultPolicyHostRestrictions(const Extension* extension);
 
   // Checks if a URL is on the blocked host permissions list for a specific
   // extension.
-  bool IsPolicyBlockedHost(const Extension* extension, const GURL& url) const;
+  bool IsPolicyBlockedHost(const Extension* extension, const GURL& url);
 
   // Returns blocked permission set for |extension|.
   std::unique_ptr<const PermissionSet> GetBlockedPermissions(
-      const Extension* extension) const;
+      const Extension* extension);
 
   // If the extension is blocked from install and a custom error message
   // was defined returns it. Otherwise returns an empty string. The maximum
   // string length is 1000 characters.
-  const std::string BlockedInstallMessage(const ExtensionId& id) const;
+  const std::string BlockedInstallMessage(const ExtensionId& id);
 
   // Returns true if every permission in |perms| is allowed for |extension|.
   bool IsPermissionSetAllowed(const Extension* extension,
-                              const PermissionSet& perms) const;
+                              const PermissionSet& perms);
 
   // Returns true if every permission in |perms| is allowed for an extension
   // with id |extension_id| and updated with |update_url|.
   bool IsPermissionSetAllowed(const ExtensionId& extension_id,
                               const std::string& update_url,
-                              const PermissionSet& perms) const;
+                              const PermissionSet& perms);
 
   // Returns true if |extension| meets the minimum required version set for it.
   // If there is no such requirement set for it, returns true as well.
   // If false is returned and |required_version| is not null, the minimum
   // required version is returned.
   bool CheckMinimumVersion(const Extension* extension,
-                           std::string* required_version) const;
+                           std::string* required_version);
 
   // Returns the list of extensions with "force_pinned" mode for the
-  // "toolbar_pin" setting.
+  // "toolbar_pin" setting. This only considers policies that are loaded (e.g.
+  // aren't deferred).
   ExtensionIdSet GetForcePinnedList() const;
 
   // Returns whether the profile associated with this instance is supervised.
@@ -240,6 +241,21 @@ class ExtensionManagement : public KeyedService {
   // Load all extension management preferences from |pref_service|, and
   // refresh the settings.
   void Refresh();
+
+  // Tries to parse the individual setting in |settings_by_id_| for
+  // |extension_id|. Returns true if it succeeds, otherwise returns false and
+  // removes the entry from |settings_by_id_|.
+  bool ParseById(const std::string& extension_id,
+                 const base::DictionaryValue* subdict);
+
+  // Returns the individual settings for |extension_id| if it exists, otherwise
+  // returns nullptr. This method will also lazy load the settings if they're
+  // not loaded yet.
+  internal::IndividualSettings* GetSettingsForId(
+      const std::string& extension_id);
+
+  // Loads the deferred settings information for |extension_id|.
+  void LoadDeferredExtensionSetting(const std::string& extension_id);
 
   // Load preference with name |pref_name| and expected type |expected_type|.
   // If |force_managed| is true, only loading from the managed preference store
@@ -281,6 +297,11 @@ class ExtensionManagement : public KeyedService {
   // identified by extension ID. The extension ID is used as index key of the
   // map.
   SettingsIdMap settings_by_id_;
+
+  // A set of extension IDs whose parsing of settings and insertion into
+  // |settings_by_id_| has been deferred until needed. We keep track of this to
+  // avoid scanning the prefs repeatedly for entries that don't have a setting.
+  std::unordered_set<std::string> deferred_ids_;
 
   // Similar to |settings_by_id_|, but contains the settings for a group of
   // extensions with same update URL. The update url itself is used as index

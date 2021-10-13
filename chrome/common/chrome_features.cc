@@ -403,6 +403,13 @@ const base::Feature kEnterpriseReportingExtensionManifestVersion{
     "EnterpriseReportingExtensionManifestVersion",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if !defined(OS_ANDROID)
+// Lazy initialize IndividualSettings for extensions from enterprise policy
+// that are not installed.
+const base::Feature kExtensionDeferredIndividualSettings{
+    "ExtensionDeferredIndividualSettings", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
 // Controls whether the user justification text field is visible on the
 // extension request dialog.
 const base::Feature kExtensionWorkflowJustification{

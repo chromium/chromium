@@ -1941,12 +1941,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.ForceToolbarPinnedCount" units="extensions"
     expires_after="2022-04-24">
+  <obsolete>
+    Code removed 2021/10.
+  </obsolete>
   <owner>nicolaso@chromium.org</owner>
   <owner>chrome-enterprise-team-core@google.com</owner>
   <summary>
     Number of extensions that are &quot;force-pinned&quot; in the
     ExtensionSettings policy. Recorded after policies are parsed, or refreshed.
     Only recorded if non-zero.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ForceToolbarPinnedCount2" units="extensions"
+    expires_after="2022-04-24">
+  <owner>nicolaso@chromium.org</owner>
+  <owner>chrome-enterprise-team-core@google.com</owner>
+  <summary>
+    Number of force installed extensions that are &quot;force-pinned&quot; in
+    the ExtensionSettings policy. Recorded after policies are parsed, or
+    refreshed. Only recorded if non-zero.
   </summary>
 </histogram>
 
@@ -2865,7 +2879,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Extensions.Management_Refresh" units="ms" expires_after="M100">
   <owner>jam@chromium.org</owner>
   <owner>cduvall@chromium.org</owner>
-  <summary>Measures how long ExtensionManagement::Refresh takes.</summary>
+  <summary>
+    Measures how long ExtensionManagement::Refresh takes. This reloads all
+    enterprise-related policies for all extensions, and is called both at
+    startup and any time the enterprise policy changes.
+  </summary>
 </histogram>
 
 <histogram name="Extensions.ManifestFetchFailureRetryCountGoogleUrl"
