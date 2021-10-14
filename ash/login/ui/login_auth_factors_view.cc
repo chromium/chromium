@@ -76,6 +76,24 @@ class AuthFactorsLabel : public views::Label {
   std::u16string accessible_name_;
 };
 
+LoginAuthFactorsView::TestApi::TestApi(LoginAuthFactorsView* view)
+    : view_(view) {}
+
+LoginAuthFactorsView::TestApi::~TestApi() = default;
+
+void LoginAuthFactorsView::TestApi::UpdateState() {
+  return view_->UpdateState();
+}
+
+std::vector<std::unique_ptr<AuthFactorModel>>&
+LoginAuthFactorsView::TestApi::auth_factors() {
+  return view_->auth_factors_;
+}
+
+views::Label* LoginAuthFactorsView::TestApi::label() {
+  return view_->label_;
+}
+
 LoginAuthFactorsView::LoginAuthFactorsView(
     base::RepeatingClosure on_click_to_enter)
     : on_click_to_enter_callback_(on_click_to_enter) {
@@ -123,8 +141,10 @@ void LoginAuthFactorsView::AddAuthFactor(
 }
 
 void LoginAuthFactorsView::UpdateState() {
-  if (auth_factors_.empty())
+  if (auth_factors_.empty()) {
+    SetVisible(false);
     return;
+  }
   // TODO(crbug.com/1233614) Add support for multiple auth factors.
   auto& auth_factor = auth_factors_[0];
 
@@ -167,6 +187,9 @@ void LoginAuthFactorsView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
   // TODO(crbug.com/1233614) Update all visible icons.
+  if (auth_factors_.empty())
+    return;
+
   auth_factors_[0]->UpdateIcon(icon_);
 }
 

@@ -5,8 +5,13 @@
 #ifndef ASH_LOGIN_UI_LOGIN_AUTH_FACTORS_VIEW_H_
 #define ASH_LOGIN_UI_LOGIN_AUTH_FACTORS_VIEW_H_
 
+#include "ash/ash_export.h"
 #include "base/callback.h"
 #include "ui/views/view.h"
+
+namespace views {
+class Label;
+}  // namespace views
 
 namespace ash {
 
@@ -17,8 +22,23 @@ class ArrowButtonView;
 
 // A view that displays a collection of auth factors to be shown on the lock and
 // login screens.
-class LoginAuthFactorsView : public views::View {
+class ASH_EXPORT LoginAuthFactorsView : public views::View {
  public:
+  // TestApi is used for tests to get internal implementation details.
+  class ASH_EXPORT TestApi {
+   public:
+    explicit TestApi(LoginAuthFactorsView* view);
+    ~TestApi();
+
+    void UpdateState();
+
+    std::vector<std::unique_ptr<AuthFactorModel>>& auth_factors();
+    views::Label* label();
+
+   private:
+    LoginAuthFactorsView* const view_;
+  };
+
   explicit LoginAuthFactorsView(base::RepeatingClosure on_click_to_enter);
   LoginAuthFactorsView(LoginAuthFactorsView&) = delete;
   LoginAuthFactorsView& operator=(LoginAuthFactorsView&) = delete;

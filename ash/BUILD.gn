@@ -2304,6 +2304,7 @@ test("ash_unittests") {
     "login/ui/lock_screen_media_controls_view_unittest.cc",
     "login/ui/lock_screen_sanity_unittest.cc",
     "login/ui/lock_window_unittest.cc",
+    "login/ui/login_auth_factors_view_unittest.cc",
     "login/ui/login_auth_user_view_unittest.cc",
     "login/ui/login_base_bubble_view_unittest.cc",
     "login/ui/login_error_bubble_unittest.cc",
