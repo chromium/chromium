@@ -27,18 +27,3 @@ source_set("geolocation") {
   ]
   frameworks = [ "CoreLocation.framework" ]
 }
-
-source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [ "omnibox_geolocation_controller_unittest.mm" ]
-  deps = [
-    ":geolocation",
-    "//base",
-    "//components/prefs:test_support",
-    "//ios/chrome/test:test_support",
-    "//ios/public/provider/chrome/browser",
-    "//ios/testing:block_swizzler",
-    "//testing/gtest",
-  ]
-}

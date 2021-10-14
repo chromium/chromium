@@ -36,16 +36,6 @@ imageset("default_browser_screen_banner") {
   ]
 }
 
-imageset("first_run_location_permissions") {
-  sources = [
-    "first_run_location_permissions.imageset/Contents.json",
-    "first_run_location_permissions.imageset/first_run_location_permissions_dark@2x.png",
-    "first_run_location_permissions.imageset/first_run_location_permissions_dark@3x.png",
-    "first_run_location_permissions.imageset/first_run_location_permissions_light@2x.png",
-    "first_run_location_permissions.imageset/first_run_location_permissions_light@3x.png",
-  ]
-}
-
 imageset("signin_screen_banner") {
   sources = [
     "signin_screen_banner.imageset/Contents.json",

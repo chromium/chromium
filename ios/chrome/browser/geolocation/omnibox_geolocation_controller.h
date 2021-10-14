@@ -7,29 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-#include "ui/base/page_transition_types.h"
-
-class ChromeBrowserState;
-class GURL;
-
-namespace web {
-class NavigationItem;
-class WebState;
-}
-
-// Manages using the current device location for omnibox search queries.
+// Manage logging for geolocation permissions once instantiated.
 @interface OmniboxGeolocationController : NSObject
 
 // Returns singleton object for this class.
 + (OmniboxGeolocationController*)sharedInstance;
-
-// Triggers the iOS system prompt to authorize the use of location, if the
-// authorization is not yet determined.
-- (void)triggerSystemPrompt;
-
-// Marks the user as new without triggering the iOS system prompt to authorize
-// the use of location
-- (void)systemPromptSkippedForNewUser;
 
 @end
 

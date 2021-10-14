@@ -47643,6 +47643,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="LocationPermissionsFirstRunModalIOSEnum">
+  <obsolete>
+    Removed in October 2021
+  </obsolete>
   <int value="0" label="iOS native system location prompt shown"/>
   <int value="1" label="No system prompt shown, modal dismissed"/>
 </enum>

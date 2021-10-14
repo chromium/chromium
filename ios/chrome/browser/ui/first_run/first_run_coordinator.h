@@ -15,9 +15,8 @@
 // Called when first run screens should finish presenting.
 - (void)willFinishPresentingScreens;
 
-// Called when first run UI has been dismissed, with |continuedAction|
-- (void)didFinishPresentingScreensWithSubsequentActionsTriggered:
-    (BOOL)actionsTriggered;
+// Called when first run UI has been dismissed.
+- (void)didFinishPresentingScreens;
 
 @end
 

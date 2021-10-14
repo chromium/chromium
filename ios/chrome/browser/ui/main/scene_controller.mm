@@ -91,8 +91,6 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
-#import "ios/chrome/browser/ui/first_run/location_permissions_commands.h"
-#import "ios/chrome/browser/ui/first_run/location_permissions_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #include "ios/chrome/browser/ui/history/history_coordinator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
@@ -185,7 +183,6 @@ bool IsSigninForcedByPolicy() {
 }  // namespace
 
 @interface SceneController () <AppStateObserver,
-                               LocationPermissionsCommands,
                                PolicyWatcherBrowserAgentObserving,
                                SettingsNavigationControllerDelegate,
                                SceneURLLoadingServiceDelegate,
@@ -251,9 +248,6 @@ bool IsSigninForcedByPolicy() {
 // time it is accessed. Use -[startSigninCoordinatorWithCompletion:] to start
 // the coordinator.
 @property(nonatomic, strong) SigninCoordinator* signinCoordinator;
-
-@property(nonatomic, strong)
-    LocationPermissionsCoordinator* locationPermissionsCoordinator;
 
 // Additional product specific data used by UserFeedbackDataSource.
 // TODO(crbug.com/1117041): Move this into a UserFeedback config object.
@@ -1552,16 +1546,6 @@ bool IsSigninForcedByPolicy() {
                                                       browser:mainBrowser
                                                   signinState:signinState];
   [self startSigninCoordinatorWithCompletion:nil];
-}
-
-- (void)showLocationPermissionsFromViewController:
-    (UIViewController*)baseViewController {
-  // TODO(crbug.com/1258089): Remove all location permission related code.
-}
-
-- (void)dismissLocationPermissionsExplanationModal {
-  [self.locationPermissionsCoordinator stop];
-  self.locationPermissionsCoordinator = nil;
 }
 
 - (void)

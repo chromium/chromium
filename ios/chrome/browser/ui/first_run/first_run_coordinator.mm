@@ -29,8 +29,6 @@
 @property(nonatomic, strong) ScreenProvider* screenProvider;
 @property(nonatomic, strong) ChromeCoordinator* childCoordinator;
 @property(nonatomic, strong) UINavigationController* navigationController;
-// Whether the remaining screens have been skipped.
-@property(nonatomic, assign) BOOL screensSkipped;
 
 // YES if First Run was completed.
 @property(nonatomic, assign) BOOL completed;
@@ -73,10 +71,7 @@
       base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kComplete);
       WriteFirstRunSentinel();
 
-      // If the remaining screens have been skipped, additional actions will be
-      // executed.
-      [self.delegate didFinishPresentingScreensWithSubsequentActionsTriggered:
-                         self.screensSkipped];
+      [self.delegate didFinishPresentingScreens];
     };
   }
 
@@ -98,7 +93,6 @@
 - (void)skipAll {
   [self.childCoordinator stop];
   self.childCoordinator = nil;
-  self.screensSkipped = YES;
   [self willFinishPresentingScreens];
 }
 

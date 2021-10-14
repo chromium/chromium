@@ -310,9 +310,6 @@ const BOOL kDefaultStatsCheckboxValue = YES;
     case SigninCompletionActionShowManagedLearnMore:
       if (self.interruptCompletion) {
         self.interruptCompletion();
-      } else {
-        [self.dispatcher
-            showLocationPermissionsFromViewController:presentingViewController];
       }
       if (completionInfo.signinCompletionAction ==
           SigninCompletionActionShowManagedLearnMore) {

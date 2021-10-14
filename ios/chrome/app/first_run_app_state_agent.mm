@@ -309,15 +309,7 @@
   [self.firstRunCoordinator stop];
 }
 
-- (void)didFinishPresentingScreensWithSubsequentActionsTriggered:
-    (BOOL)actionsTriggered {
-  // Only show the location permission if no additional actions were taken.
-  if (!actionsTriggered) {
-    id<ApplicationCommands> handler = static_cast<id<ApplicationCommands>>(
-        self.mainBrowser->GetCommandDispatcher());
-    [handler
-        showLocationPermissionsFromViewController:self.presentingInterface.bvc];
-  }
+- (void)didFinishPresentingScreens {
   [self.appState queueTransitionToNextInitStage];
 }
 

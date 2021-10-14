@@ -96,9 +96,6 @@ enum class TrustedVaultUserActionTriggerForUMA;
 - (void)showAdvancedSigninSettingsFromViewController:
     (UIViewController*)baseViewController;
 
-- (void)showLocationPermissionsFromViewController:
-    (UIViewController*)baseViewController;
-
 // Presents the Trusted Vault reauth dialog.
 // |baseViewController| presents the sign-in.
 // |trigger| UI elements where the trusted vault reauth has been triggered.

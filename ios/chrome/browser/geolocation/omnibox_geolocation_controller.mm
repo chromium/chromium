@@ -39,10 +39,6 @@ typedef enum {
 const char* const kGeolocationAuthorizationActionExistingUser =
     "Geolocation.AuthorizationActionExistingUser";
 
-// Name of the histogram recording AuthorizationAction for a new user.
-const char* const kGeolocationAuthorizationActionNewUser =
-    "Geolocation.AuthorizationActionNewUser";
-
 enum class PermissionStatus {
   // Status unknown, usually because the system is slow to respond.
   kPermissionUnknown = 0,
@@ -58,12 +54,6 @@ enum class PermissionStatus {
 @interface OmniboxGeolocationController () <CLLocationManagerDelegate>
 
 @property(nonatomic, strong) CLLocationManager* locationManager;
-
-// Records whether we are prompting for a new user, so that we can record the
-// user's action to the right histogram (either
-// kGeolocationAuthorizationActionExistingUser or
-// kGeolocationAuthorizationActionNewUser).
-@property(nonatomic, assign) BOOL newUser;
 
 // Whether the permission was undefined or not. Used to choose whether to log
 // the permission or not.
@@ -97,34 +87,12 @@ enum class PermissionStatus {
   return self;
 }
 
-- (void)triggerSystemPrompt {
-  if (self.locationServicesEnabled &&
-      self.locationManager.authorizationStatus ==
-          kCLAuthorizationStatusNotDetermined) {
-    self.newUser = YES;
-
-    // Turn on location updates, so that iOS will prompt the user.
-    [self.locationManager requestWhenInUseAuthorization];
-  }
-}
-
-- (void)systemPromptSkippedForNewUser {
-  self.newUser = YES;
-}
-
 #pragma mark - Private
 
 - (void)recordAuthorizationAction:(AuthorizationAction)authorizationAction {
   self.permissionStatus = PermissionStatus::kPermissionDetermined;
-  if (self.newUser) {
-    self.newUser = NO;
-
-    UMA_HISTOGRAM_ENUMERATION(kGeolocationAuthorizationActionNewUser,
-                              authorizationAction, kAuthorizationActionCount);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION(kGeolocationAuthorizationActionExistingUser,
-                              authorizationAction, kAuthorizationActionCount);
-  }
+  UMA_HISTOGRAM_ENUMERATION(kGeolocationAuthorizationActionExistingUser,
+                            authorizationAction, kAuthorizationActionCount);
 }
 
 // Boolean value indicating whether location services are enabled on the
