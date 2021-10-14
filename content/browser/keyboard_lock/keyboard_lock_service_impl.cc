@@ -106,9 +106,10 @@ void KeyboardLockServiceImpl::RequestKeyboardLock(
   if (render_frame_host_->GetRenderWidgetHost()->RequestKeyboardLock(
           std::move(dom_code_set))) {
     std::move(callback).Run(KeyboardLockRequestResult::kSuccess);
-    static_cast<RenderFrameHostImpl*>(render_frame_host_)
-        ->OnSchedulerTrackedFeatureUsed(
-            blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock);
+    feature_handle_ =
+        static_cast<RenderFrameHostImpl*>(render_frame_host_)
+            ->RegisterBackForwardCacheDisablingFeature(
+                blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock);
   } else {
     std::move(callback).Run(KeyboardLockRequestResult::kRequestFailedError);
   }
@@ -117,6 +118,7 @@ void KeyboardLockServiceImpl::RequestKeyboardLock(
 void KeyboardLockServiceImpl::CancelKeyboardLock() {
   LogKeyboardLockMethodCalled(KeyboardLockMethods::kCancelLock);
   render_frame_host_->GetRenderWidgetHost()->CancelKeyboardLock();
+  feature_handle_.reset();
 }
 
 void KeyboardLockServiceImpl::GetKeyboardLayoutMap(

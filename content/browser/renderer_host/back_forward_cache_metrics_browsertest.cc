@@ -619,7 +619,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, DedicatedWorker) {
   EXPECT_EQ(
       base::Difference(static_cast<WebContentsImpl*>(shell()->web_contents())
                            ->GetMainFrame()
-                           ->scheduler_tracked_features(),
+                           ->GetBackForwardCacheDisablingFeatures(),
                        kFeaturesToIgnore),
       blink::scheduler::WebSchedulerTrackedFeatures(
           blink::scheduler::WebSchedulerTrackedFeature::
@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, MAYBE_SharedWorker) {
   EXPECT_EQ(
       base::Difference(static_cast<WebContentsImpl*>(shell()->web_contents())
                            ->GetMainFrame()
-                           ->scheduler_tracked_features(),
+                           ->GetBackForwardCacheDisablingFeatures(),
                        kFeaturesToIgnore),
       blink::scheduler::WebSchedulerTrackedFeatures(
           blink::scheduler::WebSchedulerTrackedFeature::kSharedWorker));

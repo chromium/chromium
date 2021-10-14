@@ -528,6 +528,24 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     return rfh;
   }
 
+  void AcquireKeyboardLock(RenderFrameHostImpl* rfh) {
+    EXPECT_TRUE(ExecJs(rfh, R"(
+        new Promise(resolve => {
+          navigator.keyboard.lock();
+          resolve();
+        });
+      )"));
+  }
+
+  void ReleaseKeyboardLock(RenderFrameHostImpl* rfh) {
+    EXPECT_TRUE(ExecJs(rfh, R"(
+        new Promise(resolve => {
+          navigator.keyboard.unlock();
+          resolve();
+        });
+      )"));
+  }
+
   base::HistogramTester histogram_tester_;
 
   bool same_site_back_forward_cache_enabled_ = true;
@@ -2917,37 +2935,160 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(all_sites_it != all_sites_blocklist_values.end());
 }
 
+// Pages with acquired keyboard lock should not enter BackForwardCache.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        DoesNotCacheOnKeyboardLock) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  // 1) Navigate to a page and start using the IdleManager class.
+  // 1) Navigate to a page and start using the Keyboard lock.
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver rfh_a_deleted(rfh_a);
 
-  EXPECT_TRUE(ExecJs(rfh_a, R"(
-    new Promise(resolve => {
-      navigator.keyboard.lock();
-      resolve();
-    });
-  )"));
+  AcquireKeyboardLock(rfh_a);
 
   // 2) Navigate away.
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
-  // The page uses IdleManager so it should be deleted.
+  // The page uses keyboard lock so it should be deleted.
   rfh_a_deleted.WaitUntilDeleted();
 
-  // 3) Go back and make sure the IdleManager page wasn't in the cache.
+  // 3) Go back and make sure the keyboard lock page wasn't in the cache.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock}, {}, {}, {},
       FROM_HERE);
+}
+
+// If pages released keyboard lock, they can enter BackForwardCache. It will
+// remain eligible for multiple restores.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       CacheIfKeyboardLockReleasedMultipleRestores) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a page and start using the Keyboard lock.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameDeletedObserver rfh_a_deleted(rfh_a.get());
+
+  AcquireKeyboardLock(rfh_a.get());
+  ReleaseKeyboardLock(rfh_a.get());
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+
+  // 3) Go back and page should be restored from BackForwardCache.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+
+  // 4) Go forward and back, the page should be restored from BackForwardCache.
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ(rfh_b.get(), current_frame_host());
+  ExpectRestored(FROM_HERE);
+
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ(rfh_a.get(), current_frame_host());
+  ExpectRestored(FROM_HERE);
+}
+
+// If pages previously released the keyboard lock, but acquired it again, they
+// cannot enter BackForwardCache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoNotCacheIfKeyboardLockIsHeldAfterRelease) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a page and start using the Keyboard lock.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameDeletedObserver rfh_a_deleted(rfh_a.get());
+
+  AcquireKeyboardLock(rfh_a.get());
+  ReleaseKeyboardLock(rfh_a.get());
+  AcquireKeyboardLock(rfh_a.get());
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // The page uses keyboard lock so it should be deleted.
+  rfh_a_deleted.WaitUntilDeleted();
+
+  // 3) Go back and make sure the keyboard lock page wasn't in the cache.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock}, {}, {}, {},
+      FROM_HERE);
+}
+
+// If pages released keyboard lock before navigation, they can enter
+// BackForwardCache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       CacheIfKeyboardLockReleased) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a page and start using the Keyboard lock.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameDeletedObserver rfh_a_deleted(rfh_a.get());
+
+  AcquireKeyboardLock(rfh_a.get());
+  ReleaseKeyboardLock(rfh_a.get());
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // 3) Go back and page should be restored from BackForwardCache.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+}
+
+// If pages released keyboard lock during pagehide, they can enter
+// BackForwardCache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       CacheIfKeyboardLockReleasedInPagehide) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a page and start using the Keyboard lock.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameDeletedObserver rfh_a_deleted(rfh_a.get());
+
+  AcquireKeyboardLock(rfh_a.get());
+  // Register a pagehide handler to release keyboard lock.
+  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
+    window.onpagehide = function(e) {
+      new Promise(resolve => {
+      navigator.keyboard.unlock();
+      resolve();
+      });
+    };
+  )"));
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // 3) Go back and page should be restored from BackForwardCache.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -2959,7 +3100,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
   RenderFrameDeletedObserver rfh_a_deleted(rfh_a.get());
-  rfh_a->UseDummyStickySchedulerTrackedFeatureForTesting();
+  rfh_a->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
 
   // 2) Navigate away.
   EXPECT_TRUE(NavigateToURL(
@@ -2997,7 +3138,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 2) Use BroadcastChannel (non-sticky) and a dummy sticky blocklisted
   // features.
   EXPECT_TRUE(ExecJs(rfh_a, "window.foo = new BroadcastChannel('foo');"));
-  rfh_a->UseDummyStickySchedulerTrackedFeatureForTesting();
+  rfh_a->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
 
   // 3) Navigate cross-site, browser-initiated.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -3044,7 +3185,7 @@ IN_PROC_BROWSER_TEST_F(
   // 2) Use BroadcastChannel (non-sticky) and Dummy sticky blocklisted
   // features.
   EXPECT_TRUE(ExecJs(rfh_a, "window.foo = new BroadcastChannel('foo');"));
-  rfh_a->UseDummyStickySchedulerTrackedFeatureForTesting();
+  rfh_a->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
 
   // 3) Navigate cross-site, renderer-inititated.
   EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1;", url_b.spec())));
@@ -3119,7 +3260,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 2) Use BroadcastChannel (non-sticky) and dummy sticky blocklisted features.
   EXPECT_TRUE(ExecJs(rfh_1, "window.foo = new BroadcastChannel('foo');"));
-  rfh_1->UseDummyStickySchedulerTrackedFeatureForTesting();
+  rfh_1->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
 
   // 3) Navigate same-site.
   EXPECT_TRUE(NavigateToURL(shell(), url_2));
@@ -4114,7 +4255,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   RenderFrameDeletedObserver delete_observer_rfh_1(rfh_1);
   // 2) Use a dummy sticky blocklisted feature, so that the page is known to be
   // ineligible for bfcache at commit time, before we dispatch pagehide event.
-  rfh_1->UseDummyStickySchedulerTrackedFeatureForTesting();
+  rfh_1->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
 
   EXPECT_TRUE(ExecJs(rfh_1, R"(
     window.onpagehide = (e) => {
@@ -11319,13 +11460,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithSupportedFeatures,
   EXPECT_EQ(rfh_a, current_frame_host());
   ExpectRestored(FROM_HERE);
 
-  // 4) Use KeyboardLock
-  EXPECT_EQ("DONE", EvalJs(rfh_a, R"(
-    new Promise(resolve => {
-      navigator.keyboard.lock();
-      resolve('DONE');
-    });
-  )"));
+  // 4) Use KeyboardLock.
+  AcquireKeyboardLock(rfh_a);
 
   // 5) Navigate away again.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -11378,13 +11514,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNoSupportedFeatures,
   RenderFrameHostImpl* rfh_a2 = current_frame_host();
   RenderFrameDeletedObserver deleted_a2(rfh_a2);
 
-  // 4) Use KeyboardLock
-  EXPECT_EQ("DONE", EvalJs(rfh_a2, R"(
-    new Promise(resolve => {
-      navigator.keyboard.lock();
-      resolve('DONE');
-    });
-  )"));
+  // 4) Use KeyboardLock.
+  AcquireKeyboardLock(rfh_a2);
 
   // 5) Navigate away again.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));

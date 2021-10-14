@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -40,6 +41,7 @@ class CONTENT_EXPORT KeyboardLockServiceImpl final
   ~KeyboardLockServiceImpl() override;
 
   RenderFrameHostImpl* const render_frame_host_;
+  RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle feature_handle_;
 };
 
 }  // namespace content

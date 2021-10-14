@@ -282,7 +282,7 @@ void BackForwardCacheMetrics::CollectFeatureUsageFromSubtree(
     RenderFrameHostImpl* rfh,
     const url::Origin& main_frame_origin) {
   blink::scheduler::WebSchedulerTrackedFeatures features =
-      rfh->scheduler_tracked_features();
+      rfh->GetBackForwardCacheDisablingFeatures();
   if (!rfh->GetParent()) {
     main_frame_features_.PutAll(features);
   } else if (rfh->GetLastCommittedOrigin().IsSameOriginWith(

@@ -188,7 +188,6 @@ WebSchedulerTrackedFeatures StickyFeatures() {
       WebSchedulerTrackedFeature::kPictureInPicture,
       WebSchedulerTrackedFeature::kIdleManager,
       WebSchedulerTrackedFeature::kPaymentManager,
-      WebSchedulerTrackedFeature::kKeyboardLock,
       WebSchedulerTrackedFeature::kWebOTPService,
       WebSchedulerTrackedFeature::kInjectedJavascript,
       WebSchedulerTrackedFeature::kInjectedStyleSheet,

@@ -578,7 +578,7 @@ void BackForwardCacheImpl::UpdateCanStoreToIncludeCacheControlNoStore(
   if (!AllowStoringPagesWithCacheControlNoStore())
     return;
   // If the page didn't have cache-control: no-store, do nothing.
-  if (!render_frame_host->scheduler_tracked_features().Has(
+  if (!render_frame_host->GetBackForwardCacheDisablingFeatures().Has(
           WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore)) {
     return;
   }
@@ -760,7 +760,7 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
 
   BlockListedFeatures cache_control_no_store_feature(
       WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore);
-  if (!Intersection(rfh->scheduler_tracked_features(),
+  if (!Intersection(rfh->GetBackForwardCacheDisablingFeatures(),
                     cache_control_no_store_feature)
            .Empty()) {
     if (!AllowStoringPagesWithCacheControlNoStore()) {
@@ -870,7 +870,7 @@ void BackForwardCacheImpl::CanStoreRenderFrameHostLater(
   // since the first time it's used.
   WebSchedulerTrackedFeatures banned_features =
       Intersection(GetDisallowedFeatures(rfh, RequestedFeatures::kOnlySticky),
-                   rfh->scheduler_tracked_features());
+                   rfh->GetBackForwardCacheDisablingFeatures());
   if (!banned_features.Empty()) {
     if (!ShouldIgnoreBlocklists()) {
       result->NoDueToFeatures(banned_features);
@@ -896,7 +896,7 @@ void BackForwardCacheImpl::CheckDynamicBlocklistedFeaturesOnSubtree(
   // on whether we should store a page in the back-forward cache or not.
   WebSchedulerTrackedFeatures banned_features =
       Intersection(GetDisallowedFeatures(rfh, RequestedFeatures::kAll),
-                   rfh->scheduler_tracked_features());
+                   rfh->GetBackForwardCacheDisablingFeatures());
   if (!banned_features.Empty() && !ShouldIgnoreBlocklists() &&
       rfh->render_view_host()->DidReceiveBackForwardCacheAck()) {
     result->NoDueToFeatures(banned_features);
@@ -936,7 +936,7 @@ void BackForwardCacheImpl::StoreEntry(
 
   entry->render_frame_host()->DidEnterBackForwardCache();
   if (AllowStoringPagesWithCacheControlNoStore()) {
-    if (entry->render_frame_host()->scheduler_tracked_features().Has(
+    if (entry->render_frame_host()->GetBackForwardCacheDisablingFeatures().Has(
             WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore)) {
       // Start monitoring the cookie change only when cache-control:no-store
       // header is present.
@@ -1140,7 +1140,7 @@ BackForwardCacheImpl::Entry* BackForwardCacheImpl::GetEntry(
   if (AllowStoringPagesWithCacheControlNoStore() &&
       (*matching_entry)
           ->render_frame_host()
-          ->scheduler_tracked_features()
+          ->GetBackForwardCacheDisablingFeatures()
           .Has(WebSchedulerTrackedFeature::
                    kMainResourceHasCacheControlNoStore)) {
     auto* render_frame_host = (*matching_entry)->render_frame_host();

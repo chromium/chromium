@@ -4009,18 +4009,66 @@ void RenderFrameHostImpl::CancelInitialHistoryLoad() {
 
 void RenderFrameHostImpl::DidChangeActiveSchedulerTrackedFeatures(
     uint64_t features_mask) {
-  renderer_reported_scheduler_tracked_features_ =
-      blink::scheduler::WebSchedulerTrackedFeatures::FromEnumBitmask(
-          features_mask);
+  renderer_reported_bfcache_disabling_features_ =
+      BackForwardCacheDisablingFeatures::FromEnumBitmask(features_mask);
 
   MaybeEvictFromBackForwardCache();
 }
 
+using BackForwardCacheDisablingFeatureHandle =
+    RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle;
+
+BackForwardCacheDisablingFeatureHandle::
+    BackForwardCacheDisablingFeatureHandle() {
+  // |render_frame_host_| will be null, so this value is never used.
+  feature_ = BackForwardCacheDisablingFeature::kDummy;
+}
+
+BackForwardCacheDisablingFeatureHandle::BackForwardCacheDisablingFeatureHandle(
+    RenderFrameHostImpl* render_frame_host,
+    BackForwardCacheDisablingFeature feature)
+    : render_frame_host_(render_frame_host->GetWeakPtr()), feature_(feature) {
+  CHECK(render_frame_host_);
+  render_frame_host_->OnSchedulerTrackedFeatureUsed(feature_);
+}
+
 void RenderFrameHostImpl::OnSchedulerTrackedFeatureUsed(
-    blink::scheduler::WebSchedulerTrackedFeature feature) {
-  browser_reported_scheduler_tracked_features_.Put(feature);
+    BackForwardCacheDisablingFeature feature) {
+  ++browser_reported_bfcache_disabling_features_counts_[feature];
 
   MaybeEvictFromBackForwardCache();
+}
+
+void RenderFrameHostImpl::OnBackForwardCacheDisablingFeatureRemoved(
+    BackForwardCacheDisablingFeature feature) {
+  auto it = browser_reported_bfcache_disabling_features_counts_.find(feature);
+  DCHECK(it->second >= 1);
+  if (it->second == 1) {
+    browser_reported_bfcache_disabling_features_counts_.erase(it);
+  } else {
+    --it->second;
+  }
+}
+
+using BackForwardCacheDisablingFeatures =
+    blink::scheduler::WebSchedulerTrackedFeatures;
+using BackForwardCacheDisablingFeature =
+    blink::scheduler::WebSchedulerTrackedFeature;
+
+BackForwardCacheDisablingFeatures
+RenderFrameHostImpl::GetBackForwardCacheDisablingFeatures() const {
+  BackForwardCacheDisablingFeatures features =
+      renderer_reported_bfcache_disabling_features_;
+  for (const auto& it : browser_reported_bfcache_disabling_features_counts_) {
+    features.Put(it.first);
+  }
+  return features;
+}
+
+RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle
+RenderFrameHostImpl::RegisterBackForwardCacheDisablingFeature(
+    BackForwardCacheDisablingFeature feature) {
+  return BackForwardCacheDisablingFeatureHandle(this, feature);
 }
 
 bool RenderFrameHostImpl::IsFrozen() {
@@ -5816,9 +5864,9 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
       .PostTaskToDestroyEvictedFrames();
 }
 
-void RenderFrameHostImpl::UseDummyStickySchedulerTrackedFeatureForTesting() {
-  OnSchedulerTrackedFeatureUsed(
-      blink::scheduler::WebSchedulerTrackedFeature::kDummy);
+void RenderFrameHostImpl::
+    UseDummyStickyBackForwardCacheDisablingFeatureForTesting() {
+  OnSchedulerTrackedFeatureUsed(BackForwardCacheDisablingFeature::kDummy);
 }
 
 bool RenderFrameHostImpl::HasSeenRecentXrOverlaySetup() {
@@ -9036,7 +9084,7 @@ void RenderFrameHostImpl::CreatePaymentManager(
   // don't cancel pending payment requests when the RenderFrameHost is stored
   // in back-forward cache.
   OnSchedulerTrackedFeatureUsed(
-      blink::scheduler::WebSchedulerTrackedFeature::kPaymentManager);
+      BackForwardCacheDisablingFeature::kPaymentManager);
 }
 
 void RenderFrameHostImpl::CreateWebBluetoothService(
@@ -9359,8 +9407,7 @@ void RenderFrameHostImpl::BindIdleManager(
   }
 
   idle_manager_->CreateService(std::move(receiver));
-  OnSchedulerTrackedFeatureUsed(
-      blink::scheduler::WebSchedulerTrackedFeature::kIdleManager);
+  OnSchedulerTrackedFeatureUsed(BackForwardCacheDisablingFeature::kIdleManager);
 }
 
 void RenderFrameHostImpl::GetPresentationService(
@@ -9388,7 +9435,7 @@ void RenderFrameHostImpl::GetSpeechSynthesis(
   // handle speech synthesis after placing the page in BackForwardCache.
   // TODO(sreejakshetty): Make SpeechSynthesis compatible with BackForwardCache.
   OnSchedulerTrackedFeatureUsed(
-      blink::scheduler::WebSchedulerTrackedFeature::kSpeechSynthesis);
+      BackForwardCacheDisablingFeature::kSpeechSynthesis);
 }
 
 void RenderFrameHostImpl::GetSensorProvider(
@@ -10432,8 +10479,8 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   DCHECK(params.embedding_token.has_value());
   SetEmbeddingToken(params.embedding_token.value());
 
-  renderer_reported_scheduler_tracked_features_.Clear();
-  browser_reported_scheduler_tracked_features_.Clear();
+  renderer_reported_bfcache_disabling_features_.Clear();
+  browser_reported_bfcache_disabling_features_counts_.clear();
 
   // TODO(https://crbug.com/888079): The origin computed from the browser must
   // match the one reported from the renderer process.

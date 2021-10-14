@@ -467,8 +467,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void EvictFromBackForwardCacheWithReasons(
       const BackForwardCacheCanStoreDocumentResult& can_store);
 
-  // Only for testing sticky WebSchedulerTrackedFeature.
-  void UseDummyStickySchedulerTrackedFeatureForTesting();
+  // Only for testing sticky WebBackForwardCacheDisablingFeature.
+  void UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
 
   // Returns the current WebPreferences for the WebContents associated with this
   // RenderFrameHost. Will create one if it does not exist (and update all the
@@ -1556,13 +1556,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Manual RTTI to ensure safe downcasts in tests.
   virtual bool IsTestRenderFrameHost() const;
 
-  // Scheduler-relevant features this frame is using, for use in metrics.
-  // See comments at |scheduler_tracked_features_|.
-  blink::scheduler::WebSchedulerTrackedFeatures scheduler_tracked_features()
-      const {
-    return Union(renderer_reported_scheduler_tracked_features_,
-                 browser_reported_scheduler_tracked_features_);
-  }
+  using BackForwardCacheDisablingFeatures =
+      blink::scheduler::WebSchedulerTrackedFeatures;
+  using BackForwardCacheDisablingFeature =
+      blink::scheduler::WebSchedulerTrackedFeature;
+
+  // BackForwardCache disabling feature for |this|, used in determing |this|
+  // frame's BackForwardCache eligibility.
+  // See comments at |renderer_reported_bfcache_disabling_features_| and
+  // |browser_reported_bfcache_disabling_features_|.
+  BackForwardCacheDisablingFeatures GetBackForwardCacheDisablingFeatures()
+      const;
 
   // Returns a PrefetchedSignedExchangeCache which is attached to |this|.
   scoped_refptr<PrefetchedSignedExchangeCache>
@@ -1575,11 +1579,54 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // |this| or the parent frame or the opener frame.
   std::unique_ptr<WebBundleHandleTracker> MaybeCreateWebBundleHandleTracker();
 
-  // Notify the scheduler that this frame used a feature which impacts the
-  // scheduling policy (e.g. whether the frame can be frozen or put into the
-  // back-forward cache).
-  void OnSchedulerTrackedFeatureUsed(
-      blink::scheduler::WebSchedulerTrackedFeature feature);
+  class BackForwardCacheDisablingFeatureHandle {
+   public:
+    BackForwardCacheDisablingFeatureHandle();
+    BackForwardCacheDisablingFeatureHandle(
+        BackForwardCacheDisablingFeatureHandle&&);
+    BackForwardCacheDisablingFeatureHandle& operator=(
+        BackForwardCacheDisablingFeatureHandle&& other) {
+      feature_ = other.feature_;
+      render_frame_host_ = other.render_frame_host_;
+      other.render_frame_host_ = nullptr;
+      return *this;
+    }
+
+    inline ~BackForwardCacheDisablingFeatureHandle() { reset(); }
+
+    // This will reduce the feature count for |feature_| for the first time, and
+    // do nothing for further calls.
+    inline void reset() {
+      if (render_frame_host_)
+        render_frame_host_->OnBackForwardCacheDisablingFeatureRemoved(feature_);
+      render_frame_host_ = nullptr;
+    }
+
+   private:
+    friend class RenderFrameHostImpl;
+    BackForwardCacheDisablingFeatureHandle(
+        RenderFrameHostImpl* render_frame_host,
+        BackForwardCacheDisablingFeature feature);
+
+    base::WeakPtr<RenderFrameHostImpl> render_frame_host_ = nullptr;
+    BackForwardCacheDisablingFeature feature_;
+  };
+
+  BackForwardCacheDisablingFeatureHandle
+  RegisterBackForwardCacheDisablingFeature(
+      BackForwardCacheDisablingFeature feature);
+
+  // A feature that blocks back/forward cache is used. Count the usage and evict
+  // the entry if necessary. When the feature is no longer used, call |reset()|
+  // for |BackForwardCacheDisablingFeatureHandle|.
+  // TODO(crbug.com/1254588): Do not use this function unless the feature is
+  // sticky, i.e., page can never be eligible for bfcache again for back/forward
+  // cache once the feature is used. Features that are non-sticky (might be
+  // removed later, causing the page to become eligible for bfcache again)
+  // should use |BackForwardCacheDisablingFeatureHandle| instead.
+  // TODO(crbug.com/1257067): Rename this to OnBackForwardCacheDisablingFeature
+  // Used.
+  void OnSchedulerTrackedFeatureUsed(BackForwardCacheDisablingFeature feature);
 
   // Returns true if the frame is frozen.
   bool IsFrozen();
@@ -3173,6 +3220,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // JavaScriptExecuteRequestInIsolatedWorld.
   void AssertNonSpeculativeFrame() const;
 
+  // A feature that blocks back/forward cache is removed. Update the count of
+  // feature usage. This should only be called from
+  // |BackForwardCacheDisablingFeatureHandle|.
+  void OnBackForwardCacheDisablingFeatureRemoved(
+      BackForwardCacheDisablingFeature feature);
+
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts
@@ -3766,10 +3819,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // some in the browser process, depending on the design of each individual
   // feature. They are tracked separately, because when the renderer updates the
   // set of features, the browser ones should persist.
-  blink::scheduler::WebSchedulerTrackedFeatures
-      renderer_reported_scheduler_tracked_features_;
-  blink::scheduler::WebSchedulerTrackedFeatures
-      browser_reported_scheduler_tracked_features_;
+  BackForwardCacheDisablingFeatures
+      renderer_reported_bfcache_disabling_features_;
+
+  // Count the usage of BackForwardCacheDisablingFeature.
+  base::flat_map<BackForwardCacheDisablingFeature, int>
+      browser_reported_bfcache_disabling_features_counts_;
 
   // Holds prefetched signed exchanges for SignedExchangeSubresourcePrefetch.
   // They will be passed to the next navigation.
