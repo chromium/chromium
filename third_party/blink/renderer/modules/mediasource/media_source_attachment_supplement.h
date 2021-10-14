@@ -53,7 +53,7 @@ class MediaSourceAttachmentSupplement : public MediaSourceAttachment {
   // (via |tracer| in a same thread implementation) or rely on a "recent"
   // currentTime pumped by the attached element via the MediaSourceAttachment
   // interface (in a cross-thread implementation).
-  virtual double GetRecentMediaTime(MediaSourceTracer* tracer) = 0;
+  virtual base::TimeDelta GetRecentMediaTime(MediaSourceTracer* tracer) = 0;
 
   // Retrieves whether or not the media element currently has an error.
   // Implementations may choose to either directly, synchronously consult the

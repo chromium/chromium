@@ -37,7 +37,6 @@ CrossThreadMediaSourceAttachment::CrossThreadMediaSourceAttachment(
           TaskType::kPostedMessage)),
       media_source_context_destroyed_(false),
       media_element_context_destroyed_(false),
-      recent_element_time_(0.0),
       have_ever_attached_(false),
       have_ever_started_closing_(false) {
   // This kind of attachment can only be constructed by the worker thread.
@@ -76,7 +75,7 @@ void CrossThreadMediaSourceAttachment::NotifyDurationChanged(
   SendUpdatedInfoToMainThreadCache();
 }
 
-double CrossThreadMediaSourceAttachment::GetRecentMediaTime(
+base::TimeDelta CrossThreadMediaSourceAttachment::GetRecentMediaTime(
     MediaSourceTracer* /* tracer */) {
   attachment_state_lock_.AssertAcquired();
 
@@ -574,7 +573,7 @@ CrossThreadMediaSourceAttachment::StartAttachingToMediaElement(
 
     // Before element starts pumping time and error status to us, use its
     // current status initially.
-    recent_element_time_ = element->currentTime();
+    recent_element_time_ = base::Seconds(element->currentTime());
     element_has_error_ = !!element->error();
 
     // Media element should not call this method if it already has an error.
@@ -875,12 +874,12 @@ void CrossThreadMediaSourceAttachment::OnElementTimeUpdate(double time) {
         *worker_runner_, FROM_HERE,
         CrossThreadBindOnce(
             &CrossThreadMediaSourceAttachment::UpdateWorkerThreadTimeCache,
-            WTF::RetainedRef(this), time));
+            WTF::RetainedRef(this), base::Seconds(time)));
   }
 }
 
 void CrossThreadMediaSourceAttachment::UpdateWorkerThreadTimeCache(
-    double time) {
+    base::TimeDelta time) {
   {
     MutexLocker lock(attachment_state_lock_);
     DCHECK(!IsMainThread());

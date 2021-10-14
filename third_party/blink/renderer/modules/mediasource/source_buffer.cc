@@ -1345,7 +1345,7 @@ double SourceBuffer::GetMediaTime() {
   MediaSourceTracer* tracer;
   std::tie(attachment, tracer) = source_->AttachmentAndTracer();
   DCHECK(attachment);
-  return attachment->GetRecentMediaTime(tracer);
+  return attachment->GetRecentMediaTime(tracer).InSecondsF();
 }
 
 template <class T>

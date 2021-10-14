@@ -38,7 +38,7 @@ class SameThreadMediaSourceAttachment final
 
   // MediaSourceAttachmentSupplement
   void NotifyDurationChanged(MediaSourceTracer* tracer, double duration) final;
-  double GetRecentMediaTime(MediaSourceTracer* tracer) final;
+  base::TimeDelta GetRecentMediaTime(MediaSourceTracer* tracer) final;
   bool GetElementError(MediaSourceTracer* tracer) final;
   AudioTrackList* CreateAudioTrackList(MediaSourceTracer* tracer) final;
   VideoTrackList* CreateVideoTrackList(MediaSourceTracer* tracer) final;

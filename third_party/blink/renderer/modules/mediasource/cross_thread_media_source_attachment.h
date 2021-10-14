@@ -55,7 +55,7 @@ class CrossThreadMediaSourceAttachment final
   // |attachment_state_lock_|.
   void NotifyDurationChanged(MediaSourceTracer* tracer, double duration) final
       EXCLUSIVE_LOCKS_REQUIRED(attachment_state_lock_);
-  double GetRecentMediaTime(MediaSourceTracer* tracer) final
+  base::TimeDelta GetRecentMediaTime(MediaSourceTracer* tracer) final
       EXCLUSIVE_LOCKS_REQUIRED(attachment_state_lock_);
   bool GetElementError(MediaSourceTracer* tracer) final
       EXCLUSIVE_LOCKS_REQUIRED(attachment_state_lock_);
@@ -181,7 +181,7 @@ class CrossThreadMediaSourceAttachment final
 
   void CloseOnWorkerThread() LOCKS_EXCLUDED(attachment_state_lock_);
 
-  void UpdateWorkerThreadTimeCache(double time)
+  void UpdateWorkerThreadTimeCache(base::TimeDelta time)
       LOCKS_EXCLUDED(attachment_state_lock_);
   void HandleElementErrorOnWorkerThread()
       LOCKS_EXCLUDED(attachment_state_lock_);
@@ -246,7 +246,7 @@ class CrossThreadMediaSourceAttachment final
   // synchronous to servicing GetRecentMediaTime().
   // See MediaSourceAttachment::OnElementTimeUpdate() interface comments for
   // more detail.
-  double recent_element_time_ GUARDED_BY(attachment_state_lock_);
+  base::TimeDelta recent_element_time_ GUARDED_BY(attachment_state_lock_);
 
   // Updated on worker thread as eventual result of kPostMessage-ing the
   // notification of element error received in OnElementError() on the main
