@@ -9,6 +9,7 @@
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace quick_pair {
@@ -22,10 +23,18 @@ namespace quick_pair {
 // object.
 struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
     : public base::RefCounted<Device> {
-  Device(std::string metadata_id, std::string address, Protocol protocol);
+  Device(std::string metadata_id, std::string ble_address, Protocol protocol);
   Device(const Device&) = delete;
   Device& operator=(const Device&) = delete;
   Device& operator=(Device&&) = delete;
+
+  const absl::optional<std::string>& classic_address() const {
+    return classic_address_;
+  }
+
+  void set_classic_address(const std::string& address) {
+    classic_address_ = address;
+  }
 
   // An identifier which components can use to fetch additional metadata for
   // this device. This ID will correspond to different things depending on
@@ -33,15 +42,18 @@ struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
   // model ID of the Fast Pair device.
   const std::string metadata_id;
 
-  // Bluetooth address of the device.
-  const std::string address;
+  // Bluetooth LE address of the device.
+  const std::string ble_address;
 
   // The Quick Pair protocol implementation that this device belongs to.
   const Protocol protocol;
 
  private:
   friend class base::RefCounted<Device>;
-  ~Device() = default;
+  ~Device();
+
+  // Bluetooth classic address of the device.
+  absl::optional<std::string> classic_address_;
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

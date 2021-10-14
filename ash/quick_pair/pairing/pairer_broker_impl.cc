@@ -50,7 +50,7 @@ void PairerBrokerImpl::PairDevice(scoped_refptr<Device> device) {
 }
 
 void PairerBrokerImpl::PairFastPairDevice(scoped_refptr<Device> device) {
-  if (base::Contains(fast_pair_pairers_, device->address)) {
+  if (base::Contains(fast_pair_pairers_, device->ble_address)) {
     QP_LOG(WARNING) << __func__ << ": Already pairing device" << device;
     return;
   }
@@ -58,7 +58,7 @@ void PairerBrokerImpl::PairFastPairDevice(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
 
   DCHECK(adapter_);
-  fast_pair_pairers_[device->address] = std::make_unique<FastPairPairer>(
+  fast_pair_pairers_[device->ble_address] = std::make_unique<FastPairPairer>(
       adapter_, device,
       base::BindOnce(&PairerBrokerImpl::OnFastPairDevicePaired,
                      weak_pointer_factory_.GetWeakPtr()),
@@ -95,7 +95,7 @@ void PairerBrokerImpl::OnAccountKeyFailure(scoped_refptr<Device> device,
 void PairerBrokerImpl::OnFastPairProcedureComplete(
     scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": Device=" << device;
-  fast_pair_pairers_.erase(device->address);
+  fast_pair_pairers_.erase(device->ble_address);
 }
 
 }  // namespace quick_pair

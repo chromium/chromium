@@ -183,7 +183,7 @@ void FastPairRepositoryImpl::AssociateAccountKey(
       device->metadata_id,
       base::BindOnce(&FastPairRepositoryImpl::AddToFootprints,
                      weak_ptr_factory_.GetWeakPtr(), device->metadata_id,
-                     device->address, account_key));
+                     device->ble_address, account_key));
 }
 
 void FastPairRepositoryImpl::AddToFootprints(

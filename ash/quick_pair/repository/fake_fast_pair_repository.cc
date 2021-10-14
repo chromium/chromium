@@ -65,7 +65,7 @@ void FakeFastPairRepository::CheckAccountKeys(
 void FakeFastPairRepository::AssociateAccountKey(
     scoped_refptr<Device> device,
     const std::vector<uint8_t>& account_key) {
-  saved_account_keys_[device->address] = account_key;
+  saved_account_keys_[device->ble_address] = account_key;
 }
 
 void FakeFastPairRepository::DeleteAssociatedDevice(
