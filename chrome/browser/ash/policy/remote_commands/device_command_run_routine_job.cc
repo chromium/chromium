@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -138,6 +139,10 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                << routine_enum_;
 
   switch (routine_enum_) {
+    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kUnknown: {
+      NOTREACHED() << "This default value should not be used.";
+      break;
+    }
     case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
         kBatteryCapacity: {
       chromeos::cros_healthd::ServiceConnection::GetInstance()

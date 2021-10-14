@@ -14,8 +14,11 @@ module chromeos.cros_healthd.mojom;
 const int32 kFailedToStartId = 0;
 
 // Enumeration of each of the diagnostics routines the platform may support.
+//
+// NextMinVersion: 1, NextIndex: 31
 [Extensible]
 enum DiagnosticRoutineEnum {
+  [Default] kUnknown = 30,
   kBatteryCapacity = 0,
   kBatteryHealth = 1,
   kUrandom = 2,
