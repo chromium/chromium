@@ -86,30 +86,25 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
   }
 
   void RequestUpdateCheck(UpdateCheckCallback callback) override {
-    if (!service_available_) {
-      // TODO(alemate): we probably need to remember callbacks only.
-      // When service becomes available, we can do a single request,
-      // and trigger all callbacks with the same return value.
-      pending_tasks_.push_back(
-          base::BindOnce(&UpdateEngineClientImpl::RequestUpdateCheck,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-      return;
-    }
-    // TODO(crbug.com/982438): Use newer version of kAttemptUpdate instead once
-    // it was enhanced with protobuf arguments.
-    dbus::MethodCall method_call(update_engine::kUpdateEngineInterface,
-                                 update_engine::kAttemptUpdateWithFlags);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendString("");  // app_version
-    writer.AppendString("");  // omaha_url
-    writer.AppendInt32(0);    // flags, default is 0 (interactive). See
-                              // org.chromium.UpdateEngineInterface.dbus-xml.
+    update_engine::UpdateParams update_params;
+    update_params.set_app_version("");
+    update_params.set_omaha_url("");
+    // Default is interactive as |true|, but explicitly set here.
+    update_params.mutable_update_flags()->set_non_interactive(false);
 
-    VLOG(1) << "Requesting an update check";
-    update_engine_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&UpdateEngineClientImpl::OnRequestUpdateCheck,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    RequestUpdateCheckInternal(std::move(callback), std::move(update_params));
+  }
+
+  void RequestUpdateCheckWithoutApplying(
+      UpdateCheckCallback callback) override {
+    update_engine::UpdateParams update_params;
+    update_params.set_app_version("");
+    update_params.set_omaha_url("");
+    // Default is interactive as |true|, but explicitly set here.
+    update_params.mutable_update_flags()->set_non_interactive(false);
+    update_params.set_skip_applying(true);
+
+    RequestUpdateCheckInternal(std::move(callback), std::move(update_params));
   }
 
   void RebootAfterUpdate() override {
@@ -304,11 +299,39 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  void RequestUpdateCheckInternal(UpdateCheckCallback callback,
+                                  update_engine::UpdateParams update_params) {
+    if (!service_available_) {
+      pending_tasks_.push_back(
+          base::BindOnce(&UpdateEngineClientImpl::RequestUpdateCheckInternal,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         std::move(update_params)));
+      return;
+    }
+    dbus::MethodCall method_call(update_engine::kUpdateEngineInterface,
+                                 update_engine::kUpdate);
+    dbus::MessageWriter writer(&method_call);
+
+    if (!writer.AppendProtoAsArrayOfBytes(update_params)) {
+      LOG(ERROR) << "Failed to encode UpdateParams protobuf";
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), UPDATE_RESULT_FAILED));
+      return;
+    }
+
+    VLOG(1) << "Requesting an update";
+    // Bind the same callback method for reuse.
+    update_engine_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&UpdateEngineClientImpl::OnRequestUpdateCheck,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   // Called when a response for RequestUpdateCheck() is received.
   void OnRequestUpdateCheck(UpdateCheckCallback callback,
                             dbus::Response* response) {
     if (!response) {
-      LOG(ERROR) << "Failed to request update check";
+      LOG(ERROR) << "Failed to request update";
       std::move(callback).Run(UPDATE_RESULT_FAILED);
       return;
     }
@@ -551,6 +574,11 @@ class UpdateEngineClientStubImpl : public UpdateEngineClient {
         base::BindOnce(&UpdateEngineClientStubImpl::StateTransition,
                        weak_factory_.GetWeakPtr()),
         base::Milliseconds(kStateTransitionDefaultDelayMs));
+  }
+
+  void RequestUpdateCheckWithoutApplying(
+      UpdateCheckCallback callback) override {
+    RequestUpdateCheck(std::move(callback));
   }
 
   void RebootAfterUpdate() override {}

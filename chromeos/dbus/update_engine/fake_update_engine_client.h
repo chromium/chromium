@@ -35,6 +35,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
   void RemoveObserver(Observer* observer) override;
   bool HasObserver(const Observer* observer) const override;
   void RequestUpdateCheck(UpdateCheckCallback callback) override;
+  void RequestUpdateCheckWithoutApplying(UpdateCheckCallback callback) override;
   void RebootAfterUpdate() override;
   void Rollback() override;
   void CanRollbackCheck(RollbackCheckCallback callback) override;
@@ -89,6 +90,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
     return request_update_check_call_count_;
   }
 
+  // Returns how many times RequestUpdateCheckWithoutApplying() is called.
+  int request_update_check_skip_applying_call_count() const {
+    return request_update_check_without_applying_call_count_;
+  }
+
   // Returns how many times Rollback() is called.
   int rollback_call_count() const { return rollback_call_count_; }
 
@@ -114,6 +120,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
   bool can_rollback_stub_result_ = false;
   int reboot_after_update_call_count_ = 0;
   int request_update_check_call_count_ = 0;
+  int request_update_check_without_applying_call_count_ = 0;
   int rollback_call_count_ = 0;
   int can_rollback_call_count_ = 0;
   int update_over_cellular_permission_count_ = 0;
