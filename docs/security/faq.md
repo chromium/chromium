@@ -761,3 +761,8 @@ recognize that there may exist policies or policy combinations that can provide
 capabilities outside of the guidance provided here. In cases of clear violation
 of user expectations, we will attempt to remedy these policies and we will apply
 the guidance laid out in this document to any newly added policies.
+
+<a name="TOC-Which-bugs-are-valid-for-rewards-under-the-Chrome-Vulnerability-Rewards-program-"></a>
+## Which bugs are valid for rewards under the Chrome Vulnerability Rewards program?
+
+Please see [the VRP FAQ page](vrp-faq.md).
