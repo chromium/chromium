@@ -102,7 +102,10 @@ ShareInfoFileHandler::ShareInfoFileHandler(
       file_config_.mime_types.emplace_back(file_info->mime_type);
       file_config_.names.emplace_back(file_info->name);
       file_config_.sizes.emplace_back(file_info->size);
-      file_config_.total_size += base::checked_cast<uint64_t>(file_info->size);
+      if (file_info->size > 0) {
+        file_config_.total_size +=
+            base::checked_cast<uint64_t>(file_info->size);
+      }
     }
     file_config_.num_files = file_config_.external_urls.size();
   }
