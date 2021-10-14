@@ -431,15 +431,18 @@ class IdleWebFeatureTask : public IdleTask {
   }
 
   void invoke(IdleDeadline*) override {
-    if (!document_->View())
+    Document* document = document_.Get();
+    if (!document || !document->View())
       return;
-    if (layout_count_ != document_->View()->LayoutCount()) {
-      layout_count_ = document_->View()->LayoutCount();
-      const LayoutView& view = *document_->GetLayoutView();
+    if (layout_count_ != document->View()->LayoutCount()) {
+      layout_count_ = document->View()->LayoutCount();
+      if (!document->GetLayoutView())
+        return;
+      const LayoutView& view = *document->GetLayoutView();
       PhysicalSize viewport_size(LayoutUnit(view.ViewWidth()),
                                  LayoutUnit(view.ViewHeight()));
       if (FindTallerIfc(view, viewport_size)) {
-        UseCounter::Count(*document_, WebFeature::kDeferredShapingTallerIfc);
+        UseCounter::Count(*document, WebFeature::kDeferredShapingTallerIfc);
         return;
       }
       if (first_traverse_time_.is_null())
@@ -449,7 +452,7 @@ class IdleWebFeatureTask : public IdleTask {
     constexpr base::TimeDelta kCountDuration = base::Seconds(30);
     if (first_traverse_time_.is_null() ||
         base::Time::Now() < first_traverse_time_ + kCountDuration)
-      document_->RequestIdleCallback(this, IdleRequestOptions::Create());
+      document->RequestIdleCallback(this, IdleRequestOptions::Create());
   }
 
  private:
@@ -499,7 +502,7 @@ class IdleWebFeatureTask : public IdleTask {
     return false;
   }
 
-  Member<Document> document_;
+  WeakMember<Document> document_;
   base::Time first_traverse_time_;
   uint32_t layout_count_ = 0;
 };
