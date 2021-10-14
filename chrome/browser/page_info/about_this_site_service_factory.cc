@@ -50,3 +50,9 @@ KeyedService* AboutThisSiteServiceFactory::BuildServiceInstanceFor(
       std::make_unique<ChromeAboutThisSiteServiceClient>(
           OptimizationGuideKeyedServiceFactory::GetForProfile(profile)));
 }
+
+bool AboutThisSiteServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  // This service needs to be created at startup in order to register its OptimizationType with
+  // OptimizationGuideDecider.
+  return true;
+}
