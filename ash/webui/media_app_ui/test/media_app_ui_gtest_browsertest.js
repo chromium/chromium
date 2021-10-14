@@ -198,6 +198,10 @@ TEST_F('MediaAppUIGtestBrowserTest', 'RenameMissingFile', () => {
   runMediaAppTest('RenameMissingFile');
 });
 
+TEST_F('MediaAppUIGtestBrowserTest', 'OpenAllowedFileIPC', () => {
+  runMediaAppTest('OpenAllowedFileIPC');
+});
+
 TEST_F('MediaAppUIGtestBrowserTest', 'NavigateIPC', () => {
   runMediaAppTest('NavigateIPC');
 });

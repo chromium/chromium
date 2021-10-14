@@ -49,6 +49,14 @@ function assertLastReceivedFileList() {
 }
 
 /**
+ * @return {!Array<!mediaApp.AbstractFile>}
+ */
+function assertLastReceivedFileArray() {
+  const fileList = assertLastReceivedFileList();
+  return Array.from({length: fileList.length}, (v, k) => fileList.item(k));
+}
+
+/**
  * @return {!mediaApp.AbstractFile}
  */
 function currentFile() {
@@ -108,6 +116,16 @@ const SIMPLE_TEST_QUERIES = {
   getLastFile: async (data, resultData) => {
     Object.assign(resultData, flattenFile(currentFile()));
     return resultData.name;
+  },
+  getAllFiles: async (data, resultData) => {
+    Object.assign(resultData, assertLastReceivedFileArray().map(flattenFile));
+    return `${resultData.length}`;
+  },
+  openFileAtIndex: async (data, resultData) => {
+    const handle = assertLastReceivedFileList().item(data.simpleArgs.index);
+    const domFile = await handle.openFile();
+    handle.updateFile(domFile, domFile.name);
+    return 'opened and updated';
   }
 };
 

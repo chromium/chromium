@@ -100,6 +100,15 @@ mediaApp.AbstractFile.prototype.saveAs;
  * @type {function(!Array<string>): !Promise<!mediaApp.AbstractFile>|undefined}
  */
 mediaApp.AbstractFile.prototype.getExportFile;
+/**
+ * If defined, resolves a placeholder `blob` to a DOM File object using IPC with
+ * the trusted context. Propagates exceptions. Does not modify `this`, and
+ * always performs IPC to handle cases where the previously obtained File is no
+ * longer accessible. E.g. if a file changes on disk (i.e. its mtime changes),
+ * security checks may invalidate an old `File`, requiring it to be "reopened".
+ * @type {undefined|function(): !Promise<!File>}
+ */
+mediaApp.AbstractFile.prototype.openFile;
 
 /**
  * Wraps an HTML FileList object.

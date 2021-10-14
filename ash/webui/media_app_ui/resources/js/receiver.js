@@ -5,7 +5,7 @@
 import './sandboxed_load_time_data.js';
 
 import {assertCast, MessagePipe} from './message_pipe.m.js';
-import {FileContext, LoadFilesMessage, Message, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.m.js';
+import {FileContext, LoadFilesMessage, Message, OpenAllowedFileMessage, OpenAllowedFileResponse, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.m.js';
 import {loadPiex} from './piex_module_loader.js';
 
 /** A pipe through which we can send messages to the parent frame. */
@@ -124,6 +124,22 @@ class ReceivedFile {
             await parentMessagePipe.sendMessage(
                 Message.REQUEST_SAVE_FILE, msg));
     return new ReceivedFile(response.pickedFileContext);
+  }
+
+  /**
+   * @override
+   * @return {!Promise<!File>}
+   */
+  async openFile() {
+    /** @type {!OpenAllowedFileMessage} */
+    const msg = {
+      fileToken: this.token,
+    };
+    const response =
+        /** @type {!OpenAllowedFileResponse} */ (
+            await parentMessagePipe.sendMessage(
+                Message.OPEN_ALLOWED_FILE, msg));
+    return response.file;
   }
 
   /**

@@ -830,6 +830,33 @@ MediaAppUIBrowserTest.RenameMissingFile = async () => {
       testResponse.testQueryResult);
 };
 
+// Tests the IPC behind the AbstractFile.openFile function to open a file from a
+// file handle token previously communicated to the untrusted context.
+MediaAppUIBrowserTest.OpenAllowedFileIPC = async () => {
+  await launchWithFiles(
+      [await createTestImageFile(), await createTestImageFile()]);
+  let testResponse = await sendTestMessage({simple: 'getAllFiles'});
+  let clientFiles =
+      /** @type{!Array<!FileSnapshot>} */ (testResponse.testQueryResultData);
+
+  // Second file should be a placeholder with zero size.
+  const IMAGE_FILE_SIZE = 1605;
+  assertEquals(clientFiles[0].size, IMAGE_FILE_SIZE);
+  assertEquals(clientFiles[1].size, 0);
+
+  testResponse = await sendTestMessage(
+      {simple: 'openFileAtIndex', simpleArgs: {index: 1}});
+  assertEquals(testResponse.testQueryResult, 'opened and updated');
+
+  testResponse = await sendTestMessage({simple: 'getAllFiles'});
+  clientFiles =
+      /** @type{!Array<!FileSnapshot>} */ (testResponse.testQueryResultData);
+
+  // Second file should now be opened and have a valid size.
+  assertEquals(clientFiles[0].size, IMAGE_FILE_SIZE);
+  assertEquals(clientFiles[1].size, IMAGE_FILE_SIZE);
+};
+
 // Tests the IPC behind the loadNext and loadPrev functions on the received file
 // list in the untrusted context.
 MediaAppUIBrowserTest.NavigateIPC = async () => {

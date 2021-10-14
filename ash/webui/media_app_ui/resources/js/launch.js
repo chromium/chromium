@@ -4,7 +4,7 @@
 
 import * as error_reporter from './error_reporter.js';
 import {assertCast, MessagePipe} from './message_pipe.m.js';
-import {DeleteFileMessage, FileContext, LoadFilesMessage, Message, NavigateMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.m.js';
+import {DeleteFileMessage, FileContext, LoadFilesMessage, Message, NavigateMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.m.js';
 import {mediaAppPageHandler} from './mojo_api_bootstrap.js';
 
 const EMPTY_WRITE_ERROR_NAME = 'EmptyWriteError';
@@ -327,6 +327,14 @@ guestMessagePipe.registerHandler(Message.OPEN_FILE, async () => {
   };
   currentFiles.splice(entryIndex + 1, 0, fileDescriptor);
   advance(1);
+});
+
+guestMessagePipe.registerHandler(Message.OPEN_ALLOWED_FILE, async (message) => {
+  const {fileToken} = /** @type {!OpenAllowedFileMessage} */ (message);
+  const handle = fileHandleForToken(fileToken);
+  /** @type {!OpenAllowedFileResponse} */
+  const response = {file: (await getFileFromHandle(handle)).file};
+  return response;
 });
 
 /**

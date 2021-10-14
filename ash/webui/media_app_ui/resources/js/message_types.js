@@ -23,6 +23,7 @@
   RENAME_FILE: 'rename-file',
   REQUEST_SAVE_FILE: 'request-save-file',
   SAVE_AS: 'save-as',
+  OPEN_ALLOWED_FILE: 'open-allowed-file',
 };
 
 /**
@@ -154,3 +155,16 @@
  * @typedef {{newFilename: string}}
  */
 /* #export */ let SaveAsResponse;
+
+/**
+ * Message sent by the unprivileged context to the privileged context requesting
+ * an "allowed" file to be opened.
+ * @typedef {{fileToken: number}}
+ */
+/* #export */ let OpenAllowedFileMessage;
+
+/**
+ * Response message sent by the privileged context to "open" an allowed file.
+ * @typedef {{file: !File}}
+ */
+/* #export */ let OpenAllowedFileResponse;
