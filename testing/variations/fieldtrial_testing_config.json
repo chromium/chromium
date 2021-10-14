@@ -1654,21 +1654,6 @@
             ]
         }
     ],
-    "CanvasOutOfProcessRasterization": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CanvasOopRasterization"
-                    ]
-                }
-            ]
-        }
-    ],
     "CctClientDataHeader": [
         {
             "platforms": [
@@ -2698,13 +2683,26 @@
     "DefaultPassthroughCommandDecoder": [
         {
             "platforms": [
-                "linux",
-                "mac"
+                "linux"
             ],
             "experiments": [
                 {
                     "name": "Enabled_20191004",
                     "enable_features": [
+                        "DefaultPassthroughCommandDecoder"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_with_OOPR_Canvas",
+                    "enable_features": [
+                        "CanvasOopRasterization",
                         "DefaultPassthroughCommandDecoder"
                     ]
                 }
