@@ -181,6 +181,9 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
    * @private
    */
   getDeviceName_() {
+    if (!this.device_) {
+      return '';
+    }
     return getDeviceName(this.device_);
   }
 
@@ -189,6 +192,9 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
    * @private
    */
   shouldShowConnectDisconnectBtn_() {
+    if (!this.device_) {
+      return false;
+    }
     return this.device_.deviceProperties.audioCapability ===
         mojom.AudioOutputCapability.kCapableOfAudioOutput;
   }
@@ -390,7 +396,11 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     // After forgeting a device, the device is removed from paired devices
     // list. Navigating back to paired device list ensures no connect/diconnect
     // operations can be initiated on a device that is not currently paired.
+    // Reset |deviceId_| and |device_|. This is done, to prevent a second call
+    // to |navigateToPreviousRoute()| on |systemProperties| change.
     if (success) {
+      this.deviceId_ = '';
+      this.device_ = null;
       Router.getInstance().navigateToPreviousRoute();
     }
   }
@@ -410,6 +420,13 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
    */
   shouldShowErrorMessage_() {
     return this.pageState_ === PageState.CONNECTION_FAILED;
+  }
+
+  /**
+   * @return {?chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   */
+  getDeviceForTest() {
+    return this.device_;
   }
 }
 

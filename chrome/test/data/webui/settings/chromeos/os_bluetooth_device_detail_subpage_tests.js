@@ -447,6 +447,9 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     await flushAsync();
     bluetoothConfig.completeForget(/*success=*/ true);
     await windowPopstatePromise;
+
+    // Device should be null after navigating backward.
+    assertFalse(!!bluetoothDeviceDetailPage.getDeviceForTest());
   });
 
   test('Landing on page while device is still connecting', async function() {
