@@ -30,7 +30,9 @@
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/media_router/common/issue.h"
 #include "components/media_router/common/media_source.h"
-#include "url/gurl.h"
+#include "url/origin.h"
+
+class GURL;
 
 namespace content {
 struct PresentationRequest;
@@ -246,9 +248,9 @@ class MediaRouterUI
       const MediaSink::Id& sink_id,
       MediaCastMode cast_mode);
 
-  // Returns the default PresentationRequest's frame URL if there is one.
-  // Otherwise returns an empty GURL.
-  GURL GetFrameURL() const;
+  // Returns the default PresentationRequest's frame origin if there is one.
+  // Otherwise returns an opaque origin.
+  url::Origin GetFrameOrigin() const;
 
   // Creates and sends an issue if route creation timed out.
   void SendIssueForRouteTimeout(

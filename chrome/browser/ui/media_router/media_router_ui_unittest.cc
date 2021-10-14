@@ -30,6 +30,8 @@
 #include "components/media_router/common/test/test_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -331,26 +333,55 @@ TEST_F(MediaRouterViewsUITest, SetDialogHeader) {
             model.dialog_header());
       });
   ui_->AddObserver(&observer);
-  // We temporarily remove the observer here because the implementation calls
-  // OnModelUpdated() multiple times when the presentation request gets set.
-  ui_->RemoveObserver(&observer);
 
-  GURL gurl("https://example.com");
-  url::Origin origin = url::Origin::Create(gurl);
-  content::PresentationRequest presentation_request(
-      content::GlobalRenderFrameHostId(), {gurl}, origin);
-  ui_->OnDefaultPresentationChanged(&presentation_request);
-
-  // Now that the presentation request has been set, the dialog header contains
-  // its origin.
+  // The observer is called multiple times when the default PresentationRequest
+  // is changed; the last invocation has the correct header.
+  std::u16string current_header;
   EXPECT_CALL(observer, OnModelUpdated(_))
-      .WillOnce([&](const CastDialogModel& model) {
-        EXPECT_EQ(
-            l10n_util::GetStringFUTF16(IDS_MEDIA_ROUTER_PRESENTATION_CAST_MODE,
-                                       base::UTF8ToUTF16(origin.host())),
-            model.dialog_header());
+      .WillRepeatedly([&](const CastDialogModel& model) {
+        current_header = model.dialog_header();
       });
-  ui_->AddObserver(&observer);
+
+  // First test a presentation started from an https: origin.
+  const GURL presentation_url("https://presentation.com");
+  const auto https_origin =
+      url::Origin::Create(GURL("https://requesting-page.com"));
+  // An https origin is included in the dialog header without the scheme.
+  content::PresentationRequest presentation_request(
+      content::GlobalRenderFrameHostId(), {presentation_url}, https_origin);
+  ui_->OnDefaultPresentationChanged(&presentation_request);
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_MEDIA_ROUTER_PRESENTATION_CAST_MODE,
+                                       base::UTF8ToUTF16(https_origin.host())),
+            current_header);
+
+  // An opaque origin is empty, which causes the dialog to fall back to the tab
+  // mirroring header.
+  presentation_request = content::PresentationRequest(
+      content::GlobalRenderFrameHostId(), {presentation_url}, url::Origin());
+  ui_->OnDefaultPresentationChanged(&presentation_request);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_TAB_MIRROR_CAST_MODE),
+            current_header);
+
+  // An extension origin is replaced by the extension name.
+  const std::string extension_id = "extensionid";
+  const auto extension_origin =
+      url::Origin::Create(GURL("chrome-extension://" + extension_id));
+  auto* registry = extensions::ExtensionRegistry::Get(GetBrowserContext());
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder(
+          "Test Extension", extensions::ExtensionBuilder::Type::EXTENSION)
+          .SetID(extension_id)
+          .Build();
+
+  ASSERT_TRUE(registry->AddEnabled(extension));
+
+  presentation_request = content::PresentationRequest(
+      content::GlobalRenderFrameHostId(), {presentation_url}, extension_origin);
+  ui_->OnDefaultPresentationChanged(&presentation_request);
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_MEDIA_ROUTER_PRESENTATION_CAST_MODE,
+                                       std::u16string(u"Test Extension")),
+            current_header);
+
   ui_->RemoveObserver(&observer);
 }
 
