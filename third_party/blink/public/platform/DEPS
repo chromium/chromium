@@ -33,6 +33,7 @@ include_rules = [
     "+media/base/media_content_type.h",
     "+media/base/media_log.h",
     "+media/base/stream_parser.h",
+    "+media/base/video_frame.h",
     "+media/base/video_frame_metadata.h",
     "+media/base/video_transformation.h",
     "+mojo/public",

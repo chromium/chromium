@@ -551,6 +551,13 @@ const base::Feature kVaapiVp9kSVCHWEncoding{"VaapiVp9kSVCHWEncoding",
 const base::Feature kVideoBlitColorAccuracy{"video-blit-color-accuracy",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Takes a reference on a video frame, keeping it alive during the duration of a
+// video.requestVideoFrameCallback call. Doesn't change anything to the API for
+// now, as this is only used to measure the potential impact of keeping frames
+// alive for longer. See crbug.com/1259784.
+const base::Feature kKeepRvfcFrameAlive{"keep-rvfc-frame-alive",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables support for External Clear Key (ECK) key system for testing on
 // supported platforms. On platforms that do not support ECK, this feature has
 // no effect.

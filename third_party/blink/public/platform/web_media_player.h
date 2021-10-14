@@ -35,6 +35,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/surface_id.h"
+#include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/media/display_type.h"
@@ -53,7 +54,6 @@ class PaintFlags;
 }  // namespace cc
 
 namespace media {
-class VideoFrame;
 class PaintCanvasVideoRenderer;
 }
 
@@ -129,6 +129,7 @@ class WebMediaPlayer {
     int height;
     base::TimeDelta media_time;
     media::VideoFrameMetadata metadata;
+    scoped_refptr<media::VideoFrame> frame;
     base::TimeDelta rendering_interval;
     base::TimeDelta average_frame_duration;
   };

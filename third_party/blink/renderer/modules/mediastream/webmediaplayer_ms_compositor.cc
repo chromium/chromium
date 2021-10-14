@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
@@ -823,6 +824,9 @@ WebMediaPlayerMSCompositor::GetLastPresentedFrameMetadata() {
     frame_metadata->average_frame_duration = last_preferred_render_interval_;
     frame_metadata->rendering_interval = last_render_length_;
   }
+
+  if (base::FeatureList::IsEnabled(media::kKeepRvfcFrameAlive))
+    frame_metadata->frame = last_frame;
 
   frame_metadata->width = last_frame->visible_rect().width();
   frame_metadata->height = last_frame->visible_rect().height();
