@@ -276,7 +276,7 @@ p, h2, h3, h4 {
   <h4>2. TestExpectations</a></h4>
 <pre><a href="#">crbug.com/bug</a> layout/test/path/<a href="#">test.html</a> [ Status ]</pre>
   <p>TestExpectationsshow lines as they'd appear in <a
-    href="https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_expectations.md">TestExpectations</a> file.</p>
+    href="https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md">TestExpectations</a> file.</p>
 
   <p>The interesting part here is [ Status ]. Inside TestExpectations file, [ Status ]
   can have multiple values, representing all expected results. For example:</p>
@@ -551,10 +551,10 @@ class PathParser {
       return "../../../third_party/blink/web_tests";
     } else if (PathParserGlobals.chromium_revision) {
       // Existing crrev list is incorrect:  https://crbug.com/750347
-      let correctedRevision = PathParserGlobals.chromium_revision.replace("refs/heads/master@{#", "").replace("}", "");
+      let correctedRevision = PathParserGlobals.chromium_revision.replace("refs/heads/main@{#", "").replace("}", "");
       return "https://crrev.com/" + correctedRevision + "/third_party/blink/web_tests";
     } else {
-      return "https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/web_tests";
+      return "https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/web_tests";
     }
   }
 } // class PathParser
@@ -596,7 +596,7 @@ const Report = {
 
   printExpectation: (test, path, traversal) => {
     // TestExpectations file format is documented at:
-    // https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_expectations.md
+    // https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md
 
     let pathParser = new PathParser(path);
     // Print directory header if this test's directory is different from the last.
