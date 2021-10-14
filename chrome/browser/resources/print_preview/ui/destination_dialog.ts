@@ -24,9 +24,9 @@ import './destination_list_item.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {beforeNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
 import {DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
@@ -44,8 +44,7 @@ export interface PrintPreviewDestinationDialogElement {
 }
 
 const PrintPreviewDestinationDialogElementBase =
-    mixinBehaviors([ListPropertyUpdateBehavior], PolymerElement) as
-    {new (): PolymerElement & ListPropertyUpdateBehavior};
+    ListPropertyUpdateMixin(PolymerElement);
 
 export class PrintPreviewDestinationDialogElement extends
     PrintPreviewDestinationDialogElementBase {
@@ -156,7 +155,7 @@ export class PrintPreviewDestinationDialogElement extends
     }
 
     this.updateList(
-        'destinations_', destination => destination.key,
+        'destinations_', destination => (destination as Destination).key,
         this.getDestinationList_());
 
     this.loadingDestinations_ =

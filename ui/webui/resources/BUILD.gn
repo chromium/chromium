@@ -201,6 +201,7 @@ ts_library("library") {
     "cr_elements/cr_nav_menu_item_style.ts",
     "cr_elements/find_shortcut_mixin.ts",
     "js/i18n_mixin.ts",
+    "js/list_property_update_mixin.ts",
     "js/web_ui_listener_mixin.ts",
   ]
 

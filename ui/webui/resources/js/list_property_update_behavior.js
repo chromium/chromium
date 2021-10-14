@@ -15,6 +15,9 @@
  * are calculated using |Polymer.ArraySplice.calculateSplices|. All the edits
  * are then applied to the original list. Once completed, a single notification
  * containing information about all the edits is sent to the polyer object.
+ *
+ * NOTE: This file is deprecated in favor of list_property_update_mixin.ts.
+ * Don't use it in new code.
  */
 
 /** @polymerBehavior */

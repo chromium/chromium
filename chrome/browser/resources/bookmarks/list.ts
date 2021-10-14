@@ -13,7 +13,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome://resources/js/list_property_update_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
@@ -29,10 +29,9 @@ import {BookmarksPageState, OpenCommandMenuDetail} from './types.js';
 import {canReorderChildren, getDisplayedList} from './util.js';
 
 const BookmarksListElementBase =
-    mixinBehaviors([StoreClient, ListPropertyUpdateBehavior], PolymerElement) as
-    {
+    mixinBehaviors([StoreClient], ListPropertyUpdateMixin(PolymerElement)) as {
       new (): PolymerElement & BookmarksStoreClientInterface &
-      StoreObserver<BookmarksPageState>& ListPropertyUpdateBehavior
+      StoreObserver<BookmarksPageState>& ListPropertyUpdateMixinInterface
     };
 
 export interface BookmarksListElement {

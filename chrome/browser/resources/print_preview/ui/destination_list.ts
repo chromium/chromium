@@ -10,9 +10,9 @@ import './print_preview_vars_css.js';
 import '../strings.m.js';
 import './throbber_css.js';
 
-import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
 
@@ -25,8 +25,7 @@ export interface PrintPreviewDestinationListElement {
 }
 
 const PrintPreviewDestinationListElementBase =
-    mixinBehaviors([ListPropertyUpdateBehavior], PolymerElement) as
-    {new (): ListPropertyUpdateBehavior & PolymerElement};
+    ListPropertyUpdateMixin(PolymerElement);
 
 export class PrintPreviewDestinationListElement extends
     PrintPreviewDestinationListElementBase {
@@ -151,8 +150,8 @@ export class PrintPreviewDestinationListElement extends
     // Update the height before updating the list.
     this.updateHeight_(matchingDestinations.length);
     this.updateList(
-        'matchingDestinations_', destination => destination.key,
-        matchingDestinations);
+        'matchingDestinations_',
+        destination => (destination as Destination).key, matchingDestinations);
 
     this.forceIronResize_();
   }

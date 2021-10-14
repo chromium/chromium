@@ -34,3 +34,15 @@ var WebUIResourcesListPropertyUpdateBehaviorTest =
 TEST_F('WebUIResourcesListPropertyUpdateBehaviorTest', 'All', function() {
   mocha.run();
 });
+
+var WebUIResourcesListPropertyUpdateMixinTest =
+    class extends WebUIResourcesBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=resources/list_property_update_mixin_tests.js';
+  }
+};
+
+TEST_F('WebUIResourcesListPropertyUpdateMixinTest', 'All', function() {
+  mocha.run();
+});

@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT, getBookmarkFromElement, isBookmarkFolderElement} from './bookmark_folder.js';
 import {BookmarksApiProxy} from './bookmarks_api_proxy.js';
@@ -12,11 +11,7 @@ import {BookmarksDragManager} from './bookmarks_drag_manager.js';
 // Key for localStorage object that refers to all the open folders.
 export const LOCAL_STORAGE_OPEN_FOLDERS_KEY = 'openFolders';
 
-const BookmarksListElementBase =
-    mixinBehaviors([ListPropertyUpdateBehavior], PolymerElement) as
-    {new (): PolymerElement};
-
-export class BookmarksListElement extends BookmarksListElementBase {
+export class BookmarksListElement extends PolymerElement {
   static get is() {
     return 'bookmarks-list';
   }
