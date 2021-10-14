@@ -8991,21 +8991,6 @@
             ]
         }
     ],
-    "WebnotesStylize": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebNotesStylize"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebviewAccelerateSmallCanvases": [
         {
             "platforms": [
