@@ -38,6 +38,9 @@ enum class InstallErrors {
 
   // Correct permissions could not be validated for the install path.
   kCouldNotConfirmAppPermissions = -8,
+
+  // An install executable was signaled or timed out.
+  kExecutableWaitForExitFailed = -9,
 };
 
 // Choose which type of archive to install from. Possible types of archives are
@@ -45,6 +48,7 @@ enum class InstallErrors {
 // installation method.
 int InstallFromArchive(const base::FilePath& file_path,
                        const base::FilePath& existence_checker_path,
+                       const std::string& ap,
                        const std::string& arguments);
 
 }  // namespace updater

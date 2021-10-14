@@ -21,7 +21,7 @@ Installer::Result Installer::RunApplicationInstaller(
   // InstallFromArchive() returns the exit code of the script. 0 is success and
   // anything else should be an error.
   const int exit_code =
-      InstallFromArchive(app_installer, checker_path_,
+      InstallFromArchive(app_installer, checker_path_, ap_,
                          base::StrCat({pv_.GetString(), " ", arguments}));
 
   return exit_code == 0 ? Result()

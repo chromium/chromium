@@ -89,24 +89,9 @@ bool CopyKeystoneBundle(UpdaterScope scope) {
   return true;
 }
 
-absl::optional<base::FilePath> GetKsadminPath(UpdaterScope scope) {
-  const absl::optional<base::FilePath> keystone_folder_path =
-      GetKeystoneFolderPath(scope);
-  if (!keystone_folder_path || !base::PathExists(*keystone_folder_path))
-    return absl::nullopt;
-  base::FilePath ksadmin_path =
-      keystone_folder_path->Append(FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle"))
-          .Append(FILE_PATH_LITERAL("Contents"))
-          .Append(FILE_PATH_LITERAL("Helpers"))
-          .Append(FILE_PATH_LITERAL("ksadmin"));
-  if (!base::PathExists(ksadmin_path))
-    return absl::nullopt;
-  return absl::make_optional(ksadmin_path);
-}
-
 // Returns the version of ksadmin.
-absl::optional<base::Version> GetKsadminVersion(UpdaterScope scope) {
-  absl::optional<base::FilePath> ksadmin_path = GetKsadminPath(scope);
+absl::optional<base::Version> GetKSAdminVersion(UpdaterScope scope) {
+  absl::optional<base::FilePath> ksadmin_path = GetKSAdminPath(scope);
   if (!ksadmin_path)
     return absl::nullopt;
   base::CommandLine ksadmin_version(*ksadmin_path);
@@ -132,7 +117,7 @@ void MigrateKeystoneTickets(
     UpdaterScope scope,
     base::RepeatingCallback<void(const RegistrationRequest&)>
         register_callback) {
-  absl::optional<base::Version> ksadmin_version = GetKsadminVersion(scope);
+  absl::optional<base::Version> ksadmin_version = GetKSAdminVersion(scope);
   if (!ksadmin_version ||
       *ksadmin_version > base::Version(kMaxKeystoneVersion)) {
     // TODO(crbug.com/1250524): If ksadmin_version > max, we are probably
@@ -146,7 +131,7 @@ void MigrateKeystoneTickets(
     return;
   }
 
-  absl::optional<base::FilePath> ksadmin_path = GetKsadminPath(scope);
+  absl::optional<base::FilePath> ksadmin_path = GetKSAdminPath(scope);
   if (!ksadmin_path)
     return;
   base::CommandLine ksadmin_tickets(*ksadmin_path);

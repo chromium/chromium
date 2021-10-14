@@ -435,11 +435,13 @@ if (is_win || is_mac) {
         "//chrome/updater/app/server/mac/service_protocol.mm",
         "//chrome/updater/app/server/mac/update_service_wrappers.h",
         "//chrome/updater/app/server/mac/update_service_wrappers.mm",
+        "//chrome/updater/constants_prod.cc",
         "//chrome/updater/lib_util_mac.mm",
         "//chrome/updater/mac/mac_util.h",
         "//chrome/updater/mac/mac_util.mm",
         "//chrome/updater/mac/xpc_service_names.h",
         "//chrome/updater/mac/xpc_service_names.mm",
+        "//chrome/updater/util_mac.mm",
       ]
 
       deps += [ "//chrome/common/mac:launchd" ]
@@ -579,6 +581,20 @@ if (is_win || is_mac) {
       data = [
         "//chrome/test/data/updater/Keystone.ticketstore",
         "//chrome/test/data/updater/updater_setup_test_dmg.dmg",
+        "//chrome/test/data/updater/setup_test_preinstallfailure/.preinstall",
+        "//chrome/test/data/updater/setup_test_preinstallfailure/.install",
+        "//chrome/test/data/updater/setup_test_preinstallfailure/.postinstall",
+        "//chrome/test/data/updater/setup_test_preinstallfailure/marker.app",
+        "//chrome/test/data/updater/setup_test_postinstallfailure/.preinstall",
+        "//chrome/test/data/updater/setup_test_postinstallfailure/.install",
+        "//chrome/test/data/updater/setup_test_postinstallfailure/.postinstall",
+        "//chrome/test/data/updater/setup_test_postinstallfailure/marker.app",
+        "//chrome/test/data/updater/setup_test_installfailure/.preinstall",
+        "//chrome/test/data/updater/setup_test_installfailure/.install",
+        "//chrome/test/data/updater/setup_test_installfailure/.postinstall",
+        "//chrome/test/data/updater/setup_test_installfailure/marker.app",
+        "//chrome/test/data/updater/setup_test_envcheck/.install",
+        "//chrome/test/data/updater/setup_test_envcheck/marker.app",
         "//chrome/test/data/updater/updater_qualification_app_dmg.crx",
       ]
 

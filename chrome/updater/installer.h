@@ -114,6 +114,7 @@ class Installer final : public update_client::CrxInstaller {
 
   // These members are not updated when the installer succeeds.
   base::Version pv_;
+  std::string ap_;
   base::FilePath checker_path_;
   std::string fingerprint_;
 };

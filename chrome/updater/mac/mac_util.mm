@@ -10,6 +10,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -65,6 +66,21 @@ absl::optional<base::FilePath> GetApplicationSupportDirectory(
 
   VLOG(1) << "Could not get applications support path";
   return absl::nullopt;
+}
+
+absl::optional<base::FilePath> GetKSAdminPath(UpdaterScope scope) {
+  const absl::optional<base::FilePath> keystone_folder_path =
+      GetKeystoneFolderPath(scope);
+  if (!keystone_folder_path || !base::PathExists(*keystone_folder_path))
+    return absl::nullopt;
+  base::FilePath ksadmin_path =
+      keystone_folder_path->Append(FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle"))
+          .Append(FILE_PATH_LITERAL("Contents"))
+          .Append(FILE_PATH_LITERAL("Helpers"))
+          .Append(FILE_PATH_LITERAL("ksadmin"));
+  if (!base::PathExists(ksadmin_path))
+    return absl::nullopt;
+  return absl::make_optional(ksadmin_path);
 }
 
 bool PathOwnedByUser(const base::FilePath& path) {
