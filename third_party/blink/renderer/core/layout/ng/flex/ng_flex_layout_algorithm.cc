@@ -207,33 +207,18 @@ bool NGFlexLayoutAlgorithm::DoesItemStretch(const NGBlockNode& child) const {
          ItemPosition::kStretch;
 }
 
-bool NGFlexLayoutAlgorithm::IsItemFlexBasisDefinite(
-    const NGBlockNode& child) const {
-  const Length& flex_basis = child.Style().FlexBasis();
+bool NGFlexLayoutAlgorithm::IsUsedFlexBasisDefinite(
+    const NGBlockNode& child,
+    Length* out_flex_basis = nullptr) const {
+  const Length& flex_basis = GetUsedFlexBasis(child);
+  if (out_flex_basis)
+    *out_flex_basis = flex_basis;
   if (flex_basis.IsAuto() || flex_basis.IsContent())
     return false;
   const NGConstraintSpace& space = BuildSpaceForFlexBasis(child);
   if (MainAxisIsInlineAxis(child))
     return !InlineLengthUnresolvable(space, flex_basis);
   return !BlockLengthUnresolvable(space, flex_basis);
-}
-
-bool NGFlexLayoutAlgorithm::IsItemMainSizeDefinite(
-    const NGBlockNode& child) const {
-  DCHECK(is_column_)
-      << "This method doesn't work with row flexboxes because we assume "
-         "main size is block size when we call BlockLengthUnresolvable.";
-  // Inline sizes are always definite.
-  // TODO(dgrogan): The relevant tests, the last two cases in
-  // css/css-flexbox/percentage-heights-003.html passed even without this, so it
-  // may be untested or unnecessary.
-  if (MainAxisIsInlineAxis(child))
-    return true;
-  // We need a constraint space for the child to determine resolvability and the
-  // space for flex-basis is sufficient, even though it has some unnecessary
-  // stuff (ShrinkToFit and fixed cross sizes).
-  return !BlockLengthUnresolvable(BuildSpaceForFlexBasis(child),
-                                  child.Style().LogicalHeight());
 }
 
 bool NGFlexLayoutAlgorithm::IsItemCrossAxisLengthDefinite(
@@ -320,6 +305,26 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForFlexBasis(
   return space_builder.ToConstraintSpace();
 }
 
+// This can return an indefinite Length.
+Length NGFlexLayoutAlgorithm::GetUsedFlexBasis(const NGBlockNode& child) const {
+  const ComputedStyle& child_style = child.Style();
+  const Length& specified_length_in_main_axis =
+      is_horizontal_flow_ ? child_style.Width() : child_style.Height();
+  const Length& specified_flex_basis = child_style.FlexBasis();
+
+  if (specified_flex_basis.IsAuto()) {
+    if (specified_length_in_main_axis.IsAuto() &&
+        Style().IsDeprecatedWebkitBox() &&
+        (Style().BoxOrient() == EBoxOrient::kHorizontal ||
+         Style().BoxAlign() != EBoxAlignment::kStretch)) {
+      // 'auto' for items within a -webkit-box resolve as 'fit-content'.
+      return Length::FitContent();
+    }
+    return specified_length_in_main_axis;
+  }
+  return specified_flex_basis;
+}
+
 NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForLayout(
     const FlexItem& flex_item) const {
   const ComputedStyle& child_style = flex_item.ng_input_node_.Style();
@@ -342,11 +347,8 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForLayout(
     // If the flex container has a definite main size, a flex item's
     // post-flexing main size is treated as definite, even though it can
     // rely on the indefinite sizes of any flex items in the same line.
-    // TODO(crbug.com/1255340): This logic, and the similar below call to
-    // IsColumnContainerMainSizeDefinite need some refinement.
     if (!IsColumnContainerMainSizeDefinite() &&
-        !IsItemFlexBasisDefinite(flex_item.ng_input_node_) &&
-        !IsItemMainSizeDefinite(flex_item.ng_input_node_)) {
+        !IsUsedFlexBasisDefinite(flex_item.ng_input_node_)) {
       space_builder.SetIsInitialBlockSizeIndefinite(true);
     }
   } else {
@@ -521,34 +523,11 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
           child_style.BoxSizingForAspectRatio(), cross_size);
     };
 
-    // The logic that calculates flex_base_border_box assumes that the used
-    // value of the flex-basis property is either definite or 'content'.
+    Length flex_basis_length;
     LayoutUnit flex_base_border_box;
-    const Length& specified_length_in_main_axis =
-        is_horizontal_flow_ ? child_style.Width() : child_style.Height();
-    const Length& flex_basis = child_style.FlexBasis();
-    if (is_column_ && flex_basis.IsPercentOrCalc())
+    if (is_column_ && child_style.FlexBasis().IsPercentOrCalc())
       has_column_percent_flex_basis_ = true;
-
-    Length length_to_resolve = Length::Auto();
-    if (flex_basis.IsAuto()) {
-      if (!is_column_ || IsItemMainSizeDefinite(child))
-        length_to_resolve = specified_length_in_main_axis;
-
-      // 'auto' for items within a -webkit-box resolve as 'fit-content'.
-      if (length_to_resolve.IsAuto() && Style().IsDeprecatedWebkitBox() &&
-          (Style().BoxOrient() == EBoxOrient::kHorizontal ||
-           Style().BoxAlign() != EBoxAlignment::kStretch))
-        length_to_resolve = Length::FitContent();
-    } else if (!flex_basis.IsContent() && IsItemFlexBasisDefinite(child)) {
-      length_to_resolve = flex_basis;
-    }
-    DCHECK(!length_to_resolve.IsContent());
-    DCHECK(!flex_basis.IsContent() || length_to_resolve.IsAuto())
-        << "The code below expects flex-basis:content to be translated to "
-           "length_to_resolve.IsAuto()";
-
-    if (length_to_resolve.IsAuto()) {
+    if (!IsUsedFlexBasisDefinite(child, &flex_basis_length)) {
       // This block means that the used flex-basis is 'content'. In here we
       // implement parts B,C,D,E of 9.2.3
       // https://drafts.csswg.org/css-flexbox/#algo-main-item
@@ -569,17 +548,19 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
         flex_base_border_box = IntrinsicBlockSizeFunc();
       }
     } else {
+      DCHECK(!flex_basis_length.IsAuto());
+      DCHECK(!flex_basis_length.IsContent());
       // Part A of 9.2.3 https://drafts.csswg.org/css-flexbox/#algo-main-item
       if (MainAxisIsInlineAxis(child)) {
         flex_base_border_box = ResolveMainInlineLength(
             flex_basis_space, child_style, border_padding_in_child_writing_mode,
-            MinMaxSizesFunc, length_to_resolve);
+            MinMaxSizesFunc, flex_basis_length);
       } else {
         // Flex container's main axis is in child's block direction. Child's
         // flex basis is in child's block direction.
         flex_base_border_box = ResolveMainBlockLength(
             flex_basis_space, child_style, border_padding_in_child_writing_mode,
-            length_to_resolve, IntrinsicBlockSizeFunc);
+            flex_basis_length, IntrinsicBlockSizeFunc);
         if (const NGTableNode* table_child = DynamicTo<NGTableNode>(&child)) {
           // (1) A table interprets forced block size as the height of its
           // captions + rows.
@@ -629,13 +610,15 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
       }
 
       LayoutUnit specified_size_suggestion = LayoutUnit::Max();
+      const Length& specified_length_in_main_axis =
+          is_horizontal_flow_ ? child_style.Width() : child_style.Height();
       // If the item’s computed main size property is definite, then the
       // specified size suggestion is that size.
       if (MainAxisIsInlineAxis(child)) {
         if (!specified_length_in_main_axis.IsAuto()) {
-          // TODO(dgrogan): Optimization opportunity: we may have already
-          // resolved specified_length_in_main_axis in the flex basis
-          // calculation. Reuse that if possible.
+          // Note: we may have already resolved specified_length_in_main_axis
+          // when calculating flex basis. Reusing that in the current code
+          // structure is a lot of work, so just recalculate here.
           specified_size_suggestion = ResolveMainInlineLength(
               flex_basis_space, child_style,
               border_padding_in_child_writing_mode, MinMaxSizesFunc,
@@ -918,8 +901,7 @@ void NGFlexLayoutAlgorithm::ApplyStretchAlignmentToChild(FlexItem& flex_item) {
   if (is_column_) {
     available_size.Transpose();
     if (!IsColumnContainerMainSizeDefinite() &&
-        !IsItemFlexBasisDefinite(flex_item.ng_input_node_) &&
-        !IsItemMainSizeDefinite(flex_item.ng_input_node_)) {
+        !IsUsedFlexBasisDefinite(flex_item.ng_input_node_)) {
       space_builder.SetIsInitialBlockSizeIndefinite(true);
     }
   }
