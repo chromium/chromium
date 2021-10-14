@@ -732,12 +732,8 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   [ChromeEarlGreyAppInterface clearSyncServerData];
 }
 
-- (void)revokeSyncConsent {
-  [ChromeEarlGreyAppInterface revokeSyncConsent];
-}
-
-- (void)clearSyncFirstSetupComplete {
-  [ChromeEarlGreyAppInterface clearSyncFirstSetupComplete];
+- (void)signInWithoutSyncWithIdentity:(FakeChromeIdentity*)identity {
+  [ChromeEarlGreyAppInterface signInWithoutSyncWithIdentity:identity];
 }
 
 - (void)startSync {

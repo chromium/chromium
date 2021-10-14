@@ -48,6 +48,7 @@
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/app/window_test_util.h"
 #import "ios/chrome/test/earl_grey/accessibility_util.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/hardware_keyboard_util.h"
 #import "ios/testing/nserror_util.h"
 #import "ios/testing/open_url_context.h"
@@ -789,13 +790,8 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
       base::SysNSStringToUTF8(GUID));
 }
 
-+ (void)revokeSyncConsent {
-  chrome_test_util::RevokeSyncConsent();
-}
-
-+ (void)clearSyncFirstSetupComplete {
-  PrefService* prefs = chrome_test_util::GetOriginalBrowserState()->GetPrefs();
-  prefs->ClearPref(syncer::prefs::kSyncFirstSetupComplete);
++ (void)signInWithoutSyncWithIdentity:(FakeChromeIdentity*)identity {
+  chrome_test_util::SignInWithoutSync(identity);
 }
 
 + (void)clearSyncServerData {

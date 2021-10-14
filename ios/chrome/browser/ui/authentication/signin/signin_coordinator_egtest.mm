@@ -980,7 +980,6 @@ void ExpectSyncConsentHistogram(
                                           fakeIdentity2.userEmail)]
       performAction:grey_tap()];
   [SigninEarlGreyUI tapSigninConfirmationDialog];
-  CloseImportDataDialog(SettingsImportDataKeepSeparateButton());
 
   // Check fakeIdentity2 is signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];

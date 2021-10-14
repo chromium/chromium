@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/signin/gaia_auth_fetcher_ios.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -125,10 +126,19 @@ void ResetUserApprovedAccountListManager() {
   prefs->ClearPref(prefs::kSigninLastAccounts);
 }
 
-void RevokeSyncConsent() {
-  ChromeBrowserState* browser_state = GetOriginalBrowserState();
-  PrefService* prefs = browser_state->GetPrefs();
-  prefs->SetBoolean(prefs::kGoogleServicesConsentedToSync, false);
+void SignInWithoutSync(ChromeIdentity* identity) {
+  Browser* browser = GetMainBrowser();
+  UIViewController* viewController = GetActiveViewController();
+  __block AuthenticationFlow* authenticationFlow =
+      [[AuthenticationFlow alloc] initWithBrowser:browser
+                                         identity:identity
+                                  shouldClearData:SHOULD_CLEAR_DATA_CLEAR_DATA
+                                 postSignInAction:POST_SIGNIN_ACTION_NONE
+                         presentingViewController:viewController];
+  authenticationFlow.dispatcher = (id<BrowsingDataCommands>)GetMainController();
+  [authenticationFlow startSignInWithCompletion:^(BOOL success) {
+    authenticationFlow = nil;
+  }];
 }
 
 }  // namespace chrome_test_util

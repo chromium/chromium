@@ -67,6 +67,19 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
 + (void)signinWithFakeIdentity:(FakeChromeIdentity*)fakeIdentity
                     enableSync:(BOOL)enableSync {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  if (!enableSync) {
+    [ChromeEarlGrey signInWithoutSyncWithIdentity:fakeIdentity];
+    ConditionBlock condition = ^bool {
+      return [[SigninEarlGreyAppInterface primaryAccountGaiaID]
+          isEqual:fakeIdentity.gaiaID];
+    };
+    BOOL isSigned = base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForActionTimeout, condition);
+    GREYAssert(
+        isSigned, @"Signed in failed. Expected: %@, Currently signed: %@",
+        fakeIdentity.gaiaID, [SigninEarlGreyAppInterface primaryAccountGaiaID]);
+    return;
+  }
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::PrimarySignInButton()];
@@ -85,13 +98,6 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
   // Sync utilities require sync to be initialized in order to perform
   // operations on the Sync server.
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:10.0];
-
-  if (!enableSync) {
-    [ChromeEarlGrey stopSync];
-    [ChromeEarlGrey revokeSyncConsent];
-    // Ensure that Sync preferences do not take into account the first setup.
-    [ChromeEarlGrey clearSyncFirstSetupComplete];
-  }
 }
 
 + (void)signOutWithConfirmationChoice:(SignOutConfirmationChoice)confirmation {
