@@ -291,6 +291,7 @@ TEST_F(UserSigninMediatorTest, AuthenticateWithIdentitySuccess) {
 
   [mediator_ authenticateWithIdentity:identity_
                    authenticationFlow:authentication_flow_];
+  base::RunLoop().RunUntilIdle();
   ExpectConsent(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON);
 }
 
@@ -312,6 +313,7 @@ TEST_F(UserSigninMediatorTest, AuthenticateWithSettingsLinkTapped) {
 
   [mediator_ authenticateWithIdentity:identity_
                    authenticationFlow:authentication_flow_];
+  base::RunLoop().RunUntilIdle();
 }
 
 // Tests authentication failure for a given identity.
@@ -326,6 +328,7 @@ TEST_F(UserSigninMediatorTest, AuthenticateWithIdentityError) {
 
   [mediator_ authenticateWithIdentity:identity_
                    authenticationFlow:authentication_flow_];
+  base::RunLoop().RunUntilIdle();
   ExpectNoConsent();
 }
 
@@ -355,6 +358,7 @@ TEST_F(UserSigninMediatorTest, CancelWithAuthenticationInProgress) {
   [mediator_ authenticateWithIdentity:identity_
                    authenticationFlow:authentication_flow_];
   [mediator_ cancelSignin];
+  base::RunLoop().RunUntilIdle();
   ExpectNoConsent();
 }
 
@@ -363,6 +367,7 @@ TEST_F(UserSigninMediatorTest, CancelWithAuthenticationInProgress) {
 TEST_F(UserSigninMediatorTest, CancelAndDismissAuthenticationNotInProgress) {
   OCMExpect([mediator_delegate_mock_ signinStateOnStart]);
   [mediator_ cancelAndDismissAuthenticationFlowAnimated:NO];
+  base::RunLoop().RunUntilIdle();
   ExpectNoConsent();
 }
 
@@ -382,6 +387,7 @@ TEST_F(UserSigninMediatorTest,
   [mediator_ authenticateWithIdentity:identity_
                    authenticationFlow:authentication_flow_];
   [mediator_ cancelAndDismissAuthenticationFlowAnimated:YES];
+  base::RunLoop().RunUntilIdle();
   ExpectNoConsent();
 }
 
@@ -401,5 +407,6 @@ TEST_F(UserSigninMediatorTest,
   [mediator_ authenticateWithIdentity:identity_
                    authenticationFlow:authentication_flow_];
   [mediator_ cancelAndDismissAuthenticationFlowAnimated:NO];
+  base::RunLoop().RunUntilIdle();
   ExpectNoConsent();
 }

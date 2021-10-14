@@ -369,9 +369,15 @@ enum AuthenticationState {
       signin_metrics::RecordSigninAccountType(signin::ConsentLevel::kSync,
                                               isManagedAccount);
   }
-  if (_signInCompletion)
-    _signInCompletion(success);
-  _signInCompletion = nil;
+  if (_signInCompletion) {
+    // Make sure the completion callback is always called after
+    // -[AuthenticationFlow startSignInWithCompletion:] returns.
+    CompletionCallback signInCompletion = _signInCompletion;
+    _signInCompletion = nil;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      signInCompletion(success);
+    });
+  }
   [self continueSignin];
 }
 

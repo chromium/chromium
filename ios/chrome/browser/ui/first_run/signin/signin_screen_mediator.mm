@@ -75,20 +75,14 @@
   [self.consumer setUIEnabled:NO];
   __weak __typeof(self) weakSelf = self;
   [authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    // There is a bug in -startSignInWithCompletion: where the
-    // completion block may be invoked synchronously. To ensure
-    // that the completion block is always invoked asynchronously
-    // use a dispatch_async. Remove once crbug.com/1246480 is fixed.
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [weakSelf.consumer setUIEnabled:YES];
-      if (!success)
-        return;
-      [weakSelf.logger
-          logSigninCompletedWithResult:SigninCoordinatorResultSuccess
-                          addedAccount:weakSelf.addedAccount
-                 advancedSettingsShown:NO];
+    [weakSelf.consumer setUIEnabled:YES];
+    if (!success)
+      return;
+    [weakSelf.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
+                                     addedAccount:weakSelf.addedAccount
+                            advancedSettingsShown:NO];
+    if (completion)
       completion();
-    });
   }];
 }
 
