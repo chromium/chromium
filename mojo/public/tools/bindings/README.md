@@ -448,7 +448,11 @@ interesting attributes supported today.
   matching `value` in the list of `enabled_features`, the definition will be
   disabled. This is useful for mojom definitions that only make sense on one
   platform. Note that the `EnableIf` attribute can only be set once per
-  definition and cannot be set at the same time as `EnableIfNot`.
+  definition and cannot be set at the same time as `EnableIfNot`. Also be aware
+  that only one condition can be tested, `EnableIf=value,xyz` introduces a new
+  `xyz` attribute. `xyz` is not part of the `EnableIf` condition that depends
+  only on the feature `value`. Complex conditions can be introduced via
+  enabled_features in `build.gn` files.
 
 * **`[EnableIfNot=value]`**:
   The `EnableIfNot` attribute is used to conditionally enable definitions when

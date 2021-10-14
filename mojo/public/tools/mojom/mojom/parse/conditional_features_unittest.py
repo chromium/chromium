@@ -62,19 +62,19 @@ class ConditionalFeaturesTest(unittest.TestCase):
       const int kMyConst1 = 1;
       [EnableIfNot=orange]
       const double kMyConst2 = 2;
-      [EnableIf=blue,orange]
+      [EnableIf=blue]
       const int kMyConst3 = 3;
-      [EnableIfNot=blue,orange]
+      [EnableIfNot=blue]
       const int kMyConst4 = 4;
-      [EnableIfNot=purple,orange]
+      [EnableIfNot=purple]
       const int kMyConst5 = 5;
     """
     expected_source = """
       [EnableIfNot=orange]
       const double kMyConst2 = 2;
-      [EnableIf=blue,orange]
+      [EnableIf=blue]
       const int kMyConst3 = 3;
-      [EnableIfNot=purple,orange]
+      [EnableIfNot=purple]
       const int kMyConst5 = 5;
     """
     self.parseAndAssertEqual(const_source, expected_source)
@@ -84,15 +84,15 @@ class ConditionalFeaturesTest(unittest.TestCase):
     const_source = """
       [EnableIfNot=blue]
       const int kMyConst1 = 1;
-      [EnableIfNot=orange,blue]
+      [EnableIfNot=orange]
       const double kMyConst2 = 2;
-      [EnableIfNot=orange,purple]
+      [EnableIfNot=orange]
       const int kMyConst3 = 3;
     """
     expected_source = """
-      [EnableIfNot=orange,blue]
+      [EnableIfNot=orange]
       const double kMyConst2 = 2;
-      [EnableIfNot=orange,purple]
+      [EnableIfNot=orange]
       const int kMyConst3 = 3;
     """
     self.parseAndAssertEqual(const_source, expected_source)
