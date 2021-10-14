@@ -980,7 +980,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.WebPlatformV2.{Action}.TimeToActivity"
-    units="ms" expires_after="M96">
+    units="ms" expires_after="M102">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -995,7 +995,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.WebPlatformV2.{Action}.TimeToClose" units="ms"
-    expires_after="M96">
+    expires_after="M102">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
