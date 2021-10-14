@@ -64,6 +64,12 @@ void ExtensionHostTestHelper::OnExtensionHostDestroyed(
   EventSeen(host, HostEvent::kDestroyed);
 }
 
+void ExtensionHostTestHelper::OnExtensionHostRenderProcessGone(
+    content::BrowserContext* browser_context,
+    ExtensionHost* host) {
+  EventSeen(host, HostEvent::kRenderProcessGone);
+}
+
 ExtensionHost* ExtensionHostTestHelper::WaitFor(HostEvent event) {
   DCHECK(!waiting_for_);
 

@@ -26,6 +26,7 @@
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/process_manager.h"
@@ -78,9 +79,10 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
         GetBackgroundHostForExtension(extension_id);
     ASSERT_TRUE(extension_host);
 
+    extensions::ExtensionHostTestHelper host_helper(profile(), extension_id);
     extension_host->render_process_host()->Shutdown(
         content::RESULT_CODE_KILLED);
-    ASSERT_TRUE(WaitForExtensionCrash(extension_id));
+    host_helper.WaitForRenderProcessGone();
     ASSERT_FALSE(GetProcessManager()->
                  GetBackgroundHostForExtension(extension_id));
 

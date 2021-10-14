@@ -67,6 +67,9 @@ class ExtensionHostTestHelper : public ExtensionHostRegistry::Observer {
   // NOTE: No return because the ExtensionHost is *always* (obviously)
   // destroyed by the time this returns.
   void WaitForHostDestroyed() { WaitFor(HostEvent::kDestroyed); }
+  // Technically, the host can outlive the render process, but it's unlikely to
+  // be for long. Similar to above, avoid returning the host object.
+  void WaitForRenderProcessGone() { WaitFor(HostEvent::kRenderProcessGone); }
 
  private:
   // The different types of events this class can wait for.
@@ -75,6 +78,7 @@ class ExtensionHostTestHelper : public ExtensionHostRegistry::Observer {
     kDocumentElementAvailable,
     kCompletedFirstLoad,
     kDestroyed,
+    kRenderProcessGone,
   };
 
   // ExtensionHostRegistry::Observer:
@@ -89,6 +93,9 @@ class ExtensionHostTestHelper : public ExtensionHostRegistry::Observer {
       ExtensionHost* host) override;
   void OnExtensionHostDestroyed(content::BrowserContext* browser_context,
                                 ExtensionHost* host) override;
+  void OnExtensionHostRenderProcessGone(
+      content::BrowserContext* browser_context,
+      ExtensionHost* host) override;
 
   // Waits for the given `event` to happen. This may return immediately if the
   // event was already observed. Returns the ExtensionHost corresponding to the

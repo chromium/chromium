@@ -57,6 +57,7 @@
 #include "extensions/browser/content_verifier/test_utils.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -1008,9 +1009,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
   {
     BackgroundContentsService::
         SetRestartDelayForForceInstalledAppsAndExtensionsForTesting(0);
-    content::WindowedNotificationObserver extension_crashed_observer(
-        extensions::NOTIFICATION_EXTENSION_PROCESS_TERMINATED,
-        content::NotificationService::AllSources());
+    extensions::ExtensionHostTestHelper extension_crashed_observer(
+        browser()->profile(), kGoodCrxId);
     extensions::TestExtensionRegistryObserver extension_loaded_observer(
         extension_registry(), kGoodCrxId);
     extensions::ExtensionHost* extension_host =
@@ -1019,7 +1019,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
     content::RenderProcessHost* process = extension_host->render_process_host();
     content::ScopedAllowRendererCrashes allow_renderer_crashes(process);
     process->Shutdown(content::RESULT_CODE_KILLED);
-    extension_crashed_observer.Wait();
+    extension_crashed_observer.WaitForRenderProcessGone();
     extension_loaded_observer.WaitForExtensionLoaded();
   }
 }
