@@ -40,8 +40,6 @@
 #endif
 
 namespace {
-// Used to disable os hooks globally when OsIntegrationManager::SuppressOsHooks
-// can't be easily used.
 bool g_suppress_os_hooks_for_testing_ = false;
 }  // namespace
 
