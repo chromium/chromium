@@ -5,8 +5,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 
 #import "base/mac/foundation_util.h"
-#import "base/metrics/histogram_functions.h"
-#import "base/metrics/histogram_macros.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/account_consistency_method.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -81,11 +79,6 @@
       _identityManagerObserverBridge;
 }
 
-// Returns the number of times the web sign-in has been displayed.
-+ (int)displayCountWithPrefService:(PrefService*)prefService {
-  return prefService->GetInteger(prefs::kSigninBottomSheetShownCount);
-}
-
 #pragma mark - SigninCoordinator
 
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
@@ -139,11 +132,6 @@
                                       completion:nil];
   RecordConsistencyPromoUserAction(
       signin_metrics::AccountConsistencyPromoAction::SHOWN);
-  PrefService* prefService = browserState->GetPrefs();
-  int displayCount = [self.class displayCountWithPrefService:prefService] + 1;
-  prefService->SetInteger(prefs::kSigninBottomSheetShownCount, displayCount);
-  base::UmaHistogramExactLinear(kSigninAccountConsistencyPromoActionShownCount,
-                                displayCount, 100);
 }
 
 - (void)stop {
@@ -179,9 +167,6 @@
   switch (signinResult) {
     case SigninCoordinatorResultSuccess: {
       PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
-      int displayCount = [self.class displayCountWithPrefService:prefService];
-      base::UmaHistogramExactLinear(
-          kSigninAccountConsistencyPromoActionSignedInCount, displayCount, 100);
       // Reset dismissal count.
       prefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
       break;

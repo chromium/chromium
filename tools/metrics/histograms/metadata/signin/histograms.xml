@@ -105,6 +105,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Signin.AccountConsistencyPromoAction.Shown.Count"
     units="counts" expires_after="2022-04-10">
+  <obsolete>
+    Removed 2021-10
+  </obsolete>
   <owner>aliceywang@chromium.org</owner>
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -112,13 +115,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Every time the account picker bottom sheet is shown as part of the web
     sign-in flow this histogram records the number of times bottom sheet was
     shown (Android and iOS only).
-
-    NOTE: This stopped being recorded on Android on 10/2021.
   </summary>
 </histogram>
 
 <histogram name="Signin.AccountConsistencyPromoAction.SignedIn.Count"
     units="counts" expires_after="2022-04-17">
+  <obsolete>
+    Removed 2021-10
+  </obsolete>
   <owner>aliceywang@chromium.org</owner>
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -126,8 +130,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     This histogram records the number of times the account picker bottom sheet
     was shown before the user signed-in through the bottom sheet (Android and
     iOS only).
-
-    NOTE: This stopped being recorded on Android on 10/2021.
   </summary>
 </histogram>
 

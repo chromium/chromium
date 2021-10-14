@@ -36,7 +36,6 @@ using signin_metrics::PromoAction;
 
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   // ConsistencyPromoSigninCoordinator.
-  registry->RegisterIntegerPref(prefs::kSigninBottomSheetShownCount, 0);
   registry->RegisterIntegerPref(prefs::kSigninWebSignDismissalCount, 0);
 }
 

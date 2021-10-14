@@ -134,10 +134,6 @@ const char kSigninShouldPromptForSigninAgain[] =
 const char kSigninWebSignDismissalCount[] =
     "ios.signin.web_signin_dismissal_count";
 
-// Integer to count the number of times the MICE web sign-in is displayed.
-const char kSigninBottomSheetShownCount[] =
-    "ios.signin.bottom_sheet_shown_count";
-
 // Dictionary which stores the zoom levels the user has changed. The zoom levels
 // are unique for a given (iOS Dynamic Type, website domain) pair. Thus, the
 // dictionary keys are the iOS Dynamic Type level, mapping to sub-dictionarys
