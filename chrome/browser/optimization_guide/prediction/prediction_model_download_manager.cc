@@ -294,16 +294,15 @@ void PredictionModelDownloadManager::OnDownloadUnzipped(
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&PredictionModelDownloadManager::ProcessUnzippedContents,
-                     base::Unretained(this), unzipped_dir_path),
+                     unzipped_dir_path),
       base::BindOnce(&PredictionModelDownloadManager::NotifyModelReady,
                      ui_weak_ptr_factory_.GetWeakPtr()));
 }
 
+// static
 absl::optional<proto::PredictionModel>
 PredictionModelDownloadManager::ProcessUnzippedContents(
     const base::FilePath& unzipped_dir_path) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-
   // Clean up temp dir when this function finishes.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(base::GetDeletePathRecursivelyCallback(),
@@ -329,21 +328,18 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
     return absl::nullopt;
   }
 
-  if (!models_dir_) {
-    models_dir_ = base::FilePath();
-    if (!base::PathService::Get(
-            chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,
-            &(*models_dir_))) {
-      RecordPredictionModelDownloadStatus(
-          PredictionModelDownloadStatus::kOptGuideDirectoryDoesNotExist);
-      models_dir_ = absl::nullopt;
-      return absl::nullopt;
-    }
+  base::FilePath models_dir;
+  if (!base::PathService::Get(chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,
+                              &models_dir)) {
+    RecordPredictionModelDownloadStatus(
+        PredictionModelDownloadStatus::kOptGuideDirectoryDoesNotExist);
+
+    return absl::nullopt;
   }
 
   // Move each packaged file away from temp directory into a new directory.
 
-  base::FilePath store_dir = GetDirectoryForModelInfo(*models_dir_, model_info);
+  base::FilePath store_dir = GetDirectoryForModelInfo(models_dir, model_info);
   if (!base::CreateDirectory(store_dir)) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kCouldNotCreateDirectory);
