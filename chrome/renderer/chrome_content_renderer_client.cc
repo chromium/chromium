@@ -71,6 +71,7 @@
 #include "components/autofill/content/renderer/autofill_assistant_agent.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
+#include "components/autofill_assistant/content/renderer/autofill_assistant_agent.h"
 #include "components/content_capture/common/content_capture_features.h"
 #include "components/content_capture/renderer/content_capture_sender.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -253,7 +254,6 @@
 #endif
 
 using autofill::AutofillAgent;
-using autofill::AutofillAssistantAgent;
 using autofill::PasswordAutofillAgent;
 using autofill::PasswordGenerationAgent;
 using base::ASCIIToUTF16;
@@ -638,11 +638,16 @@ void ChromeContentRendererClient::RenderFrameCreated(
   PasswordGenerationAgent* password_generation_agent =
       new PasswordGenerationAgent(render_frame, password_autofill_agent,
                                   associated_interfaces);
-  AutofillAssistantAgent* autofill_assistant_agent =
-      new AutofillAssistantAgent(render_frame);
+  autofill::AutofillAssistantAgent* autofill_assistant_agent =
+      new autofill::AutofillAssistantAgent(render_frame);
   new AutofillAgent(render_frame, password_autofill_agent,
                     password_generation_agent, autofill_assistant_agent,
                     associated_interfaces);
+
+#if defined(OS_ANDROID)
+  new autofill_assistant::AutofillAssistantAgent(render_frame,
+                                                 associated_interfaces);
+#endif
 
   if (content_capture::features::IsContentCaptureEnabled()) {
     new content_capture::ContentCaptureSender(render_frame,
