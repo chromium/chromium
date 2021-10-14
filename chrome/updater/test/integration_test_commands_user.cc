@@ -10,9 +10,11 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
+#include "chrome/updater/test/server.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,6 +57,14 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void EnterTestMode(const GURL& url) const override {
     updater::test::EnterTestMode(url);
+  }
+
+  void ExpectUpdateSequence(ScopedServer* test_server,
+                            const std::string& app_id,
+                            const base::Version& from_version,
+                            const base::Version& to_version) const override {
+    updater::test::ExpectUpdateSequence(kUpdaterScope, test_server, app_id,
+                                        from_version, to_version);
   }
 
   void ExpectVersionActive(const std::string& version) const override {

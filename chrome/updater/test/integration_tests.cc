@@ -9,11 +9,9 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
-#include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
@@ -24,7 +22,6 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
@@ -37,7 +34,6 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
 #if defined(OS_WIN)
@@ -49,94 +45,6 @@ namespace test {
 namespace {
 
 #if defined(OS_WIN) || !defined(COMPONENT_BUILD)
-
-#if defined(OS_MAC)
-constexpr char kDoNothingCRXName[] = "updater_qualification_app_dmg.crx";
-constexpr char kDoNothingCRXRun[] = "updater_qualification_app_dmg.dmg";
-constexpr char kDoNothingCRXHash[] =
-    "c9eeadf63732f3259e2ad1cead6298f90a3ef4b601b1ba1cbb0f37b6112a632c";
-#elif defined(OS_WIN)
-constexpr char kDoNothingCRXName[] = "updater_qualification_app_exe.crx";
-constexpr char kDoNothingCRXRun[] = "qualification_app.exe";
-constexpr char kDoNothingCRXHash[] =
-    "0705f7eedb0427810db76dfc072c8cbc302fbeb9b2c56fa0de3752ed8d6f9164";
-#else
-static_assert(false, "Unsupported platform for IntegrationTest.*");
-#endif
-
-bool RequestMatcherRegex(const std::string& request_body_regex,
-                         const std::string& request_body) {
-  if (!re2::RE2::PartialMatch(request_body, request_body_regex)) {
-    ADD_FAILURE() << "Request with body: " << request_body
-                  << " did not match expected regex " << request_body_regex;
-    return false;
-  }
-  return true;
-}
-
-std::string GetUpdateResponse(const std::string& app_id,
-                              const std::string& codebase,
-                              const base::Version& version) {
-  return base::StringPrintf(
-      ")]}'\n"
-      R"({"response":{)"
-      R"(  "protocol":"3.1",)"
-      R"(  "app":[)"
-      R"(    {)"
-      R"(      "appid":"%s",)"
-      R"(      "status":"ok",)"
-      R"(      "updatecheck":{)"
-      R"(        "status":"ok",)"
-      R"(        "urls":{"url":[{"codebase":"%s"}]},)"
-      R"(        "manifest":{)"
-      R"(          "version":"%s",)"
-      R"(          "run":"%s",)"
-      R"(          "packages":{)"
-      R"(            "package":[)"
-      R"(              {"name":"%s","hash_sha256":"%s"})"
-      R"(            ])"
-      R"(          })"
-      R"(        })"
-      R"(      })"
-      R"(    })"
-      R"(  ])"
-      R"(}})",
-      app_id.c_str(), codebase.c_str(), version.GetString().c_str(),
-      kDoNothingCRXRun, kDoNothingCRXName, kDoNothingCRXHash);
-}
-
-void ExpectUpdateSequence(ScopedServer* test_server,
-                          const std::string& app_id,
-                          const base::Version& from_version,
-                          const base::Version& to_version) {
-  // First request: update check.
-  test_server->ExpectOnce(
-      {base::BindRepeating(
-          RequestMatcherRegex,
-          base::StringPrintf(R"(.*"appid":"%s".*)", app_id.c_str()))},
-      GetUpdateResponse(app_id, test_server->base_url().spec(), to_version));
-
-  // Second request: update download.
-  base::FilePath test_data_path;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
-  base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
-                                .AppendASCII(kDoNothingCRXName);
-  ASSERT_TRUE(base::PathExists(crx_path));
-  std::string crx_bytes;
-  base::ReadFileToString(crx_path, &crx_bytes);
-  test_server->ExpectOnce({base::BindRepeating(RequestMatcherRegex, "")},
-                          crx_bytes);
-
-  // Third request: event ping.
-  test_server->ExpectOnce(
-      {base::BindRepeating(
-          RequestMatcherRegex,
-          base::StringPrintf(R"(.*"eventresult":1,"eventtype":3,)"
-                             R"("nextversion":"%s","previousversion":"%s".*)",
-                             to_version.GetString().c_str(),
-                             from_version.GetString().c_str()))},
-      ")]}'\n");
-}
 
 void ExpectNoUpdateSequence(ScopedServer* test_server,
                             const std::string& app_id) {
@@ -163,8 +71,6 @@ void ExpectNoUpdateSequence(ScopedServer* test_server,
 #endif  // defined(OS_WIN) || !defined(COMPONENT_BUILD)
 
 }  // namespace
-
-// TODO(crbug.com/1096654): Enable for system integration tests for Win.
 
 class IntegrationTest : public ::testing::Test {
  public:
@@ -302,6 +208,14 @@ class IntegrationTest : public ::testing::Test {
 #if defined(OS_WIN)
     test_commands_->TearDownTestService();
 #endif  // OS_WIN
+  }
+
+  void ExpectUpdateSequence(ScopedServer* test_server,
+                            const std::string& app_id,
+                            const base::Version& from_version,
+                            const base::Version& to_version) {
+    test_commands_->ExpectUpdateSequence(test_server, app_id, from_version,
+                                         to_version);
   }
 
   scoped_refptr<IntegrationTestCommands> test_commands_;

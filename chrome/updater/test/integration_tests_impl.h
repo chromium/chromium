@@ -27,6 +27,8 @@ class GURL;
 namespace updater {
 namespace test {
 
+class ScopedServer;
+
 // Prints the updater.log file to stdout.
 void PrintLog(UpdaterScope scope);
 
@@ -158,6 +160,16 @@ void InvokeTestServiceFunction(
 // Returns the number of files in the directory, not including directories,
 // links, or dot dot.
 int CountDirectoryFiles(const base::FilePath& dir);
+
+// Returns true if the `request_body_regex` partially matches `request_body`.
+bool RequestMatcherRegex(const std::string& request_body_regex,
+                         const std::string& request_body);
+
+void ExpectUpdateSequence(UpdaterScope scope,
+                          ScopedServer* test_server,
+                          const std::string& app_id,
+                          const base::Version& from_version,
+                          const base::Version& to_version);
 
 }  // namespace test
 }  // namespace updater
