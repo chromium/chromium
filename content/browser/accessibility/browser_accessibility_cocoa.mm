@@ -62,14 +62,9 @@ static_assert(
 namespace {
 
 // Private WebKit accessibility attributes.
-NSString* const NSAccessibilityARIAAtomicAttribute = @"AXARIAAtomic";
-NSString* const NSAccessibilityARIABusyAttribute = @"AXARIABusy";
 NSString* const NSAccessibilityARIAColumnCountAttribute = @"AXARIAColumnCount";
 NSString* const NSAccessibilityARIAColumnIndexAttribute = @"AXARIAColumnIndex";
-NSString* const NSAccessibilityARIACurrentAttribute = @"AXARIACurrent";
-NSString* const NSAccessibilityARIALiveAttribute = @"AXARIALive";
 NSString* const NSAccessibilityARIAPosInSetAttribute = @"AXARIAPosInSet";
-NSString* const NSAccessibilityARIARelevantAttribute = @"AXARIARelevant";
 NSString* const NSAccessibilityARIARowCountAttribute = @"AXARIARowCount";
 NSString* const NSAccessibilityARIARowIndexAttribute = @"AXARIARowIndex";
 NSString* const NSAccessibilityARIASetSizeAttribute = @"AXARIASetSize";
@@ -806,14 +801,9 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     NSString* attribute;
     NSString* methodName;
   } attributeToMethodNameContainer[] = {
-      {NSAccessibilityARIAAtomicAttribute, @"ariaAtomic"},
-      {NSAccessibilityARIABusyAttribute, @"ariaBusy"},
       {NSAccessibilityARIAColumnCountAttribute, @"ariaColumnCount"},
       {NSAccessibilityARIAColumnIndexAttribute, @"ariaColumnIndex"},
-      {NSAccessibilityARIACurrentAttribute, @"ariaCurrent"},
-      {NSAccessibilityARIALiveAttribute, @"ariaLive"},
       {NSAccessibilityARIAPosInSetAttribute, @"ariaPosInSet"},
-      {NSAccessibilityARIARelevantAttribute, @"ariaRelevant"},
       {NSAccessibilityARIARowCountAttribute, @"ariaRowCount"},
       {NSAccessibilityARIARowIndexAttribute, @"ariaRowIndex"},
       {NSAccessibilityARIASetSizeAttribute, @"ariaSetSize"},
@@ -942,20 +932,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
                                     ax::mojom::StringAttribute::kAccessKey);
 }
 
-- (NSNumber*)ariaAtomic {
-  if (![self instanceActive])
-    return nil;
-  bool boolValue =
-      _owner->GetBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic);
-  return @(boolValue);
-}
-
-- (NSNumber*)ariaBusy {
-  if (![self instanceActive])
-    return nil;
-  return @(_owner->GetBoolAttribute(ax::mojom::BoolAttribute::kBusy));
-}
-
 - (NSNumber*)ariaColumnCount {
   if (![self instanceActive])
     return nil;
@@ -974,43 +950,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   return @(*ariaColIndex);
 }
 
-- (NSString*)ariaCurrent {
-  if (![self instanceActive])
-    return nil;
-  int ariaCurrent;
-  if (!_owner->GetIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState,
-                               &ariaCurrent))
-    return nil;
-
-  switch (static_cast<ax::mojom::AriaCurrentState>(ariaCurrent)) {
-    case ax::mojom::AriaCurrentState::kFalse:
-      return @"false";
-    case ax::mojom::AriaCurrentState::kTrue:
-      return @"true";
-    case ax::mojom::AriaCurrentState::kPage:
-      return @"page";
-    case ax::mojom::AriaCurrentState::kStep:
-      return @"step";
-    case ax::mojom::AriaCurrentState::kLocation:
-      return @"location";
-    case ax::mojom::AriaCurrentState::kDate:
-      return @"date";
-    case ax::mojom::AriaCurrentState::kTime:
-      return @"time";
-    default:
-      NOTREACHED();
-  }
-
-  return @"false";
-}
-
-- (NSString*)ariaLive {
-  if (![self instanceActive])
-    return nil;
-  return NSStringForStringAttribute(_owner,
-                                    ax::mojom::StringAttribute::kLiveStatus);
-}
-
 - (NSNumber*)ariaPosInSet {
   if (![self instanceActive])
     return nil;
@@ -1018,13 +957,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (!posInSet)
     return nil;
   return @(*posInSet);
-}
-
-- (NSString*)ariaRelevant {
-  if (![self instanceActive])
-    return nil;
-  return NSStringForStringAttribute(_owner,
-                                    ax::mojom::StringAttribute::kLiveRelevant);
 }
 
 - (NSNumber*)ariaRowCount {
@@ -3660,18 +3592,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (ui::IsSetLike(_owner->GetRole()))
     [ret addObject:NSAccessibilityARIASetSizeAttribute];
 
-  // Live regions.
-  if (_owner->HasStringAttribute(ax::mojom::StringAttribute::kLiveStatus))
-    [ret addObject:NSAccessibilityARIALiveAttribute];
-  if (_owner->HasStringAttribute(ax::mojom::StringAttribute::kLiveRelevant))
-    [ret addObject:NSAccessibilityARIARelevantAttribute];
-  if (_owner->HasBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic))
-    [ret addObject:NSAccessibilityARIAAtomicAttribute];
-  if (_owner->HasBoolAttribute(ax::mojom::BoolAttribute::kBusy))
-    [ret addObject:NSAccessibilityARIABusyAttribute];
-  if (_owner->HasIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState))
-    [ret addObject:NSAccessibilityARIACurrentAttribute];
-
   std::string dropEffect;
   if (_owner->GetHtmlAttribute("aria-dropeffect", &dropEffect))
     [ret addObject:NSAccessibilityDropEffectsAttribute];
@@ -3747,6 +3667,8 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   // TODO(aboxhall): expose NSAccessibilityServesAsTitleForUIElementsAttribute
   // for elements which are referred to by labelledby or are labels
 
+  NSArray* super_ret = [super accessibilityAttributeNames];
+  [ret addObjectsFromArray:super_ret];
   return ret;
 }
 

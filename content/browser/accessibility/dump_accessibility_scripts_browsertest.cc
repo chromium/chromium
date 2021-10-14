@@ -103,6 +103,17 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
     RunTest(html_file, "accessibility/mac/action");
   }
 
+  void RunMacAttributesTest(const base::FilePath::CharType* file_path) {
+    base::FilePath test_path =
+        GetTestFilePath("accessibility", "mac/attributes");
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
+    }
+    base::FilePath html_file = test_path.Append(base::FilePath(file_path));
+    RunTest(html_file, "accessibility/mac/attributes");
+  }
+
   void RunMacSelectionTest(const base::FilePath::CharType* file_path) {
     base::FilePath test_path =
         GetTestFilePath("accessibility", "mac/selection");
@@ -164,6 +175,26 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXPressButton) {
   RunMacActionTest(FILE_PATH_LITERAL("ax-press-button.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIAAtomic) {
+  RunMacAttributesTest(FILE_PATH_LITERAL("ax-aria-atomic.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIABusy) {
+  RunMacAttributesTest(FILE_PATH_LITERAL("ax-aria-busy.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIACurrent) {
+  RunMacAttributesTest(FILE_PATH_LITERAL("ax-aria-current.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIALive) {
+  RunMacAttributesTest(FILE_PATH_LITERAL("ax-aria-live.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIARelevant) {
+  RunMacAttributesTest(FILE_PATH_LITERAL("ax-aria-relevant.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SelectAllTextarea) {

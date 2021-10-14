@@ -25,6 +25,13 @@ AXAnnouncementSpec::~AXAnnouncementSpec() = default;
 
 namespace {
 
+// Private WebKit accessibility attributes.
+NSString* const NSAccessibilityARIAAtomicAttribute = @"AXARIAAtomic";
+NSString* const NSAccessibilityARIABusyAttribute = @"AXARIABusy";
+NSString* const NSAccessibilityARIACurrentAttribute = @"AXARIACurrent";
+NSString* const NSAccessibilityARIALiveAttribute = @"AXARIALive";
+NSString* const NSAccessibilityARIARelevantAttribute = @"AXARIARelevant";
+
 // Same length as web content/WebKit.
 static int kLiveRegionDebounceMillis = 20;
 
@@ -643,6 +650,19 @@ bool IsAXSetter(SEL selector) {
     [axAttributes addObjectsFromArray:@[ @"AXARIAPosInSet", @"AXARIASetSize" ]];
   if (ui::IsSetLike(_node->GetRole()))
     [axAttributes addObject:@"AXARIASetSize"];
+
+  // Live regions.
+  if (_node->HasStringAttribute(ax::mojom::StringAttribute::kLiveStatus))
+    [axAttributes addObject:NSAccessibilityARIALiveAttribute];
+  if (_node->HasStringAttribute(ax::mojom::StringAttribute::kLiveRelevant))
+    [axAttributes addObject:NSAccessibilityARIARelevantAttribute];
+  if (_node->HasBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic))
+    [axAttributes addObject:NSAccessibilityARIAAtomicAttribute];
+  if (_node->HasBoolAttribute(ax::mojom::BoolAttribute::kBusy))
+    [axAttributes addObject:NSAccessibilityARIABusyAttribute];
+  if (_node->HasIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState))
+    [axAttributes addObject:NSAccessibilityARIACurrentAttribute];
+
   return axAttributes.autorelease();
 }
 
@@ -693,6 +713,67 @@ bool IsAXSetter(SEL selector) {
 
 // NSAccessibility attributes. Order them according to
 // NSAccessibilityConstants.h, or see https://crbug.com/678898.
+
+- (NSNumber*)AXARIAAtomic {
+  if (![self instanceActive])
+    return nil;
+
+  return @(_node->GetBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic));
+}
+
+- (NSNumber*)AXARIABusy {
+  if (![self instanceActive])
+    return nil;
+
+  return @(_node->GetBoolAttribute(ax::mojom::BoolAttribute::kBusy));
+}
+
+- (NSString*)AXARIACurrent {
+  if (![self instanceActive])
+    return nil;
+
+  int ariaCurrent;
+  if (!_node->GetIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState,
+                              &ariaCurrent))
+    return nil;
+
+  switch (static_cast<ax::mojom::AriaCurrentState>(ariaCurrent)) {
+    case ax::mojom::AriaCurrentState::kNone:
+      NOTREACHED();
+      return @"false";
+    case ax::mojom::AriaCurrentState::kFalse:
+      return @"false";
+    case ax::mojom::AriaCurrentState::kTrue:
+      return @"true";
+    case ax::mojom::AriaCurrentState::kPage:
+      return @"page";
+    case ax::mojom::AriaCurrentState::kStep:
+      return @"step";
+    case ax::mojom::AriaCurrentState::kLocation:
+      return @"location";
+    case ax::mojom::AriaCurrentState::kDate:
+      return @"date";
+    case ax::mojom::AriaCurrentState::kTime:
+      return @"time";
+  }
+
+  NOTREACHED();
+  return @"false";
+}
+
+- (NSString*)AXARIALive {
+  if (![self instanceActive])
+    return nil;
+
+  return [self getStringAttribute:ax::mojom::StringAttribute::kLiveStatus];
+}
+
+- (NSString*)AXARIARelevant {
+  if (![self instanceActive])
+    return nil;
+
+  return [self getStringAttribute:ax::mojom::StringAttribute::kLiveRelevant];
+}
 
 - (NSString*)AXRole {
   if (!_node)

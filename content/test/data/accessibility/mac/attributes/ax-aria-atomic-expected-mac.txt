@@ -1,0 +1,3 @@
+true.AXARIAAtomic=1
+false.AXARIAAtomic=0
+none.AXARIAAtomic=0
