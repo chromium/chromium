@@ -5,6 +5,7 @@
 #include "ash/projector/projector_metadata_controller.h"
 
 #include "ash/projector/projector_controller_impl.h"
+#include "ash/public/cpp/projector/projector_controller.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -65,8 +66,9 @@ void ProjectorMetadataController::RecordKeyIdea() {
 void ProjectorMetadataController::SaveMetadata(
     const base::FilePath& video_file_path) {
   DCHECK(metadata_);
-  // TODO(crbug.com/1165439): Finalize on the metadata file naming convention.
-  const base::FilePath path = video_file_path.ReplaceExtension(".txt");
+  // TODO(b/200330118): Finalize on the metadata file naming convention.
+  const base::FilePath path =
+      video_file_path.AddExtension(kProjectorMetadataFileExtension);
 
   metadata_->SetName(
       video_file_path.RemoveExtension().BaseName().AsUTF8Unsafe());
@@ -74,17 +76,16 @@ void ProjectorMetadataController::SaveMetadata(
   // Save metadata.
   auto metadata_str = metadata_->Serialize();
 
-  // TODO(crbug.com/1165439): Update after finalizing on the storage strategy.
+  // TODO(b/203000496): Update after finalizing on the storage strategy.
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&SaveFile, metadata_str, path),
       base::BindOnce(
           [](const base::FilePath& path, bool success) {
             if (!success) {
               LOG(ERROR) << "Failed to save the metadata file: " << path;
+              // TODO(b/200846160): notify user with the failure.
               return;
             }
-
-            // TODO(crbug.com/1165439): Make screencast metadata indexable.
           },
           path));
 }

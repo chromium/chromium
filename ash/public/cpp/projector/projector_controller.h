@@ -15,6 +15,10 @@ struct AnnotatorTool;
 
 namespace ash {
 
+// File extension of Projector metadata file. It is used to identify Projector
+// screencasts at processing pending screencasts and fetching screencast list.
+constexpr char kProjectorMetadataFileExtension[] = "projector";
+
 class ProjectorClient;
 
 // Interface to control projector in ash.
