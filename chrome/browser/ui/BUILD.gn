@@ -2910,6 +2910,7 @@ static_library("ui") {
       "//chromeos/dbus/pciguard:pciguard",
       "//chromeos/dbus/power",
       "//chromeos/dbus/session_manager",
+      "//chromeos/dbus/spaced",
       "//chromeos/dbus/system_clock",
       "//chromeos/dbus/tpm_manager",
       "//chromeos/dbus/tpm_manager:tpm_manager_proto",

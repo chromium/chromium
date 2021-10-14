@@ -46,6 +46,7 @@
 #include "chromeos/dbus/rmad/rmad_client.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/dbus/spaced/spaced_client.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "chromeos/dbus/system_proxy/system_proxy_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -131,6 +132,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::ResourcedClient>(bus);
   InitializeDBusClient<chromeos::SeneschalClient>(bus);
   InitializeDBusClient<chromeos::SessionManagerClient>(bus);
+  InitializeDBusClient<chromeos::SpacedClient>(bus);
   InitializeDBusClient<chromeos::SystemClockClient>(bus);
   InitializeDBusClient<chromeos::SystemProxyClient>(bus);
   InitializeDBusClient<chromeos::TpmManagerClient>(bus);
@@ -195,6 +197,7 @@ void ShutdownDBus() {
   chromeos::TpmManagerClient::Shutdown();
   chromeos::SystemProxyClient::Shutdown();
   chromeos::SystemClockClient::Shutdown();
+  chromeos::SpacedClient::Shutdown();
   chromeos::SessionManagerClient::Shutdown();
   chromeos::SeneschalClient::Shutdown();
   chromeos::ResourcedClient::Shutdown();
