@@ -38,6 +38,8 @@ swift_source_set("overflow_menu_swift") {
     "overflow_menu_view_provider.swift",
   ]
 
+  deps = [ "//ios/chrome/common/ui/colors:swift" ]
+
   frameworks = [
     "Foundation.framework",
     "SwiftUI.framework",
