@@ -3811,11 +3811,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "mice-web-signin",
-    "owners": [ "fernandex", "jlebel" ],
-    "expiry_milestone": 99
-  },
-  {
     "name": "microphone-mute-notifications",
     "owners": ["tbarzic", "rtinkoff@google.com", "amehfooz"],
     "expiry_milestone": 94

@@ -299,10 +299,6 @@ extern const char kLockBottomToolbarDescription[];
 extern const char kMetrickitCrashReportName[];
 extern const char kMetrickitCrashReportDescription[];
 
-// Title and description for the flag to enable MICE web sign-in.
-extern const char kMICEWebSignInName[];
-extern const char kMICEWebSignInDescription[];
-
 // TODO(crbug.com/1128242): Remove this flag after the refactoring work is
 // finished.
 // Title and description for the flag used to test the newly

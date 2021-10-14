@@ -17,12 +17,4 @@ const base::Feature kMobileIdentityConsistencyPromos{
     "MobileIdentityConsistencyPromos", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-#if defined(OS_IOS)
-const base::Feature kMICEWebSignIn{"MICEWebSignIn",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-bool IsMICEWebSignInEnabled() {
-  return base::FeatureList::IsEnabled(kMICEWebSignIn);
-}
-#endif  // defined(OS_IOS)
-
 }  // namespace signin

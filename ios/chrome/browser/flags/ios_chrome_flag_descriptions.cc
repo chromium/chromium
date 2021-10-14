@@ -349,9 +349,6 @@ const char kMetrickitCrashReportName[] = "Metrickit crash reports";
 const char kMetrickitCrashReportDescription[] =
     "Enables sending Metrickit crash reports";
 
-const char kMICEWebSignInName[] = "MICE Web Sign-in";
-const char kMICEWebSignInDescription[] = "Enables MICE web sign-in.";
-
 const char kModernTabStripName[] = "Modern TabStrip";
 const char kModernTabStripDescription[] =
     "When enabled, the newly implemented tabstrip can be tested.";

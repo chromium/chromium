@@ -20,7 +20,6 @@
 #include "components/signin/core/browser/chrome_connected_header_helper.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/ios/browser/features.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -220,7 +219,7 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
     // credentials on a Gaia sign-on page.
     NSString* x_autologin_header = [[http_response allHeaderFields]
         objectForKey:[NSString stringWithUTF8String:signin::kAutoLoginHeader]];
-    if (signin::IsMICEWebSignInEnabled() && x_autologin_header) {
+    if (x_autologin_header) {
       show_consistency_promo_ = true;
     }
     std::move(callback).Run(PolicyDecision::Allow());
@@ -261,8 +260,7 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
             return;
           }
         }
-      } else if (!identity_manager_->GetAccountsWithRefreshTokens().empty() &&
-                 signin::IsMICEWebSignInEnabled()) {
+      } else if (!identity_manager_->GetAccountsWithRefreshTokens().empty()) {
         show_consistency_promo_ = true;
         // Allows the URL response to load before showing the consistency promo.
         // The promo should always be displayed in the foreground of Gaia
