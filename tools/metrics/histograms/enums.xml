@@ -26641,6 +26641,7 @@ Called by update_document_policy_enum.py.-->
   <int value="913" label="SandboxExternalProtocol"/>
   <int value="914" label="ReportDeviceNetworkTelemetryCollectionRateMs"/>
   <int value="915" label="ReportDeviceNetworkTelemetryEventCheckingRateMs"/>
+  <int value="916" label="KioskCRXManifestUpdateURLIgnored"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

@@ -341,6 +341,16 @@ const char kDeviceDisplayResolutionKeyRecommended[] = "recommended";
 // 3 = 270 degrees clockwise rotation
 const char kDisplayRotationDefault[] = "cros.display_rotation_default";
 
+// A boolean pref that controls Chrome App Kiosk update behavior:
+// false = legacy, CRX files are updated in the cache on startup using update
+// URL from the policy, and from time to time during kiosk session the extension
+// is updated using update URL from the extension manifest without populating
+// the cache,
+// true = CRX files are updated in the cache from time to time using update URL
+// from the policy, no additional updates are made.
+const char kKioskCRXManifestUpdateURLIgnored[] =
+    "cros.kiosk_crx_manifest_update_url_ignored";
+
 // An integer pref that sets the behavior of the login authentication flow.
 // 0 = authentication using the default GAIA flow.
 // 1 = authentication using an interstitial screen that offers the user to go

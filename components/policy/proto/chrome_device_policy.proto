@@ -1994,4 +1994,5 @@ message ChromeDeviceSettingsProto {
   optional HostnameUserConfigurableProto hostname_user_configurable = 125;
   optional BooleanPolicyProto
       login_screen_prompt_on_multiple_matching_certificates = 126;
+  optional BooleanPolicyProto kiosk_crx_manifest_update_url_ignored = 127;
 }

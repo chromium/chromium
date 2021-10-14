@@ -1350,4 +1350,22 @@ TEST_F(DeviceSettingsProviderTest,
             *provider_->Get(kDeviceRestrictedManagedGuestSessionEnabled));
 }
 
+TEST_F(DeviceSettingsProviderTest, KioskCRXManifestUpdateURLIgnoredEnabled) {
+  device_policy_->payload()
+      .mutable_kiosk_crx_manifest_update_url_ignored()
+      ->set_value(true);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value(true),
+            *provider_->Get(kKioskCRXManifestUpdateURLIgnored));
+}
+
+TEST_F(DeviceSettingsProviderTest, KioskCRXManigestUpdateURLIngoredDisabled) {
+  device_policy_->payload()
+      .mutable_kiosk_crx_manifest_update_url_ignored()
+      ->set_value(false);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value(false),
+            *provider_->Get(kKioskCRXManifestUpdateURLIgnored));
+}
+
 }  // namespace ash

@@ -113,6 +113,7 @@ const char* const kKnownSettings[] = {
     kFeatureFlags,
     kHeartbeatEnabled,
     kHeartbeatFrequency,
+    kKioskCRXManifestUpdateURLIgnored,
     kLoginAuthenticationBehavior,
     kLoginVideoCaptureAllowedUrls,
     kPluginVmAllowed,
@@ -531,6 +532,16 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
 
     new_values_cache->SetValue(kDeviceWebBasedAttestationAllowedUrls,
                                std::move(urls));
+  }
+
+  if (policy.has_kiosk_crx_manifest_update_url_ignored()) {
+    const em::BooleanPolicyProto& container(
+        policy.kiosk_crx_manifest_update_url_ignored());
+
+    if (container.has_value()) {
+      new_values_cache->SetValue(kKioskCRXManifestUpdateURLIgnored,
+                                 base::Value(container.value()));
+    }
   }
 }
 

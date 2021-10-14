@@ -193,6 +193,9 @@ extern const char kDeviceDisplayResolutionKeyRecommended[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kDisplayRotationDefault[];
 
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
+extern const char kKioskCRXManifestUpdateURLIgnored[];
+
+COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kLoginAuthenticationBehavior[];
 
 COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kAllowBluetooth[];
@@ -392,6 +395,7 @@ using ::chromeos::kExtensionCacheSize;
 using ::chromeos::kFeatureFlags;
 using ::chromeos::kHeartbeatEnabled;
 using ::chromeos::kHeartbeatFrequency;
+using ::chromeos::kKioskCRXManifestUpdateURLIgnored;
 using ::chromeos::kLoginAuthenticationBehavior;
 using ::chromeos::kLoginVideoCaptureAllowedUrls;
 using ::chromeos::kPluginVmAllowed;

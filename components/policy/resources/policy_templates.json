@@ -11731,6 +11731,37 @@
       If the policy is unset or an empty list, there are no device-local accounts.''',
     },
     {
+      'name': 'KioskCRXManifestUpdateURLIgnored',
+      'owners': ['file://chrome/browser/extensions/forced_extensions/OWNERS', 'burunduk@chromium.org'],
+      'type': 'main',
+      'schema': {
+        'type': 'boolean',
+      },
+      'future_on': ['chrome_os'],
+      'device_only': True,
+      'features': {
+        'cloud_only': True,
+        'dynamic_refresh': True,
+        'unlisted': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'New behaviour: Kiosk Chrome Apps will be only updated using update URL from the policy',
+        },
+        {
+          'value': False,
+          'caption': 'Legacy behavior: Kiosk Chrome Apps will be updated by the extension system using update URL from the extension manifest, as well as by caching manager using update URL from the policy',
+        },
+      ],
+      'example_value': True,
+      'default': False,
+      'id': 916,
+      'caption': '''Use only policy-provided update URL when downloading and updating Kiosk Chrome apps''',
+      'tags': [],
+      'desc': '''Setting the policy will disable in-session Kiosk Chrome apps update (which uses update URL from the extension manifest) and leaves only CRX pre-fetching as the update mechanism.''',
+    },
+    {
       'name': 'DeviceLocalAccountAutoLoginId',
       'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'string',
@@ -28878,6 +28909,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DevicePciPeripheralDataAccessEnabled': 'device_pci_peripheral_data_access_enabled_v2.enabled',
     'DeviceRestrictedManagedGuestSessionEnabled': 'device_restricted_managed_guest_session_enabled.enabled',
     'DeviceLoginScreenPromptOnMultipleMatchingCertificates': 'login_screen_prompt_on_multiple_matching_certificates.value',
+    'KioskCRXManifestUpdateURLIgnored': 'kiosk_crx_manifest_update_url_ignored',
   },
   'policy_atomic_group_definitions': [
     {
@@ -29384,6 +29416,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 915,
+  'highest_id_currently_used': 916,
   'highest_atomic_group_id_currently_used': 41
 }

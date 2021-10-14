@@ -601,6 +601,17 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
                     nullptr);
     }
   }
+
+  if (policy.has_kiosk_crx_manifest_update_url_ignored()) {
+    const em::BooleanPolicyProto& container(
+        policy.kiosk_crx_manifest_update_url_ignored());
+    if (container.has_value()) {
+      policies->Set(key::kKioskCRXManifestUpdateURLIgnored,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                    nullptr);
+    }
+  }
 }
 
 void DecodeNetworkPolicies(const em::ChromeDeviceSettingsProto& policy,
