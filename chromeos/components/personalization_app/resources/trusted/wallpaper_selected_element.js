@@ -133,7 +133,6 @@ export class WallpaperSelected extends WithPersonalizationStore {
       /** @private */
       isLoading_: {
         type: Boolean,
-        observer: 'onIsLoadingChanged_',
       },
 
       /** @private */
