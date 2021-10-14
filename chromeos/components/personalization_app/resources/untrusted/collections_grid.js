@@ -248,15 +248,22 @@ export class CollectionsGrid extends PolymerElement {
       return;
     }
 
-    while (this.tiles_.length < collections.length + 1) {
+    // The first tile in the collections grid is reserved for local images. The
+    // second tile is reserved for Google Photos, provided that the integration
+    // is enabled. The tile index of other collections must be `offset` so as
+    // not to occupy reserved space.
+    const offset =
+        loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled') ? 2 : 1;
+
+    while (this.tiles_.length < collections.length + offset) {
       this.push('tiles_', {type: TileType.loading});
     }
-    while (this.tiles_.length > collections.length + 1) {
+    while (this.tiles_.length > collections.length + offset) {
       this.pop('tiles_');
     }
 
     collections.forEach((collection, i) => {
-      const index = i + 1;
+      const index = i + offset;
       const tile = this.tiles_[index];
       // This tile failed to load completely.
       if (imageCounts[collection.id] === null && !this.isFailureTile_(tile)) {

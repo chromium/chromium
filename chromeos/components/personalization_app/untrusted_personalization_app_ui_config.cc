@@ -42,6 +42,12 @@ void AddStrings(content::WebUIDataSource* source) {
   source->UseStringsJs();
 }
 
+void AddBooleans(content::WebUIDataSource* source) {
+  source->AddBoolean("isGooglePhotosIntegrationEnabled",
+                     base::FeatureList::IsEnabled(
+                         ash::features::kWallpaperGooglePhotosIntegration));
+}
+
 void AddCrosColors(content::WebUIDataSource* source) {
   source->AddResourcePath("chromeos/colors/cros_styles.css",
                           IDR_WEBUI_CROS_COLORS_CSS);
@@ -62,6 +68,7 @@ class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
             kChromeUIUntrustedPersonalizationAppURL));
 
     AddStrings(source.get());
+    AddBooleans(source.get());
 
     const auto resources =
         base::make_span(kChromeosPersonalizationAppResources,

@@ -1180,6 +1180,11 @@ const base::Feature kWallpaperWebUI{"WallpaperWebUI",
 const base::Feature kWallpaperFullScreenPreview{
     "WallpaperFullScreenPreview", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable Google Photos integration in the new wallpaper experience. Note that
+// this feature flag does not have any effect if `kWallpaperWebUI` is disabled.
+const base::Feature kWallpaperGooglePhotosIntegration{
+    "WallpaperGooglePhotosIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Generates WebAPKs representing installed PWAs and installs them inside ARC.
 const base::Feature kWebApkGenerator{"WebApkGenerator",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
