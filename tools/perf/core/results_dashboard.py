@@ -373,7 +373,7 @@ def _RevisionNumberColumns(data, prefix):
       revision_supplemental_columns[prefix + key] = data[key]
 
   # If possible, also send the git hash.
-  if 'git_revision' in data and data['git_revision'] != 'undefined':
+  if 'git_revision' in data and data['git_revision'] not in [None, 'undefined']:
     revision_supplemental_columns[prefix + 'chromium'] = data['git_revision']
 
   return revision, revision_supplemental_columns
