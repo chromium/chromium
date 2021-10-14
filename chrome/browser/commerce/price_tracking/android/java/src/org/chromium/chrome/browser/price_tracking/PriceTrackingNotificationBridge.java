@@ -17,6 +17,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.commerce.PriceUtils;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotifier.ActionData;
 import org.chromium.chrome.browser.price_tracking.proto.Notifications;
 import org.chromium.chrome.browser.price_tracking.proto.Notifications.ChromeMessage;
@@ -26,11 +27,9 @@ import org.chromium.chrome.browser.price_tracking.proto.Notifications.ExpandedVi
 import org.chromium.chrome.browser.price_tracking.proto.Notifications.PriceDropNotificationPayload;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.commerce.PriceTracking.ProductPrice;
-import org.chromium.components.payments.CurrencyFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Class to show a price tracking notification. The Java object is owned by the native side
@@ -77,11 +76,18 @@ public class PriceTrackingNotificationBridge {
             Log.e(TAG, "Invalid PriceDropNotificationPayload proto.");
             return;
         }
+
         // Show the notification. Uses client side strings for now, which should match
         // HandleProductUpdateEventsProducerModule.java in google3.
+        String priceDrop = getPriceDropAmount(priceDropPayload);
+        if (TextUtils.isEmpty(priceDrop)) {
+            Log.e(TAG, "Invalid price drop amount.");
+            return;
+        }
+
         Context context = ContextUtils.getApplicationContext();
-        String title = context.getString(R.string.price_drop_notification_content_title,
-                getPriceDropAmount(priceDropPayload), priceDropPayload.getProductName());
+        String title = context.getString(R.string.price_drop_notification_content_title, priceDrop,
+                priceDropPayload.getProductName());
 
         Uri productUrl = Uri.parse(priceDropPayload.getDestinationUrl());
         if (productUrl.getHost() == null) {
@@ -214,11 +220,7 @@ public class PriceTrackingNotificationBridge {
     }
 
     private static String buildDisplayPrice(ProductPrice productPrice) {
-        CurrencyFormatter currencyFormatter =
-                new CurrencyFormatter(productPrice.getCurrencyCode(), Locale.getDefault());
-        String formattedPrice = currencyFormatter.format(
-                String.valueOf(productPrice.getAmountMicros() / UNITS_TO_MICROS));
-        currencyFormatter.destroy();
-        return formattedPrice;
+        return PriceUtils.formatPrice(
+                productPrice.getCurrencyCode(), productPrice.getAmountMicros());
     }
 }

@@ -64,6 +64,7 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//chrome/browser/android/crypto:java",
+    "//chrome/browser/commerce/android:java",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/endpoint_fetcher:java",
     "//chrome/browser/flags:java",

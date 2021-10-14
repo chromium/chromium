@@ -17,6 +17,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.commerce.PriceUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.chrome.browser.page_annotations.BuyableProductPageAnnotation;
@@ -61,14 +62,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             "price_tracking_with_optimization_guide";
     private static final String METRICS_IDENTIFIER_PREFIX = "NavigationComplete";
 
-    private static final int FRACTIONAL_DIGITS_LESS_THAN_TEN_UNITS = 2;
-    private static final int FRACTIONAL_DIGITS_GREATER_THAN_TEN_UNITS = 0;
-
     private static final Class<ShoppingPersistedTabData> USER_DATA_KEY =
             ShoppingPersistedTabData.class;
     private static final int MICROS_TO_UNITS = 1000000;
     private static final long TWO_UNITS = 2 * MICROS_TO_UNITS;
-    private static final long TEN_UNITS = 10 * MICROS_TO_UNITS;
     private static final int MINIMUM_DROP_PERCENTAGE = 10;
     private static final int ONE_WEEK_MS = (int) TimeUnit.DAYS.toMillis(7);
 
@@ -845,18 +842,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             return "";
         }
         CurrencyFormatter currencyFormatter = getCurrencyFormatter(mPriceDropData.currencyCode);
-        String formattedPrice;
-        if (priceMicros < TEN_UNITS) {
-            currencyFormatter.setMaximumFractionalDigits(FRACTIONAL_DIGITS_LESS_THAN_TEN_UNITS);
-            formattedPrice = String.format(
-                    Locale.getDefault(), "%.2f", (100 * priceMicros / MICROS_TO_UNITS) / 100.0);
-        } else {
-            currencyFormatter.setMaximumFractionalDigits(FRACTIONAL_DIGITS_GREATER_THAN_TEN_UNITS);
-            formattedPrice = String.format(Locale.getDefault(), "%d",
-                    (long) Math.floor(
-                            (double) (priceMicros + MICROS_TO_UNITS / 2) / MICROS_TO_UNITS));
-        }
-        return currencyFormatter.format(formattedPrice);
+        return PriceUtils.formatPrice(currencyFormatter, priceMicros);
     }
 
     private CurrencyFormatter getCurrencyFormatter(String currencyCode) {
