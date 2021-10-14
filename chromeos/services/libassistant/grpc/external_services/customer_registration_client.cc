@@ -94,7 +94,7 @@ void CustomerRegistrationClient::Start() {
 void CustomerRegistrationClient::RegisterWithCustomerService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  libassistant_client_->RegisterCustomer(
+  libassistant_client_->CallServiceMethod(
       customer_registration_request_,
       base::BindOnce(
           &CustomerRegistrationClient::OnCustomerRegistrationResponse,

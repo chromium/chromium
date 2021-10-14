@@ -80,7 +80,7 @@ class EventHandlerDriver : public AsyncServiceDriver {
     StateConfig config;
     config.max_retries = 5;
     config.timeout_in_ms = 3000;
-    libassistant_client_->RegisterEventHandler(
+    libassistant_client_->CallServiceMethod(
         request,
         base::BindOnce(&EventHandlerDriver::OnRegisterEventHandlerDone,
                        weak_factory_.GetWeakPtr()),

@@ -7,34 +7,29 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/notreached.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/assistant/internal/libassistant_util.h"
 
 namespace chromeos {
 namespace libassistant {
 
-namespace {
+template <>
+std::string
+GetLibassistGrpcMethodName<::assistant::api::RegisterCustomerRequest>() {
+  // CustomerRegistrationService handles CustomerRegistrationRequest sent from
+  // libassistant customers to register themselves before allowing to use
+  // libassistant services.
+  return chromeos::assistant::GetLibassistGrpcMethodName(
+      "CustomerRegistrationService", "RegisterCustomer");
+}
 
-// Implements one async client method. ResponseCallback will be invoked from
-// caller's sequence. The raw pointer will be handled by |RPCState| internally
-// and gets deleted upon completion of the RPC call.
-#define LIBAS_GRPC_CLIENT_METHOD(service, method)                             \
-  void GrpcLibassistantClient::method(                                        \
-      const ::assistant::api::method##Request& request,                       \
-      chromeos::libassistant::ResponseCallback<                               \
-          grpc::Status, ::assistant::api::method##Response> done,             \
-      chromeos::libassistant::StateConfig state_config) {                     \
-    new chromeos::libassistant::RPCState<::assistant::api::method##Response>( \
-        channel_, client_thread_.completion_queue(),                          \
-        chromeos::assistant::GetLibassistGrpcMethodName(service, #method),    \
-        request, std::move(done),                                             \
-        /*callback_task_runner=*/base::SequencedTaskRunnerHandle::Get(),      \
-        state_config);                                                        \
-  }
-
-}  // namespace
+template <>
+std::string
+GetLibassistGrpcMethodName<::assistant::api::RegisterEventHandlerRequest>() {
+  // EventNotificationService handles RegisterEventHandler sent from
+  // libassistant customers to register themselves for events.
+  return chromeos::assistant::GetLibassistGrpcMethodName(
+      "EventNotificationService", "RegisterEventHandler");
+}
 
 GrpcLibassistantClient::GrpcLibassistantClient(
     std::shared_ptr<grpc::Channel> channel)
@@ -43,9 +38,6 @@ GrpcLibassistantClient::GrpcLibassistantClient(
 }
 
 GrpcLibassistantClient::~GrpcLibassistantClient() = default;
-
-LIBAS_GRPC_CLIENT_METHOD("CustomerRegistrationService", RegisterCustomer)
-LIBAS_GRPC_CLIENT_METHOD("EventNotificationService", RegisterEventHandler)
 
 }  // namespace libassistant
 }  // namespace chromeos
