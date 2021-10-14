@@ -370,7 +370,8 @@ void TabDesktopMediaList::SetPreviewedSource(
   // only allow it to load, but also to avoid pages realising they're visible
   // only in the preview and manipulating the user.
   previewed_source_visible_keepalive_ = source_contents->IncrementCapturerCount(
-      gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false);
+      gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false,
+      /*is_activity=*/false);
 
   // Capture a new previewed image.
   // TODO(crbug.com/1224342): Schedule this delayed if there has been another
