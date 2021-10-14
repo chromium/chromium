@@ -10,6 +10,8 @@
 #include "base/callback_forward.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 
+class PrefService;
+
 namespace password_manager {
 
 class BuiltInBackendToAndroidBackendMigrator;
@@ -24,7 +26,8 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
  public:
   PasswordStoreBackendMigrationDecorator(
       std::unique_ptr<PasswordStoreBackend> built_in_backend,
-      std::unique_ptr<PasswordStoreBackend> android_backend);
+      std::unique_ptr<PasswordStoreBackend> android_backend,
+      PrefService* prefs);
   PasswordStoreBackendMigrationDecorator(
       const PasswordStoreBackendMigrationDecorator&) = delete;
   PasswordStoreBackendMigrationDecorator(
@@ -80,7 +83,12 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
   // Proxy backend to which all responsibilities are being delegated.
   std::unique_ptr<PasswordStoreBackend> active_backend_;
 
+  PrefService* prefs_ = nullptr;
+
   std::unique_ptr<BuiltInBackendToAndroidBackendMigrator> migrator_;
+
+  base::WeakPtrFactory<PasswordStoreBackendMigrationDecorator>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

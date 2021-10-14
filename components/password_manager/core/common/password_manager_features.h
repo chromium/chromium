@@ -42,11 +42,18 @@ extern const base::Feature kSupportForAddPasswordsInSettings;
 extern const base::Feature kTreatNewPasswordHeuristicsAsReliable;
 #if defined(OS_ANDROID)
 extern const base::Feature kUnifiedPasswordManagerAndroid;
+extern const base::Feature kUnifiedPasswordManagerMigration;
 extern const base::Feature kUnifiedPasswordManagerShadowAndroid;
 #endif
 extern const base::Feature kUsernameFirstFlow;
 extern const base::Feature kUsernameFirstFlowFilling;
 extern const base::Feature kUsernameFirstFlowFallbackCrowdsourcing;
+
+// All features parameters are in alphabetical order.
+
+#if defined(OS_ANDROID)
+extern const base::FeatureParam<int> kMigrationVersion;
+#endif
 
 // Field trial and corresponding parameters.
 // To manually override this, start Chrome with the following parameters:

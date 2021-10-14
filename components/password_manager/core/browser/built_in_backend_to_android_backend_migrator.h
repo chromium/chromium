@@ -8,13 +8,15 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 
+class PrefService;
+
 namespace password_manager {
 // Instantiate this object to migrate all password stored in the built-in
 // backend to the Android backend. Migration is potentially an expensive
 // operation and shouldn't start during the hot phase of Chrome start.
 class BuiltInBackendToAndroidBackendMigrator {
  public:
-  BuiltInBackendToAndroidBackendMigrator();
+  explicit BuiltInBackendToAndroidBackendMigrator(PrefService* prefs);
   BuiltInBackendToAndroidBackendMigrator(
       const BuiltInBackendToAndroidBackendMigrator&) = delete;
   BuiltInBackendToAndroidBackendMigrator& operator=(
@@ -30,6 +32,8 @@ class BuiltInBackendToAndroidBackendMigrator {
  private:
   // Saves current migration version in 'pref_'.
   void UpdateMigrationVersionInPref();
+
+  PrefService* prefs_ = nullptr;
 };
 
 }  // namespace password_manager

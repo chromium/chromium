@@ -40,7 +40,7 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
   PasswordStoreBackendMigrationDecoratorTest() {
     backend_migration_decorator_ =
         std::make_unique<PasswordStoreBackendMigrationDecorator>(
-            CreateBuiltInBackend(), CreateAndroidBackend());
+            CreateBuiltInBackend(), CreateAndroidBackend(), /*prefs=*/nullptr);
   }
 
   ~PasswordStoreBackendMigrationDecoratorTest() override {

@@ -12,6 +12,11 @@ namespace prefs {
 const char kCredentialsEnableAutosignin[] = "credentials_enable_autosignin";
 const char kCredentialsEnableService[] = "credentials_enable_service";
 
+#if defined(OS_ANDROID)
+const char kCurrentMigrationVersionToGoogleMobileServices[] =
+    "current_migration_version_to_google_mobile_services";
+#endif
+
 #if defined(OS_WIN)
 const char kOsPasswordBlank[] = "password_manager.os_password_blank";
 const char kOsPasswordLastChanged[] =

@@ -135,6 +135,11 @@ const base::Feature kTreatNewPasswordHeuristicsAsReliable = {
 const base::Feature kUnifiedPasswordManagerAndroid{
     "UnifiedPasswordManagerAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables migration of passwords from built in storage to Google Mobile
+// Services.
+const base::Feature kUnifiedPasswordManagerMigration{
+    "UnifiedPasswordManagerMigration", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Sends shadow traffic to Google Mobile Services for password storage. This
 // allows to check stability without switching away from the local storage as
 // source of truth.
@@ -158,6 +163,13 @@ const base::Feature kUsernameFirstFlowFilling = {
 const base::Feature kUsernameFirstFlowFallbackCrowdsourcing = {
     "UsernameFirstFlowFallbackCrowdsourcing",
     base::FEATURE_DISABLED_BY_DEFAULT};
+
+#if defined(OS_ANDROID)
+// Current migration version to Google Mobile Services. If version saved in pref
+// is lower than 'kMigrationVersion' passwords will be re-uploaded.
+extern const base::FeatureParam<int> kMigrationVersion = {
+    &kUnifiedPasswordManagerMigration, "migration_version", 0};
+#endif
 
 // Field trial identifier for password generation requirements.
 const char kGenerationRequirementsFieldTrial[] =

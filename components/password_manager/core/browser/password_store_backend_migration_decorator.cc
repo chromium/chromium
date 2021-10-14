@@ -9,15 +9,27 @@
 #include "components/password_manager/core/browser/field_info_table.h"
 #include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/password_manager/core/browser/password_store_proxy_backend.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 
 namespace password_manager {
 
+namespace {
+
+// Time in seconds by which the passwords migration from the built-in backend to
+// the Android backend is delayed.
+constexpr int kMigrationToAndroidBackendDelay = 30;
+
+}  // namespace
+
 PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
     std::unique_ptr<PasswordStoreBackend> built_in_backend,
-    std::unique_ptr<PasswordStoreBackend> android_backend)
+    std::unique_ptr<PasswordStoreBackend> android_backend,
+    PrefService* prefs)
     : built_in_backend_(std::move(built_in_backend)),
-      android_backend_(std::move(android_backend)) {
+      android_backend_(std::move(android_backend)),
+      prefs_(prefs) {
   DCHECK(built_in_backend_);
   DCHECK(android_backend_);
   active_backend_ = std::make_unique<PasswordStoreProxyBackend>(
@@ -34,8 +46,14 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
   active_backend_->InitBackend(std::move(remote_form_changes_received),
                                std::move(sync_enabled_or_disabled_cb),
                                std::move(completion));
-  // TODO:(crbug.com/1252443) If feature is enabled post delayed task to start
-  // migration.
+  if (base::FeatureList::IsEnabled(
+          features::kUnifiedPasswordManagerMigration)) {
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PasswordStoreBackendMigrationDecorator::StartMigration,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::Seconds(kMigrationToAndroidBackendDelay));
+  }
 }
 
 void PasswordStoreBackendMigrationDecorator::Shutdown(
@@ -136,7 +154,7 @@ PasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegateFactory() {
 }
 
 void PasswordStoreBackendMigrationDecorator::StartMigration() {
-  migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>();
+  migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(prefs_);
   migrator_->StartMigrationIfNecessary();
 }
 

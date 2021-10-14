@@ -701,6 +701,7 @@ source_set("unit_tests") {
   ]
   if (is_android) {
     sources += [
+      "built_in_backend_to_android_backend_migrator_unittest.cc",
       "password_scripts_fetcher_impl_unittests.cc",
       "password_store_backend_migration_decorator_unittest.cc",
       "password_store_proxy_backend_unittest.cc",

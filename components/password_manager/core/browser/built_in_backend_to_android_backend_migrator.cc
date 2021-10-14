@@ -3,22 +3,31 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/built_in_backend_to_android_backend_migrator.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 
 namespace password_manager {
 
-BuiltInBackendToAndroidBackendMigrator::
-    BuiltInBackendToAndroidBackendMigrator() = default;
+BuiltInBackendToAndroidBackendMigrator::BuiltInBackendToAndroidBackendMigrator(
+    PrefService* prefs)
+    : prefs_(prefs) {}
 
 BuiltInBackendToAndroidBackendMigrator::
     ~BuiltInBackendToAndroidBackendMigrator() = default;
 
 void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary() {
-  // TODO:(crbug.com/1252443) Check current migration version and version
-  // saved in pref. If current version is higher, start migration.
+  if (features::kMigrationVersion.Get() >
+      prefs_->GetInteger(
+          prefs::kCurrentMigrationVersionToGoogleMobileServices)) {
+    // TODO:(crbug.com/1252443) Implement actual migration.
+    UpdateMigrationVersionInPref();
+  }
 }
 
 void BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref() {
-  // TODO:(crbug.com/1252443) Save current migration version in pref.
+  prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
+                     features::kMigrationVersion.Get());
 }
 
 }  // namespace password_manager

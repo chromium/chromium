@@ -83,7 +83,8 @@ PasswordStoreFactory::BuildServiceInstanceFor(
     defined(USE_OZONE)
 
   ps = new password_manager::PasswordStore(
-      password_manager::PasswordStoreBackend::Create(std::move(login_db)));
+      password_manager::PasswordStoreBackend::Create(std::move(login_db),
+                                                     profile->GetPrefs()));
 #else
   NOTIMPLEMENTED();
 #endif

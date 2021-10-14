@@ -16,6 +16,8 @@ namespace syncer {
 class ProxyModelTypeControllerDelegate;
 }  // namespace syncer
 
+class PrefService;
+
 namespace password_manager {
 
 class LoginDatabase;
@@ -116,7 +118,8 @@ class PasswordStoreBackend {
   // Factory function for creating the backend. The Local backend requires the
   // provided `login_db` for storage and Android backend for migration purposes.
   static std::unique_ptr<PasswordStoreBackend> Create(
-      std::unique_ptr<LoginDatabase> login_db);
+      std::unique_ptr<LoginDatabase> login_db,
+      PrefService* prefs);
 };
 
 }  // namespace password_manager
