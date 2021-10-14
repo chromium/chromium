@@ -898,8 +898,7 @@ void WorkspaceWindowResizer::CompleteDrag() {
   // is slightly less confusing.
   if (window_state()->IsSnapped()) {
     if (details().window_component == HTCAPTION ||
-        !AreBoundsValidSnappedBounds(window_state()->GetStateType(),
-                                     GetTarget()->bounds())) {
+        !AreBoundsValidSnappedBounds(GetTarget())) {
       // Set the window to WindowStateType::kNormal but keep the
       // window at the bounds that the user has moved/resized the
       // window to.
@@ -1584,16 +1583,21 @@ WorkspaceWindowResizer::SnapType WorkspaceWindowResizer::GetSnapType(
 }
 
 bool WorkspaceWindowResizer::AreBoundsValidSnappedBounds(
-    WindowStateType snapped_type,
-    const gfx::Rect& bounds_in_parent) const {
-  DCHECK(snapped_type == WindowStateType::kPrimarySnapped ||
-         snapped_type == WindowStateType::kSecondarySnapped);
-  gfx::Rect snapped_bounds =
-      screen_util::GetDisplayWorkAreaBoundsInParent(GetTarget());
-  if (snapped_type == WindowStateType::kSecondarySnapped)
-    snapped_bounds.set_x(snapped_bounds.right() - bounds_in_parent.width());
-  snapped_bounds.set_width(bounds_in_parent.width());
-  return bounds_in_parent == snapped_bounds;
+    aura::Window* window) const {
+  const gfx::Rect bounds_in_parent = window->bounds();
+  const WindowState* state = window_state();
+  const WindowStateType state_type = state->GetStateType();
+  DCHECK(state_type == WindowStateType::kPrimarySnapped ||
+         state_type == WindowStateType::kSecondarySnapped);
+  SnapViewType snapped_type = state_type == WindowStateType::kPrimarySnapped
+                                  ? SnapViewType::kPrimary
+                                  : SnapViewType::kSecondary;
+  const float snap_ratio = state->snap_ratio().value_or(kDefaultSnapRatio);
+  gfx::Rect snapped_bounds = GetSnappedWindowBounds(
+      screen_util::GetDisplayWorkAreaBoundsInParent(window),
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window), window,
+      snapped_type, snap_ratio);
+  return bounds_in_parent.ApproximatelyEqual(snapped_bounds, 1);
 }
 
 void WorkspaceWindowResizer::SetWindowStateTypeFromGesture(

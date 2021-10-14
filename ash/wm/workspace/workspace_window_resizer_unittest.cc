@@ -2373,6 +2373,65 @@ TEST_F(PortraitWorkspaceWindowResizerTest, SnapBottom) {
   EXPECT_EQ(expected_snapped_bounds, window_->bounds());
 }
 
+// Verifies the behavior of resizing a vertically snapped window.
+TEST_F(PortraitWorkspaceWindowResizerTest, ResizeSnapped) {
+  WindowState* window_state = WindowState::Get(window_.get());
+  AllowSnap(window_.get());
+
+  const gfx::Rect kInitialBounds(100, 100, 100, 100);
+  window_->SetBounds(kInitialBounds);
+  window_->Show();
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInParent(window_.get());
+
+  const WMEvent snap_top(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_top);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
+  gfx::Rect expected_snap_bounds =
+      gfx::Rect(work_area.width(), work_area.height() / 2);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
+  EXPECT_EQ(expected_snap_bounds, window_->bounds());
+  EXPECT_EQ(kInitialBounds, window_state->GetRestoreBoundsInParent());
+
+  {
+    // 1) Resizing a vertically snapped window to make it higher should not
+    // unsnap the window.
+    std::unique_ptr<WindowResizer> resizer =
+        CreateResizerForTest(window_.get(), gfx::Point(), HTBOTTOM);
+    resizer->Drag(CalculateDragPoint(*resizer, 0, 30), 0);
+    resizer->CompleteDrag();
+    EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
+    expected_snap_bounds.Inset(0, 0, 0, -30);
+    EXPECT_EQ(expected_snap_bounds, window_->bounds());
+    EXPECT_EQ(kInitialBounds, window_state->GetRestoreBoundsInParent());
+  }
+
+  {
+    // 2) Resizing a vertically snapped window horizontally and then undoing
+    // the change should not unsnap.
+    std::unique_ptr<WindowResizer> resizer =
+        CreateResizerForTest(window_.get(), gfx::Point(), HTLEFT);
+    resizer->Drag(CalculateDragPoint(*resizer, 30, 0), 0);
+    resizer->Drag(CalculateDragPoint(*resizer, 0, 0), 0);
+    resizer->CompleteDrag();
+    EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
+    EXPECT_EQ(expected_snap_bounds, window_->bounds());
+    EXPECT_EQ(kInitialBounds, window_state->GetRestoreBoundsInParent());
+  }
+
+  {
+    // 3) Resizing a vertically snapped window horizontally should unsnap.
+    std::unique_ptr<WindowResizer> resizer =
+        CreateResizerForTest(window_.get(), gfx::Point(), HTLEFT);
+    resizer->Drag(CalculateDragPoint(*resizer, 30, 0), 0);
+    resizer->CompleteDrag();
+    EXPECT_EQ(WindowStateType::kNormal, window_state->GetStateType());
+    expected_snap_bounds.Inset(30, 0, 0, 0);
+    EXPECT_EQ(expected_snap_bounds, window_->bounds());
+    EXPECT_FALSE(window_state->HasRestoreBounds());
+  }
+}
+
 // Test WorkspaceWindowResizer functionalities for two displays with different
 // orientation: landscape and portrait. This test is parameterized to enable
 // vertical or horizontal snap layout in the portrait display.
