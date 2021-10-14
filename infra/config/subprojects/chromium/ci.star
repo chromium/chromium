@@ -918,16 +918,17 @@ ci.android_builder(
     ),
 )
 
+# TODO(crbug/1255748): Remove this once all try builds are finished
 ci.android_builder(
     name = "android-lollipop-arm-rel",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
-        category = "on_cq",
+        category = "depre",
         short_name = "L",
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
-    tree_closing = True,
+    tree_closing = False,
     os = os.LINUX_BIONIC_REMOVE,
 )
 

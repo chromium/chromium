@@ -19,8 +19,6 @@ These builders must pass before a CL may land that affects files outside of
 
 * [android-binary-size](https://ci.chromium.org/p/chromium/builders/try/android-binary-size) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-binary-size"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-binary-size""))
 
-* [android-lollipop-arm-rel](https://ci.chromium.org/p/chromium/builders/try/android-lollipop-arm-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-lollipop-arm-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-lollipop-arm-rel""))
-
 * [android-marshmallow-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-marshmallow-arm64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-marshmallow-arm64-rel""))
 
 * [android-marshmallow-x86-rel](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-x86-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-marshmallow-x86-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-marshmallow-x86-rel""))
