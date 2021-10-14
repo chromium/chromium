@@ -589,6 +589,7 @@
 <translation id="1612019740169791082">আপনার কন্টেনারের বর্তমান কনফিগারেশন ডিস্ক রিসাইজ করা সাপোর্ট করে না। Linux-এ আগে থেকে বরাদ্দ করা জায়গার পরিমাণ অ্যাডজাস্ট করতে, ব্যাক-আপ নিয়ে নতুন কন্টেনারে ফিরিয়ে আনুন।</translation>
 <translation id="1614511179807650956">আপনি হয়ত সমস্ত মোবাইল ডেটা ব্যবহার করে ফেলেছেন৷ আরও ডেটা কিনতে <ph name="NAME" /> অ্যাক্টিভেশন পোর্টালে যান</translation>
 <translation id="161460670679785907">আপনার ফোনটি শনাক্ত করা যায়নি</translation>
+<translation id="1615337439947999338">আপনার Google অ্যাকাউন্টে সেভ করুন (<ph name="EMAIL" />)</translation>
 <translation id="1615402009686901181">কোনও গোপনীয় কন্টেন্ট দেখা গেলে অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী স্ক্রিন ক্যাপচার করার সুবিধা বন্ধ করে দেওয়া হয়</translation>
 <translation id="1616206807336925449">এই এক্সটেনশনটির কোনও বিশেষ অনুমতির প্রয়োজন নেই।</translation>
 <translation id="1616298854599875024">এটি একটি শেয়ার করা মডিউল না হওয়ার কারণে <ph name="IMPORT_NAME" /> এক্সটেনশন ইমপোর্ট করা যাচ্ছে না</translation>
@@ -927,6 +928,7 @@
 <translation id="1929546189971853037">আপনার সমস্ত প্রবেশ করা ডিভাইসের ব্রাউজিং ইতিহাস পড়ুন</translation>
 <translation id="1930879306590754738">এই ডিভাইস এবং আপনার Google অ্যাকাউন্ট থেকে পাসওয়ার্ড মুছে ফেলা হয়েছে</translation>
 <translation id="1931152874660185993">কোনো উপাদান ইনস্টল করা নেই৷</translation>
+<translation id="1931410639376954712"><ph name="DEVICE_OS" /> ইনস্টল করা হচ্ছে</translation>
 <translation id="1932098463447129402">আগে কখনও নয়</translation>
 <translation id="1935303383381416800">আপনার লোকেশন দেখার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="1936931585862840749">কতগুলি কপি প্রিন্ট হবে তা নির্দিষ্ট করতে একটি সংখ্যা ব্যবহার করুন (১ থেকে <ph name="MAX_COPIES" />-এর মধ্যে)।</translation>
@@ -1059,6 +1061,7 @@
 <translation id="208586643495776849">আবার চেষ্টা করুন</translation>
 <translation id="208634871997892083">সবসময় চালু ভিপিএন</translation>
 <translation id="2087822576218954668">প্রিন্ট করুন: <ph name="PRINT_NAME" /></translation>
+<translation id="2088092308059522196">আপনি <ph name="DEVICE_OS" /> ইনস্টল করার পরেই শুধুমাত্র এনরোল করা যাবে।</translation>
 <translation id="208928984520943006">যেকোনও সময় হোম স্ক্রিনে যেতে স্ক্রিনের নিচের দিক থেকে উপরে সোয়াইপ করুন।</translation>
 <translation id="2089566709556890888">Google Chrome দিয়ে নিরাপদে ব্রাউজ করুন</translation>
 <translation id="2089795179672254991">ক্লিপবোর্ডে কপি করা টেক্সট এবং ছবি কোনও সাইট দেখতে চাইলে আপনাকে জিজ্ঞেস করা হবে (আমরা এটি সুপারিশ করছি)</translation>
@@ -1183,6 +1186,7 @@
 <translation id="2203088913459920044">নামে অক্ষর, সংখ্যা ও বিশেষ অক্ষর ব্যবহার করা যেতে পারে</translation>
 <translation id="2204034823255629767">আপনি যা টাইপ করেন তা পড়ুন এবং পরিবর্তন করুন</translation>
 <translation id="220858061631308971">দয়া করে  <ph name="DEVICE_NAME" /> "-এ পিন কোড লিখুন:</translation>
+<translation id="2210462644007531147">ইনস্টলেশন সম্পূর্ণ করা যায়নি</translation>
 <translation id="2212565012507486665">কুকিগুলিকে অনুমতি দিন</translation>
 <translation id="2214018885812055163">শেয়ার করা ফোল্ডার</translation>
 <translation id="2214884991347062907">পাসওয়ার্ডটি ভুল হয়েছে, আবার চেষ্টা করুন</translation>
@@ -1239,6 +1243,8 @@
 <translation id="22665427234727190">কোনও সাইট ব্লুটুথ ডিভাইস অ্যাক্সেস করতে চাইলে, একবার জিজ্ঞাসা করে নিন (সাজেস্ট করা হয়েছে)</translation>
 <translation id="2266957463645820432">USB এর মাধ্যমে IPP (IPPUSB)</translation>
 <translation id="2270450558902169558"><ph name="DOMAIN" /> ডোমেনের মধ্যে যে কোনও ডিভাইসের সাথে ডেটা বিনিময় করুন</translation>
+<translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />ইনস্টল করা হলে <ph name="BEGIN_BOLD" />আপনার হার্ড ড্রাইভের সমস্ত ডেটা মুছে যাবে<ph name="END_BOLD" />। আপনার ডেটার ব্যাক-আপ নেওয়া হয়েছে কিনা তা নিশ্চিত করুন।<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ইনস্টল করা একবার শুরু হয়ে গেলে আর বন্ধ করা যাবে না।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837"><ph name="DOMAINS" /> ডোমেনসমূহের মধ্যে যে কোনো ডিভাইসের সাথে ডেটা বিনিময় করুন</translation>
 <translation id="2270666014403455717">'বেছে নিন' বিকল্পের জন্য সুইচ অ্যাসাইন করুন</translation>
 <translation id="2271469253353559191">'ডার্ক মোড'-এর শিডিউল</translation>
@@ -1500,6 +1506,7 @@
 <translation id="2521854691574443804">আপনার সংস্থার সুরক্ষা নীতি মেনে চলছে কিনা তা জানতে <ph name="FILE_NAME" /> চেক করা হচ্ছে…</translation>
 <translation id="252219247728877310">কম্পোনেন্ট আপডেট করা নেই</translation>
 <translation id="2523184218357549926">আপনার দেখা পৃষ্ঠাগুলির ইউআরএল Google-এ পাঠায়</translation>
+<translation id="252418934079508528"><ph name="DEVICE_OS" /> ইনস্টল করুন</translation>
 <translation id="252502352004572774">আপনার কম্পিউটারে ক্ষতিকারক সফ্টওয়্যার আছে কিনা তা Chrome চেক করছে…</translation>
 <translation id="2526590354069164005">ডেস্কটপ</translation>
 <translation id="2526619973349913024">আপডেট চেক করুন</translation>
@@ -1703,6 +1710,7 @@
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2741713322780029189">রিকভারি টার্মিনাল খুলুন</translation>
 <translation id="2741912629735277980">লগ-ইন স্ক্রিনে UI ডিসপ্লে করুন</translation>
+<translation id="2742448780373473567"><ph name="DEVICE_OS" /> ইনস্টল করলে আপনার ডিভাইসের সব ডেটা মুছে যাবে।</translation>
 <translation id="274290345632688601">Linux অ্যাপ ও ফাইল ফিরিয়ে আনা হচ্ছে</translation>
 <translation id="274318651891194348">কীবোর্ড সার্চ করা হচ্ছে</translation>
 <translation id="2743387203779672305">ক্লিপবোর্ডে কপি করুন</translation>
@@ -2893,6 +2901,8 @@
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> সক্ষম করুন</translation>
 <translation id="3981058120448670012">কাছাকাছি থাকা ডিভাইসগুলিতে, <ph name="REMAINING_TIME" />-এর জন্য <ph name="DEVICE_NAME" /> হিসেবে দেখা যাবে...</translation>
 <translation id="3981760180856053153">ভুল সেভ করার ধরণ লেখা হয়েছে৷</translation>
+<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />কিছু সমস্যা হয়েছে এবং <ph name="DEVICE_OS" /> ইনস্টল করা যায়নি।<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />আরও সহায়তার জন্য, দেখুন: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">কয়েকটি সহজ ধাপে আপনার ব্রাউজার সেট-আপ করুন</translation>
 <translation id="3983400541576569538">কিছু অ্যাপের ডেটা মুছে যেতে পারে</translation>
 <translation id="3983586614702900908">একটি অজানা বিক্রেতা থেকে ডিভাইসগুলি</translation>
@@ -2980,6 +2990,7 @@
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> বন্ধ করুন</translation>
 <translation id="4085270836953633510">কোনও সাইট সিরিয়াল পোর্ট অ্যাক্সেস করতে চাইলে আমাকে জিজ্ঞাসা করুন</translation>
 <translation id="4085298594534903246">এই পৃষ্ঠাতে জাভাস্ক্রিপ্ট ব্লক করা হয়েছে৷</translation>
+<translation id="4085947337119280756">অতিরিক্ত এক্সটেনশন</translation>
 <translation id="4087089424473531098">এই এক্সটেনশনটি তৈরি হয়েছে:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -3283,6 +3294,7 @@
 <translation id="4449996769074858870">এই ট্যাবটি অডিও প্লে করছে৷</translation>
 <translation id="4450274068924249931">আপনার স্ক্রিনে কোনও অ্যাক্টিভিটি না হলে, ফটো, সময়, আবহাওয়া ও খবর দেখুন। 'স্ক্রিন সেভার' বিকল্প চালু রাখলে, ডিভাইস চার্জ দেওয়ার সময় ডিসপ্লে দেখতে পাবেন।</translation>
 <translation id="4450974146388585462">নির্ণয় করুন</translation>
+<translation id="445099924538929605"><ph name="DEVICE_OS" /> একটি চালু থাকা TPM শনাক্ত করেছে যেটি আপনার ডেটা আরও সুরক্ষিতভাবে সেভ করতে পারবে।</translation>
 <translation id="4451479197788154834">এই ডিভাইসে এবং আপনার Google অ্যাকাউন্টে পাসওয়ার্ড সেভ করা আছে</translation>
 <translation id="4451757071857432900">সাইটে থাকা ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন ব্লক করা হয়েছে (প্রস্তাবিত)</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" />-এ সার্চ করুন অথবা ইউআরএল টাইপ করুন</translation>
@@ -3785,6 +3797,9 @@
 <translation id="4992473555164495036">আপনার অ্যাডমিনিস্ট্রেটর উপলভ্য ইনপুট পদ্ধতিগুলি সীমাবদ্ধ করেছেন।</translation>
 <translation id="4994474651455208930">সাইটগুলিকে প্রোটোকলের জন্য ডিফল্ট হ্যান্ডলার হওয়ার জন্য জিজ্ঞাসা করার অনুমতি দেয়</translation>
 <translation id="4994754230098574403">সেট-আপ করা হচ্ছে</translation>
+<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />এনরোল করার আগে TPM মুছতে হবে যাতে <ph name="DEVICE_OS" /> ডিভাইসের মালিকানা পেতে পারে।<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />এছাড়াও আপনি সরাসরি TPM ডিভাইস সম্পূর্ণভাবে বন্ধ করতে পারেন। আপনার ডেটা সুরক্ষিতভাবে সফ্টওয়্যার এনক্রিপশন সহ সেভ করা হবে তবে হার্ডওয়্যার-ব্যাকড সার্টিফিকেটের মতো নির্দিষ্ট নিরাপত্তা ফিচার বন্ধ হয়ে যাবে।<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />সিস্টেম BIOS/UEFI সেটিংস এন্টার করে এবং রিবুট করার মাধ্যমে আপনার TPM সেটিং পরিবর্তন করতে পারবেন। ডিভাইস মডেলের উপর ভিত্তি করে ধাপ আলাদা হতে পারে। রিবুট করার আগে আরও তথ্যের জন্য, আলাদা ডিভাইসে <ph name="DEVICE_OS" /> ডকুমেন্টেশন খুলুন: [URL লিঙ্ক]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{কোনও <ph name="VM_TYPE" /> VM খুঁজে পাওয়া যায়নি}=1{1 <ph name="VM_TYPE" /> VM খুঁজে পাওয়া গেছে: <ph name="VM_NAME_LIST" />}one{{NUM_VMS} <ph name="VM_TYPE" /> VM খুঁজে পাওয়া গেছে: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VM খুঁজে পাওয়া গেছে: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">কোনও ইন্টারনেট সংযোগ নেই।</translation>
 <translation id="4998430619171209993">চালু করা আছে</translation>
@@ -3900,6 +3915,7 @@
 <translation id="5127620150973591153">নিরাপদ কানেকশন আইডি: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">সিঙ্ক বন্ধ রয়েছে</translation>
 <translation id="5127881134400491887">নেটওয়ার্ক সংযোগগুলি পরিচালনা করুন</translation>
+<translation id="5128774403617662387">চালু করার আগে, আপনার ডেটার ব্যাক-আপ নেওয়া আছে কিনা তা নিশ্চিত করুন। <ph name="DEVICE_OS" /> ইনস্টল করলে আপনার হার্ড ড্রাইভে থাকা সব ডেটা মুছে যাবে। g.co/TBD থেকে আরও জানুন।</translation>
 <translation id="512903556749061217">সংযুক্ত</translation>
 <translation id="5130080518784460891">ইটেন</translation>
 <translation id="5130675701626084557">প্রোফাইল ডাউনলোড করা যায়নি। আবার চেষ্টা করুন অথবা সহায়তার জন্য পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
@@ -4334,6 +4350,7 @@
 <translation id="5592595402373377407">এখনও যথেষ্ট ডেটা উপলব্ধ নেই৷</translation>
 <translation id="5595485650161345191">ঠিকানা সম্পাদনা করুন</translation>
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
+<translation id="5600348067066185292">ইনস্টলেশনের জন্য কয়েকটি সহজ ধাপ প্রয়োজন। আপনার কম্পিউটারে পরিবর্তন করার আগে আপনি কনফার্ম করার আরও একটি সুযোগ পাবেন।</translation>
 <translation id="5600706100022181951">আপডেটটি ডাউনলোড করতে <ph name="UPDATE_SIZE_MB" /> এমবি মোবাইল ডেটা খরচ হবে। ডাউনলোড করতে চান?</translation>
 <translation id="5601503069213153581">পিন</translation>
 <translation id="5601823921345337195">MIDI ডিভাইসের সাথে কানেক্ট করার অনুমতি দেওয়া হয়নি</translation>
@@ -4394,6 +4411,7 @@
 <translation id="5659593005791499971">ইমেল আইডি</translation>
 <translation id="5659833766619490117">এই পৃষ্ঠাটির অনুবাদ করা যায়নি</translation>
 <translation id="5662513737565158057">কীভাবে Linux অ্যাপ কাজ করবে তা পরিবর্তন করুন।</translation>
+<translation id="5667490069342183561">কোনও ডেটা হারিয়ে যাওয়ার ক্ষেত্রে Google দায়বদ্ধ নয় এবং <ph name="DEVICE_OS" /> সার্টিফায়েড নয় এমন মডেলে কাজ নাও করতে পারে। g.co/TBD থেকে আরও জানুন।</translation>
 <translation id="5667546120811588575">Google Play সেট-আপ করা হচ্ছে...</translation>
 <translation id="5668351004957198136">ব্যর্থ হয়েছে</translation>
 <translation id="56702779821643359">আপনার আশেপাশের লোকজনের সাথে ফাইল শেয়ার করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
@@ -4412,6 +4430,7 @@
 <translation id="5684181005476681636">ওয়াই-ফাইয়ের বিবরণ</translation>
 <translation id="5684661240348539843">সম্পদ শনাক্তকারী</translation>
 <translation id="5687326903064479980">সময় অঞ্চল</translation>
+<translation id="5687935527303996204">আপনার ডিভাইস সঠিকভাবে প্লাগ-ইন করা আছে কিনা তা নিশ্চিত করুন এবং এটি বন্ধ করবেন না। ইনস্টল হতে ২০ মিনিট সময় লাগতে পারে। ইনস্টলেশন সম্পূর্ণ হলে আপনার ডিভাইস অটোমেটিক বন্ধ হয়ে যাবে।</translation>
 <translation id="5689516760719285838">লোকেশন</translation>
 <translation id="5689531695336322499">মনে হচ্ছে <ph name="SUPERVISED_USER_NAME" /> অন্য কোনও ডিভাইসে Assistant-এর সাথে আগেই Voice Match সেট আপ করে ফেলেছেন। আগের এই সব রেকর্ডিং এই ডিভাইসে ভয়েস মডেল তৈরি করার জন্য ব্যবহার করা হয়েছে।</translation>
 <translation id="56907980372820799">ডেটা লিঙ্ক করুন</translation>
@@ -5749,6 +5768,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> আপনার মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="7141105143012495934">আপনার অ্যাকাউন্টের বিশদ বিবরণ পুনরুদ্ধার করতে না পারায় সাইন-ইন ব্যর্থ হয়েছে। অনুগ্রহ করে আপনার প্রশাসকের সাথে যোগাযোগ করুন অথবা আবার চেষ্টা করুন।</translation>
 <translation id="7144878232160441200">আবার চেষ্টা করুন</translation>
+<translation id="7149839598364933473">এই ডিভাইসকে <ph name="DEVICE_OS" /> ডিভাইসে রূপান্তরিত করুন।</translation>
 <translation id="7149893636342594995">গত ২৪ ঘণ্টা</translation>
 <translation id="7152478047064750137">এই এক্সটেনশনটির জন্য কোনও বিশেষ অনুমতির প্রয়োজন নেই</translation>
 <translation id="7154130902455071009">আপনার সূচনা পৃষ্ঠাকে এতে পরিবর্তন করুন: <ph name="START_PAGE" /></translation>
@@ -5843,6 +5863,16 @@
 <translation id="7257666756905341374">আপনি যে ডেটা কপি ও পেস্ট করেন তা পড়ুন</translation>
 <translation id="7258225044283673131">অ্যাপ্লিকেশনটি কাজ করছে না। অ্যাপটি বন্ধ করতে "জোর করে বন্ধ করুন" বিকল্পটি বেছে নিন।</translation>
 <translation id="7262004276116528033">এই সাইন-ইন করা পরিষেবাটি <ph name="SAML_DOMAIN" /> দ্বারা হোস্ট করা হয়</translation>
+<translation id="7264432249010320236">অতিরিক্ত সাইট</translation>
+<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />এইসব সমস্যা সমাধানের ধাপ প্রয়োগ করে দেখুন:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />আপনার ডিভাইসে HDD, SSD, বা eMMC-এর মতো কাজ করছে এমন ইন্টার্নাল স্টোরেজ আছে তা নিশ্চিত করুন
+    <ph name="LIST_ITEM" />আপনার ইন্টার্নাল স্টোরেজ ডিভাইসে ১৬ জিবির বেশি জায়গা আছে কিনা চেক করে দেখে নিন
+    <ph name="LIST_ITEM" />সরাসরি অ্যাক্সেস করা গেলে, ইন্টার্নাল স্টোরেজের সাথে কানেকশন চেক করে দেখে নিন
+    <ph name="LIST_ITEM" />আপনি একটি সার্টিফায়েড মডেল ব্যবহার করছেন তা নিশ্চিত করুন এবং ইনস্টল নোট চেক করে দেখে নিন
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />আরও সহায়তার জন্য, দেখুন: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">ভার্চুয়াল মেশিন ইনস্টল করা যায়নি। আবার চেষ্টা করুন অথবা আপনার অ্যাডমিনের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" />।</translation>
 <translation id="7267875682732693301">আপনার আঙুলের ছাপের বিভিন্ন অংশ যোগ করার জন্য বারবার আঙুল তুলে আবার টাচ করতে থাকুন</translation>
 <translation id="7268127947535186412">ডিভাইসের মালিক এই সেটিংটি ম্যানেজ করেন।</translation>
@@ -6568,6 +6598,7 @@
 <translation id="7986295104073916105">সংরক্ষিত পাসওয়ার্ড সেটিংস পড়ুন ও পরিবর্তন করুন</translation>
 <translation id="7987814697832569482">সবসময় এই ভিপিএনের মাধ্যমে কানেক্ট করুন</translation>
 <translation id="7988355189918024273">ব্যবহারযোগ্যতার বৈশিষ্ট্যগুলি চালু করুন</translation>
+<translation id="7988805580376093356">আপনার OS রাখুন এবং USB থেকে <ph name="DEVICE_OS" /> চালান।</translation>
 <translation id="7991296728590311172">সুইচ অ্যাক্সেস সেটিংস</translation>
 <translation id="7997826902155442747">প্রক্রিয়ার অগ্রাধিকার</translation>
 <translation id="7999229196265990314">নিম্নোক্ত ফাইলগুলি তৈরি হয়েছে:
@@ -6676,6 +6707,7 @@
 <translation id="80974698889265265">পিন মিলছে না</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> একটি এক্সটেনশনের প্রক্সি সেটিংস ব্যবহার করছে</translation>
 <translation id="8097959162767603171">আপনার অ্যাডমিনিস্ট্রেটরকে অবশ্যই প্রথমে অ্যাডমিন কনসোলের Chrome ডিভাইসের তালিকাতে দেওয়া পরিষেবার শর্তাবলীর সাথে সম্মত হতে হবে।</translation>
+<translation id="8098156986344908134"><ph name="DEVICE_OS" /> ইনস্টল করবেন এবং হার্ড ড্রাইভ মুছবেন?</translation>
 <translation id="8098616321286360457">নেটওয়ার্ক কানেকশন প্রয়োজন</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> বেছে নেওয়া হয়েছে। টিক চিহ্ন সরিয়ে দিতে Search ও Space বোতাম প্রেস করুন।</translation>
 <translation id="810185532889603849">কাস্টম রঙ</translation>
@@ -6860,6 +6892,7 @@
 <translation id="8287902281644548111">এপিআই কল/ইউআরএল অনুযায়ী সার্চ করুন</translation>
 <translation id="8288032458496410887"><ph name="APP" /> আনইনস্টল করুন...</translation>
 <translation id="8289128870594824098">ডিস্ক সাইজ</translation>
+<translation id="8289509909262565712"><ph name="DEVICE_OS" />-এ স্বাগতম</translation>
 <translation id="8293206222192510085">বুকমার্ক যুক্ত করুন</translation>
 <translation id="8294431847097064396">উৎস</translation>
 <translation id="8298429963694909221">আপনি এখন ফোন থেকে <ph name="DEVICE_TYPE" />-এ বিজ্ঞপ্তি পেতে পারবেন। <ph name="DEVICE_TYPE" />-এ বিজ্ঞপ্তি বাতিল করলে, আপনার ফোন থেকেও বাতিল হয়ে যাবে। আপনার ফোন কাছাকাছি রয়েছে কিনা এবং তাতে ব্লুটুথ আর ওয়াই-ফাই চালু আছে কিনা দেখে নিন।</translation>
@@ -7183,6 +7216,7 @@
 <translation id="867085395664725367">সার্ভারে সাময়িক সমস্যা হয়েছে।</translation>
 <translation id="8673026256276578048">ওয়েবে খুঁজুন...</translation>
 <translation id="8673383193459449849">সার্ভার সমস্যা হয়েছে</translation>
+<translation id="8675704450909805533"><ph name="DEVICE_OS" /> ইনস্টল করার জন্য ইনস্টলার কোনও সঠিক টার্গেট খুঁজে পায়নি।</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{ভিডিও}one{#টি ভিডিও}other{#টি ভিডিও}}</translation>
 <translation id="8676313779986170923">মতামত জানানোর জন্য ধন্যবাদ।</translation>
 <translation id="8676374126336081632">ইনপুট সাফ করুন</translation>
@@ -7339,6 +7373,7 @@
 <translation id="8823559166155093873">কুকি ব্লক করুন</translation>
 <translation id="8823704566850948458">পাসওয়ার্ড সাজেস্ট করুন...</translation>
 <translation id="8824701697284169214">&amp;পৃষ্ঠা যোগ করুন...</translation>
+<translation id="8826773185686617320"><ph name="DEVICE_OS" /> ব্যবহার করা চালু করতে ইউএসবি সরিয়ে আপনার ডিভাইস রিস্টার্ট করুন। অন্যথায়, আপনার ডিভাইস <ph name="TIME_LEFT" />-এর মধ্যে বন্ধ হয়ে যাবে।</translation>
 <translation id="8827125715368568315"><ph name="PERMISSION" /> এবং আরও <ph name="COUNT" />টি অনুমতি ব্লক করা হয়েছে</translation>
 <translation id="8827289157496676362">এক্সটেনশন পিন করুন</translation>
 <translation id="8827752199525959199">আরও অ্যাকশন, <ph name="DOMAIN" />-এ <ph name="USERNAME" />-এর জন্য পাসওয়ার্ড</translation>
@@ -7473,6 +7508,7 @@
 <translation id="8962051932294470566">আপনি একসাথে কেবল একটি ফাইল শেয়ার করতে পারবেন। বর্তমান ফাইলটি ট্রান্সফার করা হয়ে গেলে, আবার চেষ্টা করুন।</translation>
 <translation id="8962083179518285172">বিবরণ লুকান</translation>
 <translation id="8962918469425892674">এই সাইটটি মোশন এবং লাইট সেন্সর ব্যবহার করছে।</translation>
+<translation id="8964943308070692533">অতিরিক্ত বন্ধ থাকা সাইট</translation>
 <translation id="8965037249707889821">পুরানো পাসওয়ার্ড লিখুন</translation>
 <translation id="89667524227025535">আপনার ডিভাইসের ক্যামেরা ব্যবহার করে একটি QR কোড স্ক্যান করুন অথবা আপনার পরিষেবা প্রদানকারীর থেকে পাওয়া অ্যাক্টিভেশন কোড লিখুন</translation>
 <translation id="8966809848145604011">অন্যান্য প্রোফাইল</translation>
@@ -7635,6 +7671,8 @@
 <translation id="9116465289595958864">শেষবার সংশোধন করা হয়েছে</translation>
 <translation id="9116799625073598554">টিকা-লেখার অ্যাপ</translation>
 <translation id="9117030152748022724">আপনার অ্যাপ ম্যানেজ করুন</translation>
+<translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />সেরা অভিজ্ঞতা পেতে, আপনার ইন্টার্নাল ডিস্কে <ph name="DEVICE_OS" /> ইনস্টল করুন। এছাড়াও, পরে এটি লগ-ইন স্ক্রিন থেকে ইনস্টল করতে পারবেন।<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ইনস্টল করার জন্য প্রস্তুত না থাকলে, এটা করে দেখতে, ইউএসবি ব্যবহার করে চালিয়ে দেখতে পারেন। এটি আপনার বর্তমান OS ও ডেটা রাখবে তবে হয়ত দেখবেন যে, স্টোরেজ ও পারফর্ম্যান্সের সীমা কমে গেছে।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">পিন করা ট্যাব হিসেবে খুলুন</translation>
 <translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> পজ করা আছে</translation>
 <translation id="9124003689441359348">সংরক্ষিত পাসওয়ার্ডগুলি এখানে দেখা যাবে</translation>

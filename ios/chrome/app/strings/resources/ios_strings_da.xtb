@@ -816,6 +816,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bogmærker</translation>
 <translation id="8840513115188359703">Du bliver ikke logget ud af din Google-konto.</translation>
+<translation id="8843129975935593190">Din organisation begrænser, hvad du kan synkronisere.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} fane}one{{count} fane}other{{count} faner}}</translation>
 <translation id="8870413625673593573">Senest lukkede</translation>
 <translation id="8876882697946675716">Bevar synkroniseringen af dine enheder</translation>

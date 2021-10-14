@@ -405,6 +405,7 @@
 <translation id="2241693394036365668">ফাইল ডাউনল’ড কৰিলে</translation>
 <translation id="2248949050832152960">WebAuthn ব্যৱহাৰ কৰক</translation>
 <translation id="2250931979407627383">বাওঁফালে কাষত চিলাওক</translation>
+<translation id="2251943122176102076">গোপনীয় সমল কেপচাৰ কৰা হয় বাবে প্ৰশাসকে স্ক্ৰীনশ্বট লোৱা অথবা ৰেকৰ্ড কৰাটো চুপাৰিছ নকৰে:</translation>
 <translation id="225207911366869382">এই নীতিটোৰ বাবে এই মানটো অপ্ৰচলিত।</translation>
 <translation id="2258928405015593961">ম্যাদ উকলাৰ তাৰিখ হিচাপে ভৱিষ্যতৰ এটা তাৰিখ দিয়ক আৰু পুনৰ চেষ্টা কৰক</translation>
 <translation id="225943865679747347">আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" /></translation>
@@ -1191,6 +1192,7 @@
           <ph name="LIST_ITEM" />ইণ্টাৰনেট সেৱা প্ৰদানকাৰীয়ে ৱেবৰ ট্ৰেফিক নিৰীক্ষণ কৰিব পাৰে<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">সকীয়নি অন কৰক</translation>
+<translation id="4834718916855725099">স্ক্ৰীনত গোপনীয় সমল থকাৰ বাবে প্ৰশাসকে স্ক্ৰীনশ্বট লোৱা অথবা ৰেকৰ্ড কৰাটো চুপাৰিছ নকৰে:</translation>
 <translation id="4838327282952368871">স্বপ্নময়</translation>
 <translation id="4840250757394056958">আপোনাৰ Chromeৰ ইতিহাস চাওক</translation>
 <translation id="484462545196658690">স্বয়ংক্ৰিয়</translation>

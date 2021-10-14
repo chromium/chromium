@@ -803,6 +803,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Appen er blokeret af din administrator</translation>
 <translation id="3608932978122581043">Retning for indførelse</translation>
+<translation id="3611395257124510155">Virtuelt kort for <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Størrelse 2</translation>
 <translation id="361438452008624280">Listepost "<ph name="LANGUAGE_ID" />": Ukendt eller ikke-understøttet sprog.</translation>
 <translation id="3615877443314183785">Angiv en gyldig udløbsdato</translation>
@@ -1622,6 +1623,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6276112860590028508">Sider fra din læseliste vises her</translation>
 <translation id="627746635834430766">Gem dit kort og din faktureringsadresse på din Google-konto for at betale hurtigere næste gang.</translation>
+<translation id="6279098320682980337">Er det virtuelle kortnummer ikke udfyldt? Klik på kortoplysningerne for at kopiere</translation>
 <translation id="6280223929691119688">Der kan ikke leveres til denne adresse. Vælg en anden adresse.</translation>
 <translation id="6282194474023008486">Postnummer</translation>
 <translation id="6289939620939689042">Farve på side</translation>

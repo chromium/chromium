@@ -404,6 +404,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3429160811076349561">Le funzionalità di prova non sono attive</translation>
 <translation id="3440975416244667276">Tocca e tieni premuto per altre informazioni pertinenti</translation>
 <translation id="3443221991560634068">Ricarica la pagina corrente</translation>
+<translation id="3444179773590444986">Vuoi condividere un feedback sul tema scuro per i siti?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 download programmato}other{# download programmati}}</translation>
 <translation id="3478363558367712427">Puoi scegliere il motore di ricerca</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /> sui contenuti suggeriti</translation>
@@ -585,6 +586,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4663499661119906179">Vedi notizie e siti principali personalizzati</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> Preferiti eliminati</translation>
 <translation id="4668347365065281350">Tutti i dati memorizzati dai siti, inclusi i cookie e altri dati memorizzati localmente</translation>
+<translation id="4678082183394354975">Il tema scuro per i siti è attivo in Chrome</translation>
 <translation id="4684427112815847243">Sincronizza tutto</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e altre <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e altre <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Invia testo ai tuoi dispositivi</translation>
@@ -766,6 +768,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5754350196967618083">Impossibile aggiornare Discover</translation>
 <translation id="5763382633136178763">Schede in incognito</translation>
 <translation id="5763514718066511291">Tocca per copiare l'URL di quest'app</translation>
+<translation id="5765517223145864268">Raccontaci la tua esperienza o <ph name="BEGIN_LINK" />cambia le impostazioni<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">Descrizione:</translation>
 <translation id="5767013862801005129">Scheda <ph name="TAB_TITLE" /> ripristinata</translation>
 <translation id="5776970333778123608">Dati non importanti</translation>
@@ -953,6 +956,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6738516213925468394">I tuoi dati sono stati criptati con la tua <ph name="BEGIN_LINK" />passphrase di sincronizzazione<ph name="END_LINK" /> in data <ph name="TIME" />. Inseriscila per avviare la sincronizzazione.</translation>
 <translation id="6738867403308150051">Download in corso…</translation>
 <translation id="6751521182688001123">Apri rapidamente una nuova scheda. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
+<translation id="6756507620369789050">Condividi feedback</translation>
 <translation id="6767294960381293877">Elenco di dispositivi con cui condividere una scheda aperto nella parte inferiore dello schermo.</translation>
 <translation id="6783942555455976443">Salva questa pagina per un secondo momento e ricevi un promemoria</translation>
 <translation id="6795633245022906657">Apri rapidamente una nuova scheda. Per modificare questa scorciatoia, vai a Impostazioni.</translation>
@@ -1044,6 +1048,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7352651011704765696">Si è verificato un problema</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Condividi 1 elemento selezionato}other{Condividi # elementi selezionati}}</translation>
+<translation id="7356631068872238169">Elimina da Elenco lettura</translation>
 <translation id="7359002509206457351">Accedi ai metodi di pagamento</translation>
 <translation id="7375125077091615385">Tipo:</translation>
 <translation id="7376560087009844242">Se includi più testo di una pagina, potresti vedere risultati migliori quando utilizzi Tocca per cercare. Puoi andare alle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" /> per modificare questa scelta in qualsiasi momento.</translation>
@@ -1214,6 +1219,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8266862848225348053">Percorso di download</translation>
 <translation id="8274165955039650276">Visualizza i download</translation>
 <translation id="8281886186245836920">Salta</translation>
+<translation id="8282297628636750033">Applica il tema scuro ai siti, se possibile</translation>
 <translation id="8284326494547611709">Sottotitoli</translation>
 <translation id="829672787777123339">Collegamento al dispositivo in corso…</translation>
 <translation id="8310344678080805313">Schede standard</translation>
@@ -1345,6 +1351,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="9063523880881406963">Disattiva Richiedi sito desktop</translation>
 <translation id="9065203028668620118">Modifica</translation>
 <translation id="9065383040763568503">I dati memorizzati che Chrome non ritiene importanti (ad esempio siti senza impostazioni salvate o che non visiti spesso)</translation>
+<translation id="906781307897697745">in <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Nessuna pagina da leggere</translation>
 <translation id="9070377983101773829">Avvia la ricerca vocale</translation>
 <translation id="9074336505530349563">Per ricevere contenuti suggeriti appositamente per te da Google, accedi e attiva la sincronizzazione</translation>

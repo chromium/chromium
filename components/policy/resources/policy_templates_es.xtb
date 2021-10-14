@@ -78,6 +78,16 @@
 <translation id="1069489575852947981">Si se asigna el valor "Enabled" a esta política o no se le asigna ninguno, se definirá una cuenta local del dispositivo para el inicio de sesión automático sin retardo. <ph name="PRODUCT_OS_NAME" /> permitirá usar la combinación de teclas Ctrl + Alt + S para omitir el inicio de sesión automático y mostrar la pantalla de inicio de sesión.
 
       Si se le asigna el valor "Disabled", los usuarios no podrán omitir el inicio de sesión automático sin retardo (si se ha configurado).</translation>
+<translation id="1070656322814001059">Chrome bloqueará el acceso a protocolos externos dentro de iframes en entornos aislados. Consulta https://chromestatus.com/features/5680742077038592.
+
+      Si se le asigna el valor True, Chrome podrá bloquear esos accesos.
+
+      Si se le asigna el valor False, Chrome no podrá bloquear esos accesos.
+
+      El valor predeterminado es True (función de seguridad habilitada).
+
+      Esta opción la pueden utilizar los usuarios de Enterprise afectados por las restricciones (para suprimirlas temporalmente).
+      </translation>
 <translation id="1073983258515362346">Enviar información sobre la retroiluminación de un dispositivo.
 
       Si se asigna el valor "false" a esta política o no se establece, no se enviará ninguna información.
@@ -1069,6 +1079,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2246011554082893079">Controla la disponibilidad de <ph name="BOREALIS_NAME" /> en este dispositivo.
 
       Si se le asigna el valor false, <ph name="BOREALIS_NAME" /> no estará disponible para ningún usuario del dispositivo. Si, por el contrario, se le asigna el valor true o no se le asigna ningún valor, <ph name="BOREALIS_NAME" /> estará disponible únicamente si no lo desactiva otra política o ajuste.</translation>
+<translation id="2246621891161157804">Permitir que Chrome bloquee el acceso a protocolos externos dentro de iframes en entornos aislados</translation>
 <translation id="225340736558643885">Habilitar advertencias en formularios no seguros</translation>
 <translation id="2258126710006312594">Permite que los usuarios con acceso remoto transfieran archivos al host y desde el host</translation>
 <translation id="2261648512244797294">Inhabilitar el protocolo Privet de impresión obsoleto</translation>
@@ -5325,6 +5336,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7313672174502374994">El hash SHA-256 de la imagen de fondo de pantalla.</translation>
 <translation id="7322825363493984512">La contraseña para autenticar los servicios del sistema para el proxy web remoto.</translation>
 <translation id="7323896582714668701">Parámetros de línea de comandos adicionales para <ph name="PRODUCT_NAME" /></translation>
+<translation id="7325801934761922681">Impedir que Chrome bloquee el acceso a protocolos externos dentro de iframes en entornos aislados</translation>
 <translation id="7326394567531622570">Similar a Wipe (valor 2), pero intenta conservar los tokens de inicio de sesión para que el usuario no tenga que volver a iniciar sesión.</translation>
 <translation id="7331962793961469250">Si se establece en "true", las promociones de aplicaciones de Chrome Web Store no aparecerán en la página Nueva pestaña.
 
@@ -5465,6 +5477,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7544392541165889987">Si se habilita la política o no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> podrá actuar como proxy entre <ph name="CLOUD_PRINT_NAME" /> y las impresoras anteriores conectadas al ordenador. Los usuarios pueden activar el proxy de impresión en la nube utilizando su cuenta de Google para el proceso de autenticación.
 
       Si se le asigna el valor Disabled a la política, los usuarios no podrán activar el proxy y el ordenador no podrá compartir las impresoras conectadas con <ph name="CLOUD_PRINT_NAME" />.</translation>
+<translation id="7546699946724795644">Permitir que Chrome bloquee el acceso a protocolos externos dentro de iframes en entornos aislados</translation>
 <translation id="7547549430720182663">Combinar</translation>
 <translation id="7553535237300701827">El flujo de autenticación de inicio de sesión puede ser de dos formas diferentes, en función del valor que se asigne a esta política:
 

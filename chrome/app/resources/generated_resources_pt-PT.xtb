@@ -32,6 +32,7 @@
 <translation id="1032605640136438169">Reveja os novos termos.</translation>
 <translation id="103279545524624934">Liberte espaço em disco para iniciar as aplicações para Android.</translation>
 <translation id="1033780634303702874">Aceder aos dispositivos de série</translation>
+<translation id="1034484273907870301">Faixa de separadores de miniaturas para o modo de tablet</translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1036511912703768636">Aceder a qualquer um destes dispositivos USB</translation>
 <translation id="1036982837258183574">Premir |<ph name="ACCELERATOR" />| para sair do ecrã inteiro</translation>
@@ -358,6 +359,7 @@
 <translation id="1378613616312864539"><ph name="NAME" /> está a controlar esta definição</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Nenhuma palavra-passe comprometida.}=1{1 palavra-passe comprometida.}other{{NUM_COMPROMISED} palavras-passe comprometidas.}}</translation>
 <translation id="1380028686461971526">Ligar automaticamente à rede</translation>
+<translation id="1381567580865186407">A voz em <ph name="LANGUAGE" /> é enviada para a Google para processamento</translation>
 <translation id="1383597849754832576">Não é possível transferir os ficheiros de voz. Tente novamente mais tarde.</translation>
 <translation id="1383861834909034572">Abrir quando concluído</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
@@ -1147,6 +1149,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2173302385160625112">Verifique a ligação à Internet</translation>
 <translation id="2173801458090845390">Adicionar ID de requisição a este dispositivo</translation>
 <translation id="2174948148799307353">Conta gerida por <ph name="PARENT_EMAIL" />. Para terminar sessão na conta principal neste dispositivo, clique na hora no ecrã. No menu apresentado, clique em "Terminar sessão".</translation>
+<translation id="2175384018164129879">&amp;Gerir motores de pesquisa e a pesquisa de sites</translation>
 <translation id="2175607476662778685">Barra de início rápido</translation>
 <translation id="217576141146192373">Não é possível adicionar a impressora. Verifique a configuração da impressora e tente novamente.</translation>
 <translation id="2175927920773552910">Código QR</translation>
@@ -3848,6 +3851,7 @@ Pretende pará-lo?</translation>
 <translation id="5040823038948176460">Definições de conteúdo adicionais</translation>
 <translation id="5043440033854483429">O nome pode utilizar letras, números e hífenes (-) e tem de ter entre 1 e 15 carateres, inclusive.</translation>
 <translation id="5043913660911154449">Em alternativa, especifique o PPD da impressora. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
+<translation id="5044527779574548527">Não mostrar este passo novamente</translation>
 <translation id="5045550434625856497">Palavra-passe incorrecta</translation>
 <translation id="504561833207953641">A abrir numa sessão existente do navegador…</translation>
 <translation id="5047421709274785093">Impedir que os sites utilizem sensores de movimento e de luz</translation>
@@ -5299,6 +5303,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6619801788773578757">Adicionar app de quiosque</translation>
 <translation id="6619990499523117484">Confirme o PIN</translation>
 <translation id="6622980291894852883">Continuar a bloquear imagens</translation>
+<translation id="6624036901798307345">No modo tablet, toque no botão da barra de ferramentas do contador de separadores para abrir a nova Faixa de separadores que apresenta as miniaturas de cada separador.</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> tem conteúdo sensível ou perigoso. Peça ao proprietário para corrigir.</translation>
 <translation id="6624687053722465643">Doce</translation>
 <translation id="6628328486509726751">Carregado <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
@@ -5604,6 +5609,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6955893174999506273">Atribuir mais 1 interruptor</translation>
 <translation id="6957044667612803194">Esta chave de segurança não suporta PINs.</translation>
 <translation id="6960507406838246615">Atualização do Linux necessária</translation>
+<translation id="6960648667961844909">Não foi possível transferir os ficheiros de voz em <ph name="LANGUAGE" />. Tentar-se-á a transferência mais tarde. A voz é enviada para a Google para processamento até à conclusão da transferência.</translation>
 <translation id="696103774840402661">Todos os ficheiros e dados locais para todos os utilizadores neste dispositivo <ph name="DEVICE_TYPE" /> foram eliminados de forma permanente.</translation>
 <translation id="6964390816189577014">Herói</translation>
 <translation id="6964760285928603117">Remover do grupo</translation>
@@ -6209,6 +6215,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (código de erro <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">Reiniciar computador</translation>
 <translation id="7599527631045201165">O nome do dispositivo é demasiado longo. Introduza um nome mais curto e tente novamente.</translation>
+<translation id="7600054753482800821">&amp;Gerir motores de pesquisa e a pesquisa de sites</translation>
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="760197030861754408">Aceda a <ph name="LANDING_PAGE" /> para ligar.</translation>
 <translation id="7602079150116086782">Sem separadores de outros dispositivos</translation>
@@ -6876,6 +6883,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8244514732452879619">O dispositivo será bloqueado em breve</translation>
 <translation id="8246776524656196770">Proteja a sua chave de segurança com um PIN (número de identificação pessoal)</translation>
 <translation id="8248050856337841185">C&amp;olar</translation>
+<translation id="8248887045858762645">Sugestão do Chrome</translation>
 <translation id="8249048954461686687">Pasta OEM</translation>
 <translation id="8249615410597138718">Enviar para os seus dispositivos</translation>
 <translation id="8249672078237421304">Sugerir a tradução de páginas que não estejam num idioma que o utilizador saiba ler</translation>
@@ -7349,6 +7357,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="87646919272181953">Álbum do Google Fotos</translation>
 <translation id="8767621466733104912">Atualizar automaticamente o Chrome para todos os utilizadores</translation>
+<translation id="8767765348545497220">Fechar balão de ajuda</translation>
 <translation id="8770406935328356739">Diretório raiz da extensão</translation>
 <translation id="8771300903067484968">O fundo da página de inicio foi reposto para a predefinição.</translation>
 <translation id="8773302562181397928">Guardar <ph name="PRINTER_NAME" /></translation>

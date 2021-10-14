@@ -582,6 +582,7 @@
 <translation id="1612019740169791082">您的容器配置不支持调整磁盘空间大小。若要调整预留给 Linux 的空间，请先备份旧容器中的内容，然后再将这些内容恢复到新容器中。</translation>
 <translation id="1614511179807650956">您的移动数据流量配额可能已经用完。若想购买更多流量，请前往“<ph name="NAME" />”激活门户网站</translation>
 <translation id="161460670679785907">检测不到您的手机</translation>
+<translation id="1615337439947999338">保存到您的 Google 帐号 (<ph name="EMAIL" />) 中</translation>
 <translation id="1615402009686901181">管理员政策禁止在屏幕显示机密内容时截取屏幕</translation>
 <translation id="1616206807336925449">此扩展程序无需任何特殊权限。</translation>
 <translation id="1616298854599875024">无法导入扩展程序“<ph name="IMPORT_NAME" />”，因为它不是共享模块</translation>
@@ -911,6 +912,7 @@
 <translation id="1929546189971853037">读取您在所有登录过的设备上的浏览记录</translation>
 <translation id="1930879306590754738">密码已从此设备上和您的 Google 帐号中删除</translation>
 <translation id="1931152874660185993">没有安装任何组件。</translation>
+<translation id="1931410639376954712">正在安装 <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">不早于</translation>
 <translation id="1935303383381416800">允许查看您的位置信息</translation>
 <translation id="1936931585862840749">请使用一个介于 1-<ph name="MAX_COPIES" /> 之间的数字来表明要打印多少份。</translation>
@@ -1043,6 +1045,7 @@
 <translation id="208586643495776849">请重试</translation>
 <translation id="208634871997892083">始终开启的 VPN</translation>
 <translation id="2087822576218954668">打印：<ph name="PRINT_NAME" /></translation>
+<translation id="2088092308059522196">安装 <ph name="DEVICE_OS" /> 后才能注册。</translation>
 <translation id="208928984520943006">从屏幕底部向上滑动即可随时回到主屏幕。</translation>
 <translation id="2089566709556890888">使用 Google Chrome 进行安全浏览</translation>
 <translation id="2089795179672254991">当网站想查看复制到剪贴板的文字和图片时询问您（推荐）</translation>
@@ -1167,6 +1170,7 @@
 <translation id="2203088913459920044">名称可以使用字母、数字和特殊字符</translation>
 <translation id="2204034823255629767">读取和更改您输入的任何内容</translation>
 <translation id="220858061631308971">请在“<ph name="DEVICE_NAME" />”上输入此 PIN 码：</translation>
+<translation id="2210462644007531147">无法完成安装</translation>
 <translation id="2212565012507486665">允许使用 Cookie</translation>
 <translation id="2214018885812055163">共享的文件夹</translation>
 <translation id="2214884991347062907">密码不正确，请重试</translation>
@@ -1220,6 +1224,8 @@
 <translation id="22665427234727190">在网站想访问蓝牙设备时询问您（推荐）</translation>
 <translation id="2266957463645820432">USB 型 IPP (IPPUSB)</translation>
 <translation id="2270450558902169558">与网域 <ph name="DOMAIN" /> 中的任何设备交换数据</translation>
+<translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />安装流程<ph name="BEGIN_BOLD" />会清除您的整个硬盘中的数据<ph name="END_BOLD" />。请确保已备份您的数据。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />安装流程一旦开始就无法取消。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">与下列网域中的任何设备交换数据：<ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">为“选择”操作分配开关</translation>
 <translation id="2271469253353559191">深色模式时间表</translation>
@@ -1481,6 +1487,7 @@
 <translation id="2521854691574443804">正在检查 <ph name="FILE_NAME" /> 是否符合贵组织的安全政策…</translation>
 <translation id="252219247728877310">组件未更新</translation>
 <translation id="2523184218357549926">将您所访问的网页的网址发送给 Google</translation>
+<translation id="252418934079508528">安装 <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome 正在检查您的计算机上是否存在有害软件…</translation>
 <translation id="2526590354069164005">桌面</translation>
 <translation id="2526619973349913024">检查是否有更新</translation>
@@ -1684,6 +1691,7 @@
 <translation id="2740531572673183784">确定</translation>
 <translation id="2741713322780029189">打开恢复终端</translation>
 <translation id="2741912629735277980">登录屏幕上的显示界面</translation>
+<translation id="2742448780373473567">安装 <ph name="DEVICE_OS" /> 会覆盖您的设备上的所有数据。</translation>
 <translation id="274290345632688601">正在恢复 Linux 应用和文件</translation>
 <translation id="274318651891194348">正在搜索键盘</translation>
 <translation id="2743387203779672305">复制到剪贴板</translation>
@@ -2874,6 +2882,8 @@
 <translation id="3979748722126423326">启用<ph name="NETWORKDEVICE" /></translation>
 <translation id="3981058120448670012">向附近的设备显示为“<ph name="DEVICE_NAME" />”，剩余时间为 <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">输入的保存类型无效。</translation>
+<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />出了点问题，无法安装 <ph name="DEVICE_OS" />。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />如需更多帮助，请访问：g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">只需执行几个简单的步骤，即可完成浏览器设置</translation>
 <translation id="3983400541576569538">某些应用中的数据可能会丢失</translation>
 <translation id="3983586614702900908">来自未知供应商的设备</translation>
@@ -2961,6 +2971,7 @@
 <translation id="4084835346725913160">关闭 <ph name="TAB_NAME" /></translation>
 <translation id="4085270836953633510">在网站想访问串行端口时询问您</translation>
 <translation id="4085298594534903246">已拦截此网页上的 JavaScript。</translation>
+<translation id="4085947337119280756">其他扩展程序</translation>
 <translation id="4087089424473531098">已创建扩展程序：
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -3264,6 +3275,7 @@
 <translation id="4449996769074858870">该标签页正在播放音频。</translation>
 <translation id="4450274068924249931">当您的屏幕处于空闲状态时，显示照片、时间、天气和媒体信息。启用屏保功能会使您的显示屏在充电期间保持开启状态。</translation>
 <translation id="4450974146388585462">诊断</translation>
+<translation id="445099924538929605"><ph name="DEVICE_OS" /> 检测到一个处于活动状态的 TPM，它可以更安全地存储您的数据。</translation>
 <translation id="4451479197788154834">您的密码已保存到此设备上和您的 Google 帐号中</translation>
 <translation id="4451757071857432900">已禁止会展示侵扰性或误导性广告的网站显示广告（推荐）</translation>
 <translation id="4453946976636652378">在<ph name="SEARCH_ENGINE_NAME" />中搜索，或者输入一个网址</translation>
@@ -3765,6 +3777,9 @@
 <translation id="4992473555164495036">您的管理员限制了可用的输入法。</translation>
 <translation id="4994474651455208930">允许网站要求成为协议的默认处理程序</translation>
 <translation id="4994754230098574403">正在设置</translation>
+<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />注册之前，您需要清除 TPM，以使 <ph name="DEVICE_OS" /> 拥有对设备的所有权。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您还可彻底关闭 TPM 设备。您的数据仍会通过软件加密技术得到妥善存储，但某些安全功能（例如由硬件支持的证书）将被停用。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />若要更改您的 TPM 设置，请重新启动并进入系统 BIOS/UEFI 设置。具体步骤因设备型号而异。如需了解详情，请于重新启动之前在另外一部设备上打开 <ph name="DEVICE_OS" /> 2.0 文档：[网址链接]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{找不到 <ph name="VM_TYPE" /> 虚拟机}=1{找到了 1 个 <ph name="VM_TYPE" /> 虚拟机：<ph name="VM_NAME_LIST" />}other{找到了 {NUM_VMS} 个 <ph name="VM_TYPE" /> 虚拟机：<ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">未连接到互联网。</translation>
 <translation id="4998430619171209993">已开启</translation>
@@ -3880,6 +3895,7 @@
 <translation id="5127620150973591153">安全配对号码：<ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">同步功能已关闭</translation>
 <translation id="5127881134400491887">管理网络连接</translation>
+<translation id="5128774403617662387">在开始之前，请确保已备份数据。安装 <ph name="DEVICE_OS" /> 会覆盖您的硬盘。如需了解详情，请访问 g.co/TBD。</translation>
 <translation id="512903556749061217">已连接</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">无法下载配置文件。请稍后再试，或向运营商求助。</translation>
@@ -4314,6 +4330,7 @@
 <translation id="5592595402373377407">尚无足够的数据。</translation>
 <translation id="5595485650161345191">修改地址</translation>
 <translation id="5596627076506792578">更多选项</translation>
+<translation id="5600348067066185292">只需执行几个简单的步骤即可完成安装。在更改计算机之前，您还有一次机会进行确认。</translation>
 <translation id="5600706100022181951">下载更新需要使用 <ph name="UPDATE_SIZE_MB" /> MB 的移动数据流量。要继续吗？</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">不允许连接到 MIDI 设备</translation>
@@ -4373,6 +4390,7 @@
 <translation id="5659593005791499971">电子邮件</translation>
 <translation id="5659833766619490117">无法翻译此网页</translation>
 <translation id="5662513737565158057">更改 Linux 应用的运行方式。</translation>
+<translation id="5667490069342183561">Google 不对任何数据损失承担责任，<ph name="DEVICE_OS" /> 在未经认证的型号上可能无法正常运行。如需了解详情，请访问 g.co/TBD。</translation>
 <translation id="5667546120811588575">正在设置 Google Play…</translation>
 <translation id="5668351004957198136">失败</translation>
 <translation id="56702779821643359">与附近的人分享文件。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -4391,6 +4409,7 @@
 <translation id="5684181005476681636">Wi-Fi 详细信息</translation>
 <translation id="5684661240348539843">资产标识符</translation>
 <translation id="5687326903064479980">时区</translation>
+<translation id="5687935527303996204">请确保已正确插入您的设备，且不要关闭它。整个安装流程最多可能需要 20 分钟的时间。待安装完毕后，您的设备将会自动关闭。</translation>
 <translation id="5689516760719285838">位置信息</translation>
 <translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" />似乎已在另一部设备上为 Google 助理设置了 Voice Match。这些先前的语音录音被用来在此设备上创建语音模型。</translation>
 <translation id="56907980372820799">关联数据</translation>
@@ -5728,6 +5747,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> 正在使用您的麦克风</translation>
 <translation id="7141105143012495934">由于无法获取您的帐号详情，因此登录失败了。请与管理员联系或重试。</translation>
 <translation id="7144878232160441200">重试</translation>
+<translation id="7149839598364933473">将此设备转换成一部 <ph name="DEVICE_OS" /> 设备。</translation>
 <translation id="7149893636342594995">过去 24 小时</translation>
 <translation id="7152478047064750137">此扩展程序无需任何特殊权限</translation>
 <translation id="7154130902455071009">将您的初始页更改为：<ph name="START_PAGE" /></translation>
@@ -5822,6 +5842,16 @@
 <translation id="7257666756905341374">读取您复制和粘贴的数据</translation>
 <translation id="7258225044283673131">此应用无响应。请选择“强制关闭”以关闭此应用。</translation>
 <translation id="7262004276116528033">此登录服务由 <ph name="SAML_DOMAIN" /> 托管</translation>
+<translation id="7264432249010320236">其他网站</translation>
+<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />请尝试执行以下问题排查步骤：
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />确保您的设备包含正常运行的内部存储设备，例如 HDD、SSD 或 eMMC
+    <ph name="LIST_ITEM" />确认您的内部存储设备的空间大于 16GB
+    <ph name="LIST_ITEM" />检查与内部存储设备的连接（如果确实可以查看）
+    <ph name="LIST_ITEM" />确保您使用的是经过认证的型号并查看安装说明
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />如需更多帮助，请访问 g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">无法安装此虚拟机。请重试，或与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="7267875682732693301">不时地移开手指，以便传感器更完整地记录您的指纹</translation>
 <translation id="7268127947535186412">此设置由设备所有者管理。</translation>
@@ -6547,6 +6577,7 @@
 <translation id="7986295104073916105">读取和更改已保存的密码设置</translation>
 <translation id="7987814697832569482">始终通过此 VPN 连接</translation>
 <translation id="7988355189918024273">启用辅助功能</translation>
+<translation id="7988805580376093356">请从 USB（而非您的操作系统）中运行 <ph name="DEVICE_OS" />。</translation>
 <translation id="7991296728590311172">开关控制设置</translation>
 <translation id="7997826902155442747">进程优先级</translation>
 <translation id="7999229196265990314">已创建以下文件：
@@ -6655,6 +6686,7 @@
 <translation id="80974698889265265">两次输入的 PIN 码不一致</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> 使用的是由某款扩展程序指定的代理设置</translation>
 <translation id="8097959162767603171">您的管理员必须先接受管理控制台 Chrome 设备列表中的服务条款。</translation>
+<translation id="8098156986344908134">安装 <ph name="DEVICE_OS" /> 并清空硬盘？</translation>
 <translation id="8098616321286360457">需要连接网络</translation>
 <translation id="810068641062493918">已选择“<ph name="LANGUAGE" />”。按搜索键 + 空格键即可取消选择。</translation>
 <translation id="810185532889603849">自定义颜色</translation>
@@ -6839,6 +6871,7 @@
 <translation id="8287902281644548111">按 API 调用/网址搜索</translation>
 <translation id="8288032458496410887">卸载<ph name="APP" />…</translation>
 <translation id="8289128870594824098">磁盘大小</translation>
+<translation id="8289509909262565712">欢迎使用 <ph name="DEVICE_OS" /></translation>
 <translation id="8293206222192510085">添加书签</translation>
 <translation id="8294431847097064396">来源</translation>
 <translation id="8298429963694909221">您现在可在 <ph name="DEVICE_TYPE" /> 上接收手机中的通知。在 <ph name="DEVICE_TYPE" /> 上关闭通知也会在手机上关闭这些通知。请确保您的手机就在附近，且已开启蓝牙和 Wi-Fi。</translation>
@@ -7162,6 +7195,7 @@
 <translation id="867085395664725367">服务器发生了暂时性错误。</translation>
 <translation id="8673026256276578048">搜索网页...</translation>
 <translation id="8673383193459449849">服务器出现问题</translation>
+<translation id="8675704450909805533">安装程序找不到可安装 <ph name="DEVICE_OS" /> 的有效目的地。</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{视频}other{# 个视频}}</translation>
 <translation id="8676313779986170923">感谢您发送反馈。</translation>
 <translation id="8676374126336081632">清除输入的内容</translation>
@@ -7317,6 +7351,7 @@
 <translation id="8823559166155093873">屏蔽 Cookie</translation>
 <translation id="8823704566850948458">建议密码…</translation>
 <translation id="8824701697284169214">添加网页(&amp;G)...</translation>
+<translation id="8826773185686617320">拔下 USB 并重启您的设备即可开始使用 <ph name="DEVICE_OS" />。否则，您的设备将在 <ph name="TIME_LEFT" />后关闭。</translation>
 <translation id="8827125715368568315">禁用了“<ph name="PERMISSION" />”权限和另外 <ph name="COUNT" /> 项权限</translation>
 <translation id="8827289157496676362">固定扩展程序</translation>
 <translation id="8827752199525959199">更多操作，<ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 上的密码</translation>
@@ -7451,6 +7486,7 @@
 <translation id="8962051932294470566">您一次只能分享 1 个文件。请在当前传输任务完成后重试。</translation>
 <translation id="8962083179518285172">隐藏详细信息</translation>
 <translation id="8962918469425892674">此网站正在使用动态传感器或光传感器。</translation>
+<translation id="8964943308070692533">其他无效网站</translation>
 <translation id="8965037249707889821">输入旧密码</translation>
 <translation id="89667524227025535">请使用您设备的摄像头扫描二维码，或者输入您的运营商提供的激活码</translation>
 <translation id="8966809848145604011">其他个人资料</translation>
@@ -7613,6 +7649,8 @@
 <translation id="9116465289595958864">上次修改时间</translation>
 <translation id="9116799625073598554">记事应用</translation>
 <translation id="9117030152748022724">管理应用</translation>
+<translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />为获得最佳体验，请将 <ph name="DEVICE_OS" /> 安装到您的内部磁盘。您也可等到需要时再从登录屏幕安装它。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />如果尚未做好安装前的准备工作，您可从 USB 运行它来试用一下。这样做不会更改您的现有操作系统和数据，但可能会在存储和性能方面受到限制。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">在固定标签页中打开</translation>
 <translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" />已被暂停</translation>
 <translation id="9124003689441359348">已保存的密码将显示在这里</translation>

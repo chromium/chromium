@@ -803,6 +803,7 @@
 <translation id="3600246354004376029"><ph name="TITLE" />، <ph name="DOMAIN" />، <ph name="TIME" /></translation>
 <translation id="3603507503523709">سرپرست برنامه را مسدود کرده است</translation>
 <translation id="3608932978122581043">جهت تغذیه کاغذ</translation>
+<translation id="3611395257124510155">کارت مجازی برای <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">اندازه ۲</translation>
 <translation id="361438452008624280">ورودی فهرست «<ph name="LANGUAGE_ID" />»: زبان ناشناس یا پشتیبانی‌نشده.</translation>
 <translation id="3615877443314183785">تاریخ انقضای معتبری وارد کنید</translation>
@@ -1622,6 +1623,7 @@
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6276112860590028508">صفحه‌های مربوط به فهرست خواندنتان اینجا نشان داده می‌شوند</translation>
 <translation id="627746635834430766">‏برای اینکه دفعات بعد پرداخت سریع‌تری داشته باشید، اطلاعات کارت و نشانی صورت‌حسابتان را در حساب Google خود ذخیره کنید.</translation>
+<translation id="6279098320682980337">شماره کارت مجازی تکمیل نشود؟ روی جزئیات کارت کلیک کنید تا کپی شود</translation>
 <translation id="6280223929691119688">تحویل به این نشانی ممکن نیست. نشانی دیگری را انتخاب کنید.</translation>
 <translation id="6282194474023008486">کد پستی</translation>
 <translation id="6289939620939689042">رنگ صفحه</translation>

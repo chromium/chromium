@@ -809,6 +809,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Preferiti</translation>
 <translation id="8840513115188359703">Non verrai disconnesso dal tuo Account Google.</translation>
+<translation id="8843129975935593190">La tua organizzazione limita ciò che puoi sincronizzare.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} scheda}other{{count} schede}}</translation>
 <translation id="8870413625673593573">Chiusi di recente</translation>
 <translation id="8876882697946675716">Mantieni sincronizzati i tuoi dispositivi</translation>

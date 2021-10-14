@@ -32,6 +32,7 @@
 <translation id="1032605640136438169">Lütfen yeni şartları inceleyin</translation>
 <translation id="103279545524624934">Android uygulamalarını başlatmak için disk alanını boşaltın.</translation>
 <translation id="1033780634303702874">Seri cihazlarınıza erişme</translation>
+<translation id="1034484273907870301">Tablet modu için küçük resim sekme şeridi</translation>
 <translation id="1036348656032585052">Kapat</translation>
 <translation id="1036511912703768636">Bu USB cihazların herhangi birine erişme</translation>
 <translation id="1036982837258183574">Tam ekrandan çıkmak için |<ph name="ACCELERATOR" />| tuşuna basın</translation>
@@ -358,6 +359,7 @@
 <translation id="1378613616312864539">Bu ayarı, <ph name="NAME" /> adlı uzantı kontrol ediyor</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Güvenliği ihlal edilmiş şifre yok}=1{Güvenliği ihlal edilmiş 1 şifre}other{Güvenliği ihlal edilmiş {NUM_COMPROMISED} şifre}}</translation>
 <translation id="1380028686461971526">Ağa otomatik olarak bağlan</translation>
+<translation id="1381567580865186407"><ph name="LANGUAGE" /> konuşmalar, işlenmek üzere Google'a gönderilir</translation>
 <translation id="1383597849754832576">Canlı Altyazı dosyaları indirilemiyor. Daha sonra tekrar deneyin.</translation>
 <translation id="1383861834909034572">Tamamlandığında açılacak</translation>
 <translation id="1383876407941801731">Ara</translation>
@@ -1146,6 +1148,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2173302385160625112">İnternet bağlantınızı kontrol edin</translation>
 <translation id="2173801458090845390">Bu cihaza talep kimliği ekleyin</translation>
 <translation id="2174948148799307353">Hesap, <ph name="PARENT_EMAIL" /> tarafından yönetiliyor Bu cihazda birincil hesabın oturumunu kapatmak için ekranınızdaki saati tıklayın. Görüntülenen menüde "Oturumu kapat"ı tıklayın.</translation>
+<translation id="2175384018164129879">Arama &amp;Motorlarını ve Site Aramalarını Yönet</translation>
 <translation id="2175607476662778685">Hızlı başlat çubuğu</translation>
 <translation id="217576141146192373">Yazıcı eklenemiyor. Lütfen yazıcınızın yapılandırmasını kontrol edip tekrar deneyin.</translation>
 <translation id="2175927920773552910">QR Kodu</translation>
@@ -3845,6 +3848,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5040823038948176460">Ek içerik ayarları</translation>
 <translation id="5043440033854483429">Ad; harf, sayı ve kısa çizgi (-) içerebilir ve 1 ile 15 karakter arasında olmalıdır.</translation>
 <translation id="5043913660911154449">İsterseniz yazıcınızın PPD'sini de belirtebilirsiniz <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
+<translation id="5044527779574548527">Bu adımı bir daha gösterme</translation>
 <translation id="5045550434625856497">Hatalı parola</translation>
 <translation id="504561833207953641">Mevcut tarayıcı oturumunda açılıyor.</translation>
 <translation id="5047421709274785093">Sitelerin hareket ve ışık sensörlerini kullanmasını engelle</translation>
@@ -5296,6 +5300,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6619801788773578757">Kiosk uygulaması ekle</translation>
 <translation id="6619990499523117484">PIN'inizi onaylayın</translation>
 <translation id="6622980291894852883">Görselleri engellemeye devam et</translation>
+<translation id="6624036901798307345">Tablet modunda, her sekmenin küçük resimlerini gösteren yeni sekme şeridini açmak için sekme sayacı araç çubuğu düğmesine dokunun.</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> adlı dosya, hassas veya tehlikeli içeriğe sahip. Dosyanın sahibinden düzeltmesini isteyin.</translation>
 <translation id="6624687053722465643">Tatlı</translation>
 <translation id="6628328486509726751">Yüklenme zamanı: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
@@ -5601,6 +5606,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6955893174999506273">1 anahtar daha ata</translation>
 <translation id="6957044667612803194">Bu güvenlik anahtarı PIN’leri desteklemiyor</translation>
 <translation id="6960507406838246615">Linux'un güncellenmesi gerekiyor</translation>
+<translation id="6960648667961844909"><ph name="LANGUAGE" /> konuşma dosyaları indirilemedi. İndirme işlemi daha sonra tekrar denenecek. Konuşma, indirme işlemi tamamlanana kadar işlenmek üzere Google'a gönderilir.</translation>
 <translation id="696103774840402661">Bu <ph name="DEVICE_TYPE" /> üzerindeki tüm kullanıcıların dosyaları ve yerel verileri kalıcı olarak silindi.</translation>
 <translation id="6964390816189577014">Kahraman</translation>
 <translation id="6964760285928603117">Gruptan Kaldır</translation>
@@ -6206,6 +6212,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (hata kodu <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">Bilgisayarı yeniden başlat</translation>
 <translation id="7599527631045201165">Cihaz adı çok uzun. Tekrar denemek için daha kısa bir ad girin.</translation>
+<translation id="7600054753482800821">Arama &amp;motorlarını ve site aramalarını yönetin</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> dilini asla çevirme</translation>
 <translation id="760197030861754408">Bağlanmak için <ph name="LANDING_PAGE" /> sayfasına gidin.</translation>
 <translation id="7602079150116086782">Diğer cihazlardan sekme yok</translation>
@@ -6871,6 +6878,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8244514732452879619">Uyku vakti yaklaşıyor</translation>
 <translation id="8246776524656196770">Güvenlik anahtarınızı PIN (Kişisel Kimlik Numarası) ile koruyun</translation>
 <translation id="8248050856337841185">&amp;Yapıştır</translation>
+<translation id="8248887045858762645">Chrome ipucu</translation>
 <translation id="8249048954461686687">OEM klasörü</translation>
 <translation id="8249615410597138718">Cihazlarınıza Gönderin</translation>
 <translation id="8249672078237421304">Okuduğum dilde olmayan sayfaları çevirmeyi öner</translation>
@@ -7344,6 +7352,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8763927697961133303">USB cihaz</translation>
 <translation id="87646919272181953">Google Fotoğraflar albümü</translation>
 <translation id="8767621466733104912">Tüm kullanıcılar için Chrome'u otomatik olarak güncelle</translation>
+<translation id="8767765348545497220">Yardım balonunu kapat</translation>
 <translation id="8770406935328356739">Uzantı kök dizini</translation>
 <translation id="8771300903067484968">Başlangıç sayfası arka planı, varsayılan arka plana sıfırlandı.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> cihazını kaydet</translation>

@@ -809,6 +809,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="8840513115188359703">Você não será desconectado da sua Conta do Google.</translation>
+<translation id="8843129975935593190">Sua organização limita o que pode ser sincronizado.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} guia}one{{count} guia}other{{count} guias}}</translation>
 <translation id="8870413625673593573">Fechadas recentemente</translation>
 <translation id="8876882697946675716">Manter os dispositivos sincronizados</translation>

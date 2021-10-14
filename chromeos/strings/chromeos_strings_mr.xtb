@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">वापरकर्ता</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">हे <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे.</translation>
+<translation id="1175951029573070619">सरासरी (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
 <translation id="1195447618553298278">अज्ञात एरर.</translation>
 <translation id="1204296502688602597">DNS लेटन्सी</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> आणि <ph name="SECOND_MANAGER" /> द्वारे व्यवस्थापित</translation>
 <translation id="1726100011689679555">नाव सर्व्हर</translation>
 <translation id="1731082422893354635">ब्लूटूथ टचपॅड</translation>
+<translation id="175763766237925754">चांगला (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">स्कॅनिंग रद्द करत आहे</translation>
@@ -86,6 +88,7 @@
 <translation id="2323506179655536734">वगळली</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">जवळपासचे डिव्हाइस शोधण्यासाठी ब्लूटूथ सुरू करा</translation>
+<translation id="2346474577291266260">उत्कृष्ट (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">पास झाले</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">फीडबॅक अहवाल पाठवा</translation>
@@ -343,6 +346,7 @@
 <translation id="6398765197997659313">पूर्ण स्क्रीनमधून निर्गमन करा</translation>
 <translation id="641081527798843608">जुळणारा विषय</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">कमकुवत (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">फाइन</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Rescan page?}=1{{PAGE_NUMBER} पेज पुन्हा स्कॅन करायचे का?}other{{PAGE_NUMBER} पेज पुन्हा स्कॅन करायची का?}}</translation>
 <translation id="6472207088655375767">OTP</translation>

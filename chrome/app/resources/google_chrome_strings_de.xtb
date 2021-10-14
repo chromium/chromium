@@ -86,6 +86,7 @@
 <translation id="3037838751736561277">Google Chrome wird im Hintergrundmodus ausgeführt.</translation>
 <translation id="3059710691562604940">Safe Browsing ist deaktiviert. Es wird empfohlen, diese Funktion zu aktivieren.</translation>
 <translation id="3065168410429928842">Chrome-Tab</translation>
+<translation id="3069821012350118710">Websites, die Sie besuchen, speichern Ihre Daten, bis Sie Chrome schließen</translation>
 <translation id="3080151273017101988">Apps im Hintergrund ausführen, wenn Google Chrome geschlossen ist</translation>
 <translation id="3089968997497233615">Es gibt eine neue, sicherere Version von Google Chrome.</translation>
 <translation id="3100998948628680988">Chrome-Profil benennen</translation>
@@ -184,6 +185,7 @@
 <translation id="5804318322022881572">Chrome konnte nicht gestartet werden. Versuchen Sie es noch einmal.</translation>
 <translation id="5867197326698922595">Google Chrome versucht, Passwörter zu bearbeiten.</translation>
 <translation id="5895138241574237353">Neu starten</translation>
+<translation id="5901850848447342934">Sie werden <ph name="BEGIN_BOLD" />auf den meisten Websites abgemeldet<ph name="END_BOLD" />, wenn Sie Chrome schließen. Wenn die Synchronisierung deaktiviert ist, werden Sie auch <ph name="BEGIN_BOLD" />bei Google-Diensten und Chrome abgemeldet<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Netzwerkanmeldung</translation>
 <translation id="5940385492829620908">Hier können Sie im Web surfen und Ihre Lesezeichen und andere Chrome-Inhalte speichern.</translation>
 <translation id="5941830788786076944">Google Chrome als Standardbrowser festlegen</translation>
@@ -273,6 +275,7 @@
 <translation id="8614913330719544658">Google Chrome reagiert nicht. Jetzt neu starten?</translation>
 <translation id="861702415419836452">Chrome benötigt Zugriff auf die Kamera, um eine 3D-Karte Ihrer Umgebung zu erstellen</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome wird in einer Minute neu gestartet}other{Chrome wird in # Minuten neu gestartet}}</translation>
+<translation id="8629311577791198377">Wenn Sie alle Chrome-Fenster schließen, werden alle Cookies und Websitedaten automatisch gelöscht</translation>
 <translation id="8641606876632989680">Wenn sich mit einem Passwort anmelden, das gehackt wurde, benachrichtigt Sie Chrome entsprechend.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Die Erweiterung legt auch die Seite fest, die beim Start von Chrome angezeigt wird.</translation>

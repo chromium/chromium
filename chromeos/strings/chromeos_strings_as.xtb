@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">ব্যৱহাৰকাৰী</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" />এ এই <ph name="DEVICE_TYPE" />টো পৰিচালনা কৰে।</translation>
+<translation id="1175951029573070619">গড় (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">আঁতৰাওক</translation>
 <translation id="1195447618553298278">অজ্ঞাত আসোঁৱাহ।</translation>
 <translation id="1204296502688602597">DNS বিলম্বতা</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> আৰু <ph name="SECOND_MANAGER" />এ পৰিচালনা কৰা</translation>
 <translation id="1726100011689679555">নাম সম্পর্কীয় ছার্ভাৰ</translation>
 <translation id="1731082422893354635">ব্লুটুথ টাচ্চপেড</translation>
+<translation id="175763766237925754">ভাল (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">স্কেন বাতিল কৰি থকা হৈছে</translation>
@@ -84,6 +86,7 @@
 <translation id="2323506179655536734">এৰি যোৱা হৈছে</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ওচৰ-পাজৰৰ ডিভাইচসমূহ চাবলৈ ব্লুটুথ অন কৰক</translation>
+<translation id="2346474577291266260">উত্তম (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">পাছ কৰিছে</translation>
 <translation id="2380886658946992094">লিগেল</translation>
 <translation id="2391082728065870591">মতামত বিষয়ক ৰিপ’ৰ্টটো পঠিয়াওক</translation>
@@ -331,6 +334,7 @@
 <translation id="6398765197997659313">সম্পূর্ণ স্ক্ৰীণ ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="641081527798843608">বিষয়ৰ মিল</translation>
 <translation id="6423239382391657905">VPN খোলক</translation>
+<translation id="6439505561246192797">দুৰ্বল (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">ভাল</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{পৃষ্ঠাখন পুনৰ স্কেন কৰিবনে?}=1{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন পুনৰ স্কেন কৰিবনে?}one{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন পুনৰ স্কেন কৰিবনে?}other{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন পুনৰ স্কেন কৰিবনে?}}</translation>
 <translation id="6472207088655375767">OTP</translation>

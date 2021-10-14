@@ -816,6 +816,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8840513115188359703">A sessão na sua Conta Google não é terminada.</translation>
+<translation id="8843129975935593190">A sua organização limita o que pode sincronizar.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} separador}other{{count} separadores}}</translation>
 <translation id="8870413625673593573">Fechadas recentemente</translation>
 <translation id="8876882697946675716">Mantenha os seus dispositivos sincronizados</translation>

@@ -302,6 +302,7 @@
 <translation id="1313660246522271310">Барлық сайттардан, оның ішінде ашық қойындылардан шығып кетесіз.</translation>
 <translation id="1313705515580255288">Бетбелгілеріңіз, журналыңыз және басқа параметрлеріңіз Google аккаунтымен синхрондалады.</translation>
 <translation id="1316136264406804862">Ізделуде…</translation>
+<translation id="1316248800168909509"><ph name="DEVICE" /> құрылғысына жалғанбады. Қайталап көріңіз.</translation>
 <translation id="1316495628809031177">Синхрондау кідіртілді</translation>
 <translation id="1317637799698924700">Қондыру станциясы USB Type-C портымен үйлесімді режимде жұмыс істейді.</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> қосымша бетіндегі "Aртқа" түймесі</translation>
@@ -1168,6 +1169,7 @@
 <translation id="2200356397587687044">Жалғастыру үшін Chrome браузеріне рұқсат қажет</translation>
 <translation id="2202898655984161076">Принтерлерді көрсету кезінде қате орын алды. Кейбір принтерлеріңіз <ph name="CLOUD_PRINT_NAME" /> арқылы сәтті тіркелмеген болуы мүмкін.</translation>
 <translation id="2203088913459920044">Атауда әріптерді, сандарды және арнайы таңбаларды пайдалануға болады.</translation>
+<translation id="220321590587754225">Жалғанбады. Қайталап көріңіз.</translation>
 <translation id="2204034823255629767">Барлық тергендеріңізді оқу және өзгерту</translation>
 <translation id="220858061631308971">Бұл PIN кодын "<ph name="DEVICE_NAME" />" құрылғысына енгізіңіз:</translation>
 <translation id="2210462644007531147">Орнату аяқталмады.</translation>
@@ -4930,6 +4932,7 @@
 <translation id="6263284346895336537">Маңызды емес</translation>
 <translation id="6264365405983206840">&amp;Барлығын таңдау</translation>
 <translation id="6265687851677020761">Портты өшіру</translation>
+<translation id="6266532094411434237"><ph name="DEVICE" /> құрылғысына жалғануда</translation>
 <translation id="6267166720438879315">Өзіңізді <ph name="HOST_NAME" /> хостына аутентификациялау үшін сертификат таңдаңыз</translation>
 <translation id="6268252012308737255"><ph name="APP" /> қолданбасымен ашу</translation>
 <translation id="6270391203985052864">Сайттар хабарландырулар жіберу рұқсатын сұрай алады</translation>

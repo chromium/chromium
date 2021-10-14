@@ -407,6 +407,7 @@
 <translation id="2241693394036365668">फाइल डाउनलोड केली गेली</translation>
 <translation id="2248949050832152960">WebAuthn वापरा</translation>
 <translation id="2250931979407627383">एज स्टिच लेफ्ट</translation>
+<translation id="2251943122176102076">कॅप्चर केलेला आशय गोपनीय असल्याने अ‍ॅडमिनिस्ट्रेटर स्क्रीनशॉट किंवा रेकॉर्डिंग घेण्याची शिफारस करत नाही:</translation>
 <translation id="225207911366869382">हे मूल्य या धोरणासाठी नापसंत करण्‍यात आले आहे.</translation>
 <translation id="2258928405015593961">भविष्यातील एक्स्पायरेशन तारीख एंटर करा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="225943865679747347">एरर कोड: <ph name="ERROR_CODE" /></translation>
@@ -1199,6 +1200,7 @@
           <ph name="LIST_ITEM" />इंटरनेट सेवा पुरवठादार वेब ट्रॅफिकचे निरीक्षण करू शकतात<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">चेतावण्या सुरू करा</translation>
+<translation id="4834718916855725099">स्क्रीनवरील आशय गोपनीय असल्याने अ‍ॅडमिनिस्ट्रेटर स्क्रीनशॉट किंवा रेकॉर्डिंग घेण्याची शिफारस करत नाही:</translation>
 <translation id="4838327282952368871">स्वप्नवत</translation>
 <translation id="4840250757394056958">तुमचा Chrome इतिहास पहा</translation>
 <translation id="484462545196658690">ऑटो</translation>

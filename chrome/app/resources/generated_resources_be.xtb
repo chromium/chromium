@@ -589,6 +589,7 @@
 <translation id="1612019740169791082">Гэты кантэйнер не наладжаны для падтрымкі змянення памеру дыска. Каб змяніць колькасць месца, вылучанага для Linux, зрабіце рэзервовую копію і аднавіце яе ў новым кантэйнеры.</translation>
 <translation id="1614511179807650956">Магчыма, вы дасягнулі ліміту мабільнай перадачы даных. Каб купіць дадатковы трафік, наведайце партал актывацыі <ph name="NAME" /></translation>
 <translation id="161460670679785907">Не ўдалося знайсці тэлефон</translation>
+<translation id="1615337439947999338">Захаваць ва Уліковым запісе Google (<ph name="EMAIL" />)</translation>
 <translation id="1615402009686901181">Палітыка, зададзеная адміністратарам, адключае здыманне экрана, калі на ім паказваецца прыватнае змесціва</translation>
 <translation id="1616206807336925449">Пашырэнне не патрабуе спецыяльных дазволаў.</translation>
 <translation id="1616298854599875024">Не ўдалося імпартаваць пашырэнне "<ph name="IMPORT_NAME" />": гэта не абагулены модуль</translation>
@@ -918,6 +919,7 @@
 <translation id="1929546189971853037">Доступ да вашай гісторыі прагляду сайтаў з усіх прылад, з якіх вы ўвайшлі ва ўліковы запіс</translation>
 <translation id="1930879306590754738">Паролі выдалены з гэтай прылады і Уліковага запісу Google</translation>
 <translation id="1931152874660185993">Няма ўсталяваных кампанентаў.</translation>
+<translation id="1931410639376954712">Ідзе ўсталяванне <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Не раней</translation>
 <translation id="1935303383381416800">Дазволена атрымліваць звесткі пра ваша месцазнаходжанне</translation>
 <translation id="1936931585862840749">Каб указаць, колькі копій друкаваць, увядзіце лік (ад 1 да <ph name="MAX_COPIES" />).</translation>
@@ -1050,6 +1052,7 @@
 <translation id="208586643495776849">Паўтарыце спробу</translation>
 <translation id="208634871997892083">Заўсёды ўключаная VPN</translation>
 <translation id="2087822576218954668">Друк: <ph name="PRINT_NAME" /></translation>
+<translation id="2088092308059522196">Зарэгістравацца можна толькі пасля ўсталявання аперацыйнай сістэмы <ph name="DEVICE_OS" />.</translation>
 <translation id="208928984520943006">Каб у любы момант перайсці на галоўны экран, правядзіце знізу ўверх.</translation>
 <translation id="2089566709556890888">Бяспечны прагляд старонак у браўзеры Google Chrome</translation>
 <translation id="2089795179672254991">Пытацца, калі сайт запытвае доступ на прагляд тэксту і відарысаў, скапіраваных у буфер абмену (рэкамендуецца)</translation>
@@ -1175,6 +1178,7 @@
 <translation id="220321590587754225">Не ўдалося падключыцца. Паўтарыце спробу.</translation>
 <translation id="2204034823255629767">Прагляд і змяненне таго, што вы набіраеце</translation>
 <translation id="220858061631308971">Увядзіце гэты PIN-код на прыладзе "<ph name="DEVICE_NAME" />":</translation>
+<translation id="2210462644007531147">Не ўдалося завяршыць усталяванне</translation>
 <translation id="2212565012507486665">Дазволіць файлы cookie</translation>
 <translation id="2214018885812055163">Абагуленыя папкі</translation>
 <translation id="2214884991347062907">Няправільны пароль, паўтарыце спробу.</translation>
@@ -1228,6 +1232,8 @@
 <translation id="22665427234727190">Пытацца, калі сайт запытвае доступ да прылад Bluetooth (рэкамендуецца)</translation>
 <translation id="2266957463645820432">IPP-over-USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Абмен данымі з прыладамі ў дамене <ph name="DOMAIN" /></translation>
+<translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />Пры ўсталяванні <ph name="BEGIN_BOLD" />ўсе даныя на цвёрдым дыску будуць сцёрты<ph name="END_BOLD" />. Упэўніцеся, што вашы даныя маюць рэзервовую копію.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Пасля таго як усталяванне пачнецца, працэс нельга будзе скасаваць.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Абмен данымі з прыладамі ў наступных даменах: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Прызначце пераключальнік для дзеяння "Выбраць"</translation>
 <translation id="2271469253353559191">Расклад уключэння цёмнага рэжыму</translation>
@@ -1489,6 +1495,7 @@
 <translation id="2521854691574443804">Файл "<ph name="FILE_NAME" />" правяраецца на адпаведнасць палітыкам бяспекі вашай арганізацыі...</translation>
 <translation id="252219247728877310">Кампанент не абноўлены</translation>
 <translation id="2523184218357549926">Адпраўка URL-адрасоў наведаных вамі старонак у Google</translation>
+<translation id="252418934079508528">Усталяваць <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome правярае ваш камп'ютар на наяўнасць шкоднага праграмнага забеспячэння...</translation>
 <translation id="2526590354069164005">Працоўны стол</translation>
 <translation id="2526619973349913024">Праверыць на наяўнасць абнаўленняў</translation>
@@ -1692,6 +1699,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">Адкрыць тэрмінал аднаўлення</translation>
 <translation id="2741912629735277980">Паказваць карыстальніцкі інтэрфейс на экране ўваходу</translation>
+<translation id="2742448780373473567">Пры ўсталяванні <ph name="DEVICE_OS" /> усе даныя на прыладзе будуць перазапісаны.</translation>
 <translation id="274290345632688601">Аднаўленне файлаў і праграм Linux</translation>
 <translation id="274318651891194348">Ідзе пошук клавіятуры</translation>
 <translation id="2743387203779672305">Скапіраваць у буфер абмену</translation>
@@ -2883,6 +2891,8 @@
 <translation id="3979748722126423326">Уключыць прыладу <ph name="NETWORKDEVICE" /></translation>
 <translation id="3981058120448670012">Прылады паблізу будуць бачыць назву "<ph name="DEVICE_NAME" />" на працягу <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">Уведзены няправільны тып захавання.</translation>
+<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />Нешта пайшло не так. Не ўдалося ўсталяваць <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Дадатковую інфармацыю шукайце на сайце g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">Наладзьце браўзер, выканаўшы некалькі простых крокаў</translation>
 <translation id="3983400541576569538">Даныя некаторых праграм могуць быць страчаны</translation>
 <translation id="3983586614702900908">прылады ад невядомага пастаўшчыка</translation>
@@ -2970,6 +2980,7 @@
 <translation id="4084835346725913160">Закрыць укладку "<ph name="TAB_NAME" />"</translation>
 <translation id="4085270836953633510">Пытацца, калі сайт спрабуе атрымаць доступ да паслядоўных партоў</translation>
 <translation id="4085298594534903246">JavaScript заблакіраваны на гэтай старонцы.</translation>
+<translation id="4085947337119280756">Дадатковыя пашырэнні</translation>
 <translation id="4087089424473531098">Створана наступнае пашырэнне:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -3273,6 +3284,7 @@
 <translation id="4449996769074858870">На гэтай укладцы прайграецца аўдыя.</translation>
 <translation id="4450274068924249931">Паказ фота, часу, надвор'я і інфармацыі пра медыяфайл, калі экран не выкарыстоўваецца. Калі ўключыць застаўку, то падчас зарадкі дысплэй застанецца ўключаным.</translation>
 <translation id="4450974146388585462">Дыягностыка</translation>
+<translation id="445099924538929605">Аперацыйная сістэма <ph name="DEVICE_OS" /> выявіла актыўны модуль TPM, які можа больш надзейна захоўваць даныя.</translation>
 <translation id="4451479197788154834">Пароль захаваны на гэтай прыладзе і ва Уліковым запісе</translation>
 <translation id="4451757071857432900">Рэкламныя аб'явы блакіруюцца на сайтах, якія паказваюць назойлівую і падманлівую рэкламу (рэкамендуецца)</translation>
 <translation id="4453946976636652378">Шукайце праз <ph name="SEARCH_ENGINE_NAME" /> або ўвядзіце URL-адрас</translation>
@@ -3772,6 +3784,9 @@
 <translation id="4992473555164495036">Ваш адміністратар абмежаваў даступныя метады ўводу.</translation>
 <translation id="4994474651455208930">Дазволіць сайтам запытваць права быць стандартнымі апрацоўшчыкамі пратаколаў</translation>
 <translation id="4994754230098574403">Ідзе наладжванне</translation>
+<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />Перад рэгістрацыяй неабходна ачысціць TPM, каб аперацыйная сістэма <ph name="DEVICE_OS" /> змагла атрымаць права ўласнасці на прыладу.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Таксама можна зусім выключыць TPM на прыладзе. Вашы даныя і далей будуць захоўвацца ў бяспецы дзякуючы выкарыстанню шыфравання праграмнага забеспячэння, але пэўныя функцыі бяспекі (напрыклад, забяспечаныя апаратнымі сродкамі сертыфікаты) будуць адключаны.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Змяніць налады TPM можна, выканаўшы перазагрузку і ўвайшоўшы ў налады BIOS/UEFI. Этапы могуць адрознівацца ў залежнасці ад мадэлі прылады. Каб атрымаць дадатковую інфармацыю, перад перазагрузкай адкрыйце дакументацыю <ph name="DEVICE_OS" /> на асобнай прыладзе: [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Віртуальныя машыны <ph name="VM_TYPE" /> не знойдзены}=1{Знойдзена 1 віртуальная машына <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}one{Знойдзена {NUM_VMS} віртуальная машына <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}few{Знойдзена {NUM_VMS} віртуальныя машыны <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}many{Знойдзена {NUM_VMS} віртуальных машын <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Знойдзена {NUM_VMS} віртуальнай машыны <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Няма падключэння да інтэрнэту.</translation>
 <translation id="4998430619171209993">Уключана</translation>
@@ -3887,6 +3902,7 @@
 <translation id="5127620150973591153">Абаронены ідэнтыфікатар падключэння: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Сінхранізацыя выключана</translation>
 <translation id="5127881134400491887">Кіраваць падключэннямі да сеткі</translation>
+<translation id="5128774403617662387">Перад запускам упэўніцеся, што вашы даныя маюць рэзервовую копію. Пры ўсталяванні <ph name="DEVICE_OS" /> даныя на цвёрдым дыску будуць перазапісаны. Даведайцеся больш на старонцы g.co/TBD.</translation>
 <translation id="512903556749061217">далучана</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Не ўдалося спампаваць профіль. Паўтарыце спробу пазней або звярніцеся па дапамогу да аператара.</translation>
@@ -4321,6 +4337,7 @@
 <translation id="5592595402373377407">Пакуль што недастаткова даных.</translation>
 <translation id="5595485650161345191">Рэдагаваць адрас</translation>
 <translation id="5596627076506792578">Дадатковыя параметры</translation>
+<translation id="5600348067066185292">Усталяванне складаецца з двух простых крокаў. У вас будзе яшчэ адна магчымасць пацвердзіць змены, перш чым яны будуць унесены ў камп'ютар.</translation>
 <translation id="5600706100022181951">Для спампоўкі абнаўлення спатрэбіцца <ph name="UPDATE_SIZE_MB" /> МБ мабільнага трафіка. Працягнуць?</translation>
 <translation id="5601503069213153581">PIN-код</translation>
 <translation id="5601823921345337195">Не дазволена падключацца да прылад MIDI</translation>
@@ -4380,6 +4397,7 @@
 <translation id="5659593005791499971">Адрас электроннай пошты</translation>
 <translation id="5659833766619490117">Не ўдалося перакласці старонку</translation>
 <translation id="5662513737565158057">Змяненне параметраў для праграм Linux.</translation>
+<translation id="5667490069342183561">Кампанія Google не нясе адказнасці за магчымую страту даных і не гарантуе, што <ph name="DEVICE_OS" /> будзе працаваць на несертыфікаваных мадэлях прылад. Даведайцеся больш на старонцы g.co/TBD.</translation>
 <translation id="5667546120811588575">Наладжваецца Google Play...</translation>
 <translation id="5668351004957198136">Збой</translation>
 <translation id="56702779821643359">Абагульвайце файлы з карыстальнікамі паблізу. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
@@ -4398,6 +4416,7 @@
 <translation id="5684181005476681636">Звесткі пра Wi-Fi</translation>
 <translation id="5684661240348539843">Ідэнтыфікатар аб'екта ўласнасці</translation>
 <translation id="5687326903064479980">Часавы пояс</translation>
+<translation id="5687935527303996204">Упэўніцеся, што прылада падключана да сілкавання, і не выключайце яе. Усталяванне можа заняць да 20 хвілін. Пасля ўсталявання прылада аўтаматычна завершыць працу.</translation>
 <translation id="5689516760719285838">Месцазнаходжанне</translation>
 <translation id="5689531695336322499">Здаецца, работа функцыі Voice Match з Памочнікам ужо наладжана карыстальнікам <ph name="SUPERVISED_USER_NAME" /> на іншай прыладзе. Зробленыя пры наладцы запісы былі выкарыстаны для стварэння галасавой мадэлі на гэтай прыладзе.</translation>
 <translation id="56907980372820799">Звязаць даныя</translation>
@@ -5736,6 +5755,7 @@
 <translation id="7139627972753429585">Праграма "<ph name="APP_NAME" />" выкарыстоўвае ваш мікрафон</translation>
 <translation id="7141105143012495934">Уваход не выкананы: не ўдалося атрымаць даныя ўліковага запісу. Звярніцеся да адміністратара або паўтарыце спробу.</translation>
 <translation id="7144878232160441200">Паўтарыць</translation>
+<translation id="7149839598364933473">Усталяваць <ph name="DEVICE_OS" /> на гэту прыладу.</translation>
 <translation id="7149893636342594995">За апошнія 24 гадзіны</translation>
 <translation id="7152478047064750137">Пашырэнне не патрабуе спецыяльных дазволаў</translation>
 <translation id="7154130902455071009">Змяніць пачатковую старонку на наступную: <ph name="START_PAGE" /></translation>
@@ -5830,6 +5850,16 @@
 <translation id="7257666756905341374">Прагляд даных, якія вы капіруеце і ўстаўляеце</translation>
 <translation id="7258225044283673131">Праграма не адказвае. Каб закрыць яе, націсніце "Прымусова закрыць".</translation>
 <translation id="7262004276116528033">Гэты сэрвіс уваходу размешчаны на дамене <ph name="SAML_DOMAIN" /></translation>
+<translation id="7264432249010320236">Дадатковыя сайты</translation>
+<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Паспрабуйце знайсці і выправіць непаладку наступным чынам:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />упэўніцеся, што прылада мае ўнутранае сховішча (напрыклад, HDD, SSD, або eMMC) і яно працуе;
+    <ph name="LIST_ITEM" />упэўніцеся, што аб'ём унутранага сховішча прылады не меншы за 16 ГБ;
+    <ph name="LIST_ITEM" />праверце падключэнне да ўнутранага сховішча, калі гэта магчыма зрабіць фізічна;
+    <ph name="LIST_ITEM" />упэўніцеся, што выкарыстоўваеце сертыфікаваную мадэль прылады, і азнаёмцеся з нататкамі па ўсталяванні.
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Дадатковую інфармацыю шукайце на сайце: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">Не ўдалося ўсталяваць віртуальную машыну. Паўтарыце спробу або звярніцеся да адміністратара. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Дакраніцеся некалькі разоў, каб быў зняты ўвесь адбітак пальца</translation>
 <translation id="7268127947535186412">Гэта налада кіруецца ўладальнікам прылады.</translation>
@@ -6555,6 +6585,7 @@
 <translation id="7986295104073916105">Прачытайце і змяніце захаваныя налады пароля</translation>
 <translation id="7987814697832569482">Заўсёды падключацца праз гэты VPN</translation>
 <translation id="7988355189918024273">Уключыць спецыяльныя магчымасці</translation>
+<translation id="7988805580376093356">Не выкарыстоўваць бягучую АС і запусціць <ph name="DEVICE_OS" /> з USB.</translation>
 <translation id="7991296728590311172">Налады доступу праз пераключальнікі</translation>
 <translation id="7997826902155442747">Прыярытэт працэсу</translation>
 <translation id="7999229196265990314">Створаны наступныя файлы:
@@ -6662,6 +6693,7 @@
 <translation id="80974698889265265">PIN-коды не супадаюць</translation>
 <translation id="809792523045608178">У <ph name="IDS_SHORT_PRODUCT_NAME" /> выкарыстоўваюцца налады проксі-сервера, зададзеныя пашырэннем</translation>
 <translation id="8097959162767603171">Спачатку адміністратар павінен прыняць умовы выкарыстання ў спісе прылад Chrome на кансолі адміністратара.</translation>
+<translation id="8098156986344908134">Усталяваць <ph name="DEVICE_OS" /> і сцерці даныя на цвёрдым дыску?</translation>
 <translation id="8098616321286360457">Патрабуецца падключэнне да сеткі</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" />, выбрана. Каб скасаваць выбар, націсніце "Пошук" і клавішу прабелу.</translation>
 <translation id="810185532889603849">Карыстальніцкі колер</translation>
@@ -6846,6 +6878,7 @@
 <translation id="8287902281644548111">Пошук па URL-адрасе або выкліку API</translation>
 <translation id="8288032458496410887">Выдаліць <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Памер дыска</translation>
+<translation id="8289509909262565712">Вітаем у <ph name="DEVICE_OS" /></translation>
 <translation id="8293206222192510085">Дадаванне закладкі</translation>
 <translation id="8294431847097064396">Крыніца</translation>
 <translation id="8298429963694909221">Цяпер вы можаце атрымліваць апавяшчэнні, якія прыходзяць на ваш тэлефон, на прыладзе <ph name="DEVICE_TYPE" />. Калі вы будзеце адхіляць апавяшчэнні на прыладзе <ph name="DEVICE_TYPE" />, гэта дзеянне будзе дубліравацца і на тэлефоне. Упэўніцеся, што ён знаходзіцца паблізу і на ім уключаны Bluetooth і Wi-Fi.</translation>
@@ -7169,6 +7202,7 @@
 <translation id="867085395664725367">Узнікла часовая памылка сервера.</translation>
 <translation id="8673026256276578048">Пошук па ўсім інтэрнэце...</translation>
 <translation id="8673383193459449849">Праблема з серверам</translation>
+<translation id="8675704450909805533">Усталёўшчык не змог знайсці адпаведнае месца для ўсталявання <ph name="DEVICE_OS" />.</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{Відэа}one{# відэа}few{# відэа}many{# відэа}other{# відэа}}</translation>
 <translation id="8676313779986170923">Дзякуй за водгук!</translation>
 <translation id="8676374126336081632">Ачысціць поле ўводу</translation>
@@ -7327,6 +7361,7 @@
 <translation id="8823559166155093873">Блакіраваць файлы cookie</translation>
 <translation id="8823704566850948458">Прапанаваць пароль...</translation>
 <translation id="8824701697284169214">Дадаць ста&amp;ронку...</translation>
+<translation id="8826773185686617320">Каб пачаць выкарыстоўваць <ph name="DEVICE_OS" />, адключыце USB-дыск і перазапусціце прыладу. Калі вы гэтага не зробіце, прылада завершыць працу праз <ph name="TIME_LEFT" />.</translation>
 <translation id="8827125715368568315">Заблакіравана: <ph name="PERMISSION" /> і яшчэ <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Замацаваць пашырэнне</translation>
 <translation id="8827752199525959199">Іншыя дзеянні, пароль карыстальніка <ph name="USERNAME" /> для дамена <ph name="DOMAIN" /></translation>
@@ -7461,6 +7496,7 @@
 <translation id="8962051932294470566">Адначасова можна абагульваць толькі адзін файл. Паўтарыце спробу, калі будзе завершана цяперашняя перадача.</translation>
 <translation id="8962083179518285172">Схаваць падрабязнасці</translation>
 <translation id="8962918469425892674">Гэты сайт выкарыстоўвае датчыкі руху або святла.</translation>
+<translation id="8964943308070692533">Дадатковыя неактыўныя сайты</translation>
 <translation id="8965037249707889821">Увядзіце стары пароль</translation>
 <translation id="89667524227025535">Адсканіруйце QR-код камерай прылады або ўвядзіце код актывацыі, атрыманы ад аператара</translation>
 <translation id="8966809848145604011">Іншыя профілі</translation>
@@ -7620,6 +7656,8 @@
 <translation id="9116465289595958864">Апошняе змяненне</translation>
 <translation id="9116799625073598554">Праграма для нататак</translation>
 <translation id="9117030152748022724">Кіраванне праграмамі</translation>
+<translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Каб выкарыстоўваць усе магчымасці аперацыйнай сістэмы <ph name="DEVICE_OS" />, усталюйце яе на ўнутраны дыск. Гэта можна зрабіць і пазней з экрана ўваходу.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Калі вы пакуль што не хочаце ўсталёўваць гэту АС, можаце запусціць яе з USB, каб спачатку апрабаваць. Бягучая АС і вашы даныя на прыладзе захаваюцца, але даступны аб'ём сховішча і прадукцыйнасць могуць знізіцца.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Адкрыць у замацаванай укладцы</translation>
 <translation id="9122176249172999202">Работа праграмы "<ph name="IDS_SHORT_PRODUCT_NAME" />" прыпынена</translation>
 <translation id="9124003689441359348">Захаваныя паролі з'явяцца тут</translation>

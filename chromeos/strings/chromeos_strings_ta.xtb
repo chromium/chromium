@@ -12,6 +12,7 @@
 <translation id="1124772482545689468">பயனர்</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது.</translation>
+<translation id="1175951029573070619">சுமாராக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">அகற்று</translation>
 <translation id="1195447618553298278">தெரியாத பிழை.</translation>
 <translation id="1204296502688602597">DNS தாமதம்</translation>
@@ -51,6 +52,7 @@
 <translation id="1717874160321062422">நிர்வகிப்பது: <ph name="FIRST_MANAGER" />, <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">பெயர் சேவையகங்கள்</translation>
 <translation id="1731082422893354635">புளூடூத் டச்பேட்</translation>
+<translation id="175763766237925754">நன்றாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">ஸ்கேன் செய்வதை ரத்துசெய்கிறது</translation>
@@ -84,6 +86,7 @@
 <translation id="2323506179655536734">தவிர்க்கப்பட்டது</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">அருகிலுள்ள சாதனங்களைக் கண்டறிய, புளூடூத்தை இயக்கவும்</translation>
+<translation id="2346474577291266260">மிக நன்றாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2364498172489649528">வெற்றி</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">கருத்து அறிக்கையை அனுப்பு</translation>
@@ -331,6 +334,7 @@
 <translation id="6398765197997659313">முழுத்திரையிலிருந்து வெளியேறு</translation>
 <translation id="641081527798843608">சப்ஜெக்ட் மேட்ச்</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">மோசமாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">நன்றாக உள்ளது</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{பக்கத்தை மீண்டும் ஸ்கேன் செய்யவா?}=1{{PAGE_NUMBER}வது பக்கத்தை மீண்டும் ஸ்கேன் செய்யவா?}other{{PAGE_NUMBER}வது பக்கத்தை மீண்டும் ஸ்கேன் செய்யவா?}}</translation>
 <translation id="6472207088655375767">OTP</translation>

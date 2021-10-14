@@ -796,6 +796,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Aplicativo bloqueado pelo administrador</translation>
 <translation id="3608932978122581043">Fornecer orientação</translation>
+<translation id="3611395257124510155">Cartão virtual para <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Tamanho 2</translation>
 <translation id="361438452008624280">Entrada "<ph name="LANGUAGE_ID" />": idioma desconhecido ou não compatível.</translation>
 <translation id="3615877443314183785">Informe uma data de validade válida</translation>
@@ -1605,6 +1606,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6276112860590028508">As páginas da sua lista de leitura são exibidas aqui</translation>
 <translation id="627746635834430766">Para agilizar o pagamento na próxima vez, salve o cartão e o endereço de faturamento na sua Conta do Google.</translation>
+<translation id="6279098320682980337">O número do cartão virtual não foi preenchido? Clique nos detalhes do cartão para copiar</translation>
 <translation id="6280223929691119688">Não é possível entregar nesse endereço. Selecione um endereço diferente.</translation>
 <translation id="6282194474023008486">CEP</translation>
 <translation id="6289939620939689042">Cor da página</translation>

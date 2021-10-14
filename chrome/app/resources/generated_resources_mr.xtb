@@ -307,6 +307,7 @@
 <translation id="1313660246522271310">तुम्हाला उघड्या असलेल्या टॅबसह सर्व साइटमधून साइन आउट केले जाईल</translation>
 <translation id="1313705515580255288">तुमचे बुकमार्क, इतिहास आणि इतर सेटिंग्ज आपल्या Google खात्यामध्ये संकालित केल्या जातील.</translation>
 <translation id="1316136264406804862">शोधत आहे...</translation>
+<translation id="1316248800168909509"><ph name="DEVICE" /> शी कनेक्ट करता आले नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="1316495628809031177">सिंक थांबवले आहे</translation>
 <translation id="1317637799698924700">तुमचे डॉकिंग स्टेशन हे USB केबल कंपॅटिबिल मोडमध्ये काम करेल.</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> सबपेजचे मागे जा बटण</translation>
@@ -1188,6 +1189,7 @@
 <translation id="2200356397587687044">सुरू ठेवण्यासाठी Chrome ला परवानगीची आवश्यकता आहे</translation>
 <translation id="2202898655984161076">प्रिंटर सूचीबद्ध करताना समस्या आली. तुमचे काही प्रिंटर <ph name="CLOUD_PRINT_NAME" /> सह यशस्वीरित्या नोंदणीकृत नाहीत.</translation>
 <translation id="2203088913459920044">नावामध्ये अक्षरे, अंक आणि विशेष वर्ण वापरू शकता</translation>
+<translation id="220321590587754225">कनेक्ट करता आले नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="2204034823255629767">तुम्ही टाइप करता ती कोणतीहीगोष्ट वाचा आणि बदला</translation>
 <translation id="220858061631308971">कृपया यावर हा पिन कोड प्रविष्‍ट करा "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">इंस्टॉलेशन पूर्ण करता आले नाही</translation>
@@ -4974,6 +4976,7 @@
 <translation id="6263284346895336537">गंभीर नाही</translation>
 <translation id="6264365405983206840">&amp;सर्व निवडा</translation>
 <translation id="6265687851677020761">पोर्ट काढून टाका</translation>
+<translation id="6266532094411434237"><ph name="DEVICE" /> शी कनेक्ट करत आहे</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> वर तुमच्या स्वतःस प्रमाणीकृत करण्यासाठी एक सर्टिफिकेट निवडा</translation>
 <translation id="6268252012308737255"><ph name="APP" /> सह उघडा</translation>
 <translation id="6270391203985052864">साइट सूचना पाठवण्यास सांगू शकतात</translation>

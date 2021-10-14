@@ -404,6 +404,7 @@
 <translation id="3429160811076349561">ٹرائل کی خصوصیات آف ہیں</translation>
 <translation id="3440975416244667276">مزید متعلقہ معلومات کیلئے ٹچ کریں اور دبائے رکھیں</translation>
 <translation id="3443221991560634068">موجودہ صفحہ دوبارہ لوڈ کریں</translation>
+<translation id="3444179773590444986">سائٹس کیلئے گہری تھیم پر تاثرات کا اشتراک کریں؟</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ شیڈول کیا گیا}other{# ڈاؤن لوڈز شیڈول کیے گئے}}</translation>
 <translation id="3478363558367712427">آپ اپنا سرچ انجن منتخب کر سکتے ہیں</translation>
 <translation id="3493531032208478708">تجویز کردہ مواد کے بارے میں <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -585,6 +586,7 @@
 <translation id="4663499661119906179">اپنے لئے سر فہرست سائٹس اور کہانیاں دیکھیں</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> بُک مارکس حذف کر دیے گئے</translation>
 <translation id="4668347365065281350">کوکیز اور مقامی طور پر اسٹور کردہ دوسرے ڈیٹا سمیت سائٹس کے ذریعے اسٹور کردہ تمام ڈیٹا</translation>
+<translation id="4678082183394354975">‏Chrome میں سائٹس کیلئے گہری تھیم آن ہے</translation>
 <translation id="4684427112815847243">ہر چیز کی مطابقت پذیری کریں</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> مزید}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> مزید}}</translation>
 <translation id="4696983787092045100">اپنے آلات پر متن بھیجیں</translation>
@@ -766,6 +768,7 @@
 <translation id="5754350196967618083">‏Discover کو ریفریش نہیں کر سکتے</translation>
 <translation id="5763382633136178763">پوشیدگی ٹیبز</translation>
 <translation id="5763514718066511291">‏اس ایپ کے لیے URL کاپی کرنے کی خاطر تھپتھپائیں</translation>
+<translation id="5765517223145864268">ہمیں اپنے تجربے کے بارے میں بتائیں۔ یا <ph name="BEGIN_LINK" />اپنی ترتیبات تبدیل کریں<ph name="END_LINK" />۔</translation>
 <translation id="5765780083710877561">تفصیل:</translation>
 <translation id="5767013862801005129"><ph name="TAB_TITLE" /> ٹیب کو بحال کیا گیا</translation>
 <translation id="5776970333778123608">غیر اہم ڈیٹا</translation>
@@ -953,6 +956,7 @@
 <translation id="6738516213925468394">آپ کے ڈیٹا کی آپ کے <ph name="BEGIN_LINK" />مطابقت پذیر پاس فریز<ph name="END_LINK" /> کے ساتھ <ph name="TIME" /> کو مرموز کاری کی گئی تھی۔ مطابقت پذیری شروع کرنے کیلئے اسے درج کریں۔</translation>
 <translation id="6738867403308150051">ڈاؤن لوڈ ہو رہے ہیں…</translation>
 <translation id="6751521182688001123">فوری طور پر ایک نیا ٹیب کھولیں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ٹچ کریں اور دبائے رکھیں۔</translation>
+<translation id="6756507620369789050">تاثرات کا اشتراک کریں</translation>
 <translation id="6767294960381293877">ان آلات کی فہرست جن کے ساتھ ٹیب کا اشتراک کرنا ہے نصف اونچائی پر کھلی ہوئی ہے۔</translation>
 <translation id="6783942555455976443">یہ صفحہ بعد کے لیے محفوظ کریں اور یاد دہانی حاصل کریں</translation>
 <translation id="6795633245022906657">فوری طور پر ایک نیا ٹیب کھولیں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ترتیبات پر جائیں۔</translation>
@@ -1044,6 +1048,7 @@
 <translation id="7352651011704765696">کچھ غلط ہو گیا</translation>
 <translation id="7352939065658542140">ویڈیو</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{1 منتخب کردہ آئٹم کا اشتراک کریں}other{# منتخب کردہ آئٹمز کا اشتراک کریں}}</translation>
+<translation id="7356631068872238169">پڑھنے کی فہرست سے حذف کریں</translation>
 <translation id="7359002509206457351">ادائیگی کے طریقوں تک رسائی حاصل کریں</translation>
 <translation id="7375125077091615385">قسم:</translation>
 <translation id="7376560087009844242">صفحے کے مزید متن کو شامل کر کے، آپ تلاش کرنے کے لیے ٹچ کریں کا استعمال کرتے وقت بہتر نتائج دیکھ سکتے ہیں۔ آپ اسے تبدیل کرنے کے لیے ہمیشہ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> ملاحظہ کر سکتے ہیں۔</translation>
@@ -1214,6 +1219,7 @@
 <translation id="8266862848225348053">ڈاؤن لوڈ کا مقام</translation>
 <translation id="8274165955039650276">ڈاؤن لوڈز دیکھیں</translation>
 <translation id="8281886186245836920">نظر انداز کریں</translation>
+<translation id="8282297628636750033">ممکن ہو تو سائٹس پر گہری تھیم لاگو کریں</translation>
 <translation id="8284326494547611709">کیپشنز</translation>
 <translation id="829672787777123339">آپ کے آلے سے منسلک ہو رہا ہے…</translation>
 <translation id="8310344678080805313">معیاری ٹیبز</translation>
@@ -1345,6 +1351,7 @@
 <translation id="9063523880881406963">ڈیسک ٹاپ سائٹ کی درخواست کو آف کریں</translation>
 <translation id="9065203028668620118">تبدیل کریں</translation>
 <translation id="9065383040763568503">‏اسٹور شدہ وہ ڈیٹا جسے Chrome اہم نہیں سمجھتا ہے (جیسے، بغیر محفوظ کردہ ترتیبات والی سائٹس یا وہ جنہیں آپ اکثر ملاحظہ نہیں کرتے ہیں)</translation>
+<translation id="906781307897697745"><ph name="PRODUCT_NAME" /> میں</translation>
 <translation id="9069999660519089861">کوئی بغیر پڑھا ہوا صفحہ نہیں ہے</translation>
 <translation id="9070377983101773829">صوتی تلاش شروع کریں</translation>
 <translation id="9074336505530349563">‏Google کی جانب سے تجویز کردہ ذاتی نوعیت کا مواد حاصل کرنے کیلئے، سائن ان کریں اور سِنک کو آن کریں</translation>

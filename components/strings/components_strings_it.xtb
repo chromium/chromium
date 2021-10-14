@@ -797,6 +797,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Applicazione bloccata dal tuo amministratore</translation>
 <translation id="3608932978122581043">Fornisci orientamento</translation>
+<translation id="3611395257124510155">Carta virtuale per <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Dimensione 2</translation>
 <translation id="361438452008624280">Voce "<ph name="LANGUAGE_ID" />": lingua sconosciuta o non supportata.</translation>
 <translation id="3615877443314183785">Inserisci una data di scadenza valida</translation>
@@ -1610,6 +1611,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6276112860590028508">Le pagine del tuo elenco di lettura vengono visualizzate qui</translation>
 <translation id="627746635834430766">Per pagare più velocemente la prossima volta, salva la carta e l'indirizzo di fatturazione sul tuo Account Google.</translation>
+<translation id="6279098320682980337">Il numero della carta virtuale non è stato compilato? Fai clic sui dettagli della carta per copiarli</translation>
 <translation id="6280223929691119688">Impossibile consegnare all'indirizzo specificato. Seleziona un indirizzo diverso.</translation>
 <translation id="6282194474023008486">Codice postale</translation>
 <translation id="6289939620939689042">Colore pagina</translation>

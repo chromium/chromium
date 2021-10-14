@@ -407,6 +407,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="3429160811076349561">Kokeiluominaisuudet ovat poissa käytöstä</translation>
 <translation id="3440975416244667276">Katso lisää olennaisia tietoja koskettamalla pitkään</translation>
 <translation id="3443221991560634068">Päivitä nykyinen sivu</translation>
+<translation id="3444179773590444986">Haluatko antaa palautetta sivustojen tummasta teemasta?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 lataus ajoitettu}other{# latausta ajoitettu}}</translation>
 <translation id="3478363558367712427">Voit valita hakukoneen</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Lue lisätietoja<ph name="END_LINK" /> suositellusta sisällöstä.</translation>
@@ -590,6 +591,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4663499661119906179">Katso suositut sivustosi ja sinulle valitut tarinat</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> kirjanmerkkiä poistettiin</translation>
 <translation id="4668347365065281350">Kaikki data, jonka sivustot ovat tallentaneet, myös evästeet ja muu paikallisesti tallennettu data</translation>
+<translation id="4678082183394354975">Sivustojen tumma teema on päällä Chromessa</translation>
 <translation id="4684427112815847243">Synkronoi kaikki</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> muu}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> muuta}}</translation>
 <translation id="4696983787092045100">Lähetä teksti laitteillesi</translation>
@@ -773,6 +775,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5754350196967618083">Discoveria ei voi päivittää</translation>
 <translation id="5763382633136178763">Incognito-välilehdet</translation>
 <translation id="5763514718066511291">Kosketa kopioidaksesi tämän sovelluksen URL-osoite</translation>
+<translation id="5765517223145864268">Kerro meille kokemuksistasi. Voit myös <ph name="BEGIN_LINK" />muuttaa asetuksia<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">Kuvaus:</translation>
 <translation id="5767013862801005129">Välilehti <ph name="TAB_TITLE" /> palautettu</translation>
 <translation id="5776970333778123608">Vähemmän tärkeä data</translation>
@@ -960,6 +963,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6738516213925468394">Datasi salattiin <ph name="BEGIN_LINK" />synkronoinnin tunnuslauseella<ph name="END_LINK" /> <ph name="TIME" />. Aloita synkronointi antamalla tunnuslause.</translation>
 <translation id="6738867403308150051">Ladataan…</translation>
 <translation id="6751521182688001123">Avaa uusi välilehti nopeasti. Kosketa pikakuvaketta pitkään, niin voit muokata sitä.</translation>
+<translation id="6756507620369789050">Anna palautetta</translation>
 <translation id="6767294960381293877">Välilehden jakamisen laiteluettelo avataan puolen näytön korkeudella.</translation>
 <translation id="6783942555455976443">Tallenna sivu myöhemmin luettavaksi, saat muistutuksen</translation>
 <translation id="6795633245022906657">Avaa uusi välilehti nopeasti. Voit muokata pikakuvaketta asetuksista.</translation>
@@ -1051,6 +1055,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7352651011704765696">Tapahtui jokin virhe</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Jaa 1 valittu kohde}other{Jaa # valittua kohdetta}}</translation>
+<translation id="7356631068872238169">Poista lukulistalta</translation>
 <translation id="7359002509206457351">Pääsy maksutapoihin</translation>
 <translation id="7375125077091615385">Tyyppi:</translation>
 <translation id="7376560087009844242">Voit saada parempia tuloksia käyttäessäsi Koskettamalla hakemista, jos sisällytät enemmän tekstiä sivulta. Voit muuttaa tätä milloin tahansa <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
@@ -1222,6 +1227,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8266862848225348053">Lataussijainti</translation>
 <translation id="8274165955039650276">Näytä lataukset</translation>
 <translation id="8281886186245836920">Ohita</translation>
+<translation id="8282297628636750033">Käytä tummaa teemaa sivustoilla</translation>
 <translation id="8284326494547611709">Tekstitykset</translation>
 <translation id="829672787777123339">Muodostetaan yhteyttä laitteeseen…</translation>
 <translation id="8310344678080805313">Tavalliset välilehdet</translation>
@@ -1355,6 +1361,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="9063523880881406963">Poista käytöstä Käytä tietokoneversiota</translation>
 <translation id="9065203028668620118">Muokkaa</translation>
 <translation id="9065383040763568503">Tallennettu data, jota Chrome ei pidä tärkeänä (esim. sivustot, joilla ei ole tallennettuja asetuksia tai joilla et käy usein)</translation>
+<translation id="906781307897697745">paikka: <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Ei sivuja lukematta</translation>
 <translation id="9070377983101773829">Aloita puhehaku</translation>
 <translation id="9074336505530349563">Kirjaudu sisään ja ota synkronointi käyttöön, niin näet Googlen suosittelemaa yksilöllistä sisältöä</translation>

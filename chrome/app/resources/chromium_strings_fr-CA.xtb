@@ -209,6 +209,7 @@ Certaines fonctionnalités seront peut-être inaccessibles. Veuillez spécifier 
 <translation id="718435575166326686">Chromium requiert l'autorisation d'accéder à l'appareil photo pour ce site</translation>
 <translation id="7196312274710523067">Impossible de lancer Chromium. Réessayez.</translation>
 <translation id="7197677400338048821">Chromium ne peut pas vérifier vos mots de passe. Réessayez dans 24 heures.</translation>
+<translation id="7218568399872925918">Les sites que vous consultez gardent vos informations en mémoire tant que vous ne fermez pas Chromium</translation>
 <translation id="7223968959479464213">Gestionnaire de tâches – Chromium</translation>
 <translation id="731795002583552498">Mise à jour de Chromium en cours…</translation>
 <translation id="7318036098707714271">Votre fichier de préférences est corrompu ou invalide.
@@ -261,6 +262,8 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8621669128220841554">Échec de l'installation en raison d'une erreur non spécifiée. Veuillez télécharger Chromium à nouveau.</translation>
 <translation id="8697124171261953979">Elle définit également quelle page s'affiche lorsque vous démarrez Chromium ou que vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="8704119203788522458">Voici votre Chromium</translation>
+<translation id="8713679423359107094">Lorsque vous fermez toutes les fenêtres de Chromium, les témoins et les données relatives aux sites sont automatiquement effacés</translation>
+<translation id="8796443464227412154">Vous serez <ph name="BEGIN_BOLD" />déconnecté de la plupart des sites<ph name="END_BOLD" /> lorsque vous fermerez Chromium. Si la synchronisation est désactivée, vous serez également <ph name="BEGIN_BOLD" />déconnecté des services Google et de Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium a besoin de votre autorisation pour accéder à votre appareil photo et à votre micro pour ce site</translation>
 <translation id="8803635938069941624">Conditions d'utilisation de Chromium OS</translation>
 <translation id="8821041990367117597">Chromium n'a pas pu synchroniser vos données, car vos renseignements de connexion ne sont plus à jour.</translation>

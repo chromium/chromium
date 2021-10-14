@@ -816,6 +816,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Обележувачи</translation>
 <translation id="8840513115188359703">Нема да ве одјавиме од сметката на Google.</translation>
+<translation id="8843129975935593190">Вашата организација ограничува што може да синхронизирате.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} картичка}one{{count} картичка}other{{count} картички}}</translation>
 <translation id="8870413625673593573">Неодамна затворено</translation>
 <translation id="8876882697946675716">Уредите нека ви бидат синхронизирани</translation>

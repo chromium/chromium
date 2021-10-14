@@ -32,6 +32,7 @@
 <translation id="1032605640136438169">Læs de nye vilkår</translation>
 <translation id="103279545524624934">Frigør diskplads for at starte Android-apps.</translation>
 <translation id="1033780634303702874">Få adgang til dine serieenheder</translation>
+<translation id="1034484273907870301">Fanelinje med miniaturebilleder i tablettilstand</translation>
 <translation id="1036348656032585052">Deaktiver</translation>
 <translation id="1036511912703768636">Få adgang til alle disse USB-enheder</translation>
 <translation id="1036982837258183574">Tryk på |<ph name="ACCELERATOR" />| for at afslutte fuld skærm</translation>
@@ -361,6 +362,7 @@
 <translation id="1378613616312864539"><ph name="NAME" /> kontrollerer denne indstilling</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Ingen kompromitterede adgangskoder}=1{1 kompromitteret adgangskode}one{{NUM_COMPROMISED} kompromitteret adgangskode}other{{NUM_COMPROMISED} kompromitterede adgangskoder}}</translation>
 <translation id="1380028686461971526">Opret automatisk forbindelse til netværket</translation>
+<translation id="1381567580865186407">Tale på <ph name="LANGUAGE" /> sendes til behandling hos Google</translation>
 <translation id="1383597849754832576">Talefilerne kan ikke downloades. Prøv igen senere.</translation>
 <translation id="1383861834909034572">Åbnes, når fuldført</translation>
 <translation id="1383876407941801731">Søg</translation>
@@ -1160,6 +1162,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2173302385160625112">Tjek din internetforbindelse</translation>
 <translation id="2173801458090845390">Føj rekvisitions-id til denne enhed</translation>
 <translation id="2174948148799307353">Kontoen administreres af <ph name="PARENT_EMAIL" />. Klik på klokkeslættet på din skærm for at logge ud af den primære konto på denne enhed. Klik derefter på "Log ud" i den menu, der vises.</translation>
+<translation id="2175384018164129879">&amp;Administrer søgemaskiner og Site Search</translation>
 <translation id="2175607476662778685">Hurtig start</translation>
 <translation id="217576141146192373">Printeren kunne ikke tilføjes. Tjek din printers konfiguration, og prøv igen.</translation>
 <translation id="2175927920773552910">QR-kode</translation>
@@ -3864,6 +3867,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5040823038948176460">Yderligere indstillinger for indhold</translation>
 <translation id="5043440033854483429">Navne må indeholde bogstaver, tal og bindestreger (-), og de skal være på 1-15 tegn.</translation>
 <translation id="5043913660911154449">Du kan også angive PPD-filen for printeren <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
+<translation id="5044527779574548527">Vis ikke dette trin igen</translation>
 <translation id="5045550434625856497">Ugyldig adgangskode</translation>
 <translation id="504561833207953641">Åbner i eksisterende browsersession.</translation>
 <translation id="5047421709274785093">Bloker websites, så de ikke kan anvende bevægelses- og lyssensorer</translation>
@@ -5314,6 +5318,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6619801788773578757">Tilføj terminalapp</translation>
 <translation id="6619990499523117484">Bekræft din pinkode</translation>
 <translation id="6622980291894852883">Fortsæt blokering af billeder</translation>
+<translation id="6624036901798307345">I tablettilstand skal du trykke på knappen til faneoptælling på værktøjslinjen for at åbne den nye fanelinje, der viser miniaturebilleder af hver fane.</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> har følsomt eller farligt indhold. Bed ejeren af filen om at rette dette.</translation>
 <translation id="6624687053722465643">Sukkersød</translation>
 <translation id="6628328486509726751">Uploadet <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
@@ -5619,6 +5624,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6955893174999506273">Tildel 1 kontakt mere</translation>
 <translation id="6957044667612803194">Denne sikkerhedsnøgle understøtter ikke pinkoder</translation>
 <translation id="6960507406838246615">Kræver Linux-opdatering</translation>
+<translation id="6960648667961844909">Talefilerne på <ph name="LANGUAGE" /> kunne ikke downloades. Downloaden forsøges senere. Tale sendes til behandling hos Google, indtil downloaden er fuldført.</translation>
 <translation id="696103774840402661">Alle filer og lokale data for alle brugere på denne <ph name="DEVICE_TYPE" /> er blevet slettet permanent.</translation>
 <translation id="6964390816189577014">Helt</translation>
 <translation id="6964760285928603117">Fjern fra gruppe</translation>
@@ -6224,6 +6230,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (fejlkode <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">Genstart computer</translation>
 <translation id="7599527631045201165">Enhedsnavnet er for langt. Angiv et kortere navn for at prøve igen.</translation>
+<translation id="7600054753482800821">&amp;Administrer søgemaskiner og Site Search</translation>
 <translation id="7600965453749440009">Oversæt aldrig <ph name="LANGUAGE" /></translation>
 <translation id="760197030861754408">Gå til <ph name="LANDING_PAGE" /> for at tilslutte.</translation>
 <translation id="7602079150116086782">Ingen faner fra andre enheder</translation>
@@ -6890,6 +6897,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8244514732452879619">Det er snart sengetid</translation>
 <translation id="8246776524656196770">Beskyt din sikkerhedsnøgle med en pinkode</translation>
 <translation id="8248050856337841185">&amp;Indsæt</translation>
+<translation id="8248887045858762645">Tip til Chrome</translation>
 <translation id="8249048954461686687">OEM-mappe</translation>
 <translation id="8249615410597138718">Send til dine enheder</translation>
 <translation id="8249672078237421304">Tilbyd at oversætte sider, der ikke er på et sprog, du kan læse</translation>
@@ -7364,6 +7372,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8763927697961133303">USB-enhed</translation>
 <translation id="87646919272181953">Google Fotos-album</translation>
 <translation id="8767621466733104912">Opdater Chrome automatisk for alle brugere</translation>
+<translation id="8767765348545497220">Luk hjælp-boble</translation>
 <translation id="8770406935328356739">Udvidelsens rodmappe</translation>
 <translation id="8771300903067484968">Baggrunden for startsiden er nulstillet til standardbaggrunden.</translation>
 <translation id="8773302562181397928">Gem <ph name="PRINTER_NAME" /></translation>
