@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/branding_buildflags.h"
@@ -15,6 +16,7 @@
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/storage_service_impl.h"
 #include "content/child/child_process.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/utility/content_utility_client.h"
 #include "content/public/utility/utility_thread.h"
@@ -37,6 +39,8 @@
 #include "base/mac/mach_logging.h"
 #include "sandbox/mac/system_services.h"
 #include "sandbox/policy/sandbox.h"
+#elif defined(OS_ANDROID)
+#include "base/cpu_affinity_posix.h"
 #endif
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -141,6 +145,15 @@ class UtilityThreadVideoCaptureServiceImpl final
 
 auto RunNetworkService(
     mojo::PendingReceiver<network::mojom::NetworkService> receiver) {
+#if defined(OS_ANDROID)
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          features::kBigLittleScheduling,
+          features::kBigLittleSchedulingNetworkMainBigParam, false)) {
+    base::SetThreadCpuAffinityMode(base::PlatformThread::CurrentId(),
+                                   base::CpuAffinityMode::kBigCoresOnly);
+  }
+#endif
+
   auto binders = std::make_unique<service_manager::BinderRegistry>();
   GetContentClient()->utility()->RegisterNetworkBinders(binders.get());
   return std::make_unique<network::NetworkService>(

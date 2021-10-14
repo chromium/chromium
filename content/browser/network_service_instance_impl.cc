@@ -16,6 +16,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -37,6 +38,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/network_service_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -61,6 +63,8 @@
 #include "base/win/sid.h"
 #include "base/win/windows_version.h"
 #include "sandbox/policy/features.h"
+#elif defined(OS_ANDROID)
+#include "base/cpu_affinity_posix.h"
 #endif  // defined(OS_WIN)
 
 namespace content {
@@ -177,6 +181,15 @@ static NetworkServiceClient* g_client = nullptr;
 
 void CreateInProcessNetworkServiceOnThread(
     mojo::PendingReceiver<network::mojom::NetworkService> receiver) {
+#if defined(OS_ANDROID)
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          features::kBigLittleScheduling,
+          features::kBigLittleSchedulingNetworkMainBigParam, false)) {
+    base::SetThreadCpuAffinityMode(base::PlatformThread::CurrentId(),
+                                   base::CpuAffinityMode::kBigCoresOnly);
+  }
+#endif
+
   // The test interface doesn't need to be implemented in the in-process case.
   auto registry = std::make_unique<service_manager::BinderRegistry>();
   registry->AddInterface(base::BindRepeating(

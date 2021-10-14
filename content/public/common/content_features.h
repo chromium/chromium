@@ -272,12 +272,21 @@ CONTENT_EXPORT extern const base::Feature kWebXrArModule;
 CONTENT_EXPORT extern const base::Feature kAccessibilityPageZoom;
 CONTENT_EXPORT extern const base::Feature
     kBackgroundMediaRendererHasModerateBinding;
+CONTENT_EXPORT extern const base::Feature kBigLittleScheduling;
 CONTENT_EXPORT extern const base::Feature kBindingManagementWaiveCpu;
 CONTENT_EXPORT extern const base::Feature kOnDemandAccessibilityEvents;
 CONTENT_EXPORT extern const base::Feature kRequestDesktopSiteGlobal;
 CONTENT_EXPORT extern const base::Feature kUserMediaScreenCapturing;
 CONTENT_EXPORT extern const base::Feature kWarmUpNetworkProcess;
 CONTENT_EXPORT extern const base::Feature kWebNfc;
+
+extern const char kBigLittleSchedulingBrowserMainBiggerParam[];
+extern const char kBigLittleSchedulingBrowserMainBigParam[];
+extern const char kBigLittleSchedulingBrowserIOBigParam[];
+extern const char kBigLittleSchedulingRenderMainBigParam[];
+extern const char kBigLittleSchedulingNetworkMainBigParam[];
+extern const char kBigLittleSchedulingGpuMainBigParam[];
+
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_MAC)

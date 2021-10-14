@@ -1067,6 +1067,11 @@ const base::Feature kBackgroundMediaRendererHasModerateBinding{
     "BackgroundMediaRendererHasModerateBinding",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Takes advantage of specifying which big.LITTLE cores to schedule different
+// threads on. Note this conflicts with PowerScheduler feature.
+const base::Feature kBigLittleScheduling{"BigLittleScheduling",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, BindingManager will use Context.BIND_NOT_FOREGROUND to avoid
 // affecting cpu scheduling priority.
 const base::Feature kBindingManagementWaiveCpu{
@@ -1094,6 +1099,20 @@ const base::Feature kWarmUpNetworkProcess{"WarmUpNetworkProcess",
 // using the kEnableExperimentalWebPlatformFeatures flag.
 // https://w3c.github.io/web-nfc/
 const base::Feature kWebNfc{"WebNFC", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const char kBigLittleSchedulingBrowserMainBiggerParam[] =
+    "BigLittleSchedulingBrowserMainBiggerParam";
+const char kBigLittleSchedulingBrowserMainBigParam[] =
+    "BigLittleSchedulingBrowserMainBigParam";
+const char kBigLittleSchedulingBrowserIOBigParam[] =
+    "BigLittleSchedulingBrowserIOBigParam";
+const char kBigLittleSchedulingRenderMainBigParam[] =
+    "BigLittleSchedulingRenderMainBigParam";
+const char kBigLittleSchedulingNetworkMainBigParam[] =
+    "BigLittleSchedulingNetworkMainBigParam";
+const char kBigLittleSchedulingGpuMainBigParam[] =
+    "BigLittleSchedulingGpuMainBigParam";
+
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_MAC)

@@ -33,7 +33,9 @@ namespace {
 enum class CpuAffinityModeForUma {
   kDefault = 0,
   kLittleCoresOnly = 1,
-  kMaxValue = kLittleCoresOnly,
+  kBigCoresOnly = 2,
+  kBiggerCoresOnly = 3,
+  kMaxValue = kBiggerCoresOnly,
 };
 
 CpuAffinityModeForUma GetCpuAffinityModeForUma(base::CpuAffinityMode affinity) {
@@ -42,6 +44,10 @@ CpuAffinityModeForUma GetCpuAffinityModeForUma(base::CpuAffinityMode affinity) {
       return CpuAffinityModeForUma::kDefault;
     case base::CpuAffinityMode::kLittleCoresOnly:
       return CpuAffinityModeForUma::kLittleCoresOnly;
+    case base::CpuAffinityMode::kBigCoresOnly:
+      return CpuAffinityModeForUma::kBigCoresOnly;
+    case base::CpuAffinityMode::kBiggerCoresOnly:
+      return CpuAffinityModeForUma::kBiggerCoresOnly;
   }
 }
 
@@ -52,6 +58,10 @@ perfetto::StaticString TraceEventNameForAffinityMode(
       return "ApplyCpuAffinityModeDefault";
     case base::CpuAffinityMode::kLittleCoresOnly:
       return "ApplyCpuAffinityModeLittleCoresOnly";
+    case base::CpuAffinityMode::kBigCoresOnly:
+      return "ApplyCpuAffinityModeBigCoresOnly";
+    case base::CpuAffinityMode::kBiggerCoresOnly:
+      return "ApplyCpuAffinityModeBiggerCoresOnly";
   }
 }
 

@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -31,6 +32,7 @@
 #include "content/gpu/gpu_child_thread.h"
 #include "content/gpu/gpu_process.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
@@ -66,6 +68,7 @@
 #endif
 
 #if defined(OS_ANDROID)
+#include "base/cpu_affinity_posix.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/tracing/common/graphics_memory_dump_provider_android.h"
 #endif
@@ -233,6 +236,13 @@ int GpuMain(const MainFunctionParams& parameters) {
 
   if (base::FeatureList::IsEnabled(features::kGpuProcessHighPriorityWin))
     ::SetPriorityClass(::GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
+#elif defined(OS_ANDROID)
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          features::kBigLittleScheduling,
+          features::kBigLittleSchedulingGpuMainBigParam, false)) {
+    base::SetThreadCpuAffinityMode(base::PlatformThread::CurrentId(),
+                                   base::CpuAffinityMode::kBigCoresOnly);
+  }
 #endif
 
   // Installs a base::LogMessageHandlerFunction which ensures messages are sent

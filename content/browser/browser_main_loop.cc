@@ -22,6 +22,7 @@
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
@@ -154,6 +155,7 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_android.h"
+#include "base/cpu_affinity_posix.h"
 #include "base/trace_event/cpufreq_monitor_android.h"
 #include "components/tracing/common/graphics_memory_dump_provider_android.h"
 #include "content/browser/android/browser_startup_controller.h"
@@ -508,6 +510,22 @@ void BrowserMainLoop::Init() {
 
 int BrowserMainLoop::EarlyInitialization() {
   TRACE_EVENT0("startup", "BrowserMainLoop::EarlyInitialization");
+
+#if defined(OS_ANDROID)
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          features::kBigLittleScheduling,
+          features::kBigLittleSchedulingBrowserMainBiggerParam, false)) {
+    base::SetThreadCpuAffinityMode(base::PlatformThread::CurrentId(),
+                                   base::HasBiggerCpuCores()
+                                       ? base::CpuAffinityMode::kBiggerCoresOnly
+                                       : base::CpuAffinityMode::kBigCoresOnly);
+  } else if (base::GetFieldTrialParamByFeatureAsBool(
+                 features::kBigLittleScheduling,
+                 features::kBigLittleSchedulingBrowserMainBigParam, false)) {
+    base::SetThreadCpuAffinityMode(base::PlatformThread::CurrentId(),
+                                   base::CpuAffinityMode::kBigCoresOnly);
+  }
+#endif
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
   // The initialization of the sandbox host ends up with forking the Zygote
