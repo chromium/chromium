@@ -494,8 +494,10 @@ bool SearchSuggestionParser::ParseSuggestResults(
         relevances_value->GetList().size() == results_list.size()) {
       relevances = relevances_value->GetList();
     }
-    extras->GetInteger("google:verbatimrelevance",
-                       &results->verbatim_relevance);
+    if (absl::optional<int> relevance =
+            extras->FindIntKey("google:verbatimrelevance")) {
+      results->verbatim_relevance = *relevance;
+    }
 
     // Check if the active suggest field trial (if any) has triggered either
     // for the default provider or keyword provider.
@@ -538,8 +540,11 @@ bool SearchSuggestionParser::ParseSuggestResults(
     }
 
     const base::DictionaryValue* client_data = nullptr;
-    if (extras->GetDictionary("google:clientdata", &client_data) && client_data)
-      client_data->GetInteger("phi", &prefetch_index);
+    if (extras->GetDictionary("google:clientdata", &client_data) &&
+        client_data) {
+      if (absl::optional<int> phi = client_data->FindIntKey("phi"))
+        prefetch_index = *phi;
+    }
 
     if (extras->GetList("google:suggestdetail", &suggestion_details) &&
         suggestion_details->GetList().size() != results_list.size())

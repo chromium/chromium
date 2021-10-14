@@ -743,8 +743,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     // Both client and server scores are calculated regardless of usage in order
     // to log them with |AutocompleteMatch::RecordAdditionalInfo| below.
     int client_score = CalculateScore(input_.text(), result);
-    int server_score = 0;
-    result->GetInteger("score", &server_score);
+    int server_score = result->FindIntKey("score").value_or(0);
     int score = 0;
 
     if (use_client_score && use_server_score)
