@@ -155,6 +155,8 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
 
     identity_test_environment_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+        GetFakeUserManager()->GetPrimaryUser(), profile_.get());
 
     // Seed account info properly.
     identity_test_env()->MakePrimaryAccountAvailable(
