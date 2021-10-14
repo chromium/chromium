@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -100,6 +101,8 @@ class PreinstalledWebAppMigrationBrowserTest
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
     os_hooks_suppress_ =
         OsIntegrationManager::ScopedSuppressOsHooksForTesting();
+    web_app::test::WaitUntilReady(
+        web_app::WebAppProvider::GetForTest(profile()));
   }
 
   std::unique_ptr<net::test_server::HttpResponse> RequestHandlerOverride(

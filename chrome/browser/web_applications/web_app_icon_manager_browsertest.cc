@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -46,7 +47,9 @@ class WebAppIconManagerBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
   void SetUpOnMainThread() override {
-    app_service_test_.SetUp(browser()->profile());
+    Profile* profile = browser()->profile();
+    app_service_test_.SetUp(profile);
+    web_app::test::WaitUntilReady(web_app::WebAppProvider::GetForTest(profile));
   }
 
   // InProcessBrowserTest:
