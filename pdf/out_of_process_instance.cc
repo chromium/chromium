@@ -12,6 +12,7 @@
 #include <iterator>
 #include <list>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -20,6 +21,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -824,6 +826,29 @@ std::unique_ptr<UrlLoader> OutOfProcessInstance::CreateUrlLoaderInternal() {
   auto loader = std::make_unique<PepperUrlLoader>(this);
   loader->GrantUniversalAccess();
   return loader;
+}
+
+std::string OutOfProcessInstance::RewriteRequestUrl(
+    base::StringPiece url) const {
+  if (IsPrintPreview()) {
+    // TODO(crbug.com/1238829): This is a workaround for Pepper not supporting
+    // chrome-untrusted://print/ URLs. Pepper issues requests through the
+    // embedder's URL loaders, but a WebUI loader only supports subresource
+    // requests to the same scheme (so chrome: only can request chrome: URLs,
+    // and chrome-untrusted: only can request chrome-untrusted: URLs).
+    //
+    // To work around this (for the Pepper plugin only), we'll issue
+    // chrome-untrusted://print/ requests to the equivalent chrome://print/ URL,
+    // since both schemes support the same PDF URLs.
+    if (base::StartsWith(url, kChromeUntrustedPrintHost)) {
+      return base::StrCat(
+          {kChromePrintHost, url.substr(kChromeUntrustedPrintHost.size())});
+    }
+
+    NOTREACHED();
+  }
+
+  return PdfViewPluginBase::RewriteRequestUrl(url);
 }
 
 void OutOfProcessInstance::SetSelectedText(const std::string& selected_text) {

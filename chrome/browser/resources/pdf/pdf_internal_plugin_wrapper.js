@@ -21,8 +21,13 @@ channel.port1.onmessage = e => {
 };
 
 const srcUrl = new URL(plugin.getAttribute('src'));
+let parentOrigin = srcUrl.origin;
+if (parentOrigin === 'chrome-untrusted://print') {
+  // Within Print Preview, the source origin differs from the parent origin.
+  parentOrigin = 'chrome://print';
+}
 window.parent.postMessage(
-    {type: 'connect', token: srcUrl.href}, srcUrl.origin, [channel.port2]);
+    {type: 'connect', token: srcUrl.href}, parentOrigin, [channel.port2]);
 
 /**
  * Relays gesture events to the parent frame.

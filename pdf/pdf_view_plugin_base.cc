@@ -85,7 +85,6 @@ constexpr base::TimeDelta kAccessibilityPageDelay = base::Milliseconds(100);
 
 constexpr base::TimeDelta kFindResultCooldown = base::Milliseconds(100);
 
-constexpr char kChromePrintHost[] = "chrome://print/";
 constexpr char kChromeExtensionHost[] =
     "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/";
 
@@ -119,15 +118,15 @@ base::Value PrepareReplyMessage(base::StringPiece reply_type,
 }
 
 bool IsPrintPreviewUrl(base::StringPiece url) {
-  return base::StartsWith(url, kChromePrintHost);
+  return base::StartsWith(url, PdfViewPluginBase::kChromeUntrustedPrintHost);
 }
 
 int ExtractPrintPreviewPageIndex(base::StringPiece src_url) {
-  // Sample `src_url` format: chrome://print/id/page_index/print.pdf
+  // Sample `src_url` format: chrome-untrusted://print/id/page_index/print.pdf
   // The page_index is zero-based, but can be negative with special meanings.
-  std::vector<base::StringPiece> url_substr =
-      base::SplitStringPiece(src_url.substr(strlen(kChromePrintHost)), "/",
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<base::StringPiece> url_substr = base::SplitStringPiece(
+      src_url.substr(PdfViewPluginBase::kChromeUntrustedPrintHost.size()), "/",
+      base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (url_substr.size() != 3)
     return kInvalidPDFIndex;
 
@@ -145,6 +144,12 @@ bool IsPreviewingPDF(int print_preview_page_count) {
 }
 
 }  // namespace
+
+// static
+constexpr base::StringPiece PdfViewPluginBase::kChromePrintHost;
+
+// static
+constexpr base::StringPiece PdfViewPluginBase::kChromeUntrustedPrintHost;
 
 PdfViewPluginBase::PdfViewPluginBase() = default;
 
@@ -164,7 +169,7 @@ void PdfViewPluginBase::InitializeBase(std::unique_ptr<PDFiumEngine> engine,
   // This is enforced before launching the plugin process (see
   // ChromeContentBrowserClient::ShouldAllowPluginCreation), so below we just do
   // a CHECK as a defense-in-depth.
-  is_print_preview_ = IsPrintPreviewUrl(embedder_origin);
+  is_print_preview_ = (embedder_origin == kChromePrintHost);
   CHECK(IsPrintPreview() || embedder_origin == kChromeExtensionHost);
 
   full_frame_ = full_frame;
@@ -779,7 +784,7 @@ void PdfViewPluginBase::LoadUrl(base::StringPiece url, bool is_print_preview) {
     last_progress_sent_ = 0;
 
   UrlRequest request;
-  request.url = std::string(url);
+  request.url = RewriteRequestUrl(url);
   request.method = "GET";
   request.ignore_redirects = true;
 
@@ -790,6 +795,10 @@ void PdfViewPluginBase::LoadUrl(base::StringPiece url, bool is_print_preview) {
       base::BindOnce(is_print_preview ? &PdfViewPluginBase::DidOpenPreview
                                       : &PdfViewPluginBase::DidOpen,
                      GetWeakPtr(), std::move(loader)));
+}
+
+std::string PdfViewPluginBase::RewriteRequestUrl(base::StringPiece url) const {
+  return std::string(url);
 }
 
 void PdfViewPluginBase::InvalidateAfterPaintDone() {

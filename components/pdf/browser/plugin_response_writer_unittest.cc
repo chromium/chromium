@@ -192,13 +192,15 @@ TEST_F(PluginResponseWriterTest, StartWithUnescapedUrls) {
 
 TEST_F(PluginResponseWriterTest, StartForPrintPreview) {
   PdfStreamDelegate::StreamInfo stream;
-  stream.stream_url = GURL("chrome://print/1/0/print.pdf");
-  stream.original_url = GURL("chrome://print/1/0/print.pdf");
+  stream.stream_url = GURL("chrome-untrusted://print/1/0/print.pdf");
+  stream.original_url = GURL("chrome-untrusted://print/1/0/print.pdf");
   std::string response = GenerateResponse(stream);
 
-  EXPECT_THAT(response, HasSubstr("src=\"chrome://print/1/0/print.pdf\""));
   EXPECT_THAT(response,
-              HasSubstr("original-url=\"chrome://print/1/0/print.pdf\""));
+              HasSubstr("src=\"chrome-untrusted://print/1/0/print.pdf\""));
+  EXPECT_THAT(
+      response,
+      HasSubstr("original-url=\"chrome-untrusted://print/1/0/print.pdf\""));
 }
 
 TEST_F(PluginResponseWriterTest, StartWithoutInjectedScript) {

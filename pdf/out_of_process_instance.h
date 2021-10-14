@@ -116,6 +116,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // PdfViewPluginBase:
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
   std::unique_ptr<UrlLoader> CreateUrlLoaderInternal() override;
+  std::string RewriteRequestUrl(base::StringPiece url) const override;
   void SendMessage(base::Value message) override;
   void SaveAs() override;
   void InitImageData(const gfx::Size& size) override;
