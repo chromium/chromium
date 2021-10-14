@@ -226,8 +226,9 @@ TEST_F(WebCryptoRsaSsaTest, ImportMultipleRSAPrivateKeysJwk) {
     std::vector<uint8_t> pkcs8_bytes = HexStringToBytes(pkcs8_hex_string);
 
     // Get the modulus length for the key.
-    int modulus_length_bits = 0;
-    ASSERT_TRUE(key_values->GetInteger("modulusLength", &modulus_length_bits));
+    absl::optional<int> modulus_length_bits =
+        key_values->FindIntKey("modulusLength");
+    ASSERT_TRUE(modulus_length_bits);
 
     blink::WebCryptoKey private_key;
 
@@ -243,7 +244,7 @@ TEST_F(WebCryptoRsaSsaTest, ImportMultipleRSAPrivateKeysJwk) {
     live_keys.push_back(private_key);
 
     EXPECT_EQ(
-        modulus_length_bits,
+        *modulus_length_bits,
         static_cast<int>(
             private_key.Algorithm().RsaHashedParams()->ModulusLengthBits()));
 

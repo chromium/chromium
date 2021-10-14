@@ -41,8 +41,8 @@ TEST_F(WebCryptoAesCtrTest, EncryptDecryptKnownAnswer) {
 
     std::vector<uint8_t> test_key = GetBytesFromHexString(test, "key");
     std::vector<uint8_t> test_counter = GetBytesFromHexString(test, "counter");
-    int counter_length_bits = 0;
-    ASSERT_TRUE(test->GetInteger("length", &counter_length_bits));
+    absl::optional<int> counter_length_bits = test->FindIntKey("length");
+    ASSERT_TRUE(counter_length_bits);
 
     std::vector<uint8_t> test_plain_text =
         GetBytesFromHexString(test, "plain_text");
@@ -59,13 +59,13 @@ TEST_F(WebCryptoAesCtrTest, EncryptDecryptKnownAnswer) {
 
     // Test encryption.
     EXPECT_EQ(Status::Success(),
-              Encrypt(CreateAesCtrAlgorithm(test_counter, counter_length_bits),
+              Encrypt(CreateAesCtrAlgorithm(test_counter, *counter_length_bits),
                       key, CryptoData(test_plain_text), &output));
     EXPECT_BYTES_EQ(test_cipher_text, output);
 
     // Test decryption.
     EXPECT_EQ(Status::Success(),
-              Decrypt(CreateAesCtrAlgorithm(test_counter, counter_length_bits),
+              Decrypt(CreateAesCtrAlgorithm(test_counter, *counter_length_bits),
                       key, CryptoData(test_cipher_text), &output));
     EXPECT_BYTES_EQ(test_plain_text, output);
   }

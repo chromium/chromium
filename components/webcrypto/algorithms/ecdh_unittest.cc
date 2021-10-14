@@ -93,15 +93,15 @@ TEST_F(WebCryptoEcdhTest, DeriveBitsKnownAnswer) {
 
     // Now try to derive bytes.
     std::vector<uint8_t> derived_bytes;
-    int length_bits = 0;
-    ASSERT_TRUE(test->GetInteger("length_bits", &length_bits));
+    absl::optional<int> length_bits = test->FindIntKey("length_bits");
+    ASSERT_TRUE(length_bits);
 
     // If the test didn't specify an error, that implies it expects success.
     std::string expected_error = "Success";
     test->GetString("error", &expected_error);
 
     Status status = DeriveBits(CreateEcdhDeriveParams(public_key), private_key,
-                               length_bits, &derived_bytes);
+                               *length_bits, &derived_bytes);
     ASSERT_EQ(expected_error, StatusToString(status));
     if (status.IsError())
       continue;
