@@ -4,6 +4,9 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/strings/string_util.h"
+#include "base/strings/sys_string_conversions.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/account_consistency_method.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -18,6 +21,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -61,6 +65,25 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
   GREYAssertEqual(
       [ChromeEarlGrey numberOfSyncEntitiesWithType:syncer::BOOKMARKS], 0,
       @"No bookmarks should exist before tests start.");
+}
+
+- (void)enableForcedSignin {
+  AppLaunchConfiguration config = self.appConfigurationForTestCase;
+
+  // Configure the policy to force sign-in.
+  std::string policy_data = "<dict>"
+                            "    <key>BrowserSignin</key>"
+                            "    <integer>2</integer>"
+                            "</dict>";
+  base::RemoveChars(policy_data, base::kWhitespaceASCII, &policy_data);
+
+  config.additional_args.push_back("--enable-forced-signin-policy");
+  config.additional_args.push_back(
+      "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
+  config.additional_args.push_back(policy_data);
+
+  // Relaunch the app to take the configuration into account.
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
 // Tests that the Sync and Account Settings screen are correctly popped if the
@@ -516,7 +539,7 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
   [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
 }
 
-// Tests that the sign-out header is not shown when the user is not syncing.
+// Tests that the sign-out footer is not shown when the user is not syncing.
 - (void)testSignOutFooterForSignInOnlyUser {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -532,7 +555,26 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
       assertWithMatcher:grey_nil()];
 }
 
-// Tests that the sign-out header is shown when the user is syncing.
+// Tests that the sign-out footer has the right text when the user is signed in
+// and not syncing with forced sign-in enabled.
+- (void)testSignOutFooterForSignInOnlyUserWithForcedSigninEnabled {
+  [self enableForcedSignin];
+
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_accessibilityLabel(l10n_util::GetNSString(
+                  IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE_WITH_LEARN_MORE)),
+              grey_sufficientlyVisible(), nil)] assertWithMatcher:grey_nil()];
+}
+
+// Tests that the sign-out footer is shown when the user is syncing.
 - (void)testSignOutFooterForSignInAndSyncUser {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -545,6 +587,36 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
           grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
                          IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE)),
                      grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that the sign-out footer has the right text when the user is syncing
+// and forced sign-in is enabled.
+- (void)testSignOutFooterForSignInAndSyncUserWithForcedSigninEnabled {
+  [self enableForcedSignin];
+
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  NSString* footerText = [NSString
+      stringWithFormat:
+          @"%@\n\n%@",
+          l10n_util::GetNSString(
+              IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE),
+          l10n_util::GetNSString(
+              IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE_WITH_LEARN_MORE)];
+  footerText = [footerText stringByReplacingOccurrencesOfString:@"BEGIN_LINK"
+                                                     withString:@""];
+  footerText = [footerText stringByReplacingOccurrencesOfString:@"END_LINK"
+                                                     withString:@""];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(footerText),
+                                          grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
 }
 

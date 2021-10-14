@@ -49,6 +49,7 @@
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "net/base/mac/url_conversions.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -275,10 +276,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:[self signOutItem]
       toSectionWithIdentifier:SectionIdentifierSignOut];
   AuthenticationService* authService = [self authService];
-  if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
-    [model setFooter:[self signOutSyncingFooterItem]
-        forSectionWithIdentifier:SectionIdentifierSignOut];
+
+  BOOL hasSyncConsent =
+      authService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
+  TableViewLinkHeaderFooterItem* footerItem = nil;
+  if (IsForceSignInEnabled()) {
+    if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+      footerItem =
+          [self signOutSyncingFooterItemForForcedSignin:hasSyncConsent];
+    }
+  } else if (hasSyncConsent) {
+    footerItem = [self signOutSyncingFooterItem];
   }
+
+  [model setFooter:footerItem
+      forSectionWithIdentifier:SectionIdentifierSignOut];
 }
 
 #pragma mark - Model objects
@@ -295,6 +307,29 @@ typedef NS_ENUM(NSInteger, ItemType) {
       initWithType:ItemTypeSignOutSyncingFooter];
   footer.text = l10n_util::GetNSString(
       IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE);
+  return footer;
+}
+
+- (TableViewLinkHeaderFooterItem*)signOutSyncingFooterItemForForcedSignin:
+    (BOOL)syncConsent {
+  TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
+      initWithType:ItemTypeSignOutSyncingFooter];
+
+  if (syncConsent) {
+    NSString* text = l10n_util::GetNSString(
+        IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE);
+    text = [text stringByAppendingString:@"\n\n"];
+    text = [text
+        stringByAppendingString:
+            l10n_util::GetNSString(
+                IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE_WITH_LEARN_MORE)];
+    footer.text = text;
+  } else {
+    footer.text = l10n_util::GetNSString(
+        IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE_WITH_LEARN_MORE);
+  }
+
+  footer.urls = std::vector<GURL>{GURL(kChromeUIManagementURL)};
   return footer;
 }
 
@@ -354,13 +389,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSInteger sectionIdentifier =
       [self.tableViewModel sectionIdentifierForSection:section];
   switch (sectionIdentifier) {
-    case SectionIdentifierAccounts: {
+    case SectionIdentifierAccounts:
+    case SectionIdentifierSignOut: {
       // Might be a different type of footer.
       TableViewLinkHeaderFooterView* linkView =
           base::mac::ObjCCast<TableViewLinkHeaderFooterView>(view);
       linkView.delegate = self;
-    } break;
-    default:
+      break;
+    }
+    case SectionIdentifierSync:
       break;
   }
   return view;
@@ -730,6 +767,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)didSelectSignoutDataRetentionStrategy {
   _authenticationOperationInProgress = YES;
   [self preventUserInteraction];
+}
+
+#pragma mark - TableViewLinkHeaderFooterItemDelegate
+
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)URL {
+  // Subclass must have a valid dispatcher assigned.
+  DCHECK(self.dispatcher);
+  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
+  [self.dispatcher closeSettingsUIAndOpenURL:command];
 }
 
 @end
