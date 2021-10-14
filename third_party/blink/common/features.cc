@@ -637,6 +637,11 @@ const base::Feature kWebviewAccelerateSmallCanvases{
 const base::Feature kDiscardCodeCacheAfterFirstUse{
     "DiscardCodeCacheAfterFirstUse", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kCacheCodeOnIdle{"CacheCodeOnIdle",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<int> kCacheCodeOnIdleDelayParam{&kCacheCodeOnIdle,
+                                                         "delay-in-ms", 0};
+
 // Kill switch for the new element.offsetParent behavior.
 // TODO(crbug.com/920069): Remove this once the feature has
 // landed and no compat issues are reported.

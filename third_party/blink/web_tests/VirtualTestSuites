@@ -526,6 +526,14 @@
     "args": ["--enable-blink-features=ExtraWebGLVideoTextureMetadata"]
   },
   {
+    "prefix": "cache-code-on-idle",
+    "bases": [
+      "http/tests/devtools/isolated-code-cache",
+      "http/tests/devtools/resources"
+    ],
+    "args": ["--enable-features=CacheCodeOnIdle"]
+  },
+  {
     "prefix": "wasm-site-isolated-code-cache",
     "bases": ["http/tests/devtools/wasm-isolated-code-cache"],
     "args": ["--disable-features=WebAssemblyBaseline",

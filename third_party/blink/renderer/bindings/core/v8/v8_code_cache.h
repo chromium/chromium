@@ -83,7 +83,10 @@ class CORE_EXPORT V8CodeCache final {
   static void ProduceCache(v8::Isolate*,
                            CodeCacheHost*,
                            v8::Local<v8::Script>,
-                           const ScriptSourceCode&,
+                           SingleCachedMetadataHandler*,
+                           size_t source_text_length,
+                           const KURL& source_url,
+                           const WTF::TextPosition& source_start_position,
                            ProduceCacheOptions);
   static void ProduceCache(v8::Isolate*,
                            CodeCacheHost*,

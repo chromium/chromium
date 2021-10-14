@@ -428,6 +428,26 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
   return result;
 }
 
+namespace {
+void DelayedProduceCodeCacheTask(ScriptState* script_state,
+                                 v8::Global<v8::Script> script,
+                                 SingleCachedMetadataHandler* cache_handler,
+                                 size_t source_text_length,
+                                 KURL source_url,
+                                 TextPosition source_start_position) {
+  if (!script_state->ContextIsValid())
+    return;
+  ScriptState::Scope scope(script_state);
+  v8::Isolate* isolate = script_state->GetIsolate();
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  V8CodeCache::ProduceCache(
+      isolate, ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+      script.Get(isolate), cache_handler, source_text_length, source_url,
+      source_start_position,
+      V8CodeCache::ProduceCacheOptions::kProduceCodeCache);
+}
+}  // namespace
+
 ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     ScriptState* script_state,
     ClassicScript* classic_script,
@@ -523,10 +543,34 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
       // CodeCacheHost corresponding to the script execution context. For
       // isolated world the contexts may not match. Though code caching is
       // disabled for extensions so it is OK to use execution_context here.
-      V8CodeCache::ProduceCache(
-          isolate,
-          ExecutionContext::GetCodeCacheHostFromContext(execution_context),
-          script, source, produce_cache_options);
+
+      if (produce_cache_options ==
+              V8CodeCache::ProduceCacheOptions::kProduceCodeCache &&
+          base::FeatureList::IsEnabled(features::kCacheCodeOnIdle)) {
+        auto delay =
+            base::Milliseconds(features::kCacheCodeOnIdleDelayParam.Get());
+        // Workers don't have a concept of idle tasks, so use a default task for
+        // these.
+        TaskType task_type =
+            frame ? TaskType::kIdleTask : TaskType::kInternalDefault;
+        execution_context->GetTaskRunner(task_type)->PostDelayedTask(
+            FROM_HERE,
+            WTF::Bind(&DelayedProduceCodeCacheTask,
+                      // TODO(leszeks): Consider passing the
+                      // script state as a weak persistent.
+                      WrapPersistent(script_state),
+                      v8::Global<v8::Script>(isolate, script),
+                      WrapPersistent(source.CacheHandler()),
+                      source.Source().length(), source.Url(),
+                      source.StartPosition()),
+            delay);
+      } else {
+        V8CodeCache::ProduceCache(
+            isolate,
+            ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+            script, source.CacheHandler(), source.Source().length(),
+            source.Url(), source.StartPosition(), produce_cache_options);
+      }
     }
 
     // TODO(crbug/1114601): Investigate whether to check CanContinue() in other

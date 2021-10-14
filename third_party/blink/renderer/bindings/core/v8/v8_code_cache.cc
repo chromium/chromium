@@ -209,7 +209,7 @@ template <typename UnboundScript>
 static void ProduceCacheInternal(
     v8::Isolate* isolate,
     CodeCacheHost* code_cache_host,
-    UnboundScript unbound_script,
+    v8::Local<UnboundScript> unbound_script,
     SingleCachedMetadataHandler* cache_handler,
     size_t source_text_length,
     const KURL& source_url,
@@ -271,11 +271,14 @@ static void ProduceCacheInternal(
 void V8CodeCache::ProduceCache(v8::Isolate* isolate,
                                CodeCacheHost* code_cache_host,
                                v8::Local<v8::Script> script,
-                               const ScriptSourceCode& source,
+                               SingleCachedMetadataHandler* cache_handler,
+                               size_t source_text_length,
+                               const KURL& source_url,
+                               const TextPosition& source_start_position,
                                ProduceCacheOptions produce_cache_options) {
   ProduceCacheInternal(isolate, code_cache_host, script->GetUnboundScript(),
-                       source.CacheHandler(), source.Source().length(),
-                       source.Url(), source.StartPosition(), "v8.produceCache",
+                       cache_handler, source_text_length, source_url,
+                       source_start_position, "v8.produceCache",
                        produce_cache_options);
 }
 

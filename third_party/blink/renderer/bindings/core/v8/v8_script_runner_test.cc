@@ -95,7 +95,9 @@ class V8ScriptRunnerTest : public testing::Test {
     V8CodeCache::ProduceCache(
         isolate,
         ExecutionContext::GetCodeCacheHostFromContext(execution_context),
-        compiled_script.ToLocalChecked(), source_code, produce_cache_options);
+        compiled_script.ToLocalChecked(), source_code.CacheHandler(),
+        source_code.Source().length(), source_code.Url(),
+        source_code.StartPosition(), produce_cache_options);
     return true;
   }
 
@@ -120,7 +122,9 @@ class V8ScriptRunnerTest : public testing::Test {
     V8CodeCache::ProduceCache(
         isolate,
         ExecutionContext::GetCodeCacheHostFromContext(execution_context),
-        compiled_script.ToLocalChecked(), source_code, produce_cache_options);
+        compiled_script.ToLocalChecked(), source_code.CacheHandler(),
+        source_code.Source().length(), source_code.Url(),
+        source_code.StartPosition(), produce_cache_options);
     return true;
   }
 
