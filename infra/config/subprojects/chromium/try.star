@@ -1954,20 +1954,8 @@ try_.chromium_win_builder(
 try_.chromium_win_builder(
     name = "win10_chromium_x64_rel_ng",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    goma_jobs = goma.jobs.J300,
-    os = os.WINDOWS_10,
-    cores = 16,
-    ssd = True,
-    use_clang_coverage = True,
-    coverage_test_types = ["unit", "overall"],
-    main_list_view = "try",
-    tryjob = try_.job(),
-)
-
-try_.chromium_win_builder(
-    name = "win10-rel-orchestrator",
     builderless = False,
-    cores = None,
+    cores = 4,
     os = os.LINUX_BIONIC,
     executable = "recipe:chromium/orchestrator",
     use_clang_coverage = True,
@@ -1979,32 +1967,13 @@ try_.chromium_win_builder(
         },
     },
     service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
-    tryjob = try_.job(
-        experiment_percentage = 15,
-    ),
-)
-
-try_.chromium_win_builder(
-    name = "win10-rel-compilator",
-    builderless = False,
-    os = os.WINDOWS_10,
-    cores = None,
-    ssd = True,
-    goma_jobs = goma.jobs.J300,
-    executable = "recipe:chromium/compilator",
-    use_clang_coverage = True,
-    coverage_test_types = ["unit", "overall"],
-    properties = {
-        "orchestrator": {
-            "builder_name": "win10-rel-orchestrator",
-            "builder_group": "tryserver.chromium.win",
-        },
-    },
+    main_list_view = "try",
+    tryjob = try_.job(),
 )
 
 try_.chromium_win_builder(
     name = "win10_chromium_x64_rel_ng-compilator",
-    builderless = None,
+    builderless = False,
     os = os.WINDOWS_10,
     cores = 32,
     ssd = True,

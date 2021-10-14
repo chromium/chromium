@@ -487,6 +487,3 @@ as required builders.
   Path regular expressions:
   * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=+file:tools/clang/scripts/update.py)
 
-* [win10-rel-orchestrator](https://ci.chromium.org/p/chromium/builders/try/win10-rel-orchestrator) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""win10-rel-orchestrator"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""win10-rel-orchestrator""))
-  * Experiment percentage: 15.0
-
