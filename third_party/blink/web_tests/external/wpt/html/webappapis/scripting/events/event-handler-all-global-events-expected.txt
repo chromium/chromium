@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 335 tests; 319 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 335 tests; 323 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS onabort: must be on the appropriate locations for GlobalEventHandlers
 PASS onabort: the default value must be null
 PASS onabort: the content attribute must be compiled into a function as the corresponding property
@@ -270,10 +270,10 @@ PASS onselect: the default value must be null
 PASS onselect: the content attribute must be compiled into a function as the corresponding property
 PASS onselect: the content attribute must execute when an event is dispatched
 PASS onselect: dispatching an Event at a <meta> element must trigger element.onselect
-FAIL onslotchange: must be on the appropriate locations for GlobalEventHandlers assert_true: Window has an own property named "onslotchange" expected true got false
-FAIL onslotchange: the default value must be null assert_equals: The default value of the property is null for a Window instance expected (object) null but got (undefined) undefined
-FAIL onslotchange: the content attribute must be compiled into a function as the corresponding property assert_equals: The onslotchange property must be a function expected "function" but got "undefined"
-FAIL onslotchange: the content attribute must execute when an event is dispatched assert_true: Dispatching an event must run the code expected true got undefined
+PASS onslotchange: must be on the appropriate locations for GlobalEventHandlers
+PASS onslotchange: the default value must be null
+PASS onslotchange: the content attribute must be compiled into a function as the corresponding property
+PASS onslotchange: the content attribute must execute when an event is dispatched
 PASS onslotchange: dispatching an Event at a <meta> element must trigger element.onslotchange
 PASS onstalled: must be on the appropriate locations for GlobalEventHandlers
 PASS onstalled: the default value must be null

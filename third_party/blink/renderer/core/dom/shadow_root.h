@@ -66,6 +66,8 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   using TreeScope::SetDocument;
   using TreeScope::SetParentTreeScope;
 
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(slotchange, kSlotchange)
+
   Element& host() const {
     DCHECK(ParentOrShadowHostNode());
     return *To<Element>(ParentOrShadowHostNode());

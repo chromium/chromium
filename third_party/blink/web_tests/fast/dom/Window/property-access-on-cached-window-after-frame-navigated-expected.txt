@@ -185,6 +185,7 @@ PASS oldChildWindow.onseeking is newChildWindow.onseeking
 PASS oldChildWindow.onselect is newChildWindow.onselect
 PASS oldChildWindow.onselectionchange is newChildWindow.onselectionchange
 PASS oldChildWindow.onselectstart is newChildWindow.onselectstart
+PASS oldChildWindow.onslotchange is newChildWindow.onslotchange
 PASS oldChildWindow.onstalled is newChildWindow.onstalled
 PASS oldChildWindow.onstorage is newChildWindow.onstorage
 PASS oldChildWindow.onsubmit is newChildWindow.onsubmit

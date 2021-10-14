@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 984 tests; 960 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 984 tests; 966 PASS, 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -273,7 +273,7 @@ FAIL Window interface: attribute onsecuritypolicyviolation assert_own_property: 
 PASS Window interface: attribute onseeked
 PASS Window interface: attribute onseeking
 PASS Window interface: attribute onselect
-FAIL Window interface: attribute onslotchange assert_own_property: The global object must have a property "onslotchange" expected property "onslotchange" missing
+PASS Window interface: attribute onslotchange
 PASS Window interface: attribute onstalled
 PASS Window interface: attribute onsubmit
 PASS Window interface: attribute onsuspend
@@ -428,7 +428,7 @@ FAIL Window interface: window must inherit property "onsecuritypolicyviolation" 
 PASS Window interface: window must inherit property "onseeked" with the proper type
 PASS Window interface: window must inherit property "onseeking" with the proper type
 PASS Window interface: window must inherit property "onselect" with the proper type
-FAIL Window interface: window must inherit property "onslotchange" with the proper type assert_own_property: expected property "onslotchange" missing
+PASS Window interface: window must inherit property "onslotchange" with the proper type
 PASS Window interface: window must inherit property "onstalled" with the proper type
 PASS Window interface: window must inherit property "onsubmit" with the proper type
 PASS Window interface: window must inherit property "onsuspend" with the proper type
@@ -586,7 +586,7 @@ PASS Document interface: attribute onsecuritypolicyviolation
 PASS Document interface: attribute onseeked
 PASS Document interface: attribute onseeking
 PASS Document interface: attribute onselect
-FAIL Document interface: attribute onslotchange assert_true: The prototype object must have a property "onslotchange" expected true got false
+PASS Document interface: attribute onslotchange
 PASS Document interface: attribute onstalled
 PASS Document interface: attribute onsubmit
 PASS Document interface: attribute onsuspend
@@ -713,7 +713,7 @@ PASS Document interface: iframe.contentDocument must inherit property "onsecurit
 PASS Document interface: iframe.contentDocument must inherit property "onseeked" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "onseeking" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "onselect" with the proper type
-FAIL Document interface: iframe.contentDocument must inherit property "onslotchange" with the proper type assert_inherits: property "onslotchange" not found in prototype chain
+PASS Document interface: iframe.contentDocument must inherit property "onslotchange" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "onstalled" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "onsubmit" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "onsuspend" with the proper type
@@ -840,7 +840,7 @@ PASS Document interface: new Document() must inherit property "onsecuritypolicyv
 PASS Document interface: new Document() must inherit property "onseeked" with the proper type
 PASS Document interface: new Document() must inherit property "onseeking" with the proper type
 PASS Document interface: new Document() must inherit property "onselect" with the proper type
-FAIL Document interface: new Document() must inherit property "onslotchange" with the proper type assert_inherits: property "onslotchange" not found in prototype chain
+PASS Document interface: new Document() must inherit property "onslotchange" with the proper type
 PASS Document interface: new Document() must inherit property "onstalled" with the proper type
 PASS Document interface: new Document() must inherit property "onsubmit" with the proper type
 PASS Document interface: new Document() must inherit property "onsuspend" with the proper type
@@ -967,7 +967,7 @@ PASS Document interface: documentWithHandlers must inherit property "onsecurityp
 PASS Document interface: documentWithHandlers must inherit property "onseeked" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "onseeking" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "onselect" with the proper type
-FAIL Document interface: documentWithHandlers must inherit property "onslotchange" with the proper type assert_inherits: property "onslotchange" found on object expected in prototype chain
+PASS Document interface: documentWithHandlers must inherit property "onslotchange" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "onstalled" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "onsubmit" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "onsuspend" with the proper type

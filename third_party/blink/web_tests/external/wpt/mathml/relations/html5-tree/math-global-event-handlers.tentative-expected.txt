@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 335 tests; 315 PASS, 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 335 tests; 320 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS onabort: must be on the appropriate locations for GlobalEventHandlers
 PASS onabort: the default value must be null
 PASS onabort: the content attribute must be compiled into a function as the corresponding property
@@ -270,11 +270,11 @@ PASS onselect: the default value must be null
 PASS onselect: the content attribute must be compiled into a function as the corresponding property
 PASS onselect: dynamic changes on the attribute
 PASS onselect: dispatching an Event at a <math> element must trigger element.onselect
-FAIL onslotchange: must be on the appropriate locations for GlobalEventHandlers assert_true: MathMLElement has an own property named "onslotchange" expected true got false
-FAIL onslotchange: the default value must be null assert_equals: The default value of the property is null for a MathMLElement instance expected (object) null but got (undefined) undefined
-FAIL onslotchange: the content attribute must be compiled into a function as the corresponding property assert_equals: The onslotchange property must be a function expected "function" but got "undefined"
-FAIL onslotchange: dynamic changes on the attribute assert_equals: The onslotchange property must be null (no attribute) expected (object) null but got (undefined) undefined
-FAIL onslotchange: dispatching an Event at a <math> element must trigger element.onslotchange assert_equals: The event must be fired at the <math> element expected (object) Element node <math></math> but got (undefined) undefined
+PASS onslotchange: must be on the appropriate locations for GlobalEventHandlers
+PASS onslotchange: the default value must be null
+PASS onslotchange: the content attribute must be compiled into a function as the corresponding property
+PASS onslotchange: dynamic changes on the attribute
+PASS onslotchange: dispatching an Event at a <math> element must trigger element.onslotchange
 PASS onstalled: must be on the appropriate locations for GlobalEventHandlers
 PASS onstalled: the default value must be null
 PASS onstalled: the content attribute must be compiled into a function as the corresponding property

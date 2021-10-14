@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 3772 tests; 3746 PASS, 26 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 3772 tests; 3748 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -291,7 +291,7 @@ FAIL HTMLElement interface: attribute onsecuritypolicyviolation assert_true: The
 PASS HTMLElement interface: attribute onseeked
 PASS HTMLElement interface: attribute onseeking
 PASS HTMLElement interface: attribute onselect
-FAIL HTMLElement interface: attribute onslotchange assert_true: The prototype object must have a property "onslotchange" expected true got false
+PASS HTMLElement interface: attribute onslotchange
 PASS HTMLElement interface: attribute onstalled
 PASS HTMLElement interface: attribute onsubmit
 PASS HTMLElement interface: attribute onsuspend
@@ -388,7 +388,7 @@ FAIL HTMLElement interface: document.createElement("noscript") must inherit prop
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "onseeked" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "onseeking" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "onselect" with the proper type
-FAIL HTMLElement interface: document.createElement("noscript") must inherit property "onslotchange" with the proper type assert_inherits: property "onslotchange" not found in prototype chain
+PASS HTMLElement interface: document.createElement("noscript") must inherit property "onslotchange" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "onstalled" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "onsubmit" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "onsuspend" with the proper type

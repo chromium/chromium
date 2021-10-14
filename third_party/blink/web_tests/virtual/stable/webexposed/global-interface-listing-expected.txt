@@ -1450,6 +1450,7 @@ interface Document : Node
     getter onselect
     getter onselectionchange
     getter onselectstart
+    getter onslotchange
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -1648,6 +1649,7 @@ interface Document : Node
     setter onselect
     setter onselectionchange
     setter onselectstart
+    setter onslotchange
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -2698,6 +2700,7 @@ interface HTMLElement : Element
     getter onselect
     getter onselectionchange
     getter onselectstart
+    getter onslotchange
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -2815,6 +2818,7 @@ interface HTMLElement : Element
     setter onselect
     setter onselectionchange
     setter onselectstart
+    setter onslotchange
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -6210,6 +6214,7 @@ interface SVGElement : Element
     getter onselect
     getter onselectionchange
     getter onselectstart
+    getter onslotchange
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -6312,6 +6317,7 @@ interface SVGElement : Element
     setter onselect
     setter onselectionchange
     setter onselectstart
+    setter onslotchange
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -7290,6 +7296,7 @@ interface ShadowRoot : DocumentFragment
     getter host
     getter innerHTML
     getter mode
+    getter onslotchange
     getter pictureInPictureElement
     getter pointerLockElement
     getter slotAssignment
@@ -7303,6 +7310,7 @@ interface ShadowRoot : DocumentFragment
     setter adoptedStyleSheets
     setter fullscreenElement
     setter innerHTML
+    setter onslotchange
 interface SharedWorker : EventTarget
     attribute @@toStringTag
     getter onerror
@@ -10100,6 +10108,7 @@ namespace CSS
     getter onselect
     getter onselectionchange
     getter onselectstart
+    getter onslotchange
     getter onstalled
     getter onstorage
     getter onsubmit
@@ -10305,6 +10314,7 @@ namespace CSS
     setter onselect
     setter onselectionchange
     setter onselectstart
+    setter onslotchange
     setter onstalled
     setter onstorage
     setter onsubmit
