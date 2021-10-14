@@ -59,6 +59,8 @@ static_library("test_support") {
   sources = [
     "fake_fast_pair_repository.cc",
     "fake_fast_pair_repository.h",
+    "mock_fast_pair_repository.cc",
+    "mock_fast_pair_repository.h",
     "mock_http_fetcher.cc",
     "mock_http_fetcher.h",
   ]
