@@ -254,6 +254,8 @@ extern const base::Feature kEnterpriseRealtimeExtensionRequest;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kEnterpiseRealtimeExtensionRequestThrottleDelay;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kExtensionDeferredIndividualSettings;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)

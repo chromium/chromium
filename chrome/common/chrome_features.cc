@@ -411,6 +411,10 @@ const base::FeatureParam<base::TimeDelta>
     kEnterpiseRealtimeExtensionRequestThrottleDelay{
         &kEnterpriseRealtimeExtensionRequest, "throttle_delay",
         base::Minutes(1)};
+// Lazy initialize IndividualSettings for extensions from enterprise policy
+// that are not installed.
+const base::Feature kExtensionDeferredIndividualSettings{
+    "ExtensionDeferredIndividualSettings", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // Controls whether the user justification text field is visible on the
