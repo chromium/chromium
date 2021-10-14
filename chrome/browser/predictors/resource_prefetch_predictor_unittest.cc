@@ -529,8 +529,8 @@ TEST_F(ResourcePrefetchPredictorTest,
        i <= static_cast<int>(predictor_->config_.max_origins_per_entry) - 1;
        ++i) {
     InitializeOriginStat(origin_data.add_origins(),
-                         GURL(gen(i)).GetOrigin().spec(), 1, 0, 0, i + 1, false,
-                         true);
+                         GURL(gen(i)).DeprecatedGetOriginAsURL().spec(), 1, 0,
+                         0, i + 1, false, true);
   }
   EXPECT_EQ(mock_tables_->origin_table_.data_,
             OriginDataMap({{origin_data.host(), origin_data}}));

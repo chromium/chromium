@@ -311,7 +311,8 @@ void ResourcePrefetchPredictor::RecordPageRequestSummary(
   LearnRedirect(summary->initial_url.host(), summary->main_frame_url,
                 host_redirect_data_.get());
   LearnOrigins(summary->main_frame_url.host(),
-               summary->main_frame_url.GetOrigin(), summary->origins);
+               summary->main_frame_url.DeprecatedGetOriginAsURL(),
+               summary->origins);
 
   if (observer_)
     observer_->OnNavigationLearned(*summary);

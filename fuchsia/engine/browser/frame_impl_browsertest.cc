@@ -773,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, BeforeLoadScript) {
   auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
 
   frame->AddBeforeLoadJavaScript(
-      kBindingsId, {url.GetOrigin().spec()},
+      kBindingsId, {url.DeprecatedGetOriginAsURL().spec()},
       base::MemBufferFromString("stashed_title = 'hello';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
@@ -795,7 +795,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, BeforeLoadScriptUpdated) {
   auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
 
   frame->AddBeforeLoadJavaScript(
-      kBindingsId, {url.GetOrigin().spec()},
+      kBindingsId, {url.DeprecatedGetOriginAsURL().spec()},
       base::MemBufferFromString("stashed_title = 'hello';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
@@ -805,7 +805,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, BeforeLoadScriptUpdated) {
   // injected alongside it. (The latter would result in the title being
   // "helloclobber").
   frame->AddBeforeLoadJavaScript(
-      kBindingsId, {url.GetOrigin().spec()},
+      kBindingsId, {url.DeprecatedGetOriginAsURL().spec()},
       base::MemBufferFromString("stashed_title = document.title + 'clobber';",
                                 "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
@@ -831,13 +831,13 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, BeforeLoadScriptOrdered) {
   auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
 
   frame->AddBeforeLoadJavaScript(
-      kBindingsId1, {url.GetOrigin().spec()},
+      kBindingsId1, {url.DeprecatedGetOriginAsURL().spec()},
       base::MemBufferFromString("stashed_title = 'hello';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
       });
   frame->AddBeforeLoadJavaScript(
-      kBindingsId2, {url.GetOrigin().spec()},
+      kBindingsId2, {url.DeprecatedGetOriginAsURL().spec()},
       base::MemBufferFromString("stashed_title += ' there';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
@@ -860,7 +860,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, BeforeLoadScriptRemoved) {
   auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
 
   frame->AddBeforeLoadJavaScript(
-      kBindingsId1, {url.GetOrigin().spec()},
+      kBindingsId1, {url.DeprecatedGetOriginAsURL().spec()},
       base::MemBufferFromString("stashed_title = 'foo';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
@@ -868,7 +868,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, BeforeLoadScriptRemoved) {
 
   // Add a script which clobbers "foo".
   frame->AddBeforeLoadJavaScript(
-      kBindingsId2, {url.GetOrigin().spec()},
+      kBindingsId2, {url.DeprecatedGetOriginAsURL().spec()},
       base::MemBufferFromString("stashed_title = 'bar';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
@@ -917,7 +917,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ExecuteJavaScript) {
 
   // Execute with no result to set the variable.
   frame->ExecuteJavaScriptNoResult(
-      {kUrl.GetOrigin().spec()},
+      {kUrl.DeprecatedGetOriginAsURL().spec()},
       base::MemBufferFromString(
           base::StringPrintf("my_variable = %s;", kJsonStringLiteral), "test"),
       [](fuchsia::web::Frame_ExecuteJavaScriptNoResult_Result result) {
@@ -927,7 +927,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ExecuteJavaScript) {
   // Execute a script snippet to return the variable's value.
   base::RunLoop loop;
   frame->ExecuteJavaScript(
-      {kUrl.GetOrigin().spec()},
+      {kUrl.DeprecatedGetOriginAsURL().spec()},
       base::MemBufferFromString("my_variable;", "test"),
       [&](fuchsia::web::Frame_ExecuteJavaScript_Result result) {
         ASSERT_TRUE(result.is_response());
@@ -947,7 +947,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, BeforeLoadScriptVmoDestroyed) {
   auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
 
   frame->AddBeforeLoadJavaScript(
-      kOnLoadScriptId, {url.GetOrigin().spec()},
+      kOnLoadScriptId, {url.DeprecatedGetOriginAsURL().spec()},
       base::MemBufferFromString("stashed_title = 'hello';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
@@ -1028,7 +1028,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest,
   auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
 
   frame->AddBeforeLoadJavaScript(
-      kOnLoadScriptId, {url.GetOrigin().spec()},
+      kOnLoadScriptId, {url.DeprecatedGetOriginAsURL().spec()},
       base::MemBufferFromString("stashed_title = 'hello';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
@@ -1040,7 +1040,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest,
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url, "hello");
 
   frame->AddBeforeLoadJavaScript(
-      kOnLoadScriptId2, {url.GetOrigin().spec()},
+      kOnLoadScriptId2, {url.DeprecatedGetOriginAsURL().spec()},
       base::MemBufferFromString("stashed_title += ' there';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
@@ -1076,7 +1076,8 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ExecuteJavaScriptBadEncoding) {
 
   // 0xFE is an illegal UTF-8 byte; it should cause UTF-8 conversion to fail.
   frame->ExecuteJavaScriptNoResult(
-      {url.GetOrigin().spec()}, base::MemBufferFromString("true;\xfe", "test"),
+      {url.DeprecatedGetOriginAsURL().spec()},
+      base::MemBufferFromString("true;\xfe", "test"),
       [&run_loop](fuchsia::web::Frame_ExecuteJavaScriptNoResult_Result result) {
         EXPECT_TRUE(result.is_err());
         EXPECT_EQ(result.err(), fuchsia::web::FrameError::BUFFER_NOT_UTF8);
@@ -1422,7 +1423,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ChildFrameNavigationIgnored) {
   message.set_data(base::MemBufferFromString("test", "test"));
   base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result> post_result;
   frame->PostMessage(
-      page_url.GetOrigin().spec(), std::move(message),
+      page_url.DeprecatedGetOriginAsURL().spec(), std::move(message),
       cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
 
   frame.navigation_listener().SetBeforeAckHook(

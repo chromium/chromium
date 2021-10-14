@@ -423,7 +423,8 @@ TEST_F(JavaScriptDialogPresenterTest, DifferentVisibleUrl) {
   // Change visible URL.
   AddPendingItem(GURL("https://pending.test/"), ui::PAGE_TRANSITION_TYPED);
   web_controller().webStateImpl->SetIsLoading(true);
-  ASSERT_NE(page_url().GetOrigin(), web_state()->GetVisibleURL().GetOrigin());
+  ASSERT_NE(page_url().DeprecatedGetOriginAsURL(),
+            web_state()->GetVisibleURL().DeprecatedGetOriginAsURL());
 
   ExecuteJavaScript(@"alert('test')");
   ASSERT_TRUE(requested_dialogs().empty());

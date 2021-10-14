@@ -745,7 +745,8 @@ GURL WebStateImpl::GetCurrentURL(URLVerificationTrustLevel* trust_level) const {
     // an origin to compare, only a path.
     equalOrigins = result.path() == lastCommittedURL.path();
   } else {
-    equalOrigins = result.GetOrigin() == lastCommittedURL.GetOrigin();
+    equalOrigins = result.DeprecatedGetOriginAsURL() ==
+                   lastCommittedURL.DeprecatedGetOriginAsURL();
   }
   UMA_HISTOGRAM_BOOLEAN("Web.CurrentOriginEqualsLastCommittedOrigin",
                         equalOrigins);

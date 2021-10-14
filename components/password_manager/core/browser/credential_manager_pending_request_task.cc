@@ -148,7 +148,7 @@ CredentialManagerPendingRequestTask::CredentialManagerPendingRequestTask(
 
   for (const GURL& federation : request_federations)
     federations_.insert(
-        url::Origin::Create(federation.GetOrigin()).Serialize());
+        url::Origin::Create(federation.DeprecatedGetOriginAsURL()).Serialize());
 }
 
 CredentialManagerPendingRequestTask::~CredentialManagerPendingRequestTask() =

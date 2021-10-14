@@ -36,7 +36,7 @@ void CouponService::UpdateFreeListingCoupons(const CouponsMap& coupon_map) {
   coupon_db_->DeleteAllCoupons();
   coupon_map_.clear();
   for (const auto& entry : coupon_map) {
-    const GURL& origin(entry.first.GetOrigin());
+    const GURL& origin(entry.first.DeprecatedGetOriginAsURL());
     for (const auto& coupon : entry.second) {
       coupon_map_[origin].emplace_back(
           std::make_unique<autofill::AutofillOfferData>(*coupon));
@@ -50,7 +50,7 @@ void CouponService::UpdateFreeListingCoupons(const CouponsMap& coupon_map) {
 void CouponService::DeleteFreeListingCouponsForUrl(const GURL& url) {
   if (!url.is_valid())
     return;
-  const GURL& origin(url.GetOrigin());
+  const GURL& origin(url.DeprecatedGetOriginAsURL());
   coupon_map_.erase(origin);
   coupon_db_->DeleteCoupon(origin);
 }
@@ -64,7 +64,7 @@ CouponService::Coupons CouponService::GetFreeListingCouponsForUrl(
     const GURL& url) {
   if (!url.is_valid())
     return {};
-  const GURL& origin(url.GetOrigin());
+  const GURL& origin(url.DeprecatedGetOriginAsURL());
   if (coupon_map_.find(origin) == coupon_map_.end()) {
     return {};
   }
@@ -78,7 +78,7 @@ CouponService::Coupons CouponService::GetFreeListingCouponsForUrl(
 bool CouponService::IsUrlEligible(const GURL& url) {
   if (!url.is_valid())
     return false;
-  return coupon_map_.find(url.GetOrigin()) != coupon_map_.end();
+  return coupon_map_.find(url.DeprecatedGetOriginAsURL()) != coupon_map_.end();
 }
 
 CouponDB* CouponService::GetDB() {

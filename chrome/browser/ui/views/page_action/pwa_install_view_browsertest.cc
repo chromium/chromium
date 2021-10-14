@@ -143,7 +143,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
 
     command_line->AppendSwitchASCII(
         network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-        GetInstallableAppURL().GetOrigin().spec());
+        GetInstallableAppURL().DeprecatedGetOriginAsURL().spec());
   }
 
   void SetUpInProcessBrowserTestFixture() override {

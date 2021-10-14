@@ -202,7 +202,7 @@ void CastComponent::StartComponent() {
     // TODO(crbug.com/1136994): Replace this with the PermissionManager API
     // when available.
     const std::string origin =
-        GURL(application_config_.web_url()).GetOrigin().spec();
+        GURL(application_config_.web_url()).DeprecatedGetOriginAsURL().spec();
     for (auto& permission : application_config_.permissions()) {
       fuchsia::web::PermissionDescriptor permission_clone;
       zx_status_t status = permission.Clone(&permission_clone);

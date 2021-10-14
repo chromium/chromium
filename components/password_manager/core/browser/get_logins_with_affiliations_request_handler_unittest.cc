@@ -27,7 +27,7 @@ constexpr const char kAffiliatedRealm1[] = "https://noneexample.com/";
 
 PasswordFormDigest CreateHTMLFormDigest(base::StringPiece url_string) {
   return PasswordFormDigest{PasswordForm::Scheme::kHtml,
-                            GURL(url_string).GetOrigin().spec(),
+                            GURL(url_string).DeprecatedGetOriginAsURL().spec(),
                             GURL(url_string)};
 }
 
@@ -39,7 +39,7 @@ PasswordForm CreateForm(base::StringPiece url_string,
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
   form.url = GURL(url_string);
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   return form;
 }
 

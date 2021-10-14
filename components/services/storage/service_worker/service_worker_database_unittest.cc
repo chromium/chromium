@@ -47,7 +47,7 @@ struct AvailableIds {
 
 GURL URL(const GURL& origin, const std::string& path) {
   EXPECT_TRUE(origin.is_valid());
-  EXPECT_EQ(origin, origin.GetOrigin());
+  EXPECT_EQ(origin, origin.DeprecatedGetOriginAsURL());
   GURL out(origin.spec() + path);
   EXPECT_TRUE(out.is_valid());
   return out;

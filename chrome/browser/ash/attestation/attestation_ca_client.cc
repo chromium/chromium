@@ -255,8 +255,8 @@ void AttestationCAClient::CheckIfAnyProxyPresent(
         g_browser_process->system_network_context_manager()->GetContext();
   }
 
-  CAProxyLookupClient::LookUpProxyForURL(network_context, url.GetOrigin(),
-                                         std::move(callback));
+  CAProxyLookupClient::LookUpProxyForURL(
+      network_context, url.DeprecatedGetOriginAsURL(), std::move(callback));
 }
 
 }  // namespace attestation

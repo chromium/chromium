@@ -284,7 +284,8 @@ SadTab::SadTab(content::WebContents* web_contents, SadTabKind kind)
     case SAD_TAB_KIND_KILLED_BY_OOM:
       UMA_SAD_TAB_COUNTER("Tabs.SadTab.KillCreated.OOM");
       {
-        const std::string spec = web_contents->GetURL().GetOrigin().spec();
+        const std::string spec =
+            web_contents->GetURL().DeprecatedGetOriginAsURL().spec();
         memory::OomMemoryDetails::Log("Tab OOM-Killed Memory details: " + spec +
                                       ", ");
       }
@@ -293,7 +294,7 @@ SadTab::SadTab(content::WebContents* web_contents, SadTabKind kind)
     case SAD_TAB_KIND_KILLED:
       UMA_SAD_TAB_COUNTER("Tabs.SadTab.KillCreated");
       LOG(WARNING) << "Tab Killed: "
-                   << web_contents->GetURL().GetOrigin().spec();
+                   << web_contents->GetURL().DeprecatedGetOriginAsURL().spec();
       break;
   }
 }

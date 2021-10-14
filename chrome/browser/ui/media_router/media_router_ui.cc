@@ -1058,9 +1058,11 @@ void MediaRouterUI::MaybeReportFileInformation(
 content::WebContents* MediaRouterUI::OpenTabWithUrl(const GURL& url) {
   // Check if the current page is a new tab. If so open file in current page.
   // If not then open a new page.
-  auto initiatorOrigin = initiator_->GetVisibleURL().GetOrigin();
-  if (initiatorOrigin == GURL(chrome::kChromeUINewTabPageURL).GetOrigin() ||
-      initiatorOrigin == GURL(chrome::kChromeUINewTabURL).GetOrigin()) {
+  auto initiatorOrigin = initiator_->GetVisibleURL().DeprecatedGetOriginAsURL();
+  if (initiatorOrigin ==
+          GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL() ||
+      initiatorOrigin ==
+          GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL()) {
     content::NavigationController::LoadURLParams load_params(url);
     load_params.transition_type = ui::PAGE_TRANSITION_GENERATED;
     initiator_->GetController().LoadURLWithParams(load_params);

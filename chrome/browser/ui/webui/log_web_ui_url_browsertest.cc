@@ -46,7 +46,7 @@ class LogWebUIUrlTest : public InProcessBrowserTest {
     content::TitleWatcher title_watcher(tab, title);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     ASSERT_EQ(title, title_watcher.WaitAndGetTitle());
-    uint32_t origin_hash = base::Hash(url.GetOrigin().spec());
+    uint32_t origin_hash = base::Hash(url.DeprecatedGetOriginAsURL().spec());
     EXPECT_THAT(histogram_tester_.GetAllSamples(webui::kWebUICreatedForUrl),
                 ElementsAre(Bucket(origin_hash, 1)));
   }

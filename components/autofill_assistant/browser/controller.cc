@@ -1305,8 +1305,8 @@ void Controller::InitFromParameters() {
       trigger_context_->GetScriptParameters().GetPasswordChangeUsername();
   if (password_change_username) {
     DCHECK(GetDeeplinkURL().is_valid());  // |deeplink_url_| must be set.
-    user_data_.selected_login_.emplace(GetDeeplinkURL().GetOrigin(),
-                                       *password_change_username);
+    user_data_.selected_login_.emplace(
+        GetDeeplinkURL().DeprecatedGetOriginAsURL(), *password_change_username);
   }
 
   if (trigger_context_->HasExperimentId(kProgressBarExperiment)) {

@@ -828,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(RequestDataBrowserTest, LinkRelPrefetchReferrerPolicy) {
   EXPECT_TRUE(image_request->initiator.has_value());
   EXPECT_EQ(top_origin, image_request->initiator);
   // Respect the "origin" policy set by the <meta> tag.
-  EXPECT_EQ(top_url.GetOrigin().spec(), image_request->referrer);
+  EXPECT_EQ(top_url.DeprecatedGetOriginAsURL().spec(), image_request->referrer);
   EXPECT_TRUE(image_request->load_flags & net::LOAD_PREFETCH);
 }
 

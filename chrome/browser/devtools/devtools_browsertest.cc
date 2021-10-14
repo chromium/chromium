@@ -1286,7 +1286,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   EXPECT_NE(devtools_instance, extensions_instance);
   EXPECT_EQ(extensions_instance,
             devtools_extension_panel_rfh->GetSiteInstance());
-  EXPECT_EQ(non_dt_extension_test_url.GetOrigin(),
+  EXPECT_EQ(non_dt_extension_test_url.DeprecatedGetOriginAsURL(),
             non_devtools_extension_rfh->GetSiteInstance()->GetSiteURL());
   EXPECT_NE(devtools_instance, non_devtools_extension_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, non_devtools_extension_rfh->GetSiteInstance());
@@ -1482,7 +1482,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_DevtoolsInDevTools) {
   EXPECT_TRUE(ExecuteScriptAndExtractString(
       devtools_iframe_rfh, "domAutomationController.send(self.origin)",
       &message));
-  EXPECT_EQ(devtools_url.GetOrigin().spec(), message + "/");
+  EXPECT_EQ(devtools_url.DeprecatedGetOriginAsURL().spec(), message + "/");
 }
 
 // Some web features, when used from an extension, are subject to browser-side

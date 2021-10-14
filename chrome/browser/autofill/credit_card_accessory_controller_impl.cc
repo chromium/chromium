@@ -426,7 +426,9 @@ CreditCardAccessoryControllerImpl::GetPromoCodeOffers() const {
     return std::vector<const AutofillOfferData*>();
 
   return personal_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
-      autofill_manager->client()->GetLastCommittedURL().GetOrigin());
+      autofill_manager->client()
+          ->GetLastCommittedURL()
+          .DeprecatedGetOriginAsURL());
 }
 
 base::WeakPtr<ManualFillingController>

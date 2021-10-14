@@ -179,8 +179,9 @@ void ContentSettingCallbackWrapper(
 GURL GetEmbeddingOrigin(content::WebContents* web_contents,
                         const GURL& requesting_origin) {
   if (PermissionsClient::Get()->DoOriginsMatchNewTabPage(
-          requesting_origin, web_contents->GetLastCommittedURL().GetOrigin())) {
-    return web_contents->GetLastCommittedURL().GetOrigin();
+          requesting_origin,
+          web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL())) {
+    return web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   } else {
     return PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
   }
@@ -527,7 +528,7 @@ void PermissionManager::ResetPermission(PermissionType permission,
     return;
   context->ResetPermission(
       GetCanonicalOrigin(type, requesting_origin, embedding_origin),
-      embedding_origin.GetOrigin());
+      embedding_origin.DeprecatedGetOriginAsURL());
 }
 
 PermissionStatus PermissionManager::GetPermissionStatus(
@@ -753,8 +754,8 @@ PermissionResult PermissionManager::GetPermissionStatusHelper(
     return PermissionResult(status, PermissionStatusSource::UNSPECIFIED);
   PermissionContextBase* context = GetPermissionContext(permission);
   PermissionResult result = context->GetPermissionStatus(
-      render_frame_host, canonical_requesting_origin.GetOrigin(),
-      embedding_origin.GetOrigin());
+      render_frame_host, canonical_requesting_origin.DeprecatedGetOriginAsURL(),
+      embedding_origin.DeprecatedGetOriginAsURL());
   DCHECK(result.content_setting == CONTENT_SETTING_ALLOW ||
          result.content_setting == CONTENT_SETTING_ASK ||
          result.content_setting == CONTENT_SETTING_BLOCK);

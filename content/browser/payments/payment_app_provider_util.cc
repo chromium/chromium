@@ -14,7 +14,7 @@ namespace content {
 ukm::SourceId PaymentAppProviderUtil::GetSourceIdForPaymentAppFromScope(
     const GURL& sw_scope) {
   return ukm::UkmRecorder::GetSourceIdForPaymentAppFromScope(
-      sw_scope.GetOrigin());
+      sw_scope.DeprecatedGetOriginAsURL());
 }
 
 // static

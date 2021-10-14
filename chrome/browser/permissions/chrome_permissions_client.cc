@@ -296,19 +296,22 @@ bool ChromePermissionsClient::CanBypassEmbeddingOriginCheck(
   // origin may be the Default Search Engine origin. Extensions are also
   // excluded as currently they can request permission from iframes when
   // embedded in non-secure contexts (https://crbug.com/530507).
-  return embedding_origin == GURL(chrome::kChromeUINewTabURL).GetOrigin() ||
-         embedding_origin == GURL(chrome::kChromeUINewTabPageURL).GetOrigin() ||
+  return embedding_origin ==
+             GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL() ||
+         embedding_origin ==
+             GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL() ||
          requesting_origin.SchemeIs(extensions::kExtensionScheme);
 }
 
 absl::optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  if (embedding_origin.GetOrigin() ==
-      GURL(chrome::kChromeUINewTabURL).GetOrigin()) {
-    if (requesting_origin.GetOrigin() ==
-        GURL(chrome::kChromeUINewTabPageURL).GetOrigin()) {
-      return GURL(UIThreadSearchTermsData().GoogleBaseURLValue()).GetOrigin();
+  if (embedding_origin.DeprecatedGetOriginAsURL() ==
+      GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL()) {
+    if (requesting_origin.DeprecatedGetOriginAsURL() ==
+        GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL()) {
+      return GURL(UIThreadSearchTermsData().GoogleBaseURLValue())
+          .DeprecatedGetOriginAsURL();
     }
     return requesting_origin;
   }
@@ -327,8 +330,10 @@ absl::optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
 bool ChromePermissionsClient::DoOriginsMatchNewTabPage(
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  return embedding_origin == GURL(chrome::kChromeUINewTabURL).GetOrigin() &&
-         requesting_origin == GURL(chrome::kChromeUINewTabPageURL).GetOrigin();
+  return embedding_origin ==
+             GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL() &&
+         requesting_origin ==
+             GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL();
 }
 
 #if defined(OS_ANDROID)

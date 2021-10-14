@@ -97,7 +97,7 @@ void TwoClientWebAppsIntegrationTestBase::SetUpCommandLine(
   ASSERT_TRUE(embedded_test_server()->Start());
   command_line->AppendSwitchASCII(
       network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-      helper_.GetInstallableAppURL("SiteA").GetOrigin().spec());
+      helper_.GetInstallableAppURL("SiteA").DeprecatedGetOriginAsURL().spec());
   command_line->AppendSwitch("disable-fake-server-failure-output");
 }
 

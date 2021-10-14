@@ -570,7 +570,7 @@ OriginCountAndLastVisitMap HistoryBackend::GetCountsAndLastVisitForOrigins(
 
   URLRow row;
   while (it.GetNextURL(&row)) {
-    GURL origin = row.url().GetOrigin();
+    GURL origin = row.url().DeprecatedGetOriginAsURL();
     auto iter = origin_count_map.find(origin);
     if (iter != origin_count_map.end()) {
       std::pair<int, base::Time>& value = iter->second;
@@ -2553,7 +2553,7 @@ void HistoryBackend::NotifyURLsModified(const URLRows& changed_urls,
 void HistoryBackend::NotifyURLsDeleted(DeletionInfo deletion_info) {
   std::set<GURL> origins;
   for (const history::URLRow& row : deletion_info.deleted_rows())
-    origins.insert(row.url().GetOrigin());
+    origins.insert(row.url().DeprecatedGetOriginAsURL());
 
   deletion_info.set_deleted_urls_origin_map(
       GetCountsAndLastVisitForOrigins(origins));

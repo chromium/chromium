@@ -816,14 +816,18 @@ TEST_F(ProtocolHandlerRegistryTest, TestIsSameOrigin) {
       CreateProtocolHandler("mailto", GURL("https://test.com/updated-url/%s"));
   ProtocolHandler ph3 =
       CreateProtocolHandler("mailto", GURL("https://other.com/%s"));
-  ASSERT_EQ(ph1.url().GetOrigin() == ph2.url().GetOrigin(),
-      ph1.IsSameOrigin(ph2));
-  ASSERT_EQ(ph1.url().GetOrigin() == ph2.url().GetOrigin(),
-      ph2.IsSameOrigin(ph1));
-  ASSERT_EQ(ph2.url().GetOrigin() == ph3.url().GetOrigin(),
-      ph2.IsSameOrigin(ph3));
-  ASSERT_EQ(ph3.url().GetOrigin() == ph2.url().GetOrigin(),
-      ph3.IsSameOrigin(ph2));
+  ASSERT_EQ(ph1.url().DeprecatedGetOriginAsURL() ==
+                ph2.url().DeprecatedGetOriginAsURL(),
+            ph1.IsSameOrigin(ph2));
+  ASSERT_EQ(ph1.url().DeprecatedGetOriginAsURL() ==
+                ph2.url().DeprecatedGetOriginAsURL(),
+            ph2.IsSameOrigin(ph1));
+  ASSERT_EQ(ph2.url().DeprecatedGetOriginAsURL() ==
+                ph3.url().DeprecatedGetOriginAsURL(),
+            ph2.IsSameOrigin(ph3));
+  ASSERT_EQ(ph3.url().DeprecatedGetOriginAsURL() ==
+                ph2.url().DeprecatedGetOriginAsURL(),
+            ph3.IsSameOrigin(ph2));
 }
 
 TEST_F(ProtocolHandlerRegistryTest, TestInstallDefaultHandler) {

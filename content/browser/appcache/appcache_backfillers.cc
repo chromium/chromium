@@ -16,7 +16,8 @@ namespace {
 
 int64_t ComputeEntryPaddingSize(std::string response_url,
                                 std::string manifest_url) {
-  if (GURL(response_url).GetOrigin() == GURL(manifest_url).GetOrigin())
+  if (GURL(response_url).DeprecatedGetOriginAsURL() ==
+      GURL(manifest_url).DeprecatedGetOriginAsURL())
     return 0;
   return storage::ComputeRandomResponsePadding();
 }

@@ -101,7 +101,7 @@ CSVPassword::Status CSVPassword::ParseImpl(PasswordForm* form) const {
   // regular and Android credentials.
   form->signon_realm = IsValidAndroidFacetURI(origin.spec())
                            ? origin.spec()
-                           : origin.GetOrigin().spec();
+                           : origin.DeprecatedGetOriginAsURL().spec();
   form->url = std::move(origin);
   form->username_value = Convert(username);
   form->password_value = Convert(password);

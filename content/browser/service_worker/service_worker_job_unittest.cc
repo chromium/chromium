@@ -1428,7 +1428,7 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
       version->script_cache_map()->NotifyFinishedCaching(
           script, base::size(kBody), net::OK, std::string());
     } else {
-      EXPECT_NE(GURL(kNoChangeOrigin), script.GetOrigin());
+      EXPECT_NE(GURL(kNoChangeOrigin), script.DeprecatedGetOriginAsURL());
       // The script must be changed.
       WriteStringResponse(writer, kNewBody);
       version->script_cache_map()->NotifyFinishedCaching(

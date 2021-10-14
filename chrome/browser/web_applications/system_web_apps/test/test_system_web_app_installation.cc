@@ -588,7 +588,7 @@ CreateSystemAppDelegateWithWindowConfig(
       type, "Test App", app_url, base::BindLambdaForTesting([=]() {
         auto info = std::make_unique<WebApplicationInfo>();
         info->start_url = app_url;
-        info->scope = app_url.GetOrigin();
+        info->scope = app_url.DeprecatedGetOriginAsURL();
         info->title = u"Test System App";
         info->theme_color = 0xFF00FF00;
         info->display_mode = blink::mojom::DisplayMode::kStandalone;

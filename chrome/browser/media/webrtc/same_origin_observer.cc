@@ -21,7 +21,8 @@ SameOriginObserver::SameOriginObserver(
       on_same_origin_state_changed_(on_same_origin_state_changed) {
   DCHECK(observed_contents);
   is_same_origin_ = url::IsSameOriginWith(
-      reference_origin_, observed_contents_->GetLastCommittedURL().GetOrigin());
+      reference_origin_,
+      observed_contents_->GetLastCommittedURL().DeprecatedGetOriginAsURL());
   Observe(observed_contents);
 }
 
@@ -29,7 +30,8 @@ SameOriginObserver::~SameOriginObserver() = default;
 
 void SameOriginObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  const GURL& new_origin = navigation_handle->GetURL().GetOrigin();
+  const GURL& new_origin =
+      navigation_handle->GetURL().DeprecatedGetOriginAsURL();
   bool is_now_same_origin =
       url::IsSameOriginWith(reference_origin_, new_origin);
   if (is_same_origin_ != is_now_same_origin) {

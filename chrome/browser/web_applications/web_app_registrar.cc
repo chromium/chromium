@@ -233,7 +233,7 @@ GURL WebAppRegistrar::GetAppScope(const AppId& app_id) const {
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsTabStripLinkCapturing) &&
       IsTabbedWindowModeEnabled(app_id)) {
-    return GetAppStartUrl(app_id).GetOrigin();
+    return GetAppStartUrl(app_id).DeprecatedGetOriginAsURL();
   }
   return GetAppStartUrl(app_id).GetWithoutFilename();
 }

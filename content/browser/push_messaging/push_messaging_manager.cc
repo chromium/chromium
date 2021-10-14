@@ -191,7 +191,8 @@ void PushMessagingManager::Subscribe(
         blink::mojom::PushRegistrationStatus::NO_SERVICE_WORKER);
     return;
   }
-  data.requesting_origin = service_worker_registration->scope().GetOrigin();
+  data.requesting_origin =
+      service_worker_registration->scope().DeprecatedGetOriginAsURL();
 
   DCHECK(!(data.options->application_server_key.empty() &&
            IsRequestFromDocument(render_frame_id_)));
@@ -494,10 +495,11 @@ void PushMessagingManager::Unsubscribe(int64_t service_worker_registration_id,
 
   service_worker_context_->GetRegistrationUserData(
       service_worker_registration_id, {kPushSenderIdServiceWorkerKey},
-      base::BindOnce(&PushMessagingManager::UnsubscribeHavingGottenSenderId,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     service_worker_registration_id,
-                     service_worker_registration->scope().GetOrigin()));
+      base::BindOnce(
+          &PushMessagingManager::UnsubscribeHavingGottenSenderId,
+          weak_factory_.GetWeakPtr(), std::move(callback),
+          service_worker_registration_id,
+          service_worker_registration->scope().DeprecatedGetOriginAsURL()));
 }
 
 void PushMessagingManager::UnsubscribeHavingGottenSenderId(
@@ -615,7 +617,7 @@ void PushMessagingManager::DidGetSubscription(
         break;
       }
 
-      const GURL origin = registration->scope().GetOrigin();
+      const GURL origin = registration->scope().DeprecatedGetOriginAsURL();
 
       GetSubscriptionInfo(
           origin, service_worker_registration_id, application_server_key,

@@ -171,7 +171,8 @@ content::RenderProcessHost* WebrtcLoggingPrivateFunction::RphFromRequest(
     *error = "Web contents for tab not found.";
     return nullptr;
   }
-  GURL expected_origin = contents->GetLastCommittedURL().GetOrigin();
+  GURL expected_origin =
+      contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   if (expected_origin.spec() != security_origin) {
     *error = base::StringPrintf(
         "Invalid security origin. Expected=%s, actual=%s",

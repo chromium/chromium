@@ -32,8 +32,9 @@ class MediaStreamDevicePermissionContext
       bool user_gesture,
       permissions::BrowserPermissionCallback callback) override;
 
-  // TODO(xhwang): GURL.GetOrigin() shouldn't be used as the origin. Need to
-  // refactor to use url::Origin. crbug.com/527149 is filed for this.
+  // TODO(xhwang): GURL.DeprecatedGetOriginAsURL() shouldn't be used as the
+  // origin. Need to refactor to use url::Origin. crbug.com/527149 is filed for
+  // this.
   ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,

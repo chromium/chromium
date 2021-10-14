@@ -129,7 +129,7 @@ bool IsAllowedToOverrideURL(const extensions::Extension* extension,
   if (extension->web_extent().MatchesURL(override_url))
     return true;
 
-  if (override_url.GetOrigin() == extension->url())
+  if (override_url.DeprecatedGetOriginAsURL() == extension->url())
     return true;
 
   return false;

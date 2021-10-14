@@ -90,7 +90,7 @@ importer::ImportedPasswordForm CreateBlockedPasswordForm(
 
   importer::ImportedPasswordForm form;
   form.url = GURL(blocked_host).ReplaceComponents(rep);
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.blocked_by_user = true;
   return form;
 }
@@ -227,7 +227,7 @@ bool NSSDecryptor::CreatePasswordFormFromRawInfo(
     return false;
 
   form->url = url.ReplaceComponents(rep);
-  form->signon_realm = form->url.GetOrigin().spec();
+  form->signon_realm = form->url.DeprecatedGetOriginAsURL().spec();
   if (!raw_password_info.realm.empty()) {
     form->signon_realm += raw_password_info.realm;
     // Non-empty realm indicates that it's not html form authentication entry.

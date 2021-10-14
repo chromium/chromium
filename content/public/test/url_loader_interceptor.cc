@@ -545,7 +545,8 @@ URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
   return std::make_unique<URLLoaderInterceptor>(base::BindLambdaForTesting(
       [=](content::URLLoaderInterceptor::RequestParams* params) -> bool {
         // Ignore requests for other origins.
-        if (params->url_request.url.GetOrigin() != origin.GetOrigin())
+        if (params->url_request.url.DeprecatedGetOriginAsURL() !=
+            origin.DeprecatedGetOriginAsURL())
           return false;
 
         // Remove the leading slash from the url path, so that it can be

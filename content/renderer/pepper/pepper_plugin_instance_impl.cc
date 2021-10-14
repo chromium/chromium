@@ -367,7 +367,7 @@ void PrintPDFOutput(PP_Resource print_output,
 constexpr char kChromePrint[] = "chrome://print/";
 
 bool IsPrintPreviewUrl(const GURL& document_url) {
-  return url::Origin::Create(document_url.GetOrigin()) ==
+  return url::Origin::Create(document_url.DeprecatedGetOriginAsURL()) ==
          url::Origin::Create(GURL(kChromePrint));
 }
 

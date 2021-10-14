@@ -125,7 +125,7 @@ void GetLoginsWithAffiliationsRequestHandler::NotifyConsumer() {
         // Extract the origin from URL instead for the lookup.
         if (form->IsFederatedCredential() &&
             !IsValidAndroidFacetURI(form->signon_realm)) {
-          signon_realm = form->url.GetOrigin().spec();
+          signon_realm = form->url.DeprecatedGetOriginAsURL().spec();
         }
         if (base::Contains(affiliations_, signon_realm))
           form->is_affiliation_based_match = true;

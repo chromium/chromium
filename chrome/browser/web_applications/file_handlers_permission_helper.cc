@@ -143,7 +143,7 @@ void FileHandlersPermissionHelper::OnWebAppWillBeUninstalled(
   // See if there are any remaining apps in the same origin that have file
   // handlers. If so, do nothing.
   const WebApp* app = registrar.GetAppById(app_id);
-  const GURL origin = app->scope().GetOrigin();
+  const GURL origin = app->scope().DeprecatedGetOriginAsURL();
   std::vector<AppId> app_ids = registrar.FindAppsInScope(origin);
   for (const AppId& app_id_iter : app_ids) {
     const apps::FileHandlers* handlers =

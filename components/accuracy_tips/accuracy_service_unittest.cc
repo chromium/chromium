@@ -423,7 +423,7 @@ TEST_F(AccuracyServiceSurveyTest, SurveyTimeRange) {
   testing::Mock::VerifyAndClearExpectations(delegate());
 
   std::map<std::string, std::string> expected_product_specific_data = {
-      {"Tip shown for URL", gurl_.GetOrigin().spec()},
+      {"Tip shown for URL", gurl_.DeprecatedGetOriginAsURL().spec()},
       {"UI interaction", base::NumberToString(static_cast<int>(
                              AccuracyTipInteraction::kLearnMore))}};
 
@@ -487,7 +487,7 @@ TEST_F(AccuracyServiceSurveyTest, DontShowSurveyAfterDeletingHistoryForUrls) {
   history::DeletionInfo deletion_info = history::DeletionInfo::ForUrls(
       {history::URLRow(gurl_)}, std::set<GURL>());
   deletion_info.set_deleted_urls_origin_map({
-      {gurl_.GetOrigin(), {0, base::Time::Now()}},
+      {gurl_.DeprecatedGetOriginAsURL(), {0, base::Time::Now()}},
   });
   service()->OnURLsDeleted(nullptr, deletion_info);
   // ...and even though all other conditions apply, a survey can't be shown
@@ -526,12 +526,12 @@ TEST_F(AccuracyServiceSurveyTest, ShowSurveyAfterDeletingHistoryForOtherUrls) {
   history::DeletionInfo deletion_info = history::DeletionInfo::ForUrls(
       {history::URLRow(other_gurl)}, std::set<GURL>());
   deletion_info.set_deleted_urls_origin_map({
-      {other_gurl.GetOrigin(), {0, base::Time::Now()}},
+      {other_gurl.DeprecatedGetOriginAsURL(), {0, base::Time::Now()}},
   });
   service()->OnURLsDeleted(nullptr, deletion_info);
 
   std::map<std::string, std::string> expected_product_specific_data = {
-      {"Tip shown for URL", gurl_.GetOrigin().spec()},
+      {"Tip shown for URL", gurl_.DeprecatedGetOriginAsURL().spec()},
       {"UI interaction", base::NumberToString(static_cast<int>(
                              AccuracyTipInteraction::kLearnMore))}};
 

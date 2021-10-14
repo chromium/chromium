@@ -1713,7 +1713,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, NoManifestId) {
                              provider->registrar().GetAppStartUrl(app_id)),
       app_id);
   EXPECT_EQ(app->start_url().spec().substr(
-                app->start_url().GetOrigin().spec().size()),
+                app->start_url().DeprecatedGetOriginAsURL().spec().size()),
             app->manifest_id());
 }
 

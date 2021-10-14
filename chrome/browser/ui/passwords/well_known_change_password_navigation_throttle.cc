@@ -190,7 +190,7 @@ void WellKnownChangePasswordNavigationThrottle::OnProcessingFinished(
     Redirect(redirect_url);
   } else {
     RecordMetric(WellKnownChangePasswordResult::kFallbackToOriginUrl);
-    Redirect(request_url_.GetOrigin());
+    Redirect(request_url_.DeprecatedGetOriginAsURL());
   }
   CancelDeferredNavigation(NavigationThrottle::CANCEL);
 }

@@ -1119,7 +1119,7 @@ void WebAppIntegrationBrowserTest::SetUpCommandLine(
   ASSERT_TRUE(embedded_test_server()->Start());
   command_line->AppendSwitchASCII(
       network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-      helper_.GetInstallableAppURL("SiteA").GetOrigin().spec());
+      helper_.GetInstallableAppURL("SiteA").DeprecatedGetOriginAsURL().spec());
 }
 
 Browser* WebAppIntegrationBrowserTest::CreateBrowser(Profile* profile) {

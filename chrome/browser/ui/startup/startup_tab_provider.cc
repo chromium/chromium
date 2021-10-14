@@ -77,7 +77,7 @@ bool ValidateUrl(const GURL& url) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // In ChromeOS, allow any settings page to be specified on the command line.
   url_points_to_an_approved_settings_page =
-      url.GetOrigin() == settings_url.GetOrigin();
+      url.DeprecatedGetOriginAsURL() == settings_url.DeprecatedGetOriginAsURL();
 #else
   // Exposed for external cleaners to offer a settings reset to the
   // user. The allowed URLs must match exactly.

@@ -88,7 +88,8 @@ absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
     info.full_frame = !stream->embedded();
     info.allow_javascript = stream->pdf_plugin_attributes()->allow_javascript;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  } else if (stream_url.GetOrigin() == chrome::kChromeUIPrintURL) {
+  } else if (stream_url.DeprecatedGetOriginAsURL() ==
+             chrome::kChromeUIPrintURL) {
     // Check if the request is for a valid Print Preview data path. Note that
     // `ParseDataPath()` wants the path without a leading '/'.
     base::StringPiece stream_path = stream_url.path_piece();

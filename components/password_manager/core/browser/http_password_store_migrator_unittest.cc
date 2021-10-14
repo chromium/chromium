@@ -34,7 +34,7 @@ constexpr char kTestSubdomainHttpURL[] = "http://login.example.org/path2";
 PasswordForm CreateTestForm() {
   PasswordForm form;
   form.url = GURL(kTestHttpURL);
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.action = GURL("https://example.org/action.html");
   form.username_value = u"user";
   form.password_value = u"password";
@@ -45,7 +45,7 @@ PasswordForm CreateTestForm() {
 PasswordForm CreateTestPSLForm() {
   PasswordForm form;
   form.url = GURL(kTestSubdomainHttpURL);
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.action = GURL(kTestSubdomainHttpURL);
   form.username_value = u"user2";
   form.password_value = u"password2";
@@ -138,7 +138,7 @@ class HttpPasswordStoreMigratorTest : public testing::Test {
 
 void HttpPasswordStoreMigratorTest::TestEmptyStore(bool is_hsts) {
   PasswordFormDigest form_digest(CreateTestForm());
-  form_digest.url = form_digest.url.GetOrigin();
+  form_digest.url = form_digest.url.DeprecatedGetOriginAsURL();
   EXPECT_CALL(store(), GetLogins(form_digest, _));
   EXPECT_CALL(mock_network_context(), IsHSTSActiveForHost(kTestHost, _))
       .Times(1)
@@ -149,7 +149,7 @@ void HttpPasswordStoreMigratorTest::TestEmptyStore(bool is_hsts) {
       .WillRepeatedly(Return(&smart_bubble_stats_store()));
 
   EXPECT_CALL(smart_bubble_stats_store(),
-              RemoveSiteStats(GURL(kTestHttpURL).GetOrigin()))
+              RemoveSiteStats(GURL(kTestHttpURL).DeprecatedGetOriginAsURL()))
       .Times(is_hsts);
 
   HttpPasswordStoreMigrator migrator(url::Origin::Create(GURL(kTestHttpsURL)),
@@ -163,7 +163,7 @@ void HttpPasswordStoreMigratorTest::TestEmptyStore(bool is_hsts) {
 
 void HttpPasswordStoreMigratorTest::TestFullStore(bool is_hsts) {
   PasswordFormDigest form_digest(CreateTestForm());
-  form_digest.url = form_digest.url.GetOrigin();
+  form_digest.url = form_digest.url.DeprecatedGetOriginAsURL();
   EXPECT_CALL(store(), GetLogins(form_digest, _));
   EXPECT_CALL(mock_network_context(), IsHSTSActiveForHost(kTestHost, _))
       .Times(1)
@@ -172,7 +172,7 @@ void HttpPasswordStoreMigratorTest::TestFullStore(bool is_hsts) {
   EXPECT_CALL(store(), GetSmartBubbleStatsStore)
       .WillRepeatedly(Return(&smart_bubble_stats_store()));
   EXPECT_CALL(smart_bubble_stats_store(),
-              RemoveSiteStats(GURL(kTestHttpURL).GetOrigin()))
+              RemoveSiteStats(GURL(kTestHttpURL).DeprecatedGetOriginAsURL()))
       .Times(is_hsts);
   HttpPasswordStoreMigrator migrator(url::Origin::Create(GURL(kTestHttpsURL)),
                                      &store(), &mock_network_context(),
@@ -184,7 +184,8 @@ void HttpPasswordStoreMigratorTest::TestFullStore(bool is_hsts) {
   PasswordForm federated_form = CreateLocalFederatedCredential();
   PasswordForm expected_form = form;
   expected_form.url = GURL(kTestHttpsURL);
-  expected_form.signon_realm = expected_form.url.GetOrigin().spec();
+  expected_form.signon_realm =
+      expected_form.url.DeprecatedGetOriginAsURL().spec();
 
   PasswordForm expected_federated_form = federated_form;
   expected_federated_form.url = GURL("https://localhost");
@@ -220,7 +221,7 @@ void HttpPasswordStoreMigratorTest::TestMigratorDeletionByConsumer(
       .WillRepeatedly(Return(&smart_bubble_stats_store()));
 
   EXPECT_CALL(smart_bubble_stats_store(),
-              RemoveSiteStats(GURL(kTestHttpURL).GetOrigin()))
+              RemoveSiteStats(GURL(kTestHttpURL).DeprecatedGetOriginAsURL()))
       .Times(is_hsts);
   // Construct the migrator, call |OnGetPasswordStoreResults| explicitly and
   // manually delete it.

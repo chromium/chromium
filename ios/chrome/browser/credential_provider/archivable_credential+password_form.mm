@@ -34,7 +34,7 @@ password_manager::PasswordForm PasswordFormFromCredential(
   DCHECK(url.is_valid());
 
   form.url = password_manager_util::StripAuthAndParams(url);
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = SysNSStringToUTF16(credential.user);
   form.encrypted_password = SysNSStringToUTF8(credential.keychainIdentifier);
   form.times_used = credential.rank;

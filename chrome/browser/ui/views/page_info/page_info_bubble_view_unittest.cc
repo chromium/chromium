@@ -459,7 +459,7 @@ views::Label* GetChosenObjectDescriptionLabel(
 constexpr size_t kViewsPerPermissionRow = 3;
 
 TEST_P(PageInfoBubbleViewTest, NotificationPermissionRevokeUkm) {
-  GURL origin_url = GURL(kUrl).GetOrigin();
+  GURL origin_url = GURL(kUrl).DeprecatedGetOriginAsURL();
   TestingProfile* profile =
       static_cast<TestingProfile*>(web_contents_helper_->profile());
   ukm::TestAutoSetUkmRecorder ukm_recorder;

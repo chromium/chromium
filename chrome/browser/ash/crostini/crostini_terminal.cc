@@ -93,7 +93,7 @@ void LaunchTerminal(Profile* profile,
 void LaunchTerminalWithUrl(Profile* profile,
                            int64_t display_id,
                            const GURL& url) {
-  if (url.GetOrigin() != chrome::kChromeUIUntrustedTerminalURL) {
+  if (url.DeprecatedGetOriginAsURL() != chrome::kChromeUIUntrustedTerminalURL) {
     LOG(ERROR) << "Trying to launch terminal with an invalid url: " << url;
     return;
   }

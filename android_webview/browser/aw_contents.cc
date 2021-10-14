@@ -593,7 +593,7 @@ void AwContents::ShowGeolocationPrompt(const GURL& requesting_frame,
                                        PermissionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  GURL origin = requesting_frame.GetOrigin();
+  GURL origin = requesting_frame.DeprecatedGetOriginAsURL();
   bool show_prompt = pending_geolocation_prompts_.empty();
   pending_geolocation_prompts_.emplace_back(origin, std::move(callback));
   if (show_prompt) {
@@ -612,7 +612,7 @@ void AwContents::InvokeGeolocationCallback(
     return;
 
   GURL callback_origin(base::android::ConvertJavaStringToUTF16(env, origin));
-  if (callback_origin.GetOrigin() ==
+  if (callback_origin.DeprecatedGetOriginAsURL() ==
       pending_geolocation_prompts_.front().first) {
     std::move(pending_geolocation_prompts_.front().second).Run(value);
     pending_geolocation_prompts_.pop_front();
@@ -628,7 +628,7 @@ void AwContents::HideGeolocationPrompt(const GURL& origin) {
   bool removed_current_outstanding_callback = false;
   std::list<OriginCallback>::iterator it = pending_geolocation_prompts_.begin();
   while (it != pending_geolocation_prompts_.end()) {
-    if ((*it).first == origin.GetOrigin()) {
+    if ((*it).first == origin.DeprecatedGetOriginAsURL()) {
       if (it == pending_geolocation_prompts_.begin()) {
         removed_current_outstanding_callback = true;
       }

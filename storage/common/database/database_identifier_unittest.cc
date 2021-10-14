@@ -291,8 +291,8 @@ static void TestValidOriginIdentifier(bool expected_result,
 }
 
 TEST(DatabaseIdentifierTest, OriginIdentifiers) {
-  const GURL kFileOriginURL(GURL("file:///").GetOrigin());
-  const GURL kHttpOriginURL(GURL("http://bar/").GetOrigin());
+  const GURL kFileOriginURL(GURL("file:///").DeprecatedGetOriginAsURL());
+  const GURL kHttpOriginURL(GURL("http://bar/").DeprecatedGetOriginAsURL());
   const url::Origin kFileOrigin = url::Origin::Create(kFileOriginURL);
   const url::Origin kHttpOrigin = url::Origin::Create(kHttpOriginURL);
 

@@ -3839,8 +3839,9 @@ class URLRequestTestHTTP : public URLRequestTest {
     std::unique_ptr<URLRequest> req(default_context().CreateFirstPartyRequest(
         redirect_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->set_method(request_method);
-    req->SetExtraRequestHeaderByName(HttpRequestHeaders::kOrigin,
-                                     redirect_url.GetOrigin().spec(), false);
+    req->SetExtraRequestHeaderByName(
+        HttpRequestHeaders::kOrigin,
+        redirect_url.DeprecatedGetOriginAsURL().spec(), false);
     req->Start();
 
     d.RunUntilComplete();
@@ -8337,12 +8338,14 @@ TEST_F(URLRequestTestHTTP, Redirect301Tests) {
   HTTPRedirectMethodTest(url, "PUT", "PUT", true);
   HTTPRedirectMethodTest(url, "HEAD", "HEAD", false);
 
-  HTTPRedirectOriginHeaderTest(url, "GET", "GET", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "GET", "GET",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "GET", "GET", "null");
   HTTPRedirectOriginHeaderTest(url, "POST", "GET", std::string());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "POST", "GET",
                                std::string());
-  HTTPRedirectOriginHeaderTest(url, "PUT", "PUT", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "PUT", "PUT",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "PUT", "PUT", "null");
 }
 
@@ -8357,12 +8360,14 @@ TEST_F(URLRequestTestHTTP, Redirect302Tests) {
   HTTPRedirectMethodTest(url, "PUT", "PUT", true);
   HTTPRedirectMethodTest(url, "HEAD", "HEAD", false);
 
-  HTTPRedirectOriginHeaderTest(url, "GET", "GET", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "GET", "GET",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "GET", "GET", "null");
   HTTPRedirectOriginHeaderTest(url, "POST", "GET", std::string());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "POST", "GET",
                                std::string());
-  HTTPRedirectOriginHeaderTest(url, "PUT", "PUT", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "PUT", "PUT",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "PUT", "PUT", "null");
 }
 
@@ -8383,9 +8388,11 @@ TEST_F(URLRequestTestHTTP, Redirect303Tests) {
   HTTPRedirectOriginHeaderTest(url, "DELETE", "GET", std::string());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "DELETE", "GET",
                                std::string());
-  HTTPRedirectOriginHeaderTest(url, "GET", "GET", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "GET", "GET",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "GET", "GET", "null");
-  HTTPRedirectOriginHeaderTest(url, "HEAD", "HEAD", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "HEAD", "HEAD",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "HEAD", "HEAD", "null");
   HTTPRedirectOriginHeaderTest(url, "OPTIONS", "GET", std::string());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "OPTIONS", "GET",
@@ -8408,11 +8415,14 @@ TEST_F(URLRequestTestHTTP, Redirect307Tests) {
   HTTPRedirectMethodTest(url, "PUT", "PUT", true);
   HTTPRedirectMethodTest(url, "HEAD", "HEAD", false);
 
-  HTTPRedirectOriginHeaderTest(url, "GET", "GET", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "GET", "GET",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "GET", "GET", "null");
-  HTTPRedirectOriginHeaderTest(url, "POST", "POST", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "POST", "POST",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "POST", "POST", "null");
-  HTTPRedirectOriginHeaderTest(url, "PUT", "PUT", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "PUT", "PUT",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "PUT", "PUT", "null");
 }
 
@@ -8427,11 +8437,14 @@ TEST_F(URLRequestTestHTTP, Redirect308Tests) {
   HTTPRedirectMethodTest(url, "PUT", "PUT", true);
   HTTPRedirectMethodTest(url, "HEAD", "HEAD", false);
 
-  HTTPRedirectOriginHeaderTest(url, "GET", "GET", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "GET", "GET",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "GET", "GET", "null");
-  HTTPRedirectOriginHeaderTest(url, "POST", "POST", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "POST", "POST",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "POST", "POST", "null");
-  HTTPRedirectOriginHeaderTest(url, "PUT", "PUT", url.GetOrigin().spec());
+  HTTPRedirectOriginHeaderTest(url, "PUT", "PUT",
+                               url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "PUT", "PUT", "null");
 }
 
@@ -9249,8 +9262,9 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPToSameOriginHTTP) {
   // policy and already be stripped to the origin; thus this test case just
   // checks that this policy doesn't cause the referrer to change when following
   // a redirect.
-  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN, referrer.GetOrigin(),
-                              referrer.GetOrigin());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN,
+                              referrer.DeprecatedGetOriginAsURL(),
+                              referrer.DeprecatedGetOriginAsURL());
 
   VerifyReferrerAfterRedirect(ReferrerPolicy::CLEAR_ON_TRANSITION_CROSS_ORIGIN,
                               referrer, referrer);
@@ -9261,7 +9275,7 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPToSameOriginHTTP) {
   // a redirect.
   VerifyReferrerAfterRedirect(
       ReferrerPolicy::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer.GetOrigin(), referrer.GetOrigin());
+      referrer.DeprecatedGetOriginAsURL(), referrer.DeprecatedGetOriginAsURL());
 
   VerifyReferrerAfterRedirect(ReferrerPolicy::NO_REFERRER, GURL(), GURL());
 }
@@ -9277,11 +9291,11 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPToCrossOriginHTTP) {
 
   VerifyReferrerAfterRedirect(
       ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN, referrer,
-      referrer.GetOrigin());
+      referrer.DeprecatedGetOriginAsURL());
 
   VerifyReferrerAfterRedirect(
       ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN, referrer,
-      referrer.GetOrigin());
+      referrer.DeprecatedGetOriginAsURL());
 
   VerifyReferrerAfterRedirect(ReferrerPolicy::NEVER_CLEAR, referrer, referrer);
 
@@ -9289,8 +9303,9 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPToCrossOriginHTTP) {
   // policy and already be stripped to the origin; thus this test case just
   // checks that this policy doesn't cause the referrer to change when following
   // a redirect.
-  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN, referrer.GetOrigin(),
-                              referrer.GetOrigin());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN,
+                              referrer.DeprecatedGetOriginAsURL(),
+                              referrer.DeprecatedGetOriginAsURL());
 
   VerifyReferrerAfterRedirect(ReferrerPolicy::CLEAR_ON_TRANSITION_CROSS_ORIGIN,
                               referrer, GURL());
@@ -9301,7 +9316,7 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPToCrossOriginHTTP) {
   // a redirect.
   VerifyReferrerAfterRedirect(
       ReferrerPolicy::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer.GetOrigin(), referrer.GetOrigin());
+      referrer.DeprecatedGetOriginAsURL(), referrer.DeprecatedGetOriginAsURL());
 
   VerifyReferrerAfterRedirect(ReferrerPolicy::NO_REFERRER, GURL(), GURL());
 }
@@ -9328,8 +9343,9 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPSToSameOriginHTTPS) {
   // policy and already be stripped to the origin; thus this test case just
   // checks that this policy doesn't cause the referrer to change when following
   // a redirect.
-  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN, referrer.GetOrigin(),
-                              referrer.GetOrigin());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN,
+                              referrer.DeprecatedGetOriginAsURL(),
+                              referrer.DeprecatedGetOriginAsURL());
 
   VerifyReferrerAfterRedirect(ReferrerPolicy::CLEAR_ON_TRANSITION_CROSS_ORIGIN,
                               referrer, referrer);
@@ -9340,7 +9356,7 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPSToSameOriginHTTPS) {
   // a redirect.
   VerifyReferrerAfterRedirect(
       ReferrerPolicy::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer.GetOrigin(), referrer.GetOrigin());
+      referrer.DeprecatedGetOriginAsURL(), referrer.DeprecatedGetOriginAsURL());
 
   VerifyReferrerAfterRedirect(ReferrerPolicy::NO_REFERRER, GURL(), GURL());
 }
@@ -9368,8 +9384,9 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPSToCrossOriginHTTPS) {
   // policy and already be stripped to the origin; thus this test case just
   // checks that this policy doesn't cause the referrer to change when following
   // a redirect.
-  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN, referrer.GetOrigin(),
-                              referrer.GetOrigin());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN,
+                              referrer.DeprecatedGetOriginAsURL(),
+                              referrer.DeprecatedGetOriginAsURL());
 
   VerifyReferrerAfterRedirect(ReferrerPolicy::CLEAR_ON_TRANSITION_CROSS_ORIGIN,
                               referrer, GURL());
@@ -9380,7 +9397,7 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPSToCrossOriginHTTPS) {
   // a redirect.
   VerifyReferrerAfterRedirect(
       ReferrerPolicy::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer.GetOrigin(), referrer.GetOrigin());
+      referrer.DeprecatedGetOriginAsURL(), referrer.DeprecatedGetOriginAsURL());
 
   VerifyReferrerAfterRedirect(ReferrerPolicy::NO_REFERRER, GURL(), GURL());
 }
@@ -9408,8 +9425,9 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPToHTTPS) {
   // policy and already be stripped to the origin; thus this test case just
   // checks that this policy doesn't cause the referrer to change when following
   // a redirect.
-  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN, referrer.GetOrigin(),
-                              referrer.GetOrigin());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN,
+                              referrer.DeprecatedGetOriginAsURL(),
+                              referrer.DeprecatedGetOriginAsURL());
 
   VerifyReferrerAfterRedirect(ReferrerPolicy::CLEAR_ON_TRANSITION_CROSS_ORIGIN,
                               referrer, GURL());
@@ -9420,7 +9438,7 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPToHTTPS) {
   // a redirect.
   VerifyReferrerAfterRedirect(
       ReferrerPolicy::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer.GetOrigin(), referrer.GetOrigin());
+      referrer.DeprecatedGetOriginAsURL(), referrer.DeprecatedGetOriginAsURL());
 
   VerifyReferrerAfterRedirect(ReferrerPolicy::NO_REFERRER, GURL(), GURL());
 }
@@ -9448,8 +9466,9 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPSToHTTP) {
   // policy and already be stripped to the origin; thus this test case just
   // checks that this policy doesn't cause the referrer to change when following
   // a redirect.
-  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN, referrer.GetOrigin(),
-                              referrer.GetOrigin());
+  VerifyReferrerAfterRedirect(ReferrerPolicy::ORIGIN,
+                              referrer.DeprecatedGetOriginAsURL(),
+                              referrer.DeprecatedGetOriginAsURL());
 
   VerifyReferrerAfterRedirect(ReferrerPolicy::CLEAR_ON_TRANSITION_CROSS_ORIGIN,
                               referrer, GURL());
@@ -9459,7 +9478,7 @@ TEST_F(URLRequestTestReferrerPolicy, HTTPSToHTTP) {
   // subsequently cleared during the downgrading redirect.
   VerifyReferrerAfterRedirect(
       ReferrerPolicy::ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE,
-      referrer.GetOrigin(), GURL());
+      referrer.DeprecatedGetOriginAsURL(), GURL());
 
   VerifyReferrerAfterRedirect(ReferrerPolicy::NO_REFERRER, GURL(), GURL());
 }

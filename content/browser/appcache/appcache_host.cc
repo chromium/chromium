@@ -203,8 +203,8 @@ void AppCacheHost::SelectCache(const GURL& document_url,
     return;
   }
 
-  if (!manifest_url.is_empty() &&
-      (manifest_url.GetOrigin() == document_url.GetOrigin())) {
+  if (!manifest_url.is_empty() && (manifest_url.DeprecatedGetOriginAsURL() ==
+                                   document_url.DeprecatedGetOriginAsURL())) {
     // TODO(mek): Technically we should be checking to make sure
     // first_party_url_ was initialized, however in practice it appears often
     // this isn't the case (even though that means the renderer is trying to

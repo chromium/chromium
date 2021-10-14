@@ -433,7 +433,7 @@ void CreditCardFIDOAuthenticator::OnDidGetAssertion(
     if (card_->record_type() == CreditCard::VIRTUAL_CARD &&
         autofill_client_->GetLastCommittedURL().is_valid()) {
       last_committed_url_origin =
-          autofill_client_->GetLastCommittedURL().GetOrigin();
+          autofill_client_->GetLastCommittedURL().DeprecatedGetOriginAsURL();
     }
 
     full_card_request_->GetFullCardViaFIDO(

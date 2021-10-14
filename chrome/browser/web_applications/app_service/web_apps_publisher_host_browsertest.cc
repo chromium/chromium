@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, Notification) {
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->has_badge,
             apps::mojom::OptionalBool::kFalse);
 
-  const GURL origin = app_url.GetOrigin();
+  const GURL origin = app_url.DeprecatedGetOriginAsURL();
   const std::string notification_id = "notification-id";
   auto notification = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,

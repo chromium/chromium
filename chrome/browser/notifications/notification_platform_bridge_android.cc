@@ -255,7 +255,7 @@ void NotificationPlatformBridgeAndroid::Display(
 
   JNIEnv* env = AttachCurrentThread();
 
-  GURL origin_url(notification.origin_url().GetOrigin());
+  GURL origin_url(notification.origin_url().DeprecatedGetOriginAsURL());
 
   // TODO(peter): Reconsider the meta-data system to try to remove this branch.
   const PersistentNotificationMetadata* persistent_notification_metadata =

@@ -387,7 +387,7 @@ std::string LoginHandler::GetSignonRealm(
     signon_realm.append("/");
   } else {
     // Take scheme, host, and port from the url.
-    signon_realm = url.GetOrigin().spec();
+    signon_realm = url.DeprecatedGetOriginAsURL().spec();
     // This ends with a "/".
   }
   signon_realm.append(auth_info.realm);
@@ -505,10 +505,11 @@ void LoginHandler::MaybeSetUpLoginPromptBeforeCommit(
   }
 
   prompt_started_ = true;
-  RecordHttpAuthPromptType(web_contents_->GetLastCommittedURL().GetOrigin() !=
-                                   request_url.GetOrigin()
-                               ? AUTH_PROMPT_TYPE_SUBRESOURCE_CROSS_ORIGIN
-                               : AUTH_PROMPT_TYPE_SUBRESOURCE_SAME_ORIGIN);
+  RecordHttpAuthPromptType(
+      web_contents_->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
+              request_url.DeprecatedGetOriginAsURL()
+          ? AUTH_PROMPT_TYPE_SUBRESOURCE_CROSS_ORIGIN
+          : AUTH_PROMPT_TYPE_SUBRESOURCE_SAME_ORIGIN);
   ShowLoginPrompt(request_url);
 }
 

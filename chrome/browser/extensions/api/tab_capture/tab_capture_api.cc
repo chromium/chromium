@@ -157,10 +157,11 @@ ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(extension_web_contents);
 
   const GURL& extension_origin =
-      extension_web_contents->GetLastCommittedURL().GetOrigin();
+      extension_web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   AllowedScreenCaptureLevel capture_level =
       capture_policy::GetAllowedCaptureLevel(
-          extension_web_contents->GetLastCommittedURL().GetOrigin(),
+          extension_web_contents->GetLastCommittedURL()
+              .DeprecatedGetOriginAsURL(),
           extension_web_contents);
 
   DesktopMediaList::WebContentsFilter includable_web_contents_filter =
@@ -269,7 +270,8 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
       return RespondNow(Error(kInvalidTabIdError));
     }
 
-    origin = consumer_contents->GetLastCommittedURL().GetOrigin();
+    origin =
+        consumer_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
     if (!origin.is_valid()) {
       return RespondNow(Error(kInvalidOriginError));
     }

@@ -158,7 +158,7 @@ constexpr char kCommandPrefix[] = "passwordForm";
                            inFrame:(web::WebFrame*)frame {
   DCHECK_EQ(_webState, webState);
   GURL pageURL = webState->GetLastCommittedURL();
-  if (pageURL.GetOrigin() != frame->GetSecurityOrigin()) {
+  if (pageURL.DeprecatedGetOriginAsURL() != frame->GetSecurityOrigin()) {
     // Passwords is only supported on main frame and iframes with the same
     // origin.
     return;
@@ -169,7 +169,7 @@ constexpr char kCommandPrefix[] = "passwordForm";
   std::vector<FormData> forms;
   NSString* nsFormData = [NSString stringWithUTF8String:formData.c_str()];
   autofill::ExtractFormsData(nsFormData, false, std::u16string(), pageURL,
-                             pageURL.GetOrigin(), &forms);
+                             pageURL.DeprecatedGetOriginAsURL(), &forms);
   if (forms.size() != 1) {
     return;
   }
@@ -197,7 +197,7 @@ constexpr char kCommandPrefix[] = "passwordForm";
 
   FormData form;
   if (!autofill::ExtractFormData(JSONCommand, false, std::u16string(), pageURL,
-                                 pageURL.GetOrigin(), &form)) {
+                                 pageURL.DeprecatedGetOriginAsURL(), &form)) {
     return NO;
   }
 
@@ -217,7 +217,8 @@ constexpr char kCommandPrefix[] = "passwordForm";
                  pageURL:(const GURL&)pageURL {
   std::vector<FormData> formsData;
   if (!autofill::ExtractFormsData(JSONString, false, std::u16string(), pageURL,
-                                  pageURL.GetOrigin(), &formsData)) {
+                                  pageURL.DeprecatedGetOriginAsURL(),
+                                  &formsData)) {
     return;
   }
   // Extract FieldDataManager data for observed form fields.
@@ -299,7 +300,8 @@ constexpr char kCommandPrefix[] = "passwordForm";
   // 2. |formData|'s origin is not matching the origin of the last commited URL.
   // 3. If a field has user typed input or input filled on user trigger.
   if (formData.wait_for_username ||
-      formData.url.GetOrigin() != self.lastCommittedURL.GetOrigin() ||
+      formData.url.DeprecatedGetOriginAsURL() !=
+          self.lastCommittedURL.DeprecatedGetOriginAsURL() ||
       self.fieldDataManager->WasAutofilledOnUserTrigger(passwordID) ||
       self.fieldDataManager->DidUserType(passwordID)) {
     if (completionHandler) {

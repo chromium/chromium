@@ -189,8 +189,8 @@ void InstallablePaymentAppCrawler::OnPaymentMethodManifestParsed(
 
     if (permission_controller->GetPermissionStatus(
             content::PermissionType::PAYMENT_HANDLER,
-            web_app_manifest_url.GetOrigin(),
-            web_app_manifest_url.GetOrigin()) !=
+            web_app_manifest_url.DeprecatedGetOriginAsURL(),
+            web_app_manifest_url.DeprecatedGetOriginAsURL()) !=
         blink::mojom::PermissionStatus::GRANTED) {
       // Do not download the web app manifest if it is blocked.
       continue;

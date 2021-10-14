@@ -122,11 +122,12 @@ void RecordNewTabLoadTime(content::WebContents* contents) {
 
 void RecordConcreteNtp(content::NavigationHandle* navigation_handle) {
   NewTabPageConcretePage concrete_page = NewTabPageConcretePage::kOther;
-  if (navigation_handle->GetURL().GetOrigin() ==
-      GURL(chrome::kChromeUINewTabPageURL).GetOrigin()) {
+  if (navigation_handle->GetURL().DeprecatedGetOriginAsURL() ==
+      GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL()) {
     concrete_page = NewTabPageConcretePage::k1PWebUiNtp;
-  } else if (navigation_handle->GetURL().GetOrigin() ==
-             GURL(chrome::kChromeUINewTabPageThirdPartyURL).GetOrigin()) {
+  } else if (navigation_handle->GetURL().DeprecatedGetOriginAsURL() ==
+             GURL(chrome::kChromeUINewTabPageThirdPartyURL)
+                 .DeprecatedGetOriginAsURL()) {
     concrete_page = NewTabPageConcretePage::k3PWebUiNtp;
   } else if (search::IsInstantNTP(navigation_handle->GetWebContents())) {
     concrete_page = NewTabPageConcretePage::k3PRemoteNtp;
@@ -136,8 +137,8 @@ void RecordConcreteNtp(content::NavigationHandle* navigation_handle) {
   } else if (Profile::FromBrowserContext(
                  navigation_handle->GetWebContents()->GetBrowserContext())
                  ->IsOffTheRecord() &&
-             navigation_handle->GetURL().GetOrigin() ==
-                 GURL(chrome::kChromeUINewTabURL).GetOrigin()) {
+             navigation_handle->GetURL().DeprecatedGetOriginAsURL() ==
+                 GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL()) {
     concrete_page = NewTabPageConcretePage::kOffTheRecordNtp;
   }
   base::UmaHistogramEnumeration("NewTabPage.ConcretePage", concrete_page);
@@ -204,8 +205,8 @@ void SearchTabHelper::DidStartNavigation(
   if (navigation_handle->IsSameDocument())
     return;
 
-  if (web_contents_->GetVisibleURL().GetOrigin() ==
-      GURL(chrome::kChromeUINewTabURL).GetOrigin()) {
+  if (web_contents_->GetVisibleURL().DeprecatedGetOriginAsURL() ==
+      GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL()) {
     RecordConcreteNtp(navigation_handle);
   }
 

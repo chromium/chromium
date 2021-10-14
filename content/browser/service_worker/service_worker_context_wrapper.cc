@@ -1297,7 +1297,7 @@ void ServiceWorkerContextWrapper::DidGetAllRegistrationsForGetAllOrigins(
 
   std::map<GURL, StorageUsageInfo> origins;
   for (const auto& registration_info : registrations) {
-    GURL origin = registration_info.scope.GetOrigin();
+    GURL origin = registration_info.scope.DeprecatedGetOriginAsURL();
 
     auto it = origins.find(origin);
     if (it == origins.end()) {

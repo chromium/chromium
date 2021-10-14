@@ -26,7 +26,8 @@ void UrlHandlerAsh::BindReceiver(
 
 void UrlHandlerAsh::OpenUrl(const GURL& url) {
   // Settings will be handled.
-  if (url.GetOrigin() == GURL(chrome::kChromeUIOSSettingsURL).GetOrigin()) {
+  if (url.DeprecatedGetOriginAsURL() ==
+      GURL(chrome::kChromeUIOSSettingsURL).DeprecatedGetOriginAsURL()) {
     chrome::SettingsWindowManager* settings_window_manager =
         chrome::SettingsWindowManager::GetInstance();
     settings_window_manager->ShowChromePageForProfile(
@@ -36,7 +37,8 @@ void UrlHandlerAsh::OpenUrl(const GURL& url) {
   }
 
   // TODO(crbug/1256481): Only accept URL's from the Ash supplied allow list.
-  if (url.GetOrigin() == GURL(chrome::kChromeUIFlagsURL).GetOrigin()) {
+  if (url.DeprecatedGetOriginAsURL() ==
+      GURL(chrome::kChromeUIFlagsURL).DeprecatedGetOriginAsURL()) {
     if (!url_window_manager_) {
       url_window_manager_ = std::make_unique<ChromeUrlWindowManager>();
       url_window_observer_ =

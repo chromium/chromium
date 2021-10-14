@@ -398,7 +398,7 @@ TEST(GURLTest, GetOrigin) {
   };
   for (size_t i = 0; i < base::size(cases); i++) {
     GURL url(cases[i].input);
-    GURL origin = url.GetOrigin();
+    GURL origin = url.DeprecatedGetOriginAsURL();
     EXPECT_EQ(cases[i].expected, origin.spec());
   }
 }

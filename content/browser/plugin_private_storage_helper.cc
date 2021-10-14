@@ -349,7 +349,8 @@ void PluginPrivateDataDeletionHelper::CheckOriginsOnFileTaskRunner(
       IncrementTaskCount();
       PluginPrivateDataByOriginChecker* helper =
           new PluginPrivateDataByOriginChecker(
-              filesystem_context_.get(), origin.GetURL().GetOrigin(),
+              filesystem_context_.get(),
+              origin.GetURL().DeprecatedGetOriginAsURL(),
               plugin_path.BaseName().MaybeAsASCII(), begin_, end_,
               decrement_callback);
       GetIOThreadTaskRunner({})->PostTask(

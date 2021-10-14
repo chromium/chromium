@@ -135,7 +135,7 @@ bool ExtractFormData(const base::Value& form_value,
 
   // Use GURL object to verify origin of host frame URL.
   form_data->url = GURL(origin);
-  if (form_data->url.GetOrigin() != form_frame_origin)
+  if (form_data->url.DeprecatedGetOriginAsURL() != form_frame_origin)
     return false;
 
   // main_frame_origin is used for logging UKM.

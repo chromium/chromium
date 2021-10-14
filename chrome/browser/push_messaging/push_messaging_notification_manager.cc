@@ -239,7 +239,7 @@ bool PushMessagingNotificationManager::IsTabVisible(
   if (visible_url.SchemeIs(content::kViewSourceScheme))
     visible_url = GURL(visible_url.GetContent());
 
-  return visible_url.GetOrigin() == origin;
+  return visible_url.DeprecatedGetOriginAsURL() == origin;
 }
 
 void PushMessagingNotificationManager::ProcessSilentPush(
@@ -334,7 +334,7 @@ bool PushMessagingNotificationManager::ShouldSkipUserVisibleOnlyRequirements(
   if (!app_url)
     app_url = ash::android_sms::GetAndroidMessagesURL();
 
-  if (!origin.EqualsIgnoringRef(app_url->GetOrigin()))
+  if (!origin.EqualsIgnoringRef(app_url->DeprecatedGetOriginAsURL()))
     return false;
 
   return true;

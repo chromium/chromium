@@ -116,7 +116,8 @@ std::string WebrtcAudioPrivateFunction::CalculateHMAC(
   if (media::AudioDeviceDescription::IsDefaultDevice(raw_id))
     return media::AudioDeviceDescription::kDefaultDeviceId;
 
-  url::Origin security_origin = url::Origin::Create(source_url().GetOrigin());
+  url::Origin security_origin =
+      url::Origin::Create(source_url().DeprecatedGetOriginAsURL());
   return content::GetHMACForMediaDeviceID(device_id_salt(), security_origin,
                                           raw_id);
 }

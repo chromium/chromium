@@ -2955,7 +2955,8 @@ TEST_F(ControllerTest, StartPasswordChangeFlow) {
   // Initial navigation.
   SimulateNavigateToUrl(GURL("http://b.example.com"));
   EXPECT_EQ(GetUserData()->selected_login_->username, "test_username");
-  EXPECT_EQ(GetUserData()->selected_login_->origin, initialUrl.GetOrigin());
+  EXPECT_EQ(GetUserData()->selected_login_->origin,
+            initialUrl.DeprecatedGetOriginAsURL());
   EXPECT_EQ(controller_->GetCurrentURL().host(), "b.example.com");
 }
 

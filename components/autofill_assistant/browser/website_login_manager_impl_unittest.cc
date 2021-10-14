@@ -84,7 +84,7 @@ FormData MakeFormDataWithPasswordField() {
 PasswordForm MakeSimplePasswordForm() {
   PasswordForm form;
   form.url = GURL(kFakeUrl);
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.password_value = kFakePassword;
   form.username_value = kFakeUsername16;
   form.username_element = kUsernameElement;
@@ -97,7 +97,7 @@ PasswordForm MakeSimplePasswordForm() {
 PasswordForm MakeSimplePasswordFormWithoutUsername() {
   PasswordForm form;
   form.url = GURL(kFakeUrl);
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.password_value = kFakeNewPassword16;
   form.in_store = PasswordForm::Store::kProfileStore;
 

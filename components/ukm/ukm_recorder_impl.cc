@@ -141,7 +141,7 @@ void AppendWhitelistedUrls(
       urls->insert(kv.second->url().spec());
       // Some non-navigation sources only record origin as a URL.
       // Add the origin from the navigation source to match those too.
-      urls->insert(kv.second->url().GetOrigin().spec());
+      urls->insert(kv.second->url().DeprecatedGetOriginAsURL().spec());
     }
   }
 }

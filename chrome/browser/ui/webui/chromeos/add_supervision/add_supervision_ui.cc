@@ -227,7 +227,8 @@ void AddSupervisionUI::SetUpResources() {
   source->UseStringsJs();
   source->SetDefaultResource(IDR_ADD_SUPERVISION_HTML);
   source->AddString("webviewUrl", supervision_url_.spec());
-  source->AddString("eventOriginFilter", supervision_url_.GetOrigin().spec());
+  source->AddString("eventOriginFilter",
+                    supervision_url_.DeprecatedGetOriginAsURL().spec());
   source->AddString("platformVersion", base::SysInfo::OperatingSystemVersion());
   source->AddString("flowType", kAddSupervisionFlowType);
 

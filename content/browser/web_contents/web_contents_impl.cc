@@ -6679,7 +6679,7 @@ void WebContentsImpl::RunJavaScriptDialog(
           render_frame_host->GetLastCommittedOrigin() !=
           url::Origin::Create(render_frame_host->GetMainFrame()
                                   ->GetLastCommittedURL()
-                                  .GetOrigin());
+                                  .DeprecatedGetOriginAsURL());
       suppress_this_message |= is_different_origin_subframe;
       if (is_different_origin_subframe) {
         GetMainFrame()->AddMessageToConsole(
@@ -8603,8 +8603,8 @@ WebContentsImpl::GetRecordAggregateWatchTimeCallback(
          bool has_video, bool has_audio) {
         content::MediaPlayerWatchTime watch_time(
             page_main_frame_last_committed_url,
-            page_main_frame_last_committed_url.GetOrigin(), total_watch_time,
-            time_stamp, has_video, has_audio);
+            page_main_frame_last_committed_url.DeprecatedGetOriginAsURL(),
+            total_watch_time, time_stamp, has_video, has_audio);
 
         // Save the watch time if the delegate is still alive.
         if (delegate)

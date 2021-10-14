@@ -272,14 +272,14 @@ void GURL::ProcessFileSystemURLAfterReplaceComponents() {
   }
 }
 
-GURL GURL::GetOrigin() const {
+GURL GURL::DeprecatedGetOriginAsURL() const {
   // This doesn't make sense for invalid or nonstandard URLs, so return
   // the empty URL.
   if (!is_valid_ || !IsStandard())
     return GURL();
 
   if (SchemeIsFileSystem())
-    return inner_url_->GetOrigin();
+    return inner_url_->DeprecatedGetOriginAsURL();
 
   url::Replacements<char> replacements;
   replacements.ClearUsername();

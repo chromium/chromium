@@ -689,7 +689,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest,
 
   std::set<GURL> expected_request_urls = {worker_url, script_url, resource_url};
   const url::Origin expected_origin =
-      url::Origin::Create(worker_url.GetOrigin());
+      url::Origin::Create(worker_url.DeprecatedGetOriginAsURL());
 
   base::RunLoop waiter;
   URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
@@ -951,7 +951,7 @@ IN_PROC_BROWSER_TEST_P(WorkerFromAnonymousIframeNikBrowserTest,
         ->GetBrowserContext()
         ->GetDefaultStoragePartition()
         ->GetNetworkContext()
-        ->PreconnectSockets(1, worker_url.GetOrigin(), true,
+        ->PreconnectSockets(1, worker_url.DeprecatedGetOriginAsURL(), true,
                             main_rfh->GetNetworkIsolationKey());
 
     connection_tracker_->WaitForAcceptedConnections(1);

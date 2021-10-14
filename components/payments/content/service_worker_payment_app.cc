@@ -567,7 +567,7 @@ ukm::SourceId ServiceWorkerPaymentApp::UkmSourceId() {
     // PaymentRequest::OnPaymentHandlerOpenWindowCalled function.
     ukm_source_id_ =
         content::PaymentAppProviderUtil::GetSourceIdForPaymentAppFromScope(
-            sw_scope.GetOrigin());
+            sw_scope.DeprecatedGetOriginAsURL());
   }
   return ukm_source_id_;
 }

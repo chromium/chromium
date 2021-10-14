@@ -618,7 +618,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             map->GetContentSetting(origin, origin,
                                    ContentSettingsType::FILE_HANDLING));
-  GURL third_app_origin = third_app_url.GetOrigin();
+  GURL third_app_origin = third_app_url.DeprecatedGetOriginAsURL();
   EXPECT_EQ(CONTENT_SETTING_ASK,
             map->GetContentSetting(third_app_origin, third_app_origin,
                                    ContentSettingsType::FILE_HANDLING));
@@ -644,7 +644,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
   // permission.
   InstallFileHandlingPWA();
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
-  const GURL origin = GetSecureAppURL().GetOrigin();
+  const GURL origin = GetSecureAppURL().DeprecatedGetOriginAsURL();
   EXPECT_EQ(CONTENT_SETTING_ASK,
             map->GetContentSetting(origin, origin,
                                    ContentSettingsType::FILE_HANDLING));
@@ -1104,7 +1104,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
   InstallFileHandlingPWA();
   std::vector<ContentSettingsType> categories_for_pwa =
       site_settings::GetVisiblePermissionCategoriesForOrigin(
-          profile(), GetSecureAppURL().GetOrigin());
+          profile(), GetSecureAppURL().DeprecatedGetOriginAsURL());
   EXPECT_FALSE(std::find(categories_for_pwa.begin(), categories_for_pwa.end(),
                          ContentSettingsType::FILE_HANDLING) ==
                categories_for_pwa.end());

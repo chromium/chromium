@@ -964,7 +964,8 @@ TEST_F(ServiceWorkerStorageControlImplTest, GetRegistrationsForStorageKey) {
     EXPECT_EQ(result.registrations.size(), 2UL);
 
     for (auto& registration : result.registrations) {
-      EXPECT_EQ(registration->registration->scope.GetOrigin(), origin.GetURL());
+      EXPECT_EQ(registration->registration->scope.DeprecatedGetOriginAsURL(),
+                origin.GetURL());
       EXPECT_EQ(registration->registration->resources_total_size_bytes,
                 kScriptSize);
       EXPECT_TRUE(registration->version_reference);
@@ -1454,7 +1455,8 @@ TEST_F(ServiceWorkerStorageControlImplTest, ApplyPolicyUpdates) {
   // Update policies to purge the registration for |kScope2| on shutdown.
   std::vector<mojom::StoragePolicyUpdatePtr> updates;
   updates.emplace_back(mojom::StoragePolicyUpdate::New(
-      url::Origin::Create(kScope2.GetOrigin()), /*purge_on_shutdown=*/true));
+      url::Origin::Create(kScope2.DeprecatedGetOriginAsURL()),
+      /*purge_on_shutdown=*/true));
   base::RunLoop loop;
   storage()->ApplyPolicyUpdates(
       std::move(updates),

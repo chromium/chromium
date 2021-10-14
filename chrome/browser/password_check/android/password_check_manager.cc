@@ -278,7 +278,7 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
 
   } else {
     ui_credential.display_origin = url_formatter::FormatUrl(
-        credential.url.GetOrigin(),
+        credential.url.DeprecatedGetOriginAsURL(),
         url_formatter::kFormatUrlOmitDefaults |
             url_formatter::kFormatUrlOmitHTTPS |
             url_formatter::kFormatUrlOmitTrivialSubdomains |
@@ -292,7 +292,7 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
   ui_credential.has_startable_script =
       !credential.username.empty() && ShouldFetchPasswordScripts() &&
       password_script_fetcher_->IsScriptAvailable(
-          url::Origin::Create(ui_credential.url.GetOrigin()),
+          url::Origin::Create(ui_credential.url.DeprecatedGetOriginAsURL()),
           version_info::GetVersion());
   ui_credential.has_auto_change_button =
       ui_credential.has_startable_script &&

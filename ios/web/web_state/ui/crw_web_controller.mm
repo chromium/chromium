@@ -1023,12 +1023,12 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
       return;
     }
 
-    GURL documentOrigin = newURL.GetOrigin();
+    GURL documentOrigin = newURL.DeprecatedGetOriginAsURL();
     web::NavigationItem* committedItem =
         self.webStateImpl->GetNavigationManager()->GetLastCommittedItem();
     GURL committedURL =
         committedItem ? committedItem->GetURL() : GURL::EmptyGURL();
-    GURL committedOrigin = committedURL.GetOrigin();
+    GURL committedOrigin = committedURL.DeprecatedGetOriginAsURL();
     DCHECK_EQ(documentOrigin, committedOrigin)
         << "Old and new URL detection system have a mismatch";
 
@@ -1797,7 +1797,8 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
   if (base::FeatureList::IsEnabled(
           web::features::kCrashOnUnexpectedURLChange)) {
-    if (_documentURL.GetOrigin() != newURL.GetOrigin()) {
+    if (_documentURL.DeprecatedGetOriginAsURL() !=
+        newURL.DeprecatedGetOriginAsURL()) {
       if (!_documentURL.host().empty() &&
           (newURL.username().find(_documentURL.host()) != std::string::npos ||
            newURL.password().find(_documentURL.host()) != std::string::npos)) {

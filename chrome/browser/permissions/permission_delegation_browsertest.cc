@@ -128,9 +128,12 @@ IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
   // A prompt should have been shown with the top level origin rather than the
   // iframe origin.
   EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
-  EXPECT_TRUE(prompt_factory()->RequestOriginSeen(main_frame_url.GetOrigin()));
-  EXPECT_FALSE(prompt_factory()->RequestOriginSeen(iframe_url_1.GetOrigin()));
-  EXPECT_FALSE(prompt_factory()->RequestOriginSeen(iframe_url_2.GetOrigin()));
+  EXPECT_TRUE(prompt_factory()->RequestOriginSeen(
+      main_frame_url.DeprecatedGetOriginAsURL()));
+  EXPECT_FALSE(prompt_factory()->RequestOriginSeen(
+      iframe_url_1.DeprecatedGetOriginAsURL()));
+  EXPECT_FALSE(prompt_factory()->RequestOriginSeen(
+      iframe_url_2.DeprecatedGetOriginAsURL()));
 
   // Request permission from the second iframe. Because it was granted to the
   // top level frame, it should also be granted to this iframe and there should

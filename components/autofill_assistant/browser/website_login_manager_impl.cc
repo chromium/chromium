@@ -30,7 +30,7 @@ password_manager::PasswordForm CreatePasswordForm(
     const WebsiteLoginManager::Login& login,
     const std::string& password) {
   password_manager::PasswordForm form;
-  form.url = login.origin.GetOrigin();
+  form.url = login.origin.DeprecatedGetOriginAsURL();
   form.signon_realm = password_manager::GetSignonRealm(form.url);
   form.username_value = base::UTF8ToUTF16(login.username);
   form.password_value = base::UTF8ToUTF16(password);
@@ -129,7 +129,7 @@ class WebsiteLoginManagerImpl::PendingFetchLoginsRequest
   void OnFetchCompleted() override {
     std::vector<Login> logins;
     for (const auto* match : form_fetcher_->GetBestMatches()) {
-      logins.emplace_back(match->url.GetOrigin(),
+      logins.emplace_back(match->url.DeprecatedGetOriginAsURL(),
                           base::UTF16ToUTF8(match->username_value));
     }
     std::move(callback_).Run(logins);
@@ -342,8 +342,8 @@ void WebsiteLoginManagerImpl::GetLoginsForUrl(
     base::OnceCallback<void(std::vector<Login>)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   password_manager::PasswordFormDigest digest(
-      password_manager::PasswordForm::Scheme::kHtml, url.GetOrigin().spec(),
-      GURL());
+      password_manager::PasswordForm::Scheme::kHtml,
+      url.DeprecatedGetOriginAsURL().spec(), GURL());
   pending_requests_.emplace_back(std::make_unique<PendingFetchLoginsRequest>(
       digest, client_, std::move(callback),
       base::BindOnce(&WebsiteLoginManagerImpl::OnRequestFinished,

@@ -293,10 +293,12 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(
   // Allow navigations to allowed origins (currently families.google.com and
   // accounts.google.com).
   static const base::NoDestructor<base::flat_set<GURL>> kAllowedOrigins(
-      base::flat_set<GURL>({GURL(kFamiliesUrl).GetOrigin(),
-                            GURL(kFamiliesSecureUrl).GetOrigin(),
-                            GURL(kAccountsGoogleUrl).GetOrigin()}));
-  if (base::Contains(*kAllowedOrigins, effective_url.GetOrigin()))
+      base::flat_set<GURL>(
+          {GURL(kFamiliesUrl).DeprecatedGetOriginAsURL(),
+           GURL(kFamiliesSecureUrl).DeprecatedGetOriginAsURL(),
+           GURL(kAccountsGoogleUrl).DeprecatedGetOriginAsURL()}));
+  if (base::Contains(*kAllowedOrigins,
+                     effective_url.DeprecatedGetOriginAsURL()))
     return ALLOW;
 
   // Check Play Store terms of service.

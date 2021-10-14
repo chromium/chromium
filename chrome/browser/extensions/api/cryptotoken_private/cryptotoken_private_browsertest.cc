@@ -234,7 +234,8 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
   bool InterceptRequest(content::URLLoaderInterceptor::RequestParams* params) {
     // The response for origin trial requests are injected so that we have a
     // stable port to use for generating the token.
-    if (params->url_request.url.GetOrigin() != GURL(kOriginTrialOrigin)) {
+    if (params->url_request.url.DeprecatedGetOriginAsURL() !=
+        GURL(kOriginTrialOrigin)) {
       return false;
     }
 

@@ -665,7 +665,7 @@ PermissionUmaUtil::ScopedRevocationReporter::~ScopedRevocationReporter() {
       primary_url_, secondary_url_, content_type_);
   if (final_content_setting != CONTENT_SETTING_ALLOW) {
     // PermissionUmaUtil takes origins, even though they're typed as GURL.
-    GURL requesting_origin = primary_url_.GetOrigin();
+    GURL requesting_origin = primary_url_.DeprecatedGetOriginAsURL();
     PermissionRevoked(content_type_, source_ui_, requesting_origin,
                       browser_context_);
     if ((content_type_ == ContentSettingsType::GEOLOCATION ||

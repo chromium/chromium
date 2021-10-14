@@ -111,7 +111,7 @@ class OfferNotificationBubbleControllerImplTest
 TEST_F(OfferNotificationBubbleControllerImplTest, BubbleShown) {
   // Check that bubble is visible.
   AutofillOfferData offer = CreateTestOfferWithOrigins(
-      {GURL("https://www.example.com/first/").GetOrigin()});
+      {GURL("https://www.example.com/first/").DeprecatedGetOriginAsURL()});
   ShowBubble(&offer);
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
 }
@@ -132,8 +132,8 @@ TEST_F(OfferNotificationBubbleControllerImplTest, OriginSticky) {
     // Set the initial origin that the bubble will be displayed on.
     NavigateAndCommitActiveTab(GURL("https://www.example.com/first/"));
     AutofillOfferData offer = CreateTestOfferWithOrigins(
-        {GURL("https://www.example.com/first/").GetOrigin(),
-         GURL("https://www.test.com/first/").GetOrigin()});
+        {GURL("https://www.example.com/first/").DeprecatedGetOriginAsURL(),
+         GURL("https://www.test.com/first/").DeprecatedGetOriginAsURL()});
     ShowBubble(&offer);
 
     // Bubble should be visible.
@@ -149,7 +149,7 @@ TEST_F(OfferNotificationBubbleControllerImplTest, OriginSticky) {
 TEST_F(OfferNotificationBubbleControllerImplTest,
        ShownOfferIsRetrievableFromController) {
   AutofillOfferData offer = CreateTestOfferWithOrigins(
-      {GURL("https://www.example.com/first/").GetOrigin()});
+      {GURL("https://www.example.com/first/").DeprecatedGetOriginAsURL()});
   ShowBubble(&offer);
 
   EXPECT_EQ(&offer, controller()->GetOffer());
@@ -188,7 +188,7 @@ TEST_F(OfferNotificationBubbleControllerImplPrerenderTest,
 
   // Ensure a bubble is visible on the primary page.
   AutofillOfferData offer =
-      CreateTestOfferWithOrigins({original_url.GetOrigin()});
+      CreateTestOfferWithOrigins({original_url.DeprecatedGetOriginAsURL()});
   ShowBubble(&offer);
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
 

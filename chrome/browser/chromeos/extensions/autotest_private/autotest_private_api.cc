@@ -1912,7 +1912,8 @@ AutotestPrivateGetRegisteredSystemWebAppsFunction::Run() {
     api::autotest_private::SystemApp system_app;
     web_app::SystemWebAppDelegate* delegate = type_and_info.second.get();
     system_app.internal_name = delegate->GetInternalName();
-    system_app.url = delegate->GetInstallUrl().GetOrigin().spec();
+    system_app.url =
+        delegate->GetInstallUrl().DeprecatedGetOriginAsURL().spec();
     result.push_back(std::move(system_app));
   }
 

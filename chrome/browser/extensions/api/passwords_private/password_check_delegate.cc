@@ -570,14 +570,15 @@ PasswordCheckDelegate::ConstructInsecureCredential(
     api_credential.is_android_credential = false;
     api_credential.formatted_origin =
         base::UTF16ToUTF8(url_formatter::FormatUrl(
-            credential.url.GetOrigin(),
+            credential.url.DeprecatedGetOriginAsURL(),
             url_formatter::kFormatUrlOmitDefaults |
                 url_formatter::kFormatUrlOmitHTTPS |
                 url_formatter::kFormatUrlOmitTrivialSubdomains |
                 url_formatter::kFormatUrlTrimAfterHost,
             net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
-    api_credential.detailed_origin = base::UTF16ToUTF8(
-        url_formatter::FormatUrlForSecurityDisplay(credential.url.GetOrigin()));
+    api_credential.detailed_origin =
+        base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
+            credential.url.DeprecatedGetOriginAsURL()));
     api_credential.change_password_url = GetChangePasswordUrl(credential.url);
   }
 

@@ -120,7 +120,7 @@ bool IsUrlMatchedByOriginList(const GURL& url,
       continue;
     }
 
-    if (origin_url != url.GetOrigin())
+    if (origin_url != url.DeprecatedGetOriginAsURL())
       continue;
 
     return true;

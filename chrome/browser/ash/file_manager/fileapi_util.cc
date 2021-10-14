@@ -517,7 +517,7 @@ const GURL GetFileManagerURL() {
 }
 
 bool IsFileManagerURL(const GURL& source_url) {
-  return GetFileManagerURL() == source_url.GetOrigin();
+  return GetFileManagerURL() == source_url.DeprecatedGetOriginAsURL();
 }
 
 storage::FileSystemContext* GetFileManagerFileSystemContext(Profile* profile) {

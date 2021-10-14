@@ -172,7 +172,7 @@ void ManagePasswordsStateTest::TestAllUpdates() {
   GURL::Replacements replace_path;
   replace_path.SetPathStr("absolutely_different_path");
   form.url = origin.GetURL().ReplaceComponents(replace_path);
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = u"user15";
   form.password_value = u"12345";
   PasswordStoreChange change(PasswordStoreChange::ADD, form);

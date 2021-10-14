@@ -50,7 +50,7 @@ void ProcessMirrorHeader(content::WebContents::Getter web_contents_getter,
 void MaybeAddQueryParams(GURL* url) {
   // Add manage=true to query parameters for sign out URLs to make sure we
   // receive the Mirror response headers instead of the normal sign out page.
-  if (gaia::IsGaiaSignonRealm(url->GetOrigin()) &&
+  if (gaia::IsGaiaSignonRealm(url->DeprecatedGetOriginAsURL()) &&
       url->path_piece() == kSignOutPath) {
     *url = net::AppendOrReplaceQueryParameter(*url, "manage", "true");
   }
@@ -163,8 +163,8 @@ void SigninURLLoaderThrottle::ProcessRequest(
 
 void SigninURLLoaderThrottle::ProcessResponse(
     const net::HttpResponseHeaders* headers) {
-  if (!gaia::IsGaiaSignonRealm(request_url_.GetOrigin()) || !is_main_frame_ ||
-      !headers) {
+  if (!gaia::IsGaiaSignonRealm(request_url_.DeprecatedGetOriginAsURL()) ||
+      !is_main_frame_ || !headers) {
     return;
   }
 

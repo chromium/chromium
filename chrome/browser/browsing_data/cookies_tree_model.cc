@@ -277,7 +277,8 @@ CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitSharedWorker(
     const browsing_data::SharedWorkerHelper::SharedWorkerInfo* shared_worker) {
   Init(TYPE_SHARED_WORKER);
   shared_worker_info = shared_worker;
-  origin = url::Origin::Create(shared_worker_info->worker.GetOrigin());
+  origin = url::Origin::Create(
+      shared_worker_info->worker.DeprecatedGetOriginAsURL());
   return *this;
 }
 

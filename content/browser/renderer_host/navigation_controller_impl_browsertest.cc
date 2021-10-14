@@ -8541,7 +8541,7 @@ IN_PROC_BROWSER_TEST_P(
     // Since the navigation went through a cross-origin redirect and the default
     // referrer policy strips referrers to their origins on cross-origin
     // requests, only the origin is saved.
-    ExpectReferrerWithDefaultPolicy(entry, url_2.GetOrigin());
+    ExpectReferrerWithDefaultPolicy(entry, url_2.DeprecatedGetOriginAsURL());
   }
 
   {
@@ -8710,7 +8710,7 @@ IN_PROC_BROWSER_TEST_P(
   // Since the navigation went through a cross-origin redirect and the default
   // referrer policy strips referrers to their origins on cross-origin
   // requests, only the origin is saved.
-  ExpectReferrerWithDefaultPolicy(entry, start_url.GetOrigin());
+  ExpectReferrerWithDefaultPolicy(entry, start_url.DeprecatedGetOriginAsURL());
 }
 
 // Verifies that the FrameNavigationEntry's redirect chain and referrer is
@@ -8760,7 +8760,7 @@ IN_PROC_BROWSER_TEST_P(
   // The referrer is |start_url| since it's the URL that started the navigation.
   // Since the navigation went through a cross-origin URL (even though it ended
   // up on a same-origin URL after redirects), only the origin is saved.
-  ExpectReferrerWithDefaultPolicy(entry, start_url.GetOrigin());
+  ExpectReferrerWithDefaultPolicy(entry, start_url.DeprecatedGetOriginAsURL());
 }
 
 // Checks the contents of the redirect chain after reloads.
@@ -9096,7 +9096,8 @@ IN_PROC_BROWSER_TEST_P(
     // that is typically classified as a client side redirect, it is not
     // considered as a client-side redirect since we end up in an error page.
     // (Non-error client-side redirects will always return the full URL).
-    ExpectReferrerWithDefaultPolicy(entry, start_url.GetOrigin());
+    ExpectReferrerWithDefaultPolicy(entry,
+                                    start_url.DeprecatedGetOriginAsURL());
   }
 
   {
@@ -18743,7 +18744,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
   NavigationRequest* navigation_1 =
       main_frame->child_at(0)->navigation_request();
   ASSERT_TRUE(navigation_1);
-  EXPECT_EQ(main_url.GetOrigin(), navigation_1->GetReferrer().url);
+  EXPECT_EQ(main_url.DeprecatedGetOriginAsURL(),
+            navigation_1->GetReferrer().url);
   EXPECT_EQ(network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin,
             navigation_1->GetReferrer().policy);
   EXPECT_TRUE(navigation_1->IsRendererInitiated());
@@ -18761,7 +18763,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
   EXPECT_EQ(url::Origin::Create(main_url),
             frame_entry_1->initiator_origin().value());
   content::Referrer referrer_1 = frame_entry_1->referrer();
-  EXPECT_EQ(main_url.GetOrigin(), frame_entry_1->referrer().url);
+  EXPECT_EQ(main_url.DeprecatedGetOriginAsURL(), frame_entry_1->referrer().url);
   EXPECT_EQ(network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin,
             frame_entry_1->referrer().policy);
   int item_sequence_number_1 = frame_entry_1->item_sequence_number();
@@ -18776,7 +18778,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
   NavigationRequest* navigation_2 =
       main_frame->child_at(0)->navigation_request();
   ASSERT_TRUE(navigation_2);
-  EXPECT_EQ(main_url.GetOrigin(), navigation_2->GetReferrer().url);
+  EXPECT_EQ(main_url.DeprecatedGetOriginAsURL(),
+            navigation_2->GetReferrer().url);
   EXPECT_EQ(network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin,
             navigation_2->GetReferrer().policy);
   EXPECT_FALSE(navigation_2->IsRendererInitiated());
@@ -18794,7 +18797,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
   EXPECT_EQ(url::Origin::Create(main_url),
             frame_entry_2->initiator_origin().value());
   content::Referrer referrer_2 = frame_entry_1->referrer();
-  EXPECT_EQ(main_url.GetOrigin(), frame_entry_2->referrer().url);
+  EXPECT_EQ(main_url.DeprecatedGetOriginAsURL(), frame_entry_2->referrer().url);
   EXPECT_EQ(network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin,
             frame_entry_2->referrer().policy);
 

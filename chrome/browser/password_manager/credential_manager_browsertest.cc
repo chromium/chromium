@@ -205,8 +205,9 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
         test_password_store->stored_passwords().begin()->second[0];
     EXPECT_EQ(u"user", signin_form.username_value);
     EXPECT_EQ(u"hunter2", signin_form.password_value);
-    EXPECT_EQ(a_url1.GetOrigin().spec(), signin_form.signon_realm);
-    EXPECT_EQ(a_url1.GetOrigin(), signin_form.url);
+    EXPECT_EQ(a_url1.DeprecatedGetOriginAsURL().spec(),
+              signin_form.signon_realm);
+    EXPECT_EQ(a_url1.DeprecatedGetOriginAsURL(), signin_form.url);
   }
 
   // Tests the when navigator.credentials.store() is called in an `unload`
@@ -919,7 +920,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, SaveViaAPIAndAutofill) {
   EXPECT_EQ(u"API", signin_form.password_value);
   EXPECT_EQ(embedded_test_server()->base_url().spec(),
             signin_form.signon_realm);
-  EXPECT_EQ(current_url.GetOrigin(), signin_form.url);
+  EXPECT_EQ(current_url.DeprecatedGetOriginAsURL(), signin_form.url);
 }
 
 IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {

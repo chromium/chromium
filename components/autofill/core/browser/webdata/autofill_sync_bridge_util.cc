@@ -385,7 +385,8 @@ AutofillOfferData AutofillOfferDataFromOfferSpecifics(
   for (const std::string& domain : offer_specifics.merchant_domain()) {
     const GURL gurl_domain = GURL(domain);
     if (gurl_domain.is_valid())
-      offer_data.merchant_origins.emplace_back(gurl_domain.GetOrigin());
+      offer_data.merchant_origins.emplace_back(
+          gurl_domain.DeprecatedGetOriginAsURL());
   }
   offer_data.display_strings.value_prop_text =
       offer_specifics.display_strings().value_prop_text();

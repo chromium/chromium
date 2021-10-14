@@ -74,7 +74,8 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
   password_manager::PasswordForm passwordCredentialForm;
   passwordCredentialForm.username_value = base::SysNSStringToUTF16(username);
   passwordCredentialForm.password_value = base::SysNSStringToUTF16(password);
-  passwordCredentialForm.url = net::GURLWithNSURL(URL).GetOrigin();
+  passwordCredentialForm.url =
+      net::GURLWithNSURL(URL).DeprecatedGetOriginAsURL();
   passwordCredentialForm.signon_realm = passwordCredentialForm.url.spec();
   passwordCredentialForm.scheme = password_manager::PasswordForm::Scheme::kHtml;
   passwordStore->AddLogin(passwordCredentialForm);

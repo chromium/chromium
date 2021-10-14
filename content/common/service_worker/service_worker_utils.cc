@@ -92,7 +92,7 @@ bool ServiceWorkerUtils::AllOriginsMatchAndCanAccessServiceWorkers(
   }
   const GURL& first = urls.front();
   for (const GURL& url : urls) {
-    if (first.GetOrigin() != url.GetOrigin())
+    if (first.DeprecatedGetOriginAsURL() != url.DeprecatedGetOriginAsURL())
       return false;
   }
   return true;

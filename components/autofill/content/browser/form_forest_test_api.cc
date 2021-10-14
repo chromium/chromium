@@ -78,8 +78,8 @@ std::ostream& FormForestTestApi::PrintForm(std::ostream& os,
                                            int level) {
   std::string prefix(2 * level, ' ');
   os << prefix << "Form " << *form.unique_renderer_id << " at "
-     << form.host_frame << " at " << form.full_url.GetOrigin() << " with "
-     << form.fields.size() << " fields" << std::endl;
+     << form.host_frame << " at " << form.full_url.DeprecatedGetOriginAsURL()
+     << " with " << form.fields.size() << " fields" << std::endl;
   os << prefix << "Origin " << form.main_frame_origin.Serialize() << std::endl;
   if (!form.name.empty())
     os << prefix << "Name " << form.name << std::endl;

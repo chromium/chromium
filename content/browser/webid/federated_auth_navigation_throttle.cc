@@ -163,7 +163,8 @@ bool FederatedAuthNavigationThrottle::IsFederationResponse(GURL url) {
   }
   GURL redirect_url = GURL(
       RedirectUriData::Get(navigation_handle()->GetWebContents())->Value());
-  if (url.GetOrigin() == redirect_url.GetOrigin() &&
+  if (url.DeprecatedGetOriginAsURL() ==
+          redirect_url.DeprecatedGetOriginAsURL() &&
       url.path() == redirect_url.path()) {
     return true;
   }

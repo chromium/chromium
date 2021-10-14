@@ -64,7 +64,8 @@ TEST_F(OfferNotificationHelperTest,
   EXPECT_FALSE(helper()->OfferNotificationHasAlreadyBeenShown());
   // Notify the helper that the offer notification was displayed for the
   // originalUrl.
-  helper()->OnDisplayOfferNotification({originalUrl.GetOrigin()});
+  helper()->OnDisplayOfferNotification(
+      {originalUrl.DeprecatedGetOriginAsURL()});
 
   // Navigate to another URL with the same origin as the originalUrl
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
@@ -80,7 +81,8 @@ TEST_F(OfferNotificationHelperTest, DoNotDisplayOfferNotificationForReload) {
   EXPECT_FALSE(helper()->OfferNotificationHasAlreadyBeenShown());
   // Notify the helper that the offer notification was displayed for the
   // originalUrl.
-  helper()->OnDisplayOfferNotification({originalUrl.GetOrigin()});
+  helper()->OnDisplayOfferNotification(
+      {originalUrl.DeprecatedGetOriginAsURL()});
 
   // Reload the current page.
   content::NavigationSimulator::Reload(web_contents());
@@ -111,7 +113,8 @@ TEST_F(OfferNotificationHelperPrerenderTest,
   EXPECT_FALSE(helper()->OfferNotificationHasAlreadyBeenShown());
   // Notify the helper that the offer notification was displayed for the
   // primary page
-  helper()->OnDisplayOfferNotification({original_url.GetOrigin()});
+  helper()->OnDisplayOfferNotification(
+      {original_url.DeprecatedGetOriginAsURL()});
 
   // Start a prerender and navigate the test page.
   const GURL& prerender_url = GURL("https://www.example.com/second/");

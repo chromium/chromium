@@ -175,7 +175,7 @@ void PrefetchProxyURLLoaderInterceptor::MaybeCreateLoader(
                        std::move(prefetch));
 
     service->origin_prober()->Probe(
-        url_.GetOrigin(),
+        url_.DeprecatedGetOriginAsURL(),
         base::BindOnce(&PrefetchProxyURLLoaderInterceptor::OnProbeComplete,
                        weak_factory_.GetWeakPtr(),
                        std::move(on_success_callback)));

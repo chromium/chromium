@@ -630,9 +630,10 @@ static PreviousSessionInfo* gSharedInstance = nil;
 
 - (void)setReportParameterURL:(const GURL&)URL forKey:(NSString*)key {
   // Store only URL origin (not whole URL spec) as requested by Privacy Team.
-  [self setReportParameterValue:base::SysUTF8ToNSString(
-                                    URL.GetOrigin().spec().c_str())
-                         forKey:key];
+  [self
+      setReportParameterValue:base::SysUTF8ToNSString(
+                                  URL.DeprecatedGetOriginAsURL().spec().c_str())
+                       forKey:key];
 }
 
 - (void)removeReportParameterForKey:(NSString*)key {

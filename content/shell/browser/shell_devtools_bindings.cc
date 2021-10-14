@@ -214,7 +214,8 @@ void ShellDevToolsBindings::ReadyToCommitNavigation(
                    base::Unretained(this)));
     return;
   }
-  std::string origin = navigation_handle->GetURL().GetOrigin().spec();
+  std::string origin =
+      navigation_handle->GetURL().DeprecatedGetOriginAsURL().spec();
   auto it = extensions_api_.find(origin);
   if (it == extensions_api_.end())
     return;

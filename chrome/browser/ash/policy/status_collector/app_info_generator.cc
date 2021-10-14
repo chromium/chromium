@@ -227,7 +227,8 @@ const em::AppInfo AppInfoGenerator::ConvertToAppInfo(
     // For web apps, publisher id is the start url.
     GURL start_url(update.PublisherId());
     DCHECK(start_url.is_valid());
-    const std::string launch_origin = start_url.GetOrigin().spec();
+    const std::string launch_origin =
+        start_url.DeprecatedGetOriginAsURL().spec();
     info.set_app_id(launch_origin);
     info.set_app_name(launch_origin);
   }

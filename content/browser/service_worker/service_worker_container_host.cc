@@ -1678,7 +1678,7 @@ const GURL ServiceWorkerContainerHost::GetOrigin() const {
   // Ideally, the origins of GetUrlForScopeMatch() and url() should be the same
   // but GURL::GetOrigin() doesn't work with blob URL.
   // See https://crbug.com/1144717
-  return GetUrlForScopeMatch().GetOrigin();
+  return GetUrlForScopeMatch().DeprecatedGetOriginAsURL();
 }
 
 const GURL& ServiceWorkerContainerHost::GetUrlForScopeMatch() const {

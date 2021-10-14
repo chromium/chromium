@@ -2322,7 +2322,8 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kSingleFrameTestURL)));
   GURL initial_url = embedded_test_server()->GetURL(kSingleFrameTestURL);
-  GURL test_server_origin = embedded_test_server()->base_url().GetOrigin();
+  GURL test_server_origin =
+      embedded_test_server()->base_url().DeprecatedGetOriginAsURL();
   ClickTestLink("direct_download", 1, initial_url);
   std::string test_server_ip(embedded_test_server()->host_port_pair().host());
   auto* nav_list = navigation_event_list();

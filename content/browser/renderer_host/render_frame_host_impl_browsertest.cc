@@ -3844,8 +3844,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), trusty_url));
   {
     RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
-    EXPECT_EQ(trusty_url.GetOrigin(),
-              main_frame->GetLastCommittedURL().GetOrigin());
+    EXPECT_EQ(trusty_url.DeprecatedGetOriginAsURL(),
+              main_frame->GetLastCommittedURL().DeprecatedGetOriginAsURL());
 
     ASSERT_EQ(1u, main_frame->child_count());
     FrameTreeNode* child_a = main_frame->child_at(0);
@@ -3906,8 +3906,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), trusty_if_secure_url));
   {
     RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
-    EXPECT_EQ(trusty_if_secure_url.GetOrigin(),
-              main_frame->GetLastCommittedURL().GetOrigin());
+    EXPECT_EQ(trusty_if_secure_url.DeprecatedGetOriginAsURL(),
+              main_frame->GetLastCommittedURL().DeprecatedGetOriginAsURL());
 
     ASSERT_EQ(1u, main_frame->child_count());
     FrameTreeNode* child_a = main_frame->child_at(0);
@@ -6364,7 +6364,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeNikBrowserTest,
 
     ResetNetworkState();
 
-    std::string main_url_origin = main_url.GetOrigin().spec();
+    std::string main_url_origin = main_url.DeprecatedGetOriginAsURL().spec();
     // Remove trailing '/'.
     main_url_origin.pop_back();
 
@@ -6380,7 +6380,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeNikBrowserTest,
         ->GetBrowserContext()
         ->GetDefaultStoragePartition()
         ->GetNetworkContext()
-        ->PreconnectSockets(1, fetch_url.GetOrigin(), true,
+        ->PreconnectSockets(1, fetch_url.DeprecatedGetOriginAsURL(), true,
                             main_rfh->GetNetworkIsolationKey());
 
     connection_tracker_->WaitForAcceptedConnections(1);

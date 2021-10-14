@@ -188,7 +188,8 @@ TEST_F(HistoryTabHelperTest,
   navigation_handle.set_previous_main_frame_url(
       GURL("http://previousurl.com/abc"));
   auto referrer = blink::mojom::Referrer::New();
-  referrer->url = navigation_handle.GetPreviousMainFrameURL().GetOrigin();
+  referrer->url =
+      navigation_handle.GetPreviousMainFrameURL().DeprecatedGetOriginAsURL();
   referrer->policy = network::mojom::ReferrerPolicy::kDefault;
   navigation_handle.SetReferrer(std::move(referrer));
   history::HistoryAddPageArgs args =

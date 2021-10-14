@@ -155,10 +155,9 @@ void PrintTimeZoneError(const GURL& server_url,
                         const std::string& message,
                         TimeZoneResponseData* timezone) {
   timezone->status = TimeZoneResponseData::REQUEST_ERROR;
-  timezone->error_message =
-      base::StringPrintf("TimeZone provider at '%s' : %s.",
-                         server_url.GetOrigin().spec().c_str(),
-                         message.c_str());
+  timezone->error_message = base::StringPrintf(
+      "TimeZone provider at '%s' : %s.",
+      server_url.DeprecatedGetOriginAsURL().spec().c_str(), message.c_str());
   LOG(WARNING) << "TimeZoneRequest::GetTimeZoneFromResponse() : "
                << timezone->error_message;
 }

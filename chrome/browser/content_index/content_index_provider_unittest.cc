@@ -59,7 +59,8 @@ std::unique_ptr<KeyedService> BuildTestSiteEngagementService(
     content::BrowserContext* context) {
   auto service = std::make_unique<site_engagement::SiteEngagementService>(
       static_cast<Profile*>(context));
-  service->ResetBaseScoreForURL(GURL(kLaunchUrl).GetOrigin(), kEngagementScore);
+  service->ResetBaseScoreForURL(GURL(kLaunchUrl).DeprecatedGetOriginAsURL(),
+                                kEngagementScore);
   return std::move(service);
 }
 

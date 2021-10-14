@@ -178,7 +178,7 @@ PasswordForm MakePasswordForm(const std::string& signon_realm) {
 }
 
 bool MatchesOrigin(const GURL& origin, const GURL& url) {
-  return origin.GetOrigin() == url.GetOrigin();
+  return origin.DeprecatedGetOriginAsURL() == url.DeprecatedGetOriginAsURL();
 }
 
 PasswordFormData CreateTestPasswordFormDataByOrigin(const char* origin_url) {

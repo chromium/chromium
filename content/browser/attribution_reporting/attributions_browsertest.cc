@@ -831,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
   {
     auto url_loader_interceptor =
         content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
-            kBaseDataDir, kInitialUrl.GetOrigin());
+            kBaseDataDir, kInitialUrl.DeprecatedGetOriginAsURL());
     EXPECT_TRUE(NavigateToURL(web_contents(), kInitialUrl));
   }
 
@@ -891,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
   {
     auto url_loader_interceptor =
         content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
-            kBaseDataDir, kInitialUrl.GetOrigin());
+            kBaseDataDir, kInitialUrl.DeprecatedGetOriginAsURL());
     EXPECT_TRUE(NavigateToURL(web_contents(), kInitialUrl));
   }
 
@@ -968,7 +968,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
   {
     auto url_loader_interceptor =
         content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
-            kBaseDataDir, kEmptyUrl.GetOrigin());
+            kBaseDataDir, kEmptyUrl.DeprecatedGetOriginAsURL());
     EXPECT_TRUE(NavigateToURL(web_contents(), kEmptyUrl));
   }
 
@@ -1028,7 +1028,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
   {
     auto url_loader_interceptor =
         content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
-            kBaseDataDir, kEmptyUrl.GetOrigin());
+            kBaseDataDir, kEmptyUrl.DeprecatedGetOriginAsURL());
     EXPECT_TRUE(NavigateToURL(web_contents(), kEmptyUrl));
   }
 

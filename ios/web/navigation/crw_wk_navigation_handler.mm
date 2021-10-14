@@ -914,7 +914,8 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     if (!IsWKInternalUrl(currentWKItemURL) && currentWKItemURL == webViewURL &&
         currentWKItemURL != context->GetUrl() &&
         item == self.navigationManagerImpl->GetLastCommittedItem() &&
-        item->GetURL().GetOrigin() == currentWKItemURL.GetOrigin()) {
+        item->GetURL().DeprecatedGetOriginAsURL() ==
+            currentWKItemURL.DeprecatedGetOriginAsURL()) {
       // WKWebView sometimes changes URL on the same navigation, likely due to
       // location.replace() or history.replaceState in onload handler that does
       // not change the origin. It's safe to update |item| and |context| URL

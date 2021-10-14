@@ -510,7 +510,7 @@ bool NewTabPageBindings::HasOrigin(const GURL& origin) {
   if (!frame)
     return false;
   GURL url(frame->GetDocument().Url());
-  return url.GetOrigin() == origin.GetOrigin();
+  return url.DeprecatedGetOriginAsURL() == origin.DeprecatedGetOriginAsURL();
 }
 
 // static

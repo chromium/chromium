@@ -330,7 +330,7 @@ void PopulateInfoMapWithBookmarks(
                  std::back_inserter(result_bookmarks),
                  [service](const UrlAndTitle& entry) {
                    return service->IsEngagementAtLeast(
-                       entry.url.GetOrigin(),
+                       entry.url.DeprecatedGetOriginAsURL(),
                        blink::mojom::EngagementLevel::LOW);
                  });
     // TODO(dmurph): Simplify this (and probably much more) once
@@ -339,8 +339,8 @@ void PopulateInfoMapWithBookmarks(
     std::sort(
         result_bookmarks.begin(), result_bookmarks.end(),
         [&engagement_map](const UrlAndTitle& a, const UrlAndTitle& b) {
-          auto a_it = engagement_map.find(a.url.GetOrigin());
-          auto b_it = engagement_map.find(b.url.GetOrigin());
+          auto a_it = engagement_map.find(a.url.DeprecatedGetOriginAsURL());
+          auto b_it = engagement_map.find(b.url.DeprecatedGetOriginAsURL());
           double a_score = a_it == engagement_map.end() ? 0 : a_it->second;
           double b_score = b_it == engagement_map.end() ? 0 : b_it->second;
           return a_score > b_score;
@@ -385,7 +385,7 @@ void PopulateInfoMapWithInstalledEngagedInTimePeriod(
       DCHECK(scope.is_valid());
       auto app_name = registrar.GetAppShortName(app_id);
       installed_origins_map.emplace(
-          std::make_pair(scope.GetOrigin().spec(), app_name));
+          std::make_pair(scope.DeprecatedGetOriginAsURL().spec(), app_name));
     }
   }
 

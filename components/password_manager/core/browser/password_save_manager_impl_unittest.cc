@@ -649,7 +649,8 @@ TEST_P(PasswordSaveManagerImplTest, SaveNewCredentials) {
 
   password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form);
 
-  std::string expected_signon_realm = submitted_form.url.GetOrigin().spec();
+  std::string expected_signon_realm =
+      submitted_form.url.DeprecatedGetOriginAsURL().spec();
   EXPECT_EQ(submitted_form.url, saved_form.url);
   EXPECT_EQ(expected_signon_realm, saved_form.signon_realm);
   EXPECT_EQ(new_username, saved_form.username_value);

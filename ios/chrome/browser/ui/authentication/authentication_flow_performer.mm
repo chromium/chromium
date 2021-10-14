@@ -323,8 +323,9 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
   WebStateList* webStateList = browser->GetWebStateList();
   web::WebState* activeWebState = webStateList->GetActiveWebState();
   bool activeWebStateHasGaiaOrigin =
-      activeWebState && (activeWebState->GetVisibleURL().GetOrigin() ==
-                         GaiaUrls::GetInstance()->gaia_url());
+      activeWebState &&
+      (activeWebState->GetVisibleURL().DeprecatedGetOriginAsURL() ==
+       GaiaUrls::GetInstance()->gaia_url());
   int64_t dispatchDelaySecs = activeWebStateHasGaiaOrigin ? 1 : 0;
   __weak __typeof(_delegate) weakDelegate = _delegate;
   [handler removeBrowsingDataForBrowserState:browserState

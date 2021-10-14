@@ -195,7 +195,8 @@ void ChromeKeyboardWebContents::SetKeyboardUrl(const GURL& new_url) {
   if (old_url == new_url)
     return;
 
-  if (old_url.GetOrigin() != new_url.GetOrigin()) {
+  if (old_url.DeprecatedGetOriginAsURL() !=
+      new_url.DeprecatedGetOriginAsURL()) {
     // Sets keyboard window rectangle to 0 and closes the current page before
     // navigating to a keyboard in a different extension. This keeps the UX the
     // same as Android. Note we need to explicitly close the current page as it

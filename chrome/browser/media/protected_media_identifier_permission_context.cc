@@ -118,7 +118,7 @@ void ProtectedMediaIdentifierPermissionContext::UpdateTabContext(
           id.render_process_id(), id.render_frame_id());
   if (content_settings) {
     content_settings->OnProtectedMediaIdentifierPermissionSet(
-        requesting_frame.GetOrigin(), allowed);
+        requesting_frame.DeprecatedGetOriginAsURL(), allowed);
   }
 }
 

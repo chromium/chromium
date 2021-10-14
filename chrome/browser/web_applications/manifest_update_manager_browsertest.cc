@@ -2131,7 +2131,7 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   const GURL url = GetAppURL();
-  const GURL origin = url.GetOrigin();
+  const GURL origin = url.DeprecatedGetOriginAsURL();
   if (UsesPermissions()) {
     EXPECT_EQ(CONTENT_SETTING_ASK,
               map->GetContentSetting(origin, origin,

@@ -1945,9 +1945,9 @@ void NetworkContext::LookupServerBasicAuthCredentials(
       url_request_context_->http_transaction_factory()
           ->GetSession()
           ->http_auth_cache();
-  net::HttpAuthCache::Entry* entry =
-      http_auth_cache->LookupByPath(url.GetOrigin(), net::HttpAuth::AUTH_SERVER,
-                                    network_isolation_key, url.path());
+  net::HttpAuthCache::Entry* entry = http_auth_cache->LookupByPath(
+      url.DeprecatedGetOriginAsURL(), net::HttpAuth::AUTH_SERVER,
+      network_isolation_key, url.path());
   if (entry && entry->scheme() == net::HttpAuth::AUTH_SCHEME_BASIC)
     std::move(callback).Run(entry->credentials());
   else

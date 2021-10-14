@@ -159,7 +159,8 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
 
     // Ensure the launch path is a valid relative URL.
     GURL resolved = extension->url().Resolve(launch_path);
-    if (!resolved.is_valid() || resolved.GetOrigin() != extension->url()) {
+    if (!resolved.is_valid() ||
+        resolved.DeprecatedGetOriginAsURL() != extension->url()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidLaunchValue,
           keys::kLaunchLocalPath);

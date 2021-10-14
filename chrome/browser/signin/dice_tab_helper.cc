@@ -109,7 +109,7 @@ bool DiceTabHelper::IsSigninPageNavigation(
     content::NavigationHandle* navigation_handle) const {
   return !navigation_handle->IsErrorPage() &&
          navigation_handle->GetRedirectChain()[0] == signin_url_ &&
-         navigation_handle->GetURL().GetOrigin() ==
+         navigation_handle->GetURL().DeprecatedGetOriginAsURL() ==
              GaiaUrls::GetInstance()->gaia_url();
 }
 

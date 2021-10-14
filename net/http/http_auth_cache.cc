@@ -42,7 +42,7 @@ bool IsEnclosingPath(const std::string& container, const std::string& path) {
 void CheckOriginIsValid(const GURL& origin) {
   DCHECK(origin.is_valid());
   DCHECK(origin.SchemeIsHTTPOrHTTPS() || origin.SchemeIsWSOrWSS());
-  DCHECK(origin.GetOrigin() == origin);
+  DCHECK(origin.DeprecatedGetOriginAsURL() == origin);
 }
 
 // Debug helper to check that |path| arguments are properly formed.

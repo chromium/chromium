@@ -415,7 +415,8 @@ NewTabPageUI::~NewTabPageUI() = default;
 
 // static
 bool NewTabPageUI::IsNewTabPageOrigin(const GURL& url) {
-  return url.GetOrigin() == GURL(chrome::kChromeUINewTabPageURL).GetOrigin();
+  return url.DeprecatedGetOriginAsURL() ==
+         GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL();
 }
 
 // static

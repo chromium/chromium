@@ -637,8 +637,8 @@ void ExtensionTabUtil::ScrubTabForExtension(
       tab->fav_icon_url.reset();
       break;
     case kScrubTabUrlToOrigin:
-      tab->url =
-          std::make_unique<std::string>(GURL(*tab->url).GetOrigin().spec());
+      tab->url = std::make_unique<std::string>(
+          GURL(*tab->url).DeprecatedGetOriginAsURL().spec());
       break;
     case kDontScrubTab:
       break;
@@ -652,7 +652,7 @@ void ExtensionTabUtil::ScrubTabForExtension(
         break;
       case kScrubTabUrlToOrigin:
         tab->pending_url = std::make_unique<std::string>(
-            GURL(*tab->pending_url).GetOrigin().spec());
+            GURL(*tab->pending_url).DeprecatedGetOriginAsURL().spec());
         break;
       case kDontScrubTab:
         break;

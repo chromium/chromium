@@ -2304,11 +2304,13 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest,
   SiteInfo foo_site_info = SiteInfo::CreateForTesting(
       web_contents()->GetSiteInstance()->GetIsolationContext(), foo_url);
   EXPECT_EQ(app_url, foo_site_info.site_url());
-  EXPECT_EQ(foo_url.GetOrigin(), foo_site_info.process_lock_url());
+  EXPECT_EQ(foo_url.DeprecatedGetOriginAsURL(),
+            foo_site_info.process_lock_url());
   SiteInfo bar_site_info = SiteInfo::CreateForTesting(
       web_contents()->GetSiteInstance()->GetIsolationContext(), bar_url);
   EXPECT_EQ(app_url, bar_site_info.site_url());
-  EXPECT_EQ(bar_url.GetOrigin(), bar_site_info.process_lock_url());
+  EXPECT_EQ(bar_url.DeprecatedGetOriginAsURL(),
+            bar_site_info.process_lock_url());
   EXPECT_EQ(foo_site_info.site_url(), bar_site_info.site_url());
 
   // Navigate to foo_url and then to bar_url.  Verify that we end up with

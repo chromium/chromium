@@ -116,8 +116,9 @@ void UpdatePageSpecificContentSettings(
   GURL embedding_origin;
   if (permissions::PermissionsClient::Get()->DoOriginsMatchNewTabPage(
           request.security_origin,
-          web_contents->GetLastCommittedURL().GetOrigin())) {
-    embedding_origin = web_contents->GetLastCommittedURL().GetOrigin();
+          web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL())) {
+    embedding_origin =
+        web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   } else {
     embedding_origin =
         permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents);

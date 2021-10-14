@@ -369,7 +369,8 @@ void V4GetHashProtocolManager::GetFullHashesWithApis(
   DCHECK(url.SchemeIs(url::kHttpScheme) || url.SchemeIs(url::kHttpsScheme));
 
   std::vector<FullHash> full_hashes;
-  V4ProtocolManagerUtil::UrlToFullHashes(url.GetOrigin(), &full_hashes);
+  V4ProtocolManagerUtil::UrlToFullHashes(url.DeprecatedGetOriginAsURL(),
+                                         &full_hashes);
 
   FullHashToStoreAndHashPrefixesMap full_hash_to_store_and_hash_prefixes;
   for (const FullHash& full_hash : full_hashes) {

@@ -227,8 +227,8 @@
     return;
   }
 
-  if (self.webStateImpl->GetVisibleURL().GetOrigin() !=
-          requestURL.GetOrigin() &&
+  if (self.webStateImpl->GetVisibleURL().DeprecatedGetOriginAsURL() !=
+          requestURL.DeprecatedGetOriginAsURL() &&
       frame.mainFrame) {
     // Dialog was requested by web page's main frame, but visible URL has
     // different origin. This could happen if the user has started a new

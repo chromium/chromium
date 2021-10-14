@@ -100,7 +100,8 @@ class CameraPanTiltZoomPermissionContextTests
     HostContentSettingsMap* content_settings =
         permissions::PermissionsClient::Get()->GetSettingsMap(
             browser_context());
-    return content_settings->GetContentSetting(url.GetOrigin(), url.GetOrigin(),
+    return content_settings->GetContentSetting(url.DeprecatedGetOriginAsURL(),
+                                               url.DeprecatedGetOriginAsURL(),
                                                content_settings_type);
   }
 

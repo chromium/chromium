@@ -81,8 +81,9 @@ base::Value NetLogHttpStreamJobParams(const NetLogSource& source,
   base::Value dict(base::Value::Type::DICTIONARY);
   if (source.IsValid())
     source.AddToEventParameters(&dict);
-  dict.SetStringKey("original_url", original_url.GetOrigin().spec());
-  dict.SetStringKey("url", url.GetOrigin().spec());
+  dict.SetStringKey("original_url",
+                    original_url.DeprecatedGetOriginAsURL().spec());
+  dict.SetStringKey("url", url.DeprecatedGetOriginAsURL().spec());
   dict.SetBoolKey("expect_spdy", expect_spdy);
   dict.SetBoolKey("using_quic", using_quic);
   dict.SetStringKey("priority", RequestPriorityToString(priority));

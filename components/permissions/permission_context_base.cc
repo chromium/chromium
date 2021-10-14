@@ -122,7 +122,7 @@ void PermissionContextBase::RequestPermission(
     BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  GURL requesting_origin = requesting_frame.GetOrigin();
+  GURL requesting_origin = requesting_frame.DeprecatedGetOriginAsURL();
   GURL embedding_origin =
       PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
 
@@ -506,8 +506,8 @@ void PermissionContextBase::UpdateContentSetting(const GURL& requesting_origin,
                                                  const GURL& embedding_origin,
                                                  ContentSetting content_setting,
                                                  bool is_one_time) {
-  DCHECK_EQ(requesting_origin, requesting_origin.GetOrigin());
-  DCHECK_EQ(embedding_origin, embedding_origin.GetOrigin());
+  DCHECK_EQ(requesting_origin, requesting_origin.DeprecatedGetOriginAsURL());
+  DCHECK_EQ(embedding_origin, embedding_origin.DeprecatedGetOriginAsURL());
   DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
          content_setting == CONTENT_SETTING_BLOCK);
 

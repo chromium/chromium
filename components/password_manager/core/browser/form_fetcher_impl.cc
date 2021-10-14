@@ -131,7 +131,8 @@ void FormFetcherImpl::Fetch() {
       profile_password_store->GetSmartBubbleStatsStore();
   // `stats_store` can be null in tests.
   if (stats_store)
-    stats_store->GetSiteStats(form_digest_.url.GetOrigin(), this);
+    stats_store->GetSiteStats(form_digest_.url.DeprecatedGetOriginAsURL(),
+                              this);
 #endif
 }
 

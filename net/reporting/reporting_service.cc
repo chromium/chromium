@@ -124,7 +124,8 @@ class ReportingServiceImpl : public ReportingService {
     if (!header_value)
       return;
 
-    DVLOG(1) << "Received Reporting policy for " << url.GetOrigin();
+    DVLOG(1) << "Received Reporting policy for "
+             << url.DeprecatedGetOriginAsURL();
     DoOrBacklogTask(base::BindOnce(
         &ReportingServiceImpl::DoProcessReportToHeader, base::Unretained(this),
         FixupNetworkIsolationKey(network_isolation_key), url,

@@ -114,7 +114,7 @@ DesktopMediaList::WebContentsFilter GetIncludableWebContentsFilter(
             DCHECK(web_contents);
             return url::IsSameOriginWith(
                 request_origin,
-                web_contents->GetLastCommittedURL().GetOrigin());
+                web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL());
           },
           request_origin);
     default:

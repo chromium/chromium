@@ -678,7 +678,7 @@ TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationInitiatorSet) {
   // Verify that the initiator is set, and set expectedly.
   EXPECT_TRUE(delegate.last_navigation_params()->initiator_origin.has_value());
   EXPECT_EQ(delegate.last_navigation_params()->initiator_origin->GetURL(),
-            params.page_url.GetOrigin());
+            params.page_url.DeprecatedGetOriginAsURL());
 }
 
 // Verify that "Show all passwords" is displayed on a password field.

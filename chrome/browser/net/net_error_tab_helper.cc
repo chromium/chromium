@@ -269,7 +269,7 @@ void NetErrorTabHelper::RunNetworkDiagnostics(const GURL& url) {
     return;
 
   // Sanitize URL prior to running diagnostics on it.
-  RunNetworkDiagnosticsHelper(url.GetOrigin().spec());
+  RunNetworkDiagnosticsHelper(url.DeprecatedGetOriginAsURL().spec());
 }
 
 void NetErrorTabHelper::RunNetworkDiagnosticsHelper(

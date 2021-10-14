@@ -54,7 +54,7 @@ class NativeIOManagerBrowserTest : public ContentBrowserTest {
   base::FilePath GetNativeIODir(base::FilePath user_data_dir,
                                 const GURL& test_url) {
     std::string origin_identifier =
-        storage::GetIdentifierFromOrigin(test_url.GetOrigin());
+        storage::GetIdentifierFromOrigin(test_url.DeprecatedGetOriginAsURL());
     base::FilePath root_dir =
         NativeIOManager::GetNativeIORootPath(user_data_dir);
     return root_dir.AppendASCII(origin_identifier);

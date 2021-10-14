@@ -726,8 +726,9 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
   content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
 
   ASSERT_TRUE(main_rfh);
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
-            embedder_contents->GetLastCommittedURL().GetOrigin());
+  EXPECT_EQ(
+      GURL(chrome::kChromeUINewTabURL),
+      embedder_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabPageURL),
             main_rfh->GetLastCommittedOrigin().GetURL());
 
@@ -784,8 +785,9 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
   content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
 
   ASSERT_TRUE(main_rfh);
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
-            embedder_contents->GetLastCommittedURL().GetOrigin());
+  EXPECT_EQ(
+      GURL(chrome::kChromeUINewTabURL),
+      embedder_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabPageURL),
             main_rfh->GetLastCommittedOrigin().GetURL());
 

@@ -52,9 +52,11 @@ std::string GenerateAppIdUnhashed(
     const GURL& start_url) {
   // When manifest_id is specified, the app id is generated from
   // <start_url_origin>/<manifest_id>.
-  // Note: start_url.GetOrigin().spec() returns the origin ending with slash.
+  // Note: start_url.DeprecatedGetOriginAsURL().spec() returns the origin ending
+  // with slash.
   if (manifest_id.has_value()) {
-    GURL app_id(start_url.GetOrigin().spec() + manifest_id.value());
+    GURL app_id(start_url.DeprecatedGetOriginAsURL().spec() +
+                manifest_id.value());
     DCHECK(app_id.is_valid());
     return app_id.spec();
   }
@@ -87,7 +89,7 @@ std::string GenerateRecommendedId(const GURL& start_url) {
   }
 
   std::string full_url = start_url.spec();
-  std::string origin = start_url.GetOrigin().spec();
+  std::string origin = start_url.DeprecatedGetOriginAsURL().spec();
   DCHECK(!full_url.empty() && !origin.empty() &&
          origin.size() <= full_url.size());
   // Make recommended id starts with a leading slash so it's clear to developers

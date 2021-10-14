@@ -87,7 +87,8 @@ TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalled) {
                                                kMaxNumberOfCharactersToStore);
       EXPECT_CALL(
           reuse_manager_,
-          CheckReuse(expected_input, gurls[test].GetOrigin().spec(), &manager));
+          CheckReuse(expected_input,
+                     gurls[test].DeprecatedGetOriginAsURL().spec(), &manager));
       manager.OnKeyPressedCommitted(input[test].substr(i, 1));
       testing::Mock::VerifyAndClearExpectations(&reuse_manager_);
     }
@@ -197,7 +198,8 @@ TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalledOnPaste) {
                                              kMaxNumberOfCharactersToStore);
     EXPECT_CALL(
         reuse_manager_,
-        CheckReuse(expected_input, gurls[test].GetOrigin().spec(), &manager));
+        CheckReuse(expected_input,
+                   gurls[test].DeprecatedGetOriginAsURL().spec(), &manager));
     manager.OnPaste(input[test]);
     testing::Mock::VerifyAndClearExpectations(&reuse_manager_);
   }
@@ -213,8 +215,9 @@ TEST_F(PasswordReuseDetectionManagerTest,
   PasswordReuseDetectionManager manager(&client_);
 
   manager.DidNavigateMainFrame(kURL);
-  EXPECT_CALL(reuse_manager_,
-              CheckReuse(kInput, kURL.GetOrigin().spec(), &manager))
+  EXPECT_CALL(
+      reuse_manager_,
+      CheckReuse(kInput, kURL.DeprecatedGetOriginAsURL().spec(), &manager))
       .Times(2);
   // The user paste the text twice before the store gets to respond.
   manager.OnPaste(kInput);
@@ -249,16 +252,17 @@ TEST_F(PasswordReuseDetectionManagerTest,
   std::u16string committed_text = u"committed_text";
 
   EXPECT_CALL(reuse_manager_,
-              CheckReuse(init_text, test_url.GetOrigin().spec(), &manager));
+              CheckReuse(init_text, test_url.DeprecatedGetOriginAsURL().spec(),
+                         &manager));
   manager.OnKeyPressedCommitted(init_text);
   EXPECT_CALL(reuse_manager_,
               CheckReuse(init_text + uncommitted_text,
-                         test_url.GetOrigin().spec(), &manager));
+                         test_url.DeprecatedGetOriginAsURL().spec(), &manager));
   manager.OnKeyPressedUncommitted(uncommitted_text);
   // Uncommitted text should not be stored.
   EXPECT_CALL(reuse_manager_,
               CheckReuse(init_text + committed_text,
-                         test_url.GetOrigin().spec(), &manager));
+                         test_url.DeprecatedGetOriginAsURL().spec(), &manager));
   manager.OnKeyPressedCommitted(committed_text);
 }
 #endif

@@ -287,7 +287,7 @@ GURL MaybeStripToOrigin(GURL url, bool should_strip_to_origin) {
   if (!should_strip_to_origin)
     return url;
 
-  return url.GetOrigin();
+  return url.DeprecatedGetOriginAsURL();
 }
 
 }  // namespace

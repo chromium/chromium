@@ -100,7 +100,8 @@ void AppCacheUpdateJob::URLFetcher::OnResponseStarted(int net_error) {
              request_->GetResponseInfo().ssl_info.cert_status) &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kIgnoreCertificateErrors)) ||
-        (url_.GetOrigin() != job_->manifest_url_.GetOrigin() &&
+        (url_.DeprecatedGetOriginAsURL() !=
+             job_->manifest_url_.DeprecatedGetOriginAsURL() &&
          request_->GetResponseHeaders()->HasHeaderValue("cache-control",
                                                         "no-store"))) {
       DCHECK_EQ(-1, redirect_response_code_);

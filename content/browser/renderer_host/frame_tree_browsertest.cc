@@ -239,10 +239,10 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, OriginSetOnNavigation) {
   // Extra '/' is added because the replicated origin is serialized in RFC 6454
   // format, which dictates no trailing '/', whereas GURL::GetOrigin does put a
   // '/' at the end.
-  EXPECT_EQ(main_url.GetOrigin().spec(),
+  EXPECT_EQ(main_url.DeprecatedGetOriginAsURL().spec(),
             root->current_origin().Serialize() + '/');
   EXPECT_EQ(
-      main_url.GetOrigin().spec(),
+      main_url.DeprecatedGetOriginAsURL().spec(),
       root->current_frame_host()->GetLastCommittedOrigin().Serialize() + '/');
 
   // The iframe is inititially same-origin.
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, OriginSetOnNavigation) {
   GURL frame_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
   EXPECT_EQ(frame_url, root->child_at(0)->current_url());
-  EXPECT_EQ(frame_url.GetOrigin().spec(),
+  EXPECT_EQ(frame_url.DeprecatedGetOriginAsURL().spec(),
             root->child_at(0)->current_origin().Serialize() + '/');
   EXPECT_FALSE(
       root->current_frame_host()->GetLastCommittedOrigin().IsSameOriginWith(
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, OriginSetOnNavigation) {
   // origin.
   NavigateIframeToURL(contents, "1-1-id", about_blank);
   EXPECT_EQ(about_blank, root->child_at(0)->current_url());
-  EXPECT_EQ(main_url.GetOrigin().spec(),
+  EXPECT_EQ(main_url.DeprecatedGetOriginAsURL().spec(),
             root->child_at(0)->current_origin().Serialize() + '/');
   EXPECT_EQ(root->current_frame_host()->GetLastCommittedOrigin().Serialize(),
             root->child_at(0)
@@ -295,10 +295,10 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, OriginSetOnNavigation) {
 
   // Re-navigating to a normal URL should update the origin.
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  EXPECT_EQ(main_url.GetOrigin().spec(),
+  EXPECT_EQ(main_url.DeprecatedGetOriginAsURL().spec(),
             root->current_origin().Serialize() + '/');
   EXPECT_EQ(
-      main_url.GetOrigin().spec(),
+      main_url.DeprecatedGetOriginAsURL().spec(),
       contents->GetMainFrame()->GetLastCommittedOrigin().Serialize() + '/');
   EXPECT_FALSE(contents->GetMainFrame()->GetLastCommittedOrigin().opaque());
   EXPECT_EQ(root->current_origin().Serialize(), GetOriginFromRenderer(root));
@@ -541,9 +541,13 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, ChildFrameWithSrcdoc) {
 
     EXPECT_TRUE(root->child_at(1)->current_url().IsAboutSrcdoc());
     EvalJsResult js_result = EvalJs(root->child_at(1), "self.origin");
-    EXPECT_EQ(root->current_frame_host()->GetLastCommittedURL().GetOrigin(),
+    EXPECT_EQ(root->current_frame_host()
+                  ->GetLastCommittedURL()
+                  .DeprecatedGetOriginAsURL(),
               GURL(js_result.ExtractString()));
-    EXPECT_NE(child->current_frame_host()->GetLastCommittedURL().GetOrigin(),
+    EXPECT_NE(child->current_frame_host()
+                  ->GetLastCommittedURL()
+                  .DeprecatedGetOriginAsURL(),
               GURL(js_result.ExtractString()));
   }
 
@@ -654,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, SandboxFlagsSetForChildFrames) {
   // "allow-same-origin" directive.
   EXPECT_EQ("null", root->child_at(0)->current_origin().Serialize());
   EXPECT_EQ("null", root->child_at(1)->current_origin().Serialize());
-  EXPECT_EQ(main_url.GetOrigin().spec(),
+  EXPECT_EQ(main_url.DeprecatedGetOriginAsURL().spec(),
             root->child_at(2)->current_origin().Serialize() + "/");
 
   // Navigating to a different URL should not clear sandbox flags.
@@ -1498,17 +1502,17 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
                             ->root();
 
   EXPECT_EQ(root->current_origin().Serialize() + '/',
-            main_url.GetOrigin().spec());
+            main_url.DeprecatedGetOriginAsURL().spec());
 
   // First frame is an about:blank frame.  Check that its origin is correctly
   // inherited from the parent.
   EXPECT_EQ(root->child_at(0)->current_origin().Serialize() + '/',
-            main_url.GetOrigin().spec());
+            main_url.DeprecatedGetOriginAsURL().spec());
 
   // Second frame loads a same-site page.  Its origin should also be the same
   // as the parent.
   EXPECT_EQ(root->child_at(1)->current_origin().Serialize() + '/',
-            main_url.GetOrigin().spec());
+            main_url.DeprecatedGetOriginAsURL().spec());
 
   // Load cross-site page into the first frame.
   GURL cross_site_url(
@@ -1516,11 +1520,11 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), cross_site_url));
 
   EXPECT_EQ(root->child_at(0)->current_origin().Serialize() + '/',
-            cross_site_url.GetOrigin().spec());
+            cross_site_url.DeprecatedGetOriginAsURL().spec());
 
   // The root's origin shouldn't have changed.
   EXPECT_EQ(root->current_origin().Serialize() + '/',
-            main_url.GetOrigin().spec());
+            main_url.DeprecatedGetOriginAsURL().spec());
 
   {
     GURL data_url("data:text/html,foo");

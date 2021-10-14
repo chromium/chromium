@@ -20,7 +20,7 @@ bool IsRequestingOriginAllowed(
     const GURL& app_web_url,
     const std::vector<std::string>& additional_feature_permission_origins) {
   // |app_web_url| is allowed by default.
-  if (requesting_origin == app_web_url.GetOrigin()) {
+  if (requesting_origin == app_web_url.DeprecatedGetOriginAsURL()) {
     return true;
   }
   chromecast::ActivityUrlFilter activity_url_filter(
@@ -36,7 +36,7 @@ blink::mojom::PermissionStatus GetPermissionStatusFromCastPermissionUserData(
   GURL app_web_url = cast_permission_user_data->GetAppWebUrl();
   // We expect to grant content::PermissionType::PROTECTED_MEDIA_IDENTIFIER
   // to origins same as |app_web_url| by default.
-  if (requesting_origin != app_web_url.GetOrigin() ||
+  if (requesting_origin != app_web_url.DeprecatedGetOriginAsURL() ||
       permission != content::PermissionType::PROTECTED_MEDIA_IDENTIFIER) {
     chromecast::metrics::CastMetricsHelper::GetInstance()
         ->RecordApplicationEventWithValue(

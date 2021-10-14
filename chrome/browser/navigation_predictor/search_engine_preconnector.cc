@@ -131,7 +131,7 @@ GURL SearchEnginePreconnector::GetDefaultSearchEngineOriginURL() const {
   const auto* search_provider = template_service->GetDefaultSearchProvider();
   if (!search_provider || !search_provider->data().preconnect_to_search_url)
     return GURL();
-  return search_provider->GenerateSearchURL({}).GetOrigin();
+  return search_provider->GenerateSearchURL({}).DeprecatedGetOriginAsURL();
 }
 
 bool SearchEnginePreconnector::IsBrowserAppLikelyInForeground() const {

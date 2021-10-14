@@ -135,9 +135,10 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   // main frame URL.
   GURL referrer_url = navigation_handle->GetReferrer().url;
   if (navigation_handle->IsInMainFrame() && !referrer_url.is_empty() &&
-      referrer_url == referrer_url.GetOrigin() &&
-      referrer_url.GetOrigin() ==
-          navigation_handle->GetPreviousMainFrameURL().GetOrigin()) {
+      referrer_url == referrer_url.DeprecatedGetOriginAsURL() &&
+      referrer_url.DeprecatedGetOriginAsURL() ==
+          navigation_handle->GetPreviousMainFrameURL()
+              .DeprecatedGetOriginAsURL()) {
     referrer_url = navigation_handle->GetPreviousMainFrameURL();
   }
 

@@ -2127,7 +2127,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ProcessTransferAfterError) {
   // The FrameTreeNode should have updated its URL and origin.
   EXPECT_EQ(url_b, child->current_frame_host()->last_successful_url());
   EXPECT_EQ(url_b, child->current_url());
-  EXPECT_EQ(url_b.GetOrigin().spec(),
+  EXPECT_EQ(url_b.DeprecatedGetOriginAsURL().spec(),
             child->current_origin().Serialize() + '/');
 
   // Ensure that we have created a new process for the subframe.
@@ -2161,7 +2161,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ProcessTransferAfterError) {
             child->current_frame_host()->GetSiteInstance());
   EXPECT_EQ(url_a, child->current_frame_host()->last_successful_url());
   EXPECT_EQ(url_a, child->current_url());
-  EXPECT_EQ(url_a.GetOrigin().spec(),
+  EXPECT_EQ(url_a.DeprecatedGetOriginAsURL().spec(),
             child->current_origin().Serialize() + '/');
 }
 
@@ -3078,7 +3078,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
         child->current_frame_host()->GetLastCommittedOrigin();
 
     EXPECT_EQ(testCase.should_block, child_origin.opaque());
-    EXPECT_EQ(url::Origin::Create(testCase.url.GetOrigin())
+    EXPECT_EQ(url::Origin::Create(testCase.url.DeprecatedGetOriginAsURL())
                   .GetTupleOrPrecursorTupleIfOpaque(),
               child_origin.GetTupleOrPrecursorTupleIfOpaque());
   }
@@ -3697,7 +3697,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, OriginUpdatesReachProxies) {
   console_observer.Wait();
 
   std::string frame_origin = root->child_at(1)->current_origin().Serialize();
-  EXPECT_EQ(frame_origin + "/", frame_url.GetOrigin().spec());
+  EXPECT_EQ(frame_origin + "/", frame_url.DeprecatedGetOriginAsURL().spec());
   EXPECT_TRUE(base::MatchPattern(console_observer.GetMessageAt(0u),
                                  "*" + frame_origin + "*"))
       << "Error message does not contain the frame's latest origin ("
@@ -6106,7 +6106,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     const url::Origin child_origin =
         root->child_at(0)->current_frame_host()->GetLastCommittedOrigin();
     EXPECT_TRUE(child_origin.opaque());
-    EXPECT_EQ(url::Origin::Create(blocked_url.GetOrigin())
+    EXPECT_EQ(url::Origin::Create(blocked_url.DeprecatedGetOriginAsURL())
                   .GetTupleOrPrecursorTupleIfOpaque(),
               child_origin.GetTupleOrPrecursorTupleIfOpaque());
 
@@ -6140,7 +6140,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     // the blocked page is seen as cross-origin. However, those flags shouldn't
     // affect future navigations for a frame. Verify this for the above
     // navigation.
-    EXPECT_EQ(c_url.GetOrigin().spec(),
+    EXPECT_EQ(c_url.DeprecatedGetOriginAsURL().spec(),
               root->child_at(0)->current_origin().Serialize() + "/");
     EXPECT_EQ(network::mojom::WebSandboxFlags::kNone,
               root->child_at(0)->effective_frame_policy().sandbox_flags);
@@ -7867,7 +7867,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   EXPECT_EQ(CreateParsedPermissionsPolicy(
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation},
-                {url.GetOrigin()}),
+                {url.DeprecatedGetOriginAsURL()}),
             root->current_replication_state().permissions_policy_header);
 }
 
@@ -7885,7 +7885,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(CreateParsedPermissionsPolicy(
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation,
                  blink::mojom::PermissionsPolicyFeature::kPayment},
-                {start_url.GetOrigin()}),
+                {start_url.DeprecatedGetOriginAsURL()}),
             root->current_replication_state().permissions_policy_header);
 
   // When the main frame navigates to a page with a new policy, it should
@@ -7917,7 +7917,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(CreateParsedPermissionsPolicy(
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation,
                  blink::mojom::PermissionsPolicyFeature::kPayment},
-                {start_url.GetOrigin()}),
+                {start_url.DeprecatedGetOriginAsURL()}),
             root->current_replication_state().permissions_policy_header);
 
   // When the main frame navigates to a page with a new policy, it should
@@ -7948,17 +7948,18 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
-  EXPECT_EQ(CreateParsedPermissionsPolicy(
-                {blink::mojom::PermissionsPolicyFeature::kGeolocation,
-                 blink::mojom::PermissionsPolicyFeature::kPayment},
-                {main_url.GetOrigin(), GURL("http://example.com/")}),
-            root->current_replication_state().permissions_policy_header);
+  EXPECT_EQ(
+      CreateParsedPermissionsPolicy(
+          {blink::mojom::PermissionsPolicyFeature::kGeolocation,
+           blink::mojom::PermissionsPolicyFeature::kPayment},
+          {main_url.DeprecatedGetOriginAsURL(), GURL("http://example.com/")}),
+      root->current_replication_state().permissions_policy_header);
   EXPECT_EQ(1UL, root->child_count());
   EXPECT_EQ(
       CreateParsedPermissionsPolicy(
           {blink::mojom::PermissionsPolicyFeature::kGeolocation,
            blink::mojom::PermissionsPolicyFeature::kPayment},
-          {main_url.GetOrigin()}),
+          {main_url.DeprecatedGetOriginAsURL()}),
       root->child_at(0)->current_replication_state().permissions_policy_header);
 
   // Navigate the iframe cross-site.

@@ -179,7 +179,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   DCHECK(defaultTitle);
   NSURL* nsURL = net::NSURLWithGURL(indexedURL);
   std::string description = indexedURL.SchemeIsCryptographic()
-                                ? indexedURL.GetOrigin().spec()
+                                ? indexedURL.DeprecatedGetOriginAsURL().spec()
                                 : indexedURL.spec();
 
   CSSearchableItemAttributeSet* attributeSet =

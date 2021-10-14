@@ -426,8 +426,9 @@ TEST_F(WebEngineIntegrationTest, PermissionGranted) {
 TEST_F(WebEngineIntegrationMediaTest, MicrophoneAccess_WithPermission) {
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
-  GrantPermission(fuchsia::web::PermissionType::MICROPHONE,
-                  embedded_test_server_.GetURL("/").GetOrigin().spec());
+  GrantPermission(
+      fuchsia::web::PermissionType::MICROPHONE,
+      embedded_test_server_.GetURL("/").DeprecatedGetOriginAsURL().spec());
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
       embedded_test_server_.GetURL("/mic.html").spec()));
@@ -550,8 +551,9 @@ void WebEngineIntegrationCameraTest::RunCameraTest(bool grant_permission) {
   CreateContextAndFrame(std::move(create_params));
 
   if (grant_permission) {
-    GrantPermission(fuchsia::web::PermissionType::CAMERA,
-                    embedded_test_server_.GetURL("/").GetOrigin().spec());
+    GrantPermission(
+        fuchsia::web::PermissionType::CAMERA,
+        embedded_test_server_.GetURL("/").DeprecatedGetOriginAsURL().spec());
   }
 
   const char* url =

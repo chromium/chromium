@@ -3966,7 +3966,7 @@ void RenderFrameImpl::DidReceiveTitle(const blink::WebString& title) {
       if (frame_->Parent()) {
         frame_title += "Subframe: ";
       }
-      frame_title += loading_url.GetOrigin().spec();
+      frame_title += loading_url.DeprecatedGetOriginAsURL().spec();
       base::trace_event::TraceLog::GetInstance()->UpdateProcessLabel(
           routing_id_, frame_title);
     }

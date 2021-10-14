@@ -673,7 +673,7 @@ class ErrorPageAutoReloadTest : public InProcessBrowserTest {
                 return false;
               if (params->url_request.url.path() == "/favicon.ico")
                 return false;
-              if (params->url_request.url.GetOrigin() ==
+              if (params->url_request.url.DeprecatedGetOriginAsURL() ==
                   GaiaUrls::GetInstance()->gaia_url())
                 return false;
               (*requests)++;

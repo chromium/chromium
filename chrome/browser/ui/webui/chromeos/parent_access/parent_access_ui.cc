@@ -121,7 +121,8 @@ void ParentAccessUI::SetUpResources() {
   source->UseStringsJs();
   source->SetDefaultResource(IDR_PARENT_ACCESS_HTML);
   source->AddString("webviewUrl", web_content_url_.spec());
-  source->AddString("eventOriginFilter", web_content_url_.GetOrigin().spec());
+  source->AddString("eventOriginFilter",
+                    web_content_url_.DeprecatedGetOriginAsURL().spec());
 
   content::WebUIDataSource::Add(profile, source.release());
 }

@@ -107,7 +107,7 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
   if (!isMainFrame) {
     web::WebFrame* frame =
         web::GetWebFrameWithId(webState, SysNSStringToUTF8(formQuery.frameID));
-    if (!frame || webState->GetLastCommittedURL().GetOrigin() !=
+    if (!frame || webState->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
                       frame->GetSecurityOrigin()) {
       // Passwords is only supported on main frame and iframes with the same
       // origin.

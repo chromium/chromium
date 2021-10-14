@@ -494,12 +494,14 @@ void ExpectValidSiteExceptionObject(const base::Value& actual_site_object,
   const base::Value* display_name_value =
       actual_site_object.FindKeyOfType(kDisplayName, base::Value::Type::STRING);
   ASSERT_TRUE(display_name_value);
-  EXPECT_EQ(display_name_value->GetString(), origin.GetOrigin().spec());
+  EXPECT_EQ(display_name_value->GetString(),
+            origin.DeprecatedGetOriginAsURL().spec());
 
   const base::Value* origin_value =
       actual_site_object.FindKeyOfType(kOrigin, base::Value::Type::STRING);
   ASSERT_TRUE(origin_value);
-  EXPECT_EQ(origin_value->GetString(), origin.GetOrigin().spec());
+  EXPECT_EQ(origin_value->GetString(),
+            origin.DeprecatedGetOriginAsURL().spec());
 
   const base::Value* setting_value =
       actual_site_object.FindKeyOfType(kSetting, base::Value::Type::STRING);
@@ -537,9 +539,11 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
   // Add a user permission for a requesting origin of |kGoogleUrl| and an
   // embedding origin of chromium.org.
   const GURL kGoogleUrl("https://google.com");
-  exception_details[std::make_pair(kGoogleUrl.GetOrigin(), kPreferenceSource)]
-      .insert(std::make_pair(GURL("https://chromium.org").GetOrigin(),
-                             /*incognito=*/false));
+  exception_details[std::make_pair(kGoogleUrl.DeprecatedGetOriginAsURL(),
+                                   kPreferenceSource)]
+      .insert(std::make_pair(
+          GURL("https://chromium.org").DeprecatedGetOriginAsURL(),
+          /*incognito=*/false));
 
   {
     auto exception = CreateChooserExceptionObject(
@@ -561,8 +565,10 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
   // Add a user permissions for a requesting and embedding origin pair of
   // |kAndroidUrl| granted in an off the record profile.
   const GURL kAndroidUrl("https://android.com");
-  exception_details[std::make_pair(kAndroidUrl.GetOrigin(), kPreferenceSource)]
-      .insert(std::make_pair(kAndroidUrl.GetOrigin(), /*incognito=*/true));
+  exception_details[std::make_pair(kAndroidUrl.DeprecatedGetOriginAsURL(),
+                                   kPreferenceSource)]
+      .insert(std::make_pair(kAndroidUrl.DeprecatedGetOriginAsURL(),
+                             /*incognito=*/true));
 
   {
     auto exception = CreateChooserExceptionObject(
@@ -590,7 +596,8 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
 
   // Add a policy permission for a requesting origin of |kGoogleUrl| with a
   // wildcard embedding origin.
-  exception_details[std::make_pair(kGoogleUrl.GetOrigin(), kPolicySource)]
+  exception_details[std::make_pair(kGoogleUrl.DeprecatedGetOriginAsURL(),
+                                   kPolicySource)]
       .insert(std::make_pair(GURL::EmptyGURL(), /*incognito=*/false));
   {
     auto exception = CreateChooserExceptionObject(

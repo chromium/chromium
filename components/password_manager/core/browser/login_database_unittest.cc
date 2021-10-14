@@ -2028,7 +2028,7 @@ PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
   form.username_value = unique_string16;
   form.password_element = unique_string16;
   form.password_value = unique_string16;
-  form.signon_realm = origin.GetOrigin().spec();
+  form.signon_realm = origin.DeprecatedGetOriginAsURL().spec();
 
   {
     LoginDatabase db(database_path(), IsAccountStore(false));

@@ -796,7 +796,7 @@ void BackgroundSyncManager::RegisterCheckIfHasMainFrame(
   }
 
   HasMainFrameWindowClient(
-      url::Origin::Create(sw_registration->scope().GetOrigin()),
+      url::Origin::Create(sw_registration->scope().DeprecatedGetOriginAsURL()),
       base::BindOnce(&BackgroundSyncManager::RegisterDidCheckIfMainFrame,
                      weak_ptr_factory_.GetWeakPtr(), sw_registration_id,
                      std::move(options), std::move(callback)));
@@ -858,7 +858,8 @@ void BackgroundSyncManager::RegisterImpl(
 
   SyncAndNotificationPermissions permission = GetBackgroundSyncPermission(
       service_worker_context_,
-      url::Origin::Create(sw_registration->scope().GetOrigin()), sync_type);
+      url::Origin::Create(sw_registration->scope().DeprecatedGetOriginAsURL()),
+      sync_type);
   RegisterDidAskForPermission(sw_registration_id, std::move(options),
                               std::move(callback), permission);
 }
@@ -893,7 +894,7 @@ void BackgroundSyncManager::RegisterDidAskForPermission(
           sw_registration_id, options.tag, GetBackgroundSyncType(options)));
 
   url::Origin origin =
-      url::Origin::Create(sw_registration->scope().GetOrigin());
+      url::Origin::Create(sw_registration->scope().DeprecatedGetOriginAsURL());
 
   if (GetBackgroundSyncType(options) ==
       blink::mojom::BackgroundSyncType::ONE_SHOT) {
@@ -1003,7 +1004,8 @@ void BackgroundSyncManager::RegisterDidGetDelay(
 
   AddOrUpdateActiveRegistration(
       sw_registration_id,
-      url::Origin::Create(sw_registration->scope().GetOrigin()), registration);
+      url::Origin::Create(sw_registration->scope().DeprecatedGetOriginAsURL()),
+      registration);
 
   StoreRegistrations(
       sw_registration_id,
@@ -2010,7 +2012,8 @@ void BackgroundSyncManager::FireReadyEventsDidFindRegistration(
       registration->num_attempts() == registration->max_attempts() - 1;
 
   HasMainFrameWindowClient(
-      url::Origin::Create(service_worker_registration->scope().GetOrigin()),
+      url::Origin::Create(
+          service_worker_registration->scope().DeprecatedGetOriginAsURL()),
       base::BindOnce(&BackgroundSyncMetrics::RecordEventStarted, sync_type));
 
   if (sync_type == BackgroundSyncType::ONE_SHOT) {
@@ -2067,8 +2070,8 @@ void BackgroundSyncManager::EventComplete(
 
   // The event ran to completion, we should count it, no matter what happens
   // from here.
-  url::Origin origin =
-      url::Origin::Create(service_worker_registration->scope().GetOrigin());
+  url::Origin origin = url::Origin::Create(
+      service_worker_registration->scope().DeprecatedGetOriginAsURL());
   HasMainFrameWindowClient(
       origin,
       base::BindOnce(&BackgroundSyncMetrics::RecordEventResult,

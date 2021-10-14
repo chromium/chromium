@@ -91,7 +91,8 @@ TEST_F(MidiSysexPermissionContextTests, TestInsecureRequestingUrl) {
   ContentSetting setting =
       PermissionsClient::Get()
           ->GetSettingsMap(browser_context())
-          ->GetContentSetting(url.GetOrigin(), url.GetOrigin(),
+          ->GetContentSetting(url.DeprecatedGetOriginAsURL(),
+                              url.DeprecatedGetOriginAsURL(),
                               ContentSettingsType::MIDI_SYSEX);
   EXPECT_EQ(CONTENT_SETTING_ASK, setting);
 }
@@ -106,21 +107,21 @@ TEST_F(MidiSysexPermissionContextTests, TestInsecureQueryingUrl) {
   EXPECT_EQ(CONTENT_SETTING_ASK,
             PermissionsClient::Get()
                 ->GetSettingsMap(browser_context())
-                ->GetContentSetting(insecure_url.GetOrigin(),
-                                    insecure_url.GetOrigin(),
+                ->GetContentSetting(insecure_url.DeprecatedGetOriginAsURL(),
+                                    insecure_url.DeprecatedGetOriginAsURL(),
                                     ContentSettingsType::MIDI_SYSEX));
-  EXPECT_EQ(
-      CONTENT_SETTING_ASK,
-      PermissionsClient::Get()
-          ->GetSettingsMap(browser_context())
-          ->GetContentSetting(secure_url.GetOrigin(), insecure_url.GetOrigin(),
-                              ContentSettingsType::MIDI_SYSEX));
-  EXPECT_EQ(
-      CONTENT_SETTING_ASK,
-      PermissionsClient::Get()
-          ->GetSettingsMap(browser_context())
-          ->GetContentSetting(insecure_url.GetOrigin(), secure_url.GetOrigin(),
-                              ContentSettingsType::MIDI_SYSEX));
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            PermissionsClient::Get()
+                ->GetSettingsMap(browser_context())
+                ->GetContentSetting(secure_url.DeprecatedGetOriginAsURL(),
+                                    insecure_url.DeprecatedGetOriginAsURL(),
+                                    ContentSettingsType::MIDI_SYSEX));
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            PermissionsClient::Get()
+                ->GetSettingsMap(browser_context())
+                ->GetContentSetting(insecure_url.DeprecatedGetOriginAsURL(),
+                                    secure_url.DeprecatedGetOriginAsURL(),
+                                    ContentSettingsType::MIDI_SYSEX));
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             permission_context

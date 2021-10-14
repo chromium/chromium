@@ -40,7 +40,7 @@ class MediaStreamDevicesControllerBrowserTest
 
     ASSERT_TRUE(embedded_test_server()->Start());
     request_url_ = embedded_test_server()->GetURL("/simple.html");
-    request_pattern_ = request_url_.GetOrigin().spec();
+    request_pattern_ = request_url_.DeprecatedGetOriginAsURL().spec();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), request_url_));
 
     // Testing both the new (PermissionManager) and old code-paths is not simple
@@ -68,7 +68,8 @@ class MediaStreamDevicesControllerBrowserTest
     int render_process_id = web_contents->GetMainFrame()->GetProcess()->GetID();
     int render_frame_id = web_contents->GetMainFrame()->GetRoutingID();
     return content::MediaStreamRequest(
-        render_process_id, render_frame_id, 0, request_url_.GetOrigin(), false,
+        render_process_id, render_frame_id, 0,
+        request_url_.DeprecatedGetOriginAsURL(), false,
         blink::MEDIA_DEVICE_ACCESS, std::string(), std::string(),
         audio_request_type, video_request_type, /*disable_local_echo=*/false,
         /*request_pan_tilt_zoom_permission=*/false);

@@ -87,7 +87,8 @@ void PasswordManagerMetricsRecorder::RecordProvisionalSaveFailure(
       case SAVING_ON_HTTP_AFTER_HTTPS:
         logger->LogSuccessiveOrigins(
             Logger::STRING_BLOCK_PASSWORD_SAME_ORIGIN_INSECURE_SCHEME,
-            main_frame_url.GetOrigin(), form_origin.GetOrigin());
+            main_frame_url.DeprecatedGetOriginAsURL(),
+            form_origin.DeprecatedGetOriginAsURL());
         break;
       case MAX_FAILURE_VALUE:
         NOTREACHED();

@@ -97,7 +97,7 @@ static bool ShouldDisplayWebNotificationOnFullScreen(Profile* profile,
     //      notification.
     //  (b) the browser is fullscreen
     //  (c) the browser has focus.
-    if (active_contents->GetURL().GetOrigin() == origin &&
+    if (active_contents->GetURL().DeprecatedGetOriginAsURL() == origin &&
         browser->exclusive_access_manager()->context()->IsFullscreen() &&
         browser->window()->IsActive()) {
       return true;

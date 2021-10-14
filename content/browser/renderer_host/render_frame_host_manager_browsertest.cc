@@ -232,7 +232,7 @@ bool IsOriginOpaqueAndCompatibleWithURL(FrameTreeNode* node, const GURL& url) {
     return false;
   }
 
-  const GURL url_origin = url.GetOrigin();
+  const GURL url_origin = url.DeprecatedGetOriginAsURL();
   const GURL precursor_origin =
       frame_origin.GetTupleOrPrecursorTupleIfOpaque().GetURL();
   if (url_origin != precursor_origin) {
@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // Check that the referrer is set correctly.
   std::string expected_referrer =
-      embedded_test_server()->GetURL("/").GetOrigin().spec();
+      embedded_test_server()->GetURL("/").DeprecatedGetOriginAsURL().spec();
   success = false;
   EXPECT_TRUE(ExecuteScriptAndExtractBool(
       new_shell,

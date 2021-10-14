@@ -40,7 +40,7 @@ std::pair<std::string, std::string> GetOriginSearchBounds(const GURL& origin) {
   // '/'. This effectively applies the GLOB optimization by doing it in C++
   // instead of relying on SQLite to do it.
   static_assert('/' + 1 == '0', "");
-  const std::string origin_query_min = origin.GetOrigin().spec();
+  const std::string origin_query_min = origin.DeprecatedGetOriginAsURL().spec();
   DCHECK(!origin_query_min.empty());
   DCHECK_EQ('/', origin_query_min.back());
 
@@ -58,7 +58,7 @@ GetSearchBoundsForAllOriginsWithNonDefaultPort(const GURL& origin) {
   // with a port. The query becomes: 'url >= http://google.com:' and 'url <
   // http://google.com;'.
   static_assert(':' + 1 == ';', "");
-  const std::string spec = origin.GetOrigin().spec();
+  const std::string spec = origin.DeprecatedGetOriginAsURL().spec();
   DCHECK(!spec.empty());
   DCHECK_EQ('/', spec.back());
   DCHECK(!origin.has_port());
@@ -567,7 +567,7 @@ bool VisitDatabase::GetVisibleVisitCountToHost(const GURL& url,
   // The query becomes:
   // 'url >= http://google.com/' and url < http://google.com0'.
   // 0 is used as it is one character greater than '/'.
-  const std::string host_query_min = url.GetOrigin().spec();
+  const std::string host_query_min = url.DeprecatedGetOriginAsURL().spec();
   if (host_query_min.empty())
     return false;
 

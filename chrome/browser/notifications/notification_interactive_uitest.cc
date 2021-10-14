@@ -283,10 +283,10 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestPermissionAPI) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   EXPECT_EQ("default", QueryPermissionStatus(browser()));
 
-  AllowOrigin(GetTestPageURL().GetOrigin());
+  AllowOrigin(GetTestPageURL().DeprecatedGetOriginAsURL());
   EXPECT_EQ("granted", QueryPermissionStatus(browser()));
 
-  DenyOrigin(GetTestPageURL().GetOrigin());
+  DenyOrigin(GetTestPageURL().DeprecatedGetOriginAsURL());
   EXPECT_EQ("denied", QueryPermissionStatus(browser()));
 }
 
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestDenyDomainAndAllowAll) {
 
   // Verify that denying a domain and allowing all shouldn't show
   // notifications from the denied domain.
-  DenyOrigin(GetTestPageURL().GetOrigin());
+  DenyOrigin(GetTestPageURL().DeprecatedGetOriginAsURL());
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestAllowDomainAndDenyAll) {
 
   // Verify that allowing a domain and denying all others should show
   // notifications from the allowed domain.
-  AllowOrigin(GetTestPageURL().GetOrigin());
+  AllowOrigin(GetTestPageURL().DeprecatedGetOriginAsURL());
   SetDefaultContentSetting(CONTENT_SETTING_BLOCK);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestDenyAndThenAllowDomain) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Verify that denying and again allowing should show notifications.
-  DenyOrigin(GetTestPageURL().GetOrigin());
+  DenyOrigin(GetTestPageURL().DeprecatedGetOriginAsURL());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestDenyAndThenAllowDomain) {
 
   ASSERT_EQ(0, GetNotificationCount());
 
-  AllowOrigin(GetTestPageURL().GetOrigin());
+  AllowOrigin(GetTestPageURL().DeprecatedGetOriginAsURL());
   result = CreateSimpleNotification(browser(), true);
   EXPECT_NE("-1", result);
 
@@ -432,10 +432,11 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCreateDenyCloseNotifications) {
   CreateSimpleNotification(browser(), true);
   ASSERT_EQ(1, GetNotificationCount());
 
-  DenyOrigin(GetTestPageURL().GetOrigin());
+  DenyOrigin(GetTestPageURL().DeprecatedGetOriginAsURL());
   ContentSettingsForOneType settings;
   GetDisabledContentSettings(&settings);
-  ASSERT_TRUE(CheckOriginInSetting(settings, GetTestPageURL().GetOrigin()));
+  ASSERT_TRUE(CheckOriginInSetting(
+      settings, GetTestPageURL().DeprecatedGetOriginAsURL()));
 
   EXPECT_EQ(1, GetNotificationCount());
   message_center::NotificationList::Notifications notifications =

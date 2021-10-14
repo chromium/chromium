@@ -22,7 +22,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateNativeCredential(
       password_manager_util::GetMatchType(password_form) ==
               password_manager_util::GetLoginMatchType::kExact
           ? std::string()
-          : password_form.url.GetOrigin().spec();
+          : password_form.url.DeprecatedGetOriginAsURL().spec();
   std::string federation =
       password_form.federation_origin.opaque()
           ? std::string()

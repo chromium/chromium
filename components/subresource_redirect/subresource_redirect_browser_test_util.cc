@@ -91,7 +91,8 @@ RobotsRulesTestServer::OnServerRequest(
       break;
   }
 
-  auto it = robots_rules_proto_.find(robots_url.GetOrigin().spec());
+  auto it =
+      robots_rules_proto_.find(robots_url.DeprecatedGetOriginAsURL().spec());
   if (it != robots_rules_proto_.end())
     response->set_content(it->second);
   return std::move(response);
@@ -103,7 +104,8 @@ void RobotsRulesTestServer::OnRequestMonitor(
   EXPECT_EQ("/robots", request.GetURL().path());
   EXPECT_TRUE(
       net::GetValueForKeyInQuery(request.GetURL(), "u", &robots_url_str));
-  std::string robots_origin = GURL(robots_url_str).GetOrigin().spec();
+  std::string robots_origin =
+      GURL(robots_url_str).DeprecatedGetOriginAsURL().spec();
   EXPECT_TRUE(received_requests_.find(robots_origin) ==
               received_requests_.end());
   received_requests_.insert(robots_origin);

@@ -2797,7 +2797,8 @@ TEST_F(ExtensionServiceTest, InstallAppsWithUnlimitedStorage) {
       APIPermissionID::kUnlimitedStorage));
   EXPECT_TRUE(extension->web_extent().MatchesURL(
       AppLaunchInfo::GetFullLaunchURL(extension)));
-  const GURL origin1(AppLaunchInfo::GetFullLaunchURL(extension).GetOrigin());
+  const GURL origin1(
+      AppLaunchInfo::GetFullLaunchURL(extension).DeprecatedGetOriginAsURL());
   EXPECT_TRUE(profile()->GetExtensionSpecialStoragePolicy()->IsStorageUnlimited(
       origin1));
 
@@ -2810,7 +2811,8 @@ TEST_F(ExtensionServiceTest, InstallAppsWithUnlimitedStorage) {
       APIPermissionID::kUnlimitedStorage));
   EXPECT_TRUE(extension->web_extent().MatchesURL(
       AppLaunchInfo::GetFullLaunchURL(extension)));
-  const GURL origin2(AppLaunchInfo::GetFullLaunchURL(extension).GetOrigin());
+  const GURL origin2(
+      AppLaunchInfo::GetFullLaunchURL(extension).DeprecatedGetOriginAsURL());
   EXPECT_EQ(origin1, origin2);
   EXPECT_TRUE(profile()->GetExtensionSpecialStoragePolicy()->IsStorageUnlimited(
       origin2));
@@ -2842,7 +2844,8 @@ TEST_F(ExtensionServiceTest, InstallAppsAndCheckStorageProtection) {
   ASSERT_EQ(1u, registry()->enabled_extensions().size());
   EXPECT_TRUE(extension->is_app());
   const std::string id1 = extension->id();
-  const GURL origin1(AppLaunchInfo::GetFullLaunchURL(extension).GetOrigin());
+  const GURL origin1(
+      AppLaunchInfo::GetFullLaunchURL(extension).DeprecatedGetOriginAsURL());
   EXPECT_TRUE(profile()->GetExtensionSpecialStoragePolicy()->IsStorageProtected(
       origin1));
 
@@ -2851,7 +2854,8 @@ TEST_F(ExtensionServiceTest, InstallAppsAndCheckStorageProtection) {
   ValidatePrefKeyCount(++pref_count);
   ASSERT_EQ(2u, registry()->enabled_extensions().size());
   const std::string id2 = extension->id();
-  const GURL origin2(AppLaunchInfo::GetFullLaunchURL(extension).GetOrigin());
+  const GURL origin2(
+      AppLaunchInfo::GetFullLaunchURL(extension).DeprecatedGetOriginAsURL());
   ASSERT_NE(origin1, origin2);
   EXPECT_TRUE(profile()->GetExtensionSpecialStoragePolicy()->IsStorageProtected(
       origin2));
@@ -5274,7 +5278,8 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
   const std::string id1 = extension->id();
   EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
       APIPermissionID::kUnlimitedStorage));
-  const GURL origin1(AppLaunchInfo::GetFullLaunchURL(extension).GetOrigin());
+  const GURL origin1(
+      AppLaunchInfo::GetFullLaunchURL(extension).DeprecatedGetOriginAsURL());
   EXPECT_TRUE(profile()->GetExtensionSpecialStoragePolicy()->IsStorageUnlimited(
       origin1));
   std::string origin_id = storage::GetIdentifierFromOrigin(origin1);
@@ -5288,7 +5293,8 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
       APIPermissionID::kUnlimitedStorage));
   EXPECT_TRUE(extension->web_extent().MatchesURL(
       AppLaunchInfo::GetFullLaunchURL(extension)));
-  const GURL origin2(AppLaunchInfo::GetFullLaunchURL(extension).GetOrigin());
+  const GURL origin2(
+      AppLaunchInfo::GetFullLaunchURL(extension).DeprecatedGetOriginAsURL());
   EXPECT_EQ(origin1, origin2);
   EXPECT_TRUE(profile()->GetExtensionSpecialStoragePolicy()->IsStorageUnlimited(
       origin2));

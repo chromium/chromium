@@ -118,8 +118,9 @@ GURL RedirectUrlIfSwa(Profile* profile,
 
   // Projector:
   if (app_id == chromeos::kChromeUITrustedProjectorSwaAppId &&
-      url.GetOrigin() ==
-          GURL(chromeos::kChromeUIUntrustedProjectorPwaUrl).GetOrigin()) {
+      url.DeprecatedGetOriginAsURL() ==
+          GURL(chromeos::kChromeUIUntrustedProjectorPwaUrl)
+              .DeprecatedGetOriginAsURL()) {
     std::string override_url = chromeos::kChromeUITrustedProjectorAppUrl;
     if (url.path().length() > 1)
       override_url += url.path().substr(1);

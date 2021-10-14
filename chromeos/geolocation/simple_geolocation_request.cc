@@ -165,10 +165,9 @@ void PrintGeolocationError(const GURL& server_url,
                            const std::string& message,
                            Geoposition* position) {
   position->status = Geoposition::STATUS_SERVER_ERROR;
-  position->error_message =
-      base::StringPrintf("SimpleGeolocation provider at '%s' : %s.",
-                         server_url.GetOrigin().spec().c_str(),
-                         message.c_str());
+  position->error_message = base::StringPrintf(
+      "SimpleGeolocation provider at '%s' : %s.",
+      server_url.DeprecatedGetOriginAsURL().spec().c_str(), message.c_str());
   VLOG(1) << "SimpleGeolocationRequest::GetGeolocationFromResponse() : "
           << position->error_message;
 }

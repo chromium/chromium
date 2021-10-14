@@ -133,7 +133,7 @@ std::u16string CredentialEditBridge::GetDisplayURLOrAppName() {
   }
 
   return url_formatter::FormatUrl(
-      credential_.url.GetOrigin(),
+      credential_.url.DeprecatedGetOriginAsURL(),
       url_formatter::kFormatUrlOmitDefaults |
           url_formatter::kFormatUrlOmitHTTPS |
           url_formatter::kFormatUrlOmitTrivialSubdomains |

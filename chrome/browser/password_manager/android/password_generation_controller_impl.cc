@@ -226,7 +226,7 @@ void PasswordGenerationControllerImpl::ShowDialog(PasswordGenerationType type) {
 
   std::u16string password =
       active_frame_driver_->GetPasswordGenerationHelper()->GeneratePassword(
-          web_contents_->GetLastCommittedURL().GetOrigin(),
+          web_contents_->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
           generation_element_data_->form_signature,
           generation_element_data_->field_signature,
           generation_element_data_->max_password_length);

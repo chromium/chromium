@@ -185,7 +185,7 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
     if (!util::AllowFileAccess(extension->id(), browser_context)) {
       valid_schemes &= ~URLPattern::SCHEME_FILE;
     }
-    new_hosts.AddOrigin(valid_schemes, url.GetOrigin());
+    new_hosts.AddOrigin(valid_schemes, url.DeprecatedGetOriginAsURL());
     new_apis.insert(mojom::APIPermissionID::kTab);
 
     if (permissions_data->HasAPIPermission(
@@ -250,8 +250,9 @@ void ActiveTabPermissionGranter::DidFinishNavigation(
   content::NavigationEntry* navigation_entry =
       web_contents()->GetController().GetVisibleEntry();
   if (navigation_entry &&
-      navigation_entry->GetURL().GetOrigin() ==
-          navigation_handle->GetPreviousMainFrameURL().GetOrigin()) {
+      navigation_entry->GetURL().DeprecatedGetOriginAsURL() ==
+          navigation_handle->GetPreviousMainFrameURL()
+              .DeprecatedGetOriginAsURL()) {
     return;
   }
 

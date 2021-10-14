@@ -96,7 +96,7 @@ int BackgroundSyncDelegateImpl::GetSiteEngagementPenalty(const GURL& url) {
       site_engagement_service_->GetEngagementLevel(url);
   if (engagement_level == blink::mojom::EngagementLevel::NONE) {
     suspended_periodic_sync_origins_.insert(
-        url::Origin::Create(url.GetOrigin()));
+        url::Origin::Create(url.DeprecatedGetOriginAsURL()));
   }
 
   switch (engagement_level) {

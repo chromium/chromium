@@ -75,7 +75,7 @@ ReferrerChainEntry::URLType GetURLTypeAndAdjustAttributionResult(
 }
 
 std::string GetOrigin(const std::string& url) {
-  return GURL(url).GetOrigin().spec();
+  return GURL(url).DeprecatedGetOriginAsURL().spec();
 }
 
 }  // namespace

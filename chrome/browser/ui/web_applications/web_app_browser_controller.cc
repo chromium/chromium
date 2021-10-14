@@ -270,7 +270,7 @@ bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
   // https://w3c.github.io/manifest/#navigation-scope
   // If url is same origin as scope and url path starts with scope path, return
   // true. Otherwise, return false.
-  if (app_scope.GetOrigin() != url.GetOrigin()) {
+  if (app_scope.DeprecatedGetOriginAsURL() != url.DeprecatedGetOriginAsURL()) {
     // We allow an upgrade from http |app_scope| to https |url|.
     if (app_scope.scheme() != url::kHttpScheme)
       return false;
@@ -278,7 +278,8 @@ bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
     GURL::Replacements rep;
     rep.SetSchemeStr(url::kHttpsScheme);
     GURL secure_app_scope = app_scope.ReplaceComponents(rep);
-    if (secure_app_scope.GetOrigin() != url.GetOrigin())
+    if (secure_app_scope.DeprecatedGetOriginAsURL() !=
+        url.DeprecatedGetOriginAsURL())
       return false;
   }
 
@@ -407,7 +408,7 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
   if (!apk_web_app_service || !apk_web_app_service->IsWebOnlyTwa(app_id()))
     return;
 
-  const std::string origin = GetAppStartUrl().GetOrigin().spec();
+  const std::string origin = GetAppStartUrl().DeprecatedGetOriginAsURL().spec();
   const absl::optional<std::string> package_name =
       apk_web_app_service->GetPackageNameForWebApp(app_id());
   const absl::optional<std::string> fingerprint =

@@ -194,7 +194,8 @@ bool URLPatternSet::AddOrigin(int valid_schemes, const GURL& origin) {
   if (origin.is_empty())
     return false;
   const url::Origin real_origin = url::Origin::Create(origin);
-  DCHECK(real_origin.IsSameOriginWith(url::Origin::Create(origin.GetOrigin())));
+  DCHECK(real_origin.IsSameOriginWith(
+      url::Origin::Create(origin.DeprecatedGetOriginAsURL())));
   URLPattern origin_pattern(valid_schemes);
   // Origin adding could fail if |origin| does not match |valid_schemes|.
   if (origin_pattern.Parse(origin.spec()) !=

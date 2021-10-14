@@ -35,17 +35,19 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
     // GetLastCommittedOrigin. In that case GetLastCommittedURL should be used
     // for requesting and verifying permissions.
     // Disabling `kRevisedOriginHandling` feature introduces no side effects,
-    // because in both cases we rely on GetLastCommittedURL().GetOrigin().
+    // because in both cases we rely on
+    // GetLastCommittedURL().DeprecatedGetOriginAsURL().
     if (web_contents->GetOrCreateWebPreferences()
             .allow_universal_access_from_file_urls &&
         render_frame_host->GetLastCommittedOrigin().GetURL().SchemeIsFile()) {
-      return render_frame_host->GetLastCommittedURL().GetOrigin();
+      return render_frame_host->GetLastCommittedURL()
+          .DeprecatedGetOriginAsURL();
     }
 
     return render_frame_host->GetLastCommittedOrigin().GetURL();
   }
 
-  return render_frame_host->GetLastCommittedURL().GetOrigin();
+  return render_frame_host->GetLastCommittedURL().DeprecatedGetOriginAsURL();
 }
 
 }  // namespace content

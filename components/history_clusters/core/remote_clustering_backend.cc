@@ -38,7 +38,8 @@ proto::GetClustersRequest CreateRequestProto(
     proto::AnnotatedVisit* request_visit = request.add_visits();
     request_visit->set_visit_id(visit.visit_row.visit_id);
     request_visit->set_url(visit.url_row.url().spec());
-    request_visit->set_origin(visit.url_row.url().GetOrigin().spec());
+    request_visit->set_origin(
+        visit.url_row.url().DeprecatedGetOriginAsURL().spec());
     request_visit->set_foreground_time_secs(
         visit.visit_row.visit_duration.InSeconds());
     request_visit->set_navigation_time_ms(

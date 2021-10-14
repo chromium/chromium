@@ -296,7 +296,7 @@ void FormatPositionError(const GURL& server_url,
                          mojom::Geoposition* position) {
   position->error_code = mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE;
   position->error_message = "Network location provider at '";
-  position->error_message += server_url.GetOrigin().spec();
+  position->error_message += server_url.DeprecatedGetOriginAsURL().spec();
   position->error_message += "' : ";
   position->error_message += message;
   position->error_message += ".";

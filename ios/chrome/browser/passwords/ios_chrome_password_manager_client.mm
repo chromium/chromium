@@ -234,7 +234,7 @@ bool IOSChromePasswordManagerClient::IsSavingAndFillingEnabled(
 }
 
 bool IOSChromePasswordManagerClient::IsFillingEnabled(const GURL& url) const {
-  return url.GetOrigin() !=
+  return url.DeprecatedGetOriginAsURL() !=
          GURL(password_manager::kPasswordManagerAccountDashboardURL);
 }
 

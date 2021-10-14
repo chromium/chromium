@@ -273,7 +273,7 @@ int main(int argc, char** argv) {
     protected_media_permission.set_type(
         fuchsia::web::PermissionType::PROTECTED_MEDIA_IDENTIFIER);
     frame->SetPermissionState(std::move(protected_media_permission),
-                              url.GetOrigin().spec(),
+                              url.DeprecatedGetOriginAsURL().spec(),
                               fuchsia::web::PermissionState::GRANTED);
   }
 

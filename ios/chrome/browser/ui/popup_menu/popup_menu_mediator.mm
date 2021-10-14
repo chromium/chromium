@@ -1186,7 +1186,8 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 // Returns YES if incognito NTP title and image should be used for back/forward
 // item associated with |URL|.
 - (BOOL)shouldUseIncognitoNTPResourcesForURL:(const GURL&)URL {
-  return URL.GetOrigin() == kChromeUINewTabURL && self.isIncognito &&
+  return URL.DeprecatedGetOriginAsURL() == kChromeUINewTabURL &&
+         self.isIncognito &&
          base::FeatureList::IsEnabled(kUpdateHistoryEntryPointsInIncognito);
 }
 

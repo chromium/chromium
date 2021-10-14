@@ -426,7 +426,8 @@ ParseResult ParseRedirect(dnr_api::Redirect redirect,
     GURL redirect_url = base_url.Resolve(*redirect.extension_path);
 
     // Sanity check that Resolve works as expected.
-    DCHECK_EQ(base_url.GetOrigin(), redirect_url.GetOrigin());
+    DCHECK_EQ(base_url.DeprecatedGetOriginAsURL(),
+              redirect_url.DeprecatedGetOriginAsURL());
 
     if (!redirect_url.is_valid())
       return ParseResult::ERROR_INVALID_EXTENSION_PATH;

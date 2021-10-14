@@ -289,7 +289,7 @@ void PushMessagingAppIdentifier::DCheckValid() const {
   DCHECK_GE(service_worker_registration_id_, 0);
 
   DCHECK(origin_.is_valid());
-  DCHECK_EQ(origin_.GetOrigin(), origin_);
+  DCHECK_EQ(origin_.DeprecatedGetOriginAsURL(), origin_);
 
   // "wp:"
   DCHECK_EQ(kPushMessagingAppIdentifierPrefix,

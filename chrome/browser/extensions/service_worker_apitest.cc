@@ -972,8 +972,8 @@ class ServiceWorkerPushMessagingTest : public ServiceWorkerTest {
   ~ServiceWorkerPushMessagingTest() override {}
 
   void GrantNotificationPermissionForTest(const GURL& url) {
-    NotificationPermissionContext::UpdatePermission(profile(), url.GetOrigin(),
-                                                    CONTENT_SETTING_ALLOW);
+    NotificationPermissionContext::UpdatePermission(
+        profile(), url.DeprecatedGetOriginAsURL(), CONTENT_SETTING_ALLOW);
   }
 
   PushMessagingAppIdentifier GetAppIdentifierForServiceWorkerRegistration(

@@ -35,7 +35,7 @@ namespace {
 // reports. In particular, do not send query or fragments as those can have
 // privacy-sensitive information in them.
 std::string RedactURL(const GURL& url) {
-  std::string redacted_url = url.GetOrigin().spec();
+  std::string redacted_url = url.DeprecatedGetOriginAsURL().spec();
   // Path will start with / and GetOrigin ends with /. Cut one / to avoid
   // chrome://discards//graph.
   if (!redacted_url.empty() && redacted_url.back() == '/') {

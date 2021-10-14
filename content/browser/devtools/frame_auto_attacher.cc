@@ -24,9 +24,10 @@ void GetMatchingHostsByScopeMap(
     ScopeAgentsMap* scope_agents_map) {
   base::flat_set<GURL> host_name_set;
   for (const GURL& url : urls)
-    host_name_set.insert(url.GetOrigin());
+    host_name_set.insert(url.DeprecatedGetOriginAsURL());
   for (const auto& host : agent_hosts) {
-    if (host_name_set.find(host->scope().GetOrigin()) == host_name_set.end())
+    if (host_name_set.find(host->scope().DeprecatedGetOriginAsURL()) ==
+        host_name_set.end())
       continue;
     const auto& it = scope_agents_map->find(host->scope());
     if (it == scope_agents_map->end()) {

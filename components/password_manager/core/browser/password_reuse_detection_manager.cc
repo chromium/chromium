@@ -192,7 +192,8 @@ void PasswordReuseDetectionManager::CheckStoresForReuse(
     const std::u16string& input) {
   PasswordReuseManager* reuse_manager = client_->GetPasswordReuseManager();
   if (reuse_manager) {
-    reuse_manager->CheckReuse(input, main_frame_url_.GetOrigin().spec(), this);
+    reuse_manager->CheckReuse(
+        input, main_frame_url_.DeprecatedGetOriginAsURL().spec(), this);
   }
 }
 

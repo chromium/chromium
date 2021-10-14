@@ -30,10 +30,11 @@ void IdentityDialogController::ShowInitialPermissionDialog(
   // the RP page.
 
   // TODO(majidvp): Use the provider name/url here
-  auto idp_hostname = base::UTF8ToUTF16(idp_url.GetOrigin().host());
+  auto idp_hostname =
+      base::UTF8ToUTF16(idp_url.DeprecatedGetOriginAsURL().host());
 
-  auto rp_hostname =
-      base::UTF8ToUTF16(rp_web_contents->GetVisibleURL().GetOrigin().host());
+  auto rp_hostname = base::UTF8ToUTF16(
+      rp_web_contents->GetVisibleURL().DeprecatedGetOriginAsURL().host());
 
   GetOrCreateView(rp_web_contents)
       .ShowInitialPermission(idp_hostname, rp_hostname, mode,
@@ -68,10 +69,11 @@ void IdentityDialogController::ShowTokenExchangePermissionDialog(
     content::WebContents* rp_web_contents,
     const GURL& idp_url,
     TokenExchangeApprovalCallback callback) {
-  auto idp_hostname = base::UTF8ToUTF16(idp_url.GetOrigin().host());
+  auto idp_hostname =
+      base::UTF8ToUTF16(idp_url.DeprecatedGetOriginAsURL().host());
 
-  auto rp_hostname =
-      base::UTF8ToUTF16(rp_web_contents->GetVisibleURL().GetOrigin().host());
+  auto rp_hostname = base::UTF8ToUTF16(
+      rp_web_contents->GetVisibleURL().DeprecatedGetOriginAsURL().host());
 
   GetOrCreateView(rp_web_contents)
       .ShowTokenExchangePermission(idp_hostname, rp_hostname,

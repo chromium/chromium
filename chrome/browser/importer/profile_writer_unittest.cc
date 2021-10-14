@@ -45,7 +45,7 @@ using password_manager::TestPasswordStore;
 PasswordForm MakePasswordForm() {
   PasswordForm form;
   form.url = GURL("https://example.com/");
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = u"user@gmail.com";
   form.password_value = u"s3cre3t";
   form.in_store = PasswordForm::Store::kProfileStore;

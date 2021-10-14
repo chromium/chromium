@@ -86,7 +86,8 @@ bool ProtocolHandler::IsValid() const {
 
 bool ProtocolHandler::IsSameOrigin(
     const ProtocolHandler& handler) const {
-  return handler.url().GetOrigin() == url_.GetOrigin();
+  return handler.url().DeprecatedGetOriginAsURL() ==
+         url_.DeprecatedGetOriginAsURL();
 }
 
 const ProtocolHandler& ProtocolHandler::EmptyProtocolHandler() {

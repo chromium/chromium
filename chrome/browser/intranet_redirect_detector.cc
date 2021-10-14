@@ -193,7 +193,7 @@ void IntranetRedirectDetector::OnSimpleLoaderComplete(
   // origin to that; otherwise we set it to nothing.
   if (response_body) {
     DCHECK(source->GetFinalURL().is_valid());
-    GURL origin(source->GetFinalURL().GetOrigin());
+    GURL origin(source->GetFinalURL().DeprecatedGetOriginAsURL());
     if (resulting_origins_.empty()) {
       resulting_origins_.push_back(origin);
       return;

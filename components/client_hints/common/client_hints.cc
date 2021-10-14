@@ -20,7 +20,7 @@ void GetAllowedClientHintsFromSource(
   if (!network::IsUrlPotentiallyTrustworthy(url))
     return;
 
-  const GURL& origin = url.GetOrigin();
+  const GURL& origin = url.DeprecatedGetOriginAsURL();
 
   for (const auto& rule : client_hints_rules) {
     // Look for an exact match since persisted client hints are disabled by

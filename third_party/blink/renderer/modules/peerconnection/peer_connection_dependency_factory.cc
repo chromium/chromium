@@ -734,7 +734,7 @@ PeerConnectionDependencyFactory::CreatePortAllocator(
   const GURL& requesting_origin =
       GURL(document_url.GetString().Utf8(), document_url.GetParsed(),
            document_url.IsValid())
-          .GetOrigin();
+          .DeprecatedGetOriginAsURL();
 
   std::unique_ptr<rtc::NetworkManager> network_manager;
   if (port_config.enable_multiple_routes) {

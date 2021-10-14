@@ -777,7 +777,7 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, PostMessageToMainFrame) {
   title_change_observer_.RunUntilTitleEquals(kOriginalTitle);
 
   cast_web_contents_->PostMessageToMainFrame(
-      gurl.GetOrigin().spec(), kPage1Path,
+      gurl.DeprecatedGetOriginAsURL().spec(), kPage1Path,
       std::vector<blink::WebMessagePort>());
   title_change_observer_.RunUntilTitleEquals(kPage1Title);
 }
@@ -825,7 +825,8 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, PostMessagePassMessagePort) {
     std::vector<blink::WebMessagePort> message_ports;
     message_ports.push_back(std::move(page_port));
     cast_web_contents_->PostMessageToMainFrame(
-        gurl.GetOrigin().spec(), kHelloMsg, std::move(message_ports));
+        gurl.DeprecatedGetOriginAsURL().spec(), kHelloMsg,
+        std::move(message_ports));
     run_loop.Run();
   }
   // Test whether we could receive the right response from the page after we
@@ -891,7 +892,8 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest,
     std::vector<blink::WebMessagePort> message_ports;
     message_ports.push_back(std::move(page_port));
     cast_web_contents_->PostMessageToMainFrame(
-        gurl.GetOrigin().spec(), kHelloMsg, std::move(message_ports));
+        gurl.DeprecatedGetOriginAsURL().spec(), kHelloMsg,
+        std::move(message_ports));
     run_loop.Run();
   }
   // Navigating off-page should tear down the MessageChannel, native side

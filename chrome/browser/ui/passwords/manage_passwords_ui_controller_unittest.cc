@@ -210,7 +210,7 @@ password_manager::PasswordForm BuildFormFromLoginAndURL(
   form.username_value = base::ASCIIToUTF16(username);
   form.password_value = base::ASCIIToUTF16(password);
   form.url = GURL(url);
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   return form;
 }
 
@@ -271,7 +271,8 @@ void ManagePasswordsUIControllerTest::SetUp() {
   new TestManagePasswordsUIController(web_contents(), &client_);
 
   test_local_form_.url = GURL("http://example.com/login");
-  test_local_form_.signon_realm = test_local_form_.url.GetOrigin().spec();
+  test_local_form_.signon_realm =
+      test_local_form_.url.DeprecatedGetOriginAsURL().spec();
   test_local_form_.username_value = u"username";
   test_local_form_.username_element = u"username_element";
   test_local_form_.password_value = u"12345";
@@ -281,7 +282,7 @@ void ManagePasswordsUIControllerTest::SetUp() {
 
   test_federated_form_.url = GURL("http://example.com/login");
   test_federated_form_.signon_realm =
-      test_federated_form_.url.GetOrigin().spec();
+      test_federated_form_.url.DeprecatedGetOriginAsURL().spec();
   test_federated_form_.username_value = u"username";
   test_federated_form_.federation_origin =
       url::Origin::Create(GURL("https://federation.test/"));
@@ -431,7 +432,7 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSubmittedBubbleSuppressed) {
   std::vector<const PasswordForm*> best_matches;
   auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
   std::vector<password_manager::InteractionsStats> stats(1);
-  stats[0].origin_domain = submitted_form().url.GetOrigin();
+  stats[0].origin_domain = submitted_form().url.DeprecatedGetOriginAsURL();
   stats[0].username_value = submitted_form().username_value;
   stats[0].dismissal_count = kGreatDissmisalCount;
   EXPECT_CALL(*test_form_manager, GetInteractionsStats)
@@ -449,7 +450,7 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSubmittedBubbleNotSuppressed) {
   std::vector<const PasswordForm*> best_matches;
   auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
   std::vector<password_manager::InteractionsStats> stats(1);
-  stats[0].origin_domain = submitted_form().url.GetOrigin();
+  stats[0].origin_domain = submitted_form().url.DeprecatedGetOriginAsURL();
   stats[0].username_value = u"not my username";
   stats[0].dismissal_count = kGreatDissmisalCount;
   EXPECT_CALL(*test_form_manager, GetInteractionsStats)

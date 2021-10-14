@@ -214,8 +214,9 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
   if (!provider)
     return nullptr;
 
-  DCHECK(url.GetOrigin() ==
-         provider->registrar().GetAppLaunchUrl(params.app_id).GetOrigin());
+  DCHECK(url.DeprecatedGetOriginAsURL() == provider->registrar()
+                                               .GetAppLaunchUrl(params.app_id)
+                                               .DeprecatedGetOriginAsURL());
 
   Browser* browser = nullptr;
   Browser::Type browser_type = Browser::TYPE_APP;

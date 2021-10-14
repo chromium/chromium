@@ -120,7 +120,8 @@ TEST_F(FileManagerFileWatcherTest, AddSameExtensionMultipleTimes) {
   const char kExtensionId[] = "extension-id";
   GURL source_url =
       extensions::Extension::GetBaseURLFromExtensionId(kExtensionId);
-  url::Origin origin_1 = url::Origin::Create(source_url.GetOrigin());
+  url::Origin origin_1 =
+      url::Origin::Create(source_url.DeprecatedGetOriginAsURL());
   url::Origin origin_2 = url::Origin::Create(source_url);
 
   FileWatcher file_watcher(kVirtualPath);

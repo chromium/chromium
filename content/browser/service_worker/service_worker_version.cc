@@ -169,7 +169,7 @@ void DidShowPaymentHandlerWindow(
     int render_frame_id) {
   if (success) {
     service_worker_client_utils::DidNavigate(
-        context, url.GetOrigin(), key,
+        context, url.DeprecatedGetOriginAsURL(), key,
         base::BindOnce(&OnOpenWindowFinished, std::move(callback)),
         GlobalRenderFrameHostId(render_process_id, render_frame_id));
   } else {
@@ -1370,8 +1370,8 @@ void ServiceWorkerVersion::GetClient(const std::string& client_uuid,
   }
   ServiceWorkerContainerHost* container_host =
       context_->GetContainerHostByClientID(client_uuid);
-  if (!container_host ||
-      container_host->url().GetOrigin() != script_url_.GetOrigin()) {
+  if (!container_host || container_host->url().DeprecatedGetOriginAsURL() !=
+                             script_url_.DeprecatedGetOriginAsURL()) {
     // The promise will be resolved to 'undefined'.
     // Note that we don't BadMessage here since Clients#get() can be passed an
     // arbitrary UUID. The BadMessages for the origin mismatches below are
@@ -1460,7 +1460,8 @@ void ServiceWorkerVersion::PostMessageToClient(
     }
   }
 
-  if (container_host->url().GetOrigin() != script_url_.GetOrigin()) {
+  if (container_host->url().DeprecatedGetOriginAsURL() !=
+      script_url_.DeprecatedGetOriginAsURL()) {
     mojo::ReportBadMessage(
         "Received Client#postMessage() request for a cross-origin client.");
     receiver_.reset();
@@ -1510,7 +1511,8 @@ void ServiceWorkerVersion::FocusClient(const std::string& client_uuid,
     std::move(callback).Run(nullptr /* client */);
     return;
   }
-  if (container_host->url().GetOrigin() != script_url_.GetOrigin()) {
+  if (container_host->url().DeprecatedGetOriginAsURL() !=
+      script_url_.DeprecatedGetOriginAsURL()) {
     mojo::ReportBadMessage(
         "Received WindowClient#focus() request for a cross-origin client.");
     receiver_.reset();
@@ -1564,7 +1566,8 @@ void ServiceWorkerVersion::NavigateClient(const std::string& client_uuid,
                             std::string("The client was not found."));
     return;
   }
-  if (container_host->url().GetOrigin() != script_url_.GetOrigin()) {
+  if (container_host->url().DeprecatedGetOriginAsURL() !=
+      script_url_.DeprecatedGetOriginAsURL()) {
     mojo::ReportBadMessage(
         "Received WindowClient#navigate() request for a cross-origin client.");
     receiver_.reset();

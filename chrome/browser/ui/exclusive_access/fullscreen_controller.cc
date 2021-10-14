@@ -150,7 +150,8 @@ void FullscreenController::EnterFullscreenModeForTab(
   }
 
   SetTabWithExclusiveAccess(web_contents);
-  requesting_origin_ = requesting_frame->GetLastCommittedURL().GetOrigin();
+  requesting_origin_ =
+      requesting_frame->GetLastCommittedURL().DeprecatedGetOriginAsURL();
 
   ExclusiveAccessContext* exclusive_access_context =
       exclusive_access_manager()->context();

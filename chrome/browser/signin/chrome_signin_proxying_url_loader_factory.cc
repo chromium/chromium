@@ -284,7 +284,7 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
   }
 
   GURL GetOrigin() const override {
-    return in_progress_request_->response_url_.GetOrigin();
+    return in_progress_request_->response_url_.DeprecatedGetOriginAsURL();
   }
 
   const net::HttpResponseHeaders* GetHeaders() const override {
@@ -321,7 +321,7 @@ ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
     : factory_(factory),
       request_url_(request.url),
       response_url_(request.url),
-      referrer_origin_(request.referrer.GetOrigin()),
+      referrer_origin_(request.referrer.DeprecatedGetOriginAsURL()),
       request_destination_(request.destination),
       is_main_frame_(request.is_main_frame),
       is_fetch_like_api_(request.is_fetch_like_api),
@@ -392,7 +392,8 @@ void ProxyingURLLoaderFactory::InProgressRequest::FollowRedirect(
                                  modified_cors_exempt_headers, opt_new_url);
 
   request_url_ = redirect_info_.new_url;
-  referrer_origin_ = GURL(redirect_info_.new_referrer).GetOrigin();
+  referrer_origin_ =
+      GURL(redirect_info_.new_referrer).DeprecatedGetOriginAsURL();
 }
 
 void ProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(

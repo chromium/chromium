@@ -773,8 +773,8 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
 
   // Sanity check that in this test page the main frame and the
   // subframe are cross-site.
-  EXPECT_NE(main_frame->GetLastCommittedURL().GetOrigin(),
-            child_frame->GetLastCommittedURL().GetOrigin());
+  EXPECT_NE(main_frame->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
+            child_frame->GetLastCommittedURL().DeprecatedGetOriginAsURL());
   if (content::AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
     EXPECT_NE(main_frame->GetProcess()->GetID(),

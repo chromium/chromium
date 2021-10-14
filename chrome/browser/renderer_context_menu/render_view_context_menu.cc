@@ -1080,11 +1080,13 @@ void RenderViewContextMenu::RecordUsedItem(int id) {
     } else if (doc_url == GURL(chrome::kChromeUIDownloadsURL)) {
       base::RecordAction(base::UserMetricsAction(
           "Downloads_OpenUrlOfDownloadedItemFromContextMenu"));
-    } else if (doc_url.GetOrigin() == chrome::kChromeSearchMostVisitedUrl) {
+    } else if (doc_url.DeprecatedGetOriginAsURL() ==
+               chrome::kChromeSearchMostVisitedUrl) {
       base::RecordAction(
           base::UserMetricsAction("MostVisited_ClickedFromContextMenu"));
-    } else if (doc_url.GetOrigin() == GURL(chrome::kChromeUINewTabPageURL) ||
-               doc_url.GetOrigin() ==
+    } else if (doc_url.DeprecatedGetOriginAsURL() ==
+                   GURL(chrome::kChromeUINewTabPageURL) ||
+               doc_url.DeprecatedGetOriginAsURL() ==
                    GURL(chrome::kChromeUIUntrustedNewTabPageUrl)) {
       base::RecordAction(base::UserMetricsAction(
           "NewTabPage.LinkOpenedFromContextMenu.WebUI"));
@@ -2318,7 +2320,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
     case IDC_CONTENT_CONTEXT_RELOADFRAME:
       return params_.frame_url.is_valid() &&
-             params_.frame_url.GetOrigin() != chrome::kChromeUIPrintURL;
+             params_.frame_url.DeprecatedGetOriginAsURL() !=
+                 chrome::kChromeUIPrintURL;
 
     case IDC_CONTENT_CONTEXT_UNDO:
       return !!(params_.edit_flags & ContextMenuDataEditFlags::kCanUndo);

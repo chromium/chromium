@@ -45,7 +45,7 @@ bool IsSamePublicSuffixDomain(const GURL& url1, const GURL& url2) {
     return false;
   }
 
-  if (url1.GetOrigin() == url2.GetOrigin()) {
+  if (url1.DeprecatedGetOriginAsURL() == url2.DeprecatedGetOriginAsURL()) {
     return true;
   }
 

@@ -292,7 +292,7 @@ void SyncFileSystemService::InitializeForApp(
     SyncStatusCallback callback) {
   DCHECK(local_service_);
   DCHECK(remote_service_);
-  DCHECK(app_origin == app_origin.GetOrigin());
+  DCHECK(app_origin == app_origin.DeprecatedGetOriginAsURL());
 
   util::Log(logging::LOG_VERBOSE, FROM_HERE,
             "Initializing for App: %s", app_origin.spec().c_str());

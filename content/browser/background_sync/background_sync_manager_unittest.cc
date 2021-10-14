@@ -928,7 +928,7 @@ TEST_F(BackgroundSyncManagerTest, RegisterBadBackend) {
 }
 
 TEST_F(BackgroundSyncManagerTest, RegisterPermissionDenied) {
-  GURL expected_origin = GURL(kScope1).GetOrigin();
+  GURL expected_origin = GURL(kScope1).DeprecatedGetOriginAsURL();
   MockPermissionManager* mock_permission_manager =
       GetPermissionControllerDelegate();
 
@@ -952,7 +952,7 @@ TEST_F(BackgroundSyncManagerTest, RegisterPermissionDenied) {
 }
 
 TEST_F(BackgroundSyncManagerTest, RegisterPermissionGranted) {
-  GURL expected_origin = GURL(kScope1).GetOrigin();
+  GURL expected_origin = GURL(kScope1).DeprecatedGetOriginAsURL();
   MockPermissionManager* mock_permission_manager =
       GetPermissionControllerDelegate();
 
@@ -1107,7 +1107,7 @@ TEST_F(BackgroundSyncManagerTest, RebootRecoveryPeriodicSync) {
 
   EXPECT_TRUE(GetRegistration(sync_options_1_));
   EXPECT_EQ(GetOriginForPeriodicSyncRegistration(),
-            url::Origin::Create(GURL(kScope1).GetOrigin()));
+            url::Origin::Create(GURL(kScope1).DeprecatedGetOriginAsURL()));
 }
 
 TEST_F(BackgroundSyncManagerTest, RebootRecoveryTwoServiceWorkers) {
@@ -1356,7 +1356,7 @@ TEST_F(BackgroundSyncManagerTest, TestSupensionAndRevival) {
   sync_options_2_.min_interval = thirteen_hours.InMilliseconds();
   sync_options_1_.min_interval = thirteen_hours.InMilliseconds();
 
-  auto origin = url::Origin::Create(GURL(kScope1).GetOrigin());
+  auto origin = url::Origin::Create(GURL(kScope1).DeprecatedGetOriginAsURL());
 
   SuspendPeriodicSyncRegistrations({origin});
   EXPECT_TRUE(Register(sync_options_1_));
@@ -1393,7 +1393,7 @@ TEST_F(BackgroundSyncManagerTest, UnregisterForOrigin) {
   sync_options_2_.min_interval = thirteen_hours.InMilliseconds();
   sync_options_1_.min_interval = thirteen_hours.InMilliseconds();
 
-  auto origin = url::Origin::Create(GURL(kScope1).GetOrigin());
+  auto origin = url::Origin::Create(GURL(kScope1).DeprecatedGetOriginAsURL());
 
   EXPECT_TRUE(Register(sync_options_1_));
   EXPECT_TRUE(GetRegistration(sync_options_1_));

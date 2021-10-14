@@ -4983,7 +4983,7 @@ NavigationRequest::CheckCSPEmbeddedEnforcement() {
   }
 
   std::string sanitized_blocked_url =
-      GetRedirectChain().front().GetOrigin().spec();
+      GetRedirectChain().front().DeprecatedGetOriginAsURL().spec();
   if (allow_csp_from && allow_csp_from->is_error_message()) {
     AddDeferredConsoleMessage(
         blink::mojom::ConsoleMessageLevel::kError,

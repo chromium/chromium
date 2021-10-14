@@ -456,8 +456,8 @@ void ChromePasswordManagerClient::ShowTouchToFill(
 #if defined(OS_ANDROID)
   GetOrCreateTouchToFillController()->Show(
       credential_cache_
-          .GetCredentialStore(
-              url::Origin::Create(driver->GetLastCommittedURL().GetOrigin()))
+          .GetCredentialStore(url::Origin::Create(
+              driver->GetLastCommittedURL().DeprecatedGetOriginAsURL()))
           .GetCredentials(),
       driver->AsWeakPtr());
 #endif
@@ -973,9 +973,10 @@ bool ChromePasswordManagerClient::IsIsolationForPasswordSitesEnabled() const {
 }
 
 bool ChromePasswordManagerClient::IsNewTabPage() const {
-  auto origin = GetLastCommittedURL().GetOrigin();
-  return origin == GURL(chrome::kChromeUINewTabPageURL).GetOrigin() ||
-         origin == GURL(chrome::kChromeUINewTabURL).GetOrigin();
+  auto origin = GetLastCommittedURL().DeprecatedGetOriginAsURL();
+  return origin ==
+             GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL() ||
+         origin == GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL();
 }
 
 FieldInfoManager* ChromePasswordManagerClient::GetFieldInfoManager() const {
@@ -1436,7 +1437,7 @@ bool ChromePasswordManagerClient::IsPasswordManagementEnabledForCurrentPage(
   }
 
   // The password manager is disabled on Google Password Manager page.
-  if (url.GetOrigin() ==
+  if (url.DeprecatedGetOriginAsURL() ==
       GURL(password_manager::kPasswordManagerAccountDashboardURL)) {
     is_enabled = false;
   }

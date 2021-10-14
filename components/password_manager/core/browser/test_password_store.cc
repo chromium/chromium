@@ -296,7 +296,8 @@ LoginsResult TestPasswordStore::FillMatchingLogins(
         // Repeat the condition above with an additional check for origin.
         if (realm_matches || realm_psl_matches ||
             (form.scheme == PasswordForm::Scheme::kHtml &&
-             stored_form.url.GetOrigin() == form.url.GetOrigin() &&
+             stored_form.url.DeprecatedGetOriginAsURL() ==
+                 form.url.DeprecatedGetOriginAsURL() &&
              password_manager::IsFederatedRealm(stored_form.signon_realm,
                                                 form.url))) {
           matched_forms.push_back(std::make_unique<PasswordForm>(stored_form));

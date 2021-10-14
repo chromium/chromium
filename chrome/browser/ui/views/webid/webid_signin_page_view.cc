@@ -160,7 +160,7 @@ void SigninPageView::UpdateHeaderView() {
   header_view_->RemoveAllChildViews();
   header_view_->AddChildView(std::make_unique<TitleAndOriginView>(
       web_view_->GetWebContents()->GetTitle(),
-      web_view_->GetWebContents()->GetVisibleURL().GetOrigin()));
+      web_view_->GetWebContents()->GetVisibleURL().DeprecatedGetOriginAsURL()));
 }
 
 // content::WebContentsObserver:

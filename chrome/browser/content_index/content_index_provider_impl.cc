@@ -62,9 +62,10 @@ std::string EntryKey(int64_t service_worker_registration_id,
 }
 
 std::string EntryKey(const content::ContentIndexEntry& entry) {
-  return EntryKey(entry.service_worker_registration_id,
-                  url::Origin::Create(entry.launch_url.GetOrigin()),
-                  entry.description->id);
+  return EntryKey(
+      entry.service_worker_registration_id,
+      url::Origin::Create(entry.launch_url.DeprecatedGetOriginAsURL()),
+      entry.description->id);
 }
 
 EntryKeyComponents GetEntryKeyComponents(const std::string& key) {
@@ -149,8 +150,9 @@ void ContentIndexProviderImpl::OnContentAdded(
 
   NotifyItemsAdded(items);
 
-  metrics_.RecordContentAdded(url::Origin::Create(entry.launch_url.GetOrigin()),
-                              entry.description->category);
+  metrics_.RecordContentAdded(
+      url::Origin::Create(entry.launch_url.DeprecatedGetOriginAsURL()),
+      entry.description->category);
 }
 
 void ContentIndexProviderImpl::OnContentDeleted(
@@ -363,7 +365,8 @@ OfflineItem ContentIndexProviderImpl::EntryToOfflineItem(
 
   if (site_engagement_service_) {
     item.content_quality_score =
-        site_engagement_service_->GetScore(entry.launch_url.GetOrigin()) /
+        site_engagement_service_->GetScore(
+            entry.launch_url.DeprecatedGetOriginAsURL()) /
         site_engagement::SiteEngagementScore::kMaxPoints;
   }
 

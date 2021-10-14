@@ -7760,12 +7760,13 @@ void RenderFrameHostImpl::CommitNavigation(
           GetProcess()->GetID(), url::Origin::Create(common_params->url))) {
     SCOPED_CRASH_KEY_STRING64("CommitNavigation", "lock_url",
                               process_lock.ToString());
-    SCOPED_CRASH_KEY_STRING64("CommitNavigation", "commit_origin",
-                              common_params->url.GetOrigin().spec());
+    SCOPED_CRASH_KEY_STRING64(
+        "CommitNavigation", "commit_origin",
+        common_params->url.DeprecatedGetOriginAsURL().spec());
     SCOPED_CRASH_KEY_BOOL("CommitNavigation", "is_main_frame", is_main_frame());
     NOTREACHED() << "Commiting in incompatible process for URL: "
                  << process_lock.lock_url() << " lock vs "
-                 << common_params->url.GetOrigin();
+                 << common_params->url.DeprecatedGetOriginAsURL();
     base::debug::DumpWithoutCrashing();
   }
 
@@ -11171,7 +11172,7 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
                                             base::debug::CrashKeySize::Size256);
     base::debug::SetCrashKeyString(
         original_url_origin_key,
-        GetSiteInstance()->original_url().GetOrigin().spec());
+        GetSiteInstance()->original_url().DeprecatedGetOriginAsURL().spec());
   }
 
   static auto* const is_mhtml_document_key =
@@ -11183,14 +11184,16 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
   static auto* const last_committed_url_origin_key =
       base::debug::AllocateCrashKeyString("last_committed_url_origin",
                                           base::debug::CrashKeySize::Size256);
-  base::debug::SetCrashKeyString(last_committed_url_origin_key,
-                                 GetLastCommittedURL().GetOrigin().spec());
+  base::debug::SetCrashKeyString(
+      last_committed_url_origin_key,
+      GetLastCommittedURL().DeprecatedGetOriginAsURL().spec());
 
   static auto* const last_successful_url_origin_key =
       base::debug::AllocateCrashKeyString("last_successful_url_origin",
                                           base::debug::CrashKeySize::Size256);
-  base::debug::SetCrashKeyString(last_successful_url_origin_key,
-                                 last_successful_url().GetOrigin().spec());
+  base::debug::SetCrashKeyString(
+      last_successful_url_origin_key,
+      last_successful_url().DeprecatedGetOriginAsURL().spec());
 
   if (navigation_request && navigation_request->IsNavigationStarted()) {
     static auto* const is_renderer_initiated_key =

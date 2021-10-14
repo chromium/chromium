@@ -61,7 +61,7 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
     if (!params->target_tab->url) {
       return RespondNow(Error(kDesktopCaptureApiNoUrlError));
     }
-    origin = GURL(*(params->target_tab->url)).GetOrigin();
+    origin = GURL(*(params->target_tab->url)).DeprecatedGetOriginAsURL();
 
     if (!origin.is_valid()) {
       return RespondNow(Error(kDesktopCaptureApiInvalidOriginError));

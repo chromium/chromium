@@ -54,7 +54,7 @@ const char* kGaiaDomain = "accounts.google.com";
 // Returns the registered, organization-identifying host, but no subdomains,
 // from the given GURL. Returns an empty string if the GURL is invalid.
 static std::string GetDomainFromUrl(const GURL& url) {
-  if (gaia::IsGaiaSignonRealm(url.GetOrigin())) {
+  if (gaia::IsGaiaSignonRealm(url.DeprecatedGetOriginAsURL())) {
     return kGaiaDomain;
   }
   return net::registry_controlled_domains::GetDomainAndRegistry(
@@ -207,7 +207,7 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
   // WKWebView is cancelling previous navigations.
   show_consistency_promo_ = false;
 
-  if (!gaia::IsGaiaSignonRealm(url.GetOrigin())) {
+  if (!gaia::IsGaiaSignonRealm(url.DeprecatedGetOriginAsURL())) {
     std::move(callback).Run(PolicyDecision::Allow());
     return;
   }
@@ -320,7 +320,8 @@ void AccountConsistencyService::AccountConsistencyHandler::PageLoaded(
     return;
   }
 
-  if (show_consistency_promo_ && gaia::IsGaiaSignonRealm(url.GetOrigin())) {
+  if (show_consistency_promo_ &&
+      gaia::IsGaiaSignonRealm(url.DeprecatedGetOriginAsURL())) {
     [delegate_ onShowConsistencyPromo:url webState:web_state];
     show_consistency_promo_ = false;
   }

@@ -3991,7 +3991,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, ReloadWebviewAccessibleResource) {
   ASSERT_TRUE(web_view_contents);
 
   GURL embedder_url(embedder_contents->GetLastCommittedURL());
-  GURL webview_url(embedder_url.GetOrigin().spec() + "assets/foo.html");
+  GURL webview_url(embedder_url.DeprecatedGetOriginAsURL().spec() +
+                   "assets/foo.html");
 
   EXPECT_EQ(webview_url, web_view_contents->GetLastCommittedURL());
 }
@@ -4009,7 +4010,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, BlobInWebviewAccessibleResource) {
   ASSERT_TRUE(web_view_contents);
 
   GURL embedder_url(embedder_contents->GetLastCommittedURL());
-  GURL webview_url(embedder_url.GetOrigin().spec() + "assets/foo.html");
+  GURL webview_url(embedder_url.DeprecatedGetOriginAsURL().spec() +
+                   "assets/foo.html");
 
   EXPECT_EQ(webview_url, web_view_contents->GetLastCommittedURL());
 
@@ -4040,7 +4042,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, LoadWebviewInaccessibleResource) {
   // Check that the webview stays at the first page that it loaded (foo.html),
   // and does not commit inaccessible.html.
   GURL embedder_url(embedder_contents->GetLastCommittedURL());
-  GURL foo_url(embedder_url.GetOrigin().spec() + "assets/foo.html");
+  GURL foo_url(embedder_url.DeprecatedGetOriginAsURL().spec() +
+               "assets/foo.html");
 
   EXPECT_EQ(foo_url, web_view_contents->GetLastCommittedURL());
 }

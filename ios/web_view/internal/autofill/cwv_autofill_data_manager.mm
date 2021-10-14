@@ -280,7 +280,7 @@ class WebViewPasswordStoreObserver
   DCHECK(url.is_valid());
 
   form.url = password_manager_util::StripAuthAndParams(url);
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = base::SysNSStringToUTF16(username);
   form.encrypted_password = base::SysNSStringToUTF8(keychainIdentifier);
 

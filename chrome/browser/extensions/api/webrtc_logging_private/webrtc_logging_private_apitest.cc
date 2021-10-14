@@ -152,8 +152,10 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
     request_info->SetInteger(
         "tabId", extensions::ExtensionTabUtil::GetTabId(web_contents()));
     parameters->Append(std::move(request_info));
-    parameters->Append(
-        web_contents()->GetLastCommittedURL().GetOrigin().spec());
+    parameters->Append(web_contents()
+                           ->GetLastCommittedURL()
+                           .DeprecatedGetOriginAsURL()
+                           .spec());
   }
 
   // This function implicitly expects the function to succeed (test failure

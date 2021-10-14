@@ -192,7 +192,7 @@ void ChromeWebViewPermissionHelperDelegate::OnGeolocationPermissionResponse(
       web_view_guest()
           ->embedder_web_contents()
           ->GetLastCommittedURL()
-          .GetOrigin(),
+          .DeprecatedGetOriginAsURL(),
       user_gesture, std::move(callback));
 }
 

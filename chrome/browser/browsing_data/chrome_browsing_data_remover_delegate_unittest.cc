@@ -2813,7 +2813,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, OriginTypeMasks) {
 
   auto mock_policy = base::MakeRefCounted<MockExtensionSpecialStoragePolicy>();
   // Protect |kOriginProtected|.
-  mock_policy->AddProtected(kOriginProtected.GetOrigin());
+  mock_policy->AddProtected(kOriginProtected.DeprecatedGetOriginAsURL());
 
   EXPECT_FALSE(Match(kOriginProtected, kUnprotected, mock_policy.get()));
   EXPECT_TRUE(Match(kOriginUnprotected, kUnprotected, mock_policy.get()));

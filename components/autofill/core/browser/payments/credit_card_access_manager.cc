@@ -920,7 +920,7 @@ void CreditCardAccessManager::FetchVirtualCard() {
 
   // Send a risk-based unmasking request to server to attempt to fetch the card.
   absl::optional<GURL> last_committed_url_origin =
-      client_->GetLastCommittedURL().GetOrigin();
+      client_->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   if (!last_committed_url_origin.has_value()) {
     accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError);
     Reset();

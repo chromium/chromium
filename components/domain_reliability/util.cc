@@ -72,7 +72,8 @@ const struct NetErrorMapping {
 
 bool CanReportFullBeaconURLToCollector(const GURL& beacon_url,
                                        const GURL& collector_url) {
-  return beacon_url.GetOrigin() == collector_url.GetOrigin();
+  return beacon_url.DeprecatedGetOriginAsURL() ==
+         collector_url.DeprecatedGetOriginAsURL();
 }
 
 }  // namespace

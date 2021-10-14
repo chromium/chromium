@@ -33,7 +33,7 @@ GURL CreateChangePasswordUrl(const GURL& url) {
   DCHECK(url.is_valid());
   GURL::Replacements replacements;
   replacements.SetPathStr(password_manager::kWellKnownChangePasswordPath);
-  return url.GetOrigin().ReplaceComponents(replacements);
+  return url.DeprecatedGetOriginAsURL().ReplaceComponents(replacements);
 }
 
 GURL CreateWellKnownNonExistingResourceURL(const GURL& url) {

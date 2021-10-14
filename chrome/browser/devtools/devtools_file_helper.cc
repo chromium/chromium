@@ -184,7 +184,7 @@ DevToolsFileHelper::FileSystem CreateFileSystemStruct(
     const std::string& type,
     const std::string& file_system_id,
     const std::string& file_system_path) {
-  const GURL origin = web_contents->GetURL().GetOrigin();
+  const GURL origin = web_contents->GetURL().DeprecatedGetOriginAsURL();
   std::string file_system_name =
       storage::GetIsolatedFileSystemName(origin, file_system_id);
   std::string root_url = storage::GetIsolatedFileSystemRootURIString(

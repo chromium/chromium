@@ -14,7 +14,7 @@ namespace extensions {
 TEST(CreateUrlCollectionFromFormTest, UrlsFromHtmlForm) {
   password_manager::PasswordForm html_form;
   html_form.url = GURL("http://example.com/LoginAuth");
-  html_form.signon_realm = html_form.url.GetOrigin().spec();
+  html_form.signon_realm = html_form.url.DeprecatedGetOriginAsURL().spec();
 
   api::passwords_private::UrlCollection html_urls =
       CreateUrlCollectionFromForm(html_form);

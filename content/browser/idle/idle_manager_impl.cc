@@ -101,7 +101,9 @@ bool IdleManagerImpl::HasPermission() {
   DCHECK(permission_controller);
   PermissionStatus status = permission_controller->GetPermissionStatusForFrame(
       PermissionType::IDLE_DETECTION, render_frame_host_,
-      render_frame_host_->GetMainFrame()->GetLastCommittedURL().GetOrigin());
+      render_frame_host_->GetMainFrame()
+          ->GetLastCommittedURL()
+          .DeprecatedGetOriginAsURL());
   return status == PermissionStatus::GRANTED;
 }
 

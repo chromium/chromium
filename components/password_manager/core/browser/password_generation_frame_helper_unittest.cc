@@ -107,11 +107,11 @@ class FakePasswordRequirementsSpecFetcher
   ~FakePasswordRequirementsSpecFetcher() override = default;
 
   void Fetch(GURL origin, FetchCallback callback) override {
-    if (origin.GetOrigin().host_piece().find(kNoServerResponse) !=
-        std::string::npos) {
+    if (origin.DeprecatedGetOriginAsURL().host_piece().find(
+            kNoServerResponse) != std::string::npos) {
       std::move(callback).Run(PasswordRequirementsSpec());
-    } else if (origin.GetOrigin().host_piece().find(kHasServerResponse) !=
-               std::string::npos) {
+    } else if (origin.DeprecatedGetOriginAsURL().host_piece().find(
+                   kHasServerResponse) != std::string::npos) {
       std::move(callback).Run(GetDomainWideRequirements());
     } else {
       NOTREACHED();
@@ -325,7 +325,7 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
         response_string, forms, autofill::test::GetEncodedSignatures(forms),
         /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
 
-    GetGenerationHelper()->PrefetchSpec(origin.GetOrigin());
+    GetGenerationHelper()->PrefetchSpec(origin.DeprecatedGetOriginAsURL());
 
     // Processs the password requirements with expected side effects of
     // either storing the requirements from the AutofillQueryResponseContents)

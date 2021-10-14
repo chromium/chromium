@@ -115,7 +115,7 @@ void DataDeleter::StartDeleting(Profile* profile,
     ++num_tasks;
 
     launch_web_url_origin =
-        AppLaunchInfo::GetLaunchWebURL(extension).GetOrigin();
+        AppLaunchInfo::GetLaunchWebURL(extension).DeprecatedGetOriginAsURL();
     partition =
         util::GetStoragePartitionForExtensionId(extension->id(), profile);
 

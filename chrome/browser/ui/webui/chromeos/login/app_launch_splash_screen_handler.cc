@@ -240,7 +240,7 @@ void AppLaunchSplashScreenHandler::PopulateAppInfo(
 
   // Display app domain if present.
   if (!app.url.is_empty()) {
-    app.url = app.url.GetOrigin();
+    app.url = app.url.DeprecatedGetOriginAsURL();
   }
 
   out_info->SetString("name", app.name);

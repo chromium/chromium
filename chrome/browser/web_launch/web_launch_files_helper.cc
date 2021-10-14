@@ -201,7 +201,8 @@ void WebLaunchFilesHelper::SetLaunchPathsIfPermitted(
 void WebLaunchFilesHelper::MaybeSendLaunchEntries() {
   const GURL current_url =
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents());
-  if (launch_url_.GetOrigin() == current_url.GetOrigin()) {
+  if (launch_url_.DeprecatedGetOriginAsURL() ==
+      current_url.DeprecatedGetOriginAsURL()) {
     if (!permission_was_checked_ && !passed_permission_check_) {
       permission_was_checked_ = true;
       content::RenderFrameHost* frame = web_contents()->GetMainFrame();

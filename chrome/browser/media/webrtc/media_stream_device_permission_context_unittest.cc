@@ -58,19 +58,19 @@ class MediaStreamDevicePermissionContextTests
     // Check that there is no saved content settings.
     EXPECT_EQ(CONTENT_SETTING_ASK,
               HostContentSettingsMapFactory::GetForProfile(profile())
-                  ->GetContentSetting(insecure_url.GetOrigin(),
-                                      insecure_url.GetOrigin(),
+                  ->GetContentSetting(insecure_url.DeprecatedGetOriginAsURL(),
+                                      insecure_url.DeprecatedGetOriginAsURL(),
                                       content_settings_type));
     EXPECT_EQ(CONTENT_SETTING_ASK,
               HostContentSettingsMapFactory::GetForProfile(profile())
-                  ->GetContentSetting(secure_url.GetOrigin(),
-                                      insecure_url.GetOrigin(),
+                  ->GetContentSetting(secure_url.DeprecatedGetOriginAsURL(),
+                                      insecure_url.DeprecatedGetOriginAsURL(),
                                       content_settings_type));
-    EXPECT_EQ(
-        CONTENT_SETTING_ASK,
-        HostContentSettingsMapFactory::GetForProfile(profile())
-            ->GetContentSetting(insecure_url.GetOrigin(),
-                                secure_url.GetOrigin(), content_settings_type));
+    EXPECT_EQ(CONTENT_SETTING_ASK,
+              HostContentSettingsMapFactory::GetForProfile(profile())
+                  ->GetContentSetting(insecure_url.DeprecatedGetOriginAsURL(),
+                                      secure_url.DeprecatedGetOriginAsURL(),
+                                      content_settings_type));
 
     EXPECT_EQ(CONTENT_SETTING_BLOCK,
               permission_context
@@ -90,11 +90,11 @@ class MediaStreamDevicePermissionContextTests
     GURL secure_url("https://www.example.com");
 
     // Check that there is no saved content settings.
-    EXPECT_EQ(
-        CONTENT_SETTING_ASK,
-        HostContentSettingsMapFactory::GetForProfile(profile())
-            ->GetContentSetting(secure_url.GetOrigin(), secure_url.GetOrigin(),
-                                content_settings_type));
+    EXPECT_EQ(CONTENT_SETTING_ASK,
+              HostContentSettingsMapFactory::GetForProfile(profile())
+                  ->GetContentSetting(secure_url.DeprecatedGetOriginAsURL(),
+                                      secure_url.DeprecatedGetOriginAsURL(),
+                                      content_settings_type));
 
     EXPECT_EQ(CONTENT_SETTING_ASK,
               permission_context

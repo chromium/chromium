@@ -483,13 +483,14 @@ bool OutOfProcessInstance::Init(uint32_t argc,
     original_url = src_url;
 
   pp::PDF::SetCrashData(this, original_url, top_level_url);
-  InitializeBase(std::make_unique<PDFiumEngine>(this, script_option),
-                 /*embedder_origin=*/document_url.GetOrigin().spec(),
-                 /*src_url=*/src_url,
-                 /*original_url=*/original_url,
-                 /*full_frame=*/full_frame,
-                 /*background_color=*/background_color,
-                 /*has_edits=*/has_edits);
+  InitializeBase(
+      std::make_unique<PDFiumEngine>(this, script_option),
+      /*embedder_origin=*/document_url.DeprecatedGetOriginAsURL().spec(),
+      /*src_url=*/src_url,
+      /*original_url=*/original_url,
+      /*full_frame=*/full_frame,
+      /*background_color=*/background_color,
+      /*has_edits=*/has_edits);
   return true;
 }
 

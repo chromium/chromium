@@ -223,8 +223,8 @@ bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
     return false;
   }
 
-  if (current_page_url.GetOrigin() ==
-      GaiaUrls::GetInstance()->gaia_url().GetOrigin()) {
+  if (current_page_url.DeprecatedGetOriginAsURL() ==
+      GaiaUrls::GetInstance()->gaia_url().DeprecatedGetOriginAsURL()) {
     return false;
   }
 

@@ -1179,15 +1179,16 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
       !request->IsForMhtmlSubframe()) {
     SCOPED_CRASH_KEY_STRING256("GetFrameHostForNav", "lock_url",
                                process_lock.ToString());
-    SCOPED_CRASH_KEY_STRING64("GetFrameHostForNav", "commit_origin",
-                              request->common_params().url.GetOrigin().spec());
+    SCOPED_CRASH_KEY_STRING64(
+        "GetFrameHostForNav", "commit_origin",
+        request->common_params().url.DeprecatedGetOriginAsURL().spec());
     SCOPED_CRASH_KEY_BOOL("GetFrameHostForNav", "is_main_frame",
                           frame_tree_node_->IsMainFrame());
     SCOPED_CRASH_KEY_BOOL("GetFrameHostForNav", "use_current_rfh",
                           use_current_rfh);
     NOTREACHED() << "Picked an incompatible process for URL: "
                  << process_lock.ToString() << " lock vs "
-                 << request->common_params().url.GetOrigin();
+                 << request->common_params().url.DeprecatedGetOriginAsURL();
     base::debug::DumpWithoutCrashing();
   }
 

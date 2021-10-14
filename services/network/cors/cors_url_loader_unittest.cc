@@ -722,7 +722,8 @@ TEST_F(CorsURLLoaderTest, NavigationFromRenderer) {
 
 TEST_F(CorsURLLoaderTest, SameOriginRequest) {
   const GURL url("https://example.com/foo.png");
-  CreateLoaderAndStart(url.GetOrigin(), url, mojom::RequestMode::kSameOrigin);
+  CreateLoaderAndStart(url.DeprecatedGetOriginAsURL(), url,
+                       mojom::RequestMode::kSameOrigin);
   RunUntilCreateLoaderAndStartCalled();
 
   NotifyLoaderClientOnReceiveResponse();
@@ -739,7 +740,8 @@ TEST_F(CorsURLLoaderTest, SameOriginRequest) {
 
 TEST_F(CorsURLLoaderTest, SameOriginRequestWithEarlyHints) {
   const GURL url("https://example.com/foo.png");
-  CreateLoaderAndStart(url.GetOrigin(), url, mojom::RequestMode::kSameOrigin);
+  CreateLoaderAndStart(url.DeprecatedGetOriginAsURL(), url,
+                       mojom::RequestMode::kSameOrigin);
   RunUntilCreateLoaderAndStartCalled();
 
   NotifyLoaderClientOnReceiveEarlyHints();
@@ -2803,7 +2805,8 @@ TEST_F(CorsURLLoaderTest, NetLogBasic) {
 
 TEST_F(CorsURLLoaderTest, NetLogSameOriginRequest) {
   const GURL url("https://example.com/foo.png");
-  CreateLoaderAndStart(url.GetOrigin(), url, mojom::RequestMode::kSameOrigin);
+  CreateLoaderAndStart(url.DeprecatedGetOriginAsURL(), url,
+                       mojom::RequestMode::kSameOrigin);
   RunUntilCreateLoaderAndStartCalled();
 
   NotifyLoaderClientOnReceiveResponse();
@@ -2827,7 +2830,8 @@ TEST_F(CorsURLLoaderTest, NetLogSameOriginRequest) {
 TEST_F(CorsURLLoaderTest, NetLogCrossOriginSimpleRequest) {
   const GURL origin("https://example.com");
   const GURL url("https://other.example.com/foo.png");
-  CreateLoaderAndStart(origin.GetOrigin(), url, mojom::RequestMode::kCors);
+  CreateLoaderAndStart(origin.DeprecatedGetOriginAsURL(), url,
+                       mojom::RequestMode::kCors);
   RunUntilCreateLoaderAndStartCalled();
 
   NotifyLoaderClientOnReceiveResponse();

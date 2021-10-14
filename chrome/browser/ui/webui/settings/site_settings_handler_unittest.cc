@@ -2195,7 +2195,8 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   EXPECT_EQ(exceptions.GetList().size(), 5u);
 
   // Don't include WebUI schemes.
-  const std::string kWebUIOriginStr = kWebUIUrl.GetOrigin().spec();
+  const std::string kWebUIOriginStr =
+      kWebUIUrl.DeprecatedGetOriginAsURL().spec();
   EXPECT_FALSE(ChooserExceptionContainsSiteException(exceptions, "Gizmo",
                                                      kWebUIOriginStr));
 }
@@ -2244,9 +2245,12 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   const auto kAndroidOrigin = url::Origin::Create(kAndroidUrl);
   const auto kChromiumOrigin = url::Origin::Create(kChromiumUrl);
   const auto kGoogleOrigin = url::Origin::Create(kGoogleUrl);
-  const std::string kAndroidOriginStr = kAndroidUrl.GetOrigin().spec();
-  const std::string kChromiumOriginStr = kChromiumUrl.GetOrigin().spec();
-  const std::string kGoogleOriginStr = kGoogleUrl.GetOrigin().spec();
+  const std::string kAndroidOriginStr =
+      kAndroidUrl.DeprecatedGetOriginAsURL().spec();
+  const std::string kChromiumOriginStr =
+      kChromiumUrl.DeprecatedGetOriginAsURL().spec();
+  const std::string kGoogleOriginStr =
+      kGoogleUrl.DeprecatedGetOriginAsURL().spec();
 
   {
     const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(

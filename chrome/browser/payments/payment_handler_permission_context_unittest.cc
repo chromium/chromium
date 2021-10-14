@@ -97,7 +97,8 @@ TEST_F(PaymentHandlerPermissionContextTests, TestInsecureRequestingUrl) {
 
   ContentSetting setting =
       HostContentSettingsMapFactory::GetForProfile(profile())
-          ->GetContentSetting(url.GetOrigin(), url.GetOrigin(),
+          ->GetContentSetting(url.DeprecatedGetOriginAsURL(),
+                              url.DeprecatedGetOriginAsURL(),
                               ContentSettingsType::PAYMENT_HANDLER);
   EXPECT_EQ(CONTENT_SETTING_ALLOW, setting);
 }
@@ -111,19 +112,19 @@ TEST_F(PaymentHandlerPermissionContextTests, TestInsecureQueryingUrl) {
   // Check that there is no saved content settings.
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             HostContentSettingsMapFactory::GetForProfile(profile())
-                ->GetContentSetting(insecure_url.GetOrigin(),
-                                    insecure_url.GetOrigin(),
+                ->GetContentSetting(insecure_url.DeprecatedGetOriginAsURL(),
+                                    insecure_url.DeprecatedGetOriginAsURL(),
                                     ContentSettingsType::PAYMENT_HANDLER));
-  EXPECT_EQ(
-      CONTENT_SETTING_ALLOW,
-      HostContentSettingsMapFactory::GetForProfile(profile())
-          ->GetContentSetting(secure_url.GetOrigin(), insecure_url.GetOrigin(),
-                              ContentSettingsType::PAYMENT_HANDLER));
-  EXPECT_EQ(
-      CONTENT_SETTING_ALLOW,
-      HostContentSettingsMapFactory::GetForProfile(profile())
-          ->GetContentSetting(insecure_url.GetOrigin(), secure_url.GetOrigin(),
-                              ContentSettingsType::PAYMENT_HANDLER));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            HostContentSettingsMapFactory::GetForProfile(profile())
+                ->GetContentSetting(secure_url.DeprecatedGetOriginAsURL(),
+                                    insecure_url.DeprecatedGetOriginAsURL(),
+                                    ContentSettingsType::PAYMENT_HANDLER));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            HostContentSettingsMapFactory::GetForProfile(profile())
+                ->GetContentSetting(insecure_url.DeprecatedGetOriginAsURL(),
+                                    secure_url.DeprecatedGetOriginAsURL(),
+                                    ContentSettingsType::PAYMENT_HANDLER));
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             permission_context

@@ -983,7 +983,8 @@ TEST_P(PasswordFormManagerTest, SaveNewCredentials) {
 
   form_manager_->Save();
 
-  std::string expected_signon_realm = submitted_form.url.GetOrigin().spec();
+  std::string expected_signon_realm =
+      submitted_form.url.DeprecatedGetOriginAsURL().spec();
   EXPECT_EQ(submitted_form.url, saved_form.url);
   EXPECT_EQ(expected_signon_realm, saved_form.signon_realm);
   EXPECT_EQ(new_username, saved_form.username_value);
@@ -2722,7 +2723,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveCredentials) {
       .WillOnce(SaveArg<1>(&updated_form));
   EXPECT_CALL(client_, UpdateFormManagers());
   form_manager_->Save();
-  std::string expected_signon_realm = submitted_form.url.GetOrigin().spec();
+  std::string expected_signon_realm =
+      submitted_form.url.DeprecatedGetOriginAsURL().spec();
   EXPECT_EQ(submitted_form.url, updated_form.url);
   EXPECT_EQ(expected_signon_realm, updated_form.signon_realm);
   EXPECT_EQ(new_username, updated_form.username_value);

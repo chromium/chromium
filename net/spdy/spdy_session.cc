@@ -2100,7 +2100,8 @@ void SpdySession::TryCreatePushStream(spdy::SpdyStreamId stream_id,
 
   // Cross-origin push validation.
   GURL associated_url(associated_it->second->url());
-  if (associated_url.GetOrigin() != gurl.GetOrigin()) {
+  if (associated_url.DeprecatedGetOriginAsURL() !=
+      gurl.DeprecatedGetOriginAsURL()) {
     if (!gurl.SchemeIs(url::kHttpsScheme)) {
       RecordSpdyPushedStreamFateHistogram(
           SpdyPushedStreamFate::kNonHttpsPushedScheme);

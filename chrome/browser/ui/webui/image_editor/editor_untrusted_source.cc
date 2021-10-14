@@ -99,7 +99,7 @@ bool EditorUntrustedSource::ShouldServiceRequest(
     const GURL& url,
     content::BrowserContext* browser_context,
     int render_process_id) {
-  return url.GetOrigin() == GetSource();
+  return url.DeprecatedGetOriginAsURL() == GetSource();
 }
 
 bool EditorUntrustedSource::ShouldDenyXFrameOptions() {

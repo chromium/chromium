@@ -45,7 +45,7 @@ bool IsExternalURL(const GURL& url) {
   // sign-in succeeds.
   if (url.is_empty() || url == GURL(url::kAboutBlankURL))
     return false;
-  if (gaia::IsGaiaSignonRealm(url.GetOrigin()))
+  if (gaia::IsGaiaSignonRealm(url.DeprecatedGetOriginAsURL()))
     return false;
   return true;
 }

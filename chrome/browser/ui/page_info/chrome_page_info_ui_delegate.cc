@@ -131,7 +131,7 @@ bool ChromePageInfoUiDelegate::IsMultipleTabsOpen() {
   const extensions::WindowControllerList::ControllerList& windows =
       extensions::WindowControllerList::GetInstance()->windows();
   int count = 0;
-  auto site_origin = site_url_.GetOrigin();
+  auto site_origin = site_url_.DeprecatedGetOriginAsURL();
   for (auto* window : windows) {
     const Browser* const browser = window->GetBrowser();
     if (!browser)
@@ -140,7 +140,7 @@ bool ChromePageInfoUiDelegate::IsMultipleTabsOpen() {
     DCHECK(tabs);
     for (int i = 0; i < tabs->count(); ++i) {
       content::WebContents* const web_contents = tabs->GetWebContentsAt(i);
-      if (web_contents->GetURL().GetOrigin() == site_origin) {
+      if (web_contents->GetURL().DeprecatedGetOriginAsURL() == site_origin) {
         count++;
       }
     }

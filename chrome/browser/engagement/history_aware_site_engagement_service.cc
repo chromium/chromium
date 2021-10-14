@@ -34,7 +34,7 @@ void HistoryAwareSiteEngagementService::OnURLsDeleted(
     const history::DeletionInfo& deletion_info) {
   std::multiset<GURL> origins;
   for (const history::URLRow& row : deletion_info.deleted_rows())
-    origins.insert(row.url().GetOrigin());
+    origins.insert(row.url().DeprecatedGetOriginAsURL());
 
   UpdateEngagementScores(origins, deletion_info.is_from_expiration(),
                          deletion_info.deleted_urls_origin_map());

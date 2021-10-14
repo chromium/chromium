@@ -109,9 +109,9 @@
     didRedirectNavigation:(web::NavigationContext*)navigation_context {
   GURL redirectURL = navigation_context->GetUrl();
   NSString* redirectOrigin = base::SysUTF16ToNSString(
-      url_formatter::FormatUrl(redirectURL.GetOrigin()));
-  if (base::SysUTF16ToNSString(
-          url_formatter::FormatUrl(self.URL.GetOrigin())) != redirectOrigin) {
+      url_formatter::FormatUrl(redirectURL.DeprecatedGetOriginAsURL()));
+  if (base::SysUTF16ToNSString(url_formatter::FormatUrl(
+          self.URL.DeprecatedGetOriginAsURL())) != redirectOrigin) {
     [self updateOrigin:redirectOrigin];
   }
   self.URL = redirectURL;

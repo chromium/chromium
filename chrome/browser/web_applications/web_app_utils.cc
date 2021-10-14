@@ -213,7 +213,8 @@ apps::FileHandlers GetFileHandlersForAllWebAppsWithOrigin(Profile* profile,
     return {};
 
   const WebAppRegistrar& registrar = provider->registrar();
-  std::vector<AppId> app_ids = registrar.FindAppsInScope(url.GetOrigin());
+  std::vector<AppId> app_ids =
+      registrar.FindAppsInScope(url.DeprecatedGetOriginAsURL());
   if (app_ids.empty())
     return {};
 

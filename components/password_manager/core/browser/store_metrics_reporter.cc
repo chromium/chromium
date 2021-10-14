@@ -221,7 +221,7 @@ void ReportSyncingAccountStateMetrics(
     const std::string& sync_username,
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
   std::string signon_realm =
-      GaiaUrls::GetInstance()->gaia_url().GetOrigin().spec();
+      GaiaUrls::GetInstance()->gaia_url().DeprecatedGetOriginAsURL().spec();
   bool syncing_account_saved = base::ranges::any_of(
       forms, [&signon_realm, &sync_username](const auto& form) {
         return signon_realm == form->signon_realm &&

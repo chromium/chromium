@@ -501,7 +501,8 @@ bool ParseManifest(const GURL& manifest_url,
         continue;
       }
 
-      if (namespace_url.GetOrigin() != manifest_url.GetOrigin())
+      if (namespace_url.DeprecatedGetOriginAsURL() !=
+          manifest_url.DeprecatedGetOriginAsURL())
         continue;
 
       if (!IsUrlWithinScope(namespace_url, manifest_scope_url))
@@ -522,7 +523,8 @@ bool ParseManifest(const GURL& manifest_url,
       if (!target_url.is_valid())
         continue;
 
-      if (manifest_url.GetOrigin() != target_url.GetOrigin())
+      if (manifest_url.DeprecatedGetOriginAsURL() !=
+          target_url.DeprecatedGetOriginAsURL())
         continue;
 
       manifest.intercept_namespaces.emplace_back(APPCACHE_INTERCEPT_NAMESPACE,
@@ -532,7 +534,8 @@ bool ParseManifest(const GURL& manifest_url,
     }
 
     if (mode == Mode::kFallback) {
-      if (namespace_url.GetOrigin() != manifest_url.GetOrigin())
+      if (namespace_url.DeprecatedGetOriginAsURL() !=
+          manifest_url.DeprecatedGetOriginAsURL())
         continue;
 
       if (parse_mode != PARSE_MANIFEST_ALLOWING_DANGEROUS_FEATURES) {
@@ -554,7 +557,8 @@ bool ParseManifest(const GURL& manifest_url,
       if (!fallback_url.is_valid())
         continue;
 
-      if (manifest_url.GetOrigin() != fallback_url.GetOrigin())
+      if (manifest_url.DeprecatedGetOriginAsURL() !=
+          fallback_url.DeprecatedGetOriginAsURL())
         continue;
 
       // Store regardless of duplicate namespace URL. Only the first match will

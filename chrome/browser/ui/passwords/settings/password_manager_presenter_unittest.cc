@@ -133,7 +133,7 @@ password_manager::PasswordForm AddPasswordToStore(
     base::StringPiece password) {
   password_manager::PasswordForm form;
   form.url = url;
-  form.signon_realm = url.GetOrigin().spec();
+  form.signon_realm = url.DeprecatedGetOriginAsURL().spec();
   form.username_value = base::ASCIIToUTF16(username);
   form.password_value = base::ASCIIToUTF16(password);
   store->AddLogin(form);

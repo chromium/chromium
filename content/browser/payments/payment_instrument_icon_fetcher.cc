@@ -132,8 +132,10 @@ WebContents* GetWebContentsFromFrameRoutingIds(
     WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
         WebContents::FromRenderFrameHost(render_frame_host));
     if (!web_contents || web_contents->IsHidden() ||
-        scope.GetOrigin().spec().compare(
-            web_contents->GetLastCommittedURL().GetOrigin().spec()) != 0) {
+        scope.DeprecatedGetOriginAsURL().spec().compare(
+            web_contents->GetLastCommittedURL()
+                .DeprecatedGetOriginAsURL()
+                .spec()) != 0) {
       continue;
     }
     return web_contents;

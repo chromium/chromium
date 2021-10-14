@@ -157,7 +157,7 @@ class WebUsbTest : public InProcessBrowserTest {
 
     GURL url = embedded_test_server()->GetURL("localhost", "/simple_page.html");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    origin_ = url.GetOrigin();
+    origin_ = url.DeprecatedGetOriginAsURL();
 
     RenderFrameHost* render_frame_host =
         browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();

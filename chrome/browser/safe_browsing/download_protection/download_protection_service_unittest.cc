@@ -1187,10 +1187,11 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSampledFile) {
     auto* req = GetClientDownloadRequest();
     EXPECT_EQ(ClientDownloadRequest::SAMPLED_UNSUPPORTED_FILE,
               req->download_type());
-    EXPECT_EQ(GURL(req->url()).GetOrigin().spec(), req->url());
+    EXPECT_EQ(GURL(req->url()).DeprecatedGetOriginAsURL().spec(), req->url());
     for (auto resource : req->resources()) {
-      EXPECT_EQ(GURL(resource.url()).GetOrigin().spec(), resource.url());
-      EXPECT_EQ(GURL(resource.referrer()).GetOrigin().spec(),
+      EXPECT_EQ(GURL(resource.url()).DeprecatedGetOriginAsURL().spec(),
+                resource.url());
+      EXPECT_EQ(GURL(resource.referrer()).DeprecatedGetOriginAsURL().spec(),
                 resource.referrer());
     }
     ClearClientDownloadRequest();
@@ -3696,10 +3697,11 @@ TEST_F(DownloadProtectionServiceTest,
     auto* req = GetClientDownloadRequest();
     EXPECT_EQ(ClientDownloadRequest::SAMPLED_UNSUPPORTED_FILE,
               req->download_type());
-    EXPECT_EQ(GURL(req->url()).GetOrigin().spec(), req->url());
+    EXPECT_EQ(GURL(req->url()).DeprecatedGetOriginAsURL().spec(), req->url());
     for (auto resource : req->resources()) {
-      EXPECT_EQ(GURL(resource.url()).GetOrigin().spec(), resource.url());
-      EXPECT_EQ(GURL(resource.referrer()).GetOrigin().spec(),
+      EXPECT_EQ(GURL(resource.url()).DeprecatedGetOriginAsURL().spec(),
+                resource.url());
+      EXPECT_EQ(GURL(resource.referrer()).DeprecatedGetOriginAsURL().spec(),
                 resource.referrer());
     }
     ClearClientDownloadRequest();

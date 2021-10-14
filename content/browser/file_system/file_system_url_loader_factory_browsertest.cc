@@ -466,7 +466,7 @@ class FileSystemURLLoaderFactoryTest
     request.url = url;
     if (extra_headers)
       request.headers.MergeFrom(*extra_headers);
-    const std::string storage_domain = url.GetOrigin().host();
+    const std::string storage_domain = url.DeprecatedGetOriginAsURL().host();
 
     mojo::Remote<network::mojom::URLLoaderFactory> factory(
         CreateFileSystemURLLoaderFactory(

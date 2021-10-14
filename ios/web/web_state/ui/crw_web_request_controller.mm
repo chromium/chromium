@@ -297,7 +297,8 @@ enum class BackForwardNavigationType {
     // pending navigation item.
     // Do not do it for localhost address as this is needed to have
     // pre-rendering in tests.
-    if (item->GetURL().GetOrigin() == requestURL.GetOrigin() &&
+    if (item->GetURL().DeprecatedGetOriginAsURL() ==
+            requestURL.DeprecatedGetOriginAsURL() &&
         !net::IsLocalhost(requestURL)) {
       self.navigationManagerImpl->UpdatePendingItemUrl(requestURL);
     }

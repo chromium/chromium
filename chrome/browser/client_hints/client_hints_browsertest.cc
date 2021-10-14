@@ -3151,7 +3151,8 @@ class ThirdPartyUaReducedOriginTrialBrowserTest
  private:
   // URLLoaderInterceptor callback
   bool InterceptRequest(URLLoaderInterceptor::RequestParams* params) {
-    if (params->url_request.url.GetOrigin() != GURL(kFirstPartyOriginUrl)) {
+    if (params->url_request.url.DeprecatedGetOriginAsURL() !=
+        GURL(kFirstPartyOriginUrl)) {
       return false;
     }
     if (params->url_request.url.path() !=
@@ -3417,7 +3418,7 @@ class ThirdPartyAcceptChUaReducedOriginTrialBrowserTest
   // URLLoaderInterceptor callback.  Handles the third-party embeds and
   // subresource requests.
   bool InterceptRequest(URLLoaderInterceptor::RequestParams* params) {
-    const GURL origin = params->url_request.url.GetOrigin();
+    const GURL origin = params->url_request.url.DeprecatedGetOriginAsURL();
     // The interceptor does not handle requests to the EmbeddedTestServer.
     // Requests also get sent to https://accounts.google.com/ (not sure from
     // where), so we ignore them as well.

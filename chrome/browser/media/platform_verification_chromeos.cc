@@ -47,7 +47,8 @@ GURL GetURL(content::WebContents* web_contents) {
 // Whether platform verification is permitted by the user-configurable content
 // setting.
 bool IsPermittedByContentSettings(content::WebContents* web_contents) {
-  const GURL& requesting_origin = GetURL(web_contents).GetOrigin();
+  const GURL& requesting_origin =
+      GetURL(web_contents).DeprecatedGetOriginAsURL();
 
   GURL embedding_origin =
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents);

@@ -82,7 +82,7 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
   if (base::Contains(tasks_, app_id))
     return;
 
-  if (!MaybeConsumeUpdateCheck(url.GetOrigin(), app_id)) {
+  if (!MaybeConsumeUpdateCheck(url.DeprecatedGetOriginAsURL(), app_id)) {
     NotifyResult(url, app_id, ManifestUpdateResult::kThrottled);
     return;
   }

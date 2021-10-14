@@ -76,7 +76,7 @@ void InstalledPaymentAppsFinderImpl::CheckPermissionForPaymentApps(
 
   PaymentApps permitted_apps;
   for (auto& app : apps) {
-    GURL origin = app.second->scope.GetOrigin();
+    GURL origin = app.second->scope.DeprecatedGetOriginAsURL();
     if (permission_controller->GetPermissionStatus(
             PermissionType::PAYMENT_HANDLER, origin, origin) ==
         blink::mojom::PermissionStatus::GRANTED) {

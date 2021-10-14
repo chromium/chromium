@@ -149,7 +149,7 @@ class TestPreconnectManagerObserver : public PreconnectManager::Observer {
   void OnPreconnectUrl(const GURL& url,
                        int num_sockets,
                        bool allow_credentials) override {
-    preconnect_url_attempts_.insert(url.GetOrigin());
+    preconnect_url_attempts_.insert(url.DeprecatedGetOriginAsURL());
   }
 
   void OnPreresolveFinished(
@@ -197,7 +197,7 @@ class TestPreconnectManagerObserver : public PreconnectManager::Observer {
   }
 
   bool HasOriginAttemptedToPreconnect(const GURL& origin) {
-    DCHECK_EQ(origin, origin.GetOrigin());
+    DCHECK_EQ(origin, origin.DeprecatedGetOriginAsURL());
     return base::Contains(preconnect_url_attempts_, origin);
   }
 
@@ -631,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
   EXPECT_FALSE(preconnect_manager_observer()->HasHostBeenLookedUp(
       "", network_isolation_key));
   EXPECT_FALSE(preconnect_manager_observer()->HasOriginAttemptedToPreconnect(
-      url.GetOrigin()));
+      url.DeprecatedGetOriginAsURL()));
   EXPECT_FALSE(
       preconnect_manager_observer()->HasOriginAttemptedToPreconnect(GURL()));
 }
@@ -693,7 +693,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
   EXPECT_FALSE(preconnect_manager_observer()->HasHostBeenLookedUp(
       "", network_isolation_key));
   EXPECT_FALSE(preconnect_manager_observer()->HasOriginAttemptedToPreconnect(
-      url.GetOrigin()));
+      url.DeprecatedGetOriginAsURL()));
   EXPECT_FALSE(
       preconnect_manager_observer()->HasOriginAttemptedToPreconnect(GURL()));
 }

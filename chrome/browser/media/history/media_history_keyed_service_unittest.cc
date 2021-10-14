@@ -219,8 +219,8 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenHistoryIsDeleted) {
   // Record a playback in the database.
   {
     content::MediaPlayerWatchTime watch_time(
-        url, url.GetOrigin(), base::Milliseconds(123), base::Milliseconds(321),
-        true, false);
+        url, url.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
+        base::Milliseconds(321), true, false);
 
     history->AddPage(url, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
@@ -310,7 +310,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
   // Record a playback in the database for |url1a|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1a, url1a.GetOrigin(), base::Milliseconds(123),
+        url1a, url1a.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
         base::Milliseconds(321), true, false);
 
     history->AddPage(url1a, base::Time::Now(), history::SOURCE_BROWSED);
@@ -324,7 +324,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
   // Record a playback in the database for |url1b|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1b, url1b.GetOrigin(), base::Milliseconds(123),
+        url1b, url1b.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
         base::Milliseconds(321), true, false);
 
     history->AddPage(url1b, base::Time::Now(), history::SOURCE_BROWSED);
@@ -340,7 +340,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
   // origin-level.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1c, url1c.GetOrigin(), base::Milliseconds(123),
+        url1c, url1c.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
         base::Milliseconds(321), true, false);
     service()->SavePlayback(watch_time);
 
@@ -352,7 +352,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
   // Record a playback in the database for |url2a|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url2a, url2a.GetOrigin(), base::Milliseconds(123),
+        url2a, url2a.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
         base::Milliseconds(321), true, false);
 
     history->AddPage(url2a, base::Time::Now(), history::SOURCE_BROWSED);
@@ -366,7 +366,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
   // Record a playback in the database for |url2b|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url2b, url2b.GetOrigin(), base::Milliseconds(123),
+        url2b, url2b.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
         base::Milliseconds(321), true, false);
 
     history->AddPage(url2b, base::Time::Now(), history::SOURCE_BROWSED);
@@ -504,7 +504,7 @@ TEST_P(MediaHistoryKeyedServiceTest,
   // Record a playback in the database for |url1a|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1a, url1a.GetOrigin(), base::Milliseconds(123),
+        url1a, url1a.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
         base::Milliseconds(321), true, false);
 
     history->AddPage(url1a, base::Time::Now(), history::SOURCE_BROWSED);
@@ -518,7 +518,7 @@ TEST_P(MediaHistoryKeyedServiceTest,
   // Record a playback in the database for |url1b|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1b, url1b.GetOrigin(), base::Milliseconds(123),
+        url1b, url1b.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
         base::Milliseconds(321), true, false);
 
     history->AddPage(url1b, base::Time::Now(), history::SOURCE_BROWSED);
@@ -534,7 +534,7 @@ TEST_P(MediaHistoryKeyedServiceTest,
   // origin-level.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1c, url1c.GetOrigin(), base::Milliseconds(123),
+        url1c, url1c.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
         base::Milliseconds(321), true, false);
     service()->SavePlayback(watch_time);
 
@@ -546,7 +546,7 @@ TEST_P(MediaHistoryKeyedServiceTest,
   // Record a playback in the database for |url2a|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url2a, url2a.GetOrigin(), base::Milliseconds(123),
+        url2a, url2a.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
         base::Milliseconds(321), true, false);
 
     history->AddPage(url2a, base::Time::Now(), history::SOURCE_BROWSED);
@@ -560,7 +560,7 @@ TEST_P(MediaHistoryKeyedServiceTest,
   // Record a playback in the database for |url2b|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url2b, url2b.GetOrigin(), base::Milliseconds(123),
+        url2b, url2b.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
         base::Milliseconds(321), true, false);
 
     history->AddPage(url2b, base::Time::Now(), history::SOURCE_BROWSED);
@@ -698,8 +698,8 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
   // Record a playback in the database for |url1a|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1a, url1a.GetOrigin(), base::Minutes(10), base::Milliseconds(321),
-        true, true);
+        url1a, url1a.DeprecatedGetOriginAsURL(), base::Minutes(10),
+        base::Milliseconds(321), true, true);
 
     history->AddPage(url1a, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
@@ -712,8 +712,8 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
   // Record a playback in the database for |url1b|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1b, url1b.GetOrigin(), base::Minutes(25), base::Milliseconds(321),
-        true, true);
+        url1b, url1b.DeprecatedGetOriginAsURL(), base::Minutes(25),
+        base::Milliseconds(321), true, true);
 
     history->AddPage(url1b, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
@@ -726,7 +726,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
   // Record a playback in the database for |url1c|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1c, url1c.GetOrigin(), base::Milliseconds(123),
+        url1c, url1c.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
         base::Milliseconds(321), true, false);
 
     history->AddPage(url1c, base::Time::Now(), history::SOURCE_BROWSED);
@@ -740,8 +740,8 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
   // Record a playback in the database for |url2a|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url2a, url2a.GetOrigin(), base::Minutes(10), base::Milliseconds(321),
-        true, true);
+        url2a, url2a.DeprecatedGetOriginAsURL(), base::Minutes(10),
+        base::Milliseconds(321), true, true);
 
     history->AddPage(url2a, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
@@ -754,8 +754,8 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
   // Record a playback in the database for |url2b|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url2b, url2b.GetOrigin(), base::Minutes(20), base::Milliseconds(321),
-        true, true);
+        url2b, url2b.DeprecatedGetOriginAsURL(), base::Minutes(20),
+        base::Milliseconds(321), true, true);
 
     history->AddPage(url2b, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);

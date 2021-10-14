@@ -124,7 +124,7 @@ URLDataSourceImpl* URLDataManagerBackend::GetDataSourceFromURL(
     const GURL& url) {
   // chrome-untrusted:// sources keys are of the form "chrome-untrusted://host".
   if (url.scheme() == kChromeUIUntrustedScheme) {
-    auto i = data_sources_.find(url.GetOrigin().spec());
+    auto i = data_sources_.find(url.DeprecatedGetOriginAsURL().spec());
     if (i == data_sources_.end())
       return nullptr;
     return i->second.get();

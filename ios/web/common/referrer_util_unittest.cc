@@ -108,7 +108,7 @@ TEST_F(ReferrerUtilTest, OriginPolicy) {
       std::string value = ReferrerHeaderValueForNavigation(dest_url, referrer);
 
       // Origin should be sent in all cases, even secure->insecure.
-      EXPECT_EQ(source_url.GetOrigin().spec(), value);
+      EXPECT_EQ(source_url.DeprecatedGetOriginAsURL().spec(), value);
     }
   }
 }
@@ -124,10 +124,11 @@ TEST_F(ReferrerUtilTest, OriginWhenCrossOriginPolicy) {
 
       // Full URL for the same origin, and origin for all other cases (even
       // secure->insecure).
-      if (source_url.GetOrigin() == dest_url.GetOrigin())
+      if (source_url.DeprecatedGetOriginAsURL() ==
+          dest_url.DeprecatedGetOriginAsURL())
         EXPECT_EQ(source_url.GetAsReferrer().spec(), value);
       else
-        EXPECT_EQ(source_url.GetOrigin().spec(), value);
+        EXPECT_EQ(source_url.DeprecatedGetOriginAsURL().spec(), value);
     }
   }
 }
@@ -142,7 +143,8 @@ TEST_F(ReferrerUtilTest, SameOriginPolicy) {
       std::string value = ReferrerHeaderValueForNavigation(dest_url, referrer);
 
       // Full URL for the same origin, and nothing for all other cases.
-      if (source_url.GetOrigin() == dest_url.GetOrigin())
+      if (source_url.DeprecatedGetOriginAsURL() ==
+          dest_url.DeprecatedGetOriginAsURL())
         EXPECT_EQ(source_url.GetAsReferrer().spec(), value);
       else
         EXPECT_EQ(std::string(), value);
@@ -164,7 +166,7 @@ TEST_F(ReferrerUtilTest, StrictOriginPolicy) {
           !dest_url.SchemeIsCryptographic())
         EXPECT_EQ("", value);
       else
-        EXPECT_EQ(source_url.GetOrigin().spec(), value);
+        EXPECT_EQ(source_url.DeprecatedGetOriginAsURL().spec(), value);
     }
   }
 }
@@ -183,10 +185,11 @@ TEST_F(ReferrerUtilTest, StrictOriginWhenCrossOriginPolicy) {
       if (source_url.SchemeIsCryptographic() &&
           !dest_url.SchemeIsCryptographic())
         EXPECT_EQ("", value);
-      else if (source_url.GetOrigin() == dest_url.GetOrigin())
+      else if (source_url.DeprecatedGetOriginAsURL() ==
+               dest_url.DeprecatedGetOriginAsURL())
         EXPECT_EQ(source_url.GetAsReferrer().spec(), value);
       else
-        EXPECT_EQ(source_url.GetOrigin().spec(), value);
+        EXPECT_EQ(source_url.DeprecatedGetOriginAsURL().spec(), value);
     }
   }
 }

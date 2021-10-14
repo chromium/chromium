@@ -231,7 +231,8 @@ void MultiBufferDataSource::OnRedirected(
     StopLoader();
     return;
   }
-  if (url_data_->url().GetOrigin() != new_destination->url().GetOrigin()) {
+  if (url_data_->url().DeprecatedGetOriginAsURL() !=
+      new_destination->url().DeprecatedGetOriginAsURL()) {
     single_origin_ = false;
   }
   SetReader(nullptr);

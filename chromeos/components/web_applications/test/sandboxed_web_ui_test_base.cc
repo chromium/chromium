@@ -63,7 +63,8 @@ class SandboxedWebUiAppTestBase::TestCodeInjector
   // TestNavigationObserver:
   void OnDidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
-    if (navigation_handle->GetURL().GetOrigin() != GURL(owner_->sandboxed_url_))
+    if (navigation_handle->GetURL().DeprecatedGetOriginAsURL() !=
+        GURL(owner_->sandboxed_url_))
       return;
 
     auto* guest_frame = navigation_handle->GetRenderFrameHost();

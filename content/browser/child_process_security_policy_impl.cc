@@ -1873,9 +1873,9 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
   // keys that will help understand the circumstances of that kill.
   LogCanAccessDataForOriginCrashKeys(
       expected_process_lock.ToString(),
-      GetKilledProcessOriginLock(security_state), url.GetOrigin().spec(),
-      failure_reason, keep_alive_durations, shutdown_delay_ref_count,
-      process_rfh_count);
+      GetKilledProcessOriginLock(security_state),
+      url.DeprecatedGetOriginAsURL().spec(), failure_reason,
+      keep_alive_durations, shutdown_delay_ref_count, process_rfh_count);
   return false;
 }
 

@@ -225,7 +225,7 @@ void AppLauncherTabHelper::ShouldAllowRequest(
     GURL origin = web_state_->GetNavigationManager()
                       ->GetLastCommittedItem()
                       ->GetURL()
-                      .GetOrigin();
+                      .DeprecatedGetOriginAsURL();
     U2FTabHelper* u2f_helper = U2FTabHelper::FromWebState(web_state_);
     request_url = u2f_helper->GetXCallbackUrl(request_url, origin);
     // If the URL was rejected by the U2F handler, |request_url| will be empty.

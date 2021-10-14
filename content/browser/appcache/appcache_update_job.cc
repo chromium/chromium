@@ -205,7 +205,8 @@ int64_t ComputeAppCacheResponsePadding(const GURL& response_url,
                                        const GURL& manifest_url) {
   // All cross-origin resources should have their size padded in response to
   // queries regarding quota usage.
-  if (response_url.GetOrigin() == manifest_url.GetOrigin())
+  if (response_url.DeprecatedGetOriginAsURL() ==
+      manifest_url.DeprecatedGetOriginAsURL())
     return 0;
 
   return storage::ComputeRandomResponsePadding();
@@ -329,7 +330,8 @@ void AppCacheUpdateJob::StartUpdate(AppCacheHost* host,
   if (!new_master_resource.is_empty()) {
     DCHECK_EQ(new_master_resource, host->pending_master_entry_url());
     DCHECK(!new_master_resource.has_ref());
-    DCHECK_EQ(new_master_resource.GetOrigin(), manifest_url_.GetOrigin());
+    DCHECK_EQ(new_master_resource.DeprecatedGetOriginAsURL(),
+              manifest_url_.DeprecatedGetOriginAsURL());
 
     if (base::Contains(failed_master_entries_, new_master_resource))
       return;
@@ -753,7 +755,8 @@ void AppCacheUpdateJob::HandleResourceFetchCompleted(URLFetcher* url_fetcher,
     std::string message = FormatUrlErrorMessage(
         kFormatString, url, entry_fetcher->result(), response_code);
     ResultType result = entry_fetcher->result();
-    bool is_cross_origin = url.GetOrigin() != manifest_url_.GetOrigin();
+    bool is_cross_origin = url.DeprecatedGetOriginAsURL() !=
+                           manifest_url_.DeprecatedGetOriginAsURL();
     switch (result) {
       case DISKCACHE_ERROR:
         HandleCacheFailure(

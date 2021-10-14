@@ -204,7 +204,7 @@ WebRequestEventDetails::CreatePublicSessionCopy() {
   std::string url;
   dict_.GetString(keys::kUrlKey, &url);
   GURL gurl(url);
-  copy->dict_.SetString(keys::kUrlKey, gurl.GetOrigin().spec());
+  copy->dict_.SetString(keys::kUrlKey, gurl.DeprecatedGetOriginAsURL().spec());
 
   return copy;
 }

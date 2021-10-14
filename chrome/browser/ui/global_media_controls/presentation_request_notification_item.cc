@@ -53,7 +53,7 @@ void PresentationRequestNotificationItem::SetView(
 
   media_session::MediaMetadata data;
   data.source_title = url_formatter::FormatUrl(
-      web_contents->GetVisibleURL().GetOrigin(),
+      web_contents->GetVisibleURL().DeprecatedGetOriginAsURL(),
       url_formatter::kFormatUrlOmitUsernamePassword |
           url_formatter::kFormatUrlOmitTrailingSlashOnBareHostname |
           url_formatter::kFormatUrlOmitHTTPS |

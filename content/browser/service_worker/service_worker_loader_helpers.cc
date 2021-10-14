@@ -57,7 +57,8 @@ bool IsPathRestrictionSatisfiedInternal(
       return false;
     }
 
-    if (max_scope.GetOrigin() != script_url.GetOrigin()) {
+    if (max_scope.DeprecatedGetOriginAsURL() !=
+        script_url.DeprecatedGetOriginAsURL()) {
       *error_message = "A cross-origin Service-Worker-Allowed header value ('";
       error_message->append(*service_worker_allowed_header_value);
       error_message->append("') was received when fetching the script.");

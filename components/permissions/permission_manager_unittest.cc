@@ -146,7 +146,8 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
 
   void CheckPermissionStatus(PermissionType type, PermissionStatus expected) {
     EXPECT_EQ(expected, GetPermissionControllerDelegate()->GetPermissionStatus(
-                            type, url_.GetOrigin(), url_.GetOrigin()));
+                            type, url_.DeprecatedGetOriginAsURL(),
+                            url_.DeprecatedGetOriginAsURL()));
   }
 
   void CheckPermissionResult(ContentSettingsType type,
@@ -154,7 +155,8 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
                              PermissionStatusSource expected_status_source) {
     PermissionResult result =
         GetPermissionControllerDelegate()->GetPermissionStatus(
-            type, url_.GetOrigin(), url_.GetOrigin());
+            type, url_.DeprecatedGetOriginAsURL(),
+            url_.DeprecatedGetOriginAsURL());
     EXPECT_EQ(expected_status, result.content_setting);
     EXPECT_EQ(expected_status_source, result.source);
   }

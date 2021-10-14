@@ -145,7 +145,7 @@ HttpAuthController::HttpAuthController(
     HostResolver* host_resolver)
     : target_(target),
       auth_url_(auth_url),
-      auth_origin_(auth_url.GetOrigin()),
+      auth_origin_(auth_url.DeprecatedGetOriginAsURL()),
       auth_path_(auth_url.path()),
       network_isolation_key_(network_isolation_key),
       embedded_identity_used_(false),

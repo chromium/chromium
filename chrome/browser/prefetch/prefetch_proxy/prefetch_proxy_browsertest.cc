@@ -2474,7 +2474,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
     GetNormalNetworkContext()->AddDomainReliabilityContextForTesting(
-        https_report_server.GetURL("a.test", "/").GetOrigin(),
+        https_report_server.GetURL("a.test", "/").DeprecatedGetOriginAsURL(),
         https_report_server.GetURL("a.test", "/domainreliabilty-upload"));
   }
 

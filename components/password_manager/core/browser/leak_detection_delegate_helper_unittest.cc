@@ -45,7 +45,7 @@ PasswordForm CreateForm(base::StringPiece origin,
   form.url = GURL(origin);
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }

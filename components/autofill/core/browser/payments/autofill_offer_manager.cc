@@ -43,7 +43,8 @@ void AutofillOfferManager::OnPersonalDataChanged() {
 void AutofillOfferManager::UpdateSuggestionsWithOffers(
     const GURL& last_committed_url,
     std::vector<Suggestion>& suggestions) {
-  GURL last_committed_url_origin = last_committed_url.GetOrigin();
+  GURL last_committed_url_origin =
+      last_committed_url.DeprecatedGetOriginAsURL();
   if (eligible_merchant_domains_.count(last_committed_url_origin) == 0) {
     return;
   }
@@ -83,7 +84,8 @@ bool AutofillOfferManager::IsUrlEligible(const GURL& last_committed_url) {
   // For most cases this vector will be empty, so add the empty check to avoid
   // unnecessary calls.
   return !eligible_merchant_domains_.empty() &&
-         eligible_merchant_domains_.count(last_committed_url.GetOrigin());
+         eligible_merchant_domains_.count(
+             last_committed_url.DeprecatedGetOriginAsURL());
 }
 
 AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
@@ -92,14 +94,16 @@ AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
     for (AutofillOfferData* offer :
          coupon_service_delegate_->GetFreeListingCouponsForUrl(
              last_committed_url)) {
-      if (offer->IsActiveAndEligibleForOrigin(last_committed_url.GetOrigin())) {
+      if (offer->IsActiveAndEligibleForOrigin(
+              last_committed_url.DeprecatedGetOriginAsURL())) {
         return offer;
       }
     }
   }
 
   for (AutofillOfferData* offer : personal_data_->GetAutofillOffers()) {
-    if (offer->IsActiveAndEligibleForOrigin(last_committed_url.GetOrigin())) {
+    if (offer->IsActiveAndEligibleForOrigin(
+            last_committed_url.DeprecatedGetOriginAsURL())) {
       return offer;
     }
   }

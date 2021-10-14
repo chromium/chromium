@@ -278,7 +278,8 @@ void GetFormField(autofill::FormFieldData* field,
   // Necessary so the values can be used inside a block.
   std::u16string formNameCopy = formName;
   GURL pageURL = _webState->GetLastCommittedURL();
-  GURL frameOrigin = frame ? frame->GetSecurityOrigin() : pageURL.GetOrigin();
+  GURL frameOrigin =
+      frame ? frame->GetSecurityOrigin() : pageURL.DeprecatedGetOriginAsURL();
   autofill::AutofillJavaScriptFeature::GetInstance()->FetchForms(
       frame, requiredFieldsCount, base::BindOnce(^(NSString* formJSON) {
         std::vector<autofill::FormData> formData;

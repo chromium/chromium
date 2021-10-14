@@ -150,7 +150,8 @@ AppCacheURLLoader* AppCacheRequestHandler::MaybeLoadFallbackForRedirect(
   // https://chromiumcodereview.appspot.com/10829356.
   if (!maybe_load_resource_executed_)
     return nullptr;
-  if (request_->GetURL().GetOrigin() == location.GetOrigin())
+  if (request_->GetURL().DeprecatedGetOriginAsURL() ==
+      location.DeprecatedGetOriginAsURL())
     return nullptr;
 
   DCHECK(!loader_.get());  // our jobs never generate redirects

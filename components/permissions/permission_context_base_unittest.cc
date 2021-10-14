@@ -84,7 +84,8 @@ class TestPermissionContext : public PermissionContextBase {
   ContentSetting GetContentSettingFromMap(const GURL& url_a,
                                           const GURL& url_b) {
     auto* map = PermissionsClient::Get()->GetSettingsMap(browser_context());
-    return map->GetContentSetting(url_a.GetOrigin(), url_b.GetOrigin(),
+    return map->GetContentSetting(url_a.DeprecatedGetOriginAsURL(),
+                                  url_b.DeprecatedGetOriginAsURL(),
                                   content_settings_type());
   }
 
@@ -606,7 +607,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
               permission_context.GetContentSettingFromMap(url, url));
 
     // Try to reset permission.
-    permission_context.ResetPermission(url.GetOrigin(), url.GetOrigin());
+    permission_context.ResetPermission(url.DeprecatedGetOriginAsURL(),
+                                       url.DeprecatedGetOriginAsURL());
     ContentSetting setting_after_reset =
         permission_context.GetContentSettingFromMap(url, url);
     ContentSetting default_setting =

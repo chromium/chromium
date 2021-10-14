@@ -1611,7 +1611,8 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
   GURL scope_url(data.scope_url());
   GURL script_url(data.script_url());
   if (!scope_url.is_valid() || !script_url.is_valid() ||
-      scope_url.GetOrigin() != script_url.GetOrigin() ||
+      scope_url.DeprecatedGetOriginAsURL() !=
+          script_url.DeprecatedGetOriginAsURL() ||
       key.origin() != url::Origin::Create(scope_url)) {
     DLOG(ERROR) << "Scope URL '" << data.scope_url() << "' and/or script url '"
                 << data.script_url() << "' and/or the storage key's origin '"

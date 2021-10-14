@@ -444,7 +444,8 @@ TEST_F(ThreatDetailsTest, ThreatSubResource) {
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
   // The referrer is stripped to its origin because it's a cross-origin URL.
-  expected.set_referrer_url(GURL(kReferrerURL).GetOrigin().spec());
+  expected.set_referrer_url(
+      GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
   expected.set_did_proceed(true);
   expected.set_repeat_visit(true);
 
@@ -457,7 +458,7 @@ TEST_F(ThreatDetailsTest, ThreatSubResource) {
   pb_resource->set_url(kThreatURL);
   pb_resource = expected.add_resources();
   pb_resource->set_id(2);
-  pb_resource->set_url(GURL(kReferrerURL).GetOrigin().spec());
+  pb_resource->set_url(GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
 
   VerifyResults(actual, expected);
 }
@@ -501,7 +502,8 @@ TEST_F(ThreatDetailsTest, SuspiciousSiteWithReferrerChain) {
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
   // The referrer is stripped to its origin because it's a cross-origin URL.
-  expected.set_referrer_url(GURL(kReferrerURL).GetOrigin().spec());
+  expected.set_referrer_url(
+      GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
   expected.set_did_proceed(true);
   expected.set_repeat_visit(true);
 
@@ -514,7 +516,7 @@ TEST_F(ThreatDetailsTest, SuspiciousSiteWithReferrerChain) {
   pb_resource->set_url(kThreatURL);
   pb_resource = expected.add_resources();
   pb_resource->set_id(2);
-  pb_resource->set_url(GURL(kReferrerURL).GetOrigin().spec());
+  pb_resource->set_url(GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
 
   // Make sure the referrer chain returned by the provider is copied into the
   // resulting proto.
@@ -1521,7 +1523,8 @@ TEST_F(ThreatDetailsTest, ThreatWithPendingLoad) {
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
   // The referrer is stripped to its origin because it's a cross-origin URL.
-  expected.set_referrer_url(GURL(kReferrerURL).GetOrigin().spec());
+  expected.set_referrer_url(
+      GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
   expected.set_did_proceed(true);
   expected.set_repeat_visit(true);
 
@@ -1534,7 +1537,7 @@ TEST_F(ThreatDetailsTest, ThreatWithPendingLoad) {
   pb_resource->set_url(kThreatURL);
   pb_resource = expected.add_resources();
   pb_resource->set_id(2);
-  pb_resource->set_url(GURL(kReferrerURL).GetOrigin().spec());
+  pb_resource->set_url(GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
 
   VerifyResults(actual, expected);
 }

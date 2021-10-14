@@ -2211,7 +2211,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
                                           ServiceAccessType::IMPLICIT_ACCESS)
           .get();
   password_manager::PasswordForm signin_form;
-  signin_form.signon_realm = iframe_url.GetOrigin().spec();
+  signin_form.signon_realm = iframe_url.DeprecatedGetOriginAsURL().spec();
   signin_form.url = iframe_url;
   signin_form.username_value = u"temp";
   signin_form.password_value = u"pa55w0rd";
@@ -2275,7 +2275,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
                                           ServiceAccessType::IMPLICIT_ACCESS)
           .get();
   password_manager::PasswordForm signin_form;
-  signin_form.signon_realm = iframe_url.GetOrigin().spec();
+  signin_form.signon_realm = iframe_url.DeprecatedGetOriginAsURL().spec();
   signin_form.url = iframe_url;
   signin_form.username_value = u"temp";
   signin_form.password_value = u"pa55w0rd";
@@ -3661,7 +3661,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
               browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
               .get());
   password_manager::PasswordForm signin_form;
-  signin_form.signon_realm = url_A.GetOrigin().spec();
+  signin_form.signon_realm = url_A.DeprecatedGetOriginAsURL().spec();
   signin_form.url = url_A;
   signin_form.username_value = u"user";
   signin_form.password_value = u"oldpassword";
@@ -3692,7 +3692,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // update bubble is shown instead.
   WaitForPasswordStore();  // Let the navigation take its effect on storing.
   ASSERT_THAT(password_store->stored_passwords(),
-              ElementsAre(testing::Key(url_A.GetOrigin())));
+              ElementsAre(testing::Key(url_A.DeprecatedGetOriginAsURL())));
   CheckThatCredentialsStored("user", "oldpassword");
   BubbleObserver prompt_observer(WebContents());
   EXPECT_TRUE(prompt_observer.IsUpdatePromptShownAutomatically());
@@ -3703,7 +3703,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   WaitForPasswordStore();
   // The stored credential has been updated with the new password.
   const auto& passwords_map = password_store->stored_passwords();
-  ASSERT_THAT(passwords_map, ElementsAre(testing::Key(url_A.GetOrigin())));
+  ASSERT_THAT(passwords_map,
+              ElementsAre(testing::Key(url_A.DeprecatedGetOriginAsURL())));
   for (const auto& credentials : passwords_map) {
     ASSERT_THAT(credentials.second, testing::SizeIs(1));
     EXPECT_EQ(u"user", credentials.second[0].username_value);
@@ -4023,7 +4024,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   content::RenderFrameHost* frame =
       ChildFrameAt(WebContents()->GetMainFrame(), 0);
   EXPECT_EQ(GURL(url::kAboutBlankURL), frame->GetLastCommittedURL());
-  EXPECT_EQ(submit_url.GetOrigin(), frame->GetLastCommittedOrigin().GetURL());
+  EXPECT_EQ(submit_url.DeprecatedGetOriginAsURL(),
+            frame->GetLastCommittedOrigin().GetURL());
   EXPECT_TRUE(frame->IsRenderFrameLive());
   EXPECT_FALSE(prompt_observer.IsSavePromptAvailable());
 

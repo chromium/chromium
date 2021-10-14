@@ -369,7 +369,7 @@ PasswordForm MakeNormalizedBlocklistedForm(
     // standard. DCHECK that this will not happen.
     DCHECK(digest.url.is_valid());
     DCHECK(digest.url.IsStandard());
-    result.url = digest.url.GetOrigin();
+    result.url = digest.url.DeprecatedGetOriginAsURL();
   }
   return result;
 }

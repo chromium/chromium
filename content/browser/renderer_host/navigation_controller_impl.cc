@@ -1589,7 +1589,8 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
 
     new_entry = GetLastCommittedEntry()->CloneAndReplace(
         frame_entry, true, request->frame_tree_node(), frame_tree_.root());
-    if (new_entry->GetURL().GetOrigin() != params.url.GetOrigin()) {
+    if (new_entry->GetURL().DeprecatedGetOriginAsURL() !=
+        params.url.DeprecatedGetOriginAsURL()) {
       // TODO(jam): we had one report of this with a URL that was redirecting to
       // only tildes. Until we understand that better, don't copy the cert in
       // this case.
@@ -1857,7 +1858,8 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
       // an SSLStatus. So we need to copy over the SSLStatus from the entry that
       // navigated it.
       NavigationEntryImpl* last_entry = GetLastCommittedEntry();
-      if (entry->GetURL().GetOrigin() == last_entry->GetURL().GetOrigin() &&
+      if (entry->GetURL().DeprecatedGetOriginAsURL() ==
+              last_entry->GetURL().DeprecatedGetOriginAsURL() &&
           last_entry->GetSSL().initialized && !entry->GetSSL().initialized &&
           was_restored) {
         entry->GetSSL() = last_entry->GetSSL();
@@ -1869,7 +1871,8 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
       if (request->GetSSLInfo().has_value() &&
           request->GetSSLInfo()->is_valid()) {
         entry->GetSSL() = SSLStatus(*(request->GetSSLInfo()));
-      } else if (entry->GetURL().GetOrigin() != request->GetURL().GetOrigin()) {
+      } else if (entry->GetURL().DeprecatedGetOriginAsURL() !=
+                 request->GetURL().DeprecatedGetOriginAsURL()) {
         entry->GetSSL() = SSLStatus();
       }
     }
@@ -2087,7 +2090,8 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
       const GURL& current_top_url = GetLastCommittedEntry()->GetURL();
       if (current_top_url.SchemeIsHTTPOrHTTPS() &&
           dest_top_url.SchemeIsHTTPOrHTTPS() &&
-          current_top_url.GetOrigin() != dest_top_url.GetOrigin()) {
+          current_top_url.DeprecatedGetOriginAsURL() !=
+              dest_top_url.DeprecatedGetOriginAsURL()) {
         bad_message::ReceivedBadMessage(rfh->GetProcess(),
                                         bad_message::NC_AUTO_SUBFRAME);
       }

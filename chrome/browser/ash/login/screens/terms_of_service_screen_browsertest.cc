@@ -65,8 +65,9 @@ absl::optional<std::string> ReadFileToOptionalString(
 }
 
 std::string TestServerBaseUrl(net::EmbeddedTestServer* server) {
-  return std::string(base::TrimString(server->base_url().GetOrigin().spec(),
-                                      "/", base::TrimPositions::TRIM_TRAILING));
+  return std::string(
+      base::TrimString(server->base_url().DeprecatedGetOriginAsURL().spec(),
+                       "/", base::TrimPositions::TRIM_TRAILING));
 }
 
 // Returns a successful `BasicHttpResponse` with `content`.

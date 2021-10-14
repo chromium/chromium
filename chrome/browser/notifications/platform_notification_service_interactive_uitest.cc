@@ -123,14 +123,16 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
   // page that's being used in this browser test.
   void GrantNotificationPermissionForTest() const {
     NotificationPermissionContext::UpdatePermission(
-        browser()->profile(), TestPageUrl().GetOrigin(), CONTENT_SETTING_ALLOW);
+        browser()->profile(), TestPageUrl().DeprecatedGetOriginAsURL(),
+        CONTENT_SETTING_ALLOW);
   }
 
   // Blocks permission to display Web Notifications for origin of the test
   // page that's being used in this browser test.
   void BlockNotificationPermissionForTest() const {
     NotificationPermissionContext::UpdatePermission(
-        browser()->profile(), TestPageUrl().GetOrigin(), CONTENT_SETTING_BLOCK);
+        browser()->profile(), TestPageUrl().DeprecatedGetOriginAsURL(),
+        CONTENT_SETTING_BLOCK);
   }
 
   bool RequestAndAcceptPermission() {
@@ -655,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   std::string script_result;
   ASSERT_TRUE(RunScript("DisplayPersistentNotification()", &script_result));
 
-  GURL test_origin = TestPageUrl().GetOrigin();
+  GURL test_origin = TestPageUrl().DeprecatedGetOriginAsURL();
 
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications(true /* is_persistent */);

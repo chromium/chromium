@@ -65,7 +65,7 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
   GURL GetInfinitePendingResponseUrl() const {
     GURL::Replacements replacements;
     replacements.SetPathStr("resource");
-    return url_.GetOrigin().ReplaceComponents(replacements);
+    return url_.DeprecatedGetOriginAsURL().ReplaceComponents(replacements);
   }
 
   // Main page URL that never finish loading.

@@ -212,7 +212,8 @@ bool TtsControllerImpl::StopCurrentUtteranceIfMatches(const GURL& source_url) {
   paused_ = false;
 
   if (!source_url.is_empty() && current_utterance_ &&
-      current_utterance_->GetSrcUrl().GetOrigin() != source_url.GetOrigin())
+      current_utterance_->GetSrcUrl().DeprecatedGetOriginAsURL() !=
+          source_url.DeprecatedGetOriginAsURL())
     return false;
 
   if (engine_delegate_ && current_utterance_ &&

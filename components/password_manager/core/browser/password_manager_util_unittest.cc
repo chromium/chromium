@@ -68,7 +68,7 @@ PasswordForm GetTestCredential() {
   PasswordForm form;
   form.scheme = PasswordForm::Scheme::kHtml;
   form.url = GURL(kTestURL);
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = kTestUsername;
   form.password_value = kTestPassword;
   return form;
@@ -452,9 +452,10 @@ TEST(PasswordManagerUtil, MakeNormalizedBlocklistedForm_Html) {
       password_manager::PasswordFormDigest(GetTestCredential()));
   EXPECT_TRUE(blocklisted_credential.blocked_by_user);
   EXPECT_EQ(PasswordForm::Scheme::kHtml, blocklisted_credential.scheme);
-  EXPECT_EQ(GURL(kTestURL).GetOrigin().spec(),
+  EXPECT_EQ(GURL(kTestURL).DeprecatedGetOriginAsURL().spec(),
             blocklisted_credential.signon_realm);
-  EXPECT_EQ(GURL(kTestURL).GetOrigin(), blocklisted_credential.url);
+  EXPECT_EQ(GURL(kTestURL).DeprecatedGetOriginAsURL(),
+            blocklisted_credential.url);
 }
 
 TEST(PasswordManagerUtil, MakeNormalizedBlocklistedForm_Proxy) {

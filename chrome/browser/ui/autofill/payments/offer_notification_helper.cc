@@ -24,9 +24,10 @@ void OfferNotificationHelper::OnDisplayOfferNotification(
 
 void OfferNotificationHelper::PrimaryPageChanged(content::Page& page) {
   // Don't do anything if user is still on an eligible origin for this offer.
-  if (base::ranges::count(
-          origins_to_display_notification_,
-          page.GetMainDocument().GetLastCommittedURL().GetOrigin())) {
+  if (base::ranges::count(origins_to_display_notification_,
+                          page.GetMainDocument()
+                              .GetLastCommittedURL()
+                              .DeprecatedGetOriginAsURL())) {
     return;
   }
 

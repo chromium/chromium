@@ -570,7 +570,7 @@ void GetPasswordManagerValue(
       // Origin check is done in PWM based on the
       // |target_element.container_frame_host->GetLastCommittedURL()|
       login.origin = target_element.container_frame_host->GetLastCommittedURL()
-                         .GetOrigin();
+                         .DeprecatedGetOriginAsURL();
       website_login_manager->GetPasswordForLogin(
           login, base::BindOnce(&OnGetStoredPassword, std::move(callback)));
       return;

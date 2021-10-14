@@ -326,7 +326,8 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
   // If `url` is one that is allowed in WebUI renderer process, ensure that its
   // origin is either opaque or its process lock matches the RFH process lock.
   if (is_allowed_in_web_ui_renderer) {
-    url::Origin url_origin = url::Origin::Create(url.GetOrigin());
+    url::Origin url_origin =
+        url::Origin::Create(url.DeprecatedGetOriginAsURL());
 
     // Verify `site_info`'s process lock matches the RFH's process lock, if one
     // is in place.

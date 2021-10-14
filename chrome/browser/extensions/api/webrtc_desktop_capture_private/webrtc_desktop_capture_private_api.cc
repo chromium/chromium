@@ -58,7 +58,7 @@ WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::Run() {
     return RespondNow(Error(kTargetNotFoundError));
   }
 
-  GURL origin = rfh->GetLastCommittedURL().GetOrigin();
+  GURL origin = rfh->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kAllowHttpScreenCapture) &&
       !network::IsUrlPotentiallyTrustworthy(origin)) {

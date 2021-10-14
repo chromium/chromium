@@ -75,8 +75,9 @@ void PermissionsBrowserTest::LoadPageInIframe(const std::string& url) {
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionsBrowserTest, PermissionInSameOriginIframe) {
-  GrantPermission(fuchsia::web::PermissionType::MICROPHONE,
-                  embedded_test_server()->GetURL("/").GetOrigin().spec());
+  GrantPermission(
+      fuchsia::web::PermissionType::MICROPHONE,
+      embedded_test_server()->GetURL("/").DeprecatedGetOriginAsURL().spec());
 
   // Mic permission is expected to be granted since the iframe is loaded from
   // the same origin.
@@ -99,8 +100,9 @@ IN_PROC_BROWSER_TEST_F(PermissionsBrowserTest, NoPermissionInSameOriginIframe) {
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionsBrowserTest, PermissionInCrossOriginIframe) {
-  GrantPermission(fuchsia::web::PermissionType::MICROPHONE,
-                  embedded_test_server()->GetURL("/").GetOrigin().spec());
+  GrantPermission(
+      fuchsia::web::PermissionType::MICROPHONE,
+      embedded_test_server()->GetURL("/").DeprecatedGetOriginAsURL().spec());
 
   // Start a second embedded test server. It's used to load the page inside
   // the <iframe> from an origin different from the origin of the embedding
@@ -120,8 +122,9 @@ IN_PROC_BROWSER_TEST_F(PermissionsBrowserTest, PermissionInCrossOriginIframe) {
 
 IN_PROC_BROWSER_TEST_F(PermissionsBrowserTest,
                        PermissionInCrossOriginIframeWithPermissionPolicy) {
-  GrantPermission(fuchsia::web::PermissionType::MICROPHONE,
-                  embedded_test_server()->GetURL("/").GetOrigin().spec());
+  GrantPermission(
+      fuchsia::web::PermissionType::MICROPHONE,
+      embedded_test_server()->GetURL("/").DeprecatedGetOriginAsURL().spec());
 
   // Start a second embedded test server. It's used to load the page inside
   // the <iframe> from an origin different from the origin of the embedding
@@ -138,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsBrowserTest,
 
   InjectBeforeLoadJs(
       base::StringPrintf("iframePermissionPolicy = 'microphone %s';",
-                         iframe_src.GetOrigin().spec().c_str()));
+                         iframe_src.DeprecatedGetOriginAsURL().spec().c_str()));
 
   ASSERT_NO_FATAL_FAILURE(LoadPageInIframe(iframe_src.spec()));
 

@@ -1232,7 +1232,7 @@ void FileManagerPrivateInternalGetRecentFilesFunction::OnGetRecentFiles(
   file_manager::util::ConvertFileDefinitionListToEntryDefinitionList(
       file_manager::util::GetFileSystemContextForSourceURL(profile,
                                                            source_url()),
-      url::Origin::Create(source_url().GetOrigin()),
+      url::Origin::Create(source_url().DeprecatedGetOriginAsURL()),
       file_definition_list,  // Safe, since copied internally.
       base::BindOnce(&FileManagerPrivateInternalGetRecentFilesFunction::
                          OnConvertFileDefinitionListToEntryDefinitionList,

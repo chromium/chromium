@@ -436,7 +436,8 @@ void IFrameWaiter::RenderFrameCreated(
         run_loop_.Quit();
       break;
     case ORIGIN:
-      if (render_frame_host->GetLastCommittedURL().GetOrigin() == origin_)
+      if (render_frame_host->GetLastCommittedURL().DeprecatedGetOriginAsURL() ==
+          origin_)
         run_loop_.Quit();
       break;
     case URL:
@@ -454,7 +455,7 @@ void IFrameWaiter::DidFinishLoad(content::RenderFrameHost* render_frame_host,
     return;
   switch (query_type_) {
     case ORIGIN:
-      if (validated_url.GetOrigin() == origin_)
+      if (validated_url.DeprecatedGetOriginAsURL() == origin_)
         run_loop_.Quit();
       break;
     case URL:
@@ -483,7 +484,7 @@ void IFrameWaiter::FrameNameChanged(content::RenderFrameHost* render_frame_host,
 bool IFrameWaiter::FrameHasOrigin(const GURL& origin,
                                   content::RenderFrameHost* frame) {
   GURL url = frame->GetLastCommittedURL();
-  return (url.GetOrigin() == origin.GetOrigin());
+  return (url.DeprecatedGetOriginAsURL() == origin.DeprecatedGetOriginAsURL());
 }
 
 // TestRecipeReplayer ---------------------------------------------------------

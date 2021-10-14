@@ -398,8 +398,8 @@ static void JNI_WebsitePreferenceBridge_ReportNotificationRevokedForOrigin(
 
   permissions::PermissionUmaUtil::PermissionRevoked(
       ContentSettingsType::NOTIFICATIONS,
-      permissions::PermissionSourceUI::ANDROID_SETTINGS, url.GetOrigin(),
-      unwrap(jbrowser_context_handle));
+      permissions::PermissionSourceUI::ANDROID_SETTINGS,
+      url.DeprecatedGetOriginAsURL(), unwrap(jbrowser_context_handle));
 }
 
 static jint JNI_WebsitePreferenceBridge_GetPermissionSettingForOrigin(

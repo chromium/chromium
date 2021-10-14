@@ -1740,7 +1740,8 @@ void DevToolsUIBindings::ReadyToCommitNavigation(
   }
 
   content::RenderFrameHost* frame = navigation_handle->GetRenderFrameHost();
-  std::string origin = navigation_handle->GetURL().GetOrigin().spec();
+  std::string origin =
+      navigation_handle->GetURL().DeprecatedGetOriginAsURL().spec();
   auto it = extensions_api_.find(origin);
   if (it == extensions_api_.end())
     return;

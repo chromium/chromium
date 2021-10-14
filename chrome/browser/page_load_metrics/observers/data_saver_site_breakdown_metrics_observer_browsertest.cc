@@ -265,7 +265,7 @@ std::string ConvertSaveDataSavingsEstimateToJson(
   for (const auto& estimate : estimates) {
     base::StringAppendF(&origin_savings_estimate_json, "\"%s\": %s,",
                         embedded_test_server.GetURL(estimate.host, "/")
-                            .GetOrigin()
+                            .DeprecatedGetOriginAsURL()
                             .spec()
                             .c_str(),
                         estimate.data_savings_percent.c_str());

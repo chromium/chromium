@@ -1282,7 +1282,8 @@ bool NavigationManagerImpl::CanTrustLastCommittedItem(
   // visible.
   GURL web_view_url = web_view_cache_.GetVisibleWebViewURL();
   GURL last_committed_url = last_committed_item->GetURL();
-  if (web_view_url.GetOrigin() == last_committed_url.GetOrigin())
+  if (web_view_url.DeprecatedGetOriginAsURL() ==
+      last_committed_url.DeprecatedGetOriginAsURL())
     return true;
 
   // Fast back-forward navigations can be performed synchronously, with the

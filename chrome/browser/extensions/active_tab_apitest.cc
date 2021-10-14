@@ -112,7 +112,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {
         browser()->tab_strip_model()->GetActiveWebContents())
         ->RunAction(extension, true);
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
-    EXPECT_EQ(GURL(listener.message()).GetOrigin().spec(), listener.message());
+    EXPECT_EQ(GURL(listener.message()).DeprecatedGetOriginAsURL().spec(),
+              listener.message());
 
     // Clean up.
     ExtensionTabUtil::SetPlatformDelegate(nullptr);

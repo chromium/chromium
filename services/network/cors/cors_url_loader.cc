@@ -294,8 +294,8 @@ void CorsURLLoader::FollowRedirect(
     return;
   }
 
-  if (new_url &&
-      (new_url->GetOrigin() != deferred_redirect_url_->GetOrigin())) {
+  if (new_url && (new_url->DeprecatedGetOriginAsURL() !=
+                  deferred_redirect_url_->DeprecatedGetOriginAsURL())) {
     NOTREACHED() << "Can only change the URL within the same origin.";
     HandleComplete(URLLoaderCompletionStatus(net::ERR_FAILED));
     return;

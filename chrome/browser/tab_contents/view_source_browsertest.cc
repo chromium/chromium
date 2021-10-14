@@ -266,8 +266,9 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, CrossSiteSubframe) {
 
   // Do a sanity check that in this particular test page the main frame and the
   // subframe are cross-site.
-  EXPECT_NE(original_main_frame->GetLastCommittedURL().GetOrigin(),
-            original_child_frame->GetLastCommittedURL().GetOrigin());
+  EXPECT_NE(
+      original_main_frame->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
+      original_child_frame->GetLastCommittedURL().DeprecatedGetOriginAsURL());
   if (content::AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(original_main_frame->GetSiteInstance(),
               original_child_frame->GetSiteInstance());

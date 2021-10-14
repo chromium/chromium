@@ -127,7 +127,7 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptAccepted(
     absl::optional<GURL> last_committed_url_origin;
     if (autofill_client_->GetLastCommittedURL().is_valid()) {
       last_committed_url_origin =
-          autofill_client_->GetLastCommittedURL().GetOrigin();
+          autofill_client_->GetLastCommittedURL().DeprecatedGetOriginAsURL();
     }
     unmask_request_->last_committed_url_origin = last_committed_url_origin;
   }

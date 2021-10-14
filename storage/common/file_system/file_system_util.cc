@@ -189,7 +189,7 @@ bool ParseFileSystemSchemeURL(const GURL& url,
     return false;
 
   if (origin_url)
-    *origin_url = url.GetOrigin();
+    *origin_url = url.DeprecatedGetOriginAsURL();
   if (type)
     *type = file_system_type;
   if (virtual_path)

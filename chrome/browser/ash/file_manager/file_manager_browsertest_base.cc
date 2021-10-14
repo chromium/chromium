@@ -2282,7 +2282,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     // Obtain the mock CWS widget container URL and URL.origin.
     const GURL url = embedded_test_server()->GetURL(
         "/chromeos/file_manager/cws_container_mock/index.html");
-    std::string origin = url.GetOrigin().spec();
+    std::string origin = url.DeprecatedGetOriginAsURL().spec();
     if (*origin.rbegin() == '/')  // Strip origin trailing '/'.
       origin.resize(origin.length() - 1);
 

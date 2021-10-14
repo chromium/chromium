@@ -1463,7 +1463,8 @@ void WebViewGuest::EnterFullscreenModeForTab(
     const blink::mojom::FullscreenOptions& options) {
   // Ask the embedder for permission.
   base::DictionaryValue request_info;
-  const GURL& origin = requesting_frame->GetLastCommittedURL().GetOrigin();
+  const GURL& origin =
+      requesting_frame->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   request_info.SetString(webview::kOrigin, origin.spec());
   web_view_permission_helper_->RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_FULLSCREEN, request_info,

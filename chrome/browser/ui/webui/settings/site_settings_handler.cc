@@ -177,7 +177,7 @@ base::flat_set<std::string> GetInstalledAppOrigins(Profile* profile) {
           // For web apps, |PublisherId()| is set to the start URL.
           const GURL start_url(update.PublisherId());
           DCHECK(start_url.is_valid());
-          origins.push_back(start_url.GetOrigin().spec());
+          origins.push_back(start_url.DeprecatedGetOriginAsURL().spec());
         }
       });
   return base::flat_set<std::string>(std::move(origins));

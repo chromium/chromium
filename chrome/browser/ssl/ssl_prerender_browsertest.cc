@@ -86,7 +86,8 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest, TestNoInterstitialInPrerender) {
   {
     auto url_loader_interceptor =
         content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
-            GetChromeTestDataDir().MaybeAsASCII(), kInitialUrl.GetOrigin());
+            GetChromeTestDataDir().MaybeAsASCII(),
+            kInitialUrl.DeprecatedGetOriginAsURL());
 
     // Navigate to the initial page.
     ASSERT_TRUE(NavigateToURL(browser(), kInitialUrl));
@@ -160,7 +161,8 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
   {
     auto url_loader_interceptor =
         content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
-            GetChromeTestDataDir().MaybeAsASCII(), kInitialUrl.GetOrigin());
+            GetChromeTestDataDir().MaybeAsASCII(),
+            kInitialUrl.DeprecatedGetOriginAsURL());
 
     // Navigate to the initial page and register a service worker that will
     // relay the fetch.

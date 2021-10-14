@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   }
 
   // The top frame's origin should be a.com, not c.com.
-  EXPECT_EQ(top_origin + "/", main_url.GetOrigin().spec());
+  EXPECT_EQ(top_origin + "/", main_url.DeprecatedGetOriginAsURL().spec());
 }
 
 // Verify that when the last active frame in a process is going away as part of

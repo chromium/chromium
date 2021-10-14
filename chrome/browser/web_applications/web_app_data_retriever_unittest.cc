@@ -348,7 +348,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_FrameNavigated) {
   web_contents_tester()->SetTitle(kFooTitle);
 
   const GURL kFooUrl("https://foo.example/bar");
-  web_contents_tester()->NavigateAndCommit(kFooUrl.GetOrigin());
+  web_contents_tester()->NavigateAndCommit(kFooUrl.DeprecatedGetOriginAsURL());
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
@@ -359,7 +359,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_FrameNavigated) {
   web_contents_tester()->NavigateAndCommit(kFooUrl);
   run_loop.Run();
 
-  EXPECT_EQ(kFooUrl.GetOrigin(), web_app_info()->start_url);
+  EXPECT_EQ(kFooUrl.DeprecatedGetOriginAsURL(), web_app_info()->start_url);
   EXPECT_EQ(kFooTitle, web_app_info()->title);
 }
 

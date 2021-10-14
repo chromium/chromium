@@ -49,7 +49,7 @@ class SearchEnginePreconnectorBrowserTest
         "chrome/test/data/navigation_predictor");
     ASSERT_TRUE(https_server_->Start());
 
-    preresolve_counts_[GetTestURL("/").GetOrigin()] = 0;
+    preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()] = 0;
     preresolve_counts_[GURL(kGoogleSearch)] = 0;
     preresolve_counts_[GURL(kFakeSearch)] = 0;
 
@@ -75,13 +75,13 @@ class SearchEnginePreconnectorBrowserTest
       const GURL& url,
       const net::NetworkIsolationKey& network_isolation_key,
       bool success) override {
-    const GURL origin = url.GetOrigin();
+    const GURL origin = url.DeprecatedGetOriginAsURL();
     if (!base::Contains(preresolve_counts_, origin)) {
       return;
     }
 
     // Only the test URL should successfully preconnect.
-    EXPECT_EQ(origin == GetTestURL("/").GetOrigin(), success);
+    EXPECT_EQ(origin == GetTestURL("/").DeprecatedGetOriginAsURL(), success);
 
     ++preresolve_counts_[origin];
     if (run_loops_[origin])
@@ -89,7 +89,7 @@ class SearchEnginePreconnectorBrowserTest
   }
 
   void WaitForPreresolveCountForURL(const GURL& url, int expected_count) {
-    const GURL origin = url.GetOrigin();
+    const GURL origin = url.DeprecatedGetOriginAsURL();
     EXPECT_TRUE(base::Contains(preresolve_counts_, origin));
     while (preresolve_counts_[origin] < expected_count) {
       run_loops_[origin] = std::make_unique<base::RunLoop>();
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
   const GURL kDefaultUrl(kGoogleSearch);
   WaitForPreresolveCountForURL(kDefaultUrl, 2);
   EXPECT_EQ(2, preresolve_counts_[kDefaultUrl]);
-  EXPECT_EQ(0, preresolve_counts_[GetTestURL("/").GetOrigin()]);
+  EXPECT_EQ(0, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
 
   TemplateURLData data;
   data.SetShortName(kShortName);
@@ -175,11 +175,11 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
   // preconnected.
   WaitForPreresolveCountForURL(GetTestURL("/"), 2);
   // Preconnect should occur for DSE.
-  EXPECT_EQ(2, preresolve_counts_[GetTestURL("/").GetOrigin()]);
+  EXPECT_EQ(2, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
 
   WaitForPreresolveCountForURL(GetTestURL("/"), 4);
   // Preconnect should occur again for DSE.
-  EXPECT_EQ(4, preresolve_counts_[GetTestURL("/").GetOrigin()]);
+  EXPECT_EQ(4, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
 }
 
 IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
   EXPECT_EQ(2, preresolve_counts_[search_url]);
 
   // No preconnects should have been issued for the test URL.
-  EXPECT_EQ(0, preresolve_counts_[GetTestURL("/").GetOrigin()]);
+  EXPECT_EQ(0, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
 }
 
 class SearchEnginePreconnectorForegroundBrowserTest
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorForegroundBrowserTest,
       load_page() ? true : false, 1);
 
   EXPECT_EQ(load_page() ? 1 : 0,
-            preresolve_counts_[GetTestURL("/").GetOrigin()]);
+            preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
 }
 
 class SearchEnginePreconnectorKeepSocketBrowserTest
@@ -497,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorEnabledOnlyBrowserTest,
   EXPECT_EQ(2, preresolve_counts_[search_url]);
 
   // No preconnects should have been issued for the test URL.
-  EXPECT_EQ(0, preresolve_counts_[GetTestURL("/").GetOrigin()]);
+  EXPECT_EQ(0, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
 }
 
 }  // namespace

@@ -117,7 +117,8 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
   }
 
   void BlockAlicePay() {
-    GURL origin = alicepay_.GetURL("alicepay.com", "/app1/").GetOrigin();
+    GURL origin =
+        alicepay_.GetURL("alicepay.com", "/app1/").DeprecatedGetOriginAsURL();
     HostContentSettingsMapFactory::GetForProfile(browser()->profile())
         ->SetContentSettingDefaultScope(origin, origin,
                                         ContentSettingsType::PAYMENT_HANDLER,

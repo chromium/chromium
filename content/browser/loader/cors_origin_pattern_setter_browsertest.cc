@@ -84,7 +84,8 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
       base::RunLoop run_loop;
       CorsOriginPatternSetter::Set(
           web_contents()->GetBrowserContext(),
-          url::Origin::Create(embedded_test_server()->base_url().GetOrigin()),
+          url::Origin::Create(
+              embedded_test_server()->base_url().DeprecatedGetOriginAsURL()),
           std::move(list), std::vector<network::mojom::CorsOriginPatternPtr>(),
           run_loop.QuitClosure());
       run_loop.Run();
@@ -100,8 +101,9 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
       base::RunLoop run_loop;
       CorsOriginPatternSetter::Set(
           web_contents()->GetBrowserContext(),
-          url::Origin::Create(
-              embedded_test_server()->GetURL(kTestHost, "/").GetOrigin()),
+          url::Origin::Create(embedded_test_server()
+                                  ->GetURL(kTestHost, "/")
+                                  .DeprecatedGetOriginAsURL()),
           std::move(list), std::vector<network::mojom::CorsOriginPatternPtr>(),
           run_loop.QuitClosure());
       run_loop.Run();

@@ -56,7 +56,7 @@ DataSaverSiteBreakdownMetricsObserver::OnCommit(
                         .HostNoBrackets();
   committed_origin_ = navigation_handle->GetWebContents()
                           ->GetLastCommittedURL()
-                          .GetOrigin()
+                          .DeprecatedGetOriginAsURL()
                           .spec();
   return CONTINUE_OBSERVING;
 }

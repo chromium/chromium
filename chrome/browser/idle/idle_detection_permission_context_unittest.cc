@@ -34,7 +34,8 @@ class TestIdleDetectionPermissionContext
   ContentSetting GetContentSettingFromMap(const GURL& url_a,
                                           const GURL& url_b) {
     return HostContentSettingsMapFactory::GetForProfile(browser_context())
-        ->GetContentSetting(url_a.GetOrigin(), url_b.GetOrigin(),
+        ->GetContentSetting(url_a.DeprecatedGetOriginAsURL(),
+                            url_b.DeprecatedGetOriginAsURL(),
                             content_settings_type());
   }
 

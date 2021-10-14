@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest,
       embedded_test_server()->GetURL("example.com", kTestPagePath));
 
   ChromeContentBrowserClientOverrideWebAppScope browser_client;
-  browser_client.set_web_app_scope(kTestPageUrl.GetOrigin());
+  browser_client.set_web_app_scope(kTestPageUrl.DeprecatedGetOriginAsURL());
 
   content::ContentBrowserClient* old_browser_client =
       content::SetBrowserClientForTesting(&browser_client);

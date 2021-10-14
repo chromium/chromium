@@ -123,7 +123,7 @@ bool CheckCertificateChainAgainstAllowlist(
 }
 
 std::string SanitizeUrl(const std::string& url) {
-  return GURL(url).GetOrigin().spec();
+  return GURL(url).DeprecatedGetOriginAsURL().spec();
 }
 
 }  // namespace

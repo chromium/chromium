@@ -64,7 +64,8 @@ std::map<GURL, std::vector<TimestampedSetting>> GetAllSettingsForProfile(
       if (last_modified.is_null()) {
         continue;
       }
-      GURL origin = GURL(e.primary_pattern.ToString()).GetOrigin();
+      GURL origin =
+          GURL(e.primary_pattern.ToString()).DeprecatedGetOriginAsURL();
       results[origin].emplace_back(
           last_modified, content_type,
           content_settings::ValueToContentSetting(&e.setting_value),
@@ -77,7 +78,7 @@ std::map<GURL, std::vector<TimestampedSetting>> GetAllSettingsForProfile(
       auto last_modified =
           PermissionDecisionAutoBlockerFactory::GetForProfile(profile)
               ->GetEmbargoStartTime(url, content_type);
-      results[url.GetOrigin()].emplace_back(
+      results[url.DeprecatedGetOriginAsURL()].emplace_back(
           last_modified, content_type, ContentSetting::CONTENT_SETTING_BLOCK,
           site_settings::SiteSettingSource::kEmbargo);
     }

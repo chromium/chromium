@@ -266,7 +266,7 @@ void LogoServiceImpl::GetLogo(LogoCallbacks callbacks, bool for_webui_ntp) {
     } else {
       doodle_url = template_url->doodle_url();
     }
-    base_url = doodle_url.GetOrigin();
+    base_url = doodle_url.DeprecatedGetOriginAsURL();
   }
 
   if (!logo_url.is_valid() && !doodle_url.is_valid()) {

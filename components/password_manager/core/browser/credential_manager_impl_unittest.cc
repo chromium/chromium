@@ -239,7 +239,7 @@ class CredentialManagerImplTest : public testing::Test,
     form_.icon_url = GURL("https://example.com/icon.png");
     form_.password_value = u"Password";
     form_.url = client_->GetLastCommittedOrigin().GetURL();
-    form_.signon_realm = form_.url.GetOrigin().spec();
+    form_.signon_realm = form_.url.DeprecatedGetOriginAsURL().spec();
     form_.scheme = PasswordForm::Scheme::kHtml;
     form_.skip_zero_click = false;
 
@@ -263,7 +263,8 @@ class CredentialManagerImplTest : public testing::Test,
     origin_path_form_.display_name = u"Display Name 2";
     origin_path_form_.password_value = u"Password 2";
     origin_path_form_.url = GURL("https://example.com/path");
-    origin_path_form_.signon_realm = origin_path_form_.url.GetOrigin().spec();
+    origin_path_form_.signon_realm =
+        origin_path_form_.url.DeprecatedGetOriginAsURL().spec();
     origin_path_form_.scheme = PasswordForm::Scheme::kHtml;
     origin_path_form_.skip_zero_click = false;
 
@@ -271,7 +272,8 @@ class CredentialManagerImplTest : public testing::Test,
     subdomain_form_.display_name = u"Display Name 2";
     subdomain_form_.password_value = u"Password 2";
     subdomain_form_.url = GURL("https://subdomain.example.com/path");
-    subdomain_form_.signon_realm = subdomain_form_.url.GetOrigin().spec();
+    subdomain_form_.signon_realm =
+        subdomain_form_.url.DeprecatedGetOriginAsURL().spec();
     subdomain_form_.scheme = PasswordForm::Scheme::kHtml;
     subdomain_form_.skip_zero_click = false;
 
@@ -279,7 +281,8 @@ class CredentialManagerImplTest : public testing::Test,
     cross_origin_form_.display_name = u"Display Name";
     cross_origin_form_.password_value = u"Password";
     cross_origin_form_.url = GURL("https://example.net/");
-    cross_origin_form_.signon_realm = cross_origin_form_.url.GetOrigin().spec();
+    cross_origin_form_.signon_realm =
+        cross_origin_form_.url.DeprecatedGetOriginAsURL().spec();
     cross_origin_form_.scheme = PasswordForm::Scheme::kHtml;
     cross_origin_form_.skip_zero_click = false;
 
@@ -1610,7 +1613,7 @@ TEST_P(CredentialManagerImplTest, ZeroClickAfterMigratingHttpCredential) {
   // There is an http credential saved. It should be migrated and used for auto
   // sign-in.
   form_.url = HttpURLFromHttps(form_.url);
-  form_.signon_realm = form_.url.GetOrigin().spec();
+  form_.signon_realm = form_.url.DeprecatedGetOriginAsURL().spec();
   // That is the default value for old credentials.
   form_.skip_zero_click = true;
   store_->AddLogin(form_);

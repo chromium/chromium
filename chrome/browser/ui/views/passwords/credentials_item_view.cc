@@ -134,7 +134,7 @@ CredentialsItemView::CredentialsItemView(
   if (password_manager_util::GetMatchType(*form) !=
       password_manager_util::GetLoginMatchType::kExact) {
     info_icon_ = AddChildView(std::make_unique<views::TooltipIcon>(
-        base::UTF8ToUTF16(form->url.GetOrigin().spec())));
+        base::UTF8ToUTF16(form->url.DeprecatedGetOriginAsURL().spec())));
   }
 
   if (!upper_text.empty() && !lower_text.empty())

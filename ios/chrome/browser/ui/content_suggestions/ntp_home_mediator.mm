@@ -552,7 +552,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 // Save the NTP scroll offset into the last committed navigation item for the
 // before we navigate away.
 - (void)saveContentOffsetForWebState:(web::WebState*)webState {
-  if (webState->GetLastCommittedURL().GetOrigin() != kChromeUINewTabURL)
+  if (webState->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
+      kChromeUINewTabURL)
     return;
 
   web::NavigationManager* manager = webState->GetNavigationManager();
@@ -588,7 +589,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 // Set the NTP scroll offset for the current navigation item.
 - (void)setContentOffsetForWebState:(web::WebState*)webState {
-  if (webState->GetVisibleURL().GetOrigin() != kChromeUINewTabURL) {
+  if (webState->GetVisibleURL().DeprecatedGetOriginAsURL() !=
+      kChromeUINewTabURL) {
     return;
   }
   web::NavigationManager* navigationManager = webState->GetNavigationManager();

@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, Upload) {
   {
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
     GetNetworkContext()->AddDomainReliabilityContextForTesting(
-        test_server()->base_url().GetOrigin(), upload_url);
+        test_server()->base_url().DeprecatedGetOriginAsURL(), upload_url);
   }
 
   // Trigger an error.

@@ -90,7 +90,7 @@ class CredentialManagerPendingRequestTaskTest : public ::testing::Test {
     form_.username_value = u"Username";
     form_.password_value = u"Password";
     form_.url = url;
-    form_.signon_realm = form_.url.GetOrigin().spec();
+    form_.signon_realm = form_.url.DeprecatedGetOriginAsURL().spec();
     form_.scheme = PasswordForm::Scheme::kHtml;
     form_.skip_zero_click = false;
   }
