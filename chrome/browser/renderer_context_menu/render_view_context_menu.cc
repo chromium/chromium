@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -2857,6 +2858,11 @@ void RenderViewContextMenu::RegisterMenuShownCallbackForTesting(
   *GetMenuShownCallback() = std::move(cb);
 }
 
+void RenderViewContextMenu::RegisterExecutePluginActionCallbackForTesting(
+    ExecutePluginActionCallback cb) {
+  execute_plugin_action_callback_ = std::move(cb);
+}
+
 ProtocolHandlerRegistry::ProtocolHandlerList
 RenderViewContextMenu::GetHandlersForLinkUrl() {
   ProtocolHandlerRegistry::ProtocolHandlerList handlers =
@@ -3579,6 +3585,9 @@ void RenderViewContextMenu::PluginActionAt(
       plugin_rfh->GetView()->TransformRootPointToViewCoordSpace(
           gfx::PointF(location)));
   plugin_rfh->ExecutePluginActionAtLocalLocation(local_location, plugin_action);
+
+  if (execute_plugin_action_callback_)
+    std::move(execute_plugin_action_callback_).Run(plugin_rfh, plugin_action);
 }
 
 Browser* RenderViewContextMenu::GetBrowser() const {

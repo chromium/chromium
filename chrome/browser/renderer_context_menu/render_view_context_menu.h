@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
 #include "build/branding_buildflags.h"
@@ -88,6 +89,10 @@ class DlpRulesManager;
 class RenderViewContextMenu : public RenderViewContextMenuBase,
                               public ProtocolHandlerRegistry::Observer {
  public:
+  using ExecutePluginActionCallback =
+      base::OnceCallback<void(content::RenderFrameHost*,
+                              blink::mojom::PluginActionType)>;
+
   RenderViewContextMenu(content::RenderFrameHost* render_frame_host,
                         const content::ContextMenuParams& params);
 
@@ -112,6 +117,12 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   // menu is shown.
   static void RegisterMenuShownCallbackForTesting(
       base::OnceCallback<void(RenderViewContextMenu*)> cb);
+
+  // Register a one-time callback that will be called the next time a plugin
+  // action is executed from a given render frame.
+  void RegisterExecutePluginActionCallbackForTesting(
+      base::OnceCallback<void(content::RenderFrameHost*,
+                              blink::mojom::PluginActionType)> cb);
 
  protected:
   Profile* GetProfile() const;
@@ -366,6 +377,10 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
 
   // The system app (if any) associated with the WebContents we're in.
   const web_app::SystemWebAppDelegate* system_app_ = nullptr;
+
+  // A one-time callback that will be called the next time a plugin action is
+  // executed from a given render frame.
+  ExecutePluginActionCallback execute_plugin_action_callback_;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Controller for Lens Region Search feature. This controller will be
