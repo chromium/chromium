@@ -61,7 +61,7 @@ class MediatorTest : public testing::Test {
         std::make_unique<QuickPairProcessManagerImpl>());
 
     device_ = base::MakeRefCounted<Device>(kTestMetadataId, kTestAddress,
-                                           Protocol::kFastPair);
+                                           Protocol::kFastPairInitial);
   }
 
  protected:

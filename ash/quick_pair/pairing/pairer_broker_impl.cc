@@ -43,7 +43,9 @@ void PairerBrokerImpl::RemoveObserver(Observer* observer) {
 
 void PairerBrokerImpl::PairDevice(scoped_refptr<Device> device) {
   switch (device->protocol) {
-    case Protocol::kFastPair:
+    case Protocol::kFastPairInitial:
+    case Protocol::kFastPairRetroactive:
+    case Protocol::kFastPairSubsequent:
       PairFastPairDevice(std::move(device));
       break;
   }

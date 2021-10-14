@@ -30,17 +30,23 @@ void UIBrokerImpl::RemoveObserver(Observer* observer) {
 
 void UIBrokerImpl::ShowDiscovery(scoped_refptr<Device> device) {
   switch (device->protocol) {
-    case Protocol::kFastPair:
+    case Protocol::kFastPairInitial:
+    case Protocol::kFastPairSubsequent:
       fast_pair_presenter_->ShowDiscovery(
           device, base::BindOnce(&UIBrokerImpl::NotifyDiscoveryAction,
                                  weak_pointer_factory_.GetWeakPtr(), device));
+      break;
+    case Protocol::kFastPairRetroactive:
+      NOTREACHED();
       break;
   }
 }
 
 void UIBrokerImpl::ShowPairing(scoped_refptr<Device> device) {
   switch (device->protocol) {
-    case Protocol::kFastPair:
+    case Protocol::kFastPairInitial:
+    case Protocol::kFastPairRetroactive:
+    case Protocol::kFastPairSubsequent:
       fast_pair_presenter_->ShowPairing(std::move(device));
       break;
   }
@@ -48,7 +54,9 @@ void UIBrokerImpl::ShowPairing(scoped_refptr<Device> device) {
 
 void UIBrokerImpl::ShowPairingFailed(scoped_refptr<Device> device) {
   switch (device->protocol) {
-    case Protocol::kFastPair:
+    case Protocol::kFastPairInitial:
+    case Protocol::kFastPairRetroactive:
+    case Protocol::kFastPairSubsequent:
       fast_pair_presenter_->ShowPairingFailed(
           device, base::BindOnce(&UIBrokerImpl::NotifyPairingFailedAction,
                                  weak_pointer_factory_.GetWeakPtr(), device));
@@ -58,17 +66,23 @@ void UIBrokerImpl::ShowPairingFailed(scoped_refptr<Device> device) {
 
 void UIBrokerImpl::ShowAssociateAccount(scoped_refptr<Device> device) {
   switch (device->protocol) {
-    case Protocol::kFastPair:
+    case Protocol::kFastPairInitial:
+    case Protocol::kFastPairRetroactive:
       fast_pair_presenter_->ShowAssociateAccount(
           device, base::BindOnce(&UIBrokerImpl::NotifyAssociateAccountAction,
                                  weak_pointer_factory_.GetWeakPtr(), device));
+      break;
+    case Protocol::kFastPairSubsequent:
+      NOTREACHED();
       break;
   }
 }
 
 void UIBrokerImpl::ShowCompanionApp(scoped_refptr<Device> device) {
   switch (device->protocol) {
-    case Protocol::kFastPair:
+    case Protocol::kFastPairInitial:
+    case Protocol::kFastPairRetroactive:
+    case Protocol::kFastPairSubsequent:
       fast_pair_presenter_->ShowCompanionApp(
           device, base::BindOnce(&UIBrokerImpl::NotifyCompanionAppAction,
                                  weak_pointer_factory_.GetWeakPtr(), device));
@@ -78,7 +92,9 @@ void UIBrokerImpl::ShowCompanionApp(scoped_refptr<Device> device) {
 
 void UIBrokerImpl::RemoveNotifications(scoped_refptr<Device> device) {
   switch (device->protocol) {
-    case Protocol::kFastPair:
+    case Protocol::kFastPairInitial:
+    case Protocol::kFastPairRetroactive:
+    case Protocol::kFastPairSubsequent:
       fast_pair_presenter_->RemoveNotifications(std::move(device));
       break;
   }

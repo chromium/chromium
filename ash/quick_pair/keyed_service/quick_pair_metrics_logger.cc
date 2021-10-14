@@ -25,10 +25,14 @@ QuickPairMetricsLogger::~QuickPairMetricsLogger() = default;
 
 void QuickPairMetricsLogger::OnDevicePaired(scoped_refptr<Device> device) {
   switch (device->protocol) {
-    case Protocol::kFastPair:
+    case Protocol::kFastPairInitial:
       RecordFastPairEngagementFlow(
           FastPairEngagementFlowEvent::kPairingSucceeded);
       feature_usage_metrics_logger_->RecordUsage(/*success=*/true);
+      break;
+    case Protocol::kFastPairRetroactive:
+      break;
+    case Protocol::kFastPairSubsequent:
       break;
   }
 }
@@ -36,9 +40,13 @@ void QuickPairMetricsLogger::OnDevicePaired(scoped_refptr<Device> device) {
 void QuickPairMetricsLogger::OnPairFailure(scoped_refptr<Device> device,
                                            PairFailure failure) {
   switch (device->protocol) {
-    case Protocol::kFastPair:
+    case Protocol::kFastPairInitial:
       RecordFastPairEngagementFlow(FastPairEngagementFlowEvent::kPairingFailed);
       feature_usage_metrics_logger_->RecordUsage(/*success=*/false);
+      break;
+    case Protocol::kFastPairRetroactive:
+      break;
+    case Protocol::kFastPairSubsequent:
       break;
   }
 }
@@ -46,7 +54,7 @@ void QuickPairMetricsLogger::OnPairFailure(scoped_refptr<Device> device,
 void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
                                                DiscoveryAction action) {
   switch (device->protocol) {
-    case Protocol::kFastPair:
+    case Protocol::kFastPairInitial:
       switch (action) {
         case DiscoveryAction::kPairToDevice:
           RecordFastPairEngagementFlow(
@@ -60,6 +68,10 @@ void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
           break;
       }
       break;
+    case Protocol::kFastPairRetroactive:
+      break;
+    case Protocol::kFastPairSubsequent:
+      break;
   }
 }
 
@@ -67,7 +79,7 @@ void QuickPairMetricsLogger::OnPairingFailureAction(
     scoped_refptr<Device> device,
     PairingFailedAction action) {
   switch (device->protocol) {
-    case Protocol::kFastPair:
+    case Protocol::kFastPairInitial:
       switch (action) {
         case PairingFailedAction::kNavigateToSettings:
           RecordFastPairEngagementFlow(
@@ -80,14 +92,22 @@ void QuickPairMetricsLogger::OnPairingFailureAction(
           break;
       }
       break;
+    case Protocol::kFastPairRetroactive:
+      break;
+    case Protocol::kFastPairSubsequent:
+      break;
   }
 }
 
 void QuickPairMetricsLogger::OnDeviceFound(scoped_refptr<Device> device) {
   switch (device->protocol) {
-    case Protocol::kFastPair:
+    case Protocol::kFastPairInitial:
       RecordFastPairEngagementFlow(
           FastPairEngagementFlowEvent::kDiscoveryUiShown);
+      break;
+    case Protocol::kFastPairRetroactive:
+      break;
+    case Protocol::kFastPairSubsequent:
       break;
   }
 }

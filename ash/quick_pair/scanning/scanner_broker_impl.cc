@@ -72,7 +72,9 @@ void ScannerBrokerImpl::StartScanning(Protocol protocol) {
   }
 
   switch (protocol) {
-    case Protocol::kFastPair:
+    case Protocol::kFastPairInitial:
+    case Protocol::kFastPairRetroactive:
+    case Protocol::kFastPairSubsequent:
       StartFastPairScanning();
       break;
   }
@@ -82,7 +84,9 @@ void ScannerBrokerImpl::StopScanning(Protocol protocol) {
   QP_LOG(VERBOSE) << __func__ << ": protocol=" << protocol;
 
   switch (protocol) {
-    case Protocol::kFastPair:
+    case Protocol::kFastPairInitial:
+    case Protocol::kFastPairRetroactive:
+    case Protocol::kFastPairSubsequent:
       StopFastPairScanning();
       break;
   }

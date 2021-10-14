@@ -104,9 +104,9 @@ void Mediator::SetFastPairState(bool is_enabled) {
   QP_LOG(VERBOSE) << __func__ << ": " << is_enabled;
 
   if (is_enabled)
-    scanner_broker_->StartScanning(Protocol::kFastPair);
+    scanner_broker_->StartScanning(Protocol::kFastPairInitial);
   else
-    scanner_broker_->StopScanning(Protocol::kFastPair);
+    scanner_broker_->StopScanning(Protocol::kFastPairInitial);
 }
 
 void Mediator::OnDevicePaired(scoped_refptr<Device> device) {

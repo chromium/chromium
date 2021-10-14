@@ -71,7 +71,7 @@ void RetroactivePairingDetectorImpl::NotifyDeviceFound(
   }
 
   auto device = base::MakeRefCounted<Device>(
-      model_id, bluetooth_device->GetAddress(), Protocol::kFastPair);
+      model_id, bluetooth_device->GetAddress(), Protocol::kFastPairRetroactive);
   QP_LOG(INFO) << __func__ << ": Found device for Retroactive Pairing.";
 
   for (auto& observer : observers_)

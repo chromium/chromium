@@ -164,7 +164,7 @@ void FastPairDiscoverableScanner::NotifyDeviceFound(
   QP_LOG(VERBOSE) << __func__ << ": Id: " << model_id;
 
   auto device = base::MakeRefCounted<Device>(
-      model_id, bluetooth_device->GetAddress(), Protocol::kFastPair);
+      model_id, bluetooth_device->GetAddress(), Protocol::kFastPairInitial);
 
   notified_devices_[bluetooth_device->GetAddress()] = device;
 

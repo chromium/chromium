@@ -281,8 +281,9 @@ class FakeFastPairGattServiceClientImplFactory
 class FastPairPairerTest : public testing::Test {
  public:
   void SuccessfulDataEncryptorSetUp() {
-    device_ = base::MakeRefCounted<Device>(
-        kMetadataId, kBluetoothCanonicalizedAddress, Protocol::kFastPair);
+    device_ = base::MakeRefCounted<Device>(kMetadataId,
+                                           kBluetoothCanonicalizedAddress,
+                                           Protocol::kFastPairInitial);
     adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
 
     // Need to add a matching mock device to the bluetooth adapter with the
@@ -301,8 +302,9 @@ class FastPairPairerTest : public testing::Test {
   }
 
   void FailedDataEncryptorSetUp() {
-    device_ = base::MakeRefCounted<Device>(
-        kMetadataId, kBluetoothCanonicalizedAddress, Protocol::kFastPair);
+    device_ = base::MakeRefCounted<Device>(kMetadataId,
+                                           kBluetoothCanonicalizedAddress,
+                                           Protocol::kFastPairInitial);
     adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
 
     // Need to add a matching mock device to the bluetooth adapter with the

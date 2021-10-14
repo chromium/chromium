@@ -51,7 +51,7 @@ class QuickPairMetricsLoggerTest : public testing::Test {
     mock_ui_broker_ = static_cast<MockUIBroker*>(ui_broker_.get());
 
     device_ = base::MakeRefCounted<Device>(kTestMetadataId, kTestAddress,
-                                           Protocol::kFastPair);
+                                           Protocol::kFastPairInitial);
 
     metrics_logger_ = std::make_unique<QuickPairMetricsLogger>(
         scanner_broker_.get(), pairer_broker_.get(), ui_broker_.get());

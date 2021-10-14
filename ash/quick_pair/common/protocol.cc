@@ -9,8 +9,14 @@ namespace quick_pair {
 
 std::ostream& operator<<(std::ostream& stream, Protocol protocol) {
   switch (protocol) {
-    case Protocol::kFastPair:
-      stream << "[Fast Pair]";
+    case Protocol::kFastPairInitial:
+      stream << "[Fast Pair Initial]";
+      break;
+    case Protocol::kFastPairRetroactive:
+      stream << "[Fast Pair Retroactive]";
+      break;
+    case Protocol::kFastPairSubsequent:
+      stream << "[Fast Pair Subsequent]";
       break;
   }
 

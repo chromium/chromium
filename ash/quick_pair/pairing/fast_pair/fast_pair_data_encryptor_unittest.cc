@@ -56,7 +56,7 @@ class FastPairDataEncryptorTest : public testing::Test {
   void FailedSetUp() {
     repository_ = std::make_unique<FakeFastPairRepository>();
     device_ = base::MakeRefCounted<Device>(kValidModelId, kTestAddress,
-                                           Protocol::kFastPair);
+                                           Protocol::kFastPairInitial);
     FastPairDataEncryptorImpl::Factory::CreateAsync(
         device_,
         base::BindOnce(&FastPairDataEncryptorTest::OnDataEncryptorCreateAsync,
@@ -73,7 +73,7 @@ class FastPairDataEncryptorTest : public testing::Test {
     repository_->SetFakeMetadata(kValidModelId, metadata);
 
     device_ = base::MakeRefCounted<Device>(kValidModelId, kTestAddress,
-                                           Protocol::kFastPair);
+                                           Protocol::kFastPairInitial);
     FastPairDataEncryptorImpl::Factory::CreateAsync(
         device_,
         base::BindOnce(&FastPairDataEncryptorTest::OnDataEncryptorCreateAsync,

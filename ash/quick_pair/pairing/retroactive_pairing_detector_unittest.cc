@@ -157,7 +157,7 @@ class RetroactivePairingDetectorTest
   void PairFastPairDeviceWithFastPair(std::string address) {
     fake_data_parser_->SetHexModelIdFromServiceData(kValidModelId);
     auto fp_device = base::MakeRefCounted<Device>(kValidModelId, address,
-                                                  Protocol::kFastPair);
+                                                  Protocol::kFastPairInitial);
     mock_pairer_broker_->NotifyDevicePaired(fp_device);
   }
 
