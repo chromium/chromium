@@ -887,6 +887,7 @@ TEST_F(PartitionAllocTest, AllocSizes) {
     // Check a more reasonable, but still direct mapped, size.
     // Chop a system page and a byte off to test for rounding errors.
     size_t size = 20 * 1024 * 1024;
+    ASSERT_GT(size, kMaxBucketed);
     size -= SystemPageSize();
     size -= 1;
     void* ptr = allocator.root()->Alloc(size, type_name);
@@ -1115,7 +1116,9 @@ TEST_F(PartitionAllocTest, Realloc) {
   // Single-slot slot spans...
   // Test that growing an allocation with realloc() copies everything from the
   // old allocation.
-  size = 200000;
+  size = 300000;
+  ASSERT_GT(size, MaxRegularSlotSpanSize());
+  ASSERT_LE(size, kMaxBucketed);
   // Confirm size doesn't fill the entire slot.
   ASSERT_LT(size, allocator.root()->AllocationCapacityFromRequestedSize(size));
   ptr = allocator.root()->Alloc(size, type_name);
@@ -1149,6 +1152,7 @@ TEST_F(PartitionAllocTest, Realloc) {
   // downsize even if one less super page is used (due to high granularity on
   // 64-bit systems).
   size = 10 * kSuperPageSize + SystemPageSize() - 42;
+  ASSERT_GT(size, kMaxBucketed);
   ptr = allocator.root()->Alloc(size, type_name);
   size_t actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
   ptr2 = allocator.root()->Realloc(ptr, size - SystemPageSize(), type_name);
@@ -1194,6 +1198,7 @@ TEST_F(PartitionAllocTest, ReallocDirectMapAligned) {
     // downsize even if one less super page is used (due to high granularity on
     // 64-bit systems), even if the alignment padding is taken out.
     size_t size = 10 * kSuperPageSize + SystemPageSize() - 42;
+    ASSERT_GT(size, kMaxBucketed);
     void* ptr =
         allocator.root()->AllocFlagsInternal(0, size, alignment, type_name);
     size_t actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
@@ -1234,6 +1239,7 @@ TEST_F(PartitionAllocTest, ReallocDirectMapAlignedRelocate) {
   // Pick size such that the alignment will put it cross the super page
   // boundary.
   size_t size = 2 * kSuperPageSize - kMaxSupportedAlignment + SystemPageSize();
+  ASSERT_GT(size, kMaxBucketed);
   void* ptr = allocator.root()->AllocFlagsInternal(
       0, size, kMaxSupportedAlignment, type_name);
   // Reallocating with the same size will actually relocate, because without a
@@ -1246,6 +1252,7 @@ TEST_F(PartitionAllocTest, ReallocDirectMapAlignedRelocate) {
   // boundary, but this time make it so large that Realloc doesn't fing it worth
   // shrinking.
   size = 10 * kSuperPageSize - kMaxSupportedAlignment + SystemPageSize();
+  ASSERT_GT(size, kMaxBucketed);
   ptr = allocator.root()->AllocFlagsInternal(0, size, kMaxSupportedAlignment,
                                              type_name);
   ptr2 = allocator.root()->Realloc(ptr, size, type_name);
@@ -1789,19 +1796,25 @@ TEST_F(PartitionAllocTest, LostFreeSlotSpansBug) {
 // TODO(lizeb): make these tests faster.
 TEST_F(PartitionAllocDeathTest, RepeatedAllocReturnNullDirect) {
   // A direct-mapped allocation size.
-  EXPECT_DEATH(DoReturnNullTest(32 * 1024 * 1024, kPartitionAllocFlags),
+  size_t direct_map_size = 32 * 1024 * 1024;
+  ASSERT_GT(direct_map_size, kMaxBucketed);
+  EXPECT_DEATH(DoReturnNullTest(direct_map_size, kPartitionAllocFlags),
                "DoReturnNullTest");
 }
 
 // Repeating above test with Realloc
 TEST_F(PartitionAllocDeathTest, RepeatedReallocReturnNullDirect) {
-  EXPECT_DEATH(DoReturnNullTest(32 * 1024 * 1024, kPartitionReallocFlags),
+  size_t direct_map_size = 32 * 1024 * 1024;
+  ASSERT_GT(direct_map_size, kMaxBucketed);
+  EXPECT_DEATH(DoReturnNullTest(direct_map_size, kPartitionReallocFlags),
                "DoReturnNullTest");
 }
 
 // Repeating above test with TryRealloc
 TEST_F(PartitionAllocDeathTest, RepeatedTryReallocReturnNullDirect) {
-  EXPECT_DEATH(DoReturnNullTest(32 * 1024 * 1024, kPartitionRootTryRealloc),
+  size_t direct_map_size = 32 * 1024 * 1024;
+  ASSERT_GT(direct_map_size, kMaxBucketed);
+  EXPECT_DEATH(DoReturnNullTest(direct_map_size, kPartitionRootTryRealloc),
                "DoReturnNullTest");
 }
 
@@ -1809,19 +1822,28 @@ TEST_F(PartitionAllocDeathTest, RepeatedTryReallocReturnNullDirect) {
 // Test "return null" with a 512 kB block size.
 TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedAllocReturnNull) {
   // A single-slot but non-direct-mapped allocation size.
-  EXPECT_DEATH(DoReturnNullTest(512 * 1024, kPartitionAllocFlags),
+  size_t single_slot_size = 512 * 1024;
+  ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
+  ASSERT_LE(single_slot_size, kMaxBucketed);
+  EXPECT_DEATH(DoReturnNullTest(single_slot_size, kPartitionAllocFlags),
                "DoReturnNullTest");
 }
 
 // Repeating above test with Realloc.
 TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedReallocReturnNull) {
-  EXPECT_DEATH(DoReturnNullTest(512 * 1024, kPartitionReallocFlags),
+  size_t single_slot_size = 512 * 1024;
+  ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
+  ASSERT_LE(single_slot_size, kMaxBucketed);
+  EXPECT_DEATH(DoReturnNullTest(single_slot_size, kPartitionReallocFlags),
                "DoReturnNullTest");
 }
 
 // Repeating above test with TryRealloc.
 TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedTryReallocReturnNull) {
-  EXPECT_DEATH(DoReturnNullTest(512 * 1024, kPartitionRootTryRealloc),
+  size_t single_slot_size = 512 * 1024;
+  ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
+  ASSERT_LE(single_slot_size, kMaxBucketed);
+  EXPECT_DEATH(DoReturnNullTest(single_slot_size, kPartitionRootTryRealloc),
                "DoReturnNullTest");
 }
 
@@ -1868,6 +1890,7 @@ TEST_F(PartitionAllocDeathTest, DirectMapGuardPages) {
       bits::AlignUp(kMaxBucketed + kSuperPageSize, kSuperPageSize) -
           PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize()};
   for (size_t size : kSizes) {
+    ASSERT_GT(size, kMaxBucketed);
     size -= kExtraAllocSize;
     EXPECT_GT(size, kMaxBucketed)
         << "allocation not large enough for direct allocation";
@@ -2236,8 +2259,12 @@ TEST_F(PartitionAllocTest, Purge) {
   // state of the free cache ring.
   allocator.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans);
 
-  char* big_ptr =
-      reinterpret_cast<char*>(allocator.root()->Alloc(256 * 1024, type_name));
+  // A single-slot but non-direct-mapped allocation size.
+  size_t single_slot_size = 512 * 1024;
+  ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
+  ASSERT_LE(single_slot_size, kMaxBucketed);
+  char* big_ptr = reinterpret_cast<char*>(
+      allocator.root()->Alloc(single_slot_size, type_name));
   allocator.root()->Free(big_ptr);
   allocator.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans);
 
@@ -2638,6 +2665,8 @@ TEST_F(PartitionAllocTest, Bug_897585) {
   // test case in the indicated bug.
   size_t kInitialSize = 983040;
   size_t kDesiredSize = 983100;
+  ASSERT_GT(kInitialSize, kMaxBucketed);
+  ASSERT_GT(kDesiredSize, kMaxBucketed);
   void* ptr = allocator.root()->AllocFlags(PartitionAllocReturnNull,
                                            kInitialSize, nullptr);
   ASSERT_NE(nullptr, ptr);
@@ -2953,8 +2982,12 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
 
   // Single-slot slot spans...
   size_t big_size = kMaxBucketed - SystemPageSize();
+  ASSERT_GT(big_size, MaxRegularSlotSpanSize());
+  ASSERT_LE(big_size, kMaxBucketed);
   bucket_index = SizeToIndex(big_size - kExtraAllocSize);
   bucket = &root.buckets[bucket_index];
+  // Assert the allocation doesn't fill the entire span nor entire partition
+  // page, to make the test more interesting.
   ASSERT_LT(big_size, bucket->get_bytes_per_span());
   ASSERT_NE(big_size % PartitionPageSize(), 0U);
   ptr = root.Alloc(big_size - kExtraAllocSize, type_name);
@@ -3056,6 +3089,7 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
       kMaxSupportedAlignment,
   };
   for (size_t huge_size : huge_sizes) {
+    ASSERT_GT(huge_size, kMaxBucketed);
     for (size_t alignment : alignments) {
       // For direct map, we commit only as many pages as needed.
       size_t aligned_size = bits::AlignUp(huge_size, SystemPageSize());
@@ -3220,6 +3254,7 @@ TEST_F(PartitionAllocTest, ReservationOffset) {
 
   // For direct-map,
   size_t large_size = kSuperPageSize * 5 + PartitionPageSize() * .5f;
+  ASSERT_GT(large_size, kMaxBucketed);
   ptr = allocator.root()->Alloc(large_size, type_name);
   EXPECT_TRUE(ptr);
   ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
@@ -3257,6 +3292,7 @@ TEST_F(PartitionAllocTest, ReservationOffset) {
 
 TEST_F(PartitionAllocTest, GetReservationStart) {
   size_t large_size = kSuperPageSize * 3 + PartitionPageSize() * .5f;
+  ASSERT_GT(large_size, kMaxBucketed);
   void* ptr = allocator.root()->Alloc(large_size, type_name);
   EXPECT_TRUE(ptr);
   void* slot_start = allocator.root()->AdjustPointerForExtrasSubtract(ptr);
@@ -3304,6 +3340,7 @@ TEST_F(PartitionAllocTest, CheckReservationType) {
   EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
 
   size_t large_size = 2 * kSuperPageSize;
+  ASSERT_GT(large_size, kMaxBucketed);
   ptr = reinterpret_cast<char*>(allocator.root()->Alloc(large_size, type_name));
   EXPECT_TRUE(ptr);
   ptr_to_check = ptr;
