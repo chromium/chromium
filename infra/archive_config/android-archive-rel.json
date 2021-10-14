@@ -1,0 +1,14 @@
+{
+    "archive_datas": [
+        {
+            "files": [
+                "apks/ContentShell.apk",
+                "apks/ChromePublic.apk",
+                "apks/SystemWebViewShell.apk"
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "experimental/Android/{%position%}/chrome-android.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP"
+        }
+    ]
+}
