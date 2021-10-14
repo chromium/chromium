@@ -34911,6 +34911,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4057" label="FlexboxAlignSingleLineDifference"/>
   <int value="4058" label="ExternalProtocolBlockedBySandbox"/>
   <int value="4059" label="WebAssemblyDynamicTiering"/>
+  <int value="4060" label="DeferredShapingTallerIfc"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

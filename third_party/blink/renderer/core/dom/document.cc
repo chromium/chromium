@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_creation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_registration_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_idle_request_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_interest_cohort.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_elementcreationoptions_string.h"
@@ -414,6 +415,94 @@ bool DefaultFaviconAllowedByCSP(const Document* document, const IconURL& icon) {
       ReportingDisposition::kSuppressReporting,
       ContentSecurityPolicy::CheckHeaderType::kCheckAll);
 }
+
+class IdleWebFeatureTask : public IdleTask {
+ public:
+  explicit IdleWebFeatureTask(Document& document)
+      : IdleTask(), document_(document) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(document_);
+    IdleTask::Trace(visitor);
+  }
+
+  const char* NameInHeapSnapshot() const override {
+    return "WebPlatformFeatureStatisticsTask";
+  }
+
+  void invoke(IdleDeadline*) override {
+    if (!document_->View())
+      return;
+    if (layout_count_ != document_->View()->LayoutCount()) {
+      layout_count_ = document_->View()->LayoutCount();
+      const LayoutView& view = *document_->GetLayoutView();
+      PhysicalSize viewport_size(LayoutUnit(view.ViewWidth()),
+                                 LayoutUnit(view.ViewHeight()));
+      if (FindTallerIfc(view, viewport_size)) {
+        UseCounter::Count(*document_, WebFeature::kDeferredShapingTallerIfc);
+        return;
+      }
+      if (first_traverse_time_.is_null())
+        first_traverse_time_ = base::Time::Now();
+    }
+    // Stop counting after kCountDuration from the first traverse.
+    constexpr base::TimeDelta kCountDuration = base::Seconds(30);
+    if (first_traverse_time_.is_null() ||
+        base::Time::Now() < first_traverse_time_ + kCountDuration)
+      document_->RequestIdleCallback(this, IdleRequestOptions::Create());
+  }
+
+ private:
+  static bool FindTallerIfc(const LayoutBox& parent,
+                            const PhysicalSize& viewport_size) {
+    for (const auto* child = parent.SlowFirstChild(); child;
+         child = child->NextSibling()) {
+      const auto* box = DynamicTo<LayoutBox>(child);
+      if (!box)
+        continue;
+      PhysicalSize new_size = viewport_size;
+      if (box->HasNonVisibleOverflow())
+        new_size = {box->Size().Width(), box->Size().Height()};
+      if (box->IsLayoutBlockFlow() && box->ChildrenInline() &&
+          !box->IsPositioned()) {
+        if (IsTallerBox(*box, new_size) && HasInlineOrNonWhitespaceText(*box))
+          return true;
+      }
+      if (FindTallerIfc(*box, new_size))
+        return true;
+    }
+    return false;
+  }
+
+  static bool IsTallerBox(const LayoutBox& box,
+                          const PhysicalSize& viewport_size) {
+    // This function returns false for viewport block size == 0 because
+    // the counter is for "partial" deferred shaping.
+    if (box.IsHorizontalWritingMode()) {
+      return viewport_size.height > LayoutUnit() &&
+             box.Size().Height() > viewport_size.height;
+    }
+    return viewport_size.width > LayoutUnit() &&
+           box.Size().Width() > viewport_size.width;
+  }
+
+  static bool HasInlineOrNonWhitespaceText(const LayoutBox& ifc) {
+    for (const auto* child = ifc.SlowFirstChild(); child;
+         child = child->NextSibling()) {
+      if (child->IsLayoutInline())
+        return true;
+      if (const auto* text = DynamicTo<LayoutText>(child)) {
+        if (!text->ContainsOnlyWhitespace(0, text->TextLength()))
+          return true;
+      }
+    }
+    return false;
+  }
+
+  Member<Document> document_;
+  base::Time first_traverse_time_;
+  uint32_t layout_count_ = 0;
+};
 
 }  // namespace
 
@@ -2676,6 +2765,14 @@ void Document::Initialize() {
 
   if (View())
     View()->DidAttachDocument();
+
+  // We need to check IsRunningWebTest() and null Url(). Some tests fail
+  // without the check because of a scheduler behavior difference.
+  if (GetFrame()->IsLocalRoot() && !WebTestSupport::IsRunningWebTest() &&
+      !Url().IsNull()) {
+    RequestIdleCallback(MakeGarbageCollected<IdleWebFeatureTask>(*this),
+                        IdleRequestOptions::Create());
+  }
 }
 
 void Document::Shutdown() {

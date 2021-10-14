@@ -249,7 +249,7 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, IntRect frame_rect)
       can_have_scrollbars_(true),
       has_pending_layout_(false),
       layout_scheduling_enabled_(true),
-      layout_count_for_testing_(0),
+      layout_count_(0),
       lifecycle_update_count_for_testing_(0),
       // We want plugin updates to happen in FIFO order with loading tasks.
       update_plugins_timer_(frame.GetTaskRunner(TaskType::kInternalLoading),
@@ -1907,7 +1907,7 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
   TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.trees"), "LayoutTree", this,
       TracedLayoutObject::Create(*GetLayoutView(), true));
-  layout_count_for_testing_++;
+  layout_count_++;
   Document* document = GetFrame().GetDocument();
   DCHECK(document);
   if (AXObjectCache* cache = document->ExistingAXObjectCache()) {
