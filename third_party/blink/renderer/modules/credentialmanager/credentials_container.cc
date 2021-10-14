@@ -533,11 +533,10 @@ Vector<Vector<uint32_t>> UvmEntryToArray(
 
 void OnMakePublicKeyCredentialComplete(
     std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
+    RequiredOriginType required_origin_type,
     AuthenticatorStatus status,
     MakeCredentialAuthenticatorResponsePtr credential) {
   auto* resolver = scoped_resolver->Release();
-  const auto required_origin_type = RequiredOriginType::kSecure;
-
   AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
   if (status != AuthenticatorStatus::SUCCESS) {
     DCHECK(!credential);
@@ -618,8 +617,10 @@ void OnSaveCredentialIdForPaymentExtension(
         AuthenticatorStatus::FAILED_TO_SAVE_CREDENTIAL_ID_FOR_PAYMENT_EXTENSION;
     credential = nullptr;
   }
-  OnMakePublicKeyCredentialComplete(std::move(scoped_resolver), status,
-                                    std::move(credential));
+  OnMakePublicKeyCredentialComplete(
+      std::move(scoped_resolver),
+      RequiredOriginType::kSecureWithPaymentPermissionPolicy, status,
+      std::move(credential));
 }
 
 void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
@@ -1376,7 +1377,8 @@ ScriptPromise CredentialsContainer::create(
       authenticator->MakeCredential(
           std::move(mojo_options),
           WTF::Bind(&OnMakePublicKeyCredentialComplete,
-                    std::make_unique<ScopedPromiseResolver>(resolver)));
+                    std::make_unique<ScopedPromiseResolver>(resolver),
+                    required_origin_type));
     }
   }
 
