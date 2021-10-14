@@ -36,11 +36,6 @@ void MetricsLogManager::FinishCurrentLog(MetricsLogStore* log_store) {
   current_log_.reset();
 }
 
-void MetricsLogManager::DiscardCurrentLog() {
-  current_log_->CloseLog();
-  current_log_.reset();
-}
-
 void MetricsLogManager::PauseCurrentLog() {
   DCHECK(!paused_log_);
   paused_log_ = std::move(current_log_);

@@ -75,17 +75,6 @@ TEST_F(MetricsLogManagerTest, StandardFlow) {
   EXPECT_EQ(second_log, log_manager.current_log());
 }
 
-TEST_F(MetricsLogManagerTest, AbandonedLog) {
-  MetricsLogManager log_manager;
-
-  MetricsLog* dummy_log = CreateLog(MetricsLog::INITIAL_STABILITY_LOG);
-  log_manager.BeginLoggingWithLog(base::WrapUnique(dummy_log));
-  EXPECT_EQ(dummy_log, log_manager.current_log());
-
-  log_manager.DiscardCurrentLog();
-  EXPECT_EQ(nullptr, log_manager.current_log());
-}
-
 // Make sure that interjecting logs updates the "current" log correctly.
 TEST_F(MetricsLogManagerTest, InterjectedLog) {
   MetricsLogManager log_manager;

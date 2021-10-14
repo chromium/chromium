@@ -38,9 +38,6 @@ class MetricsLogManager {
   // later, leaving |current_log_| nullptr.
   void FinishCurrentLog(MetricsLogStore* log_store);
 
-  // Closes and discards |current_log|.
-  void DiscardCurrentLog();
-
   // Sets current_log to nullptr, but saves the current log for future use with
   // ResumePausedLog(). Only one log may be paused at a time.
   // TODO(stuartmorgan): Pause/resume support is really a workaround for a
