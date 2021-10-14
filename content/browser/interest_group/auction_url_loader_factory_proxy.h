@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -37,8 +38,15 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
   // `frame_origin` is the origin of the frame running the auction. Used as the
   // initiator.
   //
-  // `use_cors` indicates if requests should use CORS or not. Should be true for
-  // seller worklets.
+  // `is_for_seller` indicates if this is for a seller or bidder workler.
+  // Requests are configured differently. Seller requests use CORS and the
+  // URLLoader from the renderer, while bidder requests use trusted browser
+  // URLLoaderFactory, and don't use CORS, since they're same-site relative to
+  // the page they were learned on.
+  //
+  // `client_security_state` is the ClientSecurityState to use for fetches for
+  // bidder worklets. Ignored for seller worklets, since they use a
+  // URLLoaderFactory with that information already attached.
   //
   // `script_url` is the Javascript URL for the worklet, and
   // `trusted_signals_url` is the optional JSON url for additional input to the
@@ -47,7 +55,8 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
       GetUrlLoaderFactoryCallback get_url_loader_factory,
       const url::Origin& frame_origin,
-      bool use_cors,
+      bool is_for_seller,
+      network::mojom::ClientSecurityStatePtr client_security_state,
       const GURL& script_url,
       const absl::optional<GURL>& trusted_signals_url = absl::nullopt);
   AuctionURLLoaderFactoryProxy(const AuctionURLLoaderFactoryProxy&) = delete;
@@ -73,7 +82,8 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
   const GetUrlLoaderFactoryCallback get_url_loader_factory_;
 
   const url::Origin frame_origin_;
-  const bool use_cors_;
+  const bool is_for_seller_;
+  const network::mojom::ClientSecurityStatePtr client_security_state_;
 
   const GURL script_url_;
   const absl::optional<GURL> trusted_signals_url_;

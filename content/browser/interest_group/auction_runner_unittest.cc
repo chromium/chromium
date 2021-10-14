@@ -36,6 +36,7 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1012,6 +1013,9 @@ class AuctionRunnerTest : public testing::Test,
     return &url_loader_factory_;
   }
   RenderFrameHostImpl* GetFrame() override { return nullptr; }
+  network::mojom::ClientSecurityStatePtr GetClientSecurityState() override {
+    return network::mojom::ClientSecurityState::New();
+  }
 
   // DebuggableAuctionWorkletTracker::Observer implementation
   void AuctionWorkletCreated(DebuggableAuctionWorklet* worklet,

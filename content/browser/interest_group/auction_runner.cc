@@ -245,7 +245,8 @@ void AuctionRunner::OnSellerWorkletProcessReceived() {
       url_loader_factory.InitWithNewPipeAndPassReceiver(),
       base::BindRepeating(&Delegate::GetFrameURLLoaderFactory,
                           base::Unretained(delegate_)),
-      frame_origin_, true /* use_cors */, seller_url);
+      frame_origin_, /*is_for_seller_=*/true, /*client_security_state=*/nullptr,
+      seller_url);
   bool should_pause_on_start = false;
   mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
       worklet_receiver = seller_worklet_.BindNewPipeAndPassReceiver();
@@ -326,7 +327,8 @@ void AuctionRunner::OnBidderWorkletProcessReceived(BidState* bid_state) {
           url_loader_factory.InitWithNewPipeAndPassReceiver(),
           base::BindRepeating(&Delegate::GetTrustedURLLoaderFactory,
                               base::Unretained(delegate_)),
-          frame_origin_, false /* use_cors */, bidding_url,
+          frame_origin_, /*is_for_seller=*/false,
+          delegate_->GetClientSecurityState(), bidding_url,
           trusted_bidding_signals_full_url);
 
   bid_state->state = BidState::State::kGeneratingBid;

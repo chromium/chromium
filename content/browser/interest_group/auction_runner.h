@@ -21,6 +21,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -79,6 +80,10 @@ class CONTENT_EXPORT AuctionRunner {
 
     // Get containing frame. (Passed to debugging hooks).
     virtual RenderFrameHostImpl* GetFrame() = 0;
+
+    // Returns the ClientSecurityState associated with the frame, for use in
+    // bidder worklet and signals fetches.
+    virtual network::mojom::ClientSecurityStatePtr GetClientSecurityState() = 0;
   };
 
   // Result of an auction. Used for histograms. Only recorded for valid

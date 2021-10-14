@@ -22,6 +22,8 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,7 +48,13 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
     kAllow,
   };
 
-  ActionUrlLoaderFactoryProxyTest() { CreateUrlLoaderFactoryProxy(); }
+  ActionUrlLoaderFactoryProxyTest() {
+    // Other defaults are all reasonable, but this should always be true for
+    // FLEDGE.
+    client_security_state_->is_web_secure_context = true;
+
+    CreateUrlLoaderFactoryProxy();
+  }
 
   ~ActionUrlLoaderFactoryProxyTest() override {
     mojo::SetDefaultProcessErrorHandler(base::NullCallback());
@@ -64,7 +72,10 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
         base::BindRepeating(
             [](network::mojom::URLLoaderFactory* factory) { return factory; },
             &proxied_url_loader_factory_),
-        frame_origin_, use_cors_, GURL(kScriptUrl), trusted_signals_url_);
+        frame_origin_, is_for_seller_,
+        is_for_seller_ ? network::mojom::ClientSecurityStatePtr()
+                       : client_security_state_.Clone(),
+        GURL(kScriptUrl), trusted_signals_url_);
   }
 
   // Attempts to make a request for `request`.
@@ -152,13 +163,20 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
     // The initiator should be set.
     EXPECT_EQ(frame_origin_, observed_request.request_initiator);
 
-    if (use_cors_) {
+    if (is_for_seller_) {
+      // Seller worklet requests use the renderer's untrusted URLLoaderFactory,
+      // so inherit security parameters from there.
       EXPECT_EQ(network::mojom::RequestMode::kCors, observed_request.mode);
       EXPECT_FALSE(observed_request.trusted_params);
     } else {
+      // Bidder worklet requests use a trusted URLLoaderFactory, so need to set
+      // their own security-related parameters.
+
       EXPECT_EQ(network::mojom::RequestMode::kNoCors, observed_request.mode);
+
       ASSERT_TRUE(observed_request.trusted_params);
       EXPECT_FALSE(observed_request.trusted_params->disable_secure_dns);
+
       const auto& observed_isolation_info =
           observed_request.trusted_params->isolation_info;
       EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
@@ -167,6 +185,10 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
       EXPECT_EQ(expected_origin, observed_isolation_info.top_frame_origin());
       EXPECT_EQ(expected_origin, observed_isolation_info.frame_origin());
       EXPECT_TRUE(observed_isolation_info.site_for_cookies().IsNull());
+
+      ASSERT_TRUE(observed_request.trusted_params->client_security_state);
+      EXPECT_EQ(*client_security_state_,
+                *observed_request.trusted_params->client_security_state);
     }
   }
 
@@ -185,7 +207,9 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
 
-  bool use_cors_ = false;
+  bool is_for_seller_ = false;
+  const network::mojom::ClientSecurityStatePtr client_security_state_ =
+      network::mojom::ClientSecurityState::New();
   absl::optional<GURL> trusted_signals_url_ = GURL(kTrustedSignalsUrl);
 
   url::Origin frame_origin_ = url::Origin::Create(GURL("https://foo.test/"));
@@ -195,9 +219,9 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
 };
 
 TEST_F(ActionUrlLoaderFactoryProxyTest, Basic) {
-  for (bool use_cors : {false, true}) {
-    use_cors_ = use_cors;
-    // Force creation of a new proxy, with correct CORS value.
+  for (bool is_for_seller : {false, true}) {
+    is_for_seller_ = is_for_seller;
+    // Force creation of a new proxy, with correct `is_for_seller` value.
     remote_url_loader_factory_.reset();
     CreateUrlLoaderFactoryProxy();
 
@@ -227,9 +251,9 @@ TEST_F(ActionUrlLoaderFactoryProxyTest, Basic) {
 TEST_F(ActionUrlLoaderFactoryProxyTest, NoTrustedSignalsUrl) {
   trusted_signals_url_ = absl::nullopt;
 
-  for (bool use_cors : {false, true}) {
-    use_cors_ = use_cors;
-    // Force creation of a new proxy, with correct CORS value.
+  for (bool is_for_seller : {false, true}) {
+    is_for_seller_ = is_for_seller;
+    // Force creation of a new proxy, with correct `is_for_seller` value.
     remote_url_loader_factory_.reset();
     CreateUrlLoaderFactoryProxy();
 
@@ -259,9 +283,9 @@ TEST_F(ActionUrlLoaderFactoryProxyTest, NoTrustedSignalsUrl) {
 TEST_F(ActionUrlLoaderFactoryProxyTest, SameUrl) {
   trusted_signals_url_ = GURL(kScriptUrl);
 
-  for (bool use_cors : {false, true}) {
-    use_cors_ = use_cors;
-    // Force creation of a new proxy, with correct CORS value.
+  for (bool is_for_seller : {false, true}) {
+    is_for_seller_ = is_for_seller;
+    // Force creation of a new proxy, with correct `is_for_seller` value.
     remote_url_loader_factory_.reset();
     CreateUrlLoaderFactoryProxy();
 
@@ -285,6 +309,44 @@ TEST_F(ActionUrlLoaderFactoryProxyTest, SameUrl) {
                    ExpectedResponse::kReject);
     TryMakeRequest("https://host.test/", absl::nullopt,
                    ExpectedResponse::kReject);
+  }
+}
+
+// Make sure that proxies for bidder worklets pass through ClientSecurityState.
+// This test relies on the ClientSecurityState equality check in
+// TryMakeRequest().
+TEST_F(ActionUrlLoaderFactoryProxyTest, ClientSecurityState) {
+  trusted_signals_url_ = GURL(kScriptUrl);
+
+  is_for_seller_ = false;
+
+  for (auto ip_address_space : {network::mojom::IPAddressSpace::kLocal,
+                                network::mojom::IPAddressSpace::kPrivate,
+                                network::mojom::IPAddressSpace::kPublic,
+                                network::mojom::IPAddressSpace::kUnknown}) {
+    client_security_state_->ip_address_space = ip_address_space;
+    // Force creation of a new proxy, with correct `ip_address_space` value.
+    remote_url_loader_factory_.reset();
+    CreateUrlLoaderFactoryProxy();
+
+    TryMakeRequest(kScriptUrl, kAcceptJavascript, ExpectedResponse::kAllow);
+    TryMakeRequest(kScriptUrl, kAcceptJson, ExpectedResponse::kAllow);
+  }
+
+  for (auto private_network_request_policy :
+       {network::mojom::PrivateNetworkRequestPolicy::kAllow,
+        network::mojom::PrivateNetworkRequestPolicy::kWarn,
+        network::mojom::PrivateNetworkRequestPolicy::kBlock,
+        network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock,
+        network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock}) {
+    client_security_state_->private_network_request_policy =
+        private_network_request_policy;
+    // Force creation of a new proxy, with correct `ip_address_space` value.
+    remote_url_loader_factory_.reset();
+    CreateUrlLoaderFactoryProxy();
+
+    TryMakeRequest(kScriptUrl, kAcceptJavascript, ExpectedResponse::kAllow);
+    TryMakeRequest(kScriptUrl, kAcceptJson, ExpectedResponse::kAllow);
   }
 }
 

@@ -3157,6 +3157,84 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FinalizeAdWorks) {
             FinalizeAdAndWait());
 }
 
+// The bidder worklet is served from a private network, everything else from a
+// public network. The auction should fail.
+IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
+                       BidderOnPrivateNetwork) {
+  // Learn the bidder IG, served from the local server.
+  GURL bidder_url =
+      https_server_->GetURL("b.test", "/interest_group/bidding_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("b.test", "/echo")));
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
+      /*owner=*/url::Origin::Create(bidder_url.GetOrigin()),
+      /*name=*/"Cthulhu", bidder_url,
+      /*ads=*/MakeAdsArg({GURL("https://example.com/render")})));
+  URLLoaderMonitor url_loader_monitor;
+
+  // Use `remote_test_server_` for all other URLs.
+  GURL test_url = remote_test_server_.GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(
+                         R"(
+{
+  seller: $1,
+  decisionLogicUrl: $2,
+  interestGroupBuyers: [$3]
+}
+                         )",
+                         url::Origin::Create(test_url),
+                         remote_test_server_.GetURL(
+                             "a.test", "/interest_group/decision_logic.js"),
+                         url::Origin::Create(bidder_url))));
+
+  // The URLLoaderMonitor should have seen a request for the bidder URL, which
+  // should have been made from a public address space.
+  absl::optional<network::ResourceRequest> bidder_request =
+      url_loader_monitor.GetRequestInfo(bidder_url);
+  ASSERT_TRUE(bidder_request);
+  EXPECT_EQ(
+      network::mojom::IPAddressSpace::kPublic,
+      bidder_request->trusted_params->client_security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
+                       SellerOnPrivateNetwork) {
+  GURL seller_url =
+      https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
+
+  // Use `remote_test_server_` for all URLs except the seller worklet.
+  GURL test_url = remote_test_server_.GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
+      /*owner=*/url::Origin::Create(test_url.GetOrigin()),
+      /*name=*/"Cthulhu",
+      /*bidding_url=*/
+      remote_test_server_.GetURL("a.test", "/interest_group/bidding_logic.js"),
+      /*ads=*/MakeAdsArg({GURL("https://example.com/render")})));
+
+  URLLoaderMonitor url_loader_monitor;
+  EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(
+                         R"(
+{
+  seller: $1,
+  decisionLogicUrl: $2,
+  interestGroupBuyers: [$3]
+}
+                         )",
+                         url::Origin::Create(seller_url), seller_url,
+                         url::Origin::Create(test_url))));
+
+  // The URLLoaderMonitor should have seen a request for the seller URL. The
+  // request should have gone through the renderer's URLLoader, and inherited
+  // its IPAddressSpace, instead of passing its own.
+  absl::optional<network::ResourceRequest> seller_request =
+      url_loader_monitor.GetRequestInfo(seller_url);
+  ASSERT_TRUE(seller_request);
+  EXPECT_FALSE(seller_request->trusted_params);
+}
+
 // Have the auction and worklets server from public IPs, but send reports to a
 // private network. The reports should be blocked.
 IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
@@ -3230,6 +3308,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   GURL test_url = remote_test_server_.GetURL("a.test", "/echo");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
+  GURL bidder_url = remote_test_server_.GetURL(
+      "a.test", "/interest_group/bidding_logic_report_to_name.js");
+  GURL trusted_bidding_signals_url = remote_test_server_.GetURL(
+      "a.test", "/interest_group/trusted_bidding_signals.json");
+  GURL trusted_bidding_signals_url_with_query = remote_test_server_.GetURL(
+      "a.test",
+      "/interest_group/trusted_bidding_signals.json?hostname=a.test&keys=key1");
+
+  GURL seller_url = remote_test_server_.GetURL(
+      "a.test", "/interest_group/decision_logic_report_to_seller_signals.js");
+
   // While reports should should be made to these URLs in this test, their
   // results don't matter, so there's no need for a test server respond to for
   // these URLs with anything other than errors.
@@ -3239,13 +3328,18 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       remote_test_server_.GetURL("a.test", "/seller_report");
   URLLoaderMonitor url_loader_monitor;
 
-  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
-      /*owner=*/url::Origin::Create(test_url.GetOrigin()),
-      /*name=*/bidder_report_to_url.spec(),
-      /*bidding_url=*/
-      remote_test_server_.GetURL(
-          "a.test", "/interest_group/bidding_logic_report_to_name.js"),
-      /*ads=*/MakeAdsArg({GURL("https://example.com/render")})));
+  ASSERT_TRUE(JoinInterestGroupAndWaitInJs(
+      blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/url::Origin::Create(test_url.GetOrigin()),
+          /*name=*/bidder_report_to_url.spec(), bidder_url,
+          /*update_url=*/absl::nullopt, trusted_bidding_signals_url,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/absl::nullopt,
+          /*ads=*/absl::nullopt,
+          /*ad_components=*/absl::nullopt),
+      /*ads=*/MakeAdsArg({GURL("https://example.com/render")}),
+      /*trusted_bidding_signals_keys=*/"['key1']"));
 
   EXPECT_EQ(
       "https://example.com/render",
@@ -3264,15 +3358,27 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
               "/interest_group/decision_logic_report_to_seller_signals.js"),
           seller_report_to_url)));
 
-  // Check that both reports have the kPublic address space set.
   EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
-            url_loader_monitor.WaitForUrl(bidder_report_to_url)
+            url_loader_monitor.WaitForUrl(bidder_url)
                 .trusted_params->client_security_state->ip_address_space);
+  EXPECT_EQ(
+      network::mojom::IPAddressSpace::kPublic,
+      url_loader_monitor.WaitForUrl(trusted_bidding_signals_url_with_query)
+          .trusted_params->client_security_state->ip_address_space);
+  // Unlike the others, the request for the seller URL has an empty
+  // `trusted_params`, since it uses the renderer's untrusted URLLoader.
+  EXPECT_FALSE(url_loader_monitor.WaitForUrl(seller_url).trusted_params);
   EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
             url_loader_monitor.WaitForUrl(seller_report_to_url)
                 .trusted_params->client_security_state->ip_address_space);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            url_loader_monitor.GetRequestInfo(bidder_report_to_url)
+                ->trusted_params->client_security_state->ip_address_space);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            url_loader_monitor.GetRequestInfo(seller_report_to_url)
+                ->trusted_params->client_security_state->ip_address_space);
 
-  // Check that both requests reached the server.
+  // Check that both reports reached the server.
   WaitForURL(remote_test_server_.GetURL(bidder_report_to_url.path()));
   WaitForURL(remote_test_server_.GetURL(seller_report_to_url.path()));
 }

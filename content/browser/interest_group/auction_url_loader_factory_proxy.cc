@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -25,6 +25,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -34,15 +35,21 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
     GetUrlLoaderFactoryCallback get_url_loader_factory,
     const url::Origin& frame_origin,
-    bool use_cors,
+    bool is_for_seller,
+    network::mojom::ClientSecurityStatePtr client_security_state,
     const GURL& script_url,
     const absl::optional<GURL>& trusted_signals_url)
     : receiver_(this, std::move(pending_receiver)),
       get_url_loader_factory_(std::move(get_url_loader_factory)),
       frame_origin_(frame_origin),
-      use_cors_(use_cors),
+      is_for_seller_(is_for_seller),
+      client_security_state_(std::move(client_security_state)),
       script_url_(script_url),
-      trusted_signals_url_(trusted_signals_url) {}
+      trusted_signals_url_(trusted_signals_url) {
+  // If this is for a bidder worklet, `client_security_state_` must be non-null.
+  if (!is_for_seller_)
+    DCHECK(client_security_state_);
+}
 
 AuctionURLLoaderFactoryProxy::~AuctionURLLoaderFactoryProxy() = default;
 
@@ -89,7 +96,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
   new_request.request_initiator = frame_origin_;
 
-  if (use_cors_) {
+  if (is_for_seller_) {
     new_request.mode = network::mojom::RequestMode::kCors;
   } else {
     // Treat this as a subresource request from the owner's origin, using the
@@ -104,9 +111,8 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     new_request.trusted_params->isolation_info =
         net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
                                    origin, origin, net::SiteForCookies());
-
-    // TODO(mmenke): Investigate whether `client_security_state` should be
-    // populated.
+    new_request.trusted_params->client_security_state =
+        client_security_state_.Clone();
   }
 
   // TODO(mmenke): Investigate whether `devtools_observer` or
