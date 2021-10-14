@@ -403,7 +403,7 @@ bool AppBannerSettingsHelper::WasLaunchedRecently(
     base::Time now) {
   HostContentSettingsMap* settings =
       permissions::PermissionsClient::Get()->GetSettingsMap(browser_context);
-  std::unique_ptr<base::DictionaryValue> origin_dict =
+  std::unique_ptr<base::Value> origin_dict =
       GetOriginAppBannerData(settings, origin_url);
 
   if (!origin_dict)
@@ -414,13 +414,11 @@ bool AppBannerSettingsHelper::WasLaunchedRecently(
   // homescreen recently, return true.
   base::TimeDelta recent_last_launch_in_days =
       base::Days(kRecentLastLaunchInDays);
-  for (base::DictionaryValue::Iterator it(*origin_dict); !it.IsAtEnd();
-       it.Advance()) {
-    if (it.value().is_dict()) {
-      const base::DictionaryValue* value;
-      it.value().GetAsDictionary(&value);
+  for (auto path_dicts : origin_dict->DictItems()) {
+    if (path_dicts.second.is_dict()) {
+      base::Value* value = &path_dicts.second;
 
-      if (it.key() == kInstantAppsKey)
+      if (path_dicts.first == kInstantAppsKey)
         continue;
 
       absl::optional<double> internal_time = value->FindDoubleKey(
