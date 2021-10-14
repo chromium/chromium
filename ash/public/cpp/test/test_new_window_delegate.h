@@ -23,10 +23,10 @@ class ASH_PUBLIC_EXPORT TestNewWindowDelegate : public NewWindowDelegate {
   // NewWindowDelegate:
   void NewTab() override;
   void NewWindow(bool incognito, bool should_trigger_session_restore) override;
-  void NewWindowForWebUITabDrop(
+  void NewWindowForDetachingTab(
       aura::Window* source_window,
       const ui::OSExchangeData& drop_data,
-      NewWindowForWebUITabDropCallback closure) override;
+      NewWindowForDetachingTabCallback closure) override;
   void OpenUrl(const GURL& url, bool from_user_interaction) override;
   void OpenCalculator() override;
   void OpenFileManager() override;

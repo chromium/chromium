@@ -327,6 +327,43 @@ void BrowserManager::NewWindow(bool incognito) {
   browser_service_->service->NewWindow(incognito, base::DoNothing());
 }
 
+bool BrowserManager::NewWindowForDetachingTabSupported() const {
+  return browser_service_.has_value() &&
+         browser_service_->interface_version >=
+             crosapi::mojom::BrowserService::
+                 kNewWindowForDetachingTabMinVersion;
+}
+
+void BrowserManager::NewWindowForDetachingTab(
+    const std::u16string& tab_id_str,
+    const std::u16string& group_id_str,
+    NewWindowForDetachingTabCallback callback) {
+  // Chrome OS uses different user model where clicking the chrome icon always
+  // opens a new tab page, and it doesn't matter whether lacros is launching
+  // for the first time or not.
+  auto result = MaybeStart(browser_util::InitialBrowserAction(
+      mojom::InitialBrowserAction::kOpenNewTabPageWindow));
+  if (result != MaybeStartResult::kRunning) {
+    std::move(callback).Run(mojom::CreationResult::kBrowserNotRunning,
+                            std::string() /*new_window*/);
+    return;
+  }
+
+  if (!browser_service_.has_value()) {
+    std::move(callback).Run(mojom::CreationResult::kServiceDisconnected,
+                            std::string() /*new_window*/);
+    return;
+  }
+
+  if (!NewWindowForDetachingTabSupported()) {
+    std::move(callback).Run(mojom::CreationResult::kUnsupported,
+                            std::string() /*new_window*/);
+    return;
+  }
+  browser_service_->service->NewWindowForDetachingTab(tab_id_str, group_id_str,
+                                                      std::move(callback));
+}
+
 bool BrowserManager::NewFullscreenWindowSupported() const {
   return browser_service_.has_value() &&
          browser_service_->interface_version >=

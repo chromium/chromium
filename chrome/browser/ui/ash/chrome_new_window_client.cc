@@ -339,10 +339,10 @@ void ChromeNewWindowClient::NewWindow(bool is_incognito,
       should_trigger_session_restore);
 }
 
-void ChromeNewWindowClient::NewWindowForWebUITabDrop(
+void ChromeNewWindowClient::NewWindowForDetachingTab(
     aura::Window* source_window,
     const ui::OSExchangeData& drop_data,
-    NewWindowForWebUITabDropCallback closure) {
+    NewWindowForDetachingTabCallback closure) {
   DCHECK(ash::features::IsWebUITabStripTabDragIntegrationEnabled());
 
   BrowserView* source_view = BrowserView::GetBrowserViewForNativeWindow(

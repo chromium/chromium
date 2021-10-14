@@ -100,6 +100,20 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // so should be avoided.
   void NewWindow(bool incognito);
 
+  // Returns true if crosapi interface supports NewWindowForDetachingTab API.
+  bool NewWindowForDetachingTabSupported() const;
+
+  using NewWindowForDetachingTabCallback =
+      base::OnceCallback<void(crosapi::mojom::CreationResult,
+                              const std::string&)>;
+  // Opens a new window in the browser and transfers the given tab (or group)
+  // to it.
+  // NOTE: This method is used by Chrome OS WebUI in tablet mode as a response
+  // to a drag'n drop operation from the user.
+  void NewWindowForDetachingTab(const std::u16string& tab_id,
+                                const std::u16string& group_id,
+                                NewWindowForDetachingTabCallback closure);
+
   // Returns true if crosapi interface supports NewFullscreenWindow API.
   bool NewFullscreenWindowSupported() const;
 

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_LACROS_BROWSER_SERVICE_LACROS_H_
 #define CHROME_BROWSER_LACROS_BROWSER_SERVICE_LACROS_H_
 
+#include <string>
+
 #include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/feedback/system_logs/system_logs_source.h"
@@ -27,6 +29,10 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService {
   void NewWindow(bool incognito, NewWindowCallback callback) override;
   void NewFullscreenWindow(const GURL& url,
                            NewFullscreenWindowCallback callback) override;
+  void NewWindowForDetachingTab(
+      const std::u16string& tab_id,
+      const std::u16string& group_id,
+      NewWindowForDetachingTabCallback callback) override;
   void NewTab(NewTabCallback callback) override;
   void OpenUrl(const GURL& url, OpenUrlCallback callback) override;
   void RestoreTab(RestoreTabCallback callback) override;

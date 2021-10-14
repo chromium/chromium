@@ -6,8 +6,78 @@
 
 #include "base/logging.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
+#include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
+#include "components/exo/window_properties.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+
+CrosapiNewWindowDelegate::WindowObserver::WindowObserver(
+    CrosapiNewWindowDelegate* owner,
+    NewWindowForDetachingTabCallback closure)
+    : owner_(owner), closure_(std::move(closure)) {
+  // This object is instantiated before the relevant aura::Windows are created.
+  exo::WMHelper::GetInstance()->AddExoWindowObserver(this);
+}
+
+CrosapiNewWindowDelegate::WindowObserver::~WindowObserver() {
+  windows_committed_prior_to_window_id_.clear();
+  exo::WMHelper::GetInstance()->RemoveExoWindowObserver(this);
+
+  if (!closure_.is_null())
+    std::move(closure_).Run(/*new_window=*/nullptr);
+}
+
+void CrosapiNewWindowDelegate::WindowObserver::OnExoWindowCreated(
+    aura::Window* new_window) {
+  if (observed_windows_.IsObservingSource(new_window))
+    return;
+
+  observed_windows_.AddObservation(new_window);
+}
+
+void CrosapiNewWindowDelegate::WindowObserver::OnWindowPropertyChanged(
+    aura::Window* window,
+    const void* key,
+    intptr_t old) {
+  if (!window || key != exo::kSurfacePendingCommitKey ||
+      !window->GetProperty(exo::kSurfacePendingCommitKey) ||
+      closure_.is_null()) {
+    return;
+  }
+
+  // In case the |window_id_| has not been set yet, record the all window for
+  // future iteration.
+  if (window_id_.empty()) {
+    windows_committed_prior_to_window_id_.insert(window);
+    return;
+  }
+
+  if (crosapi::GetShellSurfaceWindow(window_id_) == window) {
+    std::move(closure_).Run(window);
+    owner_->DestroyWindowObserver();
+  }
+}
+
+void CrosapiNewWindowDelegate::WindowObserver::SetWindowID(
+    const std::string& window_id) {
+  window_id_ = window_id;
+
+  // Handle the scenario where the exo::kSurfacePendingCommitKey property
+  // is set prior to the |window_id_|.
+  if (windows_committed_prior_to_window_id_.empty())
+    return;
+
+  auto* window = crosapi::GetShellSurfaceWindow(window_id_);
+  for (auto* it : windows_committed_prior_to_window_id_) {
+    if (window == it) {
+      std::move(closure_).Run(window);
+      owner_->DestroyWindowObserver();
+    }
+  }
+}
 
 CrosapiNewWindowDelegate::CrosapiNewWindowDelegate(
     ash::NewWindowDelegate* delegate)
@@ -24,11 +94,35 @@ void CrosapiNewWindowDelegate::NewWindow(bool incognito,
   crosapi::BrowserManager::Get()->NewWindow(incognito);
 }
 
-void CrosapiNewWindowDelegate::NewWindowForWebUITabDrop(
+void CrosapiNewWindowDelegate::NewWindowForDetachingTab(
     aura::Window* source_window,
     const ui::OSExchangeData& drop_data,
-    NewWindowForWebUITabDropCallback closure) {
-  delegate_->NewWindowForWebUITabDrop(source_window, drop_data,
+    NewWindowForDetachingTabCallback closure) {
+  if (crosapi::browser_util::IsLacrosWindow(source_window)) {
+    std::u16string tab_id_str;
+    std::u16string group_id_str;
+    if (!tab_strip_ui::ExtractTabData(drop_data, &tab_id_str, &group_id_str)) {
+      std::move(closure).Run(/*new_window=*/nullptr);
+      return;
+    }
+
+    window_observer_ =
+        std::make_unique<WindowObserver>(this, std::move(closure));
+
+    // The window will be created on lacros side.
+    // Post-creation routines, like split view / window snap handling need be
+    // performed later.
+    auto callback = base::BindOnce(
+        [](WindowObserver* observer, crosapi::mojom::CreationResult result,
+           const std::string& window_id) { observer->SetWindowID(window_id); },
+        window_observer_.get());
+
+    crosapi::BrowserManager::Get()->NewWindowForDetachingTab(
+        tab_id_str, group_id_str, std::move(callback));
+    return;
+  }
+
+  delegate_->NewWindowForDetachingTab(source_window, drop_data,
                                       std::move(closure));
 }
 
@@ -77,4 +171,8 @@ void CrosapiNewWindowDelegate::OpenFeedbackPage(
     FeedbackSource source,
     const std::string& description_template) {
   delegate_->OpenFeedbackPage(source, description_template);
+}
+
+void CrosapiNewWindowDelegate::DestroyWindowObserver() {
+  window_observer_.reset();
 }

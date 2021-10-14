@@ -437,10 +437,10 @@ class MockNewWindowDelegate : public TestNewWindowDelegate {
   ~MockNewWindowDelegate() override = default;
 
   MOCK_METHOD(void,
-              NewWindowForWebUITabDrop,
+              NewWindowForDetachingTab,
               (aura::Window*,
                const ui::OSExchangeData&,
-               NewWindowForWebUITabDropCallback),
+               NewWindowForDetachingTabCallback),
               (override));
 };
 
@@ -1458,7 +1458,7 @@ TEST_F(DragDropControllerTest, DragTabChangesDragOperationToMove) {
       .Times(1)
       .WillOnce(Return(true));
   std::unique_ptr<aura::Window> new_window = CreateToplevelTestWindow();
-  EXPECT_CALL(*mock_new_window_delegate(), NewWindowForWebUITabDrop(_, _, _))
+  EXPECT_CALL(*mock_new_window_delegate(), NewWindowForDetachingTab(_, _, _))
       .Times(1)
       .WillOnce(RunOnceCallback<2>(new_window.get()));
 

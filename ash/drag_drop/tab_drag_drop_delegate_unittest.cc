@@ -58,10 +58,10 @@ class MockNewWindowDelegate : public TestNewWindowDelegate {
   ~MockNewWindowDelegate() override = default;
 
   MOCK_METHOD(void,
-              NewWindowForWebUITabDrop,
+              NewWindowForDetachingTab,
               (aura::Window*,
                const ui::OSExchangeData&,
-               NewWindowForWebUITabDropCallback),
+               NewWindowForDetachingTabCallback),
               (override));
 };
 
@@ -136,7 +136,7 @@ TEST_F(TabDragDropDelegateTest, DragToExistingTabStrip) {
   std::unique_ptr<aura::Window> source_window = CreateToplevelTestWindow();
 
   // A new window shouldn't be created in this case.
-  EXPECT_CALL(*mock_new_window_delegate(), NewWindowForWebUITabDrop(_, _, _))
+  EXPECT_CALL(*mock_new_window_delegate(), NewWindowForDetachingTab(_, _, _))
       .Times(0);
 
   // Emulate a drag session whose drop target accepts the drop. In this
@@ -169,7 +169,7 @@ TEST_F(TabDragDropDelegateTest, DragToNewWindow) {
   // is passed. Return the new window.
   std::unique_ptr<aura::Window> new_window = CreateToplevelTestWindow();
   EXPECT_CALL(*mock_new_window_delegate(),
-              NewWindowForWebUITabDrop(source_window.get(), _, _))
+              NewWindowForDetachingTab(source_window.get(), _, _))
       .Times(1)
       .WillOnce(RunOnceCallback<2>(new_window.get()));
 
@@ -204,7 +204,7 @@ TEST_F(TabDragDropDelegateTest, DropOnEdgeEntersSplitView) {
 
   new_window = CreateToplevelTestWindow();
   EXPECT_CALL(*mock_new_window_delegate(),
-              NewWindowForWebUITabDrop(source_window.get(), _, _))
+              NewWindowForDetachingTab(source_window.get(), _, _))
       .Times(1)
       .WillOnce(RunOnceCallback<2>(new_window.get()));
 
@@ -243,7 +243,7 @@ TEST_F(TabDragDropDelegateTest, DropTabInSplitViewMode) {
   delegate1->DragUpdate(drag_end_location_right);
   std::unique_ptr<aura::Window> new_window1 = CreateToplevelTestWindow();
   EXPECT_CALL(*mock_new_window_delegate(),
-              NewWindowForWebUITabDrop(source_window.get(), _, _))
+              NewWindowForDetachingTab(source_window.get(), _, _))
       .Times(1)
       .WillOnce(RunOnceCallback<2>(new_window1.get()));
   delegate1.release()->DropAndDeleteSelf(drag_end_location_right,
@@ -266,7 +266,7 @@ TEST_F(TabDragDropDelegateTest, DropTabInSplitViewMode) {
   delegate2->DragUpdate(drag_end_location_left);
   std::unique_ptr<aura::Window> new_window2 = CreateToplevelTestWindow();
   EXPECT_CALL(*mock_new_window_delegate(),
-              NewWindowForWebUITabDrop(source_window.get(), _, _))
+              NewWindowForDetachingTab(source_window.get(), _, _))
       .Times(1)
       .WillOnce(RunOnceCallback<2>(new_window2.get()));
   delegate2.release()->DropAndDeleteSelf(drag_end_location_left,
@@ -388,7 +388,7 @@ TEST_F(TabDragDropDelegateTest, TabDraggingHistogram) {
   // is passed. Return the new window.
   std::unique_ptr<aura::Window> new_window = CreateToplevelTestWindow();
   EXPECT_CALL(*mock_new_window_delegate(),
-              NewWindowForWebUITabDrop(source_window.get(), _, _))
+              NewWindowForDetachingTab(source_window.get(), _, _))
       .Times(1)
       .WillOnce(RunOnceCallback<2>(new_window.get()));
   delegate.release()->DropAndDeleteSelf(

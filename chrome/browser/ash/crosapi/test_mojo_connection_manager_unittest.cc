@@ -68,6 +68,10 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
   }
 
   void NewWindow(bool incognito, NewWindowCallback callback) override {}
+  void NewWindowForDetachingTab(
+      const std::u16string& tab_id,
+      const std::u16string& group_id,
+      NewWindowForDetachingTabCallback closure) override {}
   void NewFullscreenWindow(const GURL& url,
                            NewFullscreenWindowCallback callback) override {}
   void NewTab(NewTabCallback callback) override {}

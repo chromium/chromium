@@ -53,15 +53,15 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   virtual void NewWindow(bool incognito,
                          bool should_trigger_session_restore) = 0;
 
-  using NewWindowForWebUITabDropCallback =
+  using NewWindowForDetachingTabCallback =
       base::OnceCallback<void(aura::Window*)>;
 
   // Opens a new Browser window in response to a drag'n drop operation performed
   // by the user while in "tablet mode".
-  virtual void NewWindowForWebUITabDrop(
+  virtual void NewWindowForDetachingTab(
       aura::Window* source_window,
       const ui::OSExchangeData& drop_data,
-      NewWindowForWebUITabDropCallback closure) = 0;
+      NewWindowForDetachingTabCallback closure) = 0;
 
   // Opens the specified URL in a new tab. If the |from_user_interaction|
   // is true then the page will load with a user activation. This means the

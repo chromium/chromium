@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -32,6 +33,8 @@
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "ui/platform_window/platform_window.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 #include "url/gurl.h"
 
 namespace {
@@ -123,6 +126,59 @@ void BrowserServiceLacros::NewFullscreenWindow(
   // asynchronous. Ash-chrome should use the `exo::WMHelper` class rather than
   // this callback method call to track window creation status.
   std::move(callback).Run(crosapi::mojom::CreationResult::kSuccess);
+}
+
+void BrowserServiceLacros::NewWindowForDetachingTab(
+    const std::u16string& tab_id,
+    const std::u16string& group_id,
+    NewWindowForDetachingTabCallback callback) {
+  // TODO(https://crbug.com/1102815, https://crbug.com/1259946): Find what
+  // profile should be used.
+  //
+  // Alternative: Pass specific stable identifier over crosapi/wayland
+  // dnd so that we can re-extract here.
+  // Alternative2: look up for Profile instance that tab/group_id belongs to.
+  //
+  // Note: with multi-users scenario, an user can detach a tab from a window
+  // that belongs to user B, then tries to drop it on a window that belongs
+  // to profile A, and this should be rejected.
+  Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
+  if (!profile) {
+    LOG(ERROR) << "No last used profile is found.";
+    std::move(callback).Run(crosapi::mojom::CreationResult::kUnknown,
+                            std::string());
+  }
+
+  Browser* browser = chrome::FindBrowserWithProfile(profile);
+  if (!browser) {
+    LOG(ERROR) << "No browser is found.";
+    std::move(callback).Run(crosapi::mojom::CreationResult::kUnknown,
+                            std::string());
+  }
+
+  Browser::CreateParams params = browser->create_params();
+  params.user_gesture = true;
+  params.initial_show_state = ui::SHOW_STATE_DEFAULT;
+  Browser* new_browser = Browser::Create(params);
+  CHECK(new_browser);
+
+  if (!tab_strip_ui::DropTabsInNewBrowser(new_browser, tab_id, group_id)) {
+    new_browser->window()->Close();
+    // TODO(tonikitoo): Return a more specific error status, in case anything
+    // goes wrong.
+    std::move(callback).Run(crosapi::mojom::CreationResult::kUnknown,
+                            std::string());
+    return;
+  }
+
+  new_browser->window()->Show();
+
+  auto* native_window = new_browser->window()->GetNativeWindow();
+  auto* dwth_linux =
+      views::DesktopWindowTreeHostLinux::From(native_window->GetHost());
+  auto* platform_window = dwth_linux->platform_window();
+  std::move(callback).Run(crosapi::mojom::CreationResult::kSuccess,
+                          platform_window->GetWindowUniqueId());
 }
 
 void BrowserServiceLacros::NewTab(NewTabCallback callback) {

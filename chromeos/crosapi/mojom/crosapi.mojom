@@ -54,6 +54,7 @@ import "chromeos/crosapi/mojom/web_page_info.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
+import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/device/public/mojom/hid.mojom";
@@ -752,8 +753,8 @@ struct BrowserInitParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 13.
-// Next ID: 11
+// Next MinVersion: 14.
+// Next ID: 12
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
@@ -775,6 +776,15 @@ interface BrowserService {
   // Added in M96.
   [MinVersion=11]
   NewFullscreenWindow@9(url.mojom.Url url) => (CreationResult result);
+
+  // Opens a new window in the browser and transfers the given tab (or group)
+  // to it.
+  // NOTE: This method is used by Chrome OS WebUI in tablet mode as a response
+  // to a drag'n drop operation from the user.
+  [MinVersion=13]
+  NewWindowForDetachingTab@11(
+      mojo_base.mojom.String16 tab_id, mojo_base.mojom.String16 group_id)
+          => (CreationResult result, string app_id);
 
   // Opens a new tab in the browser with, currently, the last used profile.
   // This may open a new window, if there's no window. Please see also

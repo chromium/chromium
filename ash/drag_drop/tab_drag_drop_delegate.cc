@@ -137,14 +137,14 @@ void TabDragDropDelegate::DropAndDeleteSelf(
 
   auto closure = base::BindOnce(&TabDragDropDelegate::OnNewBrowserWindowCreated,
                                 base::Owned(this), location_in_screen);
-  NewWindowDelegate::GetPrimary()->NewWindowForWebUITabDrop(
+  NewWindowDelegate::GetPrimary()->NewWindowForDetachingTab(
       source_window_, drop_data, std::move(closure));
 }
 
 void TabDragDropDelegate::OnNewBrowserWindowCreated(
     const gfx::Point& location_in_screen,
     aura::Window* new_window) {
-  DCHECK(new_window);
+  DCHECK(new_window) << "New browser window creation for tab detaching failed.";
 
   const gfx::Rect area =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(

@@ -16,6 +16,10 @@ namespace exo {
 // "org.chromium.lacros.<window-id>" for Lacros browser shell surfaces.
 extern const ui::ClassProperty<std::string*>* const kApplicationIdKey;
 
+// This property is to 'true' after a Surface's root aura::Window
+// show-state is set in the first commit.
+extern const ui::ClassProperty<bool>* const kSurfacePendingCommitKey;
+
 }  // namespace exo
 
 #endif  // COMPONENTS_EXO_WINDOW_PROPERTIES_H_
