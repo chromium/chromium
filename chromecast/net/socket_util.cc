@@ -4,6 +4,8 @@
 
 #include "chromecast/net/socket_util.h"
 
+#include <sys/socket.h>
+
 #include <utility>
 
 #include "base/logging.h"
@@ -14,6 +16,16 @@
 #include "net/socket/unix_domain_client_socket_posix.h"
 
 namespace chromecast {
+
+bool CreateUnnamedSocketPair(base::ScopedFD* fd1, base::ScopedFD* fd2) {
+  int raw_socks[2];
+  if (socketpair(AF_UNIX, SOCK_STREAM, 0, raw_socks) == -1) {
+    return false;
+  }
+  fd1->reset(raw_socks[0]);
+  fd2->reset(raw_socks[1]);
+  return true;
+}
 
 std::unique_ptr<net::StreamSocket> AdoptUnnamedSocketHandle(
     base::ScopedFD socket_fd) {

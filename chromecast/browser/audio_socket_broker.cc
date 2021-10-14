@@ -19,6 +19,7 @@
 #include "base/timer/timer.h"
 #include "chromecast/media/audio/audio_io_thread.h"
 #include "chromecast/media/audio/audio_output_service/constants.h"
+#include "chromecast/net/socket_util.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "net/base/net_errors.h"
 #include "net/socket/unix_domain_client_socket_posix.h"
@@ -137,7 +138,7 @@ AudioSocketBroker::~AudioSocketBroker() = default;
 void AudioSocketBroker::GetSocketDescriptor(
     GetSocketDescriptorCallback callback) {
   base::ScopedFD socket_fd1, socket_fd2;
-  if (!base::CreateSocketPair(&socket_fd1, &socket_fd2)) {
+  if (!CreateUnnamedSocketPair(&socket_fd1, &socket_fd2)) {
     std::move(callback).Run(mojo::PlatformHandle(base::ScopedFD()));
     return;
   }

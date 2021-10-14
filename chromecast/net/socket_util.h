@@ -15,6 +15,12 @@ class StreamSocket;
 
 namespace chromecast {
 
+// Creates a socket pair and returns true if succeeded.
+bool CreateUnnamedSocketPair(base::ScopedFD* fd1, base::ScopedFD* fd2);
+
+// Returns a net::StreamSocket wrapping the |socket_fd|.
+// Note: nullptr will be returned if |socket_fd| is invalid or an error occurred
+// when adopting the socket descriptor.
 std::unique_ptr<net::StreamSocket> AdoptUnnamedSocketHandle(
     base::ScopedFD socket_fd);
 

@@ -245,6 +245,7 @@ cast_source_set("browser_base") {
     "//chromecast/media/service/mojom",
     "//chromecast/net",
     "//chromecast/net:connectivity_checker",
+    "//chromecast/net:socket_util",
     "//chromecast/service",
     "//components/cast/message_port:message_port_cast",
     "//components/cdm/browser",
