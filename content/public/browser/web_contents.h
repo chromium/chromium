@@ -245,6 +245,10 @@ class WebContents : public PageNavigator,
     // mostly for debugging (e.g. to help attribute specific scenarios or
     // invariant violations to a particular flavor of WebContents).
     base::Location creator_location;
+
+    // Enables contents to hold wake locks, for example, to keep the screen on
+    // while playing video.
+    bool enable_wake_locks;
   };
 
   // Creates a new WebContents.

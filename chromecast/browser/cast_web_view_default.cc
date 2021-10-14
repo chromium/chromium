@@ -43,10 +43,12 @@ namespace {
 
 std::unique_ptr<content::WebContents> CreateWebContents(
     content::BrowserContext* browser_context,
-    scoped_refptr<content::SiteInstance> site_instance) {
+    scoped_refptr<content::SiteInstance> site_instance,
+    const mojom::CastWebViewParams& params) {
   DCHECK(browser_context);
   content::WebContents::CreateParams create_params(browser_context, nullptr);
   create_params.site_instance = site_instance;
+  create_params.enable_wake_locks = params.keep_screen_on;
   return content::WebContents::Create(create_params);
 }
 
@@ -89,7 +91,8 @@ CastWebViewDefault::CastWebViewDefault(
                                                     params_->renderer_pool,
                                                     web_service_)),
       site_instance_(Prelaunch(renderer_prelauncher_.get())),
-      web_contents_(CreateWebContents(browser_context, site_instance_)),
+      web_contents_(
+          CreateWebContents(browser_context, site_instance_, *params_)),
       cast_web_contents_(web_contents_.get(), params_->Clone()),
       window_(cast_content_window
                   ? std::move(cast_content_window)

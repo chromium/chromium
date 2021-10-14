@@ -2882,6 +2882,8 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
   visibility_ =
       params.initially_hidden ? Visibility::HIDDEN : Visibility::VISIBLE;
 
+  enable_wake_locks_ = params.enable_wake_locks;
+
   if (!params.last_active_time.is_null())
     last_active_time_ = params.last_active_time;
 
@@ -4256,6 +4258,8 @@ device::mojom::GeolocationContext* WebContentsImpl::GetGeolocationContext() {
 }
 
 device::mojom::WakeLockContext* WebContentsImpl::GetWakeLockContext() {
+  if (!enable_wake_locks_)
+    return nullptr;
   if (!wake_lock_context_host_)
     wake_lock_context_host_ = std::make_unique<WakeLockContextHost>(this);
   return wake_lock_context_host_->GetWakeLockContext();

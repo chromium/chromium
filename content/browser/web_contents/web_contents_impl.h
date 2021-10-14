@@ -2050,6 +2050,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   mojo::AssociatedRemote<blink::mojom::ContextMenuClient> context_menu_client_;
 
   std::unique_ptr<WakeLockContextHost> wake_lock_context_host_;
+  bool enable_wake_locks_ = true;
 
   // The last set/computed value of WebPreferences for this WebContents, either
   // set directly through SetWebPreferences, or set after recomputing values

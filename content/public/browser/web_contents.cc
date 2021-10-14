@@ -32,7 +32,8 @@ WebContents::CreateParams::CreateParams(BrowserContext* context,
       desired_renderer_state(kOkayToHaveRendererProcess),
       starting_sandbox_flags(network::mojom::WebSandboxFlags::kNone),
       is_never_visible(false),
-      creator_location(creator_location) {}
+      creator_location(creator_location),
+      enable_wake_locks(true) {}
 
 WebContents::CreateParams::CreateParams(const CreateParams& other) = default;
 
