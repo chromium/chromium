@@ -24,11 +24,9 @@ export const ListPropertyUpdateMixin = dedupingMixin(
     Constructor<ListPropertyUpdateMixinInterface> => {
       class ListPropertyUpdateMixin extends superClass implements
           ListPropertyUpdateMixinInterface {
-        updateList(
-            propertyPath: string,
-            identityGetter: (item: object) => (object | string),
-            updatedList: object[],
-            identityBasedUpdate: boolean = false): boolean {
+        updateList<T>(
+            propertyPath: string, identityGetter: (item: T) => (T | string),
+            updatedList: T[], identityBasedUpdate: boolean = false): boolean {
           return updateListProperty(
               this, propertyPath, identityGetter, updatedList,
               identityBasedUpdate);
@@ -37,13 +35,13 @@ export const ListPropertyUpdateMixin = dedupingMixin(
       return ListPropertyUpdateMixin;
     });
 
-export function updateListProperty(
+export function updateListProperty<T>(
     instance: ListPropertyUpdateMixinInterface&PolymerElement,
-    propertyPath: string, identityGetter: (item: object) => (object | string),
-    updatedList: object[], identityBasedUpdate: boolean = false): boolean {
+    propertyPath: string, identityGetter: (item: T) => (T | string),
+    updatedList: T[], identityBasedUpdate: boolean = false): boolean {
   const list = instance.get(propertyPath);
   const splices = calculateSplices(
-      updatedList.map(identityGetter), list.map(identityGetter));
+      updatedList.map(item => identityGetter(item)), list.map(identityGetter));
 
   splices.forEach(splice => {
     const index = splice.index;
@@ -78,7 +76,7 @@ export function updateListProperty(
 
 export interface ListPropertyUpdateMixinInterface {
   /** @return Whether notifySplices was called. */
-  updateList(
-      propertyPath: string, identityGetter: (item: object) => (object | string),
-      updatedList: object[], identityBasedUpdate?: boolean): boolean;
+  updateList<T>(
+      propertyPath: string, identityGetter: (item: T) => (T | string),
+      updatedList: T[], identityBasedUpdate?: boolean): boolean;
 }

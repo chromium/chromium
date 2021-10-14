@@ -14,13 +14,13 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../settings_shared_css.js';
 import '../site_favicon.js';
 
-import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
+import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {ZoomLevelEntry} from './site_settings_prefs_browser_proxy.js';
 
 interface RepeaterEvent {
@@ -29,13 +29,8 @@ interface RepeaterEvent {
   }
 }
 
-const ZoomLevelsElementBase =
-    mixinBehaviors(
-        [ListPropertyUpdateBehavior],
-        SiteSettingsMixin(WebUIListenerMixin(PolymerElement))) as {
-      new (): PolymerElement & SiteSettingsMixinInterface &
-      ListPropertyUpdateBehavior & WebUIListenerMixinInterface
-    };
+const ZoomLevelsElementBase = ListPropertyUpdateMixin(
+    SiteSettingsMixin(WebUIListenerMixin(PolymerElement)));
 
 class ZoomLevelsElement extends ZoomLevelsElementBase {
   static get is() {
@@ -80,7 +75,7 @@ class ZoomLevelsElement extends ZoomLevelsElementBase {
    * @param sites The up to date list of sites and their zoom levels.
    */
   private onZoomLevelsChanged_(sites: Array<ZoomLevelEntry>) {
-    this.updateList('sites_', (item: ZoomLevelEntry) => item.origin, sites);
+    this.updateList('sites_', item => item.origin, sites);
     this.showNoSites_ = this.sites_.length === 0;
   }
 

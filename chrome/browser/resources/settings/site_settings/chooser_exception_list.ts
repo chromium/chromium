@@ -13,16 +13,16 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../settings_shared_css.js';
 import './chooser_exception_list_entry.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
-import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
 import {ChooserType, ContentSettingsTypes} from './constants.js';
-import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
+import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {ChooserException, RawChooserException, SiteException} from './site_settings_prefs_browser_proxy.js';
 
 interface ChooserExceptionListElement {
@@ -31,13 +31,8 @@ interface ChooserExceptionListElement {
   };
 }
 
-const ChooserExceptionListElementBase =
-    mixinBehaviors(
-        [ListPropertyUpdateBehavior],
-        SiteSettingsMixin(WebUIListenerMixin(I18nMixin(PolymerElement)))) as {
-      new (): PolymerElement & I18nMixinInterface & ListPropertyUpdateBehavior &
-      WebUIListenerMixinInterface & SiteSettingsMixinInterface
-    };
+const ChooserExceptionListElementBase = ListPropertyUpdateMixin(
+    SiteSettingsMixin(WebUIListenerMixin(I18nMixin(PolymerElement))));
 
 class ChooserExceptionListElement extends ChooserExceptionListElementBase {
   static get is() {

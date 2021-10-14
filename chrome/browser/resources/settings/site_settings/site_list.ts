@@ -23,10 +23,10 @@ import './site_list_entry.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
@@ -34,7 +34,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {AndroidInfoBrowserProxyImpl, AndroidSmsInfo} from './android_info_browser_proxy.js';
 // </if>
 import {ContentSetting, ContentSettingsTypes, INVALID_CATEGORY_SUBTYPE} from './constants.js';
-import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
+import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {RawSiteException, SiteException, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
 
 export interface SiteListElement {
@@ -45,15 +45,8 @@ export interface SiteListElement {
   };
 }
 
-const SiteListElementBase =
-    mixinBehaviors(
-        [
-          ListPropertyUpdateBehavior,
-        ],
-        SiteSettingsMixin(WebUIListenerMixin(PolymerElement))) as {
-      new (): PolymerElement & WebUIListenerMixinInterface &
-      ListPropertyUpdateBehavior & SiteSettingsMixinInterface
-    };
+const SiteListElementBase = ListPropertyUpdateMixin(
+    SiteSettingsMixin(WebUIListenerMixin(PolymerElement)));
 
 export class SiteListElement extends SiteListElementBase {
   static get is() {

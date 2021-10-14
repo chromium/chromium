@@ -150,8 +150,8 @@ export class PrintPreviewDestinationListElement extends
     // Update the height before updating the list.
     this.updateHeight_(matchingDestinations.length);
     this.updateList(
-        'matchingDestinations_',
-        destination => (destination as Destination).key, matchingDestinations);
+        'matchingDestinations_', destination => destination.key,
+        matchingDestinations);
 
     this.forceIronResize_();
   }

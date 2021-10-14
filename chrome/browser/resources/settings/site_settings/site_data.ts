@@ -21,16 +21,16 @@ import './site_data_entry.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin, BaseMixinInterface} from '../base_mixin.js';
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixinInterface, Router} from '../router.js';
+import {Route, Router} from '../router.js';
 
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from './local_data_browser_proxy.js';
 
@@ -54,13 +54,8 @@ interface SiteDataElement {
   };
 }
 
-const SiteDataElementBase = mixinBehaviors(
-                                [ListPropertyUpdateBehavior],
-                                GlobalScrollTargetMixin(WebUIListenerMixin(
-                                    BaseMixin(PolymerElement)))) as {
-  new (): PolymerElement & ListPropertyUpdateBehavior & BaseMixinInterface &
-  WebUIListenerMixinInterface & RouteObserverMixinInterface
-};
+const SiteDataElementBase = ListPropertyUpdateMixin(
+    GlobalScrollTargetMixin(WebUIListenerMixin(BaseMixin(PolymerElement))));
 
 class SiteDataElement extends SiteDataElementBase {
   static get is() {
@@ -139,7 +134,7 @@ class SiteDataElement extends SiteDataElementBase {
   /**
    * Reload cookies when the site data page is visited.
    *
-   * RouteObserverBehavior
+   * RouteObserverMixin
    */
   currentRouteChanged(currentRoute: Route, previousRoute: Route) {
     super.currentRouteChanged(currentRoute);

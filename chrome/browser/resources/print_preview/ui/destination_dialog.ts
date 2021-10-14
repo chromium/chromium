@@ -155,7 +155,7 @@ export class PrintPreviewDestinationDialogElement extends
     }
 
     this.updateList(
-        'destinations_', destination => (destination as Destination).key,
+        'destinations_', destination => destination.key,
         this.getDestinationList_());
 
     this.loadingDestinations_ =
