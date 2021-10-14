@@ -273,4 +273,83 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
         // Finish event is fired when canceling from device selection page.
         await finishedPromise;
       });
+
+  test('Confirm code', async function() {
+    let finishedPromise = eventToPromise('finished', bluetoothPairingUi);
+    const getDeviceSelectionPage = () =>
+        bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage');
+    const getDeviceConfirmCodePage = () =>
+        bluetoothPairingUi.shadowRoot.querySelector('#deviceConfirmCodePage');
+    const device = createDefaultBluetoothDevice(
+        /*id=*/ '123456',
+        /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+    const passkey = '123456';
+
+    bluetoothConfig.appendToDiscoveredDeviceList([device.deviceProperties]);
+    await flushAsync();
+
+    // By default device selection page should be shown.
+    assertTrue(!!getDeviceSelectionPage());
+    assertFalse(!!getDeviceConfirmCodePage());
+
+    // Test canceling while on confirm code page.
+    await selectDevice(device.deviceProperties);
+    let deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
+    deviceHandler.requireAuthentication(
+        PairingAuthType.CONFIRM_PASSKEY, passkey);
+    await flushAsync();
+
+    assertTrue(!!getDeviceConfirmCodePage());
+    assertEquals(getDeviceConfirmCodePage().code, passkey);
+
+    // Simulate pairing cancelation.
+    await simulateCancelation();
+    deviceHandler.completePairDevice(/*success=*/ false);
+    await flushAsync();
+
+    // We return to device selection page when pairing is cancelled.
+    assertFalse(!!getDeviceConfirmCodePage());
+
+    // Retry pairing.
+    await selectDevice(device.deviceProperties);
+    deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
+    deviceHandler.requireAuthentication(
+        PairingAuthType.CONFIRM_PASSKEY, passkey);
+    await flushAsync();
+
+    // When Confirm code page is shown.
+    assertTrue(!!getDeviceConfirmCodePage());
+    assertEquals(getDeviceConfirmCodePage().code, passkey);
+    let event = new CustomEvent('confirm-code');
+    getDeviceConfirmCodePage().dispatchEvent(event);
+    await flushAsync();
+
+    assertTrue(deviceHandler.getConfirmPasskeyResult());
+    deviceHandler.completePairDevice(/*success=*/ false);
+    await flushAsync();
+
+    // We return to device selection page on pair failure.
+    assertFalse(!!getDeviceConfirmCodePage());
+
+    // Retry pairing.
+    await selectDevice(device.deviceProperties);
+    deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
+    deviceHandler.requireAuthentication(
+        PairingAuthType.CONFIRM_PASSKEY, passkey);
+    await flushAsync();
+
+    event = new CustomEvent('confirm-code');
+    getDeviceConfirmCodePage().dispatchEvent(event);
+    await flushAsync();
+
+    // Finished event is fired on successful pairing.
+    deviceHandler.completePairDevice(/*success=*/ true);
+    await finishedPromise;
+  });
 });

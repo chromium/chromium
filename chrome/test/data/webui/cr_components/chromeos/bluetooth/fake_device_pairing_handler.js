@@ -6,6 +6,7 @@
 // as non-module JS is deprecated.
 import 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-lite.js';
 import {PairingAuthType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 
 /**
  * @fileoverview Fake implementation of DevicePairingHandler for testing.
@@ -32,6 +33,9 @@ export class FakeDevicePairingHandler {
 
     /** @private {string} */
     this.pinOrPasskey_ = '';
+
+    /** @private {boolean} */
+    this.confirmPasskeyResult_ = false;
   }
 
   /** @override */
@@ -49,8 +53,9 @@ export class FakeDevicePairingHandler {
    * after pairDevice(). Pass in a |PairingAuthType| to simulate each
    * pairing request made to |DevicePairingDelegate|.
    * @param {!PairingAuthType} authType
+   * @param {string=} opt_passkey used in confirm passkey
    */
-  requireAuthentication(authType) {
+  requireAuthentication(authType, opt_passkey) {
     switch (authType) {
       case PairingAuthType.REQUEST_PIN_CODE:
         this.devicePairingDelegate_.requestPinCode()
@@ -71,7 +76,12 @@ export class FakeDevicePairingHandler {
         // TODO(crbug.com/1010321): Implement this.
         break;
       case PairingAuthType.CONFIRM_PASSKEY:
-        // TODO(crbug.com/1010321): Implement this.
+        assert(opt_passkey);
+        this.devicePairingDelegate_.confirmPasskey(opt_passkey)
+            .then(
+                (response) =>
+                    this.finishRequestConfirmPasskey_(response.confirmed))
+            .catch(e => {});
         break;
       case PairingAuthType.AUTHORIZE_PAIRING:
         // TODO(crbug.com/1010321): Implement this.
@@ -85,6 +95,14 @@ export class FakeDevicePairingHandler {
    */
   finishRequestPinOrPasskey_(code) {
     this.pinOrPasskey_ = code;
+  }
+
+  /**
+   * @param {boolean} confirmed
+   * @private
+   */
+  finishRequestConfirmPasskey_(confirmed) {
+    this.confirmPasskeyResult_ = confirmed;
   }
 
   /**
@@ -111,5 +129,10 @@ export class FakeDevicePairingHandler {
   /** @return {string} */
   getPinOrPasskey() {
     return this.pinOrPasskey_;
+  }
+
+  /** @return {boolean} */
+  getConfirmPasskeyResult() {
+    return this.confirmPasskeyResult_;
   }
 }

@@ -7,8 +7,12 @@ import 'chrome://bluetooth-pairing/strings.m.js';
 
 import {SettingsBluetoothBasePageElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_base_page.js';
 import {ButtonState} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
+import {waitAfterNextRender} from '../../../test_util.js';
+
 // clang-format on
 
 suite('CrComponentsBluetoothBasePageTest', function() {
@@ -81,5 +85,16 @@ suite('CrComponentsBluetoothBasePageTest', function() {
     setStateForAllButtons(ButtonState.HIDDEN);
     assertFalse(!!getCancelButton());
     assertFalse(!!getPairButton());
+  });
+
+  test('default focus, and aria description', async function() {
+    bluetoothBasePage.focusDefault = true;
+    bluetoothBasePage.buttonBarState = {
+      cancel: ButtonState.DISABLED,
+      pair: ButtonState.ENABLED,
+    };
+    await waitAfterNextRender(bluetoothBasePage);
+    const pairButton = bluetoothBasePage.shadowRoot.querySelector('#pair');
+    assertEquals(getDeepActiveElement(), pairButton);
   });
 });

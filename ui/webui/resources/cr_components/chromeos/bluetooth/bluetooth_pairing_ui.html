@@ -25,6 +25,14 @@
           id="deviceRequestCodePage">
       </bluetooth-pairing-request-code-page>
     </template>
+    <template is="dom-if" if="[[shouldShowSubpage_(
+        SubpageId.DEVICE_CONFIRM_CODE_PAGE, selectedPageId_)]]" restamp>
+      <bluetooth-pairing-confirm-code-page
+          on-confirm-code="onConfirmCode_"
+          code="[[pairingCode_]]"
+          id="deviceConfirmCodePage">
+      </bluetooth-pairing-confirm-code-page>
+    </template>
     <!-- TODO(crbug.com/1010321): Add other bluetooth pairing subpage UI elements. -->
   </iron-pages>
 </div>

@@ -19,6 +19,10 @@ GEN('#include "content/public/test/browser_test.h"');
     'DeviceSelectionPage',
     'bluetooth/bluetooth_pairing_device_selection_page_test.js'
   ],
+  [
+    'PairingConfirmCode',
+    'bluetooth/bluetooth_pairing_confirm_code_page_test.js'
+  ],
   ['PairingDeviceItem', 'bluetooth/bluetooth_pairing_device_item_test.js'],
   [
     'PairingRequestCodePage',
