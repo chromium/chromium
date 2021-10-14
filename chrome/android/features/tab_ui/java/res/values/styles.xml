@@ -33,9 +33,7 @@
     </style>
 
     <style name="TabGridCardActionButtonStyle.ThemeRefactor">
-        <item name="android:layout_width">@dimen/tab_grid_card_header_height</item>
-        <item name="android:layout_height">@dimen/tab_grid_card_header_height</item>
-        <item name="android:layout_margin">@dimen/tab_grid_card_margin</item>
+        <item name="android:layout_margin">@dimen/tab_list_card_action_button_margin</item>
     </style>
 
     <style name="TabGridCardThumbnailStyle">
