@@ -103,6 +103,10 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable display locking, used in some tests.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kEnableBlinkFeatures, "CSSContentVisibilityHiddenMatchable");
+  // Enable HTMLSelectMenuElement, used by AccessibilitySelectMenu and
+  // AccessibilitySelectMenuOpen.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "HTMLSelectMenuElement");
   // LayoutNGTable table trees have an additional row GenericContainer.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kEnableBlinkFeatures, "LayoutNGTable");
@@ -2679,11 +2683,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySelectMenu) {
-  RunHtmlTest(FILE_PATH_LITERAL("select-menu.html"));
+  RunHtmlTest(FILE_PATH_LITERAL("selectmenu.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySelectMenuOpen) {
-  RunHtmlTest(FILE_PATH_LITERAL("select-menu-open.html"));
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE(AccessibilitySelectMenuOpen)) {
+  RunHtmlTest(FILE_PATH_LITERAL("selectmenu-open.html"));
 }
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
