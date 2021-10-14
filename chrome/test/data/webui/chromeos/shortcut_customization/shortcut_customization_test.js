@@ -336,6 +336,32 @@ export function shortcutCustomizationAppTest() {
     assertEquals(0, acceleratorList.length);
   });
 
+  test('RestoreAllButton', async () => {
+    await flushTasks();
+
+    let restoreDialog = page.shadowRoot.querySelector('#restoreDialog');
+    // Expect the dialog to not appear initially.
+    assertFalse(!!restoreDialog);
+
+    // Click on the Restore all button.
+    const restoreButton = page.shadowRoot.querySelector('#restoreAllButton');
+    restoreButton.click();
+
+    await flushTasks();
+
+    // Requery the dialog.
+    restoreDialog = page.shadowRoot.querySelector('#restoreDialog');
+    assertTrue(restoreDialog.open);
+
+    // Click on Cancel button.
+    restoreDialog.querySelector('#cancelButton').click();
+
+    await flushTasks();
+
+    restoreDialog = page.shadowRoot.querySelector('#restoreDialog');
+    assertFalse(!!restoreDialog);
+  });
+
   suite('FakeMojoProviderTest', () => {
     test('SettingGettingTestProvider', () => {
       // TODO(zentaro): Replace with fake when built.

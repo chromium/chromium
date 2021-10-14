@@ -64,6 +64,12 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      /** @protected */
+      showRestoreAllDialog_: {
+        type: Boolean,
+        value: false,
+      },
     }
   }
 
@@ -185,6 +191,26 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
         detail.source, detail.action);
     this.shadowRoot.querySelector('#editDialog')
         .updateDialogAccelerators(updatedAccels);
+  }
+
+  /** @protected */
+  onRestoreAllDefaultClicked_() {
+    this.showRestoreAllDialog_ = true;
+  }
+
+  /** @protected */
+  onCancelRestoreButtonClicked_() {
+    this.closeRestoreAllDialog_();
+  }
+
+  /** @protected */
+  onConfirmRestoreButtonClicked_() {
+    // TODO(jimmyxgong): Implement this function.
+  }
+
+  /** @protected */
+  closeRestoreAllDialog_() {
+    this.showRestoreAllDialog_ = false;
   }
 }
 

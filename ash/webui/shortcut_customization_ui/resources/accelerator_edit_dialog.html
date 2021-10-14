@@ -36,6 +36,11 @@
     --cr-dialog-title-slot-padding-start: 24px;
     --cr-dialog-title-slot-padding-top: 24px;
   }
+
+  [slot='button-container'] {
+    display: flex;
+    justify-content: space-between;
+  }
 </style>
 
 <cr-dialog id="editDialog" on-close="onDialogClose_">
@@ -72,9 +77,17 @@
 
   </div>
   <div slot="button-container">
-    <cr-button id="doneButton" on-click="onDoneButtonClicked_">
-      <!-- TODO(jimmyxgong): Localize this string -->
-      Done
-    </cr-button>
+    <div>
+      <cr-button id="restoreDefault" on-click="onRestoreDefaultButtonClicked_">
+        <!-- TODO(jimmyxgong): i18n string -->
+        Restore defaults
+      </cr-button>
+    </div>
+    <div>
+      <cr-button id="doneButton" on-click="onDoneButtonClicked_">
+        <!-- TODO(jimmyxgong): Localize this string -->
+        Done
+      </cr-button>
+    </div>
   </div>
 </cr-dialog>

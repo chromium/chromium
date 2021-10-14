@@ -105,6 +105,11 @@ export class AcceleratorEditDialogElement extends PolymerElement {
     // If the state is VIEW, no new pending accelerators are being added.
     return this.pendingNewAcceleratorState_ === ViewState.VIEW;
   }
+
+  /** @protected */
+  onRestoreDefaultButtonClicked_() {
+    // TODO(jimmyxgong): Implement this function.
+  }
 }
 
 customElements.define(AcceleratorEditDialogElement.is,
