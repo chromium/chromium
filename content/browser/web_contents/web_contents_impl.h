@@ -209,6 +209,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   static WebContentsImpl* FromOuterFrameTreeNode(
       const FrameTreeNode* frame_tree_node);
   static WebContentsImpl* FromRenderWidgetHostImpl(RenderWidgetHostImpl* rwh);
+  static WebContentsImpl* FromRenderFrameHostImpl(RenderFrameHostImpl* rfh);
 
   // Complex initialization here. Specifically needed to avoid having
   // members call back into our virtual functions in the constructor.

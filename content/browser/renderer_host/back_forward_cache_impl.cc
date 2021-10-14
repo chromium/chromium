@@ -741,7 +741,7 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
   // Do not store if activation navigations are disabled by the
   // NavigatorDelegate as a workaround for the following bug.
   // TODO(https://crbug.com/1234857): Remove this when the bug is fixed.
-  if (rfh->frame_tree_node()
+  if (rfh->frame_tree()
           ->navigator()
           .GetDelegate()
           ->IsActivationNavigationDisallowedForBug1234857()) {

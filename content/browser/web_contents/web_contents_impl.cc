@@ -581,11 +581,18 @@ WebContents* WebContents::FromRenderFrameHost(RenderFrameHost* rfh) {
   OPTIONAL_TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContents::FromRenderFrameHost", "render_frame_host",
                         rfh);
+  return WebContentsImpl::FromRenderFrameHostImpl(
+      static_cast<RenderFrameHostImpl*>(rfh));
+}
+
+WebContentsImpl* WebContentsImpl::FromRenderFrameHostImpl(
+    RenderFrameHostImpl* rfh) {
+  OPTIONAL_TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
+                        "WebContentsImpl::FromRenderFrameHostImpl",
+                        "render_frame_host", rfh);
   if (!rfh)
     return nullptr;
-  RenderFrameHostDelegate* delegate =
-      static_cast<RenderFrameHostImpl*>(rfh)->delegate();
-  return static_cast<WebContentsImpl*>(delegate);
+  return static_cast<WebContentsImpl*>(rfh->delegate());
 }
 
 WebContents* WebContents::FromFrameTreeNodeId(int frame_tree_node_id) {

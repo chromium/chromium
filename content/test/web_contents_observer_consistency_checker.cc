@@ -530,15 +530,9 @@ class WebContentsObserverConsistencyChecker::TestInputEventObserver
     if (render_frame_host_wrapper_.IsDestroyed())
       return;
 
-    // TODO(crbug.com/1183639): Use RenderFrameHost::GetLifecycleState() if it
-    // is possible.
-    int frame_tree_node_id =
-        content::RenderFrameHost::GetFrameTreeNodeIdForRoutingId(
-            render_frame_host_wrapper_->GetProcess()->GetID(),
-            render_frame_host_wrapper_->GetRoutingID());
-    CHECK(!FrameTreeNode::GloballyFindByID(frame_tree_node_id)
-               ->frame_tree()
-               ->is_prerendering());
+    CHECK_NE(static_cast<RenderFrameHostImpl*>(render_frame_host_wrapper_.get())
+                 ->lifecycle_state(),
+             RenderFrameHostImpl::LifecycleStateImpl::kPrerendering);
   }
 
   RenderFrameHostWrapper render_frame_host_wrapper_;
