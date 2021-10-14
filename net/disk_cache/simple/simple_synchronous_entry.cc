@@ -1359,9 +1359,10 @@ int SimpleSynchronousEntry::InitializeForOpen(
           2,
           GetDataSizeFromFileSize(key_.size(), out_entry_stat->data_size(2)));
       const int32_t data_size_2 = out_entry_stat->data_size(2);
+      int ret_value_stream_2 = net::OK;
       if (data_size_2 < 0) {
         DLOG(WARNING) << "Stream 2 file is too small.";
-        return net::ERR_FAILED;
+        ret_value_stream_2 = net::ERR_FAILED;
       } else if (data_size_2 > 0) {
         // Validate non empty stream 2.
         SimpleFileEOF eof_record;
@@ -1369,10 +1370,17 @@ int SimpleSynchronousEntry::InitializeForOpen(
             file_tracker_->Acquire(this, SubFileForFileIndex(i));
         int file_offset =
             out_entry_stat->GetEOFOffsetInFile(key_.size(), 2 /*stream index*/);
-        int ret_value_stream_2 =
+        ret_value_stream_2 =
             GetEOFRecordData(file.get(), nullptr, i, file_offset, &eof_record);
-        if (ret_value_stream_2 != net::OK)
-          return ret_value_stream_2;
+      }
+
+      if (ret_value_stream_2 != net::OK) {
+        DCHECK_EQ(i, GetFileIndexFromStreamIndex(2));
+        DCHECK(CanOmitEmptyFile(GetFileIndexFromStreamIndex(2)));
+        // Stream 2 is broken, set its size to zero to have it automatically
+        // deleted further down in this function. For V8 this preserves the
+        // cached source when only the code cache was corrupted.
+        out_entry_stat->set_data_size(2, 0);
       }
     }
   }

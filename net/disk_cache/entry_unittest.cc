@@ -4881,7 +4881,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheNoSideDataEOF) {
   SetSimpleCacheMode();
   InitCache();
 
-  const std::string key("the first key");
+  const char key[] = "the first key";
   const int kSize = 1024;
   CreateEntryWithHeaderBodyAndSideData(key, kSize);
 
@@ -4891,7 +4891,20 @@ TEST_F(DiskCacheEntryTest, SimpleCacheNoSideDataEOF) {
 
   TruncateFileFromEnd(1 /*side data file_index*/, key, kSize,
                       static_cast<int>(sizeof(disk_cache::SimpleFileEOF)));
-  EXPECT_THAT(OpenEntry(key, &entry), IsError(net::ERR_FAILED));
+  EXPECT_THAT(OpenEntry(key, &entry), IsOk());
+  // The corrupted stream should have been deleted.
+  EXPECT_FALSE(SimpleCacheThirdStreamFileExists(key));
+  // _0 should still exist.
+  base::FilePath path_0 = cache_path_.AppendASCII(
+      disk_cache::simple_util::GetFilenameFromKeyAndFileIndex(key, 0));
+  EXPECT_TRUE(base::PathExists(path_0));
+
+  scoped_refptr<net::IOBuffer> check_stream_data =
+      base::MakeRefCounted<net::IOBuffer>(kSize);
+  EXPECT_EQ(kSize, ReadData(entry, 0, 0, check_stream_data.get(), kSize));
+  EXPECT_EQ(kSize, ReadData(entry, 1, 0, check_stream_data.get(), kSize));
+  EXPECT_EQ(0, entry->GetDataSize(2));
+  entry->Close();
 }
 
 TEST_F(DiskCacheEntryTest, SimpleCacheReadWithoutKeySHA256) {
