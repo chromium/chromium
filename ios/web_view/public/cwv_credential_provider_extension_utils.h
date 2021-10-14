@@ -31,6 +31,16 @@ CWV_EXPORT
 + (BOOL)storePasswordForKeychainIdentifier:(NSString*)keychainIdentifier
                                   password:(NSString*)password;
 
+// Generates a random password.
+// |host| For example "www.chromium.org". This is used to look up the password
+// requirements like length, upper/lower case, symbols, etc.
+// |APIKey| Used to access the password spec API.
+// |completionHandler| Will be called asynchronously with a generated password.
++ (void)generateRandomPasswordForHost:(NSString*)host
+                               APIKey:(NSString*)APIKey
+                    completionHandler:(void (^)(NSString* generatedPassword))
+                                          completionHandler;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -4,13 +4,22 @@
 
 #import "ios/web_view/public/cwv_credential_provider_extension_utils.h"
 
+#include "base/run_loop.h"
+#import "base/test/ios/wait_util.h"
+#include "components/autofill/core/browser/proto/password_requirements.pb.h"
+#import "ios/components/credential_provider_extension/password_spec_fetcher.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::test::ios::kWaitForActionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace ios_web_view {
 
@@ -23,6 +32,7 @@ class CWVCredentialProviderExtensionUtilsTest : public PlatformTest {
         @{(__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword};
     SecItemDelete((__bridge CFDictionaryRef)spec);
   }
+  web::WebTaskEnvironment task_environment_;
 };
 
 // Tests that nil is returned for empty identifiers when retrieving.
@@ -84,6 +94,35 @@ TEST_F(CWVCredentialProviderExtensionUtilsTest, CannotOverridePassword) {
   EXPECT_FALSE([CWVCredentialProviderExtensionUtils
       storePasswordForKeychainIdentifier:@"identifier"
                                 password:@"password2"]);
+}
+
+// Tests that a random password is generated.
+TEST_F(CWVCredentialProviderExtensionUtilsTest, GenerateRandomPassword) {
+  id mock = OCMClassMock([PasswordSpecFetcher class]);
+  OCMStub([mock alloc]).andReturn(mock);
+  OCMStub([mock initWithHost:@"www.chromium.org" APIKey:@"apikey"])
+      .andReturn(mock);
+  OCMExpect([mock
+      fetchSpecWithCompletion:[OCMArg checkWithBlock:^BOOL(void (
+                                  ^completionHandler)(
+                                  autofill::PasswordRequirementsSpec spec)) {
+        completionHandler(autofill::PasswordRequirementsSpec());
+        return YES;
+      }]]);
+  __block bool completion_handler_called = false;
+  [CWVCredentialProviderExtensionUtils
+      generateRandomPasswordForHost:@"www.chromium.org"
+                             APIKey:@"apikey"
+                  completionHandler:^(NSString* generatedPassword) {
+                    EXPECT_TRUE(generatedPassword != nil);
+                    EXPECT_LT(0u, generatedPassword.length);
+                    completion_handler_called = true;
+                  }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+    base::RunLoop().RunUntilIdle();
+    return completion_handler_called;
+  }));
+  [mock verify];
 }
 
 }  // namespace ios_web_view
