@@ -224,6 +224,7 @@ ALWAYS_INLINE void PCScan::JoinScanIfNeeded() {
 ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr,
                                             size_t usable_size,
                                             size_t slot_size) {
+  PA_DCHECK(ptr == memory::UnmaskPtr(ptr));
   PCScan& instance = Instance();
   if (instance.clear_type_ == ClearType::kEager) {
     // We need to distinguish between usable_size and slot_size in this context:

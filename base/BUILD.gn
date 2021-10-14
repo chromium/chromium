@@ -3282,6 +3282,10 @@ test("base_unittests") {
     deps += [ ":base_unittests_arc" ]
   }
 
+  if (!is_ios) {
+    sources += [ "memory/tagging_unittest.cc" ]
+  }
+
   public_deps = [ ":base_unittests_bundle_data" ]
 
   data = [

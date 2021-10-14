@@ -44,6 +44,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/tagging.h"
 #include "base/no_destructor.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -115,6 +116,7 @@ class QuarantineCardTable final {
   // objects. May return false positives for but should never return false
   // negatives, as otherwise this breaks security.
   ALWAYS_INLINE bool IsQuarantined(uintptr_t ptr) const {
+    ptr = memory::UnmaskPtr(ptr);
     const size_t byte = Byte(ptr);
     PA_SCAN_DCHECK(byte < bytes_.size());
     return bytes_[byte];
@@ -691,7 +693,7 @@ void PCScanTask::ClearQuarantinedObjectsAndPrepareCardTable() {
         StateBitmapFromPointer(reinterpret_cast<char*>(super_page_base));
     auto* root = Root::FromSuperPage(reinterpret_cast<char*>(super_page_base));
     bitmap->IterateQuarantined([root, clear_type](uintptr_t ptr) {
-      auto* object = reinterpret_cast<void*>(ptr);
+      auto* object = memory::RemaskPtr(reinterpret_cast<void*>(ptr));
       auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
       // Use zero as a zapping value to speed up the fast bailout check in
       // ScanPartitions.
@@ -752,7 +754,8 @@ class PCScanScanLoop final : public ScanLoop<PCScanScanLoop> {
   }
 
   ALWAYS_INLINE void CheckPointer(uintptr_t maybe_ptr) {
-    quarantine_size_ += task_.TryMarkObjectInNormalBuckets(maybe_ptr);
+    quarantine_size_ +=
+        task_.TryMarkObjectInNormalBuckets(memory::UnmaskPtr(maybe_ptr));
   }
 
   const uintptr_t giga_cage_base_ = 0;
@@ -890,8 +893,10 @@ namespace {
 size_t FreeAndUnmarkInCardTable(PartitionRoot<ThreadSafe>* root,
                                 SlotSpanMetadata<ThreadSafe>* slot_span,
                                 void* object) {
+  object = memory::RemaskPtr(object);
   const size_t slot_size = slot_span->bucket->slot_size;
-  root->FreeNoHooksImmediate(object, slot_span);
+  void* slot_start = root->AdjustPointerForExtrasSubtract(object);
+  root->FreeNoHooksImmediate(object, slot_span, slot_start);
 #if PA_STARSCAN_USE_CARD_TABLE
   // Reset card(s) for this quarantined object. Please note that the
   // cards may still contain quarantined objects (which were

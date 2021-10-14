@@ -742,12 +742,20 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
                                      PageUpdatePermissions);
   }
 
+  if (LIKELY(size <= kMaxMemoryTaggingSize)) {
+    // Ensure the memory tag of the return_slot is unguessable.
+    return_slot = memory::TagMemoryRangeRandomly(return_slot, size);
+  }
+
   // Add all slots that fit within so far committed pages to the free list.
   PartitionFreelistEntry* prev_entry = nullptr;
   char* next_slot_end = next_slot + size;
   size_t free_list_entries_added = 0;
   while (next_slot_end <= commit_end) {
     auto* entry = new (next_slot) PartitionFreelistEntry();
+    if (LIKELY(size <= kMaxMemoryTaggingSize)) {
+      entry = memory::TagMemoryRangeRandomly(entry, size);
+    }
     if (!slot_span->freelist_head) {
       PA_DCHECK(!prev_entry);
       PA_DCHECK(!free_list_entries_added);

@@ -19,11 +19,15 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
   switch (accessibility) {
     case PageRead:
       return PROT_READ;
-    case PageReadWrite:
-      return PROT_READ | PROT_WRITE;
     case PageReadWriteTagged:
+#if defined(ARCH_CPU_ARM64)
       return PROT_READ | PROT_WRITE |
              (CPU::GetInstanceNoAllocation().has_mte() ? PROT_MTE : 0u);
+#else
+      FALLTHROUGH;
+#endif
+    case PageReadWrite:
+      return PROT_READ | PROT_WRITE;
     case PageReadExecuteProtected:
       return PROT_READ | PROT_EXEC |
              (CPU::GetInstanceNoAllocation().has_bti() ? PROT_BTI : 0u);

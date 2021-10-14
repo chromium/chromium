@@ -22,6 +22,7 @@
 #include "base/bits.h"
 #include "base/feature_list.h"
 #include "base/memory/nonscannable_memory.h"
+#include "base/memory/tagging.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -229,7 +230,9 @@ static size_t PartitionPurgeSlotSpan(
   for (internal::PartitionFreelistEntry* entry = slot_span->freelist_head;
        entry;
        /**/) {
-    size_t slot_index = (reinterpret_cast<char*>(entry) - ptr) / slot_size;
+    size_t slot_index =
+        (reinterpret_cast<char*>(base::memory::UnmaskPtr(entry)) - ptr) /
+        slot_size;
     PA_DCHECK(slot_index < num_slots);
     slot_usage[slot_index] = 0;
     entry = entry->GetNext(slot_size);
@@ -514,6 +517,10 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     ScopedGuard guard{lock_};
     if (initialized)
       return;
+
+    // Swaps out the active no-op tagging intrinsics with MTE-capable ones, if
+    // running on the right hardware.
+    memory::InitializeMTESupportIfNeeded();
 
 #if defined(PA_HAS_64_BITS_POINTERS)
     // Reserve address space for partition alloc.
@@ -938,7 +945,7 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
   }
 
   memcpy(ret, ptr, std::min(old_usable_size, new_size));
-  Free(ptr);
+  Free(ptr);  // Implicitly protects the old ptr on MTE systems.
   return ret;
 #endif
 }

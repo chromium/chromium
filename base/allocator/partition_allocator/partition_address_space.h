@@ -20,6 +20,7 @@
 #include "base/base_export.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/memory/tagging.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
@@ -55,6 +56,7 @@ class BASE_EXPORT PartitionAddressSpace {
 
   static ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
       const void* address) {
+    address = memory::UnmaskPtr(address);
     // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if !BUILDFLAG(USE_BACKUP_REF_PTR)
     PA_DCHECK(!IsInBRPPool(address));
@@ -141,7 +143,8 @@ class BASE_EXPORT PartitionAddressSpace {
 
   static ALWAYS_INLINE uintptr_t OffsetInBRPPool(const void* address) {
     PA_DCHECK(IsInBRPPool(address));
-    return reinterpret_cast<uintptr_t>(address) - setup_.brp_pool_base_address_;
+    return reinterpret_cast<uintptr_t>(memory::UnmaskPtr(address)) -
+           setup_.brp_pool_base_address_;
   }
 
   // PartitionAddressSpace is static_only class.
@@ -181,12 +184,19 @@ class BASE_EXPORT PartitionAddressSpace {
                 "Each pool size should be a power of two.");
 
   // Masks used to easy determine belonging to a pool.
+  // On Arm, the top byte of each pointer is ignored (meaning there are
+  // effectively 256 versions of each valid pointer). 4 bits are used to store
+  // tags for Arm's Memory Tagging Extension (MTE). To ensure that tagged
+  // pointers are recognized as being in the pool, mask off the top byte with
+  // kMemTagUnmask.
   static constexpr uintptr_t kNonBRPPoolOffsetMask =
       static_cast<uintptr_t>(kNonBRPPoolSize) - 1;
-  static constexpr uintptr_t kNonBRPPoolBaseMask = ~kNonBRPPoolOffsetMask;
+  static constexpr uintptr_t kNonBRPPoolBaseMask =
+      ~kNonBRPPoolOffsetMask & kMemTagUnmask;
   static constexpr uintptr_t kBRPPoolOffsetMask =
       static_cast<uintptr_t>(kBRPPoolSize) - 1;
-  static constexpr uintptr_t kBRPPoolBaseMask = ~kBRPPoolOffsetMask;
+  static constexpr uintptr_t kBRPPoolBaseMask =
+      ~kBRPPoolOffsetMask & kMemTagUnmask;
 
   // This must be != 0 so that IsInConfigurablePool always returns false
   // when the pool isn't initialized.

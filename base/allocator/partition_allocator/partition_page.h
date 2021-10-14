@@ -24,6 +24,7 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/tagging.h"
 #include "base/thread_annotations.h"
 
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -411,6 +412,7 @@ ALWAYS_INLINE void PartitionSuperPageExtentEntry<
 // a valid slot span. It merely ensures it doesn't fall in a meta-data region
 // that would surely never contain user data.
 ALWAYS_INLINE bool IsWithinSuperPagePayload(void* ptr, bool with_quarantine) {
+  ptr = memory::UnmaskPtr(ptr);
   PA_DCHECK(IsManagedByNormalBuckets(ptr));
   char* super_page_base = reinterpret_cast<char*>(
       reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask);
@@ -511,6 +513,7 @@ ALWAYS_INLINE void* SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(
 template <bool thread_safe>
 ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 SlotSpanMetadata<thread_safe>::FromSlotInnerPtr(void* ptr) {
+  ptr = memory::UnmaskPtr(ptr);
   auto* page = PartitionPage<thread_safe>::FromPtr(ptr);
   PA_DCHECK(page->is_valid);
   // Partition pages in the same slot span share the same slot span metadata
@@ -544,9 +547,10 @@ SlotSpanMetadata<thread_safe>::FromSlotStartPtr(void* slot_start) {
   auto* slot_span = FromSlotInnerPtr(slot_start);
   // Checks that the pointer is a multiple of slot size.
   auto* slot_span_start = ToSlotSpanStartPtr(slot_span);
-  PA_DCHECK(!((reinterpret_cast<uintptr_t>(slot_start) -
-               reinterpret_cast<uintptr_t>(slot_span_start)) %
-              slot_span->bucket->slot_size));
+  PA_DCHECK(
+      !((reinterpret_cast<uintptr_t>(memory::UnmaskPtr(slot_start)) -
+         reinterpret_cast<uintptr_t>(memory::UnmaskPtr(slot_span_start))) %
+        slot_span->bucket->slot_size));
   return slot_span;
 }
 

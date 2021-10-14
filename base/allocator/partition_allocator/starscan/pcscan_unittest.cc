@@ -18,6 +18,13 @@
 #if defined(PA_ALLOW_PCSCAN)
 
 namespace base {
+
+#define EXPECT_PEQ(ptr1, ptr2) \
+  { EXPECT_EQ(memory::UnmaskPtr(ptr1), memory::UnmaskPtr(ptr2)); }
+
+#define EXPECT_PNE(ptr1, ptr2) \
+  { EXPECT_NE(memory::UnmaskPtr(ptr1), memory::UnmaskPtr(ptr2)); }
+
 namespace internal {
 
 namespace {
@@ -127,8 +134,8 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
   EXPECT_EQ(SlotSpan::FromSlotStartPtr(first),
             SlotSpan::FromSlotStartPtr(last));
   if (bucket.num_system_pages_per_slot_span == NumSystemPagesPerPartitionPage())
-    EXPECT_EQ(reinterpret_cast<size_t>(first) & PartitionPageBaseMask(),
-              reinterpret_cast<size_t>(last) & PartitionPageBaseMask());
+    EXPECT_PEQ(reinterpret_cast<size_t>(first) & PartitionPageBaseMask(),
+               reinterpret_cast<size_t>(last) & PartitionPageBaseMask());
   EXPECT_EQ(num_slots, static_cast<size_t>(
                            bucket.active_slot_spans_head->num_allocated_slots));
   EXPECT_EQ(nullptr, bucket.active_slot_spans_head->freelist_head);
@@ -141,6 +148,7 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
 }
 
 bool IsInFreeList(void* slot_start) {
+  slot_start = memory::RemaskPtr(slot_start);
   auto* slot_span = SlotSpan::FromSlotStartPtr(slot_start);
   for (auto* entry = slot_span->freelist_head; entry;
        entry = entry->GetNext(slot_span->bucket->slot_size)) {

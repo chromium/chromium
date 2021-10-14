@@ -26,6 +26,7 @@
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/bits.h"
+#include "base/cpu.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
@@ -36,11 +37,21 @@
 #include "build/chromecast_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if defined(__ARM_FEATURE_MEMORY_TAGGING)
+#include <arm_acle.h>
+#endif
+
 #if defined(OS_POSIX)
 #include <sys/mman.h>
 #include <sys/resource.h>
 #include <sys/time.h>
 #endif  // defined(OS_POSIX)
+
+#define EXPECT_PEQ(ptr1, ptr2) \
+  { EXPECT_EQ(memory::UnmaskPtr(ptr1), memory::UnmaskPtr(ptr2)); }
+
+#define EXPECT_PNE(ptr1, ptr2) \
+  { EXPECT_NE(memory::UnmaskPtr(ptr1), memory::UnmaskPtr(ptr2)); }
 
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
@@ -259,12 +270,14 @@ class PartitionAllocTest : public testing::Test {
       else if (i == num_slots - 1)
         last = allocator.root()->AdjustPointerForExtrasSubtract(ptr);
     }
-    EXPECT_EQ(SlotSpan::FromSlotStartPtr(first),
-              SlotSpan::FromSlotStartPtr(last));
+    EXPECT_EQ(SlotSpan::FromSlotStartPtr(base::memory::UnmaskPtr(first)),
+              SlotSpan::FromSlotStartPtr(base::memory::UnmaskPtr(last)));
     if (bucket->num_system_pages_per_slot_span ==
         NumSystemPagesPerPartitionPage())
-      EXPECT_EQ(reinterpret_cast<size_t>(first) & PartitionPageBaseMask(),
-                reinterpret_cast<size_t>(last) & PartitionPageBaseMask());
+      EXPECT_EQ(reinterpret_cast<size_t>(base::memory::UnmaskPtr(first)) &
+                    PartitionPageBaseMask(),
+                reinterpret_cast<size_t>(base::memory::UnmaskPtr(last)) &
+                    PartitionPageBaseMask());
     EXPECT_EQ(num_slots,
               static_cast<size_t>(
                   bucket->active_slot_spans_head->num_allocated_slots));
@@ -394,7 +407,8 @@ void FreeFullSlotSpan(PartitionRoot<base::internal::ThreadSafe>* root,
   char* ptr = reinterpret_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span));
   size_t i;
   for (i = 0; i < num_slots; ++i) {
-    root->Free(ptr + kPointerOffset);
+    // Remask is needed here because each slot can have a different tag.
+    root->Free(memory::RemaskPtr(ptr + kPointerOffset));
     ptr += size;
   }
 }
@@ -495,7 +509,8 @@ TEST_F(PartitionAllocTest, MultiAlloc) {
       allocator.root()->Alloc(kTestAllocSize, type_name));
   EXPECT_TRUE(ptr1);
   EXPECT_TRUE(ptr2);
-  ptrdiff_t diff = ptr2 - ptr1;
+  ptrdiff_t diff = reinterpret_cast<char*>(base::memory::UnmaskPtr(ptr2)) -
+                   reinterpret_cast<char*>(base::memory::UnmaskPtr(ptr1));
   EXPECT_EQ(static_cast<ptrdiff_t>(kRealAllocSize), diff);
 
   // Check that we re-use the just-freed slot.
@@ -503,19 +518,19 @@ TEST_F(PartitionAllocTest, MultiAlloc) {
   ptr2 = reinterpret_cast<char*>(
       allocator.root()->Alloc(kTestAllocSize, type_name));
   EXPECT_TRUE(ptr2);
-  diff = ptr2 - ptr1;
+  diff = base::memory::UnmaskPtr(ptr2) - base::memory::UnmaskPtr(ptr1);
   EXPECT_EQ(static_cast<ptrdiff_t>(kRealAllocSize), diff);
   allocator.root()->Free(ptr1);
   ptr1 = reinterpret_cast<char*>(
       allocator.root()->Alloc(kTestAllocSize, type_name));
   EXPECT_TRUE(ptr1);
-  diff = ptr2 - ptr1;
+  diff = base::memory::UnmaskPtr(ptr2) - base::memory::UnmaskPtr(ptr1);
   EXPECT_EQ(static_cast<ptrdiff_t>(kRealAllocSize), diff);
 
   char* ptr3 = reinterpret_cast<char*>(
       allocator.root()->Alloc(kTestAllocSize, type_name));
   EXPECT_TRUE(ptr3);
-  diff = ptr3 - ptr1;
+  diff = base::memory::UnmaskPtr(ptr3) - base::memory::UnmaskPtr(ptr1);
   EXPECT_EQ(static_cast<ptrdiff_t>(kRealAllocSize * 2), diff);
 
   allocator.root()->Free(ptr1);
@@ -580,9 +595,9 @@ TEST_F(PartitionAllocTest, SlotSpanTransitions) {
   EXPECT_EQ(nullptr, slot_span2->next_slot_span);
 
   // Bounce slot_span1 back into the non-full list then fill it up again.
-  char* ptr =
+  char* ptr = memory::RemaskPtr(
       reinterpret_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span1)) +
-      kPointerOffset;
+      kPointerOffset);
   allocator.root()->Free(ptr);
   EXPECT_EQ(slot_span1, bucket->active_slot_spans_head);
   (void)allocator.root()->Alloc(kTestAllocSize, type_name);
@@ -598,26 +613,28 @@ TEST_F(PartitionAllocTest, SlotSpanTransitions) {
   EXPECT_EQ(nullptr, slot_span3->next_slot_span);
 
   // Work out a pointer into slot_span2 and free it.
-  ptr = reinterpret_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span2)) +
-        kPointerOffset;
+  ptr = memory::RemaskPtr(
+      reinterpret_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span2)) +
+      kPointerOffset);
   allocator.root()->Free(ptr);
   // Trying to allocate at this time should cause us to cycle around to
   // slot_span2 and find the recently freed slot.
   char* new_ptr = reinterpret_cast<char*>(
       allocator.root()->Alloc(kTestAllocSize, type_name));
-  EXPECT_EQ(ptr, new_ptr);
+  EXPECT_PEQ(ptr, new_ptr);
   EXPECT_EQ(slot_span2, bucket->active_slot_spans_head);
   EXPECT_EQ(slot_span3, slot_span2->next_slot_span);
 
   // Work out a pointer into slot_span1 and free it. This should pull the slot
   // span back into the list of available slot spans.
-  ptr = reinterpret_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span1)) +
-        kPointerOffset;
+  ptr = memory::RemaskPtr(
+      reinterpret_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span1)) +
+      kPointerOffset);
   allocator.root()->Free(ptr);
   // This allocation should be satisfied by slot_span1.
   new_ptr = reinterpret_cast<char*>(
       allocator.root()->Alloc(kTestAllocSize, type_name));
-  EXPECT_EQ(ptr, new_ptr);
+  EXPECT_PEQ(ptr, new_ptr);
   EXPECT_EQ(slot_span1, bucket->active_slot_spans_head);
   EXPECT_EQ(slot_span2, slot_span1->next_slot_span);
 
@@ -737,17 +754,17 @@ TEST_F(PartitionAllocTest, Alloc) {
 
   // Change the size of the realloc, remaining inside the same bucket.
   void* new_ptr = allocator.root()->Realloc(ptr, base_size + 2, type_name);
-  EXPECT_EQ(ptr, new_ptr);
+  EXPECT_PEQ(ptr, new_ptr);
   new_ptr = allocator.root()->Realloc(ptr, base_size + 1, type_name);
-  EXPECT_EQ(ptr, new_ptr);
+  EXPECT_PEQ(ptr, new_ptr);
   new_ptr =
       allocator.root()->Realloc(ptr, base_size + kSmallestBucket, type_name);
-  EXPECT_EQ(ptr, new_ptr);
+  EXPECT_PEQ(ptr, new_ptr);
 
   // Change the size of the realloc, switching buckets.
   new_ptr = allocator.root()->Realloc(ptr, base_size + kSmallestBucket + 1,
                                       type_name);
-  EXPECT_NE(new_ptr, ptr);
+  EXPECT_PNE(new_ptr, ptr);
   // Check that the realloc copied correctly.
   char* new_char_ptr = static_cast<char*>(new_ptr);
   EXPECT_EQ(*new_char_ptr, 'A');
@@ -763,13 +780,13 @@ TEST_F(PartitionAllocTest, Alloc) {
   // do an alloc of the old allocation size and check that the old allocation
   // address is at the head of the freelist and reused.
   void* reused_ptr = allocator.root()->Alloc(base_size + 1, type_name);
-  EXPECT_EQ(reused_ptr, orig_ptr);
+  EXPECT_PEQ(reused_ptr, orig_ptr);
   allocator.root()->Free(reused_ptr);
 
   // Downsize the realloc.
   ptr = new_ptr;
   new_ptr = allocator.root()->Realloc(ptr, base_size + 1, type_name);
-  EXPECT_EQ(new_ptr, orig_ptr);
+  EXPECT_PEQ(new_ptr, orig_ptr);
   new_char_ptr = static_cast<char*>(new_ptr);
   EXPECT_EQ(*new_char_ptr, 'B');
   *new_char_ptr = 'C';
@@ -777,7 +794,7 @@ TEST_F(PartitionAllocTest, Alloc) {
   // Upsize the realloc to outside the partition.
   ptr = new_ptr;
   new_ptr = allocator.root()->Realloc(ptr, kMaxBucketed + 1, type_name);
-  EXPECT_NE(new_ptr, ptr);
+  EXPECT_PNE(new_ptr, ptr);
   new_char_ptr = static_cast<char*>(new_ptr);
   EXPECT_EQ(*new_char_ptr, 'C');
   *new_char_ptr = 'D';
@@ -797,8 +814,8 @@ TEST_F(PartitionAllocTest, Alloc) {
   // Downsize the realloc to inside the partition.
   ptr = new_ptr;
   new_ptr = allocator.root()->Realloc(ptr, base_size + 1, type_name);
-  EXPECT_NE(new_ptr, ptr);
-  EXPECT_EQ(new_ptr, orig_ptr);
+  EXPECT_PNE(new_ptr, ptr);
+  EXPECT_PEQ(new_ptr, orig_ptr);
   new_char_ptr = static_cast<char*>(new_ptr);
   EXPECT_EQ(*new_char_ptr, 'F');
 
@@ -861,9 +878,9 @@ TEST_F(PartitionAllocTest, AllocSizes) {
     EXPECT_EQ(0, slot_span->num_allocated_slots);
     EXPECT_EQ(0, slot_span->num_unprovisioned_slots);
     void* new_ptr_1 = allocator.root()->Alloc(size, type_name);
-    EXPECT_EQ(ptr2, new_ptr_1);
+    EXPECT_PEQ(ptr2, new_ptr_1);
     void* new_ptr_2 = allocator.root()->Alloc(size, type_name);
-    EXPECT_EQ(ptr3, new_ptr_2);
+    EXPECT_PEQ(ptr3, new_ptr_2);
 
     allocator.root()->Free(new_ptr_1);
     allocator.root()->Free(new_ptr_2);
@@ -930,7 +947,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_LT(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   for (size_t offset = 0; offset < requested_size; ++offset) {
-    EXPECT_EQ(
+    EXPECT_PEQ(
         PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
         slot_start);
   }
@@ -952,7 +969,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_EQ(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   for (size_t offset = 0; offset < requested_size; offset += 877) {
-    EXPECT_EQ(
+    EXPECT_PEQ(
         PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
         slot_start);
   }
@@ -979,7 +996,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_EQ(requested_size + SystemPageSize(), actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   for (size_t offset = 0; offset < requested_size; offset += 4999) {
-    EXPECT_EQ(
+    EXPECT_PEQ(
         PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
         slot_start);
   }
@@ -999,7 +1016,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_EQ(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   for (size_t offset = 0; offset < requested_size; offset += 4999) {
-    EXPECT_EQ(
+    EXPECT_PEQ(
         PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
         slot_start);
   }
@@ -1025,7 +1042,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
     EXPECT_LT(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     for (size_t offset = 0; offset < requested_size; offset += 16111) {
-      EXPECT_EQ(
+      EXPECT_PEQ(
           PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
           slot_start);
     }
@@ -1064,7 +1081,7 @@ TEST_F(PartitionAllocTest, GetSlotStartMultiplePages) {
     char* slot_start =
         reinterpret_cast<char*>(ptr) - allocator.root()->extras_offset;
     for (size_t offset = 0; offset < requested_size; offset += 13) {
-      EXPECT_EQ(
+      EXPECT_PEQ(
           PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
           slot_start);
     }
@@ -1083,8 +1100,8 @@ TEST_F(PartitionAllocTest, Realloc) {
   // realloc(ptr, 0) should be equivalent to free().
   void* ptr2 = allocator.root()->Realloc(ptr, 0, type_name);
   EXPECT_EQ(nullptr, ptr2);
-  EXPECT_EQ(allocator.root()->AdjustPointerForExtrasSubtract(ptr),
-            slot_span->freelist_head);
+  EXPECT_PEQ(allocator.root()->AdjustPointerForExtrasSubtract(ptr),
+             slot_span->freelist_head);
 
   // Test that growing an allocation with realloc() copies everything from the
   // old allocation.
@@ -1094,7 +1111,7 @@ TEST_F(PartitionAllocTest, Realloc) {
   ptr = allocator.root()->Alloc(size, type_name);
   memset(ptr, 'A', size);
   ptr2 = allocator.root()->Realloc(ptr, size + 1, type_name);
-  EXPECT_NE(ptr, ptr2);
+  EXPECT_PNE(ptr, ptr2);
   char* char_ptr2 = static_cast<char*>(ptr2);
   EXPECT_EQ('A', char_ptr2[0]);
   EXPECT_EQ('A', char_ptr2[size - 1]);
@@ -1106,7 +1123,7 @@ TEST_F(PartitionAllocTest, Realloc) {
   // from the old allocation. Use |size - 1| to test what happens to the extra
   // space before the cookie.
   ptr = allocator.root()->Realloc(ptr2, size - 1, type_name);
-  EXPECT_NE(ptr2, ptr);
+  EXPECT_PNE(ptr2, ptr);
   char* char_ptr = static_cast<char*>(ptr);
   EXPECT_EQ('A', char_ptr[0]);
   EXPECT_EQ('A', char_ptr[size - 2]);
@@ -1127,7 +1144,7 @@ TEST_F(PartitionAllocTest, Realloc) {
   ptr = allocator.root()->Alloc(size, type_name);
   memset(ptr, 'A', size);
   ptr2 = allocator.root()->Realloc(ptr, size * 2, type_name);
-  EXPECT_NE(ptr, ptr2);
+  EXPECT_PNE(ptr, ptr2);
   char_ptr2 = static_cast<char*>(ptr2);
   EXPECT_EQ('A', char_ptr2[0]);
   EXPECT_EQ('A', char_ptr2[size - 1]);
@@ -1138,7 +1155,7 @@ TEST_F(PartitionAllocTest, Realloc) {
   // Test that shrinking an allocation with realloc() also copies everything
   // from the old allocation.
   ptr = allocator.root()->Realloc(ptr2, size / 2, type_name);
-  EXPECT_NE(ptr2, ptr);
+  EXPECT_PNE(ptr2, ptr);
   char_ptr = static_cast<char*>(ptr);
   EXPECT_EQ('A', char_ptr[0]);
   EXPECT_EQ('A', char_ptr[size / 2 - 1]);
@@ -1171,7 +1188,7 @@ TEST_F(PartitionAllocTest, Realloc) {
   // Test that a previously in-place shrunk direct mapped allocation can be
   // expanded up again up to its original size.
   ptr = allocator.root()->Realloc(ptr3, size, type_name);
-  EXPECT_EQ(ptr3, ptr);
+  EXPECT_PEQ(ptr3, ptr);
   EXPECT_EQ(actual_capacity, allocator.root()->AllocationCapacityFromPtr(ptr));
 
   // Test that the allocation can be expanded in place up to its capacity.
@@ -1232,7 +1249,7 @@ TEST_F(PartitionAllocTest, ReallocDirectMapAligned) {
     // Test that a direct mapped allocation is performed not in-place when the
     // new size is small enough.
     ptr3 = allocator.root()->Realloc(ptr2, SystemPageSize(), type_name);
-    EXPECT_NE(ptr2, ptr3);
+    EXPECT_PNE(ptr2, ptr3);
 
     allocator.root()->Free(ptr3);
   }
@@ -1248,7 +1265,7 @@ TEST_F(PartitionAllocTest, ReallocDirectMapAlignedRelocate) {
   // Reallocating with the same size will actually relocate, because without a
   // need for alignment we can downsize the reservation significantly.
   void* ptr2 = allocator.root()->Realloc(ptr, size, type_name);
-  EXPECT_NE(ptr, ptr2);
+  EXPECT_PNE(ptr, ptr2);
   allocator.root()->Free(ptr2);
 
   // Again pick size such that the alignment will put it cross the super page
@@ -1596,10 +1613,10 @@ TEST_F(PartitionAllocTest, MappingCollision) {
   // with the goal of tripping up alignment of the next mapping.
   map1 = AllocPages(page_base - PageAllocationGranularity(),
                     PageAllocationGranularity(), PageAllocationGranularity(),
-                    PageReadWrite, PageTag::kPartitionAlloc);
+                    PageReadWriteTagged, PageTag::kPartitionAlloc);
   EXPECT_TRUE(map1);
   map2 = AllocPages(page_base + kSuperPageSize, PageAllocationGranularity(),
-                    PageAllocationGranularity(), PageReadWrite,
+                    PageAllocationGranularity(), PageReadWriteTagged,
                     PageTag::kPartitionAlloc);
   EXPECT_TRUE(map2);
   EXPECT_TRUE(TrySetSystemPagesAccess(map1, PageAllocationGranularity(),
@@ -1909,10 +1926,45 @@ TEST_F(PartitionAllocDeathTest, DirectMapGuardPages) {
   }
 }
 
+#if (defined(OS_LINUX) || defined(OS_ANDROID)) && defined(ARCH_CPU_ARM64)
+TEST_F(PartitionAllocTest, MTEProtectsFreedPtr) {
+  // This test checks that Arm's memory tagging extension is correctly
+  // protecting freed pointers. Writes to a freed pointer should cause a crash.
+  CPU cpu;
+  if (!cpu.has_mte()) {
+    // This test won't pass on non-MTE systems.
+    GTEST_SKIP();
+  }
+
+  constexpr uint64_t kCookie = 0x1234567890ABCDEF;
+  constexpr uint64_t kQuarantined = 0xEFEFEFEFEFEFEFEF;
+
+  size_t alloc_size = 64 - kExtraAllocSize;
+  uint64_t* ptr1 = reinterpret_cast<uint64_t*>(
+      allocator.root()->Alloc(alloc_size, type_name));
+  EXPECT_TRUE(ptr1);
+
+  // Write to the pointer whilst it's live
+  *ptr1 = kCookie;
+
+  // Invalidate the pointer on free.
+  allocator.root()->Free(ptr1);
+
+  // Writing to ptr1 after free should crash.
+  EXPECT_EXIT(
+      {
+        // Should be in synchronous MTE mode for running this test.
+        *ptr1 = kQuarantined;
+      },
+      testing::KilledBySignal(SIGSEGV), "");
+}
+#endif
+
 // These tests rely on precise layout. They handle cookie, not ref-count.
 #if !BUILDFLAG(USE_BACKUP_REF_PTR) && defined(PA_HAS_FREELIST_HARDENING)
 
 TEST_F(PartitionAllocDeathTest, UseAfterFreeDetection) {
+  CPU cpu;
   void* data = allocator.root()->Alloc(100, "");
   allocator.root()->Free(data);
 
@@ -1923,6 +1975,7 @@ TEST_F(PartitionAllocDeathTest, UseAfterFreeDetection) {
 }
 
 TEST_F(PartitionAllocDeathTest, FreelistCorruption) {
+  CPU cpu;
   const size_t alloc_size = 2 * sizeof(void*);
   void** fake_freelist_entry =
       static_cast<void**>(allocator.root()->Alloc(alloc_size, ""));
@@ -1941,24 +1994,34 @@ TEST_F(PartitionAllocDeathTest, FreelistCorruption) {
 // With DCHECK_IS_ON(), cookie already handles off-by-one detection.
 #if !DCHECK_IS_ON()
 TEST_F(PartitionAllocDeathTest, OffByOneDetection) {
+  CPU cpu;
   const size_t alloc_size = 2 * sizeof(void*);
   char* array = static_cast<char*>(allocator.root()->Alloc(alloc_size, ""));
-  array[alloc_size] = 'A';
-  // Crash at the next allocation. This assumes that we are touching a new,
-  // non-randomized slot span, where the next slot to be handed over to the
-  // application directly follows the current one.
-  EXPECT_DEATH(allocator.root()->Alloc(alloc_size, ""), "");
+  if (cpu.has_mte()) {
+    EXPECT_DEATH(array[alloc_size] = 'A', "");
+  } else {
+    array[alloc_size] = 'A';
+    // Crash at the next allocation. This assumes that we are touching a new,
+    // non-randomized slot span, where the next slot to be handed over to the
+    // application directly follows the current one.
+    EXPECT_DEATH(allocator.root()->Alloc(alloc_size, ""), "");
+  }
 }
 
 TEST_F(PartitionAllocDeathTest, OffByOneDetectionWithRealisticData) {
+  CPU cpu;
   const size_t alloc_size = 2 * sizeof(void*);
   void** array = static_cast<void**>(allocator.root()->Alloc(alloc_size, ""));
   char valid;
-  array[2] = &valid;
-  // Crash at the next allocation. This assumes that we are touching a new,
-  // non-randomized slot span, where the next slot to be handed over to the
-  // application directly follows the current one.
-  EXPECT_DEATH(allocator.root()->Alloc(alloc_size, ""), "");
+  if (cpu.has_mte()) {
+    EXPECT_DEATH(array[2] = &valid, "");
+  } else {
+    array[2] = &valid;
+    // Crash at the next allocation. This assumes that we are touching a new,
+    // non-randomized slot span, where the next slot to be handed over to the
+    // application directly follows the current one.
+    EXPECT_DEATH(allocator.root()->Alloc(alloc_size, ""), "");
+  }
 }
 #endif  // !DCHECK_IS_ON()
 
@@ -2322,7 +2385,7 @@ TEST_F(PartitionAllocTest, PreferActiveOverEmpty) {
   // A good choice here is to re-fill the third slot span since the first two
   // are empty. We used to fail that.
   void* ptr7 = allocator.root()->Alloc(size, type_name);
-  EXPECT_EQ(ptr6, ptr7);
+  EXPECT_PEQ(ptr6, ptr7);
   EXPECT_EQ(slot_span3, bucket->active_slot_spans_head);
 
   allocator.root()->Free(ptr5);
@@ -2544,10 +2607,10 @@ TEST_F(PartitionAllocTest, PurgeDiscardableWithFreeListRewrite) {
   // Let's check we didn't brick the freelist.
   void* ptr1b =
       allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
-  EXPECT_EQ(ptr1, ptr1b);
+  EXPECT_PEQ(ptr1, ptr1b);
   void* ptr2b =
       allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
-  EXPECT_EQ(ptr2, ptr2b);
+  EXPECT_PEQ(ptr2, ptr2b);
   EXPECT_FALSE(slot_span->freelist_head);
 
   allocator.root()->Free(ptr1);
@@ -3173,6 +3236,8 @@ TEST_F(PartitionAllocTest, RefCountBasic) {
 
   allocator.root()->Free(ptr1);
   // The allocation shouldn't be reclaimed, and its contents should be zapped.
+  // Remask ptr1 to get its correct MTE tag.
+  ptr1 = memory::RemaskPtr(ptr1);
   EXPECT_NE(*ptr1, kCookie);
   EXPECT_EQ(*ptr1, kQuarantined);
 
@@ -3184,6 +3249,8 @@ TEST_F(PartitionAllocTest, RefCountBasic) {
   allocator.root()->Free(ptr2);
 
   // When the last reference is released, the slot should become reusable.
+  // Remask ref_count because PartitionAlloc retags ptr to enforce quarantine.
+  ref_count = memory::RemaskPtr(ref_count);
   EXPECT_TRUE(ref_count->Release());
   PartitionAllocFreeForRefCounting(reinterpret_cast<char*>(ptr1) -
                                    kPointerOffset);
@@ -3208,11 +3275,15 @@ void PartitionAllocTest::RunRefCountReallocSubtest(size_t orig_size,
   void* ptr2 = allocator.root()->Realloc(ptr1, new_size, type_name);
   EXPECT_TRUE(ptr2);
 
+  // PartitionAlloc may retag memory areas on realloc (even if they
+  // do not move), so recover the true tag here.
+  ref_count1 = memory::RemaskPtr(ref_count1);
+
   // Re-query ref-count. It may have moved if Realloc changed the slot.
   auto* ref_count2 =
       PartitionRefCountPointer(reinterpret_cast<char*>(ptr2) - kPointerOffset);
 
-  if (ptr1 == ptr2) {
+  if (memory::UnmaskPtr(ptr1) == memory::UnmaskPtr(ptr2)) {
     // If the slot didn't change, ref-count should stay the same.
     EXPECT_EQ(ref_count1, ref_count2);
     EXPECT_FALSE(ref_count2->IsAliveWithNoKnownRefs());
@@ -3406,7 +3477,7 @@ TEST_F(PartitionAllocTest, CrossPartitionRootRealloc) {
   void* ptr2 = new_root->ReallocFlags(PartitionAllocReturnNull, ptr,
                                       test_size + 1024, nullptr);
   EXPECT_TRUE(ptr2);
-  EXPECT_NE(ptr, ptr2);
+  EXPECT_PNE(ptr, ptr2);
 }
 
 TEST_F(PartitionAllocTest, FastPathOrReturnNull) {
@@ -3617,13 +3688,10 @@ TEST_F(PartitionAllocTest, ConfigurablePool) {
       const size_t size = kTestSizes[base::RandGenerator(kTestSizesCount)];
       allocations[i] = root->Alloc(size, nullptr);
       EXPECT_NE(nullptr, allocations[i]);
-      uintptr_t allocation_base = reinterpret_cast<uintptr_t>(allocations[i]);
+      uintptr_t allocation_base =
+          memory::UnmaskPtr(reinterpret_cast<uintptr_t>(allocations[i]));
       EXPECT_TRUE(allocation_base >= pool_base &&
                   allocation_base < pool_base + pool_size);
-    }
-
-    for (size_t i = 0; i < count; ++i) {
-      root->Free(allocations[i]);
     }
 
     PartitionAddressSpace::UninitConfigurablePoolForTesting();

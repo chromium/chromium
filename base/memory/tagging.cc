@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 #include "base/memory/tagging.h"
+
+#include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 
-#if defined(__ARM_FEATURE_MEMORY_TAGGING) && defined(ARCH_CPU_ARM64) && \
-    (defined(OS_LINUX) || defined(OS_ANDROID))
-#define HAS_MEMORY_TAGGING 1
+#if defined(HAS_MEMORY_TAGGING)
+#include <arm_acle.h>
 #include <sys/auxv.h>
 #include <sys/prctl.h>
-#define HWCAP2_MTE (1 << 19)
+#define HWCAP2_MTE (1 << 18)
 #define PR_SET_TAGGED_ADDR_CTRL 55
 #define PR_GET_TAGGED_ADDR_CTRL 56
 #define PR_TAGGED_ADDR_ENABLE (1UL << 0)
@@ -105,7 +106,8 @@ void ChangeMemoryTaggingModeForAllThreadsPerProcess(
   }
 #endif  // defined(HAS_MEMORY_TAGGING)
 }
-#else
+#endif  // defined(OS_ANDROID)
+
 #if defined(HAS_MEMORY_TAGGING)
 namespace {
 void ChangeMemoryTaggingModeInternal(unsigned prctl_mask) {
@@ -113,7 +115,8 @@ void ChangeMemoryTaggingModeInternal(unsigned prctl_mask) {
   if (cpu.has_mte()) {
     int status = prctl(PR_SET_TAGGED_ADDR_CTRL, prctl_mask, 0, 0, 0);
     if (status != 0) {
-      LOG(FATAL) << "ChangeMemoryTaggingModeInternal: prctl failure";
+      LOG(FATAL) << "ChangeTagReportingModeInternal: prctl failure, status = "
+                 << status;
     }
   }
 }
@@ -133,7 +136,98 @@ void ChangeMemoryTaggingModeForCurrentThread(TagViolationReportingMode m) {
   }
 #endif  // defined(HAS_MEMORY_TAGGING)
 }
-#endif  // defined(OS_ANDROID)
+
+namespace {
+ALLOW_UNUSED_TYPE static bool CheckTagRegionParameters(void* ptr, size_t sz) {
+  // Check that ptr and size are correct for MTE
+  uintptr_t ptr_as_uint = reinterpret_cast<uintptr_t>(ptr);
+  bool ret = (ptr_as_uint % kMemTagGranuleSize == 0) &&
+             (sz % kMemTagGranuleSize == 0) && sz;
+  return ret;
+}
+
+#if defined(HAS_MEMORY_TAGGING)
+static bool HasCPUMemoryTaggingExtension() {
+  return CPU::GetInstanceNoAllocation().has_mte();
+}
+#endif
+
+#if defined(HAS_MEMORY_TAGGING)
+void* TagRegionRandomlyForMTE(void* ptr, size_t sz, uint64_t mask) {
+  // Randomly tag a region (MTE-enabled systems only). The first 16-byte
+  // granule is randomly tagged, all other granules in the region are
+  // then assigned that initial tag via __arm_mte_set_tag.
+  if (!CheckTagRegionParameters(ptr, sz))
+    return nullptr;
+  // __arm_mte_create_random_tag generates a randomly tagged pointer via the
+  // hardware's random number generator, but does not apply it to the memory.
+  char* nptr = reinterpret_cast<char*>(__arm_mte_create_random_tag(ptr, mask));
+  for (size_t i = 0; i < sz; i += kMemTagGranuleSize) {
+    // Next, tag the first and all subsequent granules with the randomly tag.
+    __arm_mte_set_tag(nptr +
+                      i);  // Tag is taken from the top bits of the argument.
+  }
+  return nptr;
+}
+
+void* TagRegionIncrementForMTE(void* ptr, size_t sz) {
+  // Increment a region's tag (MTE-enabled systems only), using the tag of the
+  // first granule.
+  if (!CheckTagRegionParameters(ptr, sz))
+    return nullptr;
+  // Increment ptr's tag.
+  char* nptr = reinterpret_cast<char*>(__arm_mte_increment_tag(ptr, 1u));
+  for (size_t i = 0; i < sz; i += kMemTagGranuleSize) {
+    // Apply the tag to the first granule, and all subsequent granules.
+    __arm_mte_set_tag(nptr + i);
+  }
+  return nptr;
+}
+
+void* RemaskVoidPtrForMTE(void* ptr) {
+  if (LIKELY(ptr)) {
+    // Can't look up the tag for a null ptr (segfaults).
+    return __arm_mte_get_tag(ptr);
+  }
+  return nullptr;
+}
+#endif
+
+void* TagRegionIncrementNoOp(void* ptr, size_t sz) {
+  // Region parameters are checked even on non-MTE systems to check the
+  // intrinsics are used correctly.
+  return ptr;
+}
+
+void* TagRegionRandomlyNoOp(void* ptr, size_t sz, uint64_t mask) {
+  // Verifies a 16-byte aligned tagging granule, size tagging granule (all
+  // architectures).
+  return ptr;
+}
+
+void* RemaskVoidPtrNoOp(void* ptr) {
+  return ptr;
+}
+
+}  // namespace
+
+void InitializeMTESupportIfNeeded() {
+#if defined(HAS_MEMORY_TAGGING)
+  if (HasCPUMemoryTaggingExtension()) {
+    internal::global_remask_void_ptr_fn = RemaskVoidPtrForMTE;
+    internal::global_tag_memory_range_increment_fn = TagRegionIncrementForMTE;
+    internal::global_tag_memory_range_randomly_fn = TagRegionRandomlyForMTE;
+  }
+#endif
+}
+
+namespace internal {
+RemaskPtrInternalFn* global_remask_void_ptr_fn = RemaskVoidPtrNoOp;
+TagMemoryRangeIncrementInternalFn* global_tag_memory_range_increment_fn =
+    TagRegionIncrementNoOp;
+TagMemoryRangeRandomlyInternalFn* global_tag_memory_range_randomly_fn =
+    TagRegionRandomlyNoOp;
+}  // namespace internal
 
 TagViolationReportingMode GetMemoryTaggingModeForCurrentThread() {
 #if defined(HAS_MEMORY_TAGGING)

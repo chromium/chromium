@@ -449,7 +449,9 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   // Same as |Free()|, bypasses the allocator hooks.
   ALWAYS_INLINE static void FreeNoHooks(void* ptr);
   // Immediately frees the pointer bypassing the quarantine.
-  ALWAYS_INLINE void FreeNoHooksImmediate(void* ptr, SlotSpan* slot_span);
+  ALWAYS_INLINE void FreeNoHooksImmediate(void* ptr,
+                                          SlotSpan* slot_span,
+                                          void* slot_start);
 
   ALWAYS_INLINE static size_t GetUsableSize(void* ptr);
 
@@ -803,12 +805,13 @@ ALWAYS_INLINE void* PartitionAllocGetSlotStartInBRPPool(void* ptr) {
   uintptr_t slot_span_start = reinterpret_cast<uintptr_t>(
       internal::SlotSpanMetadata<internal::ThreadSafe>::ToSlotSpanStartPtr(
           slot_span));
+  PA_DCHECK(slot_span_start == memory::UnmaskPtr(slot_span_start));
   size_t offset_in_slot_span = ptr_addr - slot_span_start;
 
   auto* bucket = slot_span->bucket;
-  return reinterpret_cast<void*>(
+  return memory::RemaskPtr(reinterpret_cast<void*>(
       slot_span_start +
-      bucket->slot_size * bucket->GetSlotNumber(offset_in_slot_span));
+      bucket->slot_size * bucket->GetSlotNumber(offset_in_slot_span)));
 }
 
 // Checks whether a given pointer stays within the same allocation slot after
@@ -1028,25 +1031,36 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
   PA_DCHECK(IsValidSlotSpan(slot_span));
   PA_DCHECK(FromSlotSpan(slot_span) == root);
 
+  const size_t slot_size = slot_span->bucket->slot_size;
+  void* slot_start = root->AdjustPointerForExtrasSubtract(ptr);
+  if (LIKELY(slot_size <= kMaxMemoryTaggingSize)) {
+    // Incrementing the memory range returns the true underlying tag, so
+    // RemaskPtr is not required here.
+    slot_start = memory::TagMemoryRangeIncrement(slot_start, slot_size);
+    ptr = memory::RemaskPtr(ptr);
+  }
+
   // TODO(bikineev): Change the condition to LIKELY once PCScan is enabled by
   // default.
   if (UNLIKELY(root->IsQuarantineEnabled())) {
     // PCScan safepoint. Call before potentially scheduling scanning task.
     PCScan::JoinScanIfNeeded();
     if (LIKELY(internal::IsManagedByNormalBuckets(ptr))) {
-      PCScan::MoveToQuarantine(ptr, slot_span->GetUsableSize(root),
+      PCScan::MoveToQuarantine(memory::UnmaskPtr(ptr),
+                               slot_span->GetUsableSize(root),
                                slot_span->bucket->slot_size);
       return;
     }
   }
 
-  root->FreeNoHooksImmediate(ptr, slot_span);
+  root->FreeNoHooksImmediate(ptr, slot_span, slot_start);
 }
 
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     void* ptr,
-    SlotSpan* slot_span) {
+    SlotSpan* slot_span,
+    void* slot_start) {
   // The thread cache is added "in the middle" of the main allocator, that is:
   // - After all the cookie/ref-count management
   // - Before the "raw" allocator.
@@ -1074,7 +1088,6 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   //
   // For more context, see the other "Layout inside the slot" comment below.
 
-  void* slot_start = AdjustPointerForExtrasSubtract(ptr);
 
 #if DCHECK_IS_ON()
   if (allow_cookie) {
@@ -1234,6 +1247,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeLocked(void* slot_start) {
 template <bool thread_safe>
 ALWAYS_INLINE bool PartitionRoot<thread_safe>::IsValidSlotSpan(
     SlotSpan* slot_span) {
+  slot_span = memory::UnmaskPtr(slot_span);
   PartitionRoot* root = FromSlotSpan(slot_span);
   return root->inverted_self == ~reinterpret_cast<uintptr_t>(root);
 }
@@ -1305,7 +1319,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RecommitSystemPagesForData(
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
   internal::ScopedSyscallTimer<thread_safe> timer{this};
-  RecommitSystemPages(address, length, PageReadWrite,
+  RecommitSystemPages(address, length, PageReadWriteTagged,
                       accessibility_disposition);
   IncreaseCommittedPages(length);
 }
@@ -1316,7 +1330,7 @@ ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
   internal::ScopedSyscallTimer<thread_safe> timer{this};
-  bool ok = TryRecommitSystemPages(address, length, PageReadWrite,
+  bool ok = TryRecommitSystemPages(address, length, PageReadWriteTagged,
                                    accessibility_disposition);
   if (ok)
     IncreaseCommittedPages(length);
