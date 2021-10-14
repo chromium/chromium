@@ -2416,6 +2416,25 @@ std::vector<EventList> GenerateFailingEventLists() {
                                           all_observations.end(), kEventCount);
 }
 
+DownloadFile::RenameCompletionCallback GetRenameCompletionCallback(
+    MockDownloadFile* download_file) {
+  DownloadFile::RenameCompletionCallback intermediate_rename_callback;
+  bool use_download_collection = false;
+#if defined(OS_ANDROID)
+  if (DownloadCollectionBridge::ShouldPublishDownload(
+          base::FilePath(kDummyIntermediatePath))) {
+    use_download_collection = true;
+    EXPECT_CALL(*download_file, RenameToIntermediateUri(_, _, _, _, _, _))
+        .WillOnce(MoveArg<5>(&intermediate_rename_callback));
+  }
+#endif
+  if (!use_download_collection) {
+    EXPECT_CALL(*download_file, RenameAndUniquify(_, _))
+        .WillOnce(MoveArg<1>(&intermediate_rename_callback));
+  }
+  return intermediate_rename_callback;
+}
+
 class DownloadItemDestinationUpdateRaceTest
     : public DownloadItemTest,
       public ::testing::WithParamInterface<EventList> {
@@ -2515,13 +2534,8 @@ TEST_P(DownloadItemDestinationUpdateRaceTest, IntermediateRenameFails) {
   // Intermediate rename loop is not used immediately, but let's set up the
   // DownloadFile expectations since we are about to transfer its ownership to
   // the DownloadItem.
-  DownloadFile::RenameCompletionCallback intermediate_rename_callback;
-  EXPECT_CALL(*file_, RenameAndUniquify(_, _))
-      .WillOnce(WithArg<1>([&intermediate_rename_callback](
-                               DownloadFile::RenameCompletionCallback cb) {
-        intermediate_rename_callback = std::move(cb);
-      }));
-
+  DownloadFile::RenameCompletionCallback intermediate_rename_callback =
+      GetRenameCompletionCallback(file_.get());
   DownloadFile::InitializeCallback initialize_callback;
   EXPECT_CALL(*file_, Initialize(_, _, _))
       .WillOnce(SaveArg<0>(&initialize_callback));
@@ -2586,12 +2600,8 @@ TEST_P(DownloadItemDestinationUpdateRaceTest, IntermediateRenameSucceeds) {
   // Intermediate rename loop is not used immediately, but let's set up the
   // DownloadFile expectations since we are about to transfer its ownership to
   // the DownloadItem.
-  DownloadFile::RenameCompletionCallback intermediate_rename_callback;
-  EXPECT_CALL(*file_, RenameAndUniquify(_, _))
-      .WillOnce(WithArg<1>([&intermediate_rename_callback](
-                               DownloadFile::RenameCompletionCallback cb) {
-        intermediate_rename_callback = std::move(cb);
-      }));
+  DownloadFile::RenameCompletionCallback intermediate_rename_callback =
+      GetRenameCompletionCallback(file_.get());
 
   DownloadFile::InitializeCallback initialize_callback;
   EXPECT_CALL(*file_, Initialize(_, _, _))
