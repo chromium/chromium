@@ -873,12 +873,6 @@ if (is_win) {
         "//chrome/updater/mac:updater_install_script",
       ]
     }
-
-    if (is_asan) {
-      # crashpad_handler requires the ASan runtime at its @executable_path.
-      sources += [ "$root_out_dir/libclang_rt.asan_osx_dynamic.dylib" ]
-      public_deps += [ "//build/config/sanitizers:copy_asan_runtime" ]
-    }
   }
 
   bundle_data("chrome_framework_resources") {

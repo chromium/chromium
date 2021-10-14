@@ -68,11 +68,11 @@ executable("app_mode_loader") {
 
   sources = [ "app_mode_loader_mac.mm" ]
 
-  if (is_component_build) {
+  if (is_component_build || is_asan) {
     # Loaders are installed to ~/Applications. In a component build, include
     # the absolute path to the out dir in their library search path so that
     # their components are found at launch.
-    ldflags = [ "-Wl,-rpath," +  rebase_path(root_out_dir) ]
+    ldflags = [ "-Wl,-rpath," + rebase_path(root_out_dir) ]
   }
 
   deps = [
