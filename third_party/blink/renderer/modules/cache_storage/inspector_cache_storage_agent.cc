@@ -275,7 +275,8 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
           request->is_history_navigation, request->devtools_stack_id);
       cache_remote_->Match(
           std::move(request), mojom::blink::CacheQueryOptions::New(),
-          false /* in_related_fetch_event */, trace_id,
+          /*in_related_fetch_event=*/false, /*in_range_fetch_event=*/false,
+          trace_id,
           WTF::Bind(
               [](scoped_refptr<ResponsesAccumulator> accumulator,
                  mojom::blink::FetchAPIRequestPtr request,
@@ -740,7 +741,8 @@ void InspectorCacheStorageAgent::requestCachedResponse(
 
   cache_storage->Match(
       std::move(request), std::move(multi_query_options),
-      false /* in_related_fetch_event */, trace_id,
+      /*in_related_fetch_event=*/false, /*in_range_fetch_event=*/false,
+      trace_id,
       WTF::Bind(
           [](std::unique_ptr<RequestCachedResponseCallback> callback,
              mojom::blink::MatchResultPtr result) {

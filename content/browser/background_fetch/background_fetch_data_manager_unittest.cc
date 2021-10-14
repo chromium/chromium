@@ -496,7 +496,8 @@ class BackgroundFetchDataManagerTest
           cache->Match(
               BackgroundFetchSettledFetch::CloneRequest(request),
               std::move(match_options),
-              /* in_related_fetch_event= */ false, trace_id,
+              /*in_related_fetch_event=*/false, /*in_range_fetch_event=*/false,
+              trace_id,
               base::BindOnce(&BackgroundFetchDataManagerTest::DidMatchCache,
                              base::Unretained(this), run_loop.QuitClosure(),
                              &match_result));

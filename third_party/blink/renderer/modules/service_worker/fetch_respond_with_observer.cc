@@ -214,8 +214,8 @@ void FetchRespondWithObserver::OnResponseRejected(
   ServiceWorkerGlobalScope* service_worker_global_scope =
       To<ServiceWorkerGlobalScope>(GetExecutionContext());
   service_worker_global_scope->RespondToFetchEvent(
-      event_id_, request_url_, std::move(response), event_dispatch_time_,
-      base::TimeTicks::Now());
+      event_id_, request_url_, range_request_, std::move(response),
+      event_dispatch_time_, base::TimeTicks::Now());
   event_->RejectHandledPromise(error_message);
 }
 
@@ -331,8 +331,9 @@ void FetchRespondWithObserver::OnResponseFulfilled(
       // Handle the blob response body.
       fetch_api_response->blob = blob_data_handle;
       service_worker_global_scope->RespondToFetchEvent(
-          event_id_, request_url_, std::move(fetch_api_response),
-          event_dispatch_time_, base::TimeTicks::Now());
+          event_id_, request_url_, range_request_,
+          std::move(fetch_api_response), event_dispatch_time_,
+          base::TimeTicks::Now());
       event_->ResolveHandledPromise();
       return;
     }
@@ -358,13 +359,13 @@ void FetchRespondWithObserver::OnResponseFulfilled(
     }
 
     service_worker_global_scope->RespondToFetchEventWithResponseStream(
-        event_id_, request_url_, std::move(fetch_api_response),
+        event_id_, request_url_, range_request_, std::move(fetch_api_response),
         std::move(stream_handle), event_dispatch_time_, base::TimeTicks::Now());
     event_->ResolveHandledPromise();
     return;
   }
   service_worker_global_scope->RespondToFetchEvent(
-      event_id_, request_url_, std::move(fetch_api_response),
+      event_id_, request_url_, range_request_, std::move(fetch_api_response),
       event_dispatch_time_, base::TimeTicks::Now());
   event_->ResolveHandledPromise();
 }
@@ -387,7 +388,8 @@ void FetchRespondWithObserver::OnNoResponse() {
   ServiceWorkerGlobalScope* service_worker_global_scope =
       To<ServiceWorkerGlobalScope>(GetExecutionContext());
   service_worker_global_scope->RespondToFetchEventWithNoResponse(
-      event_id_, request_url_, event_dispatch_time_, base::TimeTicks::Now());
+      event_id_, request_url_, range_request_, event_dispatch_time_,
+      base::TimeTicks::Now());
   event_->ResolveHandledPromise();
 }
 
@@ -415,6 +417,7 @@ FetchRespondWithObserver::FetchRespondWithObserver(
       frame_type_(request.frame_type),
       request_destination_(request.destination),
       request_body_has_source_(request.body.FormBody()),
+      range_request_(request.headers.Contains(http_names::kRange)),
       corp_checker_(std::move(corp_checker)),
       task_runner_(context->GetTaskRunner(TaskType::kNetworking)) {}
 

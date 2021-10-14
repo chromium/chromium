@@ -2284,7 +2284,8 @@ class CacheStorageSideDataSizeChecker
     (*cache_storage_cache_)
         ->Match(std::move(scoped_request),
                 blink::mojom::CacheQueryOptions::New(),
-                /*in_related_fetch_event=*/false, /*trace_id=*/0,
+                /*in_related_fetch_event=*/false,
+                /*in_range_fetch_event=*/false, /*trace_id=*/0,
                 base::BindOnce(&CacheStorageSideDataSizeChecker::
                                    OnCacheStorageCacheMatchCallback,
                                this, result, std::move(continuation)));

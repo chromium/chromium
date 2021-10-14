@@ -946,16 +946,19 @@ ScriptPromise Cache::MatchImpl(ScriptState* script_state,
   }
 
   bool in_related_fetch_event = false;
+  bool in_range_fetch_event = false;
   ExecutionContext* context = ExecutionContext::From(script_state);
-  if (auto* global_scope = DynamicTo<ServiceWorkerGlobalScope>(context))
+  if (auto* global_scope = DynamicTo<ServiceWorkerGlobalScope>(context)) {
     in_related_fetch_event = global_scope->HasRelatedFetchEvent(request->url());
+    in_range_fetch_event = global_scope->HasRangeFetchEvent(request->url());
+  }
 
   // Make sure to bind the Cache object to keep the mojo remote alive during
   // the operation. Otherwise GC might prevent the callback from ever being
   // executed.
   cache_remote_->Match(
       std::move(mojo_request), std::move(mojo_options), in_related_fetch_event,
-      trace_id,
+      in_range_fetch_event, trace_id,
       WTF::Bind(
           [](ScriptPromiseResolver* resolver, base::TimeTicks start_time,
              const CacheQueryOptions* options, int64_t trace_id, Cache* self,
