@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.price_tracking;
 
+import android.content.Context;
+import android.net.Uri;
+import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.ByteString;
@@ -19,9 +24,13 @@ import org.chromium.chrome.browser.price_tracking.proto.Notifications.ChromeNoti
 import org.chromium.chrome.browser.price_tracking.proto.Notifications.ChromeNotification.NotificationDataType;
 import org.chromium.chrome.browser.price_tracking.proto.Notifications.ExpandedView;
 import org.chromium.chrome.browser.price_tracking.proto.Notifications.PriceDropNotificationPayload;
+import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.commerce.PriceTracking.ProductPrice;
+import org.chromium.components.payments.CurrencyFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Class to show a price tracking notification. The Java object is owned by the native side
@@ -29,6 +38,7 @@ import java.util.List;
  */
 public class PriceTrackingNotificationBridge {
     private static final String TAG = "PriceTrackNotif";
+    private static final long UNITS_TO_MICROS = 1000000L;
     private final long mNativePriceTrackingNotificationBridge;
     private final PriceDropNotifier mNotifier;
 
@@ -53,53 +63,115 @@ public class PriceTrackingNotificationBridge {
     @VisibleForTesting
     @CalledByNative
     void showNotification(byte[] payload) {
+        ChromeNotification chromeNotification = parseAndValidateChromeNotification(payload);
+        if (chromeNotification == null) {
+            Log.e(TAG, "Invalid ChromeNotification proto.");
+            return;
+        }
+
+        // Parse the PriceDropNotificationPayload.
+        PriceDropNotificationPayload priceDropPayload =
+                parseAndValidatePriceDropNotificationPayload(
+                        chromeNotification.getNotificationData());
+        if (priceDropPayload == null) {
+            Log.e(TAG, "Invalid PriceDropNotificationPayload proto.");
+            return;
+        }
+        // Show the notification. Uses client side strings for now, which should match
+        // HandleProductUpdateEventsProducerModule.java in google3.
+        Context context = ContextUtils.getApplicationContext();
+        String title = context.getString(R.string.price_drop_notification_content_title,
+                getPriceDropAmount(priceDropPayload), priceDropPayload.getProductName());
+
+        Uri productUrl = Uri.parse(priceDropPayload.getDestinationUrl());
+        if (productUrl.getHost() == null) {
+            Log.e(TAG, "Failed to parse destination URL host.");
+            return;
+        }
+        String text = context.getString(R.string.price_drop_notification_content_text,
+                buildDisplayPrice(priceDropPayload.getCurrentPrice()), productUrl.getHost());
+
+        // TODO(crbug.com/1257380): Figure out how to serialize offer id correctly.
+        String offerId = String.valueOf(priceDropPayload.getOfferId());
+        ChromeMessage chromeMessage = chromeNotification.getChromeMessage();
+        PriceDropNotifier.NotificationData notificationData =
+                new PriceDropNotifier.NotificationData(title, text,
+                        chromeMessage.hasIconImageUrl() ? chromeMessage.getIconImageUrl() : null,
+                        priceDropPayload.getDestinationUrl(), offerId,
+                        parseActions(chromeNotification));
+        mNotifier.showNotification(notificationData);
+    }
+
+    private static ChromeNotification parseAndValidateChromeNotification(byte[] payload) {
         ChromeNotification chromeNotification;
         try {
             chromeNotification = ChromeNotification.parseFrom(payload);
         } catch (InvalidProtocolBufferException e) {
             Log.e(TAG, "Failed to parse ChromeNotification payload.");
-            return;
+            return null;
         }
 
-        if (!chromeNotification.hasChromeMessage()) return;
-        ChromeMessage chromeMessage = chromeNotification.getChromeMessage();
-        if (!chromeMessage.hasDestinationUrl()) return;
+        // Must have ChromeMessage proto and notification_data field, which is
+        // PriceDropNotificationPayload.
+        if (!chromeNotification.hasChromeMessage() || !chromeNotification.hasNotificationData()) {
+            return null;
+        }
 
-        // TODO(xingliu): Use client strings for display text, title, and action text.
-        // Show the notification.
-        PriceDropNotifier.NotificationData notificationData =
-                new PriceDropNotifier.NotificationData(chromeMessage.getDisplayTitle(),
-                        chromeMessage.getDisplayText(),
-                        chromeMessage.hasIconImageUrl() ? chromeMessage.getIconImageUrl() : null,
-                        chromeMessage.getDestinationUrl(), parseOfferId(chromeNotification),
-                        parseActions(chromeNotification));
-        mNotifier.showNotification(notificationData);
+        // Must have the correct type.
+        if (!chromeNotification.hasNotificationDataType()
+                || chromeNotification.getNotificationDataType()
+                        != NotificationDataType.PRICE_DROP_NOTIFICATION) {
+            return null;
+        }
+        return chromeNotification;
     }
 
-    private static String parseOfferId(ChromeNotification chromeNotification) {
-        PriceDropNotificationPayload priceDropPayload = null;
-        Long offerId = null;
-        if (chromeNotification.hasNotificationData()
-                && chromeNotification.hasNotificationDataType()) {
-            if (chromeNotification.getNotificationDataType()
-                    == NotificationDataType.PRICE_DROP_NOTIFICATION) {
-                priceDropPayload = parsePriceDropPayload(chromeNotification.getNotificationData());
-            }
-        }
-        if (priceDropPayload != null && priceDropPayload.hasOfferId()) {
-            offerId = priceDropPayload.getOfferId();
-        }
-        // TODO(crbug.com/1257380): Figure out how to serialize offer id correctly.
-        return offerId != null ? String.valueOf(offerId) : null;
-    }
-
-    private static PriceDropNotificationPayload parsePriceDropPayload(ByteString payload) {
+    private static PriceDropNotificationPayload parseAndValidatePriceDropNotificationPayload(
+            ByteString payload) {
         PriceDropNotificationPayload priceDropPayload = null;
         try {
             priceDropPayload = PriceDropNotificationPayload.parseFrom(payload);
         } catch (InvalidProtocolBufferException e) {
             Log.e(TAG, "Failed to parse PriceDropNotificationPayload.");
+            return null;
         }
+        if (priceDropPayload == null) return null;
+
+        // PriceDropNotificationPayload must have current price and previous prices to calculate the
+        // price drop.
+        if (!priceDropPayload.hasCurrentPrice() || !priceDropPayload.hasPreviousPrice()
+                || !priceDropPayload.hasOfferId()) {
+            return null;
+        }
+
+        // Current price must be smaller than previous price, or it's not a price drop.
+        if (priceDropPayload.getCurrentPrice().getAmountMicros()
+                > priceDropPayload.getPreviousPrice().getAmountMicros()) {
+            return null;
+        }
+
+        // Must have destination URL to ensure clicking to function.
+        if (!priceDropPayload.hasDestinationUrl()
+                || TextUtils.isEmpty(priceDropPayload.getDestinationUrl())) {
+            return null;
+        }
+
+        // Must have the offer id to ensure the subscription to function.
+        if (!priceDropPayload.hasOfferId()) return null;
+
+        // Must have the product name to show in the title.
+        if (!priceDropPayload.hasProductName()
+                || TextUtils.isEmpty(priceDropPayload.getProductName())) {
+            return null;
+        }
+
+        // Must have valid price data.
+        if (!priceDropPayload.hasCurrentPrice() || !priceDropPayload.hasPreviousPrice()
+                || priceDropPayload.getCurrentPrice().getAmountMicros()
+                        >= priceDropPayload.getPreviousPrice().getAmountMicros()) {
+            return null;
+        }
+
         return priceDropPayload;
     }
 
@@ -112,8 +184,41 @@ public class PriceTrackingNotificationBridge {
         ExpandedView expandedView = chromeMessage.getExpandedView();
         for (Notifications.Action action : expandedView.getActionList()) {
             if (!action.hasActionId() || !action.hasText()) continue;
+            String actionText = getActionText(action.getActionId());
+            if (TextUtils.isEmpty(actionText)) continue;
             actions.add(new ActionData(action.getActionId(), action.getText()));
         }
         return actions;
+    }
+
+    private static @Nullable String getActionText(String actionId) {
+        if (TextUtils.isEmpty(actionId)) return null;
+        Context context = ContextUtils.getApplicationContext();
+        if (PriceDropNotificationManager.ACTION_ID_VISIT_SITE.equals(actionId)) {
+            return context.getString(R.string.price_drop_notification_action_visit_site);
+        } else if (PriceDropNotificationManager.ACTION_ID_TURN_OFF_ALERT.equals(actionId)) {
+            return context.getString(R.string.price_drop_notification_action_turn_off_alert);
+        }
+        return null;
+    }
+
+    private static String getPriceDropAmount(PriceDropNotificationPayload priceDropPayload) {
+        long dropAmount = priceDropPayload.getPreviousPrice().getAmountMicros()
+                - priceDropPayload.getCurrentPrice().getAmountMicros();
+        assert dropAmount > 0;
+        return buildDisplayPrice(
+                ProductPrice.newBuilder()
+                        .setAmountMicros(dropAmount)
+                        .setCurrencyCode(priceDropPayload.getCurrentPrice().getCurrencyCode())
+                        .build());
+    }
+
+    private static String buildDisplayPrice(ProductPrice productPrice) {
+        CurrencyFormatter currencyFormatter =
+                new CurrencyFormatter(productPrice.getCurrencyCode(), Locale.getDefault());
+        String formattedPrice = currencyFormatter.format(
+                String.valueOf(productPrice.getAmountMicros() / UNITS_TO_MICROS));
+        currencyFormatter.destroy();
+        return formattedPrice;
     }
 }
