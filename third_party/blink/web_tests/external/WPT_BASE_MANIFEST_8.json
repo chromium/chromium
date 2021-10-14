@@ -274241,7 +274241,7 @@
      },
      "tools": {
       "build.sh": [
-       "f69fa4ff17d9ffe18559c34546139872c6a8e2e2",
+       "8126b77ea262764dad555098fb5107e9b32768c0",
        []
       ],
       "gentest.py": [
@@ -282289,6 +282289,10 @@
        ],
        "centering-iframe.sub.html": [
         "6ffd72296d8302c71866624b08b1b3213f1b5e4e",
+        []
+       ],
+       "dialog-focusing-steps-disconnected-expected.txt": [
+        "5270b6237ecbb824eb78fd402ed3b24d073d1cc7",
         []
        ],
        "dialog-focusing-steps-inert-expected.txt": [
@@ -304201,7 +304205,7 @@
      []
     ],
     "RTCPeerConnection-insertable-streams.js": [
-     "303a50b521788e550bf84f1c0e3b6e3633a029cf",
+     "24acb699ac01f869603fa0dd35946c69a15e942b",
      []
     ],
     "RTCPeerConnection-sender-worker-single-frame.js": [
@@ -435017,6 +435021,13 @@
        ],
        "dialog-enabled.html": [
         "87a130c6f0178de695a1f9ebd8c000dabf3e53c3",
+        [
+         null,
+         {}
+        ]
+       ],
+       "dialog-focusing-steps-disconnected.html": [
+        "abcfef569bfaf3d28ac73d7011fdc1d071570dcc",
         [
          null,
          {}
