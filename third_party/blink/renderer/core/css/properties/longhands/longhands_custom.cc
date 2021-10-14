@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
+#include "third_party/blink/renderer/core/css/css_ratio_value.h"
 #include "third_party/blink/renderer/core/css/css_reflect_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
@@ -406,26 +407,10 @@ const CSSValue* AspectRatio::ParseSingleValue(
   if (range.AtEnd())
     return auto_value;
 
-  CSSValue* width = css_parsing_utils::ConsumeNumber(
-      range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-  if (!width)
+  CSSValue* ratio = css_parsing_utils::ConsumeRatio(range, context);
+  if (!ratio)
     return nullptr;
-  CSSValue* height = nullptr;
-  if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
-    height = css_parsing_utils::ConsumeNumber(
-        range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-    if (!height)
-      return nullptr;
-  } else {
-    // A missing height is treated as 1.
-    height = CSSNumericLiteralValue::Create(
-        1.0f, CSSPrimitiveValue::UnitType::kNumber);
-  }
 
-  CSSValueList* ratio_list = CSSValueList::CreateSlashSeparated();
-  ratio_list->Append(*width);
-  if (height)
-    ratio_list->Append(*height);
   if (!range.AtEnd()) {
     if (auto_value)
       return nullptr;
@@ -437,7 +422,7 @@ const CSSValue* AspectRatio::ParseSingleValue(
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   if (auto_value)
     list->Append(*auto_value);
-  list->Append(*ratio_list);
+  list->Append(*ratio);
   return list;
 }
 
@@ -449,18 +434,18 @@ const CSSValue* AspectRatio::CSSValueFromComputedStyleInternal(
   if (ratio.GetTypeForComputedStyle() == EAspectRatioType::kAuto)
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
 
-  CSSValueList* ratio_list = CSSValueList::CreateSlashSeparated();
-  ratio_list->Append(*CSSNumericLiteralValue::Create(
-      ratio.GetRatio().Width(), CSSPrimitiveValue::UnitType::kNumber));
-  ratio_list->Append(*CSSNumericLiteralValue::Create(
-      ratio.GetRatio().Height(), CSSPrimitiveValue::UnitType::kNumber));
+  auto* ratio_value = MakeGarbageCollected<cssvalue::CSSRatioValue>(
+      *CSSNumericLiteralValue::Create(ratio.GetRatio().Width(),
+                                      CSSPrimitiveValue::UnitType::kNumber),
+      *CSSNumericLiteralValue::Create(ratio.GetRatio().Height(),
+                                      CSSPrimitiveValue::UnitType::kNumber));
   if (ratio.GetTypeForComputedStyle() == EAspectRatioType::kRatio)
-    return ratio_list;
+    return ratio_value;
 
   DCHECK_EQ(ratio.GetTypeForComputedStyle(), EAspectRatioType::kAutoAndRatio);
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
-  list->Append(*ratio_list);
+  list->Append(*ratio_value);
   return list;
 }
 

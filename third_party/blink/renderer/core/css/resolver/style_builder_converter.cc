@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/css/css_pending_system_font_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
+#include "third_party/blink/renderer/core/css/css_ratio_value.h"
 #include "third_party/blink/renderer/core/css/css_reflect_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
@@ -2077,19 +2078,14 @@ StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
 
 namespace {
 FloatSize GetRatioFromList(const CSSValueList& list) {
-  auto* ratio_list = DynamicTo<CSSValueList>(list.Item(0));
-  if (!ratio_list) {
+  auto* ratio = DynamicTo<cssvalue::CSSRatioValue>(list.Item(0));
+  if (!ratio) {
     DCHECK_EQ(list.length(), 2u);
-    ratio_list = DynamicTo<CSSValueList>(list.Item(1));
+    ratio = DynamicTo<cssvalue::CSSRatioValue>(list.Item(1));
   }
-  DCHECK(ratio_list);
-  DCHECK_GE(ratio_list->length(), 1u);
-  DCHECK_LE(ratio_list->length(), 2u);
-  float width = To<CSSPrimitiveValue>(ratio_list->Item(0)).GetFloatValue();
-  float height = 1;
-  if (ratio_list->length() == 2u)
-    height = To<CSSPrimitiveValue>(ratio_list->Item(1)).GetFloatValue();
-  return FloatSize(width, height);
+  DCHECK(ratio);
+  return FloatSize(ratio->First().GetFloatValue(),
+                   ratio->Second().GetFloatValue());
 }
 
 bool ListHasAuto(const CSSValueList& list) {

@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value.h"
+#include "third_party/blink/renderer/core/css/css_ratio_value.h"
 #include "third_party/blink/renderer/core/css/css_ray_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
@@ -1089,6 +1090,31 @@ CSSPrimitiveValue* ConsumeResolution(CSSParserTokenRange& range) {
         range.ConsumeIncludingWhitespace().NumericValue(), unit);
   }
   return nullptr;
+}
+
+// https://drafts.csswg.org/css-values-4/#ratio-value
+//
+// <ratio> = <number [0,+inf]> [ / <number [0,+inf]> ]?
+CSSValue* ConsumeRatio(CSSParserTokenRange& range,
+                       const CSSParserContext& context) {
+  CSSPrimitiveValue* first = ConsumeNumber(
+      range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+  if (!first)
+    return nullptr;
+
+  CSSPrimitiveValue* second = nullptr;
+
+  if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
+    second = ConsumeNumber(range, context,
+                           CSSPrimitiveValue::ValueRange::kNonNegative);
+    if (!second)
+      return nullptr;
+  } else {
+    second = CSSNumericLiteralValue::Create(
+        1, CSSPrimitiveValue::UnitType::kInteger);
+  }
+
+  return MakeGarbageCollected<cssvalue::CSSRatioValue>(*first, *second);
 }
 
 CSSIdentifierValue* ConsumeIdent(CSSParserTokenRange& range) {
