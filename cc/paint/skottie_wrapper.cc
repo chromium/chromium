@@ -3,12 +3,36 @@
 // found in the LICENSE file.
 
 #include "cc/paint/skottie_wrapper.h"
+
+#include <utility>
 #include <vector>
 
 #include "base/hash/hash.h"
+#include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 
 namespace cc {
+namespace {
+
+// Directs logs from the skottie animation builder to //base/logging. Without
+// this, errors/warnings from the animation builder get silently dropped.
+class SkottieLogWriter : public skottie::Logger {
+ public:
+  void log(Level level, const char message[], const char* json) override {
+    static constexpr char kSkottieLogPrefix[] = "[Skottie] \"";
+    static constexpr char kSkottieLogSuffix[] = "\"";
+    switch (level) {
+      case Level::kWarning:
+        LOG(WARNING) << kSkottieLogPrefix << message << kSkottieLogSuffix;
+        break;
+      case Level::kError:
+        LOG(ERROR) << kSkottieLogPrefix << message << kSkottieLogSuffix;
+        break;
+    }
+  }
+};
+
+}  // namespace
 
 // static
 scoped_refptr<SkottieWrapper> SkottieWrapper::CreateSerializable(
@@ -25,14 +49,16 @@ scoped_refptr<SkottieWrapper> SkottieWrapper::CreateNonSerializable(
 
 SkottieWrapper::SkottieWrapper(base::span<const uint8_t> data)
     : animation_(
-          skottie::Animation::Make(reinterpret_cast<const char*>(data.data()),
-                                   data.size())),
+          skottie::Animation::Builder()
+              .setLogger(sk_make_sp<SkottieLogWriter>())
+              .make(reinterpret_cast<const char*>(data.data()), data.size())),
       id_(base::FastHash(data)) {}
 
 SkottieWrapper::SkottieWrapper(std::vector<uint8_t> data)
     : animation_(
-          skottie::Animation::Make(reinterpret_cast<const char*>(data.data()),
-                                   data.size())),
+          skottie::Animation::Builder()
+              .setLogger(sk_make_sp<SkottieLogWriter>())
+              .make(reinterpret_cast<const char*>(data.data()), data.size())),
       raw_data_(std::move(data)),
       id_(base::FastHash(raw_data_)) {}
 
