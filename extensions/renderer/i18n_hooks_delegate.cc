@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/cxx17_backports.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "content/public/renderer/render_frame.h"
@@ -264,7 +265,7 @@ RequestResult I18nHooksDelegate::HandleRequest(
     const APITypeReferenceMap& refs) {
   using Handler = RequestResult (I18nHooksDelegate::*)(
       ScriptContext*, const std::vector<v8::Local<v8::Value>>&);
-  static const struct {
+  static constexpr struct {
     Handler handler;
     base::StringPiece method;
   } kHandlers[] = {
@@ -317,8 +318,10 @@ RequestResult I18nHooksDelegate::HandleGetUILanguage(
     ScriptContext* script_context,
     const std::vector<v8::Local<v8::Value>>& parsed_arguments) {
   RequestResult result(RequestResult::HANDLED);
-  result.return_value = gin::StringToSymbol(
-      script_context->isolate(), content::RenderThread::Get()->GetLocale());
+  const std::string lang = base::i18n::GetConfiguredLocale();
+  DCHECK(!lang.empty());
+
+  result.return_value = gin::StringToSymbol(script_context->isolate(), lang);
   return result;
 }
 

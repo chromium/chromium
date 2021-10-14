@@ -540,11 +540,10 @@
     "extension_types": ["extension", "legacy_packaged_app", "platform_app",
                         "login_screen_extension"],
     "contexts": ["blessed_extension", "unblessed_extension", "content_script",
-                 "lock_screen_extension"],
-    "disallow_for_service_workers": true
+                 "lock_screen_extension"]
   },
-  "i18n.getAcceptLanguages": {
-    "disallow_for_service_workers": false
+  "i18n.getMessage": {
+    "disallow_for_service_workers": true
   },
   "identity": {
     "dependencies": ["permission:identity"],

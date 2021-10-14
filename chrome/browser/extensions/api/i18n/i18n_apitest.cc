@@ -17,7 +17,26 @@
 
 namespace extensions {
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, I18N) {
+using ContextType = ExtensionBrowserTest::ContextType;
+
+class ExtensionI18nTest : public ExtensionApiTest,
+                          public testing::WithParamInterface<ContextType> {
+ public:
+  ExtensionI18nTest() : ExtensionApiTest(GetParam()) {}
+  ~ExtensionI18nTest() override = default;
+  ExtensionI18nTest(const ExtensionI18nTest& other) = delete;
+  ExtensionI18nTest& operator=(const ExtensionI18nTest& other) = delete;
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         ExtensionI18nTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionI18nTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(ExtensionI18nTest, Basic) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("i18n")) << message_;
 }
