@@ -57,7 +57,9 @@ class FastPairRepository {
                                    const std::vector<uint8_t>& account_key) = 0;
 
   // Deletes the associated data for a given |device|.
-  virtual void DeleteAssociatedDevice(
+  // Returns true if a delete will be processed for this device, false
+  // otherwise.
+  virtual bool DeleteAssociatedDevice(
       const device::BluetoothDevice* device) = 0;
 
  protected:
