@@ -1654,9 +1654,7 @@ void ServiceWorkerStorage::WriteRegistrationInDB(
   ServiceWorkerDatabase::Status status =
       database->WriteRegistration(*registration, resources, &deleted_version);
   original_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                blink::StorageKey(
-                                    url::Origin::Create(registration->script)),
+      FROM_HERE, base::BindOnce(std::move(callback), registration->key,
                                 deleted_version, status));
 }
 
