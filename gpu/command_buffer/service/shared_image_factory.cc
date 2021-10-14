@@ -54,6 +54,7 @@
 #if defined(OS_WIN)
 #include "gpu/command_buffer/service/shared_image_backing_factory_d3d.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gl/gl_angle_util_win.h"
 #endif  // OS_WIN
 
 #if defined(OS_FUCHSIA)
@@ -206,7 +207,7 @@ SharedImageFactory::SharedImageFactory(
         std::make_unique<ExternalVkImageFactory>(context_state);
     factories_.push_back(std::move(external_vk_image_factory));
 #endif  // defined(OS_ANDROID)
-#else  // BUILDFLAG(ENABLE_VULKAN)
+#else   // BUILDFLAG(ENABLE_VULKAN)
     // Others (ChromeOS is handled below for compat with WebGPU)
     LOG(ERROR) << "ERROR: gr_context_type_ is GrContextType::kVulkan and "
                   "interop_backing_factory_ is not set";
@@ -223,12 +224,16 @@ SharedImageFactory::SharedImageFactory(
   }
 
 #if defined(OS_WIN)
-  // For Windows
-  bool use_passthrough = gpu_preferences.use_passthrough_cmd_decoder &&
-                         gles2::PassthroughCommandDecoderSupported();
-  if (use_passthrough && gr_context_type_ == GrContextType::kGL) {
-    // Only supported for passthrough command decoder.
-    auto d3d_factory = std::make_unique<SharedImageBackingFactoryD3D>();
+  // Only supported for passthrough command decoder and Skia-GL.
+  const bool use_passthrough = gpu_preferences.use_passthrough_cmd_decoder &&
+                               gles2::PassthroughCommandDecoderSupported();
+  const bool is_skia_gl = gr_context_type_ == GrContextType::kGL;
+  // D3D11 device will be null if ANGLE is using the D3D9 backend.
+  // TODO(sunnyps): Should we get the device from SharedContextState instead?
+  auto d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
+  if (use_passthrough && is_skia_gl && d3d11_device) {
+    auto d3d_factory =
+        std::make_unique<SharedImageBackingFactoryD3D>(std::move(d3d11_device));
     d3d_backing_factory_ = d3d_factory.get();
     factories_.push_back(std::move(d3d_factory));
   }

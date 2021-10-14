@@ -30,7 +30,8 @@ struct Mailbox;
 class GPU_GLES2_EXPORT SharedImageBackingFactoryD3D
     : public SharedImageBackingFactory {
  public:
-  SharedImageBackingFactoryD3D();
+  explicit SharedImageBackingFactoryD3D(
+      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
   SharedImageBackingFactoryD3D(const SharedImageBackingFactoryD3D&) = delete;
   SharedImageBackingFactoryD3D& operator=(const SharedImageBackingFactoryD3D&) =

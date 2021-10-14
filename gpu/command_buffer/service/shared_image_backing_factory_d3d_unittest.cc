@@ -130,6 +130,9 @@ bool IsD3DSharedImageSupported() {
 class SharedImageBackingFactoryD3DTestBase : public testing::Test {
  public:
   void SetUp() override {
+    if (!IsD3DSharedImageSupported())
+      return;
+
     surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
     ASSERT_TRUE(surface_);
     context_ = gl::init::CreateGLContext(nullptr, surface_.get(),
@@ -142,7 +145,8 @@ class SharedImageBackingFactoryD3DTestBase : public testing::Test {
     shared_image_representation_factory_ =
         std::make_unique<SharedImageRepresentationFactory>(
             &shared_image_manager_, nullptr);
-    shared_image_factory_ = std::make_unique<SharedImageBackingFactoryD3D>();
+    shared_image_factory_ = std::make_unique<SharedImageBackingFactoryD3D>(
+        gl::QueryD3D11DeviceObjectFromANGLE());
   }
 
  protected:
