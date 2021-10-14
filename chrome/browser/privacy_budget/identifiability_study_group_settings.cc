@@ -98,7 +98,7 @@ bool IdentifiabilityStudyGroupSettings::ValidateAssignedBlockSampling() {
     }
   }
   double sum_weights =
-      std::accumulate(blocks_weights_.begin(), blocks_weights_.end(), 0);
+      std::accumulate(blocks_weights_.begin(), blocks_weights_.end(), 0.0);
   for (const auto& iter : weight_per_surface) {
     double surface_probability = iter.second / sum_weights;
     if (surface_probability > features::kMaxProbabilityPerSurface)
