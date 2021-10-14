@@ -30,7 +30,6 @@ class OnDeviceStateEventRequest;
 namespace chromeos {
 namespace libassistant {
 
-class ActionService;
 class GrpcLibassistantClient;
 
 // Component responsible for:
@@ -57,8 +56,6 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
   void RemoveObserver(
       GrpcServicesObserver<::assistant::api::OnDeviceStateEventRequest>*
           observer);
-
-  ActionService* GetActionService();
 
   // Expose a reference to |GrpcLibassistantClient|.
   GrpcLibassistantClient& GrpcLibassistantClient();
@@ -115,8 +112,6 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
   std::unique_ptr<
       EventHandlerDriver<::assistant::api::DeviceStateEventHandlerInterface>>
       device_state_event_handler_driver_;
-
-  std::unique_ptr<ActionService> action_handler_driver_;
 
   base::WeakPtrFactory<GrpcServicesInitializer> weak_factory_{this};
 };

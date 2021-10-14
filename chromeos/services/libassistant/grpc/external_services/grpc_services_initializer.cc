@@ -12,7 +12,6 @@
 #include "base/task/sequenced_task_runner_forward.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromeos/services/libassistant/grpc/external_services/action_service.h"
 #include "chromeos/services/libassistant/grpc/external_services/customer_registration_client.h"
 #include "chromeos/services/libassistant/grpc/external_services/heartbeat_event_handler_driver.h"
 #include "chromeos/services/libassistant/grpc/grpc_libassistant_client.h"
@@ -96,10 +95,6 @@ void GrpcServicesInitializer::RemoveObserver(
   device_state_event_handler_driver_->RemoveObserver(observer);
 }
 
-ActionService* GrpcServicesInitializer::GetActionService() {
-  return action_handler_driver_.get();
-}
-
 GrpcLibassistantClient& GrpcServicesInitializer::GrpcLibassistantClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return *libassistant_client_;
@@ -117,11 +112,6 @@ void GrpcServicesInitializer::InitDrivers(grpc::ServerBuilder* server_builder) {
       EventHandlerDriver<::assistant::api::DeviceStateEventHandlerInterface>>(
       &server_builder_, libassistant_client_.get(), assistant_service_address_);
   service_drivers_.emplace_back(device_state_event_handler_driver_.get());
-
-  // Inits action service.
-  action_handler_driver_ = std::make_unique<ActionService>(
-      &server_builder_, libassistant_client_.get(), assistant_service_address_);
-  service_drivers_.emplace_back(action_handler_driver_.get());
 }
 
 void GrpcServicesInitializer::InitLibassistGrpcClient() {

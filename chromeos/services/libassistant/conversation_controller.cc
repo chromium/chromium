@@ -248,6 +248,10 @@ void ConversationController::AddAuthenticationStateObserver(
 
 void ConversationController::OnAssistantClientCreated(
     AssistantClient* assistant_client) {
+  // Registers ActionModule when AssistantClient has been created but not yet
+  // started.
+  assistant_client->RegisterActionModule(action_module_.get());
+
   assistant_client->assistant_manager_internal()->SetAssistantManagerDelegate(
       assistant_manager_delegate_.get());
 }
@@ -257,10 +261,6 @@ void ConversationController::OnAssistantClientRunning(
   // Only when Libassistant is running we can start sending queries.
   assistant_client_ = assistant_client;
   requests_are_allowed_ = true;
-
-  // Register the action module when all libassistant services are ready.
-  // `action_module_` outlives gRPC services.
-  assistant_client->RegisterActionModule(action_module_.get());
 }
 
 void ConversationController::OnDestroyingAssistantClient(

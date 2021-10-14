@@ -16,7 +16,6 @@
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/callback_utils.h"
 #include "chromeos/services/libassistant/grpc/assistant_client_v1.h"
-#include "chromeos/services/libassistant/grpc/external_services/action_service.h"
 #include "chromeos/services/libassistant/grpc/grpc_libassistant_client.h"
 #include "chromeos/services/libassistant/grpc/services_status_observer.h"
 #include "libassistant/shared/public/assistant_manager.h"
@@ -53,11 +52,6 @@ void AssistantClientImpl::StartServices(
 
 bool AssistantClientImpl::StartGrpcServices() {
   return grpc_services_.Start();
-}
-
-void AssistantClientImpl::RegisterActionModule(
-    assistant_client::ActionModule* action_module) {
-  grpc_services_.GetActionService()->RegisterActionModule(action_module);
 }
 
 void AssistantClientImpl::OnServicesStatusChanged(ServicesStatus status) {
