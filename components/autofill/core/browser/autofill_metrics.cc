@@ -1217,6 +1217,25 @@ void AutofillMetrics::LogOfferNotificationBubbleResultMetric(
 }
 
 // static
+void AutofillMetrics::LogOfferNotificationBubblePromoCodeButtonClicked(
+    AutofillOfferData::OfferType offer_type) {
+  std::string histogram_name =
+      "Autofill.OfferNotificationBubblePromoCodeButtonClicked.";
+  // Switch to different sub-histogram depending on offer type being displayed.
+  // Card-linked offers do not have a promo code button.
+  switch (offer_type) {
+    case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
+      histogram_name += "FreeListingCouponOffer";
+      break;
+    case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
+    case AutofillOfferData::OfferType::UNKNOWN:
+      NOTREACHED();
+      return;
+  }
+  base::UmaHistogramBoolean(histogram_name, true);
+}
+
+// static
 void AutofillMetrics::LogOfferNotificationInfoBarDeepLinkClicked() {
   base::RecordAction(base::UserMetricsAction(
       "Autofill_OfferNotificationInfoBar_DeepLinkClicked"));

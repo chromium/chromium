@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/base_event_utils.h"
@@ -426,6 +428,39 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   EXPECT_EQ(clicked_button_tooltip, promo_code_label_button->GetTooltipText());
   EXPECT_EQ(promo_code_label_button->GetText() + u" " + clicked_button_tooltip,
             promo_code_label_button->GetAccessibleName());
+}
+
+IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
+                       CopyPromoCode) {
+  // Applies to promo code offers only, as card-linked offers do not have a
+  // clickable promo code copy button.
+  if (test_offer_type_ == AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER)
+    return;
+
+  ShowBubbleForOfferAndVerify();
+  ASSERT_TRUE(GetOfferNotificationBubbleViews());
+  ASSERT_TRUE(IsIconVisible());
+
+  // Simulate clicking on the copy promo code button.
+  base::HistogramTester histogram_tester;
+  GetOfferNotificationBubbleViews()->OnPromoCodeButtonClicked();
+
+  // Clipboard should have the promo code text, which should be the same as what
+  // is on the promo code button, and it should have logged the click.
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  std::u16string clipboard_text;
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+                      &clipboard_text);
+  std::u16string test_promo_code =
+      base::ASCIIToUTF16(GetDefaultTestPromoCode());
+  EXPECT_EQ(clipboard_text, test_promo_code);
+  EXPECT_EQ(
+      GetOfferNotificationBubbleViews()->promo_code_label_button_->GetText(),
+      test_promo_code);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.OfferNotificationBubblePromoCodeButtonClicked." +
+          GetSubhistogramNameForOfferType(),
+      true, 1);
 }
 
 }  // namespace autofill

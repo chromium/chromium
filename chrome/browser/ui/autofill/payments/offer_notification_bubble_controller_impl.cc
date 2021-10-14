@@ -132,6 +132,9 @@ void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
 
 void OfferNotificationBubbleControllerImpl::OnPromoCodeButtonClicked() {
   promo_code_button_clicked_ = true;
+
+  AutofillMetrics::LogOfferNotificationBubblePromoCodeButtonClicked(
+      offer_->GetOfferType());
 }
 
 void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(

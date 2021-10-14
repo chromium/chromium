@@ -35,6 +35,8 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
+                           CopyPromoCode);
+  FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
                            TooltipAndAccessibleName);
 
   // AutofillBubbleBase:
@@ -51,8 +53,7 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
   void InitWithPromoCodeOfferContent();
 
   // Called when the promo code LabelButton is clicked for a promo code offer.
-  // Copies the promo code to the clipboard, logs metrics, and updates the
-  // button tooltip.
+  // Copies the promo code to the clipboard and updates the button tooltip.
   void OnPromoCodeButtonClicked();
 
   void UpdateButtonTooltipsAndAccessibleNames();
