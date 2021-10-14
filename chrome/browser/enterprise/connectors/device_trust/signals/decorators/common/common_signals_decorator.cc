@@ -7,23 +7,17 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "chrome/browser/enterprise/signals/signals_utils.h"
-#include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/version_info/version_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
-CommonSignalsDecorator::CommonSignalsDecorator(
-    PrefService* local_state,
-    PrefService* profile_prefs,
-    PolicyBlocklistService* policy_blocklist_service)
-    : local_state_(local_state),
-      profile_prefs_(profile_prefs),
-      policy_blocklist_service_(policy_blocklist_service) {
+CommonSignalsDecorator::CommonSignalsDecorator(PrefService* local_state,
+                                               PrefService* profile_prefs)
+    : local_state_(local_state), profile_prefs_(profile_prefs) {
   DCHECK(profile_prefs_);
   DCHECK(local_state_);
-  DCHECK(policy_blocklist_service_);
 }
 
 CommonSignalsDecorator::~CommonSignalsDecorator() = default;
@@ -41,9 +35,6 @@ void CommonSignalsDecorator::Decorate(SignalsType& signals,
   signals.set_safe_browsing_protection_level(static_cast<int32_t>(
       enterprise_signals::utils::GetSafeBrowsingProtectionLevel(
           profile_prefs_)));
-  signals.set_remote_desktop_available(
-      enterprise_signals::utils::GetChromeRemoteDesktopAppBlocked(
-          policy_blocklist_service_));
 
   absl::optional<bool> third_party_blocking_enabled =
       enterprise_signals::utils::GetThirdPartyBlockingEnabled(local_state_);

@@ -19,7 +19,6 @@ source_set("common") {
 
   deps = [
     "//chrome/browser/enterprise/signals:utils",
-    "//components/policy/content",
     "//components/policy/core/common",
     "//components/version_info",
     "//third_party/abseil-cpp:absl",

@@ -8,7 +8,6 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
 
-class PolicyBlocklistService;
 class PrefService;
 
 namespace enterprise_connectors {
@@ -16,9 +15,7 @@ namespace enterprise_connectors {
 // Definition of the SignalsDecorator common to all platforms.
 class CommonSignalsDecorator : public SignalsDecorator {
  public:
-  CommonSignalsDecorator(PrefService* local_state,
-                         PrefService* profile_prefs,
-                         PolicyBlocklistService* policy_blocklist_service);
+  CommonSignalsDecorator(PrefService* local_state, PrefService* profile_prefs);
   ~CommonSignalsDecorator() override;
 
   // SignalsDecorator:
@@ -31,7 +28,6 @@ class CommonSignalsDecorator : public SignalsDecorator {
 
   PrefService* local_state_;
   PrefService* profile_prefs_;
-  PolicyBlocklistService* policy_blocklist_service_;
 
   base::WeakPtrFactory<CommonSignalsDecorator> weak_ptr_factory_{this};
 };
