@@ -63,7 +63,7 @@ class FakePtraceConnection : public PtraceConnection {
 
   //! \brief Attempts to create a ProcessMemory when called, calling
   //!     ADD_FAILURE() and returning `nullptr` on failure.
-  ProcessMemory* Memory() override;
+  ProcessMemoryLinux* Memory() override;
 
   //! \todo Not yet implemented.
   bool Threads(std::vector<pid_t>* threads) override;

@@ -405,6 +405,7 @@ crashpad_static_library("util") {
       "ios/raw_logging.h",
       "ios/scoped_vm_read.cc",
       "ios/scoped_vm_read.h",
+      "net/http_transport_mac.mm",
     ]
   }
 
@@ -667,8 +668,8 @@ if (!crashpad_is_android && !crashpad_is_ios) {
 
     deps = [
       ":util",
-      "../third_party/cpp-httplib",
       "$mini_chromium_source_parent:base",
+      "../third_party/cpp-httplib",
       "../third_party/zlib",
       "../tools:tool_support",
     ]
@@ -875,12 +876,12 @@ source_set("util_test") {
 
   deps = [
     ":util",
+    "$mini_chromium_source_parent:base",
     "../client",
     "../compat",
     "../test",
     "../third_party/googletest:googlemock",
     "../third_party/googletest:googletest",
-    "$mini_chromium_source_parent:base",
     "../third_party/zlib",
   ]
 

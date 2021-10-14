@@ -123,7 +123,7 @@ class ProcessReaderLinux {
   pid_t ParentProcessID() const { return process_info_.ParentProcessID(); }
 
   //! \brief Return a memory reader for the target process.
-  const ProcessMemory* Memory() const { return connection_->Memory(); }
+  const ProcessMemoryLinux* Memory() const { return connection_->Memory(); }
 
   //! \brief Return a memory map of the target process.
   MemoryMap* GetMemoryMap() { return &memory_map_; }

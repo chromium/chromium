@@ -68,7 +68,8 @@ CrashReportUploadThread::~CrashReportUploadThread() {
 
 void CrashReportUploadThread::ReportPending(const UUID& report_uuid) {
   known_pending_report_uuids_.PushBack(report_uuid);
-  thread_.DoWorkNow();
+  if (thread_.is_running())
+    thread_.DoWorkNow();
 }
 
 void CrashReportUploadThread::Start() {

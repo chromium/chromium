@@ -24,11 +24,20 @@
 
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "build/build_config.h"
+#include "util/file/filesystem.h"
+#include "util/linux/ptrace_connection.h"
 
 namespace crashpad {
 
 ProcessMemoryLinux::ProcessMemoryLinux(PtraceConnection* connection)
-    : ProcessMemory(), mem_fd_() {
+    : ProcessMemory(), mem_fd_(), ignore_top_byte_(false) {
+#if defined(ARCH_CPU_ARM_FAMILY)
+  if (connection->Is64Bit()) {
+    ignore_top_byte_ = true;
+  }
+#endif  // ARCH_CPU_ARM_FAMILY
+
   char path[32];
   snprintf(path, sizeof(path), "/proc/%d/mem", connection->GetProcessID());
   mem_fd_.reset(HANDLE_EINTR(open(path, O_RDONLY | O_NOCTTY | O_CLOEXEC)));
@@ -53,11 +62,15 @@ ProcessMemoryLinux::ProcessMemoryLinux(PtraceConnection* connection)
 
 ProcessMemoryLinux::~ProcessMemoryLinux() {}
 
+VMAddress ProcessMemoryLinux::PointerToAddress(VMAddress address) const {
+  return ignore_top_byte_ ? address & 0x00ffffffffffffff : address;
+}
+
 ssize_t ProcessMemoryLinux::ReadUpTo(VMAddress address,
                                      size_t size,
                                      void* buffer) const {
   DCHECK_LE(size, size_t{std::numeric_limits<ssize_t>::max()});
-  return read_up_to_(address, size, buffer);
+  return read_up_to_(PointerToAddress(address), size, buffer);
 }
 
 }  // namespace crashpad

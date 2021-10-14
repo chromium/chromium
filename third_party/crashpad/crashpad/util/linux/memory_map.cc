@@ -240,7 +240,7 @@ MemoryMap::Mapping::Mapping()
       executable(false),
       shareable(false) {}
 
-MemoryMap::MemoryMap() : mappings_(), initialized_() {}
+MemoryMap::MemoryMap() : mappings_(), connection_(nullptr), initialized_() {}
 
 MemoryMap::~MemoryMap() {}
 
@@ -256,6 +256,7 @@ bool MemoryMap::Mapping::Equals(const Mapping& other) const {
 
 bool MemoryMap::Initialize(PtraceConnection* connection) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
+  connection_ = connection;
 
   // If the maps file is not read atomically, entries can be read multiple times
   // or missed entirely. The kernel reads entries from this file into a page
@@ -268,8 +269,8 @@ bool MemoryMap::Initialize(PtraceConnection* connection) {
   do {
     std::string contents;
     char path[32];
-    snprintf(path, sizeof(path), "/proc/%d/maps", connection->GetProcessID());
-    if (!connection->ReadFileContents(base::FilePath(path), &contents)) {
+    snprintf(path, sizeof(path), "/proc/%d/maps", connection_->GetProcessID());
+    if (!connection_->ReadFileContents(base::FilePath(path), &contents)) {
       return false;
     }
 
@@ -298,6 +299,7 @@ bool MemoryMap::Initialize(PtraceConnection* connection) {
 
 const MemoryMap::Mapping* MemoryMap::FindMapping(LinuxVMAddress address) const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  address = connection_->Memory()->PointerToAddress(address);
 
   for (const auto& mapping : mappings_) {
     if (mapping.range.Base() <= address && mapping.range.End() > address) {

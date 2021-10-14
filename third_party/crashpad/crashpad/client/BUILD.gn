@@ -35,6 +35,8 @@ crashpad_static_library("client") {
       "crashpad_client_ios.cc",
       "ios_handler/exception_processor.h",
       "ios_handler/exception_processor.mm",
+      "ios_handler/in_process_handler.cc",
+      "ios_handler/in_process_handler.h",
       "ios_handler/in_process_intermediate_dump_handler.cc",
       "ios_handler/in_process_intermediate_dump_handler.h",
       "simulate_crash_ios.h",
@@ -84,7 +86,6 @@ crashpad_static_library("client") {
     cflags = [ "/wd4201" ]  # nonstandard extension used : nameless struct/union
   }
 
-  # TODO(justincohen): Temporary dependency to bring up the iOS client.
   if (crashpad_is_ios) {
     deps += [
       "../handler:common",

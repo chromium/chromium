@@ -22,7 +22,7 @@
 
 #include "base/files/file_path.h"
 #include "util/linux/thread_info.h"
-#include "util/process/process_memory.h"
+#include "util/process/process_memory_linux.h"
 
 namespace crashpad {
 
@@ -64,7 +64,7 @@ class PtraceConnection {
   //!
   //! The caller does not take ownership of the reader. The reader is valid for
   //! the lifetime of the PtraceConnection that created it.
-  virtual ProcessMemory* Memory() = 0;
+  virtual ProcessMemoryLinux* Memory() = 0;
 
   //! \brief Determines the thread IDs of the threads in the connected process.
   //!

@@ -200,8 +200,7 @@ bool ExceptionSnapshotIOSIntermediateDump::InitializeFromNSException(
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
   DCHECK(exception_data);
 
-  exception_ = EXC_SOFTWARE;
-  exception_info_ = 0xDEADC0DE; /* uncaught NSException */
+  exception_ = kMachExceptionFromNSException;
 
   if (!GetDataValueFromMap(exception_data, Key::kThreadID, &thread_id_)) {
     LOG(ERROR) << "Exceptions require a thread id.";

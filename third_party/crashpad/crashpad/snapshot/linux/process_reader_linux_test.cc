@@ -291,9 +291,12 @@ void ExpectThreads(const ThreadMap& thread_map,
 #if !defined(ADDRESS_SANITIZER)
     // AddressSanitizer causes stack variables to be stored separately from the
     // call stack.
-    EXPECT_LE(thread.stack_region_address, iterator->second.stack_address);
-    EXPECT_GE(thread.stack_region_address + thread.stack_region_size,
-              iterator->second.stack_address);
+    EXPECT_LE(
+        thread.stack_region_address,
+        connection->Memory()->PointerToAddress(iterator->second.stack_address));
+    EXPECT_GE(
+        thread.stack_region_address + thread.stack_region_size,
+        connection->Memory()->PointerToAddress(iterator->second.stack_address));
 #endif  // !defined(ADDRESS_SANITIZER)
 
     if (iterator->second.max_stack_size) {

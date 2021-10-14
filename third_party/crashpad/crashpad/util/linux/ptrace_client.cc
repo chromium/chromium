@@ -248,7 +248,7 @@ bool PtraceClient::ReadFileContents(const base::FilePath& path,
   return true;
 }
 
-ProcessMemory* PtraceClient::Memory() {
+ProcessMemoryLinux* PtraceClient::Memory() {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   if (!memory_) {
     memory_ = std::make_unique<ProcessMemoryLinux>(this);

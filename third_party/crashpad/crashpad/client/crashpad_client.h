@@ -465,7 +465,8 @@ class CrashpadClient {
   //! \param[in] database The path to a Crashpad database.
   //! \param[in] url The URL of an upload server.
   //! \param[in] annotations Process annotations to set in each crash report.
-  static void StartCrashpadInProcessHandler(
+  //! \return `true` on success, `false` on failure with a message logged.
+  static bool StartCrashpadInProcessHandler(
       const base::FilePath& database,
       const std::string& url,
       const std::map<std::string, std::string>& annotations);
@@ -503,7 +504,7 @@ class CrashpadClient {
       const std::map<std::string, std::string>& annotations = {});
 
   //! \brief Requests that the handler begin in-process uploading of any
-  //! pending reports.
+  //!     pending reports.
   //!
   //! Once called the handler will start looking for pending reports to upload
   //! on another thread. This method does not block.

@@ -73,7 +73,7 @@ bool DirectPtraceConnection::ReadFileContents(const base::FilePath& path,
   return LoggingReadEntireFile(path, contents);
 }
 
-ProcessMemory* DirectPtraceConnection::Memory() {
+ProcessMemoryLinux* DirectPtraceConnection::Memory() {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   if (!memory_) {
     memory_ = std::make_unique<ProcessMemoryLinux>(this);

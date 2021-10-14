@@ -58,13 +58,13 @@ class DirectPtraceConnection : public PtraceConnection {
   bool GetThreadInfo(pid_t tid, ThreadInfo* info) override;
   bool ReadFileContents(const base::FilePath& path,
                         std::string* contents) override;
-  ProcessMemory* Memory() override;
+  ProcessMemoryLinux* Memory() override;
   bool Threads(std::vector<pid_t>* threads) override;
   ssize_t ReadUpTo(VMAddress, size_t size, void* buffer) override;
 
  private:
   std::vector<std::unique_ptr<ScopedPtraceAttach>> attachments_;
-  std::unique_ptr<ProcessMemory> memory_;
+  std::unique_ptr<ProcessMemoryLinux> memory_;
   pid_t pid_;
   Ptracer ptracer_;
   InitializationStateDcheck initialized_;
