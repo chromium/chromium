@@ -287,12 +287,6 @@ class OzonePlatformWayland : public OzonePlatform,
 
       properties->uses_external_vulkan_image_factory = true;
 
-      // Wayland doesn't provide clients with global screen coordinates.
-      // Instead, it forces clients to position windows relative to their top
-      // level windows if the have child-parent relationship. In case of
-      // toplevel windows, clients simply don't know their position on screens
-      // and always assume they are located at some arbitrary position.
-      properties->ignore_screen_bounds_for_menus = true;
       // Wayland uses sub-surfaces to show tooltips, and sub-surfaces must be
       // bound to their root surfaces always, but finding the correct root
       // surface at the moment of creating the tooltip is not always possible
@@ -312,6 +306,10 @@ class OzonePlatformWayland : public OzonePlatform,
 
       // By design, clients are disallowed to manipulate global screen
       // coordinates, instead only surface-local ones are supported.
+      // Non-toplevel surfaces, for example, must be positioned relative to
+      // their parents. As for toplevel surfaces, clients simply don't know
+      // their position on screens and always assume they are located at some
+      // arbitrary position.
       properties->supports_global_screen_coordinates = false;
 
       initialised = true;

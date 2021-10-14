@@ -133,10 +133,6 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Linux only: determines if Skia can fall back to the X11 output device.
     bool skia_can_fall_back_to_x11 = false;
 
-    // Wayland only: determines if the client must ignore the screen bounds when
-    // calculating bounds of menu windows.
-    bool ignore_screen_bounds_for_menus = false;
-
     // Wayland only: determines whether BufferQueue needs a background image to
     // be stacked below an AcceleratedWidget to make a widget opaque.
     bool needs_background_image = false;
