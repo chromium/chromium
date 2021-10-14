@@ -209,8 +209,12 @@ class CORE_EXPORT DisplayLockContext final
   // We unlock auto locks for printing, which is set here.
   void SetShouldUnlockAutoForPrint(bool);
 
-  void SetActivateForFindInPage(bool activate_for_find_in_page) {
-    activate_for_find_in_page_ = activate_for_find_in_page;
+  void SetIsHiddenUntilFoundElement(bool is_hidden_until_found) {
+    is_hidden_until_found_ = is_hidden_until_found;
+  }
+
+  void SetIsDetailsSlotElement(bool is_details_slot) {
+    is_details_slot_ = is_details_slot;
   }
 
   bool HasElement() const { return element_; }
@@ -464,7 +468,12 @@ class CORE_EXPORT DisplayLockContext final
   // When we use content-visibility:hidden for the <details> element's content
   // slot or the hidden=until-found attribute, then this lock must activate
   // during find-in-page.
-  bool activate_for_find_in_page_ = false;
+  bool is_details_slot_ = false;
+
+  // When an element has the hidden=until-found attribute, it gets the a
+  // presentational style of content-visibility:hidden, and we also want to
+  // activate this lock during find-in-page.
+  bool is_hidden_until_found_ = false;
 
   // If we have pending subtree checks, it means we should check for selection
   // and focus at the start of the next frame.

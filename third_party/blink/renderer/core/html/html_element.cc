@@ -350,7 +350,6 @@ void HTMLElement::CollectStyleForPresentationAttribute(
         EqualIgnoringASCIICase(value, "until-found")) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
-      EnsureDisplayLockContext().SetActivateForFindInPage(true);
     } else {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kDisplay,
                                               CSSValueID::kNone);

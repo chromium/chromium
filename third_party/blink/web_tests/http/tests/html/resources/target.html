@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<div>target</div>
+<script>
+  window.addEventListener('message', async event => {
+    if (event.data === 'find') {
+      testRunner.findString('target', []);
+    }
+  });
+</script>
