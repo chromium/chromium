@@ -294,7 +294,7 @@ lib_list="\
 "
 
 # 32-bit libraries needed e.g. to compile V8 snapshot for Android or armhf
-lib32_list="linux-libc-dev:i386 libpci3:i386"
+lib32_list="linux-libc-dev:i386 libpci3:i386 libglib2.0-0:i386"
 
 # 32-bit libraries needed for a 32-bit build
 lib32_list="$lib32_list libx11-xcb1:i386"
