@@ -7346,22 +7346,47 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="FileBrowser.ClickBreadcrumbs">
-  <owner>sashab@chromium.org</owner>
-  <owner>joelhockey@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <description>
     User clicked the breadcrumbs in order to return to a parent directory.
   </description>
 </action>
 
 <action name="FileBrowser.CreateNewFolder">
-  <owner>sashab@chromium.org</owner>
-  <owner>slangley@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <description>User created a new folder in the file manager app.</description>
 </action>
 
+<action name="FileBrowser.FolderShortcut.Add">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <description>
+    User pinned a folder to the top of the directory tree on Files app
+  </description>
+</action>
+
+<action name="FileBrowser.FolderShortcut.Navigate">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <description>
+    User navigated to a folder pinned to the top of the directory tree on Files
+    app.
+  </description>
+</action>
+
+<action name="FileBrowser.FolderShortcut.Remove">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <description>
+    User removed a folder pinned to the top of the directory tree on Files app.
+  </description>
+</action>
+
 <action name="FileBrowser.PhotoEditor.Edit">
-  <owner>sashab@chromium.org</owner>
-  <owner>slangley@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <description>
     User saved a photo over itself for the first time (i.e. edited the photo) in
     the gallery app.
@@ -7369,16 +7394,16 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="FileBrowser.PhotoEditor.View">
-  <owner>sashab@chromium.org</owner>
-  <owner>slangley@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <description>
     User loaded an image into an editing session in the gallery app.
   </description>
 </action>
 
 <action name="FileBrowser.SelectSearch">
-  <owner>sashab@chromium.org</owner>
-  <owner>slangley@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <description>
     User focused the search field at the top of the file manager app.
   </description>
@@ -7389,6 +7414,7 @@ should be able to be added at any place in this file.
     Removed in M90. Files.app no longer displays CWS widget dialog.
   </obsolete>
   <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <description>
     The embedded Chrome Web Store dialog was shown with suggested apps to open
     the file in the file manager app.
