@@ -109,6 +109,21 @@ WHERE
   OR "Timeout" IN UNNEST(typ_expectations)
 """
 
+ACTIVE_BUILDER_QUERY_TEMPLATE = """\
+WITH
+  builders AS (
+    SELECT
+      (
+        SELECT value
+        FROM tr.variant
+        WHERE key = "builder") as builder_name
+    FROM
+      `chrome-luci-data.chromium.blink_web_tests_{builder_type}_test_results` tr
+  )
+SELECT DISTINCT builder_name
+FROM builders
+"""
+
 KNOWN_TEST_ID_PREFIXES = [
     'ninja://:blink_web_tests/',
     'ninja://:webgpu_blink_web_tests',
@@ -130,8 +145,9 @@ class WebTestBigQueryQuerier(queries_module.BigQueryQuerier):
             filepaths.append(f)
         return filepaths
 
-    def _ShouldSkipOverResult(self, _):
-        return False
+    def _ShouldSkipOverResult(self, result):
+        # WebGPU web tests are currently unsupported for various reasons.
+        return 'webgpu/cts.html' in result['test_id']
 
     def _GetQueryGeneratorForBuilder(self, builder, builder_type):
         # Look for all tests.
@@ -164,6 +180,9 @@ class WebTestBigQueryQuerier(queries_module.BigQueryQuerier):
             if test_id.startswith(prefix):
                 return test_id.replace(prefix, '')
         raise RuntimeError('Unable to strip prefix from test ID %s' % test_id)
+
+    def _GetActiveBuilderQuery(self, builder_type):
+        return ACTIVE_BUILDER_QUERY_TEMPLATE.format(builder_type=builder_type)
 
 
 class WebTestFixedQueryGenerator(queries_module.FixedQueryGenerator):

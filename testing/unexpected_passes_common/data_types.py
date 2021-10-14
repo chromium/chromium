@@ -83,15 +83,13 @@ class Result(object):
   def __init__(self, test, tags, actual_result, step, build_id):
     """
     Args:
-      test: A string containing the name of the test. Cannot have wildcards.
+      test: A string containing the name of the test.
       tags: An iterable containing the typ tags for the result.
       actual_result: The actual result of the test as a string.
       step: A string containing the name of the step on the builder.
       build_id: A string containing the Buildbucket ID for the build this result
           came from.
     """
-    # Results should not have any globs.
-    assert '*' not in test
     self.test = test
     self.tags = frozenset(tags)
     self.actual_result = actual_result

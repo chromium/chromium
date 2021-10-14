@@ -95,6 +95,10 @@ class BigQueryQuerier(object):
     """
     assert isinstance(expectation_map, data_types.TestExpectationMap)
 
+    # Filter out any builders that we can easily determine do not currently
+    # produce data we care about.
+    builders = self._FilterOutInactiveBuilders(builders, builder_type)
+
     # Spin up a separate process for each query/add step. This is wasteful in
     # the sense that we'll have a bunch of idle processes once faster steps
     # start finishing, but ensures that we start slow queries early and avoids
@@ -118,6 +122,45 @@ class BigQueryQuerier(object):
     expectation_map.update(tmp_expectation_map)
 
     return all_unmatched_results
+
+  def _FilterOutInactiveBuilders(self, builders, builder_type):
+    """Filters out any builders that are not producing data.
+
+    This helps save time on querying, as querying for the builder names is cheap
+    while querying for individual results from a builder is expensive. Filtering
+    out inactive builders lets us preemptively remove builders that we know we
+    won't get any data from, and thus don't need to waste time querying.
+
+    Args:
+      builders: A list of strings containing the names of builders to query.
+      builder_type: A string containing the type of builder to query, either
+          "ci" or "try".
+
+    Returns:
+      A copy of |builders| with any inactive builders removed.
+    """
+    query = self._GetActiveBuilderQuery(builder_type).encode('utf-8')
+    cmd = _GenerateBigQueryCommand(self._project, {}, batch=False)
+    with open(os.devnull, 'w') as devnull:
+      p = subprocess.Popen(cmd,
+                           stdout=subprocess.PIPE,
+                           stderr=devnull,
+                           stdin=subprocess.PIPE)
+    stdout, _ = p.communicate(query)
+    if not isinstance(stdout, six.string_types):
+      stdout = stdout.decode('utf-8')
+    results = json.loads(stdout)
+
+    # We filter from an initial list instead of directly using the returned
+    # builders since there are cases where they aren't equivalent, such as for
+    # GPU tests if a particular builder doesn't run a particular suite. This
+    # could be encapsulated in the query, but this would cause the query to take
+    # longer. Since generating the initial list locally is basically
+    # instantenous and we're optimizing for runtime, filtering is the better
+    # option.
+    active_builders = set([r['builder_name'] for r in results])
+    filtered_builders = [b for b in builders if b in active_builders]
+    return filtered_builders
 
   def _QueryAddCombined(self, inputs):
     """Combines the query and add steps for use in a process pool.
@@ -355,6 +398,19 @@ class BigQueryQuerier(object):
     """
     raise NotImplementedError()
 
+  def _GetActiveBuilderQuery(self, builder_type):
+    """Gets the SQL query for determining which builders actually produce data.
+
+    Args:
+      builder_type: A string containing the type of builders to query, either
+          "ci" or "try".
+
+    Returns:
+      A string containing a SQL query that will get all the names of all
+      relevant builders that are active/producing data.
+    """
+    raise NotImplementedError()
+
 
 class _BaseQueryGenerator(object):
   """Abstract base class for query generators."""
@@ -473,7 +529,7 @@ class SplitQueryGenerator(_BaseQueryGenerator):  # pylint: disable=abstract-meth
     return self._clauses
 
 
-def _GenerateBigQueryCommand(project, parameters):
+def _GenerateBigQueryCommand(project, parameters, batch=True):
   """Generate a BigQuery commandline.
 
   Does not contain the actual query, as that is passed in via stdin.
@@ -484,6 +540,9 @@ def _GenerateBigQueryCommand(project, parameters):
         the format {type: {key: value}}. For example, the dict:
         {'INT64': {'num_builds': 5}}
         would result in --parameter=num_builds:INT64:5 being passed to BigQuery.
+    batch: Whether to run the query in batch mode or not. Batching adds some
+        random amount of overhead since it means the query has to wait for idle
+        resources, but also allows for much better parallelism.
 
   Returns:
     A list containing the BigQuery commandline, suitable to be passed to a
@@ -497,6 +556,9 @@ def _GenerateBigQueryCommand(project, parameters):
       '--project_id=%s' % project,
       '--use_legacy_sql=false',
   ]
+
+  if batch:
+    cmd.append('--batch')
 
   for parameter_type, parameter_pairs in parameters.items():
     for k, v in parameter_pairs.items():

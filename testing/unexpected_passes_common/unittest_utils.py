@@ -53,6 +53,9 @@ class SimpleBigQueryQuerier(queries_module.BigQueryQuerier):
   def _StripPrefixFromTestId(self, test_id):
     return test_id.split('.')[-1]
 
+  def _GetActiveBuilderQuery(self, _):
+    return ''
+
 
 def CreateGenericQuerier(suite=None,
                          project=None,

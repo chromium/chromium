@@ -108,6 +108,21 @@ WHERE
   {suite_filter_clause}
 """
 
+ACTIVE_BUILDER_QUERY_TEMPLATE = """\
+WITH
+  builders AS (
+    SELECT
+      (
+        SELECT value
+        FROM tr.variant
+        WHERE key = "builder") as builder_name
+    FROM
+      `chrome-luci-data.chromium.gpu_{builder_type}_test_results` tr
+  )
+SELECT DISTINCT builder_name
+FROM builders
+"""
+
 # The suite reported to Telemetry for selecting which suite to run is not
 # necessarily the same one that is reported to typ/ResultDB, so map any special
 # cases here.
@@ -208,6 +223,9 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
     split_id = test_id.split('.', 3)
     assert len(split_id) == 4
     return split_id[-1]
+
+  def _GetActiveBuilderQuery(self, builder_type):
+    return ACTIVE_BUILDER_QUERY_TEMPLATE.format(builder_type=builder_type)
 
 
 class GpuFixedQueryGenerator(queries_module.FixedQueryGenerator):

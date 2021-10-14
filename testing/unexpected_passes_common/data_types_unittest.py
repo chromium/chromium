@@ -81,12 +81,19 @@ class ExpectationUnittest(unittest.TestCase):
     e = data_types.Expectation('test', ['tag3'], 'Pass')
     self.assertFalse(e.AppliesToResult(r))
 
+  def testAppliesToResultResultHasAsterisk(self):
+    r = data_types.Result('foo.html?include=*', ['tag1', 'tag2'], 'Pass',
+                          'pixel_tests', 'build_id')
+    e = data_types.Expectation('*', ['tag1', 'tag2'], 'Pass')
+    self.assertTrue(e.AppliesToResult(r))
+    e = data_types.Expectation('foo.html?include=*', ['tag1', 'tag2'], 'Pass')
+    self.assertTrue(e.AppliesToResult(r))
+    e = data_types.Expectation('foo.html?include=bar*', ['tag1', 'tag2'],
+                               'Pass')
+    self.assertFalse(e.AppliesToResult(r))
+
 
 class ResultUnittest(unittest.TestCase):
-  def testWildcardsDisallowed(self):
-    with self.assertRaises(AssertionError):
-      data_types.Result('*', ['tag1'], 'Pass', 'pixel_tests', 'build_id')
-
   def testEquality(self):
     r = GENERIC_RESULT
     other = data_types.Result('test', ['tag1', 'tag2'], 'Pass', 'pixel_tests',
