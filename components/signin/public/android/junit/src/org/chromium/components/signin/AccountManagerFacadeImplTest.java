@@ -263,8 +263,7 @@ public class AccountManagerFacadeImplTest {
 
         mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
 
-        verify(mChildAccountStatusListenerMock)
-                .onStatusReady(ChildAccountStatus.REGULAR_CHILD, account);
+        verify(mChildAccountStatusListenerMock).onStatusReady(ChildAccountStatus.REGULAR_CHILD);
     }
 
     @Test
@@ -274,8 +273,7 @@ public class AccountManagerFacadeImplTest {
 
         mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
 
-        verify(mChildAccountStatusListenerMock)
-                .onStatusReady(ChildAccountStatus.USM_CHILD, account);
+        verify(mChildAccountStatusListenerMock).onStatusReady(ChildAccountStatus.USM_CHILD);
     }
 
     @Test
@@ -286,8 +284,7 @@ public class AccountManagerFacadeImplTest {
 
         mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
 
-        verify(mChildAccountStatusListenerMock)
-                .onStatusReady(ChildAccountStatus.REGULAR_CHILD, account);
+        verify(mChildAccountStatusListenerMock).onStatusReady(ChildAccountStatus.REGULAR_CHILD);
     }
 
     @Test
@@ -296,7 +293,7 @@ public class AccountManagerFacadeImplTest {
 
         mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
 
-        verify(mChildAccountStatusListenerMock).onStatusReady(ChildAccountStatus.NOT_CHILD, null);
+        verify(mChildAccountStatusListenerMock).onStatusReady(ChildAccountStatus.NOT_CHILD);
     }
 
     @Test

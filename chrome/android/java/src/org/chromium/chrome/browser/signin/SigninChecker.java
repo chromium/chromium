@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.signin;
 
 import android.accounts.Account;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationState;
@@ -144,13 +143,18 @@ public class SigninChecker
     }
 
     private void checkChildAccount(List<Account> accounts) {
-        AccountUtils.checkChildAccountStatus(
-                mAccountManagerFacade, accounts, this::onChildAccountStatusReady);
+        if (accounts.size() == 1) {
+            // Child accounts can't share a device.
+            final Account account = accounts.get(0);
+            mAccountManagerFacade.checkChildAccountStatus(
+                    account, status -> { onChildAccountStatusReady(account, status); });
+        } else {
+            ++mNumOfChildAccountChecksDone;
+        }
     }
 
-    private void onChildAccountStatusReady(@Status int status, @Nullable Account childAccount) {
+    private void onChildAccountStatusReady(Account account, @Status int status) {
         if (ChildAccountStatus.isChild(status)) {
-            assert childAccount != null;
             mSigninManager.onFirstRunCheckDone();
             if (mSigninManager.isSignInAllowed()) {
                 Log.d(TAG, "The child account sign-in starts.");
@@ -171,7 +175,7 @@ public class SigninChecker
                 SyncUserDataWiper.wipeSyncUserData().then((Void v) -> {
                     RecordUserAction.record("Signin_Signin_WipeDataOnChildAccountSignin2");
                     mSigninManager.signinAndEnableSync(
-                            SigninAccessPoint.FORCED_SIGNIN, childAccount, signInCallback);
+                            SigninAccessPoint.FORCED_SIGNIN, account, signInCallback);
                 });
                 return;
             }

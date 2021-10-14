@@ -61,8 +61,7 @@ public class SigninCheckerTest {
                         Account account, ChildAccountStatusListener listener) {
                     listener.onStatusReady(CHILD_ACCOUNT_EMAIL.equals(account.name)
                                     ? ChildAccountStatus.REGULAR_CHILD
-                                    : ChildAccountStatus.NOT_CHILD,
-                            account);
+                                    : ChildAccountStatus.NOT_CHILD);
                 }
             });
 

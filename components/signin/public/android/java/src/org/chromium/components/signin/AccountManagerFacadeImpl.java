@@ -174,8 +174,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
             @Override
             public void onPostExecute(@ChildAccountStatus.Status Integer status) {
-                // TODO(crbug.com/1258563): rework this interface to avoid passing a null account.
-                listener.onStatusReady(status, ChildAccountStatus.isChild(status) ? account : null);
+                listener.onStatusReady(status);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
