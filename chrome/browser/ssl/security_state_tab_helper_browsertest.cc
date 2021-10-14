@@ -44,7 +44,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/reputation/core/safety_tip_test_utils.h"
@@ -1856,8 +1855,7 @@ class SecurityStateTabHelperTestWithMixedFormsWarnings
  public:
   SecurityStateTabHelperTestWithMixedFormsWarnings() {
     std::vector<base::Feature> enabled_features = {
-        security_interstitials::kInsecureFormSubmissionInterstitial,
-        autofill::features::kAutofillPreventMixedFormsFilling};
+        security_interstitials::kInsecureFormSubmissionInterstitial};
     feature_list.InitWithFeatures(enabled_features, {});
   }
 
@@ -1899,8 +1897,7 @@ class SecurityStateTabHelperTestWithMixedFormsWarningsDisabled
  public:
   SecurityStateTabHelperTestWithMixedFormsWarningsDisabled() {
     std::vector<base::Feature> disabled_features = {
-        security_interstitials::kInsecureFormSubmissionInterstitial,
-        autofill::features::kAutofillPreventMixedFormsFilling};
+        security_interstitials::kInsecureFormSubmissionInterstitial};
     feature_list.InitWithFeatures({}, disabled_features);
   }
 

@@ -936,9 +936,6 @@ extern const char kMediaSessionWebRTCDescription[];
 extern const char kMetricsSettingsAndroidName[];
 extern const char kMetricsSettingsAndroidDescription[];
 
-extern const char kMixedFormsDisableAutofillName[];
-extern const char kMixedFormsDisableAutofillDescription[];
-
 extern const char kMixedFormsInterstitialName[];
 extern const char kMixedFormsInterstitialDescription[];
 

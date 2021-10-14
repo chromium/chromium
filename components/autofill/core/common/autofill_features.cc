@@ -296,11 +296,6 @@ const base::Feature kAutofillParsingPatternsLanguageDependent{
     "AutofillParsingPatternsLanguageDependent",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If feature is enabled, Autofill will be disabled for mixed forms (forms on
-// HTTPS sites that submit over HTTP).
-const base::Feature kAutofillPreventMixedFormsFilling{
-    "AutofillPreventMixedFormsFilling", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If the feature is enabled, FormTracker's probable-form-submission detection
 // is disabled and replaced with browser-side detection.
 // TODO(crbug/1117451): Remove once it works.

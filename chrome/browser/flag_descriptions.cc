@@ -1630,13 +1630,6 @@ const char kMetricsSettingsAndroidName[] = "Metrics Settings on Android";
 const char kMetricsSettingsAndroidDescription[] =
     "Enables the new design of metrics settings.";
 
-const char kMixedFormsDisableAutofillName[] =
-    "Disable autofill for mixed forms";
-const char kMixedFormsDisableAutofillDescription[] =
-    "If enabled, autofill is not allowed for mixed forms (forms on HTTPS sites "
-    "that submit over HTTP), and a warning bubble will be shown instead. "
-    "Autofill for passwords is not affected by this setting.";
-
 const char kMixedFormsInterstitialName[] = "Mixed forms interstitial";
 const char kMixedFormsInterstitialDescription[] =
     "When enabled, a full-page interstitial warning is shown when a mixed "

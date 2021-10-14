@@ -6714,11 +6714,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEditPasswordsInSettingsDescription, kOsAll,
      FEATURE_VALUE_TYPE(password_manager::features::kEditPasswordsInSettings)},
 
-    {"mixed-forms-disable-autofill",
-     flag_descriptions::kMixedFormsDisableAutofillName,
-     flag_descriptions::kMixedFormsDisableAutofillDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillPreventMixedFormsFilling)},
-
     {"mixed-forms-interstitial", flag_descriptions::kMixedFormsInterstitialName,
      flag_descriptions::kMixedFormsInterstitialDescription, kOsAll,
      FEATURE_VALUE_TYPE(

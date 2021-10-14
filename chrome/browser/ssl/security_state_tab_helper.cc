@@ -117,9 +117,7 @@ SecurityStateTabHelper::GetVisibleSecurityState() {
   // forms (and they are not disabled by policy) we don't degrade the lock icon
   // for sites with mixed forms present.
   if (base::FeatureList::IsEnabled(
-          security_interstitials::kInsecureFormSubmissionInterstitial) &&
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillPreventMixedFormsFilling)) {
+          security_interstitials::kInsecureFormSubmissionInterstitial)) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
     if (profile &&

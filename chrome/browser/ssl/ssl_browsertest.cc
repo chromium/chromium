@@ -76,7 +76,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_launcher_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/certificate_transparency/pref_names.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/common/content_settings_agent.mojom.h"
@@ -1083,9 +1082,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestMixedContentWithSamePageNavigation) {
   // secure sites with an insecure form.
   security_state::SecurityLevel expected_level =
       base::FeatureList::IsEnabled(
-          security_interstitials::kInsecureFormSubmissionInterstitial) &&
-              base::FeatureList::IsEnabled(
-                  autofill::features::kAutofillPreventMixedFormsFilling)
+          security_interstitials::kInsecureFormSubmissionInterstitial)
           ? security_state::SECURE
           : security_state::NONE;
 
@@ -2416,9 +2413,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestDisplaysInsecureForm) {
   // secure sites with an insecure form.
   security_state::SecurityLevel expected_level =
       base::FeatureList::IsEnabled(
-          security_interstitials::kInsecureFormSubmissionInterstitial) &&
-              base::FeatureList::IsEnabled(
-                  autofill::features::kAutofillPreventMixedFormsFilling)
+          security_interstitials::kInsecureFormSubmissionInterstitial)
           ? security_state::SECURE
           : security_state::NONE;
 

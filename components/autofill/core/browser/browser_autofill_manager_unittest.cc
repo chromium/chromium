@@ -9330,24 +9330,9 @@ INSTANTIATE_TEST_SUITE_P(
                        profile_metrics::BrowserProfileType::kIncognito,
                        profile_metrics::BrowserProfileType::kGuest}));
 
-// BrowserAutofillManagerTest with kAutofillDisabledMixedForms feature enabled.
-class BrowserAutofillManagerTestWithMixedForms
-    : public BrowserAutofillManagerTest {
- protected:
-  BrowserAutofillManagerTestWithMixedForms() = default;
-  ~BrowserAutofillManagerTestWithMixedForms() override = default;
-
-  void SetUp() override {
-    BrowserAutofillManagerTest::SetUp();
-
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillPreventMixedFormsFilling);
-  }
-};
-
 // Test that if a form is mixed content we show a warning instead of any
 // suggestions.
-TEST_F(BrowserAutofillManagerTestWithMixedForms, GetSuggestions_MixedForm) {
+TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedForm) {
   // Set up our form data.
   FormData form;
   form.name = u"MyForm";
@@ -9368,8 +9353,7 @@ TEST_F(BrowserAutofillManagerTestWithMixedForms, GetSuggestions_MixedForm) {
 
 // Test that if a form is mixed content we do not show a warning if the opt out
 // polcy is set.
-TEST_F(BrowserAutofillManagerTestWithMixedForms,
-       GetSuggestions_MixedFormOptoutPolicy) {
+TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormOptoutPolicy) {
   // Set pref to disabled.
   autofill_client_.GetPrefs()->SetBoolean(::prefs::kMixedFormsWarningsEnabled,
                                           false);
@@ -9389,8 +9373,7 @@ TEST_F(BrowserAutofillManagerTestWithMixedForms,
 }
 
 // Test that we dismiss the mixed form warning if user starts typing.
-TEST_F(BrowserAutofillManagerTestWithMixedForms,
-       GetSuggestions_MixedFormUserTyped) {
+TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormUserTyped) {
   // Set up our form data.
   FormData form;
   form.name = u"MyForm";
@@ -9417,8 +9400,7 @@ TEST_F(BrowserAutofillManagerTestWithMixedForms,
 
 // Test that we don't treat javascript scheme target URLs as mixed forms.
 // Regression test for crbug.com/1135173
-TEST_F(BrowserAutofillManagerTestWithMixedForms,
-       GetSuggestions_JavascriptUrlTarget) {
+TEST_F(BrowserAutofillManagerTest, GetSuggestions_JavascriptUrlTarget) {
   // Set up our form data, using a javascript scheme target URL.
   FormData form;
   form.name = u"MyForm";
@@ -9434,8 +9416,7 @@ TEST_F(BrowserAutofillManagerTestWithMixedForms,
 }
 
 // Test that we don't treat about:blank target URLs as mixed forms.
-TEST_F(BrowserAutofillManagerTestWithMixedForms,
-       GetSuggestions_AboutBlankTarget) {
+TEST_F(BrowserAutofillManagerTest, GetSuggestions_AboutBlankTarget) {
   // Set up our form data, using a javascript scheme target URL.
   FormData form;
   form.name = u"MyForm";
