@@ -32,7 +32,6 @@ TEST(HardeningTest, PartialCorruption) {
                        PartitionOptions::Cookie::kDisallowed,
                        PartitionOptions::BackupRefPtr::kDisabled,
                        PartitionOptions::UseConfigurablePool::kNo}};
-  root.UncapEmptySlotSpanMemoryForTesting();
 
   const size_t kAllocSize = 100;
   void* data = root.Alloc(kAllocSize, "");
@@ -62,7 +61,6 @@ TEST(HardeningTest, OffHeapPointerCrashing) {
                        PartitionOptions::Cookie::kDisallowed,
                        PartitionOptions::BackupRefPtr::kDisabled,
                        PartitionOptions::UseConfigurablePool::kNo}};
-  root.UncapEmptySlotSpanMemoryForTesting();
 
   const size_t kAllocSize = 100;
   void* data = root.Alloc(kAllocSize, "");
@@ -89,7 +87,6 @@ TEST(HardeningTest, MetadataPointerCrashing) {
                        PartitionOptions::Cookie::kDisallowed,
                        PartitionOptions::BackupRefPtr::kDisabled,
                        PartitionOptions::UseConfigurablePool::kNo}};
-  root.UncapEmptySlotSpanMemoryForTesting();
 
   const size_t kAllocSize = 100;
   void* data = root.Alloc(kAllocSize, "");
@@ -121,7 +118,6 @@ TEST(HardeningTest, SuccessfulCorruption) {
                        PartitionOptions::Cookie::kDisallowed,
                        PartitionOptions::BackupRefPtr::kDisabled,
                        PartitionOptions::UseConfigurablePool::kNo}};
-  root.UncapEmptySlotSpanMemoryForTesting();
 
   uintptr_t* zero_vector = reinterpret_cast<uintptr_t*>(
       root.AllocFlags(PartitionAllocZeroFill, 100 * sizeof(uintptr_t), ""));

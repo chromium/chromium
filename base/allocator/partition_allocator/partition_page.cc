@@ -4,8 +4,6 @@
 
 #include "base/allocator/partition_allocator/partition_page.h"
 
-#include <algorithm>
-
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
@@ -120,20 +118,6 @@ ALWAYS_INLINE void PartitionRegisterEmptySlotSpan(
   if (current_index == kMaxFreeableSpans)
     current_index = 0;
   root->global_empty_slot_span_ring_index = current_index;
-
-  // Avoid wasting too much memory on empty slot spans. Note that we only divide
-  // by powers of two, since division can be very slow, and this path is taken
-  // for every single-slot slot span deallocation.
-  //
-  // Empty slot spans are also all decommitted with MemoryReclaimer, but it may
-  // never run, be delayed arbitrarily, and/or miss large memory spikes.
-  size_t max_empty_dirty_bytes =
-      root->total_size_of_committed_pages.load(std::memory_order_relaxed) >>
-      root->max_empty_slot_spans_dirty_bytes_shift;
-  if (root->empty_slot_spans_dirty_bytes > max_empty_dirty_bytes) {
-    root->ShrinkEmptySlotSpansRing(std::min(
-        root->empty_slot_spans_dirty_bytes / 2, max_empty_dirty_bytes));
-  }
 }
 
 }  // namespace
