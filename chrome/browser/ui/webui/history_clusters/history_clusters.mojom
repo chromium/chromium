@@ -83,12 +83,9 @@ struct Cluster {
   // Cluster identifier. See //components/history/core/browser/history_types.h
   int64 id;
 
-  // Prominently featured constituent visits; typically the highest scoring
-  // one(s).
-  array<URLVisit> visits;
-
-  // Time of the most recent visit in the Cluster. Used for extracting Clusters.
-  mojo_base.mojom.Time last_visit_time;
+  // The prominently featured constituent visit, typically the highest scoring
+  // one, containing its own related visits.
+  URLVisit visit;
 };
 
 // Parameters used to query the browser for Clusters in reverse chronological

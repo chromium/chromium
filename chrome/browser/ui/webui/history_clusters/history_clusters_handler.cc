@@ -127,17 +127,16 @@ mojom::QueryResultPtr QueryClustersResultToMojom(Profile* profile,
     std::set<std::string> related_searches;  // Keeps track of unique searches.
     for (const auto& visit : cluster.visits) {
       mojom::URLVisitPtr visit_mojom = VisitToMojom(profile, visit);
-      if (cluster_mojom->visits.empty()) {
-        // First visit is always the top visit.
-        cluster_mojom->visits.push_back(std::move(visit_mojom));
+      if (!cluster_mojom->visit) {
+        // The first visit is always the top visit.
+        cluster_mojom->visit = std::move(visit_mojom);
       } else {
-        auto& top_visit = cluster.visits.front();
+        const auto& top_visit = cluster.visits.front();
         DCHECK(visit.score <= top_visit.score);
-        auto& top_visit_mojom = cluster_mojom->visits.front();
-
-        // After 3 related visits are attached, any subsequent visits scored
-        // below 0.5 are considered below the fold. 0-scored (duplicate) visits
-        // are always considered below the fold.
+        // After 3 related visits are attached to the top visit, any subsequent
+        // visits scored below 0.5 are considered below the fold. 0-scored
+        // (duplicate) visits are always considered below the fold.
+        const auto& top_visit_mojom = cluster_mojom->visit;
         visit_mojom->below_the_fold =
             (top_visit_mojom->related_visits.size() > 3 && visit.score < 0.5) ||
             visit.score == 0.0;
@@ -149,8 +148,8 @@ mojom::QueryResultPtr QueryClustersResultToMojom(Profile* profile,
       // Note we coalesce a whole visit's worth of searches at a time, so we
       // can exceed the cap, but we ignore further visits' searches after that.
       constexpr size_t kMaxRelatedSearches = 8;
-      auto& top_visit = cluster_mojom->visits.front();
-      if (top_visit->related_searches.size() < kMaxRelatedSearches) {
+      const auto& top_visit_mojom = cluster_mojom->visit;
+      if (top_visit_mojom->related_searches.size() < kMaxRelatedSearches) {
         for (const auto& search_query :
              visit.annotated_visit.content_annotations.related_searches) {
           if (!related_searches.insert(search_query).second) {
@@ -159,7 +158,7 @@ mojom::QueryResultPtr QueryClustersResultToMojom(Profile* profile,
 
           auto search_query_mojom = SearchQueryToMojom(profile, search_query);
           if (search_query_mojom) {
-            top_visit->related_searches.emplace_back(
+            top_visit_mojom->related_searches.emplace_back(
                 std::move(*search_query_mojom));
           }
         }
