@@ -596,12 +596,6 @@ class BottomSheet extends FrameLayout
      */
     private void cancelAnimation() {
         if (mSettleAnimator == null) return;
-
-        // If an animation is canceled, ensure listeners are removed to prevent any delayed,
-        // unwanted callbacks.
-        mSettleAnimator.removeAllListeners();
-        mSettleAnimator.removeAllUpdateListeners();
-
         mSettleAnimator.cancel();
         mSettleAnimator = null;
     }
