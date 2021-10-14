@@ -342,4 +342,52 @@ TEST(CascadePriorityTest, InlineStyle) {
             Priority(author, false, 0, false, 0, 0));
 }
 
+TEST(CascadePriorityTest, ForLayerComparison) {
+  using Priority = CascadePriority;
+  CascadeOrigin author = CascadeOrigin::kAuthor;
+  CascadeOrigin user = CascadeOrigin::kUser;
+
+  EXPECT_EQ(Priority(author, false, 0, false, 1, 2).ForLayerComparison(),
+            Priority(author, false, 0, false, 1, 8).ForLayerComparison());
+  EXPECT_EQ(Priority(author, true, 1, false, 1, 4).ForLayerComparison(),
+            Priority(author, true, 1, false, 1, 8).ForLayerComparison());
+  EXPECT_EQ(Priority(author, true, 1, false, 1, 16).ForLayerComparison(),
+            Priority(author, false, 1, false, 1, 32).ForLayerComparison());
+  EXPECT_EQ(Priority(author, true, 1, true, 0, 16).ForLayerComparison(),
+            Priority(author, false, 1, true, 0, 32).ForLayerComparison());
+
+  EXPECT_LT(Priority(user, false, 0, false, 0, 1).ForLayerComparison(),
+            Priority(user, false, 0, false, 1, 0).ForLayerComparison());
+  EXPECT_LT(Priority(user, false, 0, false, 0, 1).ForLayerComparison(),
+            Priority(user, false, 0, true, 0, 0).ForLayerComparison());
+  EXPECT_LT(Priority(user, false, 0, false, 0, 1).ForLayerComparison(),
+            Priority(user, false, 1, false, 0, 0).ForLayerComparison());
+  EXPECT_LT(Priority(user, false, 0, false, 0, 1).ForLayerComparison(),
+            Priority(author, false, 0, false, 0, 0).ForLayerComparison());
+  EXPECT_LT(Priority(user, true, 0, false, 0, 1).ForLayerComparison(),
+            Priority(user, false, 0, false, 1, 0).ForLayerComparison());
+  EXPECT_LT(Priority(user, true, 0, false, 0, 1).ForLayerComparison(),
+            Priority(user, false, 0, true, 0, 0).ForLayerComparison());
+  EXPECT_LT(Priority(user, true, 0, false, 0, 1).ForLayerComparison(),
+            Priority(user, false, 1, false, 0, 0).ForLayerComparison());
+  EXPECT_LT(Priority(user, true, 0, false, 0, 1).ForLayerComparison(),
+            Priority(author, false, 0, false, 0, 0).ForLayerComparison());
+  EXPECT_LT(Priority(user, false, 0, false, 0, 1).ForLayerComparison(),
+            Priority(user, true, 0, false, 1, 0).ForLayerComparison());
+  EXPECT_LT(Priority(user, false, 0, false, 0, 1).ForLayerComparison(),
+            Priority(user, true, 0, true, 0, 0).ForLayerComparison());
+  EXPECT_LT(Priority(user, false, 0, false, 0, 1).ForLayerComparison(),
+            Priority(user, true, 1, false, 0, 0).ForLayerComparison());
+  EXPECT_LT(Priority(user, false, 0, false, 0, 1).ForLayerComparison(),
+            Priority(author, true, 0, false, 0, 0).ForLayerComparison());
+  EXPECT_LT(Priority(user, true, 0, false, 0, 1).ForLayerComparison(),
+            Priority(user, true, 0, false, 1, 0).ForLayerComparison());
+  EXPECT_LT(Priority(user, true, 0, false, 0, 1).ForLayerComparison(),
+            Priority(user, true, 0, true, 0, 0).ForLayerComparison());
+  EXPECT_LT(Priority(user, true, 0, false, 0, 1).ForLayerComparison(),
+            Priority(user, true, 1, false, 0, 0).ForLayerComparison());
+  EXPECT_LT(Priority(user, true, 0, false, 0, 1).ForLayerComparison(),
+            Priority(author, true, 0, false, 0, 0).ForLayerComparison());
+}
+
 }  // namespace blink

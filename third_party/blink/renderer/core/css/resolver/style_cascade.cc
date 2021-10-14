@@ -295,14 +295,14 @@ StyleCascade::GetCascadedValues() const {
     result.Set(name, cascaded);
   }
 
-  for (const auto& entry : map_.GetCustomMap()) {
-    CascadePriority priority = entry.value;
+  for (const auto& name : map_.GetCustomMap().Keys()) {
+    CascadePriority priority = map_.At(name);
     DCHECK(priority.HasOrigin());
     if (IsInterpolation(priority))
       continue;
     const CSSValue* cascaded = ValueAt(match_result_, priority.GetPosition());
     DCHECK(cascaded);
-    result.Set(entry.key, cascaded);
+    result.Set(name, cascaded);
   }
 
   return result;
@@ -800,7 +800,7 @@ const CSSValue* StyleCascade::ResolveRevert(const CSSProperty& property,
     case CascadeOrigin::kUser:
     case CascadeOrigin::kAuthor:
     case CascadeOrigin::kAnimation: {
-      CascadePriority* p =
+      const CascadePriority* p =
           map_.Find(property.GetCSSPropertyName(), target_origin);
       if (!p) {
         origin = CascadeOrigin::kNone;
