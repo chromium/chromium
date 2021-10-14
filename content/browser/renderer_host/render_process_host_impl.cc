@@ -2513,21 +2513,6 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
   file_system_manager_impl_.reset(new FileSystemManagerImpl(
       GetID(), storage_partition_impl_->GetFileSystemContext(),
       ChromeBlobStorageContext::GetFor(GetBrowserContext())));
-  // This interface is still exposed by the RenderProcessHost's registry so
-  // that it can be accessed by PepperFileSystemHost. Blink accesses this
-  // interface through RenderFrameHost/RendererInterfaceBinders.
-  //
-  // Note, the base::Unretained() is safe because the target object has an IO
-  // thread deleter and the callback is also targeting the IO thread.  When
-  // the RPHI is destroyed it also triggers the destruction of the registry
-  // on the IO thread.
-  //
-  // TODO(https://crbug.com/873661): Make PepperFileSystemHost access this with
-  // the RenderFrameHost's registry, and remove this registration. The empty
-  // construction of StorageKey will also be removed at that time.
-  registry->AddInterface(base::BindRepeating(
-      &FileSystemManagerImpl::BindReceiver,
-      base::Unretained(file_system_manager_impl_.get()), blink::StorageKey()));
 
   AddUIThreadInterface(
       registry.get(), base::BindRepeating(&viz::GpuClient::Add,
