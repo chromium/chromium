@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_LOGIN_UI_SMART_LOCK_AUTH_MODEL_H_
-#define ASH_LOGIN_UI_SMART_LOCK_AUTH_MODEL_H_
+#ifndef ASH_LOGIN_UI_SMART_LOCK_AUTH_FACTOR_MODEL_H_
+#define ASH_LOGIN_UI_SMART_LOCK_AUTH_FACTOR_MODEL_H_
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/auth_factor_model.h"
@@ -17,12 +17,12 @@ class AuthIconView;
 
 // Implements the logic necessary to show Smart Lock as an auth factor on the
 // lock screen.
-class ASH_EXPORT SmartLockAuthModel : public AuthFactorModel {
+class ASH_EXPORT SmartLockAuthFactorModel : public AuthFactorModel {
  public:
-  SmartLockAuthModel();
-  SmartLockAuthModel(SmartLockAuthModel&) = delete;
-  SmartLockAuthModel& operator=(SmartLockAuthModel&) = delete;
-  ~SmartLockAuthModel() override;
+  SmartLockAuthFactorModel();
+  SmartLockAuthFactorModel(SmartLockAuthFactorModel&) = delete;
+  SmartLockAuthFactorModel& operator=(SmartLockAuthFactorModel&) = delete;
+  ~SmartLockAuthFactorModel() override;
 
   // TODO(crbug.com/1233614): Remove this once SmartLockState is passed in
   // instead of EasyUnlockIconState.
@@ -47,4 +47,4 @@ class ASH_EXPORT SmartLockAuthModel : public AuthFactorModel {
 
 }  // namespace ash
 
-#endif  // ASH_LOGIN_UI_SMART_LOCK_AUTH_MODEL_H_
+#endif  // ASH_LOGIN_UI_SMART_LOCK_AUTH_FACTOR_MODEL_H_

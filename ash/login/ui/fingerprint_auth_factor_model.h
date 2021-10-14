@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_LOGIN_UI_FINGERPRINT_AUTH_MODEL_H_
-#define ASH_LOGIN_UI_FINGERPRINT_AUTH_MODEL_H_
+#ifndef ASH_LOGIN_UI_FINGERPRINT_AUTH_FACTOR_MODEL_H_
+#define ASH_LOGIN_UI_FINGERPRINT_AUTH_FACTOR_MODEL_H_
 
 #include "ash/login/ui/auth_factor_model.h"
 #include "ash/public/cpp/login_types.h"
@@ -15,12 +15,12 @@ class AuthIconView;
 
 // Implements the logic necessary to show Fingerprint as an auth factor on the
 // lock screen.
-class FingerprintAuthModel : public AuthFactorModel {
+class FingerprintAuthFactorModel : public AuthFactorModel {
  public:
-  FingerprintAuthModel();
-  FingerprintAuthModel(FingerprintAuthModel&) = delete;
-  FingerprintAuthModel& operator=(FingerprintAuthModel&) = delete;
-  ~FingerprintAuthModel() override;
+  FingerprintAuthFactorModel();
+  FingerprintAuthFactorModel(FingerprintAuthFactorModel&) = delete;
+  FingerprintAuthFactorModel& operator=(FingerprintAuthFactorModel&) = delete;
+  ~FingerprintAuthFactorModel() override;
 
   void SetFingerprintState(FingerprintState state);
   void NotifyFingerprintAuthResult(bool result);
@@ -51,4 +51,4 @@ class FingerprintAuthModel : public AuthFactorModel {
 
 }  // namespace ash
 
-#endif  // ASH_LOGIN_UI_FINGERPRINT_AUTH_MODEL_H_
+#endif  // ASH_LOGIN_UI_FINGERPRINT_AUTH_FACTOR_MODEL_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/login/ui/smart_lock_auth_model.h"
+#include "ash/login/ui/smart_lock_auth_factor_model.h"
 
 #include "ash/login/ui/auth_icon_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -20,11 +20,12 @@ constexpr int kSmartLockIconSizeDp = 28;
 
 }  // namespace
 
-SmartLockAuthModel::SmartLockAuthModel() = default;
+SmartLockAuthFactorModel::SmartLockAuthFactorModel() = default;
 
-SmartLockAuthModel::~SmartLockAuthModel() = default;
+SmartLockAuthFactorModel::~SmartLockAuthFactorModel() = default;
 
-void SmartLockAuthModel::SetEasyUnlockIconState(EasyUnlockIconState state) {
+void SmartLockAuthFactorModel::SetEasyUnlockIconState(
+    EasyUnlockIconState state) {
   switch (state) {
     case EasyUnlockIconState::NONE:
       FALLTHROUGH;
@@ -49,7 +50,7 @@ void SmartLockAuthModel::SetEasyUnlockIconState(EasyUnlockIconState state) {
   }
 }
 
-void SmartLockAuthModel::SetSmartLockState(SmartLockState state) {
+void SmartLockAuthFactorModel::SetSmartLockState(SmartLockState state) {
   if (state_ == state)
     return;
 
@@ -57,12 +58,13 @@ void SmartLockAuthModel::SetSmartLockState(SmartLockState state) {
   NotifyOnStateChanged();
 }
 
-void SmartLockAuthModel::NotifySmartLockAuthResult(bool result) {
+void SmartLockAuthFactorModel::NotifySmartLockAuthResult(bool result) {
   auth_result_ = result;
   NotifyOnStateChanged();
 }
 
-AuthFactorModel::AuthFactorState SmartLockAuthModel::GetAuthFactorState() {
+AuthFactorModel::AuthFactorState
+SmartLockAuthFactorModel::GetAuthFactorState() {
   // TODO(crbug.com/1233614): Handle all SmartLockState values appropriately.
   switch (state_) {
     case SmartLockState::kDisabled:
@@ -84,11 +86,11 @@ AuthFactorModel::AuthFactorState SmartLockAuthModel::GetAuthFactorState() {
   }
 }
 
-AuthFactorType SmartLockAuthModel::GetType() {
+AuthFactorType SmartLockAuthFactorModel::GetType() {
   return AuthFactorType::kSmartLock;
 }
 
-int SmartLockAuthModel::GetLabelId() {
+int SmartLockAuthFactorModel::GetLabelId() {
   if (auth_result_.has_value()) {
     return auth_result_.value() ? IDS_SMART_LOCK_LABEL_PHONE_LOCKED
                                 : IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD;
@@ -126,18 +128,18 @@ int SmartLockAuthModel::GetLabelId() {
   NOTREACHED();
 }
 
-bool SmartLockAuthModel::ShouldAnnounceLabel() {
+bool SmartLockAuthFactorModel::ShouldAnnounceLabel() {
   // TODO(crbug.com/1233614): Return 'true' depending on SmartLockState.
   return false;
 }
 
-int SmartLockAuthModel::GetAccessibleNameId() {
+int SmartLockAuthFactorModel::GetAccessibleNameId() {
   // TODO(crbug.com/1233614): Determine whether any state needs to have a
   // different label for a11y.
   return GetLabelId();
 }
 
-void SmartLockAuthModel::UpdateIcon(AuthIconView* icon_view) {
+void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon_view) {
   if (auth_result_.has_value() && auth_result_.value()) {
     icon_view->SetImage(gfx::CreateVectorIcon(
         kLockScreenFingerprintSuccessIcon, kSmartLockIconSizeDp,
@@ -185,7 +187,7 @@ void SmartLockAuthModel::UpdateIcon(AuthIconView* icon_view) {
       gfx::CreateVectorIcon(*icon, kSmartLockIconSizeDp, icon_color));
 }
 
-void SmartLockAuthModel::OnTapOrClickEvent() {
+void SmartLockAuthFactorModel::OnTapOrClickEvent() {
   // TODO(crbug.com/1233614): If Smart Lock is not available because of an error
   // and the icon is pressed, show the particular error message.
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/login/ui/fingerprint_auth_model.h"
+#include "ash/login/ui/fingerprint_auth_factor_model.h"
 
 #include "ash/login/resources/grit/login_resources.h"
 #include "ash/login/ui/auth_icon_view.h"
@@ -28,11 +28,11 @@ constexpr int kResetToDefaultIconDelayMs = 1300;
 
 }  // namespace
 
-FingerprintAuthModel::FingerprintAuthModel() = default;
+FingerprintAuthFactorModel::FingerprintAuthFactorModel() = default;
 
-FingerprintAuthModel::~FingerprintAuthModel() = default;
+FingerprintAuthFactorModel::~FingerprintAuthFactorModel() = default;
 
-void FingerprintAuthModel::SetFingerprintState(FingerprintState state) {
+void FingerprintAuthFactorModel::SetFingerprintState(FingerprintState state) {
   if (state_ == state)
     return;
 
@@ -45,7 +45,7 @@ void FingerprintAuthModel::SetFingerprintState(FingerprintState state) {
   NotifyOnStateChanged();
 }
 
-void FingerprintAuthModel::NotifyFingerprintAuthResult(bool result) {
+void FingerprintAuthFactorModel::NotifyFingerprintAuthResult(bool result) {
   reset_state_.Stop();
   auth_result_ = result;
   NotifyOnStateChanged();
@@ -55,17 +55,18 @@ void FingerprintAuthModel::NotifyFingerprintAuthResult(bool result) {
     // is safe because |reset_state_| is owned by |this|.
     reset_state_.Start(FROM_HERE,
                        base::Milliseconds(kResetToDefaultIconDelayMs),
-                       base::BindOnce(&FingerprintAuthModel::OnResetState,
+                       base::BindOnce(&FingerprintAuthFactorModel::OnResetState,
                                       base::Unretained(this)));
   }
 }
 
-void FingerprintAuthModel::SetCanUsePin(bool can_use_pin) {
+void FingerprintAuthFactorModel::SetCanUsePin(bool can_use_pin) {
   can_use_pin_ = can_use_pin;
   NotifyOnStateChanged();
 }
 
-AuthFactorModel::AuthFactorState FingerprintAuthModel::GetAuthFactorState() {
+AuthFactorModel::AuthFactorState
+FingerprintAuthFactorModel::GetAuthFactorState() {
   // TODO(crbug.com/1233614): Calculate the correct AuthFactorState based on the
   // current FingerprintState.
   if (!visible_)
@@ -75,11 +76,11 @@ AuthFactorModel::AuthFactorState FingerprintAuthModel::GetAuthFactorState() {
                                                  : AuthFactorState::kReady;
 }
 
-AuthFactorType FingerprintAuthModel::GetType() {
+AuthFactorType FingerprintAuthFactorModel::GetType() {
   return AuthFactorType::kFingerprint;
 }
 
-int FingerprintAuthModel::GetLabelId() {
+int FingerprintAuthFactorModel::GetLabelId() {
   if (auth_result_.has_value()) {
     return auth_result_.value() ? IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_AUTH_SUCCESS
                                 : IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_AUTH_FAILED;
@@ -102,20 +103,20 @@ int FingerprintAuthModel::GetLabelId() {
   NOTREACHED();
 }
 
-bool FingerprintAuthModel::ShouldAnnounceLabel() {
+bool FingerprintAuthFactorModel::ShouldAnnounceLabel() {
   return state_ == FingerprintState::DISABLED_FROM_ATTEMPTS ||
          state_ == FingerprintState::DISABLED_FROM_TIMEOUT ||
          (auth_result_.has_value() && !auth_result_.value());
 }
 
-int FingerprintAuthModel::GetAccessibleNameId() {
+int FingerprintAuthFactorModel::GetAccessibleNameId() {
   if (state_ == FingerprintState::DISABLED_FROM_ATTEMPTS)
     return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_ACCESSIBLE_AUTH_DISABLED_FROM_ATTEMPTS;
 
   return GetLabelId();
 }
 
-void FingerprintAuthModel::UpdateIcon(AuthIconView* icon_view) {
+void FingerprintAuthFactorModel::UpdateIcon(AuthIconView* icon_view) {
   if (auth_result_.has_value()) {
     if (auth_result_.value()) {
       // We do not need to treat the light/dark mode for this use-case since
@@ -166,19 +167,19 @@ void FingerprintAuthModel::UpdateIcon(AuthIconView* icon_view) {
   }
 }
 
-void FingerprintAuthModel::OnTapOrClickEvent() {
+void FingerprintAuthFactorModel::OnTapOrClickEvent() {
   if (state_ == FingerprintState::AVAILABLE_DEFAULT ||
       state_ == FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING) {
     SetFingerprintState(FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING);
     reset_state_.Start(
         FROM_HERE, kResetToDefaultMessageDelayMs,
-        base::BindOnce(&FingerprintAuthModel::SetFingerprintState,
+        base::BindOnce(&FingerprintAuthFactorModel::SetFingerprintState,
                        base::Unretained(this),
                        FingerprintState::AVAILABLE_DEFAULT));
   }
 }
 
-void FingerprintAuthModel::OnResetState() {
+void FingerprintAuthFactorModel::OnResetState() {
   if (auth_result_.has_value() && !auth_result_.value()) {
     // Clear failed auth attempt to allow retry.
     auth_result_.reset();
@@ -186,7 +187,7 @@ void FingerprintAuthModel::OnResetState() {
   NotifyOnStateChanged();
 }
 
-void FingerprintAuthModel::SetVisible(bool visible) {
+void FingerprintAuthFactorModel::SetVisible(bool visible) {
   visible_ = visible;
 }
 

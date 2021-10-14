@@ -29,8 +29,8 @@ class LabelButton;
 namespace ash {
 
 class LoginAuthFactorsView;
-class FingerprintAuthModel;
-class SmartLockAuthModel;
+class FingerprintAuthFactorModel;
+class SmartLockAuthFactorModel;
 class LoginPasswordView;
 class LoginPinView;
 class LoginPinInputView;
@@ -290,8 +290,8 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   DisabledAuthMessageView* disabled_auth_message_ = nullptr;
   FingerprintView* fingerprint_view_ = nullptr;
   LoginAuthFactorsView* auth_factors_view_ = nullptr;
-  FingerprintAuthModel* fingerprint_auth_model_ = nullptr;
-  SmartLockAuthModel* smart_lock_auth_model_ = nullptr;
+  FingerprintAuthFactorModel* fingerprint_auth_factor_model_ = nullptr;
+  SmartLockAuthFactorModel* smart_lock_auth_factor_model_ = nullptr;
   ChallengeResponseView* challenge_response_view_ = nullptr;
   LockedTpmMessageView* locked_tpm_message_view_ = nullptr;
 
