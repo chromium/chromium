@@ -174,6 +174,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     // result, besides the dialog closing.
     // If no |label| is provided, default strings are chosen by the
     // DialogModelHost implementation.
+    // TODO(pbos): Reconsider this API, a DialogModelHost does not need to use
+    // buttons for accepting/cancelling. Also "ok" should be "accept" to be in
+    // sync with other APIs?
     Builder& AddOkButton(
         base::OnceClosure callback,
         std::u16string label = std::u16string(),

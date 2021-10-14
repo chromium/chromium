@@ -5,19 +5,56 @@
 #ifndef UI_BASE_TEST_TEST_DIALOG_MODEL_HOST_H_
 #define UI_BASE_TEST_TEST_DIALOG_MODEL_HOST_H_
 
+#include <algorithm>
+#include <memory>
+#include <string>
+
+#include "base/containers/flat_set.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/dialog_model_host.h"
 
 namespace ui {
 
-class TestDialogModelHost : public DialogModelHost {
+class TestDialogModelHost final : public DialogModelHost {
  public:
-  // TODO(pbos): Flesh out more of DialogModelHost public test APIs to enable
-  // hosting a DialogModel, then try to make this private again. Right now
-  // unittests inline OnDialogCancelled(ui::TestDialogModelHost::GetPassKey())
-  // instead of having TestDialogModelHost manage user flows by methods such as
-  // TestDialogModelHost::Cancel() and the destructor of TestDialogModelHost
-  // call OnDialogDestroying().
-  using DialogModelHost::GetPassKey;
+  enum class ButtonId {
+    kCancel,
+    kExtra,
+    kOk,
+  };
+
+  explicit TestDialogModelHost(std::unique_ptr<DialogModel> dialog_model);
+
+  TestDialogModelHost(const TestDialogModelHost&) = delete;
+  TestDialogModelHost& operator=(const TestDialogModelHost&) = delete;
+
+  ~TestDialogModelHost();
+
+  // These are static method rather than a method on the host because this needs
+  // to result with the destruction of the host.
+  static void Accept(std::unique_ptr<TestDialogModelHost> host);
+  static void Cancel(std::unique_ptr<TestDialogModelHost> host);
+  static void Close(std::unique_ptr<TestDialogModelHost> host);
+  static void DestroyWithoutAction(std::unique_ptr<TestDialogModelHost> host);
+
+  void TriggerExtraButton(const ui::Event& event);
+
+  // TODO(pbos): Consider requiring unique IDs here so that we don't need this
+  // shorthand for querying for a specific field.
+  DialogModelTextfield* FindSingleTextfield();
+  void SetSingleTextfieldText(std::u16string text);
+
+  const base::flat_set<Accelerator>& GetAccelerators(ButtonId button_id);
+  const std::u16string& GetLabel(ButtonId button_id);
+  int GetUniqueId(ButtonId button_id);
+
+ private:
+  // DialogModelHost:
+  void Close() override;
+  void OnFieldAdded(DialogModelField* field) override;
+
+  std::unique_ptr<DialogModel> dialog_model_;
 };
 
 }  // namespace ui
