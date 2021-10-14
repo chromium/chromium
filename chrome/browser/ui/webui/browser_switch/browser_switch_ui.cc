@@ -175,7 +175,7 @@ class BrowserSwitchHandler : public content::WebUIMessageHandler {
       const std::vector<std::string>& changed_prefs);
 
   // For the internals page: tell JS to update all the page contents.
-  void UpdateEverything();
+  void SendDataChangedEvent();
 
   // Launches the given URL in the configured alternative browser. Acts as a
   // bridge for |AlternativeBrowserDriver::TryLaunch()|. Then, if that succeeds,
@@ -298,17 +298,17 @@ void BrowserSwitchHandler::OnJavascriptDisallowed() {
 
 void BrowserSwitchHandler::OnAllRulesetsParsed(
     browser_switcher::BrowserSwitcherService* service) {
-  UpdateEverything();
+  SendDataChangedEvent();
 }
 
 void BrowserSwitchHandler::OnBrowserSwitcherPrefsChanged(
     browser_switcher::BrowserSwitcherPrefs* prefs,
     const std::vector<std::string>& changed_prefs) {
-  UpdateEverything();
+  SendDataChangedEvent();
 }
 
-void BrowserSwitchHandler::UpdateEverything() {
-  CallJavascriptFunction("updateEverything", base::Value());
+void BrowserSwitchHandler::SendDataChangedEvent() {
+  FireWebUIListener("data-changed");
 }
 
 void BrowserSwitchHandler::HandleLaunchAlternativeBrowserAndCloseTab(
