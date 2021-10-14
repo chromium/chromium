@@ -1977,6 +1977,9 @@
     },
   },
   'media_unittests': {
+    'remove_from': [
+      'android-lollipop-arm-rel', # Not enough capacity. https://crbug.com/1248257
+    ],
     'modifications': {
       'android-11-x86-rel': {
         'args': [
