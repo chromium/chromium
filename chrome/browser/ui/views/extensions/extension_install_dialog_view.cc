@@ -449,6 +449,11 @@ void ExtensionInstallDialogView::AddedToWidget() {
 void ExtensionInstallDialogView::OnDialogCanceled() {
   DCHECK(done_callback_);
 
+  // The dialog will be closed, so stop observing for any extension changes
+  // that could potentially crop up during that process (like the extension
+  // being uninstalled).
+  extension_registry_observation_.Reset();
+
   UpdateInstallResultHistogram(false);
   prompt_->OnDialogCanceled();
   std::move(done_callback_)
@@ -458,6 +463,12 @@ void ExtensionInstallDialogView::OnDialogCanceled() {
 
 void ExtensionInstallDialogView::OnDialogAccepted() {
   DCHECK(done_callback_);
+
+  // The dialog will be closed, so stop observing for any extension changes
+  // that could potentially crop up during that process (like the extension
+  // being uninstalled).
+  extension_registry_observation_.Reset();
+
   bool expect_justification =
       prompt_->type() ==
           ExtensionInstallPrompt::PromptType::EXTENSION_REQUEST_PROMPT &&
@@ -501,6 +512,11 @@ void ExtensionInstallDialogView::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     extensions::UninstallReason reason) {
+  // Extra checks for https://crbug.com/1259043.
+  // TODO(devlin): Remove these when we've validated there's no longer a crash.
+  CHECK(extension);
+  CHECK(prompt_);
+  CHECK(prompt_->extension());
   // Close the dialog if the extension is uninstalled.
   if (extension->id() != prompt_->extension()->id())
     return;
