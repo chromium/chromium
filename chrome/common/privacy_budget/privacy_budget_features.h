@@ -277,6 +277,19 @@ extern const base::FeatureParam<std::string> kIdentifiabilityStudyPerHashCost;
 //               kWebFeature.
 extern const base::FeatureParam<std::string> kIdentifiabilityStudyPerTypeCost;
 
+// This is a hardcoded maximum for the probability of any single surface to be
+// reported as part of the experiment.
+//
+// For example, given the following parameters:
+//     kIdentifiabilityStudyBlocks = "1;2,1;3,4;5"
+//     kIdentifiabilityStudyBlockWeights = "1,1,1"
+// the surface 1 has probability 2/3 to be chosen.
+//
+// If, in the finch client configuration, a surface appears with total
+// probability higher than this threshold, the study will be deactivated for
+// this client and this client will not report any surface.
+constexpr double kMaxProbabilityPerSurface = 0.5;
+
 }  // namespace features
 
 #endif  // CHROME_COMMON_PRIVACY_BUDGET_PRIVACY_BUDGET_FEATURES_H_

@@ -725,7 +725,7 @@ TEST(IdentifiabilityStudyStateStandaloneTest, CheapSurfaces) {
 
 TEST(IdentifiabilityStudyStateStandaloneTest, SomeSetOfGroups) {
   // Number of test groups. Arbitrary.
-  constexpr unsigned kTestGroupCount = 200;
+  constexpr unsigned kTestGroupCount = 80;
 
   // Number of surfaces in a single group. The groups don't need to be the same
   // size.
@@ -736,6 +736,7 @@ TEST(IdentifiabilityStudyStateStandaloneTest, SomeSetOfGroups) {
     parameters.blocks.emplace_back(
         CreateSurfaceList(kSurfacesInGroup, kSurfacesInGroup * group_index));
   }
+  parameters.block_weights.assign(kTestGroupCount, 1.0);
   parameters.active_surface_budget = kSurfacesInGroup;
   test::ScopedPrivacyBudgetConfig config(parameters);
 
@@ -752,7 +753,7 @@ TEST(IdentifiabilityStudyStateStandaloneTest, SomeSetOfGroups) {
 TEST(IdentifiabilityStudyStateStandaloneTest,
      SomeSetOfGroupsWithRhoEqualToZero) {
   // Number of test groups. Arbitrary.
-  constexpr unsigned kTestGroupCount = 200;
+  constexpr unsigned kTestGroupCount = 80;
 
   // Number of surfaces in a single group. The groups don't need to be the same
   // size.
@@ -763,6 +764,7 @@ TEST(IdentifiabilityStudyStateStandaloneTest,
     parameters.blocks.emplace_back(
         CreateSurfaceList(kSurfacesInGroup, kSurfacesInGroup * group_index));
   }
+  parameters.block_weights.assign(kTestGroupCount, 1.0);
   parameters.active_surface_budget = kSurfacesInGroup;
   parameters.expected_surface_count = 0;
   test::ScopedPrivacyBudgetConfig config(parameters);
@@ -777,26 +779,9 @@ TEST(IdentifiabilityStudyStateStandaloneTest,
   EXPECT_EQ(kSurfacesInGroup, state.active_surfaces().Size());
 }
 
-TEST(IdentifiabilityStudyStateStandaloneTest, SingleGroup) {
-  constexpr unsigned kSurfacesInGroup = 40;
-
-  test::ScopedPrivacyBudgetConfig::Parameters parameters;
-  parameters.blocks.emplace_back(CreateSurfaceList(kSurfacesInGroup));
-  parameters.active_surface_budget = kSurfacesInGroup;
-  test::ScopedPrivacyBudgetConfig config(parameters);
-
-  TestingPrefServiceSimple pref_service;
-  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
-  test_utils::InspectableIdentifiabilityStudyState state(&pref_service);
-
-  EXPECT_EQ(kSurfacesInGroup, state.active_surfaces().Size());
-  EXPECT_EQ(0u, state.seen_surfaces().size());
-}
-
 TEST(IdentifiabilityStudyStateStandaloneTest, GroupsWithWeights) {
-  constexpr unsigned kTestGroupCount = 200;
+  constexpr unsigned kTestGroupCount = 80;
   constexpr unsigned kSurfacesInGroup = 40;
-  constexpr unsigned kGroupToSelect = 31;
 
   test::ScopedPrivacyBudgetConfig::Parameters parameters;
   for (unsigned group_index = 0; group_index < kTestGroupCount; ++group_index) {
@@ -804,8 +789,7 @@ TEST(IdentifiabilityStudyStateStandaloneTest, GroupsWithWeights) {
         CreateSurfaceList(kSurfacesInGroup, kSurfacesInGroup * group_index));
   }
 
-  parameters.block_weights.assign(kTestGroupCount, 0.0);
-  parameters.block_weights[kGroupToSelect] = 1.0;
+  parameters.block_weights.assign(kTestGroupCount, 1.0);
   parameters.active_surface_budget = kSurfacesInGroup;
   test::ScopedPrivacyBudgetConfig config(parameters);
 
@@ -813,13 +797,17 @@ TEST(IdentifiabilityStudyStateStandaloneTest, GroupsWithWeights) {
   prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
   test_utils::InspectableIdentifiabilityStudyState state(&pref_service);
 
-  EXPECT_TRUE(state.ShouldRecordSurface(parameters.blocks[kGroupToSelect][0]));
-  EXPECT_FALSE(
-      state.ShouldRecordSurface(parameters.blocks[kGroupToSelect + 1][0]));
+  int surfaces_to_record = 0;
+  for (const IdentifiableSurfaceList& block : parameters.blocks) {
+    if (state.ShouldRecordSurface(block[0]))
+      surfaces_to_record++;
+  }
+  // Should record surfaces from exactly one group.
+  EXPECT_EQ(1, surfaces_to_record);
 }
 
 TEST(IdentifiabilityStudyStateStandaloneTest, GroupSelectionPersists) {
-  constexpr unsigned kTestGroupCount = 200;
+  constexpr unsigned kTestGroupCount = 80;
   constexpr unsigned kSurfacesInGroup = 40;
 
   test::ScopedPrivacyBudgetConfig::Parameters parameters;
@@ -827,6 +815,7 @@ TEST(IdentifiabilityStudyStateStandaloneTest, GroupSelectionPersists) {
     parameters.blocks.emplace_back(
         CreateSurfaceList(kSurfacesInGroup, kSurfacesInGroup * group_index));
   }
+  parameters.block_weights.assign(kTestGroupCount, 1.0);
   parameters.active_surface_budget = kSurfacesInGroup;
 
   // Runs two scoped test. The selection from the first one should persist to

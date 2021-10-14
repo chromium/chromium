@@ -24,6 +24,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "chrome/browser/privacy_budget/identifiability_study_group_settings.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/browser/privacy_budget/representative_surface_set.h"
 #include "chrome/browser/privacy_budget/surface_set_equivalence.h"
@@ -38,29 +39,9 @@
 
 namespace {
 
-bool IsStudyActive() {
-  return blink::IdentifiabilityStudySettings::Get()->IsActive();
-}
-
-bool GetAssignBlockSamplingStateFromFieldTrial() {
-  return !features::kIdentifiabilityStudyBlocks.Get().empty();
-}
-
 int GetStudyGenerationFromFieldTrial() {
   return base::clamp(features::kIdentifiabilityStudyGeneration.Get(), 0,
                      std::numeric_limits<int>::max());
-}
-
-int GetActiveSurfaceBudgetFromFieldTrial() {
-  return base::clamp<int>(
-      features::kIdentifiabilityStudyActiveSurfaceBudget.Get(), 0,
-      features::kMaxIdentifiabilityStudyActiveSurfaceBudget);
-}
-
-int GetExpectedSurfaceCountFromFieldTrial() {
-  return base::clamp<int>(
-      features::kIdentifiabilityStudyExpectedSurfaceCount.Get(), 0,
-      features::kMaxIdentifiabilityStudyExpectedSurfaceCount);
 }
 
 }  // namespace
@@ -68,14 +49,13 @@ int GetExpectedSurfaceCountFromFieldTrial() {
 constexpr int IdentifiabilityStudyState::kGeneratorVersion;
 
 IdentifiabilityStudyState::IdentifiabilityStudyState(PrefService* pref_service)
-    : pref_service_(pref_service),
+    : settings_(IdentifiabilityStudyGroupSettings::InitFromFeatureParams()),
+      pref_service_(pref_service),
       valuation_(equivalence_),
       active_surfaces_(valuation_),
       generation_(GetStudyGenerationFromFieldTrial()),
-      is_using_assigned_block_sampling_(
-          GetAssignBlockSamplingStateFromFieldTrial()),
-      active_surface_budget_(GetActiveSurfaceBudgetFromFieldTrial()),
-      random_offset_generator_(GetExpectedSurfaceCountFromFieldTrial(),
+      active_surface_budget_(settings_.surface_budget()),
+      random_offset_generator_(settings_.expected_surface_count(),
                                kMesaDistributionRatio) {
   InitializeGlobalStudySettings();
   InitFromPrefs();
@@ -90,13 +70,13 @@ int IdentifiabilityStudyState::generation() const {
 bool IdentifiabilityStudyState::ShouldRecordSurface(
     blink::IdentifiableSurface surface) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (LIKELY(!IsStudyActive()))
+  if (LIKELY(!settings_.enabled()))
     return false;
 
   if (base::Contains(active_surfaces_, surface))
     return true;
 
-  if (is_using_assigned_block_sampling_)
+  if (settings_.is_using_assigned_block_sampling())
     return false;
 
   if (!CanAddOneMoreActiveSurface())
@@ -266,7 +246,7 @@ void IdentifiabilityStudyState::CheckInvariants() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Should only be called if the study is active.
-  DCHECK(IsStudyActive());
+  DCHECK(settings_.enabled());
 
   // These assertions correspond to the invariants listed in
   // identifiability_study_state.h.
@@ -335,14 +315,14 @@ void IdentifiabilityStudyState::ResetPersistedState() {
   pref_service_->ClearPref(prefs::kPrivacyBudgetSelectedOffsets);
   pref_service_->ClearPref(prefs::kPrivacyBudgetSelectedBlock);
 
-  if (!IsStudyActive()) {
+  if (!settings_.enabled()) {
     pref_service_->ClearPref(prefs::kPrivacyBudgetGeneration);
     return;
   }
 
   pref_service_->SetInteger(prefs::kPrivacyBudgetGeneration, generation_);
 
-  if (is_using_assigned_block_sampling_) {
+  if (settings_.is_using_assigned_block_sampling()) {
     InitStateForAssignedBlockSampling();
   } else {
     MaybeUpdateSelectedOffsets();
@@ -353,8 +333,7 @@ void IdentifiabilityStudyState::ResetPersistedState() {
 void IdentifiabilityStudyState::InitStateForAssignedBlockSampling() {
   DCHECK_LT(selected_block_offset_, 0);
 
-  auto blocks = DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceBlocks>(
-      features::kIdentifiabilityStudyBlocks.Get());
+  IdentifiableSurfaceBlocks blocks = settings_.blocks();
 
   // Returning without adding anything to the active set effectively disables
   // the study.
@@ -367,11 +346,9 @@ void IdentifiabilityStudyState::InitStateForAssignedBlockSampling() {
   }
 
   if (selected_block_offset_ < 0 ||
-      selected_block_offset_ >= static_cast<int>(blocks.size())) {
-    selected_block_offset_ = SelectMultinomialChoice(
-        DecodeIdentifiabilityFieldTrialParam<std::vector<double>>(
-            features::kIdentifiabilityStudyBlockWeights.Get()),
-        blocks.size());
+      selected_block_offset_ >= static_cast<int64_t>(blocks.size())) {
+    selected_block_offset_ =
+        SelectMultinomialChoice(settings_.blocks_weights());
   }
 
   IdentifiableSurfaceList& selected_group = blocks[selected_block_offset_];
@@ -400,14 +377,7 @@ void IdentifiabilityStudyState::InitStateForAssignedBlockSampling() {
 
 // static
 int IdentifiabilityStudyState::SelectMultinomialChoice(
-    const std::vector<double>& weights,
-    unsigned bin_count) {
-  if (bin_count <= 1)
-    return 0;
-
-  if (weights.size() != bin_count)
-    return base::RandInt(0, bin_count - 1);
-
+    const std::vector<double>& weights) {
   std::discrete_distribution<int> distribution(weights.begin(), weights.end());
   base::RandomBitGenerator generator;
   return distribution(generator);
@@ -483,7 +453,7 @@ IdentifiabilityStudyState::AdjustForDroppedOffsets(
 }
 
 void IdentifiabilityStudyState::InitFromPrefs() {
-  if (LIKELY(!IsStudyActive())) {
+  if (LIKELY(!settings_.enabled())) {
     // Nothing to do if the study is not active. However it is possible that
     // this client has switched from active to inactive, in which case we should
     // nuke any persisted data.
@@ -499,12 +469,15 @@ void IdentifiabilityStudyState::InitFromPrefs() {
     return;
   }
 
-  if (is_using_assigned_block_sampling_) {
+  if (settings_.is_using_assigned_block_sampling()) {
     InitStateForAssignedBlockSampling();
-    CheckInvariants();
-    return;
+  } else {
+    InitStateForRandomSurfaceSampling();
   }
+  CheckInvariants();
+}
 
+void IdentifiabilityStudyState::InitStateForRandomSurfaceSampling() {
   ResetInMemoryState();
 
   selected_offsets_ =
@@ -555,7 +528,6 @@ void IdentifiabilityStudyState::InitFromPrefs() {
 
   WriteSelectedOffsetsToPrefs();
   MaybeUpdateSelectedOffsets();
-  CheckInvariants();
 }
 
 bool IdentifiabilityStudyState::TryAddNewlySeenSurface(
