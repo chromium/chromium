@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_SEQUENCED_TASK_RUNNER_HELPERS_H_
-#define BASE_SEQUENCED_TASK_RUNNER_HELPERS_H_
+#ifndef BASE_TASK_SEQUENCED_TASK_RUNNER_HELPERS_H_
+#define BASE_TASK_SEQUENCED_TASK_RUNNER_HELPERS_H_
 
 #include <memory>
 
@@ -54,4 +54,4 @@ class ReleaseHelper {
 
 }  // namespace base
 
-#endif  // BASE_SEQUENCED_TASK_RUNNER_HELPERS_H_
+#endif  // BASE_TASK_SEQUENCED_TASK_RUNNER_HELPERS_H_

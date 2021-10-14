@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_BIND_POST_TASK_H_
-#define BASE_BIND_POST_TASK_H_
+#ifndef BASE_TASK_BIND_POST_TASK_H_
+#define BASE_TASK_BIND_POST_TASK_H_
 
 #include <memory>
 #include <type_traits>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_post_task_internal.h"
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/bind_post_task_internal.h"
 #include "base/task/task_runner_forward.h"
 
 // BindPostTask() is a helper function for binding a OnceCallback or
@@ -105,4 +105,4 @@ RepeatingCallback<void(Args...)> BindPostTask(
 
 }  // namespace base
 
-#endif  // BASE_BIND_POST_TASK_H_
+#endif  // BASE_TASK_BIND_POST_TASK_H_
