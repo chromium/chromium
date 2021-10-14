@@ -1,0 +1,58 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_DESKTOP_H_
+#define CHROME_BROWSER_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_DESKTOP_H_
+
+#include "components/breadcrumbs/core/breadcrumb_manager_tab_helper.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
+
+namespace content {
+class NavigationHandle;
+class WebContents;
+}  // namespace content
+
+// Handles logging of Breadcrumb events associated with |web_contents_|.
+class BreadcrumbManagerTabHelperDesktop
+    : public breadcrumbs::BreadcrumbManagerTabHelper,
+      public content::WebContentsObserver,
+      public content::WebContentsUserData<BreadcrumbManagerTabHelperDesktop> {
+ public:
+  ~BreadcrumbManagerTabHelperDesktop() override;
+  BreadcrumbManagerTabHelperDesktop(const BreadcrumbManagerTabHelperDesktop&) =
+      delete;
+  BreadcrumbManagerTabHelperDesktop& operator=(
+      const BreadcrumbManagerTabHelperDesktop&) = delete;
+
+ private:
+  friend class content::WebContentsUserData<BreadcrumbManagerTabHelperDesktop>;
+
+  explicit BreadcrumbManagerTabHelperDesktop(
+      content::WebContents* web_contents);
+
+  // breadcrumbs::BreadcrumbManagerTabHelper:
+  void PlatformLogEvent(const std::string& event) override;
+
+  // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
+  void DidFailLoad(content::RenderFrameHost* render_frame_host,
+                   const GURL& validated_url,
+                   int error_code) override;
+  void DidChangeVisibleSecurityState() override;
+  void RenderProcessGone(base::TerminationStatus status) override;
+  void WebContentsDestroyed() override;
+
+  // The WebContents associated with this tab helper.
+  content::WebContents* web_contents_ = nullptr;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+#endif  // CHROME_BROWSER_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_DESKTOP_H_

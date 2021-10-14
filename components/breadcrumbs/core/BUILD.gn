@@ -11,6 +11,8 @@ source_set("core") {
     "breadcrumb_manager_keyed_service.cc",
     "breadcrumb_manager_keyed_service.h",
     "breadcrumb_manager_observer.h",
+    "breadcrumb_manager_tab_helper.cc",
+    "breadcrumb_manager_tab_helper.h",
     "breadcrumb_persistent_storage_manager.cc",
     "breadcrumb_persistent_storage_manager.h",
     "breadcrumb_persistent_storage_util.cc",
@@ -26,7 +28,10 @@ source_set("core") {
     ":generate_not_user_triggered_actions",
     "//base",
     "//components/crash/core/common:crash_key",
+    "//components/infobars/core",
     "//components/keyed_service/core",
+    "//net",
+    "//ui/base",
   ]
 }
 
