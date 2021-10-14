@@ -45,8 +45,14 @@ class ScoreNormalizer {
   ScoreNormalizer(const ScoreNormalizer&) = delete;
   ScoreNormalizer& operator=(const ScoreNormalizer&) = delete;
 
+  // Normalizes the provided score with the normalizer for |name|.
   double Normalize(const std::string& name, double score) const;
+
+  // Train the |name| normalizer on |score|.
   void Update(const std::string& name, double score);
+
+  // A convenience method that calls Update and then Normalize.
+  double UpdateAndNormalize(const std::string& name, double score);
 
  private:
   friend class ScoreNormalizerTest;

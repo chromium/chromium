@@ -15,6 +15,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/search/omnibox_result.h"
+#include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -55,6 +56,18 @@ OmniboxProvider::OmniboxProvider(Profile* profile,
                          profile,
                          ServiceAccessType::EXPLICIT_ACCESS)) {
   controller_->AddObserver(this);
+
+  // Normalize scores if the launcher search normalization experiment is
+  // enabled, but don't if the categorical search experiment is also enabled.
+  // This is because categorical search normalizes scores from all providers
+  // during ranking, and we don't want to do it twice.
+  if (base::FeatureList::IsEnabled(
+          app_list_features::kEnableLauncherSearchNormalization) &&
+      !app_list_features::IsCategoricalSearchEnabled()) {
+    auto path =
+        RankerStateDirectory(profile).AppendASCII("score_norm_omnibox.pb");
+    normalizer_.emplace(path, ScoreNormalizer::Params());
+  }
 }
 
 OmniboxProvider::~OmniboxProvider() {}
@@ -102,9 +115,16 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
       continue;
     }
 
-    new_results.emplace_back(std::make_unique<OmniboxResult>(
+    auto result = std::make_unique<OmniboxResult>(
         profile_, list_controller_, controller_.get(), &favicon_cache_, match,
-        is_zero_state_input_));
+        is_zero_state_input_);
+
+    if (normalizer_.has_value()) {
+      result->set_relevance(
+          normalizer_->UpdateAndNormalize("results", result->relevance()));
+    }
+
+    new_results.emplace_back(std::move(result));
   }
 
   SwapResults(&new_results);

@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
+#include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker.h"
 #include "components/prefs/pref_service.h"
 
@@ -98,6 +99,18 @@ ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
         profile->GetPath().AppendASCII("zero_state_local_files.pb"), config,
         chromeos::ProfileHelper::IsEphemeralUserProfile(profile));
   }
+
+  // Normalize scores if the launcher search normalization experiment is
+  // enabled, but don't if the categorical search experiment is also enabled.
+  // This is because categorical search normalizes scores from all providers
+  // during ranking, and we don't want to do it twice.
+  if (base::FeatureList::IsEnabled(
+          app_list_features::kEnableLauncherSearchNormalization) &&
+      !app_list_features::IsCategoricalSearchEnabled()) {
+    auto path =
+        RankerStateDirectory(profile).AppendASCII("score_norm_local.pb");
+    normalizer_.emplace(path, ScoreNormalizer::Params());
+  }
 }
 
 ZeroStateFileProvider::~ZeroStateFileProvider() = default;
@@ -128,10 +141,15 @@ void ZeroStateFileProvider::SetSearchResults(
   // Use valid results for search results.
   SearchProvider::Results new_results;
   for (const auto& filepath_score : results.first) {
+    double score = filepath_score.second;
+    if (normalizer_.has_value()) {
+      score = normalizer_->UpdateAndNormalize("results", score);
+    }
+
     auto result = std::make_unique<FileResult>(
         kZeroStateFileSchema, filepath_score.first,
-        ash::AppListSearchResultType::kZeroStateFile, GetDisplayType(),
-        filepath_score.second, profile_);
+        ash::AppListSearchResultType::kZeroStateFile, GetDisplayType(), score,
+        profile_);
     result->RequestThumbnail(&thumbnail_loader_);
     new_results.push_back(std::move(result));
 
