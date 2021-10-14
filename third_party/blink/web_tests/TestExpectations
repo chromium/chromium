@@ -7212,3 +7212,6 @@ crbug.com/1259277 [ Debug Linux ] virtual/scroll-unification/fast/events/message
 crbug.com/1259652 [ Mac10.13 ] external/wpt/streams/readable-streams/tee.any.html [ Failure Pass ]
 crbug.com/1259652 [ Mac10.13 ] external/wpt/streams/readable-streams/tee.any.serviceworker.html [ Failure Pass ]
 crbug.com/1259652 [ Mac10.13 ] external/wpt/streams/readable-streams/tee.any.sharedworker.html [ Failure Pass ]
+
+# Sheriff 2021-10-14
+crbug.com/1259749 [ Mac11.0 ] http/tests/eventsource/eventsource-cors-non-http.html [ Failure Pass ]
