@@ -5,4 +5,5 @@
 -GLRendererPixelTestFastSolidColorDraw.*
 -GLRendererPixelTestWithBackdropFilter.*
 -SkiaOutputSurfaceImplTest.*
+-SkiaReadbackPixelTestNV12.*
 -YUVReadbackTest.*
