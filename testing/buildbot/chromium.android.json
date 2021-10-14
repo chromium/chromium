@@ -1923,6 +1923,12 @@
         "test_id_prefix": "ninja://device:device_junit_tests/"
       },
       {
+        "name": "incremental_javac_junit_tests",
+        "swarming": {},
+        "test": "incremental_javac_junit_tests",
+        "test_id_prefix": "ninja://build/android/test:incremental_javac_junit_tests/"
+      },
+      {
         "name": "junit_unit_tests",
         "swarming": {},
         "test": "junit_unit_tests",
@@ -27126,6 +27132,16 @@
         "test_id_prefix": "ninja://device:device_junit_tests/"
       },
       {
+        "name": "incremental_javac_junit_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "incremental_javac_junit_tests",
+        "test_id_prefix": "ninja://build/android/test:incremental_javac_junit_tests/"
+      },
+      {
         "name": "junit_unit_tests",
         "resultdb": {
           "enable": true,
@@ -38693,6 +38709,17 @@
       },
       {
         "isolate_profile_data": true,
+        "name": "incremental_javac_junit_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "incremental_javac_junit_tests",
+        "test_id_prefix": "ninja://build/android/test:incremental_javac_junit_tests/"
+      },
+      {
+        "isolate_profile_data": true,
         "name": "junit_unit_tests",
         "resultdb": {
           "enable": true,
@@ -39738,6 +39765,78 @@
         },
         "test": "chrome_public_unit_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_unit_test_apk/"
+      },
+      {
+        "args": [
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "components_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
+              "location": "bin",
+              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "device_os": null,
+              "device_type": null,
+              "machine_type": "n1-standard-4|e2-standard-4",
+              "os": "Ubuntu-16.04|Ubuntu-18.04",
+              "pool": "chromium.tests.avd"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "avd_generic_android23",
+              "path": ".android"
+            },
+            {
+              "name": "system_images_android_23_google_apis_x86",
+              "path": ".emulator_sdk"
+            }
+          ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "avd_generic_android23"
+              }
+            ]
+          },
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
+        },
+        "test": "components_unittests",
+        "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
         "args": [

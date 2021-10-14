@@ -8512,6 +8512,16 @@
         "test_id_prefix": "ninja://device:device_junit_tests/"
       },
       {
+        "name": "incremental_javac_junit_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "incremental_javac_junit_tests",
+        "test_id_prefix": "ninja://build/android/test:incremental_javac_junit_tests/"
+      },
+      {
         "name": "junit_unit_tests",
         "resultdb": {
           "enable": true,

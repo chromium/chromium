@@ -25,6 +25,8 @@
       # Name is vr_*, but actually has AR tests.
       'vr_android_unittests': {},
     },
+    # TODO(crbug.com/1255748): Remove after L bots are depreacted as this is
+    # only used there.
     'android_build_junit_tests': {
       'incremental_javac_junit_tests': {}
     },
@@ -1019,6 +1021,7 @@
       'components_junit_tests': {},
       'content_junit_tests': {},
       'device_junit_tests': {},
+      'incremental_javac_junit_tests':{},
       'junit_unit_tests': {},
       'keyboard_accessory_junit_tests': {},
       'media_base_junit_tests': {},
@@ -1347,6 +1350,16 @@
         },
         'resultdb': {
           'enable': True,
+        },
+      },
+    },
+
+    # TODO(crbug.com/1255748): Remove after chromium_gtests are enabled on
+    # android_marshmallow_emulator_gtests
+    'components_capacity_tests': {
+      'components_unittests': {
+        'android_swarming': {
+          'shards': 4,
         },
       },
     },
@@ -5781,6 +5794,9 @@
       'android_wpr_record_replay_tests',
       #'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
+      # TODO(crbug.com/1255748): Remove components_capacity_tests when
+      # chromium_gtests are enabled in this suite.
+      'components_capacity_tests',
       'linux_flavor_specific_chromium_gtests',
       #'weblayer_android_gtests',
       #'weblayer_gtests',
