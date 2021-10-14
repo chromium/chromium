@@ -122,10 +122,18 @@ void ExtensionBackgroundPageWaiter::WaitForBackgroundOpen() {
     extension_host = host_helper.WaitForHostCompletedFirstLoad();
   }
 
-  ASSERT_TRUE(extension_host);
-  ASSERT_TRUE(extension_host->has_loaded_once());
-  ASSERT_EQ(extension_host,
-            process_manager->GetBackgroundHostForExtension(extension_->id()));
+  // NOTE: We can't actually always assert that the `extension_host` is present
+  // here. It could be null if the host started and then synchronously shut
+  // down, since ExtensionHostTestHelper::WaitFor*() methods spin the run loop.
+  // With this, tests that cause the background page to close quickly (e.g.
+  // after 1ms of inactivity) can result in the host having already closed at
+  // this point. However, *if* the host is around, we can verify that it
+  // properly finished loading.
+  if (extension_host) {
+    ASSERT_TRUE(extension_host->has_loaded_once());
+    ASSERT_EQ(extension_host,
+              process_manager->GetBackgroundHostForExtension(extension_->id()));
+  }
 }
 
 void ExtensionBackgroundPageWaiter::WaitForBackgroundClosed() {
