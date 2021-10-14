@@ -1994,6 +1994,8 @@ bool AppsGridView::IsPointWithinDragBuffer(const gfx::Point& point) const {
 }
 
 void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
+  const gfx::Size initial_grid_size = GetTileGridSize();
+
   if (!updating_model_)
     EndDrag(true);
 
@@ -2020,10 +2022,16 @@ void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
     UpdatePulsingBlockViews();
   }
 
+  // TODO(https://crbug.com/1260018): Investigate removing Layout() to improve
+  // performance.
   Layout();
+  if (GetTileGridSize() != initial_grid_size)
+    PreferredSizeChanged();
 }
 
 void AppsGridView::OnListItemRemoved(size_t index, AppListItem* item) {
+  const gfx::Size initial_grid_size = GetTileGridSize();
+
   if (!updating_model_)
     EndDrag(true);
 
@@ -2040,7 +2048,11 @@ void AppsGridView::OnListItemRemoved(size_t index, AppListItem* item) {
     UpdatePulsingBlockViews();
   }
 
+  // TODO(https://crbug.com/1260018): Investigate removing Layout() to improve
+  // performance.
   Layout();
+  if (GetTileGridSize() != initial_grid_size)
+    PreferredSizeChanged();
 }
 
 void AppsGridView::OnListItemMoved(size_t from_index,

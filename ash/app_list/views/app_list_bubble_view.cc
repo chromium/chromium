@@ -148,6 +148,9 @@ void AppListBubbleView::InitContentsView(
       view_delegate_, drag_and_drop_host, GetAppListConfig(),
       a11y_announcer_.get(),
       /*folder_controller=*/this));
+  // The apps page must fill the bubble so that the apps grid view can flex to
+  // include empty space below the visible icons.
+  layout->SetFlexForView(apps_page_, 1);
 
   search_page_ =
       contents->AddChildView(std::make_unique<AppListBubbleSearchPage>(

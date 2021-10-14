@@ -87,6 +87,13 @@ class ScrollableAppsGridViewTest : public AshTestBase {
 
   void PopulateApps(int n) { app_list_test_model_->PopulateApps(n); }
 
+  void DeleteApps(int n) {
+    AppListItemList* item_list = app_list_test_model_->top_level_item_list();
+    for (int i = 0; i < n; i++) {
+      app_list_test_model_->DeleteItem(item_list->item_at(0)->id());
+    }
+  }
+
   AppListFolderItem* CreateAndPopulateFolderWithApps(int n) {
     return app_list_test_model_->CreateAndPopulateFolderWithApps(n);
   }
@@ -445,6 +452,52 @@ TEST_F(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenBelowWidget) {
   int scroll_offset = scroll_view_->GetVisibleRect().y();
   EXPECT_EQ(scroll_offset, 0);
   EXPECT_FALSE(apps_grid_view_->auto_scroll_timer_for_test()->IsRunning());
+}
+
+// Regression test for https://crbug.com/1258954
+TEST_F(ScrollableAppsGridViewTest, DragItemIntoEmptySpaceWillReorderToEnd) {
+  AddAppListItem("id1");
+  AddAppListItem("id2");
+  AddAppListItem("id3");
+  ShowAppList();
+
+  // The grid view is taller than the single row of apps, so it can handle drops
+  // in the empty region.
+  EXPECT_GT(apps_grid_view_->height(),
+            apps_grid_view_->GetTileGridSize().height());
+
+  // Drag and drop the first item straight down below the first row.
+  StartDragOnItemViewAt(0);
+  gfx::Size tile_size = apps_grid_view_->GetTileViewSize();
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseBy(0, tile_size.height());
+  generator->ReleaseLeftButton();
+
+  // The first item was reordered to the end.
+  AppListItemList* item_list =
+      Shell::Get()->app_list_controller()->GetModel()->top_level_item_list();
+  ASSERT_EQ(3u, item_list->item_count());
+  EXPECT_EQ("id2", item_list->item_at(0)->id());
+  EXPECT_EQ("id3", item_list->item_at(1)->id());
+  EXPECT_EQ("id1", item_list->item_at(2)->id());
+}
+
+TEST_F(ScrollableAppsGridViewTest, ChangingAppListModelUpdatesAppsGridHeight) {
+  // Start with 4 rows of 5.
+  PopulateApps(20);
+  ShowAppList();
+
+  // Adding one row of 5 causes the grid size to expand.
+  const int height_before_adding = apps_grid_view_->height();
+  PopulateApps(5);
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+  EXPECT_GT(apps_grid_view_->height(), height_before_adding);
+
+  // Removing one row of 5 causes the grid size to contract.
+  const int height_before_removing = apps_grid_view_->height();
+  DeleteApps(5);
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+  EXPECT_LT(apps_grid_view_->height(), height_before_removing);
 }
 
 TEST_F(ScrollableAppsGridViewTest, DragItemToReorderInFolderRecordsHistogram) {

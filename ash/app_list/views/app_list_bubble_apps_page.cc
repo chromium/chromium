@@ -126,6 +126,9 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   scrollable_apps_grid_view_->SetModel(model);
   scrollable_apps_grid_view_->SetItemList(model->top_level_item_list());
   scrollable_apps_grid_view_->ResetForShowApps();
+  // Ensure the grid fills the remaining space in the bubble so that icons can
+  // be dropped beneath the last row.
+  layout->SetFlexForView(scrollable_apps_grid_view_, 1);
 
   scroll_view_->SetContents(std::move(scroll_contents));
   continue_section_->UpdateSuggestionTasks();
