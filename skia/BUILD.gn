@@ -202,10 +202,19 @@ config("skia_library_config") {
       "/wd5041",  # out-of-line definition for constexpr static data member is
                   # not needed and is deprecated in C++17
     ]
-    cflags_cc = [ "/std:c++17" ]
+    cflags_cc = [
+      "/std:c++14",
+      "-Wno-c++17-extensions",
+    ]
   } else {
-    cflags_cc = [ "-std=c++17" ]
-    cflags_objcc = [ "-std=c++17" ]
+    cflags_cc = [
+      "-std=c++14",
+      "-Wno-c++17-extensions",
+    ]
+    cflags_objcc = [
+      "-std=c++14",
+      "-Wno-c++17-extensions",
+    ]
   }
 }
 
