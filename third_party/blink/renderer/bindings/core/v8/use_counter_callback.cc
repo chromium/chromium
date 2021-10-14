@@ -242,6 +242,15 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kSharedArrayBufferConstructed: {
       ExecutionContext* current_execution_context =
           CurrentExecutionContext(isolate);
+      if (!current_execution_context) {
+        // This callback can be called in a setup where it is not possible to
+        // retrieve the current ExecutionContext, e.g. when a shared WebAssembly
+        // memory grew on a concurrent worker, and the interrupt that should
+        // take care of growing the WebAssembly memory on the current memory was
+        // triggered within the execution of a regular expression.
+        blink_feature = WebFeature::kV8SharedArrayBufferConstructed;
+        break;
+      }
       bool is_cross_origin_isolated =
           current_execution_context->CrossOriginIsolatedCapability();
       String protocol =
