@@ -169,6 +169,8 @@ class KioskLaunchController
   void CleanUp();
   void LaunchApp();
 
+  bool auto_launch_ = false;  // Whether current app is being auto-launched.
+
   // Current state of the controller.
   AppState app_state_ = AppState::kCreatingProfile;
   // Current state of network configure dialog.

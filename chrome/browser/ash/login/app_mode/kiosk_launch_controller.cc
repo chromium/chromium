@@ -177,6 +177,7 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
   SYSLOG(INFO) << "Starting kiosk mode of type "
                << static_cast<int>(kiosk_app_id.type) << "...";
   kiosk_app_id_ = kiosk_app_id;
+  auto_launch_ = auto_launch;
 
   RecordKioskLaunchUMA(auto_launch);
 
@@ -268,7 +269,8 @@ void KioskLaunchController::OnCancelAppLaunch() {
   if (cleaned_up_)
     return;
 
-  if (KioskAppManager::Get()->GetDisableBailoutShortcut())
+  // Only auto-launched apps should be cancelable.
+  if (KioskAppManager::Get()->GetDisableBailoutShortcut() && auto_launch_)
     return;
 
   SYSLOG(INFO) << "Canceling kiosk app launch.";
