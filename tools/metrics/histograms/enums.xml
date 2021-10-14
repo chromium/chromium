@@ -49549,6 +49549,7 @@ from previous Chrome versions.
   <int value="-879055117" label="ClipboardContentSetting:enabled"/>
   <int value="-879031960" label="FetchKeepaliveTimeoutSetting:disabled"/>
   <int value="-879024703" label="pwa-update-dialog-for-name-and-icon:enabled"/>
+  <int value="-878580380" label="CrostiniUseLxd4:enabled"/>
   <int value="-876773120" label="TabbedAppOverflowMenuActionBar:enabled"/>
   <int value="-876148583" label="ArcBootCompletedBroadcast:disabled"/>
   <int value="-875217114"
@@ -52720,6 +52721,7 @@ from previous Chrome versions.
   <int value="1586022426" label="AutofillCreditCardAssist:enabled"/>
   <int value="1586251544" label="VoiceButtonInTopToolbar:disabled"/>
   <int value="1587521886" label="SSLCommittedInterstitials:enabled"/>
+  <int value="1588716465" label="CrostiniUseLxd4:disabled"/>
   <int value="1589341623" label="disable-easy-unlock"/>
   <int value="1590278995"
       label="AutofillSendExperimentIdsInPaymentsRPCs:enabled"/>

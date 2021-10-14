@@ -2449,6 +2449,9 @@ extern const char kCrostiniUseDlcDescription[];
 extern const char kCrostiniResetLxdDbName[];
 extern const char kCrostiniResetLxdDbDescription[];
 
+extern const char kCrostiniUseLxd4Name[];
+extern const char kCrostiniUseLxd4Description[];
+
 extern const char kDisableBufferBWCompressionName[];
 extern const char kDisableBufferBWCompressionDescription[];
 

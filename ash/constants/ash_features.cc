@@ -293,6 +293,10 @@ const base::Feature kCrostiniGpuSupport{"CrostiniGpuSupport",
 const base::Feature kCrostiniResetLxdDb{"CrostiniResetLxdDb",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Do we use the default LXD version or try LXD 4?
+const base::Feature kCrostiniUseLxd4{"CrostiniUseLxd4",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Use DLC instead of component updater for managing the Termina image if set
 // (and component updater instead of DLC if not).
 const base::Feature kCrostiniUseDlc{"CrostiniUseDlc",

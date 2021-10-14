@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/views/crostini/crostini_expired_container_warning_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/image_loader/image_loader_client.h"
@@ -1208,6 +1209,9 @@ void CrostiniManager::StartTerminaVm(std::string name,
   if (profile_->GetPrefs()->GetBoolean(prefs::kCrostiniMicAllowed) &&
       profile_->GetPrefs()->GetBoolean(::prefs::kAudioCaptureAllowed)) {
     request.set_enable_audio_capture(true);
+  }
+  if (base::FeatureList::IsEnabled(chromeos::features::kCrostiniUseLxd4)) {
+    request.add_features(vm_tools::concierge::StartVmRequest::LXD_4_LTS);
   }
   const int32_t cpus = base::SysInfo::NumberOfProcessors() - num_cores_disabled;
   DCHECK_LT(0, cpus);

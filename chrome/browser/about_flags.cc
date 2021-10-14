@@ -3578,6 +3578,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"terminal-ssh", flag_descriptions::kTerminalSSHName,
      flag_descriptions::kTerminalSSHDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kTerminalSSH)},
+    {"crostini-use-lxd-4", flag_descriptions::kCrostiniUseLxd4Name,
+     flag_descriptions::kCrostiniUseLxd4Description, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kCrostiniResetLxdDb)},
 #if BUILDFLAG(USE_TCMALLOC)
     {"dynamic-tcmalloc-tuning", flag_descriptions::kDynamicTcmallocName,
      flag_descriptions::kDynamicTcmallocDescription, kOsCrOS,
