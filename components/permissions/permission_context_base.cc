@@ -443,12 +443,14 @@ content::BrowserContext* PermissionContextBase::browser_context() const {
 void PermissionContextBase::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  if (content_type != content_settings_type_)
+    ContentSettingsTypeSet content_type_set) {
+  if (!content_type_set.Contains(content_settings_type_))
     return;
 
-  for (permissions::Observer& obs : permission_observers_)
-    obs.OnPermissionChanged(primary_pattern, secondary_pattern, content_type);
+  for (permissions::Observer& obs : permission_observers_) {
+    obs.OnPermissionChanged(primary_pattern, secondary_pattern,
+                            content_type_set);
+  }
 }
 
 void PermissionContextBase::AddObserver(

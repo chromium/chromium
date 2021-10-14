@@ -130,9 +130,9 @@ TEST_F(PolicyProviderTest, GettingManagedContentSettings) {
   EXPECT_EQ(CONTENT_SETTING_DEFAULT,
             TestUtils::GetContentSetting(&provider, youtube_url, youtube_url,
                                          ContentSettingsType::COOKIES, false));
-  EXPECT_EQ(NULL, TestUtils::GetContentSettingValue(
-                      &provider, youtube_url, youtube_url,
-                      ContentSettingsType::COOKIES, false));
+  EXPECT_EQ(nullptr, TestUtils::GetContentSettingValue(
+                         &provider, youtube_url, youtube_url,
+                         ContentSettingsType::COOKIES, false));
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             TestUtils::GetContentSetting(&provider, google_url, google_url,
@@ -167,9 +167,9 @@ TEST_F(PolicyProviderTest, AutoSelectCertificateList) {
   PolicyProvider provider(prefs);
   GURL google_url("https://mail.google.com");
   // Tests the default setting for auto selecting certificates
-  EXPECT_EQ(NULL, TestUtils::GetContentSettingValue(
-                      &provider, google_url, google_url,
-                      ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
+  EXPECT_EQ(nullptr, TestUtils::GetContentSettingValue(
+                         &provider, google_url, google_url,
+                         ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
 
   // Set the content settings pattern list for origins to auto select
   // certificates.
@@ -180,9 +180,9 @@ TEST_F(PolicyProviderTest, AutoSelectCertificateList) {
   prefs->SetManagedPref(prefs::kManagedAutoSelectCertificateForUrls,
                         std::move(value));
   GURL youtube_url("https://www.youtube.com");
-  EXPECT_EQ(NULL, TestUtils::GetContentSettingValue(
-                      &provider, youtube_url, youtube_url,
-                      ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
+  EXPECT_EQ(nullptr, TestUtils::GetContentSettingValue(
+                         &provider, youtube_url, youtube_url,
+                         ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
   std::unique_ptr<base::Value> cert_filter_setting(
       TestUtils::GetContentSettingValue(
           &provider, google_url, google_url,

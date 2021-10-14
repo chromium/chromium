@@ -211,7 +211,7 @@ class PermissionManager : public KeyedService,
   // permissions::Observer:
   void OnPermissionChanged(const ContentSettingsPattern& primary_pattern,
                            const ContentSettingsPattern& secondary_pattern,
-                           ContentSettingsType content_type) override;
+                           ContentSettingsTypeSet content_type_set) override;
 
   PermissionResult GetPermissionStatusHelper(
       ContentSettingsType permission,

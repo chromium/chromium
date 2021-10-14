@@ -82,12 +82,12 @@ bool CameraPanTiltZoomPermissionContext::IsRestrictedToSecureOrigins() const {
 void CameraPanTiltZoomPermissionContext::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsTypeSet content_type_set) {
   PermissionContextBase::OnContentSettingChanged(
-      primary_pattern, secondary_pattern, content_type);
+      primary_pattern, secondary_pattern, content_type_set);
 
-  if (content_type != ContentSettingsType::MEDIASTREAM_CAMERA &&
-      content_type != ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
+  if (!content_type_set.Contains(ContentSettingsType::MEDIASTREAM_CAMERA) &&
+      !content_type_set.Contains(ContentSettingsType::CAMERA_PAN_TILT_ZOOM)) {
     return;
   }
 
@@ -118,7 +118,7 @@ void CameraPanTiltZoomPermissionContext::OnContentSettingChanged(
       host_content_settings_map_->GetContentSetting(url, url,
                                                     content_settings_type());
 
-  if (content_type == ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
+  if (content_type_set.Contains(ContentSettingsType::CAMERA_PAN_TILT_ZOOM)) {
     // Automatically update camera permission to camera PTZ permission as any
     // change to camera PTZ should be reflected to camera.
     updating_mediastream_camera_permission_ = true;
@@ -136,7 +136,8 @@ void CameraPanTiltZoomPermissionContext::OnContentSettingChanged(
   }
 
   ContentSetting mediastream_camera_setting =
-      host_content_settings_map_->GetContentSetting(url, url, content_type);
+      host_content_settings_map_->GetContentSetting(
+          url, url, ContentSettingsType::MEDIASTREAM_CAMERA);
   if (mediastream_camera_setting == CONTENT_SETTING_BLOCK ||
       mediastream_camera_setting == CONTENT_SETTING_ASK) {
     // Automatically reset camera PTZ permission if camera permission

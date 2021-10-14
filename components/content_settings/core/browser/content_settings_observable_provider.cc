@@ -32,6 +32,8 @@ void ObservableProvider::NotifyObservers(
   DCHECK(secondary_pattern.IsValid());
   for (Observer& observer : observer_list_) {
     observer.OnContentSettingChanged(primary_pattern, secondary_pattern,
+                                     ContentSettingsTypeSet(content_type));
+    observer.OnContentSettingChanged(primary_pattern, secondary_pattern,
                                      content_type);
   }
 }

@@ -41,9 +41,10 @@ class SoundContentSettingObserver
   void OnAudioStateChanged(bool audible) override;
 
   // content_settings::Observer implementation.
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   bool HasLoggedSiteMutedUkmForTesting() { return logged_site_muted_ukm_; }
 

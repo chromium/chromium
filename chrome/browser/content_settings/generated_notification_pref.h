@@ -42,9 +42,10 @@ class GeneratedNotificationPref
   std::unique_ptr<extensions::api::settings_private::PrefObject> GetPrefObject()
       const override;
 
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   void OnNotificationPreferencesChanged();
 

@@ -29,6 +29,7 @@ static_library("browser") {
     "content_settings_registry.h",
     "content_settings_rule.cc",
     "content_settings_rule.h",
+    "content_settings_type_set.h",
     "content_settings_utils.cc",
     "content_settings_utils.h",
     "cookie_settings.cc",

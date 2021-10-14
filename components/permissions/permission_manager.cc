@@ -681,7 +681,7 @@ bool PermissionManager::IsPermissionKillSwitchOn(
 void PermissionManager::OnPermissionChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsTypeSet content_type_set) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(primary_pattern.IsValid());
   DCHECK(secondary_pattern.IsValid());
@@ -689,12 +689,13 @@ void PermissionManager::OnPermissionChanged(
   std::vector<base::OnceClosure> callbacks;
   callbacks.reserve(subscriptions_.size());
   base::AutoReset<bool> reset(&is_processing_permission_change_, true);
-  SCOPED_CRASH_KEY_NUMBER("PermissionManager", "content_type",
-                          static_cast<int>(content_type));
+  SCOPED_CRASH_KEY_NUMBER(
+      "PermissionManager", "content_type",
+      static_cast<int>(content_type_set.GetTypeOrDefault()));
   for (SubscriptionsMap::iterator iter(&subscriptions_); !iter.IsAtEnd();
        iter.Advance()) {
     Subscription* subscription = iter.GetCurrentValue();
-    if (subscription->permission != content_type)
+    if (!content_type_set.Contains(subscription->permission))
       continue;
 
     // The RFH may be null if the request is for a worker.

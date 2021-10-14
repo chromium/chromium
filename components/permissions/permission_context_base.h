@@ -39,7 +39,7 @@ class Observer : public base::CheckedObserver {
   virtual void OnPermissionChanged(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type) = 0;
+      ContentSettingsTypeSet content_type_set) = 0;
 };
 
 using BrowserPermissionCallback = base::OnceCallback<void(ContentSetting)>;
@@ -179,9 +179,10 @@ class PermissionContextBase : public KeyedService,
                                           ContentSetting content_setting);
 
   // content_settings::Observer:
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   // Implementors can override this method to use a different PermissionRequest
   // implementation.

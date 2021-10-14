@@ -41,10 +41,11 @@ class ContentSettingsChangeWaiter : public content_settings::Observer {
         ->RemoveObserver(this);
   }
 
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override {
-    if (content_type == content_type_)
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override {
+    if (content_type_set.Contains(content_type_))
       Proceed();
   }
 

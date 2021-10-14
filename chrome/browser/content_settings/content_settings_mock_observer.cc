@@ -6,10 +6,8 @@
 
 namespace content_settings {
 
-MockObserver::MockObserver() {
-}
+MockObserver::MockObserver() = default;
 
-MockObserver::~MockObserver()  {
-}
+MockObserver::~MockObserver() = default;
 
 }  // namespace content_settings

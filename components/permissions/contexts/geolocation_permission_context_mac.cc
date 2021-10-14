@@ -4,6 +4,7 @@
 
 #include "components/permissions/contexts/geolocation_permission_context_mac.h"
 
+#include "components/content_settings/core/browser/content_settings_observer.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 
@@ -47,9 +48,9 @@ void GeolocationPermissionContextMac::OnSystemPermissionUpdated(
     LocationSystemPermissionStatus new_status) {
   system_permission_ = new_status;
   for (permissions::Observer& obs : permission_observers_) {
-    obs.OnPermissionChanged(ContentSettingsPattern::Wildcard(),
-                            ContentSettingsPattern::Wildcard(),
-                            ContentSettingsType::GEOLOCATION);
+    obs.OnPermissionChanged(
+        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+        ContentSettingsTypeSet(ContentSettingsType::GEOLOCATION));
   }
 }
 

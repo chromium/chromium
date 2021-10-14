@@ -253,8 +253,8 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
 void CookieSettings::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  if (content_type == ContentSettingsType::COOKIES) {
+    ContentSettingsTypeSet content_type_set) {
+  if (content_type_set.Contains(ContentSettingsType::COOKIES)) {
     for (auto& observer : observers_)
       observer.OnCookieSettingChanged();
   }

@@ -17,11 +17,11 @@ MockSettingsObserver::~MockSettingsObserver() = default;
 void MockSettingsObserver::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  bool all_types = content_type == ContentSettingsType::DEFAULT;
+    ContentSettingsTypeSet content_type_set) {
   bool all_hosts =
       primary_pattern.MatchesAllHosts() && secondary_pattern.MatchesAllHosts();
-  OnContentSettingsChanged(map_, content_type, all_types, primary_pattern,
+  OnContentSettingsChanged(map_, content_type_set.GetTypeOrDefault(),
+                           content_type_set.ContainsAllTypes(), primary_pattern,
                            secondary_pattern, all_hosts);
   // This checks that calling a Get function from an observer doesn't
   // deadlock.
