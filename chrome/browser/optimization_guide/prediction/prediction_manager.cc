@@ -467,7 +467,7 @@ PredictionModel* PredictionManager::GetPredictionModelForTesting(
   return nullptr;
 }
 
-const HostModelFeaturesMRUCache*
+const HostModelFeaturesLRUCache*
 PredictionManager::GetHostModelFeaturesForTesting() const {
   return &host_model_features_cache_;
 }

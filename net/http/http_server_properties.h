@@ -16,7 +16,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -182,7 +182,7 @@ class NET_EXPORT HttpServerProperties
   };
 
   class NET_EXPORT ServerInfoMap
-      : public base::MRUCache<ServerInfoMapKey, ServerInfo> {
+      : public base::LRUCache<ServerInfoMapKey, ServerInfo> {
    public:
     ServerInfoMap();
 
@@ -218,12 +218,12 @@ class NET_EXPORT HttpServerProperties
   };
 
   // Max number of quic servers to store is not hardcoded and can be set.
-  // Because of this, QuicServerInfoMap will not be a subclass of MRUCache.
+  // Because of this, QuicServerInfoMap will not be a subclass of LRUCache.
   // Separate from ServerInfoMap because the key includes privacy mode (Since
   // this is analogous to the SSL session cache, which has separate caches for
   // privacy mode), and each entry can be quite large, so it has its own size
   // limit, which is much smaller than the ServerInfoMap's limit.
-  typedef base::MRUCache<QuicServerInfoMapKey, std::string> QuicServerInfoMap;
+  typedef base::LRUCache<QuicServerInfoMapKey, std::string> QuicServerInfoMap;
 
   // If a |pref_delegate| is specified, it will be used to read/write the
   // properties to a pref file. Writes are rate limited to improve performance.

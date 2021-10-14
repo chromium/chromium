@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 
 namespace base {
@@ -64,7 +64,7 @@ class NaClValidationCache {
  private:
   bool DeserializeImpl(const base::Pickle* pickle);
 
-  typedef base::HashingMRUCache<std::string, bool> ValidationCacheType;
+  typedef base::HashingLRUCache<std::string, bool> ValidationCacheType;
   ValidationCacheType validation_cache_;
 
   std::string validation_cache_key_;

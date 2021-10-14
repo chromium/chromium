@@ -9,7 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
@@ -1261,11 +1261,11 @@ struct ShapeRunWithFontInput {
   size_t hash = 0;
 };
 
-// An MRU cache of the results from calling ShapeRunWithFont. The maximum cache
+// An LRU cache of the results from calling ShapeRunWithFont. The maximum cache
 // size used in blink::ShapeCache is 10k. A Finch experiment showed that
 // reducing the cache size to 1k has no performance impact.
 constexpr int kShapeRunCacheSize = 1000;
-using ShapeRunCacheBase = base::HashingMRUCache<ShapeRunWithFontInput,
+using ShapeRunCacheBase = base::HashingLRUCache<ShapeRunWithFontInput,
                                                 TextRunHarfBuzz::ShapeOutput,
                                                 ShapeRunWithFontInput::Hash>;
 class ShapeRunCache : public ShapeRunCacheBase {

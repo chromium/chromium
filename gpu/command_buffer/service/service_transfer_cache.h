@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/containers/span.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "cc/paint/image_transfer_cache_entry.h"
@@ -125,7 +125,7 @@ class GPU_GLES2_EXPORT ServiceTransferCache
     }
   };
 
-  using EntryCache = base::MRUCache<EntryKey, CacheEntryInternal, EntryKeyComp>;
+  using EntryCache = base::LRUCache<EntryKey, CacheEntryInternal, EntryKeyComp>;
 
   void EnforceLimits();
 

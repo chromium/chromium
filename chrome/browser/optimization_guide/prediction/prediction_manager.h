@@ -11,7 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -44,8 +44,8 @@ class PredictionModelDownloadManager;
 class PredictionModelFetcher;
 class ModelInfo;
 
-using HostModelFeaturesMRUCache =
-    base::HashingMRUCache<std::string, base::flat_map<std::string, float>>;
+using HostModelFeaturesLRUCache =
+    base::HashingLRUCache<std::string, base::flat_map<std::string, float>>;
 
 using OptimizationTargetDecisionCallback =
     base::OnceCallback<void(optimization_guide::OptimizationTargetDecision)>;
@@ -154,7 +154,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   // Return the host model features for all hosts used by this
   // PredictionManager for testing.
-  const HostModelFeaturesMRUCache* GetHostModelFeaturesForTesting() const;
+  const HostModelFeaturesLRUCache* GetHostModelFeaturesForTesting() const;
 
   // Returns the host model features for a host if available.
   absl::optional<base::flat_map<std::string, float>>
@@ -337,8 +337,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
            base::ObserverList<OptimizationTargetModelObserver>>
       registered_observers_for_optimization_targets_;
 
-  // A MRU cache of host to host model features known to the prediction manager.
-  HostModelFeaturesMRUCache host_model_features_cache_;
+  // A LRU cache of host to host model features known to the prediction manager.
+  HostModelFeaturesLRUCache host_model_features_cache_;
 
   // The fetcher that handles making requests to update the models and host
   // model features from the remote Optimization Guide Service.

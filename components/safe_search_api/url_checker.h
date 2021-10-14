@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/safe_search_api/url_checker_client.h"
@@ -72,7 +72,7 @@ class URLChecker {
   std::unique_ptr<URLCheckerClient> async_checker_;
   CheckList checks_in_progress_;
 
-  base::MRUCache<GURL, CheckResult> cache_;
+  base::LRUCache<GURL, CheckResult> cache_;
   base::TimeDelta cache_timeout_;
 
   base::WeakPtrFactory<URLChecker> weak_factory_{this};

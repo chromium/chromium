@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -49,7 +49,7 @@ class LargeIconCache : public KeyedService {
   std::unique_ptr<favicon_base::LargeIconResult> CloneLargeIconResult(
       const favicon_base::LargeIconResult& large_icon_result);
 
-  base::MRUCache<GURL, std::unique_ptr<LargeIconCacheEntry>> cache_;
+  base::LRUCache<GURL, std::unique_ptr<LargeIconCacheEntry>> cache_;
 };
 
 #endif  // IOS_CHROME_BROWSER_FAVICON_LARGE_ICON_CACHE_H_

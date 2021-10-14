@@ -103,9 +103,9 @@ const scoped_refptr<StarterHeuristic> GetOrCreateStarterHeuristic() {
 
 // The cache of failed trigger script fetches is shared across all instances and
 // initialized on first use.
-base::HashingMRUCache<std::string, base::TimeTicks>*
+base::HashingLRUCache<std::string, base::TimeTicks>*
 GetOrCreateFailedTriggerScriptFetchesCache() {
-  static base::NoDestructor<base::HashingMRUCache<std::string, base::TimeTicks>>
+  static base::NoDestructor<base::HashingLRUCache<std::string, base::TimeTicks>>
       cached_failed_trigger_script_fetches(kMaxFailedTriggerScriptsCacheSize);
   return cached_failed_trigger_script_fetches.get();
 }
@@ -113,7 +113,7 @@ GetOrCreateFailedTriggerScriptFetchesCache() {
 // Goes through the |cache| and removes entries that have gone stale, i.e.,
 // entries that were added before |cutoff_ticks|.
 void ClearStaleCacheEntries(
-    base::HashingMRUCache<std::string, base::TimeTicks>* cache,
+    base::HashingLRUCache<std::string, base::TimeTicks>* cache,
     base::TimeTicks cutoff_ticks) {
   // Go in reverse order until the oldest entry is younger than |cutoff_ticks|.
   for (auto it = cache->rbegin(); it != cache->rend();) {
@@ -127,7 +127,7 @@ void ClearStaleCacheEntries(
 // Returns true if |cache| has an entry for |url| that is younger than
 // |cutoff_ticks|, false otherwise. Does not change the order of the cache.
 bool HasFreshCacheEntry(
-    const base::HashingMRUCache<std::string, base::TimeTicks>& cache,
+    const base::HashingLRUCache<std::string, base::TimeTicks>& cache,
     const GURL& url,
     base::TimeTicks cutoff_ticks) {
   std::string domain = url_utils::GetOrganizationIdentifyingDomain(url);

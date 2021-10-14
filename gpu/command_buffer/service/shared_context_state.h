@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -347,7 +347,7 @@ class GPU_GLES2_EXPORT SharedContextState
   absl::optional<error::ContextLostReason> context_lost_reason_;
   base::ObserverList<ContextLostObserver>::Unchecked context_lost_observers_;
 
-  base::MRUCache<void*, sk_sp<SkSurface>> sk_surface_cache_;
+  base::LRUCache<void*, sk_sp<SkSurface>> sk_surface_cache_;
 
   bool device_needs_reset_ = false;
   base::Time last_gl_check_graphics_reset_status_;

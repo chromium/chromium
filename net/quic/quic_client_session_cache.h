@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "net/third_party/quiche/src/quic/core/crypto/quic_crypto_client_config.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -76,7 +76,7 @@ class NET_EXPORT_PRIVATE QuicClientSessionCache : public quic::SessionCache {
                             const quic::ApplicationState* application_state);
 
   base::Clock* clock_;
-  base::MRUCache<quic::QuicServerId, Entry> cache_;
+  base::LRUCache<quic::QuicServerId, Entry> cache_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 };
 

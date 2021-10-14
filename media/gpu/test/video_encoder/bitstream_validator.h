@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/condition_variable.h"
@@ -98,7 +98,7 @@ class BitstreamValidator : public BitstreamProcessor {
   // The key is timestamp, and the value is BitstreamRef that is being processed
   // by |decoder_| and its frame index.
   static constexpr size_t kDecoderBufferMapSize = 32;
-  base::MRUCache<int64_t, std::pair<size_t, scoped_refptr<BitstreamRef>>>
+  base::LRUCache<int64_t, std::pair<size_t, scoped_refptr<BitstreamRef>>>
       decoding_buffers_{kDecoderBufferMapSize};
 
   // The conversion table from the current spatial index to the spatial index of

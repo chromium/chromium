@@ -10,7 +10,7 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "components/autofill/core/browser/geo/country_names_for_locale.h"
@@ -76,7 +76,7 @@ class CountryNames {
   // or default locale. The Cache is keyed by the locale_name and contains
   // |CountryNamesForLocale| instances.
   using LocalizedCountryNamesCache =
-      base::MRUCache<std::string, CountryNamesForLocale>;
+      base::LRUCache<std::string, CountryNamesForLocale>;
 
   // The locale object for the application locale string.
   const std::string application_locale_name_;

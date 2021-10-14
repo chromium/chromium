@@ -78,7 +78,7 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
     kUnknown = 0,
     kDomainCache = 1,
     kSimple = 2,
-    kMruCache = 3,
+    kLruCache = 3,
   };
 
   class ResultDebugData : public base::SupportsUserData::Data {
@@ -135,7 +135,7 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   class TrustImpl;
   class TrustImplDomainCache;
   class TrustImplNoCache;
-  class TrustImplMRUCache;
+  class TrustImplLRUCache;
 
   FRIEND_TEST_ALL_PREFIXES(TrustStoreMacImplTest, MultiRootNotTrusted);
 

@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
@@ -718,20 +718,20 @@ class TrustStoreMac::TrustImplNoCache : public TrustStoreMac::TrustImpl {
   const CFStringRef policy_oid_;
 };
 
-// TrustImplMRUCache is calls SecTrustSettingsCopyTrustSettings on every cert
-// checked, but caches the results in an MRU cache. The cache is cleared on
+// TrustImplLRUCache is calls SecTrustSettingsCopyTrustSettings on every cert
+// checked, but caches the results in an LRU cache. The cache is cleared on
 // keychain updates.
-class TrustStoreMac::TrustImplMRUCache : public TrustStoreMac::TrustImpl {
+class TrustStoreMac::TrustImplLRUCache : public TrustStoreMac::TrustImpl {
  public:
-  TrustImplMRUCache(CFStringRef policy_oid, size_t cache_size)
+  TrustImplLRUCache(CFStringRef policy_oid, size_t cache_size)
       : policy_oid_(policy_oid), trust_status_cache_(cache_size) {
     keychain_observer_ = std::make_unique<KeychainTrustObserver>();
   }
 
-  TrustImplMRUCache(const TrustImplMRUCache&) = delete;
-  TrustImplMRUCache& operator=(const TrustImplMRUCache&) = delete;
+  TrustImplLRUCache(const TrustImplLRUCache&) = delete;
+  TrustImplLRUCache& operator=(const TrustImplLRUCache&) = delete;
 
-  ~TrustImplMRUCache() override {
+  ~TrustImplLRUCache() override {
     GetNetworkNotificationThreadMac()->DeleteSoon(
         FROM_HERE, std::move(keychain_observer_));
   }
@@ -746,7 +746,7 @@ class TrustStoreMac::TrustImplMRUCache : public TrustStoreMac::TrustImpl {
                             base::SupportsUserData* debug_data) override {
     TrustStatusDetails trust_details = GetTrustStatus(cert);
     UpdateUserData(trust_details.debug_info, debug_data,
-                   TrustStoreMac::TrustImplType::kMruCache);
+                   TrustStoreMac::TrustImplType::kLruCache);
     return trust_details.trust_status;
   }
 
@@ -845,7 +845,7 @@ class TrustStoreMac::TrustImplMRUCache : public TrustStoreMac::TrustImpl {
 
   base::Lock cache_lock_;
   // |cache_lock_| must be held while accessing any following members.
-  base::MRUCache<SHA256HashValue, TrustStatusDetails> trust_status_cache_;
+  base::LRUCache<SHA256HashValue, TrustStatusDetails> trust_status_cache_;
   // Tracks the number of keychain changes that have been observed. If the
   // keychain observer has noted a change, MaybeResetCache will update
   // |iteration_| and the cache will be cleared. Any in-flight trust
@@ -868,9 +868,9 @@ TrustStoreMac::TrustStoreMac(CFStringRef policy_oid,
     case TrustImplType::kSimple:
       trust_cache_ = std::make_unique<TrustImplNoCache>(policy_oid);
       break;
-    case TrustImplType::kMruCache:
+    case TrustImplType::kLruCache:
       trust_cache_ =
-          std::make_unique<TrustImplMRUCache>(policy_oid, cache_size);
+          std::make_unique<TrustImplLRUCache>(policy_oid, cache_size);
       break;
   }
 }

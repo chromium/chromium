@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/backoff_entry.h"
@@ -149,11 +149,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
     url_loader_factory_.Bind(std::move(factory));
   }
 
-  base::MRUCache<net::SHA256HashValue, bool>* GetCacheForTesting() {
+  base::LRUCache<net::SHA256HashValue, bool>* GetCacheForTesting() {
     return &dedupe_cache_;
   }
 
-  base::MRUCache<net::SHA256HashValue, std::unique_ptr<SCTAuditingReporter>>*
+  base::LRUCache<net::SHA256HashValue, std::unique_ptr<SCTAuditingReporter>>*
   GetPendingReportersForTesting() {
     return &pending_reporters_;
   }
@@ -170,16 +170,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
   // Value `bool` is ignored in the dedupe cache. This cache only stores
   // recently seen hashes of SCTs in order to deduplicate on SCTs, and the bool
   // will always be `true`.
-  base::MRUCache<net::SHA256HashValue, bool> dedupe_cache_;
+  base::LRUCache<net::SHA256HashValue, bool> dedupe_cache_;
   // Tracks high-water-mark of `dedupe_cache_.size()`.
   size_t dedupe_cache_size_hwm_;
 
-  // The pending reporters set is an MRUCache, so that the total number of
-  // pending reporters can be capped. The MRUCache means that reporters will be
+  // The pending reporters set is an LRUCache, so that the total number of
+  // pending reporters can be capped. The LRUCache means that reporters will be
   // evicted (and canceled) oldest first. If a new report is triggered for the
   // same SCTs it will get deduplicated if a previous report is still pending,
   // but the last-seen time will be updated.
-  base::MRUCache<net::SHA256HashValue, std::unique_ptr<SCTAuditingReporter>>
+  base::LRUCache<net::SHA256HashValue, std::unique_ptr<SCTAuditingReporter>>
       pending_reporters_;
   // Tracks high-water-mark of `pending_reporters_.size()`.
   size_t pending_reporters_size_hwm_;

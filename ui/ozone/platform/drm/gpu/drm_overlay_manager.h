@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/native_widget_types.h"
@@ -82,7 +82,7 @@ class DrmOverlayManager : public OverlayManagerOzone {
   };
 
   using OverlayCandidatesListCache =
-      base::MRUCache<std::vector<OverlaySurfaceCandidate>,
+      base::LRUCache<std::vector<OverlaySurfaceCandidate>,
                      OverlayValidationCacheValue>;
 
   // Map of each widget to the cache of list of all OverlaySurfaceCandidate

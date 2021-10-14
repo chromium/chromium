@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 
 #include <cstddef>
 #include <memory>
@@ -21,9 +21,7 @@ namespace {
 int cached_item_live_count = 0;
 
 struct CachedItem {
-  CachedItem() : value(0) {
-    cached_item_live_count++;
-  }
+  CachedItem() : value(0) { cached_item_live_count++; }
 
   explicit CachedItem(int new_value) : value(new_value) {
     cached_item_live_count++;
@@ -33,17 +31,15 @@ struct CachedItem {
     cached_item_live_count++;
   }
 
-  ~CachedItem() {
-    cached_item_live_count--;
-  }
+  ~CachedItem() { cached_item_live_count--; }
 
   int value;
 };
 
 }  // namespace
 
-TEST(MRUCacheTest, Basic) {
-  typedef base::MRUCache<int, CachedItem> Cache;
+TEST(LRUCacheTest, Basic) {
+  typedef base::LRUCache<int, CachedItem> Cache;
   Cache cache(Cache::NO_AUTO_EVICT);
 
   // Check failure conditions
@@ -122,8 +118,8 @@ TEST(MRUCacheTest, Basic) {
   EXPECT_EQ(0U, cache.size());
 }
 
-TEST(MRUCacheTest, GetVsPeek) {
-  typedef base::MRUCache<int, CachedItem> Cache;
+TEST(LRUCacheTest, GetVsPeek) {
+  typedef base::LRUCache<int, CachedItem> Cache;
   Cache cache(Cache::NO_AUTO_EVICT);
 
   static const int kItem1Key = 1;
@@ -157,8 +153,8 @@ TEST(MRUCacheTest, GetVsPeek) {
   }
 }
 
-TEST(MRUCacheTest, KeyReplacement) {
-  typedef base::MRUCache<int, CachedItem> Cache;
+TEST(LRUCacheTest, KeyReplacement) {
+  typedef base::LRUCache<int, CachedItem> Cache;
   Cache cache(Cache::NO_AUTO_EVICT);
 
   static const int kItem1Key = 1;
@@ -195,8 +191,8 @@ TEST(MRUCacheTest, KeyReplacement) {
 }
 
 // Make sure that the owning version release its pointers properly.
-TEST(MRUCacheTest, Owning) {
-  using Cache = base::MRUCache<int, std::unique_ptr<CachedItem>>;
+TEST(LRUCacheTest, Owning) {
+  using Cache = base::LRUCache<int, std::unique_ptr<CachedItem>>;
   Cache cache(Cache::NO_AUTO_EVICT);
 
   int initial_count = cached_item_live_count;
@@ -238,8 +234,8 @@ TEST(MRUCacheTest, Owning) {
   }
 }
 
-TEST(MRUCacheTest, AutoEvict) {
-  using Cache = base::MRUCache<int, std::unique_ptr<CachedItem>>;
+TEST(LRUCacheTest, AutoEvict) {
+  using Cache = base::LRUCache<int, std::unique_ptr<CachedItem>>;
   static const Cache::size_type kMaxSize = 3;
 
   int initial_count = cached_item_live_count;
@@ -262,9 +258,9 @@ TEST(MRUCacheTest, AutoEvict) {
   EXPECT_EQ(initial_count, cached_item_live_count);
 }
 
-TEST(MRUCacheTest, HashingMRUCache) {
+TEST(LRUCacheTest, HashingLRUCache) {
   // Very simple test to make sure that the hashing cache works correctly.
-  typedef base::HashingMRUCache<std::string, CachedItem> Cache;
+  typedef base::HashingLRUCache<std::string, CachedItem> Cache;
   Cache cache(Cache::NO_AUTO_EVICT);
 
   CachedItem one(1);
@@ -280,8 +276,8 @@ TEST(MRUCacheTest, HashingMRUCache) {
   EXPECT_TRUE(cache.Get("First") == cache.end());
 }
 
-TEST(MRUCacheTest, Swap) {
-  typedef base::MRUCache<int, CachedItem> Cache;
+TEST(LRUCacheTest, Swap) {
+  typedef base::LRUCache<int, CachedItem> Cache;
   Cache cache1(Cache::NO_AUTO_EVICT);
 
   // Insert two items into cache1.
@@ -385,8 +381,8 @@ TEST(MRUCacheTest, Swap) {
 }
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-TEST(MRUCacheTest, EstimateMemory) {
-  base::MRUCache<std::string, int> cache(10);
+TEST(LRUCacheTest, EstimateMemory) {
+  base::LRUCache<std::string, int> cache(10);
 
   const std::string key(100u, 'a');
   cache.Put(key, 1);

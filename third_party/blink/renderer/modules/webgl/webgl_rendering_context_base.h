@@ -28,7 +28,7 @@
 
 #include <memory>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/single_thread_task_runner_forward.h"
@@ -1904,7 +1904,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool checkProgramCompletionQueryAvailable(WebGLProgram* program,
                                             bool* completed);
   static constexpr unsigned int kMaxProgramCompletionQueries = 128u;
-  base::MRUCache<WebGLProgram*, GLuint> program_completion_queries_;
+  base::LRUCache<WebGLProgram*, GLuint> program_completion_queries_;
 
   int number_of_user_allocated_multisampled_renderbuffers_;
 

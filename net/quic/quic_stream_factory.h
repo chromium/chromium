@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -560,12 +560,12 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // When a QuicCryptoClientConfig is in use, it has one or more live
   // CryptoClientConfigHandles, and is stored in |active_crypto_config_map_|.
   // Once all the handles are deleted, it's moved to
-  // |recent_crypto_config_map_|. If reused before it is evicted from MRUCache,
+  // |recent_crypto_config_map_|. If reused before it is evicted from LRUCache,
   // it will be removed from the cache and return to the active config map.
   // These two maps should never both have entries with the same
   // NetworkIsolationKey.
   QuicCryptoClientConfigMap active_crypto_config_map_;
-  base::MRUCache<NetworkIsolationKey,
+  base::LRUCache<NetworkIsolationKey,
                  std::unique_ptr<QuicCryptoClientConfigOwner>>
       recent_crypto_config_map_;
 

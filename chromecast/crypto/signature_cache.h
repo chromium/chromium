@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
 
@@ -37,7 +37,7 @@ class SignatureCache {
  private:
   std::string key_;
   base::Lock lock_;
-  base::HashingMRUCache<std::string, std::string> contents_;
+  base::HashingLRUCache<std::string, std::string> contents_;
 };
 
 }  // namespace chromecast

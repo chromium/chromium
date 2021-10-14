@@ -11,7 +11,7 @@
 #include <map>
 
 #include "base/check_op.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
@@ -272,7 +272,7 @@ hb_font_t* CreateHarfBuzzFont(sk_sp<SkTypeface> skia_face,
                               const FontRenderParams& params,
                               bool subpixel_rendering_suppressed) {
   // A cache from Skia font to harfbuzz typeface information.
-  using TypefaceCache = base::MRUCache<SkFontID, TypefaceData>;
+  using TypefaceCache = base::LRUCache<SkFontID, TypefaceData>;
 
   constexpr int kTypefaceCacheSize = 64;
   static base::NoDestructor<TypefaceCache> face_caches(kTypefaceCacheSize);

@@ -12,7 +12,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
 #include "base/containers/small_map.h"
 #include "base/macros.h"
@@ -194,7 +194,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   // operation leads to a frame being output and frames might be reordered, so
   // we don't know when it's safe to drop a timestamp. This means we need to use
   // a cache here, with a size large enough to account for frame reordering.
-  base::MRUCache<int32_t, base::TimeDelta> buffer_id_to_timestamp_;
+  base::LRUCache<int32_t, base::TimeDelta> buffer_id_to_timestamp_;
 
   // Queue containing all requested decode tasks.
   base::queue<DecodeTask> decode_task_queue_;

@@ -13,7 +13,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "components/history/core/browser/history_types.h"
@@ -97,7 +97,7 @@ class DocumentProvider : public AutocompleteProvider {
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, CachingForSyncMatches);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, StartCallsStop);
 
-  using MatchesCache = base::MRUCache<GURL, AutocompleteMatch>;
+  using MatchesCache = base::LRUCache<GURL, AutocompleteMatch>;
 
   DocumentProvider(AutocompleteProviderClient* client,
                    AutocompleteProviderListener* listener,

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SUBRESOURCE_REDIRECT_ORIGIN_ROBOTS_RULES_CACHE_H_
 #define CHROME_BROWSER_SUBRESOURCE_REDIRECT_ORIGIN_ROBOTS_RULES_CACHE_H_
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/subresource_redirect/origin_robots_rules.h"
@@ -39,7 +39,7 @@ class OriginRobotsRulesCache {
 
  private:
   // Cache keyed by origin
-  base::MRUCache<url::Origin, std::unique_ptr<OriginRobotsRules>> rules_cache_;
+  base::LRUCache<url::Origin, std::unique_ptr<OriginRobotsRules>> rules_cache_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

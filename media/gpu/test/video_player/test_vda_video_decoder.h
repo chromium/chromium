@@ -9,7 +9,7 @@
 #include <map>
 #include <memory>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
@@ -120,7 +120,7 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
   // Map of video frame decoded callbacks, keyed on bitstream buffer id.
   std::map<int32_t, DecodeCB> decode_cbs_;
   // Records the time at which each bitstream buffer decode operation started.
-  base::MRUCache<int32_t, base::TimeDelta> decode_start_timestamps_;
+  base::LRUCache<int32_t, base::TimeDelta> decode_start_timestamps_;
 
   int32_t next_bitstream_buffer_id_ = 0;
   int32_t next_picture_buffer_id_ = 0;

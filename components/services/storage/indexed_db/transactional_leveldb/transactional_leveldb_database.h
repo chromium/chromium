@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -169,7 +169,7 @@ class TransactionalLevelDBDatabase
   // Despite the type name, this object uses LRU eviction. Raw pointers are safe
   // here because the destructor of TransactionalLevelDBIterator removes itself
   // from its associated database.
-  base::HashingMRUCache<TransactionalLevelDBIterator*, DetachIteratorOnDestruct>
+  base::HashingLRUCache<TransactionalLevelDBIterator*, DetachIteratorOnDestruct>
       iterator_lru_;
 
   // Recorded for UMA reporting.

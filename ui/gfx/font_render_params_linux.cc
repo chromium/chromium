@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -89,7 +89,7 @@ struct QueryResult {
 
 // Keyed by hashes of FontRenderParamQuery structs from
 // HashFontRenderParamsQuery().
-typedef base::HashingMRUCache<std::string, QueryResult> Cache;
+typedef base::HashingLRUCache<std::string, QueryResult> Cache;
 
 // A cache and the lock that must be held while accessing it.
 // GetFontRenderParams() is called by both the UI thread and the sandbox IPC

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
@@ -53,7 +53,7 @@ class MediaSinkServiceStatus {
   // Map of discovered sinks, keyed by provider name.
   base::flat_map<std::string, std::vector<MediaSinkInternal>> discovered_sinks_;
   // Map of available sinks, keyed by media source.
-  base::MRUCache<std::string, std::vector<MediaSinkInternal>> available_sinks_;
+  base::LRUCache<std::string, std::vector<MediaSinkInternal>> available_sinks_;
 
   base::WeakPtrFactory<MediaSinkServiceStatus> weak_ptr_factory_{this};
 };

@@ -549,7 +549,7 @@ BlobMemoryController::BlobMemoryController(
       file_runner_(std::move(file_runner)),
       disk_space_function_(&base::SysInfo::AmountOfFreeDiskSpace),
       populated_memory_items_(
-          base::MRUCache<uint64_t, ShareableBlobDataItem*>::NO_AUTO_EVICT),
+          base::LRUCache<uint64_t, ShareableBlobDataItem*>::NO_AUTO_EVICT),
       memory_pressure_listener_(
           FROM_HERE,
           base::BindRepeating(&BlobMemoryController::OnMemoryPressure,

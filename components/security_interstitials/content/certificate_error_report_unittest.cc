@@ -387,7 +387,7 @@ TEST(ErrorReportTest, TrialDebugInfo) {
       net::TrustStoreMac::TRUST_SETTINGS_DICT_CONTAINS_APPLICATION |
       net::TrustStoreMac::TRUST_SETTINGS_DICT_CONTAINS_RESULT;
   debug_info->mac_trust_impl =
-      cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kMruCache;
+      cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kLruCache;
 #endif
 #if defined(OS_WIN)
   debug_info->win_platform_debug_info =

@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
@@ -163,10 +163,10 @@ class PageContentAnnotationsService : public KeyedService,
   // used for extracting data from the main frame of Google SRP |web_contents|.
   continuous_search::SearchResultExtractorClient
       search_result_extractor_client_;
-  // A MRU Cache keeping track of the visits that have been requested for
+  // A LRU Cache keeping track of the visits that have been requested for
   // annotation. If the requested visit is in this cache, the models will not be
   // requested for another annotation on the same visit.
-  base::MRUCache<HistoryVisit, bool, HistoryVisit::Comp>
+  base::LRUCache<HistoryVisit, bool, HistoryVisit::Comp>
       last_annotated_history_visits_;
 
   base::WeakPtrFactory<PageContentAnnotationsService> weak_ptr_factory_{this};

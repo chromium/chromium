@@ -993,7 +993,7 @@ _CONFIG = [
         # The modules listed above need access to the following GL drawing and
         # display-related types.
         'allowed': [
-            'base::MRUCache',
+            'base::LRUCache',
             'gl::GpuPreference',
             'gpu::SHARED_IMAGE_USAGE_.+',
             'gpu::gles2::GLES2Interface',

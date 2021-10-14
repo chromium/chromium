@@ -11,7 +11,7 @@
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/files/file.h"
 #include "base/macros.h"
 #include "base/task/post_task.h"
@@ -208,7 +208,7 @@ class NaClBrowser {
   typedef std::map<int, int> GdbDebugStubPortMap;
   GdbDebugStubPortMap gdb_debug_stub_port_map_;
 
-  typedef base::HashingMRUCache<std::string, base::FilePath> PathCacheType;
+  typedef base::HashingLRUCache<std::string, base::FilePath> PathCacheType;
   PathCacheType path_cache_{kFilePathCacheSize};
 
   // True if it is no longer possible to launch NaCl processes.

@@ -8,7 +8,7 @@
 #include <memory>
 #include <set>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
@@ -144,7 +144,7 @@ class Starter : public content::WebContentsObserver {
   // This cache is shared across all tabs. It is size-limited and entries only
   // last for a limited amount of time before they go stale. Made available in
   // the header for easier unit-testing.
-  base::HashingMRUCache<std::string, base::TimeTicks>*
+  base::HashingLRUCache<std::string, base::TimeTicks>*
       cached_failed_trigger_script_fetches_;
 
   // The list of organization-identifying domains that a user has temporarily
@@ -154,7 +154,7 @@ class Starter : public content::WebContentsObserver {
   // This is a per-tab cache. This cache does not affect explicit startup
   // requests. The cache is size-limited and entries only last for a limited
   // amount of time before they go stale.
-  base::HashingMRUCache<std::string, base::TimeTicks> user_denylisted_domains_;
+  base::HashingLRUCache<std::string, base::TimeTicks> user_denylisted_domains_;
 
   // Debug parameters for in-CCT and in-Tab trigger scenarios. This is populated
   // from the command line and intended only for debugging and testing.

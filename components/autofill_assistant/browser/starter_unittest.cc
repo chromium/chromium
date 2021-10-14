@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 #include "base/base64url.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/strings/string_piece.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -115,12 +115,12 @@ class StarterTest : public testing::Test {
     return &task_environment_;
   }
 
-  base::HashingMRUCache<std::string, base::TimeTicks>*
+  base::HashingLRUCache<std::string, base::TimeTicks>*
   GetFailedTriggerFetchesCacheForTest() {
     return starter_->cached_failed_trigger_script_fetches_;
   }
 
-  base::HashingMRUCache<std::string, base::TimeTicks>*
+  base::HashingLRUCache<std::string, base::TimeTicks>*
   GetUserDenylistedCacheForTest() const {
     return &starter_->user_denylisted_domains_;
   }

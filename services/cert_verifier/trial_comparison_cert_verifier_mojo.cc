@@ -37,9 +37,9 @@ TrustImplTypeToMojom(net::TrustStoreMac::TrustImplType input) {
     case net::TrustStoreMac::TrustImplType::kSimple:
       return cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
           kSimple;
-    case net::TrustStoreMac::TrustImplType::kMruCache:
+    case net::TrustStoreMac::TrustImplType::kLruCache:
       return cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
-          kMruCache;
+          kLruCache;
   }
 }
 #endif

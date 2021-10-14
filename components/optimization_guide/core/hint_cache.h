@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -164,10 +164,10 @@ class HintCache {
 
  private:
   using HostKeyedHintCache =
-      base::HashingMRUCache<std::string, std::unique_ptr<MemoryHint>>;
+      base::HashingLRUCache<std::string, std::unique_ptr<MemoryHint>>;
 
   using URLKeyedHintCache =
-      base::HashingMRUCache<std::string, std::unique_ptr<MemoryHint>>;
+      base::HashingLRUCache<std::string, std::unique_ptr<MemoryHint>>;
 
   // The callback run after the store finishes initialization. This then runs
   // the callback initially provided by the Initialize() call.

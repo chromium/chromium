@@ -12,7 +12,7 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "net/base/host_port_pair.h"
@@ -120,7 +120,7 @@ class NET_EXPORT SSLClientSessionCache {
 
   base::Clock* clock_;
   Config config_;
-  base::MRUCache<Key, Entry> cache_;
+  base::LRUCache<Key, Entry> cache_;
   size_t lookups_since_flush_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 };

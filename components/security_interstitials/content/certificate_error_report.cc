@@ -162,7 +162,7 @@ TrustImplTypeFromMojom(
     case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple:
       return chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_SIMPLE;
     case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
-        kMruCache:
+        kLruCache:
       return chrome_browser_ssl::TrialVerificationInfo::
           MAC_TRUST_IMPL_MRU_CACHE;
   }

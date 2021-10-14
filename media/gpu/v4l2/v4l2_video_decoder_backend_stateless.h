@@ -5,7 +5,7 @@
 #ifndef MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_BACKEND_STATELESS_H_
 #define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_BACKEND_STATELESS_H_
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
 #include "base/containers/small_map.h"
 #include "base/memory/weak_ptr.h"
@@ -164,7 +164,7 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
   // operation leads to a frame being output and frames might be reordered, so
   // we don't know when it's safe to drop a timestamp. This means we need to use
   // a cache here, with a size large enough to account for frame reordering.
-  base::MRUCache<int32_t, base::TimeDelta> bitstream_id_to_timestamp_;
+  base::LRUCache<int32_t, base::TimeDelta> bitstream_id_to_timestamp_;
 
   // The task runner we are running on, for convenience.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

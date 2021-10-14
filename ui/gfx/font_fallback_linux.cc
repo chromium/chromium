@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
@@ -180,7 +180,7 @@ class FallbackFontEntry {
 
 using FallbackFontEntries = std::vector<FallbackFontEntry>;
 using FallbackFontEntriesCache =
-    base::MRUCache<FallbackFontKey, FallbackFontEntries>;
+    base::LRUCache<FallbackFontKey, FallbackFontEntries>;
 
 // The fallback font cache is a mapping from a font to the potential fallback
 // fonts with their codepoint coverage.
@@ -194,7 +194,7 @@ FallbackFontEntriesCache* GetFallbackFontEntriesCacheInstance() {
 // The fallback fonts cache is a mapping from a font family name to its
 // potential fallback fonts.
 using FallbackFontList = std::vector<Font>;
-using FallbackFontListCache = base::MRUCache<std::string, FallbackFontList>;
+using FallbackFontListCache = base::LRUCache<std::string, FallbackFontList>;
 
 FallbackFontListCache* GetFallbackFontListCacheInstance() {
   constexpr int kFallbackCacheSize = 64;

@@ -392,7 +392,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values(TrustStoreMac::TrustImplType::kDomainCache,
                         TrustStoreMac::TrustImplType::kSimple,
-                        TrustStoreMac::TrustImplType::kMruCache),
+                        TrustStoreMac::TrustImplType::kLruCache),
         // Some TrustImpls may calculate/cache IsKnownRoot values and trust
         // values independently, so test with calling IsKnownRoot both before
         // and after GetTrust to try to ensure there is no ordering issue with

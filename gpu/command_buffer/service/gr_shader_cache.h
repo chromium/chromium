@@ -7,7 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/hash/hash.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/synchronization/lock.h"
@@ -107,7 +107,7 @@ class RASTER_EXPORT GrShaderCache
     size_t operator()(const CacheKey& key) const { return key.hash; }
   };
 
-  using Store = base::HashingMRUCache<CacheKey, CacheData, CacheKeyHash>;
+  using Store = base::HashingLRUCache<CacheKey, CacheData, CacheKeyHash>;
 
   void EnforceLimits(size_t size_needed);
 

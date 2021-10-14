@@ -141,7 +141,7 @@ SoftwareImageDecodeCache::SoftwareImageDecodeCache(
     SkColorType color_type,
     size_t locked_memory_limit_bytes,
     PaintImage::GeneratorClientId generator_client_id)
-    : decoded_images_(ImageMRUCache::NO_AUTO_EVICT),
+    : decoded_images_(ImageLRUCache::NO_AUTO_EVICT),
       locked_images_budget_(locked_memory_limit_bytes),
       color_type_(color_type),
       generator_client_id_(generator_client_id),

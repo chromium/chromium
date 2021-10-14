@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/decoder_client.h"
@@ -170,14 +170,14 @@ class GPU_GLES2_EXPORT MemoryProgramCache : public ProgramCache {
 
   friend class ProgramCacheValue;
 
-  typedef base::MRUCache<std::string,
-                         scoped_refptr<ProgramCacheValue> > ProgramMRUCache;
+  typedef base::LRUCache<std::string, scoped_refptr<ProgramCacheValue>>
+      ProgramLRUCache;
 
   const bool disable_gpu_shader_disk_cache_;
   const bool disable_program_caching_for_transform_feedback_;
   const bool compress_program_binaries_;
   size_t curr_size_bytes_;
-  ProgramMRUCache store_;
+  ProgramLRUCache store_;
   GpuProcessActivityFlags* activity_flags_;
 };
 

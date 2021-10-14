@@ -114,7 +114,7 @@ bool HttpServerProperties::QuicServerInfoMapKey::operator==(
 }
 
 HttpServerProperties::ServerInfoMap::ServerInfoMap()
-    : base::MRUCache<ServerInfoMapKey, ServerInfo>(kMaxServerInfoEntries) {}
+    : base::LRUCache<ServerInfoMapKey, ServerInfo>(kMaxServerInfoEntries) {}
 
 HttpServerProperties::ServerInfoMap::iterator
 HttpServerProperties::ServerInfoMap::GetOrPut(const ServerInfoMapKey& key) {
@@ -544,7 +544,7 @@ void HttpServerProperties::SetMaxServerConfigsStoredInProperties(
   max_server_configs_stored_in_properties_ =
       max_server_configs_stored_in_properties;
 
-  // MRUCache doesn't allow the capacity of the cache to be changed. Thus create
+  // LRUCache doesn't allow the capacity of the cache to be changed. Thus create
   // a new map with the new size and add current elements and swap the new map.
   quic_server_info_map_.ShrinkToSize(max_server_configs_stored_in_properties_);
   QuicServerInfoMap temp_map(max_server_configs_stored_in_properties_);

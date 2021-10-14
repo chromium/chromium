@@ -9,7 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -128,7 +128,7 @@ class BitmapFetcherService : public KeyedService, public BitmapFetcherDelegate {
 
     std::unique_ptr<const SkBitmap> bitmap;
   };
-  base::MRUCache<GURL, std::unique_ptr<CacheEntry>> cache_;
+  base::LRUCache<GURL, std::unique_ptr<CacheEntry>> cache_;
 
   // Current request ID to be used.
   int current_request_id_;

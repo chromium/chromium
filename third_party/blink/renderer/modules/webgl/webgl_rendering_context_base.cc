@@ -1010,7 +1010,7 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
       num_gl_errors_to_console_allowed_(kMaxGLErrorsAllowedToConsole),
       context_type_(context_type),
       program_completion_queries_(
-          base::MRUCache<WebGLProgram*, GLuint>::NO_AUTO_EVICT),
+          base::LRUCache<WebGLProgram*, GLuint>::NO_AUTO_EVICT),
       number_of_user_allocated_multisampled_renderbuffers_(0) {
   DCHECK(context_provider);
 

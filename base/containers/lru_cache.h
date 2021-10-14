@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file contains a template for a Most Recently Used cache that allows
+// This file contains a template for a Least Recently Used cache that allows
 // constant-time access to items using a key, but easy identification of the
 // least-recently-used items for removal.  Each key can only be associated with
 // one payload item at a time.
@@ -13,8 +13,8 @@
 // legibility rather than optimality. If future profiling identifies this as
 // a bottleneck, there is room for smaller values of 1 in the O(1). :]
 
-#ifndef BASE_CONTAINERS_MRU_CACHE_H_
-#define BASE_CONTAINERS_MRU_CACHE_H_
+#ifndef BASE_CONTAINERS_LRU_CACHE_H_
+#define BASE_CONTAINERS_LRU_CACHE_H_
 
 #include <stddef.h>
 
@@ -31,29 +31,29 @@ namespace base {
 namespace trace_event {
 namespace internal {
 
-template <class MruCacheType>
-size_t DoEstimateMemoryUsageForMruCache(const MruCacheType&);
+template <class LruCacheType>
+size_t DoEstimateMemoryUsageForLruCache(const LruCacheType&);
 
 }  // namespace internal
 }  // namespace trace_event
 
-// MRUCacheBase ----------------------------------------------------------------
+// LRUCacheBase ----------------------------------------------------------------
 
 // This template is used to standardize map type containers that can be used
-// by MRUCacheBase. This level of indirection is necessary because of the way
+// by LRUCacheBase. This level of indirection is necessary because of the way
 // that template template params and default template params interact.
 template <class KeyType, class ValueType, class CompareType>
-struct MRUCacheStandardMap {
+struct LRUCacheStandardMap {
   using Type = std::map<KeyType, ValueType, CompareType>;
 };
 
-// Base class for the MRU cache specializations defined below.
+// Base class for the LRU cache specializations defined below.
 template <class KeyType,
           class PayloadType,
           class HashOrCompareType,
           template <typename, typename, typename> class MapType =
-              MRUCacheStandardMap>
-class MRUCacheBase {
+              LRUCacheStandardMap>
+class LRUCacheBase {
  public:
   // The payload of the list. This maintains a copy of the key so we can
   // efficiently delete things given an element of the list.
@@ -79,12 +79,12 @@ class MRUCacheBase {
   // a new item is inserted. If the caller wants to manage this itself (for
   // example, maybe it has special work to do when something is evicted), it
   // can pass NO_AUTO_EVICT to not restrict the cache size.
-  explicit MRUCacheBase(size_type max_size) : max_size_(max_size) {}
+  explicit LRUCacheBase(size_type max_size) : max_size_(max_size) {}
 
-  MRUCacheBase(const MRUCacheBase&) = delete;
-  MRUCacheBase& operator=(const MRUCacheBase&) = delete;
+  LRUCacheBase(const LRUCacheBase&) = delete;
+  LRUCacheBase& operator=(const LRUCacheBase&) = delete;
 
-  virtual ~MRUCacheBase() = default;
+  virtual ~LRUCacheBase() = default;
 
   size_type max_size() const { return max_size_; }
 
@@ -143,7 +143,7 @@ class MRUCacheBase {
   }
 
   // Exchanges the contents of |this| by the contents of the |other|.
-  void Swap(MRUCacheBase& other) {
+  void Swap(LRUCacheBase& other) {
     ordering_.swap(other.ordering_);
     index_.swap(other.index_);
     std::swap(max_size_, other.max_size_);
@@ -156,7 +156,7 @@ class MRUCacheBase {
     return ordering_.erase(pos);
   }
 
-  // MRUCache entries are often processed in reverse order, so we add this
+  // LRUCache entries are often processed in reverse order, so we add this
   // convenience function (not typically defined by STL containers).
   reverse_iterator Erase(reverse_iterator pos) {
     // We have to actually give it the incremented iterator to delete, since
@@ -205,9 +205,9 @@ class MRUCacheBase {
   bool empty() const { return ordering_.empty(); }
 
  private:
-  template <class MruCacheType>
-  friend size_t trace_event::internal::DoEstimateMemoryUsageForMruCache(
-      const MruCacheType&);
+  template <class LruCacheType>
+  friend size_t trace_event::internal::DoEstimateMemoryUsageForLruCache(
+      const LruCacheType&);
 
   PayloadList ordering_;
   KeyIndex index_;
@@ -215,52 +215,52 @@ class MRUCacheBase {
   size_type max_size_;
 };
 
-// MRUCache --------------------------------------------------------------------
+// LRUCache --------------------------------------------------------------------
 
 // A container that does not do anything to free its data. Use this when storing
 // value types (as opposed to pointers) in the list.
 template <class KeyType,
           class PayloadType,
           class CompareType = std::less<KeyType>>
-class MRUCache : public MRUCacheBase<KeyType, PayloadType, CompareType> {
+class LRUCache : public LRUCacheBase<KeyType, PayloadType, CompareType> {
  private:
-  using ParentType = MRUCacheBase<KeyType, PayloadType, CompareType>;
+  using ParentType = LRUCacheBase<KeyType, PayloadType, CompareType>;
 
  public:
-  // See MRUCacheBase, noting the possibility of using NO_AUTO_EVICT.
-  explicit MRUCache(typename ParentType::size_type max_size)
+  // See LRUCacheBase, noting the possibility of using NO_AUTO_EVICT.
+  explicit LRUCache(typename ParentType::size_type max_size)
       : ParentType(max_size) {}
-  MRUCache(const MRUCache&) = delete;
-  MRUCache& operator=(const MRUCache&) = delete;
-  ~MRUCache() override = default;
+  LRUCache(const LRUCache&) = delete;
+  LRUCache& operator=(const LRUCache&) = delete;
+  ~LRUCache() override = default;
 };
 
-// HashingMRUCache ------------------------------------------------------------
+// HashingLRUCache ------------------------------------------------------------
 
 template <class KeyType, class ValueType, class HashType>
-struct MRUCacheHashMap {
+struct LRUCacheHashMap {
   using Type = std::unordered_map<KeyType, ValueType, HashType>;
 };
 
-// This class is similar to MRUCache, except that it uses std::unordered_map as
+// This class is similar to LRUCache, except that it uses std::unordered_map as
 // the map type instead of std::map. Note that your KeyType must be hashable to
 // use this cache or you need to provide a hashing class.
 template <class KeyType, class PayloadType, class HashType = std::hash<KeyType>>
-class HashingMRUCache
-    : public MRUCacheBase<KeyType, PayloadType, HashType, MRUCacheHashMap> {
+class HashingLRUCache
+    : public LRUCacheBase<KeyType, PayloadType, HashType, LRUCacheHashMap> {
  private:
   using ParentType =
-      MRUCacheBase<KeyType, PayloadType, HashType, MRUCacheHashMap>;
+      LRUCacheBase<KeyType, PayloadType, HashType, LRUCacheHashMap>;
 
  public:
-  // See MRUCacheBase, noting the possibility of using NO_AUTO_EVICT.
-  explicit HashingMRUCache(typename ParentType::size_type max_size)
+  // See LRUCacheBase, noting the possibility of using NO_AUTO_EVICT.
+  explicit HashingLRUCache(typename ParentType::size_type max_size)
       : ParentType(max_size) {}
-  HashingMRUCache(const HashingMRUCache&) = delete;
-  HashingMRUCache& operator=(const HashingMRUCache&) = delete;
-  ~HashingMRUCache() override = default;
+  HashingLRUCache(const HashingLRUCache&) = delete;
+  HashingLRUCache& operator=(const HashingLRUCache&) = delete;
+  ~HashingLRUCache() override = default;
 };
 
 }  // namespace base
 
-#endif  // BASE_CONTAINERS_MRU_CACHE_H_
+#endif  // BASE_CONTAINERS_LRU_CACHE_H_

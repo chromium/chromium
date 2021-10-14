@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
@@ -121,7 +121,7 @@ class GPU_GLES2_EXPORT ServiceDiscardableManager
              std::tie(rhs.texture_manager, rhs.texture_id);
     }
   };
-  using EntryCache = base::MRUCache<GpuDiscardableEntryKey,
+  using EntryCache = base::LRUCache<GpuDiscardableEntryKey,
                                     GpuDiscardableEntry,
                                     GpuDiscardableEntryKeyCompare>;
   EntryCache entries_;

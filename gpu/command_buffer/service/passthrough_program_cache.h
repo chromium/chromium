@@ -6,7 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_PASSTHROUGH_PROGRAM_CACHE_H_
 
 #include <mutex>
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/program_cache.h"
@@ -92,11 +92,11 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
 
   friend class ProgramCacheValue;
 
-  typedef base::MRUCache<Key, ProgramCacheValue> ProgramMRUCache;
+  typedef base::LRUCache<Key, ProgramCacheValue> ProgramLRUCache;
 
   const bool disable_gpu_shader_disk_cache_;
   size_t curr_size_bytes_;
-  ProgramMRUCache store_;
+  ProgramLRUCache store_;
 
   // TODO(syoussefi): take compression from memory_program_cache, see
   // compress_program_binaries_

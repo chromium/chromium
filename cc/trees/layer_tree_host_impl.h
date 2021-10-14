@@ -17,7 +17,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/task/sequenced_task_runner_forward.h"
@@ -1286,7 +1286,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // computation is deterministic for a given color space, can be called
   // multiple times per frame, and incurs a non-trivial cost.
   // mutable because |contains_srgb_cache_| is accessed in a const method.
-  mutable base::MRUCache<gfx::ColorSpace, bool> contains_srgb_cache_;
+  mutable base::LRUCache<gfx::ColorSpace, bool> contains_srgb_cache_;
 
   // When enabled, calculates which frame sinks can be throttled based on
   // some pre-defined criteria.

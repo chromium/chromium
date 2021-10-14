@@ -10,7 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -139,12 +139,12 @@ class FaviconCache : public history::HistoryServiceObserver {
   base::CancelableTaskTracker task_tracker_;
   std::map<Request, std::list<FaviconFetchedCallback>> pending_requests_;
 
-  base::MRUCache<Request, gfx::Image> mru_cache_;
+  base::LRUCache<Request, gfx::Image> lru_cache_;
 
   // Keep responses with empty favicons in a separate list, to prevent a
   // response with an empty favicon from ever evicting an existing favicon.
   // The value is always set to true and has no meaning.
-  base::MRUCache<Request, bool> responses_without_favicons_;
+  base::LRUCache<Request, bool> responses_without_favicons_;
 
   // Subscription for notifications of changes to favicons.
   base::CallbackListSubscription favicons_changed_subscription_;

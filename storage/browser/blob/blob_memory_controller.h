@@ -18,7 +18,7 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/component_export.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -312,7 +312,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
 
   // Lifetime of the ShareableBlobDataItem objects is handled externally in the
   // BlobStorageContext class.
-  base::MRUCache<uint64_t, ShareableBlobDataItem*> populated_memory_items_;
+  base::LRUCache<uint64_t, ShareableBlobDataItem*> populated_memory_items_;
   size_t populated_memory_items_bytes_ = 0;
   // We need to keep track of items currently being paged to disk so that if
   // another blob successfully grabs a ref, we can prevent it from adding the
