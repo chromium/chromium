@@ -66712,6 +66712,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="12" label="Notification inline reply response"/>
   <int value="13" label="Show notification access setup request"/>
   <int value="14" label="Show notification access setup response"/>
+  <int value="15" label="Fetch camera roll items request"/>
+  <int value="16" label="Fetch camera roll items response"/>
+  <int value="17" label="Fetch camera roll item data request"/>
+  <int value="18" label="Fetch camera roll item data response"/>
+  <int value="19" label="Initiate camera roll item transfer request"/>
 </enum>
 
 <enum name="PhoneHubNotificationAccessSetupStatus">

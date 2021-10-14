@@ -47,6 +47,19 @@ std::string GetMessageResultHistogramName(proto::MessageType message_type) {
     case proto::MessageType::UPDATE_BATTERY_MODE_RESPONSE:
       return "PhoneHub.TaskCompletion.UpdateBatteryMode.Result";
 
+    case proto::MessageType::FETCH_CAMERA_ROLL_ITEMS_REQUEST:
+      FALLTHROUGH;
+    case proto::MessageType::FETCH_CAMERA_ROLL_ITEMS_RESPONSE:
+      return "PhoneHub.TaskCompletion.FetchCameraRollItems.Result";
+
+    case proto::MessageType::FETCH_CAMERA_ROLL_ITEM_DATA_REQUEST:
+      FALLTHROUGH;
+    case proto::MessageType::FETCH_CAMERA_ROLL_ITEM_DATA_RESPONSE:
+      return "PhoneHub.TaskCompletion.FetchCameraRollItemData.Result";
+
+    case proto::MessageType::INITIATE_CAMERA_ROLL_ITEM_TRANSFER_REQUEST:
+      return "PhoneHub.TaskCompletion.InitiateCameraRollItemTransfer.Result";
+
     default:
       // Note that PROVIDE_CROS_STATE, PHONE_STATUS_SNAPSHOT and
       // PHONE_STATUS_UPDATE message types are not logged as part of this

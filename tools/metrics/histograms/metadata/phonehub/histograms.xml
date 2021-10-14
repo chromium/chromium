@@ -313,6 +313,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     request message was sent and a response was received.
   </summary>
   <token key="MessageType">
+    <variant name="FetchCameraRollItemData"/>
+    <variant name="FetchCameraRollItems"/>
+    <variant name="InitiateCameraRollItemTransfer"/>
     <variant name="LocatePhone"/>
     <variant name="NotificationDismissal"/>
     <variant name="NotificationInlineReply"/>
