@@ -42,14 +42,14 @@ namespace content {
 //
 // Prefer not to use this class. In order of ease of use & simplicity:
 //  -if you need to serve static data, use net::test::EmbeddedTestServer and
-//   serve data from the source tree (e.g. in content/test/data)
+//   serve data from the source tree (e.g. in content/test/data).
 //  -if you need to control the response data at runtime, then use
-//   net::test_server::EmbeddedTestServer::RegisterRequestHandler
+//   net::test_server::EmbeddedTestServer::RegisterRequestHandler.
 //  -if you need to delay when the server sends the response, use
-//   net::test_server::ControllableHttpResponse
+//   net::test_server::ControllableHttpResponse.
 //  -otherwise, if you need full control over the net::Error and/or want to
 //   inspect and/or modify the C++ structs used by URLLoader interface, then use
-//   this helper class
+//   this helper class.
 //
 // Notes:
 //  -the callback is called on the UI or IO threads depending on the factory
@@ -95,11 +95,14 @@ class URLLoaderInterceptor {
   // and instead |ready_callback| is called after the interceptor is installed.
   // If provided, |completion_status_callback| is called when the load
   // completes.
-  explicit URLLoaderInterceptor(InterceptCallback callback);
-  URLLoaderInterceptor(
-      InterceptCallback callback,
-      const URLLoaderCompletionStatusCallback& completion_status_callback,
-      base::OnceClosure ready_callback);
+  //
+  // In order to hook up `completion_status_callback`, the interceptor wraps all
+  // requests that the `intercept_callback` does not intercept, so destroying
+  // the URLLoaderInterceptor aborts all non-intercepted requests.
+  explicit URLLoaderInterceptor(
+      InterceptCallback intercept_callback,
+      const URLLoaderCompletionStatusCallback& completion_status_callback = {},
+      base::OnceClosure ready_callback = {});
 
   URLLoaderInterceptor(const URLLoaderInterceptor&) = delete;
   URLLoaderInterceptor& operator=(const URLLoaderInterceptor&) = delete;

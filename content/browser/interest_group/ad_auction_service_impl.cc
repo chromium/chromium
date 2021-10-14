@@ -30,6 +30,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -73,7 +74,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // an in-browser interest group based ad auction to an auction participant.
 void FetchReport(network::mojom::URLLoaderFactory* url_loader_factory,
                  const GURL& url,
-                 const url::Origin& frame_origin) {
+                 const url::Origin& frame_origin,
+                 network::mojom::ClientSecurityStatePtr client_security_state) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
   resource_request->redirect_mode = network::mojom::RedirectMode::kError;
@@ -82,6 +84,8 @@ void FetchReport(network::mojom::URLLoaderFactory* url_loader_factory,
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info =
       net::IsolationInfo::CreateTransient();
+  resource_request->trusted_params->client_security_state =
+      std::move(client_security_state);
   auto simple_url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);
   network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
@@ -350,10 +354,14 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   std::move(callback).Run(render_url);
 
   network::mojom::URLLoaderFactory* factory = GetTrustedURLLoaderFactory();
-  if (bidder_report_url)
-    FetchReport(factory, *bidder_report_url, origin());
-  if (seller_report_url)
-    FetchReport(factory, *seller_report_url, origin());
+  if (bidder_report_url) {
+    FetchReport(factory, *bidder_report_url, origin(),
+                GetFrame()->BuildClientSecurityState());
+  }
+  if (seller_report_url) {
+    FetchReport(factory, *seller_report_url, origin(),
+                GetFrame()->BuildClientSecurityState());
+  }
 }
 
 InterestGroupManager& AdAuctionServiceImpl::GetInterestGroupManager() const {

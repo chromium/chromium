@@ -427,14 +427,11 @@ URLLoaderInterceptor::RequestParams::RequestParams(RequestParams&& other) =
 URLLoaderInterceptor::RequestParams& URLLoaderInterceptor::RequestParams::
 operator=(RequestParams&& other) = default;
 
-URLLoaderInterceptor::URLLoaderInterceptor(InterceptCallback callback)
-    : URLLoaderInterceptor(std::move(callback), {}, {}) {}
-
 URLLoaderInterceptor::URLLoaderInterceptor(
-    InterceptCallback callback,
+    InterceptCallback intercept_callback,
     const URLLoaderCompletionStatusCallback& completion_status_callback,
     base::OnceClosure ready_callback)
-    : callback_(std::move(callback)),
+    : callback_(std::move(intercept_callback)),
       io_thread_(base::MakeRefCounted<IOState>(this)) {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
          BrowserThread::CurrentlyOn(BrowserThread::UI));
