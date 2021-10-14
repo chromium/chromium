@@ -216,6 +216,7 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kBlobStoreAccessAcrossAgentClustersInResolveForNavigation,
           WebFeature::kReadOrWriteWebDatabaseThirdPartyContext,
           WebFeature::kSearchEventFired,
+          WebFeature::kReadOrWriteWebDatabase,
       }));
   return *opt_in_features;
 }

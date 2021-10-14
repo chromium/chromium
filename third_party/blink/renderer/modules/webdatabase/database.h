@@ -194,7 +194,8 @@ class Database final : public ScriptWrappable {
   bool transaction_in_progress_;
   bool is_transaction_queue_enabled_;
 
-  // Gates a UKM counter to execute once per database instance.
+  // Gates UKM counters to execute once per database instance.
+  bool did_try_to_count_transaction_;
   bool did_try_to_count_third_party_transaction_;
 
   // Disable BackForwardCache when using WebDatabase feature, because we do not
