@@ -1711,6 +1711,10 @@ void InterestGroupStorage::PerformDBMaintenance() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   last_maintenance_time_ = base::Time::Now();
   ops_since_last_maintenance_ = 0;
+  int64_t db_size;
+  if (base::GetFileSize(path_to_database_, &db_size)) {
+    UMA_HISTOGRAM_MEMORY_KB("Storage.InterestGroup.DBSize", db_size / 1024);
+  }
   if (EnsureDBInitialized()) {
     DoPerformDatabaseMaintenance(
         *db_, last_maintenance_time_, /*max_owners=*/max_owners_,

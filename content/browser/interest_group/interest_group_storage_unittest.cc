@@ -77,8 +77,6 @@ class InterestGroupStorageTest : public testing::Test {
 };
 
 TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
-  base::HistogramTester histograms;
-
   EXPECT_FALSE(base::PathExists(db_path()));
 
   { std::unique_ptr<InterestGroupStorage> storage = CreateStorage(); }
@@ -106,6 +104,7 @@ TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
 }
 
 TEST_F(InterestGroupStorageTest, DatabaseJoin) {
+  base::HistogramTester histograms;
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
   InterestGroup test_group = NewInterestGroup(test_origin, "example");
@@ -126,6 +125,7 @@ TEST_F(InterestGroupStorageTest, DatabaseJoin) {
     EXPECT_EQ(1, interest_groups[0].group->signals->join_count);
     EXPECT_EQ(0, interest_groups[0].group->signals->bid_count);
   }
+  histograms.ExpectUniqueSample("Storage.InterestGroup.PerSiteCount", 1u, 1);
 }
 
 // Test that joining and interest group twice increments the counter.
@@ -689,6 +689,7 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
 // Maintenance should prune the number of interest groups and interest group
 // owners based on the set limit.
 TEST_F(InterestGroupStorageTest, JoinTooManyGroupNames) {
+  base::HistogramTester histograms;
   const size_t kExcessOwners = 10;
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
@@ -716,6 +717,8 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupNames) {
   std::vector<BiddingInterestGroup> interest_groups =
       storage->GetInterestGroupsForOwner(test_origin);
   EXPECT_EQ(num_groups, interest_groups.size());
+  histograms.ExpectBucketCount("Storage.InterestGroup.PerSiteCount", num_groups,
+                               1);
 
   // Allow enough idle time to trigger maintenance.
   task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod +
@@ -723,6 +726,9 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupNames) {
 
   interest_groups = storage->GetInterestGroupsForOwner(test_origin);
   ASSERT_EQ(max_groups_per_owner, interest_groups.size());
+  histograms.ExpectBucketCount("Storage.InterestGroup.PerSiteCount",
+                               max_groups_per_owner, 1);
+  histograms.ExpectTotalCount("Storage.InterestGroup.PerSiteCount", 2);
 
   std::vector<std::string> remaining_groups;
   for (const auto& group : interest_groups) {
@@ -732,6 +738,8 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupNames) {
       added_groups.begin() + kExcessOwners, added_groups.end());
   EXPECT_THAT(remaining_groups,
               UnorderedElementsAreArray(remaining_groups_expected));
+  histograms.ExpectTotalCount("Storage.InterestGroup.DBSize", 1);
+  histograms.ExpectTotalCount("Storage.InterestGroup.DBMaintenanceTime", 1);
 }
 
 // Excess group owners should have their groups pruned by maintenance.
@@ -778,6 +786,8 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupOwners) {
 }
 
 TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
+  base::HistogramTester histograms;
+
   const url::Origin keep_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
   std::vector<::url::Origin> test_origins = {
@@ -822,6 +832,8 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
   // Verify that maintenance has run.
   EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(), next_maintenance_time);
   original_maintenance_time = storage->GetLastMaintenanceTimeForTesting();
+  histograms.ExpectTotalCount("Storage.InterestGroup.DBSize", 1);
+  histograms.ExpectTotalCount("Storage.InterestGroup.DBMaintenanceTime", 1);
 
   task_environment().FastForwardBy(InterestGroupStorage::kHistoryLength -
                                    base::Days(1));
@@ -851,6 +863,8 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
   // Verify that maintenance has run.
   EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(), next_maintenance_time);
   original_maintenance_time = storage->GetLastMaintenanceTimeForTesting();
+  histograms.ExpectTotalCount("Storage.InterestGroup.DBSize", 2);
+  histograms.ExpectTotalCount("Storage.InterestGroup.DBMaintenanceTime", 2);
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(1u, origins.size());
@@ -873,6 +887,8 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
   // Verify that maintenance has run.
   EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(), next_maintenance_time);
   original_maintenance_time = storage->GetLastMaintenanceTimeForTesting();
+  histograms.ExpectTotalCount("Storage.InterestGroup.DBSize", 3);
+  histograms.ExpectTotalCount("Storage.InterestGroup.DBMaintenanceTime", 3);
 
   // Verify that the database only contains unexpired entries.
   origins = storage->GetAllInterestGroupOwners();
