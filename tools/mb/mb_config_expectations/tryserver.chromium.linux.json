@@ -103,6 +103,7 @@
       "symbol_level": 0,
       "target_cpu": "arm64",
       "target_os": "fuchsia",
+      "test_host_cpu": "arm64",
       "use_goma": true
     }
   },
@@ -115,6 +116,7 @@
       "symbol_level": 0,
       "target_cpu": "arm64",
       "target_os": "fuchsia",
+      "test_host_cpu": "arm64",
       "use_goma": true
     }
   },
@@ -159,6 +161,7 @@
       "symbol_level": 0,
       "target_cpu": "arm64",
       "target_os": "fuchsia",
+      "test_host_cpu": "arm64",
       "use_goma": true
     }
   },

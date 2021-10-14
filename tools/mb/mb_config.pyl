@@ -2174,6 +2174,7 @@
 
     'fuchsia_clang_tot_official_arm64': [
       'official_optimize', 'fuchsia', 'arm64', 'clang_tot', 'static',
+      'arm64_host',
     ],
 
     'fuchsia_clang_tot_release_x64': [
@@ -2634,7 +2635,7 @@
     ],
 
     'official_fuchsia_arm64': [
-      'arm64', 'fuchsia', 'official', 'custom_args',
+      'arm64', 'fuchsia', 'official', 'custom_args', 'arm64_host',
     ],
 
     'official_fuchsia_x64': [
@@ -2903,7 +2904,7 @@
     ],
 
     'release_trybot_fuchsia_arm64': [
-      'release_trybot', 'fuchsia', 'arm64',
+      'release_trybot', 'fuchsia', 'arm64', 'arm64_host',
     ],
 
     'release_trybot_fuchsia_arm64_cast': [

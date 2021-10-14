@@ -5,7 +5,8 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "target_cpu": "arm64",
-      "target_os": "fuchsia"
+      "target_os": "fuchsia",
+      "test_host_cpu": "arm64"
     }
   },
   "fuchsia-x64": {
