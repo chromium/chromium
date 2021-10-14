@@ -270,6 +270,11 @@ class, which is a Java wrapper [around C++
 Skia](https://cs.android.com/android/platform/superproject/+/master:frameworks/base/libs/hwui/jni/BitmapFactory.cpp;l=586;drc=864d304156d1ef8985ee39c3c1858349b133b365).
 These APIs are therefore not considered memory-safe under the rule.
 
+Regular expressions ([re2](https://cs.chromium.org/chromium/src/third_party/re2/README.chromium))
+using trustworthy patterns can be used at high privilege to match on
+untrustworthy input strings. This does not automatically turn the matched text
+or captured groups into safe values.
+
 ## Safe Types
 
 As discussed above in [Normalization](#normalization), there are some types that
