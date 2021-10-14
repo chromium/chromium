@@ -787,7 +787,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
 
   GetLocalFrameClient().DidFinishSameDocumentNavigation(
       history_item_.Get(), commit_type, is_synchronously_committed,
-      same_document_navigation_type, is_client_redirect_);
+      same_document_navigation_type, is_client_redirect_, is_browser_initiated);
   probe::DidNavigateWithinDocument(frame_);
   if (!was_loading) {
     GetLocalFrameClient().DidStopLoading();

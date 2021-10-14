@@ -137,7 +137,8 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       WebHistoryCommitType,
       bool is_synchronously_committed,
       mojom::blink::SameDocumentNavigationType,
-      bool is_client_redirect) {}
+      bool is_client_redirect,
+      bool is_browser_initiated) {}
   virtual void DispatchDidOpenDocumentInputStream(const KURL&) {}
   virtual void DispatchDidReceiveTitle(const String&) = 0;
   virtual void DispatchDidCommitLoad(

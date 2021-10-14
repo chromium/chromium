@@ -80,6 +80,7 @@ class CORE_EXPORT LayoutShiftTracker final
   void NotifyFindInPageInput();
   void NotifyChangeEvent();
   void NotifyZoomLevelChanged();
+  void NotifyBrowserInitiatedSameDocumentNavigation();
   bool IsActive() const { return is_active_; }
   double Score() const { return score_; }
   double WeightedScore() const { return weighted_score_; }

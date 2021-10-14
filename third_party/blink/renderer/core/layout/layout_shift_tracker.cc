@@ -711,6 +711,10 @@ void LayoutShiftTracker::NotifyZoomLevelChanged() {
   UpdateTimerAndInputTimestamp();
 }
 
+void LayoutShiftTracker::NotifyBrowserInitiatedSameDocumentNavigation() {
+  UpdateTimerAndInputTimestamp();
+}
+
 void LayoutShiftTracker::UpdateTimerAndInputTimestamp() {
   // This cancels any previously scheduled task from the same timer.
   timer_.StartOneShot(kTimerDelay, FROM_HERE);
