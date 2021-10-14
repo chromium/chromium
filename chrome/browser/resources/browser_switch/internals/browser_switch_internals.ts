@@ -108,7 +108,7 @@ function checkUrl() {
     $('output').innerText = '';
     return;
   }
-  if (!/^http[s]?:\/\//g.test(url)) {
+  if (!url.includes('://')) {
     url = 'http://' + url;
   }
   sendWithPromise('getDecision', url)
