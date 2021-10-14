@@ -318,7 +318,7 @@ TEST_P(WaylandWindowTest, UpdateVisualSizeConfiguresWaylandWindow) {
   EXPECT_CALL(*xdg_surface_, AckConfigure(1));
   EXPECT_CALL(*mock_surface, SetOpaqueRegion(_));
   EXPECT_CALL(*mock_surface, SetInputRegion(_));
-  window_->UpdateVisualSize(kNormalBounds.size());
+  window_->UpdateVisualSize(kNormalBounds.size(), 1.0f);
 }
 
 // Checks that decoration insets do not change final bounds and that
@@ -358,7 +358,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
   // Setting the decoration insets does not trigger the immediate update of the
   // window geometry.  Emulate updating the visual size (sending the frame
   // update) for that.
-  window_->UpdateVisualSize(kNormalBounds.size());
+  window_->UpdateVisualSize(kNormalBounds.size(), 1.0f);
 
   Sync();
 
@@ -379,6 +379,9 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
 
   Sync();
 
+  // Pretend we are already rendering using new scale.
+  window_->root_surface()->SetSurfaceBufferScale(kHiDpiScale);
+
   // Set new insets so that rounding does not result in integer.
   const gfx::Insets kDecorationInsets_2x = {48, 55, 63, 55};
   EXPECT_CALL(*xdg_surface_,
@@ -389,7 +392,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
   // Setting the decoration insets does not trigger the immediate update of the
   // window geometry.  Emulate updating the visual size (sending the frame
   // update) for that.
-  window_->UpdateVisualSize(kHiDpiBounds.size());
+  window_->UpdateVisualSize(kHiDpiBounds.size(), kHiDpiScale);
 
   Sync();
 
@@ -439,9 +442,9 @@ TEST_P(WaylandWindowTest, ShuffledUpdateVisualSizeOrder) {
                      kNormalBounds3.height(), ++serial, state.get());
   Sync();
 
-  window_->UpdateVisualSize(kNormalBounds2.size());
-  window_->UpdateVisualSize(kNormalBounds1.size());
-  window_->UpdateVisualSize(kNormalBounds3.size());
+  window_->UpdateVisualSize(kNormalBounds2.size(), 1.0f);
+  window_->UpdateVisualSize(kNormalBounds1.size(), 1.0f);
+  window_->UpdateVisualSize(kNormalBounds3.size(), 1.0f);
 }
 
 TEST_P(WaylandWindowTest, MismatchUpdateVisualSize) {
@@ -472,7 +475,7 @@ TEST_P(WaylandWindowTest, MismatchUpdateVisualSize) {
                      kNormalBounds3.height(), ++serial, state.get());
   Sync();
 
-  window_->UpdateVisualSize({100, 100});
+  window_->UpdateVisualSize({100, 100}, 1.0f);
 }
 
 TEST_P(WaylandWindowTest, UpdateVisualSizeClearsPreviousUnackedConfigures) {
@@ -510,9 +513,9 @@ TEST_P(WaylandWindowTest, UpdateVisualSizeClearsPreviousUnackedConfigures) {
                      kNormalBounds3.height(), ++serial, state.get());
   Sync();
 
-  window_->UpdateVisualSize(kNormalBounds2.size());
-  window_->UpdateVisualSize(kNormalBounds1.size());
-  window_->UpdateVisualSize(kNormalBounds3.size());
+  window_->UpdateVisualSize(kNormalBounds2.size(), 1.0f);
+  window_->UpdateVisualSize(kNormalBounds1.size(), 1.0f);
+  window_->UpdateVisualSize(kNormalBounds3.size(), 1.0f);
 }
 
 TEST_P(WaylandWindowTest, MaximizeAndRestore) {

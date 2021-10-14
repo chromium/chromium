@@ -27,6 +27,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_constraints.h"
+#include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -426,12 +427,14 @@ void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {
   pending_bounds_dip_ = gfx::Rect();
 }
 
-void WaylandToplevelWindow::UpdateVisualSize(const gfx::Size& size_px) {
-  WaylandWindow::UpdateVisualSize(size_px);
+void WaylandToplevelWindow::UpdateVisualSize(const gfx::Size& size_px,
+                                             float scale_factor) {
+  WaylandWindow::UpdateVisualSize(size_px, scale_factor);
 
   if (!shell_toplevel_)
     return;
-  auto size_dip = gfx::ScaleToRoundedSize(size_px, 1.f / window_scale());
+
+  auto size_dip = gfx::ScaleToRoundedSize(size_px, 1.f / scale_factor);
   auto result =
       std::find_if(pending_configures_.begin(), pending_configures_.end(),
                    [&size_dip](auto& configure) {

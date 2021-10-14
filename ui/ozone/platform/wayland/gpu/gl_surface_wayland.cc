@@ -112,7 +112,7 @@ GLSurfaceWayland::~GLSurfaceWayland() {
 void GLSurfaceWayland::UpdateVisualSize() {
   window_->ui_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&WaylandWindow::UpdateVisualSize,
-                                window_->AsWeakPtr(), size_));
+                                window_->AsWeakPtr(), size_, scale_factor_));
 }
 
 }  // namespace ui

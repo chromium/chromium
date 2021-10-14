@@ -91,7 +91,7 @@ class WaylandToplevelWindow : public WaylandWindow,
                                bool is_fullscreen,
                                bool is_activated) override;
   void HandleSurfaceConfigure(uint32_t serial) override;
-  void UpdateVisualSize(const gfx::Size& size_px) override;
+  void UpdateVisualSize(const gfx::Size& size_px, float scale_factor) override;
   bool OnInitialize(PlatformWindowInitProperties properties) override;
   bool IsActive() const override;
   bool IsSurfaceConfigured() override;

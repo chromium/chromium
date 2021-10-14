@@ -269,7 +269,7 @@ void WaylandWindow::SetBounds(const gfx::Rect& bounds_px) {
   bounds_px_ = adjusted_bounds_px;
 
   if (update_visual_size_immediately_)
-    UpdateVisualSize(bounds_px.size());
+    UpdateVisualSize(bounds_px.size(), window_scale());
   delegate_->OnBoundsChanged(bounds_px_);
 }
 
@@ -469,7 +469,8 @@ void WaylandWindow::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
   NOTREACHED() << "Only shell popups must receive HandlePopupConfigure calls.";
 }
 
-void WaylandWindow::UpdateVisualSize(const gfx::Size& size_px) {
+void WaylandWindow::UpdateVisualSize(const gfx::Size& size_px,
+                                     float scale_factor) {
   if (visual_size_px_ == size_px)
     return;
   visual_size_px_ = size_px;
@@ -890,7 +891,8 @@ bool WaylandWindow::CommitOverlays(
   if (split == overlays.end() && overlays.front()->z_order == INT32_MIN)
     split = overlays.begin();
 
-  UpdateVisualSize((*split)->bounds_rect.size());
+  UpdateVisualSize((*split)->bounds_rect.size(),
+                   (*split)->surface_scale_factor);
 
   if (!wayland_overlay_delegation_enabled_) {
     root_surface_->SetViewportSource((*split)->crop_rect);

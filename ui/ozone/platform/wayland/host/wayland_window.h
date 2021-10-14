@@ -199,7 +199,24 @@ class WaylandWindow : public PlatformWindow,
                                        bool is_fullscreen,
                                        bool is_activated);
   virtual void HandlePopupConfigure(const gfx::Rect& bounds);
-  virtual void UpdateVisualSize(const gfx::Size& size_px);
+  // The final size of the Wayland surface is determined by the buffer size in
+  // px * scale that the Chromium compositor renders at. If the window changes a
+  // display (and scale changes from 1 to 2), the buffers are recreated with
+  // some delays. Thus, applying a visual size using window_scale (which is the
+  // current scale of a wl_output where the window is located at) is wrong, as
+  // it may result in a smaller visual size than needed. For example, buffers'
+  // size in px is 100x100, the buffer scale and window scale is 1. The window
+  // is moved to another display and window scale changes to 2. The window's
+  // bounds also change are multiplied by the scale factor. It takes time until
+  // buffers are recreated for a larger size in px and submitted. However, there
+  // might be an in flight frame that submits buffers with old size. Thus,
+  // applying scale factor immediately will result in a visual size in dip to be
+  // smaller than needed. This results in a bouncing window size in some
+  // scenarios like starting Chrome on a secondary display with larger scale
+  // factor than the primary display's one. Thus, this method gets a scale
+  // factor that helps to determine size of the surface in dip respecting
+  // size that GPU renders at.
+  virtual void UpdateVisualSize(const gfx::Size& size_px, float scale_factor);
 
   // Handles close requests.
   virtual void OnCloseRequest();
