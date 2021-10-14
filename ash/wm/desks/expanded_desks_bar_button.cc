@@ -137,6 +137,22 @@ void ExpandedDesksBarButton::UpdateLabelColor() {
           : AshColorProvider::Get()->GetDisabledColor(label_color));
 }
 
+bool ExpandedDesksBarButton::IsPointOnButton(
+    const gfx::Point& screen_location) const {
+  gfx::Point point_in_view = screen_location;
+  ConvertPointFromScreen(this, &point_in_view);
+  return HitTestPoint(point_in_view);
+}
+
+void ExpandedDesksBarButton::UpdateBorderColor() const {
+  DCHECK(inner_button_);
+  const bool focused =
+      bar_view_->dragged_item_over_bar() &&
+      IsPointOnButton(bar_view_->last_dragged_item_screen_location());
+  if (inner_button_->border_ptr()->SetFocused(focused))
+    inner_button_->SchedulePaint();
+}
+
 void ExpandedDesksBarButton::Layout() {
   // Layout the button until |mini_views_| have been created. This button only
   // needs to be laid out in the expanded desks bar where the |mini_views_| is

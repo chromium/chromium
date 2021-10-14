@@ -15,7 +15,8 @@ enum class DesksCreationRemovalSource {
   kKeyboard = 1,
   kDesksRestore = 2,
   kLaunchTemplate = 3,
-  kMaxValue = kLaunchTemplate,
+  kDragToNewDeskButton = 4,
+  kMaxValue = kDragToNewDeskButton,
 };
 
 // These values are logged to UMA. Entries should not be renumbered and

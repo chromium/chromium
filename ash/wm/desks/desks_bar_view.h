@@ -182,6 +182,9 @@ class ASH_EXPORT DesksBarView : public views::View,
   // scrolls the bar to make sure it can always be seen.
   void ScrollToShowMiniViewIfNecessary(const DeskMiniView* mini_view);
 
+  void OnNewDeskButtonPressed(
+      DesksCreationRemovalSource desks_creation_removal_source);
+
  private:
   friend class DesksBarScrollViewLayout;
   friend class DesksTestApi;
@@ -231,7 +234,6 @@ class ASH_EXPORT DesksBarView : public views::View,
   // preview is cropped at the start position of the scrollable bar.
   int GetAdjustedUncroppedScrollPosition(int position) const;
 
-  void OnNewDeskButtonPressed();
   void OnDesksTemplatesButtonPressed();
 
   // A view that shows a dark gary transparent background that can be animated

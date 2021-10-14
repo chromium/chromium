@@ -46,6 +46,12 @@ class ExpandedDesksBarButton : public views::View {
   // Updates the `label_`'s color on DesksController::CanCreateDesks.
   void UpdateLabelColor();
 
+  bool IsPointOnButton(const gfx::Point& screen_location) const;
+
+  // Updates the border color of the ExpandedDesksBarButton based on
+  // the dragged item's position.
+  void UpdateBorderColor() const;
+
   // views::View:
   void Layout() override;
 

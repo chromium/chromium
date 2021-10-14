@@ -26,12 +26,17 @@ WmHighlightItemBorder::WmHighlightItemBorder(int corner_radius,
       corner_radius_(corner_radius),
       border_insets_(gfx::Insets(kBorderSize + kBorderPadding) + padding) {}
 
-void WmHighlightItemBorder::SetFocused(bool focused) {
+bool WmHighlightItemBorder::SetFocused(bool focused) {
   // Note that all WM features that use this custom border currently have dark
   // mode as the default color mode.
-  set_color(focused ? AshColorProvider::Get()->GetControlsLayerColor(
-                          AshColorProvider::ControlsLayerType::kFocusRingColor)
-                    : SK_ColorTRANSPARENT);
+  const SkColor new_color =
+      focused ? AshColorProvider::Get()->GetControlsLayerColor(
+                    AshColorProvider::ControlsLayerType::kFocusRingColor)
+              : SK_ColorTRANSPARENT;
+  if (new_color == color())
+    return false;
+  set_color(new_color);
+  return true;
 }
 
 void WmHighlightItemBorder::Paint(const views::View& view,

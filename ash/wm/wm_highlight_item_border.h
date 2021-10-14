@@ -30,8 +30,8 @@ class WmHighlightItemBorder : public views::Border {
   ~WmHighlightItemBorder() override = default;
 
   // This highlight meant to indicate focus. No border will be painted if
-  // |focused| is false.
-  void SetFocused(bool focused);
+  // |focused| is false. Returns true if the |color_| is changed.
+  bool SetFocused(bool focused);
 
   // views::Border:
   void Paint(const views::View& view, gfx::Canvas* canvas) override;
