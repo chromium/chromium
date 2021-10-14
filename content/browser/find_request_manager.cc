@@ -20,86 +20,82 @@ namespace content {
 
 namespace {
 
-// The following functions allow traversal over all frames, including those
-// across WebContentses.
+// The following functions allow traversal over all RenderFrameHosts, including
+// those across WebContentses. Excludes portals as they are not relevant for
+// find-in-page.
 //
 // An inner WebContents may be embedded in an outer WebContents via an inner
 // WebContentsTreeNode of the outer WebContents's WebContentsTreeNode.
 
-// Returns all child frames of |node|.
-std::vector<FrameTreeNode*> GetChildren(FrameTreeNode* node) {
-  std::vector<FrameTreeNode*> children;
-  children.reserve(node->child_count());
-  for (size_t i = 0; i != node->child_count(); ++i) {
+// Returns all child RenderFrameHosts of |rfh| except those in portals.
+std::vector<RenderFrameHostImpl*> GetChildren(RenderFrameHostImpl* rfh) {
+  std::vector<RenderFrameHostImpl*> children;
+  children.reserve(rfh->child_count());
+  for (size_t i = 0; i != rfh->child_count(); ++i) {
     if (auto* contents = static_cast<WebContentsImpl*>(
-            WebContentsImpl::FromOuterFrameTreeNode(node->child_at(i)))) {
+            WebContentsImpl::FromOuterFrameTreeNode(rfh->child_at(i)))) {
       // Portals can't receive keyboard events or be focused, so we don't return
       // find results inside a portal.
       if (!contents->IsPortal()) {
         // If the child is used for an inner WebContents then add the inner
         // WebContents.
-        children.push_back(contents->GetFrameTree()->root());
+        children.push_back(
+            contents->GetFrameTree()->root()->current_frame_host());
       }
     } else {
-      children.push_back(node->child_at(i));
+      children.push_back(rfh->child_at(i)->current_frame_host());
     }
   }
 
   return children;
 }
 
-// Returns the first child FrameTreeNode under |node|, if |node| has a child, or
-// nullptr otherwise.
-FrameTreeNode* GetFirstChild(FrameTreeNode* node) {
-  auto children = GetChildren(node);
+// Returns the first child RenderFrameHostImpl under |rfh|, if |rfh| has a
+// child, or nullptr otherwise.
+RenderFrameHostImpl* GetFirstChild(RenderFrameHostImpl* rfh) {
+  auto children = GetChildren(rfh);
   if (!children.empty())
     return children.front();
   return nullptr;
 }
 
-// Returns the last child FrameTreeNode under |node|, if |node| has a child, or
-// nullptr otherwise.
-FrameTreeNode* GetLastChild(FrameTreeNode* node) {
-  auto children = GetChildren(node);
+// Returns the last child RenderFrameHostImpl under |rfh|, if |rfh| has a
+// child, or nullptr otherwise.
+RenderFrameHostImpl* GetLastChild(RenderFrameHostImpl* rfh) {
+  auto children = GetChildren(rfh);
   if (!children.empty())
     return children.back();
   return nullptr;
 }
 
-// Returns the deepest last child frame under |node|/|rfh| in the frame tree.
-FrameTreeNode* GetDeepestLastChild(FrameTreeNode* node) {
-  while (FrameTreeNode* last_child = GetLastChild(node))
-    node = last_child;
-  return node;
+// Returns the deepest last child frame under |rfh| in the frame tree.
+RenderFrameHostImpl* GetDeepestLastChild(RenderFrameHostImpl* rfh) {
+  while (RenderFrameHostImpl* last_child = GetLastChild(rfh))
+    rfh = last_child;
+  return rfh;
 }
 
-// Returns the parent FrameTreeNode of |node|, if |node| has a parent, or
+// Returns the parent RenderFrameHost of |rfh|, if |rfh| has a parent, or
 // nullptr otherwise.
-FrameTreeNode* GetParent(FrameTreeNode* node) {
-  if (!node)
-    return nullptr;
-  if (node->parent())
-    return node->parent()->frame_tree_node();
-
-  auto* contents = WebContentsImpl::FromFrameTreeNode(node);
-  if (!node->IsMainFrame() || !contents->GetOuterWebContents())
+RenderFrameHostImpl* GetAncestor(RenderFrameHostImpl* rfh) {
+  if (!rfh)
     return nullptr;
 
-  return GetParent(FrameTreeNode::GloballyFindByID(
-      contents->GetOuterDelegateFrameTreeNodeId()));
+  return rfh->GetParentOrOuterDocumentOrEmbedder();
 }
 
-// Returns the previous sibling FrameTreeNode of |node|, if one exists, or
-// nullptr otherwise.
-FrameTreeNode* GetPreviousSibling(FrameTreeNode* node) {
-  if (FrameTreeNode* previous_sibling = node->PreviousSibling())
-    return previous_sibling;
+// Returns the previous sibling RenderFrameHostImpl of |rfh|, if one exists,
+// or nullptr otherwise.
+RenderFrameHostImpl* GetPreviousSibling(RenderFrameHostImpl* rfh) {
+  if (rfh->PreviousSibling()) {
+    return rfh->PreviousSibling()->current_frame_host();
+  }
 
   // The previous sibling may be in another WebContents.
-  if (FrameTreeNode* parent = GetParent(node)) {
+  if (RenderFrameHostImpl* parent = GetAncestor(rfh)) {
     auto children = GetChildren(parent);
-    auto it = std::find(children.begin(), children.end(), node);
-    // It is odd that this node may not be a child of its parent, but this is
+    auto it = std::find(children.begin(), children.end(), rfh);
+    // It is odd that this rfh may not be a child of its parent, but this is
     // actually possible during teardown, hence the need for the check for
     // "it != children.end()".
     if (it != children.end() && it != children.begin())
@@ -109,19 +105,19 @@ FrameTreeNode* GetPreviousSibling(FrameTreeNode* node) {
   return nullptr;
 }
 
-// Returns the next sibling FrameTreeNode of |node|, if one exists, or nullptr
-// otherwise.
-FrameTreeNode* GetNextSibling(FrameTreeNode* node) {
-  if (FrameTreeNode* next_sibling = node->NextSibling())
-    return next_sibling;
+// Returns the next sibling RenderFrameHostImpl of |rfh|, if one exists, or
+// nullptr otherwise.
+RenderFrameHostImpl* GetNextSibling(RenderFrameHostImpl* rfh) {
+  if (rfh->NextSibling())
+    return rfh->NextSibling()->current_frame_host();
 
   // The next sibling may be in another WebContents.
-  if (FrameTreeNode* parent = GetParent(node)) {
+  if (RenderFrameHostImpl* parent = GetAncestor(rfh)) {
     auto children = GetChildren(parent);
-    auto it = std::find(children.begin(), children.end(), node);
-    // It is odd that this node may not be a child of its parent, but this is
-    // actually possible during teardown, hence the need for the check for
-    // "it != children.end()".
+    auto it = std::find(children.begin(), children.end(), rfh);
+    // It is odd that this RenderFrameHost may not be a child of its parent, but
+    // this is actually possible during teardown, hence the need for the check
+    // for "it != children.end()".
     if (it != children.end() && ++it != children.end())
       return *it;
   }
@@ -129,41 +125,45 @@ FrameTreeNode* GetNextSibling(FrameTreeNode* node) {
   return nullptr;
 }
 
-// Returns the FrameTreeNode directly after |node| in the frame tree in search
-// order, or nullptr if one does not exist. If |wrap| is set, then wrapping
-// between the first and last frames is permitted. Note that this traversal
-// follows the same ordering as in blink::FrameTree::traverseNextWithWrap().
-FrameTreeNode* TraverseNext(FrameTreeNode* node, bool wrap) {
-  if (FrameTreeNode* first_child = GetFirstChild(node))
+// Returns the RenderFrameHostImpl directly after |rfh| in the rfh tree in
+// search order, or nullptr if one does not exist. If |wrap| is set, then
+// wrapping between the first and last frames is permitted. Note that this
+// traversal follows the same ordering as in
+// blink::FrameTree::traverseNextWithWrap().
+RenderFrameHostImpl* TraverseNext(RenderFrameHostImpl* rfh, bool wrap) {
+  if (RenderFrameHostImpl* first_child = GetFirstChild(rfh))
     return first_child;
 
-  FrameTreeNode* sibling = GetNextSibling(node);
+  RenderFrameHostImpl* sibling = GetNextSibling(rfh);
   while (!sibling) {
-    FrameTreeNode* parent = GetParent(node);
+    RenderFrameHostImpl* parent = GetAncestor(rfh);
     if (!parent)
-      return wrap ? node : nullptr;
-    node = parent;
-    sibling = GetNextSibling(node);
+      return wrap ? rfh : nullptr;
+    rfh = parent;
+    sibling = GetNextSibling(rfh);
   }
   return sibling;
 }
 
-// Returns the FrameTreeNode directly before |node| in the frame tree in search
-// order, or nullptr if one does not exist. If |wrap| is set, then wrapping
-// between the first and last frames is permitted. Note that this traversal
-// follows the same ordering as in blink::FrameTree::traversePreviousWithWrap().
-FrameTreeNode* TraversePrevious(FrameTreeNode* node, bool wrap) {
-  if (FrameTreeNode* previous_sibling = GetPreviousSibling(node))
+// Returns the RenderFrameHostImpl directly before |rfh| in the frame tree in
+// search order, or nullptr if one does not exist. If |wrap| is set, then
+// wrapping between the first and last frames is permitted. Note that this
+// traversal follows the same ordering as in
+// blink::FrameTree::traversePreviousWithWrap().
+RenderFrameHostImpl* TraversePrevious(RenderFrameHostImpl* rfh, bool wrap) {
+  if (RenderFrameHostImpl* previous_sibling = GetPreviousSibling(rfh))
     return GetDeepestLastChild(previous_sibling);
-  if (FrameTreeNode* parent = GetParent(node))
+  if (RenderFrameHostImpl* parent = GetAncestor(rfh))
     return parent;
-  return wrap ? GetDeepestLastChild(node) : nullptr;
+  return wrap ? GetDeepestLastChild(rfh) : nullptr;
 }
 
 // The same as either TraverseNext() or TraversePrevious(), depending on
 // |forward|.
-FrameTreeNode* TraverseNode(FrameTreeNode* node, bool forward, bool wrap) {
-  return forward ? TraverseNext(node, wrap) : TraversePrevious(node, wrap);
+RenderFrameHostImpl* TraverseFrame(RenderFrameHostImpl* rfh,
+                                   bool forward,
+                                   bool wrap) {
+  return forward ? TraverseNext(rfh, wrap) : TraversePrevious(rfh, wrap);
 }
 
 }  // namespace
@@ -684,7 +684,7 @@ RenderFrameHost* FindRequestManager::GetInitialFrame(bool forward) const {
   FrameTreeNode* ftn = contents_->GetFrameTree()->root();
   RenderFrameHost* rfh = ftn->current_frame_host();
   if (!forward)
-    rfh = GetDeepestLastChild(ftn)->current_frame_host();
+    rfh = GetDeepestLastChild(static_cast<RenderFrameHostImpl*>(rfh));
 
   return rfh;
 }
@@ -696,35 +696,37 @@ RenderFrameHost* FindRequestManager::Traverse(RenderFrameHost* from_rfh,
   DCHECK(from_rfh);
   // If |from_rfh| is being detached, it might already be removed from
   // its parent's list of children, meaning we can't traverse it correctly.
-  // We also don't traverse when |from_rfh| is in back-forward cache as we don't
-  // allow any updates in this state.
+  // We also don't traverse when |from_rfh| is in back-forward cache or is being
+  // prerendered, as we don't allow any updates in these states.
   auto* from_rfh_impl = static_cast<RenderFrameHostImpl*>(from_rfh);
   if (from_rfh_impl->IsPendingDeletion() ||
-      from_rfh_impl->IsInBackForwardCache()) {
+      from_rfh_impl->IsInBackForwardCache() ||
+      from_rfh_impl->lifecycle_state() ==
+          RenderFrameHostImpl::LifecycleStateImpl::kPrerendering) {
     return nullptr;
   }
 
-  FrameTreeNode* node = from_rfh_impl->frame_tree_node();
-  FrameTreeNode* last_node = node;
-  while ((node = TraverseNode(node, forward, wrap)) != nullptr) {
-    if (!CheckFrame(node->current_frame_host())) {
+  RenderFrameHostImpl* rfh = from_rfh_impl;
+  RenderFrameHostImpl* last_frame = rfh;
+  while ((rfh = TraverseFrame(rfh, forward, wrap)) != nullptr) {
+    if (!CheckFrame(rfh)) {
       // If we're in the same frame as before, we might got into an infinite
       // loop.
-      if (last_node == node)
+      if (last_frame == rfh)
         break;
-      last_node = node;
+      last_frame = rfh;
       continue;
     }
-    RenderFrameHost* current_rfh = node->current_frame_host();
+    RenderFrameHost* current_rfh = rfh;
     if (!matches_only ||
         find_in_page_clients_.find(current_rfh)->second->number_of_matches() ||
         base::Contains(pending_initial_replies_, current_rfh)) {
       // Note that if there is still a pending reply expected for this frame,
       // then it may have unaccounted matches and will not be skipped via
       // |matches_only|.
-      return node->current_frame_host();
+      return rfh;
     }
-    if (wrap && node->current_frame_host() == from_rfh)
+    if (wrap && rfh == from_rfh)
       return nullptr;
   }
 

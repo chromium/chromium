@@ -532,18 +532,18 @@ TEST_F(FrameTreeTest, GetSibling) {
   FrameTreeNode* grandchild = child1->child_at(0);
 
   // Test PreviousSibling().
-  EXPECT_EQ(nullptr, root->PreviousSibling());
-  EXPECT_EQ(nullptr, child0->PreviousSibling());
-  EXPECT_EQ(child0, child1->PreviousSibling());
-  EXPECT_EQ(child1, child2->PreviousSibling());
-  EXPECT_EQ(nullptr, grandchild->PreviousSibling());
+  EXPECT_EQ(nullptr, root->current_frame_host()->PreviousSibling());
+  EXPECT_EQ(nullptr, child0->current_frame_host()->PreviousSibling());
+  EXPECT_EQ(child0, child1->current_frame_host()->PreviousSibling());
+  EXPECT_EQ(child1, child2->current_frame_host()->PreviousSibling());
+  EXPECT_EQ(nullptr, grandchild->current_frame_host()->PreviousSibling());
 
   // Test NextSibling().
-  EXPECT_EQ(nullptr, root->NextSibling());
-  EXPECT_EQ(child1, child0->NextSibling());
-  EXPECT_EQ(child2, child1->NextSibling());
-  EXPECT_EQ(nullptr, child2->NextSibling());
-  EXPECT_EQ(nullptr, grandchild->NextSibling());
+  EXPECT_EQ(nullptr, root->current_frame_host()->NextSibling());
+  EXPECT_EQ(child1, child0->current_frame_host()->NextSibling());
+  EXPECT_EQ(child2, child1->current_frame_host()->NextSibling());
+  EXPECT_EQ(nullptr, child2->current_frame_host()->NextSibling());
+  EXPECT_EQ(nullptr, grandchild->current_frame_host()->NextSibling());
 }
 
 // Do some simple manipulations of the frame tree, making sure that

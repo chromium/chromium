@@ -8722,6 +8722,36 @@ bool RenderFrameHostImpl::HasSelection() {
   return has_selection_;
 }
 
+FrameTreeNode* RenderFrameHostImpl::PreviousSibling() const {
+  return GetSibling(-1);
+}
+
+FrameTreeNode* RenderFrameHostImpl::NextSibling() const {
+  return GetSibling(1);
+}
+
+FrameTreeNode* RenderFrameHostImpl::GetSibling(int relative_offset) const {
+  if (!parent_ || !parent_->child_count())
+    return nullptr;
+
+  for (size_t i = 0; i < parent_->child_count(); ++i) {
+    // Frame tree node id will only be known for subframes, and will therefore
+    // be accessible in this iteration, as all children are subframes.
+    if (parent_->child_at(i)->frame_tree_node_id() != GetFrameTreeNodeId()) {
+      continue;
+    }
+
+    if (i + relative_offset < 0 ||
+        i + relative_offset >= parent_->child_count()) {
+      return nullptr;
+    }
+    return parent_->child_at(i + relative_offset);
+  }
+
+  NOTREACHED() << "FrameTreeNode not found in its parent's children.";
+  return nullptr;
+}
+
 RenderFrameHostImpl* RenderFrameHostImpl::GetMainFrame() {
   return const_cast<RenderFrameHostImpl*>(base::as_const(*this).GetMainFrame());
 }

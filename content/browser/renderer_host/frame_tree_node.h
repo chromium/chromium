@@ -304,14 +304,6 @@ class CONTENT_EXPORT FrameTreeNode {
     return render_manager_.current_frame_host();
   }
 
-  // Return the node immediately preceding this node in its parent's children,
-  // or nullptr if there is no such node.
-  FrameTreeNode* PreviousSibling() const;
-
-  // Return the node immediately following this node in its parent's children,
-  // or nullptr if there is no such node.
-  FrameTreeNode* NextSibling() const;
-
   // Returns true if this node is in a loading state.
   bool IsLoading() const;
 
@@ -539,8 +531,6 @@ class CONTENT_EXPORT FrameTreeNode {
                            ContainerPolicySandboxDynamic);
 
   class OpenerDestroyedObserver;
-
-  FrameTreeNode* GetSibling(int relative_offset) const;
 
   // The |notification_type| parameter is used for histograms only.
   bool NotifyUserActivation(

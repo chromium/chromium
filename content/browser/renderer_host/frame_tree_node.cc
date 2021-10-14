@@ -421,14 +421,6 @@ void FrameTreeNode::SetPendingFramePolicy(blink::FramePolicy frame_policy) {
   }
 }
 
-FrameTreeNode* FrameTreeNode::PreviousSibling() const {
-  return GetSibling(-1);
-}
-
-FrameTreeNode* FrameTreeNode::NextSibling() const {
-  return GetSibling(1);
-}
-
 bool FrameTreeNode::IsLoading() const {
   RenderFrameHostImpl* current_frame_host =
       render_manager_.current_frame_host();
@@ -726,24 +718,6 @@ bool FrameTreeNode::UpdateUserActivationState(
 void FrameTreeNode::OnSetHadStickyUserActivationBeforeNavigation(bool value) {
   render_manager_.OnSetHadStickyUserActivationBeforeNavigation(value);
   replication_state_->has_received_user_gesture_before_nav = value;
-}
-
-FrameTreeNode* FrameTreeNode::GetSibling(int relative_offset) const {
-  if (!parent_ || !parent_->child_count())
-    return nullptr;
-
-  for (size_t i = 0; i < parent_->child_count(); ++i) {
-    if (parent_->child_at(i) == this) {
-      if ((relative_offset < 0 && static_cast<size_t>(-relative_offset) > i) ||
-          i + relative_offset >= parent_->child_count()) {
-        return nullptr;
-      }
-      return parent_->child_at(i + relative_offset);
-    }
-  }
-
-  NOTREACHED() << "FrameTreeNode not found in its parent's children.";
-  return nullptr;
 }
 
 bool FrameTreeNode::UpdateFramePolicyHeaders(

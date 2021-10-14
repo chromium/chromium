@@ -3100,7 +3100,8 @@ bool RenderFrameHostManager::InitRenderFrame(
   // previous sibling frame so that this frame is correctly inserted into the
   // frame tree on the renderer side.
   int previous_sibling_routing_id = MSG_ROUTING_NONE;
-  FrameTreeNode* previous_sibling = frame_tree_node_->PreviousSibling();
+  FrameTreeNode* previous_sibling =
+      frame_tree_node_->current_frame_host()->PreviousSibling();
   if (previous_sibling) {
     previous_sibling_routing_id =
         previous_sibling->render_manager()->GetRoutingIdForSiteInstance(

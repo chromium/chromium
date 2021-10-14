@@ -334,6 +334,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ForEachRenderFrameHost(FrameIterationCallback on_frame) override;
   void ForEachRenderFrameHost(
       FrameIterationAlwaysContinueCallback on_frame) override;
+  // TODO (crbug.com/1251545) : Frame tree node id should only be known for
+  // subframes. As such, update this method.
   int GetFrameTreeNodeId() const override;
   const base::UnguessableToken& GetDevToolsFrameToken() override;
   absl::optional<base::UnguessableToken> GetEmbeddingToken() override;
@@ -2392,6 +2394,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Computes the nonce to be used for isolation info and storage key.
   absl::optional<base::UnguessableToken> ComputeNonce(bool anonymous);
 
+  // Return the frame immediately preceding this RenderFrameHost in its parent's
+  // children, or nullptr if there is no such node.
+  FrameTreeNode* PreviousSibling() const;
+
+  // Return the frame immediately following this RenderFrameHost in its parent's
+  // children, or nullptr if there is no such node.
+  FrameTreeNode* NextSibling() const;
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -2552,6 +2562,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   class DroppedInterfaceRequestLogger;
   class SubresourceLoaderFactoriesConfig;
+
+  FrameTreeNode* GetSibling(int relative_offset) const;
 
   FrameTreeNode* FindAndVerifyChildInternal(
       RenderFrameHostOrProxy child_frame_or_proxy,
