@@ -41,6 +41,8 @@
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)
+#include "chrome/browser/commerce/price_tracking/android/price_tracking_notification_bridge.h"
+#include "chrome/browser/optimization_guide/android/android_push_notification_manager.h"
 #include "chrome/browser/optimization_guide/android/optimization_guide_tab_url_provider_android.h"
 #else
 #include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
@@ -67,6 +69,23 @@ void DeleteOldStorePaths(const base::FilePath& profile_path) {
 }
 
 }  // namespace
+
+// static
+std::unique_ptr<optimization_guide::PushNotificationManager>
+OptimizationGuideKeyedService::MaybeCreatePushNotificationManager(
+    Profile* profile) {
+#if defined(OS_ANDROID)
+  if (optimization_guide::features::IsPushNotificationsEnabled()) {
+    auto push_notification_manager = std::make_unique<
+        optimization_guide::android::AndroidPushNotificationManager>(
+        profile->GetPrefs());
+    push_notification_manager->AddObserver(
+        PriceTrackingNotificationBridge::GetForBrowserContext(profile));
+    return push_notification_manager;
+  }
+#endif
+  return nullptr;
+}
 
 OptimizationGuideKeyedService::OptimizationGuideKeyedService(
     content::BrowserContext* browser_context)
@@ -159,7 +178,8 @@ void OptimizationGuideKeyedService::Initialize() {
   hints_manager_ = std::make_unique<optimization_guide::ChromeHintsManager>(
       profile, profile->GetPrefs(), hint_store, top_host_provider_.get(),
       tab_url_provider_.get(), url_loader_factory,
-      content::GetNetworkConnectionTracker());
+      content::GetNetworkConnectionTracker(),
+      MaybeCreatePushNotificationManager(profile));
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
       prediction_model_and_features_store, url_loader_factory,
       profile->GetPrefs(), profile);

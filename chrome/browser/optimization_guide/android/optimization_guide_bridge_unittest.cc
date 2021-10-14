@@ -46,7 +46,8 @@ class MockOptimizationGuideHintsManager
             /*top_host_provider=*/nullptr,
             /*tab_url_provider=*/nullptr,
             /*url_loader_factory=*/nullptr,
-            content::GetNetworkConnectionTracker()) {}
+            content::GetNetworkConnectionTracker(),
+            /*push_notification_manager=*/nullptr) {}
   ~MockOptimizationGuideHintsManager() override = default;
   MOCK_METHOD3(CanApplyOptimizationAsync,
                void(const GURL&,

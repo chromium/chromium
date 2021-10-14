@@ -30,6 +30,7 @@ class OptimizationGuideStore;
 class PredictionManager;
 class PredictionManagerBrowserTestBase;
 class PredictionModelDownloadClient;
+class PushNotificationManager;
 class ModelInfo;
 class TabUrlProvider;
 class TopHostProvider;
@@ -37,6 +38,7 @@ class TopHostProvider;
 
 class GURL;
 class OptimizationGuideNavigationData;
+class Profile;
 
 // Keyed service that can be used to get information received from the remote
 // Optimization Guide Service. For regular profiles, this will do the work to
@@ -96,6 +98,11 @@ class OptimizationGuideKeyedService
   void OverrideTargetModelForTesting(
       optimization_guide::proto::OptimizationTarget optimization_target,
       std::unique_ptr<optimization_guide::ModelInfo> model_info);
+
+  // Creates the platform specific push notification manager. May returns
+  // nullptr for desktop or when the push notification feature is disabled.
+  static std::unique_ptr<optimization_guide::PushNotificationManager>
+  MaybeCreatePushNotificationManager(Profile* profile);
 
  private:
   friend class ChromeBrowsingDataRemoverDelegate;

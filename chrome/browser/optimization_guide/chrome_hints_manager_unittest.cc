@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/test/base/testing_profile.h"
@@ -108,7 +109,9 @@ class ChromeHintsManagerFetchingTest
         &testing_profile_, pref_service(), hint_store_.get(),
         /*top_host_provider=*/nullptr, tab_url_provider_.get(),
         url_loader_factory_,
-        network::TestNetworkConnectionTracker::GetInstance());
+        network::TestNetworkConnectionTracker::GetInstance(),
+        OptimizationGuideKeyedService::MaybeCreatePushNotificationManager(
+            &testing_profile_));
     hints_manager_->SetClockForTesting(task_environment_.GetMockClock());
 
     // Run until hint cache is initialized and the ChromeHintsManager is ready

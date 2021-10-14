@@ -19,30 +19,10 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if defined(OS_ANDROID)
-#include "chrome/browser/commerce/price_tracking/android/price_tracking_notification_bridge.h"
 #include "chrome/browser/optimization_guide/android/android_push_notification_manager.h"
 #endif
 
 namespace {
-
-// Creates the platform specific push notification manager.
-std::unique_ptr<optimization_guide::PushNotificationManager>
-MaybeCreatePushNotificationManager(Profile* profile,
-                                   PrefService* pref_service) {
-#if defined(OS_ANDROID)
-  if (optimization_guide::features::IsPushNotificationsEnabled()) {
-    auto push_notification_manager = std::make_unique<
-        optimization_guide::android::AndroidPushNotificationManager>(
-        pref_service);
-    // TODO(xingliu): Move this to OptimizationGuideKeyedServiceFactory. See
-    // crbug.com/1256908.
-    push_notification_manager->AddObserver(
-        PriceTrackingNotificationBridge::GetForBrowserContext(profile));
-    return push_notification_manager;
-  }
-#endif
-  return nullptr;
-}
 
 // Returns true if we can make a request for hints for |prediction|.
 bool IsAllowedToFetchForNavigationPrediction(
@@ -76,7 +56,9 @@ ChromeHintsManager::ChromeHintsManager(
     optimization_guide::TopHostProvider* top_host_provider,
     optimization_guide::TabUrlProvider* tab_url_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    network::NetworkConnectionTracker* network_connection_tracker)
+    network::NetworkConnectionTracker* network_connection_tracker,
+    std::unique_ptr<optimization_guide::PushNotificationManager>
+        push_notification_manager)
     : HintsManager(profile->IsOffTheRecord(),
                    g_browser_process->GetApplicationLocale(),
                    pref_service,
@@ -85,7 +67,7 @@ ChromeHintsManager::ChromeHintsManager(
                    tab_url_provider,
                    url_loader_factory,
                    network_connection_tracker,
-                   MaybeCreatePushNotificationManager(profile, pref_service)),
+                   std::move(push_notification_manager)),
       profile_(profile) {
   NavigationPredictorKeyedService* navigation_predictor_service =
       NavigationPredictorKeyedServiceFactory::GetForProfile(profile);
