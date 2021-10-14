@@ -261,6 +261,8 @@ void DevToolsProtocolTest::DispatchProtocolMessage(
     base::DictionaryValue* result;
     bool have_result = root->GetDictionary("result", &result);
     result_.reset(have_result ? result->DeepCopy() : nullptr);
+    base::Value* error = root->FindDictKey("error");
+    error_ = error ? error->Clone() : base::Value();
     in_dispatch_ = false;
     if (id && id == waiting_for_command_result_id_) {
       waiting_for_command_result_id_ = 0;
@@ -293,6 +295,10 @@ void DevToolsProtocolTest::DispatchProtocolMessage(
 void DevToolsProtocolTest::AgentHostClosed(DevToolsAgentHost* agent_host) {
   if (!agent_host_can_close_)
     NOTREACHED();
+}
+
+bool DevToolsProtocolTest::AllowUnsafeOperations() {
+  return allow_unsafe_operations_;
 }
 
 }  // namespace content

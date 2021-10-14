@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -2722,6 +2723,27 @@ IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, DISABLED_MultiDownload) {
       file2, GetTestFilePath("download", "download-test.lib")));
 }
 #endif  // !defined(ANDROID)
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, UnsafeOperations) {
+  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
+  Attach();
+
+  base::Value params(base::Value::Type::DICTIONARY);
+  params.SetStringKey("url", "http://www.example.com/hello.js");
+  params.SetStringKey("data", "Tm90aGluZyB0byBzZWUgaGVyZSE=");
+
+  SendCommand("Page.addCompilationCache",
+              std::make_unique<base::Value>(params.Clone()));
+  EXPECT_TRUE(result_);
+  Detach();
+  SetAllowUnsafeOperations(false);
+  Attach();
+  SendCommand("Page.addCompilationCache",
+              std::make_unique<base::Value>(params.Clone()));
+  EXPECT_THAT(error_, base::test::DictionaryHasValue(
+                          "code", base::Value(static_cast<int>(
+                                      crdtp::DispatchCode::SERVER_ERROR))));
+}
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TracingWithPerfettoConfig) {
   std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());

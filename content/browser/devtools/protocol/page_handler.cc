@@ -196,8 +196,9 @@ bool CanExecuteGlobalCommands(
 
 PageHandler::PageHandler(EmulationHandler* emulation_handler,
                          BrowserHandler* browser_handler,
-                         bool allow_file_access)
+                         bool allow_unsafe_operations)
     : DevToolsDomainHandler(Page::Metainfo::domainName),
+      allow_unsafe_operations_(allow_unsafe_operations),
       enabled_(false),
       screencast_enabled_(false),
       screencast_quality_(kDefaultScreenshotQuality),
@@ -1800,6 +1801,15 @@ CreateNotRestoredExplanation(
     }
   }
   return reasons;
+}
+
+Response PageHandler::AddCompilationCache(const std::string& url,
+                                          const Binary& data) {
+  // We're just checking a permission here, the real business happens
+  // in the renderer, if we fall through.
+  if (allow_unsafe_operations_)
+    return Response::FallThrough();
+  return Response::ServerError("Permission denied");
 }
 
 void PageHandler::BackForwardCacheNotUsed(

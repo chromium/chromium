@@ -142,3 +142,7 @@ base::Value DevToolsProtocolTestBase::WaitForMatchingNotification(
 
 void DevToolsProtocolTestBase::AgentHostClosed(
     content::DevToolsAgentHost* agent_host) {}
+
+bool DevToolsProtocolTestBase::AllowUnsafeOperations() {
+  return allow_unsafe_operations_;
+}

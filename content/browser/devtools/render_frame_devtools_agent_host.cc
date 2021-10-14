@@ -343,7 +343,7 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
       GetId(), auto_attacher_.get(), session->GetRootSession()));
   session->AddHandler(std::make_unique<protocol::PageHandler>(
       emulation_handler_ptr, browser_handler_ptr,
-      session->GetClient()->MayReadLocalFiles()));
+      session->GetClient()->AllowUnsafeOperations()));
   session->AddHandler(std::make_unique<protocol::SecurityHandler>());
   if (!frame_tree_node_ || !frame_tree_node_->parent()) {
     session->AddHandler(

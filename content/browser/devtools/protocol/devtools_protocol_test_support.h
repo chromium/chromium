@@ -130,7 +130,12 @@ class DevToolsProtocolTest : virtual public ContentBrowserTest,
     cert_ = cert;
   }
 
+  void SetAllowUnsafeOperations(bool allow) {
+    allow_unsafe_operations_ = allow;
+  }
+
   std::unique_ptr<base::DictionaryValue> result_;
+  base::Value error_;
   scoped_refptr<DevToolsAgentHost> agent_host_;
   int last_sent_id_;
   std::vector<int> result_ids_;
@@ -142,8 +147,8 @@ class DevToolsProtocolTest : virtual public ContentBrowserTest,
   void RunLoopUpdatingQuitClosure();
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override;
-
   void AgentHostClosed(DevToolsAgentHost* agent_host) override;
+  bool AllowUnsafeOperations() override;
 
   std::string waiting_for_notification_;
   NotificationMatcher waiting_for_notification_matcher_;
@@ -153,6 +158,7 @@ class DevToolsProtocolTest : virtual public ContentBrowserTest,
   bool agent_host_can_close_;
   scoped_refptr<net::X509Certificate> cert_;
   base::OnceClosure run_loop_quit_closure_;
+  bool allow_unsafe_operations_ = true;
 };
 
 }  // namespace content

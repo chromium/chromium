@@ -532,6 +532,10 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     return GetRootClient()->MayWriteLocalFiles();
   }
 
+  bool AllowUnsafeOperations() override {
+    return GetRootClient()->AllowUnsafeOperations();
+  }
+
   content::DevToolsAgentHostClient* GetRootClient() {
     return handler_->root_session_->GetClient();
   }

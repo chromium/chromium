@@ -33,6 +33,7 @@ class DevToolsPipeHandler : public DevToolsAgentHostClient {
                                base::span<const uint8_t> message) override;
   void AgentHostClosed(DevToolsAgentHost* agent_host) override;
   bool UsesBinaryProtocol() override;
+  bool AllowUnsafeOperations() override;
 
   void Shutdown();
 

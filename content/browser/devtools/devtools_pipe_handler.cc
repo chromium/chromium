@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/devtools_pipe_handler.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 
 #if defined(OS_WIN)
 #include <io.h>
@@ -415,6 +416,10 @@ void DevToolsPipeHandler::AgentHostClosed(DevToolsAgentHost* agent_host) {}
 
 bool DevToolsPipeHandler::UsesBinaryProtocol() {
   return mode_ == ProtocolMode::kCBOR;
+}
+
+bool DevToolsPipeHandler::AllowUnsafeOperations() {
+  return true;
 }
 
 }  // namespace content

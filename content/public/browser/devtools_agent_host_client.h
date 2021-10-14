@@ -43,6 +43,12 @@ class CONTENT_EXPORT DevToolsAgentHostClient {
   // protocol. Example would be manipulating a deault downloads path.
   virtual bool MayWriteLocalFiles();
 
+  // Returns true if the client is allowed to perform operations
+  // they may potentially be used to gain privileges, e.g. providing
+  // JS compilation cache entries. This should only be true for clients
+  // that are already privileged, such as local automation clients.
+  virtual bool AllowUnsafeOperations();
+
   // Determines protocol message format.
   virtual bool UsesBinaryProtocol();
 };

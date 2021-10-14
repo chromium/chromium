@@ -34,6 +34,7 @@ class DevToolsProtocolTestBindings : public WebContentsObserver,
   void AgentHostClosed(DevToolsAgentHost* agent_host) override;
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override;
+  bool AllowUnsafeOperations() override;
 
   // WebContentsObserver overrides
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
