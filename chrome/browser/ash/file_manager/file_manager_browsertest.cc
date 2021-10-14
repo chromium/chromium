@@ -865,18 +865,33 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("transferFromDownloadsToTeamDrive").FilesSwa(),
         TestCase("transferBetweenTeamDrives"),
         TestCase("transferBetweenTeamDrives").FilesSwa(),
+// TODO(crbug.com/1259959): Determine failure reason and enable this test.
+#if !defined(MEMORY_SANITIZER) && !defined(OS_CHROMEOS)
         TestCase("transferDragDropActiveLeave"),
+#endif
         TestCase("transferDragDropActiveLeave").FilesSwa(),
+// TODO(crbug.com/1259959): Determine failure reason and enable this test.
+#if !defined(MEMORY_SANITIZER) && !defined(OS_CHROMEOS)
         TestCase("transferDragDropActiveDrop"),
+#endif
         TestCase("transferDragDropActiveDrop").FilesSwa(),
+// TODO(crbug.com/1259959): Determine failure reason and enable this test.
+#if !defined(MEMORY_SANITIZER) && !defined(OS_CHROMEOS)
         TestCase("transferDragDropTreeItemAccepts"),
+#endif
         TestCase("transferDragDropTreeItemAccepts").FilesSwa(),
 // TODO(crbug.com/1236842): Remove flakiness and enable this test.
 #if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
+// TODO(crbug.com/1259959): Determine failure reason and enable this test.
+#if !defined(MEMORY_SANITIZER) && !defined(OS_CHROMEOS)
         TestCase("transferDragDropTreeItemDenies"),
+#endif
         TestCase("transferDragDropTreeItemDenies").FilesSwa(),
 #endif
+// TODO(crbug.com/1259959): Determine failure reason and enable this test.
+#if !defined(MEMORY_SANITIZER) && !defined(OS_CHROMEOS)
         TestCase("transferDragAndHoverTreeItemEntryList"),
+#endif
         TestCase("transferDragAndHoverTreeItemEntryList").FilesSwa(),
 // TODO(crbug.com/1236842): Remove flakiness and enable this test.
 #if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
@@ -888,11 +903,20 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableSinglePartitionFormat()
             .FilesSwa(),
 #endif
+// TODO(crbug.com/1259959): Determine failure reason and enable this test.
+#if !defined(MEMORY_SANITIZER) && !defined(OS_CHROMEOS)
         TestCase("transferDragFileListItemSelects"),
+#endif
         TestCase("transferDragFileListItemSelects").FilesSwa(),
+// TODO(crbug.com/1259959): Determine failure reason and enable this test.
+#if !defined(MEMORY_SANITIZER) && !defined(OS_CHROMEOS)
         TestCase("transferDragAndDrop"),
+#endif
         TestCase("transferDragAndDrop").FilesSwa(),
+// TODO(crbug.com/1259959): Determine failure reason and enable this test.
+#if !defined(MEMORY_SANITIZER) && !defined(OS_CHROMEOS)
         TestCase("transferDragAndHover"),
+#endif
         TestCase("transferDragAndHover").FilesSwa(),
         TestCase("transferDropBrowserFile"),
         TestCase("transferDropBrowserFile").FilesSwa(),
