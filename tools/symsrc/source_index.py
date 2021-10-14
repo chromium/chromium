@@ -51,6 +51,8 @@ from __future__ import print_function
 try:
   # Python 3.x
   from urllib.parse import urlparse
+  # Replace the Python 2 unicode function with str when running Python 3.
+  unicode = str
 except ImportError:
   # Python 2.x
   from urlparse import urlparse
@@ -190,6 +192,7 @@ def ReadSourceStream(pdb_filename, toolchain_dir):
                               '-p:%s' % pdb_filename],
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   data, _ = pdbstr.communicate()
+  data = data.decode()
 
   # Old version of pdbstr.exe return -1 when the source requested stream is
   # missing, while more recent ones return 1, use |abs| to workaround this.
@@ -204,7 +207,7 @@ def WriteSourceStream(pdb_filename, data, toolchain_dir):
   # Write out the data to a temporary filename that we can pass to pdbstr.
   (f, fname) = tempfile.mkstemp()
   f = os.fdopen(f, "wb")
-  f.write(data)
+  f.write(data.encode())
   f.close()
 
   srctool = subprocess.Popen([FindSrcSrvFile('pdbstr.exe', toolchain_dir),
@@ -213,6 +216,7 @@ def WriteSourceStream(pdb_filename, data, toolchain_dir):
                               '-p:%s' % pdb_filename],
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   data, _ = srctool.communicate()
+  data = data.decode()
 
   if ((srctool.returncode != 0 and srctool.returncode != -1) or
       data.startswith("pdbstr: ")):
