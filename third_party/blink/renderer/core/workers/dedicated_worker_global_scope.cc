@@ -81,6 +81,8 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
   const bool parent_direct_socket_capability =
       creation_params->parent_direct_socket_capability;
 
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp =
+      std::move(creation_params->response_content_security_policies);
   auto* global_scope = MakeGarbageCollected<DedicatedWorkerGlobalScope>(
       std::move(creation_params), thread, time_origin,
       std::move(outside_origin_trial_tokens), begin_frame_provider_params,
@@ -89,14 +91,11 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
 
   if (global_scope->IsOffMainThreadScriptFetchDisabled()) {
     // Legacy on-the-main-thread worker script fetch (to be removed):
-    // Pass dummy CSP headers here as it is superseded by outside's CSP headers
-    // in Initialize().
     // Pass dummy origin trial tokens here as it is already set to outside's
     // origin trial tokens in DedicatedWorkerGlobalScope's constructor.
-    global_scope->Initialize(
-        response_script_url, response_referrer_policy, *response_address_space,
-        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-        nullptr /* response_origin_trial_tokens */);
+    global_scope->Initialize(response_script_url, response_referrer_policy,
+                             *response_address_space, std::move(response_csp),
+                             nullptr /* response_origin_trial_tokens */);
     return global_scope;
   } else {
     // Off-the-main-thread worker script fetch:
@@ -195,8 +194,7 @@ void DedicatedWorkerGlobalScope::Initialize(
     const KURL& response_url,
     network::mojom::ReferrerPolicy response_referrer_policy,
     network::mojom::IPAddressSpace response_address_space,
-    Vector<network::mojom::blink::
-               ContentSecurityPolicyPtr> /* response_csp_headers */,
+    Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
     const Vector<String>* /* response_origin_trial_tokens */) {
   // Step 14.3. "Set worker global scope's url to response's url."
   InitializeURL(response_url);
@@ -212,14 +210,19 @@ void DedicatedWorkerGlobalScope::Initialize(
   // https://wicg.github.io/cors-rfc1918/#integration-html
   SetAddressSpace(response_address_space);
 
-  // Step 14.6. "Execute the Initialize a global object's CSP list algorithm
-  // on worker global scope and response. [CSP]"
-  // DedicatedWorkerGlobalScope inherits the outside's CSP instead of the
-  // response CSP headers. These should be called after SetAddressSpace() to
-  // correctly override the address space by the "treat-as-public-address" CSP
-  // directive.
-  InitContentSecurityPolicyFromVector(
-      mojo::Clone(OutsideContentSecurityPolicies()));
+  // The following is the Content-Security-Policy part of "Initialize worker
+  // global scope's policy container"
+  // https://html.spec.whatwg.org/#initialize-worker-policy-container
+  //
+  // For workers delivered from network schemes we use the parsed CSP from the
+  // response headers, while for local schemes CSP is inherited from the owner.
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> csp_list =
+      response_url.ProtocolIsAbout() || response_url.ProtocolIsData() ||
+              response_url.ProtocolIs("blob") ||
+              response_url.ProtocolIs("filesystem")
+          ? mojo::Clone(OutsideContentSecurityPolicies())
+          : std::move(response_csp);
+  InitContentSecurityPolicyFromVector(std::move(csp_list));
   BindContentSecurityPolicyToExecutionContext();
 
   // This should be called after OriginTrialContext::AddTokens() to install
@@ -408,13 +411,14 @@ void DedicatedWorkerGlobalScope::DidFetchClassicScript(
   }
 
   // Step 12.3-12.6 are implemented in Initialize().
-  // Pass dummy CSP headers here as it is superseded by outside's CSP headers in
-  // Initialize().
   // Pass dummy origin trial tokens here as it is already set to outside's
   // origin trial tokens in DedicatedWorkerGlobalScope's constructor.
   Initialize(classic_script_loader->ResponseURL(), response_referrer_policy,
              classic_script_loader->ResponseAddressSpace(),
-             Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+             classic_script_loader->GetContentSecurityPolicy()
+                 ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
+                                   ->GetParsedPolicies())
+                 : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
              nullptr /* response_origin_trial_tokens */);
 
   // Step 12.7. "Asynchronously complete the perform the fetch steps with

@@ -141,6 +141,7 @@ class WorkerThreadForTest : public WorkerThread {
         "fake global scope name", "fake user agent", UserAgentMetadata(),
         nullptr /* web_worker_fetch_context */,
         Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
         network::mojom::ReferrerPolicy::kDefault, security_origin,
         false /* starter_secure_context */,
         CalculateHttpsState(security_origin), worker_clients,

@@ -50,6 +50,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       scoped_refptr<WebWorkerFetchContext>,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>
           outside_content_security_policies,
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+          response_content_security_policies,
       network::mojom::ReferrerPolicy referrer_policy,
       const SecurityOrigin*,
       bool starter_secure_context,
@@ -102,11 +104,16 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
 
   scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context;
 
-  // TODO(bashi): This contains "inside" CSP headers for on-the-main-thread
-  // service/shared worker script fetch. Add a separate parameter for "inside"
-  // CSP headers.
   Vector<network::mojom::blink::ContentSecurityPolicyPtr>
       outside_content_security_policies;
+
+  // This is used only for classic dedicated workers with off-the-main-thread
+  // fetch disabled.
+  //
+  // TODO(https://crbug.com/835717): Remove this after dedicated workers support
+  // off-the-main-thread script fetch by default.
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+      response_content_security_policies;
 
   network::mojom::ReferrerPolicy referrer_policy;
   std::unique_ptr<Vector<String>> origin_trial_tokens;

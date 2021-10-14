@@ -68,6 +68,7 @@ class MainThreadWorkletTest : public PageTestBase {
         window->UserAgent(), window->GetFrame()->Loader().UserAgentMetadata(),
         nullptr /* web_worker_fetch_context */,
         mojo::Clone(window->GetContentSecurityPolicy()->GetParsedPolicies()),
+        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
         window->GetReferrerPolicy(), window->GetSecurityOrigin(),
         window->IsSecureContext(), window->GetHttpsState(),
         nullptr /* worker_clients */, nullptr /* content_settings_client */,

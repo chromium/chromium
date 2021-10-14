@@ -216,6 +216,7 @@ class ThreadedWorkletMessagingProxyForTest
             mojo::Clone(GetExecutionContext()
                             ->GetContentSecurityPolicy()
                             ->GetParsedPolicies()),
+            Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
             GetExecutionContext()->GetReferrerPolicy(),
             GetExecutionContext()->GetSecurityOrigin(),
             GetExecutionContext()->IsSecureContext(),

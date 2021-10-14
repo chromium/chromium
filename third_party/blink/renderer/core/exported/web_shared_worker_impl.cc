@@ -265,6 +265,7 @@ void WebSharedWorkerImpl::StartWorkerContext(
       reduced_ua_enabled ? reduced_user_agent : user_agent, ua_metadata,
       std::move(web_worker_fetch_context),
       ConvertToMojoBlink(content_security_policies),
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       outside_settings_object->GetReferrerPolicy(),
       outside_settings_object->GetSecurityOrigin(), constructor_secure_context,
       outside_settings_object->GetHttpsState(),

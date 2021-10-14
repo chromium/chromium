@@ -154,6 +154,7 @@ class DedicatedWorkerMessagingProxyForTest
         "fake global scope name", "fake user agent", UserAgentMetadata(),
         nullptr /* web_worker_fetch_context */,
         Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
         network::mojom::ReferrerPolicy::kDefault, security_origin.get(),
         false /* starter_secure_context */,
         CalculateHttpsState(security_origin.get()),

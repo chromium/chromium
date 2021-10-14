@@ -3867,7 +3867,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(embedded_test_server()->Start());
 
   WriteTestFiles(*embedded_test_server(), "example.com");
-  WriteFile(FILE_PATH_LITERAL("worker_test.html.mock-http-headers"),
+  WriteFile(FILE_PATH_LITERAL("worker.js.mock-http-headers"),
             "HTTP/1.1 200 OK\n"
             "Content-Type: text/html\n"
             "Content-Security-Policy: block-all-mixed-content;");
@@ -3900,7 +3900,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(embedded_test_server()->Start());
 
   WriteTestFiles(*embedded_test_server(), "example.com");
-  WriteFile(FILE_PATH_LITERAL("worker_test.html.mock-http-headers"),
+  WriteFile(FILE_PATH_LITERAL("worker.js.mock-http-headers"),
             "HTTP/1.1 200 OK\n"
             "Content-Type: text/html\n"
             "Content-Security-Policy: block-all-mixed-content;");

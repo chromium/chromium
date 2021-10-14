@@ -48,6 +48,7 @@ PaintWorkletGlobalScopeProxy::PaintWorkletGlobalScopeProxy(
       user_agent, frame_client->UserAgentMetadata(),
       frame_client->CreateWorkerFetchContext(),
       mojo::Clone(window->GetContentSecurityPolicy()->GetParsedPolicies()),
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       window->GetReferrerPolicy(), window->GetSecurityOrigin(),
       window->IsSecureContext(), window->GetHttpsState(),
       nullptr /* worker_clients */,

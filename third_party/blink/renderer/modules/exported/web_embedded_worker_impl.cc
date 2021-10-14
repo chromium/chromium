@@ -215,6 +215,7 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       global_scope_name, worker_start_data->user_agent,
       worker_start_data->ua_metadata, std::move(web_worker_fetch_context),
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       network::mojom::ReferrerPolicy::kDefault, starter_origin.get(),
       starter_secure_context, starter_https_state, nullptr /* worker_clients */,
       std::move(content_settings_proxy),
