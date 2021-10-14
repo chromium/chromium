@@ -19270,8 +19270,10 @@
 
       This defaults to True: security feature enabled.
 
-      This can be used by Enterprise affected by these restrictions to
-      temporarily lift it.
+      This can be used by administrators who need more time to update their
+      internal website affected by this new restriction. This Enterprise policy
+      is temporary; it's intended to be removed after
+      <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 104.
       ''',
     },
     {
