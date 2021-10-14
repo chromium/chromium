@@ -28,6 +28,7 @@
 #include "net/http/http_auth.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -114,7 +115,10 @@ void RequestPlatformPathFromFileSystemURL(
     media::MediaResourceGetter::GetPlatformPathCB callback) {
   DCHECK(file_system_context->default_file_task_runner()
              ->RunsTasksInCurrentSequence());
+  // TODO (https://crbug.com/1258029): determine how to pipe in the correct
+  // third-party StorageKey and replace the in-line conversion below.
   SyncGetPlatformPath(file_system_context.get(), render_process_id, url,
+                      blink::StorageKey(url::Origin::Create(url)),
                       base::BindOnce(&OnSyncGetPlatformPathDone,
                                      file_system_context, std::move(callback)));
 }

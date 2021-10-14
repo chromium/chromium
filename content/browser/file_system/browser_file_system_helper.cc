@@ -159,12 +159,10 @@ bool FileSystemURLIsValid(storage::FileSystemContext* context,
 void SyncGetPlatformPath(storage::FileSystemContext* context,
                          int process_id,
                          const GURL& path,
+                         const blink::StorageKey& storage_key,
                          SyncGetPlatformPathCB callback) {
   DCHECK(context->default_file_task_runner()->RunsTasksInCurrentSequence());
-  // TODO(https://crbug.com/1221308): determine whether StorageKey should be
-  // replaced with a more meaningful value
-  storage::FileSystemURL url(
-      context->CrackURL(path, blink::StorageKey(url::Origin::Create(path))));
+  storage::FileSystemURL url(context->CrackURL(path, storage_key));
   if (!FileSystemURLIsValid(context, url)) {
     // Note: Posting a task here so this function always returns
     // before the callback is called no matter which path is taken.

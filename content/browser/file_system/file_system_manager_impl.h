@@ -191,8 +191,9 @@ class CONTENT_EXPORT FileSystemManagerImpl
       int process_id,
       scoped_refptr<storage::FileSystemContext> context,
       base::WeakPtr<FileSystemManagerImpl> file_system_manager,
+      const blink::StorageKey& storage_key,
       GetPlatformPathCallback callback);
-  // Returns an error if |url| is invalid.
+  // Returns an error if `url` is invalid.
   absl::optional<base::File::Error> ValidateFileSystemURL(
       const storage::FileSystemURL& url);
 
