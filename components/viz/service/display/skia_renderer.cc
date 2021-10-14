@@ -47,6 +47,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "skia/ext/opacity_filter_canvas.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -604,7 +605,8 @@ class SkiaRenderer::ScopedSkImageBuilder {
                        bool maybe_concurrent_reads,
                        SkAlphaType alpha_type = kPremul_SkAlphaType,
                        GrSurfaceOrigin origin = kTopLeft_GrSurfaceOrigin,
-                       bool use_target_color_space = false);
+                       const absl::optional<gfx::ColorSpace>&
+                           override_colorspace = absl::nullopt);
 
   ScopedSkImageBuilder(const ScopedSkImageBuilder&) = delete;
   ScopedSkImageBuilder& operator=(const ScopedSkImageBuilder&) = delete;
@@ -627,19 +629,16 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
     bool maybe_concurrent_reads,
     SkAlphaType alpha_type,
     GrSurfaceOrigin origin,
-    bool use_target_color_space) {
+    const absl::optional<gfx::ColorSpace>& override_color_space) {
   if (!resource_id)
     return;
   auto* resource_provider = skia_renderer->resource_provider();
   DCHECK(IsTextureResource(resource_provider, resource_id));
 
-  gfx::ColorSpace color_space;
-  if (use_target_color_space)
-    color_space = skia_renderer->CurrentRenderPassColorSpace();
-
   auto* image_context = skia_renderer->lock_set_for_external_use_->LockResource(
       resource_id, maybe_concurrent_reads, /*is_video_plane=*/false,
-      color_space);
+      override_color_space);
+
   // |ImageContext::image| provides thread safety: (a) this ImageContext is
   // only accessed by GPU thread after |image| is set and (b) the fields of
   // ImageContext that are accessed by both compositor and GPU thread are no
@@ -772,6 +771,11 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
   current_frame_resource_fence_ = base::MakeRefCounted<FrameResourceFence>();
   this->resource_provider()->SetReadLockFence(
       current_frame_resource_fence_.get());
+
+#if OS_ANDROID
+  use_real_color_space_for_stream_video_ =
+      features::UseRealVideoColorSpaceForDisplay();
+#endif
 }
 
 SkiaRenderer::~SkiaRenderer() = default;
@@ -1983,9 +1987,18 @@ void SkiaRenderer::DrawStreamVideoQuad(const StreamVideoDrawQuad* quad,
                                        DrawQuadParams* params) {
   DCHECK(!MustFlushBatchedQuads(quad, rpdq_params, *params));
 
+  absl::optional<gfx::ColorSpace> override_color_space;
+
+  // Force SRGB color space if we don't want real color space from media
+  // decoder.
+  if (!use_real_color_space_for_stream_video_) {
+    override_color_space = gfx::ColorSpace::CreateSRGB();
+  }
+
   ScopedSkImageBuilder builder(this, quad->resource_id(),
                                /*maybe_concurrent_reads=*/true,
-                               kUnpremul_SkAlphaType);
+                               kUnpremul_SkAlphaType, kTopLeft_GrSurfaceOrigin,
+                               override_color_space);
   const SkImage* image = builder.sk_image();
   if (!image)
     return;
@@ -2019,11 +2032,15 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   const bool needs_color_conversion_filter =
       quad->is_video_frame && src_color_space.IsHDR();
 
+  absl::optional<gfx::ColorSpace> override_color_space;
+  if (needs_color_conversion_filter)
+    override_color_space = CurrentRenderPassColorSpace();
+
   ScopedSkImageBuilder builder(
       this, quad->resource_id(), /*maybe_concurrent_reads=*/true,
       quad->premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
       quad->y_flipped ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin,
-      /*use_target_color_space=*/needs_color_conversion_filter);
+      override_color_space);
   const SkImage* image = builder.sk_image();
   if (!image)
     return;

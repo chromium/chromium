@@ -129,7 +129,7 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
     ResourceId id,
     bool maybe_concurrent_reads,
     bool is_video_plane,
-    const gfx::ColorSpace& color_space) {
+    const absl::optional<gfx::ColorSpace>& override_color_space) {
   auto it = resource_provider_->resources_.find(id);
   DCHECK(it != resource_provider_->resources_.end());
 
@@ -147,9 +147,8 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
         // using a special color filter and |color_space| is set to destination
         // color space so that Skia doesn't perform implicit color conversion.
         image_color_space =
-            color_space.IsValid()
-                ? color_space.ToSkColorSpace()
-                : resource.transferable.color_space.ToSkColorSpace();
+            override_color_space.value_or(resource.transferable.color_space)
+                .ToSkColorSpace();
       }
       resource.image_context =
           resource_provider_->external_use_client_->CreateImageContext(

@@ -57,7 +57,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSkia
         ResourceId resource_id,
         bool maybe_concurrent_reads,
         bool is_video_plane,
-        const gfx::ColorSpace& color_space = gfx::ColorSpace());
+        const absl::optional<gfx::ColorSpace>& override_color_space =
+            absl::nullopt);
 
     // Unlock all locked resources with a |sync_token|.  The |sync_token| should
     // be waited on before reusing the resource's backing to ensure that any

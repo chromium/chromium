@@ -82,6 +82,7 @@ GPU_EXPORT bool LimitAImageReaderMaxSizeToOne();
 GPU_EXPORT bool IsWebViewZeroCopyVideoEnabled();
 GPU_EXPORT bool IncreaseBufferCountForHighFrameRate();
 GPU_EXPORT bool IncreaseBufferCountForWebViewOverlays();
+GPU_EXPORT bool UseRealVideoColorSpaceForDisplay();
 #endif
 
 }  // namespace features
