@@ -577,6 +577,7 @@
       // skip style recalc in UpdateStyle() for containers which are guaranteed
       // to be reachable in the following layout.
       name: "CSSContainerSkipStyleRecalc",
+      implied_by: ["CSSContainerQueries"]
     },
     {
       // Support for contain:inline-size and contain:block-size
