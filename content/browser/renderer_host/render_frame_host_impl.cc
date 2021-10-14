@@ -5395,6 +5395,13 @@ void RenderFrameHostImpl::NotifyVirtualKeyboardOverlayRect(
   }
 }
 
+// Returns the keyboard layout mapping.
+base::flat_map<std::string, std::string>
+RenderFrameHostImpl::GetKeyboardLayoutMap() {
+  // Fetch the keyboard layout from the main frame.
+  return GetMainFrame()->GetRenderWidgetHost()->GetKeyboardLayoutMap();
+}
+
 #if defined(OS_ANDROID)
 void RenderFrameHostImpl::UpdateUserGestureCarryoverInfo() {
   // This should not occur for prerenders but may occur for pages in

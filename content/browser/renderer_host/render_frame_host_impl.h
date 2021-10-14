@@ -1499,6 +1499,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool ShouldVirtualKeyboardOverlayContent() const;
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
 
+  // Returns the keyboard layout mapping.
+  base::flat_map<std::string, std::string> GetKeyboardLayoutMap();
+
   blink::mojom::FrameVisibility visibility() const { return visibility_; }
 
   // A CommitCallbackInterceptor is used to modify parameters for or cancel a

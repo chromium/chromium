@@ -40,6 +40,7 @@ gyroscope
 hid
 idle-detection
 interest-cohort
+keyboard-map
 magnetometer
 microphone
 midi

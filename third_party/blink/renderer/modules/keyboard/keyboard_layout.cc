@@ -28,8 +28,9 @@ namespace {
 constexpr char kKeyboardMapFrameDetachedErrorMsg[] =
     "Current frame is detached.";
 
-constexpr char kKeyboardMapChildFrameErrorMsg[] =
-    "getLayoutMap() must be called from a top-level browsing context.";
+constexpr char kFeaturePolicyBlocked[] =
+    "getLayoutMap() must be called from a top-level browsing context or "
+    "allowed by the permission policy.";
 
 constexpr char kKeyboardMapRequestFailedErrorMsg[] =
     "getLayoutMap() request could not be completed.";
@@ -80,8 +81,7 @@ ScriptPromise KeyboardLayout::GetKeyboardLayoutMap(
   }
 
   if (!CalledFromSupportedContext(ExecutionContext::From(script_state))) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kKeyboardMapChildFrameErrorMsg);
+    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
     return ScriptPromise();
   }
 
@@ -123,9 +123,14 @@ bool KeyboardLayout::EnsureServiceConnected() {
 
 bool KeyboardLayout::CalledFromSupportedContext(ExecutionContext* context) {
   DCHECK(context);
-  // This API is only accessible from a top level, secure browsing context.
-  return DomWindow() && DomWindow()->GetFrame()->IsMainFrame() &&
-         context->IsSecureContext();
+  DCHECK(DomWindow());
+  // This API is only accessible from a top level, secure browsing context or
+  // if the keyboard-map has been added to allowlist attribute of an iframe.
+  return context->IsSecureContext() &&
+         (DomWindow()->GetFrame()->IsMainFrame() ||
+          context->IsFeatureEnabled(
+              mojom::blink::PermissionsPolicyFeature::kKeyboardMap,
+              ReportOptions::kReportOnFailure));
 }
 
 void KeyboardLayout::GotKeyboardLayoutMap(

@@ -123,8 +123,7 @@ void KeyboardLockServiceImpl::GetKeyboardLayoutMap(
     GetKeyboardLayoutMapCallback callback) {
   auto response = GetKeyboardLayoutMapResult::New();
   response->status = blink::mojom::GetKeyboardLayoutMapStatus::kSuccess;
-  response->layout_map =
-      render_frame_host_->GetRenderWidgetHost()->GetKeyboardLayoutMap();
+  response->layout_map = render_frame_host_->GetKeyboardLayoutMap();
 
   std::move(callback).Run(std::move(response));
 }

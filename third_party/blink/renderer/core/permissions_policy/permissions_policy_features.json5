@@ -258,6 +258,10 @@
       depends_on: ["InterestCohortFeaturePolicy"],
     },
     {
+      name: "KeyboardMap",
+      permissions_policy_name: "keyboard-map",
+    },
+    {
       name: "Magnetometer",
       permissions_policy_name: "magnetometer",
     },

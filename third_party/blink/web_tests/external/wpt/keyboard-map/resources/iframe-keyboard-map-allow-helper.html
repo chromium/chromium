@@ -4,13 +4,9 @@
 
 window.onmessage = message => {
   if (message.data === 'Ready') {
-    let onSuccess = () => { parent.postMessage('Failure', '*'); };
+    let onSuccess = () => { parent.postMessage('Success', '*'); };
     let onError = error => {
-      if (error.name == 'SecurityError') {
-        parent.postMessage('Success', '*');
-      } else {
-        parent.postMessage('Failure', '*');
-      }
+      parent.postMessage('Failure', '*');
     };
 
     navigator.keyboard.getLayoutMap().then(onSuccess, onError).catch(onError);

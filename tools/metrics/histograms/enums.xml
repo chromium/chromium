@@ -35021,6 +35021,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="87" label="ClientHintUABitness"/>
   <int value="88" label="ClientHintUAReduced"/>
   <int value="89" label="ClientHintViewportHeight"/>
+  <int value="90" label="KeyboardMap"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">
