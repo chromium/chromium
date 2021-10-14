@@ -182,3 +182,17 @@ function SyncBrowserProxy() {}
 SyncBrowserProxy.prototype.getSyncStatus = function() {};
 
 SyncBrowserProxy.prototype.sendSyncPrefsChanged = function() {};
+
+/**
+ * @typedef {{
+ *   name: string,
+ *   iconUrl: string
+ * }}
+ */
+let ProfileInfo;
+
+/** @interface */
+function ProfileInfoBrowserProxy() {}
+
+/** @return {!Promise<!ProfileInfo>} */
+ProfileInfoBrowserProxy.prototype.getProfileInfo = function() {};

@@ -95,7 +95,7 @@ import './parental_controls_page/parental_controls_page.m.js';
 import './settings_scheduler_slider/settings_scheduler_slider.js';
 
 export {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
-export {ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from '../people_page/profile_info_browser_proxy.js';
+export {ProfileInfoBrowserProxyImpl} from '../people_page/profile_info_browser_proxy.js';
 export {PageStatus, StatusAction, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 export {CrSettingsPrefs} from '../prefs/prefs_types.js';
 export {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from '../privacy_page/privacy_page_browser_proxy.js';

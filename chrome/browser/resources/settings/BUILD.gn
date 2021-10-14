@@ -138,7 +138,7 @@ preprocess_if_expr("preprocess") {
     "open_window_proxy.ts",
     "page_visibility.ts",
     "people_page/sync_browser_proxy.ts",
-    "people_page/profile_info_browser_proxy.js",
+    "people_page/profile_info_browser_proxy.ts",
     "prefs/prefs_mixin.ts",
     "prefs/prefs.ts",
     "prefs/prefs_types.ts",
@@ -382,10 +382,7 @@ grit("resources") {
 }
 
 group("closure_compile") {
-  deps = [
-    ":closure_compile_local",
-    "people_page:closure_compile",
-  ]
+  deps = [ ":closure_compile_local" ]
 
   if (is_chromeos_ash) {
     deps += [ "chromeos:closure_compile_module" ]
@@ -601,7 +598,7 @@ ts_library("build_ts") {
     "open_window_proxy.ts",
     "page_visibility.ts",
     "people_page/people_page.ts",
-    "people_page/profile_info_browser_proxy.js",
+    "people_page/profile_info_browser_proxy.ts",
     "people_page/signout_dialog.ts",
     "people_page/sync_account_control.ts",
     "people_page/sync_browser_proxy.ts",
