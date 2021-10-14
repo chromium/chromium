@@ -32,6 +32,11 @@ namespace share {
 
 namespace {
 
+// Third party command IDs are allocated by SharingHubModel starting at 0, but that conflicts
+// with the dynamic IDs allocated for text editing commands by views::Textfield, so offset those
+// command IDs here. See https://crbug.com/1259293 for more details.
+const int kMenuCommandIdOffset = 2000;
+
 // TODO(ellyjones): This is duplicated from RenderViewContextMenu, where it
 // doesn't really belong. There is a note on the RenderViewContextMenu to remove
 // it once it is no longer needed there, after https://crbug.com/1250494 is
@@ -118,7 +123,8 @@ void ShareSubmenuModel::ExecuteCommand(int id, int event_flags) {
     default:
       base::RecordAction(
           base::UserMetricsAction("ShareSubmenu.ThirdPartySelected"));
-      ShareToThirdParty(id);
+      DCHECK_GE(id, kMenuCommandIdOffset);
+      ShareToThirdParty(id - kMenuCommandIdOffset);
       break;
   }
 }
@@ -202,7 +208,8 @@ void ShareSubmenuModel::AddShareToThirdPartyItems() {
 
   for (const auto& action : actions) {
     auto image = ui::ImageModel::FromImageSkia(action.third_party_icon);
-    AddItemWithIcon(action.command_id, action.title, image);
+    AddItemWithIcon(action.command_id + kMenuCommandIdOffset, action.title,
+                    image);
     SetAccessibleNameAt(
         GetItemCount() - 1,
         l10n_util::GetStringFUTF16(IDS_SHARING_HUB_SHARE_LABEL_ACCESSIBILITY,
