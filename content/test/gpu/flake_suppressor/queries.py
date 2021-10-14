@@ -11,8 +11,6 @@ MAX_ROWS = (2**31) - 1
 
 # Gets all failures from the past X days that did not already have an associated
 # test suppression when the test ran.
-# TODO(crbug.com/1192733): Update the query to also omit results for a test if
-# a suppression was added sometime between the failure and now.
 # TODO(crbug.com/1192733): Look into updating this to also check try results
 # once crbug.com/1217300 is complete.
 QUERY = """\
@@ -20,7 +18,6 @@ WITH
   failed_tests AS (
     SELECT
       exported.id,
-      status,
       test_metadata.name,
       ARRAY(
         SELECT value

@@ -55,6 +55,7 @@ def ParseArgs():
 
 def main():
   args = ParseArgs()
+  expectations.AssertCheckoutIsUpToDate()
   results = queries.GetFlakyOrFailingTests(args.sample_period, args.project)
   aggregated_results = results_module.AggregateResults(results)
   result_output.GenerateHtmlOutputFile(aggregated_results)

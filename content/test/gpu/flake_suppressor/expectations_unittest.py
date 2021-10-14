@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import base64
 import os
 import sys
 import unittest
@@ -53,7 +54,8 @@ class IterateThroughResultsForUserUnittest(fake_filesystem_unittest.TestCase):
     }
 
     self.expectation_file = os.path.join(
-        expectations.EXPECTATION_FILE_DIRECTORY, 'pixel_expectations.txt')
+        expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+        'pixel_expectations.txt')
     uu.CreateFile(self, self.expectation_file)
     expectation_file_contents = validate_tag_consistency.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
@@ -203,7 +205,7 @@ class ModifyFileForResultUnittest(fake_filesystem_unittest.TestCase):
   def setUp(self):
     self.setUpPyfakefs()
     self.expectation_file = os.path.join(
-        expectations.EXPECTATION_FILE_DIRECTORY, 'expectation.txt')
+        expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY, 'expectation.txt')
     uu.CreateFile(self, self.expectation_file)
     self._expectation_file_patcher = mock.patch.object(
         expectations, 'GetExpectationFileForSuite')
@@ -272,32 +274,36 @@ class ModifyFileForResultUnittest(fake_filesystem_unittest.TestCase):
 class GetExpectationFileForSuiteUnittest(unittest.TestCase):
   def testRegularExpectationFile(self):
     """Tests that a regular expectation file is found properly."""
-    expected_filepath = os.path.join(expectations.EXPECTATION_FILE_DIRECTORY,
-                                     'pixel_expectations.txt')
+    expected_filepath = os.path.join(
+        expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+        'pixel_expectations.txt')
     actual_filepath = expectations.GetExpectationFileForSuite(
         'pixel_integration_test', ['webgl-version-2'])
     self.assertEqual(actual_filepath, expected_filepath)
 
   def testOverrideExpectationFile(self):
     """Tests that an overridden expectation file is found properly."""
-    expected_filepath = os.path.join(expectations.EXPECTATION_FILE_DIRECTORY,
-                                     'info_collection_expectations.txt')
+    expected_filepath = os.path.join(
+        expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+        'info_collection_expectations.txt')
     actual_filepath = expectations.GetExpectationFileForSuite(
         'info_collection_test', ['webgl-version-2'])
     self.assertEqual(actual_filepath, expected_filepath)
 
   def testWebGl1Conformance(self):
     """Tests that a WebGL 1 expectation file is found properly."""
-    expected_filepath = os.path.join(expectations.EXPECTATION_FILE_DIRECTORY,
-                                     'webgl_conformance_expectations.txt')
+    expected_filepath = os.path.join(
+        expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+        'webgl_conformance_expectations.txt')
     actual_filepath = expectations.GetExpectationFileForSuite(
         'webgl_conformance_integration_test', [])
     self.assertEqual(actual_filepath, expected_filepath)
 
   def testWebGl2Conformance(self):
     """Tests that a WebGL 2 expectation file is found properly."""
-    expected_filepath = os.path.join(expectations.EXPECTATION_FILE_DIRECTORY,
-                                     'webgl2_conformance_expectations.txt')
+    expected_filepath = os.path.join(
+        expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+        'webgl2_conformance_expectations.txt')
     actual_filepath = expectations.GetExpectationFileForSuite(
         'webgl_conformance_integration_test', ['webgl-version-2'])
     self.assertEqual(actual_filepath, expected_filepath)
@@ -309,7 +315,7 @@ class FindBestInsertionLineForExpectationUnittest(
   def setUp(self):
     self.setUpPyfakefs()
     self.expectation_file = os.path.join(
-        expectations.EXPECTATION_FILE_DIRECTORY, 'expectation.txt')
+        expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY, 'expectation.txt')
     uu.CreateFile(self, self.expectation_file)
     expectation_file_contents = validate_tag_consistency.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
@@ -348,6 +354,128 @@ class FindBestInsertionLineForExpectationUnittest(
     expected_line = len(validate_tag_consistency.TAG_HEADER.splitlines()) + 5
     self.assertEqual(insertion_line, expected_line)
     self.assertEqual(tags, set(['win', 'release']))
+
+
+class GetExpectationFilesFromOriginUnittest(unittest.TestCase):
+  class FakeRequestResult(object):
+    def __init__(self):
+      self.status_code = 200
+      self.text = ''
+
+  def setUp(self):
+    self._get_patcher = mock.patch('flake_suppressor.expectations.requests.get')
+    self._get_mock = self._get_patcher.start()
+    self.addCleanup(self._get_patcher.stop)
+
+  def testBasic(self):
+    """Tests basic functionality along the happy path."""
+
+    def SideEffect(url):
+      request_result = GetExpectationFilesFromOriginUnittest.FakeRequestResult()
+      text = ''
+      if url.endswith('test_expectations?format=TEXT'):
+        text = """\
+mode type hash foo_tests.txt
+mode type hash bar_tests.txt"""
+      elif url.endswith('foo_tests.txt?format=TEXT'):
+        text = 'foo_tests.txt content'
+      elif url.endswith('bar_tests.txt?format=TEXT'):
+        text = 'bar_tests.txt content'
+      else:
+        self.fail('Given unhandled URL %s' % url)
+      request_result.text = base64.b64encode(text.encode('utf-8'))
+      return request_result
+
+    self._get_mock.side_effect = SideEffect
+    expected_contents = {
+        'foo_tests.txt': 'foo_tests.txt content',
+        'bar_tests.txt': 'bar_tests.txt content',
+    }
+    self.assertEqual(expectations.GetExpectationFilesFromOrigin(),
+                     expected_contents)
+    self.assertEqual(self._get_mock.call_count, 3)
+
+  def testNonOkStatusCodesSurfaced(self):
+    """Tests that getting a non-200 status code back results in a failure."""
+
+    def SideEffect(_):
+      request_result = GetExpectationFilesFromOriginUnittest.FakeRequestResult()
+      request_result.status_code = 404
+      return request_result
+
+    self._get_mock.side_effect = SideEffect
+    with self.assertRaises(AssertionError):
+      expectations.GetExpectationFilesFromOrigin()
+
+
+class GetExpectationFilesFromLocalCheckoutUnittest(
+    fake_filesystem_unittest.TestCase):
+  def setUp(self):
+    self.setUpPyfakefs()
+
+  def testBasic(self):
+    """Tests basic functionality."""
+    os.makedirs(expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY)
+    with open(
+        os.path.join(expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+                     'foo.txt'), 'w') as outfile:
+      outfile.write('foo.txt contents')
+    with open(
+        os.path.join(expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+                     'bar.txt'), 'w') as outfile:
+      outfile.write('bar.txt contents')
+    expected_contents = {
+        'foo.txt': 'foo.txt contents',
+        'bar.txt': 'bar.txt contents',
+    }
+    self.assertEqual(expectations.GetExpectationFilesFromLocalCheckout(),
+                     expected_contents)
+
+
+class AssertCheckoutIsUpToDateUnittest(unittest.TestCase):
+  def setUp(self):
+    self._origin_patcher = mock.patch(
+        'flake_suppressor.expectations.GetExpectationFilesFromOrigin')
+    self._origin_mock = self._origin_patcher.start()
+    self.addCleanup(self._origin_patcher.stop)
+    self._local_patcher = mock.patch(
+        'flake_suppressor.expectations.GetExpectationFilesFromLocalCheckout')
+    self._local_mock = self._local_patcher.start()
+    self.addCleanup(self._local_patcher.stop)
+
+  def testContentsMatch(self):
+    """Tests the happy path where the contents match."""
+    self._origin_mock.return_value = {
+        'foo.txt': 'foo_content',
+        'bar.txt': 'bar_content',
+    }
+    self._local_mock.return_value = {
+        'bar.txt': 'bar_content',
+        'foo.txt': 'foo_content',
+    }
+    expectations.AssertCheckoutIsUpToDate()
+
+  def testContentsDoNotMatch(self):
+    """Tests that mismatched contents results in a failure."""
+    self._origin_mock.return_value = {
+        'foo.txt': 'foo_content',
+        'bar.txt': 'bar_content',
+    }
+    # Differing keys.
+    self._local_mock.return_value = {
+        'bar.txt': 'bar_content',
+        'foo2.txt': 'foo_content',
+    }
+    with self.assertRaises(RuntimeError):
+      expectations.AssertCheckoutIsUpToDate()
+
+    # Differing values.
+    self._local_mock.return_value = {
+        'bar.txt': 'bar_content',
+        'foo.txt': 'foo_content2',
+    }
+    with self.assertRaises(RuntimeError):
+      expectations.AssertCheckoutIsUpToDate()
 
 
 if __name__ == '__main__':
