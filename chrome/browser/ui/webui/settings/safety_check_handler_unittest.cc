@@ -383,11 +383,9 @@ SafetyCheckHandlerTest::GetSafetyCheckStatusChangedWithDataIfExists(
     if (!data.arg2()->GetAsDictionary(&dictionary)) {
       continue;
     }
-    int cur_new_state;
-    if (dictionary->GetInteger("newState", &cur_new_state) &&
-        cur_new_state == new_state) {
+    absl::optional<int> cur_new_state = dictionary->FindIntKey("newState");
+    if (cur_new_state == new_state)
       return dictionary;
-    }
   }
   return nullptr;
 }

@@ -218,14 +218,14 @@ ClearBrowsingDataHandler::ProcessInstalledApps(
     CHECK(site->GetBoolean(kIsCheckedField, &is_checked));
     std::string domain;
     CHECK(site->GetString(kRegisterableDomainField, &domain));
-    int domain_reason = -1;
-    CHECK(site->GetInteger(kReasonBitfieldField, &domain_reason));
+    absl::optional<int> domain_reason = site->FindIntKey(kReasonBitfieldField);
+    CHECK(domain_reason);
     if (is_checked) {  // Selected installed apps should be deleted.
       ignored_domains.push_back(domain);
-      ignored_domain_reasons.push_back(domain_reason);
+      ignored_domain_reasons.push_back(*domain_reason);
     } else {  // Unselected sites should be kept.
       excluded_domains.push_back(domain);
-      excluded_domain_reasons.push_back(domain_reason);
+      excluded_domain_reasons.push_back(*domain_reason);
     }
   }
   if (!excluded_domains.empty() || !ignored_domains.empty()) {

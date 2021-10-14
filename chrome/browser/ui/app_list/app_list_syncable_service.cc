@@ -425,8 +425,8 @@ void AppListSyncableService::InitFromLocalStorage() {
       continue;
     }
 
-    int type;
-    if (!dict_item->GetInteger(kTypeKey, &type)) {
+    absl::optional<int> type = dict_item->FindIntKey(kTypeKey);
+    if (!type) {
       LOG(ERROR) << "Item type is not set in local storage for " << item.key()
                  << ".";
       continue;
@@ -434,7 +434,7 @@ void AppListSyncableService::InitFromLocalStorage() {
 
     SyncItem* sync_item = CreateSyncItem(
         item.key(),
-        static_cast<sync_pb::AppListSpecifics::AppListItemType>(type));
+        static_cast<sync_pb::AppListSpecifics::AppListItemType>(*type));
 
     dict_item->GetString(kNameKey, &sync_item->item_name);
     dict_item->GetString(kParentIdKey, &sync_item->parent_id);

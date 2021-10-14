@@ -573,7 +573,11 @@ std::string DeviceEmulatorMessageHandler::CreateBluetoothDeviceFromListValue(
   CHECK(device_dict->GetString("pairingMethod", &props.pairing_method));
   CHECK(device_dict->GetString("pairingAuthToken", &props.pairing_auth_token));
   CHECK(device_dict->GetString("pairingAction", &props.pairing_action));
-  CHECK(device_dict->GetInteger("classValue", &props.device_class));
+
+  absl::optional<int> class_value = device_dict->FindIntKey("classValue");
+  CHECK(class_value);
+  props.device_class = *class_value;
+
   CHECK(device_dict->GetBoolean("isTrusted", &props.is_trusted));
   CHECK(device_dict->GetBoolean("incoming", &props.incoming));
 

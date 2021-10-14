@@ -75,9 +75,10 @@ class DeviceNameHandlerTest : public testing::Test {
     returned_data->GetString("deviceName", &device_name);
     EXPECT_EQ(expected_device_name, device_name);
 
-    int device_name_state;
-    returned_data->GetInteger("deviceNameState", &device_name_state);
-    EXPECT_EQ(static_cast<int>(expected_device_name_state), device_name_state);
+    absl::optional<int> device_name_state =
+        returned_data->FindIntKey("deviceNameState");
+    ASSERT_TRUE(device_name_state);
+    EXPECT_EQ(static_cast<int>(expected_device_name_state), *device_name_state);
   }
 
   void VerifySetDeviceNameResult(

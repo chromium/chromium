@@ -135,16 +135,10 @@ void ChromeLabsButton::UpdateDotIndicator() {
 
   bool should_show_dot_indicator = base::ranges::any_of(
       all_labs.begin(), all_labs.end(), [new_badge_prefs](const LabInfo& lab) {
-        if (!new_badge_prefs->HasKey(lab.internal_name))
-          return false;
-        int new_badge_pref_value;
-        new_badge_prefs->GetInteger(lab.internal_name, &new_badge_pref_value);
+        absl::optional<int> new_badge_pref_value =
+            new_badge_prefs->FindIntKey(lab.internal_name);
         // Show the dot indicator if new experiments have not been seen yet.
-        if (new_badge_pref_value ==
-            chrome_labs_prefs::kChromeLabsNewExperimentPrefValue) {
-          return true;
-        }
-        return false;
+        return new_badge_pref_value == chrome_labs_prefs::kChromeLabsNewExperimentPrefValue;
       });
 
   if (should_show_dot_indicator)

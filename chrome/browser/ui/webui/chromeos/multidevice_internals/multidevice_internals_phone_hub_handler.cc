@@ -70,10 +70,11 @@ phonehub::Notification::AppMetadata DictToAppMetadata(
   std::string package_name;
   CHECK(app_metadata_dict->GetString("packageName", &package_name));
 
-  int icon_image_type_as_int;
-  CHECK(app_metadata_dict->GetInteger("icon", &icon_image_type_as_int));
+  absl::optional<int> icon_image_type_as_int =
+      app_metadata_dict->FindIntKey("icon");
+  CHECK(icon_image_type_as_int);
 
-  auto icon_image_type = static_cast<ImageType>(icon_image_type_as_int);
+  auto icon_image_type = static_cast<ImageType>(*icon_image_type_as_int);
   gfx::Image icon = gfx::Image::CreateFrom1xBitmap(
       ImageTypeToBitmap(icon_image_type, kIconSize));
 
@@ -108,12 +109,10 @@ void TryAddingMetadata(
   if (!last_accessed_timestamp)
     return;
 
-  int favicon_image_type_as_int;
-  if (!browser_tab_metadata->GetInteger("favicon",
-                                        &favicon_image_type_as_int) ||
-      !favicon_image_type_as_int) {
+  int favicon_image_type_as_int =
+      browser_tab_metadata->FindIntKey("favicon").value_or(0);
+  if (!favicon_image_type_as_int)
     return;
-  }
 
   auto favicon_image_type = static_cast<ImageType>(favicon_image_type_as_int);
   gfx::Image favicon = gfx::Image::CreateFrom1xBitmap(
@@ -385,37 +384,39 @@ void MultidevicePhoneHubHandler::HandleSetFakePhoneStatus(
   const base::DictionaryValue* phones_status_dict = nullptr;
   CHECK(args->GetDictionary(0, &phones_status_dict));
 
-  int mobile_status_as_int;
-  CHECK(phones_status_dict->GetInteger("mobileStatus", &mobile_status_as_int));
+  absl::optional<int> mobile_status_as_int =
+      phones_status_dict->FindIntKey("mobileStatus");
+  CHECK(mobile_status_as_int);
   auto mobile_status = static_cast<phonehub::PhoneStatusModel::MobileStatus>(
-      mobile_status_as_int);
+      *mobile_status_as_int);
 
-  int signal_strength_as_int;
-  CHECK(phones_status_dict->GetInteger("signalStrength",
-                                       &signal_strength_as_int));
+  absl::optional<int> signal_strength_as_int =
+      phones_status_dict->FindIntKey("signalStrength");
+  CHECK(signal_strength_as_int);
+
   auto signal_strength =
       static_cast<phonehub::PhoneStatusModel::SignalStrength>(
-          signal_strength_as_int);
+          *signal_strength_as_int);
 
   std::u16string mobile_provider;
   CHECK(phones_status_dict->GetString("mobileProvider", &mobile_provider));
 
-  int charging_state_as_int;
-  CHECK(
-      phones_status_dict->GetInteger("chargingState", &charging_state_as_int));
+  absl::optional<int> charging_state_as_int =
+      phones_status_dict->FindIntKey("chargingState");
+  CHECK(charging_state_as_int);
   auto charging_state = static_cast<phonehub::PhoneStatusModel::ChargingState>(
-      charging_state_as_int);
+      *charging_state_as_int);
 
-  int battery_saver_state_as_int;
-  CHECK(phones_status_dict->GetInteger("batterySaverState",
-                                       &battery_saver_state_as_int));
+  absl::optional<int> battery_saver_state_as_int =
+      phones_status_dict->FindIntKey("batterySaverState");
+  CHECK(battery_saver_state_as_int);
   auto battery_saver_state =
       static_cast<phonehub::PhoneStatusModel::BatterySaverState>(
-          battery_saver_state_as_int);
+          *battery_saver_state_as_int);
 
-  int battery_percentage;
-  CHECK(
-      phones_status_dict->GetInteger("batteryPercentage", &battery_percentage));
+  absl::optional<int> battery_percentage =
+      phones_status_dict->FindIntKey("batteryPercentage");
+  CHECK(battery_percentage);
 
   phonehub::PhoneStatusModel::MobileConnectionMetadata connection_metadata = {
       .signal_strength = signal_strength,
@@ -423,7 +424,7 @@ void MultidevicePhoneHubHandler::HandleSetFakePhoneStatus(
   };
   auto phone_status = phonehub::PhoneStatusModel(
       mobile_status, connection_metadata, charging_state, battery_saver_state,
-      battery_percentage);
+      *battery_percentage);
   fake_phone_hub_manager_->mutable_phone_model()->SetPhoneStatusModel(
       phone_status);
 
@@ -433,7 +434,7 @@ void MultidevicePhoneHubHandler::HandleSetFakePhoneStatus(
                   << "\n  mobile provider: " << mobile_provider
                   << "\n  charging state: " << charging_state
                   << "\n  battery saver state: " << battery_saver_state
-                  << "\n  battery percentage: " << battery_percentage;
+                  << "\n  battery percentage: " << *battery_percentage;
 }
 
 void MultidevicePhoneHubHandler::HandleSetBrowserTabs(
@@ -476,8 +477,8 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
   const base::DictionaryValue* notification_data_dict = nullptr;
   CHECK(args->GetDictionary(0, &notification_data_dict));
 
-  int id;
-  CHECK(notification_data_dict->GetInteger("id", &id));
+  absl::optional<int> id = notification_data_dict->FindIntKey("id");
+  CHECK(id);
 
   const base::DictionaryValue* app_metadata_dict = nullptr;
   CHECK(
@@ -491,13 +492,15 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
   CHECK(js_timestamp);
   auto timestamp = base::Time::FromJsTime(*js_timestamp);
 
-  int importance_as_int;
-  CHECK(notification_data_dict->GetInteger("importance", &importance_as_int));
+  absl::optional<int> importance_as_int =
+      notification_data_dict->FindIntKey("importance");
+  CHECK(importance_as_int);
   auto importance =
-      static_cast<phonehub::Notification::Importance>(importance_as_int);
+      static_cast<phonehub::Notification::Importance>(*importance_as_int);
 
-  int inline_reply_id;
-  CHECK(notification_data_dict->GetInteger("inlineReplyId", &inline_reply_id));
+  absl::optional<int> inline_reply_id =
+      notification_data_dict->FindIntKey("inlineReplyId");
+  CHECK(inline_reply_id);
 
   absl::optional<std::u16string> opt_title;
   std::u16string title;
@@ -513,20 +516,18 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
   }
 
   absl::optional<gfx::Image> opt_shared_image;
-  int shared_image_type_as_int;
-  if (notification_data_dict->GetInteger("sharedImage",
-                                         &shared_image_type_as_int) &&
-      shared_image_type_as_int) {
+  int shared_image_type_as_int =
+      notification_data_dict->FindIntKey("sharedImage").value_or(0);
+  if (shared_image_type_as_int) {
     auto shared_image_type = static_cast<ImageType>(shared_image_type_as_int);
     opt_shared_image = gfx::Image::CreateFrom1xBitmap(
         ImageTypeToBitmap(shared_image_type, kSharedImageSize));
   }
 
   absl::optional<gfx::Image> opt_contact_image;
-  int contact_image_type_as_int;
-  if (notification_data_dict->GetInteger("contactImage",
-                                         &contact_image_type_as_int) &&
-      contact_image_type_as_int) {
+  int contact_image_type_as_int =
+      notification_data_dict->FindIntKey("contactImage").value_or(0);
+  if (contact_image_type_as_int) {
     auto shared_contact_image_type =
         static_cast<ImageType>(contact_image_type_as_int);
     opt_contact_image = gfx::Image::CreateFrom1xBitmap(
@@ -534,7 +535,7 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
   }
 
   auto notification = phonehub::Notification(
-      id, app_metadata, timestamp, importance, inline_reply_id,
+      *id, app_metadata, timestamp, importance, *inline_reply_id,
       phonehub::Notification::InteractionBehavior::kNone, opt_title,
       opt_text_content, opt_shared_image, opt_contact_image);
 
@@ -573,25 +574,26 @@ void MultidevicePhoneHubHandler::HandleSetCameraRoll(
   const base::DictionaryValue* camera_roll_dict = nullptr;
   CHECK(args->GetDictionary(0, &camera_roll_dict));
 
-  int number_of_thumbnails;
-  CHECK(camera_roll_dict->GetInteger("numberOfThumbnails",
-                                     &number_of_thumbnails));
+  absl::optional<int> number_of_thumbnails =
+      camera_roll_dict->FindIntKey("numberOfThumbnails");
+  CHECK(number_of_thumbnails);
 
-  int file_type_as_int;
-  CHECK(camera_roll_dict->GetInteger("fileType", &file_type_as_int));
+  absl::optional<int> file_type_as_int =
+      camera_roll_dict->FindIntKey("fileType");
+  CHECK(file_type_as_int);
   const char* file_type;
-  if (file_type_as_int == 0) {
+  if (*file_type_as_int == 0) {
     file_type = "image/jpeg";
   } else {
     file_type = "video/mp4";
   }
 
-  if (number_of_thumbnails == 0) {
+  if (*number_of_thumbnails == 0) {
     fake_phone_hub_manager_->fake_camera_roll_manager()->ClearCurrentItems();
   } else {
     std::vector<phonehub::CameraRollItem> items;
     // Create items in descending key order
-    for (int i = number_of_thumbnails; i > 0; --i) {
+    for (int i = *number_of_thumbnails; i > 0; --i) {
       phonehub::proto::CameraRollItemMetadata metadata;
       metadata.set_key(base::NumberToString(i));
       metadata.set_mime_type(file_type);
@@ -600,15 +602,15 @@ void MultidevicePhoneHubHandler::HandleSetCameraRoll(
       metadata.set_file_name("fake_file_" + base::NumberToString(i) + ".jpg");
 
       gfx::Image thumbnail = gfx::Image::CreateFrom1xBitmap(RGB_Bitmap(
-          255 - i * 192 / number_of_thumbnails,
-          63 + i * 192 / number_of_thumbnails, 255, kCameraRollThumbnailSize));
+          255 - i * 192 / *number_of_thumbnails,
+          63 + i * 192 / *number_of_thumbnails, 255, kCameraRollThumbnailSize));
 
       items.emplace_back(metadata, thumbnail);
     }
     fake_phone_hub_manager_->fake_camera_roll_manager()->SetCurrentItems(items);
   }
 
-  PA_LOG(VERBOSE) << "Setting Camera Roll to " << number_of_thumbnails
+  PA_LOG(VERBOSE) << "Setting Camera Roll to " << *number_of_thumbnails
                   << " thumbnails\nFile Type: " << file_type;
 }
 

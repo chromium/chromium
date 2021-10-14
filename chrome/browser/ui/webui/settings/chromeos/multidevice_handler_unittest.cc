@@ -88,64 +88,67 @@ void VerifyPageContentDict(
   const base::DictionaryValue* page_content_dict;
   EXPECT_TRUE(value->GetAsDictionary(&page_content_dict));
 
-  int mode;
-  EXPECT_TRUE(page_content_dict->GetInteger("mode", &mode));
-  EXPECT_EQ(static_cast<int>(expected_host_status), mode);
+  absl::optional<int> mode = page_content_dict->FindIntKey("mode");
+  ASSERT_TRUE(mode);
+  EXPECT_EQ(static_cast<int>(expected_host_status), *mode);
 
-  int better_together_state;
-  EXPECT_TRUE(page_content_dict->GetInteger("betterTogetherState",
-                                            &better_together_state));
+  absl::optional<int> better_together_state =
+      page_content_dict->FindIntKey("betterTogetherState");
+  ASSERT_TRUE(better_together_state);
   auto it = feature_states_map.find(
       multidevice_setup::mojom::Feature::kBetterTogetherSuite);
-  EXPECT_EQ(static_cast<int>(it->second), better_together_state);
+  EXPECT_EQ(static_cast<int>(it->second), *better_together_state);
 
-  int instant_tethering_state;
-  EXPECT_TRUE(page_content_dict->GetInteger("instantTetheringState",
-                                            &instant_tethering_state));
+  absl::optional<int> instant_tethering_state =
+      page_content_dict->FindIntKey("instantTetheringState");
+  ASSERT_TRUE(instant_tethering_state);
   it = feature_states_map.find(
       multidevice_setup::mojom::Feature::kInstantTethering);
-  EXPECT_EQ(static_cast<int>(it->second), instant_tethering_state);
+  EXPECT_EQ(static_cast<int>(it->second), *instant_tethering_state);
 
-  int messages_state;
-  EXPECT_TRUE(page_content_dict->GetInteger("messagesState", &messages_state));
+  absl::optional<int> messages_state =
+      page_content_dict->FindIntKey("messagesState");
+  ASSERT_TRUE(messages_state);
   it = feature_states_map.find(multidevice_setup::mojom::Feature::kMessages);
-  EXPECT_EQ(static_cast<int>(it->second), messages_state);
+  EXPECT_EQ(static_cast<int>(it->second), *messages_state);
 
-  int smart_lock_state;
-  EXPECT_TRUE(
-      page_content_dict->GetInteger("smartLockState", &smart_lock_state));
+  absl::optional<int> smart_lock_state =
+      page_content_dict->FindIntKey("smartLockState");
+  ASSERT_TRUE(smart_lock_state);
   it = feature_states_map.find(multidevice_setup::mojom::Feature::kSmartLock);
-  EXPECT_EQ(static_cast<int>(it->second), smart_lock_state);
+  EXPECT_EQ(static_cast<int>(it->second), *smart_lock_state);
 
-  int phone_hub_state;
-  EXPECT_TRUE(page_content_dict->GetInteger("phoneHubState", &phone_hub_state));
+  absl::optional<int> phone_hub_state =
+      page_content_dict->FindIntKey("phoneHubState");
+  ASSERT_TRUE(phone_hub_state);
   it = feature_states_map.find(multidevice_setup::mojom::Feature::kPhoneHub);
-  EXPECT_EQ(static_cast<int>(it->second), phone_hub_state);
+  EXPECT_EQ(static_cast<int>(it->second), *phone_hub_state);
 
-  int phone_hub_notifications_state;
-  EXPECT_TRUE(page_content_dict->GetInteger("phoneHubNotificationsState",
-                                            &phone_hub_notifications_state));
+  absl::optional<int> phone_hub_notifications_state =
+      page_content_dict->FindIntKey("phoneHubNotificationsState");
+  ASSERT_TRUE(phone_hub_notifications_state);
   it = feature_states_map.find(
       multidevice_setup::mojom::Feature::kPhoneHubNotifications);
-  EXPECT_EQ(static_cast<int>(it->second), phone_hub_notifications_state);
+  EXPECT_EQ(static_cast<int>(it->second), *phone_hub_notifications_state);
 
-  int phone_hub_task_continuation_state;
-  EXPECT_TRUE(page_content_dict->GetInteger(
-      "phoneHubTaskContinuationState", &phone_hub_task_continuation_state));
+  absl::optional<int> phone_hub_task_continuation_state =
+      page_content_dict->FindIntKey("phoneHubTaskContinuationState");
+  ASSERT_TRUE(phone_hub_task_continuation_state);
   it = feature_states_map.find(
       multidevice_setup::mojom::Feature::kPhoneHubTaskContinuation);
-  EXPECT_EQ(static_cast<int>(it->second), phone_hub_task_continuation_state);
+  EXPECT_EQ(static_cast<int>(it->second), *phone_hub_task_continuation_state);
 
-  int phone_hub_apps_state;
-  EXPECT_TRUE(page_content_dict->GetInteger("phoneHubAppsState",
-                                            &phone_hub_apps_state));
+  absl::optional<int> phone_hub_apps_state =
+      page_content_dict->FindIntKey("phoneHubAppsState");
+  ASSERT_TRUE(phone_hub_apps_state);
   it = feature_states_map.find(multidevice_setup::mojom::Feature::kEche);
-  EXPECT_EQ(static_cast<int>(it->second), phone_hub_apps_state);
+  EXPECT_EQ(static_cast<int>(it->second), *phone_hub_apps_state);
 
-  int wifi_sync_state;
-  EXPECT_TRUE(page_content_dict->GetInteger("wifiSyncState", &wifi_sync_state));
+  absl::optional<int> wifi_sync_state =
+      page_content_dict->FindIntKey("wifiSyncState");
+  ASSERT_TRUE(wifi_sync_state);
   it = feature_states_map.find(multidevice_setup::mojom::Feature::kWifiSync);
-  EXPECT_EQ(static_cast<int>(it->second), wifi_sync_state);
+  EXPECT_EQ(static_cast<int>(it->second), *wifi_sync_state);
 
   std::string host_device_name;
   if (expected_host_device) {
