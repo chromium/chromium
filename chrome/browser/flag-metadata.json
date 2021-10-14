@@ -4544,6 +4544,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "quick-settings-network-revamp",
+    "owners": [ "chadduffin", "khorimoto", "cros-connectivity@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "quick-settings-pwa-notifications",
     "owners": [ "yulunwu" ],
     "expiry_milestone": 100

@@ -344,6 +344,8 @@ extern const base::Feature kDisableQuickAnswersV2Translation;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickAnswersV2SettingsSubToggle;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kQuickSettingsNetworkRevamp;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickUnlockFingerprint;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickUnlockPinAutosubmit;
@@ -562,6 +564,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorAnnotatorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersV2TranslationDisabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersV2SettingsSubToggleEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsQuickSettingsNetworkRevampEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsReduceDisplayNotificationsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsReverseScrollGesturesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

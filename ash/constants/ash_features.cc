@@ -911,6 +911,11 @@ const base::Feature kProjectorAnnotator{"ProjectorAnnotator",
 const base::Feature kQuickAnswersV2SettingsSubToggle{
     "QuickAnswersV2SettingsSubToggle", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables the Quick Settings Network revamp, which updates Network
+// Quick Settings UI and related infrastructure. See https://crbug.com/1169479.
+const base::Feature kQuickSettingsNetworkRevamp{
+    "QuickSettingsNetworkRevamp", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables fingerprint quick unlock.
 const base::Feature kQuickUnlockFingerprint{"QuickUnlockFingerprint",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1627,6 +1632,10 @@ bool IsQuickAnswersV2TranslationDisabled() {
 
 bool IsQuickAnswersV2SettingsSubToggleEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswersV2SettingsSubToggle);
+}
+
+bool IsQuickSettingsNetworkRevampEnabled() {
+  return base::FeatureList::IsEnabled(kQuickSettingsNetworkRevamp);
 }
 
 bool IsReduceDisplayNotificationsEnabled() {

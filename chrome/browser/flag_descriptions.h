@@ -2942,6 +2942,9 @@ extern const char kSystemKoreanPhysicalTypingDescription[];
 extern const char kSystemLatinPhysicalTypingName[];
 extern const char kSystemLatinPhysicalTypingDescription[];
 
+extern const char kQuickSettingsNetworkRevampName[];
+extern const char kQuickSettingsNetworkRevampDescription[];
+
 extern const char kTerminalSSHName[];
 extern const char kTerminalSSHDescription[];
 

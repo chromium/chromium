@@ -5107,6 +5107,12 @@ const char kSystemLatinPhysicalTypingDescription[] =
     "Use the system input engine instead of the Chrome extension for physical "
     "typing in languages based on latin script.";
 
+const char kQuickSettingsNetworkRevampName[] =
+    "Enables the Quick Settings Network revamp.";
+const char kQuickSettingsNetworkRevampDescription[] =
+    "Enables the Quick Settings Network revamp, which updates Network Quick "
+    "Settings UI and related infrastructure. See https://crbug.com/1169479.";
+
 const char kPluginVmFullscreenName[] = "Plugin VM Fullscreen";
 const char kPluginVmFullscreenDescription[] =
     "Hides shelf in immersive mode and allows esc hold to exit.";
