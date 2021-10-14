@@ -211,7 +211,7 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
       InspectableViewsFinder::ViewList views,
       const base::FilePath& expected_output_path) {
     std::string error;
-    std::unique_ptr<base::DictionaryValue> expected_output_data(
+    std::unique_ptr<base::Value> expected_output_data(
         DeserializeJSONTestData(expected_output_path, &error));
     EXPECT_EQ(std::string(), error);
 
@@ -220,7 +220,7 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
         CreateExtensionInfoFromPath(extension_path,
                                     mojom::ManifestLocation::kUnpacked);
     info->views = std::move(views);
-    std::unique_ptr<base::DictionaryValue> actual_output_data = info->ToValue();
+    std::unique_ptr<base::Value> actual_output_data = info->ToValue();
     ASSERT_TRUE(actual_output_data);
 
     // Compare the outputs.
@@ -230,19 +230,17 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
         extension_path.MaybeAsASCII() + ")";
     std::string expected_string;
     std::string actual_string;
-    for (base::DictionaryValue::Iterator field(*expected_output_data);
-         !field.IsAtEnd(); field.Advance()) {
-      const base::Value& expected_value = field.value();
-      base::Value* actual_value = nullptr;
-      EXPECT_TRUE(actual_output_data->Get(field.key(), &actual_value)) <<
-          field.key() + " is missing" + paths_details;
+    for (auto field : expected_output_data->DictItems()) {
+      const base::Value& expected_value = field.second;
+      base::Value* actual_value = actual_output_data->FindPath(field.first);
+      EXPECT_TRUE(actual_value) << field.first + " is missing" + paths_details;
       if (!actual_value)
         continue;
       if (!actual_value->Equals(&expected_value)) {
         base::JSONWriter::Write(expected_value, &expected_string);
         base::JSONWriter::Write(*actual_value, &actual_string);
-        EXPECT_EQ(expected_string, actual_string) <<
-            field.key() << paths_details;
+        EXPECT_EQ(expected_string, actual_string)
+            << field.first << paths_details;
       }
     }
   }

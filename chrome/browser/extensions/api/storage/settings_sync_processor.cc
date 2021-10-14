@@ -32,13 +32,13 @@ SettingsSyncProcessor::~SettingsSyncProcessor() {
   DCHECK(IsOnBackendSequence());
 }
 
-void SettingsSyncProcessor::Init(const base::DictionaryValue& initial_state) {
+void SettingsSyncProcessor::Init(const base::Value& initial_state) {
   DCHECK(IsOnBackendSequence());
   CHECK(!initialized_) << "Init called multiple times";
 
-  for (base::DictionaryValue::Iterator i(initial_state); !i.IsAtEnd();
-       i.Advance())
-    synced_keys_.insert(i.key());
+  for (auto iter : initial_state.DictItems()) {
+    synced_keys_.insert(iter.first);
+  }
 
   initialized_ = true;
 }

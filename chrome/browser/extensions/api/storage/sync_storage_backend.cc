@@ -25,9 +25,9 @@ void AddAllSyncData(const std::string& extension_id,
                     const base::DictionaryValue& src,
                     syncer::ModelType type,
                     syncer::SyncDataList* dst) {
-  for (base::DictionaryValue::Iterator it(src); !it.IsAtEnd(); it.Advance()) {
-    dst->push_back(settings_sync_util::CreateData(extension_id, it.key(),
-                                                  it.value(), type));
+  for (auto it : src.DictItems()) {
+    dst->push_back(settings_sync_util::CreateData(extension_id, it.first,
+                                                  it.second, type));
   }
 }
 

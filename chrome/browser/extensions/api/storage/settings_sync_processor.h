@@ -38,7 +38,7 @@ class SettingsSyncProcessor {
   ~SettingsSyncProcessor();
 
   // Initializes this with the initial state of sync.
-  void Init(const base::DictionaryValue& initial_state);
+  void Init(const base::Value& initial_state);
 
   // Sends |changes| to sync.
   absl::optional<syncer::ModelError> SendChanges(

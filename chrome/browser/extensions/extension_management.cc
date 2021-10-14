@@ -540,16 +540,15 @@ void ExtensionManagement::Refresh() {
         installed_extensions.insert(extension_info->extension_id);
     }
 
-    for (base::DictionaryValue::Iterator iter(*dict_pref); !iter.IsAtEnd();
-         iter.Advance()) {
-      if (iter.key() == schema_constants::kWildcard)
+    for (auto iter : dict_pref->DictItems()) {
+      if (iter.first == schema_constants::kWildcard)
         continue;
-      if (!iter.value().GetAsDictionary(&subdict))
+      if (!iter.second.GetAsDictionary(&subdict))
         continue;
-      if (base::StartsWith(iter.key(), schema_constants::kUpdateUrlPrefix,
+      if (base::StartsWith(iter.first, schema_constants::kUpdateUrlPrefix,
                            base::CompareCase::SENSITIVE)) {
         const std::string& update_url =
-            iter.key().substr(strlen(schema_constants::kUpdateUrlPrefix));
+            iter.first.substr(strlen(schema_constants::kUpdateUrlPrefix));
         if (!GURL(update_url).is_valid()) {
           LOG(WARNING) << "Invalid update URL: " << update_url << ".";
           continue;
@@ -564,7 +563,7 @@ void ExtensionManagement::Refresh() {
         }
       } else {
         std::vector<std::string> extension_ids = base::SplitString(
-            iter.key(), ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+            iter.first, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
         for (const auto& extension_id : extension_ids) {
           if (!crx_file::id_util::IdIsValid(extension_id)) {
             SYSLOG(WARNING) << "Invalid extension ID : " << extension_id << ".";
@@ -759,33 +758,32 @@ void ExtensionManagement::UpdateForcedExtensions(
 
   InstallStageTracker* install_stage_tracker =
       InstallStageTracker::Get(profile_);
-  for (base::DictionaryValue::Iterator it(*extension_dict); !it.IsAtEnd();
-       it.Advance()) {
-    if (!crx_file::id_util::IdIsValid(it.key())) {
+  for (auto it : extension_dict->DictItems()) {
+    if (!crx_file::id_util::IdIsValid(it.first)) {
       install_stage_tracker->ReportFailure(
-          it.key(), InstallStageTracker::FailureReason::INVALID_ID);
+          it.first, InstallStageTracker::FailureReason::INVALID_ID);
       continue;
     }
     const base::DictionaryValue* dict_value = nullptr;
-    if (!it.value().GetAsDictionary(&dict_value)) {
+    if (!it.second.GetAsDictionary(&dict_value)) {
       install_stage_tracker->ReportFailure(
-          it.key(), InstallStageTracker::FailureReason::NO_UPDATE_URL);
+          it.first, InstallStageTracker::FailureReason::NO_UPDATE_URL);
       continue;
     }
     const std::string* update_url =
         dict_value->FindStringKey(ExternalProviderImpl::kExternalUpdateUrl);
     if (!update_url) {
       install_stage_tracker->ReportFailure(
-          it.key(), InstallStageTracker::FailureReason::NO_UPDATE_URL);
+          it.first, InstallStageTracker::FailureReason::NO_UPDATE_URL);
       continue;
     }
-    internal::IndividualSettings* by_id = AccessById(it.key());
+    internal::IndividualSettings* by_id = AccessById(it.first);
     by_id->installation_mode = INSTALLATION_FORCED;
     by_id->update_url = *update_url;
     install_stage_tracker->ReportInstallationStage(
-        it.key(), InstallStageTracker::Stage::CREATED);
+        it.first, InstallStageTracker::Stage::CREATED);
     install_stage_tracker->ReportInstallCreationStage(
-        it.key(),
+        it.first,
         InstallStageTracker::InstallCreationStage::CREATION_INITIATED);
   }
 }

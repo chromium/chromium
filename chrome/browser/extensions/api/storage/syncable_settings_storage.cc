@@ -190,13 +190,9 @@ SyncableSettingsStorage::SendLocalSettingsToSync(
 
   // Transform the current settings into a list of sync changes.
   value_store::ValueStoreChangeList changes;
-  while (!local_state->DictEmpty()) {
-    // It's not possible to iterate over a DictionaryValue and modify it at the
-    // same time, so hack around that restriction.
-    std::string key = base::DictionaryValue::Iterator(*local_state).key();
-    absl::optional<base::Value> value = local_state->ExtractKey(key);
-    changes.push_back(
-        value_store::ValueStoreChange(key, absl::nullopt, std::move(*value)));
+  for (auto pair : local_state->DictItems()) {
+    changes.push_back(value_store::ValueStoreChange(pair.first, absl::nullopt,
+                                                    std::move(pair.second)));
   }
 
   absl::optional<syncer::ModelError> error =
@@ -215,36 +211,30 @@ SyncableSettingsStorage::OverwriteLocalSettingsWithSync(
   // those to ProcessSyncChanges. This generates events like onStorageChanged.
   std::unique_ptr<SettingSyncDataList> changes(new SettingSyncDataList());
 
-  for (base::DictionaryValue::Iterator it(*local_state); !it.IsAtEnd();
-       it.Advance()) {
-    absl::optional<base::Value> sync_value = sync_state->ExtractKey(it.key());
+  for (auto it : local_state->DictItems()) {
+    absl::optional<base::Value> sync_value = sync_state->ExtractKey(it.first);
     if (sync_value.has_value()) {
-      if (*sync_value == it.value()) {
+      if (*sync_value == it.second) {
         // Sync and local values are the same, no changes to send.
       } else {
         // Sync value is different, update local setting with new value.
         changes->push_back(std::make_unique<SettingSyncData>(
-            syncer::SyncChange::ACTION_UPDATE, extension_id_, it.key(),
+            syncer::SyncChange::ACTION_UPDATE, extension_id_, it.first,
             base::Value::ToUniquePtrValue(std::move(*sync_value))));
       }
     } else {
       // Not synced, delete local setting.
       changes->push_back(std::make_unique<SettingSyncData>(
-          syncer::SyncChange::ACTION_DELETE, extension_id_, it.key(),
+          syncer::SyncChange::ACTION_DELETE, extension_id_, it.first,
           std::unique_ptr<base::Value>(new base::DictionaryValue())));
     }
   }
 
   // Add all new settings to local settings.
-  while (!sync_state->DictEmpty()) {
-    // It's not possible to iterate over a DictionaryValue and modify it at the
-    // same time, so hack around that restriction.
-    std::string key = base::DictionaryValue::Iterator(*sync_state).key();
-    absl::optional<base::Value> value = sync_state->ExtractKey(key);
-    CHECK(value.has_value());
+  for (auto pair : sync_state->DictItems()) {
     changes->push_back(std::make_unique<SettingSyncData>(
-        syncer::SyncChange::ACTION_ADD, extension_id_, key,
-        base::Value::ToUniquePtrValue(std::move(*value))));
+        syncer::SyncChange::ACTION_ADD, extension_id_, pair.first,
+        base::Value::ToUniquePtrValue(std::move(pair.second))));
   }
 
   if (changes->empty())

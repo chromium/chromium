@@ -80,15 +80,14 @@ void ExtensionManagementPrefUpdaterBase::SetBlocklistedByDefault(bool value) {
 
 void ExtensionManagementPrefUpdaterBase::
     ClearInstallationModesForIndividualExtensions() {
-  for (base::DictionaryValue::Iterator it(*pref_); !it.IsAtEnd();
-       it.Advance()) {
-    DCHECK(it.value().is_dict());
-    if (it.key() != schema::kWildcard) {
-      DCHECK(crx_file::id_util::IdIsValid(it.key()));
+  for (auto it : pref_->DictItems()) {
+    DCHECK(it.second.is_dict());
+    if (it.first != schema::kWildcard) {
+      DCHECK(crx_file::id_util::IdIsValid(it.first));
       RemoveDictionaryPath(pref_.get(),
-                           make_path(it.key(), schema::kInstallationMode));
+                           make_path(it.first, schema::kInstallationMode));
       RemoveDictionaryPath(pref_.get(),
-                           make_path(it.key(), schema::kUpdateUrl));
+                           make_path(it.first, schema::kUpdateUrl));
     }
   }
 }
