@@ -59,7 +59,7 @@ public class FirstRunActivitySigninAndSyncTest {
                 @Override
                 public void checkChildAccountStatus(
                         Account account, ChildAccountStatusListener listener) {
-                    listener.onStatusReady(ChildAccountStatus.NOT_CHILD);
+                    listener.onStatusReady(ChildAccountStatus.NOT_CHILD, account);
                 }
             };
 
