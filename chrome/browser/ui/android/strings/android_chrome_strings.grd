@@ -5119,7 +5119,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Sign up for <ph name="SITE_NAME">%1$s<ex>rp.example</ex></ph>
       </message>
       <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE" desc="Header for Account Selection sheet where the user can pick an account to sign up with." translateable="false">
-        Choose an account to sign up for <ph name="SITE_NAME">%1$s<ex>rp.example</ex></ph>
+        Choose an account for <ph name="SITE_NAME">%1$s<ex>rp.example</ex></ph>
       </message>
       <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT" desc="The consent text shown to the user before sign up." translateable="false">
         To sign up, <ph name="PROVIDER_NAME">%1$s<ex>provider.example</ex></ph> will share your name, email, address, and profile picture with the site. See <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>Privacy Policy<ph name="END_LINK1">&lt;/link1&gt;</ph> and <ph name="BEGIN_LINK2">&lt;link2&gt;</ph>Terms of service<ph name="END_LINK2">&lt;/link2&gt;</ph>.
