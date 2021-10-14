@@ -78,6 +78,8 @@ void PrintCertStatus(int cert_status) {
   }
 }
 
+}  // namespace
+
 void PrintCertVerifyResult(const net::CertVerifyResult& result) {
   PrintDebugData(&result);
   PrintCertStatus(result.cert_status);
@@ -108,8 +110,6 @@ void PrintCertVerifyResult(const net::CertVerifyResult& result) {
     }
   }
 }
-
-}  // namespace
 
 bool VerifyUsingCertVerifyProc(
     net::CertVerifyProc* cert_verify_proc,

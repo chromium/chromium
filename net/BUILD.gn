@@ -2295,6 +2295,35 @@ if (!is_ios && !is_android) {
     }
   }
 
+  proto_library("cert_verify_comparison_tool_proto") {
+    sources = [ "tools/cert_verify_tool/dumper.proto" ]
+
+    visibility = [ ":cert_verify_comparison_tool" ]
+  }
+
+  executable("cert_verify_comparison_tool") {
+    testonly = true
+    sources = [
+      "tools/cert_verify_tool/cert_verify_comparision_tool.cc",
+      "tools/cert_verify_tool/cert_verify_tool_util.cc",
+      "tools/cert_verify_tool/cert_verify_tool_util.h",
+      "tools/cert_verify_tool/verify_using_cert_verify_proc.cc",
+      "tools/cert_verify_tool/verify_using_cert_verify_proc.h",
+    ]
+
+    deps = [
+      ":cert_verify_comparison_tool_proto",
+      ":net",
+      ":test_support",
+      "//base",
+      "//build/win:default_exe_manifest",
+    ]
+
+    if (is_mac) {
+      frameworks = [ "Security.framework" ]
+    }
+  }
+
   executable("crash_cache") {
     testonly = true
     sources = [ "tools/crash_cache/crash_cache.cc" ]
