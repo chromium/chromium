@@ -14,15 +14,13 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "chromeos/crosapi/mojom/browser_app_instance_registry.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
 
 namespace apps {
 
 BrowserAppInstanceForwarder::BrowserAppInstanceForwarder(
-    BrowserAppInstanceTracker& tracker)
-    : registry_(chromeos::LacrosService::Get()
-                    ->GetRemote<crosapi::mojom::BrowserAppInstanceRegistry>()),
-      tracker_(tracker) {
+    BrowserAppInstanceTracker& tracker,
+    mojo::Remote<crosapi::mojom::BrowserAppInstanceRegistry>& registry)
+    : registry_(registry), tracker_(tracker) {
   tracker_observation_.Observe(&tracker);
   registry_->RegisterController(
       controller_receiver_.BindNewPipeAndPassRemoteWithVersion());
