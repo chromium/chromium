@@ -35,6 +35,15 @@ Device::Device(std::string metadata_id,
       ble_address(std::move(ble_address)),
       protocol(protocol) {}
 
+Device::Device(std::string metadata_id,
+               std::string ble_address,
+               Protocol protocol,
+               const std::vector<uint8_t>& additional_data)
+    : metadata_id(std::move(metadata_id)),
+      ble_address(std::move(ble_address)),
+      protocol(protocol),
+      additional_data_(additional_data) {}
+
 Device::~Device() = default;
 
 std::ostream& operator<<(std::ostream& stream, const Device& device) {

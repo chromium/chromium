@@ -154,16 +154,18 @@ void FastPairNotDiscoverableScanner::OnAccountKeyFilterCheckResult(
       device, details.trigger_distance(),
       base::BindRepeating(&FastPairNotDiscoverableScanner::NotifyDeviceFound,
                           weak_pointer_factory_.GetWeakPtr(),
-                          model_id_stream.str()),
+                          model_id_stream.str(), metadata->account_key),
       tx_power == 0 ? absl::nullopt : absl::make_optional(tx_power));
 }
 
 void FastPairNotDiscoverableScanner::NotifyDeviceFound(
     const std::string model_id,
+    std::vector<uint8_t> account_key,
     device::BluetoothDevice* bluetooth_device) {
   QP_LOG(VERBOSE) << __func__ << ": Id: " << model_id;
-  auto device = base::MakeRefCounted<Device>(
-      model_id, bluetooth_device->GetAddress(), Protocol::kFastPairSubsequent);
+  auto device =
+      base::MakeRefCounted<Device>(model_id, bluetooth_device->GetAddress(),
+                                   Protocol::kFastPairSubsequent, account_key);
 
   notified_devices_[bluetooth_device->GetAddress()] = device;
 

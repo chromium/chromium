@@ -5,6 +5,9 @@
 #ifndef ASH_QUICK_PAIR_COMMON_DEVICE_H_
 #define ASH_QUICK_PAIR_COMMON_DEVICE_H_
 
+#include <cstdint>
+#include <vector>
+
 #include "ash/quick_pair/common/protocol.h"
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
@@ -17,13 +20,17 @@ namespace quick_pair {
 // Thin class which is used by the higher level components of the Quick Pair
 // system to represent a device.
 //
-// Lower level components will use |protocol|, |metadata_id| and |address| to
-// fetch objects which contain more information. E.g. A Fast Pair component
-// can use |metadata_id| to query the Service to receive a full metadata
-// object.
+// Lower level components will use |protocol|, |metadata_id|, |ble_address| and
+// |additional_data| to fetch objects which contain more information. E.g. A
+// Fast Pair component can use |metadata_id| to query the Service to receive a
+// full metadata object.
 struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
     : public base::RefCounted<Device> {
   Device(std::string metadata_id, std::string ble_address, Protocol protocol);
+  Device(std::string metadata_id,
+         std::string ble_address,
+         Protocol protocol,
+         const std::vector<uint8_t>& additional_data);
   Device(const Device&) = delete;
   Device& operator=(const Device&) = delete;
   Device& operator=(Device&&) = delete;
@@ -34,6 +41,14 @@ struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
 
   void set_classic_address(const std::string& address) {
     classic_address_ = address;
+  }
+
+  const std::vector<uint8_t>& additional_data() const {
+    return additional_data_;
+  }
+
+  void set_additional_data(const std::vector<uint8_t>& data) {
+    additional_data_ = data;
   }
 
   // An identifier which components can use to fetch additional metadata for
@@ -54,6 +69,11 @@ struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
 
   // Bluetooth classic address of the device.
   absl::optional<std::string> classic_address_;
+
+  // Additional data, the meaning of which can vary depending on Protocol and
+  // other state.  E.g. for Fast Pair, this is set to the account key during
+  // the subsequent pairing scenario.
+  std::vector<uint8_t> additional_data_;
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

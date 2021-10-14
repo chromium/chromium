@@ -59,6 +59,7 @@ class FastPairNotDiscoverableScanner final : public FastPairScanner::Observer {
   void OnAccountKeyFilterCheckResult(device::BluetoothDevice* device,
                                      absl::optional<PairingMetadata> metadata);
   void NotifyDeviceFound(const std::string model_id,
+                         std::vector<uint8_t> account_key,
                          device::BluetoothDevice* device);
   void OnUtilityProcessStopped(
       device::BluetoothDevice* device,
