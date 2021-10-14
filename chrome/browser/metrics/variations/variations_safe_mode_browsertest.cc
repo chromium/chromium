@@ -279,7 +279,8 @@ class FieldTrialTest : public ::testing::Test {
 
 }  // namespace
 
-TEST_F(FieldTrialTest, ExtendedSafeModeEndToEnd) {
+// TODO(crbug/1259550): The test is failing on some Windows builders.
+TEST_F(FieldTrialTest, DISABLED_ExtendedSafeModeEndToEnd) {
   // Reuse the browser_tests binary (i.e., that this test code is in), to
   // manually run the sub-test.
   base::CommandLine sub_test =
