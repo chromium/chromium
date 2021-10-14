@@ -310,6 +310,10 @@ class OzonePlatformWayland : public OzonePlatform,
       properties->needs_background_image =
           ui::IsWaylandOverlayDelegationEnabled();
 
+      // By design, clients are disallowed to manipulate global screen
+      // coordinates, instead only surface-local ones are supported.
+      properties->supports_global_screen_coordinates = false;
+
       initialised = true;
     }
 

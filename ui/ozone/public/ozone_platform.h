@@ -168,6 +168,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // supported (which implicitly means that it is Ozone/X11).
     bool supports_vaapi = false;
 #endif
+
+    // Indicates that the platform allows client applications to manipulate
+    // global screen coordinates. Wayland, for example, disallow it by design.
+    bool supports_global_screen_coordinates = true;
   };
 
   // Groups platform properties that can only be known at run time.
