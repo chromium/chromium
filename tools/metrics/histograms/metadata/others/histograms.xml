@@ -13444,6 +13444,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The accuracy status of a page. Recorded on each page load.</summary>
 </histogram>
 
+<histogram name="Privacy.ClearOnExitSyncEvent" enum="ClearOnExitSyncEvent"
+    expires_after="M100">
+  <owner>sauski@google.com</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    Interactions between sync and the cookies clear on exit setting. Only
+    recorded when the user has cookies clear on exit enabled.
+  </summary>
+</histogram>
+
 <histogram name="Privacy.ConsentAuditor.ConsentGiven.Feature"
     enum="ConsentAuditorFeature" expires_after="M85">
   <owner>markusheintz@google.com</owner>
