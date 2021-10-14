@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_auth_attempt.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_metrics.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
+#include "chrome/browser/ash/login/easy_unlock/smartlock_feature_usage_metrics.h"
 #include "chrome/browser/ash/login/easy_unlock/smartlock_state_handler.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/proximity_auth/smart_lock_metrics_recorder.h"
@@ -113,6 +114,9 @@ class EasyUnlockService : public KeyedService {
   // is set (from policy), this returns the preference value. Otherwise, it is
   // permitted if the flag is enabled. Virtual to allow override for testing.
   virtual bool IsAllowed() const;
+
+  // Whether Smart Lock is eligible for this user.
+  virtual bool IsEligible() const = 0;
 
   // Whether Easy Unlock is currently enabled for this user. Virtual to allow
   // override for testing.
@@ -233,6 +237,14 @@ class EasyUnlockService : public KeyedService {
       const multidevice::RemoteDeviceRefList& remote_devices,
       absl::optional<multidevice::RemoteDeviceRef> local_device);
 
+  // Called by subclasses when ready to begin recording SmartLock feature usage
+  // within Standard Feature Usage Logging (SFUL) framework.
+  void StartFeatureUsageMetrics();
+
+  // Called by subclasses when ready to stop recording SmartLock feature usage
+  // within SFUL framework.
+  void StopFeatureUsageMetrics();
+
   bool will_authenticate_using_easy_unlock() const {
     return will_authenticate_using_easy_unlock_;
   }
@@ -285,6 +297,10 @@ class EasyUnlockService : public KeyedService {
   // screen. After a `RemoteDeviceRef` instance is provided, this object will
   // handle the rest.
   std::unique_ptr<proximity_auth::ProximityAuthSystem> proximity_auth_system_;
+
+  // Tracks Smart Lock feature usage for the Standard Feature Usage Logging
+  // (SFUL) framework.
+  std::unique_ptr<SmartLockFeatureUsageMetrics> feature_usage_metrics_;
 
   // Monitors suspend and wake state of ChromeOS.
   class PowerMonitor;

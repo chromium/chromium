@@ -18,19 +18,26 @@ namespace {
 using chromeos::multidevice_setup::mojom::Feature;
 using chromeos::multidevice_setup::mojom::FeatureState;
 
+bool IsEligible1() {
+  return true;
+}
+
+bool IsEligible2() {
+  return false;
+}
+
+bool IsEnabled1() {
+  return true;
+}
+
+bool IsEnabled2() {
+  return false;
+}
+
 class SmartLockFeatureUsageMetricsTest : public ::testing::Test {
  protected:
   SmartLockFeatureUsageMetricsTest() = default;
   ~SmartLockFeatureUsageMetricsTest() override = default;
-
-  void TestFeatureState(FeatureState feature_state,
-                        bool expected_eligible_value,
-                        bool expected_enabled_value) {
-    fake_multidevice_setup_client_.SetFeatureState(Feature::kSmartLock,
-                                                   feature_state);
-    EXPECT_EQ(expected_eligible_value, feature_usage_metrics_->IsEligible());
-    EXPECT_EQ(expected_enabled_value, feature_usage_metrics_->IsEnabled());
-  }
 
   chromeos::multidevice_setup::FakeMultiDeviceSetupClient
       fake_multidevice_setup_client_;
@@ -39,59 +46,30 @@ class SmartLockFeatureUsageMetricsTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(SmartLockFeatureUsageMetricsTest, NullMultiDeviceSetupClient) {
-  feature_usage_metrics_ =
-      std::make_unique<SmartLockFeatureUsageMetrics>(nullptr);
-
-  EXPECT_TRUE(feature_usage_metrics_->IsEnabled());
-  EXPECT_TRUE(feature_usage_metrics_->IsEligible());
-}
-
 TEST_F(SmartLockFeatureUsageMetricsTest, EnabledAndEligibleFeatureStates) {
   feature_usage_metrics_ = std::make_unique<SmartLockFeatureUsageMetrics>(
-      &fake_multidevice_setup_client_);
+      base::BindRepeating(&IsEligible1), base::BindRepeating(&IsEnabled1));
 
-  TestFeatureState(FeatureState::kProhibitedByPolicy,
-                   /*expected_eligible_value=*/true,
-                   /*expected_enabled_value=*/false);
-  TestFeatureState(FeatureState::kDisabledByUser,
-                   /*expected_eligible_value=*/true,
-                   /*expected_enabled_value=*/false);
-  TestFeatureState(FeatureState::kEnabledByUser,
-                   /*expected_eligible_value=*/true,
-                   /*expected_enabled_value=*/true);
-  TestFeatureState(FeatureState::kNotSupportedByChromebook,
-                   /*expected_eligible_value=*/false,
-                   /*expected_enabled_value=*/false);
-  TestFeatureState(FeatureState::kNotSupportedByPhone,
-                   /*expected_eligible_value=*/false,
-                   /*expected_enabled_value=*/false);
-  TestFeatureState(FeatureState::kUnavailableNoVerifiedHost,
-                   /*expected_eligible_value=*/false,
-                   /*expected_enabled_value=*/false);
-  TestFeatureState(FeatureState::kUnavailableInsufficientSecurity,
-                   /*expected_eligible_value=*/true,
-                   /*expected_enabled_value=*/false);
-  TestFeatureState(FeatureState::kUnavailableSuiteDisabled,
-                   /*expected_eligible_value=*/true,
-                   /*expected_enabled_value=*/false);
-  TestFeatureState(FeatureState::kFurtherSetupRequired,
-                   /*expected_eligible_value=*/true,
-                   /*expected_enabled_value=*/false);
-  TestFeatureState(FeatureState::kUnavailableTopLevelFeatureDisabled,
-                   /*expected_eligible_value=*/true,
-                   /*expected_enabled_value=*/false);
+  EXPECT_TRUE(feature_usage_metrics_->IsEligible());
+  EXPECT_TRUE(feature_usage_metrics_->IsEnabled());
+
+  feature_usage_metrics_ = std::make_unique<SmartLockFeatureUsageMetrics>(
+      base::BindRepeating(&IsEligible1), base::BindRepeating(&IsEnabled2));
+
+  EXPECT_TRUE(feature_usage_metrics_->IsEligible());
+  EXPECT_FALSE(feature_usage_metrics_->IsEnabled());
+
+  feature_usage_metrics_ = std::make_unique<SmartLockFeatureUsageMetrics>(
+      base::BindRepeating(&IsEligible2), base::BindRepeating(&IsEnabled2));
+
+  EXPECT_FALSE(feature_usage_metrics_->IsEligible());
+  EXPECT_FALSE(feature_usage_metrics_->IsEnabled());
 }
 
 TEST_F(SmartLockFeatureUsageMetricsTest, RecordUsage) {
   SmartLockFeatureUsageMetrics feature_usage_metrics_(
-      &fake_multidevice_setup_client_);
+      base::BindRepeating(&IsEligible1), base::BindRepeating(&IsEnabled1));
   base::HistogramTester histograms;
-
-  // feature_usage_metrics_ must be both eligible and enabled in order for
-  // RecordUsage method to be used.
-  fake_multidevice_setup_client_.SetFeatureState(Feature::kSmartLock,
-                                                 FeatureState::kEnabledByUser);
 
   histograms.ExpectBucketCount(
       "ChromeOS.FeatureUsage.SmartLock",

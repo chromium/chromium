@@ -8,17 +8,17 @@
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
 namespace ash {
+
 namespace {
-using chromeos::multidevice_setup::mojom::Feature;
-using chromeos::multidevice_setup::mojom::FeatureState;
 
 const char kFeatureName[] = "SmartLock";
 }  // namespace
 
 SmartLockFeatureUsageMetrics::SmartLockFeatureUsageMetrics(
-    chromeos::multidevice_setup::MultiDeviceSetupClient*
-        multi_device_setup_client)
-    : multi_device_setup_client_(multi_device_setup_client),
+    base::RepeatingCallback<bool()> is_eligible_callback,
+    base::RepeatingCallback<bool()> is_enabled_callback)
+    : is_eligible_callback_(is_eligible_callback),
+      is_enabled_callback_(is_enabled_callback),
       feature_usage_metrics_(kFeatureName, this) {}
 
 SmartLockFeatureUsageMetrics::~SmartLockFeatureUsageMetrics() = default;
@@ -28,54 +28,11 @@ void SmartLockFeatureUsageMetrics::RecordUsage(bool success) {
 }
 
 bool SmartLockFeatureUsageMetrics::IsEligible() const {
-  if (!multi_device_setup_client_) {
-    // EasyUnlockServiceSignin cannot determine Eligible/Enabled values, so
-    // it injects a null MultiDeviceSetupClient reference. Therefore, a null
-    // MultiDeviceSetupClient reference implies that Eligible/Enabled are always
-    // true.
-    return true;
-  }
-
-  switch (multi_device_setup_client_->GetFeatureState(Feature::kSmartLock)) {
-    case FeatureState::kUnavailableNoVerifiedHost:
-      FALLTHROUGH;
-    case FeatureState::kNotSupportedByChromebook:
-      FALLTHROUGH;
-    case FeatureState::kNotSupportedByPhone:
-      return false;
-
-    case FeatureState::kProhibitedByPolicy:
-      FALLTHROUGH;
-    case FeatureState::kDisabledByUser:
-      FALLTHROUGH;
-    case FeatureState::kEnabledByUser:
-      FALLTHROUGH;
-    case FeatureState::kUnavailableInsufficientSecurity:
-      FALLTHROUGH;
-    case FeatureState::kUnavailableSuiteDisabled:
-      FALLTHROUGH;
-    case FeatureState::kFurtherSetupRequired:
-      FALLTHROUGH;
-    case FeatureState::kUnavailableTopLevelFeatureDisabled:
-      return true;
-  }
+  return is_eligible_callback_.Run();
 }
 
 bool SmartLockFeatureUsageMetrics::IsEnabled() const {
-  if (!multi_device_setup_client_) {
-    // EasyUnlockServiceSignin cannot determine Eligible/Enabled values, so
-    // it injects a null MultiDeviceSetupClient reference. Therefore, a null
-    // MultiDeviceSetupClient reference implies that Eligible/Enabled are always
-    // true.
-    return true;
-  }
-
-  if (multi_device_setup_client_->GetFeatureState(Feature::kSmartLock) ==
-      FeatureState::kEnabledByUser) {
-    return true;
-  }
-
-  return false;
+  return is_enabled_callback_.Run();
 }
 
 }  // namespace ash

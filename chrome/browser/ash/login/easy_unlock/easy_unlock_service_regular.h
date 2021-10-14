@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
-#include "chrome/browser/ash/login/easy_unlock/smartlock_feature_usage_metrics.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
@@ -92,6 +91,7 @@ class EasyUnlockServiceRegular
   void InitializeInternal() override;
   void ShutdownInternal() override;
   bool IsAllowedInternal() const override;
+  bool IsEligible() const override;
   bool IsEnabled() const override;
   bool IsChromeOSLoginEnabled() const override;
 
@@ -147,10 +147,6 @@ class EasyUnlockServiceRegular
 
   // Used to determine the FeatureState of Smart Lock.
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
-
-  // Tracks Smart Lock feature usage for the Standard Feature Usage Logging
-  // (SFUL) framework.
-  std::unique_ptr<SmartLockFeatureUsageMetrics> feature_usage_metrics_;
 
   // Stores the unlock keys for EasyUnlock before the current device sync, so we
   // can compare it to the unlock keys after syncing.

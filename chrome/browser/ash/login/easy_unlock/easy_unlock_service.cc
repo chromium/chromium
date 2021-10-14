@@ -641,6 +641,22 @@ void EasyUnlockService::SetProximityAuthDevices(
   proximity_auth_system_->Start();
 }
 
+void EasyUnlockService::StartFeatureUsageMetrics() {
+  feature_usage_metrics_ = std::make_unique<SmartLockFeatureUsageMetrics>(
+      base::BindRepeating(&EasyUnlockService::IsEligible,
+                          base::Unretained(this)),
+      base::BindRepeating(&EasyUnlockService::IsEnabled,
+                          base::Unretained(this)));
+
+  SmartLockMetricsRecorder::SetUsageRecorderInstance(
+      feature_usage_metrics_.get());
+}
+
+void EasyUnlockService::StopFeatureUsageMetrics() {
+  feature_usage_metrics_.reset();
+  SmartLockMetricsRecorder::SetUsageRecorderInstance(nullptr);
+}
+
 void EasyUnlockService::OnCryptohomeKeysFetchedForChecking(
     const AccountId& account_id,
     const std::set<std::string> paired_devices,
