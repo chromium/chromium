@@ -29,6 +29,7 @@
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/events/event.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
@@ -159,6 +160,17 @@ void InputMethodAsh::ProcessKeyEventDone(ui::KeyEvent* event, bool is_handled) {
       // If IME does not handle key event, passes keyevent to character composer
       // to be able to compose complex characters.
       is_handled = ExecuteCharacterComposer(*event);
+
+      if (!is_handled &&
+          !KeycodeConverter::IsDomKeyForModifier(event->GetDomKey())) {
+        // If the character composer didn't handle it either, then confirm any
+        // composition text before forwarding the key event. We ignore modifier
+        // keys because, for example, if the IME handles Shift+A, then we don't
+        // want the Shift key to confirm the composition text. Only confirm the
+        // composition text when the IME does not handle the full key combo.
+        ConfirmCompositionText(/* reset_engine */ true,
+                               /* keep_selection */ true);
+      }
     }
   }
   if (event->type() == ET_KEY_PRESSED || event->type() == ET_KEY_RELEASED) {
