@@ -15,7 +15,6 @@
     flex-grow: 1;
     justify-content: space-between;
     min-width: 0;
-    outline: none;
     padding-inline-start: var(--cluster-padding-horizontal);
     user-select: none;
   }
@@ -24,10 +23,6 @@
     padding-inline-start: calc(var(--cluster-padding-horizontal) +
                                var(--top-visit-favicon-size) +
                                var(--favicon-margin));
-  }
-
-  :host-context(.focus-outline-visible) #header:focus {
-    box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
   }
 
   a {
@@ -39,6 +34,11 @@
     align-items: center;
     display: flex;
     min-width: 0;
+    outline: none;
+  }
+
+  :host-context(.focus-outline-visible) #start-justified:focus {
+    box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
   }
 
   #page-info {
@@ -122,9 +122,9 @@
     display: none;
   }
 </style>
-<a id="header" href="[[visit.normalizedUrl.url]]" on-click="onClick_"
-    on-auxclick="onAuxClick_" on-keydown="onKeydown_">
-  <div id="start-justified">
+<div id="header" on-click="onClick_" on-auxclick="onAuxClick_"
+    on-keydown="onKeydown_">
+  <a id="start-justified" href="[[visit.normalizedUrl.url]]">
     <page-favicon is-top-visit-favicon="[[isTopVisit]]"
         url="[[visit.normalizedUrl]]">
     </page-favicon>
@@ -141,7 +141,7 @@
         <span id="debug-info" hidden="[[!debugInfo_]]">[[debugInfo_]]</span>
       </span>
     </div>
-  </div>
+  </a>
   <div id="end-justified">
     <div id="timestamp">[[visit.relativeDate]]</div>
     <cr-icon-button id="actionMenuButton" class="icon-more-vert"
@@ -149,7 +149,7 @@
         on-click="onActionMenuButtonClick_">
     </cr-icon-button>
   </div>
-</a>
+</div>
 
 <cr-lazy-render id="actionMenu">
   <template>
