@@ -155,7 +155,7 @@ void OverlayPanelContent::UpdateBrowserControlsState(
   if (are_controls_hidden)
     state = cc::BrowserControlsState::kHidden;
 
-  web_contents_->GetMainFrame()->UpdateBrowserControlsState(
+  web_contents_->UpdateBrowserControlsState(
       state, cc::BrowserControlsState::kBoth, false);
 }
 

@@ -588,7 +588,7 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
   // Tests should always start with the browser controls hidden.
   // TODO(danakj): We no longer run web tests on android, and this is an android
   // feature, so maybe this isn't needed anymore.
-  main_window_->web_contents()->GetMainFrame()->UpdateBrowserControlsState(
+  main_window_->web_contents()->UpdateBrowserControlsState(
       cc::BrowserControlsState::kBoth, cc::BrowserControlsState::kHidden,
       false);
 

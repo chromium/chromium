@@ -596,8 +596,8 @@ void TopControlsSlideControllerChromeOS::UpdateBrowserControlsStateShown(
 
   const cc::BrowserControlsState current_state =
       cc::BrowserControlsState::kShown;
-  main_frame->UpdateBrowserControlsState(constraints_state, current_state,
-                                         animate);
+  web_contents->UpdateBrowserControlsState(constraints_state, current_state,
+                                           animate);
 }
 
 bool TopControlsSlideControllerChromeOS::CanEnable(

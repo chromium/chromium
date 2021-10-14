@@ -22,6 +22,7 @@
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "cc/input/browser_controls_state.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/mhtml_generation_result.h"
@@ -1306,6 +1307,13 @@ class WebContents : public PageNavigator,
 
   // Returns the value from CreateParams::creator_location.
   virtual const base::Location& GetCreatorLocation() = 0;
+
+  // Hide or show the browser controls for the given WebContents, based on
+  // allowed states, desired state and whether the transition should be animated
+  // or not.
+  virtual void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
+                                          cc::BrowserControlsState current,
+                                          bool animate) = 0;
 
  private:
   // This interface should only be implemented inside content.

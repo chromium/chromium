@@ -422,9 +422,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool HasTransientUserActivation() override;
   void NotifyUserActivation(
       blink::mojom::UserActivationNotificationType notification_type) override;
-  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
-                                  cc::BrowserControlsState current,
-                                  bool animate) override;
   bool Reload() override;
   bool IsDOMContentLoaded() override;
   void UpdateIsAdSubframe(bool is_ad_subframe) override;
@@ -477,6 +474,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderFrameHost. Will create one if it does not exist (and update all the
   // renderers with the newly computed value).
   blink::web_pref::WebPreferences GetOrCreateWebPreferences();
+
+  // Notifies the renderer whether hiding/showing the browser controls is
+  // enabled, what the current state should be, and whether or not to animate to
+  // the proper state.
+  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
+                                  cc::BrowserControlsState current,
+                                  bool animate);
 
   // IPC::Sender
   bool Send(IPC::Message* msg) override;

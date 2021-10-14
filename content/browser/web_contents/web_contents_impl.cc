@@ -9005,4 +9005,13 @@ void WebContentsImpl::NotifyPrimaryMainFrameProcessIsAlive() {
   }
 }
 
+void WebContentsImpl::UpdateBrowserControlsState(
+    cc::BrowserControlsState constraints,
+    cc::BrowserControlsState current,
+    bool animate) {
+  // Browser controls should be synchronised with the scroll state. Therefore,
+  // they are controlled from the renderer by the main RenderFrame(Host).
+  GetMainFrame()->UpdateBrowserControlsState(constraints, current, animate);
+}
+
 }  // namespace content

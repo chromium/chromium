@@ -779,7 +779,7 @@ void TabImpl::UpdateBrowserControlsState(cc::BrowserControlsState new_state,
     animate = false;
   // The constraint is managed by Java code, so re-use the existing constraint
   // and only update the desired state.
-  web_contents_->GetMainFrame()->UpdateBrowserControlsState(
+  web_contents_->UpdateBrowserControlsState(
       current_browser_controls_visibility_constraint_, new_state, animate);
 }
 
@@ -1327,7 +1327,7 @@ void TabImpl::OnUpdateBrowserControlsStateBecauseOfProcessSwitch(
       // here is likely to be racy, so the top-view is always shown.
       const bool animate =
           !base::FeatureList::IsEnabled(kImmediatelyHideBrowserControlsForTest);
-      web_contents_->GetMainFrame()->UpdateBrowserControlsState(
+      web_contents_->UpdateBrowserControlsState(
           cc::BrowserControlsState::kBoth, cc::BrowserControlsState::kShown,
           animate);
       // This falls through to call UpdateBrowserControlsState() again to

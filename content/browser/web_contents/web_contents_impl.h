@@ -557,6 +557,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void WriteIntoTrace(perfetto::TracedValue context) override;
   void DisallowActivationNavigationsForBug1234857() override;
   const base::Location& GetCreatorLocation() override;
+  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
+                                  cc::BrowserControlsState current,
+                                  bool animate) override;
 
   // Implementation of PageNavigator.
   WebContents* OpenURL(const OpenURLParams& params) override;
