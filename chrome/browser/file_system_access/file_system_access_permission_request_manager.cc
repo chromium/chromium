@@ -93,8 +93,8 @@ FileSystemAccessPermissionRequestManager::
 bool FileSystemAccessPermissionRequestManager::CanShowRequest() const {
   // Deley showing requests until the main frame is fully loaded.
   // ScheduleShowRequest() will be called again when that happens.
-  return main_frame_has_fully_loaded_ && !queued_requests_.empty() &&
-         !current_request_;
+  return web_contents()->IsDocumentOnLoadCompletedInMainFrame() &&
+         !queued_requests_.empty() && !current_request_;
 }
 
 void FileSystemAccessPermissionRequestManager::ScheduleShowRequest() {
@@ -131,14 +131,14 @@ void FileSystemAccessPermissionRequestManager::DequeueAndShowRequest() {
 void FileSystemAccessPermissionRequestManager::
     DocumentOnLoadCompletedInMainFrame(
         content::RenderFrameHost* render_frame_host) {
-  main_frame_has_fully_loaded_ = true;
   // This is scheduled because while all calls to the browser have been
   // issued at DOMContentLoaded, they may be bouncing around in scheduled
   // callbacks finding the UI thread still. This makes sure we allow those
   // scheduled calls to AddRequest to complete before we show the page-load
   // permissions bubble.
-  if (!queued_requests_.empty())
+  if (!queued_requests_.empty()) {
     ScheduleShowRequest();
+  }
 }
 
 void FileSystemAccessPermissionRequestManager::OnPermissionDialogResult(

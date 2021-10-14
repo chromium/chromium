@@ -31,8 +31,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/web_ui_browsertest_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
@@ -291,6 +293,116 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, FullscreenOpenFile) {
   // Wait until the fullscreen exit operation completes.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsFullscreen());
+}
+
+class FileSystemAccessBrowserSlowLoadTest : public FileSystemAccessBrowserTest {
+ public:
+  FileSystemAccessBrowserSlowLoadTest() = default;
+  ~FileSystemAccessBrowserSlowLoadTest() override = default;
+
+  FileSystemAccessBrowserSlowLoadTest(
+      const FileSystemAccessBrowserSlowLoadTest&) = delete;
+  FileSystemAccessBrowserSlowLoadTest& operator=(
+      const FileSystemAccessBrowserSlowLoadTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    main_document_response_ =
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            embedded_test_server(), "/main_document");
+    FileSystemAccessBrowserTest::SetUpOnMainThread();
+  }
+
+ protected:
+  std::unique_ptr<net::test_server::ControllableHttpResponse>
+      main_document_response_;
+};
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserSlowLoadTest, WaitUntilLoaded) {
+  const base::FilePath test_file = CreateTestFile("");
+  const std::string file_contents = "file contents to write";
+
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({test_file}));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
+      ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
+
+  web_contents->GetController().LoadURL(
+      embedded_test_server()->GetURL("/main_document"), content::Referrer(),
+      ui::PAGE_TRANSITION_LINK, std::string());
+
+  content::TestNavigationObserver load_observer(web_contents);
+
+  main_document_response_->WaitForRequest();
+  main_document_response_->Send(
+      "HTTP/1.1 200 OK\r\n"
+      "Connection: close\r\n"
+      "Content-Type: text/html; charset=utf-8\r\n"
+      "\r\n"
+      "<body>\n"
+      "<script>\n"
+      "self.createWritableFinished = false;\n"
+      "self.createWritableFinishedWhenDocumentLoad = \n"
+      "    new Promise((resolve) => {\n"
+      "      window.addEventListener('load', () => {\n"
+      "        resolve(self.createWritableFinished);\n"
+      "      });\n"
+      "    });\n"
+      "</script>"
+      "</body>");
+
+  load_observer.WaitForNavigationFinished();
+
+  EXPECT_FALSE(IsUsageIndicatorVisible());
+
+  EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
+            content::EvalJs(web_contents,
+                            "(async () => {"
+                            "  let [e] = await self.showOpenFilePicker();"
+                            "  self.entry = e;"
+                            "  return e.name; })()"));
+
+  // Even read-only access should show a usage indicator.
+  EXPECT_TRUE(IsUsageIndicatorVisible());
+
+  EXPECT_EQ("done",
+            content::EvalJs(
+                web_contents,
+                "(() => {"
+                "  self.createWritablePromise = self.entry.createWritable();"
+                "  self.createWritablePromise.then((result) => {"
+                "        self.createWritableFinished = true;"
+                "      });"
+                "  return 'done';})()"));
+
+  // Finish the response. This will triger the load event handler.
+  main_document_response_->Done();
+
+  // The promise of createWritable() must not have been resolved when the
+  // load event handler was called.
+  EXPECT_EQ(false,
+            content::EvalJs(web_contents,
+                            "self.createWritableFinishedWhenDocumentLoad"));
+
+  // The FileSystemWritableFileStream must work correctly.
+  EXPECT_EQ(
+      static_cast<int>(file_contents.size()),
+      content::EvalJs(
+          web_contents,
+          content::JsReplace("(async () => {"
+                             "  const w = await self.createWritablePromise;"
+                             "  await w.write(new Blob([$1]));"
+                             "  await w.close();"
+                             "  return (await self.entry.getFile()).size; })()",
+                             file_contents)));
+
+  // The usage indicator should still be visible.
+  EXPECT_TRUE(IsUsageIndicatorVisible());
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
