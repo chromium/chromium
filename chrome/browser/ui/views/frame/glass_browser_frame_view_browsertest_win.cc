@@ -662,3 +662,19 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
       glass_frame_view_->web_app_frame_toolbar_for_testing()->height(),
       glass_frame_view_->caption_button_container_for_testing()->height());
 }
+
+IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
+                       Fullscreen) {
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
+
+  ToggleWindowControlsOverlayEnabledAndWait();
+
+  EXPECT_GT(glass_frame_view_->GetBoundsForClientView().y(), 0);
+
+  glass_frame_view_->frame()->SetFullscreen(true);
+  browser_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // ClientView should be covering the entire screen.
+  EXPECT_EQ(glass_frame_view_->GetBoundsForClientView().y(), 0);
+}
