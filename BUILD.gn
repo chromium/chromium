@@ -185,6 +185,8 @@ group("gn_all") {
   if (!is_ios) {
     deps += [
       "//cc:cc_unittests",
+      "//chrome/test:unit_tests",
+      "//components:components_browsertests",
       "//components/policy:policy_templates",
       "//components/url_formatter/tools:format_url",
       "//components/viz:viz_perftests",
@@ -193,10 +195,12 @@ group("gn_all") {
       "//content/test:content_browsertests",
       "//content/test:content_perftests",
       "//content/test:content_unittests",
+      "//device:device_unittests",
       "//gpu:gpu_benchmark",
       "//gpu:gpu_unittests",
       "//ipc:ipc_tests",
       "//media:media_unittests",
+      "//media/capture:capture_unittests",
       "//media/midi:midi_unittests",
       "//media/mojo:media_mojo_unittests",
       "//mojo",
@@ -251,11 +255,7 @@ group("gn_all") {
 
   if (!is_ios && !is_fuchsia) {
     deps += [
-      "//chrome/test:unit_tests",
-      "//components:components_browsertests",
-      "//device:device_unittests",
       "//google_apis/gcm:mcs_probe",
-      "//media/capture:capture_unittests",
       "//media/cast:cast_unittests",
       "//third_party/catapult/telemetry:bitmaptools($host_toolchain)",
     ]
