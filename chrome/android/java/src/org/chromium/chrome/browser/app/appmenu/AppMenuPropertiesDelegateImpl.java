@@ -17,6 +17,7 @@ import android.view.SubMenu;
 import android.view.View;
 import android.widget.PopupMenu;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -315,6 +316,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             if (!item.isVisible()) continue;
 
             PropertyModel propertyModel = AppMenuUtil.menuItemToPropertyModel(item);
+            propertyModel.set(AppMenuItemProperties.ICON_COLOR_RES, getMenuItemIconColorRes(item));
             propertyModel.set(AppMenuItemProperties.SUPPORT_ENTER_ANIMATION, true);
             if (item.hasSubMenu()) {
                 // Only support top level menu items have SUBMENU, and a SUBMENU item cannot have a
@@ -455,12 +457,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
         // TODO(crbug.com/1257406): Show this only if the current page is not in bookmarks.
         menu.findItem(R.id.add_bookmark_menu_id)
-                .setVisible(isCurrentTabNotNull && isHttpOrHttpsScheme
-                        && BookmarkFeatures.isAddBookmarkMenuItemEnabled());
+                .setVisible(isCurrentTabNotNull && BookmarkFeatures.isAddBookmarkMenuItemEnabled());
         // TODO(crbug.com/1257406): Show this only if the current page is in bookmarks.
         menu.findItem(R.id.edit_bookmark_menu_id)
-                .setVisible(isCurrentTabNotNull && isHttpOrHttpsScheme
-                        && BookmarkFeatures.isEditBookmarkMenuItemEnabled());
+                .setVisible(
+                        isCurrentTabNotNull && BookmarkFeatures.isEditBookmarkMenuItemEnabled());
 
         // Don't allow either "chrome://" pages or interstitial pages to be shared, or when the
         // current tab is null.
@@ -1096,5 +1097,17 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     @VisibleForTesting
     static void setPageBookmarkedForTesting(Boolean bookmarked) {
         sItemBookmarkedForTesting = bookmarked;
+    }
+
+    /**
+     * @return Whether the menu item's icon need to be tinted to blue.
+     */
+    protected @ColorRes int getMenuItemIconColorRes(MenuItem menuItem) {
+        int itemId = menuItem.getItemId();
+        if (itemId == R.id.edit_bookmark_menu_id || itemId == R.id.add_bookmark_menu_id) {
+            return R.color.default_icon_color_blue;
+        }
+
+        return R.color.default_icon_color_secondary_tint_list;
     }
 }
