@@ -12,7 +12,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "content/browser/interest_group/bidding_interest_group.h"
+#include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "sql/database.h"
@@ -83,28 +83,28 @@ class CONTENT_EXPORT InterestGroupStorage {
                               const std::string& ad_json);
   // Records the K-anonymity data for an interest group owner/name combination.
   void UpdateInterestGroupNameKAnonymity(
-      const BiddingInterestGroup::KAnonymityData& data,
+      const StorageInterestGroup::KAnonymityData& data,
       const absl::optional<base::Time>& update_sent_time);
   // Records the K-anonymity data for an interest group update URL.
   void UpdateInterestGroupUpdateURLKAnonymity(
-      const BiddingInterestGroup::KAnonymityData& data,
+      const StorageInterestGroup::KAnonymityData& data,
       const absl::optional<base::Time>& update_sent_time);
   // Records the K-anonymity data for an ad.
-  void UpdateAdKAnonymity(const BiddingInterestGroup::KAnonymityData& data,
+  void UpdateAdKAnonymity(const StorageInterestGroup::KAnonymityData& data,
                           const absl::optional<base::Time>& update_sent_time);
   // Gets a list of all interest group owners. Each owner will only appear
   // once.
   std::vector<url::Origin> GetAllInterestGroupOwners();
   // Gets a list of all interest groups with their bidding information
   // associated with the provided owner.
-  std::vector<BiddingInterestGroup> GetInterestGroupsForOwner(
+  std::vector<StorageInterestGroup> GetInterestGroupsForOwner(
       const url::Origin& owner);
   // Like GetInterestGroupsForOwner(), but doesn't return any interest groups
   // that are currently rate-limited for updates. Additionally, this will update
   // the `next_update_after` field such that a subsequent
   // ClaimInterestGroupsForUpdate() call with the same `owner` won't return
   // anything until after the success rate limit period passes.
-  std::vector<BiddingInterestGroup> ClaimInterestGroupsForUpdate(
+  std::vector<StorageInterestGroup> ClaimInterestGroupsForUpdate(
       const url::Origin& owner);
 
   // Clear out storage for the matching owning origin. If the callback is empty
@@ -112,7 +112,7 @@ class CONTENT_EXPORT InterestGroupStorage {
   void DeleteInterestGroupData(
       const base::RepeatingCallback<bool(const url::Origin&)>& origin_matcher);
 
-  std::vector<BiddingInterestGroup> GetAllInterestGroupsUnfilteredForTesting();
+  std::vector<StorageInterestGroup> GetAllInterestGroupsUnfilteredForTesting();
 
   base::Time GetLastMaintenanceTimeForTesting() const;
 

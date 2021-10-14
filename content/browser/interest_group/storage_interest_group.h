@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_INTEREST_GROUP_BIDDING_INTEREST_GROUP_H_
-#define CONTENT_BROWSER_INTEREST_GROUP_BIDDING_INTEREST_GROUP_H_
+#ifndef CONTENT_BROWSER_INTEREST_GROUP_STORAGE_INTEREST_GROUP_H_
+#define CONTENT_BROWSER_INTEREST_GROUP_STORAGE_INTEREST_GROUP_H_
 
 #include "content/common/content_export.h"
 
@@ -16,17 +16,17 @@
 
 namespace content {
 
-// BiddingInterestGroup contains both the auction worklet's Bidding interest
+// StorageInterestGroup contains both the auction worklet's Bidding interest
 // group as well as several fields that are used by the browser process during
 // an auction but are not needed by or should not be sent to the worklet
 // process.
-struct CONTENT_EXPORT BiddingInterestGroup {
-  BiddingInterestGroup();
-  explicit BiddingInterestGroup(
+struct CONTENT_EXPORT StorageInterestGroup {
+  StorageInterestGroup();
+  explicit StorageInterestGroup(
       auction_worklet::mojom::BiddingInterestGroupPtr group);
-  BiddingInterestGroup(BiddingInterestGroup&&);
-  BiddingInterestGroup& operator=(BiddingInterestGroup&&) = default;
-  ~BiddingInterestGroup();
+  StorageInterestGroup(StorageInterestGroup&&);
+  StorageInterestGroup& operator=(StorageInterestGroup&&) = default;
+  ~StorageInterestGroup();
 
   // KAnonymityData contains the information related to K-anonymity for either
   // an interest group or an ad. The interest groups are identified by update
@@ -48,7 +48,7 @@ struct CONTENT_EXPORT BiddingInterestGroup {
     base::Time last_updated;
   };
 
-  auction_worklet::mojom::BiddingInterestGroupPtr group;
+  auction_worklet::mojom::BiddingInterestGroupPtr bidding_group;
   absl::optional<KAnonymityData> name_kanon;
   absl::optional<KAnonymityData> update_url_kanon;
   std::vector<KAnonymityData> ads_kanon;
@@ -57,8 +57,8 @@ struct CONTENT_EXPORT BiddingInterestGroup {
 // Stream operator so KAnonymityData can be used in assertion statements.
 CONTENT_EXPORT std::ostream& operator<<(
     std::ostream& out,
-    const BiddingInterestGroup::KAnonymityData& kanon);
+    const StorageInterestGroup::KAnonymityData& kanon);
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_INTEREST_GROUP_BIDDING_INTEREST_GROUP_H_
+#endif  // CONTENT_BROWSER_INTEREST_GROUP_STORAGE_INTEREST_GROUP_H_

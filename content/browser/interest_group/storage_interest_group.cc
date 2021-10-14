@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/interest_group/bidding_interest_group.h"
+#include "content/browser/interest_group/storage_interest_group.h"
 
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 
 namespace content {
 
-BiddingInterestGroup::BiddingInterestGroup() = default;
-BiddingInterestGroup::BiddingInterestGroup(
+StorageInterestGroup::StorageInterestGroup() = default;
+StorageInterestGroup::StorageInterestGroup(
     auction_worklet::mojom::BiddingInterestGroupPtr group) {
-  this->group = std::move(group);
+  this->bidding_group = std::move(group);
 }
-BiddingInterestGroup::BiddingInterestGroup(BiddingInterestGroup&&) = default;
-BiddingInterestGroup::~BiddingInterestGroup() = default;
+StorageInterestGroup::StorageInterestGroup(StorageInterestGroup&&) = default;
+StorageInterestGroup::~StorageInterestGroup() = default;
 
 std::ostream& operator<<(std::ostream& out,
-                         const BiddingInterestGroup::KAnonymityData& kanon) {
+                         const StorageInterestGroup::KAnonymityData& kanon) {
   return out << "KAnonymityData[key=`" << kanon.key << "`, k=" << kanon.k
              << ", last_updated=`" << kanon.last_updated << "`]";
 }

@@ -240,7 +240,7 @@ class RemoveInterestGroupTester {
   }
 
  private:
-  void GetInterestGroupsCallback(std::vector<BiddingInterestGroup> groups) {
+  void GetInterestGroupsCallback(std::vector<StorageInterestGroup> groups) {
     get_interest_group_success_ = groups.size() > 0;
     await_completion_.Notify();
   }

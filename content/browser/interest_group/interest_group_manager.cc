@@ -125,7 +125,7 @@ void InterestGroupManager::GetAllInterestGroupOwners(
 
 void InterestGroupManager::GetInterestGroupsForOwner(
     const url::Origin& owner,
-    base::OnceCallback<void(std::vector<BiddingInterestGroup>)> callback) {
+    base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback) {
   impl_.AsyncCall(&InterestGroupStorage::GetInterestGroupsForOwner)
       .WithArgs(owner)
       .Then(std::move(callback));
@@ -133,7 +133,7 @@ void InterestGroupManager::GetInterestGroupsForOwner(
 
 void InterestGroupManager::ClaimInterestGroupsForUpdate(
     const url::Origin& owner,
-    base::OnceCallback<void(std::vector<BiddingInterestGroup>)> callback) {
+    base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback) {
   impl_.AsyncCall(&InterestGroupStorage::ClaimInterestGroupsForUpdate)
       .WithArgs(owner)
       .Then(std::move(callback));
@@ -153,15 +153,16 @@ void InterestGroupManager::GetLastMaintenanceTimeForTesting(
 
 void InterestGroupManager::DidUpdateInterestGroupsOfOwnerDbLoad(
     url::Origin owner,
-    std::vector<BiddingInterestGroup> interest_groups) {
+    std::vector<StorageInterestGroup> interest_groups) {
   net::IsolationInfo per_update_isolation_info =
       net::IsolationInfo::CreateTransient();
 
   for (auto& interest_group : interest_groups) {
-    if (!interest_group.group->group.update_url)
+    if (!interest_group.bidding_group->group.update_url)
       continue;
     auto resource_request = std::make_unique<network::ResourceRequest>();
-    resource_request->url = interest_group.group->group.update_url.value();
+    resource_request->url =
+        interest_group.bidding_group->group.update_url.value();
     resource_request->redirect_mode = network::mojom::RedirectMode::kError;
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
     resource_request->request_initiator = owner;
@@ -180,7 +181,7 @@ void InterestGroupManager::DidUpdateInterestGroupsOfOwnerDbLoad(
             base::BindOnce(
                 &InterestGroupManager::DidUpdateInterestGroupsOfOwnerNetFetch,
                 weak_factory_.GetWeakPtr(), simple_url_loader_it, owner,
-                interest_group.group->group.name),
+                interest_group.bidding_group->group.name),
             kMaxUpdateSize);
   }
 }

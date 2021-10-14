@@ -117,13 +117,13 @@ TEST_F(InterestGroupStorageTest, DatabaseJoin) {
     std::vector<url::Origin> origins = storage->GetAllInterestGroupOwners();
     EXPECT_EQ(1u, origins.size());
     EXPECT_EQ(test_origin, origins[0]);
-    std::vector<BiddingInterestGroup> interest_groups =
+    std::vector<StorageInterestGroup> interest_groups =
         storage->GetInterestGroupsForOwner(test_origin);
     EXPECT_EQ(1u, interest_groups.size());
-    EXPECT_EQ(test_origin, interest_groups[0].group->group.owner);
-    EXPECT_EQ("example", interest_groups[0].group->group.name);
-    EXPECT_EQ(1, interest_groups[0].group->signals->join_count);
-    EXPECT_EQ(0, interest_groups[0].group->signals->bid_count);
+    EXPECT_EQ(test_origin, interest_groups[0].bidding_group->group.owner);
+    EXPECT_EQ("example", interest_groups[0].bidding_group->group.name);
+    EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
+    EXPECT_EQ(0, interest_groups[0].bidding_group->signals->bid_count);
   }
   histograms.ExpectUniqueSample("Storage.InterestGroup.PerSiteCount", 1u, 1);
 }
@@ -146,12 +146,12 @@ TEST_F(InterestGroupStorageTest, JoinJoinLeave) {
   EXPECT_EQ(1u, origins.size());
   EXPECT_EQ(test_origin, origins[0]);
 
-  std::vector<BiddingInterestGroup> interest_groups =
+  std::vector<StorageInterestGroup> interest_groups =
       storage->GetInterestGroupsForOwner(test_origin);
   EXPECT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("example", interest_groups[0].group->group.name);
-  EXPECT_EQ(2, interest_groups[0].group->signals->join_count);
-  EXPECT_EQ(0, interest_groups[0].group->signals->bid_count);
+  EXPECT_EQ("example", interest_groups[0].bidding_group->group.name);
+  EXPECT_EQ(2, interest_groups[0].bidding_group->signals->join_count);
+  EXPECT_EQ(0, interest_groups[0].bidding_group->signals->bid_count);
 
   storage->JoinInterestGroup(NewInterestGroup(test_origin, "example2"),
                              test_origin.GetURL());
@@ -167,9 +167,9 @@ TEST_F(InterestGroupStorageTest, JoinJoinLeave) {
 
   interest_groups = storage->GetInterestGroupsForOwner(test_origin);
   EXPECT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("example2", interest_groups[0].group->group.name);
-  EXPECT_EQ(1, interest_groups[0].group->signals->join_count);
-  EXPECT_EQ(0, interest_groups[0].group->signals->bid_count);
+  EXPECT_EQ("example2", interest_groups[0].bidding_group->group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
+  EXPECT_EQ(0, interest_groups[0].bidding_group->signals->bid_count);
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(1u, origins.size());
@@ -188,28 +188,28 @@ TEST_F(InterestGroupStorageTest, BidCount) {
   EXPECT_EQ(1u, origins.size());
   EXPECT_EQ(test_origin, origins[0]);
 
-  std::vector<BiddingInterestGroup> interest_groups =
+  std::vector<StorageInterestGroup> interest_groups =
       storage->GetInterestGroupsForOwner(test_origin);
   EXPECT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("example", interest_groups[0].group->group.name);
-  EXPECT_EQ(1, interest_groups[0].group->signals->join_count);
-  EXPECT_EQ(0, interest_groups[0].group->signals->bid_count);
+  EXPECT_EQ("example", interest_groups[0].bidding_group->group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
+  EXPECT_EQ(0, interest_groups[0].bidding_group->signals->bid_count);
 
   storage->RecordInterestGroupBid(test_origin, "example");
 
   interest_groups = storage->GetInterestGroupsForOwner(test_origin);
   EXPECT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("example", interest_groups[0].group->group.name);
-  EXPECT_EQ(1, interest_groups[0].group->signals->join_count);
-  EXPECT_EQ(1, interest_groups[0].group->signals->bid_count);
+  EXPECT_EQ("example", interest_groups[0].bidding_group->group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
+  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->bid_count);
 
   storage->RecordInterestGroupBid(test_origin, "example");
 
   interest_groups = storage->GetInterestGroupsForOwner(test_origin);
   EXPECT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("example", interest_groups[0].group->group.name);
-  EXPECT_EQ(1, interest_groups[0].group->signals->join_count);
-  EXPECT_EQ(2, interest_groups[0].group->signals->bid_count);
+  EXPECT_EQ("example", interest_groups[0].bidding_group->group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
+  EXPECT_EQ(2, interest_groups[0].bidding_group->signals->bid_count);
 }
 
 TEST_F(InterestGroupStorageTest, RecordsWins) {
@@ -226,12 +226,12 @@ TEST_F(InterestGroupStorageTest, RecordsWins) {
   EXPECT_EQ(1u, origins.size());
   EXPECT_EQ(test_origin, origins[0]);
 
-  std::vector<BiddingInterestGroup> interest_groups =
+  std::vector<StorageInterestGroup> interest_groups =
       storage->GetInterestGroupsForOwner(test_origin);
   ASSERT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("example", interest_groups[0].group->group.name);
-  EXPECT_EQ(1, interest_groups[0].group->signals->join_count);
-  EXPECT_EQ(0, interest_groups[0].group->signals->bid_count);
+  EXPECT_EQ("example", interest_groups[0].bidding_group->group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
+  EXPECT_EQ(0, interest_groups[0].bidding_group->signals->bid_count);
 
   std::string ad1_json = "{url: '" + ad1_url.spec() + "'}";
   storage->RecordInterestGroupBid(test_origin, "example");
@@ -239,9 +239,9 @@ TEST_F(InterestGroupStorageTest, RecordsWins) {
 
   interest_groups = storage->GetInterestGroupsForOwner(test_origin);
   ASSERT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("example", interest_groups[0].group->group.name);
-  EXPECT_EQ(1, interest_groups[0].group->signals->join_count);
-  EXPECT_EQ(1, interest_groups[0].group->signals->bid_count);
+  EXPECT_EQ("example", interest_groups[0].bidding_group->group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
+  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->bid_count);
 
   // Add the second win *after* the first so we can check ordering.
   task_environment().FastForwardBy(base::Seconds(1));
@@ -251,13 +251,15 @@ TEST_F(InterestGroupStorageTest, RecordsWins) {
 
   interest_groups = storage->GetInterestGroupsForOwner(test_origin);
   ASSERT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("example", interest_groups[0].group->group.name);
-  EXPECT_EQ(1, interest_groups[0].group->signals->join_count);
-  EXPECT_EQ(2, interest_groups[0].group->signals->bid_count);
-  EXPECT_EQ(2u, interest_groups[0].group->signals->prev_wins.size());
+  EXPECT_EQ("example", interest_groups[0].bidding_group->group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
+  EXPECT_EQ(2, interest_groups[0].bidding_group->signals->bid_count);
+  EXPECT_EQ(2u, interest_groups[0].bidding_group->signals->prev_wins.size());
   // Ad wins should be listed in reverse chronological order.
-  EXPECT_EQ(ad2_json, interest_groups[0].group->signals->prev_wins[0]->ad_json);
-  EXPECT_EQ(ad1_json, interest_groups[0].group->signals->prev_wins[1]->ad_json);
+  EXPECT_EQ(ad2_json,
+            interest_groups[0].bidding_group->signals->prev_wins[0]->ad_json);
+  EXPECT_EQ(ad1_json,
+            interest_groups[0].bidding_group->signals->prev_wins[1]->ad_json);
 
   // Try delete
   storage->DeleteInterestGroupData(
@@ -283,7 +285,7 @@ TEST_F(InterestGroupStorageTest, UpdatesInterestGroupNameKAnonymity) {
 
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
-  std::vector<BiddingInterestGroup> groups =
+  std::vector<StorageInterestGroup> groups =
       storage->GetInterestGroupsForOwner(test_origin);
 
   EXPECT_EQ(0u, groups.size());
@@ -299,32 +301,32 @@ TEST_F(InterestGroupStorageTest, UpdatesInterestGroupNameKAnonymity) {
   groups = storage->GetInterestGroupsForOwner(test_origin);
 
   ASSERT_EQ(2u, groups.size());
-  EXPECT_EQ(name, groups[1].group->group.name);
+  EXPECT_EQ(name, groups[1].bidding_group->group.name);
   ASSERT_TRUE(groups[1].name_kanon);
   EXPECT_EQ(key, groups[1].name_kanon->key);
   EXPECT_EQ(0, groups[1].name_kanon->k);
   EXPECT_EQ(base::Time::Min(), groups[1].name_kanon->last_updated);
 
-  EXPECT_EQ(name2, groups[0].group->group.name);
+  EXPECT_EQ(name2, groups[0].bidding_group->group.name);
   ASSERT_TRUE(groups[0].name_kanon);
   EXPECT_EQ(key2, groups[0].name_kanon->key);
   EXPECT_EQ(0, groups[0].name_kanon->k);
   EXPECT_EQ(base::Time::Min(), groups[0].name_kanon->last_updated);
 
   base::Time update_time = base::Time::Now();
-  BiddingInterestGroup::KAnonymityData kanon{key, 10, update_time};
+  StorageInterestGroup::KAnonymityData kanon{key, 10, update_time};
   storage->UpdateInterestGroupNameKAnonymity(kanon, absl::nullopt);
 
   groups = storage->GetInterestGroupsForOwner(test_origin);
 
   ASSERT_EQ(2u, groups.size());
-  EXPECT_EQ(name, groups[1].group->group.name);
+  EXPECT_EQ(name, groups[1].bidding_group->group.name);
   ASSERT_TRUE(groups[1].name_kanon);
   EXPECT_EQ(key, groups[1].name_kanon->key);
   EXPECT_EQ(10, groups[1].name_kanon->k);
   EXPECT_EQ(update_time, groups[1].name_kanon->last_updated);
 
-  EXPECT_EQ(name2, groups[0].group->group.name);
+  EXPECT_EQ(name2, groups[0].bidding_group->group.name);
   ASSERT_TRUE(groups[0].name_kanon);
   EXPECT_EQ(key2, groups[0].name_kanon->key);
   EXPECT_EQ(0, groups[0].name_kanon->k);
@@ -333,19 +335,19 @@ TEST_F(InterestGroupStorageTest, UpdatesInterestGroupNameKAnonymity) {
   task_environment().FastForwardBy(base::Seconds(1));
 
   update_time = base::Time::Now();
-  kanon = BiddingInterestGroup::KAnonymityData{key, 12, update_time};
+  kanon = StorageInterestGroup::KAnonymityData{key, 12, update_time};
   storage->UpdateInterestGroupNameKAnonymity(kanon, absl::nullopt);
 
   groups = storage->GetInterestGroupsForOwner(test_origin);
 
   ASSERT_EQ(2u, groups.size());
-  EXPECT_EQ(name, groups[1].group->group.name);
+  EXPECT_EQ(name, groups[1].bidding_group->group.name);
   ASSERT_TRUE(groups[1].name_kanon);
   EXPECT_EQ(key, groups[1].name_kanon->key);
   EXPECT_EQ(12, groups[1].name_kanon->k);
   EXPECT_EQ(update_time, groups[1].name_kanon->last_updated);
 
-  EXPECT_EQ(name2, groups[0].group->group.name);
+  EXPECT_EQ(name2, groups[0].bidding_group->group.name);
   ASSERT_TRUE(groups[0].name_kanon);
   EXPECT_EQ(key2, groups[0].name_kanon->key);
   EXPECT_EQ(0, groups[0].name_kanon->k);
@@ -359,7 +361,7 @@ TEST_F(InterestGroupStorageTest, UpdatesInterestGroupUpdateURLKAnonymity) {
   url::Origin test_origin = url::Origin::Create(update_url);
 
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
-  std::vector<BiddingInterestGroup> groups =
+  std::vector<StorageInterestGroup> groups =
       storage->GetInterestGroupsForOwner(test_origin);
 
   EXPECT_EQ(0u, groups.size());
@@ -379,32 +381,32 @@ TEST_F(InterestGroupStorageTest, UpdatesInterestGroupUpdateURLKAnonymity) {
   groups = storage->GetInterestGroupsForOwner(test_origin);
 
   ASSERT_EQ(2u, groups.size());
-  EXPECT_EQ("name2", groups[0].group->group.name);
+  EXPECT_EQ("name2", groups[0].bidding_group->group.name);
   ASSERT_TRUE(groups[0].update_url_kanon);
   EXPECT_EQ(update_url, groups[0].update_url_kanon->key);
   EXPECT_EQ(0, groups[0].update_url_kanon->k);
   EXPECT_EQ(base::Time::Min(), groups[0].update_url_kanon->last_updated);
 
-  EXPECT_EQ("name", groups[1].group->group.name);
+  EXPECT_EQ("name", groups[1].bidding_group->group.name);
   ASSERT_TRUE(groups[1].update_url_kanon);
   EXPECT_EQ(update_url, groups[1].update_url_kanon->key);
   EXPECT_EQ(0, groups[1].update_url_kanon->k);
   EXPECT_EQ(base::Time::Min(), groups[1].update_url_kanon->last_updated);
 
   base::Time update_time = base::Time::Now();
-  BiddingInterestGroup::KAnonymityData kanon{update_url, 10, update_time};
+  StorageInterestGroup::KAnonymityData kanon{update_url, 10, update_time};
   storage->UpdateInterestGroupUpdateURLKAnonymity(kanon, absl::nullopt);
 
   groups = storage->GetInterestGroupsForOwner(test_origin);
 
   ASSERT_EQ(2u, groups.size());
-  EXPECT_EQ("name2", groups[0].group->group.name);
+  EXPECT_EQ("name2", groups[0].bidding_group->group.name);
   ASSERT_TRUE(groups[0].update_url_kanon);
   EXPECT_EQ(update_url, groups[0].update_url_kanon->key);
   EXPECT_EQ(10, groups[0].update_url_kanon->k);
   EXPECT_EQ(update_time, groups[0].update_url_kanon->last_updated);
 
-  EXPECT_EQ("name", groups[1].group->group.name);
+  EXPECT_EQ("name", groups[1].bidding_group->group.name);
   ASSERT_TRUE(groups[1].update_url_kanon);
   EXPECT_EQ(update_url, groups[1].update_url_kanon->key);
   EXPECT_EQ(10, groups[1].update_url_kanon->k);
@@ -413,19 +415,19 @@ TEST_F(InterestGroupStorageTest, UpdatesInterestGroupUpdateURLKAnonymity) {
   task_environment().FastForwardBy(base::Seconds(1));
 
   update_time = base::Time::Now();
-  kanon = BiddingInterestGroup::KAnonymityData{update_url, 12, update_time};
+  kanon = StorageInterestGroup::KAnonymityData{update_url, 12, update_time};
   storage->UpdateInterestGroupUpdateURLKAnonymity(kanon, absl::nullopt);
 
   groups = storage->GetInterestGroupsForOwner(test_origin);
 
   ASSERT_EQ(2u, groups.size());
-  EXPECT_EQ("name2", groups[0].group->group.name);
+  EXPECT_EQ("name2", groups[0].bidding_group->group.name);
   ASSERT_TRUE(groups[0].update_url_kanon);
   EXPECT_EQ(update_url, groups[0].update_url_kanon->key);
   EXPECT_EQ(12, groups[0].update_url_kanon->k);
   EXPECT_EQ(update_time, groups[0].update_url_kanon->last_updated);
 
-  EXPECT_EQ("name", groups[1].group->group.name);
+  EXPECT_EQ("name", groups[1].bidding_group->group.name);
   ASSERT_TRUE(groups[1].update_url_kanon);
   EXPECT_EQ(update_url, groups[1].update_url_kanon->key);
   EXPECT_EQ(12, groups[1].update_url_kanon->k);
@@ -450,7 +452,7 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
       blink::InterestGroup::Ad(ad3_url, "component_metadata3"));
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
-  std::vector<BiddingInterestGroup> groups =
+  std::vector<StorageInterestGroup> groups =
       storage->GetInterestGroupsForOwner(test_origin);
 
   EXPECT_EQ(0u, groups.size());
@@ -459,7 +461,7 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
 
   groups = storage->GetInterestGroupsForOwner(test_origin);
 
-  std::vector<BiddingInterestGroup::KAnonymityData> expected_output = {
+  std::vector<StorageInterestGroup::KAnonymityData> expected_output = {
       {ad1_url, 0, base::Time::Min()},
       {ad2_url, 0, base::Time::Min()},
       {ad1_url, 0, base::Time::Min()},
@@ -471,7 +473,7 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
               testing::UnorderedElementsAreArray(expected_output));
 
   base::Time update_time = base::Time::Now();
-  BiddingInterestGroup::KAnonymityData kanon{ad1_url, 10, update_time};
+  StorageInterestGroup::KAnonymityData kanon{ad1_url, 10, update_time};
   storage->UpdateAdKAnonymity(kanon, absl::nullopt);
   expected_output[0] = kanon;
   expected_output[2] = kanon;
@@ -485,7 +487,7 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
   task_environment().FastForwardBy(base::Seconds(1));
 
   update_time = base::Time::Now();
-  kanon = BiddingInterestGroup::KAnonymityData{ad2_url, 12, update_time};
+  kanon = StorageInterestGroup::KAnonymityData{ad2_url, 12, update_time};
   storage->UpdateAdKAnonymity(kanon, absl::nullopt);
   expected_output[1] = kanon;
 
@@ -521,13 +523,13 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
 
   // Update the k-anonymity data.
   base::Time update_kanon_time = base::Time::Now();
-  BiddingInterestGroup::KAnonymityData ad1_kanon{ad1_url, 10,
+  StorageInterestGroup::KAnonymityData ad1_kanon{ad1_url, 10,
                                                  update_kanon_time};
-  BiddingInterestGroup::KAnonymityData ad2_kanon{ad2_url, 20,
+  StorageInterestGroup::KAnonymityData ad2_kanon{ad2_url, 20,
                                                  update_kanon_time};
-  BiddingInterestGroup::KAnonymityData update_kanon{update_url, 30,
+  StorageInterestGroup::KAnonymityData update_kanon{update_url, 30,
                                                     update_kanon_time};
-  BiddingInterestGroup::KAnonymityData name_kanon{key, 40, update_kanon_time};
+  StorageInterestGroup::KAnonymityData name_kanon{key, 40, update_kanon_time};
   storage->UpdateAdKAnonymity(ad1_kanon, update_kanon_time);
   storage->UpdateAdKAnonymity(ad2_kanon, update_kanon_time);
   storage->UpdateInterestGroupUpdateURLKAnonymity(update_kanon,
@@ -535,9 +537,9 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
   storage->UpdateInterestGroupNameKAnonymity(name_kanon, update_kanon_time);
 
   // Check k-anonymity data was correctly set.
-  std::vector<BiddingInterestGroup::KAnonymityData> expected_output = {
+  std::vector<StorageInterestGroup::KAnonymityData> expected_output = {
       ad1_kanon, ad2_kanon};
-  std::vector<BiddingInterestGroup> groups =
+  std::vector<StorageInterestGroup> groups =
       storage->GetInterestGroupsForOwner(test_origin);
   ASSERT_EQ(1u, groups.size());
   EXPECT_THAT(groups[0].ads_kanon,
@@ -627,15 +629,16 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
   storage->JoinInterestGroup(partial, partial_origin.GetURL());
   storage->JoinInterestGroup(full, full_origin.GetURL());
 
-  std::vector<BiddingInterestGroup> bidding_interest_groups =
+  std::vector<StorageInterestGroup> storage_interest_groups =
       storage->GetInterestGroupsForOwner(partial_origin);
-  ASSERT_EQ(1u, bidding_interest_groups.size());
-  EXPECT_TRUE(
-      partial.IsEqualForTesting(bidding_interest_groups[0].group->group));
+  ASSERT_EQ(1u, storage_interest_groups.size());
+  EXPECT_TRUE(partial.IsEqualForTesting(
+      storage_interest_groups[0].bidding_group->group));
 
-  bidding_interest_groups = storage->GetInterestGroupsForOwner(full_origin);
-  ASSERT_EQ(1u, bidding_interest_groups.size());
-  EXPECT_TRUE(full.IsEqualForTesting(bidding_interest_groups[0].group->group));
+  storage_interest_groups = storage->GetInterestGroupsForOwner(full_origin);
+  ASSERT_EQ(1u, storage_interest_groups.size());
+  EXPECT_TRUE(
+      full.IsEqualForTesting(storage_interest_groups[0].bidding_group->group));
 }
 
 TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
@@ -714,7 +717,7 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupNames) {
   std::vector<url::Origin> origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(1u, origins.size());
 
-  std::vector<BiddingInterestGroup> interest_groups =
+  std::vector<StorageInterestGroup> interest_groups =
       storage->GetInterestGroupsForOwner(test_origin);
   EXPECT_EQ(num_groups, interest_groups.size());
   histograms.ExpectBucketCount("Storage.InterestGroup.PerSiteCount", num_groups,
@@ -731,8 +734,8 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupNames) {
   histograms.ExpectTotalCount("Storage.InterestGroup.PerSiteCount", 2);
 
   std::vector<std::string> remaining_groups;
-  for (const auto& group : interest_groups) {
-    remaining_groups.push_back(group.group->group.name);
+  for (const auto& db_group : interest_groups) {
+    remaining_groups.push_back(db_group.bidding_group->group.name);
   }
   std::vector<std::string> remaining_groups_expected(
       added_groups.begin() + kExcessOwners, added_groups.end());
@@ -811,7 +814,7 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
   std::vector<url::Origin> origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(3u, origins.size());
 
-  std::vector<BiddingInterestGroup> interest_groups =
+  std::vector<StorageInterestGroup> interest_groups =
       storage->GetInterestGroupsForOwner(keep_origin);
   EXPECT_EQ(2u, interest_groups.size());
   base::Time next_maintenance_time =
@@ -871,9 +874,9 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
 
   interest_groups = storage->GetInterestGroupsForOwner(keep_origin);
   EXPECT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("keep", interest_groups[0].group->group.name);
-  EXPECT_EQ(1, interest_groups[0].group->signals->join_count);
-  EXPECT_EQ(0, interest_groups[0].group->signals->bid_count);
+  EXPECT_EQ("keep", interest_groups[0].bidding_group->group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
+  EXPECT_EQ(0, interest_groups[0].bidding_group->signals->bid_count);
   next_maintenance_time = base::Time::Now() + InterestGroupStorage::kIdlePeriod;
 
   // All the groups should still be in the database since they shouldn't have
@@ -896,9 +899,9 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
 
   interest_groups = storage->GetAllInterestGroupsUnfilteredForTesting();
   EXPECT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("keep", interest_groups[0].group->group.name);
-  EXPECT_EQ(1, interest_groups[0].group->signals->join_count);
-  EXPECT_EQ(0, interest_groups[0].group->signals->bid_count);
+  EXPECT_EQ("keep", interest_groups[0].bidding_group->group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
+  EXPECT_EQ(0, interest_groups[0].bidding_group->signals->bid_count);
 }
 
 }  // namespace content

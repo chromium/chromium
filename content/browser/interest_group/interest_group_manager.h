@@ -17,7 +17,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_process_manager.h"
-#include "content/browser/interest_group/bidding_interest_group.h"
+#include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -94,7 +94,7 @@ class CONTENT_EXPORT InterestGroupManager {
   // associated with the provided owner.
   void GetInterestGroupsForOwner(
       const url::Origin& owner,
-      base::OnceCallback<void(std::vector<BiddingInterestGroup>)> callback);
+      base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback);
   // Like GetInterestGroupsForOwner(), but doesn't return any interest groups
   // that are currently rate-limited for updates. Additionally, this will update
   // the `next_update_after` field such that a subsequent
@@ -102,7 +102,7 @@ class CONTENT_EXPORT InterestGroupManager {
   // anything until after the success rate limit period passes.
   void ClaimInterestGroupsForUpdate(
       const url::Origin& owner,
-      base::OnceCallback<void(std::vector<BiddingInterestGroup>)> callback);
+      base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback);
   // Clear out storage for the matching owning origin. If the callback is empty
   // then apply to all origins.
   void DeleteInterestGroupData(
@@ -128,7 +128,7 @@ class CONTENT_EXPORT InterestGroupManager {
 
   void DidUpdateInterestGroupsOfOwnerDbLoad(
       url::Origin owner,
-      std::vector<BiddingInterestGroup> interest_groups);
+      std::vector<StorageInterestGroup> interest_groups);
   void DidUpdateInterestGroupsOfOwnerNetFetch(
       UrlLoadersList::iterator simple_url_loader,
       url::Origin owner,

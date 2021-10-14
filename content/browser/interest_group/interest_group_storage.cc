@@ -760,7 +760,7 @@ bool DoRecordInterestGroupWin(sql::Database& db,
 
 bool DoUpdateKAnonymity(sql::Database& db,
                         KAnonType type,
-                        const BiddingInterestGroup::KAnonymityData& data,
+                        const StorageInterestGroup::KAnonymityData& data,
                         const absl::optional<base::Time>& update_sent_time) {
   // clang-format off
   sql::Statement update(
@@ -788,7 +788,7 @@ bool DoUpdateKAnonymity(sql::Database& db,
 
 bool DoUpdateInterestGroupNameKAnonymity(
     sql::Database& db,
-    const BiddingInterestGroup::KAnonymityData& data,
+    const StorageInterestGroup::KAnonymityData& data,
     const absl::optional<base::Time>& update_sent_time) {
   return DoUpdateKAnonymity(db, KAnonType::kOwnerAndName, data,
                             update_sent_time);
@@ -796,13 +796,13 @@ bool DoUpdateInterestGroupNameKAnonymity(
 
 bool DoUpdateInterestGroupUpdateURLKAnonymity(
     sql::Database& db,
-    const BiddingInterestGroup::KAnonymityData& data,
+    const StorageInterestGroup::KAnonymityData& data,
     const absl::optional<base::Time>& update_sent_time) {
   return DoUpdateKAnonymity(db, KAnonType::kUpdateURL, data, update_sent_time);
 }
 
 bool DoUpdateAdKAnonymity(sql::Database& db,
-                          const BiddingInterestGroup::KAnonymityData& data,
+                          const StorageInterestGroup::KAnonymityData& data,
                           const absl::optional<base::Time>& update_sent_time) {
   return DoUpdateKAnonymity(db, KAnonType::kAdURL, data, update_sent_time);
 }
@@ -859,7 +859,7 @@ bool DoGetInterestGroupKAnonymity(
     sql::Database& db,
     KAnonType type,
     const GURL& key,
-    absl::optional<BiddingInterestGroup::KAnonymityData>& output) {
+    absl::optional<StorageInterestGroup::KAnonymityData>& output) {
   // clang-format off
   sql::Statement interest_group_kanon(
     db.GetCachedStatement(SQL_FROM_HERE,
@@ -893,7 +893,7 @@ bool DoGetInterestGroupNameKAnonymity(
     sql::Database& db,
     const url::Origin& owner,
     const std::string& name,
-    absl::optional<BiddingInterestGroup::KAnonymityData>& output) {
+    absl::optional<StorageInterestGroup::KAnonymityData>& output) {
   return DoGetInterestGroupKAnonymity(db, KAnonType::kOwnerAndName,
                                       KAnonKeyFor(owner, name), output);
 }
@@ -901,7 +901,7 @@ bool DoGetInterestGroupNameKAnonymity(
 bool DoGetInterestGroupUpdateURLKAnonymity(
     sql::Database& db,
     const GURL& update_url,
-    absl::optional<BiddingInterestGroup::KAnonymityData>& output) {
+    absl::optional<StorageInterestGroup::KAnonymityData>& output) {
   return DoGetInterestGroupKAnonymity(db, KAnonType::kUpdateURL, update_url,
                                       output);
 }
@@ -909,7 +909,7 @@ bool DoGetInterestGroupUpdateURLKAnonymity(
 bool DoGetAdsKAnonymity(
     sql::Database& db,
     const GURL& ad_url,
-    absl::optional<BiddingInterestGroup::KAnonymityData>& output) {
+    absl::optional<StorageInterestGroup::KAnonymityData>& output) {
   return DoGetInterestGroupKAnonymity(db, KAnonType::kAdURL, ad_url, output);
 }
 
@@ -999,12 +999,12 @@ bool GetBidCount(sql::Database& db,
   return bid_count.Succeeded();
 }
 
-absl::optional<std::vector<BiddingInterestGroup>> DoGetInterestGroupsForOwner(
+absl::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
     sql::Database& db,
     const url::Origin& owner,
     base::Time now,
     bool claim_groups_for_update = false) {
-  std::vector<BiddingInterestGroup> result;
+  std::vector<StorageInterestGroup> result;
   // clang-format off
   sql::Statement load(
       db.GetCachedStatement(SQL_FROM_HERE,
@@ -1092,63 +1092,64 @@ absl::optional<std::vector<BiddingInterestGroup>> DoGetInterestGroupsForOwner(
 
   // These queries are in separate loops to improve locality of the database
   // access.
-  for (auto& bidding_interest_group : result) {
+  for (auto& db_interest_group : result) {
     if (!DoGetInterestGroupNameKAnonymity(
-            db, owner, bidding_interest_group.group->group.name,
-            bidding_interest_group.name_kanon)) {
+            db, owner, db_interest_group.bidding_group->group.name,
+            db_interest_group.name_kanon)) {
       return absl::nullopt;
     }
-    if (bidding_interest_group.group->group.update_url &&
+    if (db_interest_group.bidding_group->group.update_url &&
         !DoGetInterestGroupUpdateURLKAnonymity(
-            db, bidding_interest_group.group->group.update_url.value(),
-            bidding_interest_group.update_url_kanon)) {
+            db, db_interest_group.bidding_group->group.update_url.value(),
+            db_interest_group.update_url_kanon)) {
       return absl::nullopt;
     }
   }
-  for (auto& bidding_interest_group : result) {
-    if (!bidding_interest_group.group->group.ads)
+  for (auto& db_interest_group : result) {
+    if (!db_interest_group.bidding_group->group.ads)
       continue;
-    for (auto& ad : bidding_interest_group.group->group.ads.value()) {
-      absl::optional<BiddingInterestGroup::KAnonymityData> ad_kanon;
+    for (auto& ad : db_interest_group.bidding_group->group.ads.value()) {
+      absl::optional<StorageInterestGroup::KAnonymityData> ad_kanon;
       if (!DoGetAdsKAnonymity(db, ad.render_url, ad_kanon)) {
         return absl::nullopt;
       }
       if (!ad_kanon)
         continue;
-      bidding_interest_group.ads_kanon.push_back(std::move(ad_kanon).value());
+      db_interest_group.ads_kanon.push_back(std::move(ad_kanon).value());
     }
   }
-  for (auto& bidding_interest_group : result) {
-    if (!bidding_interest_group.group->group.ad_components)
+  for (auto& db_interest_group : result) {
+    if (!db_interest_group.bidding_group->group.ad_components)
       continue;
-    for (auto& ad : bidding_interest_group.group->group.ad_components.value()) {
-      absl::optional<BiddingInterestGroup::KAnonymityData> ad_kanon;
+    for (auto& ad :
+         db_interest_group.bidding_group->group.ad_components.value()) {
+      absl::optional<StorageInterestGroup::KAnonymityData> ad_kanon;
       if (!DoGetAdsKAnonymity(db, ad.render_url, ad_kanon)) {
         return absl::nullopt;
       }
       if (!ad_kanon)
         continue;
-      bidding_interest_group.ads_kanon.push_back(std::move(ad_kanon).value());
+      db_interest_group.ads_kanon.push_back(std::move(ad_kanon).value());
     }
   }
-  for (auto& bidding_interest_group : result) {
-    if (!GetJoinCount(db, owner, bidding_interest_group.group->group.name,
+  for (auto& db_interest_group : result) {
+    if (!GetJoinCount(db, owner, db_interest_group.bidding_group->group.name,
                       now - InterestGroupStorage::kHistoryLength,
-                      bidding_interest_group.group)) {
+                      db_interest_group.bidding_group)) {
       return absl::nullopt;
     }
   }
-  for (auto& bidding_interest_group : result) {
-    if (!GetBidCount(db, owner, bidding_interest_group.group->group.name,
+  for (auto& db_interest_group : result) {
+    if (!GetBidCount(db, owner, db_interest_group.bidding_group->group.name,
                      now - InterestGroupStorage::kHistoryLength,
-                     bidding_interest_group.group)) {
+                     db_interest_group.bidding_group)) {
       return absl::nullopt;
     }
   }
-  for (auto& bidding_interest_group : result) {
-    if (!GetPreviousWins(db, owner, bidding_interest_group.group->group.name,
+  for (auto& db_interest_group : result) {
+    if (!GetPreviousWins(db, owner, db_interest_group.bidding_group->group.name,
                          now - InterestGroupStorage::kHistoryLength,
-                         bidding_interest_group.group)) {
+                         db_interest_group.bidding_group)) {
       return absl::nullopt;
     }
   }
@@ -1214,13 +1215,13 @@ bool DoDeleteInterestGroupData(
   }
 
   for (const auto& affected_origin : affected_origins) {
-    absl::optional<std::vector<BiddingInterestGroup>> maybe_interest_groups =
+    absl::optional<std::vector<StorageInterestGroup>> maybe_interest_groups =
         DoGetInterestGroupsForOwner(db, affected_origin, distant_past);
     if (!maybe_interest_groups)
       return false;
-    for (const auto& bidding_interest_group : maybe_interest_groups.value()) {
+    for (const auto& db_interest_group : maybe_interest_groups.value()) {
       if (!DoRemoveInterestGroup(db, affected_origin,
-                                 bidding_interest_group.group->group.name))
+                                 db_interest_group.bidding_group->group.name))
         return false;
     }
   }
@@ -1310,7 +1311,7 @@ bool ClearExcessInterestGroups(sql::Database& db,
   for (size_t owner_idx = 0; owner_idx < maybe_all_origins.value().size();
        owner_idx++) {
     const url::Origin& affected_origin = maybe_all_origins.value()[owner_idx];
-    const absl::optional<std::vector<BiddingInterestGroup>>
+    const absl::optional<std::vector<StorageInterestGroup>>
         maybe_interest_groups =
             DoGetInterestGroupsForOwner(db, affected_origin, distant_past);
     if (!maybe_interest_groups)
@@ -1320,9 +1321,9 @@ bool ClearExcessInterestGroups(sql::Database& db,
       first_idx = 0;
     for (size_t group_idx = first_idx;
          group_idx < maybe_interest_groups.value().size(); group_idx++) {
-      if (!DoRemoveInterestGroup(
-              db, affected_origin,
-              maybe_interest_groups.value()[group_idx].group->group.name))
+      if (!DoRemoveInterestGroup(db, affected_origin,
+                                 maybe_interest_groups.value()[group_idx]
+                                     .bidding_group->group.name))
         return false;
     }
   }
@@ -1616,7 +1617,7 @@ void InterestGroupStorage::RecordInterestGroupWin(const url::Origin& owner,
 }
 
 void InterestGroupStorage::UpdateInterestGroupNameKAnonymity(
-    const BiddingInterestGroup::KAnonymityData& data,
+    const StorageInterestGroup::KAnonymityData& data,
     const absl::optional<base::Time>& update_sent_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
@@ -1629,7 +1630,7 @@ void InterestGroupStorage::UpdateInterestGroupNameKAnonymity(
 }
 
 void InterestGroupStorage::UpdateInterestGroupUpdateURLKAnonymity(
-    const BiddingInterestGroup::KAnonymityData& data,
+    const StorageInterestGroup::KAnonymityData& data,
     const absl::optional<base::Time>& update_sent_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
@@ -1642,7 +1643,7 @@ void InterestGroupStorage::UpdateInterestGroupUpdateURLKAnonymity(
 }
 
 void InterestGroupStorage::UpdateAdKAnonymity(
-    const BiddingInterestGroup::KAnonymityData& data,
+    const StorageInterestGroup::KAnonymityData& data,
     const absl::optional<base::Time>& update_sent_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
@@ -1666,13 +1667,13 @@ std::vector<url::Origin> InterestGroupStorage::GetAllInterestGroupOwners() {
   return std::move(maybe_result.value());
 }
 
-std::vector<BiddingInterestGroup>
+std::vector<StorageInterestGroup>
 InterestGroupStorage::GetInterestGroupsForOwner(const url::Origin& owner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
     return {};
 
-  absl::optional<std::vector<BiddingInterestGroup>> maybe_result =
+  absl::optional<std::vector<StorageInterestGroup>> maybe_result =
       DoGetInterestGroupsForOwner(*db_, owner, base::Time::Now());
   if (!maybe_result)
     return {};
@@ -1681,13 +1682,13 @@ InterestGroupStorage::GetInterestGroupsForOwner(const url::Origin& owner) {
   return std::move(maybe_result.value());
 }
 
-std::vector<BiddingInterestGroup>
+std::vector<StorageInterestGroup>
 InterestGroupStorage::ClaimInterestGroupsForUpdate(const url::Origin& owner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
     return {};
 
-  absl::optional<std::vector<BiddingInterestGroup>> maybe_result =
+  absl::optional<std::vector<StorageInterestGroup>> maybe_result =
       DoGetInterestGroupsForOwner(*db_, owner, base::Time::Now(),
                                   /*claim_groups_for_update=*/true);
   if (!maybe_result)
@@ -1722,17 +1723,17 @@ void InterestGroupStorage::PerformDBMaintenance() {
   }
 }
 
-std::vector<BiddingInterestGroup>
+std::vector<StorageInterestGroup>
 InterestGroupStorage::GetAllInterestGroupsUnfilteredForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Time distant_past = base::Time::Min();
-  std::vector<BiddingInterestGroup> result;
+  std::vector<StorageInterestGroup> result;
   absl::optional<std::vector<url::Origin>> maybe_owners =
       DoGetAllInterestGroupOwners(*db_, distant_past);
   if (!maybe_owners)
     return {};
   for (const auto& owner : *maybe_owners) {
-    absl::optional<std::vector<BiddingInterestGroup>> maybe_owner_results =
+    absl::optional<std::vector<StorageInterestGroup>> maybe_owner_results =
         DoGetInterestGroupsForOwner(*db_, owner, distant_past);
     DCHECK(maybe_owner_results);
     std::move(maybe_owner_results->begin(), maybe_owner_results->end(),
