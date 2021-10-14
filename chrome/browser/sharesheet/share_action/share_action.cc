@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sharesheet/share_action.h"
+#include "chrome/browser/sharesheet/share_action/share_action.h"
 
 #include "build/chromeos_buildflags.h"
 

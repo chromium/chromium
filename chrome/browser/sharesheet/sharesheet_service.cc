@@ -14,8 +14,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/sharesheet/share_action.h"
-#include "chrome/browser/sharesheet/sharesheet_service_delegate.h"
+#include "chrome/browser/sharesheet/share_action/share_action.h"
+#include "chrome/browser/sharesheet/sharesheet_service_delegator.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -43,8 +43,7 @@ std::u16string& GetSelectedApp() {
 
 SharesheetService::SharesheetService(Profile* profile)
     : profile_(profile),
-      sharesheet_action_cache_(
-          std::make_unique<SharesheetActionCache>(profile_)),
+      share_action_cache_(std::make_unique<ShareActionCache>(profile_)),
       app_service_proxy_(
           apps::AppServiceProxyFactory::GetForProfile(profile_)) {}
 
@@ -76,10 +75,10 @@ void SharesheetService::ShowBubble(content::WebContents* web_contents,
 
 SharesheetController* SharesheetService::GetSharesheetController(
     gfx::NativeWindow native_window) {
-  SharesheetServiceDelegate* delegate = GetDelegate(native_window);
-  if (!delegate)
+  SharesheetServiceDelegator* delegator = GetDelegator(native_window);
+  if (!delegator)
     return nullptr;
-  return delegate->GetSharesheetController();
+  return delegator->GetSharesheetController();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -93,7 +92,7 @@ void SharesheetService::ShowNearbyShareBubbleForArc(
   DCHECK(intent->action == apps_util::kIntentActionSend ||
          intent->action == apps_util::kIntentActionSendMultiple);
 
-  ShareAction* share_action = sharesheet_action_cache_->GetActionFromName(
+  ShareAction* share_action = share_action_cache_->GetActionFromName(
       l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME));
   if (!share_action || !share_action->ShouldShowAction(
                            intent, false /*contains_google_document=*/)) {
@@ -104,26 +103,26 @@ void SharesheetService::ShowNearbyShareBubbleForArc(
       std::move(action_cleanup_callback));
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
 
-  auto* sharesheet_service_delegate = GetOrCreateDelegate(native_window);
-  sharesheet_service_delegate->ShowNearbyShareBubbleForArc(
+  auto* sharesheet_service_delegator = GetOrCreateDelegator(native_window);
+  sharesheet_service_delegator->ShowNearbyShareBubbleForArc(
       std::move(intent), std::move(delivered_callback),
       std::move(close_callback));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Cleanup delegate when bubble closes.
+// Cleanup delegator when bubble closes.
 void SharesheetService::OnBubbleClosed(gfx::NativeWindow native_window,
                                        const std::u16string& active_action) {
-  auto iter = active_delegates_.begin();
-  while (iter != active_delegates_.end()) {
+  auto iter = active_delegators_.begin();
+  while (iter != active_delegators_.end()) {
     if ((*iter)->GetNativeWindow() == native_window) {
       if (!active_action.empty()) {
         ShareAction* share_action =
-            sharesheet_action_cache_->GetActionFromName(active_action);
+            share_action_cache_->GetActionFromName(active_action);
         if (share_action != nullptr)
           share_action->OnClosing(iter->get()->GetSharesheetController());
       }
-      active_delegates_.erase(iter);
+      active_delegators_.erase(iter);
       break;
     }
     ++iter;
@@ -135,23 +134,23 @@ void SharesheetService::OnTargetSelected(gfx::NativeWindow native_window,
                                          const TargetType type,
                                          apps::mojom::IntentPtr intent,
                                          views::View* share_action_view) {
-  SharesheetServiceDelegate* delegate = GetDelegate(native_window);
-  if (!delegate)
+  SharesheetServiceDelegator* delegator = GetDelegator(native_window);
+  if (!delegator)
     return;
 
   RecordUserActionMetrics(target_name);
   if (type == TargetType::kAction) {
     ShareAction* share_action =
-        sharesheet_action_cache_->GetActionFromName(target_name);
+        share_action_cache_->GetActionFromName(target_name);
     if (share_action == nullptr)
       return;
-    delegate->OnActionLaunched();
-    share_action->LaunchAction(delegate->GetSharesheetController(),
+    delegator->OnActionLaunched();
+    share_action->LaunchAction(delegator->GetSharesheetController(),
                                share_action_view, std::move(intent));
   } else if (type == TargetType::kArcApp || type == TargetType::kWebApp) {
     DCHECK(intent);
     LaunchApp(target_name, std::move(intent));
-    delegate->CloseBubble(SharesheetResult::kSuccess);
+    delegator->CloseBubble(SharesheetResult::kSuccess);
   }
 }
 
@@ -161,7 +160,7 @@ bool SharesheetService::OnAcceleratorPressed(
   if (active_action.empty())
     return false;
   ShareAction* share_action =
-      sharesheet_action_cache_->GetActionFromName(active_action);
+      share_action_cache_->GetActionFromName(active_action);
   DCHECK(share_action);
   return share_action == nullptr
              ? false
@@ -173,8 +172,8 @@ bool SharesheetService::HasShareTargets(const apps::mojom::IntentPtr& intent,
   std::vector<apps::IntentLaunchInfo> intent_launch_info =
       app_service_proxy_->GetAppsForIntent(intent);
 
-  return sharesheet_action_cache_->HasVisibleActions(
-             intent, contains_hosted_document) ||
+  return share_action_cache_->HasVisibleActions(intent,
+                                                contains_hosted_document) ||
          (!contains_hosted_document && !intent_launch_info.empty());
 }
 
@@ -184,7 +183,7 @@ Profile* SharesheetService::GetProfile() {
 
 const gfx::VectorIcon* SharesheetService::GetVectorIcon(
     const std::u16string& display_name) {
-  return sharesheet_action_cache_->GetVectorIconFromName(display_name);
+  return share_action_cache_->GetVectorIconFromName(display_name);
 }
 
 void SharesheetService::ShowBubbleForTesting(
@@ -203,8 +202,8 @@ void SharesheetService::ShowBubbleForTesting(
 
 SharesheetUiDelegate* SharesheetService::GetUiDelegateForTesting(
     gfx::NativeWindow native_window) {
-  auto* delegate = GetDelegate(native_window);
-  return delegate->GetUiDelegateForTesting();  // IN-TEST
+  auto* delegator = GetDelegator(native_window);
+  return delegator->GetUiDelegateForTesting();  // IN-TEST
 }
 
 // static
@@ -236,7 +235,7 @@ std::vector<TargetInfo> SharesheetService::GetActionsForIntent(
     const apps::mojom::IntentPtr& intent,
     bool contains_hosted_document) {
   std::vector<TargetInfo> targets;
-  auto& actions = sharesheet_action_cache_->GetShareActions();
+  auto& actions = share_action_cache_->GetShareActions();
   auto iter = actions.begin();
   while (iter != actions.end()) {
     if ((*iter)->ShouldShowAction(intent, contains_hosted_document)) {
@@ -325,7 +324,7 @@ void SharesheetService::OnReadyToShowBubble(
     DeliveredCallback delivered_callback,
     CloseCallback close_callback,
     std::vector<TargetInfo> targets) {
-  auto* delegate = GetOrCreateDelegate(native_window);
+  auto* delegator = GetOrCreateDelegator(native_window);
 
   // If SetSelectedAppForTesting() has been called, immediately launch the app.
   const std::u16string selected_app = GetSelectedApp();
@@ -343,13 +342,13 @@ void SharesheetService::OnReadyToShowBubble(
     }
 
     std::move(delivered_callback).Run(result);
-    delegate->OnBubbleClosed(/*active_action=*/std::u16string());
+    delegator->OnBubbleClosed(/*active_action=*/std::u16string());
     return;
   }
 
-  delegate->ShowBubble(std::move(targets), std::move(intent),
-                       std::move(delivered_callback),
-                       std::move(close_callback));
+  delegator->ShowBubble(std::move(targets), std::move(intent),
+                        std::move(delivered_callback),
+                        std::move(close_callback));
 }
 
 void SharesheetService::LaunchApp(const std::u16string& target_name,
@@ -364,22 +363,22 @@ void SharesheetService::LaunchApp(const std::u16string& target_name,
       apps::MakeWindowInfo(display::kDefaultDisplayId));
 }
 
-SharesheetServiceDelegate* SharesheetService::GetOrCreateDelegate(
+SharesheetServiceDelegator* SharesheetService::GetOrCreateDelegator(
     gfx::NativeWindow native_window) {
-  auto* delegate = GetDelegate(native_window);
-  if (delegate == nullptr) {
-    auto new_delegate =
-        std::make_unique<SharesheetServiceDelegate>(native_window, this);
-    delegate = new_delegate.get();
-    active_delegates_.push_back(std::move(new_delegate));
+  auto* delegator = GetDelegator(native_window);
+  if (delegator == nullptr) {
+    auto new_delegator =
+        std::make_unique<SharesheetServiceDelegator>(native_window, this);
+    delegator = new_delegator.get();
+    active_delegators_.push_back(std::move(new_delegator));
   }
-  return delegate;
+  return delegator;
 }
 
-SharesheetServiceDelegate* SharesheetService::GetDelegate(
+SharesheetServiceDelegator* SharesheetService::GetDelegator(
     gfx::NativeWindow native_window) {
-  auto iter = active_delegates_.begin();
-  while (iter != active_delegates_.end()) {
+  auto iter = active_delegators_.begin();
+  while (iter != active_delegators_.end()) {
     if ((*iter)->GetNativeWindow() == native_window) {
       return iter->get();
     }

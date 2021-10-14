@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SHARESHEET_SHARESHEET_ACTION_CACHE_H_
-#define CHROME_BROWSER_SHARESHEET_SHARESHEET_ACTION_CACHE_H_
+#ifndef CHROME_BROWSER_SHARESHEET_SHARE_ACTION_SHARE_ACTION_CACHE_H_
+#define CHROME_BROWSER_SHARESHEET_SHARE_ACTION_SHARE_ACTION_CACHE_H_
 
 #include <memory>
 #include <string>
@@ -21,15 +21,15 @@ namespace sharesheet {
 
 class ShareAction;
 
-// The SharesheetActionCache facilitates communication between ShareActions
+// The ShareActionCache facilitates communication between ShareActions
 // and the SharesheetService.
-class SharesheetActionCache {
+class ShareActionCache {
  public:
-  explicit SharesheetActionCache(Profile* profile);
-  ~SharesheetActionCache();
+  explicit ShareActionCache(Profile* profile);
+  ~ShareActionCache();
 
-  SharesheetActionCache(const SharesheetActionCache&) = delete;
-  SharesheetActionCache& operator=(const SharesheetActionCache&) = delete;
+  ShareActionCache(const ShareActionCache&) = delete;
+  ShareActionCache& operator=(const ShareActionCache&) = delete;
 
   ShareAction* GetActionFromName(const std::u16string& action_name);
 
@@ -50,4 +50,4 @@ class SharesheetActionCache {
 
 }  // namespace sharesheet
 
-#endif  // CHROME_BROWSER_SHARESHEET_SHARESHEET_ACTION_CACHE_H_
+#endif  // CHROME_BROWSER_SHARESHEET_SHARE_ACTION_SHARE_ACTION_CACHE_H_

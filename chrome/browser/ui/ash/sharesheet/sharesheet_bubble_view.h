@@ -19,7 +19,7 @@ class Separator;
 }  // namespace views
 
 namespace sharesheet {
-class SharesheetServiceDelegate;
+class SharesheetServiceDelegator;
 }
 
 namespace ash {
@@ -34,7 +34,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   using TargetInfo = ::sharesheet::TargetInfo;
 
   SharesheetBubbleView(gfx::NativeWindow native_window,
-                       ::sharesheet::SharesheetServiceDelegate* delegate);
+                       ::sharesheet::SharesheetServiceDelegator* delegate);
   SharesheetBubbleView(const SharesheetBubbleView&) = delete;
   SharesheetBubbleView& operator=(const SharesheetBubbleView&) = delete;
   ~SharesheetBubbleView() override;
@@ -93,7 +93,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   void RecordFormFactorMetric();
 
   // Owns this class.
-  ::sharesheet::SharesheetServiceDelegate* delegate_;
+  ::sharesheet::SharesheetServiceDelegator* delegator_;
   std::u16string active_target_;
   apps::mojom::IntentPtr intent_;
   ::sharesheet::DeliveredCallback delivered_callback_;

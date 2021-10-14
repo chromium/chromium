@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sharesheet/sharesheet_service_delegate.h"
+#include "chrome/browser/sharesheet/sharesheet_service_delegator.h"
 
 #include <utility>
 
@@ -15,7 +15,7 @@
 
 namespace sharesheet {
 
-SharesheetServiceDelegate::SharesheetServiceDelegate(
+SharesheetServiceDelegator::SharesheetServiceDelegator(
     gfx::NativeWindow native_window,
     SharesheetService* sharesheet_service)
     : native_window_(native_window), sharesheet_service_(sharesheet_service) {
@@ -28,31 +28,32 @@ SharesheetServiceDelegate::SharesheetServiceDelegate(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-SharesheetServiceDelegate::~SharesheetServiceDelegate() = default;
+SharesheetServiceDelegator::~SharesheetServiceDelegator() = default;
 
-gfx::NativeWindow SharesheetServiceDelegate::GetNativeWindow() {
+gfx::NativeWindow SharesheetServiceDelegator::GetNativeWindow() {
   DCHECK(native_window_);
   return native_window_;
 }
 
-SharesheetController* SharesheetServiceDelegate::GetSharesheetController() {
+SharesheetController* SharesheetServiceDelegator::GetSharesheetController() {
   DCHECK(sharesheet_controller_);
   return sharesheet_controller_.get();
 }
 
-Profile* SharesheetServiceDelegate::GetProfile() {
+Profile* SharesheetServiceDelegator::GetProfile() {
   DCHECK(sharesheet_service_);
   return sharesheet_service_->GetProfile();
 }
 
-SharesheetUiDelegate* SharesheetServiceDelegate::GetUiDelegateForTesting() {
+SharesheetUiDelegate* SharesheetServiceDelegator::GetUiDelegateForTesting() {
   return sharesheet_controller_.get();
 }
 
-void SharesheetServiceDelegate::ShowBubble(std::vector<TargetInfo> targets,
-                                           apps::mojom::IntentPtr intent,
-                                           DeliveredCallback delivered_callback,
-                                           CloseCallback close_callback) {
+void SharesheetServiceDelegator::ShowBubble(
+    std::vector<TargetInfo> targets,
+    apps::mojom::IntentPtr intent,
+    DeliveredCallback delivered_callback,
+    CloseCallback close_callback) {
   if (sharesheet_controller_) {
     sharesheet_controller_->ShowBubble(std::move(targets), std::move(intent),
                                        std::move(delivered_callback),
@@ -65,7 +66,7 @@ void SharesheetServiceDelegate::ShowBubble(std::vector<TargetInfo> targets,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Skips the generic Sharesheet bubble and directly displays the
 // NearbyShare bubble dialog.
-void SharesheetServiceDelegate::ShowNearbyShareBubbleForArc(
+void SharesheetServiceDelegator::ShowNearbyShareBubbleForArc(
     apps::mojom::IntentPtr intent,
     DeliveredCallback delivered_callback,
     CloseCallback close_callback) {
@@ -78,7 +79,7 @@ void SharesheetServiceDelegate::ShowNearbyShareBubbleForArc(
 
 // Invoked immediately after an action has launched in the event that UI
 // changes need to occur at this point.
-void SharesheetServiceDelegate::OnActionLaunched() {
+void SharesheetServiceDelegator::OnActionLaunched() {
   if (sharesheet_controller_) {
     sharesheet_controller_->OnActionLaunched();
     return;
@@ -86,7 +87,7 @@ void SharesheetServiceDelegate::OnActionLaunched() {
   NOTREACHED();
 }
 
-void SharesheetServiceDelegate::CloseBubble(SharesheetResult result) {
+void SharesheetServiceDelegator::CloseBubble(SharesheetResult result) {
   if (sharesheet_controller_) {
     sharesheet_controller_->CloseBubble(result);
     return;
@@ -94,14 +95,14 @@ void SharesheetServiceDelegate::CloseBubble(SharesheetResult result) {
   NOTREACHED();
 }
 
-void SharesheetServiceDelegate::OnBubbleClosed(
+void SharesheetServiceDelegator::OnBubbleClosed(
     const std::u16string& active_action) {
   DCHECK(sharesheet_service_);
   sharesheet_service_->OnBubbleClosed(native_window_, active_action);
   // This object is now deleted and nothing can be accessed any more.
 }
 
-void SharesheetServiceDelegate::OnTargetSelected(
+void SharesheetServiceDelegator::OnTargetSelected(
     const std::u16string& target_name,
     const TargetType type,
     apps::mojom::IntentPtr intent,
@@ -111,14 +112,14 @@ void SharesheetServiceDelegate::OnTargetSelected(
                                         std::move(intent), share_action_view);
 }
 
-bool SharesheetServiceDelegate::OnAcceleratorPressed(
+bool SharesheetServiceDelegator::OnAcceleratorPressed(
     const ui::Accelerator& accelerator,
     const std::u16string& active_action) {
   DCHECK(sharesheet_service_);
   return sharesheet_service_->OnAcceleratorPressed(accelerator, active_action);
 }
 
-const gfx::VectorIcon* SharesheetServiceDelegate::GetVectorIcon(
+const gfx::VectorIcon* SharesheetServiceDelegator::GetVectorIcon(
     const std::u16string& display_name) {
   DCHECK(sharesheet_service_);
   return sharesheet_service_->GetVectorIcon(display_name);

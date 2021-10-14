@@ -18,7 +18,7 @@
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
-#include "chrome/browser/sharesheet/sharesheet_service_delegate.h"
+#include "chrome/browser/sharesheet/sharesheet_service_delegator.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_expand_button.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_header_view.h"
@@ -152,8 +152,8 @@ class SharesheetBubbleView::SharesheetParentWidgetObserver
 
 SharesheetBubbleView::SharesheetBubbleView(
     gfx::NativeWindow native_window,
-    ::sharesheet::SharesheetServiceDelegate* delegate)
-    : delegate_(delegate) {
+    ::sharesheet::SharesheetServiceDelegator* delegator)
+    : delegator_(delegator) {
   // We set the dialog role because views::BubbleDialogDelegate defaults this to
   // an alert dialog. This would make screen readers announce all of this dialog
   // which is undesirable.
@@ -190,7 +190,7 @@ void SharesheetBubbleView::ShowBubble(
   bool show_content_previews = !targets.empty();
   header_view_ =
       main_view_->AddChildView(std::make_unique<SharesheetHeaderView>(
-          intent_->Clone(), delegate_->GetProfile(), show_content_previews));
+          intent_->Clone(), delegator_->GetProfile(), show_content_previews));
   body_view_ = main_view_->AddChildView(std::make_unique<views::View>());
   body_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -268,7 +268,7 @@ void SharesheetBubbleView::ShowNearbyShareBubbleForArc(
     std::move(delivered_callback_)
         .Run(::sharesheet::SharesheetResult::kSuccess);
   }
-  delegate_->OnTargetSelected(
+  delegator_->OnTargetSelected(
       l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME),
       ::sharesheet::TargetType::kAction, std::move(intent_),
       share_action_view_);
@@ -374,7 +374,7 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
                             base::Unretained(this),
                             base::Passed(std::move(target))),
         display_name, secondary_display_name, icon,
-        delegate_->GetVectorIcon(display_name));
+        delegator_->GetVectorIcon(display_name));
 
     layout_for_target->AddView(std::move(target_view));
   }
@@ -479,7 +479,7 @@ bool SharesheetBubbleView::AcceleratorPressed(
   // not pressed |VKEY_TAB| first to focus the SharesheetBubbleView.
   DCHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
   if (share_action_view_->GetVisible() &&
-      delegate_->OnAcceleratorPressed(accelerator, active_target_)) {
+      delegator_->OnAcceleratorPressed(accelerator, active_target_)) {
     return true;
   }
   // If delivered_callback_ is not null at this point, then the sharesheet was
@@ -649,8 +649,8 @@ void SharesheetBubbleView::TargetButtonPressed(TargetInfo target) {
   } else {
     intent_->activity_name = target.activity_name;
   }
-  delegate_->OnTargetSelected(target.launch_name, type, std::move(intent_),
-                              share_action_view_);
+  delegator_->OnTargetSelected(target.launch_name, type, std::move(intent_),
+                               share_action_view_);
   if (delivered_callback_) {
     std::move(delivered_callback_)
         .Run(::sharesheet::SharesheetResult::kSuccess);
@@ -739,7 +739,7 @@ void SharesheetBubbleView::CloseWidgetWithReason(
     std::move(close_callback_).Run(closed_reason);
   }
   // Bubble is deleted here.
-  delegate_->OnBubbleClosed(active_target_);
+  delegator_->OnBubbleClosed(active_target_);
 }
 
 // TODO(crbug.com/1097623): Rename this function.

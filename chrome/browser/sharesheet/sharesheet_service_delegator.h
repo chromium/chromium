@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SHARESHEET_SHARESHEET_SERVICE_DELEGATE_H_
-#define CHROME_BROWSER_SHARESHEET_SHARESHEET_SERVICE_DELEGATE_H_
+#ifndef CHROME_BROWSER_SHARESHEET_SHARESHEET_SERVICE_DELEGATOR_H_
+#define CHROME_BROWSER_SHARESHEET_SHARESHEET_SERVICE_DELEGATOR_H_
 
 #include <memory>
 #include <string>
@@ -34,15 +34,15 @@ namespace sharesheet {
 
 class SharesheetService;
 
-// The SharesheetServiceDelegate is the interface through which the business
+// The SharesheetServiceDelegator is the interface through which the business
 // logic in SharesheetService communicates with the UI.
-class SharesheetServiceDelegate {
+class SharesheetServiceDelegator {
  public:
-  SharesheetServiceDelegate(gfx::NativeWindow native_window,
-                            SharesheetService* sharesheet_service);
-  ~SharesheetServiceDelegate();
-  SharesheetServiceDelegate(const SharesheetServiceDelegate&) = delete;
-  SharesheetServiceDelegate& operator=(const SharesheetServiceDelegate&) =
+  SharesheetServiceDelegator(gfx::NativeWindow native_window,
+                             SharesheetService* sharesheet_service);
+  ~SharesheetServiceDelegator();
+  SharesheetServiceDelegator(const SharesheetServiceDelegator&) = delete;
+  SharesheetServiceDelegator& operator=(const SharesheetServiceDelegator&) =
       delete;
 
   gfx::NativeWindow GetNativeWindow();
@@ -93,7 +93,7 @@ class SharesheetServiceDelegate {
 
  private:
   // Only used for ID purposes. NativeWindow will always outlive the
-  // SharesheetServiceDelegate.
+  // SharesheetServiceDelegator.
   gfx::NativeWindow native_window_;
 
   SharesheetService* sharesheet_service_;
@@ -103,4 +103,4 @@ class SharesheetServiceDelegate {
 
 }  // namespace sharesheet
 
-#endif  // CHROME_BROWSER_SHARESHEET_SHARESHEET_SERVICE_DELEGATE_H_
+#endif  // CHROME_BROWSER_SHARESHEET_SHARESHEET_SERVICE_DELEGATOR_H_

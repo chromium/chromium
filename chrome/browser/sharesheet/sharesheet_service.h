@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/sharesheet/sharesheet_action_cache.h"
+#include "chrome/browser/sharesheet/share_action/share_action_cache.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
@@ -46,7 +46,7 @@ struct VectorIcon;
 
 namespace sharesheet {
 
-class SharesheetServiceDelegate;
+class SharesheetServiceDelegator;
 class SharesheetUiDelegate;
 
 // The SharesheetService is the root service that provides a sharesheet for
@@ -162,9 +162,9 @@ class SharesheetService : public KeyedService {
   void LaunchApp(const std::u16string& target_name,
                  apps::mojom::IntentPtr intent);
 
-  SharesheetServiceDelegate* GetOrCreateDelegate(
+  SharesheetServiceDelegator* GetOrCreateDelegator(
       gfx::NativeWindow native_window);
-  SharesheetServiceDelegate* GetDelegate(gfx::NativeWindow native_window);
+  SharesheetServiceDelegator* GetDelegator(gfx::NativeWindow native_window);
 
   void RecordUserActionMetrics(const std::u16string& target_name);
   void RecordTargetCountMetrics(const std::vector<TargetInfo>& targets);
@@ -173,16 +173,16 @@ class SharesheetService : public KeyedService {
   void RecordShareDataMetrics(const apps::mojom::IntentPtr& intent);
 
   Profile* profile_;
-  std::unique_ptr<SharesheetActionCache> sharesheet_action_cache_;
+  std::unique_ptr<ShareActionCache> share_action_cache_;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   apps::AppServiceProxyLacros* app_service_proxy_;
 #else
   apps::AppServiceProxyBase* app_service_proxy_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  // Record of all active SharesheetServiceDelegates. These can be retrieved
+  // Record of all active SharesheetServiceDelegators. These can be retrieved
   // by ShareActions and used as SharesheetControllers to make bubble changes.
-  std::vector<std::unique_ptr<SharesheetServiceDelegate>> active_delegates_;
+  std::vector<std::unique_ptr<SharesheetServiceDelegator>> active_delegators_;
 
   base::WeakPtrFactory<SharesheetService> weak_factory_{this};
 };

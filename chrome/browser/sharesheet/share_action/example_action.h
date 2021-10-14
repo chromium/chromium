@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SHARESHEET_EXAMPLE_ACTION_H_
-#define CHROME_BROWSER_SHARESHEET_EXAMPLE_ACTION_H_
+#ifndef CHROME_BROWSER_SHARESHEET_SHARE_ACTION_EXAMPLE_ACTION_H_
+#define CHROME_BROWSER_SHARESHEET_SHARE_ACTION_EXAMPLE_ACTION_H_
 
-#include "chrome/browser/sharesheet/share_action.h"
+#include "chrome/browser/sharesheet/share_action/share_action.h"
 
 namespace sharesheet {
 
@@ -31,4 +31,4 @@ class ExampleAction : public ShareAction {
 
 }  // namespace sharesheet
 
-#endif  // CHROME_BROWSER_SHARESHEET_EXAMPLE_ACTION_H_
+#endif  // CHROME_BROWSER_SHARESHEET_SHARE_ACTION_EXAMPLE_ACTION_H_
