@@ -36,6 +36,8 @@ class AssistantClientImpl : public AssistantClientV1,
   // chromeos::libassistant::AssistantClientV1 overrides:
   void StartServices(base::OnceClosure services_ready_callback) override;
   bool StartGrpcServices() override;
+  void RegisterActionModule(
+      assistant_client::ActionModule* action_module) override;
 
   // ServicesStatusObserver overrides:
   void OnServicesStatusChanged(ServicesStatus status) override;

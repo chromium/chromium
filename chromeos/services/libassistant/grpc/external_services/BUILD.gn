@@ -4,6 +4,10 @@
 
 source_set("grpc_services_initializer") {
   sources = [
+    "action_args.cc",
+    "action_args.h",
+    "action_service.cc",
+    "action_service.h",
     "event_handler_driver.cc",
     "event_handler_driver.h",
     "grpc_services_initializer.cc",
@@ -16,6 +20,7 @@ source_set("grpc_services_initializer") {
     ":heartbeat_event_handler_driver",
     "//base",
     "//chromeos/assistant/internal",
+    "//chromeos/services/libassistant:callback_utils",
     "//chromeos/services/libassistant/grpc:grpc_client",
     "//chromeos/services/libassistant/grpc:grpc_service",
     "//chromeos/services/libassistant/grpc:grpc_util",
