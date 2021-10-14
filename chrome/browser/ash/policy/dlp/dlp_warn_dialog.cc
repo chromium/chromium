@@ -210,7 +210,7 @@ void AddConfidentialContentRow(views::GridLayout* layout,
 void MaybeAddConfidentialContent(
     views::GridLayout* layout,
     const DlpConfidentialContents& confidential_contents) {
-  if (confidential_contents.empty())
+  if (confidential_contents.IsEmpty())
     return;
   // First add padding between the message and the list
   layout->AddPaddingRow(views::GridLayout::kFixedSize, kBodyContentSpacing);
@@ -235,7 +235,7 @@ void MaybeAddConfidentialContent(
                         views::GridLayout::ColumnSize::kUsePreferred,
                         /*fixed_width=*/0, /*min_width=*/0);
   for (const DlpConfidentialContent& confidential_content :
-       confidential_contents)
+       confidential_contents.GetContents())
     AddConfidentialContentRow(scrollable_layout, confidential_content);
 }
 

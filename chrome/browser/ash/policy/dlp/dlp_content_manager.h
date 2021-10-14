@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/ash/policy/dlp/dlp_window_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
@@ -61,6 +62,7 @@ class DlpContentManager : public DlpContentObserver,
   DlpContentRestrictionSet GetOnScreenPresentRestrictions() const;
 
   // Returns whether screenshots should be restricted.
+  // TODO(crbug.com/1257493): Remove when it won't be used anymore
   virtual bool IsScreenshotRestricted(const ScreenshotArea& area);
 
   // Returns whether screenshots should be restricted for extensions API.
@@ -73,6 +75,7 @@ class DlpContentManager : public DlpContentObserver,
                                   OnDlpRestrictionChecked callback);
 
   // Returns whether video capture should be restricted.
+  // TODO(crbug.com/1257493): Remove when it won't be used anymore
   bool IsVideoCaptureRestricted(const ScreenshotArea& area);
 
   // Checks whether video capture of |area| is restricted or not advised.
@@ -101,6 +104,7 @@ class DlpContentManager : public DlpContentObserver,
 
   // Returns whether initiation of capture mode should be restricted because
   // any restricted content is currently visible.
+  // TODO(crbug.com/1257493): Remove when it won't be used anymore
   bool IsCaptureModeInitRestricted();
 
   // Checks whether initiation of capture mode is restricted or not advised
@@ -169,8 +173,15 @@ class DlpContentManager : public DlpContentObserver,
   struct VideoCaptureInfo {
     explicit VideoCaptureInfo(const ScreenshotArea& area);
 
-    const ScreenshotArea area_;
-    bool confidential_content_observed_ = false;
+    const ScreenshotArea area;
+    DlpConfidentialContents confidential_contents;
+  };
+
+  // Structure to relate a list of confidential contents to the corresponding
+  // restriction level.
+  struct ConfidentialContentsInfo {
+    RestrictionLevelAndUrl restriction_info;
+    DlpConfidentialContents confidential_contents;
   };
 
   DlpContentManager();
@@ -205,9 +216,14 @@ class DlpContentManager : public DlpContentObserver,
   // Removes PrivacyScreen enforcement after delay if it's still not enforced.
   void MaybeRemovePrivacyScreenEnforcement() const;
 
-  // Returns which level and url of |restriction| that is currently enforced for
-  // |area|.
-  RestrictionLevelAndUrl GetAreaRestrictionInfo(
+  // Returns the information about contents that are currently visible on
+  // screen, for which the highest level |restriction| is enforced.
+  ConfidentialContentsInfo GetConfidentialContentsOnScreen(
+      DlpContentRestriction restriction) const;
+
+  // Returns level, url, and information about visible confidential contents of
+  // |restriction| that is currently enforced for |area|.
+  ConfidentialContentsInfo GetAreaConfidentialContentsInfo(
       const ScreenshotArea& area,
       DlpContentRestriction restriction) const;
 
@@ -236,9 +252,9 @@ class DlpContentManager : public DlpContentObserver,
   RestrictionLevelAndUrl GetPrintingRestrictionInfo(
       content::WebContents* web_contents) const;
 
-  // Helper method for async to check the restriction level, based on which
+  // Helper method for async check of the restriction level, based on which
   // calls |callback| with an indicator whether to proceed or not.
-  void CheckScreenCaptureRestriction(RestrictionLevelAndUrl restriction_info,
+  void CheckScreenCaptureRestriction(ConfidentialContentsInfo info,
                                      OnDlpRestrictionChecked callback);
 
   // Reports events if required by the |restriction_info| and

@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONFIDENTIAL_CONTENTS_H_
 
 #include <string>
-#include <vector>
 
+#include "base/containers/flat_set.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace content {
@@ -29,11 +29,46 @@ struct DlpConfidentialContent {
       default;
   ~DlpConfidentialContent() = default;
 
+  // Contents with the same title are considered equal.
+  bool operator==(const DlpConfidentialContent& other) const;
+  bool operator!=(const DlpConfidentialContent& other) const;
+  bool operator<(const DlpConfidentialContent& other) const;
+  bool operator<=(const DlpConfidentialContent& other) const;
+  bool operator>(const DlpConfidentialContent& other) const;
+  bool operator>=(const DlpConfidentialContent& other) const;
+
   gfx::ImageSkia icon;
   std::u16string title;
 };
 
-using DlpConfidentialContents = std::vector<DlpConfidentialContent>;
+// Provides basic functions for storing and working with confidential contents.
+class DlpConfidentialContents {
+ public:
+  DlpConfidentialContents();
+  DlpConfidentialContents(const DlpConfidentialContents& other);
+  DlpConfidentialContents& operator=(const DlpConfidentialContents& other);
+  ~DlpConfidentialContents();
+
+  // Returns a reference to the underlying content container.
+  const base::flat_set<DlpConfidentialContent>& GetContents() const;
+
+  // Converts |web_contents| to a DlpConfidentialContent and adds it to the
+  // underlying container.
+  void Add(content::WebContents* web_contents);
+  // Removes all stored confidential content, if there was any, and adds
+  // |web_contents| converted to a DlpConfidentialContent.
+  void ClearAndAdd(content::WebContents* web_contents);
+
+  // Returns whether there is any content stored or not.
+  bool IsEmpty() const;
+
+  // Adds all content stored in |other| to the underlying container, without
+  // duplicates.
+  void UnionWith(const DlpConfidentialContents& other);
+
+ private:
+  base::flat_set<DlpConfidentialContent> contents_;
+};
 
 }  // namespace policy
 
