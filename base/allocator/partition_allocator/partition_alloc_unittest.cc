@@ -1278,13 +1278,7 @@ TEST_F(PartitionAllocTest, ReallocDirectMapAlignedRelocate) {
 }
 
 // Tests the handing out of freelists for partial slot spans.
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// Bulk-disabled on mac-arm64 for bot stabilization: https://crbug.com/1154345
-#define MAYBE_PartialPageFreelists DISABLED_PartialPageFreelists
-#else
-#define MAYBE_PartialPageFreelists PartialPageFreelists
-#endif
-TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
+TEST_F(PartitionAllocTest, PartialPageFreelists) {
   size_t big_size = SystemPageSize() - kExtraAllocSize;
   size_t bucket_index = SizeToIndex(big_size + kExtraAllocSize);
   PartitionRoot<ThreadSafe>::Bucket* bucket =
@@ -2955,13 +2949,7 @@ TEST_F(PartitionAllocTest, GetUsableSize) {
   }
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// Disabled pending investigation: https://crbug.com/1154345
-#define MAYBE_Bookkeeping DISABLED_Bookkeeping
-#else
-#define MAYBE_Bookkeeping Bookkeeping
-#endif
-TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
+TEST_F(PartitionAllocTest, Bookkeeping) {
   auto& root = *allocator.root();
 
   EXPECT_EQ(0U, root.total_size_of_committed_pages);
