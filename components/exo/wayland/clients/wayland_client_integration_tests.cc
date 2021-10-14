@@ -4,20 +4,25 @@
 
 #include <gbm.h>
 #include <cstdint>
+#include <iterator>
 #include <vector>
 
-#include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
-#include "base/message_loop/message_pump_type.h"
 #include "base/strings/string_util.h"
-#include "base/task/single_thread_task_executor.h"
+#include "base/test/launcher/unit_test_launcher.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_suite.h"
 #include "components/exo/wayland/clients/client_base.h"
 #include "components/exo/wayland/clients/client_helper.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_types.h"
+#include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/linux/drm_util_linux.h"
+#include "ui/gfx/linux/gbm_util.h"
 
 namespace {
 
@@ -41,17 +46,13 @@ namespace clients {
 
 namespace {
 
-constexpr uint32_t kBufferUsage =
-    GBM_BO_USE_SCANOUT | GBM_BO_USE_LINEAR | GBM_BO_USE_TEXTURING;
-
-class BufferCheckerClient : public ClientBase {
+class BufferCheckerTestClient : public ClientBase {
  public:
-  explicit BufferCheckerClient() = default;
-  ~BufferCheckerClient() override = default;
+  explicit BufferCheckerTestClient() = default;
+  ~BufferCheckerTestClient() override = default;
 
-  int Run(const ClientBase::InitParams& params) {
-    CHECK(ClientBase::Init(params));
-
+  bool HasAnySupportedUsages(uint32_t format) {
+    std::vector<gfx::BufferUsage> supported_usages;
     bool callback_pending = false;
     std::unique_ptr<wl_callback> frame_callback;
     wl_callback_listener frame_listener = {
@@ -59,51 +60,63 @@ class BufferCheckerClient : public ClientBase {
           *(static_cast<bool*>(data)) = false;
         }};
 
-    base::queue<uint32_t> formats_to_test;
-    for (auto format : reported_formats)
-      formats_to_test.push(format);
+    base::queue<gfx::BufferUsage> usages_to_test;
+    for (int i = 0; i < static_cast<int>(gfx::BufferUsage::LAST); i++)
+      usages_to_test.push(static_cast<gfx::BufferUsage>(i));
 
-    uint32_t current_format;
+    gfx::BufferUsage current_usage;
     std::unique_ptr<Buffer> current_buffer;
     do {
       if (callback_pending)
         continue;
 
       if (current_buffer) {
-        LOG(ERROR) << "Successfully used buffer with format drm: "
-                   << DrmCodeToString(current_format) << " gfx::BufferFormat: "
-                   << DrmCodeToBufferFormatString(current_format);
+        supported_usages.push_back(current_usage);
       }
 
       if (wl_display_get_error(display_.get())) {
         LOG(ERROR) << "Wayland error encountered";
-        return -1;
+        return false;
       }
 
       // Buffers may fail to be created, so loop until we get one or return
       // early if we run out. We can't loop in the outer loop because, without
       // doing the rest of the code, we won't be dispatched to again.
       do {
-        if (formats_to_test.size() == 0)
-          return 0;
+        if (usages_to_test.size() == 0) {
+          std::vector<std::string> supported_usage_strings;
+          std::transform(supported_usages.begin(), supported_usages.end(),
+                         std::back_inserter(supported_usage_strings),
+                         gfx::BufferUsageToString);
+          LOG(INFO) << "Successfully used buffer with format drm: "
+                    << DrmCodeToString(format) << " gfx::BufferFormat: "
+                    << DrmCodeToBufferFormatString(format)
+                    << " gfx::BufferUsages: ["
+                    << base::JoinString(supported_usage_strings, ", ") << "]";
+          return supported_usages.size() > 0;
+        }
 
-        current_format = formats_to_test.front();
-        formats_to_test.pop();
+        current_usage = usages_to_test.front();
+        usages_to_test.pop();
 
         current_buffer = CreateDrmBuffer(
-            gfx::Size(surface_size_.width(), surface_size_.height()),
-            current_format, kBufferUsage, /*y_invert=*/false);
+            gfx::Size(surface_size_.width(), surface_size_.height()), format,
+            ui::BufferUsageToGbmFlags(current_usage), /*y_invert=*/false);
         if (!current_buffer) {
           LOG(ERROR) << "Unable to create buffer for drm: "
-                     << DrmCodeToString(current_format)
-                     << " gfx::BufferFormat: "
-                     << DrmCodeToBufferFormatString(current_format);
+                     << DrmCodeToString(format) << " gfx::BufferFormat: "
+                     << DrmCodeToBufferFormatString(format)
+                     << " gfx::BufferUsage "
+                     << gfx::BufferUsageToString(current_usage);
         }
       } while (current_buffer == nullptr);
 
-      LOG(ERROR) << "Attempting to use buffer with format drm: "
-                 << DrmCodeToString(current_format) << " gfx::BufferFormat: "
-                 << DrmCodeToBufferFormatString(current_format);
+      LOG(INFO) << "Attempting to use buffer with format drm: "
+                << DrmCodeToString(format)
+                << " gfx::BufferFormat: " << DrmCodeToBufferFormatString(format)
+                << " gfx::BufferUsage "
+                << gfx::BufferUsageToString(current_usage);
+      ;
 
       wl_surface_damage(surface_.get(), 0, 0, surface_size_.width(),
                         surface_size_.height());
@@ -120,7 +133,7 @@ class BufferCheckerClient : public ClientBase {
 
     LOG(ERROR)
         << "Expected to return from inside the loop. Wayland disconnected?";
-    return -1;
+    return false;
   }
 
   std::vector<uint32_t> reported_formats;
@@ -152,40 +165,51 @@ class BufferCheckerClient : public ClientBase {
 }  // namespace wayland
 }  // namespace exo
 
-int main(int argc, char* argv[]) {
-  base::AtExitManager exit_manager;
-  base::CommandLine::Init(argc, argv);
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-
-  exo::wayland::clients::ClientBase::InitParams params;
-  if (!params.FromCommandLine(*command_line))
-    return 1;
-
-  if (!params.use_drm) {
-    LOG(ERROR) << "Missing --use-drm parameter which is required for gbm "
-                  "buffer allocation";
-    return 1;
+class IntegrationTestClientTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    CHECK(base_params_.FromCommandLine(*command_line));
+    CHECK(base_params_.use_drm) << "Missing --use-drm parameter which is "
+                                   "required for gbm buffer allocation";
   }
 
-  // Initialize no buffers when we start (wait until we've gotten the list from
-  // dmabuf)
-  params.num_buffers = 0;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
 
-  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
-  exo::wayland::clients::BufferCheckerClient client;
-  int ret = client.Run(params);
+  exo::wayland::clients::ClientBase::InitParams base_params_;
+};
 
+void PrintReportedFormats(std::vector<uint32_t>& formats) {
   std::vector<std::string> drm_names;
   std::vector<std::string> buffer_names;
-  for (auto reported_format : client.reported_formats) {
-    drm_names.push_back(DrmCodeToString(reported_format));
-    buffer_names.push_back(DrmCodeToBufferFormatString(reported_format));
+  for (auto format : formats) {
+    drm_names.push_back(DrmCodeToString(format));
+    buffer_names.push_back(DrmCodeToBufferFormatString(format));
   }
-
   LOG(ERROR) << "zwp_linux_dmabuf_v1 reported supported DRM formats: "
              << base::JoinString(drm_names, ", ");
   LOG(ERROR) << "zwp_linux_dmabuf_v1 reported supported gfx::BufferFormats: "
              << base::JoinString(buffer_names, ", ");
+}
 
-  return ret;
+TEST_F(IntegrationTestClientTest, CanUseAllReportedBuffers) {
+  exo::wayland::clients::BufferCheckerTestClient client;
+  auto params = base_params_;
+  // Initialize no buffers when we start, wait until we've gotten the list
+  params.num_buffers = 0;
+  ASSERT_TRUE(client.Init(params));
+  PrintReportedFormats(client.reported_formats);
+  for (auto format : client.reported_formats)
+    EXPECT_TRUE(client.HasAnySupportedUsages(format));
+}
+
+int main(int argc, char* argv[]) {
+  base::CommandLine::Init(argc, argv);
+  base::TestSuite test_suite(argc, argv);
+
+  // Tests may not run to completion if we do not run them serially.
+  return base::LaunchUnitTestsSerially(
+      argc, argv,
+      base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
 }

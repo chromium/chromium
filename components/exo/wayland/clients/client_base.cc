@@ -92,6 +92,12 @@ const char kYInvert[] = "y-invert";
 // Specifies if client should use xdg or zxdg_v6 or rely on wl_shell.
 const char kXdg[] = "xdg";
 
+// In cases where we can't easily change the environment variables, such as tast
+// tests, this flag specifies the socket to pass to wl_display_connect.
+//
+// When attaching to exo, this will usually be: /var/run/chrome/wayland-0
+const char kWaylandSocket[] = "wayland_socket";
+
 }  // namespace switches
 
 namespace {
@@ -405,6 +411,10 @@ bool ClientBase::InitParams::FromCommandLine(
   y_invert = command_line.HasSwitch(switches::kYInvert);
 
   use_xdg = command_line.HasSwitch(switches::kXdg);
+
+  if (command_line.HasSwitch(switches::kWaylandSocket))
+    wayland_socket = command_line.GetSwitchValueASCII(switches::kWaylandSocket);
+
   return true;
 }
 
@@ -449,7 +459,8 @@ bool ClientBase::Init(const InitParams& params) {
   y_invert_ = params.y_invert;
   has_transform_ = params.has_transform;
 
-  display_.reset(wl_display_connect(nullptr));
+  display_.reset(wl_display_connect(
+      params.wayland_socket ? params.wayland_socket->c_str() : nullptr));
   if (!display_) {
     LOG(ERROR) << "wl_display_connect failed";
     return false;

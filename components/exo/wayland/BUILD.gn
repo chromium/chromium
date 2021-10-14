@@ -684,14 +684,16 @@ test("wayland_client_compatibility_tests") {
 }
 
 if (ozone_platform_drm) {
-  executable("wayland_buffer_compatability_checker_client") {
-    sources = [ "clients/buffer_compatability_checker.cc" ]
+  test("wayland_client_integration_tests") {
+    sources = [ "clients/wayland_client_integration_tests.cc" ]
     deps = [
       ":client_support",
       "//base",
+      "//base/test:test_support",
       "//build/config/linux/libdrm",
       "//ui/gfx:gfx",
       "//ui/gfx/linux:drm",
+      "//ui/gfx/linux:gbm",
     ]
   }
 

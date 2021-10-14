@@ -68,6 +68,7 @@ class ClientBase {
     bool use_xdg = false;
     bool use_release_fences = false;
     bool use_stylus = false;
+    absl::optional<std::string> wayland_socket = {};
   };
 
   struct Globals {
