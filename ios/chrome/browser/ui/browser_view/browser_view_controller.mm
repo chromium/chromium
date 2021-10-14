@@ -1654,6 +1654,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
        withTransitionCoordinator:
            (id<UIViewControllerTransitionCoordinator>)coordinator {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+  // After |-shutdown| is called, |self.browser| is invalid and will cause
+  // a crash.
+  if (_isShutdown)
+    return;
+
   [self dismissPopups];
 
   __weak BrowserViewController* weakSelf = self;
