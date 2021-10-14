@@ -442,8 +442,10 @@ MojomComponentType EnumTraits<MojomComponentType, ProtoComponentType>::ToMojom(
       return MojomComponentType::kBaseAccelerometer;
     case rmad::RmadComponent::RMAD_COMPONENT_LID_ACCELEROMETER:
       return MojomComponentType::kLidAccelerometer;
-    case rmad::RmadComponent::RMAD_COMPONENT_GYROSCOPE:
-      return MojomComponentType::kGyroscope;
+    case rmad::RmadComponent::RMAD_COMPONENT_BASE_GYROSCOPE:
+      return MojomComponentType::kBaseGyroscope;
+    case rmad::RmadComponent::RMAD_COMPONENT_LID_GYROSCOPE:
+      return MojomComponentType::kLidGyroscope;
 
     case rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD:
       return MojomComponentType::kKeyboard;
@@ -517,8 +519,11 @@ bool EnumTraits<MojomComponentType, ProtoComponentType>::FromMojom(
     case MojomComponentType::kLidAccelerometer:
       *out = rmad::RmadComponent::RMAD_COMPONENT_LID_ACCELEROMETER;
       return true;
-    case MojomComponentType::kGyroscope:
-      *out = rmad::RmadComponent::RMAD_COMPONENT_GYROSCOPE;
+    case MojomComponentType::kBaseGyroscope:
+      *out = rmad::RmadComponent::RMAD_COMPONENT_BASE_GYROSCOPE;
+      return true;
+    case MojomComponentType::kLidGyroscope:
+      *out = rmad::RmadComponent::RMAD_COMPONENT_LID_GYROSCOPE;
       return true;
 
     case MojomComponentType::kKeyboard:

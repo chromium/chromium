@@ -172,7 +172,7 @@ export function reimagingCalibrationRunPageTest() {
     let message = statusMessage.innerHTML;
     service.triggerCalibrationObserver(
         {
-          component: ComponentType.kGyroscope,
+          component: ComponentType.kBaseGyroscope,
           status: CalibrationStatus.kCalibrationInProgress,
           progress: 0.5
         },

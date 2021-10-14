@@ -232,12 +232,13 @@ enum ComponentType {
   kScreen = 15,
   kBaseAccelerometer = 16,
   kLidAccelerometer = 17,
-  kGyroscope = 18,
+  kBaseGyroscope = 18,
+  kLidGyroscope = 19,
 
   // Irrelevant components.
   // TODO(chenghan): Do we really need these?
-  kKeyboard = 19,
-  kPowerButton = 20,
+  kKeyboard = 20,
+  kPowerButton = 21,
 };
 
 // Component repair state

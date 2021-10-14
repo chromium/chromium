@@ -23,9 +23,10 @@ export const ComponentTypeToName = {
   [ComponentType.kCellular]: 'Cellular',
   [ComponentType.kEthernet]: 'Ethernet',
   [ComponentType.kWireless]: 'Wireless',
-  [ComponentType.kGyroscope]: 'Gyroscope',
   [ComponentType.kBaseAccelerometer]: 'Base Accelerometer',
   [ComponentType.kLidAccelerometer]: 'Lid Accelerometer',
+  [ComponentType.kBaseGyroscope]: 'Base Gyroscope',
+  [ComponentType.kLidGyroscope]: 'Lid Gyroscope',
   [ComponentType.kScreen]: 'Screen',
   [ComponentType.kKeyboard]: 'Keyboard',
   [ComponentType.kPowerButton]: 'Power Button'
@@ -49,9 +50,10 @@ export const ComponentTypeToId = {
   [ComponentType.kCellular]: 'componentCellular',
   [ComponentType.kEthernet]: 'componentEthernet',
   [ComponentType.kWireless]: 'componentWireless',
-  [ComponentType.kGyroscope]: 'componentGyroscope',
   [ComponentType.kBaseAccelerometer]: 'componentBaseAccelerometer',
   [ComponentType.kLidAccelerometer]: 'componentLidAccelerometer',
+  [ComponentType.kBaseGyroscope]: 'componentBaseGyroscope',
+  [ComponentType.kLidGyroscope]: 'componentLidGyroscope',
   [ComponentType.kScreen]: 'componentScreen',
   [ComponentType.kKeyboard]: 'componentKeyboard',
   [ComponentType.kPowerButton]: 'componentPowerButton'

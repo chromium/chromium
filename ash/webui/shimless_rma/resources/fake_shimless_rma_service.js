@@ -739,7 +739,7 @@ export class FakeShimlessRmaService {
           8000);
       this.triggerCalibrationObserver(
           {
-            component: ComponentType.kGyroscope,
+            component: ComponentType.kBaseGyroscope,
             status: CalibrationStatus.kCalibrationSkip,
             progress: 1.0
           },

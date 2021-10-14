@@ -226,12 +226,14 @@ TEST_F(ShimlessRmaMojoToProtoTest, RepairComponentsMatch) {
            {mojom::ComponentType::kWireless,
             rmad::RmadComponent::RMAD_COMPONENT_WIRELESS},
            // Additional rmad components.
-           {mojom::ComponentType::kGyroscope,
-            rmad::RmadComponent::RMAD_COMPONENT_GYROSCOPE},
            {mojom::ComponentType::kBaseAccelerometer,
             rmad::RmadComponent::RMAD_COMPONENT_BASE_ACCELEROMETER},
            {mojom::ComponentType::kLidAccelerometer,
             rmad::RmadComponent::RMAD_COMPONENT_LID_ACCELEROMETER},
+           {mojom::ComponentType::kBaseGyroscope,
+            rmad::RmadComponent::RMAD_COMPONENT_BASE_GYROSCOPE},
+           {mojom::ComponentType::kLidGyroscope,
+            rmad::RmadComponent::RMAD_COMPONENT_LID_GYROSCOPE},
            {mojom::ComponentType::kScreen,
             rmad::RmadComponent::RMAD_COMPONENT_SCREEN},
 
