@@ -179,11 +179,12 @@ void FastPairRepositoryImpl::AssociateAccountKey(
     scoped_refptr<Device> device,
     const std::vector<uint8_t>& account_key) {
   QP_LOG(INFO) << __func__;
+  DCHECK(device->classic_address());
   GetDeviceMetadata(
       device->metadata_id,
       base::BindOnce(&FastPairRepositoryImpl::AddToFootprints,
                      weak_ptr_factory_.GetWeakPtr(), device->metadata_id,
-                     device->ble_address, account_key));
+                     device->classic_address().value(), account_key));
 }
 
 void FastPairRepositoryImpl::AddToFootprints(

@@ -15,6 +15,7 @@
 #include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 #include "base/callback.h"
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
@@ -158,10 +159,13 @@ void FastPairPairer::OnParseDecryptedResponse(
   // address and add ourselves as a pairing delegate.
   std::string device_address =
       device::CanonicalizeBluetoothAddress(response->address_bytes);
+  device_->set_classic_address(device_address);
+
   device::BluetoothDevice* device = adapter_->GetDevice(device_address);
   QP_LOG(VERBOSE) << "Key-based pairing changed. Address: " << device_address
                   << ". Found device: " << ((device != nullptr) ? "Yes" : "No")
                   << ".";
+
   if (device) {
     device->Pair(this, base::BindOnce(&FastPairPairer::OnPairConnected,
                                       weak_ptr_factory_.GetWeakPtr()));
