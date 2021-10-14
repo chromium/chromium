@@ -37,10 +37,9 @@ LacrosButterBar::LacrosButterBar() {
   bool should_show_banner =
       !local_state->GetBoolean(lacros_prefs::kShowedExperimentalBannerPref);
 
-  // If Lacros is not the primary browser, we always show the banner.
-  should_show_banner |= !chromeos::LacrosService::Get()
-                             ->init_params()
-                             ->standalone_browser_is_primary;
+  // Always show the banner for now, until privacy concerns are addressed.
+  // https://crbug.com/1259732.
+  should_show_banner |= true;
   if (!should_show_banner)
     return;
 
