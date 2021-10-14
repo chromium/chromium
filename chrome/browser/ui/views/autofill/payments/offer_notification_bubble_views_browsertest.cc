@@ -92,6 +92,20 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   EXPECT_TRUE(GetOfferNotificationBubbleViews());
 }
 
+IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
+                       PromoCodeOffer_FromCouponService_WithinTimeGap) {
+  const GURL orgin("https://www.example.com/");
+  SetUpFreeListingCouponOfferDataForCouponService(
+      CreatePromoCodeOfferDataWithDomains({orgin}));
+  UpdateFreeListingCouponDisplayTime(
+      CreatePromoCodeOfferDataWithDomains({orgin}));
+
+  NavigateTo("https://www.example.com/first/");
+
+  EXPECT_TRUE(IsIconVisible());
+  EXPECT_FALSE(GetOfferNotificationBubbleViews());
+}
+
 class OfferNotificationBubbleViewsBrowserTestWithoutPromoCodes
     : public OfferNotificationBubbleViewsTestBase {
  public:
