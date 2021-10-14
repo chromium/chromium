@@ -9,12 +9,13 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/chrome_device_permissions_prompt.h"
 #include "chrome/browser/extensions/chrome_extension_chooser_dialog.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_editor_view.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/task_manager_view.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/permissions/chooser_controller.h"
-#include "ui/views/bubble/bubble_dialog_model_host.h"
 
 // This file provides definitions of desktop browser dialog-creation methods for
 // all toolkit-views platforms.
@@ -60,20 +61,10 @@ void HideTaskManager() {
 }
 #endif
 
-// TODO(pbos): Find where this should live before checking stuff in.
 void ShowBrowserModal(Browser* browser,
                       std::unique_ptr<ui::DialogModel> dialog_model) {
-  const gfx::NativeView anchor = BrowserView::GetBrowserViewForBrowser(browser)
-                                     ->GetWidget()
-                                     ->GetNativeView();
-  // It's fine to pass in a null context, since it will be inferred from the
-  // non-null anchor.
-  auto bubble = views::BubbleDialogModelHost::CreateModal(
-      std::move(dialog_model), ui::MODAL_TYPE_WINDOW);
-  bubble->SetOwnedByWidget(true);
-  views::DialogDelegate::CreateDialogWidget(std::move(bubble),
-                                            gfx::kNullNativeWindow, anchor)
-      ->Show();
+  constrained_window::ShowBrowserModal(std::move(dialog_model),
+                                       browser->window()->GetNativeWindow());
 }
 
 }  // namespace chrome

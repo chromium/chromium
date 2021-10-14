@@ -146,14 +146,7 @@ void ExtensionUninstallDialogViews::Show() {
         views::BubbleDialogDelegate::CreateBubble(std::move(bubble)),
         extension()->id());
   } else {
-    // TODO(pbos): Add unique_ptr version of CreateBrowserModalDialogViews and
-    // remove .release().
-    constrained_window::CreateBrowserModalDialogViews(
-        views::BubbleDialogModelHost::CreateModal(std::move(dialog_model),
-                                                  ui::MODAL_TYPE_WINDOW)
-            .release(),
-        parent())
-        ->Show();
+    constrained_window::ShowBrowserModal(std::move(dialog_model), parent());
   }
   chrome::RecordDialogCreation(chrome::DialogIdentifier::EXTENSION_UNINSTALL);
 }

@@ -17,6 +17,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -199,6 +200,12 @@ views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
       manager->delegate()->GetWebContentsModalDialogHost()->GetHostView());
 }
 
+views::Widget* CreateBrowserModalDialogViews(
+    std::unique_ptr<views::DialogDelegate> dialog,
+    gfx::NativeWindow parent) {
+  return CreateBrowserModalDialogViews(dialog.release(), parent);
+}
+
 views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
                                              gfx::NativeWindow parent) {
   DCHECK_NE(ui::MODAL_TYPE_CHILD, dialog->GetModalType());
@@ -231,6 +238,15 @@ views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
     dialog_host_observer->OnPositionRequiresUpdate();
   }
   return widget;
+}
+
+void ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
+                      gfx::NativeWindow parent) {
+  auto dialog = views::BubbleDialogModelHost::CreateModal(
+      std::move(dialog_model), ui::MODAL_TYPE_WINDOW);
+  dialog->SetOwnedByWidget(true);
+  constrained_window::CreateBrowserModalDialogViews(std::move(dialog), parent)
+      ->Show();
 }
 
 }  // namespace constrained_window
