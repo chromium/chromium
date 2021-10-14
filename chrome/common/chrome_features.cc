@@ -41,6 +41,12 @@ const base::Feature kAllowDisableTouchpadHapticFeedback{
     "AllowDisableTouchpadHapticFeedback", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Shows settings to adjust the touchpad haptic click settings.
+const base::Feature kAllowTouchpadHapticClickSettings{
+    "AllowTouchpadHapticClickSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // defined(IS_CHROMEOS_ASH)
+
 // Always reinstall system web apps, instead of only doing so after version
 // upgrade or locale changes.
 const base::Feature kAlwaysReinstallSystemWebApps{

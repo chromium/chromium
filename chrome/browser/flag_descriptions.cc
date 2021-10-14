@@ -4034,6 +4034,11 @@ const char kAllowScrollSettingsDescription[] =
     "Shows settings to enable/disable scroll acceleration and to adjust the "
     "sensitivity for scrolling.";
 
+const char kAllowTouchpadHapticClickSettingsName[] =
+    "Allow changes to the click sensitivity for haptic touchpads.";
+const char kAllowTouchpadHapticClickSettingsDescription[] =
+    "Shows settings to adjust click sensitivity for haptic touchpads.";
+
 extern const char kAmbientModeNewUrlName[] =
     "Use new backend URL format for ChromeOS Screensaver";
 extern const char kAmbientModeNewUrlDescription[] =

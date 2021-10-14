@@ -50344,6 +50344,7 @@ from previous Chrome versions.
   <int value="-222296540" label="VirtualKeyboardBorderedKey:disabled"/>
   <int value="-222282965"
       label="disable_idle_sockets_close_on_memory_pressure:enabled"/>
+  <int value="-221649438" label="AllowTouchpadHapticClickSettings:disabled"/>
   <int value="-220599034" label="UsePdfCompositorServiceForPrint:enabled"/>
   <int value="-220298483" label="ImeOptionsInSettings:enabled"/>
   <int value="-217885320" label="CdmFactoryDaemon:disabled"/>
@@ -51997,6 +51998,7 @@ from previous Chrome versions.
   <int value="1050664817" label="CSSFragmentIdentifiers:enabled"/>
   <int value="1053743655" label="NewOverviewAnimations:enabled"/>
   <int value="1054910800" label="enable-timezone-tracking-option"/>
+  <int value="1055116004" label="AllowTouchpadHapticClickSettings:enabled"/>
   <int value="1057014709" label="EnforceTLS13Downgrade:enabled"/>
   <int value="1057709415" label="DeprecateAltBasedSixPack:disabled"/>
   <int value="1057741107"

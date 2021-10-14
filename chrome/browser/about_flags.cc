@@ -5691,6 +5691,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAllowScrollSettingsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kAllowScrollSettings)},
 
+    {"allow-touchpad-haptic-click-settings",
+     flag_descriptions::kAllowTouchpadHapticClickSettingsName,
+     flag_descriptions::kAllowTouchpadHapticClickSettingsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAllowTouchpadHapticClickSettings)},
+
     {"bluetooth-advertisement-monitoring",
      flag_descriptions::kBluetoothAdvertisementMonitoringName,
      flag_descriptions::kBluetoothAdvertisementMonitoringDescription, kOsCrOS,

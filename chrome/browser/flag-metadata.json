@@ -124,6 +124,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "allow-touchpad-haptic-click-settings",
+    "owners": [ "gavinwill", "cros-peripherals@google.com" ],
+    "expiry_milestone": 101
+  },
+  {
     "name": "ambient-mode-new-url",
     "owners": [ "xiaohuic", "assistive-eng@google.com" ],
     "expiry_milestone": 101

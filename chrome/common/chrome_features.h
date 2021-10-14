@@ -45,6 +45,11 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAllowDisableTouchpadHapticFeedback;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kAllowTouchpadHapticClickSettings;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAlwaysReinstallSystemWebApps;
 
