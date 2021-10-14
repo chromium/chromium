@@ -23,7 +23,6 @@
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/client_session_control.h"
-#include "remoting/host/current_process_stats_agent.h"
 #include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/desktop_environment_options.h"
@@ -32,7 +31,6 @@
 #include "remoting/host/mojom/remoting_mojom_traits.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
-#include "remoting/protocol/process_stats_stub.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
@@ -57,7 +55,6 @@ class DesktopEnvironment;
 class DesktopEnvironmentFactory;
 class InputInjector;
 class KeyboardLayoutMonitor;
-class ProcessStatsSender;
 class RemoteInputFilter;
 class ScreenControls;
 class ScreenResolution;
@@ -76,7 +73,6 @@ class DesktopSessionAgent
       public webrtc::DesktopCapturer::Callback,
       public webrtc::MouseCursorMonitor::Callback,
       public ClientSessionControl,
-      public protocol::ProcessStatsStub,
       public IpcFileOperations::ResultHandler,
       public mojom::DesktopSessionControl {
  public:
@@ -161,10 +157,6 @@ class DesktopSessionAgent
   void SetDisableInputs(bool disable_inputs) override;
   void OnDesktopDisplayChanged(
       std::unique_ptr<protocol::VideoLayout> layout) override;
-
-  // ProcessStatsStub interface.
-  void OnProcessStats(
-      const protocol::AggregatedProcessResourceUsage& usage) override;
 
   // Handles StartSessionAgent request from the client.
   void OnStartSessionAgent(const std::string& authenticated_jid,
@@ -272,11 +264,6 @@ class DesktopSessionAgent
   // Routes file-transfer messages to the corresponding reader/writer to be
   // executed.
   absl::optional<SessionFileOperationsHandler> session_file_operations_handler_;
-
-  // Reports process statistic data to network process.
-  std::unique_ptr<ProcessStatsSender> stats_sender_;
-
-  CurrentProcessStatsAgent current_process_stats_;
 
   mojo::AssociatedRemote<mojom::DesktopSessionEventHandler>
       desktop_session_event_handler_;

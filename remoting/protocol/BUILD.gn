@@ -145,7 +145,6 @@ static_library("protocol") {
     "port_allocator_factory.h",
     "port_range.cc",
     "port_range.h",
-    "process_stats_stub.h",
     "pseudotcp_adapter.cc",
     "pseudotcp_adapter.h",
     "pseudotcp_channel_factory.cc",

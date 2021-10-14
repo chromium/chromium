@@ -26,7 +26,6 @@
 #include "remoting/host/host_event_logger.h"
 #include "remoting/host/host_exit_codes.h"
 #include "remoting/host/host_status_observer.h"
-#include "remoting/host/process_stats_sender.h"
 #include "remoting/host/screen_resolution.h"
 #include "remoting/protocol/transport.h"
 
@@ -107,10 +106,6 @@ bool DaemonProcess::OnMessageReceived(const IPC::Message& message) {
                         OnHostStarted)
     IPC_MESSAGE_HANDLER(ChromotingNetworkDaemonMsg_HostShutdown,
                         OnHostShutdown)
-    IPC_MESSAGE_HANDLER(ChromotingNetworkToAnyMsg_StartProcessStatsReport,
-                        StartProcessStatsReport)
-    IPC_MESSAGE_HANDLER(ChromotingNetworkToAnyMsg_StopProcessStatsReport,
-                        StopProcessStatsReport)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
 
@@ -130,10 +125,7 @@ void DaemonProcess::OnPermanentError(int exit_code) {
   Stop();
 }
 
-void DaemonProcess::OnWorkerProcessStopped() {
-  process_stats_request_count_ = 0;
-  stats_sender_.reset();
-}
+void DaemonProcess::OnWorkerProcessStopped() {}
 
 void DaemonProcess::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
@@ -185,8 +177,7 @@ DaemonProcess::DaemonProcess(
       io_task_runner_(io_task_runner),
       next_terminal_id_(0),
       stopped_callback_(std::move(stopped_callback)),
-      status_monitor_(new HostStatusMonitor()),
-      current_process_stats_("DaemonProcess") {
+      status_monitor_(new HostStatusMonitor()) {
   DCHECK(caller_task_runner->BelongsToCurrentThread());
   // TODO(sammc): On OSX, mojo::core::SetMachPortProvider() should be called
   // with a base::PortProvider implementation. Add it here when this code is
@@ -361,39 +352,6 @@ void DaemonProcess::DeleteAllDesktopSessions() {
     delete desktop_sessions_.front();
     desktop_sessions_.pop_front();
   }
-}
-
-void DaemonProcess::StartProcessStatsReport(base::TimeDelta interval) {
-  DCHECK(caller_task_runner()->BelongsToCurrentThread());
-  if (interval <= base::Seconds(0)) {
-    interval = kDefaultProcessStatsInterval;
-  }
-
-  process_stats_request_count_++;
-  DCHECK_GT(process_stats_request_count_, 0);
-  if (process_stats_request_count_ == 1 ||
-      stats_sender_->interval() > interval) {
-    DCHECK_EQ(process_stats_request_count_ == 1, !stats_sender_);
-    stats_sender_.reset(new ProcessStatsSender(
-        this,
-        interval,
-        { &current_process_stats_ }));
-  }
-}
-
-void DaemonProcess::StopProcessStatsReport() {
-  DCHECK(caller_task_runner()->BelongsToCurrentThread());
-  process_stats_request_count_--;
-  DCHECK_GE(process_stats_request_count_, 0);
-  if (process_stats_request_count_ == 0) {
-    DCHECK(stats_sender_);
-    stats_sender_.reset();
-  }
-}
-
-void DaemonProcess::OnProcessStats(
-    const protocol::AggregatedProcessResourceUsage& usage) {
-  SendToNetwork(new ChromotingAnyToNetworkMsg_ReportProcessStats(usage));
 }
 
 base::FilePath DaemonProcess::GetConfigPath() {

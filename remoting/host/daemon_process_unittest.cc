@@ -41,7 +41,6 @@ enum Messages {
   kMessageDisconnectTerminal = ChromotingNetworkHostMsg_DisconnectTerminal::ID,
   kMessageTerminalDisconnected =
       ChromotingDaemonNetworkMsg_TerminalDisconnected::ID,
-  kMessageReportProcessStats = ChromotingAnyToNetworkMsg_ReportProcessStats::ID,
 };
 
 // Provides a public constructor allowing the test to create instances of
@@ -351,55 +350,6 @@ TEST_F(DaemonProcessTest, InvalidConnectTerminal) {
       ChromotingNetworkHostMsg_ConnectTerminal(id, resolution, false)));
   EXPECT_TRUE(desktop_sessions().empty());
   EXPECT_EQ(0, terminal_id_);
-}
-
-TEST_F(DaemonProcessTest, StartProcessStatsReport) {
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageReportProcessStats)));
-  daemon_process_->OnMessageReceived(
-      ChromotingNetworkToAnyMsg_StartProcessStatsReport(base::Milliseconds(1)));
-  base::RunLoop run_loop;
-  ON_CALL(*daemon_process_, Sent(Message(kMessageReportProcessStats)))
-      .WillByDefault(testing::Invoke(
-          [&run_loop](const IPC::Message& message) {
-            run_loop.Quit();
-          }));
-  run_loop.Run();
-}
-
-TEST_F(DaemonProcessTest, StartProcessStatsReportWithDifferentDelta) {
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageReportProcessStats)))
-      .Times(AnyNumber());
-  int received = 0;
-  daemon_process_->OnMessageReceived(
-      ChromotingNetworkToAnyMsg_StartProcessStatsReport(base::Hours(1)));
-  daemon_process_->OnMessageReceived(
-      ChromotingNetworkToAnyMsg_StartProcessStatsReport(base::Milliseconds(1)));
-  base::RunLoop run_loop;
-  ON_CALL(*daemon_process_, Sent(Message(kMessageReportProcessStats)))
-      .WillByDefault(testing::Invoke(
-          [&run_loop, &received](const IPC::Message& message) {
-            received++;
-            if (received == 5) {
-              run_loop.Quit();
-            }
-          }));
-  run_loop.Run();
-}
-
-TEST_F(DaemonProcessTest, StopProcessStatsReportWhenTheWorkerProcessDied) {
-  daemon_process_->OnMessageReceived(
-      ChromotingNetworkToAnyMsg_StartProcessStatsReport(base::Milliseconds(1)));
-  base::RunLoop run_loop;
-  ON_CALL(*daemon_process_, Sent(Message(kMessageReportProcessStats)))
-      .WillByDefault(testing::Invoke(
-          [](const IPC::Message& message) {
-            ASSERT_TRUE(false);
-          }));
-  static_cast<WorkerProcessIpcDelegate*>(daemon_process_.get())
-      ->OnWorkerProcessStopped();
-  task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(10));
-  run_loop.Run();
 }
 
 }  // namespace remoting

@@ -18,7 +18,6 @@
 #include "remoting/host/screen_resolution.h"
 #include "remoting/proto/action.pb.h"
 #include "remoting/proto/control.pb.h"
-#include "remoting/proto/process_stats.pb.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/file_transfer_helpers.h"
 #include "remoting/protocol/transport.h"
@@ -318,14 +317,3 @@ IPC_MESSAGE_CONTROL(ChromotingNetworkToRemoteSecurityKeyMsg_ConnectionReady)
 // Error indicating the request originated from outside the remoted session.
 // The IPC channel will be disconnected after this message has been sent.
 IPC_MESSAGE_CONTROL(ChromotingNetworkToRemoteSecurityKeyMsg_InvalidSession)
-
-// Starts to report process resource usage.
-IPC_MESSAGE_CONTROL(ChromotingNetworkToAnyMsg_StartProcessStatsReport,
-                    base::TimeDelta /* interval */)
-
-// Stops to report process resource usage.
-IPC_MESSAGE_CONTROL(ChromotingNetworkToAnyMsg_StopProcessStatsReport)
-
-// Reports process resource usage to network process.
-IPC_MESSAGE_CONTROL(ChromotingAnyToNetworkMsg_ReportProcessStats,
-                    remoting::protocol::AggregatedProcessResourceUsage)

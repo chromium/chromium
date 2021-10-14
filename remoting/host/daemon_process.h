@@ -20,10 +20,8 @@
 #include "ipc/ipc_channel_handle.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "remoting/host/config_watcher.h"
-#include "remoting/host/current_process_stats_agent.h"
 #include "remoting/host/host_status_monitor.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
-#include "remoting/protocol/process_stats_stub.h"
 
 struct SerializedTransportRoute;
 
@@ -36,16 +34,13 @@ namespace remoting {
 class AutoThreadTaskRunner;
 class DesktopSession;
 class HostEventLogger;
-class ProcessStatsSender;
 class ScreenResolution;
 
 // This class implements core of the daemon process. It manages the networking
 // process running at lower privileges and maintains the list of desktop
 // sessions.
-class DaemonProcess
-    : public ConfigWatcher::Delegate,
-      public WorkerProcessIpcDelegate,
-      public protocol::ProcessStatsStub {
+class DaemonProcess : public ConfigWatcher::Delegate,
+                      public WorkerProcessIpcDelegate {
  public:
   typedef std::list<DesktopSession*> DesktopSessionList;
 
@@ -170,17 +165,6 @@ class DaemonProcess
   // Deletes all desktop sessions.
   void DeleteAllDesktopSessions();
 
-  // Starts to report process statistic data to network process. If |interval|
-  // is less then or equal to 0, a default non-zero value will be used.
-  void StartProcessStatsReport(base::TimeDelta interval);
-
-  // Stops sending process statistic data to network process.
-  void StopProcessStatsReport();
-
-  // ProcessStatsStub implementation.
-  void OnProcessStats(
-      const protocol::AggregatedProcessResourceUsage& usage) override;
-
   // Gets the location of the config file.
   base::FilePath GetConfigPath();
 
@@ -208,20 +192,6 @@ class DaemonProcess
   std::unique_ptr<HostEventLogger> host_event_logger_;
 
   scoped_refptr<HostStatusMonitor> status_monitor_;
-
-  // Reports process statistic data to network process.
-  std::unique_ptr<ProcessStatsSender> stats_sender_;
-
-  // The number of StartProcessStatsReport requests received.
-  // Daemon and Network processes manages multiple desktop sessions. Some of
-  // them may request for process statistic reports. So the resource usage of
-  // daemon process and network process will be merged to each desktop session.
-  //
-  // As long as at least process statistic reports is enabled for one desktop
-  // session, daemon process should continually send the reports.
-  int process_stats_request_count_ = 0;
-
-  CurrentProcessStatsAgent current_process_stats_;
 };
 
 }  // namespace remoting

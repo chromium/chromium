@@ -34,7 +34,6 @@
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mojom/desktop_session.mojom-shared.h"
-#include "remoting/host/process_stats_sender.h"
 #include "remoting/host/remote_input_filter.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/screen_controls.h"
@@ -231,8 +230,7 @@ DesktopSessionAgent::DesktopSessionAgent(
     : audio_capture_task_runner_(audio_capture_task_runner),
       caller_task_runner_(caller_task_runner),
       input_task_runner_(input_task_runner),
-      io_task_runner_(io_task_runner),
-      current_process_stats_("DesktopSessionAgent") {
+      io_task_runner_(io_task_runner) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 }
 
@@ -276,10 +274,6 @@ bool DesktopSessionAgent::OnMessageReceived(const IPC::Message& message) {
       IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_CancelFile,
                           &*session_file_operations_handler_,
                           SessionFileOperationsHandler::Cancel)
-      IPC_MESSAGE_HANDLER(ChromotingNetworkToAnyMsg_StartProcessStatsReport,
-                          StartProcessStatsReport)
-      IPC_MESSAGE_HANDLER(ChromotingNetworkToAnyMsg_StopProcessStatsReport,
-                          StopProcessStatsReport)
       IPC_MESSAGE_UNHANDLED(handled = false)
     IPC_END_MESSAGE_MAP()
   } else {
@@ -339,7 +333,6 @@ DesktopSessionAgent::~DesktopSessionAgent() {
   DCHECK(!network_channel_);
   DCHECK(!screen_controls_);
   DCHECK(!video_capturer_);
-  DCHECK(!stats_sender_);
   DCHECK(!session_file_operations_handler_);
 }
 
@@ -384,12 +377,6 @@ void DesktopSessionAgent::OnDesktopDisplayChanged(
   }
   SendToNetwork(std::make_unique<ChromotingDesktopNetworkMsg_DisplayChanged>(
       *layout.get()));
-}
-
-void DesktopSessionAgent::OnProcessStats(
-    const protocol::AggregatedProcessResourceUsage& usage) {
-  SendToNetwork(
-      std::make_unique<ChromotingAnyToNetworkMsg_ReportProcessStats>(usage));
 }
 
 void DesktopSessionAgent::OnStartSessionAgent(
@@ -593,8 +580,6 @@ void DesktopSessionAgent::Stop() {
 
   delegate_.reset();
 
-  stats_sender_.reset();
-
   // Make sure the channel is closed.
   network_channel_.reset();
 
@@ -784,26 +769,6 @@ void DesktopSessionAgent::StopAudioCapturer() {
   DCHECK(audio_capture_task_runner_->BelongsToCurrentThread());
 
   audio_capturer_.reset();
-}
-
-void DesktopSessionAgent::StartProcessStatsReport(base::TimeDelta interval) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  DCHECK(!stats_sender_);
-
-  if (interval <= base::Seconds(0)) {
-    interval = kDefaultProcessStatsInterval;
-  }
-
-  stats_sender_.reset(new ProcessStatsSender(
-      this,
-      interval,
-      { &current_process_stats_ }));
-}
-
-void DesktopSessionAgent::StopProcessStatsReport() {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  DCHECK(stats_sender_);
-  stats_sender_.reset();
 }
 
 void DesktopSessionAgent::SetUpUrlForwarder() {
