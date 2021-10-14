@@ -618,36 +618,45 @@ testcase.openQuickViewDocumentsProvider = async () => {
   await openQuickView(appId, ENTRIES.hello.nameText);
 
   /**
-   * The text <webview> resides in the #quick-view shadow DOM, as a child of
+   * The tag used to create a safe environment to display the preview: webview
+   * for legacy Files app and iframe for Files SWA.
+   */
+  const previewTag = remoteCall.isSwaMode() ? 'iframe' : 'webview';
+
+  /**
+   * The text preview resides in the #quick-view shadow DOM, as a child of
    * the #dialog element.
    */
-  const webView = ['#quick-view', '#dialog[open] webview.text-content'];
+  const preview = ['#quick-view', `#dialog[open] ${previewTag}.text-content`];
 
-  // Wait for the Quick View <webview> to load and display its content.
+  // Wait for the Quick View preview to load and display its content.
   const caller = getCaller();
-  function checkWebViewTextLoaded(elements) {
+  function checkPreviewTextLoaded(elements) {
     let haveElements = Array.isArray(elements) && elements.length === 1;
     if (haveElements) {
       haveElements = elements[0].styles.display.includes('block');
     }
     if (!haveElements || !elements[0].attributes.src) {
-      return pending(caller, 'Waiting for <webview> to load.');
+      return pending(caller, `Waiting for ${previewTag} to load.`);
     }
     return;
   }
   await repeatUntil(async () => {
-    return checkWebViewTextLoaded(await remoteCall.callRemoteTestUtil(
-        'deepQueryAllElements', appId, [webView, ['display']]));
+    return checkPreviewTextLoaded(await remoteCall.callRemoteTestUtil(
+        'deepQueryAllElements', appId, [preview, ['display']]));
   });
 
-  // Wait until the <webview> displays the file's content.
+  // Wait until the preview displays the file's content.
   await repeatUntil(async () => {
-    const getTextContent = 'window.document.body.textContent';
-    const text = await remoteCall.callRemoteTestUtil(
-        'deepExecuteScriptInWebView', appId, [webView, getTextContent]);
+    const contentWindowQuery = remoteCall.isSwaMode() ?
+        'document.querySelector("iframe").contentWindow' :
+        'window';
+    const getTextContent = contentWindowQuery + '.document.body.textContent';
+    const text =
+        await remoteCall.executeJsInPreviewTag(appId, preview, getTextContent);
     // Check: the content of text file should be shown.
     if (!text || !text[0] || !text[0].includes('chocolate and chips')) {
-      return pending(caller, 'Waiting for <webview> content.');
+      return pending(caller, `Waiting for ${previewTag} content.`);
     }
   });
 
@@ -1183,10 +1192,16 @@ testcase.openQuickViewAudio = async () => {
   const caller = getCaller();
 
   /**
-   * The <webview> resides in the <files-safe-media type="audio"> shadow DOM,
+   * The tag used to create a safe environment to display the preview: webview
+   * for legacy Files app and iframe for Files SWA.
+   */
+  const previewTag = remoteCall.isSwaMode() ? 'iframe' : 'webview';
+
+  /**
+   * The preview resides in the <files-safe-media type="audio"> shadow DOM,
    * which is a child of the #quick-view shadow DOM.
    */
-  const webView = ['#quick-view', 'files-safe-media[type="audio"]', 'webview'];
+  const preview = ['#quick-view', 'files-safe-media[type="audio"]', previewTag];
 
   // Open Files app on Downloads containing ENTRIES.beautiful song.
   const appId =
@@ -1195,29 +1210,30 @@ testcase.openQuickViewAudio = async () => {
   // Open the file in Quick View.
   await openQuickView(appId, ENTRIES.beautiful.nameText);
 
-  // Wait for the Quick View <webview> to load and display its content.
-  function checkWebViewAudioLoaded(elements) {
+  // Wait for the Quick View preview to load and display its content.
+  function checkPreviewAudioLoaded(elements) {
     let haveElements = Array.isArray(elements) && elements.length === 1;
     if (haveElements) {
       haveElements = elements[0].styles.display.includes('block');
     }
     if (!haveElements || elements[0].attributes.loaded !== '') {
-      return pending(caller, 'Waiting for <webview> to load.');
+      return pending(caller, `Waiting for ${previewTag} to load.`);
     }
     return;
   }
   await repeatUntil(async () => {
-    return checkWebViewAudioLoaded(await remoteCall.callRemoteTestUtil(
-        'deepQueryAllElements', appId, [webView, ['display']]));
+    return checkPreviewAudioLoaded(await remoteCall.callRemoteTestUtil(
+        'deepQueryAllElements', appId, [preview, ['display']]));
   });
 
-  // Get the <webview> document.body backgroundColor style.
+  // Get the preview document.body backgroundColor style.
   const getBackgroundStyle =
       'window.getComputedStyle(document.body).backgroundColor';
-  const backgroundColor = await remoteCall.callRemoteTestUtil(
-      'deepExecuteScriptInWebView', appId, [webView, getBackgroundStyle]);
 
-  // Check: the <webview> body backgroundColor should be transparent black.
+  const backgroundColor = await remoteCall.executeJsInPreviewTag(
+      appId, preview, getBackgroundStyle);
+
+  // Check: the preview body backgroundColor should be transparent black.
   chrome.test.assertEq('rgba(0, 0, 0, 0)', backgroundColor[0]);
 
   // Check: the correct mimeType should be displayed.

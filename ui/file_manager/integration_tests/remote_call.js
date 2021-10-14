@@ -521,6 +521,54 @@ export class RemoteCallFilesApp extends RemoteCall {
   }
 
   /**
+   * Executes a script in the context of a <preview-tag> element contained in
+   * the window.
+   * For SWA: It's the first chrome-untrusted://file-manager <iframe>.
+   * For legacy: It's the first elements based on the `query`.
+   * Responds with its output.
+   *
+   * @param {string} appId App window Id.
+   * @param {string} query Query to the <preview-tag> element (this is ignored
+   *     for SWA).
+   * @param {string} statement Javascript statement to be executed within the
+   *     <preview-tag>.
+   * @return {!Promise<*>} resolved with the return value of the `statement`.
+   */
+  async executeJsInPreviewTag(appId, query, statement) {
+    if (this.isSwaMode()) {
+      return this.executeJsInPreviewTagSwa_(statement);
+    }
+
+    return this.callRemoteTestUtil(
+        'deepExecuteScriptInWebView', appId, [query, statement]);
+  }
+
+  /**
+   * Inject javascript statemenent in the first chrome-untrusted://file-manager
+   * page found and respond with its output.
+   * @private
+   * @param {string} statement
+   * @return {!Promise}
+   */
+  async executeJsInPreviewTagSwa_(statement) {
+    const script = `try {
+          let result = ${statement};
+          result = result === undefined ? '@undefined@' : [result];
+          window.domAutomationController.send(JSON.stringify(result));
+        } catch {
+          window.domAutomationController.send(JSON.stringify('@undefined@'));
+        }`;
+
+    const command = {
+      name: 'executeScriptInChromeUntrusted',
+      data: script,
+    };
+
+    const response = await sendTestMessage(command);
+    return response === '"@undefined@"' ? undefined : JSON.parse(response);
+  }
+
+  /**
    * Waits for the file list turns to the given contents.
    * @param {string} appId App window Id.
    * @param {Array<Array<string>>} expected Expected contents of file list.

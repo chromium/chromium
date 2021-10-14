@@ -513,13 +513,22 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("openQuickView"),
+        TestCase("openQuickView").FilesSwa(),
         TestCase("openQuickViewDialog"),
+        // Doesn't work because using an "open" dialog.
+        // TestCase("openQuickViewDialog").FilesSwa(),
         TestCase("openQuickViewAndEscape"),
+        TestCase("openQuickViewAndEscape").FilesSwa(),
         TestCase("openQuickView").InGuestMode(),
+        TestCase("openQuickView").InGuestMode().FilesSwa(),
         TestCase("openQuickView").TabletMode(),
+        TestCase("openQuickView").TabletMode().FilesSwa(),
         TestCase("openQuickViewViaContextMenuSingleSelection"),
+        TestCase("openQuickViewViaContextMenuSingleSelection").FilesSwa(),
         TestCase("openQuickViewViaContextMenuCheckSelections"),
+        TestCase("openQuickViewViaContextMenuCheckSelections").FilesSwa(),
         TestCase("openQuickViewAudio"),
+        TestCase("openQuickViewAudio").FilesSwa(),
         TestCase("openQuickViewAudioOnDrive"),
         TestCase("openQuickViewAudioWithImageMetadata"),
         TestCase("openQuickViewImageJpg"),
@@ -549,6 +558,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewAndroid"),
         TestCase("openQuickViewDocumentsProvider")
             .EnableGenericDocumentsProvider(),
+        TestCase("openQuickViewDocumentsProvider")
+            .EnableGenericDocumentsProvider()
+            .FilesSwa(),
         TestCase("openQuickViewCrostini"),
         TestCase("openQuickViewUsb"),
         TestCase("openQuickViewRemovablePartitions"),
