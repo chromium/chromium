@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -194,6 +195,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithUserGesture,
 
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithUserGesture,
                        GenerateAppForLink) {
+  web_app::test::WaitUntilReady(web_app::WebAppProvider::GetForTest(profile()));
   ASSERT_TRUE(RunExtensionTest("management/generate_app_for_link"));
 }
 
@@ -218,6 +220,7 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 
 IN_PROC_BROWSER_TEST_P(GenerateAppForLinkWithLacrosWebAppsApiTest,
                        GenerateAppForLink) {
+  web_app::test::WaitUntilReady(web_app::WebAppProvider::GetForTest(profile()));
   MaybeCreateScopedUserGesture();
   ASSERT_TRUE(RunExtensionTest("management/generate_app_for_link_lacros"));
 }
@@ -240,6 +243,8 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
 
     os_hooks_suppress_ =
         web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
+    web_app::test::WaitUntilReady(
+        web_app::WebAppProvider::GetForTest(profile()));
   }
 
   void RunTest(const char* manifest,
