@@ -3,6 +3,7 @@
 <translationbundle lang="zh-CN">
 <translation id="1096883626080133124">借助比以前更简单、更安全、更快速的 Google Chrome 提高工作效率</translation>
 <translation id="1282031177488366470">帮助我们改进 Chrome 的功能和性能</translation>
+<translation id="1354592789402432496">您的管理员要求您使用单位帐号登录。管理员不允许使用的帐号会处于隐藏状态。</translation>
 <translation id="1479202195792305274">您需要先登录 Google 帐号才能使用 Chrome 的密码检查功能。</translation>
 <translation id="1493827051843127077">将 Chrome 设为默认同步您所有设备上的标签页、密码和付款信息</translation>
 <translation id="1504372625950710826">Chrome 无法检查是否有更新。请尝试检查您的互联网连接。</translation>
@@ -45,6 +46,7 @@
 <translation id="3988789688219830639">Google Chrome 无权访问您的照片或视频。请依次点按 iOS 中的“设置”&gt;“隐私”&gt;“照片”，授予其访问权限。</translation>
 <translation id="4099578267706723511">将使用情况统计信息和崩溃报告发送给 Google，帮助我们完善 Chrome。</translation>
 <translation id="417201473131094001">在 Chrome Canary 版中不受支持</translation>
+<translation id="4214277427269650960">登录此网站和 Chrome。您可等到需要时再开启同步功能。</translation>
 <translation id="424864128008805179">退出 Chrome？</translation>
 <translation id="4249068189593983585">Chrome 提示。要查看更多的标签页选项，请轻触并按住工具栏（位于屏幕底部或顶部）中的“显示标签页”按钮。</translation>
 <translation id="4523886039239821078">部分插件导致 Chrome 崩溃，请卸载这些插件：</translation>
@@ -59,6 +61,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">已离线，Chrome 无法检查是否有更新</translation>
 <translation id="5716154293141027663">每当您点按其他应用中的链接时，系统都会使用 Chrome 打开相应链接</translation>
+<translation id="572883588166315317">根据贵单位的要求，您必须登录才能使用 Chrome。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" />。</translation>
 <translation id="5854621639439811139">Chrome 提示。现在屏幕底部会显示“后退”、“前进”和“搜索”等按钮。</translation>
 <translation id="5876773482963502140">如果您允许 Chrome 获取您的位置信息，Chrome 便会将该信息发送到已获您授权的所有网站。网站可能会请求使用您的位置信息以便为您显示本地信息（例如附近的商店或新闻）。</translation>
 <translation id="5998675059699164418">根据贵单位的要求，您必须登录才能使用 Chrome。</translation>

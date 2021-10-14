@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">Құрылғылар бірігіп жақсы жұмыс істейді</translation>
 <translation id="1119348796022671382">Интерфейсті ашық түске бояу үшін тақырыптық түс режимі тұсқағазыңыздан алынған түстерді пайдаланады.</translation>
 <translation id="112308213915226829">Сөрені автоматты жасыру</translation>
+<translation id="1142002900084379065">Жақында түскен фотосуреттер</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> аккаунты туралы ақпарат диалогтік терезесін ашу</translation>
 <translation id="1150989369772528668">Күнтізбе</translation>
 <translation id="1153356358378277386">Жұпталған құрылғылар</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">Толық экран ұлғайтқышы қосулы. Оны өшіру үшін Ctrl+Search+M пернелер тіркесімін қайта басыңыз.</translation>
 <translation id="2302092602801625023">Бұл аккаунт Family Link арқылы басқарылады</translation>
 <translation id="2303600792989757991">Терезеде шолу режимін ауыстыру</translation>
+<translation id="2318576281648121272">Бүгін <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Бір әріпке артқа жылжу</translation>
 <translation id="2339073806695260576">Жазба мен скриншот үшін сөредегі стилус түймесін түртіңіз. Лазерлік меңзерді немесе ұлғайтқыш әйнекті пайдаланыңыз.</translation>
 <translation id="2341729377289034582">Тік қалыпта құлыпталды</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">Құпия сөзді көрсету</translation>
 <translation id="24452542372838207">Хабарландыруды жаю</translation>
 <translation id="2450205753526923158">Скриншот режимі</translation>
+<translation id="2456008742792828469">Күнтізбе, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Ажыратымдылықты растаңыз</translation>
 <translation id="2475982808118771221">Қате орын алды</translation>
 <translation id="2482878487686419369">Хабарландырулар</translation>
@@ -278,6 +281,7 @@
 <translation id="3100274880412651815">Түсіру режимін жабу</translation>
 <translation id="3105917916468784889">Скриншот түсіру</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Ұсынысты өшіру</translation>
 <translation id="3126069444801937830">Жаңарту үшін қайта іске қосу</translation>
 <translation id="3139942575505304791">1-ші жұмыс үстелі</translation>
 <translation id="315116470104423982">Мобильді деректер</translation>
@@ -503,6 +507,7 @@
 <translation id="4642092649622328492">Экранның бір бөлігін түсіру</translation>
 <translation id="4659419629803378708">ChromeVox қосылды</translation>
 <translation id="4665114317261903604">Мазаламау режиміне ауысыңыз. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081"><ph name="FILENAME" /> жүктеп алынуда</translation>
 <translation id="4696813013609194136">Құрылғының құлпын ата-ана кодымен ашыңыз</translation>
 <translation id="4702647871202761252">Құпиялылық экраны өшірулі.</translation>
 <translation id="4731797938093519117">Ата-ананың кіру рұқсаты</translation>
@@ -639,6 +644,7 @@
 <translation id="5744083938413354016">Түртіп сүйреу</translation>
 <translation id="5745612484876805746">Күн батқанда, Night Light режимі автоматты түрде іске қосылады</translation>
 <translation id="5750765938512549687">Bluetooth өшірулі</translation>
+<translation id="576341972084747908">Қауіпті <ph name="FILENAME" /> файлы жүктеп алынуда</translation>
 <translation id="576453121877257266">"Түнгі жарық" функциясы қосулы.</translation>
 <translation id="5769373120130404283">Құпиялылық экраны</translation>
 <translation id="5777841717266010279">Экран бөлісуді тоқтату қажет пе?</translation>
@@ -777,6 +783,7 @@
 <translation id="6852052252232534364">Іске қосу үшін басыңыз.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Бір цифр қалды.}other{# цифр қалды.}}</translation>
+<translation id="6867938213751067702"><ph name="FILENAME" /> файлын жүктеп алу кідіртілді</translation>
 <translation id="6878400149835617132">Таңбаша өшірілді</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> құрылғысы нашар жұмыс істеуі мүмкін. Сертификаты бар <ph name="PREFERRED_MINIMUM_POWER" /> Вт немесе одан жоғары кернеулі USB-C қуат адаптерін пайдаланыңыз.</translation>
 <translation id="688631446150864480">Терезелерді ауыстыру үшін төменге бағыттауыш пернені басыңыз.</translation>

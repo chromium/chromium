@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">关于 Chromium</translation>
 <translation id="1257458525759135959">若要保存图片，请点按“设置”并允许 Chromium 添加照片</translation>
 <translation id="1289216811211435351">改用 Chromium</translation>
+<translation id="1354592789402432496">您的管理员要求您使用单位帐号登录。管理员不允许使用的帐号会处于隐藏状态。</translation>
 <translation id="1361748954329991663">Chromium 版本太旧。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中无任何可用更新，则可能是因为您的设备不再支持新版 Chromium。</translation>
 <translation id="1370204544543370355">若要充分利用 Chromium，请使用您的 Google 帐号登录 Chromium</translation>
 <translation id="1431818719585918472">让 Chromium 锁定您的无痕式标签页。</translation>
@@ -51,6 +52,7 @@
 <translation id="5171868502429358653">登录 Chromium</translation>
 <translation id="5224391634244552924">尚未保存任何密码。您需要先保存密码才能使用 Chromium 的密码检查功能。</translation>
 <translation id="5308226104666789935">Chromium 无法检查是否有更新</translation>
+<translation id="5324242752415821224">根据贵单位的要求，您必须登录才能使用 Chromium。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" />。</translation>
 <translation id="5396916991083608703">将 Chromium 设为默认浏览器？</translation>
 <translation id="5521125884468363740">要查看您在其他设备上用 Chromium 打开的标签页，请登录帐号并开启同步功能</translation>
 <translation id="5573014823074921752">Chromium 提示。要查看更多的标签页选项，请轻触并按住工具栏（位于屏幕底部或顶部）中的“显示标签页”按钮。</translation>
@@ -64,6 +66,7 @@
 2. 点按“默认浏览器应用”
 3. 选择“Chromium”。</translation>
 <translation id="6155422572367400359">登录此网站、您的 Google 帐号和 Chromium。您可等到需要时再开启同步功能。</translation>
+<translation id="6183442264225539303">登录此网站和 Chromium。您可等到需要时再开启同步功能。</translation>
 <translation id="6268381023930128611">退出 Chromium？</translation>
 <translation id="632825460376924298">允许登录 Chromium</translation>
 <translation id="6337530241089703714">请选择是要清除还是要保留您在此设备上存储的 Chromium 数据</translation>

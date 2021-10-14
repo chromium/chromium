@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Chromium 정보</translation>
 <translation id="1257458525759135959">이미지를 저장하려면 '설정'을 탭하여 Chromium에 사진 추가 권한을 부여하세요.</translation>
 <translation id="1289216811211435351">Chromium으로 전환</translation>
+<translation id="1354592789402432496">관리자가 조직 계정으로 로그인할 것을 요구합니다. 관리자가 제한한 계정은 표시되지 않습니다.</translation>
 <translation id="1361748954329991663">Chromium이 이전 버전입니다. <ph name="BEGIN_LINK" />앱 스토어<ph name="END_LINK" />에 사용 가능한 업데이트가 없으면 기기에서 더 이상 Chromium의 새 버전을 지원하지 않는 것일 수 있습니다.</translation>
 <translation id="1370204544543370355">Chromium을 최대한으로 활용하려면 Google 계정을 사용해 Chromium에 로그인하세요</translation>
 <translation id="1431818719585918472">Chromium에서 시크릿 탭을 잠그도록 허용합니다.</translation>
@@ -51,6 +52,7 @@
 <translation id="5171868502429358653">Chromium에 로그인</translation>
 <translation id="5224391634244552924">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Chromium에서 확인할 수 있습니다.</translation>
 <translation id="5308226104666789935">Chromium에서 업데이트를 확인할 수 없습니다.</translation>
+<translation id="5324242752415821224">조직에서 Chromium을 사용하려면 로그인할 것을 요구합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5396916991083608703">Chromium을 기본 브라우저로 설정하시겠습니까?</translation>
 <translation id="5521125884468363740">Chromium을 사용하는 어느 곳에서나 탭을 확인하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
 <translation id="5573014823074921752">Chromium 도움말. 더 많은 탭 옵션을 보려면 화면 하단이나 상단에 있는 툴바에서 탭 표시 버튼을 길게 터치하세요.</translation>
@@ -64,6 +66,7 @@
 2. 기본 브라우저 앱을 탭합니다.
 3. Chromium을 선택합니다.</translation>
 <translation id="6155422572367400359">이 사이트, Google 계정, Chromium에 로그인하세요. 나중에 동기화를 사용 설정할 수 있습니다.</translation>
+<translation id="6183442264225539303">이 사이트 및 Chromium에 로그인하세요. 나중에 동기화를 사용 설정할 수 있습니다.</translation>
 <translation id="6268381023930128611">Chromium에서 로그아웃</translation>
 <translation id="632825460376924298">Chromium 로그인 허용</translation>
 <translation id="6337530241089703714">이 기기에서 내 Chromium 데이터를 삭제할지 또는 유지할지 선택하세요</translation>

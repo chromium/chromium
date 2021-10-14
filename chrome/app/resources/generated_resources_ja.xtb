@@ -32,6 +32,7 @@
 <translation id="1032605640136438169">新しい利用規約をご確認ください</translation>
 <translation id="103279545524624934">Android アプリを起動できるようにディスク領域を解放します。</translation>
 <translation id="1033780634303702874">シリアル デバイスへのアクセス</translation>
+<translation id="1034484273907870301">タブレット モードのサムネイル タブバー</translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1036511912703768636">これらの USB デバイスへのアクセス</translation>
 <translation id="1036982837258183574">全画面表示を終了するには |<ph name="ACCELERATOR" />| を押します</translation>
@@ -302,6 +303,7 @@
 <translation id="1313660246522271310">タブで表示中のサイトも含め、すべてのサイトからログアウトします</translation>
 <translation id="1313705515580255288">ブックマークや履歴などの設定が Google アカウントに同期されます。</translation>
 <translation id="1316136264406804862">検索しています...</translation>
+<translation id="1316248800168909509"><ph name="DEVICE" /> に接続できませんでした。もう一度お試しください。</translation>
 <translation id="1316495628809031177">同期は一時停止中です</translation>
 <translation id="1317637799698924700">ドッキング ステーションは USB Type-C 互換モードで動作します。</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> サブページの戻るボタン</translation>
@@ -354,6 +356,7 @@
 <translation id="1378613616312864539">この設定は <ph name="NAME" /> により制御されています</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{不正使用されたパスワードはありません}=1{不正使用されたパスワード: 1 件}other{不正使用されたパスワード: {NUM_COMPROMISED} 件}}</translation>
 <translation id="1380028686461971526">自動接続するネットワーク</translation>
+<translation id="1381567580865186407"><ph name="LANGUAGE" /> の音声は処理のために Google に送信されます</translation>
 <translation id="1383597849754832576">読み上げファイルをダウンロードできません。しばらくしてからもう一度お試しください。</translation>
 <translation id="1383861834909034572">ダウンロードが完了したら開きます</translation>
 <translation id="1383876407941801731">検索</translation>
@@ -1140,6 +1143,7 @@
 <translation id="2173302385160625112">インターネット接続を確認してください</translation>
 <translation id="2173801458090845390">登録 ID をこのデバイスに追加します</translation>
 <translation id="2174948148799307353">アカウントは <ph name="PARENT_EMAIL" /> によって管理されています。このデバイスでメイン アカウントからログアウトするには、画面上にある時間をクリックして表示されるメニューで [ログアウト] をクリックします。</translation>
+<translation id="2175384018164129879">検索エンジンとサイト内検索を管理する(&amp;M)</translation>
 <translation id="2175607476662778685">クイック起動バー</translation>
 <translation id="217576141146192373">プリンタを追加できません。プリンタの設定を確認して、もう一度お試しください。</translation>
 <translation id="2175927920773552910">QR コード</translation>
@@ -1171,6 +1175,7 @@
 <translation id="2200356397587687044">続行するには Chrome に権限が必要です</translation>
 <translation id="2202898655984161076">プリンタのリスト作成中に問題が発生しました。一部のプリンタが <ph name="CLOUD_PRINT_NAME" /> に正常に登録されていない可能性があります。</translation>
 <translation id="2203088913459920044">名前には文字、数字、特殊文字を使用できます</translation>
+<translation id="220321590587754225">接続できませんでした。もう一度お試しください。</translation>
 <translation id="2204034823255629767">すべての入力内容の読み取りと変更</translation>
 <translation id="220858061631308971">「<ph name="DEVICE_NAME" />」の PIN コードを入力してください:</translation>
 <translation id="2210462644007531147">インストールを完了できませんでした</translation>
@@ -3819,6 +3824,7 @@
 <translation id="5040823038948176460">その他のコンテンツの設定</translation>
 <translation id="5043440033854483429">名前には文字、数字、ハイフン（-）を使用できます。1～15 文字の間で指定してください。</translation>
 <translation id="5043913660911154449">または、プリンタの PPD を指定してください（<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" />）</translation>
+<translation id="5044527779574548527">今後この手順を表示しない</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
 <translation id="504561833207953641">既存のブラウザ セッションで開いています。</translation>
 <translation id="5047421709274785093">サイトによるモーション センサーと光センサーの使用をブロックする</translation>
@@ -4928,6 +4934,7 @@
 <translation id="6263284346895336537">非重要</translation>
 <translation id="6264365405983206840">すべて選択(&amp;A)</translation>
 <translation id="6265687851677020761">ポートを削除</translation>
+<translation id="6266532094411434237"><ph name="DEVICE" /> に接続しています</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> での認証に使用する証明書を選択してください</translation>
 <translation id="6268252012308737255"><ph name="APP" /> で開く</translation>
 <translation id="6270391203985052864">通知を送信するかどうかの確認をサイトに許可する</translation>
@@ -5261,6 +5268,7 @@
 <translation id="6619801788773578757">キオスク アプリケーションを追加</translation>
 <translation id="6619990499523117484">PIN を確認してください</translation>
 <translation id="6622980291894852883">画像を引き続きブロックする</translation>
+<translation id="6624036901798307345">タブレット モードのときに、ツールバーのタブカウンタ ボタンをタップして、各タブのサムネイルが表示された新しいタブバーを開きます。</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> はデリケートなコンテンツまたは危険なコンテンツです。所有者に修正するよう依頼してください。</translation>
 <translation id="6624687053722465643">スイーツ</translation>
 <translation id="6628328486509726751">アップロード日時: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
@@ -5564,6 +5572,7 @@
 <translation id="6955893174999506273">スイッチを 1 つ追加で割り当てる</translation>
 <translation id="6957044667612803194">このセキュリティ キーでは PIN がサポートされていません</translation>
 <translation id="6960507406838246615">Linux の更新が必要です</translation>
+<translation id="6960648667961844909"><ph name="LANGUAGE" /> の音声ファイルをダウンロードできませんでした。ダウンロードは後で試行されます。音声はダウンロードが完了するまで処理のために Google に送信されます。</translation>
 <translation id="696103774840402661">この <ph name="DEVICE_TYPE" /> にあるすべてのユーザーのファイルとローカルデータをすべて完全に削除しました。</translation>
 <translation id="6964390816189577014">ヒーロー</translation>
 <translation id="6964760285928603117">グループから削除</translation>
@@ -6164,6 +6173,7 @@
 <translation id="7595547011743502844"><ph name="ERROR" />（エラーコード <ph name="ERROR_CODE" />）。</translation>
 <translation id="7598466960084663009">パソコンを再起動</translation>
 <translation id="7599527631045201165">デバイス名が長すぎます。短い名前を入力して、もう一度お試しください。</translation>
+<translation id="7600054753482800821">検索エンジンとサイト内検索を管理する(&amp;M)</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />を翻訳しない</translation>
 <translation id="760197030861754408"><ph name="LANDING_PAGE" /> で接続してください。</translation>
 <translation id="7602079150116086782">他のデバイスからのタブなし</translation>
@@ -6824,6 +6834,7 @@
 <translation id="8244514732452879619">もうすぐ、おやすみの時間です</translation>
 <translation id="8246776524656196770">PIN（個人識別番号）を使ってセキュリティ キーを保護します</translation>
 <translation id="8248050856337841185">貼り付け(&amp;P)</translation>
+<translation id="8248887045858762645">Chrome のヒント</translation>
 <translation id="8249048954461686687">OEM フォルダ</translation>
 <translation id="8249615410597138718">お使いのデバイスに送信</translation>
 <translation id="8249672078237421304">母国語以外のページで翻訳ツールを表示する</translation>
@@ -7292,6 +7303,7 @@
 <translation id="8763927697961133303">USB デバイス</translation>
 <translation id="87646919272181953">Google フォトのアルバム</translation>
 <translation id="8767621466733104912">すべてのユーザーに対して Chrome を自動的に更新</translation>
+<translation id="8767765348545497220">ヘルプバブルを閉じる</translation>
 <translation id="8770406935328356739">拡張機能のルート ディレクトリ</translation>
 <translation id="8771300903067484968">スタートページの背景をデフォルトの背景にリセットしました。</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> を保存</translation>

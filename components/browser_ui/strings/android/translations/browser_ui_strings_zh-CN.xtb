@@ -169,6 +169,7 @@
 <translation id="5505264765875738116">网站无法询问能否向您发送通知</translation>
 <translation id="5516455585884385570">打开通知设置</translation>
 <translation id="5527111080432883924">需先询问，得到许可后才允许网站读取剪贴板中的文字和图片（推荐）</translation>
+<translation id="5553374991681107062">最新</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5649053991847567735">自动下载项</translation>
@@ -269,6 +270,7 @@
 <translation id="7999064672810608036">确定要清除该网站的所有本地数据（包括 Cookie）并重置该网站的所有权限吗？</translation>
 <translation id="8007176423574883786">已对此设备停用</translation>
 <translation id="802154636333426148">下载失败</translation>
+<translation id="8042586301629853791">排序方式：</translation>
 <translation id="8067883171444229417">播放视频</translation>
 <translation id="8068648041423924542">无法选择证书。</translation>
 <translation id="8087000398470557479">此内容来自 <ph name="DOMAIN_NAME" />（由 Google 提供）。</translation>

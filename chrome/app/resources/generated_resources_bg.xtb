@@ -32,6 +32,7 @@
 <translation id="1032605640136438169">Моля, прегледайте новите Условия</translation>
 <translation id="103279545524624934">Освободете място на диска, за да стартирате приложения за Android.</translation>
 <translation id="1033780634303702874">Достъп до серийните ви устройства</translation>
+<translation id="1034484273907870301">Лента с раздели с миниизображения в режим на таблет</translation>
 <translation id="1036348656032585052">Изключване</translation>
 <translation id="1036511912703768636">Достъп до всяко от тези USB устройства</translation>
 <translation id="1036982837258183574">Натиснете |<ph name="ACCELERATOR" />| за изход от режима на цял екран</translation>
@@ -360,6 +361,7 @@
 <translation id="1378613616312864539"><ph name="NAME" /> контролира тази настройка</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Няма компрометирани пароли}=1{1 компрометирана парола}other{{NUM_COMPROMISED} компрометирани пароли}}</translation>
 <translation id="1380028686461971526">Свързване с мрежа автоматично</translation>
+<translation id="1381567580865186407">Говорът на <ph name="LANGUAGE" /> се изпраща до Google за обработка</translation>
 <translation id="1383597849754832576">Файловете за говор не могат да бъдат изтеглени. Опитайте отново по-късно.</translation>
 <translation id="1383861834909034572">Ще се отвори след изтегляне</translation>
 <translation id="1383876407941801731">Търсене</translation>
@@ -1155,6 +1157,7 @@
 <translation id="2173302385160625112">Проверете връзката си с интернет</translation>
 <translation id="2173801458090845390">Добавяне на идентификационен номер на заявка към това устройство</translation>
 <translation id="2174948148799307353">Профилът се управлява от <ph name="PARENT_EMAIL" />. За да излезете от основния профил на това устройство, кликнете върху часа на екрана. В менюто, което се показва, кликнете върху „Изход“.</translation>
+<translation id="2175384018164129879">&amp;Управление на търсещите машини и Site Search</translation>
 <translation id="2175607476662778685">Лента за бързо стартиране</translation>
 <translation id="217576141146192373">Принтерът не може да бъде добавен. Моля, проверете конфигурацията му и опитайте отново.</translation>
 <translation id="2175927920773552910">Код за бърза реакция</translation>
@@ -3860,6 +3863,7 @@
 <translation id="5040823038948176460">Допълнителни настройки за съдържанието</translation>
 <translation id="5043440033854483429">Името може да съдържа букви, цифри и тирета (-) и трябва да бъде с дължина между 1 и 15 знака.</translation>
 <translation id="5043913660911154449">Или посочете PPD файла за принтера си. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
+<translation id="5044527779574548527">Тази стъпка да не се показва повече</translation>
 <translation id="5045550434625856497">Грешна парола</translation>
 <translation id="504561833207953641">Отваря се в съществуваща сесия на браузъра.</translation>
 <translation id="5047421709274785093">Забраняване на сайтовете да използват сензори за движение и светлина</translation>
@@ -5311,6 +5315,7 @@
 <translation id="6619801788773578757">Добавяне на павилионно приложение</translation>
 <translation id="6619990499523117484">Потвърдете своя ПИН</translation>
 <translation id="6622980291894852883">Блокирането на изображения да продължи</translation>
+<translation id="6624036901798307345">В режим на таблет докоснете бутона в лентата с инструменти за броя на разделите, за да отворите новата лента с раздели, показваща миниизображения за всеки от тях.</translation>
 <translation id="6624535038674360844">Във файла <ph name="FILE_NAME" /> има деликатно или опасно съдържание. Помолете собственика му да отстрани проблема.</translation>
 <translation id="6624687053722465643">Сладкиш</translation>
 <translation id="6628328486509726751">Качено: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
@@ -5616,6 +5621,7 @@
 <translation id="6955893174999506273">Задаване на още 1 превключвател</translation>
 <translation id="6957044667612803194">Този ключ за сигурност не поддържа ПИН кодове</translation>
 <translation id="6960507406838246615">Изисква се актуализиране на Linux</translation>
+<translation id="6960648667961844909">Файловете за говор на <ph name="LANGUAGE" /> не бяха изтеглени. По-късно ще се направи опит за изтегляне. Говорът ще се изпраща до Google за обработка, докато изтеглянето завърши.</translation>
 <translation id="696103774840402661">Всички файлове и локални данни за всички потребители на това устройство <ph name="DEVICE_TYPE" /> бяха изтрити за постоянно.</translation>
 <translation id="6964390816189577014">Герой</translation>
 <translation id="6964760285928603117">Премахване от групата</translation>
@@ -6221,6 +6227,7 @@
 <translation id="7595547011743502844"><ph name="ERROR" /> (код на грешка: <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">Рестартирайте компютъра</translation>
 <translation id="7599527631045201165">Името на устройството е твърде дълго. Въведете по-кратко име, за да опитате отново.</translation>
+<translation id="7600054753482800821">&amp;Управление на търсещите машини и Site Search</translation>
 <translation id="7600965453749440009">Никога да не се превежда от <ph name="LANGUAGE" /></translation>
 <translation id="760197030861754408">Отворете <ph name="LANDING_PAGE" />, за да се свържете.</translation>
 <translation id="7602079150116086782">Няма раздели от други устройства</translation>
@@ -6888,6 +6895,7 @@
 <translation id="8244514732452879619">Времето за сън наближава</translation>
 <translation id="8246776524656196770">Защитете ключа си за сигурност с ПИН (персонален идентификационен номер)</translation>
 <translation id="8248050856337841185">&amp;Поставяне</translation>
+<translation id="8248887045858762645">Съвет за Chrome</translation>
 <translation id="8249048954461686687">OEM папка</translation>
 <translation id="8249615410597138718">Изпращане до устройствата ви</translation>
 <translation id="8249672078237421304">Извеждане на предложение за превод на страниците, които не са на четим от вас език</translation>
@@ -7361,6 +7369,7 @@
 <translation id="8763927697961133303">USB устройство</translation>
 <translation id="87646919272181953">Албум в Google Снимки</translation>
 <translation id="8767621466733104912">Автоматично актуализиране на Chrome за всички потребители</translation>
+<translation id="8767765348545497220">Затваряне на балончето за помощ</translation>
 <translation id="8770406935328356739">Основна директория на разширението</translation>
 <translation id="8771300903067484968">Възстановен е стандартният фон на началната страница.</translation>
 <translation id="8773302562181397928">Запазване на <ph name="PRINTER_NAME" /></translation>

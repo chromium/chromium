@@ -401,6 +401,7 @@
 <translation id="2241693394036365668">มีการดาวน์โหลดไฟล์</translation>
 <translation id="2248949050832152960">ใช้ WebAuthn</translation>
 <translation id="2250931979407627383">เย็บขอบด้านซ้าย</translation>
+<translation id="2251943122176102076">ผู้ดูแลระบบไม่แนะนำให้จับหรือบันทึกภาพหน้าจอ เนื่องจากเนื้อหาที่เป็นความลับจะถูกบันทึก</translation>
 <translation id="225207911366869382">เลิกใช้งานค่านี้กับนโยบายนี้</translation>
 <translation id="2258928405015593961">ป้อนวันที่หมดอายุในอนาคตแล้วลองอีกครั้ง</translation>
 <translation id="225943865679747347">รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
@@ -794,6 +795,7 @@
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">ผู้ดูแลระบบบล็อกแอปพลิเคชันไว้</translation>
 <translation id="3608932978122581043">ฟีดกระดาษตามแนว</translation>
+<translation id="3611395257124510155">บัตรเสมือนสำหรับ <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">ขนาด 2</translation>
 <translation id="361438452008624280">ข้อมูลในรายการ "<ph name="LANGUAGE_ID" />": ภาษาที่ไม่รู้จักหรือไม่รองรับ</translation>
 <translation id="3615877443314183785">ป้อนวันที่หมดอายุที่ถูกต้อง</translation>
@@ -1185,6 +1187,7 @@
           <ph name="LIST_ITEM" />ผู้ให้บริการอินเทอร์เน็ตอาจตรวจสอบการเข้าชมเว็บ<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">เปิดคำเตือน</translation>
+<translation id="4834718916855725099">ผู้ดูแลระบบไม่แนะนำให้จับหรือบันทึกภาพหน้าจอ เนื่องจากมีเนื้อหาที่เป็นความลับในหน้าจอ</translation>
 <translation id="4838327282952368871">ชวนฝัน</translation>
 <translation id="4840250757394056958">ดูประวัติการเข้าชมใน Chrome</translation>
 <translation id="484462545196658690">อัตโนมัติ</translation>
@@ -1602,6 +1605,7 @@
 <translation id="6272383483618007430">Google อัปเดต</translation>
 <translation id="6276112860590028508">หน้าเว็บจากเรื่องรออ่านของคุณจะปรากฏที่นี่</translation>
 <translation id="627746635834430766">เพื่อให้ชำระเงินได้เร็วขึ้นในครั้งถัดไป โปรดบันทึกบัตรและที่อยู่สำหรับการเรียกเก็บเงินไว้ในบัญชี Google</translation>
+<translation id="6279098320682980337">ไม่กรอกหมายเลขบัตรเสมือนใช่ไหม คลิกรายละเอียดบัตรเพื่อคัดลอก</translation>
 <translation id="6280223929691119688">ไม่สามารถนำส่งสินค้าไปยังที่อยู่นี้ โปรดเลือกที่อยู่อื่น</translation>
 <translation id="6282194474023008486">รหัสไปรษณีย์</translation>
 <translation id="6289939620939689042">สีของหน้าเว็บ</translation>

@@ -816,6 +816,7 @@
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Отметки</translation>
 <translation id="8840513115188359703">Няма да излезете от профила си в Google.</translation>
+<translation id="8843129975935593190">Организацията ви ограничава това какво можете да синхронизирате.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} раздел}other{{count} раздела}}</translation>
 <translation id="8870413625673593573">Наскоро затворени</translation>
 <translation id="8876882697946675716">Синхронизирайте устройствата си</translation>

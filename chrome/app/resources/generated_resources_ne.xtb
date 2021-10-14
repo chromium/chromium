@@ -303,6 +303,7 @@
 <translation id="1313660246522271310">तपाईंलाई खुला रहेका ट्याबहरूसहित सबै साइटहरूबाट साइन आउट गरिने छ</translation>
 <translation id="1313705515580255288">तपाइँका पृष्ठमञ्जूषाहरू, इतिहास, र अन्य सेटिङहरू तपाइँको Google खातामा समक्रमण गरिनेछन्।</translation>
 <translation id="1316136264406804862">खोज्दै...</translation>
+<translation id="1316248800168909509"><ph name="DEVICE" /> मा कनेक्ट गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1316495628809031177">सिंक पज गरिएको छ</translation>
 <translation id="1317637799698924700">तपाईंको डकिङ स्टेसन USB Type-C सँग मिल्दो मोडमा काम गर्ने छ।</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> को उपपृष्ठमा फर्कने बटन</translation>
@@ -1174,6 +1175,7 @@
 <translation id="2200356397587687044">खाली गर्ने प्रक्रिया जारी राख्न Chrome लाई अनुमति चाहिन्छ</translation>
 <translation id="2202898655984161076">मुद्रकहरूको सूची बनाउनमा समस्या थियो। तपाइँका केही मुद्रकहरू <ph name="CLOUD_PRINT_NAME" /> सँग सफलतापूर्वक दर्ता नभएको हुन सक्छ।</translation>
 <translation id="2203088913459920044">नाममा अक्षर, सङ्ख्या तथा विशेष वर्णहरू प्रयोग गर्न मिल्छ</translation>
+<translation id="220321590587754225">कनेक्ट गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2204034823255629767">तपाईंले टाइप गर्नुहुने कुनैपनि कुरालाई पढ्नुहोस् र परिवर्तन गर्नुहोस्</translation>
 <translation id="220858061631308971">कृपया "<ph name="DEVICE_NAME" />" मा यो पिन कोड प्रविष्टि गर्नुहोस्:</translation>
 <translation id="2210462644007531147">इन्स्टल गर्ने प्रक्रिया पूरा गर्न सकिएन</translation>
@@ -4956,6 +4958,7 @@
 <translation id="6263284346895336537">संवेदनशील छैन</translation>
 <translation id="6264365405983206840">&amp;सबै चयन गर्नुहोस्</translation>
 <translation id="6265687851677020761">पोर्ट हटाउनुहोस्</translation>
+<translation id="6266532094411434237"><ph name="DEVICE" /> मा कनेक्ट गरिँदै छ</translation>
 <translation id="6267166720438879315">तपाइँ आफैलाई <ph name="HOST_NAME" /> मा प्रमाणीकरण गर्नको लागि एक प्रमाणपत्र चयन गर्नुहोस्</translation>
 <translation id="6268252012308737255"><ph name="APP" /> मार्फत खोल्नुहोस्</translation>
 <translation id="6270391203985052864">साइटहरूले सूचनाहरू पठाउनका निम्ति अनुमति माग्न सक्छन्।</translation>

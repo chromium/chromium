@@ -16,6 +16,7 @@
 <translation id="1066060668811609597">管理同步功能</translation>
 <translation id="1076421457278169141">已扫描代码</translation>
 <translation id="1084365883616172403">Facebook 信息发布已完成。</translation>
+<translation id="1086486568852410168">使用 Google 智能镜头搜索</translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">接受并继续</translation>
 <translation id="110724200315609752">切换到另一个已打开的窗口</translation>
@@ -57,6 +58,7 @@
 <translation id="1400642268715879018">过去 4 周</translation>
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="1430915738399379752">打印</translation>
+<translation id="1434356225517321998">您的浏览器处于受管理状态。<ph name="BEGIN_LINK" />详细信息<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">隐藏密码</translation>
 <translation id="145015347812617860">有<ph name="COUNT" />个书签</translation>
 <translation id="149095475893949513">此网站正要尝试下载一个配置文件。</translation>
@@ -120,6 +122,7 @@
 <translation id="209018056901015185">请求切换到桌面版网站</translation>
 <translation id="2103075008456228677">打开 history.google.com</translation>
 <translation id="2116625576999540962">移动了<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
+<translation id="2122754583996902531">您的浏览器处于受管理状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="212623074644302906">请求添加到阅读清单</translation>
 <translation id="2139867232736819575">搜索您复制的文字</translation>
 <translation id="214201757571129614">登录…</translation>
@@ -128,6 +131,7 @@
 <translation id="2218443599109088993">缩小</translation>
 <translation id="2230173723195178503">已加载网页</translation>
 <translation id="2239626343334228536">正在清除浏览数据…</translation>
+<translation id="2256933947031277845">贵单位要求您只能使用特定帐号登录。</translation>
 <translation id="225943865679747347">错误代码：<ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">添加帐号</translation>
 <translation id="2268044343513325586">优化</translation>
@@ -257,6 +261,7 @@
 <translation id="345565170154308620">管理密码…</translation>
 <translation id="3469166899695866866">是否停止下载？</translation>
 <translation id="3470502288861289375">正在复制…</translation>
+<translation id="3472993688462687965">开启同步功能后，您可同步的数据可能会受到贵单位的限制。</translation>
 <translation id="3474624961160222204">继续以<ph name="NAME" />的身份使用</translation>
 <translation id="3478058380795961209">到期月份</translation>
 <translation id="3482959374254649722">正在同步您的标签页…</translation>
@@ -368,10 +373,12 @@
 
 您的数据已使用您的同步密码加密。输入该密码即可开始同步。</translation>
 <translation id="4689564913179979534">管理付款方式…</translation>
+<translation id="469022783543509074">您已被强制退出登录</translation>
 <translation id="470966556546083668">请勿开启同步功能</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4747097190499141774">密码加密不包括 Google Pay 中的付款方式和地址。只有知道您密码的人才能读取您的已加密数据。系统不会将该密码发送给 Google，Google 也不会存储该密码。如果您忘记了密码或想更改此设置，则需重置同步设置。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">打开新的无痕式标签页</translation>
+<translation id="4764612367328936189">贵单位要求您只能使用特定帐号登录。不允许使用的帐号会处于隐藏状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4775879719735953715">默认浏览器</translation>
 <translation id="4778644898150334464">使用其他密码</translation>
 <translation id="4802417911091824046">密码加密不包括 Google Pay 中的付款方式和地址。
@@ -828,6 +835,7 @@
 <translation id="9081058212938299310">更新 <ph name="USERNAME" /> 的密码？</translation>
 <translation id="9083392325882095631">有1个书签</translation>
 <translation id="9083838294503912307">要在您的所有设备上保持同步并获享个性化体验，请开启同步功能。</translation>
+<translation id="9084677839771512880">贵单位限制了您可同步的内容。<ph name="BEGIN_LINK" />详细信息<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Chrome 建议的密码：</translation>
 <translation id="9094033019050270033">更新密码</translation>
 <translation id="9100610230175265781">必须提供密码</translation>

@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Informácie o prehliadači Chromium</translation>
 <translation id="1257458525759135959">Ak chcete ukladať obrázky, klepnutím na Nastavenia povoľte prehliadaču Chromium pridávať do vašich fotiek</translation>
 <translation id="1289216811211435351">Prejdite na Chromium</translation>
+<translation id="1354592789402432496">Správca vyžaduje, aby ste sa prihlásili účtom organizácie. Účty obmedzené správcom sú skryté.</translation>
 <translation id="1361748954329991663">Prehliadač Chromium je zastaraný. Ak v <ph name="BEGIN_LINK" />obchode s aplikáciami<ph name="END_LINK" /> nie je dostupná aktualizácia, je možné, že vaše zariadenie už nepodporuje nové verzie prehliadača Chromium.</translation>
 <translation id="1370204544543370355">Ak chcete využívať Chromium naplno, prihláste sa doň svojím účtom Google</translation>
 <translation id="1431818719585918472">Umožnite prehliadaču Chromium uzamknúť vaše karty inkognito.</translation>
@@ -51,6 +52,7 @@
 <translation id="5171868502429358653">Prihláste sa do prehliadača Chromium</translation>
 <translation id="5224391634244552924">Žiadne uložené heslá. Chromium môže skontrolovať heslá, keď ich uložíte.</translation>
 <translation id="5308226104666789935">Chromium nemôže skontrolovať dostupnosť aktualizácií</translation>
+<translation id="5324242752415821224">Vaša organizácia vyžaduje, aby ste sa na používanie prehliadača Chromium prihlásili. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="5396916991083608703">Chcete nastaviť Chromium ako predvolený prehliadač?</translation>
 <translation id="5521125884468363740">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chromium, prihláste sa a zapnite synchronizáciu</translation>
 <translation id="5573014823074921752">Tip pre Chromium: ďalšie možnosti karty získate pridržaním tlačidla „Zobraziť karty“ na paneli s nástrojmi, ktorý sa nachádza v dolnej alebo hornej časti obrazovky.</translation>
@@ -64,6 +66,7 @@
 2. Klepnite na položku Predvolená aplikácia prehliadača.
 3. Vyberte Chromium.</translation>
 <translation id="6155422572367400359">Prihláste sa na tomto webe, do svojho účtu Google aj prehliadača Chromium. Neskôr môžete zapnúť synchronizáciu.</translation>
+<translation id="6183442264225539303">Prihláste sa na tomto webe a v prehliadači Chromium. Neskôr môžete zapnúť synchronizáciu.</translation>
 <translation id="6268381023930128611">Odhlásiť sa z prehliadača Chromium?</translation>
 <translation id="632825460376924298">Povoliť prihlásenie do prehliadača Chromium</translation>
 <translation id="6337530241089703714">Vyberte, či chcete údaje prehliadača Chromium v tomto zariadení vymazať alebo ponechať</translation>

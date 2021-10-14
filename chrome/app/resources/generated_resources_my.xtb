@@ -32,6 +32,7 @@
 <translation id="1032605640136438169">စည်းမျဉ်းအသစ်များကို ဖတ်ရှုပါ</translation>
 <translation id="103279545524624934">Android အက်ပ်များကိုစဖွင့်ရန် နေရာလွတ်ပြုလုပ်ပါ။</translation>
 <translation id="1033780634303702874">သင်၏ ဆင့်ဆက် ကိရိယာများကို ရယူသုံးရန်</translation>
+<translation id="1034484273907870301">တက်ဘလက်မုဒ်အတွက် ပုံသေး တဘ်ဘားတန်း</translation>
 <translation id="1036348656032585052">ပိတ်ရန်</translation>
 <translation id="1036511912703768636">ယင်း USB စက်ပစ္စည်းများထဲမျ မည်သည်ကိုမဆို သုံးစွဲပါ</translation>
 <translation id="1036982837258183574">မျက်နှာပြင်အပြည့်ဖွင့်ခြင်းမှ ထွက်ရန် |<ph name="ACCELERATOR" />| ကိုနှိပ်ပါ</translation>
@@ -357,6 +358,7 @@
 <translation id="1378613616312864539"><ph name="NAME" /> သည် ဤဆက်တင်ကို ထိန်းချုပ်နေပါသည်</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{ကျိုးပေါက်ထားသည့် စကားဝှက်များ မရှိပါ}=1{ကျိုးပေါက်ထားသည့် စကားဝှက် 1 ခု}other{ကျိုးပေါက်ထားသည့် စကားဝှက် {NUM_COMPROMISED} ခု}}</translation>
 <translation id="1380028686461971526">ကွန်ရက်သို့ အော်တို ချိတ်ဆက်ရန်</translation>
+<translation id="1381567580865186407"><ph name="LANGUAGE" /> စကားသံကို စီမံလုပ်ဆောင်ရန် Google သို့ ပို့ထားသည်</translation>
 <translation id="1383597849754832576">တိုက်ရိုက်စာတန်းဖိုင်များကို ဒေါင်းလုဒ်လုပ်၍ မရပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="1383861834909034572">ပြီးဆုံးသည့် အခါမှာ ဖွင့်မည်</translation>
 <translation id="1383876407941801731">ရှာဖွေမှု</translation>
@@ -1151,6 +1153,7 @@
 <translation id="2173302385160625112">သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
 <translation id="2173801458090845390">ဤစက်ပစ္စည်းသို့ လိုအပ်ချက် ID ကို ထည့်ရန်</translation>
 <translation id="2174948148799307353">အကောင့်ကို <ph name="PARENT_EMAIL" /> က စီမံပါသည်။ ဤစက်ရှိ ပင်မအကောင့်မှထွက်ရန် ဖန်သားပြင်ပေါ်ရှိ အချိန်ကို နှိပ်ပါ။ ပေါ်လာသည့် မီနူးတွင် "ထွက်ရန်" ကို နှိပ်ပါ။</translation>
+<translation id="2175384018164129879">&amp;ရှာဖွေရေး အင်ဂျင်များနှင့် Site Search ကို စီမံရန်</translation>
 <translation id="2175607476662778685">အမြန် ဖွင့်တင်ရေး ဘား</translation>
 <translation id="217576141146192373">ပရင်တာကို ထည့်၍မရပါ။ သင့်ပရင်တာ၏ စီစဉ်သတ်မှတ်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2175927920773552910">QR ကုဒ်</translation>
@@ -3839,6 +3842,7 @@
 <translation id="5040823038948176460">နောက်ထပ် အကြောင်းအရာ ဆက်တင်များ</translation>
 <translation id="5043440033854483429">အမည်တွင် အက္ခရာ၊ ဂဏန်းနှင့် တုံးတိုများ (-) သုံးနိုင်ပြီး စာလုံးရေ ၁ လုံးမှ ၁၅ လုံးအတွင်း ရှိရမည်။</translation>
 <translation id="5043913660911154449">သို့မဟုတ် သင့်ပရင်တာ PPD ကို သတ်မှတ်ပါ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
+<translation id="5044527779574548527">ဤအဆင့်ကို ထပ်မံ၍ မပြပါနှင့်</translation>
 <translation id="5045550434625856497">စကားဝှက် မမှန်ပါ</translation>
 <translation id="504561833207953641">လက်ရှိ ဘရောင်ဇာစက်ရှင်တွင် ဖွင့်နေသည်</translation>
 <translation id="5047421709274785093">ဝဘ်ဆိုက်များကို လှုပ်ရှားမှုနှင့် အလင်းအာရုံခံကိရိယာများ အသုံးပြုခြင်းမှ ပိတ်ထားရန်</translation>
@@ -5281,6 +5285,7 @@
 <translation id="6619801788773578757">kiosk အပလီကေးရှင်းကို ထည့်ရန်−</translation>
 <translation id="6619990499523117484">သင့်ပင်နံပါတ်ကို အတည်ပြုပါ</translation>
 <translation id="6622980291894852883">ပုံများကို ပိတ်ဆို့မှု ဆက်လုပ်ရန်</translation>
+<translation id="6624036901798307345">တက်ဘလက်မုဒ်တွင် တဘ်တစ်ခုစီ၏ ပုံသေးများကို ပြသပေးသည့် တဘ်ဘားတန်းအသစ်ကို ဖွင့်ရန် တဘ်ရေတွက်မှုပြ ကိရိယာဘား ခလုတ်ကို တို့ပါ။</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> တွင် သတိထားရသော သို့မဟုတ် အန္တရာယ်ရှိသော အကြောင်းအရာ ပါဝင်သည်။ ၎င်း၏ပိုင်ရှင်ကို ပြင်ခိုင်းပါ။</translation>
 <translation id="6624687053722465643">ချိုသာမှု</translation>
 <translation id="6628328486509726751">တင်ပြီး <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
@@ -5584,6 +5589,7 @@
 <translation id="6955893174999506273">နောက်ထပ် အသွင်တူခလုတ် 1 ခု သတ်မှတ်ရန်</translation>
 <translation id="6957044667612803194">ဤလုံခြုံရေးကီးက ပင်နံပါတ်များကို မပံ့ပိုးပါ</translation>
 <translation id="6960507406838246615">Linux အပ်ဒိတ် လိုအပ်သည်</translation>
+<translation id="6960648667961844909"><ph name="LANGUAGE" /> စကားသံဖိုင်များကို ဒေါင်းလုဒ်လုပ်၍ မရပါ။ နောက်မှ ဒေါင်းလုဒ်လုပ်ပါမည်။ စကားသံကို စီမံလုပ်ဆောင်ရန် ဒေါင်းလုဒ်လုပ်မှု မပြီးမချင်း Google သို့ ပို့ပါမည်။</translation>
 <translation id="696103774840402661">ဤ <ph name="DEVICE_TYPE" /> ပေါ်ရှိ အသုံးပြုသူအားလုံးအတွက် ဖိုင်နှင့် စက်တွင်းဒေတာအားလုံးကို အပြီးဖျက်ပါမည်။</translation>
 <translation id="6964390816189577014">သူရဲကောင်း</translation>
 <translation id="6964760285928603117">အဖွဲ့မှ ဖယ်ရှားပါ</translation>
@@ -6184,6 +6190,7 @@
 <translation id="7595547011743502844"><ph name="ERROR" /> (အမှားကုဒ် <ph name="ERROR_CODE" />)။</translation>
 <translation id="7598466960084663009">ကွန်ပျူတာကို ပိတ်ပြီးပြန်ဖွင့်ရန်</translation>
 <translation id="7599527631045201165">စက်ပစ္စည်းအမည် အလွန်ရှည်သည်။ ထပ်စမ်းကြည့်ရန် အမည်တိုတိုပေးပါ။</translation>
+<translation id="7600054753482800821">&amp;ရှာဖွေရေး အင်ဂျင်များနှင့် Site Search ကို စီမံရန်</translation>
 <translation id="7600965453749440009">ဘာသာပြန်အသစ် <ph name="LANGUAGE" /></translation>
 <translation id="760197030861754408">ချိတ်ဆက်ရန် <ph name="LANDING_PAGE" /> သို့ သွားပါ။</translation>
 <translation id="7602079150116086782">အခြား ကိရိယာများမှ တဲဘ်များ မရှိ</translation>
@@ -6845,6 +6852,7 @@
 <translation id="8244514732452879619">မကြာမီ မီးပိတ်ပါတော့မည်</translation>
 <translation id="8246776524656196770">သင့်လုံခြုံရေးကီးကို ပင်နံပါတ် (ကိုယ်ပိုင်စိစစ်ရေး အမှတ်) နှင့် ကာကွယ်ပါ</translation>
 <translation id="8248050856337841185">&amp;ကပ်ပေးရန်</translation>
+<translation id="8248887045858762645">Chrome အကြံပြုချက်</translation>
 <translation id="8249048954461686687">OEM ဖိုလ်ဒါ</translation>
 <translation id="8249615410597138718">သင့်ကိရိယာများသို့ ပို့ပါ</translation>
 <translation id="8249672078237421304">သင့်ဘာသာစကားမဟုတ်သည့် စာမျက်နှာများကို ဘာသာပြန်ပေးရန် ကမ်းလှမ်းပါသည်</translation>
@@ -7313,6 +7321,7 @@
 <translation id="8763927697961133303">USB ကိရိယာ</translation>
 <translation id="87646919272181953">Google Photos အယ်လ်ဘမ်</translation>
 <translation id="8767621466733104912">အသုံးပြုသူများ အားလုံးအတွက် Chrome ကို အလိုအလျောက် အပ်ဒိတ်လုပ်ပါ</translation>
+<translation id="8767765348545497220">အကူအညီ ပူဖောင်းကွက်ကို ပိတ်ရန်</translation>
 <translation id="8770406935328356739">နောက်ဆက်တွဲ ပင်မလမ်းကြောင်း</translation>
 <translation id="8771300903067484968">စတင်သည့် စာမျက်နှာနောက်ခံကို မူလနောက်ခံသို့ ပြင်ဆင်သတ်မှတ်ထားပါသည်။</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> ကို သိမ်းရန်</translation>
