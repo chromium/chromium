@@ -2152,7 +2152,7 @@
     ],
 
     'debug_bot_fuchsia_arm64': [
-      'debug_bot', 'fuchsia', 'arm64',
+      'debug_bot', 'fuchsia', 'arm64', 'arm64_host',
     ],
 
     'debug_bot_fuchsia_compile_only': [
@@ -2839,7 +2839,7 @@
     ],
 
     'release_bot_fuchsia_arm64': [
-      'release_bot', 'fuchsia', 'arm64',
+      'release_bot', 'fuchsia', 'arm64', 'arm64_host',
     ],
 
     'release_bot_fuchsia_arm64_cast': [
@@ -3130,6 +3130,10 @@
 
     'arm64': {
       'gn_args': 'target_cpu="arm64"',
+    },
+
+    'arm64_host': {
+      'gn_args': 'test_host_cpu="arm64"',
     },
 
     'arm_no_neon': {
