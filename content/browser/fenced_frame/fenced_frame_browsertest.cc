@@ -58,8 +58,8 @@ class FencedFrameBrowserTest : public ContentBrowserTest {
 // Tests that the renderer can create a <fencedframe> that results in a
 // browser-side content::FencedFrame also being created.
 IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, CreateFromScriptAndDestroy) {
-  const GURL main_url =
-      embedded_test_server()->GetURL("fencedframe.test", "/title1.html");
+  const GURL main_url = embedded_test_server()->GetURL(
+      "fencedframe.test", "/fenced_frames/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
                                          "fencedframe.test", "/title1.html")));
   RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
@@ -130,8 +130,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, Navigation) {
   RenderFrameHost* inner_fenced_frame_rfh =
       fenced_frame_test_helper().CreateFencedFrame(primary_rfh, main_url);
 
-  const GURL fenced_frame_url =
-      embedded_test_server()->GetURL("fencedframe.test", "/title2.html");
+  const GURL fenced_frame_url = embedded_test_server()->GetURL(
+      "fencedframe.test", "/fenced_frames/title1.html");
   inner_fenced_frame_rfh =
       fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
           inner_fenced_frame_rfh, fenced_frame_url);

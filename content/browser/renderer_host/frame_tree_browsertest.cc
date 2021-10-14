@@ -860,10 +860,13 @@ class FencedFrameTreeBrowserTest
   void NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       const ToRenderFrameHost& adapter,
       GURL url,
-      const std::string& navigate_script) {
+      const std::string& navigate_script,
+      net::Error expected_net_error_code = net::OK) {
     RenderFrameHostImpl* rfh =
         static_cast<RenderFrameHostImpl*>(adapter.render_frame_host());
-    EXPECT_TRUE(rfh->frame_tree_node()->IsInFencedFrameTree());
+
+    FrameTreeNode* frame_tree_node = rfh->frame_tree_node();
+    EXPECT_TRUE(frame_tree_node->IsInFencedFrameTree());
 
     // For the ShadowDOM version of fenced frames, we can just use a
     // `TestFrameNavigationObserver` as normal directly on the frame that is
@@ -873,6 +876,7 @@ class FencedFrameTreeBrowserTest
       TestFrameNavigationObserver observer(rfh);
       EXPECT_EQ(url.spec(), EvalJs(rfh->GetParent(), navigate_script));
       observer.Wait();
+      EXPECT_EQ(observer.last_net_error_code(), expected_net_error_code);
       return;
     }
 
@@ -885,6 +889,9 @@ class FencedFrameTreeBrowserTest
     EXPECT_EQ(url.spec(),
               EvalJs(rfh->GetParentOrOuterDocument(), navigate_script));
     fenced_frame->WaitForDidStopLoadingForTesting();
+    // `rfh` might be destroyed and invalid at this point.
+    EXPECT_EQ(frame_tree_node->current_frame_host()->IsErrorDocument(),
+              expected_net_error_code != net::OK);
   }
 
   void SetUpOnMainThread() override {
@@ -996,7 +1003,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
   EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
 
-  GURL https_url(https_server()->GetURL("a.test", "/title1.html"));
+  GURL https_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
   GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
@@ -1057,7 +1065,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckFencedFrameNoCookies) {
   EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
   EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
 
-  GURL https_url(https_server()->GetURL("a.test", "/title1.html"));
+  GURL https_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
   FencedFrameURLMapping& url_mapping =
       root_rfh->GetPage().fenced_frame_urls_map();
   GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
@@ -1149,7 +1158,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckIsFencedFrame) {
   // is nothing to execute script in.
   {
     // Navigate the fenced frame.
-    GURL fenced_frame_url(https_server()->GetURL("a.test", "/title1.html"));
+    GURL fenced_frame_url(
+        https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
     std::string navigate_script =
         JsReplace("fenced_frame.src = $1;", fenced_frame_url.spec());
     NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
@@ -1202,7 +1212,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   // RenderFrameHostImpl::RenderFrameCreated() on its owned RFHI.
   {
     // Navigate the fenced frame.
-    GURL fenced_frame_url(https_server()->GetURL("a.test", "/title1.html"));
+    GURL fenced_frame_url(
+        https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
     std::string navigate_script =
         JsReplace("f.src = $1;", fenced_frame_url.spec());
     NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
@@ -1314,7 +1325,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   // navigation.
   {
     // Navigate the fenced frame.
-    GURL fenced_frame_url(https_server()->GetURL("b.test", "/title1.html"));
+    GURL fenced_frame_url(
+        https_server()->GetURL("b.test", "/fenced_frames/title1.html"));
     std::string navigate_script =
         JsReplace("f.src = $1;", fenced_frame_url.spec());
     NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
@@ -1352,7 +1364,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckUniqueStorage) {
   // RenderFrameHostImpl::RenderFrameCreated() on its owned RFHI.
   {
     // Navigate the fenced frame.
-    GURL fenced_frame_url(https_server()->GetURL("a.test", "/title1.html"));
+    GURL fenced_frame_url(
+        https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
     std::string navigate_script =
         JsReplace("f.src = $1;", fenced_frame_url.spec());
     NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
@@ -1406,6 +1419,36 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckUniqueStorage) {
       blink::features::FencedFramesImplementationType::kShadowDOM) {
     EXPECT_EQ("c", EvalJs(fenced_frame, "localStorage[\"foo\"]"));
   }
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
+                       CheckFencedFrameNotNavigatedWithoutOptIn) {
+  GURL main_url = https_server()->GetURL("b.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  {
+    EXPECT_TRUE(ExecJs(root,
+                       "var f = document.createElement('fencedframe');"
+                       "document.body.appendChild(f);"));
+  }
+  EXPECT_EQ(1U, root->child_count());
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
+
+  GURL https_url(https_server()->GetURL("a.test", "/title1.html"));
+  FencedFrameURLMapping& url_mapping =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+  GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
+  EXPECT_TRUE(urn_uuid.is_valid());
+
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame_root_node, urn_uuid, navigate_urn_script,
+      net::ERR_BLOCKED_BY_RESPONSE);
 }
 
 INSTANTIATE_TEST_SUITE_P(

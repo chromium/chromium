@@ -25,11 +25,8 @@ TestFrameNavigationObserver::TestFrameNavigationObserver(
     const ToRenderFrameHost& adapter)
     : WebContentsObserver(
           WebContents::FromRenderFrameHost(ToRenderFrameHostImpl(adapter))),
-      frame_tree_node_id_(ToRenderFrameHostImpl(adapter)->GetFrameTreeNodeId()),
-      navigation_started_(false),
-      has_committed_(false),
-      wait_for_commit_(false),
-      last_navigation_succeeded_(false) {
+      frame_tree_node_id_(
+          ToRenderFrameHostImpl(adapter)->GetFrameTreeNodeId()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -66,6 +63,7 @@ void TestFrameNavigationObserver::DidFinishNavigation(
     return;
 
   last_navigation_succeeded_ = !navigation_handle->IsErrorPage();
+  last_net_error_code_ = navigation_handle->GetNetErrorCode();
   if (!navigation_handle->HasCommitted() ||
       navigation_handle->IsErrorPage() ||
       navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_) {

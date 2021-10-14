@@ -129,8 +129,8 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeFencedFrameBrowserTest,
   std::vector<FencedFrame*> fenced_frames = primary_rfh->GetFencedFrames();
   EXPECT_EQ(1u, fenced_frames.size());
 
-  const GURL fenced_frame_url =
-      embedded_test_server()->GetURL("fencedframe.test", "/title1.html");
+  const GURL fenced_frame_url = embedded_test_server()->GetURL(
+      "fencedframe.test", "/fenced_frames/title1.html");
   EXPECT_TRUE(ExecJs(
       primary_rfh, JsReplace("document.querySelector('fencedframe').src = $1;",
                              fenced_frame_url.spec())));

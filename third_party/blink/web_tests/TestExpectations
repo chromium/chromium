@@ -7215,3 +7215,6 @@ crbug.com/1259652 [ Mac10.13 ] external/wpt/streams/readable-streams/tee.any.sha
 
 # Sheriff 2021-10-14
 crbug.com/1259749 [ Mac11.0 ] http/tests/eventsource/eventsource-cors-non-http.html [ Failure Pass ]
+
+# Data URL navigation within Fenced Frames currently crashed in the MPArch implementation.
+crbug.com/1243568 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/window-data-url-navigation.html [ Crash ]

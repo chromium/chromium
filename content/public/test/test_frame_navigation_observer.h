@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/base/net_errors.h"
 
 namespace content {
 
@@ -41,6 +42,8 @@ class TestFrameNavigationObserver : public WebContentsObserver {
 
   bool last_navigation_succeeded() const { return last_navigation_succeeded_; }
 
+  net::Error last_net_error_code() const { return last_net_error_code_; }
+
  private:
   // WebContentsObserver
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
@@ -51,17 +54,20 @@ class TestFrameNavigationObserver : public WebContentsObserver {
   int frame_tree_node_id_;
 
   // If true the navigation has started.
-  bool navigation_started_;
+  bool navigation_started_ = false;
 
   // If true, the navigation has committed.
-  bool has_committed_;
+  bool has_committed_ = false;
 
   // If true, this object is waiting for commit only, not for the full load
   // of the document.
-  bool wait_for_commit_;
+  bool wait_for_commit_ = false;
 
   // True if the last navigation succeeded.
-  bool last_navigation_succeeded_;
+  bool last_navigation_succeeded_ = false;
+
+  // The net error code of the last navigation.
+  net::Error last_net_error_code_ = net::OK;
 
   // Saved parameters from NavigationHandle.
   absl::optional<ui::PageTransition> transition_type_;

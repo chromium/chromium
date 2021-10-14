@@ -25,6 +25,9 @@ const KEYS = {
 
   "location.ancestorOrigins"     : "00000000-0000-0000-0000-000000000007",
   "location.ancestorOrigins ACK" : "00000000-0000-0000-0000-000000000008",
+
+  "data: URL"                    : "00000000-0000-0000-0000-000000000009",
+  "204 response"                 : "00000000-0000-0000-0000-00000000000A",
   // Add keys below this list, incrementing the key UUID in hexadecimal:
   "keyboard.lock"                : "00000000-0000-0000-0000-000000000009",
 }
@@ -71,7 +74,7 @@ async function nextValueFromServer(key) {
 }
 
 // Writes `value` for `key` in the key-value store on the server.
-async function writeValueToServer(key, value) {
-  const serverUrl = `${STORE_URL}?key=${key}&value=${value}`;
-  await fetch(serverUrl);
+async function writeValueToServer(key, value, origin = '') {
+  const serverUrl = `${origin}${STORE_URL}?key=${key}&value=${value}`;
+  await fetch(serverUrl, {"mode": "no-cors"});
 }

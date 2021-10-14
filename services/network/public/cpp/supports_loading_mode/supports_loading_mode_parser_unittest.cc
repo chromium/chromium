@@ -29,6 +29,9 @@ TEST(SupportsLoadingModeParserTest, Valid) {
   EXPECT_THAT(ParseSupportsLoadingMode("uncredentialed-prefetch"),
               SupportedModesAre(mojom::LoadingMode::kDefault,
                                 mojom::LoadingMode::kUncredentialedPrefetch));
+  EXPECT_THAT(ParseSupportsLoadingMode("fenced-frame"),
+              SupportedModesAre(mojom::LoadingMode::kDefault,
+                                mojom::LoadingMode::kFencedFrame));
   EXPECT_THAT(ParseSupportsLoadingMode(
                   "uncredentialed-prefetch, uncredentialed-prefetch"),
               SupportedModesAre(mojom::LoadingMode::kDefault,
@@ -52,6 +55,8 @@ TEST(SupportsLoadingModeParserTest, IgnoresUnknown) {
   EXPECT_THAT(ParseSupportsLoadingMode("\"uncredentialed-prefetch\""),
               SupportedModesAre(mojom::LoadingMode::kDefault));
   EXPECT_THAT(ParseSupportsLoadingMode("(uncredentialed-prefetch default)"),
+              SupportedModesAre(mojom::LoadingMode::kDefault));
+  EXPECT_THAT(ParseSupportsLoadingMode("uncredentialed-pre"),
               SupportedModesAre(mojom::LoadingMode::kDefault));
 }
 
@@ -78,6 +83,11 @@ TEST(SupportsLoadingModeParserTest, ValidFromResponseHeaders) {
                   "supports-loading-mode: uncredentialed-prefetch\n")),
               SupportedModesAre(mojom::LoadingMode::kDefault,
                                 mojom::LoadingMode::kUncredentialedPrefetch));
+  EXPECT_THAT(ParseSupportsLoadingMode(*net::HttpResponseHeaders::TryToCreate(
+                  "HTTP/1.1 200 OK\n"
+                  "supports-loading-mode: fenced-frame\n")),
+              SupportedModesAre(mojom::LoadingMode::kDefault,
+                                mojom::LoadingMode::kFencedFrame));
   EXPECT_THAT(ParseSupportsLoadingMode(*net::HttpResponseHeaders::TryToCreate(
                   "HTTP/1.1 200 OK\n"
                   "Supports-Loading-Mode: default,\n"

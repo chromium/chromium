@@ -122,9 +122,11 @@
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/cpp/supports_loading_mode/supports_loading_mode_parser.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/supports_loading_mode.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom.h"
@@ -915,6 +917,14 @@ const GURL& GetLastLoadingURLInRendererForNavigationReplacement(
 
   // Otherwise, return the last document URL.
   return rfh->last_document_url_in_renderer();
+}
+
+bool IsOptedInFencedFrame(const net::HttpResponseHeaders& http_headers) {
+  network::mojom::SupportsLoadingModePtr result =
+      network::ParseSupportsLoadingMode(http_headers);
+  return !result.is_null() &&
+         base::Contains(result->supported_modes,
+                        network::mojom::LoadingMode::kFencedFrame);
 }
 
 }  // namespace
@@ -3050,6 +3060,25 @@ void NavigationRequest::OnResponseStarted(
   }
 
   const auto& url = common_params_->url;
+
+  // The root fenced frames are required to have the Supports-Loading-Mode HTTP
+  // response header "fenced-frame" to be able to load.
+  const bool should_enforce_fenced_frame_opt_in =
+      response_should_be_rendered_ && response_head_->headers &&
+      frame_tree_node_->IsFencedFrameRoot() &&
+      !(url.IsAboutBlank() || url.SchemeIsBlob() ||
+        url.SchemeIs(url::kDataScheme));
+  if (should_enforce_fenced_frame_opt_in &&
+      !IsOptedInFencedFrame(*response_head_->headers)) {
+    OnRequestFailedInternal(
+        network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_RESPONSE),
+        false /* skip_throttles */, absl::nullopt /* error_page_content */,
+        false /* collapse_frame */);
+    // DO NOT ADD CODE after this. The previous call to
+    // OnRequestFailedInternal has destroyed the NavigationRequest.
+    return;
+  }
+
   auto cross_origin_embedder_policy =
       CoepFromMainResponse(url, response_head_.get());
 

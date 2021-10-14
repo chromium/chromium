@@ -20,6 +20,10 @@ enum LoadingMode {
   // script before navigation. The document should, if necessary, personalize
   // itself after loading when credentials become available, dynamically.
   kUncredentialedPrerender,
+
+  // A mode to opt-in to being loaded in a fenced frame. The navigation in the
+  // root fenced frame node should not be successful if the mode is not present.
+  kFencedFrame,
 };
 
 // https://github.com/jeremyroman/alternate-loading-modes/blob/gh-pages/opt-in.md
