@@ -24,6 +24,7 @@
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/android/autocomplete/tab_matcher_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
@@ -424,7 +425,11 @@ ScopedJavaLocalRef<jobject>
 AutocompleteControllerAndroid::FindMatchingTabWithUrl(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_gurl) {
-  TabAndroid* tab = provider_client_->GetTabOpenWithURL(
+  // TODO(crbug.com/1176768): Eliminate the need for this cast and possibly the
+  // entire call.
+  const auto& tab_matcher =
+      static_cast<const TabMatcherAndroid&>(provider_client_->GetTabMatcher());
+  TabAndroid* tab = tab_matcher.GetTabOpenWithURL(
       *url::GURLAndroid::ToNativeGURL(env, j_gurl), nullptr);
 
   return tab ? tab->GetJavaObject() : nullptr;

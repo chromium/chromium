@@ -26,9 +26,11 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/fake_tab_matcher.h"
 #include "components/omnibox/browser/intranet_redirector_state.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/tab_matcher.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -1956,7 +1958,8 @@ TEST_F(AutocompleteResultTest, ConvertsOpenTabsCorrectly) {
 
   // Have IsTabOpenWithURL() return true for some URLs.
   FakeAutocompleteProviderClient client;
-  client.set_url_substring_match("matches");
+  static_cast<FakeTabMatcher&>(const_cast<TabMatcher&>(client.GetTabMatcher()))
+      .set_url_substring_match("matches");
 
   result.ConvertOpenTabMatches(&client, nullptr);
 

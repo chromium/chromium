@@ -51,6 +51,7 @@
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/tab_matcher.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -73,15 +74,7 @@
 #include "chrome/browser/autocomplete/keyword_extensions_delegate_impl.h"
 #endif
 
-#if defined(OS_ANDROID)
-#include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/tab_android_user_data.h"
-#include "chrome/browser/flags/android/chrome_session_state.h"
-#include "chrome/browser/ui/android/omnibox/jni_headers/ChromeAutocompleteProviderClient_jni.h"
-#include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#else
+#if !defined(OS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -89,55 +82,9 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #endif
 
-#if defined(OS_ANDROID)
-using chrome::android::ActivityType;
-#endif
-
 namespace {
 
-#if defined(OS_ANDROID)
-class AutocompleteClientTabAndroidUserData
-    : public TabAndroidUserData<AutocompleteClientTabAndroidUserData>,
-      public TabAndroid::Observer {
- public:
-  ~AutocompleteClientTabAndroidUserData() override {
-    tab_->RemoveObserver(this);
-  }
-
-  const GURL& GetStrippedURL() { return stripped_url_; }
-
-  bool IsInitialized() { return initialized_; }
-
-  void UpdateStrippedURL(const GURL& url,
-                         TemplateURLService* template_url_service) {
-    initialized_ = true;
-    if (url.is_valid()) {
-      stripped_url_ = AutocompleteMatch::GURLToStrippedGURL(
-          url, AutocompleteInput(), template_url_service, std::u16string());
-    }
-  }
-
-  // TabAndroid::Observer implementation
-  void OnInitWebContents(TabAndroid* tab) override {
-    tab->RemoveUserData(UserDataKey());
-  }
-
- private:
-  explicit AutocompleteClientTabAndroidUserData(TabAndroid* tab) : tab_(tab) {
-    DCHECK(tab);
-    tab->AddObserver(this);
-  }
-  friend class TabAndroidUserData<AutocompleteClientTabAndroidUserData>;
-
-  TabAndroid* tab_;
-  bool initialized_ = false;
-  GURL stripped_url_;
-
-  TAB_ANDROID_USER_DATA_KEY_DECL();
-};
-TAB_ANDROID_USER_DATA_KEY_IMPL(AutocompleteClientTabAndroidUserData)
-
-#else  // defined(OS_ANDROID)
+#if !defined(OS_ANDROID)
 // This list should be kept in sync with chrome/common/webui_url_constants.h.
 // Only include useful sub-pages, confirmation alerts are not useful.
 const char* const kChromeSettingsSubPages[] = {
@@ -153,46 +100,6 @@ const char* const kChromeSettingsSubPages[] = {
 };
 #endif  // defined(OS_ANDROID)
 
-class AutocompleteClientWebContentsUserData
-    : public content::WebContentsUserData<
-          AutocompleteClientWebContentsUserData> {
- public:
-  ~AutocompleteClientWebContentsUserData() override = default;
-
-  int GetLastCommittedEntryIndex() { return last_committed_entry_index_; }
-  const GURL& GetLastCommittedStrippedURL() {
-    return last_committed_stripped_url_;
-  }
-  void UpdateLastCommittedStrippedURL(
-      int last_committed_index,
-      const GURL& last_committed_url,
-      TemplateURLService* template_url_service) {
-    if (last_committed_url.is_valid()) {
-      last_committed_entry_index_ = last_committed_index;
-      // Use blank input since we will re-use this stripped URL with other
-      // inputs.
-      last_committed_stripped_url_ = AutocompleteMatch::GURLToStrippedGURL(
-          last_committed_url, AutocompleteInput(), template_url_service,
-          std::u16string());
-    }
-  }
-
- private:
-  explicit AutocompleteClientWebContentsUserData(
-      content::WebContents* contents);
-  friend class content::WebContentsUserData<
-      AutocompleteClientWebContentsUserData>;
-
-  int last_committed_entry_index_ = -1;
-  GURL last_committed_stripped_url_;
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-AutocompleteClientWebContentsUserData::AutocompleteClientWebContentsUserData(
-    content::WebContents*) {}
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AutocompleteClientWebContentsUserData);
-
 }  // namespace
 
 ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
@@ -202,6 +109,7 @@ ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
       url_consent_helper_(unified_consent::UrlKeyedDataCollectionConsentHelper::
                               NewPersonalizedDataCollectionConsentHelper(
                                   SyncServiceFactory::GetForProfile(profile_))),
+      tab_matcher_(*this, profile_),
       storage_partition_(nullptr),
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()) {
@@ -483,35 +391,8 @@ void ChromeAutocompleteProviderClient::StartServiceWorker(
       base::DoNothing());
 }
 
-bool ChromeAutocompleteProviderClient::IsTabOpenWithURL(
-    const GURL& url,
-    const AutocompleteInput* input) {
-#if defined(OS_ANDROID)
-  return GetTabOpenWithURL(url, input) != nullptr;
-#else
-  const AutocompleteInput empty_input;
-  if (!input)
-    input = &empty_input;
-  const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
-      url, *input, GetTemplateURLService(), std::u16string());
-  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
-  content::WebContents* active_tab = nullptr;
-  if (active_browser)
-    active_tab = active_browser->tab_strip_model()->GetActiveWebContents();
-  for (auto* browser : *BrowserList::GetInstance()) {
-    // Only look at same profile (and anonymity level).
-    if (profile_ == browser->profile()) {
-      for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-        content::WebContents* web_contents =
-            browser->tab_strip_model()->GetWebContentsAt(i);
-        if (web_contents != active_tab &&
-            IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents))
-          return true;
-      }
-    }
-  }
-  return false;
-#endif  // defined(OS_ANDROID)
+const TabMatcher& ChromeAutocompleteProviderClient::GetTabMatcher() const {
+  return tab_matcher_;
 }
 
 bool ChromeAutocompleteProviderClient::IsIncognitoModeAvailable() const {
@@ -559,22 +440,6 @@ bool ChromeAutocompleteProviderClient::StrippedURLsAreEqual(
              url1, *input, template_url_service, std::u16string()) ==
          AutocompleteMatch::GURLToStrippedGURL(
              url2, *input, template_url_service, std::u16string());
-}
-
-bool ChromeAutocompleteProviderClient::IsStrippedURLEqualToWebContentsURL(
-    const GURL& stripped_url,
-    content::WebContents* web_contents) {
-  AutocompleteClientWebContentsUserData::CreateForWebContents(web_contents);
-  AutocompleteClientWebContentsUserData* user_data =
-      AutocompleteClientWebContentsUserData::FromWebContents(web_contents);
-  DCHECK(user_data);
-  if (user_data->GetLastCommittedEntryIndex() !=
-      web_contents->GetController().GetLastCommittedEntryIndex()) {
-    user_data->UpdateLastCommittedStrippedURL(
-        web_contents->GetController().GetLastCommittedEntryIndex(),
-        web_contents->GetLastCommittedURL(), GetTemplateURLService());
-  }
-  return stripped_url == user_data->GetLastCommittedStrippedURL();
 }
 
 void ChromeAutocompleteProviderClient::OpenSharingHub() {
@@ -632,78 +497,3 @@ void ChromeAutocompleteProviderClient::PromptPageTranslation() {
   }
 #endif  // !defined(OS_ANDROID)
 }
-
-#if defined(OS_ANDROID)
-TabAndroid* ChromeAutocompleteProviderClient::GetTabOpenWithURL(
-    const GURL& url,
-    const AutocompleteInput* input) {
-  const AutocompleteInput empty_input;
-  if (!input)
-    input = &empty_input;
-  const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
-      url, *input, GetTemplateURLService(), std::u16string());
-
-  std::vector<TabModel*> tab_models;
-  for (TabModel* model : TabModelList::models()) {
-    if (profile_ != model->GetProfile())
-      continue;
-
-    tab_models.push_back(model);
-  }
-
-  std::vector<TabAndroid*> all_tabs = GetAllHiddenAndNonCCTTabs(tab_models);
-
-  for (TabAndroid* tab : all_tabs) {
-    content::WebContents* web_contents = tab->web_contents();
-    if (web_contents != nullptr) {
-      if (IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents))
-        return tab;
-    } else {
-      // Browser did not load the tab yet after Chrome started. To avoid
-      // reloading WebContents, we just compare URLs.
-      AutocompleteClientTabAndroidUserData::CreateForTabAndroid(tab);
-      AutocompleteClientTabAndroidUserData* user_data =
-          AutocompleteClientTabAndroidUserData::FromTabAndroid(tab);
-      DCHECK(user_data);
-      if (!user_data->IsInitialized())
-        user_data->UpdateStrippedURL(tab->GetURL(), GetTemplateURLService());
-
-      const GURL tab_stripped_url = user_data->GetStrippedURL();
-      if (tab_stripped_url == stripped_url)
-        return tab;
-    }
-  }
-
-  return nullptr;
-}
-
-std::vector<TabAndroid*>
-ChromeAutocompleteProviderClient::GetAllHiddenAndNonCCTTabs(
-    const std::vector<TabModel*>& tab_models) {
-  if (tab_models.size() == 0)
-    return std::vector<TabAndroid*>();
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  jclass tab_model_clazz = TabModelJniBridge::GetClazz(env);
-  base::android::ScopedJavaLocalRef<jobjectArray> j_tab_model_array(
-      env, env->NewObjectArray(tab_models.size(), tab_model_clazz, nullptr));
-  // Get all the hidden and non CCT tabs. Filter the tabs in CCT tabmodel first.
-  for (size_t i = 0; i < tab_models.size(); ++i) {
-    ActivityType type = tab_models[i]->activity_type();
-    if (type == ActivityType::kCustomTab ||
-        type == ActivityType::kTrustedWebActivity) {
-      continue;
-    }
-    env->SetObjectArrayElement(j_tab_model_array.obj(), i,
-                               tab_models[i]->GetJavaObject().obj());
-  }
-
-  base::android::ScopedJavaLocalRef<jobjectArray> j_tabs =
-      Java_ChromeAutocompleteProviderClient_getAllHiddenTabs(env,
-                                                             j_tab_model_array);
-  if (j_tabs.is_null())
-    return std::vector<TabAndroid*>();
-
-  return TabAndroid::GetAllNativeTabs(env, j_tabs);
-}
-#endif  // defined(OS_ANDROID)

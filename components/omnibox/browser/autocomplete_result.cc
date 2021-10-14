@@ -30,6 +30,7 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/intranet_redirector_state.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/tab_matcher.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url_service.h"
@@ -487,7 +488,8 @@ void AutocompleteResult::ConvertOpenTabMatches(
     if (match.has_tab_match)
       continue;
     // If URL is in a tab, remember that.
-    if (client->IsTabOpenWithURL(match.destination_url, input)) {
+    if (client->GetTabMatcher().IsTabOpenWithURL(match.destination_url,
+                                                 input)) {
       match.has_tab_match = true;
     }
   }

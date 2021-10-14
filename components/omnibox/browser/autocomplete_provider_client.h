@@ -30,6 +30,7 @@ class KeywordProvider;
 class OmniboxPedalProvider;
 class PrefService;
 class ShortcutsBackend;
+class TabMatcher;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -183,11 +184,9 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // configure the provider if desired.
   virtual void ConfigureKeywordProvider(KeywordProvider* keyword_provider) {}
 
-  // Called to find out if there is an open tab with the given URL within the
-  // current profile. |input| can be null; match is more precise (e.g. scheme
-  // presence) if provided.
-  virtual bool IsTabOpenWithURL(const GURL& url,
-                                const AutocompleteInput* input) = 0;
+  // Called to acquire the instance of TabMatcher, used to identify open tabs
+  // for a given set of AutocompleteMatches within the current profile.
+  virtual const TabMatcher& GetTabMatcher() const = 0;
 
   // Returns whether user is currently allowed to enter incognito mode.
   virtual bool IsIncognitoModeAvailable() const;

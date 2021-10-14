@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
+#include "ios/chrome/browser/autocomplete/tab_matcher_impl.h"
 
 class ChromeBrowserState;
 
@@ -80,8 +81,7 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
       history::KeywordID keyword_id,
       const std::u16string& term) override;
   void PrefetchImage(const GURL& url) override;
-  bool IsTabOpenWithURL(const GURL& url,
-                        const AutocompleteInput* input) override;
+  const TabMatcher& GetTabMatcher() const override;
 
   // OmniboxAction::Client implementation.
   void OpenSharingHub() override {}
@@ -97,6 +97,7 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
       url_consent_helper_;
   std::unique_ptr<OmniboxTriggeredFeatureService>
       omnibox_triggered_feature_service_;
+  TabMatcherImpl tab_matcher_;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOCOMPLETE_AUTOCOMPLETE_PROVIDER_CLIENT_IMPL_H_

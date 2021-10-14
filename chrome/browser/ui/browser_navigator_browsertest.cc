@@ -36,6 +36,7 @@
 #include "components/captive_portal/core/buildflags.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "components/omnibox/browser/tab_matcher.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_types.h"
@@ -708,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SchemeMismatchTabSwitchTest) {
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 
   ChromeAutocompleteProviderClient client(browser()->profile());
-  EXPECT_TRUE(client.IsTabOpenWithURL(search_url, nullptr));
+  EXPECT_TRUE(client.GetTabMatcher().IsTabOpenWithURL(search_url, nullptr));
 
   NavigateHelper(search_url, browser(), WindowOpenDisposition::SWITCH_TO_TAB,
                  false);
@@ -770,7 +771,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_SwitchToTabCorrectWindow) {
   // actively avoid it (because the user almost certainly doesn't want to
   // switch to the tab they're already on). While we are not on the target
   // tab, make sure the provider client recommends our other window.
-  EXPECT_TRUE(client.IsTabOpenWithURL(singleton_url, nullptr));
+  EXPECT_TRUE(client.GetTabMatcher().IsTabOpenWithURL(singleton_url, nullptr));
 
   // Navigate to the singleton again.
   Browser* test_browser =
@@ -782,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_SwitchToTabCorrectWindow) {
   EXPECT_EQ(orig_browser, test_browser);
   // Now that we're on the tab, make sure the provider client doesn't
   // recommend it.
-  EXPECT_FALSE(client.IsTabOpenWithURL(singleton_url, nullptr));
+  EXPECT_FALSE(client.GetTabMatcher().IsTabOpenWithURL(singleton_url, nullptr));
 }
 
 // This test verifies that "switch to tab" prefers the latest used browser,

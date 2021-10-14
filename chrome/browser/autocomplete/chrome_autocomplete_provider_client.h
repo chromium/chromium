@@ -13,17 +13,17 @@
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
-
 #if defined(OS_ANDROID)
-class TabAndroid;
-class TabModel;
-#endif  // defined(OS_ANDROID)
+#include "chrome/browser/android/autocomplete/tab_matcher_android.h"
+#else
+#include "chrome/browser/autocomplete/tab_matcher_desktop.h"
+#endif
 
 class Profile;
+class TabMatcher;
 
 namespace content {
 class StoragePartition;
-class WebContents;
 }
 
 namespace unified_consent {
@@ -95,8 +95,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
       const std::u16string& term) override;
   void PrefetchImage(const GURL& url) override;
   void StartServiceWorker(const GURL& destination_url) override;
-  bool IsTabOpenWithURL(const GURL& url,
-                        const AutocompleteInput* input) override;
+  const TabMatcher& GetTabMatcher() const override;
   bool IsIncognitoModeAvailable() const override;
   bool IsSharingHubAvailable() const override;
   void OnAutocompleteControllerResultReady(
@@ -118,28 +117,17 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
                             const GURL& url2,
                             const AutocompleteInput* input) const;
 
-  // Performs a comparison of |stripped_url| to the stripped last committed
-  // URL of |web_contents|, using the internal cache to avoid repeatedly
-  // re-stripping the URL.
-  bool IsStrippedURLEqualToWebContentsURL(const GURL& stripped_url,
-                                          content::WebContents* web_contents);
-
-#if defined(OS_ANDROID)
-  // Returns a TabAndroid has opened same URL as |url|.
-  TabAndroid* GetTabOpenWithURL(const GURL& url,
-                                const AutocompleteInput* input);
-  // Make a JNI call to get all the hidden tabs and non Custom tabs in
-  // |tab_model|.
-  std::vector<TabAndroid*> GetAllHiddenAndNonCCTTabs(
-      const std::vector<TabModel*>& tab_models);
-#endif  // defined(OS_ANDROID)
-
  private:
   Profile* profile_;
   ChromeAutocompleteSchemeClassifier scheme_classifier_;
   std::unique_ptr<OmniboxPedalProvider> pedal_provider_;
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
       url_consent_helper_;
+#if defined(OS_ANDROID)
+  TabMatcherAndroid tab_matcher_;
+#else
+  TabMatcherDesktop tab_matcher_;
+#endif
 
   // The |most_visited_sites_| is created upon request. It is created at
   // most once by requesting in MostVisitedSitesProvider when the page
