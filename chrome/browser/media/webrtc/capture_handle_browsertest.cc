@@ -74,8 +74,7 @@ std::string StringifyCaptureHandle(WebContents* web_contents,
 
   std::string origin_str;
   if (expose_origin) {
-    const auto origin =
-        url::Origin::Create(web_contents->GetLastCommittedURL());
+    const auto origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
     origin_str =
         base::StringPrintf(",\"origin\":\"%s\"", origin.Serialize().c_str());
   }
@@ -106,7 +105,7 @@ struct TabInfo {
   }
 
   url::Origin GetOrigin() const {
-    return url::Origin::Create(web_contents->GetLastCommittedURL());
+    return web_contents->GetMainFrame()->GetLastCommittedOrigin();
   }
 
   std::string GetOriginAsString() const { return GetOrigin().Serialize(); }
