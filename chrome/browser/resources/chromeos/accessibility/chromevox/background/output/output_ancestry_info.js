@@ -38,8 +38,10 @@ OutputAncestryInfo = class {
     this.enterAncestors_ = OutputAncestryInfo.byContextFirst_(
         AutomationUtil.getUniqueAncestors(prevNode, node));
     /** @private {!Array<!AutomationNode>} */
-    this.leaveAncestors_ = OutputAncestryInfo.byContextFirst_(
-        AutomationUtil.getUniqueAncestors(node, prevNode));
+    this.leaveAncestors_ =
+        OutputAncestryInfo
+            .byContextFirst_(AutomationUtil.getUniqueAncestors(node, prevNode))
+            .reverse();
     /** @private {!Array<!AutomationNode>} */
     this.endAncestors_ = [];
     /** @private {!Array<!AutomationNode>} */

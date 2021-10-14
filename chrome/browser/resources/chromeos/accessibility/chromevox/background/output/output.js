@@ -1725,10 +1725,19 @@ Output = class {
       buff,
       ruleStr,
       type,
+      ancestors: info.leaveAncestors,
+      formatName: 'leave',
+      exclude: [...info.enterAncestors, node]
+    });
+    this.ancestryHelper_({
+      node,
+      prevNode,
+      buff,
+      ruleStr,
+      type,
       ancestors: info.enterAncestors,
       formatName: 'enter',
-      secondaryAncestors: info.leaveAncestors,
-      secondaryFormatName: 'leave'
+      excludePreviousAncestors: true
     });
 
     if (optionalArgs.suppressStartEndAncestry) {
@@ -1744,8 +1753,17 @@ Output = class {
       type,
       ancestors: info.startAncestors,
       formatName: 'startOf',
-      secondaryAncestors: info.endAncestors,
-      secondaryFormatName: 'endOf'
+      excludePreviousAncestors: true
+    });
+    this.ancestryHelper_({
+      node,
+      prevNode,
+      buff,
+      ruleStr,
+      type,
+      ancestors: info.endAncestors,
+      formatName: 'endOf',
+      exclude: [...info.startAncestors].concat(node)
     });
   }
 
@@ -1758,23 +1776,13 @@ Output = class {
    * ruleStr: !OutputRulesStr,
    * ancestors: !Array<!AutomationNode>,
    * formatName: string,
-   * secondaryAncestors: !Array<!AutomationNode>,
-   * secondaryFormatName: string
+   * exclude: (!Array<!AutomationNode>|undefined),
+   * excludePreviousAncestors: (boolean|undefined)
    * }} args
    * @private
    */
   ancestryHelper_(args) {
-    let {
-      node,
-      prevNode,
-      buff,
-      ruleStr,
-      type,
-      ancestors,
-      formatName,
-      secondaryAncestors,
-      secondaryFormatName
-    } = args;
+    let {node, prevNode, buff, ruleStr, type, ancestors, formatName} = args;
 
     /** Following types are contained: {event, role, navigation, output} */
     const rule = {};
@@ -1783,57 +1791,16 @@ Output = class {
     rule.event = Output.RULES[type] ? type : 'navigate';
     const eventBlock = Output.RULES[rule.event];
 
-    // Hash the roles we've entered.
-    const enteredRoleSet = {};
-    for (let j = ancestors.length - 1, hashNode; (hashNode = ancestors[j]);
-         j--) {
-      enteredRoleSet[hashNode.role] = true;
-    }
-
-    for (let i = 0, secondaryFormatNode;
-         (secondaryFormatNode = secondaryAncestors[i]); i++) {
-      // This prevents very repetitive announcements.
-      if (enteredRoleSet[secondaryFormatNode.role] ||
-          node === secondaryFormatNode) {
-        continue;
-      }
-
-      const secondaryRole = secondaryFormatNode.role;
-      const parentRole =
-          (OutputRoleInfo[secondaryFormatNode.role] || {}).inherits;
-      if (secondaryRole && eventBlock[secondaryRole] &&
-          eventBlock[secondaryRole][secondaryFormatName]) {
-        rule.role = secondaryRole;
-      } else if (
-          parentRole && eventBlock[parentRole] &&
-          eventBlock[parentRole][secondaryFormatName]) {
-        rule.role = parentRole;
-      } else {
-        rule.role = 'default';
-      }
-
-      if (eventBlock[rule.role][secondaryFormatName]) {
-        rule.navigation = secondaryFormatName;
-        ruleStr.writeRule(/** @type {OutputRulesStr.Rule} */ (rule));
-        this.format_({
-          node: secondaryFormatNode,
-          outputFormat: eventBlock[rule.role][secondaryFormatName],
-          outputBuffer: buff,
-          outputRuleString: ruleStr,
-          opt_prevNode: prevNode
-        });
-      }
-    }
+    const excludeRoles =
+        args.exclude ? new Set(args.exclude.map(node => node.role)) : new Set();
 
     // Customize for braille node annotations.
     const originalBuff = buff;
-    const enterRole = {};
     for (let j = ancestors.length - 1, formatNode; (formatNode = ancestors[j]);
          j--) {
-      if (enterRole[formatNode.role]) {
-        continue;
-      }
-      if (this.formattedAncestors_.has(formatNode)) {
+      if (excludeRoles.has(formatNode.role) ||
+          (args.excludePreviousAncestors &&
+           this.formattedAncestors_.has(formatNode))) {
         continue;
       }
 
@@ -1859,7 +1826,7 @@ Output = class {
           }
         }
 
-        enterRole[formatNode.role] = true;
+        excludeRoles.add(formatNode.role);
         ruleStr.writeRule /** @type {OutputRulesStr.Rule} */ ((rule));
         const enterFormat = rule.output ?
             eventBlock[rule.role][formatName][rule.output] :
