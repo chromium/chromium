@@ -2293,9 +2293,6 @@ extern const char kUseAngleGL[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-extern const char kAccountManagementFlowsV2Name[];
-extern const char kAccountManagementFlowsV2Description[];
-
 extern const char kAcceleratedMjpegDecodeName[];
 extern const char kAcceleratedMjpegDecodeDescription[];
 

@@ -23,11 +23,6 @@ const base::Feature kInstantTetheringBackgroundAdvertisementSupport{
 
 }  // namespace
 
-// Enables redesign of account management flows.
-// https://crbug.com/1132472
-const base::Feature kAccountManagementFlowsV2{"AccountManagementFlowsV2",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Adjusts portrait mode split view to avoid the input field in the bottom
 // window being occluded by the virtual keyboard.
 const base::Feature kAdjustSplitViewForVK{"AdjustSplitViewForVK",
@@ -1243,10 +1238,6 @@ bool AreImprovedScreenCaptureSettingsEnabled() {
 
 bool DoWindowsFollowCursor() {
   return base::FeatureList::IsEnabled(kWindowsFollowCursor);
-}
-
-bool IsAccountManagementFlowsV2Enabled() {
-  return base::FeatureList::IsEnabled(kAccountManagementFlowsV2);
 }
 
 bool IsAdjustSplitViewForVKEnabled() {

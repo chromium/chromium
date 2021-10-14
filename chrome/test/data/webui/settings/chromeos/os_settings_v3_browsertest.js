@@ -82,121 +82,7 @@ var OSSettingsNearbyShareSubPageV3Test = class extends OSSettingsV3BrowserTest {
 
 TEST_F('OSSettingsNearbyShareSubPageV3Test', 'All', () => mocha.run());
 
-var OSSettingsPrivacyPageV3Test = class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_privacy_page_test.m.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {disabled: ['chromeos::features::kAccountManagementFlowsV2']};
-  }
-};
-
-var OSSettingsPeoplePageAccountManagerV3Test =
-    class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/people_page_account_manager_test.m.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {disabled: ['chromeos::features::kAccountManagementFlowsV2']};
-  }
-};
-
-TEST_F('OSSettingsPeoplePageAccountManagerV3Test', 'All', () => mocha.run());
-
-var OSSettingsPeoplePageAccountManagerV3TestWithAccountManagementFlowsV2Enabled =
-    class extends OSSettingsPeoplePageAccountManagerV3Test {
-  /** @override */
-  get featureList() {
-    return {enabled: ['chromeos::features::kAccountManagementFlowsV2']};
-  }
-};
-
-TEST_F(
-    'OSSettingsPeoplePageAccountManagerV3TestWithAccountManagementFlowsV2Enabled',
-    'All', () => mocha.run());
-
-TEST_F('OSSettingsPrivacyPageV3Test', 'AllBuilds', () => {
-  mocha.grep('/^(?!PrivacePageTest_OfficialBuild).*$/').run();
-});
-
-GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
-TEST_F('OSSettingsPrivacyPageV3Test', 'PrivacePage_OfficialBuild', () => {
-  mocha.grep('PrivacePageTest_OfficialBuild').run();
-});
-GEN('#endif');
-
-var OSSettingsPrivacyPageV3TestWithAccountManagementFlowsV2Enabled =
-    class extends OSSettingsPrivacyPageV3Test {
-  /** @override */
-  get featureList() {
-    return {enabled: ['chromeos::features::kAccountManagementFlowsV2']};
-  }
-};
-
-TEST_F(
-    'OSSettingsPrivacyPageV3TestWithAccountManagementFlowsV2Enabled',
-    'AllBuilds', () => {
-      mocha.grep('/^(?!PrivacePageTest_OfficialBuild).*$/').run();
-    });
-
-GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
-TEST_F(
-    'OSSettingsPrivacyPageV3TestWithAccountManagementFlowsV2Enabled',
-    'PrivacePage_OfficialBuild', () => {
-      mocha.grep('PrivacePageTest_OfficialBuild').run();
-    });
-GEN('#endif');
-
-var OSSettingsLockScreenPageV3Test = class extends OSSettingsPrivacyPageV3Test {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/lock_screen_tests.m.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {disabled: ['chromeos::features::kAccountManagementFlowsV2']};
-  }
-};
-
-TEST_F('OSSettingsLockScreenPageV3Test', 'AllJsTests', () => {
-  mocha.run();
-});
-
-var OSSettingsLockScreenPageV3TestWithAccountManagementFlowsV2Enabled =
-    class extends OSSettingsLockScreenPageV3Test {
-  /** @override */
-  get featureList() {
-    return {enabled: ['chromeos::features::kAccountManagementFlowsV2']};
-  }
-};
-
-TEST_F(
-    'OSSettingsLockScreenPageV3TestWithAccountManagementFlowsV2Enabled',
-    'AllJsTests', () => {
-      mocha.run();
-    });
-
-var OSSettingsUserPageV3TestWithAccountManagementFlowsV2Enabled =
-    class extends OSSettingsLockScreenPageV3Test {
-  /** @override */
-  get featureList() {
-    return {enabled: ['chromeos::features::kAccountManagementFlowsV2']};
-  }
-};
-
-TEST_F(
-    'OSSettingsUserPageV3TestWithAccountManagementFlowsV2Enabled', 'AllJsTests',
-    () => {
-      mocha.run();
-    });
-
+// eslint-disable-next-line no-var
 var OSSettingsPeoplePageOsSyncV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
@@ -240,43 +126,6 @@ TEST_F('OSSettingsPeoplePageOsSyncOptionalDisabledV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
-
-var OSSettingsPeoplePageV3Test = class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_people_page_test.m.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled,
-      disabled: ['chromeos::features::kAccountManagementFlowsV2'],
-    };
-  }
-};
-
-TEST_F('OSSettingsPeoplePageV3Test', 'AllJsTests', () => {
-  mocha.run();
-});
-
-var OSSettingsPeoplePageV3TestWithAccountManagementFlowsV2Enabled =
-    class extends OSSettingsPeoplePageV3Test {
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled.concat(
-          ['chromeos::features::kAccountManagementFlowsV2']),
-      disabled: [],
-    };
-  }
-};
-
-TEST_F(
-    'OSSettingsPeoplePageV3TestWithAccountManagementFlowsV2Enabled',
-    'AllJsTests', () => {
-      mocha.run();
-    });
 
 // TODO(crbug.com/1234871) Move this test back into the list of tests below once
 // Bluetooth revamp is launched.
@@ -404,6 +253,7 @@ TEST_F('OSSettingsOsBluetoothDeviceDetailSubpageV3Test', 'AllJsTests', () => {
  ['KerberosPage', 'kerberos_page_test.m.js'],
  ['KeyboardShortcutBanner', 'keyboard_shortcut_banner_test.m.js'],
  ['LocalizedLink', 'localized_link_test.m.js'],
+ ['LockScreenPage', 'lock_screen_tests.m.js'],
  ['ManageAccessibilityPage', 'manage_accessibility_page_tests.m.js'],
  // TODO(crbug.com/1227116): Re-enable once flakiness is fixed.
  //  ['MultideviceFeatureItem', 'multidevice_feature_item_tests.m.js'],
@@ -458,6 +308,8 @@ TEST_F('OSSettingsOsBluetoothDeviceDetailSubpageV3Test', 'AllJsTests', () => {
  ['NearbyShareConfirmPage', 'nearby_share_confirm_page_test.m.js'],
  ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.m.js'],
  ['ParentalControlsPage', 'parental_controls_page_test.m.js'],
+ ['PeoplePage', 'os_people_page_test.m.js'],
+ ['PeoplePageAccountManager', 'people_page_account_manager_test.m.js'],
  ['PeoplePageChangePicture', 'people_page_change_picture_test.m.js'],
  [
    'PeoplePageQuickUnlock',
@@ -465,6 +317,7 @@ TEST_F('OSSettingsOsBluetoothDeviceDetailSubpageV3Test', 'AllJsTests', () => {
  ],
  ['PersonalizationPage', 'personalization_page_test.m.js'],
  ['PrintingPage', 'os_printing_page_tests.m.js'],
+ ['PrivacyPage', 'os_privacy_page_test.m.js'],
  ['ResetPage', 'os_reset_page_test.m.js'],
  ['SettingsSchedulerSlider', 'settings_scheduler_slider_test.m.js'],
  ['SearchEngine', 'search_engine_test.m.js'],

@@ -1364,7 +1364,7 @@ bool IsSecureDnsAvailable() {
 void AddPrivacyStrings(content::WebUIDataSource* html_source,
                        Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-    {"privacyPageTitle", IDS_SETTINGS_PRIVACY},
+    {"privacyPageTitle", IDS_SETTINGS_PRIVACY_V2},
     {"privacyPageMore", IDS_SETTINGS_PRIVACY_MORE},
     {"doNotTrack", IDS_SETTINGS_ENABLE_DO_NOT_TRACK},
     {"doNotTrackDialogTitle", IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_TITLE},

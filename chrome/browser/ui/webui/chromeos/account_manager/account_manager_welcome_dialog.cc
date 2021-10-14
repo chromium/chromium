@@ -30,7 +30,6 @@ namespace {
 AccountManagerWelcomeDialog* g_dialog = nullptr;
 constexpr int kSigninDialogWidth = 768;
 constexpr int kSigninDialogHeight = 640;
-constexpr int kMaxNumTimesShown = 1;
 
 }  // namespace
 
@@ -45,26 +44,10 @@ AccountManagerWelcomeDialog::~AccountManagerWelcomeDialog() {
 
 // static
 bool AccountManagerWelcomeDialog::ShowIfRequired() {
-  if (chromeos::features::IsAccountManagementFlowsV2Enabled()) {
-    return false;
-  }
-
-  PrefService* pref_service =
-      ProfileManager::GetActiveUserProfile()->GetPrefs();
-  const int num_times_shown = pref_service->GetInteger(
-      prefs::kAccountManagerNumTimesWelcomeScreenShown);
-  if (num_times_shown >= kMaxNumTimesShown) {
-    return false;
-  }
-
-  if (!ShowIfRequiredInternal()) {
-    return false;
-  }
-
-  pref_service->SetInteger(prefs::kAccountManagerNumTimesWelcomeScreenShown,
-                           num_times_shown + 1);
-
-  return true;
+  // TODO(crbug.com/1259613): Remove the
+  // `prefs::kAccountManagerNumTimesWelcomeScreenShown` pref. Remove the dialog
+  // if `ShowIfRequiredForEduCoexistence` is also not needed.
+  return false;
 }
 
 // static

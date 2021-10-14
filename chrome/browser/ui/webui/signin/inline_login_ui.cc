@@ -205,8 +205,9 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
   source->AddLocalizedStrings(kLocalizedStrings);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  source->AddBoolean("isAccountManagementFlowsV2Enabled",
-                     chromeos::features::IsAccountManagementFlowsV2Enabled());
+  // TODO(crbug.com/1152711): Stop sending this and remove usages from JS/HTML
+  // files.
+  source->AddBoolean("isAccountManagementFlowsV2Enabled", true);
   source->AddBoolean("shouldSkipWelcomePage",
                      profile->GetPrefs()->GetBoolean(
                          chromeos::prefs::kShouldSkipInlineLoginWelcomePage));

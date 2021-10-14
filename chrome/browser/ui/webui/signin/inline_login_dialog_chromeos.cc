@@ -185,9 +185,7 @@ void InlineLoginDialogChromeOS::GetDialogSize(gfx::Size* size) const {
 }
 
 ui::ModalType InlineLoginDialogChromeOS::GetDialogModalType() const {
-  return chromeos::features::IsAccountManagementFlowsV2Enabled()
-             ? ui::MODAL_TYPE_SYSTEM
-             : ui::MODAL_TYPE_NONE;
+  return ui::MODAL_TYPE_SYSTEM;
 }
 
 bool InlineLoginDialogChromeOS::ShouldShowDialogTitle() const {
