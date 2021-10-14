@@ -36,7 +36,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="CrosDisks.ArchiveType" enum="CrosDisksArchiveType"
     expires_after="2022-04-03">
   <owner>fdegros@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     The type of archive file that Chrome OS cros-disks daemon is requested to
     mount.
@@ -46,7 +46,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="CrosDisks.DeviceMediaType" enum="CrosDisksDeviceMediaType"
     expires_after="2022-04-24">
   <owner>fdegros@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     The media type of removable device that Chrome OS cros-disks daemon is
     requested to mount.
@@ -56,7 +56,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="CrosDisks.FilesystemType" enum="CrosDisksFilesystemType"
     expires_after="2022-04-24">
   <owner>fdegros@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     The type of file system that Chrome OS cros-disks daemon is requested to
     mount.
@@ -66,7 +66,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="CrosDisks.Fuse.Archivemount" enum="ArchivemountError"
     expires_after="2022-04-17">
   <owner>fdegros@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     The error code returned by the archivemount program, which is called every
     time a user opens various archive files in ChromeOS Files App.
@@ -76,7 +76,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="CrosDisks.Fuse.FuseZip" enum="FuseZipError"
     expires_after="2022-04-10">
   <owner>fdegros@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     The error code returned by ZIP mounting program fuse-zip, which is called
     every time a user opens a ZIP archive in ChromeOS Files App.
@@ -86,7 +86,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="CrosDisks.Fuse.Rar2fs" enum="Rar2fsError"
     expires_after="2022-04-03">
   <owner>fdegros@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     The error code returned by RAR mounting program rar2fs, which is called
     every time a user opens a RAR archive in ChromeOS Files App.

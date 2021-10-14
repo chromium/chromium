@@ -451,7 +451,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ImageLoader.Client.Cache.HitMiss" enum="BooleanCacheHit"
     expires_after="2019-01-01">
   <owner>tapted@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     For each image load request that requested caching, records whether or not
     it was found in the client-side cache. A hit means the request was not
@@ -462,7 +462,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ImageLoader.Client.Cache.Usage" units="%"
     expires_after="2019-01-01">
   <owner>tapted@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Returns the percentage of the client-side cache that is used for loading
     images, before they are sent to the ImageLoader extension. Expressed as a
@@ -473,7 +473,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ImageLoader.Client.Cached" enum="BooleanRequested"
     expires_after="2019-01-01">
   <owner>tapted@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     For each image load request records whether or not it requested caching.
   </summary>
