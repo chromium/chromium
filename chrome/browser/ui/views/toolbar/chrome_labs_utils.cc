@@ -57,7 +57,7 @@ void UpdateChromeLabsNewBadgePrefs(Profile* profile,
                               chrome_labs_prefs::kChromeLabsNewBadgeDict);
 #endif
 
-  base::DictionaryValue* new_badge_prefs = update.Get();
+  base::Value* new_badge_prefs = update.Get();
 
   std::vector<std::string> lab_internal_names;
   const std::vector<LabInfo>& all_labs = model->GetLabInfo();
@@ -68,19 +68,18 @@ void UpdateChromeLabsNewBadgePrefs(Profile* profile,
     if (IsChromeLabsFeatureValid(lab, profile) &&
         (lab.internal_name != flag_descriptions::kScrollableTabStripFlagId)) {
       lab_internal_names.push_back(lab.internal_name);
-      if (!new_badge_prefs->HasKey(lab.internal_name)) {
-        new_badge_prefs->SetInteger(
+      if (!new_badge_prefs->FindKey(lab.internal_name)) {
+        new_badge_prefs->SetIntKey(
             lab.internal_name,
             chrome_labs_prefs::kChromeLabsNewExperimentPrefValue);
       }
     }
   }
   std::vector<std::string> entries_to_remove;
-  for (base::DictionaryValue::Iterator it(*new_badge_prefs); !it.IsAtEnd();
-       it.Advance()) {
+  for (auto pref : new_badge_prefs->DictItems()) {
     // The size of |lab_internal_names| is capped around 3-5 elements.
-    if (!base::Contains(lab_internal_names, it.key())) {
-      entries_to_remove.push_back(it.key());
+    if (!base::Contains(lab_internal_names, pref.first)) {
+      entries_to_remove.push_back(pref.first);
     }
   }
 
