@@ -303,8 +303,8 @@ TEST_F(MetricsLogTest, Timestamps_OngoingLog) {
   EXPECT_EQ(parsed.time_log_created().time_sec(), 1);
   EXPECT_EQ(parsed.time_log_created().time_source(),
             ChromeUserMetricsExtension::RealLocalTime::CLIENT_CLOCK);
-  // The timezone should be set, but we don't check what it is.
-  EXPECT_TRUE(parsed.time_log_created().has_time_zone_offset_from_gmt_sec());
+  // The timezone should not be set in the time_log_created field.
+  EXPECT_FALSE(parsed.time_log_created().has_time_zone_offset_from_gmt_sec());
   EXPECT_TRUE(parsed.has_time_log_closed());
   EXPECT_EQ(parsed.time_log_closed().time_sec(), 2);
   EXPECT_EQ(parsed.time_log_closed().time_source(),
