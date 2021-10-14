@@ -557,9 +557,6 @@ const char kJavaScriptHarmony[]             = "javascript-harmony";
 // Enables unsafe fast JS calls between Blink and V8.
 const char kEnableUnsafeFastJSCalls[] = "enable-unsafe-fast-js-calls";
 
-// Specifies the flags passed to JS engine.
-const char kJavaScriptFlags[]               = "js-flags";
-
 // Flag to launch tests in the browser process.
 const char kLaunchAsBrowser[] = "as-browser";
 

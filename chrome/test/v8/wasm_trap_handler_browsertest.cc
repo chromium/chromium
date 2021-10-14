@@ -15,6 +15,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/blink/public/common/switches.h"
 
 namespace {
 // |kIsTrapHandlerSupported| indicates whether the trap handler is supported
@@ -86,7 +87,7 @@ class WasmTrapHandlerBrowserTest : public InProcessBrowserTest {
 #if defined(OS_POSIX)
     command_line->AppendSwitch(switches::kEnableCrashReporterForTesting);
 #endif
-    command_line->AppendSwitchASCII(switches::kJavaScriptFlags,
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
                                     "--allow-natives-syntax");
   }
 };

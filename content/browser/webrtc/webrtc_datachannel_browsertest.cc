@@ -5,8 +5,8 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/blink/public/common/switches.h"
 
 namespace {
 
@@ -30,7 +30,7 @@ class WebRtcDataChannelTest : public WebRtcContentBrowserTestBase {
     WebRtcContentBrowserTestBase::SetUpCommandLine(command_line);
     AppendUseFakeUIForMediaStreamFlag();
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kJavaScriptFlags, kJavaScriptFeaturesNeeded);
+        blink::switches::kJavaScriptFlags, kJavaScriptFeaturesNeeded);
   }
 };
 

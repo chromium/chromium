@@ -138,6 +138,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/permissions_policy/policy_value.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
@@ -9873,7 +9874,8 @@ class SitePerProcessBrowserTestWithLeakDetector
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SitePerProcessBrowserTest::SetUpCommandLine(command_line);
     // Using the LeakDetector requires exposing GC.
-    command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--expose-gc");
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    "--expose-gc");
   }
 };
 

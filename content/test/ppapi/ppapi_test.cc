@@ -20,6 +20,7 @@
 #include "media/base/media_switches.h"
 #include "net/base/filename_util.h"
 #include "ppapi/shared_impl/ppapi_switches.h"
+#include "third_party/blink/public/common/switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/audio/cras_audio_handler.h"
@@ -57,7 +58,8 @@ void PPAPITestBase::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kDisableSmoothScrolling);
 
   // Allow manual garbage collection.
-  command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--expose_gc");
+  command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                  "--expose_gc");
 
   command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
 

@@ -110,9 +110,10 @@ IsolateHolder::~IsolateHolder() {
 // static
 void IsolateHolder::Initialize(ScriptMode mode,
                                v8::ArrayBuffer::Allocator* allocator,
-                               const intptr_t* reference_table) {
+                               const intptr_t* reference_table,
+                               const std::string js_command_line_flags) {
   CHECK(allocator);
-  V8Initializer::Initialize(mode);
+  V8Initializer::Initialize(mode, js_command_line_flags);
   g_array_buffer_allocator = allocator;
   g_reference_table = reference_table;
 }

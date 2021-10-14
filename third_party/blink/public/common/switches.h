@@ -16,9 +16,10 @@ namespace switches {
 // alongside the definition of their values in the .cc file.
 BLINK_COMMON_EXPORT extern const char kAllowPreCommitInput[];
 BLINK_COMMON_EXPORT extern const char kBlinkSettings[];
+BLINK_COMMON_EXPORT extern const char kConditionalFocusWindowMs[];
 BLINK_COMMON_EXPORT extern const char kDarkModeSettings[];
-BLINK_COMMON_EXPORT extern const char kDefaultTileWidth[];
 BLINK_COMMON_EXPORT extern const char kDefaultTileHeight[];
+BLINK_COMMON_EXPORT extern const char kDefaultTileWidth[];
 BLINK_COMMON_EXPORT extern const char kDisableImageAnimationResync[];
 BLINK_COMMON_EXPORT extern const char kDisableLowResTiling[];
 BLINK_COMMON_EXPORT extern const char kDisablePartialRaster[];
@@ -30,24 +31,24 @@ BLINK_COMMON_EXPORT extern const char
     kEnableGpuMemoryBufferCompositorResources[];
 BLINK_COMMON_EXPORT extern const char kEnableLowResTiling[];
 BLINK_COMMON_EXPORT extern const char kEnablePreferCompositingToLCDText[];
-BLINK_COMMON_EXPORT extern const char kEnableRGBA4444Textures[];
 BLINK_COMMON_EXPORT extern const char kEnableRasterSideDarkModeForImages[];
+BLINK_COMMON_EXPORT extern const char kEnableRGBA4444Textures[];
 BLINK_COMMON_EXPORT extern const char kEnableZeroCopy[];
 BLINK_COMMON_EXPORT extern const char kGpuRasterizationMSAASampleCount[];
-BLINK_COMMON_EXPORT extern const char kIntensiveWakeUpThrottlingPolicy[];
 BLINK_COMMON_EXPORT extern const char
     kIntensiveWakeUpThrottlingPolicy_ForceDisable[];
 BLINK_COMMON_EXPORT extern const char
     kIntensiveWakeUpThrottlingPolicy_ForceEnable[];
+BLINK_COMMON_EXPORT extern const char kIntensiveWakeUpThrottlingPolicy[];
+BLINK_COMMON_EXPORT extern const char kJavaScriptFlags[];
 BLINK_COMMON_EXPORT extern const char kMaxUntiledLayerHeight[];
 BLINK_COMMON_EXPORT extern const char kMaxUntiledLayerWidth[];
 BLINK_COMMON_EXPORT extern const char kMinHeightForGpuRasterTile[];
 BLINK_COMMON_EXPORT extern const char kNetworkQuietTimeout[];
+BLINK_COMMON_EXPORT extern const char kSharedArrayBufferAllowedOrigins[];
 BLINK_COMMON_EXPORT extern const char kShowLayoutShiftRegions[];
 BLINK_COMMON_EXPORT extern const char kShowPaintRects[];
 BLINK_COMMON_EXPORT extern const char kTouchTextSelectionStrategy[];
-BLINK_COMMON_EXPORT extern const char kSharedArrayBufferAllowedOrigins[];
-BLINK_COMMON_EXPORT extern const char kConditionalFocusWindowMs[];
 BLINK_COMMON_EXPORT extern const char kWebSQLInThirdPartyContextEnabled[];
 
 }  // namespace switches

@@ -51,6 +51,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/display/display_switches.h"
 
 #if defined(USE_AURA)
@@ -205,7 +206,8 @@ void WebViewAPITest::RunTest(const std::string& test_name,
 
 void WebViewAPITest::SetUpCommandLine(base::CommandLine* command_line) {
   AppShellTest::SetUpCommandLine(command_line);
-  command_line->AppendSwitchASCII(::switches::kJavaScriptFlags, "--expose-gc");
+  command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                  "--expose-gc");
 }
 
 void WebViewAPITest::SetUpOnMainThread() {

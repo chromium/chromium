@@ -57,6 +57,7 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -449,7 +450,8 @@ class IndexedDBBrowserTestWithGCExposed : public IndexedDBBrowserTest {
   IndexedDBBrowserTestWithGCExposed() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--expose-gc");
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    "--expose-gc");
   }
 
  private:

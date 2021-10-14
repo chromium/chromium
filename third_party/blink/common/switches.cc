@@ -136,5 +136,9 @@ const char kConditionalFocusWindowMs[] = "conditional-focus-window-ms";
 
 const char kWebSQLInThirdPartyContextEnabled[] =
     "web-sql-in-third-party-context-enabled";
+
+// Specifies the flags passed to JS engine.
+const char kJavaScriptFlags[] = "js-flags";
+
 }  // namespace switches
 }  // namespace blink

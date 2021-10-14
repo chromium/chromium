@@ -54,6 +54,7 @@
 #include "services/network/public/cpp/corb/corb_impl.h"
 #include "services/network/public/cpp/features.h"
 #include "storage/browser/blob/blob_storage_context.h"
+#include "third_party/blink/public/common/switches.h"
 
 namespace content {
 
@@ -827,7 +828,8 @@ class SignedExchangeSubresourcePrefetchBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PrefetchBrowserTestBase::SetUpCommandLine(command_line);
     // For window.gc().
-    command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--expose-gc");
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    "--expose-gc");
   }
 
   void SetUp() override {

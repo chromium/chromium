@@ -24,6 +24,8 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -228,48 +230,10 @@ void SetV8FlagsIfOverridden(const base::Feature& feature,
   }
 }
 
-}  // namespace
-
-// static
-void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
-  static bool v8_is_initialized = false;
-  if (v8_is_initialized)
-    return;
-
-  v8::V8::InitializePlatform(V8Platform::Get());
-
-  // Set this early on as some initialization steps, such as the initialization
-  // of the virtual memory cage, already use V8's random number generator.
-  v8::V8::SetEntropySource(&GenerateEntropy);
-
-#if defined(V8_VIRTUAL_MEMORY_CAGE)
-  static_assert(ARCH_CPU_64_BITS,
-                "V8 virtual memory cage can only work in 64-bit builds");
-  // For now, creating the virtual memory cage is optional, and we only do it
-  // if the correpsonding feature is enabled. In the future, it will be
-  // mandatory when compiling with V8_VIRTUAL_MEMORY_CAGE.
-  bool v8_cage_is_initialized = false;
-  if (base::FeatureList::IsEnabled(features::kV8VirtualMemoryCage)) {
-    v8_cage_is_initialized = v8::V8::InitializeVirtualMemoryCage();
-
-    // Record the size of the virtual memory cage, in GB. The size will always
-    // be a power of two, so we use a sparse histogram to capture it.
-    // If the initialization failed, this API will return zero.
-    // The main reason for capturing this histogram here instead of having V8
-    // do it is that there are no Isolates available yet, which are required
-    // for recording histograms in V8.
-    size_t size = v8::V8::GetVirtualMemoryCageSizeInBytes();
-    int sizeInGB = size >> 30;
-    DCHECK(base::bits::IsPowerOfTwo(size));
-    DCHECK(size == 0 || sizeInGB > 0);
-    base::UmaHistogramSparse("V8.VirtualMemoryCageSizeGB", sizeInGB);
-  }
-#endif
-
+void SetFlags(IsolateHolder::ScriptMode mode,
+              const std::string js_command_line_flags) {
   // We assume that all feature flag defaults correspond to the default
   // values of the coresponding V8 flags.
-  // TODO(cbruni): Fix flag priorities to let --js-flags override feature
-  // flags.
   SetV8FlagsIfOverridden(features::kV8OptimizeJavascript, "--opt", "--no-opt");
   SetV8FlagsIfOverridden(features::kV8FlushBytecode, "--flush-bytecode",
                          "--no-flush-bytecode");
@@ -347,6 +311,59 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");
   }
+
+  if (js_command_line_flags.empty())
+    return;
+
+  // Allow the --js-flags switch to override existing flags:
+  std::vector<base::StringPiece> flag_list =
+      base::SplitStringPiece(js_command_line_flags, ",", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
+  for (const auto& flag : flag_list) {
+    v8::V8::SetFlagsFromString(std::string(flag).c_str(), flag.size());
+  }
+}
+
+}  // namespace
+
+// static
+void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
+                               const std::string js_command_line_flags) {
+  static bool v8_is_initialized = false;
+  if (v8_is_initialized)
+    return;
+
+  v8::V8::InitializePlatform(V8Platform::Get());
+
+  // Set this early on as some initialization steps, such as the initialization
+  // of the virtual memory cage, already use V8's random number generator.
+  v8::V8::SetEntropySource(&GenerateEntropy);
+
+#if defined(V8_VIRTUAL_MEMORY_CAGE)
+  static_assert(ARCH_CPU_64_BITS,
+                "V8 virtual memory cage can only work in 64-bit builds");
+  // For now, creating the virtual memory cage is optional, and we only do it
+  // if the correpsonding feature is enabled. In the future, it will be
+  // mandatory when compiling with V8_VIRTUAL_MEMORY_CAGE.
+  bool v8_cage_is_initialized = false;
+  if (base::FeatureList::IsEnabled(features::kV8VirtualMemoryCage)) {
+    v8_cage_is_initialized = v8::V8::InitializeVirtualMemoryCage();
+
+    // Record the size of the virtual memory cage, in GB. The size will always
+    // be a power of two, so we use a sparse histogram to capture it.
+    // If the initialization failed, this API will return zero.
+    // The main reason for capturing this histogram here instead of having V8
+    // do it is that there are no Isolates available yet, which are required
+    // for recording histograms in V8.
+    size_t size = v8::V8::GetVirtualMemoryCageSizeInBytes();
+    int sizeInGB = size >> 30;
+    DCHECK(base::bits::IsPowerOfTwo(size));
+    DCHECK(size == 0 || sizeInGB > 0);
+    base::UmaHistogramSparse("V8.VirtualMemoryCageSizeGB", sizeInGB);
+  }
+#endif
+
+  SetFlags(mode, js_command_line_flags);
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
   if (g_mapped_snapshot) {

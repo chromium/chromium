@@ -25,8 +25,6 @@
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool/initialization_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -271,16 +269,6 @@ RenderProcessImpl::RenderProcessImpl()
     v8::V8::EnableWebAssemblyTrapHandler(use_v8_signal_handler);
   }
 #endif  // defined(OS_MAC) && defined(ARCH_CPU_X86_64)
-
-  if (command_line->HasSwitch(switches::kJavaScriptFlags)) {
-    std::string js_flags =
-        command_line->GetSwitchValueASCII(switches::kJavaScriptFlags);
-    std::vector<base::StringPiece> flag_list = base::SplitStringPiece(
-        js_flags, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    for (const auto& flag : flag_list) {
-      v8::V8::SetFlagsFromString(std::string(flag).c_str(), flag.size());
-    }
-  }
 }
 
 RenderProcessImpl::~RenderProcessImpl() {

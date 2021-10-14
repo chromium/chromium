@@ -121,6 +121,7 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/display/display_switches.h"
@@ -546,7 +547,8 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--expose-gc");
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    "--expose-gc");
 
     extensions::PlatformAppBrowserTest::SetUpCommandLine(command_line);
   }

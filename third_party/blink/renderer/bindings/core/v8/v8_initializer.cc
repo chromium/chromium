@@ -33,6 +33,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
@@ -750,12 +751,15 @@ V8PerIsolateData::V8ContextSnapshotMode GetV8ContextSnapshotMode() {
 
 }  // namespace
 
-void V8Initializer::InitializeMainThread(const intptr_t* reference_table) {
+void V8Initializer::InitializeMainThread(
+    const intptr_t* reference_table,
+    const std::string js_command_line_flags) {
   DCHECK(IsMainThread());
 
   DEFINE_STATIC_LOCAL(ArrayBufferAllocator, array_buffer_allocator, ());
   gin::IsolateHolder::Initialize(gin::IsolateHolder::kNonStrictMode,
-                                 &array_buffer_allocator, reference_table);
+                                 &array_buffer_allocator, reference_table,
+                                 js_command_line_flags);
 
   ThreadScheduler* scheduler = ThreadScheduler::Current();
 

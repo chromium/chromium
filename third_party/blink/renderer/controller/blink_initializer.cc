@@ -34,9 +34,11 @@
 #include <utility>
 
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/command_line.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
@@ -131,7 +133,11 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
   // BlinkInitializer::Initialize() must be called before InitializeMainThread
   GetBlinkInitializer().Initialize();
 
-  V8Initializer::InitializeMainThread(V8ContextSnapshot::GetReferenceTable());
+  std::string js_command_line_flag =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          blink::switches::kJavaScriptFlags);
+  V8Initializer::InitializeMainThread(V8ContextSnapshot::GetReferenceTable(),
+                                      js_command_line_flag);
 
   GetBlinkInitializer().RegisterInterfaces(*binders);
 

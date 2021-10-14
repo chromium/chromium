@@ -90,6 +90,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "url/gurl.h"
@@ -229,7 +230,7 @@ class RenderFrameHostImplBrowserTest : public ContentBrowserTest {
     // TODO(https://crbug.com/794320): Remove this when the new Java Bridge code
     // is integrated into WebView.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kJavaScriptFlags, "--expose_gc");
+        blink::switches::kJavaScriptFlags, "--expose_gc");
 
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnableBlinkFeatures, "WebOTP");

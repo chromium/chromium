@@ -433,9 +433,9 @@ class RendererSandboxedProcessLauncherDelegateWin
       dynamic_code_can_be_disabled_ = true;
       return;
     }
-    if (cmd_line->HasSwitch(switches::kJavaScriptFlags)) {
+    if (cmd_line->HasSwitch(blink::switches::kJavaScriptFlags)) {
       std::string js_flags =
-          cmd_line->GetSwitchValueASCII(switches::kJavaScriptFlags);
+          cmd_line->GetSwitchValueASCII(blink::switches::kJavaScriptFlags);
       std::vector<base::StringPiece> js_flag_list = base::SplitStringPiece(
           js_flags, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       for (const auto& js_flag : js_flag_list) {
@@ -3352,7 +3352,8 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
   }
 
   if (IsJitDisabled())
-    command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--jitless");
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    "--jitless");
 
 #if defined(OS_WIN)
   command_line->AppendSwitchASCII(
@@ -3461,7 +3462,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kFullMemoryCrashReport,
     switches::kGaiaUrl,
     switches::kIPCConnectionTimeout,
-    switches::kJavaScriptFlags,
     switches::kLogBestEffortTasks,
     switches::kLogFile,
     switches::kLoggingLevel,
@@ -3520,6 +3520,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     blink::switches::kShowLayoutShiftRegions,
     blink::switches::kShowPaintRects,
     blink::switches::kTouchTextSelectionStrategy,
+    blink::switches::kJavaScriptFlags,
     // Please keep these in alphabetical order. Compositor switches here
     // should also be added to
     // chrome/browser/ash/login/chrome_restart_request.cc.

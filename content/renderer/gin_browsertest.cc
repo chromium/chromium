@@ -4,13 +4,13 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/render_view_test.h"
 #include "content/renderer/render_view_impl.h"
 #include "gin/handle.h"
 #include "gin/per_isolate_data.h"
 #include "gin/wrappable.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -50,7 +50,7 @@ class GinBrowserTest : public RenderViewTest {
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kJavaScriptFlags, "--expose_gc");
+        blink::switches::kJavaScriptFlags, "--expose_gc");
 
     RenderViewTest::SetUp();
   }

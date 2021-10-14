@@ -89,12 +89,15 @@ class GIN_EXPORT IsolateHolder {
   // defined and the snapshot file is available, it should be loaded (by calling
   // V8Initializer::LoadV8SnapshotFromFD or
   // V8Initializer::LoadV8Snapshot) before calling this method.
+  // |js_command_line_flags| can contain a comma-separed command line flags
+  // that are passed to V8.
   // If the snapshot file contains customised contexts which have static
   // external references, |reference_table| needs to point an array of those
   // reference pointers. Otherwise, it can be nullptr.
   static void Initialize(ScriptMode mode,
                          v8::ArrayBuffer::Allocator* allocator,
-                         const intptr_t* reference_table = nullptr);
+                         const intptr_t* reference_table = nullptr,
+                         const std::string js_command_line_flags = {});
 
   // Returns whether `Initialize` has already been invoked in the process.
   // Initialization is a one-way operation (i.e., this method cannot return

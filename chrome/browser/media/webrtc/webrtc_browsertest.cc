@@ -27,6 +27,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
 
 #if defined(OS_MAC)
 #include "base/mac/mac_util.h"
@@ -57,7 +58,8 @@ class WebRtcBrowserTest : public WebRtcTestBase {
     EXPECT_FALSE(command_line->HasSwitch(switches::kUseFakeUIForMediaStream));
 
     // Flag used by TestWebAudioMediaStream to force garbage collection.
-    command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--expose-gc");
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    "--expose-gc");
   }
 
   void RunsAudioVideoWebRTCCallInTwoTabs(
