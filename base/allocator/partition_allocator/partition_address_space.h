@@ -78,20 +78,23 @@ class BASE_EXPORT PartitionAddressSpace {
     uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
     return std::make_pair(pool, address_as_uintptr - base);
   }
-  static ALWAYS_INLINE constexpr size_t ConfigurablePoolReservationSize() {
-    return kConfigurablePoolSize;
+  static ALWAYS_INLINE constexpr size_t ConfigurablePoolMaxSize() {
+    return kConfigurablePoolMaxSize;
+  }
+  static ALWAYS_INLINE constexpr size_t ConfigurablePoolMinSize() {
+    return kConfigurablePoolMinSize;
   }
 
   // Initialize the GigaCage and the Pools inside of it.
   // This function must only be called from the main thread.
   static void Init();
-  // Initialize the ConfigurablePool at the given address.
-  // The address must be aligned to the size of the pool. Currently, the size of
-  // the pool must always be ConfigurablePoolReservationSize(). In general, the
-  // size must be less than or equal to kPoolMaxSize and must be a power of two.
-  // This function must only be called from the main thread.
+  // Initialize the ConfigurablePool at the given address.  The address must be
+  // aligned to the size of the pool. The size must be a power of two and must
+  // be within [ConfigurablePoolMinSize(), ConfigurablePoolMaxSize()]. This
+  // function must only be called from the main thread.
   static void InitConfigurablePool(void* address, size_t size);
   static void UninitForTesting();
+  static void UninitConfigurablePoolForTesting();
 
   static ALWAYS_INLINE bool IsInitialized() {
     // Either neither or both non-BRP and BRP pool are initialized. The
@@ -107,7 +110,7 @@ class BASE_EXPORT PartitionAddressSpace {
 
   static ALWAYS_INLINE bool IsConfigurablePoolInitialized() {
     return setup_.configurable_pool_base_address_ !=
-           kConfigurablePoolOffsetMask;
+           kConfigurablePoolInitialBaseAddress;
   }
 
   // Returns false for nullptr.
@@ -127,7 +130,8 @@ class BASE_EXPORT PartitionAddressSpace {
   }
   // Returns false for nullptr.
   static ALWAYS_INLINE bool IsInConfigurablePool(const void* address) {
-    return (reinterpret_cast<uintptr_t>(address) & kConfigurablePoolBaseMask) ==
+    return (reinterpret_cast<uintptr_t>(address) &
+            setup_.configurable_pool_base_mask_) ==
            setup_.configurable_pool_base_address_;
   }
 
@@ -168,13 +172,12 @@ class BASE_EXPORT PartitionAddressSpace {
   // memory cage, which requires that ArrayBuffers be located inside of it.
   static constexpr size_t kNonBRPPoolSize = kPoolMaxSize;
   static constexpr size_t kBRPPoolSize = kPoolMaxSize;
-  static constexpr size_t kConfigurablePoolSize = 4 * kGiB;
-  static_assert(
-      kConfigurablePoolSize <= kPoolMaxSize,
-      "The Configurable Pool must not be larger than the maximum pool size");
+  static constexpr size_t kConfigurablePoolMaxSize = kPoolMaxSize;
+  static constexpr size_t kConfigurablePoolMinSize = 1 * kGiB;
   static_assert(bits::IsPowerOfTwo(kNonBRPPoolSize) &&
                     bits::IsPowerOfTwo(kBRPPoolSize) &&
-                    bits::IsPowerOfTwo(kConfigurablePoolSize),
+                    bits::IsPowerOfTwo(kConfigurablePoolMaxSize) &&
+                    bits::IsPowerOfTwo(kConfigurablePoolMinSize),
                 "Each pool size should be a power of two.");
 
   // Masks used to easy determine belonging to a pool.
@@ -184,20 +187,23 @@ class BASE_EXPORT PartitionAddressSpace {
   static constexpr uintptr_t kBRPPoolOffsetMask =
       static_cast<uintptr_t>(kBRPPoolSize) - 1;
   static constexpr uintptr_t kBRPPoolBaseMask = ~kBRPPoolOffsetMask;
-  static constexpr uintptr_t kConfigurablePoolOffsetMask =
-      static_cast<uintptr_t>(kConfigurablePoolSize) - 1;
-  static constexpr uintptr_t kConfigurablePoolBaseMask =
-      ~kConfigurablePoolOffsetMask;
+
+  // This must be != 0 so that IsInConfigurablePool always returns false
+  // when the pool isn't initialized.
+  static constexpr uintptr_t kConfigurablePoolInitialBaseAddress =
+      static_cast<uintptr_t>(-1);
 
   struct GigaCageSetup {
     // Before PartitionAddressSpace::Init(), no allocation are allocated from a
     // reserved address space. Therefore, set *_pool_base_address_ initially to
-    // k*PoolOffsetMask, so that PartitionAddressSpace::IsIn*Pool() always
+    // k*PoolOffsetMask, or kConfigurablePoolInitialBaseAddress for the
+    // ConfigurablePool, so that PartitionAddressSpace::IsIn*Pool() always
     // returns false.
     constexpr GigaCageSetup()
         : non_brp_pool_base_address_(kNonBRPPoolOffsetMask),
           brp_pool_base_address_(kBRPPoolOffsetMask),
-          configurable_pool_base_address_(kConfigurablePoolOffsetMask),
+          configurable_pool_base_address_(kConfigurablePoolInitialBaseAddress),
+          configurable_pool_base_mask_(0),
           non_brp_pool_(0),
           brp_pool_(0),
           configurable_pool_(0) {}
@@ -208,6 +214,7 @@ class BASE_EXPORT PartitionAddressSpace {
         uintptr_t non_brp_pool_base_address_;
         uintptr_t brp_pool_base_address_;
         uintptr_t configurable_pool_base_address_;
+        uintptr_t configurable_pool_base_mask_;
 
         pool_handle non_brp_pool_;
         pool_handle brp_pool_;

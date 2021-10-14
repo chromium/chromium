@@ -91,11 +91,13 @@ void PartitionAddressSpace::InitConfigurablePool(void* address, size_t size) {
   Init();
 
   PA_CHECK(address);
-  PA_CHECK(size == kConfigurablePoolSize);
+  PA_CHECK(size <= kConfigurablePoolMaxSize);
+  PA_CHECK(size >= kConfigurablePoolMinSize);
   PA_CHECK(bits::IsPowerOfTwo(size));
   PA_CHECK(reinterpret_cast<uintptr_t>(address) % size == 0);
 
   setup_.configurable_pool_base_address_ = reinterpret_cast<uintptr_t>(address);
+  setup_.configurable_pool_base_mask_ = ~(size - 1);
 
   setup_.configurable_pool_ = internal::AddressPoolManager::GetInstance()->Add(
       setup_.configurable_pool_base_address_, size);
@@ -115,11 +117,20 @@ void PartitionAddressSpace::UninitForTesting() {
   // by someone else, but deinitialize it nonetheless.
   setup_.non_brp_pool_base_address_ = kNonBRPPoolOffsetMask;
   setup_.brp_pool_base_address_ = kBRPPoolOffsetMask;
-  setup_.configurable_pool_base_address_ = kConfigurablePoolOffsetMask;
+  setup_.configurable_pool_base_address_ = kConfigurablePoolInitialBaseAddress;
+  setup_.configurable_pool_base_mask_ = 0;
   setup_.non_brp_pool_ = 0;
   setup_.brp_pool_ = 0;
   setup_.configurable_pool_ = 0;
   internal::AddressPoolManager::GetInstance()->ResetForTesting();
+}
+
+void PartitionAddressSpace::UninitConfigurablePoolForTesting() {
+  internal::AddressPoolManager::GetInstance()->Remove(
+      setup_.configurable_pool_);
+  setup_.configurable_pool_base_address_ = kConfigurablePoolInitialBaseAddress;
+  setup_.configurable_pool_base_mask_ = 0;
+  setup_.configurable_pool_ = 0;
 }
 
 #endif  // defined(PA_HAS_64_BITS_POINTERS)

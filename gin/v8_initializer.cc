@@ -29,6 +29,7 @@
 #include "base/system/sys_info.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "gin/gin_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -237,6 +238,10 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
 
   v8::V8::InitializePlatform(V8Platform::Get());
 
+  // Set this early on as some initialization steps, such as the initialization
+  // of the virtual memory cage, already use V8's random number generator.
+  v8::V8::SetEntropySource(&GenerateEntropy);
+
 #if defined(V8_VIRTUAL_MEMORY_CAGE)
   static_assert(ARCH_CPU_64_BITS,
                 "V8 virtual memory cage can only work in 64-bit builds");
@@ -349,7 +354,6 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
   }
 #endif  // V8_USE_EXTERNAL_STARTUP_DATA
 
-  v8::V8::SetEntropySource(&GenerateEntropy);
   v8::V8::Initialize();
 
   v8_is_initialized = true;
@@ -362,14 +366,42 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
     // Pool if it is enabled.
     v8::PageAllocator* cage_page_allocator =
         v8::V8::GetVirtualMemoryCagePageAllocator();
-    size_t pool_size = base::internal::PartitionAddressSpace::
-        ConfigurablePoolReservationSize();
-    void* pool_base = cage_page_allocator->AllocatePages(
-        nullptr, pool_size, pool_size, v8::PageAllocator::kNoAccess);
-    // The V8 cage is guaranteed to be large enough to host the Pool.
+    const size_t max_pool_size =
+        base::internal::PartitionAddressSpace::ConfigurablePoolMaxSize();
+    const size_t min_pool_size =
+        base::internal::PartitionAddressSpace::ConfigurablePoolMinSize();
+    size_t pool_size = max_pool_size;
+#if defined(OS_WIN)
+    // On Windows prior to 8.1 we allocate a smaller Pool since reserving
+    // virtual memory is expensive on these OSes.
+    if (base::win::GetVersion() < base::win::Version::WIN8_1) {
+      // The size chosen here should be synchronized with the size of the
+      // virtual memory reservation for the V8 cage on these platforms.
+      // Currently, that is 8GB, of which 4GB are used for V8's pointer
+      // compression region.
+      // TODO(saelo) give this constant a proper name and maybe move it
+      // somewhere else.
+      constexpr size_t kGB = 1ULL << 30;
+      pool_size = 4ULL * kGB;
+      DCHECK_LE(pool_size, max_pool_size);
+      DCHECK_GE(pool_size, min_pool_size);
+    }
+#endif
+    // Try to reserve the maximum size of the pool at first, then keep halving
+    // the size on failure until it succeeds.
+    void* pool_base = nullptr;
+    while (!pool_base && pool_size >= min_pool_size) {
+      pool_base = cage_page_allocator->AllocatePages(
+          nullptr, pool_size, pool_size, v8::PageAllocator::kNoAccess);
+      if (!pool_base) {
+        pool_size /= 2;
+      }
+    }
+    // The V8 cage is guaranteed to be large enough to host the pool.
     CHECK(pool_base);
     base::internal::PartitionAddressSpace::InitConfigurablePool(pool_base,
                                                                 pool_size);
+    // TODO(saelo) maybe record the size of the Pool into UMA.
   }
 #endif
 }

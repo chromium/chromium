@@ -3584,38 +3584,47 @@ TEST_F(PartitionAllocTest, ConfigurablePool) {
 
   // The rest is only applicable to 64-bit mode
 #if defined(ARCH_CPU_64_BITS)
-  const size_t pool_size =
-      PartitionAddressSpace::ConfigurablePoolReservationSize();
-  void* pool_memory = AllocPages(nullptr, pool_size, pool_size,
-                                 PageInaccessible, PageTag::kPartitionAlloc);
-  EXPECT_NE(nullptr, pool_memory);
-  PartitionAddressSpace::InitConfigurablePool(pool_memory, pool_size);
+  // Repeat the test for every possible Pool size
+  const size_t max_pool_size = PartitionAddressSpace::ConfigurablePoolMaxSize();
+  const size_t min_pool_size = PartitionAddressSpace::ConfigurablePoolMinSize();
+  for (size_t pool_size = max_pool_size; pool_size >= min_pool_size;
+       pool_size /= 2) {
+    DCHECK(bits::IsPowerOfTwo(pool_size));
+    EXPECT_FALSE(IsConfigurablePoolAvailable());
+    void* pool_memory = AllocPages(nullptr, pool_size, pool_size,
+                                   PageInaccessible, PageTag::kPartitionAlloc);
+    EXPECT_NE(nullptr, pool_memory);
+    PartitionAddressSpace::InitConfigurablePool(pool_memory, pool_size);
 
-  EXPECT_TRUE(IsConfigurablePoolAvailable());
+    EXPECT_TRUE(IsConfigurablePoolAvailable());
 
-  auto* root = new base::PartitionRoot<ThreadSafe>({
-      base::PartitionOptions::AlignedAlloc::kDisallowed,
-      base::PartitionOptions::ThreadCache::kDisabled,
-      base::PartitionOptions::Quarantine::kDisallowed,
-      base::PartitionOptions::Cookie::kAllowed,
-      base::PartitionOptions::BackupRefPtr::kDisabled,
-      base::PartitionOptions::UseConfigurablePool::kIfAvailable,
-  });
+    auto* root = new base::PartitionRoot<ThreadSafe>({
+        base::PartitionOptions::AlignedAlloc::kDisallowed,
+        base::PartitionOptions::ThreadCache::kDisabled,
+        base::PartitionOptions::Quarantine::kDisallowed,
+        base::PartitionOptions::Cookie::kAllowed,
+        base::PartitionOptions::BackupRefPtr::kDisabled,
+        base::PartitionOptions::UseConfigurablePool::kIfAvailable,
+    });
 
-  const size_t count = 250;
-  std::vector<void*> allocations(count, nullptr);
-  uintptr_t pool_base = reinterpret_cast<uintptr_t>(pool_memory);
-  for (size_t i = 0; i < count; ++i) {
-    const size_t size = kTestSizes[base::RandGenerator(kTestSizesCount)];
-    allocations[i] = root->Alloc(size, nullptr);
-    EXPECT_NE(nullptr, allocations[i]);
-    uintptr_t allocation_base = reinterpret_cast<uintptr_t>(allocations[i]);
-    EXPECT_TRUE(allocation_base >= pool_base &&
-                allocation_base < pool_base + pool_size);
-  }
+    const size_t count = 250;
+    std::vector<void*> allocations(count, nullptr);
+    uintptr_t pool_base = reinterpret_cast<uintptr_t>(pool_memory);
+    for (size_t i = 0; i < count; ++i) {
+      const size_t size = kTestSizes[base::RandGenerator(kTestSizesCount)];
+      allocations[i] = root->Alloc(size, nullptr);
+      EXPECT_NE(nullptr, allocations[i]);
+      uintptr_t allocation_base = reinterpret_cast<uintptr_t>(allocations[i]);
+      EXPECT_TRUE(allocation_base >= pool_base &&
+                  allocation_base < pool_base + pool_size);
+    }
 
-  for (size_t i = 0; i < count; ++i) {
-    root->Free(allocations[i]);
+    for (size_t i = 0; i < count; ++i) {
+      root->Free(allocations[i]);
+    }
+
+    PartitionAddressSpace::UninitConfigurablePoolForTesting();
+    FreePages(pool_memory, pool_size);
   }
 
 #endif  // defined(ARCH_CPU_64_BITS)
