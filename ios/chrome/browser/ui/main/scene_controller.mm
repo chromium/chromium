@@ -53,8 +53,7 @@
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
 #import "ios/chrome/browser/crash_report/crash_restore_helper.h"
 #import "ios/chrome/browser/first_run/first_run.h"
-#include "ios/chrome/browser/geolocation/omnibox_geolocation_controller.h"
-#import "ios/chrome/browser/geolocation/omnibox_geolocation_controller.h"
+#import "ios/chrome/browser/geolocation/geolocation_logger.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
@@ -878,7 +877,7 @@ bool IsSigninForcedByPolicy() {
 
   // Make sure the geolocation controller is created to observe permission
   // events.
-  [OmniboxGeolocationController sharedInstance];
+  [GeolocationLogger sharedInstance];
 }
 
 // Determines the mode (normal or incognito) the initial UI should be in.

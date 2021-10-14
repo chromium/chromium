@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/geolocation/omnibox_geolocation_controller.h"
+#import "ios/chrome/browser/geolocation/geolocation_logger.h"
 
 #import <CoreLocation/CoreLocation.h>
 
@@ -51,7 +51,7 @@ enum class PermissionStatus {
 
 }  // anonymous namespace
 
-@interface OmniboxGeolocationController () <CLLocationManagerDelegate>
+@interface GeolocationLogger () <CLLocationManagerDelegate>
 
 @property(nonatomic, strong) CLLocationManager* locationManager;
 
@@ -61,11 +61,10 @@ enum class PermissionStatus {
 
 @end
 
-@implementation OmniboxGeolocationController
+@implementation GeolocationLogger
 
-+ (OmniboxGeolocationController*)sharedInstance {
-  static OmniboxGeolocationController* instance =
-      [[OmniboxGeolocationController alloc] init];
++ (GeolocationLogger*)sharedInstance {
+  static GeolocationLogger* instance = [[GeolocationLogger alloc] init];
   return instance;
 }
 
@@ -108,7 +107,7 @@ enum class PermissionStatus {
     (CLLocationManager*)locationManager {
   if (self.permissionStatus == PermissionStatus::kPermissionUnknown)
     return;
- 
+
   if (self.permissionStatus == PermissionStatus::kPermissionNotDetermined) {
     switch (locationManager.authorizationStatus) {
       case kCLAuthorizationStatusNotDetermined:
