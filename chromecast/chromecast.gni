@@ -104,7 +104,7 @@ declare_args() {
   audio_input_sample_rate = 16000
 
   # Whether use unix sockets in Cast input/output stream.
-  use_unix_sockets = is_linux || is_chromeos
+  use_unix_sockets = is_linux || is_chromeos || is_android
 
   # Set to true to enable audio capture service for audio input.
   enable_audio_capture_service = false
