@@ -390,7 +390,16 @@ void ResourceLoader::CodeCacheRequest::MaybeSendCachedCode(
 
   auto ClearCachedCodeIfPresent = [&]() {
     if (data.size() != 0) {
-      resource_loader->ClearCachedCode();
+      auto cache_type = resource_loader->GetCodeCacheType();
+      // TODO(crbug/1245526): Return early if we don't have a valid
+      // code_cache_loader_. This shouldn't happen but looks like we are hitting
+      // this case sometimes. This is a temporary fix to see if it fixes crashes
+      // and we should investigate why the code_cache_loader_ isn't valid here
+      // if this fixes the crashes. It is OK to return early here since the
+      // entry can be cleared on the next fetch.
+      if (!code_cache_loader_)
+        return;
+      code_cache_loader_->ClearCodeCacheEntry(cache_type, url_);
     }
   };
 
@@ -943,11 +952,6 @@ blink::mojom::CodeCacheType ResourceLoader::GetCodeCacheType() const {
 
 void ResourceLoader::SendCachedCodeToResource(mojo_base::BigBuffer data) {
   resource_->SetSerializedCachedMetadata(std::move(data));
-}
-
-void ResourceLoader::ClearCachedCode() {
-  auto cache_type = GetCodeCacheType();
-  Platform::Current()->ClearCodeCacheEntry(cache_type, resource_->Url());
 }
 
 void ResourceLoader::DidSendData(uint64_t bytes_sent,
