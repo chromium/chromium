@@ -95,6 +95,9 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   bool Confirm(const std::string& message) override;
   std::string Prompt(const std::string& question,
                      const std::string& default_answer) override;
+  void SubmitForm(const std::string& url,
+                  const void* data,
+                  int length) override;
   std::vector<SearchStringResult> SearchString(const char16_t* string,
                                                const char16_t* term,
                                                bool case_sensitive) override;
@@ -145,6 +148,8 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
  private:
   bool CanSaveEdits() const;
+
+  void FormDidOpen(int32_t result);
 
   // The Pepper image data that is in sync with mutable_image_data().
   pp::ImageData pepper_image_data_;
