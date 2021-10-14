@@ -23,6 +23,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1104621072296271835">Vaše zariadenia fungujú spoločne ešte lepšie</translation>
 <translation id="1119348796022671382">Farebný režim na základe motívu používa farby získané z tapety, ktorými jemne sfarbí rozhranie.</translation>
 <translation id="112308213915226829">Automatické skrývanie poličky</translation>
+<translation id="1142002900084379065">Najnovšie fotky</translation>
 <translation id="1148499908455722006">Otvoriť dialógové okno informácií o používateľovi <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendár</translation>
 <translation id="1153356358378277386">Spárované zariadenia</translation>
@@ -179,6 +180,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2298170939937364391">Bola zapnutá lupa na celú obrazovku. Vypnete ju opätovným stlačením kombinácie klávesov Ctrl+Hľadať+M.</translation>
 <translation id="2302092602801625023">Tento účet spravuje aplikácia Family Link</translation>
 <translation id="2303600792989757991">Prepnúť prehľad okien</translation>
+<translation id="2318576281648121272">Dnes o <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">Dozadu o písmeno</translation>
 <translation id="2339073806695260576">Klepnite na tlačidlo dotykového pera na poličke a vytvorte poznámku, snímku obrazovky alebo použite laserový ukazovateľ či lupu.</translation>
 <translation id="2341729377289034582">Uzamknuté zvisle</translation>
@@ -200,6 +202,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2435457462613246316">Zobraziť heslo</translation>
 <translation id="24452542372838207">Rozbaliť upozornenie</translation>
 <translation id="2450205753526923158">Režim snímky obrazovky</translation>
+<translation id="2456008742792828469">Kalendár, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Potvrďte rozlíšenie</translation>
 <translation id="2475982808118771221">Vyskytla sa chyba</translation>
 <translation id="2482878487686419369">Upozornenia</translation>
@@ -278,6 +281,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3100274880412651815">Zrušiť režim snímania</translation>
 <translation id="3105917916468784889">Nasnímať obrazovku</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113926042639749131">Odstrániť návrh</translation>
 <translation id="3126069444801937830">Reštartovaním vykonáte aktualizáciu</translation>
 <translation id="3139942575505304791">1. plocha</translation>
 <translation id="315116470104423982">Mobilné dátové prenosy</translation>
@@ -504,6 +508,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4642092649622328492">Vytvorenie čiastočnej snímky obrazovky</translation>
 <translation id="4659419629803378708">Funkcia ChromeVox je povolená</translation>
 <translation id="4665114317261903604">Prepnúť režim bez vyrušení. <ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">Sťahuje sa <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">Odomknutie zariadenia kódom rodiča</translation>
 <translation id="4702647871202761252">Obrazovka ochrany súkromia je vypnutá</translation>
 <translation id="4706121060329443414">K pokusu o stiahnutie dôjde neskôr. Reč bude odoslaná Googlu na spracovanie.</translation>
@@ -641,6 +646,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5744083938413354016">Presunutie klepnutím</translation>
 <translation id="5745612484876805746">Nočný režim sa automaticky zapína pri západe slnka</translation>
 <translation id="5750765938512549687">Rozhranie Bluetooth je vypnuté</translation>
+<translation id="576341972084747908">Sťahovanie nebezpečného súboru <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Nočný režim je zapnutý.</translation>
 <translation id="5769373120130404283">Obrazovka ochrany súkromia</translation>
 <translation id="5777841717266010279">Chcete ukončiť zdieľanie obrazovky?</translation>
@@ -782,6 +788,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6852052252232534364">Aktivovať kliknutím</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Zostáva jedna číslica}few{Zostávajú # číslice}many{# digits remaining}other{Zostáva # číslic}}</translation>
+<translation id="6867938213751067702">Sťahovanie súboru <ph name="FILENAME" /> bolo pozastavené</translation>
 <translation id="6878400149835617132">Skratka je vypnutá</translation>
 <translation id="6886172995547742638">Vaše zariadenie <ph name="DEVICE_TYPE" /> môže mať nižší výkon. Používajte nabíjačku s portom USB-C, ktorá má certifikovaný výkon minimálne <ph name="PREFERRED_MINIMUM_POWER" /> W</translation>
 <translation id="688631446150864480">Ak chcete prepnúť okná, stlačte kláves so šípkou nadol</translation>

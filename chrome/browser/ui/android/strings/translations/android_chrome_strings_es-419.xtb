@@ -404,6 +404,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="3429160811076349561">Las funciones de prueba están desactivadas</translation>
 <translation id="3440975416244667276">Mantén presionado para ver información más relevante</translation>
 <translation id="3443221991560634068">Volver a cargar la página actual</translation>
+<translation id="3444179773590444986">¿Deseas compartir comentarios sobre el Tema oscuro para los sitios?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Se programó 1 descarga.}other{Se programaron # descargas.}}</translation>
 <translation id="3478363558367712427">Puedes elegir tu motor de búsqueda</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre el contenido sugerido</translation>
@@ -585,6 +586,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4663499661119906179">Visualiza los sitios que más visitas y las historias que más lees</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> favoritos eliminados</translation>
 <translation id="4668347365065281350">Todos los datos que almacenan los sitios, incluidas las cookies y otros datos almacenados de forma local</translation>
+<translation id="4678082183394354975">Está activado el Tema oscuro para los sitios de Chrome</translation>
 <translation id="4684427112815847243">Sincronizar todo</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}other{<ph name="SHIPPING_OPTION_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}}</translation>
 <translation id="4696983787092045100">Enviar texto a tus dispositivos</translation>
@@ -766,6 +768,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5754350196967618083">No se puede actualizar Descubre</translation>
 <translation id="5763382633136178763">Pestañas en modo de incógnito</translation>
 <translation id="5763514718066511291">Presiona para copiar la URL para esta app</translation>
+<translation id="5765517223145864268">Cuéntanos tu experiencia. O bien <ph name="BEGIN_LINK" />cambia la configuración<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">Descripción:</translation>
 <translation id="5767013862801005129">Se restableció la pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="5776970333778123608">Datos no importantes</translation>
@@ -953,6 +956,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6738516213925468394">Tus datos se encriptaron con la <ph name="BEGIN_LINK" />frase de contraseña de sincronización<ph name="END_LINK" /> el <ph name="TIME" />. Ingresa la frase para iniciar la sincronización.</translation>
 <translation id="6738867403308150051">Descargando…</translation>
 <translation id="6751521182688001123">Abre rápidamente una nueva pestaña. Para editar este atajo, mantenlo presionado.</translation>
+<translation id="6756507620369789050">Enviar comentarios</translation>
 <translation id="6767294960381293877">La lista de dispositivos con los que se puede compartir una pestaña está abierta a media altura.</translation>
 <translation id="6783942555455976443">Guarda esta página para verla más tarde y establece un recordatorio.</translation>
 <translation id="6795633245022906657">Abre rápidamente una nueva pestaña. Para editar este atajo, ve a Configuración.</translation>
@@ -1044,6 +1048,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Comparte 1 elemento seleccionado}other{Comparte # elementos seleccionados}}</translation>
+<translation id="7356631068872238169">Borrar de Lista de lectura</translation>
 <translation id="7359002509206457351">Acceder a formas de pago</translation>
 <translation id="7375125077091615385">Tipo:</translation>
 <translation id="7376560087009844242">Si incluyes más texto de la página, obtendrás mejores resultados cuando uses la función Tocar para buscar. Puedes cambiar esta opción en la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> en cualquier momento.</translation>
@@ -1214,6 +1219,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8266862848225348053">Ubicación de las descargas</translation>
 <translation id="8274165955039650276">Ver las descargas</translation>
 <translation id="8281886186245836920">Omitir</translation>
+<translation id="8282297628636750033">Aplica el Tema oscuro para sitios (de ser posible)</translation>
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="829672787777123339">Estableciendo conexión con el dispositivo…</translation>
 <translation id="8310344678080805313">Pestañas estándar</translation>
@@ -1345,6 +1351,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="9063523880881406963">Desactivar la opción para solicitar versión de escritorio</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9065383040763568503">Datos almacenados que Chrome no considera importantes (por ejemplo, sitios que no visitas a menudo o sin configuración guardada)</translation>
+<translation id="906781307897697745">en <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">No hay páginas no leídas</translation>
 <translation id="9070377983101773829">Iniciar búsqueda por voz</translation>
 <translation id="9074336505530349563">Para obtener contenido personalizado y sugerido por Google, accede a tu cuenta y activa la sincronización</translation>

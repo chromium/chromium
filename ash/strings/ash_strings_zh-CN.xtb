@@ -23,6 +23,7 @@
 <translation id="1104621072296271835">协同运作可使您的各部设备更好地发挥作用</translation>
 <translation id="1119348796022671382">带主题背景的颜色模式会使用从您壁纸中提取的颜色为界面略施粉黛。</translation>
 <translation id="112308213915226829">自动隐藏任务栏</translation>
+<translation id="1142002900084379065">近期照片</translation>
 <translation id="1148499908455722006">打开“<ph name="USER_NAME" />”的信息对话框</translation>
 <translation id="1150989369772528668">日历</translation>
 <translation id="1153356358378277386">已配对的设备</translation>
@@ -179,6 +180,7 @@
 <translation id="2298170939937364391">已启用全屏放大镜。再按一次 Ctrl+搜索键+M 组合键即可将其停用。</translation>
 <translation id="2302092602801625023">该帐号由 Family Link 管理</translation>
 <translation id="2303600792989757991">“切换窗口”概述</translation>
+<translation id="2318576281648121272">今天 <ph name="TODAY_DATE" /></translation>
 <translation id="2322173485024759474">后退一个字母</translation>
 <translation id="2339073806695260576">点按任务栏中的触控笔按钮即可开始记事、截取屏幕截图以及使用激光笔/放大镜。</translation>
 <translation id="2341729377289034582">已锁定为纵向</translation>
@@ -200,6 +202,7 @@
 <translation id="2435457462613246316">显示密码</translation>
 <translation id="24452542372838207">展开通知</translation>
 <translation id="2450205753526923158">截屏模式</translation>
+<translation id="2456008742792828469">日历，<ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">确认分辨率</translation>
 <translation id="2475982808118771221">出现错误</translation>
 <translation id="2482878487686419369">通知</translation>
@@ -278,6 +281,7 @@
 <translation id="3100274880412651815">关闭截屏/录屏模式</translation>
 <translation id="3105917916468784889">生成屏幕截图</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />（蓝牙）</translation>
+<translation id="3113926042639749131">移除推荐内容</translation>
 <translation id="3126069444801937830">重新启动以进行更新</translation>
 <translation id="3139942575505304791">桌面 1</translation>
 <translation id="315116470104423982">移动数据</translation>
@@ -504,6 +508,7 @@
 <translation id="4642092649622328492">截取局部屏幕截图</translation>
 <translation id="4659419629803378708">已启用 ChromeVox</translation>
 <translation id="4665114317261903604">开启/关闭“勿扰”模式。<ph name="STATE_TEXT" /></translation>
+<translation id="4667099493359681081">正在下载 <ph name="FILENAME" /></translation>
 <translation id="4696813013609194136">使用家长访问代码解锁设备</translation>
 <translation id="4702647871202761252">已关闭隐私保护屏</translation>
 <translation id="4706121060329443414">系统会在晚些时候尝试下载。目前，系统会将语音识别结果文件发送给 Google 进行处理。</translation>
@@ -641,6 +646,7 @@
 <translation id="5744083938413354016">点按拖动</translation>
 <translation id="5745612484876805746">护眼模式会于日落时自动开启</translation>
 <translation id="5750765938512549687">蓝牙已关闭</translation>
+<translation id="576341972084747908">下载的文件 <ph name="FILENAME" /> 存在风险</translation>
 <translation id="576453121877257266">当前已开启护眼模式。</translation>
 <translation id="5769373120130404283">隐私保护屏</translation>
 <translation id="5777841717266010279">要停止屏幕共享吗？</translation>
@@ -782,6 +788,7 @@
 <translation id="6852052252232534364">点击即可启用</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{还差 1 位数字}other{还差 # 位数字}}</translation>
+<translation id="6867938213751067702"><ph name="FILENAME" /> 已暂停下载</translation>
 <translation id="6878400149835617132">快捷方式已关闭</translation>
 <translation id="6886172995547742638">这可能会导致您的 <ph name="DEVICE_TYPE" /> 性能低下。请使用已获认证的不低于 <ph name="PREFERRED_MINIMUM_POWER" />W 的 USB-C 型电源适配器。</translation>
 <translation id="688631446150864480">按向下键即可切换窗口</translation>

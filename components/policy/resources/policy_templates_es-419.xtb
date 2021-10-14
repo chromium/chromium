@@ -78,6 +78,18 @@
 <translation id="1069489575852947981">Si habilitas la política o no la estableces, se definirá una cuenta local del dispositivo para el acceso automático sin tiempos de espera. <ph name="PRODUCT_OS_NAME" /> permitirá usar la combinación de teclas Ctrl+Alt+S para omitir el acceso automático y mostrar la pantalla de acceso.
 
       Si inhabilitas la política, los usuarios no podrán omitir el acceso automático sin tiempos de espera (si se configuró).</translation>
+<translation id="1070656322814001059">Chrome bloqueará la navegación a protocolos externos dentro del
+      iframe de la zona de pruebas. Consulta https://chromestatus.com/features/5680742077038592.
+
+      Si estableces esta política como verdadera, Chrome bloqueará la navegación a esos protocolos.
+
+      Si la estableces como falsa, Chrome no bloqueará la navegación a esos protocolos.
+
+      Esta política se establece de forma predeterminada como verdadera: se habilita la función de seguridad.
+
+      Las empresas afectadas por estas restricciones pueden utilizar esta política
+      para anularlas temporalmente.
+      </translation>
 <translation id="1073983258515362346">Envía información sobre la luz de fondo del dispositivo.
 
       Si se establece la política como falsa o no se establece, no se enviará la información.
@@ -1061,6 +1073,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="2246011554082893079">Controla la disponibilidad de <ph name="BOREALIS_NAME" /> para este dispositivo.
 
       Si estableces la política como falsa, <ph name="BOREALIS_NAME" /> no estará disponible para todos los usuarios del dispositivo. De lo contrario, si no estableces la política o la estableces como verdadera, <ph name="BOREALIS_NAME" /> estará disponible únicamente si no hay otra política o configuración que la inhabilite.</translation>
+<translation id="2246621891161157804">Permitir que Chrome bloquee la navegación a protocolos externos dentro de iframes de la zona de pruebas</translation>
 <translation id="225340736558643885">Habilita las advertencias si se detectan formularios no seguros</translation>
 <translation id="2258126710006312594">Permite que los usuarios con acceso remoto transfieran archivos hacia y desde el host</translation>
 <translation id="2261648512244797294">Inhabilita la impresión Privet obsoleta</translation>
@@ -5245,6 +5258,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7313672174502374994">El hash SHA-256 de la imagen de fondo de pantalla.</translation>
 <translation id="7322825363493984512">La contraseña para autenticar los servicios del sistema contra el proxy web remoto.</translation>
 <translation id="7323896582714668701">Parámetros de línea de comandos adicionales para <ph name="PRODUCT_NAME" /></translation>
+<translation id="7325801934761922681">Impedir que Chrome bloquee la navegación a protocolos externos dentro del iframe de la zona de pruebas</translation>
 <translation id="7326394567531622570">Similar a Wipe (valor 2), pero intenta preservar los tokens de acceso para que el usuario no tenga que volver a acceder.</translation>
 <translation id="7331962793961469250">Cuando la política se configura en Verdadero, las promociones de aplicaciones de Chrome Web Store no aparecen en la nueva pestaña. Cuando esta opción se configura en Falso o cuando no se configura, las promociones de aplicaciones de Chrome Web Store aparecen en la nueva pestaña.</translation>
 <translation id="7332963785317884918">Esta política cayó en desuso. <ph name="PRODUCT_OS_NAME" /> siempre utilizará la estrategia de limpieza "RemoveLRU".
@@ -5383,6 +5397,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7544392541165889987">Si habilitas la política o no la estableces, <ph name="PRODUCT_NAME" /> podrá actuar como proxy entre <ph name="CLOUD_PRINT_NAME" /> y las impresoras heredadas que estén conectadas a la máquina. Cuando utilicen sus Cuentas de Google, los usuarios podrán activar el proxy de impresión en nube mediante la autenticación.
 
       Si inhabilitas la política, los usuarios no podrán activar el proxy, y la máquina no podrá compartir sus impresoras con <ph name="CLOUD_PRINT_NAME" />.</translation>
+<translation id="7546699946724795644">Permitir que Chrome bloquee la navegación a protocolos externos dentro del iframe de la zona de pruebas</translation>
 <translation id="7547549430720182663">Combinar</translation>
 <translation id="7553535237300701827">Según el valor que se establezca para esta política, el flujo de autenticación de acceso será una de las siguientes opciones:
 

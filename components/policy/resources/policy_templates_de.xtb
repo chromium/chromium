@@ -78,6 +78,16 @@
 <translation id="1069489575852947981">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird ein lokales Gerätekonto für die verzögerungsfreie automatische Anmeldung eingerichtet. <ph name="PRODUCT_OS_NAME" /> verwendet die Tastenkombination Strg + Alt + S, um die automatische Anmeldung zu umgehen und stattdessen den Anmeldebildschirm aufzurufen.
 
       Wenn die Richtlinie deaktiviert ist, kann eine verzögerungsfreie automatische Anmeldung, sofern konfiguriert, nicht umgangen werden.</translation>
+<translation id="1070656322814001059">Chrome blockiert das Aufrufen externer Protokolle in einem Sandbox-iFrame. Weitere Informationen finden Sie unter https://chromestatus.com/features/5680742077038592.
+
+      Wird die Richtline auf „true“ gesetzt, blockiert Chrome diese Aufrufe.
+
+      Wird die Richtline auf „false“ gesetzt, kann Chrome diese Aufrufe nicht blockieren.
+
+      Standardmäßig ist der Wert auf „true“ gesetzt: Sicherheitsfunktion aktiviert.
+
+      Sie kann von Unternehmen verwendet werden, die diese Einschränkungen vorübergehend aufheben möchten.
+      </translation>
 <translation id="1073983258515362346">Diese Richtlinie gibt Informationen zur Hintergrundbeleuchtung eines Geräts aus.
 
       Wenn sie auf "false" gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
@@ -1050,6 +1060,7 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 <translation id="2246011554082893079">Steuert die Verfügbarkeit von <ph name="BOREALIS_NAME" /> für dieses Gerät.
 
       Wenn die Richtlinie auf „false“ gesetzt ist, steht <ph name="BOREALIS_NAME" /> Nutzern dieses Geräts nicht zur Verfügung. Wenn die Richtlinie nicht konfiguriert oder auf „true“ gesetzt ist, ist <ph name="BOREALIS_NAME" /> verfügbar, sofern die Richtlinie nicht durch eine andere Richtlinie oder Einstellung außer Kraft gesetzt wird.</translation>
+<translation id="2246621891161157804">Chrome erlauben, das Aufrufen externer Protokolle in einem Sandbox-iFrame zu blockieren</translation>
 <translation id="225340736558643885">Warnmeldungen für nicht sichere Formulare aktivieren</translation>
 <translation id="2258126710006312594">Nutzern mit Remotezugriff die Übertragung von Dateien vom/zum Host gestatten</translation>
 <translation id="2261648512244797294">Veraltetes Drucken über Privet deaktivieren</translation>
@@ -5213,6 +5224,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7313672174502374994">SHA-256-Hash des Hintergrundbilds.</translation>
 <translation id="7322825363493984512">Passwort zur Authentifizierung der Systemdienste für den Remote-Web-Proxy.</translation>
 <translation id="7323896582714668701">Zusätzliche Befehlszeilenparameter für <ph name="PRODUCT_NAME" /></translation>
+<translation id="7325801934761922681">Chrome daran hindern, das Aufrufen externer Protokolle in einem Sandbox-iFrame zu blockieren</translation>
 <translation id="7326394567531622570">Ähnlich wie bei den Werkseinstellungen (Wert 2); hier wird jedoch versucht, die Log-in-Tokens zu übernehmen, sodass der Nutzer sich nicht noch einmal anmelden muss.</translation>
 <translation id="7331962793961469250">Wenn die Option auf "True" gesetzt ist, erscheint Werbung für Chrome Web Store-Apps nicht auf der "Neuer Tab"-Seite. Wenn sie auf "False" eingestellt oder nicht konfiguriert ist, so erscheint Chrome Web Store-Werbung auf der "Neuer Tab"-Seite.</translation>
 <translation id="7332963785317884918">Diese Richtlinie ist veraltet. <ph name="PRODUCT_OS_NAME" /> verwendet immer die "RemoveLRU"-Bereinigungsstrategie.
@@ -5349,6 +5361,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7544392541165889987">Wenn die Richtlinie aktiviert ist oder nicht konfiguriert wird, kann <ph name="PRODUCT_NAME" /> als Proxy zwischen <ph name="CLOUD_PRINT_NAME" /> und älteren Druckern fungieren, die an den Computer angeschlossen sind. Nutzer können den Cloud Print-Proxy durch die Authentifizierung mit ihrem Google-Konto aktivieren.
 
       Ist die Richtlinie deaktiviert, können Nutzer den Proxy nicht aktivieren und die Drucker des Computers können nicht für <ph name="CLOUD_PRINT_NAME" /> freigegeben werden.</translation>
+<translation id="7546699946724795644">Chrome erlauben, das Aufrufen externer Protokolle in einem Sandbox-iFrame zu blockieren</translation>
 <translation id="7547549430720182663">Zusammenführen</translation>
 <translation id="7553535237300701827">Wenn diese Richtlinie konfiguriert ist, verläuft der Authentifizierungsvorgang beim Log-in auf eine der folgenden Arten, abhängig von der festgelegten Einstellung:
 

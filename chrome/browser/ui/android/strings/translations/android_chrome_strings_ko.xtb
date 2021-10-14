@@ -57,6 +57,7 @@
 <translation id="1310482092992808703">탭 그룹화</translation>
 <translation id="1311657260431405215">이 QR 코드(<ph name="QRCODEVALUE" />)는 URL이 아닙니다.</translation>
 <translation id="1316212908214730110">Chrome_스타일_지정된_하이라이트_</translation>
+<translation id="1320912611264252795">북마크 저장 흐름 폴더가 전체 높이로 열림</translation>
 <translation id="1327257854815634930">탐색 기록 열림</translation>
 <translation id="1331212799747679585">Chrome을 업데이트할 수 없습니다. 옵션 더보기</translation>
 <translation id="1332501820983677155">Chrome 기능 단축키</translation>
@@ -83,6 +84,7 @@
 <translation id="1466383950273130737">Chrome 언어 선택</translation>
 <translation id="147113415845704694">"오늘 날씨 어때?"라고 말해 보세요.</translation>
 <translation id="1477626028522505441">서버 문제로 인해 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
+<translation id="148482509007564431">북마크 저장 흐름</translation>
 <translation id="1492417797159476138">이미 사이트에 사용 중인 사용자 이름입니다.</translation>
 <translation id="1493287004536771723"><ph name="SITE_NAME" /> 사이트를 팔로우 중입니다.</translation>
 <translation id="1506061864768559482">검색엔진</translation>
@@ -263,6 +265,7 @@
 <translation id="2631006050119455616">절약</translation>
 <translation id="2645657967708199252"><ph name="CONNECTION_TYPE" /> 연결로 인해 다운로드가 느려질 수 있습니다</translation>
 <translation id="2647434099613338025">언어 추가</translation>
+<translation id="2649068648233607930">내 브라우저는 <ph name="DOMAIN" />에서 관리합니다</translation>
 <translation id="2650751991977523696">파일을 다시 다운로드하시겠습니까?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{오디오 파일 #개}other{오디오 파일 #개}}</translation>
 <translation id="2656405586795711023">웹 앱</translation>
@@ -429,6 +432,7 @@
 <translation id="3602290021589620013">미리보기</translation>
 <translation id="3616113530831147358">오디오</translation>
 <translation id="3622349720008044802">창 관리</translation>
+<translation id="3624977496395967031">정렬 옵션을 열려면 클릭하세요.</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />에 공유하는 중</translation>
 <translation id="3632295766818638029">비밀번호 공개</translation>
 <translation id="363596933471559332">저장된 사용자 인증 정보를 사용하여 자동으로 웹사이트에 로그인합니다. 이 기능이 꺼져 있는 경우에는 웹사이트에 로그인할 때마다 인증 요청 메시지가 표시됩니다.</translation>
@@ -498,6 +502,7 @@
 <translation id="4084682180776658562">북마크</translation>
 <translation id="4084712963632273211">발신자: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Google 제공<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4095146165863963773">앱 데이터를 삭제하시겠습니까?</translation>
+<translation id="4096227151372679484">북마크 저장 흐름이 절반 높이로 열림</translation>
 <translation id="4099578267706723511">사용 통계와 비정상 종료 보고서를 Google로 전송하여 Chrome을 개선하는 데 동참하세요.</translation>
 <translation id="410351446219883937">자동재생</translation>
 <translation id="4108314971463891922">팔로우</translation>
@@ -607,6 +612,7 @@
 <translation id="4766678251456904326">기기에 계정 추가</translation>
 <translation id="4767937498890654900">{FILE_COUNT,plural, =1{다운로드 1개가 예약되었습니다.}other{다운로드 #개가 예약되었습니다.}}</translation>
 <translation id="4791358705705538979">웹에서 결제와 같은 작업을 처리하도록 도와줍니다.</translation>
+<translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다.
 
 이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />하세요.</translation>
@@ -630,6 +636,7 @@
 <translation id="4885273946141277891">지원되지 않는 Chrome 인스턴스 수입니다.</translation>
 <translation id="4905823827770127520">페이지 링크 포함</translation>
 <translation id="4908869848243824489">Google 디스커버</translation>
+<translation id="4909709702739934280">내 브라우저는 관리자가 관리합니다</translation>
 <translation id="4910889077668685004">결제 앱</translation>
 <translation id="4912413785358399818">탭 이동</translation>
 <translation id="4913161338056004800">통계 재설정</translation>
@@ -1155,6 +1162,7 @@
 <translation id="7926975587469166629">카드 닉네임</translation>
 <translation id="7929962904089429003">메뉴 열기</translation>
 <translation id="7930998711684428189">데이터 유출로 인해 비밀번호가 노출된 경우 알립니다.</translation>
+<translation id="7939485076072265087">강조표시한 텍스트에 사용할 스타일 카드 만들기</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />이(가) 이전 버전입니다.</translation>
 <translation id="7944772052836377867">동기화를 위해 본인 인증 필요</translation>
 <translation id="7947953824732555851">수락 및 로그인</translation>
@@ -1274,6 +1282,7 @@
 <translation id="8562452229998620586">저장한 비밀번호가 여기에 표시됩니다.</translation>
 <translation id="856481929701340285">데스크톱 버전으로 보기</translation>
 <translation id="8569404424186215731"><ph name="DATE" />부터</translation>
+<translation id="8570677896027847510">파일을 안전하게 다운로드할 수 없음</translation>
 <translation id="8571213806525832805">지난 4주</translation>
 <translation id="8572344201470131220">이미지 복사됨</translation>
 <translation id="8583805026567836021">계정 데이터 지우기</translation>
@@ -1326,6 +1335,7 @@
 <translation id="8912362522468806198">Google 계정</translation>
 <translation id="8920114477895755567">부모님의 세부정보를 기다리는 중</translation>
 <translation id="8922289737868596582">옵션 더보기 버튼을 눌러 페이지를 다운로드하여 오프라인에서 사용하세요.</translation>
+<translation id="8924575305646776101"><ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> 사용 가능</translation>
 <translation id="8928626432984354940">북마크 폴더 목록이 절반 높이로 열림</translation>
 <translation id="8937267401510745927">작업 처리를 돕기 위해 내가 어시스턴트를 통해 제출한 정보뿐만 아니라 어시스턴트를 이용한 사이트의 URL과 콘텐츠도 Google에 전송됩니다. 이 정보는 Google 계정에 저장될 수 있습니다. Chrome 설정에서 어시스턴트를 사용 중지할 수 있습니다.</translation>
@@ -1361,8 +1371,10 @@
 <translation id="9086455579313502267">네트워크에 액세스할 수 없습니다.</translation>
 <translation id="9100505651305367705">지원되는 경우 간단히 보기로 기사를 표시하는 기능 제공</translation>
 <translation id="9100610230175265781">암호를 입력해야 합니다.</translation>
+<translation id="9101137867221042551">관리</translation>
 <translation id="9102803872260866941">미리보기 탭 열림</translation>
 <translation id="9104217018994036254">탭을 공유할 기기 목록입니다.</translation>
+<translation id="9106148373857059373">북마크 저장 흐름 닫힘</translation>
 <translation id="9108312223223904744">휴대전화를 보안 키로 사용 지원</translation>
 <translation id="9108808586816295166">보안 DNS가 항상 제공되지는 않을 수도 있습니다.</translation>
 <translation id="9133397713400217035">오프라인 탐색</translation>

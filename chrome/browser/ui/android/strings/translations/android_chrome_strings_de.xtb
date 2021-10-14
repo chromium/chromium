@@ -404,6 +404,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3429160811076349561">Testfunktionen sind deaktiviert</translation>
 <translation id="3440975416244667276">Für mehr relevante Informationen berühren und halten</translation>
 <translation id="3443221991560634068">Aktuelle Seite neu laden</translation>
+<translation id="3444179773590444986">Feedback zu dunklem Design für Websites teilen?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 Download geplant}other{# Downloads geplant}}</translation>
 <translation id="3478363558367712427">Sie können Ihre Suchmaschine auswählen</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /> zu vorgeschlagenen Inhalten</translation>
@@ -585,6 +586,7 @@ Eventuell finden Sie unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4663499661119906179">Personalisierte Top-Websites und Meldungen ansehen</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> Lesezeichen gelöscht</translation>
 <translation id="4668347365065281350">Alle von Websites gespeicherten Daten, einschließlich Cookies und anderer lokal gespeicherter Daten</translation>
+<translation id="4678082183394354975">Dunkles Design für Websites in Chrome aktiviert</translation>
 <translation id="4684427112815847243">Alles synchronisieren</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> weitere}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> weitere}}</translation>
 <translation id="4696983787092045100">SMS an meine Geräte senden</translation>
@@ -766,6 +768,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5754350196967618083">Discover kann nicht aktualisiert werden</translation>
 <translation id="5763382633136178763">Inkognito-Tabs</translation>
 <translation id="5763514718066511291">Tippen, um die URL für diese App zu kopieren</translation>
+<translation id="5765517223145864268">Sagen Sie uns Ihre Meinung zum dunklen Design. Oder <ph name="BEGIN_LINK" />ändern Sie Ihre Einstellungen<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">Beschreibung:</translation>
 <translation id="5767013862801005129"><ph name="TAB_TITLE" />-Tab wiederhergestellt</translation>
 <translation id="5776970333778123608">Unwichtige Daten</translation>
@@ -953,6 +956,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6738516213925468394">Ihre Daten wurden am <ph name="TIME" /> mit Ihrer <ph name="BEGIN_LINK" />Synchronisierungspassphrase<ph name="END_LINK" /> verschlüsselt. Geben Sie diese ein, um die Synchronisierung zu starten.</translation>
 <translation id="6738867403308150051">Wird heruntergeladen...</translation>
 <translation id="6751521182688001123">Öffnet schnell einen neuen Tab. Zum Ändern Schaltfläche gedrückt halten.</translation>
+<translation id="6756507620369789050">Feedback geben</translation>
 <translation id="6767294960381293877">Die Liste von Geräten, mit denen ein Tab geteilt werden kann, ist halb geöffnet.</translation>
 <translation id="6783942555455976443">Diese Seite für später speichern und eine Erinnerung erhalten</translation>
 <translation id="6795633245022906657">Öffnet schnell einen neuen Tab. Wenn Sie diese Verknüpfung bearbeiten möchten, rufen Sie die Einstellungen auf.</translation>
@@ -1044,6 +1048,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7352651011704765696">Ein Problem ist aufgetreten.</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{1 ausgewähltes Element teilen}other{# ausgewählte Elemente teilen}}</translation>
+<translation id="7356631068872238169">Von der Leseliste löschen</translation>
 <translation id="7359002509206457351">Auf Zahlungsmethoden zugreifen</translation>
 <translation id="7375125077091615385">Typ:</translation>
 <translation id="7376560087009844242">Wenn Sie mehr Text einer Seite einschließen, können Sie beim Verwenden von „Zum Suchen antippen“ bessere Ergebnisse erhalten. In den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> können Sie das jederzeit ändern.</translation>
@@ -1214,6 +1219,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8266862848225348053">Downloadpfad</translation>
 <translation id="8274165955039650276">Downloads aufrufen</translation>
 <translation id="8281886186245836920">Überspringen</translation>
+<translation id="8282297628636750033">Dunkles Design auf Websites anwenden</translation>
 <translation id="8284326494547611709">Untertitel</translation>
 <translation id="829672787777123339">Verbindung zu Ihrem Gerät wird hergestellt…</translation>
 <translation id="8310344678080805313">Standard-Tabs</translation>
@@ -1345,6 +1351,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="9063523880881406963">"Desktopversion ansehen" deaktivieren</translation>
 <translation id="9065203028668620118">Bearbeiten</translation>
 <translation id="9065383040763568503">Gespeicherte Daten, die Chrome nicht für wichtig hält, wie etwa Websites ohne gespeicherte Einstellungen oder solche, die nicht oft besucht werden</translation>
+<translation id="906781307897697745">in <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Keine ungelesenen Seiten</translation>
 <translation id="9070377983101773829">Sprachsuche starten</translation>
 <translation id="9074336505530349563">Melden Sie sich und aktivieren Sie die Synchronisierung, um personalisierte, von Google vorgeschlagene Inhalte zu erhalten</translation>

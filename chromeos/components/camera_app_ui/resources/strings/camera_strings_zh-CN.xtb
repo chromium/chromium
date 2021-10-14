@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1113173431709655881">相机模式</translation>
 <translation id="1175958423215084756">检测到链接。<ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">图库图片</translation>
 <translation id="1300209025925956156">扫描您的文件</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">开始录制</translation>
 <translation id="2599796128805996109">后置摄像头</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> 秒</translation>
+<translation id="2761536921376153655">扫描类型</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" />已插入。</translation>
 <translation id="2968794441791257519">使用此相机拍摄的照片和视频将被移至“下载内容”文件夹。您可在“文件”中访问它们。
 
@@ -99,9 +101,11 @@
 <translation id="698156982839284926">3 秒</translation>
 <translation id="712848772518857951">确定要移除这 <ph name="COUNT" /> 个文件吗？</translation>
 <translation id="7134221860976209830">10 秒定时器</translation>
+<translation id="7191890674911603392">录制类型</translation>
 <translation id="7243947652761655814">视频分辨率</translation>
 <translation id="7337660886763914220">文件系统出错。</translation>
 <translation id="7450541714075000668">文本已复制</translation>
+<translation id="7476762461674917065">显示 GIF 录制选项</translation>
 <translation id="7488619942230388918">录制 GIF 视频</translation>
 <translation id="7557677699350329807">切换到下一个摄像头</translation>
 <translation id="7607002721634913082">已暂停</translation>

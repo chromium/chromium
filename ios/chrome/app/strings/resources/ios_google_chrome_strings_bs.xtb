@@ -3,7 +3,7 @@
 <translationbundle lang="bs">
 <translation id="1096883626080133124">Obavite više s jednostavnim i sigurnim Google Chromeom koji je brži nego ikad</translation>
 <translation id="1282031177488366470">Pomozite nam da poboljšamo funkcije i performanse Chromea</translation>
-<translation id="1354592789402432496">Vaš administrator zahtijeva da se prijavite organizacijskim računom. Računi koje administrator ograničava skriveni su.</translation>
+<translation id="1354592789402432496">Vaš administrator zahtijeva da se prijavite pomoću računa organizacije. Računi koje je ograničio vaš administrator su skriveni.</translation>
 <translation id="1479202195792305274">Chrome može provjeravati vaše lozinke kada se prijavite pomoću Google računa.</translation>
 <translation id="1493827051843127077">Postavite Chrome kao zadani preglednik da sinhronizirate kartice, lozinke i informacije o plaćanju na svim uređajima</translation>
 <translation id="1504372625950710826">Chrome nije mogao provjeriti ima li ažuriranja. Predlažemo da provjerite internetsku vezu.</translation>
@@ -46,7 +46,7 @@
 <translation id="3988789688219830639">Google Chrome nema pristup vašim fotografijama ili videozapisima. Omogućite pristup u meniju iOS postavke &gt; Privatnost &gt; Fotografije.</translation>
 <translation id="4099578267706723511">Poboljšajte Chrome šaljući Googleu statistike upotrebe i izvješća o rušenju.</translation>
 <translation id="417201473131094001">Nije podržano na Chrome Canaryju</translation>
-<translation id="4214277427269650960">Prijavite se na ovu web-lokaciju i Chrome. Sinkronizaciju možete uključiti kasnije.</translation>
+<translation id="4214277427269650960">Prijavite se na ovu web lokaciju i u Chrome. Sinhronizaciju možete uključiti kasnije.</translation>
 <translation id="424864128008805179">Odjaviti se iz Chromea?</translation>
 <translation id="4249068189593983585">Savjet za Chrome. Za više opcija za kartice dodirnite i zadržite dugme Prikaži kartice na alatnoj traci, na dnu ili na vrhu ekrana.</translation>
 <translation id="4523886039239821078">Zbog nekih dodataka Chrome može prestati da radi. Deinstalirajte:</translation>
@@ -61,7 +61,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Van mreže, Chrome ne može provjeravati ima li ažuriranja</translation>
 <translation id="5716154293141027663">Otvorite Chrome kad god dodirnete linkove u drugim aplikacijama</translation>
-<translation id="572883588166315317">Vaša organizacija zahtijeva da se prijavite da biste koristili Chrome. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" />.</translation>
+<translation id="572883588166315317">Vaša organizacija zahtijeva da se prijavite da koristite Chrome. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" />.</translation>
 <translation id="5854621639439811139">Chrome savjet. Neka dugmad se sada nalaze na dnu ekrana, kao što su dugmad za nazad, naprijed i pretraživanje.</translation>
 <translation id="5876773482963502140">Ako dozvolite Chromeu da zna vašu lokaciju, poslat će je svim web lokacijama koje dozvolite. Web lokacije mogu tražiti vašu lokaciju kada imaju lokalne informacije koje vam mogu prikazati, kao što su prodavnice u blizini ili vijesti.</translation>
 <translation id="5998675059699164418">Vaša organizacija zahtijeva da se prijavite da koristite Chrome.</translation>

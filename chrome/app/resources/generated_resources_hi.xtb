@@ -590,6 +590,7 @@
 <translation id="1612019740169791082">डिस्क का साइज़ बदलने के लिए आपके कंटेनर को कॉन्फ़िगर नहीं किया गया है. Linux के लिए पहले से तय की गई जगह में बदलाव करने के लिए, उसका बैक अप लें. इसके बाद, उसे नए कंटेनर में फिर से सेव करें.</translation>
 <translation id="1614511179807650956">आपने शायद तय सीमा तक मोबाइल डेटा का इस्तेमाल कर लिया है. और डेटा खरीदने के लिए <ph name="NAME" /> ऐक्टिवेशन पोर्टल पर जाएं</translation>
 <translation id="161460670679785907">आपका फ़ोन नहीं मिल पा रहा है</translation>
+<translation id="1615337439947999338">अपने Google खाते (<ph name="EMAIL" />) में सेव करें</translation>
 <translation id="1615402009686901181">एडमिन नीति के तहत, गोपनीय कॉन्टेंट दिखने पर स्क्रीन कैप्चर की सुविधा बंद कर दी जाती है</translation>
 <translation id="1616206807336925449">इस एक्‍सटेंशन को किसी विशेष अनुमति की आवश्‍यकता नहीं है.</translation>
 <translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" एक्‍सटेंशन को आयात नहीं किया जा सका, क्‍योंकि वह एक शेयर किया गया मॉड्यूल नहीं है</translation>
@@ -928,6 +929,7 @@
 <translation id="1929546189971853037">अपने प्रवेश किए हुए सभी डिवाइस पर अपना ब्राउज़िंग इतिहास पढ़ें</translation>
 <translation id="1930879306590754738">आपके Google खाते और इस डिवाइस से पासवर्ड को मिटा दिया गया है</translation>
 <translation id="1931152874660185993">कोई घटक इंस्टॉल नहीं.</translation>
+<translation id="1931410639376954712"><ph name="DEVICE_OS" /> इंस्टॉल हो रहा है</translation>
 <translation id="1932098463447129402">पहले नहीं</translation>
 <translation id="1935303383381416800">आपकी जगह की जानकारी देखने की अनुमति है</translation>
 <translation id="1936931585862840749">बताएं कि आपको कितनी कॉपी प्रिंट करनी है (1 से <ph name="MAX_COPIES" />).</translation>
@@ -1060,6 +1062,7 @@
 <translation id="208586643495776849">कृपया दोबारा कोशिश करें</translation>
 <translation id="208634871997892083">हमेशा-चालू वीपीएन</translation>
 <translation id="2087822576218954668">प्रिंट: <ph name="PRINT_NAME" /></translation>
+<translation id="2088092308059522196"><ph name="DEVICE_OS" /> इंस्टॉल करने के बाद ही डिवाइस का नाम दर्ज किया जा सकता है.</translation>
 <translation id="208928984520943006">किसी भी समय होम स्क्रीन पर जाने के लिए, स्क्रीन के सबसे निचले हिस्से से ऊपर की ओर स्वाइप करें.</translation>
 <translation id="2089566709556890888">Google Chrome के ज़रिए सुरक्षित रूप से ब्राउज़ करें</translation>
 <translation id="2089795179672254991">जब कोई साइट क्लिपबोर्ड पर कॉपी किए गए लेख और इमेज देखना चाहे, तो इसके लिए पूछें (सुझाया गया)</translation>
@@ -1184,6 +1187,7 @@
 <translation id="2203088913459920044">नाम में अक्षर, संख्याएं, और विशेष वर्ण इस्तेमाल किए जा सकते हैं</translation>
 <translation id="2204034823255629767">आप जो कुछ भी लिखते हैं उसे पढ़ें और बदलें</translation>
 <translation id="220858061631308971">कृपया इस पिन कोड को "<ph name="DEVICE_NAME" />" पर दर्ज करें:</translation>
+<translation id="2210462644007531147">इंस्टॉल नहीं किया जा सका</translation>
 <translation id="2212565012507486665">कुकी की अनुमति दें</translation>
 <translation id="2214018885812055163">शेयर किया गया फ़ोल्डर</translation>
 <translation id="2214884991347062907">पासवर्ड गलत है. फिर से कोशिश करें</translation>
@@ -1240,6 +1244,8 @@
 <translation id="22665427234727190">जब कोई साइट ब्लूटूथ डिवाइस ऐक्सेस करना चाहे, तो इसके लिए पूछें (सुझाया गया)</translation>
 <translation id="2266957463645820432">यूएसबी पर IPP (IPPUSB)</translation>
 <translation id="2270450558902169558"><ph name="DOMAIN" /> डोमेन के किसी भी डिवाइस से डेटा का लेन-देन करें</translation>
+<translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />इंस्टॉल करने पर, <ph name="BEGIN_BOLD" />आपकी हार्ड ड्राइव का सारा डेटा हमेशा के लिए मिटा दिया जाएगा<ph name="END_BOLD" />. पक्का करें कि आपके डेटा का बैक अप ले लिया गया है.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />इंस्टॉल करना शुरू करने के बाद, रद्द नहीं किया जा सकता.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">इन डोमेन के किसी भी डिवाइस से डेटा का लेन-देन करें: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">“चुनें” कार्रवाई के लिए स्विच असाइन करें</translation>
 <translation id="2271469253353559191">गहरे रंग वाला मोड शेड्यूल करें</translation>
@@ -1501,6 +1507,7 @@
 <translation id="2521854691574443804">आपके संगठन की सुरक्षा नीतियों के मुताबिक <ph name="FILE_NAME" /> की जांच की जा रही है...</translation>
 <translation id="252219247728877310">घटक अपडेट नहीं किया गया</translation>
 <translation id="2523184218357549926">आप जिन पेजों पर जाते हैं उनके यूआरएल Google को भेजती है</translation>
+<translation id="252418934079508528"><ph name="DEVICE_OS" /> को इंस्टॉल करें</translation>
 <translation id="252502352004572774">Chrome आपके कंप्यूटर की जांच करके पता लगा रहा है कि उसमें खतरनाक सॉफ़्टवेयर तो नहीं है...</translation>
 <translation id="2526590354069164005">डेस्कटॉप</translation>
 <translation id="2526619973349913024">देखें कि अपडेट उपलब्ध हैं या नहीं</translation>
@@ -1704,6 +1711,7 @@
 <translation id="2740531572673183784">ठीक है</translation>
 <translation id="2741713322780029189">वापस पाने वाला टर्मिनल खोलें</translation>
 <translation id="2741912629735277980">लाॅगिन स्क्रीन पर यूज़र इंटरफ़ेस (यूआई) दिखाएं</translation>
+<translation id="2742448780373473567"><ph name="DEVICE_OS" /> इंस्टॉल करने से, आपकी हार्ड ड्राइव का सारा पुराना डेटा मिट जाएगा.</translation>
 <translation id="274290345632688601">Linux ऐप्लिकेशन और फ़ाइलें इंपोर्ट की जा रही हैं</translation>
 <translation id="274318651891194348">कीबोर्ड खोजा जा रहा है</translation>
 <translation id="2743387203779672305">क्लिपबोर्ड में कॉपी करें</translation>
@@ -2895,6 +2903,8 @@
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> चालू करें</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" /> तक आस-पास के डिवाइस को <ph name="DEVICE_NAME" /> के तौर पर दिखेगा...</translation>
 <translation id="3981760180856053153">सेव करने का गलत तरीका दर्ज किया गया.</translation>
+<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />कोई गड़बड़ी हुई है और <ph name="DEVICE_OS" /> इंस्टॉल नहीं किया जा सका.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ज़्यादा मदद के लिए, इस पर जाएं: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">कुछ आसान चरणों में अपना ब्राउज़र सेट करें</translation>
 <translation id="3983400541576569538">शायद कुछ ऐप्लिकेशन का डेटा खो गया है</translation>
 <translation id="3983586614702900908">किसी अज्ञात विक्रेता के डिवाइस</translation>
@@ -2982,6 +2992,7 @@
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> बंद करें</translation>
 <translation id="4085270836953633510">जब कोई साइट सीरियल पाेर्ट ऐक्सेस करना चाहे, तो इसके लिए पूछें</translation>
 <translation id="4085298594534903246">इस पेज पर JavaScript को अवरोधित कर दिया गया था.</translation>
+<translation id="4085947337119280756">अन्य एक्सटेंशन</translation>
 <translation id="4087089424473531098">एक्सटेंशमन बनाया गया:
 
 <ph name="EXTENSION_FILE" />￼</translation>
@@ -3285,6 +3296,7 @@
 <translation id="4449996769074858870">यह टैब ऑडियो चला रहा है.</translation>
 <translation id="4450274068924249931">जब डिवाइस की स्क्रीन इस्तेमाल में न हो, तब उस पर फ़ोटो, समय, मौसम, और मीडिया की जानकारी दिखाएं. स्क्रीन सेवर चालू करने पर, डिवाइस चार्ज होने के दौरान आपका डिसप्ले चालू रहेगा.</translation>
 <translation id="4450974146388585462">निदान करें</translation>
+<translation id="445099924538929605"><ph name="DEVICE_OS" /> ने एक ऐसे चालू TPM का पता लगाया है जो डेटा को ज़्यादा सुरक्षित तरीके से सेव कर सकता है.</translation>
 <translation id="4451479197788154834">आपका पासवर्ड इस डिवाइस और आपके Google खाते में सेव हो गया है</translation>
 <translation id="4451757071857432900">उन साइटों पर ब्लॉक है जिन पर तंग करने वाले या गुमराह करने वाले विज्ञापन दिखाई देते हैं (सुझाव)</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> पर खोजें या कोई यूआरएल लिखें</translation>
@@ -3787,6 +3799,9 @@
 <translation id="4992473555164495036">आपके एडमिन ने इनपुट के उपलब्ध तरीके सीमित किए हुए हैं.</translation>
 <translation id="4994474651455208930">साइटों को प्रोटोकॉल के लिए सामान्य हैंडलर बनने के लिए पूछने की अनुमति दें</translation>
 <translation id="4994754230098574403">सेट अप किया जा रहा है</translation>
+<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />नाम दर्ज करने से पहले, आपको TPM हटाना होगा, ताकि <ph name="DEVICE_OS" /> को डिवाइस का मालिकाना हक़ मिल सके.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />आप TPM डिवाइस को पूरी तरह बंद भी कर सकते हैं. आपका डेटा, सॉफ़्टवेयर एन्क्रिप्ट (सुरक्षित) करने के तरीके की मदद से सुरक्षित सेव कर लिया जाएगा. हालांकि, हार्डवेयर-बैक्ड सर्टिफ़िकेट जैसी सुरक्षा से जुड़ी सुविधाएं बंद कर दी जाएंगी.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />आप अपनी TPM सेटिंग बदल सकते हैं. इसके लिए, आपको सेटिंग को फिर से चालू करके, सिस्टम BIOS/UEFI सेटिंग डालनी होगी. डिवाइस मॉडल के आधार पर तरीके अलग-अलग हो सकते हैं. ज़्यादा जानकारी के लिए, फिर से चालू करने से पहले, <ph name="DEVICE_OS" /> दस्तावेज़ को किसी अलग डिवाइस पर खोलें: [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> का कोई वीएम नहीं मिला}=1{<ph name="VM_TYPE" /> का 1 वीएम मिला: <ph name="VM_NAME_LIST" />}one{<ph name="VM_TYPE" /> का {NUM_VMS} वीएम मिला: <ph name="VM_NAME_LIST" />}other{<ph name="VM_TYPE" /> के {NUM_VMS} वीएम मिले: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">कोई इंटरनेट कनेक्शन नहीं.</translation>
 <translation id="4998430619171209993">चालू है</translation>
@@ -3902,6 +3917,7 @@
 <translation id="5127620150973591153">सुरक्षित कनेक्शन आईडी: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">समन्वयन बंद है</translation>
 <translation id="5127881134400491887">नेटवर्क कनेक्शन प्रबंधित करें</translation>
+<translation id="5128774403617662387">शुरू करने से पहले, पक्का करें कि आपने डेटा का बैक अप ले लिया है. <ph name="DEVICE_OS" /> इंस्टॉल करने से, आपकी हार्ड ड्राइव का सारा पुराना डेटा मिट जाएगा. g.co/TBD पर जाकर ज़्यादा जानें.</translation>
 <translation id="512903556749061217">अनुलग्न</translation>
 <translation id="5130080518784460891">ईटेन</translation>
 <translation id="5130675701626084557">प्रोफ़ाइल को डाउनलोड नहीं किया जा सका. कृपया बाद में कोशिश करें या मदद के लिए, मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
@@ -4336,6 +4352,7 @@
 <translation id="5592595402373377407">अभी काफ़ी डेटा उपलब्ध नहीं है.</translation>
 <translation id="5595485650161345191">पते में बदलाव करें</translation>
 <translation id="5596627076506792578">ज़्यादा विकल्प</translation>
+<translation id="5600348067066185292">कुछ आसान तरीकों से इंस्टॉल करें. आपके कंप्यूटर में बदलाव किए जाने से पहले, आपको पुष्टि करने का एक मौका और मिलेगा.</translation>
 <translation id="5600706100022181951">अपडेट को डाउनलोड करने में <ph name="UPDATE_SIZE_MB" /> एमबी मोबाइल डेटा का इस्तेमाल होगा. क्या आप जारी रखना चाहते हैं?</translation>
 <translation id="5601503069213153581">पिन</translation>
 <translation id="5601823921345337195">MIDI डिवाइस से कनेक्ट करने की अनुमति नहीं है</translation>
@@ -4395,6 +4412,7 @@
 <translation id="5659593005791499971">ईमेल</translation>
 <translation id="5659833766619490117">इस पेज का अनुवाद नहीं किया जा सका</translation>
 <translation id="5662513737565158057">Linux ऐप्लिकेशन के काम करने का तरीका बदलें.</translation>
+<translation id="5667490069342183561">किसी भी तरह के डेटा का नुकसान होने पर, Google ज़िम्मेदार नहीं होगा. हो सकता है कि <ph name="DEVICE_OS" />, ऐसे मॉडल पर काम न करे जो सर्टिफ़ाइड नहीं हैं. g.co/TBD पर जाकर ज़्यादा जानें.</translation>
 <translation id="5667546120811588575">Google Play सेट अप किया जा रहा है...</translation>
 <translation id="5668351004957198136">हमें पता नहीं चला कि सॉफ़्टवेयर चलाने के लिए क्या ज़रूरी है</translation>
 <translation id="56702779821643359">अपने आस-पास मौजूद लोगों के साथ फ़ाइलें शेयर करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
@@ -4413,6 +4431,7 @@
 <translation id="5684181005476681636">वाई-फ़ाई की जानकारी</translation>
 <translation id="5684661240348539843">एसेट पहचानकर्ता</translation>
 <translation id="5687326903064479980">समय क्षेत्र</translation>
+<translation id="5687935527303996204">पक्का करें कि आपका डिवाइस प्लग-इन हो और उसे बंद न करें. इंस्टॉल करने में 20 मिनट लग सकते हैं. इंस्टॉल करने के बाद, आपका डिवाइस अपने-आप शट डाउन हो जाएगा.</translation>
 <translation id="5689516760719285838">स्थान</translation>
 <translation id="5689531695336322499">ऐसा लगता है कि <ph name="SUPERVISED_USER_NAME" /> ने पहले से ही किसी दूसरे डिवाइस पर, Assistant के साथ वॉइस मैच की सुविधा को सेट अप कर लिया है. इस डिवाइस पर आवाज़ का नमूना बनाने के लिए, इन पुरानी रिकॉर्डिंग का इस्तेमाल किया गया है.</translation>
 <translation id="56907980372820799">डेटा लिंक करें</translation>
@@ -5751,6 +5770,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> आपके माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
 <translation id="7141105143012495934">साइन इन नहीं हो पाया क्योंकि आपके खाते की जानकारी फिर से नहीं पाई जा सकी. कृपया अपने एडमिन से संपर्क करें या फिर से कोशिश करें.</translation>
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
+<translation id="7149839598364933473">इस डिवाइस को <ph name="DEVICE_OS" /> डिवाइस में बदलें.</translation>
 <translation id="7149893636342594995">पिछले 24 घंटे</translation>
 <translation id="7152478047064750137">इस एक्‍सटेंशन को कोई खास अनुमति नहीं चाहिए</translation>
 <translation id="7154130902455071009">अपना आरंभ पेज इसमें बदलें: <ph name="START_PAGE" /></translation>
@@ -5845,6 +5865,16 @@
 <translation id="7257666756905341374">कॉपी बनाया और चिपकाया जाने वाला डेटा पढ़ें</translation>
 <translation id="7258225044283673131">ऐप्लिकेशन काम नहीं कर रहा है. ऐप्लिकेशन को बंद करने के लिए "ज़बरदस्ती बंद करें" चुनें.</translation>
 <translation id="7262004276116528033">यह साइन इन सेवा <ph name="SAML_DOMAIN" /> की मदद से होस्‍ट की गई है</translation>
+<translation id="7264432249010320236">अन्य साइटें</translation>
+<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />समस्या हल करने का यह तरीका आज़माएं:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />पक्का करें कि आपके डिवाइस में एचडीडी, एसएसडी या ईएमएमसी जैसे स्टोरेज मौजूद हों
+    <ph name="LIST_ITEM" />जांचें कि आपके डिवाइस का स्टोरेज 16GB से ज़्यादा है या नहीं
+    <ph name="LIST_ITEM" />अगर ऐक्सेस कर सकें, तो डिवाइस के स्टोरेज का कनेक्शन जांचें
+    <ph name="LIST_ITEM" />पक्का करें कि सर्टिफ़ाइड मॉडल का इस्तेमाल किया जा रहा हो और इंस्टॉल करते समय दिखाए जाने वाले नोट की जांच करें
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ज़्यादा मदद के लिए इस पर जाएं: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">वर्चुअल मशीन को इंस्टॉल नहीं किया जा सका. कृपया फिर से कोशिश करें या अपने एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">अपने फ़िंगरप्रिंट के अलग-अलग हिस्सों को कैप्चर करने के लिए, अपनी उंगली को उठाते रहें</translation>
 <translation id="7268127947535186412">डिवाइस के मालिक इस सेटिंग का प्रबंधन करते हैं.</translation>
@@ -6570,6 +6600,7 @@
 <translation id="7986295104073916105">सहेजे गए पासवर्ड सेटिंग को पढ़ें और बदलें</translation>
 <translation id="7987814697832569482">हमेशा इस वीपीएन के ज़रिए कनेक्ट करें</translation>
 <translation id="7988355189918024273">सुलभता सुविधाएं चालू करें</translation>
+<translation id="7988805580376093356">अपना ओएस न हटाएं और <ph name="DEVICE_OS" /> को यूएसबी से चलाएं.</translation>
 <translation id="7991296728590311172">ऐक्सेस का तरीका बदलने की सेटिंग</translation>
 <translation id="7997826902155442747">प्राथमिकता संसाधित करें</translation>
 <translation id="7999229196265990314">निम्न फ़ाइलें बनाई गईं:
@@ -6678,6 +6709,7 @@
 <translation id="80974698889265265">पिन का मिलान नहीं हो रहा है</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> एक एक्सटेंशन की प्रॉक्सी सेटिंग इस्तेमाल कर रहा है</translation>
 <translation id="8097959162767603171">आपके एडमिन को सबसे पहले, Admin console की Chrome डिवाइस सूची में जाकर, सेवा की शर्तों को स्वीकार करना होगा.</translation>
+<translation id="8098156986344908134">क्या आप <ph name="DEVICE_OS" /> इंस्टॉल करना चाहते हैं और हार्ड ड्राइव का सारा डेटा हमेशा के लिए मिटाना चाहते हैं?</translation>
 <translation id="8098616321286360457">इंटरनेट ज़रूरी है</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> चुनी गई. चुने का निशान हटाने के लिए, Search के साथ Space दबाएं.</translation>
 <translation id="810185532889603849">पसंद के मुताबिक रंग</translation>
@@ -6862,6 +6894,7 @@
 <translation id="8287902281644548111">एपीआई कॉल/यूआरएल के हिसाब से खोजें</translation>
 <translation id="8288032458496410887"><ph name="APP" /> ऐप्लिकेशन अनइंस्टॉल करें...</translation>
 <translation id="8289128870594824098">डिस्क का साइज़</translation>
+<translation id="8289509909262565712"><ph name="DEVICE_OS" /> में आपका स्वागत है</translation>
 <translation id="8293206222192510085">बुकमार्क जोड़ें</translation>
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8298429963694909221">अब आप <ph name="DEVICE_TYPE" /> पर अपने फ़ोन की सूचनाएं पा सकते हैं. <ph name="DEVICE_TYPE" /> पर सूचनाएं खारिज करने पर ये आपके फ़ोन से भी खारिज हो जाएंगी. पक्का करें कि आपका फ़ोन आस-पास हो और उस पर ब्लूटूथ और वाई-फ़ाई चालू हों.</translation>
@@ -7185,6 +7218,7 @@
 <translation id="867085395664725367">सर्वर में कुछ समय के लिए गड़बड़ी हुई.</translation>
 <translation id="8673026256276578048">वेब पर खोजें...</translation>
 <translation id="8673383193459449849">सर्वर संबंधी समस्या</translation>
+<translation id="8675704450909805533">इंस्टॉलर, <ph name="DEVICE_OS" /> इंस्टॉल करने के लिए सही डेस्टिनेशन नहीं खोज सका.</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{वीडियो}one{# वीडियो}other{# वीडियो}}</translation>
 <translation id="8676313779986170923">फ़ीडबैक (सुझाव, शिकायत या राय) भेजने के लिए धन्यवाद.</translation>
 <translation id="8676374126336081632">इनपुट साफ़ करें</translation>
@@ -7341,6 +7375,7 @@
 <translation id="8823559166155093873">कुकी ब्लॉक करें</translation>
 <translation id="8823704566850948458">पासवर्ड सुझाएं...</translation>
 <translation id="8824701697284169214">पृ&amp;ष्ठ जोड़ें...</translation>
+<translation id="8826773185686617320"><ph name="DEVICE_OS" /> को इस्तेमाल करने के लिए, यूएसबी निकालें और अपने डिवाइस को रीस्टार्ट करें. ऐसा न करने पर, <ph name="TIME_LEFT" /> में आपका डिवाइस शट डाउन हो जाएगा.</translation>
 <translation id="8827125715368568315"><ph name="PERMISSION" /> के साथ-साथ <ph name="COUNT" /> और सेटिंग को ब्लॉक किया गया</translation>
 <translation id="8827289157496676362">एक्सटेंशन पिन करें</translation>
 <translation id="8827752199525959199">ज़्यादा कार्रवाइयां, <ph name="DOMAIN" /> पर <ph name="USERNAME" /> के लिए पासवर्ड</translation>
@@ -7475,6 +7510,7 @@
 <translation id="8962051932294470566">आप एक बार में सिर्फ़ एक फ़ाइल शेयर कर सकते हैं. मौजूदा ट्रांसफ़र पूरा हो जाने के बाद कोशिश करें.</translation>
 <translation id="8962083179518285172">विवरण छुपाएं</translation>
 <translation id="8962918469425892674">यह साइट गति या रोशनी के सेंसर का इस्तेमाल कर रही है.</translation>
+<translation id="8964943308070692533">ऐसी अन्य साइटें जो चालू नहीं हैं</translation>
 <translation id="8965037249707889821">पुराना पासवर्ड डालें</translation>
 <translation id="89667524227025535">अपने डिवाइस का कैमरा इस्तेमाल करके क्यूआर कोड स्कैन करें या मोबाइल और इंटरनेट सेवा देने वाली कंपनी से मिला ऐक्टिवेशन कोड डालें</translation>
 <translation id="8966809848145604011">अन्य प्रोफ़ाइलें</translation>
@@ -7637,6 +7673,8 @@
 <translation id="9116465289595958864">पिछली बार संशोधित</translation>
 <translation id="9116799625073598554">नोट लेने वाला ऐप्लिकेशन</translation>
 <translation id="9117030152748022724">अपने ऐप्लिकेशन मैनेज करना</translation>
+<translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />बेहतर अनुभव के लिए, <ph name="DEVICE_OS" /> को अपनी इंटर्नल डिस्क में इंस्टॉल करें. आप इसे बाद में लॉगिन स्क्रीन से भी इंस्टॉल कर सकते हैं.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />अगर आप इसे इंस्टॉल करने के लिए तैयार नहीं हैं, तो आप इसे यूएसबी से चलाकर आज़मा सकते हैं. इससे आपका मौजूदा ओएस और डेटा सुरक्षित रहेगा, लेकिन आपको स्टोरेज और परफ़ॉर्मेंस की सीमाएं दिख सकती हैं.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">छोटे टैब के रूप में खोलें</translation>
 <translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> को रोका गया</translation>
 <translation id="9124003689441359348">सहेजे गए पासवर्ड यहां दिखाई देंगे</translation>

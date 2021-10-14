@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1113173431709655881">카메라 모드</translation>
 <translation id="1175958423215084756">링크가 감지되었습니다. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">갤러리 이미지</translation>
 <translation id="1300209025925956156">문서 스캔</translation>
@@ -34,6 +35,7 @@
 <translation id="2549985041256363841">녹화 시작</translation>
 <translation id="2599796128805996109">후면 카메라</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" />초</translation>
+<translation id="2761536921376153655">검색 유형</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> 카메라가 연결되었습니다.</translation>
 <translation id="2968794441791257519">카메라로 촬영된 사진 및 동영상은 다운로드 폴더로 이동됩니다. 파일 앱에서 이러한 사진 및 동영상에 액세스할 수 있습니다.
 
@@ -99,9 +101,11 @@
 <translation id="698156982839284926">3초</translation>
 <translation id="712848772518857951">항목 <ph name="COUNT" />개를 삭제하시겠습니까?</translation>
 <translation id="7134221860976209830">10초 타이머</translation>
+<translation id="7191890674911603392">녹화 유형</translation>
 <translation id="7243947652761655814">동영상 해상도</translation>
 <translation id="7337660886763914220">파일 시스템 오류가 발생했습니다.</translation>
 <translation id="7450541714075000668">텍스트 복사됨</translation>
+<translation id="7476762461674917065">GIF 녹화 옵션 표시</translation>
 <translation id="7488619942230388918">GIF 동영상 녹화</translation>
 <translation id="7557677699350329807">다음 카메라로 전환</translation>
 <translation id="7607002721634913082">일시중지됨</translation>

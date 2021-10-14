@@ -589,6 +589,7 @@
 <translation id="1612019740169791082">Container Anda tidak dikonfigurasi untuk mendukung perubahan ukuran disk. Untuk menyesuaikan jumlah ruang yang telah ditetapkan untuk Linux, cadangkan lalu pulihkan ke dalam container baru.</translation>
 <translation id="1614511179807650956">Kuota Anda yang diizinkan mungkin telah habis. Kunjungi portal aktivasi <ph name="NAME" /> untuk membeli kuota lagi</translation>
 <translation id="161460670679785907">Tidak dapat mendeteksi ponsel Anda</translation>
+<translation id="1615337439947999338">Simpan di Akun Google Anda (<ph name="EMAIL" />)</translation>
 <translation id="1615402009686901181">Kebijakan administrator akan menonaktifkan tangkapan layar saat konten rahasia terlihat</translation>
 <translation id="1616206807336925449">Ekstensi ini tidak memerlukan izin khusus.</translation>
 <translation id="1616298854599875024">Tidak dapat mengimpor ekstensi "<ph name="IMPORT_NAME" />" karena bukan modul yang dibagikan</translation>
@@ -927,6 +928,7 @@
 <translation id="1929546189971853037">Baca histori penjelajahan Anda di semua perangkat tempat Anda masuk</translation>
 <translation id="1930879306590754738">Sandi dihapus dari perangkat ini dan Akun Google Anda</translation>
 <translation id="1931152874660185993">Tidak ada komponen yang dipasang.</translation>
+<translation id="1931410639376954712">Menginstal <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Tidak Sebelum</translation>
 <translation id="1935303383381416800">Diizinkan melihat lokasi Anda</translation>
 <translation id="1936931585862840749">Gunakan angka untuk menunjukkan jumlah salinan yang akan dicetak (1 sampai <ph name="MAX_COPIES" />).</translation>
@@ -1059,6 +1061,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="208586643495776849">Coba lagi</translation>
 <translation id="208634871997892083">VPN selalu aktif</translation>
 <translation id="2087822576218954668">Pencetakan: <ph name="PRINT_NAME" /></translation>
+<translation id="2088092308059522196">Pendaftaran hanya didukung setelah Anda menginstal <ph name="DEVICE_OS" />.</translation>
 <translation id="208928984520943006">Untuk membuka Layar utama kapan saja, geser ke atas dari bagian bawah.</translation>
 <translation id="2089566709556890888">Akses dengan aman menggunakan Google Chrome</translation>
 <translation id="2089795179672254991">Tanyakan saat situs ingin melihat teks dan gambar yang disalin ke papan klip (direkomendasikan)</translation>
@@ -1183,6 +1186,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2203088913459920044">Nama dapat menggunakan huruf, angka, dan karakter khusus</translation>
 <translation id="2204034823255629767">Membaca dan mengubah apa saja yang Anda ketik</translation>
 <translation id="220858061631308971">Masukkan kode PIN ini ke "<ph name="DEVICE_NAME" />":</translation>
+<translation id="2210462644007531147">Tidak dapat menyelesaikan penginstalan</translation>
 <translation id="2212565012507486665">Izinkan cookie</translation>
 <translation id="2214018885812055163">Folder bersama</translation>
 <translation id="2214884991347062907">Sandi salah, coba lagi</translation>
@@ -1239,6 +1243,8 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="22665427234727190">Tanyakan saat situs ingin mengakses perangkat Bluetooth (direkomendasikan)</translation>
 <translation id="2266957463645820432">IPP melalui USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Menukar data dengan perangkat apa pun dalam domain <ph name="DOMAIN" /></translation>
+<translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />Penginstalan <ph name="BEGIN_BOLD" />akan menghapus seluruh data di hard drive<ph name="END_BOLD" />. Pastikan data Anda sudah dicadangkan.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Penginstalan tidak dapat dibatalkan setelah dimulai.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Menukar data dengan perangkat apa pun dalam domain: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Tetapkan tombol akses untuk “Pilih”</translation>
 <translation id="2271469253353559191">Jadwal mode gelap</translation>
@@ -1500,6 +1506,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2521854691574443804">Memeriksa <ph name="FILE_NAME" /> berdasarkan kebijakan keamanan organisasi Anda ...</translation>
 <translation id="252219247728877310">Komponen tidak diperbarui</translation>
 <translation id="2523184218357549926">Mengirimkan URL halaman yang Anda buka ke Google</translation>
+<translation id="252418934079508528">Instal <ph name="DEVICE_OS" /></translation>
 <translation id="252502352004572774">Chrome sedang memeriksa software berbahaya di komputer Anda ...</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2526619973349913024">Periksa update</translation>
@@ -1704,6 +1711,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="2740531572673183784">Oke</translation>
 <translation id="2741713322780029189">Buka terminal pemulihan</translation>
 <translation id="2741912629735277980">Tampilkan UI di layar login</translation>
+<translation id="2742448780373473567">Menginstal <ph name="DEVICE_OS" /> akan menimpa semua data di perangkat.</translation>
 <translation id="274290345632688601">Memulihkan file &amp; aplikasi Linux</translation>
 <translation id="274318651891194348">Menelusuri keyboard</translation>
 <translation id="2743387203779672305">Salin ke papan klip</translation>
@@ -2896,6 +2904,8 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3979748722126423326">Aktifkan <ph name="NETWORKDEVICE" /></translation>
 <translation id="3981058120448670012">Dapat dilihat oleh perangkat di sekitar sebagai <ph name="DEVICE_NAME" /> selama <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">Jenis penyimpanan yang dimasukkan tidak valid.</translation>
+<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />Terjadi error dan <ph name="DEVICE_OS" /> tidak dapat diinstal.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Untuk mendapatkan bantuan lebih lanjut, buka: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">Siapkan browser Anda dalam beberapa langkah mudah</translation>
 <translation id="3983400541576569538">Data dari beberapa aplikasi mungkin akan hilang</translation>
 <translation id="3983586614702900908">perangkat dari vendor tak dikenal</translation>
@@ -2983,6 +2993,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4084835346725913160">Tutup <ph name="TAB_NAME" /></translation>
 <translation id="4085270836953633510">Tanyakan saat situs ingin mengakses port serial</translation>
 <translation id="4085298594534903246">JavaScript dicekal di halaman ini.</translation>
+<translation id="4085947337119280756">Ekstensi Tambahan</translation>
 <translation id="4087089424473531098">Membuat ekstensi:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -3286,6 +3297,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4449996769074858870">Tab ini memutar audio.</translation>
 <translation id="4450274068924249931">Jika layar tidak ada aktivitas, akan ditampilkan foto, waktu, cuaca, dan berita. Mengaktifkan screensaver akan membuat layar tetap menyala saat pengisian daya.</translation>
 <translation id="4450974146388585462">Diagnosis</translation>
+<translation id="445099924538929605"><ph name="DEVICE_OS" /> mendeteksi TPM aktif yang dapat menyimpan data Anda dengan lebih aman.</translation>
 <translation id="4451479197788154834">Sandi disimpan di perangkat ini dan Akun Google Anda</translation>
 <translation id="4451757071857432900">Diblokir di situs yang menampilkan iklan yang mengganggu atau menyesatkan (direkomendasikan)</translation>
 <translation id="4453946976636652378">Telusuri <ph name="SEARCH_ENGINE_NAME" /> atau ketik URL</translation>
@@ -3788,6 +3800,9 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4992473555164495036">Administrator membatasi metode masukan yang tersedia.</translation>
 <translation id="4994474651455208930">Izinkan situs meminta untuk menjadi penangan default bagi protokol</translation>
 <translation id="4994754230098574403">Menyiapkan</translation>
+<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />Sebelum mendaftar, Anda perlu menghapus TPM agar <ph name="DEVICE_OS" /> dapat mengambil alih kepemilikan perangkat.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Anda juga dapat sepenuhnya menonaktifkan TPM di perangkat. Data Anda akan tetap disimpan secara aman dengan enkripsi software, tetapi fitur keamanan tertentu seperti sertifikat yang didukung hardware akan dinonaktifkan.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Anda dapat mengubah setelan TPM dengan memulai ulang dan masuk ke setelan BIOS/UEFI sistem. Langkah-langkah dapat berbeda bergantung pada model perangkat. Untuk info selengkapnya, buka dokumentasi <ph name="DEVICE_OS" /> di perangkat lain sebelum Anda memulai ulang: [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Tidak ada VM <ph name="VM_TYPE" /> yang ditemukan}=1{1 VM <ph name="VM_TYPE" /> ditemukan: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} VM <ph name="VM_TYPE" /> ditemukan: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Tidak ada koneksi internet.</translation>
 <translation id="4998430619171209993">Aktif</translation>
@@ -3903,6 +3918,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5127620150973591153">ID koneksi aman: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Sinkronisasi nonaktif</translation>
 <translation id="5127881134400491887">Mengelola koneksi jaringan</translation>
+<translation id="5128774403617662387">Sebelum memulai, pastikan Anda sudah mencadangkan data Anda. Menginstal <ph name="DEVICE_OS" /> akan menimpa semua data di hard drive. Pelajari lebih lanjut di g.co/TBD.</translation>
 <translation id="512903556749061217">terpasang</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Profil tidak dapat didownload. Coba lagi nanti atau hubungi operator untuk mendapatkan bantuan.</translation>
@@ -4337,6 +4353,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5592595402373377407">Data yang tersedia belum cukup.</translation>
 <translation id="5595485650161345191">Edit alamat</translation>
 <translation id="5596627076506792578">Opsi lainnya</translation>
+<translation id="5600348067066185292">Penginstalan dapat dilakukan dalam beberapa langkah mudah. Anda akan memiliki kesempatan lain untuk mengonfirmasi sebelum perubahan dilakukan pada komputer.</translation>
 <translation id="5600706100022181951">Update akan didownload menggunakan data seluler sebesar <ph name="UPDATE_SIZE_MB" /> MB. Ingin melanjutkan?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Tidak diizinkan terhubung ke perangkat MIDI</translation>
@@ -4396,6 +4413,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5659833766619490117">Halaman ini tidak dapat diterjemahkan</translation>
 <translation id="5662513737565158057">Mengubah cara kerja aplikasi Linux.</translation>
+<translation id="5667490069342183561">Google tidak bertanggung jawab atas hilangnya data apa pun, dan <ph name="DEVICE_OS" /> mungkin tidak akan berfungsi di model yang tidak tersertifikasi. Pelajari lebih lanjut di g.co/TBD.</translation>
 <translation id="5667546120811588575">Menyiapkan Google Play...</translation>
 <translation id="5668351004957198136">Gagal</translation>
 <translation id="56702779821643359">Bagikan file kepada pengguna di sekitar Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
@@ -4414,6 +4432,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5684181005476681636">Detail Wi-Fi</translation>
 <translation id="5684661240348539843">Pengenal Aset</translation>
 <translation id="5687326903064479980">Zona waktu</translation>
+<translation id="5687935527303996204">Pastikan perangkat dicolokkan dan tidak dimatikan. Penginstalan dapat memerlukan waktu hingga 20 menit. Perangkat akan otomatis dimatikan saat penginstalan selesai.</translation>
 <translation id="5689516760719285838">Lokasi</translation>
 <translation id="5689531695336322499">Sepertinya <ph name="SUPERVISED_USER_NAME" /> sudah menyiapkan Voice Match dengan Asisten Anda di perangkat lain. Rekaman sebelumnya tersebut digunakan untuk membuat model suara di perangkat ini.</translation>
 <translation id="56907980372820799">Tautkan data</translation>
@@ -5752,6 +5771,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> sedang menggunakan mikrofon Anda</translation>
 <translation id="7141105143012495934">Proses masuk gagal karena detail akun Anda tidak dapat diambil. Hubungi administrator Anda atau coba lagi.</translation>
 <translation id="7144878232160441200">Coba lagi</translation>
+<translation id="7149839598364933473">Ubah perangkat ini menjadi perangkat <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">24 jam terakhir</translation>
 <translation id="7152478047064750137">Ekstensi ini tidak memerlukan izin khusus</translation>
 <translation id="7154130902455071009">Ubah halaman awal Anda menjadi: <ph name="START_PAGE" /></translation>
@@ -5846,6 +5866,16 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="7257666756905341374">Mengakses data yang Anda salin dan tempel</translation>
 <translation id="7258225044283673131">Aplikasi tidak merespons. Pilih "Tutup paksa" untuk menutup aplikasi.</translation>
 <translation id="7262004276116528033">Layanan masuk ini dihosting oleh <ph name="SAML_DOMAIN" /></translation>
+<translation id="7264432249010320236">Situs Tambahan</translation>
+<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Coba langkah pemecahan masalah berikut:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Pastikan perangkat memiliki penyimpanan internal yang berfungsi seperti HDD, SSD, atau eMMC
+    <ph name="LIST_ITEM" />Pastikan penyimpanan internal perangkat Anda lebih besar dari 16 GB
+    <ph name="LIST_ITEM" />Periksa koneksi ke penyimpanan internal, jika dapat diakses secara fisik
+    <ph name="LIST_ITEM" />Pastikan Anda menggunakan model yang tersertifikasi dan periksa catatan penginstalannya
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Untuk mendapatkan bantuan lebih lanjut, buka: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">Tidak dapat menginstal mesin virtual. Coba lagi atau hubungi administrator Anda. Kode error: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Angkat dan sentuhkan jari secara berulang untuk menambahkan bagian lain dari sidik jari Anda</translation>
 <translation id="7268127947535186412">Setelan ini dikelola oleh pemilik perangkat.</translation>
@@ -6572,6 +6602,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7986295104073916105">Membaca dan mengubah setelan sandi yang tersimpan</translation>
 <translation id="7987814697832569482">Selalu terhubung melalui VPN ini</translation>
 <translation id="7988355189918024273">Aktifkan fitur aksesibilitas</translation>
+<translation id="7988805580376093356">Jangan gunakan OS Anda dan jalankan <ph name="DEVICE_OS" /> dari USB.</translation>
 <translation id="7991296728590311172">Setelan Tombol Akses</translation>
 <translation id="7997826902155442747">Prioritas Proses</translation>
 <translation id="7999229196265990314">Membuat file berikut:
@@ -6680,6 +6711,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="80974698889265265">PIN tidak cocok</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> menggunakan setelan proxy dari ekstensi</translation>
 <translation id="8097959162767603171">Administrator Anda harus menyetujui persyaratan layanan terlebih dulu di daftar perangkat Chrome konsol Admin.</translation>
+<translation id="8098156986344908134">Instal <ph name="DEVICE_OS" /> dan hapus hard drive?</translation>
 <translation id="8098616321286360457">Perlu koneksi jaringan</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> dipilih. Tekan tombol Penelusuran dan Spasi untuk membatalkan pilihan.</translation>
 <translation id="810185532889603849">Warna khusus</translation>
@@ -6864,6 +6896,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8287902281644548111">Telusuri berdasarkan panggilan API/URL</translation>
 <translation id="8288032458496410887">Uninstal <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Ukuran disk</translation>
+<translation id="8289509909262565712">Selamat datang di <ph name="DEVICE_OS" /></translation>
 <translation id="8293206222192510085">Tambahkan Bookmark</translation>
 <translation id="8294431847097064396">Sumber</translation>
 <translation id="8298429963694909221">Anda sekarang dapat menerima notifikasi dari ponsel di <ph name="DEVICE_TYPE" />. Menutup notifikasi di <ph name="DEVICE_TYPE" /> juga akan menutupnya di ponsel Anda. Pastikan ponsel berada di dekat Anda serta Bluetooth dan Wi-Fi aktif.</translation>
@@ -7187,6 +7220,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="867085395664725367">Terjadi error server sementara.</translation>
 <translation id="8673026256276578048">Telusuri Web...</translation>
 <translation id="8673383193459449849">Server bermasalah</translation>
+<translation id="8675704450909805533">Penginstal tidak dapat menemukan tujuan yang valid untuk menginstal <ph name="DEVICE_OS" />.</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{Video}other{# video}}</translation>
 <translation id="8676313779986170923">Terima kasih telah mengirimkan masukan.</translation>
 <translation id="8676374126336081632">Hapus masukan</translation>
@@ -7342,6 +7376,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8823559166155093873">Blokir cookie</translation>
 <translation id="8823704566850948458">Sarankan sandi...</translation>
 <translation id="8824701697284169214">Tambahkan La&amp;man...</translation>
+<translation id="8826773185686617320">Cabut USB dan mulai ulang perangkat untuk mulai menggunakan <ph name="DEVICE_OS" />. Jika tidak, perangkat akan dimatikan dalam <ph name="TIME_LEFT" />.</translation>
 <translation id="8827125715368568315">Memblokir <ph name="PERMISSION" /> dan <ph name="COUNT" /> lainnya</translation>
 <translation id="8827289157496676362">Pasang pin ekstensi</translation>
 <translation id="8827752199525959199">Tindakan lainnya, sandi untuk <ph name="USERNAME" /> di <ph name="DOMAIN" /></translation>
@@ -7476,6 +7511,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8962051932294470566">Anda hanya dapat membagikan satu file dalam satu waktu. Coba lagi setelah transfer saat ini selesai.</translation>
 <translation id="8962083179518285172">Sembunyikan Detail</translation>
 <translation id="8962918469425892674">Situs ini menggunakan sensor gerakan atau sensor cahaya.</translation>
+<translation id="8964943308070692533">Situs Tidak Aktif Tambahan</translation>
 <translation id="8965037249707889821">Masukkan sandi lama</translation>
 <translation id="89667524227025535">Pindai Kode QR menggunakan kamera perangkat Anda atau masukkan kode aktivasi yang diberikan oleh operator Anda</translation>
 <translation id="8966809848145604011">Profil Lainnya</translation>
@@ -7638,6 +7674,8 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="9116465289595958864">Terakhir diubah</translation>
 <translation id="9116799625073598554">Aplikasi pencatat</translation>
 <translation id="9117030152748022724">Kelola aplikasi Anda</translation>
+<translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Untuk mendapatkan pengalaman terbaik, instal <ph name="DEVICE_OS" /> ke disk internal Anda. Anda juga dapat menginstalnya nanti dari layar login.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Jika belum siap menginstal, Anda dapat menjalankannya dari USB untuk mencobanya. Tindakan ini akan menyimpan OS dan data yang ada, tetapi Anda dapat melihat batas penyimpanan dan performa.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Buka sebagai tab terpasang</translation>
 <translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> dijeda</translation>
 <translation id="9124003689441359348">Sandi yang disimpan akan muncul di sini</translation>

@@ -404,6 +404,7 @@
 <translation id="3429160811076349561">ट्रायल की सुविधाएं बंद हैं</translation>
 <translation id="3440975416244667276">ज़्यादा काम की जानकारी के लिए इसे दबाकर रखें</translation>
 <translation id="3443221991560634068">वर्तमान पेज फिर से लोड करें</translation>
+<translation id="3444179773590444986">क्या आप साइटों के लिए गहरे रंग वाली थीम से जुड़े सुझाव, शिकायत या राय शेयर करना चाहते हैं?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 डाउनलोड शेड्यूल किया गया}one{# डाउनलोड शेड्यूल किया गया}other{# डाउनलोड शेड्यूल किए गए}}</translation>
 <translation id="3478363558367712427">आप अपना सर्च इंजन चुन सकते हैं</translation>
 <translation id="3493531032208478708">सुझाई गई सामग्री के बारे में <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
@@ -585,6 +586,7 @@
 <translation id="4663499661119906179">अपने हिसाब से खास साइटें और खबरें देखें</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> बुकमार्क का पता लगा</translation>
 <translation id="4668347365065281350">सभी तरह के डेटा को साइटों के हिसाब से सेव किया गया है. इसमें कुकी और स्थानीय रूप से सेव किया गया दूसरा डेटा भी शामिल है</translation>
+<translation id="4678082183394354975">Chrome में साइटों के लिए, गहरे रंग वाली थीम चालू है</translation>
 <translation id="4684427112815847243">सब कुछ सिंक करें</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}}</translation>
 <translation id="4696983787092045100">अपने डिवाइस पर मैसेज भेजें</translation>
@@ -766,6 +768,7 @@
 <translation id="5754350196967618083">'डिस्कवर' को रीफ़्रेश नहीं किया जा सकता</translation>
 <translation id="5763382633136178763">गुप्त टैब</translation>
 <translation id="5763514718066511291">इस ऐप्लिकेशन का यूआरएल कॉपी करने के लिए टैप करें</translation>
+<translation id="5765517223145864268">हमें अपने अनुभव के बारे में बताएं. या <ph name="BEGIN_LINK" />अपनी सेटिंग में बदलाव करें<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">वर्णन:</translation>
 <translation id="5767013862801005129"><ph name="TAB_TITLE" /> टैब को वापस लाया गया</translation>
 <translation id="5776970333778123608">गैरज़रूरी डेटा</translation>
@@ -953,6 +956,7 @@
 <translation id="6738516213925468394">आपका डेटा <ph name="TIME" /> को <ph name="BEGIN_LINK" />सिंक करने के लिए लंबा पासवर्ड बनाकर<ph name="END_LINK" /> सुरक्षित किया गया था. सिंक शुरू करने के लिए पासवर्ड डालें.</translation>
 <translation id="6738867403308150051">डाउनलोड हो रहे हैं...</translation>
 <translation id="6751521182688001123">तेज़ी से एक नया टैब खोलें. इस शॉर्टकट में बदलाव करने के लिए, दबाकर रखें.</translation>
+<translation id="6756507620369789050">सुझाव, शिकायत या राय शेयर करें</translation>
 <translation id="6767294960381293877">टैब शेयर करने के लिए चुने जाने वाले डिवाइस की सूची आधी खुली हुई है.</translation>
 <translation id="6783942555455976443">इस पेज को बाद के लिए सेव करें और रिमाइंडर पाएं</translation>
 <translation id="6795633245022906657">फटाफट एक नया टैब खोलें. इस शॉर्टकट में बदलाव करने के लिए, सेटिंग पर जाएं.</translation>
@@ -1044,6 +1048,7 @@
 <translation id="7352651011704765696">कुछ गलत हुआ</translation>
 <translation id="7352939065658542140">वीडियो</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{1 चयनित आइटम शेयर करें}one{# चयनित आइटम शेयर करें}other{# चयनित आइटम शेयर करें}}</translation>
+<translation id="7356631068872238169">रीडिंग लिस्ट से मिटाएं</translation>
 <translation id="7359002509206457351">भुगतान के तरीकों को ऐक्सेस करें</translation>
 <translation id="7375125077091615385">प्रकार:</translation>
 <translation id="7376560087009844242">खोजने के लिए टैप करने की सुविधा इस्तेमाल करते समय, किसी पेज के ज़्यादा शब्द शामिल करने पर, आपको बेहतर नतीजे दिख सकते हैं. इसमें बदलाव करने के लिए, आप जब चाहें <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> पर जा सकते हैं.</translation>
@@ -1214,6 +1219,7 @@
 <translation id="8266862848225348053">डाउनलोड सेव करने की जगह</translation>
 <translation id="8274165955039650276">डाउनलोड देखें</translation>
 <translation id="8281886186245836920">अभी नहीं</translation>
+<translation id="8282297628636750033">जब भी हो सके, साइट पर गहरे रंग वाली थीम लागू करें</translation>
 <translation id="8284326494547611709">कैप्शन</translation>
 <translation id="829672787777123339">आपके डिवाइस से कनेक्ट किया जा रहा है…</translation>
 <translation id="8310344678080805313">मानक टैब</translation>
@@ -1345,6 +1351,7 @@
 <translation id="9063523880881406963">अनुरोध डेस्कटॉप साइट बंद करें</translation>
 <translation id="9065203028668620118">बदलाव करें</translation>
 <translation id="9065383040763568503">सेव किया गया ऐसा डेटा जो Chrome के हिसाब से ज़रूरी नहीं है (उदाहरण के लिए, ऐसी साइटें जिनमें कोई भी सेटिंग सेव नहीं की गई है या जिन पर आप अक्सर नहीं जाते)</translation>
+<translation id="906781307897697745"><ph name="PRODUCT_NAME" /> में</translation>
 <translation id="9069999660519089861">सभी लेख पढ़ लिए गए हैं</translation>
 <translation id="9070377983101773829">बोलकर खोज चालू करें</translation>
 <translation id="9074336505530349563">Google की ओर से सुझाई गई मनमुताबिक सामग्री पाने के लिए, साइन इन करें और 'सिंक करें' को चालू करें</translation>

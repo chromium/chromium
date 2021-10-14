@@ -404,6 +404,7 @@
 <translation id="3429160811076349561">Пробныя функцыі выключаны</translation>
 <translation id="3440975416244667276">Націсніце і ўтрымлівайце, каб паглядзець звязаную інфармацыю</translation>
 <translation id="3443221991560634068">Перазагрузіць бягучую старонку</translation>
+<translation id="3444179773590444986">Пакінуць водгук на цёмную тэму для сайтаў?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Запланавана 1 спампоўка}one{Запланавана # спампоўка}few{Запланавана # спампоўкі}many{Запланавана # спамповак}other{Запланавана # спампоўкі}}</translation>
 <translation id="3478363558367712427">Вы можаце выбраць пошукавую сістэму</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра прапанаванае змесціва</translation>
@@ -585,6 +586,7 @@
 <translation id="4663499661119906179">Прагледзьце папулярныя сайты і падабраныя для вас артыкулы</translation>
 <translation id="4663756553811254707">Закладкі (<ph name="NUMBER_OF_BOOKMARKS" />) выдалены</translation>
 <translation id="4668347365065281350">Усе даныя, захаваныя сайтамі, у тым ліку файлы cookie і іншыя лакальна захаваныя даныя</translation>
+<translation id="4678082183394354975">У браўзеры Chrome уключана цёмная тэма для сайтаў</translation>
 <translation id="4684427112815847243">Сінхранізаваць усё</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Адправіць тэкст на вашы прылады</translation>
@@ -766,6 +768,7 @@
 <translation id="5754350196967618083">Не ўдаецца абнавіць рэкамендацыі</translation>
 <translation id="5763382633136178763">Укладкі інкогніта</translation>
 <translation id="5763514718066511291">Дакраніцеся, каб скапіраваць URL-адрас гэтай праграмы</translation>
+<translation id="5765517223145864268">Падзяліцеся з намі сваімі ўражаннямі або <ph name="BEGIN_LINK" />змяніце налады<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">Апісанне:</translation>
 <translation id="5767013862801005129">Адноўлена ўкладка "<ph name="TAB_TITLE" />"</translation>
 <translation id="5776970333778123608">Няважныя даныя</translation>
@@ -953,6 +956,7 @@
 <translation id="6738516213925468394">Даныя былі зашыфраваны з дапамогай <ph name="BEGIN_LINK" />фразы-пароля для сінхранізацыі<ph name="END_LINK" /> <ph name="TIME" />. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
 <translation id="6738867403308150051">Ідзе спампоўка…</translation>
 <translation id="6751521182688001123">Хуткае адкрыццё новай укладкі. Каб змяніць функцыю гэтай кнопкі, націсніце на яе і ўтрымлівайце.</translation>
+<translation id="6756507620369789050">Пакінуць водгук</translation>
 <translation id="6767294960381293877">Спіс прылад, з якімі можна абагуліць укладку, разгорнуты на палову экрана.</translation>
 <translation id="6783942555455976443">Захавайце старонку, каб прагледзець яе пазней. Вы атрымаеце напамін</translation>
 <translation id="6795633245022906657">Хуткае адкрыццё новай укладкі. Каб змяніць функцыю гэтай кнопкі, перайдзіце ў Налады.</translation>
@@ -1044,6 +1048,7 @@
 <translation id="7352651011704765696">Нешта пайшло не так</translation>
 <translation id="7352939065658542140">ВІДЭА</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Абагуліць 1 выбраны элемент}one{Абагуліць # выбраны элемент}few{Абагуліць # выбраныя элементы}many{Абагуліць # выбраных элементаў}other{Абагуліць # выбранага элемента}}</translation>
+<translation id="7356631068872238169">Выдаліць са спіса на прагляд</translation>
 <translation id="7359002509206457351">Доступ да спосабаў аплаты</translation>
 <translation id="7375125077091615385">Тып:</translation>
 <translation id="7376560087009844242">Дадаючы больш тэксту са старонкі, пры выкарыстанні функцыі "Пошук дотыкам" можна атрымліваць лепшыя вынікі. Змяніць параметры заўсёды можна ў <ph name="BEGIN_LINK" />наладах<ph name="END_LINK" />.</translation>
@@ -1214,6 +1219,7 @@
 <translation id="8266862848225348053">Размяшчэнне спамповак</translation>
 <translation id="8274165955039650276">Паказаць спампоўкі</translation>
 <translation id="8281886186245836920">Прапусціць</translation>
+<translation id="8282297628636750033">Прымяняць цёмную тэму, калі гэта магчыма</translation>
 <translation id="8284326494547611709">Субцітры</translation>
 <translation id="829672787777123339">Ідзе падключэнне да вашай прылады…</translation>
 <translation id="8310344678080805313">Стандартныя ўкладкі</translation>
@@ -1345,6 +1351,7 @@
 <translation id="9063523880881406963">Выключыць запытванне версіі для настольнага камп'ютара</translation>
 <translation id="9065203028668620118">Змяніць</translation>
 <translation id="9065383040763568503">Захаваныя даныя, якія Chrome не лічыць важнымі (напрыклад, сайты, налады якіх не захаваны або якія вы наведваеце рэдка)</translation>
+<translation id="906781307897697745">месцазнаходжанне: <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Няма непрачытаных старонак</translation>
 <translation id="9070377983101773829">Пачаць галасавы пошук</translation>
 <translation id="9074336505530349563">Каб Google рэкамендаваў вам персаналізаванае змесціва, увайдзіце ва ўліковы запіс і ўключыце сінхранізацыю</translation>

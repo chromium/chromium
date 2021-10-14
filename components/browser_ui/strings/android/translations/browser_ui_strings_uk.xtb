@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Запитувати, коли сайт хоче шукати пристрої Bluetooth поблизу (рекомендовано)</translation>
 <translation id="2315043854645842844">Операційна система не підтримує сертифікат, вибраний на стороні клієнта.</translation>
 <translation id="2359808026110333948">Продовжити</translation>
+<translation id="2379925928934107488">Якщо у веб-перекладачі Chrome активовано темну тему, вона використовуватиметься для сайтів, коли це можливо.</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}one{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}few{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}many{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}other{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Завантажено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">На цьому пристрої також вимкнено доступ до геоданих. Увімкніть його в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Розгорнуто – натисніть, щоб згорнути.</translation>
 <translation id="2586657967955657006">Буфер обміну</translation>
+<translation id="2597457036804169544">Не використовувати темну тему для сайтів</translation>
 <translation id="2621115761605608342">Увімкнути JavaScript на певному сайті.</translation>
 <translation id="2653659639078652383">Надіслати</translation>
 <translation id="2677748264148917807">Вийти</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Вимкнути звук на сайтах, які відтворюють його</translation>
 <translation id="3744111561329211289">Фонова синхронізація</translation>
 <translation id="3763247130972274048">Двічі торкніться відео ліворуч або праворуч, щоб пропустити 10 с</translation>
+<translation id="3797520601150691162">Не використовувати темну тему для певного сайту</translation>
 <translation id="381841723434055211">Номери телефонів</translation>
 <translation id="3835233591525155343">Дані про активний стан пристрою</translation>
 <translation id="385051799172605136">Назад</translation>
@@ -167,6 +170,7 @@
 <translation id="5505264765875738116">Сайти не можуть просити дозвіл надсилати сповіщення</translation>
 <translation id="5516455585884385570">Відкрити налаштування сповіщень</translation>
 <translation id="5527111080432883924">Запитувати, перш ніж дозволяти сайтам переглядати тексти й зображення в буфері обміну (рекомендовано)</translation>
+<translation id="5553374991681107062">Останні</translation>
 <translation id="5556459405103347317">Перезавантажити</translation>
 <translation id="5596627076506792578">Інші опції</translation>
 <translation id="5649053991847567735">Автоматичні завантаження</translation>
@@ -244,6 +248,7 @@
 <translation id="7302486331832100261">Зазвичай ви блокуєте сповіщення. Щоб дозволити, натисніть "Деталі".</translation>
 <translation id="7423098979219808738">Спершу запитувати</translation>
 <translation id="7423538860840206698">Заборонено переглядати буфер обміну</translation>
+<translation id="7425915948813553151">Темна тема для сайтів</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Сайт використовує мікрофон</translation>
 <translation id="7561196759112975576">Завжди</translation>
@@ -267,6 +272,7 @@
 <translation id="7999064672810608036">Видалити всі локальні дані, зокрема файли cookie, і скинути всі дозволи для цього веб-сайту?</translation>
 <translation id="8007176423574883786">Вимкнено для цього пристрою</translation>
 <translation id="802154636333426148">Не вдалося завантажити</translation>
+<translation id="8042586301629853791">Порядок сортування:</translation>
 <translation id="8067883171444229417">Дивитися відео</translation>
 <translation id="8068648041423924542">Не вдалося вибрати сертифікат.</translation>
 <translation id="8087000398470557479">Це вміст із сайту <ph name="DOMAIN_NAME" />, який доставляє Google.</translation>

@@ -586,6 +586,7 @@
 <translation id="1612019740169791082">‏آپ کا کنٹینر ڈسک کی سائز تبدیل کرنے کو سپورٹ کرنے کے لئے کنفیگر نہیں کیا گیا ہے۔ Linux کے لیے مختص کی گئی جگہ کی مقدار کو ایڈجسٹ کرنے کے لیے بیک اپ لیں اور اسے نئے کنٹینر میں بحال کریں۔</translation>
 <translation id="1614511179807650956">ممکن ہے آپ نے اپنا موبائل ڈیٹا الاؤنس استعمال کر لیا ہو۔ مزید ڈیٹا خریدنے کیلئے <ph name="NAME" /> کی فعالیت کا پورٹل ملاحظہ کریں</translation>
 <translation id="161460670679785907">آپ کے فون کا پتہ لگانے سے قاصر</translation>
+<translation id="1615337439947999338">‏اپنے Google اکاؤنٹ میں محفوظ کریں (<ph name="EMAIL" />)</translation>
 <translation id="1615402009686901181">منتظم کی پالیسی کے تحت، رازدارانہ مواد کے مرئی ہونے پر اسکرین کیپچر کرنے کی سہولت غیر فعال ہو جاتی ہے</translation>
 <translation id="1616206807336925449">اس ایکسٹینشن کو کوئی خاص اجازتیں درکار نہیں ہیں۔</translation>
 <translation id="1616298854599875024">ایکسٹینشن "<ph name="IMPORT_NAME" />" کو درآمد کرنے سے قاصر ہے کیونکہ یہ ایک اشتراک کردہ ماڈیول نہیں ہے</translation>
@@ -915,6 +916,7 @@
 <translation id="1929546189971853037">اپنے سبھی سائن ان کردہ آلات پر اپنی براؤزنگ کی سرگزشت پڑھیں</translation>
 <translation id="1930879306590754738">‏پاس ورڈ کو اس آلے اور آپ کے Google اکاؤنٹ سے حذف کیا گیا</translation>
 <translation id="1931152874660185993">کوئی اجزاء انسٹال نہیں ہیں۔</translation>
+<translation id="1931410639376954712"><ph name="DEVICE_OS" /> انسٹال ہو رہا ہے</translation>
 <translation id="1932098463447129402">اس سے پہلے نہیں</translation>
 <translation id="1935303383381416800">آپ کا مقام دیکھنے کی اجازت ہے</translation>
 <translation id="1936931585862840749">پرنٹ کرنے کی خاطر کاپیوں کی تعداد بتانے کیلئے نمبر (1 سے <ph name="MAX_COPIES" /> تک) کا استعمال کریں۔</translation>
@@ -1047,6 +1049,7 @@
 <translation id="208586643495776849">براہ کرم دوبارہ کوشش کریں</translation>
 <translation id="208634871997892083">‏ہمیشہ آن VPN</translation>
 <translation id="2087822576218954668">پرنٹ کریں: <ph name="PRINT_NAME" /></translation>
+<translation id="2088092308059522196"><ph name="DEVICE_OS" /> انسٹال کرنے کے بعد ہی اندراج تعاون یافتہ ہوتا ہے۔</translation>
 <translation id="208928984520943006">کسی بھی وقت ہوم اسکرین پر جانے کے لیے، نیچے سے اوپر کی طرف سوائپ کریں۔</translation>
 <translation id="2089566709556890888">‏Google Chrome کے ساتھ محفوظ طریقے سے براؤز کریں</translation>
 <translation id="2089795179672254991">جب کوئی سائٹ کلپ بورڈ میں کاپی کیے گئے متن اور تصاویر دیکھنا چاہے تو پوچھیں (تجویز کردہ)</translation>
@@ -1171,6 +1174,7 @@
 <translation id="2203088913459920044">نام میں حروف، نمبرز اور مخصوص حروف کا استعمال کیا جا سکتا ہے</translation>
 <translation id="2204034823255629767">آپ جو کچھ بھی ٹائپ کرتے ہیں اسے پڑھیں اور تبدیل کریں</translation>
 <translation id="220858061631308971">‏براہ کرم اس PIN کوڈ کو "<ph name="DEVICE_NAME" />" میں داخل کریں:</translation>
+<translation id="2210462644007531147">انسٹالیشن مکمل نہیں ہو سکی</translation>
 <translation id="2212565012507486665">کوکیز کی اجازت دیں</translation>
 <translation id="2214018885812055163">اشتراک کردہ فولڈرز</translation>
 <translation id="2214884991347062907">غلط پاس ورڈ، دوبارہ کوشش کریں</translation>
@@ -1224,6 +1228,8 @@
 <translation id="22665427234727190">جب کوئی سائٹ بلوٹوتھ آلات تک رسائی حاصل کرنا چاہے تو پوچھیں (تجویز کردہ)</translation>
 <translation id="2266957463645820432">‏IPP اوور USB (IPPUSB)‎</translation>
 <translation id="2270450558902169558">ڈومین میں موجود کسی بھی آلہ کے ساتھ ڈیٹا کا تبادلہ کریں: <ph name="DOMAIN" /></translation>
+<translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />انسٹالیشن <ph name="BEGIN_BOLD" />آپ کی ہارڈ ڈرائیو کو مکمل طور پر مٹا دے گی<ph name="END_BOLD" />۔ یقینی بنائیں کہ آپ کے ڈیٹا کا بیک اپ لیا جا چکا ہے۔<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />ایک بار انسٹالیشن شروع ہو جانے کے بعد اسے منسوخ نہیں کیا جا سکتا۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">ڈومینز میں موجود کسی بھی آلے کے ساتھ ڈیٹا کا تبادلہ کریں: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">"منتخب کرنے" کیلئے سوئچ تفویض کریں</translation>
 <translation id="2271469253353559191">تاریک وضع شیڈول</translation>
@@ -1485,6 +1491,7 @@
 <translation id="2521854691574443804">آپ کی تنظیم کی سکیورٹی پالیسیز کے ساتھ <ph name="FILE_NAME" /> کو چیک کیا جا رہا ہے...</translation>
 <translation id="252219247728877310">جزء اپ ڈیٹ نہیں کیا گیا</translation>
 <translation id="2523184218357549926">‏Google کو ان صفحات کے URLs بھیجتی ہے جنہیں آپ ملاحظہ کرتے ہیں</translation>
+<translation id="252418934079508528"><ph name="DEVICE_OS" /> انسٹال کریں</translation>
 <translation id="252502352004572774">‏Chrome نقصان دہ سافٹ ویئر کے لئے آپ کے کمپیوٹر کو چیک کر رہا ہے...</translation>
 <translation id="2526590354069164005">ڈیسک ٹاپ</translation>
 <translation id="2526619973349913024">اپ ڈیٹ چیک کریں</translation>
@@ -1688,6 +1695,7 @@
 <translation id="2740531572673183784">ٹھیک ہے</translation>
 <translation id="2741713322780029189">بازیابی ٹرمینل کھولیں</translation>
 <translation id="2741912629735277980">‏لاگ ان اسکرین پر UI ڈسپلے کریں</translation>
+<translation id="2742448780373473567"><ph name="DEVICE_OS" /> کو انسٹال کرنے سے آپ کے آلے پر موجود تمام ڈیٹا اوور رائٹ ہو جائے گا۔</translation>
 <translation id="274290345632688601">‏Linux کی ایپس اور فائلز بحال ہو رہی ہیں</translation>
 <translation id="274318651891194348">کی بورڈ کی تلاش ہو رہی ہے</translation>
 <translation id="2743387203779672305">کلپ بورڈ پر کاپی کریں</translation>
@@ -2880,6 +2888,8 @@
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> کو فعال کریں</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" /> کے لئے <ph name="DEVICE_NAME" /> کے بطور قریبی آلات کے لئے مرئی ہے...</translation>
 <translation id="3981760180856053153">محفوظ کرنے کی غلط قسم درج کی گئی۔</translation>
+<translation id="3981828803725658123">‏<ph name="BEGIN_PARAGRAPH1" />کچھ غلط ہو گیا اور <ph name="DEVICE_OS" /> انسٹال نہیں کیا جا سکا۔<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />مزید مدد کے ليے، ملاحظہ کریں: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">اپنے براؤزر کو چند آسان مراحل میں سیٹ کریں</translation>
 <translation id="3983400541576569538">کچھ ایپس کا ڈیٹا غائب ہو سکتا ہے</translation>
 <translation id="3983586614702900908">ایک نامعلوم وینڈر کی جانب سے آلات</translation>
@@ -2967,6 +2977,7 @@
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> کو بند کریں</translation>
 <translation id="4085270836953633510">جب کوئی سائٹ سیریل پورٹس تک رسائی حاصل کرنا چاہے تو پوچھیں</translation>
 <translation id="4085298594534903246">‏JavaScript کو اس صفحہ پر مسدود کر دیا گیا۔</translation>
+<translation id="4085947337119280756">اضافی ایکسٹینشنز</translation>
 <translation id="4087089424473531098">ایکسٹینشن بنایا گیا:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -3270,6 +3281,7 @@
 <translation id="4449996769074858870">یہ ٹیب آڈیو کو چلا رہا ہے۔</translation>
 <translation id="4450274068924249931">اسکرین معطل ہونے پر، تصاویر، وقت، موسم اور میڈیا کی معلومات دکھائیں۔ اسکرین سیور کو فعال کرنے سے چارجنگ کے دوران آپ کا ڈسپلے آن رہے گا۔</translation>
 <translation id="4450974146388585462">تشخیص کریں</translation>
+<translation id="445099924538929605">‏<ph name="DEVICE_OS" /> نے ایک فعال TPM کا پتہ لگایا ہے جو آپ کے ڈیٹا کو زیادہ محفوظ طریقے سے اسٹور کر سکتا ہے۔</translation>
 <translation id="4451479197788154834">‏آپ کا پاس ورڈ اس آلے پر اور آپ کے Google اکاؤنٹ میں محفوظ ہے</translation>
 <translation id="4451757071857432900">دخل انداز یا گمراہ کن اشتہارات دکھانے والی سائٹس پر مسدود کر دیا گيا (تجویز کردہ)</translation>
 <translation id="4453946976636652378">‏<ph name="SEARCH_ENGINE_NAME" /> پر تلاش کریں یا URL ٹائپ کریں</translation>
@@ -3771,6 +3783,9 @@
 <translation id="4992473555164495036">آپ کے منتظم نے اندراج کے دستیاب طریقوں کو محدود کیا ہوا ہے۔</translation>
 <translation id="4994474651455208930">سائٹس کو پروٹوکولز کیلئے ڈیفالٹ ہینڈلرز بننے کیلئے پوچھنے کی اجازت دیں</translation>
 <translation id="4994754230098574403">ترتیب دیا جا رہا ہے</translation>
+<translation id="4995131849631312693">‏<ph name="BEGIN_PARAGRAPH1" />اندراج کرنے سے پہلے آپ کو TPM صاف کرنے کی ضرورت ہے تاکہ <ph name="DEVICE_OS" /> آلے کی ملکیت لے سکے۔<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />آپ TPM آلے کو مکمل طور پر آف بھی کر سکتے ہیں۔ آپ کا ڈیٹا اب بھی سافٹ ویئر مرموز کاری کے ساتھ محفوظ طریقے سے اسٹور کیا جائے گا لیکن کچھ حفاظتی خصوصیات جیسے ہارڈ ویئر کے ذریعے تعاون یافتہ سرٹیفیکیٹس غیر فعال ہو جائیں گے۔<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />آپ سسٹم کی BIOS/UEFI ترتیبات کو ریبوٹ کر کے اور درج کر کے اپنی TPM کی ترتیبات کو تبدیل کرسکتے ہیں۔ آلے کے ماڈل کی بنیاد پر اقدامات مختلف ہوتے ہیں۔ مزید معلومات کیلئے، ریبوٹ کرنے سے پہلے <ph name="DEVICE_OS" /> دستاویزات کو ایک علیحدہ آلے پر کھولیں: [URL کا لنک]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{‏کوئی <ph name="VM_TYPE" /> VMs نہیں ملی}=1{‏1 <ph name="VM_TYPE" /> VM ملی: <ph name="VM_NAME_LIST" />}other{‏{NUM_VMS} <ph name="VM_TYPE" /> VMs مل گئیں: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">کوئی انٹرنیٹ کنکشن نہیں ہے۔</translation>
 <translation id="4998430619171209993">آن</translation>
@@ -3886,6 +3901,7 @@
 <translation id="5127620150973591153">‏محفوظ کنکشن ID: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">‏Sync آف ہے</translation>
 <translation id="5127881134400491887">نیٹ ورک کنکشنز کا نظم کریں</translation>
+<translation id="5128774403617662387">‏شروع کرنے سے پہلے ، یقینی بنائیں کہ آپ کے پاس اپنے ڈیٹا کا بیک اپ ہے۔ <ph name="DEVICE_OS" /> کو انسٹال کرنے سے آپ کی ہارڈ ڈرائیو اوور رائٹ ہو جائے گی۔ g.co/TBD پر مزید جانیں۔</translation>
 <translation id="512903556749061217">منسلک</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">پروفائل ڈاؤن لوڈ نہیں کی جا سکی۔ براہ کرم بعد میں دوبارہ کوشش کریں یا مدد کے لئے کیرئیر سے رابطہ کریں۔</translation>
@@ -4319,6 +4335,7 @@
 <translation id="5592595402373377407">ابھی تک کافی ڈیٹا دستیاب نہیں ہے۔</translation>
 <translation id="5595485650161345191">پتے میں ترمیم کریں</translation>
 <translation id="5596627076506792578">مزید اختیارات</translation>
+<translation id="5600348067066185292">انسٹالیشن میں کچھ آسان مراحل لگتے ہیں۔ آپ کے کمپیوٹر میں تبدیلیاں کرنے سے پہلے آپ کو تصدیق کرنے کا دوسرا موقع ملے گا۔</translation>
 <translation id="5600706100022181951">‏موبائل ڈیٹا <ph name="UPDATE_SIZE_MB" /> MB استعمال کرتے ہوۓ اپڈیٹ ڈاؤن لوڈ ہو جائے گا۔ کیا آپ اسے جاری رکھنا چاہتے ہيں؟</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">‏MIDI آلات سے منسلک ہونے کی اجازت نہیں ہے</translation>
@@ -4378,6 +4395,7 @@
 <translation id="5659593005791499971">ای میل</translation>
 <translation id="5659833766619490117">اس صفحہ کا ترجمہ نہیں کیا جا سکا</translation>
 <translation id="5662513737565158057">‏Linux ایپس کے کام کرنے کا طریقہ تبدیل کریں۔</translation>
+<translation id="5667490069342183561">‏Google کسی بھی ڈیٹا سے محروم ہونے کا ذمہ دار نہیں ہے اور ممکن ہے <ph name="DEVICE_OS" /> غیر تصدیق شدہ ماڈلز پر کام نہ کرے۔ g.co/TBD پر مزید جانیں۔</translation>
 <translation id="5667546120811588575">‏Google Play کو سیٹ کیا جا رہا ہے...</translation>
 <translation id="5668351004957198136">ناکام</translation>
 <translation id="56702779821643359">اپنے آس پاس کے لوگوں کے ساتھ فائلز کا اشتراک کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
@@ -4396,6 +4414,7 @@
 <translation id="5684181005476681636">‏Wi-Fi کی تفصیلات</translation>
 <translation id="5684661240348539843">اثاثہ شناخت کنندہ</translation>
 <translation id="5687326903064479980">ٹائم زون</translation>
+<translation id="5687935527303996204">یقینی بنائیں کہ آپ کا آلہ پلگ ان ہے اور اسے آف نہ کریں۔ انسٹالیشن میں 20 تک لگ سکتے ہیں۔ انسٹالیشن مکمل ہونے پر آپ کا آلہ خودکار طور پر شٹ ڈاؤن ہو جائے گا۔</translation>
 <translation id="5689516760719285838">مقام</translation>
 <translation id="5689531695336322499">‏ایسا لگتا ہے کہ <ph name="SUPERVISED_USER_NAME" /> نے پہلے ہی کسی دوسرے آلہ پر اپنی اسسٹنٹ کے ساتھ Voice Match کو سیٹ اپ کر دیا ہے۔ ان گزشتہ ریکارڈنگز کا استعمال اس آلہ پر ایک صوتی ماڈل تخلیق کرنے کیلئے کیا گیا۔</translation>
 <translation id="56907980372820799">ڈیٹا کو لنک کریں</translation>
@@ -5734,6 +5753,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> ایپ آپ کا مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="7141105143012495934">سائن ان ناکام ہو گیا کیونکہ آپ کے اکاؤنٹ کی تفصیلات کی بازیافت نہيں ہو سکی۔ براہ کرم اپنے منتظم سے رابطہ کریں یا دوبارہ کوشش کریں۔</translation>
 <translation id="7144878232160441200">دوبارہ کوشش کریں</translation>
+<translation id="7149839598364933473">اس آلے کو ایک <ph name="DEVICE_OS" /> آلے میں تبدیل کریں۔</translation>
 <translation id="7149893636342594995">آخری 72 گھنٹے</translation>
 <translation id="7152478047064750137">اس ایکسٹینشن کو کوئی خاص اجازتیں درکار نہیں ہیں</translation>
 <translation id="7154130902455071009">اپنے شروعاتی صفحہ کو اس پر تبدیل کریں: <ph name="START_PAGE" /></translation>
@@ -5828,6 +5848,16 @@
 <translation id="7257666756905341374">آپ جو ڈیٹا کاپی اور پیسٹ کرتے ہیں اسے پڑھیں</translation>
 <translation id="7258225044283673131">ایپلیکیشن جواب نہیں دے رہی ہے۔ ایپ بند کرنے کیلئے، "زبردستی بند کریں" منتخب کریں۔</translation>
 <translation id="7262004276116528033">اس سائن ان سروس کی میزبانی <ph name="SAML_DOMAIN" />  کرتا ہے</translation>
+<translation id="7264432249010320236">اضافی سائٹس</translation>
+<translation id="7264564921322372728">‏<ph name="BEGIN_PARAGRAPH1" />ان ٹربل شوٹنگ اقدامات کو آزمائیں:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />یقینی بنائیں کہ آپ کے آلے میں داخلی اسٹوریج کام کر رہی ہے، جیسے HDD، ‏SSD یا eMMC
+    <ph name="LIST_ITEM" />چیک کریں کہ آپ کے آلے میں داخلی اسٹوریج 16GB سے زیادہ ہے
+    <ph name="LIST_ITEM" />اندرونی اسٹوریج سے کنکشن چیک کریں اگر اس کی طبعی لحاظ سے رسائی حاصل کی جا سکتی ہے
+    <ph name="LIST_ITEM" />یقینی بنائیں کہ آپ ایک تصدیق شدہ ماڈل استعمال کر رہے ہیں اور انسٹال کی نوٹس چیک کریں
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />مزید مدد کیلئے، ملاحظہ کریں: g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">ورچوئل مشین کو انسٹال نہیں کیا جا سکا۔ براہ کرم دوبارہ کوشش کریں، یا اپنے منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="7267875682732693301">اپنے فنگر پرنٹ کے مختلف حصوں کو شامل کرنے کیلئے اپنی انگلی کو اٹھاتے رہیں</translation>
 <translation id="7268127947535186412">یہ ترتیب آلہ کے مالک کے زیر انتظام ہے۔</translation>
@@ -6554,6 +6584,7 @@
 <translation id="7986295104073916105">محفوظ کردہ پاس ورڈ کی ترتیبات پڑھیں اور تبدیل کریں</translation>
 <translation id="7987814697832569482">‏ہمیشہ اس VPN کے ذریعے منسلک کریں</translation>
 <translation id="7988355189918024273">ایکسیسبیلٹی کی خصوصیات کو فعال کریں</translation>
+<translation id="7988805580376093356">‏اپنا OS برقرار رکھیں اور USB سے <ph name="DEVICE_OS" /> چلائیں۔</translation>
 <translation id="7991296728590311172">سوئچ رسائی کی ترتیبات</translation>
 <translation id="7997826902155442747">کارروائی کی ترجیح</translation>
 <translation id="7999229196265990314">مندرجہ ذیل فائلز بنائی گئیں:
@@ -6661,6 +6692,7 @@
 <translation id="80974698889265265">‏PINs مماثل نہیں ہیں</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> ایکسٹینشن سے پراکسی کی ترتیبات کا استعمال کر رہا ہے</translation>
 <translation id="8097959162767603171">‏آپ کے منتظم کو پہلے منتظم کنسول Chrome آلہ کی فہرست میں سروس کی شرائط کو قبول کرنا ہوگا۔</translation>
+<translation id="8098156986344908134"><ph name="DEVICE_OS" /> انسٹال کریں اور ہارڈ ڈرائیو کو مٹائیں؟</translation>
 <translation id="8098616321286360457">نیٹ ورک کنکشن درکار ہے</translation>
 <translation id="810068641062493918">‏<ph name="LANGUAGE" /> کا انتخاب کیا گیا۔ غیر منتخب کرنے کیلئے، Search اور Space دبائیں۔</translation>
 <translation id="810185532889603849">حسب ضرورت رنگ</translation>
@@ -6845,6 +6877,7 @@
 <translation id="8287902281644548111">‏API کال/URL کے لحاظ سے تلاش کریں</translation>
 <translation id="8288032458496410887"><ph name="APP" /> کو اَن انسٹال کریں…</translation>
 <translation id="8289128870594824098">ڈسک کا سائز</translation>
+<translation id="8289509909262565712"><ph name="DEVICE_OS" /> میں خوش آمدید</translation>
 <translation id="8293206222192510085">بُک مارک شامل کریں</translation>
 <translation id="8294431847097064396">ماخذ</translation>
 <translation id="8298429963694909221">‏اب آپ اپنے فون سے اپنے <ph name="DEVICE_TYPE" /> پر اطلاعات موصول کر سکتے ہیں۔ آپ کے <ph name="DEVICE_TYPE" /> پر برخاست کرنے سے اطلاعات آپ کے فون پر بھی برخاست ہو جائيں گی۔ یقینی بنائیں کہ آپ کا فون قریب میں ہے اور اس میں بلوٹوتھ اور Wi-Fi آن ہے۔</translation>
@@ -7168,6 +7201,7 @@
 <translation id="867085395664725367">سرور کی عارضی خرابی پیش آگئی۔</translation>
 <translation id="8673026256276578048">ویب پر تلاش کریں…</translation>
 <translation id="8673383193459449849">سرور کا مسئلہ</translation>
+<translation id="8675704450909805533"><ph name="DEVICE_OS" /> انسٹال کرنے کیلئے انسٹالر ایک درست منزل کو تلاش نہیں کر سکا۔</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{ویڈیو}other{# ویڈیوز}}</translation>
 <translation id="8676313779986170923">تاثرات بھیجنے کا شکریہ۔</translation>
 <translation id="8676374126336081632">ان پٹ صاف کریں</translation>
@@ -7323,6 +7357,7 @@
 <translation id="8823559166155093873">کوکیز کو مسدود کریں</translation>
 <translation id="8823704566850948458">پاس ورڈ تجویز کریں...</translation>
 <translation id="8824701697284169214">&amp;صفحہ شامل کریں…</translation>
+<translation id="8826773185686617320">‏USB کو ہٹائیں اور <ph name="DEVICE_OS" /> کا استعمال شروع کرنے کیلئے اپنا آلہ دوبارہ شروع کریں۔ بصورت دیگر آپ کا آلہ <ph name="TIME_LEFT" /> میں شٹ ڈاؤن ہو جائے گا۔</translation>
 <translation id="8827125715368568315"><ph name="PERMISSION" /> اور مزید <ph name="COUNT" /> کو مسدود کر دیا گیا</translation>
 <translation id="8827289157496676362">ایکسٹینشن پن کریں</translation>
 <translation id="8827752199525959199">مزید کارروائیاں، <ph name="DOMAIN" /> پر <ph name="USERNAME" /> کیلئے پاس ورڈ</translation>
@@ -7457,6 +7492,7 @@
 <translation id="8962051932294470566">آپ ایک وقت میں صرف ایک فائل کا اشتراک کر سکتے ہیں۔ موجودہ منتقلی مکمل ہونے پر دوبارہ کوشش کریں۔</translation>
 <translation id="8962083179518285172">تفصیلات چھپائیں</translation>
 <translation id="8962918469425892674">یہ سائٹ موشن یا لائٹ سینسرز کا استعمال کر رہی ہے۔</translation>
+<translation id="8964943308070692533">اضافی غیر فعال سائٹس</translation>
 <translation id="8965037249707889821">پرانا پاس ورڈ درج کریں</translation>
 <translation id="89667524227025535">‏آلے کا کیمرا استعمال کر کے QR کوڈ اسکین کریں یا اپنے کیریئر کے ذریعے فراہم کردہ فعالیت کا کوڈ درج کریں</translation>
 <translation id="8966809848145604011">دیگر پروفائلز</translation>
@@ -7619,6 +7655,8 @@
 <translation id="9116465289595958864">آخری ترمیم</translation>
 <translation id="9116799625073598554">نوٹ لینے والی ایپ</translation>
 <translation id="9117030152748022724">اپنی ایپس کا نظم کریں</translation>
+<translation id="9120693811286642342">‏<ph name="BEGIN_PARAGRAPH1" />بہترین تجربے کیلئے، اپنی اندرونی ڈسک میں <ph name="DEVICE_OS" /> انسٹال کریں۔ آپ بعد میں اسے لاگ ان اسکرین سے بھی انسٹال کر سکتے ہیں۔<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />اگر آپ انسٹال کرنے کیلئے تیار نہیں ہیں تو اسے آزمانے کیلئے، آپ اسے USB سے چلا سکتے ہیں۔ اس سے آپ کا موجودہ OS اور ڈیٹا محفوظ رہے گا، لیکن آپ کی اسٹوریج اور کارکردگی کی حدود کم ہو سکتی ہیں۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">پن کردہ ٹیب کے بطور کھولیں</translation>
 <translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> موقوف ہے</translation>
 <translation id="9124003689441359348">محفوظ کردہ پاس ورڈز یہاں ظاہر ہوں گے</translation>

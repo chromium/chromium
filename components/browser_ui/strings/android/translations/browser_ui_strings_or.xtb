@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">ଯେତେବେଳେ ଏକ ସାଇଟ୍ ଆଖପାଖର ବ୍ଲୁଟୂଥ୍ ଡିଭାଇସ୍‍ଗୁଡ଼ିକୁ ଖୋଜିବାକୁ ଚାହୁଁଛି, ସେତେବେଳେ ପଚାରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="2315043854645842844">କ୍ଲାଏଣ୍ଟ ସାଇଡ୍ ସାର୍ଟିଫିକେଟ୍ ଚୟନ ଅପରେଟିଂ ସିଷ୍ଟମ୍‍ ଦ୍ବାରା ସପୋର୍ଟ କରୁନାହିଁ।</translation>
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
+<translation id="2379925928934107488">ଯେତେବେଳେ ସମ୍ଭବ, Chrome ଗାଢ଼ା ଥିମ ବ୍ୟବହାର କରିବା ସମୟରେ ସାଇଟଗୁଡ଼ିକରେ ଗାଢ଼ା ଥିମ ଲାଗୁ କରନ୍ତୁ</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ଏବଂ ଅଧିକ <ph name="NUM_MORE" />ଟିକୁ ଅନୁମତି ଦିଆଯାଇଛି}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ଏବଂ ଅଧିକ <ph name="NUM_MORE" />ଟିକୁ ଅନୁମତି ଦିଆଯାଇଛି}}</translation>
 <translation id="2434158240863470628">ଡାଉନ୍‌ଲୋଡ୍ ଶେଷ ହେଲା <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">ଏହି ଡିଭାଇସ୍‌ ପାଇଁ ଲୋକେସନ୍‌ ଆକ୍ସେସ୍‌ ମଧ୍ୟ ବନ୍ଦ ଅଛି। ଏହାକୁ <ph name="BEGIN_LINK" />Android ସେଟିଂସ୍‌<ph name="END_LINK" />ରେ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="257931822824936280">ସଂପ୍ରସାରିତ - ସଙ୍କୁଚିତ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="2586657967955657006">କ୍ଲିପ୍‌ବୋର୍ଡ</translation>
+<translation id="2597457036804169544">ସାଇଟଗୁଡ଼ିକରେ ଗାଢ଼ା ଥିମ ଲାଗୁ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="2621115761605608342">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ୍ ପାଇଁ JavaScriptକୁ ଅନୁମତି ଦିଏ।</translation>
 <translation id="2653659639078652383">ଉପସ୍ଥାପନ</translation>
 <translation id="2677748264148917807">ଛାଡ଼ନ୍ତୁ</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">ଯେଉଁ ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକରେ ସାଉଣ୍ଡ ଚାଲୁଛି ସେଗୁଡ଼ିକୁ ମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="3744111561329211289">ପୃଷ୍ଠପଟ ସିଙ୍କ୍‌</translation>
 <translation id="3763247130972274048">10 ସେକେଣ୍ଡ ବାଦ୍ ଦେବାକୁ ଭିଡିଓର ବାମ କିମ୍ବା ଡାହାଣକୁ ଦୁଇ ଥର ଟାପ୍ କରନ୍ତୁ</translation>
+<translation id="3797520601150691162">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ ପାଇଁ ଗାଢ଼ା ଥିମ ଲାଗୁ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="381841723434055211">ଫୋନ୍ ନମ୍ଵରଗୁଡ଼ିକ</translation>
 <translation id="3835233591525155343">ଆପଣଙ୍କ ଡିଭାଇସର ବ୍ୟବହାର</translation>
 <translation id="385051799172605136">ପଛକୁ</translation>
@@ -244,6 +247,7 @@
 <translation id="7302486331832100261">ଆପଣ ସାଧାରଣତଃ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତି। ଅନୁମତି ଦେବା ପାଇଁ, ବିବରଣୀରେ ଟାପ୍ କରନ୍ତୁ।</translation>
 <translation id="7423098979219808738">ପ୍ରଥମେ ପଚାରନ୍ତୁ</translation>
 <translation id="7423538860840206698">ପଢ଼ିବା କ୍ଲିପ୍‌ବୋର୍ଡରୁ ଅବରୋଧ କରାଯାଇଛି</translation>
+<translation id="7425915948813553151">ସାଇଟଗୁଡ଼ିକ ପାଇଁ ଗାଢ଼ା ଥିମ</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">କୌଣସି ସାଇଟ୍ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="7561196759112975576">ସର୍ବଦା</translation>

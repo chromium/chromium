@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Nachfragen, wenn eine Website nach Bluetooth-Geräten in der Nähe suchen möchte (empfohlen)</translation>
 <translation id="2315043854645842844">Die clientseitige Zertifikatauswahl wird vom Betriebssystem nicht unterstützt.</translation>
 <translation id="2359808026110333948">Weiter</translation>
+<translation id="2379925928934107488">Sofern möglich, dunkles Design auf Websites anwenden, wenn Chrome das dunkle Design verwendet</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere zugelassen}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere zugelassen}}</translation>
 <translation id="2434158240863470628">Download abgeschlossen <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">Der Standortzugriff ist für dieses Gerät ebenfalls deaktiviert. Sie können ihn in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
 <translation id="257931822824936280">Maximiert – zum Minimieren klicken</translation>
 <translation id="2586657967955657006">Zwischenablage</translation>
+<translation id="2597457036804169544">Dunkles Design nicht auf Websites anwenden</translation>
 <translation id="2621115761605608342">JavaScript für eine bestimmte Website zulassen.</translation>
 <translation id="2653659639078652383">Senden</translation>
 <translation id="2677748264148917807">Verlassen</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Websites stummschalten, die Ton wiedergeben</translation>
 <translation id="3744111561329211289">Hintergrundsynchronisierung</translation>
 <translation id="3763247130972274048">Tippen Sie links oder rechts im Video doppelt, um 10 s zu überspringen</translation>
+<translation id="3797520601150691162">Dunkles Design auf eine bestimmte Website nicht anwenden</translation>
 <translation id="381841723434055211">Telefonnummern</translation>
 <translation id="3835233591525155343">Meine Gerätenutzung</translation>
 <translation id="385051799172605136">Zurück</translation>
@@ -244,6 +247,7 @@
 <translation id="7302486331832100261">Normalerweise blockieren Sie Benachrichtigungen. Sie können auf Details tippen, um sie zuzulassen.</translation>
 <translation id="7423098979219808738">Zuerst fragen</translation>
 <translation id="7423538860840206698">Es dürfen keine Dateien aus der Zwischenablage abgerufen werden</translation>
+<translation id="7425915948813553151">Dunkles Design für Websites</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Eine Website verwendet Ihr Mikrofon</translation>
 <translation id="7561196759112975576">Immer</translation>

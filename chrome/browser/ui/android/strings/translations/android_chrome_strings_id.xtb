@@ -404,6 +404,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3429160811076349561">Fitur uji coba nonaktif</translation>
 <translation id="3440975416244667276">Sentuh lama untuk mendapatkan info yang lebih relevan</translation>
 <translation id="3443221991560634068">Memuat ulang halaman saat ini</translation>
+<translation id="3444179773590444986">Bagikan masukan terkait tema gelap untuk situs?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 download dijadwalkan}other{# download dijadwalkan}}</translation>
 <translation id="3478363558367712427">Anda dapat memilih mesin telusur Anda</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /> konten yang disarankan</translation>
@@ -585,6 +586,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4663499661119906179">Lihat situs dan artikel teratas untuk Anda</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> bookmark dihapus</translation>
 <translation id="4668347365065281350">Semua data yang disimpan oleh situs, termasuk cookie dan data lain yang disimpan secara lokal</translation>
+<translation id="4678082183394354975">Tema gelap untuk situs aktif di Chrome</translation>
 <translation id="4684427112815847243">Sinkronkan semua</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lainnya}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lainnya}}</translation>
 <translation id="4696983787092045100">Kirim pesan teks ke Perangkat Anda</translation>
@@ -766,6 +768,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5754350196967618083">Tidak dapat memuat ulang Discover</translation>
 <translation id="5763382633136178763">Tab samaran</translation>
 <translation id="5763514718066511291">Ketuk untuk menyalin URL aplikasi ini</translation>
+<translation id="5765517223145864268">Ceritakan pengalaman Anda. Atau <ph name="BEGIN_LINK" />ubah setelan Anda<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">Deskripsi:</translation>
 <translation id="5767013862801005129">Memulihkan tab <ph name="TAB_TITLE" /></translation>
 <translation id="5776970333778123608">Data yang tidak penting</translation>
@@ -953,6 +956,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6738516213925468394">Data Anda dienkripsi dengan <ph name="BEGIN_LINK" />frasa sandi sinkronisasi<ph name="END_LINK" /> pada tanggal <ph name="TIME" />. Masukkan frasa sandi untuk memulai sinkronisasi.</translation>
 <translation id="6738867403308150051">Mendownload…</translation>
 <translation id="6751521182688001123">Buka tab baru dengan cepat. Sentuh lama untuk mengedit pintasan ini.</translation>
+<translation id="6756507620369789050">Bagikan masukan</translation>
 <translation id="6767294960381293877">Daftar perangkat yang dapat digunakan untuk berbagi tab terbuka dalam setengah layar.</translation>
 <translation id="6783942555455976443">Simpan halaman ini untuk dilihat nanti dan dapatkan pengingat</translation>
 <translation id="6795633245022906657">Buka tab baru dengan cepat. Untuk mengedit pintasan ini, buka Setelan.</translation>
@@ -1044,6 +1048,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7352651011704765696">Ada yang tidak beres</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Bagikan 1 item yang dipilih}other{Bagikan # item yang dipilih}}</translation>
+<translation id="7356631068872238169">Hapus dari Daftar Bacaan</translation>
 <translation id="7359002509206457351">Akses metode pembayaran</translation>
 <translation id="7375125077091615385">Jenis:</translation>
 <translation id="7376560087009844242">Dengan menyertakan lebih banyak teks halaman, Anda dapat melihat hasil yang lebih baik saat menggunakan fitur Sentuh untuk Menelusuri. Anda dapat membuka <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" /> kapan saja untuk mengubahnya.</translation>
@@ -1214,6 +1219,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8266862848225348053">Lokasi download</translation>
 <translation id="8274165955039650276">Lihat hasil download</translation>
 <translation id="8281886186245836920">Lewati</translation>
+<translation id="8282297628636750033">Terapkan tema gelap ke situs, jika mungkin</translation>
 <translation id="8284326494547611709">Teks</translation>
 <translation id="829672787777123339">Menghubungkan ke perangkat …</translation>
 <translation id="8310344678080805313">Tab standar</translation>
@@ -1345,6 +1351,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="9063523880881406963">Nonaktifkan Ubah situs desktop</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9065383040763568503">Data tersimpan yang dianggap tidak penting oleh Chrome (misalnya situs yang tidak memiliki setelan tersimpan atau situs yang jarang Anda kunjungi)</translation>
+<translation id="906781307897697745">di <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Tidak ada halaman yang belum dibaca</translation>
 <translation id="9070377983101773829">Mulai penelusuran suara</translation>
 <translation id="9074336505530349563">Untuk mendapatkan konten hasil personalisasi yang disarankan oleh Google, login dan aktifkan sinkronisasi</translation>

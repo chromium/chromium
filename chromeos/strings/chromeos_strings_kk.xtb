@@ -58,6 +58,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1881378885488531302">IP мекенжайын алу мүмкін емес</translation>
 <translation id="1887850431809612466">Жабдық нұсқасы</translation>
+<translation id="1901646112321215184">Ешбір DNS сервері конфигурацияланбаған.</translation>
 <translation id="1905710495812624430">Максималды рұқсат етілетін әрекеттер шегінен асып кетті.</translation>
 <translation id="1908234395526491708">UDP сұрауының ақаулары</translation>
 <translation id="1930797645656624981">Chrome OS енгізу әдісі қызметі</translation>
@@ -74,6 +75,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">КЕЗЕКТЕ</translation>
 <translation id="2161394479394250669">Баспа жұмысынан бас тарту</translation>
+<translation id="2180197493692062006">Бірдеңе дұрыс болмады. Қолданбаны қайта ашып көріңіз.</translation>
 <translation id="2209788852729124853">Трафик есептегіштерін нөлдеу</translation>
 <translation id="2212733584906323460">Атаулар ажыратымдылығы</translation>
 <translation id="2217935453350629363">Қазіргі жылдамдық</translation>
@@ -89,6 +91,7 @@
 <translation id="2391082728065870591">Пікірлер есебін жіберу</translation>
 <translation id="2407209115954268704">SIM картасын құлыптау күйі</translation>
 <translation id="2418150275289244458">Параметрлер бөлімінен ашу</translation>
+<translation id="2421798028054665193"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /> сурет</translation>
 <translation id="2446553403094072641">Жылжымалы үтір дәлдігі</translation>
 <translation id="2448312741937722512">Түрі</translation>
 <translation id="2461822463642141190">Қазіргі</translation>
@@ -107,11 +110,13 @@
 <translation id="2860473693272905224">Сканерге басқа бет қойыңыз.</translation>
 <translation id="2872961005593481000">Өшіру</translation>
 <translation id="2878387241690264070">Заряд <ph name="NUM_SECONDS" /> секундта <ph name="RATE" /> азайды.</translation>
+<translation id="2927511423571448384">Брандмауэр арқылы Android-тан HTTP (80-порт) веб-сайттарына қосылу мүмкін емес.</translation>
 <translation id="3008341117444806826">ЖАҢАРТУ</translation>
 <translation id="3009958530611748826">Сканерленген мазмұн сақталатын қалтаны таңдаңыз</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Соңғы нүкте</translation>
 <translation id="3069085583900247081">Тексерілмеді.</translation>
+<translation id="3076387335132326640">Ашық желіні қолданып жатырсыз.</translation>
 <translation id="3083667275341675831">Байланыс диагностикасы</translation>
 <translation id="3091839911843451378">Сәтсіз: тоқтатылды</translation>
 <translation id="3102119246920354026">Кэш</translation>
@@ -199,6 +204,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> мАсағ батарея</translation>
 <translation id="4561801978359312462">SIM құлпы ашық</translation>
 <translation id="4562494484721939086">Қызмет жоқ</translation>
+<translation id="4567024731344774461">Android-тан DNS-ті анықтау мүмкін емес.</translation>
 <translation id="458794348635939462">Барлық хост атаулары түрлендірілмеді.</translation>
 <translation id="4593212453765072419">Прокси растауы талап етіледі.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Басып шығарудан бас тарту үшін "Enter" пернесін басыңыз.</translation>
@@ -223,6 +229,7 @@
 <translation id="484790837831576105">DNS ажыратымдылығы (Android)</translation>
 <translation id="4848429997038228357">ТЕКСЕРІЛУДЕ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}other{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}}</translation>
+<translation id="4871137769558798671">Брандмауэр арқылы HTTPS (443-порт) веб-сайттарына қосылу мүмкін емес.</translation>
 <translation id="4880328057631981605">Кіру нүктесінің атауы</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Дереу жаңа құпия сөз таңдаңыз.</translation>
@@ -257,6 +264,7 @@
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029"><ph name="MILESTONE_VERSION" />-нұсқа</translation>
 <translation id="5300814202279832142">Терезені жұмыс үстеліне жылжыту</translation>
+<translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Идентификация мәліметі</translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5318334351163689047">TCP сұрауының ақаулары</translation>
@@ -278,6 +286,8 @@
 <translation id="5502931783115429516">Android іске қосылмаған.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5546352997259770619">Сигнал күші аз, кіру нүктесіне жақындап көріңіз.</translation>
+<translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Қайта сканерлеу</translation>
 <translation id="5669267381087807207">Белсендірілуде</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -318,6 +328,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Пайдаланған сайын, батарея сыйымдылығы азая береді.</translation>
 <translation id="6191293864534840972">Атау серверлері форматы дұрыс емес.</translation>
+<translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Сканерлер жоқ</translation>
 <translation id="6232017090690406397">Батарея</translation>
 <translation id="6243280677745499710">Орнатылып тұрған</translation>
@@ -327,6 +338,7 @@
 <translation id="636850387210749493">Кәсіпорынды тіркеу</translation>
 <translation id="6379086450106841622">Сенсорлық экран</translation>
 <translation id="6388847657025262518">Сканердің құжат бергіші кептеліп қалды. Құжат бергішті тексеріп, әрекетті қайталаңыз.</translation>
+<translation id="6395640744968320699">Брандмауэр арқылы HTTP (80-порт) веб-сайттарына қосылу мүмкін емес.</translation>
 <translation id="641081527798843608">Тақырып сәйкестігі</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Жақсы</translation>
@@ -334,6 +346,7 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> басқарады</translation>
 <translation id="649050271426829538">Тоқтатылды: қағаз кептелісі</translation>
+<translation id="6498608540383876992">Шлюзбен байланысу мүмкін емес.</translation>
 <translation id="6516990319416533844">Батареяны зарядтау жылдамдығын тексеру үшін оны қысқа уақыт пайдаланып, зарядын азайтыңыз.</translation>
 <translation id="6517239166834772319">Шолу</translation>
 <translation id="6527081081771465939">WiFi қауіпсіздік протоколы белгісіз.</translation>
@@ -381,6 +394,7 @@
 <translation id="7271040990581020067">Сканер пайдаланылуда. Кейінірек қайталап көріңіз.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Тұсқағаз жинақтары</translation>
+<translation id="7292680402155138244">HTTPS (443-порт) веб-сайттарына кідіріс жоғары.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -431,12 +445,15 @@
 <translation id="7994702968232966508">EAP әдісі</translation>
 <translation id="8020238979854764615">Қате шықты. Басқа суреттерді таңдап, қайталап көріңіз.</translation>
 <translation id="802154636333426148">Жүктеу сәтсіз аяқталды</translation>
+<translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Пікір жіберу</translation>
 <translation id="8075838845814659848">Қалған заряд</translation>
 <translation id="808894953321890993">Кұпия сөзді өзгерту</translation>
 <translation id="811820734797650957">Шлюз байланысы тексеріледі (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Трафик есептегіштерін сұрау</translation>
+<translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8177708084858970226">DNS-ті анықтау мүмкін емес.</translation>
 <translation id="8206859287963243715">Ұялы</translation>
 <translation id="8208861521865154048">Бонустар</translation>
 <translation id="8230672074305416752">Әдепкі желі шлюзінің байланысы тексерілмеді.</translation>
@@ -448,6 +465,7 @@
 <translation id="8297006494302853456">Әлсіз</translation>
 <translation id="8302368968391049045">HTTPS брандмауэрі</translation>
 <translation id="8318753676953949627">Кескіндер жоқ.</translation>
+<translation id="8346875532700229909">Android-тан шлюзбен байланысу мүмкін емес.</translation>
 <translation id="8347227221149377169">Баспа жұмыстары</translation>
 <translation id="8352772353338965963">Бірнеше аккаунтға кіру үшін аккаунт қосыңыз. Барлық кірілген аккаунтларға құпия сөзсіз кіруге болады, сондықтан бұл мүмкіндікті тек сенімді аккаунтлар пайдалануы тиіс.</translation>
 <translation id="8364946094152050673">Атау серверлері бос.</translation>
@@ -479,6 +497,7 @@
 <translation id="8747900814994928677">Өзгерісті растау</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="879568662008399081">Бұл желіде адаптивті портал болуы мүмкін.</translation>
 <translation id="8798099450830957504">Әдепкі</translation>
 <translation id="8798441408945964110">Провайдер аты</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
@@ -502,6 +521,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканерлеу}=1{{NUMBER_OF_PAGES} бетті сканерлеу}other{{NUMBER_OF_PAGES} бетті сканерлеу}}</translation>
 <translation id="9003704114456258138">Жиілік</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9062831201344759865">DNS ажыратымдылығының кідірісі жоғары.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Қазір пайдаланылуы</translation>

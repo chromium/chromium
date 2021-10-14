@@ -583,6 +583,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1612019740169791082">Ihr Container unterstützt keine Anpassungen der Laufwerkgröße. Wenn Sie den Speicherplatz anpassen möchten, der für Linux reserviert wurde, machen Sie eine Sicherungskopie und stellen Sie die Anwendung in einem neuen Container wieder her.</translation>
 <translation id="1614511179807650956">Sie haben eventuell Ihr mobiles Datenkontingent aufgebraucht. Besuchen Sie das <ph name="NAME" />-Aktivierungsportal, um weiteres Datenkontingent zu kaufen.</translation>
 <translation id="161460670679785907">Ihr Smartphone wurde nicht erkannt</translation>
+<translation id="1615337439947999338">Im Google-Konto speichern (<ph name="EMAIL" />)</translation>
 <translation id="1615402009686901181">Die Administratorrichtlinie blockiert die Bildschirmaufnahme, wenn vertrauliche Inhalte sichtbar sind</translation>
 <translation id="1616206807336925449">Diese Erweiterung erfordert keine speziellen Berechtigungen.</translation>
 <translation id="1616298854599875024">Die Erweiterung "<ph name="IMPORT_NAME" />" konnte nicht importiert werden, da es sich nicht um ein freigegebenes Modul handelt</translation>
@@ -912,6 +913,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1929546189971853037">Browserverlauf auf allen Ihren angemeldeten Geräten lesen</translation>
 <translation id="1930879306590754738">Passwort auf diesem Gerät und in Ihrem Google-Konto gelöscht</translation>
 <translation id="1931152874660185993">Keine Komponenten installiert</translation>
+<translation id="1931410639376954712"><ph name="DEVICE_OS" /> wird installiert</translation>
 <translation id="1932098463447129402">Nicht vor</translation>
 <translation id="1935303383381416800">Dürfen meine Standortdaten abrufen</translation>
 <translation id="1936931585862840749">Geben Sie eine Zahl ein, um die Anzahl der zu druckenden Exemplare festzulegen (1 bis <ph name="MAX_COPIES" />).</translation>
@@ -1044,6 +1046,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="208586643495776849">Versuchen Sie es bitte noch einmal</translation>
 <translation id="208634871997892083">Durchgehend aktives VPN</translation>
 <translation id="2087822576218954668">Drucken: <ph name="PRINT_NAME" /></translation>
+<translation id="2088092308059522196">Die Anmeldung wird erst nach der Installation von <ph name="DEVICE_OS" /> unterstützt.</translation>
 <translation id="208928984520943006">Sie können jederzeit von unten nach oben wischen, um den Startbildschirm aufzurufen.</translation>
 <translation id="2089566709556890888">Sicher surfen mit Google Chrome</translation>
 <translation id="2089795179672254991">Nachfragen, wenn eine Website Texte und Bilder aus der Zwischenablage abrufen möchte (empfohlen)</translation>
@@ -1168,6 +1171,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2203088913459920044">Der Name darf aus Buchstaben, Ziffern und Sonderzeichen bestehen</translation>
 <translation id="2204034823255629767">Ihre Eingaben lesen und ändern</translation>
 <translation id="220858061631308971">Geben Sie diesen PIN-Code bitte auf "<ph name="DEVICE_NAME" /> " ein:</translation>
+<translation id="2210462644007531147">Installation konnte nicht abgeschlossen werden</translation>
 <translation id="2212565012507486665">Cookies zulassen</translation>
 <translation id="2214018885812055163">Freigegebene Ordner</translation>
 <translation id="2214884991347062907">Falsches Passwort. Versuchen Sie es noch einmal.</translation>
@@ -1221,6 +1225,8 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="22665427234727190">Nachfragen, wenn eine Website auf Bluetooth-Geräte zugreifen möchte (empfohlen)</translation>
 <translation id="2266957463645820432">IPP über USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Daten mit einem beliebigen Gerät in der Domain "<ph name="DOMAIN" />" austauschen</translation>
+<translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />Durch die Installation <ph name="BEGIN_BOLD" />wird Ihre gesamte Festplatte gelöscht<ph name="END_BOLD" />. Sichern Sie unbedingt Ihre Daten.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Sobald die Installation gestartet wurde, kann sie nicht mehr abgebrochen werden.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Daten mit einem beliebigen Gerät in diesen Domains austauschen: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Schalter für „Auswählen“ zuweisen</translation>
 <translation id="2271469253353559191">Zeitplan für dunklen Modus</translation>
@@ -1482,6 +1488,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2521854691574443804"><ph name="FILE_NAME" /> wird auf die Einhaltung der Sicherheitsrichtlinien Ihres Unternehmens geprüft…</translation>
 <translation id="252219247728877310">Komponente nicht aktualisiert</translation>
 <translation id="2523184218357549926">URLs der von Ihnen besuchten Seiten werden an Google gesendet</translation>
+<translation id="252418934079508528"><ph name="DEVICE_OS" /> installieren</translation>
 <translation id="252502352004572774">Chrome prüft jetzt Ihren Computer auf schädliche Software…</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2526619973349913024">Nach Updates suchen</translation>
@@ -1686,6 +1693,7 @@ und „Strg + Alt + dunkler“, um herauszuzoomen.</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2741713322780029189">Terminal zur Wiederherstellung öffnen</translation>
 <translation id="2741912629735277980">UI auf dem Anmeldebildschirm anzeigen</translation>
+<translation id="2742448780373473567">Wenn Sie <ph name="DEVICE_OS" /> installieren, werden alle Daten auf Ihrem Gerät überschrieben.</translation>
 <translation id="274290345632688601">Linux-Apps und -Dateien werden wiederhergestellt</translation>
 <translation id="274318651891194348">Suche nach Tastatur läuft</translation>
 <translation id="2743387203779672305">In Zwischenablage kopieren</translation>
@@ -2878,6 +2886,8 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> aktivieren</translation>
 <translation id="3981058120448670012">Für <ph name="REMAINING_TIME" /> als <ph name="DEVICE_NAME" /> für Geräte in der Nähe sichtbar…</translation>
 <translation id="3981760180856053153">Eingegebener Speichertyp ist ungültig.</translation>
+<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />Fehler – <ph name="DEVICE_OS" /> konnte nicht installiert werden.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Weitere Informationen finden Sie auf g.co/xxxxx.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">Sie können Ihren Browser mit ein paar einfachen Schritten einrichten</translation>
 <translation id="3983400541576569538">Daten aus anderen Apps gehen unter Umständen verloren</translation>
 <translation id="3983586614702900908">Geräte von einem unbekannten Anbieter</translation>
@@ -2965,6 +2975,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> schließen</translation>
 <translation id="4085270836953633510">Nachfragen, wenn eine Website auf serielle Schnittstellen zugreifen möchte</translation>
 <translation id="4085298594534903246">JavaScript wurde auf dieser Seite blockiert.</translation>
+<translation id="4085947337119280756">Zusätzliche Erweiterungen</translation>
 <translation id="4087089424473531098">Die folgende Erweiterung wurde erstellt:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -3268,6 +3279,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4449996769074858870">In diesem Tab wird Audio wiedergegeben.</translation>
 <translation id="4450274068924249931">Wenn Ihr Bildschirm inaktiv ist, können Sie sich Fotos, die Zeit sowie Wetter- und Medieninformationen anzeigen lassen. Mit dem Bildschirmschoner bleibt der Bildschirm auch während dem Laden an.</translation>
 <translation id="4450974146388585462">Diagnose</translation>
+<translation id="445099924538929605"><ph name="DEVICE_OS" /> hat ein aktives TPM erkannt, das Ihre Daten sicherer speichern kann.</translation>
 <translation id="4451479197788154834">Ihr Passwort ist auf diesem Gerät und in Ihrem Google-Konto gespeichert</translation>
 <translation id="4451757071857432900">Auf Websites blockiert, die aufdringliche oder irreführende Werbung anzeigen (empfohlen)</translation>
 <translation id="4453946976636652378">Mit <ph name="SEARCH_ENGINE_NAME" /> suchen oder eine URL eingeben</translation>
@@ -3767,6 +3779,9 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4992473555164495036">Ihr Administrator hat die verfügbaren Eingabemethoden eingeschränkt.</translation>
 <translation id="4994474651455208930">Registrierung von Websites als Standard-Handler für Protokolle zulassen</translation>
 <translation id="4994754230098574403">Wird eingerichtet</translation>
+<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />Vor der Registrierung müssen Sie das TPM löschen, damit <ph name="DEVICE_OS" /> Inhaber des Geräts werden kann.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Sie können das TPM auf dem Gerät auch vollständig deaktivieren. Ihre Daten sind auch danach mit Software-Verschlüsselung sicher gespeichert. Einige Sicherheitsfunktionen, wie hardwaregestützte Zertifikate, werden jedoch deaktiviert.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Sie können Ihre TPM-Einstellungen ändern, indem Sie einen Neustart ausführen und die BIOS/UEFI-Einstellungen des Systems eingeben. Je nach Gerätemodell können diese Schritte variieren. Wenn Sie weitere Informationen benötigen, können Sie vor dem Neustart die <ph name="DEVICE_OS" />-Dokumentation auf einem separaten Gerät öffnen: [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Keine <ph name="VM_TYPE" />-VMs gefunden}=1{1 <ph name="VM_TYPE" />-VM gefunden: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" />-VMs gefunden: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Keine Internetverbindung.</translation>
 <translation id="4998430619171209993">An</translation>
@@ -3882,6 +3897,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5127620150973591153">ID der sicheren Verbindung: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Synchronisierung ist deaktiviert</translation>
 <translation id="5127881134400491887">Netzwerkverbindungen verwalten</translation>
+<translation id="5128774403617662387">Prüfen Sie vor der Installation, ob Sie eine Sicherung Ihrer Daten haben. Wenn Sie <ph name="DEVICE_OS" /> installieren, werden die Daten auf Ihrer Festplatte überschrieben. Weitere Informationen finden Sie unter g.co/TBD.</translation>
 <translation id="512903556749061217">angeschlossen</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Das Profil konnte nicht heruntergeladen werden. Bitte versuche es später noch einmal oder wende dich an deinen Mobilfunkanbieter.</translation>
@@ -4316,6 +4332,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5592595402373377407">Noch nicht genügend Daten vorhanden</translation>
 <translation id="5595485650161345191">Adresse bearbeiten</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
+<translation id="5600348067066185292">Die Installation ist einfach und gelingt in wenigen Schritten. Sie müssen noch einmal alles bestätigen, bevor Änderungen an Ihrem Computer vorgenommen werden.</translation>
 <translation id="5600706100022181951">Der Download des Updates verbraucht <ph name="UPDATE_SIZE_MB" /> MB an mobilen Daten. Möchten Sie fortfahren?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Dürfen keine Verbindung mit MIDI-Geräten herstellen</translation>
@@ -4375,6 +4392,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5659593005791499971">E-Mail</translation>
 <translation id="5659833766619490117">Diese Seite konnte nicht übersetzt werden</translation>
 <translation id="5662513737565158057">Hier können Sie ändern, wie Linux-Apps ausgeführt werden.</translation>
+<translation id="5667490069342183561">Google übernimmt keine Verantwortung für Datenverluste und <ph name="DEVICE_OS" /> funktioniert möglicherweise nicht auf nicht zertifizierten Modellen. Weitere Informationen finden Sie unter g.co/TBD.</translation>
 <translation id="5667546120811588575">Google Play wird eingerichtet...</translation>
 <translation id="5668351004957198136">Nicht erfolgreich</translation>
 <translation id="56702779821643359">Sie können Dateien ganz einfach mit Menschen in der Nähe teilen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -4393,6 +4411,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5684181005476681636">WLAN-Details</translation>
 <translation id="5684661240348539843">Asset-ID</translation>
 <translation id="5687326903064479980">Zeitzone</translation>
+<translation id="5687935527303996204">Sehen Sie nach, ob das Gerät eingesteckt ist und schalten Sie es nicht aus. Die Installation kann bis zu 20 Minuten dauern. Ihr Gerät wird automatisch heruntergefahren, sobald die Installation fertig ist.</translation>
 <translation id="5689516760719285838">Standort</translation>
 <translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" /> hat Voice Match mit Assistant offenbar schon auf einem anderen Gerät eingerichtet. Diese vorherigen Aufnahmen wurden verwendet, um ein Sprachmodell auf diesem Gerät zu erstellen.</translation>
 <translation id="56907980372820799">Daten verknüpfen</translation>
@@ -5731,6 +5750,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> verwendet dein Mikrofon</translation>
 <translation id="7141105143012495934">Sie konnten nicht angemeldet werden, weil Ihre Kontodetails nicht abgerufen werden konnten. Bitte wenden Sie sich an Ihren Administrator oder versuchen Sie es erneut.</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
+<translation id="7149839598364933473">Machen Sie aus diesem Gerät ein <ph name="DEVICE_OS" />-Gerät.</translation>
 <translation id="7149893636342594995">Letzte 24 Stunden</translation>
 <translation id="7152478047064750137">Diese Erweiterung erfordert keine speziellen Berechtigungen</translation>
 <translation id="7154130902455071009">Startseite in <ph name="START_PAGE" /> ändern</translation>
@@ -5825,6 +5845,16 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7257666756905341374">Daten lesen, die Sie kopieren und einfügen</translation>
 <translation id="7258225044283673131">Die Anwendung reagiert nicht. Wählen Sie "Schließen erzwingen" aus, um die App zu beenden.</translation>
 <translation id="7262004276116528033">Dieser Anmeldedienst wird von <ph name="SAML_DOMAIN" /> gehostet.</translation>
+<translation id="7264432249010320236">Zusätzliche Websites</translation>
+<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Führen Sie diese Schritte zur Fehlerbehebung aus:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Achten Sie darauf, dass Ihr Gerät einen funktionierenden internen Speicher hat, z. B. eine HDD, SSD oder einen eMMC-Speicher
+    <ph name="LIST_ITEM" />Achten Sie darauf, dass der interne Speicher größer als 16 GB ist
+    <ph name="LIST_ITEM" />Prüfen Sie die Verbindung zum internen Speicher, sofern auf diesen zugegriffen werden kann
+    <ph name="LIST_ITEM" />Achten Sie darauf, dass Sie ein zertifiziertes Modell verwenden und sehen Sie sich die Installationshinweise an
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Weitere Informationen finden Sie unter g.co/xxxxx<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">Die virtuelle Maschine konnte nicht installiert werden. Versuchen Sie es noch einmal oder wenden Sie sich an Ihren Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Legen Sie den Finger immer wieder in leicht geänderter Position auf, bis der Abdruck vollständig erfasst ist</translation>
 <translation id="7268127947535186412">Diese Einstellung wird vom Eigentümer des Geräts verwaltet.</translation>
@@ -6550,6 +6580,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7986295104073916105">Einstellungen für gespeicherte Passwörter aufrufen und ändern</translation>
 <translation id="7987814697832569482">Immer über dieses VPN verbinden</translation>
 <translation id="7988355189918024273">Bedienungshilfen aktivieren</translation>
+<translation id="7988805580376093356">Behalten Sie Ihr Betriebssystem und führen Sie <ph name="DEVICE_OS" /> über USB aus.</translation>
 <translation id="7991296728590311172">Einstellungen für Schalterzugriff</translation>
 <translation id="7997826902155442747">Prozesspriorität</translation>
 <translation id="7999229196265990314">Folgende Dateien wurden erstellt:
@@ -6658,6 +6689,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="80974698889265265">Die PINs stimmen nicht überein</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> verwendet Proxy-Einstellungen einer Erweiterung</translation>
 <translation id="8097959162767603171">Ihr Administrator muss zuerst die Nutzungsbedingungen in der Chrome-Geräteliste der Admin-Konsole akzeptieren.</translation>
+<translation id="8098156986344908134"><ph name="DEVICE_OS" /> installieren und Festplatte löschen?</translation>
 <translation id="8098616321286360457">Netzwerkverbindung erforderlich</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> ausgewählt. Drücken Sie zum Aufheben der Auswahl die Suchtaste + Leertaste.</translation>
 <translation id="810185532889603849">Personalisierte Farbe</translation>
@@ -6842,6 +6874,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8287902281644548111">Anhand des API-Aufrufs bzw. der URL suchen</translation>
 <translation id="8288032458496410887"><ph name="APP" /> deinstallieren…</translation>
 <translation id="8289128870594824098">Laufwerkgröße</translation>
+<translation id="8289509909262565712">Willkommen bei <ph name="DEVICE_OS" /></translation>
 <translation id="8293206222192510085">Lesezeichen hinzufügen</translation>
 <translation id="8294431847097064396">Quelle</translation>
 <translation id="8298429963694909221">Du kannst jetzt Benachrichtigungen von deinem Smartphone auf deinem Gerät (<ph name="DEVICE_TYPE" />) erhalten. Wenn du auf <ph name="DEVICE_TYPE" /> Benachrichtigungen schließt, werden diese auch auf deinem Smartphone geschlossen. Achte darauf, dass dein Smartphone sich in der Nähe befindet und Bluetooth und WLAN aktiviert sind.</translation>
@@ -7165,6 +7198,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="867085395664725367">Ein temporärer Serverfehler ist aufgetreten.</translation>
 <translation id="8673026256276578048">Im Web suchen...</translation>
 <translation id="8673383193459449849">Serverfehler</translation>
+<translation id="8675704450909805533">Das Installationsprogramm konnte für <ph name="DEVICE_OS" /> keinen gültigen Zielspeicherort finden.</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{Video}other{# Videos}}</translation>
 <translation id="8676313779986170923">Vielen Dank für Ihr Feedback.</translation>
 <translation id="8676374126336081632">Eingabe löschen</translation>
@@ -7320,6 +7354,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8823559166155093873">Cookies blockieren</translation>
 <translation id="8823704566850948458">Passwort vorschlagen…</translation>
 <translation id="8824701697284169214">&amp;Seite hinzufügen...</translation>
+<translation id="8826773185686617320">Entfernen Sie den USB-Stick und starten Sie Ihr Gerät neu, um <ph name="DEVICE_OS" /> zu verwenden. Anderenfalls wird Ihr Gerät in <ph name="TIME_LEFT" /> heruntergefahren.</translation>
 <translation id="8827125715368568315"><ph name="PERMISSION" /> und <ph name="COUNT" /> weitere blockiert</translation>
 <translation id="8827289157496676362">Erweiterung anpinnen</translation>
 <translation id="8827752199525959199">Weitere Aktionen; Passwort für <ph name="USERNAME" /> in <ph name="DOMAIN" /></translation>
@@ -7454,6 +7489,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8962051932294470566">Sie können nur jeweils eine Datei teilen. Versuchen Sie es noch einmal, wenn die aktuelle Übertragung abgeschlossen ist.</translation>
 <translation id="8962083179518285172">Details ausblenden</translation>
 <translation id="8962918469425892674">Diese Website nutzt Bewegungs- oder Lichtsensoren.</translation>
+<translation id="8964943308070692533">Zusätzliche inaktive Websites</translation>
 <translation id="8965037249707889821">Altes Passwort eingeben</translation>
 <translation id="89667524227025535">Scannen Sie den QR-Code mit Ihrer Kamera oder geben Sie den Aktivierungscode Ihres Anbieters ein</translation>
 <translation id="8966809848145604011">Weitere Profile</translation>
@@ -7616,6 +7652,8 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, finden Sie
 <translation id="9116465289595958864">Zuletzt geändert</translation>
 <translation id="9116799625073598554">Notizen-App</translation>
 <translation id="9117030152748022724">Apps verwalten</translation>
+<translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Für optimale Leistung sollten Sie <ph name="DEVICE_OS" /> auf dem internen Laufwerk installieren. Eine Installation ist aber auch später über den Anmeldebildschirm möglich.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Zum Ausprobieren können Sie es erst einmal über den USB-Stick ausführen. So behalten Sie Ihr vorhandenes Betriebssystem und Ihre Daten. Speicherplatz und Leistung sind jedoch möglicherweise begrenzt.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">In angepinntem Tab öffnen</translation>
 <translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> pausiert</translation>
 <translation id="9124003689441359348">Hier werden gespeicherte Passwörter angezeigt</translation>

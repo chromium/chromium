@@ -5,7 +5,7 @@
 <translation id="1185134272377778587">O programu Chromium</translation>
 <translation id="1257458525759135959">Da sačuvate slike, dodirnite Postavke da omogućite Chromiumu dodavanje u vaše fotografije</translation>
 <translation id="1289216811211435351">Pređite na Chromium</translation>
-<translation id="1354592789402432496">Vaš administrator zahtijeva da se prijavite organizacijskim računom. Računi koje administrator ograničava skriveni su.</translation>
+<translation id="1354592789402432496">Vaš administrator zahtijeva da se prijavite pomoću računa organizacije. Računi koje je ograničio vaš administrator su skriveni.</translation>
 <translation id="1361748954329991663">Chromium je zastario. Ako ažuriranje nije dostupno u <ph name="BEGIN_LINK" />App Storeu<ph name="END_LINK" />, moguće je da vaš uređaj više ne podržava nove verzije Chromiuma.</translation>
 <translation id="1370204544543370355">Da iskoristite sve prednosti Chromiuma, prijavite se na Chromium pomoću Google računa</translation>
 <translation id="1431818719585918472">Omogućite Chromiumu da zaključa vaše anonimne kartice.</translation>
@@ -52,7 +52,7 @@
 <translation id="5171868502429358653">Prijavite se u Chromium</translation>
 <translation id="5224391634244552924">Nema sačuvanih lozinki. Chromium može provjeravati vaše lozinke kada ih sačuvate.</translation>
 <translation id="5308226104666789935">Chromium ne može provjeriti ima li ažuriranja</translation>
-<translation id="5324242752415821224">Vaša organizacija zahtijeva da se prijavite da biste koristili Chromium. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" />.</translation>
+<translation id="5324242752415821224">Vaša organizacija zahtijeva da se prijavite da koristite Chromium. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Postaviti Chromium kao zadani preglednik?</translation>
 <translation id="5521125884468363740">Da vidite svoje kartice s bilo kojeg uređaja na kojem koristite Chromium, prijavite se i uključite sinhronizaciju</translation>
 <translation id="5573014823074921752">Savjet za Chromium. Za više opcija za kartice dodirnite i zadržite dugme Prikaži kartice na alatnoj traci, na dnu ili na vrhu ekrana.</translation>
@@ -66,7 +66,7 @@
 2. Dodirnite Zadana aplikacija preglednika
 3. Odaberite Chromium.</translation>
 <translation id="6155422572367400359">Prijavite se na ovu web lokaciju, Google račun i Chromium. Sinhronizaciju možete uključiti kasnije.</translation>
-<translation id="6183442264225539303">Prijavite se na ovu web-lokaciju i Chromium. Sinkronizaciju možete uključiti kasnije.</translation>
+<translation id="6183442264225539303">Prijavite se na ovu web lokaciju i u Chromium. Sinhronizaciju možete uključiti kasnije.</translation>
 <translation id="6268381023930128611">Odjaviti se iz Chromiuma?</translation>
 <translation id="632825460376924298">Omogućite prijavu pomoću Chromiuma</translation>
 <translation id="6337530241089703714">Odaberite želite li obrisati podatke Chromiuma s ovog uređaja ili ih želite zadržati</translation>

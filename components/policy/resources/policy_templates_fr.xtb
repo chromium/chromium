@@ -78,6 +78,16 @@
 <translation id="1069489575852947981">Si cette règle est activée ou qu'elle n'est pas configurée, la connexion sans délai au compte local de l'appareil concerné s'effectue automatiquement. <ph name="PRODUCT_OS_NAME" /> permet d'utiliser le raccourci clavier Ctrl+Alt+S pour contourner la connexion automatique et afficher l'écran de connexion.
 
       Si cette règle est désactivée, les utilisateurs ne peuvent pas contourner la connexion automatique sans délai (si celle-ci est configurée).</translation>
+<translation id="1070656322814001059">Chrome bloquera les navigations vers des protocoles externes dans un iFrame en bac à sable. Voir https://chromestatus.com/features/5680742077038592.
+
+      Si cette règle est définie sur "True", Chrome bloque ces navigations.
+
+      Si cette règle est définie sur "False", Chrome ne peut pas les bloquer.
+
+      Elle est définie par défaut sur "True" (fonctionnalité de sécurité activée).
+
+      L'entreprise concernée par ces restrictions peut utiliser cette règle pour les retirer temporairement.
+      </translation>
 <translation id="1073983258515362346">Transmettre les informations concernant le rétroéclairage d'un appareil.
 
       Si la règle est définie sur "False" ou n'est pas définie, ces informations ne sont pas transmises.
@@ -1068,6 +1078,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="2246011554082893079">Contrôle la disponibilité de <ph name="BOREALIS_NAME" /> pour cet appareil.
 
       Si cette règle est définie sur "False", <ph name="BOREALIS_NAME" /> sera indisponible pour tous les utilisateurs de l'appareil. Si la règle est définie sur "True" ou n'est pas définie, <ph name="BOREALIS_NAME" /> sera disponible si et seulement si aucune autre règle ni aucun autre paramètre ne le désactivent.</translation>
+<translation id="2246621891161157804">Autoriser Chrome à bloquer les navigations vers des protocoles externes dans des cadres iFrame en bac à sable</translation>
 <translation id="225340736558643885">Activer les avertissements pour les formulaires non sécurisés</translation>
 <translation id="2258126710006312594">Autoriser le transfert de fichiers vers et depuis l'hôte pour les utilisateurs connectés à distance</translation>
 <translation id="2261648512244797294">Désactiver l'impression Privet (obsolète)</translation>
@@ -5245,6 +5256,7 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
 <translation id="7313672174502374994">Hachage SHA-256 du fond d'écran.</translation>
 <translation id="7322825363493984512">Mot de passe pour authentifier les services système auprès du proxy Web à distance.</translation>
 <translation id="7323896582714668701">Paramètres de ligne de commande supplémentaires pour <ph name="PRODUCT_NAME" /></translation>
+<translation id="7325801934761922681">Empêcher Chrome de bloquer les navigations vers des protocoles externes dans un iFrame en bac à sable</translation>
 <translation id="7326394567531622570">Semblable à l'option "Nettoyer" (valeur 2), celle-ci essaie de conserver les jetons de connexion pour éviter à l'utilisateur de devoir se reconnecter.</translation>
 <translation id="7331962793961469250">Si cette option est définie sur "True", les publicités pour les applications Chrome Web Store ne s'affichent pas sur la page Nouvel onglet.
 
@@ -5385,6 +5397,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="7544392541165889987">Si cette règle est activée, ou si elle n'est pas définie, <ph name="PRODUCT_NAME" /> joue le rôle de proxy entre <ph name="CLOUD_PRINT_NAME" /> et les anciennes imprimantes connectées à la machine. Les utilisateurs peuvent activer le proxy d'impression sur le cloud en s'authentifiant à l'aide de leur compte Google.
 
       Si cette règle est désactivée, les utilisateurs ne peuvent pas activer le proxy et la machine ne peut pas partager ses imprimantes avec <ph name="CLOUD_PRINT_NAME" />.</translation>
+<translation id="7546699946724795644">Autoriser Chrome à bloquer les navigations vers des protocoles externes dans un iFrame en bac à sable</translation>
 <translation id="7547549430720182663">Fusionner</translation>
 <translation id="7553535237300701827">Lorsque cette règle est définie, l'authentification s'effectue de l'une des deux façons suivantes, selon la valeur du paramètre :
 

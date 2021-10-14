@@ -78,6 +78,18 @@
 <translation id="1069489575852947981">Jika kebijakan disetel ke Aktif atau tidak disetel, akun lokal perangkat akan disiapkan untuk login otomatis tanpa penundaan. <ph name="PRODUCT_OS_NAME" /> akan mematuhi pintasan keyboard Ctrl+Alt+S untuk melewati login otomatis dan menampilkan layar login.
 
       Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat melewati login otomatis tanpa penundaan (jika dikonfigurasikan).</translation>
+<translation id="1070656322814001059">Chrome akan memblokir navigasi ke protokol eksternal di dalam
+      iframe sandbox. Lihat https://chromestatus.com/features/5680742077038592.
+
+      Jika kebijakan disetel ke Benar (True), Chrome akan diizinkan memblokir navigasi tersebut.
+
+      Jika kebijakan disetel ke Salah (False), Chrome tidak akan diizinkan memblokir navigasi tersebut.
+
+      Setelan default untuk kebijakan ini adalah Benar (True): fitur keamanan akan diaktifkan.
+
+      Kebijakan ini dapat digunakan oleh Perusahaan yang terpengaruh oleh pembatasan tersebut untuk
+      sementara waktu menghentikannya.
+      </translation>
 <translation id="1073983258515362346">Melaporkan informasi tentang lampu latar perangkat.
 
       Jika kebijakan ditetapkan ke false, atau tidak ditetapkan, informasi tidak akan dilaporkan.
@@ -1066,6 +1078,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="2246011554082893079">Mengontrol ketersediaan <ph name="BOREALIS_NAME" /> untuk perangkat ini.
 
       Jika kebijakan disetel ke salah (false), <ph name="BOREALIS_NAME" /> tidak akan tersedia untuk semua pengguna perangkat. Sebaliknya (jika kebijakan tidak disetel atau disetel ke benar (true)), <ph name="BOREALIS_NAME" /> akan tersedia jika dan hanya jika tidak ada kebijakan atau setelan lain yang menonaktifkannya.</translation>
+<translation id="2246621891161157804">Mengizinkan Chrome memblokir navigasi ke protokol eksternal di iframe sandbox</translation>
 <translation id="225340736558643885">Mengaktifkan peringatan untuk formulir tidak aman</translation>
 <translation id="2258126710006312594">Izinkan pengguna dengan akses jarak jauh untuk mentransfer file ke/dari host</translation>
 <translation id="2261648512244797294">Nonaktifkan pencetakan privet yang tidak digunakan lagi</translation>
@@ -5263,6 +5276,7 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="7313672174502374994">Hash SHA-256 gambar wallpaper.</translation>
 <translation id="7322825363493984512">Sandi untuk mengautentikasi layanan sistem ke proxy web jarak jauh.</translation>
 <translation id="7323896582714668701">Parameter baris perintah tambahan untuk <ph name="PRODUCT_NAME" /></translation>
+<translation id="7325801934761922681">Cegah Chrome memblokir navigasi ke protokol eksternal di dalam iframe sandbox</translation>
 <translation id="7326394567531622570">Serupa dengan Wipe (nilai 2), namun mencoba untuk mempertahankan token login sehingga pengguna tidak perlu login lagi.</translation>
 <translation id="7331962793961469250">Bila disetel ke True, promosi untuk apl Chrome Webstore tidak akan muncul pada halaman tab baru. Menyetel opsi ini ke False atau membiarkannya tanpa disetel akan membuat promosi untuk apl Chrome Webstore muncul di halaman tab baru</translation>
 <translation id="7332963785317884918">Kebijakan ini tidak lagi digunakan. <ph name="PRODUCT_OS_NAME" /> akan selalu menggunakan strategi pembersihan 'RemoveLRU'.
@@ -5401,6 +5415,7 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="7544392541165889987">Jika kebijakan disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> dapat bertindak sebagai proxy di antara <ph name="CLOUD_PRINT_NAME" /> dan printer lama yang terhubung ke mesin. Dengan Akun Google-nya, pengguna dapat mengaktifkan proxy cloud print melalui autentikasi.
 
       Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengaktifkan proxy, dan mesin tidak dapat membagikan printernya ke <ph name="CLOUD_PRINT_NAME" />.</translation>
+<translation id="7546699946724795644">Izinkan Chrome memblokir navigasi ke protokol eksternal di dalam iframe sandbox</translation>
 <translation id="7547549430720182663">Gabungkan</translation>
 <translation id="7553535237300701827">Jika kebijakan ini disetel, alur autentikasi proses masuk akan menggunakan salah satu cara berikut tergantung nilai setelan:
 

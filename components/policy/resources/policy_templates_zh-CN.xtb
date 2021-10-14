@@ -78,6 +78,16 @@
 <translation id="1069489575852947981">如果此政策已启用或未设置，系统将设置设备本地帐号以实现零延迟的自动登录。<ph name="PRODUCT_OS_NAME" />支持利用键盘快捷键 Ctrl + Alt + S 绕过自动登录并显示登录屏幕。
 
       如果此政策已停用，用户则无法绕过零延迟的自动登录（若已配置）。</translation>
+<translation id="1070656322814001059">Chrome 将阻止导航到沙盒化 iframe 内的外部协议。请参阅 https://chromestatus.com/features/5680742077038592。
+
+      如果此政策设为 True，Chrome 将会阻止此类导航。
+
+      如果此政策设为 False，Chrome 将无法阻止此类导航。
+
+      此政策默认设为 True：安全功能已启用。
+
+      受这些限制影响的企业可以使用此政策暂时解除相应限制。
+      </translation>
 <translation id="1073983258515362346">报告与设备背光有关的信息。
 
       如果此政策设为 false 或未设置，系统将不会报告这些信息。
@@ -427,6 +437,7 @@
       如果您停用了此设置，用户将无法选择启用“附近分享”功能。
 
       如果您未设置此政策，默认情况下，受企业管理的用户无法选择启用“附近分享”功能，但不受管理的用户可以选择启用该功能。</translation>
+<translation id="1552612763424066828">禁止在设备进入空闲或暂停状态时将其锁定</translation>
 <translation id="1553532014072799546">应用级使用时间限制白名单</translation>
 <translation id="1553956579506604198">禁止安装外部扩展程序</translation>
 <translation id="1555248923316727072">SAML 用户身份管理设置</translation>
@@ -768,6 +779,7 @@
       如果此政策已停用或未设置，系统便不会使用快速切换功能。</translation>
 <translation id="1972134432340252414">屏蔽浏览器进程中的旧版扩展点</translation>
 <translation id="1977581177449752640">如果您设置了此政策，远程访问主机会使用带有指定颁发者 CN 的客户端证书向 <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> 验证身份。若要使用任意可用的客户端证书，请将此政策设为 <ph name="WILDCARD_VALUE" />。如果您未设置此政策或将它留空，系统会停用此功能。</translation>
+<translation id="1986003348976870087">不提示用户在登录屏幕上选择客户端证书。</translation>
 <translation id="1988345404999458987">提供可用打印服务器的配置。
 
       此政策让您能够以 JSON 文件的形式向 <ph name="PRODUCT_OS_NAME" />设备提供外部打印服务器的配置。
@@ -877,6 +889,7 @@
 <translation id="208566302163036794">禁用已停用的功能</translation>
 <translation id="208623333578980446">允许使用屏幕唤醒锁定以便进行电源管理</translation>
 <translation id="2086944573376916479">受管理的帐号必须是主帐号，且无任何辅助帐号</translation>
+<translation id="2090304907729569435">禁止在浏览器侧边栏中显示 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />结果。</translation>
 <translation id="2090939118981888335">如果此政策已启用，系统会允许使用数据压缩代理。如果此政策已停用，系统将禁止使用该代理。
 
       如果您设置了此政策，用户便无法更改相关设置。如果您未设置此政策，用户可以选择使用该功能。</translation>
@@ -1046,6 +1059,7 @@
 <translation id="2246011554082893079">控制该设备能否使用 <ph name="BOREALIS_NAME" />。
 
       如果此政策设为 false，该设备的所有用户都将无法使用 <ph name="BOREALIS_NAME" />。否则（如果此政策未设置或设为 true），仅当未被任何其他政策或设置停用时，<ph name="BOREALIS_NAME" /> 才可用。</translation>
+<translation id="2246621891161157804">允许 Chrome 阻止导航到沙盒化 iframe 中的外部协议</translation>
 <translation id="225340736558643885">启用针对不安全表单的警告</translation>
 <translation id="2258126710006312594">允许远程访问用户将文件传到主机或接收从主机传出的文件</translation>
 <translation id="2261648512244797294">停用已弃用的 Privet 本地打印</translation>
@@ -1108,6 +1122,7 @@
       在 <ph name="PRODUCT_OS_NAME" /> 76 版及更低版本中，请将 <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> 设备政策设为相同的值。（如果这两项政策的值不一致，当进入用户会话时，系统可能会出现延迟。）
 
       注意：对于 Android 设备，请改用 <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" /> 政策。</translation>
+<translation id="2306505001667207184">每当自动选择政策与多个证书匹配时，都会提示用户选择客户端证书。</translation>
 <translation id="2307496301287881990">报告显示状态和图形状态</translation>
 <translation id="2309390639296060546">默认地理位置设置</translation>
 <translation id="2331354174913096226">所需 DNS-over-HTTPS 解析器的 URI 模板。要指定多个 DNS-over-HTTPS 解析器，请使用空格将相应的 URI 模板分隔开。
@@ -1127,6 +1142,7 @@
 
       在 <ph name="PRODUCT_NAME" /> 81 版中，此政策的默认值从 false 改成了 true。受影响的代理预计会无法成功连接，并会返回错误代码 ERR_TLS13_DOWNGRADE_DETECTED。如果管理员需要更多时间来升级受影响的代理，则可以使用此政策暂时停用这项安全功能。此政策已在 86 版中移除。
       </translation>
+<translation id="2336822410658374491">禁止在上下文菜单中使用默认搜索服务提供商</translation>
 <translation id="2337859888277013371">不允许使用往返缓存</translation>
 <translation id="2341509917222115272">如果此政策已启用或未设置，用户便可让客户端和主机在连接时自动配对，无需每次都输入 PIN 码。
 
@@ -1146,6 +1162,7 @@
 
       自 91 版起，您已无法再将此政策设为“tls1”或“tls1.1”。我们不再支持禁止显示 TLS 1.0/1.1 警告的功能。</translation>
 <translation id="2364639863953745682">Google 助理新手入门体验的模式</translation>
+<translation id="2366301887862414321">允许使用用户级和系统级原生消息传递主机</translation>
 <translation id="2384233438419344179">如果此政策已启用，系统会阻止来自浏览器地址栏所含网域之外的网页元素设置 Cookie。如果此政策已停用，系统会允许这些元素设置 Cookie，并会阻止用户更改此设置。
 
       如果此政策未设置，系统会开启第三方 Cookie，但用户可以更改此设置。</translation>
@@ -1261,6 +1278,7 @@
       此政策的值应以天为单位。</translation>
 <translation id="2466131534462628618">进行强制门户身份验证时忽略代理服务器</translation>
 <translation id="2467896267442150508">持续时间不超过 1 周的间隔时段。如果开始时间晚于结束时间，该间隔时段会跨周。</translation>
+<translation id="2476249479201711962">允许在上下文菜单中使用默认搜索服务提供商</translation>
 <translation id="247658312644322296">“另存为 PDF”目的地</translation>
 <translation id="2478756867046106663">允许那些提供误导性体验的网站打开新的窗口或标签页</translation>
 <translation id="2480971699591919564">启用“点击通话”功能，以允许已登录的 Chrome 用户从桌面设备向 Android 设备发送电话号码。若想了解详情，请参阅这篇帮助中心文章：https://support.google.com/chrome/answer/9430554?hl=zh-CN。
@@ -1311,6 +1329,7 @@
           如果您设置了此政策，用户将无法更改或覆盖它。
 
           如果未设置此政策，则“插入符号突出显示”最初会处于停用状态，但用户可以随时启用该功能。</translation>
+<translation id="2506865562891982662">允许用户从 <ph name="PRODUCT_NAME" /> 菜单中使用访问代码或二维码选择投射设备。</translation>
 <translation id="2509748672176727116">用户将能够执行网络数据包捕获流程</translation>
 <translation id="2509919237512982967">在 M84 之前的版本中使用旧版表单控件。</translation>
 <translation id="2512972020817284317">允许合并用户级云政策。</translation>
@@ -1516,6 +1535,7 @@
 
       如果此政策未设置，“用电高峰期切换电源”功能最初会处于关闭状态。用户无法更改相关设置。</translation>
 <translation id="2773288106548584039">旧版浏览器支持</translation>
+<translation id="2780840673734667062">禁止使用其他 Google 帐号登录</translation>
 <translation id="2784880732336446591">退出时清除浏览数据</translation>
 <translation id="2787173078141616821">报告有关 Android 状态的信息</translation>
 <translation id="2787774054174244402">如果此政策设为 True，用户将无法向外部存储设备写入内容。
@@ -1648,6 +1668,7 @@
 
       如果此政策未设置，则意味着 <ph name="ASK_GEOLOCATION_POLICY_NAME" /> 政策适用，但用户可以更改此设置。</translation>
 <translation id="2922511125678964398">允许强制门户身份验证忽略代理设置</translation>
+<translation id="2939988360019366928">允许在浏览器侧边栏中显示最近的 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />结果</translation>
 <translation id="2940127076681735544">如果此政策设为一个有效网址，<ph name="PRODUCT_NAME" /> 就会从该网址下载网站列表，并参照 <ph name="SITELIST_POLICY_NAME" /> 政策的设定应用相应规则。
 
       如果此政策未设置（或设为一个无效网址），<ph name="PRODUCT_NAME" /> 便不会将它用作浏览器切换规则的来源。
@@ -1900,6 +1921,10 @@
 
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="3207821022126246451">WebRTC 会在面向公众的接口中使用 TCP；若受所配置的代理支持，则会仅使用 UDP。</translation>
+<translation id="3207873329349672535">此政策可控制系统是否会在 <ph name="PRODUCT_NAME" /> 菜单中为用户提供一个选项，以允许他们使用 <ph name="PRODUCT_NAME" /> 菜单中未包含的投射设备的屏幕上显示的访问代码或二维码投射至这些投射设备。
+      默认情况下，用户必须重新输入访问代码或重新扫描二维码才能启动后续投射会话，但如果 <ph name="ACCESS_CODE_CAST_DEVICE_DURATION_POLICY_NAME" /> 政策已设为非 0 值（默认值为 0），那么投射设备将保留在可用投射设备列表中，直到指定时间段已过。
+      如果此政策已启用，系统将为用户提供通过使用访问代码或扫描二维码选择投射设备的选项。
+      如果此政策已停用或未设置，系统将不会为用户提供通过使用访问代码或扫描二维码选择投射设备的选项。</translation>
 <translation id="3208615748170745525">自发现有可用更新之日起算的天数。</translation>
 <translation id="3210408472559816322">通过设置此政策，您可以指定不应加载哪些本地消息传递主机。拒绝名单值 <ph name="WILDCARD_VALUE" /> 表示所有本地消息传递主机均会被拒绝，除非它们已获得明确许可。
 
@@ -1961,6 +1986,7 @@
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="3261592499545947104">应在证书还差多少秒到期时触发续订操作</translation>
+<translation id="3262080895269946462">允许第三方情境下的 WebSQL 默认处于停用状态。</translation>
 <translation id="3264706118366247207">以列表形式配置应在用户关闭所有浏览器窗口后删除哪些类型的浏览数据。可用的数据类型包括浏览记录 (<ph name="DATA_TYPE_BROWSING_HISTORY" />)、下载记录 (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />)、Cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />)、缓存 <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、自动填充 (<ph name="DATA_TYPE_AUTOFILL" />)、密码 (<ph name="DATA_TYPE_PASSWORD" />)、网站设置 (<ph name="DATA_TYPE_SITE_SETTINGS" />) 和托管的应用数据 (<ph name="DATA_TYPE_HOSTED_APP_DATA" />)。此政策不会优先于 <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />。
 
       仅当 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策设为 true 时，此政策才不会被忽略。如果在平台级别设置了此政策，则应在平台级别停用同步功能。如果在用户级别设置了此政策，则应为该用户停用同步功能，才能使此政策生效。
@@ -2007,6 +2033,7 @@
 
           如果此政策设为非空字符串，该字符串将被用作 <ph name="PRODUCT_NAME" /> 目标名称。否则，目标名称便是设备名称。如果此政策未设置，则目标名称将是设备名称，且设备所有者（或者该设备的托管网域内的用户）将能更改该名称。该名称的长度不得超过 24 个字符。</translation>
 <translation id="3329063005964041553">禁止在这些 Web 应用上使用 File Handling API</translation>
+<translation id="3329401415394648069">允许使用 U2F Security Key API。</translation>
 <translation id="3339271789059866414">配置系统代理服务的可用情况以及系统服务的代理凭据。
       如果此政策未设置，系统代理服务将不可用。</translation>
 <translation id="3348799281602260763">如果此政策已启用，WebRTC 对等连接可以降级至已过时的 TLS/DTLS（DTLS 1.0、TLS 1.0 和 TLS 1.1）协议版本。
@@ -2104,6 +2131,7 @@
 
       如果此政策已停用或未设置，系统会关闭 DTC。因此，DTC 无法收集、处理和报告设备的遥测与诊断数据。</translation>
 <translation id="3450649825886735618">不使用任何 Google 网络服务来帮助修正拼写错误</translation>
+<translation id="3451901387456196887">在 <ph name="PRODUCT_NAME" /> 菜单中为用户提供通过使用访问代码或扫描二维码选择投射设备的选项。</translation>
 <translation id="3456292544936505775">此政策用于控制不允许 <ph name="PRODUCT_OS_NAME" />设备在哪些时间范围内自动检查是否有更新。
       当此政策设为非空的时间范围列表时：
       相应设备将无法在指定的时间范围内自动检查是否有更新。由于存在潜在的安全问题，需要企业回滚的设备和低于最低 <ph name="PRODUCT_OS_NAME" />版本的设备都不会受到此政策的影响。另外，此政策不会阻止由用户或管理员请求的更新检查。
@@ -2240,6 +2268,7 @@
 
       如果您设置了此政策，用户便无法更改相关设置。如果您未设置此政策，“接入交流电时启动”会处于关闭状态，而且用户无法开启该功能。</translation>
 <translation id="3660562134618097814">在用户登录期间转移 SAML IdP Cookie</translation>
+<translation id="3665437376055221832">仅当没有任何证书与自动选择政策匹配时才提示用户。</translation>
 <translation id="3685979383016152590">通过设置此政策，您可以指定对批量打印机配置应用哪项访问政策，并控制用户可以使用 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 中的哪些打印机。
 
       * 如果您选择 <ph name="PRINTERS_BLOCKLIST" />（值为 0），系统会使用 <ph name="PRINTERS_BULK_BLOCKLIST" /> 来限制用户对指定打印机的访问权
@@ -2493,11 +2522,15 @@
 <translation id="3942041691320538491">如果此政策设为 0（默认值），您可以访问开发者工具和 JavaScript 控制台，但无法在由企业政策安装的扩展程序中访问。如果此政策设为 1，无论在什么情境下（包括在由企业政策安装的扩展程序中），您都可以访问开发者工具和 JavaScript 控制台。如果此政策设为 2，您既无法访问开发者工具，也无法检查网站元素。
 
       此设置还可关闭用于打开开发者工具或 JavaScript 控制台的键盘快捷键及菜单（或上下文菜单）条目。</translation>
+<translation id="3943930334592166130">此政策旨在控制是否让系统在有多个证书与 <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> 匹配时提示用户选择客户端证书。
+      如果此政策已启用，每当自动选择政策与多个证书匹配时，系统都会提示用户选择客户端证书。
+      如果此政策已停用或未设置，只有当无任何证书与自动选择政策匹配时，系统才会提示用户。</translation>
 <translation id="3950110092991281616">仅为常规会话启用静默身份验证。</translation>
 <translation id="3950239119790560549">更新时间限制</translation>
 <translation id="3956573780915784996">允许用户收集系统级性能跟踪记录。</translation>
 <translation id="3956686688560604829">为旧版浏览器支持使用 Internet Explorer 的 SiteList 政策。</translation>
 <translation id="3958586912393694012">允许使用 Smart Lock</translation>
+<translation id="3960728283243442805">不在 <ph name="PRODUCT_NAME" /> 菜单中为用户提供通过使用访问代码或扫描二维码选择投射设备的选项。</translation>
 <translation id="3962445567482559878">使用 Google 助理新手入门体验的 EDU 模式</translation>
 <translation id="396261881101930204">对用户隐藏推荐的媒体内容</translation>
 <translation id="3964262920683972987">配置设备级的壁纸图片，在没有任何用户登录设备的情况下，登录屏幕会显示此图片。要设置此政策，请指定可供 Chrome 操作系统设备下载相应壁纸图片的网址，并指定用于验证下载内容是否完整的加密哈希值。图片必须是 JPEG 格式，且大小不得超过 16MB。网址必须可直接访问，而无需进行任何身份验证。系统会下载并缓存相应的壁纸图片。只要网址或哈希值有任何变化，系统都会重新下载相应的壁纸图片。
@@ -2862,6 +2895,7 @@
 <translation id="4480694116501920047">强制使用安全搜索</translation>
 <translation id="4481202456143946404">派生自引入新《服务条款》版本的 Google3 cl 的有效《服务条款》版本。</translation>
 <translation id="4483649828988077221">停用自动更新功能</translation>
+<translation id="4484515651939984695">指定使用访问代码或二维码选择的投射设备会在 <ph name="PRODUCT_NAME" /> 菜单的投射设备列表中保留多长时间（以秒为单位）。</translation>
 <translation id="4485425108474077672">配置“打开新的标签页”页面网址</translation>
 <translation id="4492287494009043413">停用截取屏幕截图功能</translation>
 <translation id="4494132853995232608">Wilco DTC</translation>
@@ -2929,6 +2963,13 @@
       对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。</translation>
 <translation id="4578265298946081589">不要在用户退出后重新启动。</translation>
 <translation id="4581507927311097234">系统应在设备闲置多久（以毫秒为单位）后关闭屏幕</translation>
+<translation id="4582338216073557489">当此政策设为 None 时，<ph name="PRODUCT_NAME" /> 会使用默认的缓存大小在磁盘中存储缓存文件。用户无法更改此设置。
+
+      如果您设置了此政策，那么无论用户是否指定了 --disk-cache-size flag，<ph name="PRODUCT_NAME" /> 都会使用您所提供的缓存大小（小于几兆字节的值都会向上舍入）。
+
+      如果您未设置此政策，<ph name="PRODUCT_NAME" /> 会使用默认大小。用户可以使用 --disk-cache-size flag 更改此设置。
+
+      注意：此政策中指定的值会被用作对浏览器中各种缓存子系统的提示。因此，所有缓存的实际磁盘总消耗将会变得更高，但仍会与指定的值在同一数量级。</translation>
 <translation id="4587365491100112056">通过设置此政策，您可以指定身份验证数据缓存期限（以小时为单位）。此缓存包含与机器领域所信任的领域（关联领域）相关的数据。因此，身份验证数据缓存有助于加快登录速度。系统不会缓存用户专属数据以及非关联领域的数据。
 
       如果此政策设为 0，系统会关闭身份验证数据缓存。每当用户登录时，系统都会提取领域专属的数据，因此关闭身份验证数据缓存可能会显著降低用户的登录速度。
@@ -3192,6 +3233,7 @@
       如果您指定了此政策，系统在关闭浏览器时便可延迟所设秒数之久，以处理 keepalive (https://fetch.spec.whatwg.org/#request-keepalive-flag) 请求。
 
       默认值 (0) 表示此功能已停用。</translation>
+<translation id="4940810901775798837">允许不安全网站向任意网络端点发送请求</translation>
 <translation id="4942681160308347946">将此政策设为 True 时，系统会在登录屏幕上开启语音反馈。将此政策设为 False 时，系统会在登录屏幕上关闭语音反馈。
 
       如果您设置了此政策，用户便可暂时开启或关闭语音反馈。当登录屏幕重新加载或闲置了 1 分钟后，语音反馈就会还原为初始状态。
@@ -3229,6 +3271,15 @@
 <translation id="4980635395568992380">数据类型：</translation>
 <translation id="4983201894483989687">允许运行过期的插件</translation>
 <translation id="4986560318567565414">控制用于从替代浏览器切换至 Chrome 的路径。</translation>
+<translation id="4987813583395474995">如果此政策已启用，已弃用的 U2F Security Key API 仍可供使用，但对于 U2F API 请求，系统不会显示弃用提醒。
+
+      如果此政策已停用或未设置，系统将会应用默认行为。
+
+      U2F Security Key API 已弃用，在 Chrome 98 中，它将会默认处于停用状态。
+
+      这是一项临时选择停用机制。自 Chrome 104 起，U2F API 将从 Chrome 中移除，届时此政策将不再受支持。
+
+      有关 U2F Security Key API 弃用情况的更多信息，请参阅 https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A。</translation>
 <translation id="4988291787868618635">闲置延迟时间已过时执行的操作</translation>
 <translation id="4996068111491152684"><ph name="PRODUCT_OS_NAME" />登录凭据不会被用于网络身份验证。</translation>
 <translation id="4996086761250834365">允许进行 <ph name="PLUGIN_VM_NAME" /> 产品分析</translation>
@@ -3250,6 +3301,9 @@
 
       如果此政策已停用，系统会阻止 <ph name="PRODUCT_NAME" /> 发送此类查询。</translation>
 <translation id="504116558738617678">仅在相应设备不受管理或只有 1 个用户时显示磁盘空间不足警告</translation>
+<translation id="5049105847726444023">如果此政策已启用或未设置，用户便可通过切换工具栏中的图标显示其近期的 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />结果。
+
+      如果此政策已停用，系统会从工具栏中移除用于打开包含 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />结果的侧边栏的图标。</translation>
 <translation id="5052278640307929670">通过设置此政策，您可以允许合并来自多个不同来源并具有相同范围及级别的所选政策。
 
       如果某项政策位于列表中，而且来源之间存在冲突，
@@ -3268,6 +3322,7 @@
 
       注意：系统也可通过 <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> 政策向该列表添加元素。</translation>
 <translation id="5067143124345820993">登录用户白名单</translation>
+<translation id="5070080638050927923">当有多个证书匹配时提示用户选择客户端证书。</translation>
 <translation id="5071303485174858500">停用受限受管理访客会话。</translation>
 <translation id="5073609397321802133">如果此政策设为 false，“新标签页”页面将不允许用户自定义背景。所有现有的自定义背景都将被永久移除，即使此政策后来又改设为 true 也是如此。
 
@@ -3660,6 +3715,10 @@
       当该策略值已设置，且不为零，那么当不活动期达到指定的时间期间后，当前登录的演示用户就会自动退出。
 
       该策略值应该以毫秒为单位。</translation>
+<translation id="5502683401545256109">此政策可控制当有多个证书与 <ph name="DEVICE_LOGIN_SCREEN_AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> 匹配时，系统是否会提示用户在 SAML 流程托管框架的登录屏幕上选择客户端证书。
+      如果此政策已启用，每当自动选择政策与多个证书匹配时，系统都会要求用户选择客户端证书。
+      如果此政策已停用或未设置，系统从不会提示用户在登录屏幕上选择客户端证书。
+      注意：通常不建议启用此政策，因为它可能会带来隐私方面的风险（如果使用了由 TPM 提供保证的设备级证书），并且会导致用户体验不佳。</translation>
 <translation id="55057839818162162">启用由 <ph name="GOOGLE_LENS_PRODUCT_NAME" />提供支持的摄像头辅助搜索功能</translation>
 <translation id="5508307164752647432">启用 Kerberos 功能</translation>
 <translation id="5511702823008968136">启用书签栏</translation>
@@ -3683,6 +3742,7 @@
 <translation id="5535973522252703021">Kerberos 授权服务器白名单</translation>
 <translation id="553806128266843748">一个布尔值标记，用于表明是否启用节流功能。</translation>
 <translation id="5540885720415375851">允许使用“本地设备发现”功能</translation>
+<translation id="5544314852228513983">允许用户决定是否应在设备进入空闲或暂停状态时将其锁定</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">在登录屏幕上启用高对比度模式</translation>
 <translation id="555077880566103058">允许所有网站自动运行 <ph name="FLASH_PLUGIN_NAME" /> 插件</translation>
@@ -3767,6 +3827,7 @@
       如果此政策已停用，系统会从所有来源关闭拼写检查，而且用户无法开启该功能。如果此政策设为 False，<ph name="SPELL_CHECK_SERVICE_ENABLED_POLICY_NAME" />、<ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> 和 <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" /> 政策都不会产生任何影响。
 
       如果此政策未设置，用户便可在语言设置中开启或关闭拼写检查。 </translation>
+<translation id="5655553344896004108">允许使用已弃用的 U2F Security Key API</translation>
 <translation id="5656177735561364047">启用“共享剪贴板”功能</translation>
 <translation id="5657576769650058122">如果此政策已启用，屏幕虚拟键盘（一种 Chrome 操作系统输入设备）会保持开启状态。如果此政策已停用，该键盘会保持关闭状态。
 
@@ -4328,6 +4389,7 @@
 <translation id="640244877779556713">启用表情符号建议</translation>
 <translation id="6407093060083181305">配置扩展程序安装屏蔽名单</translation>
 <translation id="640827304541402854">禁止从远程访问主机穿越防火墙</translation>
+<translation id="6412352702230183710">仅允许使用系统级原生消息传递主机</translation>
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="6422575351619065453">在自助服务终端模式中，用于控制是否显示悬浮无障碍功能菜单。
 
@@ -4482,6 +4544,13 @@
       如果您不设置此政策或此政策是空列表，则不存在设备本地帐号。</translation>
 <translation id="6584541828182430328">停用“显示全屏提醒”功能</translation>
 <translation id="6594372503585248865">允许远程主机桌面在处于已连接状态时显示与连接相关的界面</translation>
+<translation id="6596675965208703569">此政策用于指定以前使用访问代码或二维码选择的投射设备可在 <ph name="PRODUCT_NAME" /> 投射设备菜单中持续显示多长时间（以秒为单位）。
+      条目的有效期从用户首次输入访问代码或首次扫描二维码时起算。
+      在此时间段内，相应的投射设备会显示在 <ph name="PRODUCT_NAME" /> 菜单的投射设备列表中。
+      待此时间段过后，若要再次使用相应的投射设备，用户必须重新输入访问代码或重新扫描二维码。
+      默认情况下，此时间段为 0 秒，因此投射设备不会显示在 <ph name="PRODUCT_NAME" /> 菜单中，而这样一来，用户就必须重新输入访问代码或重新扫描二维码才能启动新的投射会话。
+      请注意，此政策仅会影响投射设备在 <ph name="PRODUCT_NAME" /> 菜单中的显示时长，丝毫不会影响任何正在进行的投射会话（即使此时间段已过，这类会话仍会继续）。
+      此政策只有在已启用 <ph name="ACCESS_CODE_CAST_ENABLED_POLICY_NAME" /> 政策的情况下才会生效。</translation>
 <translation id="6598235178374410284">用户头像图片</translation>
 <translation id="6600377630856879433">允许这些来源使用窗口和标签页截取功能</translation>
 <translation id="6603004149426829878">解析时区时一律将任何可用的位置信号发送给服务器</translation>
@@ -4594,6 +4663,9 @@
 <translation id="670597451099978576">自动授权这些网站在登录屏幕上连接到具有给定供应商 ID 和产品 ID 的 USB 设备。</translation>
 <translation id="6706330611356546885">允许任何网站运行 JavaScript JIT</translation>
 <translation id="6720330829631914048">自当天开始后已流逝的小时数（24 小时制）。</translation>
+<translation id="6721252203593581486">自 M97 起，第三方情境（例如跨网站 iframe）下的 WebSQL 默认处于关闭状态，并将在 M101 中被完全移除。
+          如果此政策设为 false 或未设置，第三方情境下的 WebSQL 将保持关闭状态。
+          如果此政策设为 true，第三方情境下的 WebSQL 将被重新启用。</translation>
 <translation id="6723472666969849951">通过设置此政策，您可以控制可以在 <ph name="PRODUCT_NAME" /> 中安装哪些应用和扩展程序，它们可与哪些主机互动，以及限制运行时访问。
 
       如果您不设置此政策，则任何类型的扩展程序和应用都可以安装。
@@ -4679,6 +4751,7 @@
 
           注意：<ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" />（若已指定）会覆盖此政策。</translation>
 <translation id="6833988859168635883">启动页、主页和新标签页</translation>
+<translation id="683399492058633424">当登录屏幕上有多个证书匹配时提示用户选择客户端证书。</translation>
 <translation id="6835883744948188639">显示建议用户重新启动浏览器的周期性提示</translation>
 <translation id="683688607121170501">通过此设置，您可允许用户在登录其 <ph name="PRODUCT_OS_NAME" />设备后从浏览器窗口的内容区域和 Android 应用中切换 Google 帐号。
 
@@ -4983,6 +5056,7 @@
 <translation id="710003290625031750">已展开的架构说明：</translation>
 <translation id="7101550508196914704">不在书签栏中显示应用快捷方式</translation>
 <translation id="7109384070286741861">停用 CECPQ2</translation>
+<translation id="7114169791477667553">停用默认搜索服务提供商</translation>
 <translation id="7122626777103192518">如果此政策设为 True，系统将允许使用内置 Android 分享系统将 Android 应用中的文本/文件分享给受支持的 Web 应用。
       启用后，该功能会将已安装的 Web 应用的元数据发送给 Google，以生成和安装 shim Android 应用。
       如果此政策设为 False，系统将停用该功能。</translation>
@@ -5049,6 +5123,7 @@
       在 <ph name="ANDROID_VERSION" /> 及更高版本中，如果 DNS-over-TLS 处于活跃状态，<ph name="PRODUCT_NAME" /> 将不会发送不安全的 DNS 请求。
 
       如果未设置此政策，浏览器可能会向与用户配置的系统解析器关联的解析器发送 DNS-over-HTTPS 请求。</translation>
+<translation id="7157329428182136164">启用对 3D 图形 API 的支持</translation>
 <translation id="7158358621906236999">默认传感器设置</translation>
 <translation id="7161568070244869726">强制启用 AppCache</translation>
 <translation id="7165882688932913315">此政策用于控制对本地设备发现界面 (<ph name="CHROME_DEVICES_LINK" />) 中的可控制功能的访问权限，该界面会显示可在用户附近发现的设备以及已注册到这些设备的云端设备。在除 <ph name="PRODUCT_OS_NAME" />之外的所有其他操作系统中，本地设备发现界面还允许用户将与其计算机相连的传统打印机添加到 <ph name="CLOUD_PRINT_NAME" />。
@@ -5171,6 +5246,7 @@
 <translation id="7313672174502374994">相应壁纸图片的 SHA-256 哈希值。</translation>
 <translation id="7322825363493984512">用于向远程网络代理验证系统服务身份的密码。</translation>
 <translation id="7323896582714668701">适用于 <ph name="PRODUCT_NAME" />的其他命令行参数</translation>
+<translation id="7325801934761922681">不允许 Chrome 阻止导航到沙盒化 iframe 内的外部协议</translation>
 <translation id="7326394567531622570">与 Wipe（值 2）类似，但该选项会尝试保留登录令牌，以使用户无需再次登录。</translation>
 <translation id="7331962793961469250">设置为“True”时，新标签页中不会显示 Chrome 网上应用店应用的推广内容。如果将此选项设置为“False”或不做任何设置，新标签页中就会显示 Chrome 网上应用店应用的推广内容。</translation>
 <translation id="7332963785317884918">此政策已被弃用。<ph name="PRODUCT_OS_NAME" />将始终使用“RemoveLRU”清理策略。
@@ -5309,6 +5385,7 @@
 <translation id="7544392541165889987">如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 便可作为 <ph name="CLOUD_PRINT_NAME" />与连接到该计算机的传统打印机之间的代理。用户可以使用自己的 Google 帐号进行身份验证，从而开启云打印代理。
 
       如果此政策已停用，用户将无法开启代理，该计算机也就无法与 <ph name="CLOUD_PRINT_NAME" />共享其打印机。</translation>
+<translation id="7546699946724795644">允许 Chrome 阻止导航到沙盒化 iframe 内的外部协议</translation>
 <translation id="7547549430720182663">合并</translation>
 <translation id="7553535237300701827">设置此政策后，登录身份验证流程将采用以下其中一种方式，具体取决于设置的值：
 
@@ -5626,6 +5703,7 @@
 
       如果未设置此政策，系统将会启用此政策，但用户可以自行更改。</translation>
 <translation id="7956210013490975468">为 <ph name="PRODUCT_OS_NAME" />配置系统代理服务。</translation>
+<translation id="7958340569967087581">允许在浏览器侧边栏中显示 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />结果。</translation>
 <translation id="7958537754689366707">必须每 12 小时输入一次密码</translation>
 <translation id="7959035883875301444">控制对 JavaScript JIT 的使用</translation>
 <translation id="7961779417826583251">对于指定的一系列旧版证书授权机构，不强制执行证书透明化要求</translation>
@@ -5633,6 +5711,7 @@
       如果此政策已启用，系统将会显示可用的 Privet 打印机。
       如果此政策已停用或未设置，系统将不会在“打印预览”对话框中显示 Privet 打印机，因为该打印方法已被弃用。</translation>
 <translation id="7970844378072291834">强制启用纯 HTTPS 模式（尚不支持）</translation>
+<translation id="7972642710812569707">强制重新启用第三方情境下的 WebSQL。</translation>
 <translation id="7973609468423251675">请注意，此政策已被弃用，并将在 <ph name="PRODUCT_OS_NAME" />版本 85 中移除。请改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 
           指定当使用电池供电时系统应在设备闲置多久后降低屏幕亮度。
@@ -5678,7 +5757,9 @@
       如果此政策已启用，用户便能够使用 <ph name="LACROS_NAME" /> 浏览器。</translation>
 <translation id="802147957407376460">将屏幕旋转 0 度</translation>
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> 图片的 SHA-256 哈希值。</translation>
+<translation id="8028814157747157754">启用默认搜索服务提供商并允许用户修改搜索服务提供商列表</translation>
 <translation id="8029201909194194377">远程访问连接可达到的会话时长上限</translation>
+<translation id="8029607810986641704">在设备进入空闲或暂停状态时将其锁定</translation>
 <translation id="8036964468882248070">如果此政策已启用，已注册的设备将会报告存储设备的硬件统计信息和标识符。
 
       如果此政策已停用或未设置，已注册的设备将不会报告存储统计信息。</translation>
@@ -5714,6 +5795,7 @@
           如果此政策已停用，智能调暗模式将不会影响屏幕变暗时间。</translation>
 <translation id="8080200590486938727">停用插件查找器</translation>
 <translation id="8089200718228084417">启用已弃用的 Privet 本地打印</translation>
+<translation id="8089236320223488328">在确定不安全网站能否向任意网络端点发送请求时使用默认行为</translation>
 <translation id="8091982561085048989">一个布尔值标记，用于表明是否应该使用 IPP Everywhere 来设置打印机。<ph name="PRODUCT_OS_NAME" /> 76 版及更高版本支持该标记。</translation>
 <translation id="8099880303030573137">使用电池供电时的闲置延迟时间</translation>
 <translation id="8101381354936029836">政策原子组：</translation>
@@ -5948,6 +6030,7 @@
 <translation id="8371178326720637170">允许受管理的扩展程序使用 Enterprise Hardware Platform API</translation>
 <translation id="8375817202037102567">禁止在这些网站上向文件和目录写入内容</translation>
 <translation id="8379317372795444261">允许通过 HTTP 连接进行<ph name="BASIC_AUTH" />身份验证</translation>
+<translation id="8381678031726288574">应用默认的 U2F API 弃用设置。</translation>
 <translation id="8382184662529825177">允许为设备使用远程认证来保护内容</translation>
 <translation id="838870586332499308">启用数据漫游</translation>
 <translation id="8393850527597048037">仅限平台</translation>
@@ -6435,6 +6518,7 @@
 <translation id="8976531594979650914">使用系统默认打印机作为默认选项</translation>
 <translation id="8977192934280677167">允许在上下文菜单中使用默认搜索服务提供商进行搜索</translation>
 <translation id="8983537551095611459">配置要从受限受管理访客会话清理过程中排除的扩展程序的 ID 列表</translation>
+<translation id="8983539044126123594">允许使用其他 Google 帐号登录</translation>
 <translation id="8992176907758534924">不允许任何网站显示图片</translation>
 <translation id="9007632512838819703">此政策已被弃用，请改用 <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" />。
 

@@ -51,6 +51,7 @@
 <translation id="2289270750774289114">Preguntar cando un sitio web queira detectar dispositivos Bluetooth próximos (recomendado)</translation>
 <translation id="2315043854645842844">A selección do certificado do cliente non é compatible co sistema operativo.</translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2379925928934107488">Aplícaselles o tema escuro aos sitios sempre que é posible cando Chrome está configurado con ese tema</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis (permitidos)}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis (permitidos)}}</translation>
 <translation id="2434158240863470628">Completouse a descarga <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -63,6 +64,7 @@
 <translation id="2570922361219980984">O acceso á localización tamén está desactivado neste dispositivo. Actívao na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Vista ampliada (fai clic para contraela).</translation>
 <translation id="2586657967955657006">Portapapeis</translation>
+<translation id="2597457036804169544">Non se lles aplica o tema escuro aos sitios</translation>
 <translation id="2621115761605608342">Permite a execución de JavaScript para un sitio específico.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2677748264148917807">Saír</translation>
@@ -101,6 +103,7 @@
 <translation id="3600792891314830896">Silencia sitios que reproducen son</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3763247130972274048">Toca dúas veces cara á esquerda ou á dereita no vídeo para saltar 10 s</translation>
+<translation id="3797520601150691162">Non se lle aplica o tema escuro a un sitio concreto</translation>
 <translation id="381841723434055211">Números de teléfono</translation>
 <translation id="3835233591525155343">Uso do dispositivo</translation>
 <translation id="385051799172605136">Atrás</translation>
@@ -245,6 +248,7 @@
 <translation id="7302486331832100261">Adoitas bloquear as notificacións. Para permitilas, toca Detalles.</translation>
 <translation id="7423098979219808738">Preguntar primeiro</translation>
 <translation id="7423538860840206698">Bloqueouse a lectura do portapapeis</translation>
+<translation id="7425915948813553151">Tema escuro para os sitios</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Un sitio está utilizando o micrófono</translation>
 <translation id="7561196759112975576">Sempre</translation>

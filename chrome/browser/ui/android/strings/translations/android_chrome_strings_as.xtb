@@ -404,6 +404,7 @@
 <translation id="3429160811076349561">ট্ৰায়েলৰ সুবিধা অফ আছে</translation>
 <translation id="3440975416244667276">অধিক প্ৰাসংগিক তথ্যৰ বাবে স্পৰ্শ কৰি ধৰি ৰাখক</translation>
 <translation id="3443221991560634068">বর্তমানৰ পৃষ্ঠাটো পুনৰ ল’ড কৰক</translation>
+<translation id="3444179773590444986">ছাইটৰ বাবে গাঢ় ৰঙৰ থীম সম্পৰ্কে মতামত শ্বেয়াৰ কৰিব নেকি?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{১ টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে}one{# টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে}other{# টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে}}</translation>
 <translation id="3478363558367712427">আপুনি নিজৰ সন্ধান ইঞ্জিন বাছনি কৰিব পাৰে</translation>
 <translation id="3493531032208478708">পৰামৰ্শ দিয়া সমলৰ বিষয়ে <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -585,6 +586,7 @@
 <translation id="4663499661119906179">আপোনাৰ বাবে থকা শীৰ্ষ ছাইটসমূহ আৰু কাহিনীবোৰ</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" />টা বুকমাৰ্ক মচা হ’ল</translation>
 <translation id="4668347365065281350">কুকি আৰু স্থানীয়ভাৱে ষ্ট’ৰ কৰা অন্য ডেটাকে ধৰি ছাইটসমূহে ষ্ট’ৰ কৰা সকলো ডেটা</translation>
+<translation id="4678082183394354975">Chromeত ছাইটৰ বাবে গাঢ় ৰঙৰ থীম অন কৰা হৈছে</translation>
 <translation id="4684427112815847243">সকলো ছিংক কৰক</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}}</translation>
 <translation id="4696983787092045100">আপোনাৰ ডিভাইচসমূহলৈ পাঠ পঠিয়াওক</translation>
@@ -766,6 +768,7 @@
 <translation id="5754350196967618083">Discover ৰিফ্ৰেশ্ব কৰিব নোৱাৰি</translation>
 <translation id="5763382633136178763">ইনক'গনিট' টেব</translation>
 <translation id="5763514718066511291">এই এপৰ URLটো প্ৰতিলিপি কৰিবলৈ টিপক</translation>
+<translation id="5765517223145864268">আমাক আপোনাৰ অভিজ্ঞতাৰ বিষয়ে কওক। অথবা <ph name="BEGIN_LINK" />আপোনাৰ ছেটিং সলনি কৰক<ph name="END_LINK" />।</translation>
 <translation id="5765780083710877561">বিৱৰণ:</translation>
 <translation id="5767013862801005129"><ph name="TAB_TITLE" /> টেবটো পুনঃস্থাপন কৰা হৈছে</translation>
 <translation id="5776970333778123608">গুৰুত্বহীন ডেটা</translation>
@@ -953,6 +956,7 @@
 <translation id="6738516213925468394">আপোনাৰ ডেটাখিনি আপুনি <ph name="BEGIN_LINK" />ছিংক কৰি থোৱা পাছফ্ৰে'জ<ph name="END_LINK" />ৰ সহায়ত <ph name="TIME" />ত এনক্রিপ্ট কৰা হৈছিল। ছিংক আৰম্ভ কৰিবলৈ এইটো দিয়ক।</translation>
 <translation id="6738867403308150051">ডাউনল’ড কৰি থকা হৈছে…</translation>
 <translation id="6751521182688001123">ক্ষিপ্ৰভাৱে এটা নতুন টেব খোলক। এই শ্বৰ্টকাটটো সম্পাদনা কৰিবলৈ, স্পৰ্শ কৰি ধৰি ৰাখক।</translation>
+<translation id="6756507620369789050">মতামত শ্বেয়াৰ কৰক</translation>
 <translation id="6767294960381293877">টেব এটা শ্বেয়াৰ কৰিবলৈ আধাকৈ খোল খোৱা ডিভাইচসমূহৰ সূচী।</translation>
 <translation id="6783942555455976443">পৰৱৰ্তী সময়ৰ কাৰণে এই পৃষ্ঠাখন ছেভ কৰি ৰাখক আৰু এটা ৰিমাইণ্ডাৰ পাওক</translation>
 <translation id="6795633245022906657">ক্ষিপ্ৰভাৱে এটা নতুন টেব খোলক। এই শ্বৰ্টকাটটো সম্পাদনা কৰিবলৈ ছেটিঙলৈ যাওক।</translation>
@@ -1044,6 +1048,7 @@
 <translation id="7352651011704765696">কিবা সমস্যা হৈছে</translation>
 <translation id="7352939065658542140">ভিডিঅ’</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{বাছনি কৰা ১টা বস্তু শ্বেয়াৰ কৰক}one{বাছনি কৰা #টা বস্তু শ্বেয়াৰ কৰক}other{বাছনি কৰা #টা বস্তু শ্বেয়াৰ কৰক}}</translation>
+<translation id="7356631068872238169">পঢ়াৰ সূচীৰ পৰা মচক</translation>
 <translation id="7359002509206457351">পৰিশোধৰ পদ্ধতি এক্সেছ কৰক</translation>
 <translation id="7375125077091615385">ধৰণ:</translation>
 <translation id="7376560087009844242">কোনো পৃষ্ঠাৰ অধিক পাঠ অন্তৰ্ভুক্ত কৰি, সন্ধান কৰিবলৈ স্পৰ্শ কৰক সুবিধাটো ব্যৱহাৰ কৰোঁতে আপুনি হয়তো উন্নত ফলাফল দেখা পাব পাৰে। এইটো সলনি কৰিবলৈ আপুনি যিকোনো সময়তে <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" /> লৈ যাব পাৰে।</translation>
@@ -1214,6 +1219,7 @@
 <translation id="8266862848225348053">ডাউনল’ডৰ অৱস্থান</translation>
 <translation id="8274165955039650276">ডাউনল’ড কৰাবোৰ চাওক</translation>
 <translation id="8281886186245836920">এৰি যাওক</translation>
+<translation id="8282297628636750033">সম্ভৱ হ’লে ছাইটত গাঢ় ৰঙৰ থীম প্ৰয়োগ কৰক</translation>
 <translation id="8284326494547611709">কেপশ্বন</translation>
 <translation id="829672787777123339">আপোনাৰ ডিভাইচটোৰ সৈতে সংযোগ কৰি থকা হৈছে…</translation>
 <translation id="8310344678080805313">মান্য টেব</translation>
@@ -1345,6 +1351,7 @@
 <translation id="9063523880881406963">ডেস্কটপ ছাইট অনুৰোধ কৰা সুবিধাটি বন্ধ কৰক</translation>
 <translation id="9065203028668620118">সম্পাদনা কৰক</translation>
 <translation id="9065383040763568503">Chromeএ গুৰুত্বপূৰ্ণ বুলি গণ্য নকৰা ষ্ট’ৰ কৰি ৰখা ডেটা (যেনে, এনে ছাইট যিবিলাকৰ ছেটিংসমূহ ছেভ কৰি ৰখা হোৱা নাই অথবা যিবিলাক আপুনি সঘনাই নাচায়)</translation>
+<translation id="906781307897697745"><ph name="PRODUCT_NAME" />ত</translation>
 <translation id="9069999660519089861">কোনো নপঢ়া পৃষ্ঠা নাই</translation>
 <translation id="9070377983101773829">কণ্ঠধ্বনিৰ জৰিয়তে সন্ধান আৰম্ভ কৰক</translation>
 <translation id="9074336505530349563">Googleএ পৰামৰ্শ কৰা ব্যক্তিগতকৰণ কৰা সমল পাবলৈ ছাইন ইন কৰি ছিংক অন কৰক</translation>

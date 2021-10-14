@@ -586,6 +586,7 @@
 <translation id="1612019740169791082">コンテナはディスクサイズを変更できるように設定されていません。Linux 用に予約されている容量を調整するには、バックアップしてから新しいコンテナに復元してください。</translation>
 <translation id="1614511179807650956">モバイルデータの割り当て量をすべて使用している可能性があります。データを追加購入するには、<ph name="NAME" /> の有効化ポータルにアクセスしてください</translation>
 <translation id="161460670679785907">スマートフォンが見つかりません</translation>
+<translation id="1615337439947999338">Google アカウント（<ph name="EMAIL" />）に保存</translation>
 <translation id="1615402009686901181">管理者のポリシーによって、機密コンテンツが表示されているときは、スクリーン キャプチャが無効になります</translation>
 <translation id="1616206807336925449">この拡張機能は特別な権限を必要としません。</translation>
 <translation id="1616298854599875024">拡張機能「<ph name="IMPORT_NAME" />」は、共有モジュールではないためインポートできません</translation>
@@ -915,6 +916,7 @@
 <translation id="1929546189971853037">ログインしているすべてのデバイスでの閲覧履歴の読み取り</translation>
 <translation id="1930879306590754738">このデバイスと Google アカウントからパスワードを削除しました</translation>
 <translation id="1931152874660185993">コンポーネントはインストールされていません。</translation>
+<translation id="1931410639376954712"><ph name="DEVICE_OS" /> をインストールしています</translation>
 <translation id="1932098463447129402">開始時刻</translation>
 <translation id="1935303383381416800">位置情報の取得を許可するサイト</translation>
 <translation id="1936931585862840749">印刷部数を数値（1～<ph name="MAX_COPIES" />）で指定してください。</translation>
@@ -1047,6 +1049,7 @@
 <translation id="208586643495776849">もう一度お試しください</translation>
 <translation id="208634871997892083">常時接続 VPN</translation>
 <translation id="2087822576218954668">印刷: <ph name="PRINT_NAME" /></translation>
+<translation id="2088092308059522196">登録は <ph name="DEVICE_OS" /> をインストールした後にのみ行うことができます。</translation>
 <translation id="208928984520943006">ホーム画面は、下から上にスワイプすれば、いつでも表示できます。</translation>
 <translation id="2089566709556890888">Google Chrome で安全にブラウジング</translation>
 <translation id="2089795179672254991">クリップボードにコピーされているテキストや画像にサイトがアクセスする際に確認する（推奨）</translation>
@@ -1171,6 +1174,7 @@
 <translation id="2203088913459920044">名前には文字、数字、特殊文字を使用できます</translation>
 <translation id="2204034823255629767">すべての入力内容の読み取りと変更</translation>
 <translation id="220858061631308971">「<ph name="DEVICE_NAME" />」の PIN コードを入力してください:</translation>
+<translation id="2210462644007531147">インストールを完了できませんでした</translation>
 <translation id="2212565012507486665">Cookie を許可</translation>
 <translation id="2214018885812055163">共有フォルダ</translation>
 <translation id="2214884991347062907">パスワードが正しくありません。もう一度お試しください</translation>
@@ -1224,6 +1228,7 @@
 <translation id="22665427234727190">サイトから Bluetooth デバイスへのアクセスを求められたときに確認する（推奨）</translation>
 <translation id="2266957463645820432">IPP over USB（IPPUSB）</translation>
 <translation id="2270450558902169558">ドメイン <ph name="DOMAIN" /> 内のデバイスとのデータ交換</translation>
+<translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />インストールすると、<ph name="BEGIN_BOLD" />ハードドライブのデータはすべて消去されます<ph name="END_BOLD" />。データをバックアップしていることを確認してください。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />インストールを開始した後にキャンセルすることはできません。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">ドメイン <ph name="DOMAINS" /> のデバイスとのデータ交換</translation>
 <translation id="2270666014403455717">スイッチを「選択」に割り当てます</translation>
 <translation id="2271469253353559191">ダークモードのスケジュールを設定する</translation>
@@ -1484,6 +1489,7 @@
 <translation id="2521854691574443804">組織のセキュリティ ポリシーに沿って <ph name="FILE_NAME" /> をチェックしています...</translation>
 <translation id="252219247728877310">コンポーネント未更新</translation>
 <translation id="2523184218357549926">アクセスしたページの URL を Google に送信します</translation>
+<translation id="252418934079508528"><ph name="DEVICE_OS" /> をインストール</translation>
 <translation id="252502352004572774">お使いのパソコンに有害なソフトウェアがないか確認しています...</translation>
 <translation id="2526590354069164005">デスクトップ</translation>
 <translation id="2526619973349913024">アップデートを確認</translation>
@@ -1688,6 +1694,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">リカバリ ターミナルを開く</translation>
 <translation id="2741912629735277980">ログイン画面に UI を表示する</translation>
+<translation id="2742448780373473567"><ph name="DEVICE_OS" /> をインストールすると、デバイスのデータはすべて上書きされます。</translation>
 <translation id="274290345632688601">Linux のアプリとファイルを復元しています</translation>
 <translation id="274318651891194348">キーボードを探しています</translation>
 <translation id="2743387203779672305">クリップボードにコピー</translation>
@@ -2880,6 +2887,7 @@
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> を有効にする</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" />間、付近のデバイスに「<ph name="DEVICE_NAME" />」として表示されます...</translation>
 <translation id="3981760180856053153">入力された保存形式が無効です。</translation>
+<translation id="3981828803725658123"><ph name="BEGIN_PARAGRAPH1" />エラーが発生したため、<ph name="DEVICE_OS" /> をインストールできませんでした。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />詳しくは、g.co/xxxxx をご覧ください<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3982375475032951137">簡単な手順でブラウザを設定できます</translation>
 <translation id="3983400541576569538">一部のアプリのデータは失われる可能性があります</translation>
 <translation id="3983586614702900908">不明なベンダーのデバイス</translation>
@@ -2967,6 +2975,7 @@
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> を閉じる</translation>
 <translation id="4085270836953633510">サイトからシリアルポートへのアクセス許可を求められたときに確認する</translation>
 <translation id="4085298594534903246">このページの JavaScript はブロックされました。</translation>
+<translation id="4085947337119280756">追加の拡張機能</translation>
 <translation id="4087089424473531098">拡張機能を作成しました:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -3270,6 +3279,7 @@
 <translation id="4449996769074858870">このタブは音声の再生中です。</translation>
 <translation id="4450274068924249931">画面がアイドル状態のときに、写真、時刻、天気、メディア情報を表示します。スクリーン セーバーを有効にすると、充電中もディスプレイがオンになります。</translation>
 <translation id="4450974146388585462">診断</translation>
+<translation id="445099924538929605"><ph name="DEVICE_OS" /> が、データをより安全に保存できる有効な TPM を検出しました。</translation>
 <translation id="4451479197788154834">パスワードはこのデバイスと Google アカウントに保存されています</translation>
 <translation id="4451757071857432900">煩わしい広告や誤解を招く広告が表示されるサイトでブロック（推奨）</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> で検索するか、URL を入力してください</translation>
@@ -3771,6 +3781,7 @@
 <translation id="4992473555164495036">使用できる入力方法が管理者によって制限されています。</translation>
 <translation id="4994474651455208930">プロトコルのデフォルト ハンドラへのサイトの登録要求を許可する</translation>
 <translation id="4994754230098574403">設定しています</translation>
+<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />登録する前に、<ph name="DEVICE_OS" /> がデバイスのオーナー権限を取得できるよう TPM を消去する必要があります。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />デバイスの TPM を完全にオフにすることもできます。データは、ソフトウェアによる暗号化で引き続き安全に保存されますが、ハードウェア式証明書など、特定のセキュリティ機能は無効になります。<ph name="END_PARAGRAPH2" /><ph name="BEGIN_PARAGRAPH3" />TPM の設定を変更するには、再起動してシステム BIOS / UEFI の設定に入ってください。手順はデバイスモデルに応じて異なります。詳しくは、再起動する前に別のデバイスで <ph name="DEVICE_OS" /> のドキュメントをご確認ください: [URL リンク]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> VM は見つかりませんでした}=1{1 件の <ph name="VM_TYPE" /> VM が見つかりました: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} 件の <ph name="VM_TYPE" /> VM が見つかりました: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">インターネットに接続されていません。</translation>
 <translation id="4998430619171209993">オン</translation>
@@ -3886,6 +3897,7 @@
 <translation id="5127620150973591153">安全な接続 ID: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">同期は無効です</translation>
 <translation id="5127881134400491887">ネットワーク接続の管理</translation>
+<translation id="5128774403617662387">開始する前に、データがバックアップされていることを確認してください。<ph name="DEVICE_OS" /> をインストールすると、ハードドライブは上書きされます。詳しくは、g.co/TBD をご覧ください。</translation>
 <translation id="512903556749061217">接続</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">プロファイルをダウンロードできませんでした。しばらくしてからもう一度試すか、携帯通信会社にお問い合わせください。</translation>
@@ -4319,6 +4331,7 @@
 <translation id="5592595402373377407">利用可能なデータがまだ十分にありません。</translation>
 <translation id="5595485650161345191">住所の編集</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
+<translation id="5600348067066185292">インストールの手順は簡単です。パソコンに変更を加える前に、インストールを確認するメッセージがもう一度表示されます。</translation>
 <translation id="5600706100022181951">アップデートをダウンロードすると、<ph name="UPDATE_SIZE_MB" /> MB のモバイルデータを使用することになります。続行してもよろしいですか？</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">MIDI デバイスへの接続を許可しないサイト</translation>
@@ -4378,6 +4391,7 @@
 <translation id="5659593005791499971">メール</translation>
 <translation id="5659833766619490117">このページを翻訳できませんでした</translation>
 <translation id="5662513737565158057">Linux アプリの動作を変更します。</translation>
+<translation id="5667490069342183561">Google はデータの消失について一切の責任を負いません。<ph name="DEVICE_OS" /> は未認定のモデルでは動作しない可能性があります。詳しくは、g.co/TBD をご覧ください。</translation>
 <translation id="5667546120811588575">Google Play を設定しています...</translation>
 <translation id="5668351004957198136">不合格</translation>
 <translation id="56702779821643359">近くのユーザーとファイルを共有できます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -4396,6 +4410,7 @@
 <translation id="5684181005476681636">Wi-Fi の詳細</translation>
 <translation id="5684661240348539843">アセット ID</translation>
 <translation id="5687326903064479980">タイムゾーン</translation>
+<translation id="5687935527303996204">デバイスが電源に接続されていることを確認してください。電源をオフにしないでください。インストールには 20 分ほどかかる場合があります。インストールが完了するとデバイスは自動的にシャットダウンします。</translation>
 <translation id="5689516760719285838">位置情報</translation>
 <translation id="5689531695336322499">アシスタントの Voice Match は、<ph name="SUPERVISED_USER_NAME" /> さんがすでに別のデバイスで設定済みのようです。このデバイスの音声モデルは、登録済みの音声を使って作成されています。</translation>
 <translation id="56907980372820799">データをリンク</translation>
@@ -5734,6 +5749,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> がマイクを使用しています</translation>
 <translation id="7141105143012495934">アカウントの詳細を取得できなかったためログインできませんでした。管理者に問い合わせるか、もう一度お試しください。</translation>
 <translation id="7144878232160441200">再読み込み</translation>
+<translation id="7149839598364933473">このデバイスを <ph name="DEVICE_OS" /> デバイスに変換します。</translation>
 <translation id="7149893636342594995">過去 24 時間</translation>
 <translation id="7152478047064750137">この拡張機能に特別な権限は必要ありません</translation>
 <translation id="7154130902455071009">スタート ページを次に変更します: <ph name="START_PAGE" /></translation>
@@ -5828,6 +5844,16 @@
 <translation id="7257666756905341374">コピー＆ペーストするデータの読み取り</translation>
 <translation id="7258225044283673131">アプリケーションから応答がありません。終了するには [強制終了] を選択してください。</translation>
 <translation id="7262004276116528033">このログイン サービスは <ph name="SAML_DOMAIN" /> でホストされています</translation>
+<translation id="7264432249010320236">追加のサイト</translation>
+<translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />次の解決方法をお試しください。
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />デバイスに有効な内部ストレージ（HDD、SSD、eMMC など）が含まれていることを確認します
+    <ph name="LIST_ITEM" />内部ストレージ デバイスが 16 GB 以上であることを確認します
+    <ph name="LIST_ITEM" />物理的にアクセス可能な場合は、内部ストレージへの接続を確認します
+    <ph name="LIST_ITEM" />認定モデルを使用していることを確認し、インストールに関する注意事項を確認します
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />詳しくは、g.co/xxxxx をご覧ください<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7267044199012331848">仮想マシンをインストールできませんでした。もう一度お試しいただくか、管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="7267875682732693301">指を何度か離して、あらゆる角度から指紋を登録します</translation>
 <translation id="7268127947535186412">この設定はデバイスの所有者が管理しています。</translation>
@@ -6552,6 +6578,7 @@
 <translation id="7986295104073916105">保存されたパスワード設定の読み取りと変更</translation>
 <translation id="7987814697832569482">この VPN で常に接続する</translation>
 <translation id="7988355189918024273">ユーザー補助機能を有効にします</translation>
+<translation id="7988805580376093356">OS を変更せず、<ph name="DEVICE_OS" /> を USB から実行します。</translation>
 <translation id="7991296728590311172">スイッチ アクセスの設定</translation>
 <translation id="7997826902155442747">プロセスの優先値</translation>
 <translation id="7999229196265990314">次のファイルを作成しました:
@@ -6660,6 +6687,7 @@
 <translation id="80974698889265265">PIN が一致しません</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> は拡張機能のプロキシ設定を使用しています</translation>
 <translation id="8097959162767603171">まず管理者の方に管理コンソールの Chrome デバイスリストの利用規約に同意していただく必要があります。</translation>
+<translation id="8098156986344908134"><ph name="DEVICE_OS" /> をインストールしてハードドライブのデータを消去しますか？</translation>
 <translation id="8098616321286360457">ネットワーク接続が必要です</translation>
 <translation id="810068641062493918">「<ph name="LANGUAGE" />」が選択されています。選択を解除するには検索+Space キーを押してください。</translation>
 <translation id="810185532889603849">カスタム色</translation>
@@ -6844,6 +6872,7 @@
 <translation id="8287902281644548111">API 呼び出しまたは URL で検索</translation>
 <translation id="8288032458496410887">「<ph name="APP" />」をアンインストール...</translation>
 <translation id="8289128870594824098">ディスクサイズ</translation>
+<translation id="8289509909262565712"><ph name="DEVICE_OS" /> へようこそ</translation>
 <translation id="8293206222192510085">ブックマークの追加</translation>
 <translation id="8294431847097064396">ソース</translation>
 <translation id="8298429963694909221">スマートフォンの通知を <ph name="DEVICE_TYPE" /> で受信できるようになりました。<ph name="DEVICE_TYPE" /> で通知を非表示にすると、その通知はスマートフォンでも表示されなくなります。Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi もオンになっていることを確認してください。</translation>
@@ -7167,6 +7196,7 @@
 <translation id="867085395664725367">一時的なサーバーエラーが発生しました。</translation>
 <translation id="8673026256276578048">ウェブ検索...</translation>
 <translation id="8673383193459449849">サーバーに問題が発生しました</translation>
+<translation id="8675704450909805533">インストーラは <ph name="DEVICE_OS" /> の有効なインストール先を見つけられませんでした。</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{動画}other{# 件の動画}}</translation>
 <translation id="8676313779986170923">フィードバックを送信していただきありがとうございます。</translation>
 <translation id="8676374126336081632">入力内容を消去</translation>
@@ -7322,6 +7352,7 @@
 <translation id="8823559166155093873">Cookie をブロック</translation>
 <translation id="8823704566850948458">パスワードを自動生成...</translation>
 <translation id="8824701697284169214">ページを追加(&amp;G)...</translation>
+<translation id="8826773185686617320"><ph name="DEVICE_OS" /> の使用を開始するには、USB を取り外してデバイスを再起動してください。再起動しない場合、<ph name="TIME_LEFT" /> 後にデバイスがシャットダウンします。</translation>
 <translation id="8827125715368568315"><ph name="PERMISSION" />、他 <ph name="COUNT" /> 件をブロックしました</translation>
 <translation id="8827289157496676362">拡張機能を固定します</translation>
 <translation id="8827752199525959199">その他の操作、<ph name="DOMAIN" /> での <ph name="USERNAME" /> のパスワード</translation>
@@ -7456,6 +7487,7 @@
 <translation id="8962051932294470566">一度に共有できるファイルは 1 つのみです。現在の転送が終わってから、もう一度お試しください。</translation>
 <translation id="8962083179518285172">詳細を非表示</translation>
 <translation id="8962918469425892674">このサイトはモーション センサーまたは光センサーを使用しています。</translation>
+<translation id="8964943308070692533">追加の無効なサイト</translation>
 <translation id="8965037249707889821">古いパスワードを入力</translation>
 <translation id="89667524227025535">デバイスのカメラで QR コードをスキャンするか、携帯通信会社から提供されたアクティベーション コードを入力してください</translation>
 <translation id="8966809848145604011">他のプロフィール</translation>
@@ -7618,6 +7650,8 @@
 <translation id="9116465289595958864">最終更新</translation>
 <translation id="9116799625073598554">メモ用アプリ</translation>
 <translation id="9117030152748022724">アプリを管理する</translation>
+<translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />快適にご利用いただくには、<ph name="DEVICE_OS" /> を内部ディスクにインストールしてください。後でログイン画面からインストールすることもできます。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />インストールする準備ができていない場合は、USB から実行して試してみることもできます。この場合、既存の OS とデータは残りますが、保存容量やパフォーマンスが制限される可能性があります。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">固定されたタブとして開く</translation>
 <translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> は一時停止中</translation>
 <translation id="9124003689441359348">保存したパスワードがここに表示されます</translation>

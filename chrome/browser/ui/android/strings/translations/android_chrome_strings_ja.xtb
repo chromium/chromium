@@ -404,6 +404,7 @@
 <translation id="3429160811076349561">試用版機能はオフになっています</translation>
 <translation id="3440975416244667276">長押しすると、その他の関連情報が表示されます</translation>
 <translation id="3443221991560634068">現在のページを再読み込みする</translation>
+<translation id="3444179773590444986">サイトのダークモードに関するフィードバックを共有しますか？</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 件のダウンロードがスケジュール設定されました}other{# 件のダウンロードがスケジュール設定されました}}</translation>
 <translation id="3478363558367712427">検索エンジンを選択できます</translation>
 <translation id="3493531032208478708">詳しくは、<ph name="BEGIN_LINK" />おすすめのコンテンツ<ph name="END_LINK" />についての説明をご覧ください</translation>
@@ -585,6 +586,7 @@
 <translation id="4663499661119906179">よく使用するサイトや記事を表示します</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> 件のブックマークを削除しました</translation>
 <translation id="4668347365065281350">サイトによって保存されたすべてのデータ（Cookie やローカルに保存された他のデータを含む）</translation>
+<translation id="4678082183394354975">Chrome でサイトのダークモードがオンになっています</translation>
 <translation id="4684427112815847243">すべてを同期する</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}}</translation>
 <translation id="4696983787092045100">デバイスにテキストを送信</translation>
@@ -766,6 +768,7 @@
 <translation id="5754350196967618083">おすすめの記事を更新できません</translation>
 <translation id="5763382633136178763">シークレット タブ</translation>
 <translation id="5763514718066511291">タップすると、このアプリの URL がコピーされます</translation>
+<translation id="5765517223145864268">ご意見、ご感想をぜひお聞かせください。<ph name="BEGIN_LINK" />設定を変更する<ph name="END_LINK" />こともできます。</translation>
 <translation id="5765780083710877561">説明:</translation>
 <translation id="5767013862801005129"><ph name="TAB_TITLE" /> タブを復元しました</translation>
 <translation id="5776970333778123608">重要度の低いデータ</translation>
@@ -953,6 +956,7 @@
 <translation id="6738516213925468394">データは <ph name="TIME" />に<ph name="BEGIN_LINK" />同期パスフレーズ<ph name="END_LINK" />で暗号化されました。同期を開始するには、同期パスフレーズを入力してください。</translation>
 <translation id="6738867403308150051">ダウンロードしています…</translation>
 <translation id="6751521182688001123">新しいタブをすばやく開きます。このショートカットを編集するには、長押ししてください。</translation>
+<translation id="6756507620369789050">フィードバックを共有</translation>
 <translation id="6767294960381293877">タブを共有するデバイスのリストが画面の下半分に表示されました。</translation>
 <translation id="6783942555455976443">このページを後で読めるように保存してリマインダーを受け取ります</translation>
 <translation id="6795633245022906657">新しいタブをすばやく開きます。このショートカットは [設定] で編集できます。</translation>
@@ -1044,6 +1048,7 @@
 <translation id="7352651011704765696">問題が発生しました</translation>
 <translation id="7352939065658542140">動画</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{1 件の選択されたアイテムを共有します}other{# 件の選択されたアイテムを共有します}}</translation>
+<translation id="7356631068872238169">リーディング リストから削除</translation>
 <translation id="7359002509206457351">お支払い方法へのアクセス</translation>
 <translation id="7375125077091615385">タイプ:</translation>
 <translation id="7376560087009844242">検索に含めるページのテキストを増やすと、「タップして検索」使用時により正確な結果が得られる可能性があります。<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />からいつでも変更できます。</translation>
@@ -1214,6 +1219,7 @@
 <translation id="8266862848225348053">ダウンロード場所</translation>
 <translation id="8274165955039650276">ダウンロードを表示</translation>
 <translation id="8281886186245836920">スキップ</translation>
+<translation id="8282297628636750033">可能な場合はダークモードをサイトに適用する</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="829672787777123339">デバイスに接続しています…</translation>
 <translation id="8310344678080805313">標準のタブ</translation>
@@ -1345,6 +1351,7 @@
 <translation id="9063523880881406963">[PC 版サイトを見る] をオフにします</translation>
 <translation id="9065203028668620118">編集</translation>
 <translation id="9065383040763568503">Chrome で重要度が低いと判断される保存データ（設定を保存していないサイトやアクセス頻度の少ないサイトのデータなど）</translation>
+<translation id="906781307897697745"><ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">未読ページはありません</translation>
 <translation id="9070377983101773829">音声検索を開始</translation>
 <translation id="9074336505530349563">ユーザーに合わせた Google からのおすすめコンテンツを表示するには、ログインして同期を有効にします</translation>

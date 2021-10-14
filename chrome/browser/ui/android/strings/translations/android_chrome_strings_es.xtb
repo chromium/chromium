@@ -407,6 +407,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3429160811076349561">Las funciones de prueba están desactivadas.</translation>
 <translation id="3440975416244667276">Mantén pulsado para ver más información relevante</translation>
 <translation id="3443221991560634068">Vuelve a cargar la página actual</translation>
+<translation id="3444179773590444986">¿Enviar comentarios sobre el tema oscuro para sitios?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 descarga programada}other{# descargas programadas}}</translation>
 <translation id="3478363558367712427">Puedes elegir tu buscador</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre el contenido sugerido</translation>
@@ -590,6 +591,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4663499661119906179">Accede a tus historias y sitios favoritos</translation>
 <translation id="4663756553811254707">Se han eliminado <ph name="NUMBER_OF_BOOKMARKS" /> marcadores</translation>
 <translation id="4668347365065281350">Todos los datos almacenados por sitios, incluidas las cookies y otros datos almacenados de forma local</translation>
+<translation id="4678082183394354975">El tema oscuro para sitios está activado en Chrome</translation>
 <translation id="4684427112815847243">Sincronizar todo</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}}</translation>
 <translation id="4696983787092045100">Enviar mensaje de texto a tus dispositivos</translation>
@@ -773,6 +775,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5754350196967618083">No se ha podido actualizar Discover</translation>
 <translation id="5763382633136178763">Pestañas de incógnito</translation>
 <translation id="5763514718066511291">Toca para copiar la URL de esta aplicación</translation>
+<translation id="5765517223145864268">Dinos tu opinión. O <ph name="BEGIN_LINK" />cambia los ajustes<ph name="END_LINK" />.</translation>
 <translation id="5765780083710877561">Descripción:</translation>
 <translation id="5767013862801005129">Pestaña <ph name="TAB_TITLE" /> restaurada</translation>
 <translation id="5776970333778123608">Datos no importantes</translation>
@@ -960,6 +963,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6738516213925468394">Tus datos están cifrados con tu <ph name="BEGIN_LINK" />frase de contraseña de sincronización<ph name="END_LINK" /> desde el <ph name="TIME" />. Introdúcela para iniciar la sincronización.</translation>
 <translation id="6738867403308150051">Descargando…</translation>
 <translation id="6751521182688001123">Abre una pestaña nueva rápidamente. Para editar este acceso directo, mantenlo pulsado.</translation>
+<translation id="6756507620369789050">Enviar comentarios</translation>
 <translation id="6767294960381293877">La lista de dispositivos con los que puedes compartir una pestaña está abierta y ocupa la mitad inferior de la pantalla.</translation>
 <translation id="6783942555455976443">Guardar esta página para después y recibir un recordatorio</translation>
 <translation id="6795633245022906657">Abre una pestaña nueva rápidamente. Para editar esta combinación de teclas, ve a Configuración.</translation>
@@ -1047,10 +1051,11 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7333031090786104871">Aún se está añadiendo el sitio web anterior</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7340958967809483333">Opciones de Discover</translation>
-<translation id="7352339641508007922">Arrastra para hacer una captura de pantalla completa</translation>
+<translation id="7352339641508007922">Arrastra para hacer una captura de página completa</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
 <translation id="7352939065658542140">VÍDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Compartir 1 elemento seleccionado}other{Compartir # elementos seleccionados}}</translation>
+<translation id="7356631068872238169">Quitar de lista de lectura</translation>
 <translation id="7359002509206457351">Acceder a métodos de pago</translation>
 <translation id="7375125077091615385">Tipo:</translation>
 <translation id="7376560087009844242">Al incluir más texto de una página, es posible que obtengas mejores resultados cuando uses Tocar para buscar. Puedes cambiar esta opción en los <ph name="BEGIN_LINK" />ajustes<ph name="END_LINK" /> en cualquier momento.</translation>
@@ -1134,7 +1139,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7808889146555843082">Aunque quites esta contraseña, no se eliminará tu cuenta de <ph name="SITE" />. Cambia la contraseña o elimina tu cuenta de <ph name="SITE" /> para protegerla de otros.</translation>
 <translation id="7810647596859435254">Abrir con…</translation>
-<translation id="7815484226266492798">Captura de pantalla completa</translation>
+<translation id="7815484226266492798">Captura de página completa</translation>
 <translation id="7821588508402923572">El ahorro de datos aparecerá aquí</translation>
 <translation id="78270725016672455">Tu ordenador quiere registrar este dispositivo para iniciar sesión en un sitio.</translation>
 <translation id="7844171778363018843">No hay datos seleccionados para sincronizar</translation>
@@ -1222,6 +1227,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8266862848225348053">Ubicación de las descargas</translation>
 <translation id="8274165955039650276">Ver descargas</translation>
 <translation id="8281886186245836920">Saltar</translation>
+<translation id="8282297628636750033">Aplicar tema oscuro a sitios, siempre que sea posible</translation>
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="829672787777123339">Conectando con tu dispositivo…</translation>
 <translation id="8310344678080805313">Pestañas estándar</translation>
@@ -1355,6 +1361,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="9063523880881406963">Desactivar opción para ver como ordenador</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9065383040763568503">Datos almacenados que Chrome no considera importantes (por ejemplo, sitios sin ajustes guardados o que no visitas a menudo)</translation>
+<translation id="906781307897697745">en <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">No hay páginas sin leer</translation>
 <translation id="9070377983101773829">Iniciar búsqueda por voz</translation>
 <translation id="9074336505530349563">Para obtener contenido personalizado sugerido por Google, inicia sesión y activa la sincronización</translation>
