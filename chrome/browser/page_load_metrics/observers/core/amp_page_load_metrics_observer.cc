@@ -498,14 +498,12 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
           "Subframe.SessionWindow.Gap1000ms.Max5000ms",
           page_load_metrics::LayoutShiftUmaValue(
               normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls));
-      // TODO(sullivan): remove this histogram in resolving crbug.com/1230786.
       base::UmaHistogramCustomCounts(
-          "PageLoad.Clients.AMP.Experimental.LayoutInstability."
-          "MaxCumulativeShiftScore."
-          "Subframe.SessionWindow.Gap1000ms.Max5000ms.Bucketing50_GoodRange",
-          page_load_metrics::LayoutShiftExperimentalUmaValue10000(
+          "PageLoad.Clients.AMP.LayoutInstability.MaxCumulativeShiftScore."
+          "Subframe.SessionWindow.Gap1000ms.Max5000ms2",
+          page_load_metrics::LayoutShiftUmaValue10000(
               normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls),
-          1, 1000, 50);
+          1, 24000, 50);
     }
     RecordMobileFriendliness(builder);
   } else {
