@@ -19,7 +19,7 @@ namespace chromeos {
 // A class to make DBus calls for the org.chromium.Spaced service.
 class COMPONENT_EXPORT(SPACED_CLIENT) SpacedClient {
  public:
-  using GetRootDeviceSizeCallback = DBusMethodCallback<uint64_t>;
+  using GetSizeCallback = DBusMethodCallback<uint64_t>;
 
   SpacedClient(const SpacedClient&) = delete;
   SpacedClient& operator=(const SpacedClient&) = delete;
@@ -36,8 +36,17 @@ class COMPONENT_EXPORT(SPACED_CLIENT) SpacedClient {
   // Returns the global instance which may be null if not initialized.
   static SpacedClient* Get();
 
+  // Gets free disk space available for the given file path.
+  virtual void GetFreeDiskSpace(const std::string& path,
+                                GetSizeCallback callback) = 0;
+
+  // Gets total disk space available on the current partition for the given file
+  // path.
+  virtual void GetTotalDiskSpace(const std::string& path,
+                                 GetSizeCallback callback) = 0;
+
   // Gets the total disk space available for usage on the device.
-  virtual void GetRootDeviceSize(GetRootDeviceSizeCallback callback) = 0;
+  virtual void GetRootDeviceSize(GetSizeCallback callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

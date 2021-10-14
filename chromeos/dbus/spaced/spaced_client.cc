@@ -28,14 +28,40 @@ class SpacedClientImpl : public SpacedClient {
   SpacedClientImpl(const SpacedClientImpl&) = delete;
   SpacedClientImpl& operator=(const SpacedClientImpl&) = delete;
 
-  void GetRootDeviceSize(GetRootDeviceSizeCallback callback) override {
+  void GetFreeDiskSpace(const std::string& path,
+                        GetSizeCallback callback) override {
+    dbus::MethodCall method_call(::spaced::kSpacedInterface,
+                                 ::spaced::kGetFreeDiskSpaceMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(path);
+
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&SpacedClientImpl::HandleResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void GetTotalDiskSpace(const std::string& path,
+                         GetSizeCallback callback) override {
+    dbus::MethodCall method_call(::spaced::kSpacedInterface,
+                                 ::spaced::kGetTotalDiskSpaceMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(path);
+
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&SpacedClientImpl::HandleResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void GetRootDeviceSize(GetSizeCallback callback) override {
     dbus::MethodCall method_call(::spaced::kSpacedInterface,
                                  ::spaced::kGetRootDeviceSizeMethod);
     dbus::MessageWriter writer(&method_call);
 
     proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&SpacedClientImpl::OnGetRootDeviceSizeReceived,
+        base::BindOnce(&SpacedClientImpl::HandleResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
@@ -47,8 +73,7 @@ class SpacedClientImpl : public SpacedClient {
 
  private:
   // Handles the result of Mount and calls |callback|.
-  void OnGetRootDeviceSizeReceived(GetRootDeviceSizeCallback callback,
-                                   dbus::Response* response) {
+  void HandleResponse(GetSizeCallback callback, dbus::Response* response) {
     if (!response) {
       std::move(callback).Run(absl::nullopt);
       return;
@@ -58,8 +83,8 @@ class SpacedClientImpl : public SpacedClient {
     uint64_t size = 0;
 
     if (!reader.PopUint64(&size)) {
-      LOG(ERROR) << "GetRootDeviceSize D-Bus method: invalid response: " +
-                        response->ToString();
+      LOG(ERROR) << "Spaced D-Bus method " << response->GetMember()
+                 << ": Invalid response. " + response->ToString();
       std::move(callback).Run(absl::nullopt);
       return;
     }

@@ -22,7 +22,13 @@ class COMPONENT_EXPORT(SPACED_CLIENT) FakeSpacedClient : public SpacedClient {
   FakeSpacedClient& operator=(const FakeSpacedClient&) = delete;
 
   // FakeSpacedClient override:
-  void GetRootDeviceSize(GetRootDeviceSizeCallback callback) override;
+  void GetFreeDiskSpace(const std::string& path,
+                        GetSizeCallback callback) override;
+
+  void GetTotalDiskSpace(const std::string& path,
+                         GetSizeCallback callback) override;
+
+  void GetRootDeviceSize(GetSizeCallback callback) override;
 };
 
 }  // namespace chromeos

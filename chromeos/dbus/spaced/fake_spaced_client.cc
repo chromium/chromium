@@ -10,7 +10,17 @@ FakeSpacedClient::FakeSpacedClient() = default;
 
 FakeSpacedClient::~FakeSpacedClient() = default;
 
-void FakeSpacedClient::GetRootDeviceSize(GetRootDeviceSizeCallback callback) {
+void FakeSpacedClient::GetFreeDiskSpace(const std::string& path,
+                                        GetSizeCallback callback) {
+  std::move(callback).Run(absl::nullopt);
+}
+
+void FakeSpacedClient::GetTotalDiskSpace(const std::string& path,
+                                         GetSizeCallback callback) {
+  std::move(callback).Run(absl::nullopt);
+}
+
+void FakeSpacedClient::GetRootDeviceSize(GetSizeCallback callback) {
   std::move(callback).Run(absl::nullopt);
 }
 
