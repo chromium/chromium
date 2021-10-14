@@ -11,6 +11,7 @@ import 'chrome://oobe/screens/common/parental_handoff.m.js';
 import 'chrome://oobe/screens/common/sync_consent.m.js';
 import 'chrome://oobe/screens/common/tpm_error.m.js';
 import 'chrome://oobe/screens/common/user_creation.m.js';
+import 'chrome://oobe/screens/common/oobe_reset.m.js';
 import 'chrome://oobe/screens/login/active_directory_password_change.m.js';
 import 'chrome://oobe/screens/login/gaia_password_changed.m.js';
 import 'chrome://oobe/screens/login/lacros_data_migration.m.js';

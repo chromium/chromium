@@ -6,18 +6,18 @@
 
 <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/util.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
-<link rel="import" href="/components/oobe_icons.html">
-<link rel="import" href="/components/behaviors/login_screen_behavior.html">
-<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="/components/buttons/oobe_text_button.html">
-<link rel="import" href="/components/common_styles/common_styles.html">
-<link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="/components/dialogs/oobe_adaptive_dialog.html">
-<link rel="import" href="/components/dialogs/oobe_modal_dialog.html">
+<link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_text_button.html">
+<link rel="import" href="../../components/common_styles/common_styles.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="../../components/dialogs/oobe_modal_dialog.html">
 
 <dom-module id="oobe-reset-element">
   <template>
@@ -85,7 +85,7 @@
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
         <!-- Reset screen illustration -->
-        <img src="images/powerwash.svg" class="illustration">
+        <img src="images/powerwash.svg" class="oobe-illustration">
         <!-- TPM Update - Only shown during powerwash state -->
         <div id="tpmFirmwareUpdate" class="layout horizontal"
             hidden="[[!inPowerwashState_]]">
@@ -118,8 +118,9 @@
             hidden="[[!inRestartRequiredState_]]">
         </oobe-text-button>
         <!-- Powerwash button (depends on powerwash mode) -->
-        <oobe-text-button inverse on-click="onPowerwashTap_" class="focus-on-show"
-            id="powerwash" hidden="[[!inPowerwashState_]]"
+        <oobe-text-button inverse on-click="onPowerwashTap_"
+            class="focus-on-show" id="powerwash"
+            hidden="[[!inPowerwashState_]]"
             text-key="[[powerwashButtonTextKey_]]"
             disabled="[[powerwashButtonDisabled_]]">
         </oobe-text-button>
@@ -139,4 +140,5 @@
       </div>
     </oobe-modal-dialog>
   </template>
+  <script src="oobe_reset.js"></script>
 </dom-module>

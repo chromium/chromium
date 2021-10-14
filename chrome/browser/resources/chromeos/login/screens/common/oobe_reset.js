@@ -6,7 +6,8 @@
  * @fileoverview Polymer element for displaying material design reset screen.
  */
 
-(function() {
+/* #js_imports_placeholder */
+
 /** @enum {number} */
 const RESET_SCREEN_STATE = {
   'RESTART_REQUIRED': 0,
@@ -23,7 +24,7 @@ const POWERWASH_MODE = {
 };
 
 // Powerwash mode details. Used by the UI for the two different modes
-/** @type {Map<POWERWASH_MODE, Object<string,string>>} */
+/** @type {Map<number, Object<string,string>>} */
 const POWERWASH_MODE_DETAILS = new Map([
   [
     POWERWASH_MODE.POWERWASH_WITH_ROLLBACK, {
@@ -43,134 +44,173 @@ const POWERWASH_MODE_DETAILS = new Map([
   ],
 ]);
 
-Polymer({
-  is: 'oobe-reset-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ */
+const ResetScreenElementBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+    Polymer.Element);
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+/**
+ * @polymer
+ */
+class OobeReset extends ResetScreenElementBase {
+  static get is() {
+    return 'oobe-reset-element';
+  }
 
-  EXTERNAL_API: [
-    'setIsRollbackAvailable',
-    'setIsRollbackRequested',
-    'setIsTpmFirmwareUpdateAvailable',
-    'setIsTpmFirmwareUpdateChecked',
-    'setIsTpmFirmwareUpdateEditable',
-    'setTpmFirmwareUpdateMode',
-    'setShouldShowConfirmationDialog',
-    'setScreenState',
-  ],
+  /* #html_template_placeholder */
 
-  properties: {
+  static get properties() {
+    return {
+      /* The current state of the screen as set from the C++ side. */
+      screenState_: {
+        type: Number,
+        observer: 'onScreenStateChanged_',
+      },
 
-    /* The current state of the screen as set from the C++ side. */
-    /** @type {RESET_SCREEN_STATE} */
-    screenState_: {
-      type: Number,
-      value: RESET_SCREEN_STATE.RESTART_REQUIRED,
-      observer: 'onScreenStateChanged_',
-    },
+      /** Whether rollback is available */
+      isRollbackAvailable_: {
+        type: Boolean,
+        observer: 'updatePowerwashModeBasedOnRollbackOptions_',
+      },
 
-    /** @type {boolean}  Whether rollback is available */
-    isRollbackAvailable_: {
-      type: Boolean,
-      value: false,
-      observer: 'updatePowerwashModeBasedOnRollbackOptions_',
-    },
+      /**
+       * Whether the rollback option was chosen by the user.
+       */
+      isRollbackRequested_: {
+        type: Boolean,
+        observer: 'updatePowerwashModeBasedOnRollbackOptions_',
+      },
 
-    /**
-     * @type {boolean}
-     *  Whether the rollback option was chosen by the user.
-     */
-    isRollbackRequested_: {
-      type: Boolean,
-      value: false,
-      observer: 'updatePowerwashModeBasedOnRollbackOptions_',
-    },
+      /**
+       * Whether to show the TPM firmware update checkbox.
+       */
+      tpmUpdateAvailable_: {
+        type: Boolean,
+      },
 
-    /**
-     * Whether to show the TPM firmware update checkbox.
-     */
-    tpmUpdateAvailable_: Boolean,
+      /**
+       * If the checkbox to request a TPM firmware update is checked.
+       */
+      tpmUpdateChecked_: {
+        type: Boolean,
+      },
 
-    /**
-     * If the checkbox to request a TPM firmware update is checked.
-     */
-    tpmUpdateChecked_: Boolean,
+      /**
+       * If the checkbox to request a TPM firmware update is editable.
+       */
+      tpmUpdateEditable_: {
+        type: Boolean,
+      },
 
-    /**
-     * If the checkbox to request a TPM firmware update is editable.
-     */
-    tpmUpdateEditable_: Boolean,
+      /**
+       * The current TPM update mode.
+       */
+      tpmUpdateMode_: {
+        type: String,
+      },
 
-    /**
-     * The current TPM update mode.
-     */
-    tpmUpdateMode_: String,
+      // Title to be shown on the confirmation dialog.
+      confirmationDialogTitle_: {
+        type: String,
+        computed: 'getConfirmationDialogTitle_(locale, powerwashMode_)',
+      },
 
-    // Title to be shown on the confirmation dialog.
-    confirmationDialogTitle_: {
-      type: String,
-      computed: 'getConfirmationDialogTitle_(locale, powerwashMode_)',
-    },
+      // Content to be shown on the confirmation dialog.
+      confirmationDialogText_: {
+        type: String,
+        computed: 'getConfirmationDialogText_(locale, powerwashMode_)',
+      },
 
-    // Content to be shown on the confirmation dialog.
-    confirmationDialogText_: {
-      type: String,
-      computed: 'getConfirmationDialogText_(locale, powerwashMode_)',
-    },
+      // The subtitle to be shown while the screen is in POWERWASH_PROPOSAL
+      powerwashStateSubtitle_: {
+        type: String,
+        computed: 'getPowerwashStateSubtitle_(locale, powerwashMode_)'
+      },
 
-    // The subtitle to be shown while the screen is in POWERWASH_PROPOSAL
-    powerwashStateSubtitle_: {
-      type: String,
-      computed: 'getPowerwashStateSubtitle_(locale, powerwashMode_)'
-    },
+      // The text shown on the powerwash button. (depends on powerwash mode)
+      powerwashButtonTextKey_: {
+        type: String,
+        computed: 'getPowerwashButtonTextKey_(locale, powerwashMode_)'
+      },
 
-    // The text shown on the powerwash button. (depends on powerwash mode)
-    powerwashButtonTextKey_: {
-      type: String,
-      computed: 'getPowerwashButtonTextKey_(locale, powerwashMode_)'
-    },
+      // Whether the powerwash button is disabled.
+      powerwashButtonDisabled_: {
+        type: Boolean,
+        computed: 'isPowerwashDisabled_(powerwashMode_, tpmUpdateChecked_)',
+      },
 
-    // Whether the powerwash button is disabled.
-    powerwashButtonDisabled_: {
-      type: Boolean,
-      computed: 'isPowerwashDisabled_(powerwashMode_, tpmUpdateChecked_)',
-    },
+      // The chosen powerwash mode
+      powerwashMode_: {
+        type: Number,
+      },
 
-    // The chosen powerwash mode
-    /**@type {POWERWASH_MODE} */
-    powerwashMode_: {
-      type: Number,
-      value: POWERWASH_MODE.POWERWASH_ONLY,
-    },
+      // Simple variables that reflect the current screen state
+      // Only modified by the observer of 'screenState_'
+      inRestartRequiredState_: {
+        type: Boolean,
+      },
 
-    // Simple variables that reflect the current screen state
-    // Only modified by the observer of 'screenState_'
-    inRestartRequiredState_: {
-      type: Boolean,
-      value: true,
-    },
+      inRevertState_: {
+        type: Boolean,
+      },
 
-    inRevertState_: {
-      type: Boolean,
-      value: false,
-    },
+      inPowerwashState_: {
+        type: Boolean,
+      },
+    };
+  }
 
-    inPowerwashState_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+  constructor() {
+    super();
+    this.screenState_ = RESET_SCREEN_STATE.RESTART_REQUIRED;
+    this.isRollbackAvailable_ = false;
+    this.isRollbackRequested_ = false;
+    this.powerwashMode_ = POWERWASH_MODE.POWERWASH_ONLY;
+    this.inRestartRequiredState_ = true;
+    this.inRevertState_ = false;
+    this.inPowerwashState_ = false;
+  }
+
+
+  /** Overridden from LoginScreenBehavior. */
+  // clang-format off
+  get EXTERNAL_API() {
+    return ['setIsRollbackAvailable',
+            'setIsRollbackRequested',
+            'setIsTpmFirmwareUpdateAvailable',
+            'setIsTpmFirmwareUpdateChecked',
+            'setIsTpmFirmwareUpdateEditable',
+            'setTpmFirmwareUpdateMode',
+            'setShouldShowConfirmationDialog',
+            'setScreenState',
+    ];
+  }
+
+  // clang-format on
 
   /** @override */
   ready() {
-    this.initializeLoginScreen('ResetScreen', {
-      resetAllowed: false,
-    });
-  },
+    super.ready();
+    this.initializeLoginScreen('ResetScreen', {resetAllowed: false});
+  }
 
+  /**
+   * Returns the control which should receive initial focus.
+   * @suppress {missingProperties}
+   */
+  get defaultControl() {
+    return this.$.resetDialog;
+  }
+
+  /** @suppress {missingProperties} */
   focus() {
     this.$.resetDialog.focus();
-  },
+  }
 
   reset() {
     this.screenState_ = RESET_SCREEN_STATE.RESTART_REQUIRED;
@@ -178,54 +218,57 @@ Polymer({
     this.tpmUpdateAvailable_ = false;
     this.isRollbackAvailable_ = false;
     this.isRollbackRequested_ = false;
-  },
+  }
 
   /* ---------- EXTERNAL API BEGIN ---------- */
   /** @param {boolean} rollbackAvailable  */
   setIsRollbackAvailable(rollbackAvailable) {
     this.isRollbackAvailable_ = rollbackAvailable;
-  },
+  }
 
   /**
    * @param {boolean} rollbackRequested
    */
   setIsRollbackRequested(rollbackRequested) {
     this.isRollbackRequested_ = rollbackRequested;
-  },
+  }
 
   /** @param {boolean} value  */
   setIsTpmFirmwareUpdateAvailable(value) {
     this.tpmUpdateAvailable_ = value;
-  },
+  }
 
   /** @param {boolean} value  */
   setIsTpmFirmwareUpdateChecked(value) {
     this.tpmUpdateChecked_ = value;
-  },
+  }
 
   /** @param {boolean} value  */
   setIsTpmFirmwareUpdateEditable(value) {
     this.tpmUpdateEditable_ = value;
-  },
+  }
 
   /** @param {string} value  */
   setTpmFirmwareUpdateMode(value) {
     this.tpmUpdateMode_ = value;
-  },
+  }
 
-  /** @param {boolean} should_show  */
+  /**
+   * @param {boolean} should_show
+   * @suppress {missingProperties}
+   */
   setShouldShowConfirmationDialog(should_show) {
     if (should_show) {
       this.$.confirmationDialog.showDialog();
     } else {
       this.$.confirmationDialog.hideDialog();
     }
-  },
+  }
 
   /** @param {RESET_SCREEN_STATE} state  */
   setScreenState(state) {
     this.screenState_ = state;
-  },
+  }
   /* ---------- EXTERNAL API END ---------- */
 
   /**
@@ -241,7 +284,7 @@ Polymer({
       this.powerwashMode_ = POWERWASH_MODE.POWERWASH_ONLY;
       this.classList.remove('rollback-proposal-view');
     }
-  },
+  }
 
   /** @private */
   onScreenStateChanged_() {
@@ -258,7 +301,7 @@ Polymer({
         (this.screenState_ == RESET_SCREEN_STATE.RESTART_REQUIRED);
     this.inPowerwashState_ =
         (this.screenState_ == RESET_SCREEN_STATE.POWERWASH_PROPOSAL);
-  },
+  }
 
   /**
    * Determines the subtitle based on the current powerwash mode
@@ -271,7 +314,7 @@ Polymer({
       return '';
     const modeDetails = POWERWASH_MODE_DETAILS.get(this.powerwashMode_);
     return this.i18n(modeDetails.subtitleText);
-  },
+  }
 
   /**
    * The powerwash button text depends on the powerwash mode
@@ -283,7 +326,7 @@ Polymer({
     if (this.powerwashMode_ === undefined)
       return '';
     return POWERWASH_MODE_DETAILS.get(this.powerwashMode_).buttonTextKey;
-  },
+  }
 
   /**
    * Cannot powerwash with rollback when the TPM update checkbox is checked
@@ -294,7 +337,7 @@ Polymer({
   isPowerwashDisabled_(mode, tpmUpdateChecked) {
     return this.tpmUpdateChecked_ &&
         (this.powerwashMode_ == POWERWASH_MODE.POWERWASH_WITH_ROLLBACK);
-  },
+  }
 
   /* ---------- CONFIRMATION DIALOG ---------- */
 
@@ -309,7 +352,7 @@ Polymer({
       return '';
     const modeDetails = POWERWASH_MODE_DETAILS.get(this.powerwashMode_);
     return this.i18n(modeDetails.dialogTitle);
-  },
+  }
 
   /**
    * Determines the confirmation dialog content
@@ -322,7 +365,7 @@ Polymer({
       return '';
     const modeDetails = POWERWASH_MODE_DETAILS.get(this.powerwashMode_);
     return this.i18n(modeDetails.dialogContent);
-  },
+  }
 
   /**
    * On-tap event handler for confirmation dialog continue button.
@@ -330,16 +373,17 @@ Polymer({
    */
   onDialogContinueTap_() {
     this.userActed('powerwash-pressed');
-  },
+  }
 
   /**
    * On-tap event handler for confirmation dialog cancel button.
    * @private
+   * @suppress {missingProperties}
    */
   onDialogCancelTap_() {
     this.$.confirmationDialog.hideDialog();
     this.userActed('reset-confirm-dismissed');
-  },
+  }
 
   /**
    * Catch 'close' event through escape key
@@ -347,7 +391,7 @@ Polymer({
    */
   onDialogClosed_() {
     this.userActed('reset-confirm-dismissed');
-  },
+  }
 
   /* ---------- SIMPLE EVENT HANDLERS ---------- */
   /**
@@ -356,7 +400,7 @@ Polymer({
    */
   onCancelTap_() {
     this.userActed('cancel-reset');
-  },
+  }
 
   /**
    * On-tap event handler for restart button.
@@ -364,7 +408,7 @@ Polymer({
    */
   onRestartTap_() {
     this.userActed('restart-pressed');
-  },
+  }
 
   /**
    * On-tap event handler for powerwash button.
@@ -372,7 +416,7 @@ Polymer({
    */
   onPowerwashTap_() {
     this.userActed('show-confirmation');
-  },
+  }
 
   /**
    * On-tap event handler for learn more link.
@@ -380,16 +424,17 @@ Polymer({
    */
   onLearnMoreTap_() {
     this.userActed('learn-more-link');
-  },
+  }
 
   /**
    * Change handler for TPM firmware update checkbox.
    * @private
+   * @suppress {missingProperties}
    */
   onTPMFirmwareUpdateChanged_() {
     const checked = this.$.tpmFirmwareUpdateCheckbox.checked;
     chrome.send('ResetScreen.setTpmFirmwareUpdateChecked', [checked]);
-  },
+  }
 
   /**
    * On-tap event handler for the TPM firmware update learn more link.
@@ -399,6 +444,7 @@ Polymer({
   onTPMFirmwareUpdateLearnMore_(event) {
     this.userActed('tpm-firmware-update-learn-more-link');
     event.stopPropagation();
-  },
-});
-})();
+  }
+}
+
+customElements.define(OobeReset.is, OobeReset);

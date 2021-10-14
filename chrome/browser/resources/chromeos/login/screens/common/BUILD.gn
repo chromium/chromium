@@ -17,6 +17,7 @@ group("polymer3_elements") {
     ":fingerprint_setup_module",
     ":gesture_navigation_module",
     ":marketing_opt_in_module",
+    ":oobe_reset_module",
     ":parental_handoff_module",
     ":sync_consent_module",
     ":tpm_error_module",
@@ -45,6 +46,7 @@ js_type_check("closure_compile_module") {
     ":fingerprint_setup.m",
     ":gesture_navigation.m",
     ":marketing_opt_in.m",
+    ":oobe_reset.m",
     ":parental_handoff.m",
     ":sync_consent.m",
     ":tpm_error.m",
@@ -136,6 +138,21 @@ js_library("marketing_opt_in.m") {
   extra_deps = [ ":marketing_opt_in_module" ]
 }
 
+js_library("oobe_reset.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/oobe_reset.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+  extra_deps = [ ":oobe_reset_module" ]
+}
+
 js_library("parental_handoff.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/parental_handoff.m.js" ]
   deps = [
@@ -225,6 +242,14 @@ polymer_modulizer("gesture_navigation") {
 polymer_modulizer("marketing_opt_in") {
   js_file = "marketing_opt_in.js"
   html_file = "marketing_opt_in.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("oobe_reset") {
+  js_file = "oobe_reset.js"
+  html_file = "oobe_reset.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
