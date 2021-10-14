@@ -17,7 +17,7 @@
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 KernelFeatureManager::KernelFeatureManager(
     DebugDaemonClient* debug_daemon_client)
@@ -110,4 +110,4 @@ void KernelFeatureManager::OnKernelFeatureEnable(bool result,
   VLOG(1) << "Kernel feature has not been activated: " << out;
 }
 
-}  // namespace chromeos
+}  // namespace ash

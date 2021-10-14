@@ -8,9 +8,8 @@
 #include "chromeos/settings/cros_settings_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ash::attestation::PlatformVerificationFlow;
-
-namespace {
+namespace ash {
+namespace attestation {
 
 TEST(AttestationDevicePolicyTest, ContentProtectionTest) {
   ash::ScopedTestingCrosSettings settings;
@@ -24,4 +23,5 @@ TEST(AttestationDevicePolicyTest, ContentProtectionTest) {
   EXPECT_FALSE(PlatformVerificationFlow::IsAttestationAllowedByPolicy());
 }
 
-}  // namespace
+}  // namespace attestation
+}  // namespace ash

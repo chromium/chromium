@@ -24,6 +24,7 @@ class AccountManagerFactory;
 class ChromeSessionManager;
 class ChromeUserManager;
 class InSessionPasswordChangeManager;
+class KernelFeatureManager;
 class ProfileHelper;
 
 namespace system {
@@ -36,7 +37,6 @@ class SystemClock;
 }  // namespace ash
 
 namespace chromeos {
-class KernelFeatureManager;
 class SchedulerConfigurationManager;
 class TimeZoneResolver;
 }  // namespace chromeos
@@ -113,7 +113,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
     return scheduler_configuration_manager_.get();
   }
 
-  chromeos::KernelFeatureManager* kernel_feature_manager() {
+  ash::KernelFeatureManager* kernel_feature_manager() {
     return kernel_feature_manager_.get();
   }
 
@@ -208,7 +208,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   std::unique_ptr<chromeos::SchedulerConfigurationManager>
       scheduler_configuration_manager_;
-  std::unique_ptr<chromeos::KernelFeatureManager> kernel_feature_manager_;
+  std::unique_ptr<ash::KernelFeatureManager> kernel_feature_manager_;
 
   BrowserRestoreObserver browser_restore_observer;
 

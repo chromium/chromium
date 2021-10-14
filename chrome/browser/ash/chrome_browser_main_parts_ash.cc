@@ -717,7 +717,7 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
   SystemProxyManager::Initialize(g_browser_process->local_state());
 
   debugd_notification_handler_ =
-      std::make_unique<chromeos::DebugdNotificationHandler>(
+      std::make_unique<ash::DebugdNotificationHandler>(
           DBusThreadManager::Get()->GetDebugDaemonClient());
 
   return ChromeBrowserMainPartsLinux::PreMainMessageLoopRun();

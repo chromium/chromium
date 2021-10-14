@@ -23,8 +23,6 @@
 #include "services/device/public/mojom/usb_manager.mojom.h"
 #include "services/device/public/mojom/usb_manager_client.mojom.h"
 
-class CrosUsbDetectorTest;
-
 namespace ash {
 
 const uint8_t kInvalidUsbPortNumber = 0xff;
@@ -127,7 +125,7 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
   std::vector<CrosUsbDeviceInfo> GetShareableDevices() const;
 
  private:
-  friend class ::CrosUsbDetectorTest;
+  friend class CrosUsbDetectorTest;
 
   // Internal representation of a USB device.
   struct UsbDevice {

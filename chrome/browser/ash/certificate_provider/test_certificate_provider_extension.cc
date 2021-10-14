@@ -39,6 +39,8 @@
 #include "third_party/boringssl/src/include/openssl/rsa.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
+namespace ash {
+
 namespace {
 
 constexpr char kExtensionId[] = "ecmhnokcdiianioonpgakiooenfnonid";
@@ -353,3 +355,5 @@ void TestCertificateProviderExtension::HandleSignatureRequest(
   response.SetKey("signature", ConvertBytesToValue(signature));
   std::move(callback).Run(response);
 }
+
+}  // namespace ash

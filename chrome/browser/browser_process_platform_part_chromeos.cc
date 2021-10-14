@@ -275,7 +275,7 @@ void BrowserProcessPlatformPart::ShutdownSchedulerConfigurationManager() {
 
 void BrowserProcessPlatformPart::InitializeKernelFeatureManager() {
   DCHECK(!kernel_feature_manager_);
-  kernel_feature_manager_ = std::make_unique<chromeos::KernelFeatureManager>(
+  kernel_feature_manager_ = std::make_unique<ash::KernelFeatureManager>(
       chromeos::DBusThreadManager::Get()->GetDebugDaemonClient());
 }
 

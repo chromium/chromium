@@ -944,10 +944,10 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest, LazyBackgroundPage) {
   extensions::ProcessManager::SetEventPageSuspendingTimeForTesting(1);
 
   // Load the test extension.
-  TestCertificateProviderExtension test_certificate_provider_extension(
+  ash::TestCertificateProviderExtension test_certificate_provider_extension(
       profile());
   extensions::ExtensionHostTestHelper host_helper(
-      profile(), TestCertificateProviderExtension::extension_id());
+      profile(), ash::TestCertificateProviderExtension::extension_id());
   host_helper.RestrictToType(
       extensions::mojom::ViewType::kExtensionBackgroundPage);
   const extensions::Extension* const extension =
@@ -956,14 +956,15 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest, LazyBackgroundPage) {
                         .AppendASCII("test_certificate_provider")
                         .AppendASCII("extension"));
   ASSERT_TRUE(extension);
-  EXPECT_EQ(extension->id(), TestCertificateProviderExtension::extension_id());
+  EXPECT_EQ(extension->id(),
+            ash::TestCertificateProviderExtension::extension_id());
   host_helper.WaitForHostCompletedFirstLoad();
 
   // Navigate to the page that requests the client authentication. Use the
   // incognito profile in order to force re-authentication in the later request
   // made by the test.
-  const std::string client_cert_fingerprint =
-      GetCertFingerprint1(*TestCertificateProviderExtension::GetCertificate());
+  const std::string client_cert_fingerprint = GetCertFingerprint1(
+      *ash::TestCertificateProviderExtension::GetCertificate());
   Browser* const incognito_browser = CreateIncognitoBrowser(profile());
   ASSERT_TRUE(incognito_browser);
   ui_test_utils::NavigateToURLWithDisposition(
@@ -975,7 +976,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest, LazyBackgroundPage) {
                 incognito_browser->tab_strip_model()->GetActiveWebContents()),
             "got client cert with fingerprint: " + client_cert_fingerprint);
   CheckCertificateProvidedByExtension(
-      *TestCertificateProviderExtension::GetCertificate(), *extension);
+      *ash::TestCertificateProviderExtension::GetCertificate(), *extension);
 
   // Let the extension's background page become idle.
   WaitForExtensionIdle(extension->id());

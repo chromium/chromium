@@ -58,7 +58,7 @@ const cryptauth::GcmDeviceInfo& GcmDeviceInfoProviderImpl::GetGcmDeviceInfo()
     cryptauth::GcmDeviceInfo gcm_device_info;
 
     gcm_device_info.set_long_device_id(
-        cryptauth::CryptAuthDeviceIdProviderImpl::GetInstance()->GetDeviceId());
+        CryptAuthDeviceIdProviderImpl::GetInstance()->GetDeviceId());
     gcm_device_info.set_device_type(cryptauth::CHROME);
     gcm_device_info.set_device_software_version(
         version_info::GetVersionNumber());

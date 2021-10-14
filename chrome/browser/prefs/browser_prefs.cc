@@ -1037,7 +1037,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::UserSessionManager::RegisterPrefs(registry);
   ash::WebKioskAppManager::RegisterPrefs(registry);
   component_updater::MetadataTable::RegisterPrefs(registry);
-  cryptauth::CryptAuthDeviceIdProviderImpl::RegisterLocalPrefs(registry);
+  ash::CryptAuthDeviceIdProviderImpl::RegisterLocalPrefs(registry);
   extensions::ExtensionAssetsManagerChromeOS::RegisterPrefs(registry);
   extensions::ExtensionsPermissionsTracker::RegisterLocalStatePrefs(registry);
   extensions::lock_screen_data::LockScreenItemStorage::RegisterLocalState(

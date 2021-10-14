@@ -70,6 +70,7 @@ class ArcServiceLauncher;
 namespace ash {
 class AccessibilityEventRewriterDelegateImpl;
 class BulkPrintersCalculatorFactory;
+class DebugdNotificationHandler;
 namespace quick_pair {
 class QuickPairBrowserDelegateImpl;
 }
@@ -99,7 +100,6 @@ class LockToSingleUserManager;
 namespace chromeos {
 
 class BluetoothPrefStateObserver;
-class DebugdNotificationHandler;
 class FastTransitionObserver;
 class NetworkChangeManagerClient;
 class NetworkPrefStateObserver;
@@ -158,7 +158,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<FastTransitionObserver> fast_transition_observer_;
   std::unique_ptr<NetworkThrottlingObserver> network_throttling_observer_;
   std::unique_ptr<NetworkChangeManagerClient> network_change_manager_client_;
-  std::unique_ptr<DebugdNotificationHandler> debugd_notification_handler_;
+  std::unique_ptr<ash::DebugdNotificationHandler> debugd_notification_handler_;
 
   std::unique_ptr<internal::DBusServices> dbus_services_;
 

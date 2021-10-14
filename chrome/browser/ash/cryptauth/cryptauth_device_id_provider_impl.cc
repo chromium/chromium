@@ -10,7 +10,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace cryptauth {
+namespace ash {
 
 // static
 void CryptAuthDeviceIdProviderImpl::RegisterLocalPrefs(
@@ -40,4 +40,4 @@ std::string CryptAuthDeviceIdProviderImpl::GetDeviceId() const {
 
 CryptAuthDeviceIdProviderImpl::CryptAuthDeviceIdProviderImpl() = default;
 
-}  // namespace cryptauth
+}  // namespace ash

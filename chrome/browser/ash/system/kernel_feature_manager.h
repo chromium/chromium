@@ -12,8 +12,10 @@
 #include "base/memory/weak_ptr.h"
 
 namespace chromeos {
-
 class DebugDaemonClient;
+}
+
+namespace ash {
 
 // It is desirable to test kernel patches on a population to measure benefits
 // or problems with application of a kernel patch. For experimentation,
@@ -25,7 +27,8 @@ class DebugDaemonClient;
 // of the running kernel is changed live without requiring a restart.
 class KernelFeatureManager {
  public:
-  explicit KernelFeatureManager(DebugDaemonClient* debug_daemon_client);
+  explicit KernelFeatureManager(
+      chromeos::DebugDaemonClient* debug_daemon_client);
   KernelFeatureManager(const KernelFeatureManager&) = delete;
   KernelFeatureManager& operator=(const KernelFeatureManager&) = delete;
   ~KernelFeatureManager();
@@ -48,13 +51,13 @@ class KernelFeatureManager {
   void EnableKernelFeatures();
   void OnKernelFeatureEnable(bool result, const std::string& out);
 
-  DebugDaemonClient* const debug_daemon_client_;
+  chromeos::DebugDaemonClient* const debug_daemon_client_;
   bool debug_daemon_ready_ = false;
   std::vector<std::string> kernel_feature_list_;
 
   base::WeakPtrFactory<KernelFeatureManager> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_KERNEL_FEATURE_MANAGER_H_

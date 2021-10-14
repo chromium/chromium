@@ -316,7 +316,7 @@ void ClientAppMetadataProviderService::OnInstanceIdTokenFetched(
   metadata.set_instance_id(instance_id);
   metadata.set_instance_id_token(token);
   metadata.set_long_device_id(
-      cryptauth::CryptAuthDeviceIdProviderImpl::GetInstance()->GetDeviceId());
+      CryptAuthDeviceIdProviderImpl::GetInstance()->GetDeviceId());
 
   metadata.set_locale(ChromeContentBrowserClient().GetApplicationLocale());
   metadata.set_device_os_version(base::GetLinuxDistro());
