@@ -80,8 +80,16 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
   BrowserList::RemoveObserver(&closing_observer);
 }
 
+// Flakes on Mac11.0: https://crbug.com/1259913
+#if defined(OS_MAC)
+#define MAYBE_TwoBrowsersClosingShutdownHistograms \
+  DISABLED_TwoBrowsersClosingShutdownHistograms
+#else
+#define MAYBE_TwoBrowsersClosingShutdownHistograms \
+  TwoBrowsersClosingShutdownHistograms
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
-                       TwoBrowsersClosingShutdownHistograms) {
+                       MAYBE_TwoBrowsersClosingShutdownHistograms) {
   histogram_tester_.ExpectUniqueSample(
       "Shutdown.ShutdownType",
       static_cast<int>(browser_shutdown::ShutdownType::kWindowClose), 1);
