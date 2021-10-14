@@ -27,6 +27,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
@@ -132,6 +134,9 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @Mock
     private Tracker mMockTracker;
+
+    @Captor
+    private ArgumentCaptor<Runnable> mOnBottomSheetDismissedCaptor;
 
     private static final String FAKE_HOST = "fake_host";
     private static final String DIFFERENT_HOST = "different_host";
@@ -487,10 +492,13 @@ public class MerchantTrustSignalsCoordinatorTest {
     @SmallTest
     @Test
     public void testOnMessagePrimaryAction() {
-        mCoordinator.onMessagePrimaryAction(mDummyMerchantTrustSignals);
+        mCoordinator.onMessagePrimaryAction(mDummyMerchantTrustSignals, FAKE_URL);
         verify(mMockMetrics, times(1)).recordMetricsForMessageTapped();
         verify(mMockDetailsTabCoordinator, times(1))
-                .requestOpenSheet(any(GURL.class), any(String.class));
+                .requestOpenSheet(any(GURL.class), any(String.class),
+                        mOnBottomSheetDismissedCaptor.capture());
+        mOnBottomSheetDismissedCaptor.getValue().run();
+        verify(mCoordinator, times(1)).maybeShowStoreIcon(eq(FAKE_URL));
     }
 
     @SmallTest
@@ -500,9 +508,12 @@ public class MerchantTrustSignalsCoordinatorTest {
 
         mCoordinator.onStoreInfoClicked(mDummyMerchantTrustSignals);
         verify(mMockDetailsTabCoordinator, times(1))
-                .requestOpenSheet(any(GURL.class), any(String.class));
+                .requestOpenSheet(any(GURL.class), any(String.class),
+                        mOnBottomSheetDismissedCaptor.capture());
         verify(mMockTracker, times(1))
                 .notifyEvent(eq(EventConstants.PAGE_INFO_STORE_INFO_ROW_CLICKED));
+        mOnBottomSheetDismissedCaptor.getValue().run();
+        verify(mCoordinator, times(0)).maybeShowStoreIcon(any());
 
         TrackerFactory.setTrackerForTests(null);
     }

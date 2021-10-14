@@ -37,6 +37,24 @@ public class MerchantTrustMetrics {
         int MAX_VALUE = 2;
     }
 
+    /**
+     * Which ui the bottom sheet is opened from.
+     *
+     * Needs to stay in sync with MerchantTrustBottomSheetOpenedSource in enums.xml. These values
+     * are persisted to logs. Entries should not be renumbered and numeric values should never be
+     * reused.
+     */
+    @IntDef({BottomSheetOpenedSource.UNKNOWN, BottomSheetOpenedSource.FROM_MESSAGE,
+            BottomSheetOpenedSource.FROM_PAGE_INFO})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface BottomSheetOpenedSource {
+        int UNKNOWN = 0;
+        int FROM_MESSAGE = 1;
+        int FROM_PAGE_INFO = 2;
+        // Always update MAX_VALUE to match the last item in the list.
+        int MAX_VALUE = 2;
+    }
+
     // Metrics for merchant trust signal message.
     private boolean mDidRecordMessagePrepared;
     private boolean mDidRecordMessageShown;
