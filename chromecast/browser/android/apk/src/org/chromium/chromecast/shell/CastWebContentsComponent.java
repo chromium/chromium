@@ -113,8 +113,8 @@ public class CastWebContentsComponent {
 
     private void startCastActivity(Context context, WebContents webContents, boolean enableTouch,
             boolean isRemoteControlMode, boolean turnOnScreen) {
-        Intent intent = CastWebContentsIntentUtils.requestStartCastActivity(context, webContents,
-                enableTouch, isRemoteControlMode, turnOnScreen, mKeepScreenOn, mSessionId);
+        Intent intent = CastWebContentsIntentUtils.requestStartCastActivity(
+                context, webContents, enableTouch, isRemoteControlMode, turnOnScreen, mSessionId);
         if (DEBUG) Log.d(TAG, "start activity by intent: " + intent);
         sResumeIntent.set(intent);
 
@@ -180,14 +180,13 @@ public class CastWebContentsComponent {
     private boolean mEnableTouchInput;
     private final boolean mIsRemoteControlMode;
     private final boolean mTurnOnScreen;
-    private final boolean mKeepScreenOn;
 
     private final Controller<CastAudioFocusRequest> mAudioFocusRequestState = new Controller<>();
 
     public CastWebContentsComponent(String sessionId,
             OnComponentClosedHandler onComponentClosedHandler,
             SurfaceEventHandler surfaceEventHandler, boolean enableTouchInput,
-            boolean isRemoteControlMode, boolean turnOnScreen, boolean keepScreenOn) {
+            boolean isRemoteControlMode, boolean turnOnScreen) {
         if (DEBUG) {
             Log.d(TAG,
                     "New CastWebContentsComponent. Instance ID: " + sessionId
@@ -201,7 +200,6 @@ public class CastWebContentsComponent {
         mSurfaceEventHandler = surfaceEventHandler;
         mIsRemoteControlMode = isRemoteControlMode;
         mTurnOnScreen = turnOnScreen;
-        mKeepScreenOn = keepScreenOn;
 
         mHasWebContentsState.subscribe(x -> {
             final IntentFilter filter = new IntentFilter();
