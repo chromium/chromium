@@ -26,17 +26,7 @@ var CrElementsFocusTest = class extends PolymerInteractiveUITest {
 var CrElementsActionMenuTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test?module=cr_elements/cr_action_menu_test.js';
-  }
-
-  /** @override */
-  get extraLibraries() {
-    return [
-      // TODO(dpapad): Figure out why this test fails if test_loader.html is
-      // used instead.
-      '//third_party/mocha/mocha.js',
-      '//chrome/test/data/webui/mocha_adapter.js',
-    ];
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_action_menu_test.js';
   }
 };
 

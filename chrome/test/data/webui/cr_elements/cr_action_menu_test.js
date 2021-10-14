@@ -576,8 +576,10 @@ suite('CrActionMenu', function() {
     // overridden so that no scrolling happens.
     test('onscreen forces anchor change', function() {
       const rect = dots.getBoundingClientRect();
-      document.body.scrollLeft = rect.right - document.body.clientWidth + 10;
-      document.body.scrollTop = rect.bottom - document.body.clientHeight + 10;
+      document.documentElement.scrollLeft =
+          rect.right - document.documentElement.clientWidth + 10;
+      document.documentElement.scrollTop =
+          rect.bottom - document.documentElement.clientHeight + 10;
 
       menu.showAt(dots, {anchorAlignmentX: AnchorAlignment.AFTER_START});
       const buttonWidth = dots.offsetWidth;
@@ -590,8 +592,8 @@ suite('CrActionMenu', function() {
     });
 
     test('scroll position maintained for showAtPosition', function() {
-      document.body.scrollLeft = 500;
-      document.body.scrollTop = 1000;
+      document.documentElement.scrollLeft = 500;
+      document.documentElement.scrollTop = 1000;
       menu.showAtPosition({top: 50, left: 50});
       assertEquals(550, dialog.offsetLeft);
       assertEquals(1050, dialog.offsetTop);
