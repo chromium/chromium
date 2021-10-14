@@ -856,11 +856,12 @@ void OverviewGrid::OnSelectorItemDragStarted(OverviewItem* item) {
     overview_mode_item->OnSelectorItemDragStarted(item);
 }
 
-void OverviewGrid::ShowDesksTemplatesGrid() {
+void OverviewGrid::ShowDesksTemplatesGrid(
+    const std::vector<DeskTemplate*>& desk_templates) {
   if (!desks_templates_grid_widget_) {
     desks_templates_grid_widget_ =
         DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
-            root_window_, GetGridEffectiveBounds());
+            root_window_, GetGridEffectiveBounds(), desk_templates);
   }
 
   desks_templates_grid_widget_->Show();

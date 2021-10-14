@@ -30,16 +30,18 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   DesksTemplatesPresenter& operator=(const DesksTemplatesPresenter&) = delete;
   ~DesksTemplatesPresenter() override;
 
+  const std::vector<DeskTemplate*>& desk_templates() { return desk_templates_; }
+
   // desks_storage::DeskModelObserver:
   // TODO(sammiequon): Implement these once the model starts sending these
   // messages.
   void DeskModelLoaded() override {}
   void OnDeskModelDestroying() override;
   void EntriesAddedOrUpdatedRemotely(
-      const std::vector<const ash::DeskTemplate*>& new_entries) override {}
+      const std::vector<const DeskTemplate*>& new_entries) override {}
   void EntriesRemovedRemotely(const std::vector<std::string>& uuids) override {}
   void EntriesAddedOrUpdatedLocally(
-      const std::vector<const ash::DeskTemplate*>& new_entries) override {}
+      const std::vector<const DeskTemplate*>& new_entries) override {}
   void EntriesRemovedLocally(const std::vector<std::string>& uuids) override {}
 
  private:
@@ -52,13 +54,18 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   // Pointer to the session which owns `this`.
   OverviewSession* const overview_session_;
 
-  // Test closure that runs after the UI has been updated async after a call to
-  // the model.
-  base::OnceClosure on_update_ui_closure_for_testing_;
-
   base::ScopedObservation<desks_storage::DeskModel,
                           desks_storage::DeskModelObserver>
       desk_model_observation_{this};
+
+  // TODO(richui): Currently save a local copy of the list of all the templates
+  // we get from the desk model. Remove this later to have the desk model called
+  // directly whenever we want to update the UI.
+  std::vector<DeskTemplate*> desk_templates_;
+
+  // Test closure that runs after the UI has been updated async after a call to
+  // the model.
+  base::OnceClosure on_update_ui_closure_for_testing_;
 
   base::WeakPtrFactory<DesksTemplatesPresenter> weak_ptr_factory_{this};
 };

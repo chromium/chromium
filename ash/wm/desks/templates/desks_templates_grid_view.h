@@ -12,6 +12,7 @@
 namespace ash {
 
 class DesksTemplatesItemView;
+class DeskTemplate;
 
 // A view that acts as the content view of the desks templates widget.
 // TODO(richui): Add details and ASCII.
@@ -19,7 +20,8 @@ class DesksTemplatesGridView : public views::View {
  public:
   METADATA_HEADER(DesksTemplatesGridView);
 
-  DesksTemplatesGridView();
+  explicit DesksTemplatesGridView(
+      const std::vector<DeskTemplate*>& desk_templates);
   DesksTemplatesGridView(const DesksTemplatesGridView&) = delete;
   DesksTemplatesGridView& operator=(const DesksTemplatesGridView&) = delete;
   ~DesksTemplatesGridView() override;
@@ -30,7 +32,8 @@ class DesksTemplatesGridView : public views::View {
   // depending on the animations.
   static views::UniqueWidgetPtr CreateDesksTemplatesGridWidget(
       aura::Window* root,
-      const gfx::Rect& grid_bounds);
+      const gfx::Rect& grid_bounds,
+      const std::vector<DeskTemplate*>& desk_templates);
 
   // views::View:
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -39,6 +42,8 @@ class DesksTemplatesGridView : public views::View {
   void RemovedFromWidget() override;
 
  private:
+  friend class DesksTemplatesGridViewTestApi;
+
   // Helper to unify mouse/touch events.
   void OnLocatedEvent(ui::LocatedEvent* event, bool is_touch);
 

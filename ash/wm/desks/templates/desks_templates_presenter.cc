@@ -67,6 +67,8 @@ void DesksTemplatesPresenter::OnGetAllEntries(
     }
   }
 
+  desk_templates_ = entries;
+
   if (on_update_ui_closure_for_testing_)
     std::move(on_update_ui_closure_for_testing_).Run();
 }

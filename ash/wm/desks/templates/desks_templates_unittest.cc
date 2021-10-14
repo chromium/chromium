@@ -13,6 +13,8 @@
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
+#include "ash/wm/desks/templates/desks_templates_grid_view.h"
+#include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -29,6 +31,8 @@
 #include "components/desks_storage/core/local_desk_data_manager.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
 
@@ -69,6 +73,73 @@ class DesksTemplatesPresenterTestApi {
 
  private:
   DesksTemplatesPresenter* const presenter_;
+};
+
+// Wrapper for OverviewGrid that exposes internal state to test
+// functions.
+class OverviewGridTestApi {
+ public:
+  explicit OverviewGridTestApi(const OverviewGrid* overview_grid)
+      : overview_grid_(overview_grid) {
+    DCHECK(overview_grid_);
+  }
+  OverviewGridTestApi(const OverviewGridTestApi&) = delete;
+  OverviewGridTestApi& operator=(const OverviewGridTestApi&) = delete;
+  ~OverviewGridTestApi() = default;
+
+  const DesksTemplatesGridView* desks_templates_grid_view() const {
+    return static_cast<DesksTemplatesGridView*>(
+        overview_grid_->desks_templates_grid_widget_->GetContentsView());
+  }
+
+ private:
+  const OverviewGrid* overview_grid_;
+};
+
+// Wrapper for DesksTemplatesGridView that exposes internal state to test
+// functions.
+class DesksTemplatesGridViewTestApi {
+ public:
+  explicit DesksTemplatesGridViewTestApi(
+      const DesksTemplatesGridView* grid_view)
+      : grid_view_(grid_view) {
+    DCHECK(grid_view_);
+  }
+  DesksTemplatesGridViewTestApi(const DesksTemplatesGridViewTestApi&) = delete;
+  DesksTemplatesGridViewTestApi& operator=(
+      const DesksTemplatesGridViewTestApi&) = delete;
+  ~DesksTemplatesGridViewTestApi() = default;
+
+  const std::vector<DesksTemplatesItemView*>& grid_items() const {
+    return grid_view_->grid_items_;
+  }
+
+ private:
+  const DesksTemplatesGridView* grid_view_;
+};
+
+// Wrapper for DesksTemplatesItemView that exposes internal state to test
+// functions.
+class DesksTemplatesItemViewTestApi {
+ public:
+  explicit DesksTemplatesItemViewTestApi(
+      const DesksTemplatesItemView* item_view)
+      : item_view_(item_view) {
+    DCHECK(item_view_);
+  }
+  DesksTemplatesItemViewTestApi(const DesksTemplatesItemViewTestApi&) = delete;
+  DesksTemplatesItemViewTestApi& operator=(
+      const DesksTemplatesItemViewTestApi&) = delete;
+  ~DesksTemplatesItemViewTestApi() = default;
+
+  const views::Textfield* name_view() const { return item_view_->name_view_; }
+
+  const views::Label* time_view() const { return item_view_->time_view_; }
+
+  const base::GUID uuid() const { return item_view_->uuid_; }
+
+ private:
+  const DesksTemplatesItemView* item_view_;
 };
 
 class DesksTemplatesTest : public OverviewTestBase {
@@ -143,6 +214,41 @@ class DesksTemplatesTest : public OverviewTestBase {
     if (zero_state)
       return desks_bar_view->zero_state_desks_templates_button();
     return desks_bar_view->expanded_state_desks_templates_button();
+  }
+
+  // Shows the desks templates grid by emulating a click on the templates
+  // button. It is required to have at least one entry in the desk model for the
+  // button to be visible and clickable.
+  void ShowDesksTemplatesGrid() {
+    auto* root_window = Shell::GetPrimaryRootWindow();
+    auto* zero_button =
+        GetDesksTemplatesButtonForRoot(root_window, /*zero_state=*/true);
+    auto* expanded_button =
+        GetDesksTemplatesButtonForRoot(root_window, /*zero_state=*/false);
+    ASSERT_TRUE(zero_button);
+    ASSERT_TRUE(expanded_button);
+    ASSERT_TRUE(zero_button->GetVisible() || expanded_button->GetVisible());
+
+    if (zero_button->GetVisible())
+      ClickOnView(zero_button);
+    else
+      ClickOnView(expanded_button);
+  }
+
+  void ClickOnView(const views::View* view) {
+    DCHECK(view);
+
+    const gfx::Point view_center = view->GetBoundsInScreen().CenterPoint();
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseTo(view_center);
+    event_generator->ClickLeftButton();
+  }
+
+  const std::vector<std::unique_ptr<OverviewGrid>>& GetOverviewGridList() {
+    auto* overview_session = GetOverviewSession();
+    DCHECK(overview_session);
+
+    return overview_session->grid_list();
   }
 
   // OverviewTestBase:
@@ -277,16 +383,19 @@ TEST_F(DesksTemplatesTest, DesksTemplatesButtonVisibility) {
 TEST_F(DesksTemplatesTest, NoWindowsLabelOnTemplateGridShow) {
   UpdateDisplay("400x300,400x300");
 
+  // At least one entry is required for the templates grid to be shown.
+  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
+
   // Start overview mode. The no windows widget should be visible.
   ToggleOverview();
-  ASSERT_TRUE(GetOverviewSession());
-  auto& grid_list = GetOverviewSession()->grid_list();
+  WaitForUI();
+  auto& grid_list = GetOverviewGridList();
   ASSERT_EQ(2u, grid_list.size());
   EXPECT_TRUE(grid_list[0]->no_windows_widget());
   EXPECT_TRUE(grid_list[1]->no_windows_widget());
 
   // Open the desk templates grid. The no windows widget should now be hidden.
-  GetOverviewSession()->ShowDesksTemplatesGrids();
+  ShowDesksTemplatesGrid();
   EXPECT_FALSE(grid_list[0]->no_windows_widget());
   EXPECT_FALSE(grid_list[1]->no_windows_widget());
 }
@@ -323,6 +432,58 @@ TEST_F(DesksTemplatesTest, DialogSystemModal) {
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
   EXPECT_FALSE(Shell::IsSystemModalWindowOpen());
   EXPECT_TRUE(GetOverviewSession());
+}
+
+// Tests that the desks templates grid and item views are populated correctly.
+TEST_F(DesksTemplatesTest, DesksTemplatesGridItems) {
+  UpdateDisplay("800x600,800x600");
+
+  const base::GUID uuid_1 = base::GUID::GenerateRandomV4();
+  const std::string name_1 = "template_1";
+  base::Time time_1 = base::Time::Now();
+  AddEntry(uuid_1, name_1, time_1);
+
+  const base::GUID uuid_2 = base::GUID::GenerateRandomV4();
+  const std::string name_2 = "template_2";
+  base::Time time_2 = time_1 + base::Hours(13);
+  AddEntry(uuid_2, name_2, time_2);
+
+  // Enter overview and show the Desks Templates Grid.
+  ToggleOverview();
+  WaitForUI();
+  ShowDesksTemplatesGrid();
+
+  // Check that the grid is populated with the correct number of items, as
+  // well as with the correct name and timestamp.
+  for (auto& overview_grid : GetOverviewGridList()) {
+    const DesksTemplatesGridView* templates_grid_view =
+        OverviewGridTestApi(overview_grid.get()).desks_templates_grid_view();
+
+    DCHECK(templates_grid_view);
+    std::vector<DesksTemplatesItemView*> grid_items =
+        DesksTemplatesGridViewTestApi(templates_grid_view).grid_items();
+
+    ASSERT_EQ(2ul, grid_items.size());
+
+    // The grid item order is currently not guaranteed, so need to
+    // verify that each template exists by looking them up by their
+    // UUID.
+    auto verify_template_grid_item = [grid_items](const base::GUID& uuid,
+                                                  const std::string& name) {
+      auto iter =
+          std::find_if(grid_items.cbegin(), grid_items.cend(),
+                       [uuid](const DesksTemplatesItemView* v) {
+                         return DesksTemplatesItemViewTestApi(v).uuid() == uuid;
+                       });
+      ASSERT_NE(grid_items.end(), iter);
+      DesksTemplatesItemViewTestApi test_api(*iter);
+      EXPECT_EQ(base::UTF8ToUTF16(name), test_api.name_view()->GetText());
+      EXPECT_FALSE(test_api.time_view()->GetText().empty());
+    };
+
+    verify_template_grid_item(uuid_1, name_1);
+    verify_template_grid_item(uuid_2, name_2);
+  }
 }
 
 }  // namespace ash

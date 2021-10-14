@@ -21,15 +21,19 @@ namespace {
 // The column set id that this view's GridLayout uses.
 constexpr int kColumnSetId = 0;
 
+constexpr size_t kMaxTemplateCount = 6;
 constexpr int kNumColumns = 3;
-constexpr int kNumRows = 2;
 
 // TODO(richui): Replace these temporary values once specs come out.
 constexpr int kGridPaddingDp = 25;
 
 }  // namespace
 
-DesksTemplatesGridView::DesksTemplatesGridView() {
+DesksTemplatesGridView::DesksTemplatesGridView(
+    const std::vector<DeskTemplate*>& desk_templates) {
+  DCHECK(!desk_templates.empty());
+  DCHECK_LE(desk_templates.size(), kMaxTemplateCount);
+
   views::GridLayout* layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());
   views::ColumnSet* column_set = layout->AddColumnSet(kColumnSetId);
@@ -47,22 +51,17 @@ DesksTemplatesGridView::DesksTemplatesGridView() {
                           /*fixed_width=*/0, /*min_width=*/0);
   }
 
-  // Add a placeholder view in each available slot on the grid.
-  // TODO(richui): Add a new class which shows the preview for each
-  // template. These should also be only created as needed.
-  for (int i = 0; i < kNumRows; ++i) {
+  // Add each of the templates to the grid.
+  for (size_t i = 0; i < desk_templates.size(); ++i) {
     // Add padding in front of each row except the first one.
     if (i == 0) {
       layout->StartRow(fixed_size, kColumnSetId);
-    } else {
+    } else if (i % kNumColumns == 0) {
       layout->StartRowWithPadding(fixed_size, kColumnSetId, fixed_size,
                                   kGridPaddingDp);
     }
-    for (int j = 0; j < kNumColumns; ++j) {
-      DesksTemplatesItemView* grid_item =
-          layout->AddView(std::make_unique<DesksTemplatesItemView>());
-      grid_items_.push_back(grid_item);
-    }
+    grid_items_.push_back(layout->AddView(
+        std::make_unique<DesksTemplatesItemView>(desk_templates[i])));
   }
 }
 
@@ -71,7 +70,8 @@ DesksTemplatesGridView::~DesksTemplatesGridView() = default;
 // static
 views::UniqueWidgetPtr DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
     aura::Window* root,
-    const gfx::Rect& grid_bounds) {
+    const gfx::Rect& grid_bounds,
+    const std::vector<DeskTemplate*>& desk_templates) {
   DCHECK(root);
   DCHECK(root->IsRootWindow());
 
@@ -89,8 +89,8 @@ views::UniqueWidgetPtr DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
 
   views::UniqueWidgetPtr widget(
       std::make_unique<views::Widget>(std::move(params)));
-  auto* desks_template_grid_view =
-      widget->SetContentsView(std::make_unique<DesksTemplatesGridView>());
+  auto* desks_template_grid_view = widget->SetContentsView(
+      std::make_unique<DesksTemplatesGridView>(desk_templates));
   gfx::Rect widget_bounds(grid_bounds);
   widget_bounds.ClampToCenteredSize(
       desks_template_grid_view->GetPreferredSize());

@@ -4,12 +4,19 @@
 
 #include "ash/wm/desks/templates/desks_templates_item_view.h"
 
+#include <string>
+
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/public/cpp/desk_template.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/desks_templates_delete_button.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace ash {
@@ -26,9 +33,30 @@ constexpr gfx::Size kPreviewIconSize(40, 40);
 constexpr int kDeleteButtonMargin = 8;
 constexpr int kDeleteButtonSize = 24;
 
+constexpr char kAmPmTimeDateFmtStr[] = "%d:%02d%s, %d-%02d-%02d";
+
+// TODO(richui): This is a placeholder text format. Update this once specs are
+// done.
+std::u16string GetTimeStr(base::Time timestamp) {
+  base::Time::Exploded exploded_time;
+  timestamp.LocalExplode(&exploded_time);
+
+  const int noon = 12;
+  int hour = exploded_time.hour % noon;
+  if (hour == 0)
+    hour += noon;
+
+  std::string time = base::StringPrintf(
+      kAmPmTimeDateFmtStr, hour, exploded_time.minute,
+      (exploded_time.hour >= noon ? "pm" : "am"), exploded_time.year,
+      exploded_time.month, exploded_time.day_of_month);
+  return base::UTF8ToUTF16(time);
+}
+
 }  // namespace
 
-DesksTemplatesItemView::DesksTemplatesItemView() {
+DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
+    : uuid_(desk_template->uuid()) {
   // TODO(richui): Remove all the borders. It is only used for visualizing
   // bounds while it is a placeholder.
   auto delete_button_callback = base::BindRepeating(
@@ -46,22 +74,23 @@ DesksTemplatesItemView::DesksTemplatesItemView() {
               .SetOrientation(views::BoxLayout::Orientation::kVertical)
               .SetCrossAxisAlignment(
                   views::BoxLayout::CrossAxisAlignment::kStart)
-              .AddChildren(views::Builder<views::View>()
-                               .CopyAddressTo(&name_view_)
-                               .SetPreferredSize(kViewSize)
-                               .SetBorder(views::CreateSolidBorder(
-                                   /*thickness=*/2, SK_ColorGRAY)),
-                           views::Builder<views::View>()
-                               .CopyAddressTo(&time_view_)
-                               .SetPreferredSize(kViewSize)
-                               .SetBorder(views::CreateSolidBorder(
-                                   /*thickness=*/2, SK_ColorGRAY)),
-                           views::Builder<views::View>().CopyAddressTo(&spacer),
-                           views::Builder<views::BoxLayoutView>()
-                               .CopyAddressTo(&preview_view_)
-                               .SetOrientation(
-                                   views::BoxLayout::Orientation::kHorizontal)
-                               .SetBetweenChildSpacing(kIconSpacingDp)),
+              .AddChildren(
+                  views::Builder<views::Textfield>()
+                      .CopyAddressTo(&name_view_)
+                      .SetText(desk_template->template_name())
+                      .SetAccessibleName(desk_template->template_name())
+                      .SetPreferredSize(kViewSize),
+                  views::Builder<views::Label>()
+                      .CopyAddressTo(&time_view_)
+                      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                      .SetText(GetTimeStr(desk_template->created_time()))
+                      .SetPreferredSize(kViewSize),
+                  views::Builder<views::View>().CopyAddressTo(&spacer),
+                  views::Builder<views::BoxLayoutView>()
+                      .CopyAddressTo(&preview_view_)
+                      .SetOrientation(
+                          views::BoxLayout::Orientation::kHorizontal)
+                      .SetBetweenChildSpacing(kIconSpacingDp)),
           views::Builder<DesksTemplatesDeleteButton>()
               .CopyAddressTo(&delete_button_)
               .SetCallback(delete_button_callback))
