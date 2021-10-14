@@ -54,6 +54,18 @@ class TransferUpdateListener {
   }
 }
 
+/**
+ * The progress bar asset URL for light mode
+ * @type {string}
+ */
+const PROGRESS_BAR_URL_LIGHT = 'nearby_share_progress_bar_light.json';
+
+/**
+ * The progress bar asset URL for dark mode
+ * @type {string}
+ */
+const PROGRESS_BAR_URL_DARK = 'nearby_share_progress_bar_dark.json';
+
 Polymer({
   is: 'nearby-confirmation-page',
 
@@ -151,6 +163,15 @@ Polymer({
     lastTransferStatus_: {
       type: nearbyShare.mojom.TransferStatus,
       value: null,
+    },
+
+    /**
+     * Whether the confirmation page is being rendered in dark mode.
+     * @private {boolean}
+     */
+    isDarkModeActive_: {
+      type: Boolean,
+      value: false,
     },
   },
 
@@ -322,4 +343,13 @@ Polymer({
         this.payloadPreview.description :
         'Unknown file';
   },
+
+  /**
+   * Returns the URL for the asset that defines a file transfer's animated
+   * progress bar.
+   */
+  getAnimationUrl_() {
+    return this.isDarkModeActive_ ? PROGRESS_BAR_URL_DARK :
+                                    PROGRESS_BAR_URL_LIGHT;
+  }
 });

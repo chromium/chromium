@@ -45,6 +45,17 @@ function tokensEqual(a, b) {
   return a.high === b.high && a.low === b.low;
 }
 
+/**
+ * The pulse animation asset URL for light mode.
+ * @type {string}
+ */
+const PULSE_ANIMATION_URL_LIGHT = 'nearby_share_pulse_animation_light.json';
+
+/**
+ * The pulse animation asset URL for dark mode.
+ */
+const PULSE_ANIMATION_URL_DARK = 'nearby_share_pulse_animation_dark.json';
+
 Polymer({
   is: 'nearby-discovery-page',
 
@@ -119,6 +130,15 @@ Polymer({
     errorDescription_: {
       type: String,
       value: null,
+    },
+
+    /**
+     * Whether the discovery page is being rendered in dark mode.
+     * @private {boolean}
+     */
+    isDarkModeActive_: {
+      type: Boolean,
+      value: false,
     },
   },
 
@@ -540,4 +560,13 @@ Polymer({
 
     return tempEl.innerHTML;
   },
+
+  /**
+   * Returns the URL for the asset that defines the discovery page's
+   * pulsing background animation
+   */
+  getAnimationUrl_() {
+    return this.isDarkModeActive_ ? PULSE_ANIMATION_URL_DARK :
+                                    PULSE_ANIMATION_URL_LIGHT;
+  }
 });
