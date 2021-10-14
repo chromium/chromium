@@ -2270,7 +2270,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Preview page <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
       </message>
       <message name="IDS_CONTEXTMENU_READ_LATER" desc="Context sensitive menu item for marking a link to be read later. We're also labeling it *New* to draw attention to it when first released. [CHAR_LIMIT=30]">
-        Add to Reading List <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
+        Add to reading list <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
       </message>
       <message name="IDS_CONTEXTMENU_PERFORMANCE_INFO_FAST" desc="This string is shown in the context sensitive menu for links and is shown underneath the link URL. It indicates to the user that the link's target page is fast-loading and responsive. [CHAR_LIMIT=30]">
         Fast page
@@ -3205,14 +3205,14 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_MENU_EDIT_BOOKMARK" desc="Menu item for editing the content of the bookmark for the current page. [CHAR_LIMIT=27]">
         Edit Bookmark
       </message>
-      <message name="IDS_MENU_ADD_TO_READING_LIST" desc="Menu item for adding the current page to the 'Reading List' to read later. [CHAR_LIMIT=27]">
-        Add to Reading List
+      <message name="IDS_MENU_ADD_TO_READING_LIST" desc="Menu item for adding the current page to the reading list. [CHAR_LIMIT=27]">
+        Add to reading list
       </message>
-      <message name="IDS_MENU_DELETE_FROM_READING_LIST" desc="Menu item for removing the current page from the 'Reading List'. [CHAR_LIMIT=27]">
-        Delete from Reading List
+      <message name="IDS_MENU_DELETE_FROM_READING_LIST" desc="Menu item for removing the current page from the reading list. [CHAR_LIMIT=27]">
+        Delete from reading list
       </message>
-      <message name="IDS_MENU_EDIT_READING_LIST" desc="Menu item for opening and editing the 'Reading List'. Shown only when the current page is already on the Reading List. [CHAR_LIMIT=27]">
-        Edit Reading List
+      <message name="IDS_MENU_EDIT_READING_LIST" desc="Menu item for opening and editing the reading list. Shown only when the current page is already on the reading list. [CHAR_LIMIT=27]">
+        Edit reading list
       </message>
       <message name="IDS_MENU_FIND_IN_PAGE" desc="Menu item allowing users to find text within the current page. [CHAR_LIMIT=27]">
         Find in page
@@ -3435,7 +3435,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Save this page for later and get a reminder
       </message>
       <message name="IDS_READING_LIST_SAVE_PAGES_FOR_LATER" desc="The text on the reading list in product help bubble to introduce the feature to the user.">
-        Add pages to your Reading List to get a reminder
+        Add pages to your reading list for later
       </message>
       <message name="IDS_READING_LIST_FIND_IN_BOOKMARKS" desc="The text to inform the user to find the reading list in bookmarks UI.">
         Find your reading list in Bookmarks
