@@ -857,6 +857,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FileBrowser.ZipFileTask" enum="FileManagerZipHandlerType"
     expires_after="M98">
+  <obsolete>
+    Related to NaCl-based ZipArchiver extension, removed in M96
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
