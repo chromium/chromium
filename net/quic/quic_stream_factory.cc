@@ -1785,7 +1785,7 @@ int QuicStreamFactory::CreateSession(
   std::unique_ptr<CryptoClientConfigHandle> crypto_config_handle =
       CreateCryptoConfigHandle(key.session_key().network_isolation_key());
   InitializeCachedStateInCryptoConfig(*crypto_config_handle, server_id,
-                                      server_info, &connection_id);
+                                      server_info);
 
   QuicChromiumPacketWriter* writer =
       new QuicChromiumPacketWriter(socket.get(), task_runner_);
@@ -2037,8 +2037,7 @@ void QuicStreamFactory::InitializeMigrationOptions() {
 void QuicStreamFactory::InitializeCachedStateInCryptoConfig(
     const CryptoClientConfigHandle& crypto_config_handle,
     const quic::QuicServerId& server_id,
-    const std::unique_ptr<QuicServerInfo>& server_info,
-    quic::QuicConnectionId* connection_id) {
+    const std::unique_ptr<QuicServerInfo>& server_info) {
   quic::QuicCryptoClientConfig::CachedState* cached =
       crypto_config_handle.GetConfig()->LookupOrCreate(server_id);
 

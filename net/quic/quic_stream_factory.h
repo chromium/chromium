@@ -456,14 +456,11 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   void InitializeMigrationOptions();
 
   // Initializes the cached state associated with |server_id| in
-  // |crypto_config_| with the information in |server_info|. Populates
-  // |connection_id| with the next server designated connection id,
-  // if any, and otherwise leaves it unchanged.
+  // |crypto_config_| with the information in |server_info|.
   void InitializeCachedStateInCryptoConfig(
       const CryptoClientConfigHandle& crypto_config_handle,
       const quic::QuicServerId& server_id,
-      const std::unique_ptr<QuicServerInfo>& server_info,
-      quic::QuicConnectionId* connection_id);
+      const std::unique_ptr<QuicServerInfo>& server_info);
 
   void ProcessGoingAwaySession(QuicChromiumClientSession* session,
                                const quic::QuicServerId& server_id,
