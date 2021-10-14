@@ -74,10 +74,12 @@ TEST(SpeechRecognitionResultStructTraitsTest, WithInvalidHypothesisParts) {
       std::vector<media::HypothesisParts>();
   auto& hypothesis_parts =
       invalid_result.timing_information->hypothesis_parts.value();
+  // Invalid hypothesis parts (outside the range audio_start_time to
+  // audio_end_time):
   hypothesis_parts.emplace_back(std::vector<std::string>({"hello"}),
                                 base::Seconds(-1));
   hypothesis_parts.emplace_back(std::vector<std::string>({"world"}),
-                                base::Seconds(1));
+                                base::Seconds(2));
   std::vector<uint8_t> data =
       media::mojom::SpeechRecognitionResult::Serialize(&invalid_result);
   media::SpeechRecognitionResult output;
@@ -89,7 +91,7 @@ TEST(SpeechRecognitionResultStructTraitsTest, WithValidHypothesisParts) {
   media::SpeechRecognitionResult valid_result("hello world", true);
   valid_result.timing_information = media::TimingInformation();
   valid_result.timing_information->audio_start_time = kZeroTime;
-  valid_result.timing_information->audio_end_time = base::Seconds(2);
+  valid_result.timing_information->audio_end_time = base::Seconds(1);
   valid_result.timing_information->hypothesis_parts =
       std::vector<media::HypothesisParts>();
   auto& hypothesis_parts =
