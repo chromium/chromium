@@ -173,9 +173,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.BadMessageTerminated.Extensions"
-    enum="BadMessageReasonExtensions" expires_after="2022-04-03">
-  <owner>jamescook@chromium.org</owner>
-  <owner>karandeepb@chromium.org</owner>
+    enum="BadMessageReasonExtensions" expires_after="never">
+<!-- expires-never: Monitoring core extension system health. -->
+
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
     Count of extension processes killed because they sent an IPC that couldn't
     be properly handled. Categories are the reasons (code locations) for the
