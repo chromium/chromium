@@ -1871,7 +1871,8 @@ CSSFunctionValue* ComputedStyleUtils::ValueForTransformOperation(
         result->Append(*CSSNumericLiteralValue::Create(
             scale.X(), CSSPrimitiveValue::UnitType::kNumber));
       }
-      if (id == CSSValueID::kScaleY || id == CSSValueID::kScale ||
+      if (id == CSSValueID::kScaleY ||
+          (id == CSSValueID::kScale && scale.Y() != scale.X()) ||
           id == CSSValueID::kScale3d) {
         result->Append(*CSSNumericLiteralValue::Create(
             scale.Y(), CSSPrimitiveValue::UnitType::kNumber));
