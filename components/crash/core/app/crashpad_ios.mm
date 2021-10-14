@@ -45,7 +45,7 @@ const std::map<std::string, std::string>& GetProcessSimpleAnnotations() {
       process_annotations["channel"] = base::SysNSStringToUTF8(channel);
       NSString* version =
           base::mac::ObjCCast<NSString>([base::mac::FrameworkBundle()
-              objectForInfoDictionaryKey:@"CFBundleShortVersionString"]);
+              objectForInfoDictionaryKey:@"CFBundleVersion"]);
       process_annotations["ver"] = base::SysNSStringToUTF8(version);
       process_annotations["plat"] = std::string("iOS");
       process_annotations["crashpad"] = std::string("yes");
