@@ -374,7 +374,7 @@ bool WebAppInstallFinalizer::CanReparentTab(const AppId& app_id,
   // Reparent the web contents into its own window only if that is the
   // app's launch type.
   DCHECK(registrar_);
-  if (registrar_->GetAppUserDisplayMode(app_id) != DisplayMode::kStandalone)
+  if (registrar_->GetAppUserDisplayMode(app_id) == DisplayMode::kBrowser)
     return false;
 
   return ui_manager_->CanReparentAppTabToWindow(app_id, shortcut_created);
