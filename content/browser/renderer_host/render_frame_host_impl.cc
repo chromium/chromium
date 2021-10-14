@@ -12591,6 +12591,10 @@ RenderFrameHostImpl::DocumentAssociatedData::~DocumentAssociatedData() {
     // DocumentServiceBase unregisters itself at destruction time.
     delete services.back();
   }
+
+  // Explicitly clear all user data here, so that the other fields of
+  // DocumentAssociatedData are still valid while user data is being destroyed.
+  ClearAllUserData();
 }
 
 std::ostream& operator<<(std::ostream& o,
