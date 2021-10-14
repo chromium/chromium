@@ -9,8 +9,6 @@
 #include <string>
 
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chromeos/assistant/internal/proto/shared/proto/v2/customer_registration_interface.pb.h"
-#include "chromeos/assistant/internal/proto/shared/proto/v2/event_notification_interface.pb.h"
 #include "chromeos/services/libassistant/grpc/grpc_client_thread.h"
 #include "chromeos/services/libassistant/grpc/grpc_state.h"
 #include "chromeos/services/libassistant/grpc/grpc_util.h"
