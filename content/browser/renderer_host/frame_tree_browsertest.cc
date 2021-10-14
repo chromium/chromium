@@ -562,10 +562,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, ChildFrameWithSrcdoc) {
     observer.Wait();
 
     EXPECT_TRUE(child->current_url().IsAboutSrcdoc());
-    EXPECT_EQ(
-        url::Origin::Create(root->current_frame_host()->GetLastCommittedURL())
-            .Serialize(),
-        EvalJs(child, "self.origin"));
+    EXPECT_EQ(root->current_frame_host()->GetLastCommittedOrigin().Serialize(),
+              EvalJs(child, "self.origin"));
   }
 }
 
