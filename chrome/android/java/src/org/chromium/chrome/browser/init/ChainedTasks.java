@@ -6,31 +6,35 @@ package org.chromium.chrome.browser.init;
 
 import android.util.Pair;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 
 import java.util.LinkedList;
 
+import javax.annotation.concurrent.GuardedBy;
+
 /**
- * Allows to chain multiple tasks on the UI thread, with the next task posted when one completes.
+ * Allows chaining multiple tasks on arbitrary threads, with the next task posted when one
+ * completes.
  *
  * Threading:
- * - Can construct and call {@link add()} on any thread. Note that this is not synchronized.
- * - Can call {@link start()} on any thread, blocks if called from the UI thread and coalesceTasks
- *   is true.
- * - {@link cancel()} must be called from the UI thread.
+ * - This class is threadsafe and all methods may be called from any thread.
+ * - Tasks may run with arbitrary TaskTraits, unless tasks are coalesced, in which case all tasks
+ *   must run on the same thread.
  */
 public class ChainedTasks {
     private LinkedList<Pair<TaskTraits, Runnable>> mTasks = new LinkedList<>();
-    private volatile boolean mFinalized;
+    @GuardedBy("mTasks")
+    private boolean mFinalized;
+    private volatile boolean mCanceled;
 
     private final Runnable mRunAndPost = new Runnable() {
         @Override
         @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
         public void run() {
-            if (mTasks.isEmpty()) return;
+            if (mCanceled) return;
+
             Pair<TaskTraits, Runnable> pair = mTasks.pop();
             try (TraceEvent e = TraceEvent.scoped(
                          "ChainedTask.run: " + pair.second.getClass().getName())) {
@@ -45,37 +49,41 @@ public class ChainedTasks {
      * called.
      */
     public void add(TaskTraits traits, Runnable task) {
-        if (mFinalized) throw new IllegalStateException("Must not call add() after start()");
-        mTasks.add(new Pair<>(traits, task));
+        synchronized (mTasks) {
+            if (mFinalized) throw new IllegalStateException("Must not call add() after start()");
+            mTasks.add(new Pair<>(traits, task));
+        }
     }
 
     /**
-     * Cancels the remaining tasks. Must be called from the UI thread.
+     * Cancels the remaining tasks.
      */
     public void cancel() {
-        if (!ThreadUtils.runningOnUiThread()) {
-            throw new IllegalStateException("Must call cancel() from the UI thread.");
+        synchronized (mTasks) {
+            mFinalized = true;
+            mCanceled = true;
         }
-        mFinalized = true;
-        mTasks.clear();
     }
 
     /**
      * Posts or runs all the tasks, one by one.
      *
      * @param coalesceTasks if false, posts the tasks. Otherwise run them in a single task. If
-     * called on the UI thread, run in the current task.
+     * called on the thread matching the TaskTraits, will block and run all tasks synchronously.
      */
     public void start(final boolean coalesceTasks) {
-        if (mFinalized) throw new IllegalStateException("Cannot call start() several times");
-        mFinalized = true;
+        synchronized (mTasks) {
+            if (mFinalized) throw new IllegalStateException("Cannot call start() several times");
+            mFinalized = true;
+        }
         if (mTasks.isEmpty()) return;
         if (coalesceTasks) {
-            PostTask.runOrPostTask(mTasks.peek().first, new Runnable() {
-                @Override
-                public void run() {
-                    for (Pair<TaskTraits, Runnable> pair : mTasks) pair.second.run();
-                    mTasks.clear();
+            TaskTraits traits = mTasks.peek().first;
+            PostTask.runOrPostTask(traits, () -> {
+                for (Pair<TaskTraits, Runnable> pair : mTasks) {
+                    assert PostTask.canRunTaskImmediately(pair.first);
+                    pair.second.run();
+                    if (mCanceled) return;
                 }
             });
         } else {

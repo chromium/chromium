@@ -196,17 +196,4 @@ public class ChainedTasksTest {
         Assert.assertFalse(finished.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertEquals(expectedMessages, messages);
     }
-
-    @Test
-    @SmallTest
-    public void testThreadRestrictions() {
-        ChainedTasks tasks = new ChainedTasks();
-        tasks.start(false);
-        try {
-            tasks.cancel();
-            Assert.fail("Cancel should not be callable from a non-UI thread");
-        } catch (IllegalStateException e) {
-            // Expected.
-        }
-    }
 }
