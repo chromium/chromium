@@ -45,6 +45,7 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/web/win/web_font_prewarmer.h"
 #include "third_party/blink/renderer/platform/fonts/bitmap_glyphs_block_list.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
@@ -53,6 +54,7 @@
 #include "third_party/blink/renderer/platform/fonts/win/font_fallback_win.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/ports/SkTypeface_win.h"
@@ -61,6 +63,8 @@
 #include <windows.h>
 
 namespace blink {
+
+WebFontPrewarmer* FontCache::prewarmer_ = nullptr;
 
 HashMap<String, sk_sp<SkTypeface>, CaseFoldingHash>*
     FontCache::sideloaded_fonts_ = nullptr;
@@ -185,6 +189,21 @@ const LayoutLocale* FallbackLocaleForCharacter(
 }
 
 }  // namespace
+
+// static
+void FontCache::PrewarmFamily(const AtomicString& family_name) {
+  DCHECK(IsMainThread());
+
+  if (!prewarmer_)
+    return;
+
+  static HashSet<AtomicString> prewarmed_families;
+  const auto result = prewarmed_families.insert(family_name);
+  if (!result.is_new_entry)
+    return;
+
+  prewarmer_->PrewarmFamily(family_name);
+}
 
 // static
 void FontCache::AddSideloadedFontForTesting(sk_sp<SkTypeface> typeface) {

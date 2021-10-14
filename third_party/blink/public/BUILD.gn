@@ -423,7 +423,10 @@ source_set("blink_headers") {
   }
 
   if (is_win) {
-    sources += [ "web/win/web_font_rendering.h" ]
+    sources += [
+      "web/win/web_font_prewarmer.h",
+      "web/win/web_font_rendering.h",
+    ]
   }
 
   public_configs = [

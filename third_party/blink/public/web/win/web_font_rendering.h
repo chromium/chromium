@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/win/web_font_prewarmer.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkFontMgr;
@@ -17,6 +18,9 @@ namespace blink {
 class WebFontRendering {
  public:
   BLINK_EXPORT static void SetSkiaFontManager(sk_sp<SkFontMgr>);
+  // Set an instance of |WebFontPrewarmer|. The instance must be kept alive
+  // until the process exits.
+  BLINK_EXPORT static void SetFontPrewarmer(WebFontPrewarmer*);
   BLINK_EXPORT static void AddSideloadedFontForTesting(sk_sp<SkTypeface>);
   BLINK_EXPORT static void SetMenuFontMetrics(const WebString& family_name,
                                               int32_t font_height);

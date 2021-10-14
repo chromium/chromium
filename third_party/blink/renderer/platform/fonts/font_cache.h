@@ -84,6 +84,7 @@ class FontFaceCreationParams;
 class FontFallbackMap;
 class FontGlobalContext;
 class SimpleFontData;
+class WebFontPrewarmer;
 
 enum class AlternateFontName {
   kAllowAlternate,
@@ -177,6 +178,14 @@ class PLATFORM_EXPORT FontCache {
 
   sk_sp<SkFontMgr> FontManager() { return font_manager_; }
   static void SetFontManager(sk_sp<SkFontMgr>);
+
+#if defined(OS_WIN)
+  static void SetFontPrewarmer(WebFontPrewarmer* prewarmer) {
+    DCHECK(!prewarmer_);
+    prewarmer_ = prewarmer;
+  }
+  static void PrewarmFamily(const AtomicString& family_name);
+#endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // These are needed for calling QueryRenderStyleForStrike, since
@@ -367,6 +376,7 @@ class PLATFORM_EXPORT FontCache {
   static SkFontMgr* static_font_manager_;
 
 #if defined(OS_WIN)
+  static WebFontPrewarmer* prewarmer_;
   static bool antialiased_text_enabled_;
   static bool lcd_text_enabled_;
   static HashMap<String, sk_sp<SkTypeface>, CaseFoldingHash>* sideloaded_fonts_;
