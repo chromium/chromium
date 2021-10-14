@@ -6,6 +6,8 @@
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom.h"
 #include "chrome/browser/ui/webui/connectors_internals/zero_trust_utils.h"
@@ -16,12 +18,8 @@ namespace enterprise_connectors {
 
 ConnectorsInternalsPageHandler::ConnectorsInternalsPageHandler(
     mojo::PendingReceiver<connectors_internals::mojom::PageHandler> receiver,
-    DeviceTrustService* device_trust_service,
     Profile* profile)
-    : receiver_(this, std::move(receiver)),
-      device_trust_service_(device_trust_service),
-      profile_(profile) {
-  DCHECK(device_trust_service_);
+    : receiver_(this, std::move(receiver)), profile_(profile) {
   DCHECK(profile_);
 }
 
@@ -29,23 +27,31 @@ ConnectorsInternalsPageHandler::~ConnectorsInternalsPageHandler() = default;
 
 void ConnectorsInternalsPageHandler::GetZeroTrustState(
     GetZeroTrustStateCallback callback) {
-  if (!device_trust_service_) {
+  auto* device_trust_service =
+      DeviceTrustServiceFactory::GetForProfile(profile_);
+
+  // The factory will not return a service if the profile is off-the-record.
+  if (!device_trust_service) {
     auto state = connectors_internals::mojom::ZeroTrustState::New(
         false, base::flat_map<std::string, std::string>());
     std::move(callback).Run(std::move(state));
     return;
   }
-  device_trust_service_->GetSignals(
+
+  // Since this page is used for debugging purposes, show the signals regardless
+  // of the policy value (i.e. even if service->IsEnabled is false).
+  device_trust_service->GetSignals(
       base::BindOnce(&ConnectorsInternalsPageHandler::OnSignalsCollected,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     device_trust_service->IsEnabled()));
 }
 
 void ConnectorsInternalsPageHandler::OnSignalsCollected(
     GetZeroTrustStateCallback callback,
+    bool is_device_trust_enabled,
     std::unique_ptr<SignalsType> signals) {
   auto state = connectors_internals::mojom::ZeroTrustState::New(
-      device_trust_service_->IsEnabled(),
-      utils::SignalsToMap(std::move(signals)));
+      is_device_trust_enabled, utils::SignalsToMap(std::move(signals)));
   std::move(callback).Run(std::move(state));
 }
 

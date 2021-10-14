@@ -32,7 +32,6 @@ class ConnectorsInternalsUI : public ui::MojoWebUIController {
 
  private:
   std::unique_ptr<ConnectorsInternalsPageHandler> page_handler_;
-  DeviceTrustService* device_trust_service_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
