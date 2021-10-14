@@ -236,7 +236,7 @@
     'chromium.fuzz': {
       'ASAN Debug': 'asan_lsan_debug_bot',
       'ASAN Release Media': 'asan_lsan_fuzzer_v8_heap_chromeos_codecs_release_bot',
-      'ASAN Release': 'asan_lsan_fuzzer_v8_heap_release_bot',
+      'ASAN Release': 'asan_lsan_fuzzer_v8_heap_release_bot_reclient',
       'ASan Debug (32-bit x86 with V8-ARM)': 'asan_v8_heap_debug_bot_hybrid',
       'ASan Release (32-bit x86 with V8-ARM)': 'asan_fuzzer_v8_heap_release_bot_hybrid',
       'ASan Release Media (32-bit x86 with V8-ARM)': 'asan_fuzzer_v8_heap_chromeos_codecs_release_bot_hybrid',
@@ -1754,10 +1754,6 @@
 
     'asan_lsan_fuzzer_v8_heap_chromeos_codecs_release_bot_reclient': [
       'asan', 'lsan', 'v8_heap', 'chromeos_codecs', 'release_bot_reclient',
-    ],
-
-    'asan_lsan_fuzzer_v8_heap_release_bot': [
-      'asan', 'lsan', 'fuzzer', 'v8_heap', 'release_bot',
     ],
 
     'asan_lsan_fuzzer_v8_heap_release_bot_reclient': [

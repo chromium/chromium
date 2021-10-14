@@ -408,11 +408,15 @@ def dawn_windows_builder(*, name, **kwargs):
         **kwargs
     )
 
-def fuzz_builder(*, name, **kwargs):
+def fuzz_builder(
+        *,
+        name,
+        goma_backend = builders.goma.backend.RBE_PROD,
+        **kwargs):
     return ci.builder(
         name = name,
         builder_group = "chromium.fuzz",
-        goma_backend = builders.goma.backend.RBE_PROD,
+        goma_backend = goma_backend,
         notifies = ["chromesec-lkgr-failures"],
         **kwargs
     )

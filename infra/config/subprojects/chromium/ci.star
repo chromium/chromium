@@ -3081,6 +3081,9 @@ ci.fuzz_builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
+    goma_backend = None,
+    reclient_jobs = 250,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.fuzz_builder(
